@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="1" failures="0" errors="0" time="0.154">
+    <testsuite name="tests/integration/api/auth.me.test.ts" timestamp="2026-05-07T13:45:02.500Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.009862542">
+        <testcase classname="tests/integration/api/auth.me.test.ts" name="auth.me HTTP endpoint &gt; GET /trpc/auth.me returns unauthenticated shape" time="0.009565959">
+        </testcase>
+    </testsuite>
+</testsuites>

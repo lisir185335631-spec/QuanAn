@@ -76,8 +76,8 @@
         "US-001"
       ],
       "priority": 2,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-upgrade] foundation due to downstream=2 (US-004 + US-006) · vite/react 是全主应用基础",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -115,8 +115,8 @@
         "US-001"
       ],
       "priority": 3,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-upgrade] foundation due to downstream=2 (US-006 + US-007) + DATABASE_URL 全栈关键路径",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -172,8 +172,8 @@
         "US-002"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "medium · token 派生工具占位 · 后续 PRD-3 起完整使用",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -192,31 +192,34 @@
     },
     {
       "id": "US-005",
-      "title": "shadcn 12 基础组件 + Header 简化版(单文件 · 三 dropdown 内联 mock)",
-      "description": "As IP 起号者 · I want shadcn 12 基础组件就位(packages/ui/src/base) + Header 单文件简化版(三 dropdown 内联 mock 数据 · 不拆子组件)· So that 满足 P0 退出条件 'Header 三 dropdown 显示正确' · 范围缩小避 Developer 超时",
+      "title": "shadcn 12 基础组件 + Header 三 dropdown",
+      "description": "As IP 起号者 · I want Header 显示 用户头像 / IP 账号 / 工具入口 三 dropdown · So that 推进 ARCHITECTURE §3.6.4 主应用骨架 P0 退出条件",
       "acceptanceCriteria": [
-        "shadcn 12 基础组件 copy-paste 到 packages/ui/src/base/*(button / input / dropdown-menu / avatar / dialog / sheet / separator / scroll-area / toast / tooltip / tabs / select)",
-        "packages/ui/src/base/index.ts 聚合 export 12 组件",
-        "apps/web/src/components/Header.tsx 单文件 · 含 3 dropdown(用户头像 / IP 账号 / 工具入口)· 内联 mock 数据 · 不拆 4 子组件(简化交付)",
-        "Header 用户头像 dropdown 显示 mock(name='Mock User' / email='mock@quanqn.dev' / 占位 avatar) + logout 入口",
-        "Header IP 账号 dropdown 显示 mock 列表 2-3 个示例账号 + '+ 新建账号' 入口",
-        "Header 工具入口 dropdown 显示 14 工具 + 6 新模块文字占位(链接占位 # · 不导航)",
-        "apps/web/src/App.tsx 引 Header 替换占位 h1",
-        "0 React warning · 0 hydration mismatch · pnpm typecheck 全 workspace 退出码 0",
+        "shadcn 12 基础组件就位(button / input / dropdown-menu / avatar / dialog / sheet / separator / scroll-area / toast / tooltip / tabs / select)· copy-paste 模式不依赖 npm shadcn 包",
+        "Header 用户头像 dropdown · 显示 mock 用户(name=Mock User · email=mock@quanqn.dev · avatar 占位)· 含 logout 入口",
+        "Header IP 账号 dropdown · 显示 mock 列表(2-3 个示例账号)+ '+ 新建账号' 入口",
+        "Header 工具入口 dropdown · 显示 14 工具页 + 6 新模块占位(参 ARCHITECTURE §3.6.4 表)",
+        "0 React warning · 0 hydration mismatch(React 18 strict 模式 · 用 agent-browser 验证)",
+        "窄屏 ≤640px 下 · 三 dropdown 隐藏 · 显示 hamburger menu · 点开抽屉(sheet 组件)",
+        "Header 首次渲染 < 100ms · dropdown 展开动画 < 200ms",
         "Typecheck passes",
-        "Tests pass(占位 · 无新 unit 必需 · E2E 留 PRD-2)"
+        "Tests pass · E2E playwright Header 三 dropdown 可见 + 点开"
       ],
       "depends_on": [
         "US-004"
       ],
       "priority": 5,
       "passes": false,
-      "notes": "[RCA-002 v0.2 · 断点续跑] 2026-05-07 23:30 拆细 US-005 + 让 ralph 从断点续跑\n\n★ ralph round 6/7/8 (3 次 30min Developer 超时) 实际产出 (在 working tree 未 commit) ·\n  · apps/web/package.json · 加 10 @radix-ui deps (avatar/dialog/dropdown-menu/scroll-area/select/separator/slot/tabs/toast/tooltip)\n  · pnpm-lock.yaml · 部分更新 (pnpm install 可能没跑完)\n  · apps/web/src/components/ui/{12 shadcn 组件}.tsx · 已写\n    (button/input/dropdown-menu/avatar/dialog/sheet/separator/scroll-area/toast/tooltip/tabs/select)\n  · apps/web/src/components/Header.tsx · 已写\n  · apps/web/src/lib/utils.ts · 已写 (cn 函数)\n  · apps/web/src/App.tsx · 已改\n  · apps/web/src/styles/globals.css · 已改\n\n★ 你的任务 (round 9 fresh start · 不要重写) ·\n  1. 跑 pnpm install (装 @radix-ui 10 deps · 可能上次没跑完)\n  2. 跑 pnpm --filter @quanqn/web typecheck (修任何 typecheck 错)\n  3. 跑 pnpm typecheck (全 workspace 验证零回归)\n  4. git add + git commit -m \"feat: [US-005] - shadcn 12 基础组件 + Header 简化版 (从 round 6-8 断点续跑)\"\n  5. 退出 (退出后 ralph.py 会激活 audit-gate 等 Opus 审)\n\n★ 不要 ·\n  · 不要重写 12 shadcn 组件 (已存在 · 用 git status 看)\n  · 不要重写 Header.tsx\n  · 不要在 packages/ui/src/base/ 创建文件 (现实是 shadcn 默认路径 apps/web/src/components/ui/ · 接受这个偏差 · 写到 audit-exemption)\n\n注 · 范围已简化 (size large → medium · 17 文件 → 13 · 移除 4 子组件 + e2e · 留 PRD-2)",
+      "notes": "medium · shadcn 用 copy-paste 不 npm install · radix-ui 是底层 dep",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
+        "apps/web/src/components/Header.tsx",
+        "apps/web/src/components/UserDropdown.tsx",
+        "apps/web/src/components/AccountDropdown.tsx",
+        "apps/web/src/components/ToolsDropdown.tsx",
+        "apps/web/src/components/HamburgerMenu.tsx",
         "packages/ui/src/base/button.tsx",
-        "packages/ui/src/base/input.tsx",
         "packages/ui/src/base/dropdown-menu.tsx",
         "packages/ui/src/base/avatar.tsx",
         "packages/ui/src/base/dialog.tsx",
@@ -227,15 +230,16 @@
         "packages/ui/src/base/tooltip.tsx",
         "packages/ui/src/base/tabs.tsx",
         "packages/ui/src/base/select.tsx",
-        "apps/web/src/components/Header.tsx"
+        "packages/ui/src/base/input.tsx",
+        "tests/e2e/header.spec.ts"
       ],
       "files_to_modify": [
         "apps/web/src/App.tsx",
         "packages/ui/src/base/index.ts",
         "packages/ui/package.json"
       ],
-      "test_command": "pnpm --filter @quanqn/web typecheck",
-      "size_hint": "medium",
+      "test_command": "pnpm --filter @quanqn/web typecheck && pnpm test:e2e -- header.spec.ts",
+      "size_hint": "large",
       "risk_level": "medium",
       "anti_patterns": []
     },

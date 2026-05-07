@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="10" failures="0" errors="0" time="0.162">
+    <testsuite name="tests/unit/parseDesignTokens.test.ts" timestamp="2026-05-07T14:12:24.365Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.003592417">
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts color tokens from YAML frontmatter" time="0.001492834">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts typography tokens including all three font families" time="0.000179292">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts rounded tokens" time="0.000138">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts spacing tokens" time="0.000127541">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; YAML wins over text section — text section hex values are not in tokens" time="0.000362834">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; primary color comes from YAML, not from text-section editorial hint" time="0.000101834">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing opening ---" time="0.000239125">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing closing ---" time="0.000056917">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on corrupt YAML with line number in message" time="0.000307875">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; returns empty objects for missing optional sections" time="0.000230167">
+        </testcase>
+    </testsuite>
+</testsuites>

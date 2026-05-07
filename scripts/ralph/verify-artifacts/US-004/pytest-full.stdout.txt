@@ -1,0 +1,20 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts color tokens from YAML frontmatter
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts typography tokens including all three font families
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts rounded tokens
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts spacing tokens
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > YAML wins over text section — text section hex values are not in tokens
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > primary color comes from YAML, not from text-section editorial hint
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing opening ---
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing closing ---
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on corrupt YAML with line number in message
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > returns empty objects for missing optional sections
+ ✓ tests/integration/api/auth.me.test.ts > auth.me HTTP endpoint > GET /trpc/auth.me returns unauthenticated shape
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  22:12:30
+   Duration  168ms (transform 20ms, setup 11ms, collect 21ms, tests 14ms, environment 0ms, prepare 67ms)
+

@@ -1,0 +1,16 @@
+
+> @quanqn/web@0.1.0 build /Users/return/Desktop/QuanQn/apps/web
+> tsc -b && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 31 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.70 kB │ gzip:  0.42 kB
+dist/assets/index-Dc-2NpQb.css    0.24 kB │ gzip:  0.20 kB
+dist/assets/ui-BKsbMNwd.js        0.07 kB │ gzip:  0.09 kB │ map:   0.10 kB
+dist/assets/trpc-BEvdERty.js      0.96 kB │ gzip:  0.61 kB │ map:   2.26 kB
+dist/assets/index-DqzjYApU.js     1.14 kB │ gzip:  0.69 kB │ map:   1.80 kB
+dist/assets/react-ppAWL3zK.js   140.77 kB │ gzip: 45.24 kB │ map: 344.78 kB
+✓ built in 675ms

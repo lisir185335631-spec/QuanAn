@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/integration/api/auth.me.test.ts > auth.me HTTP endpoint > GET /trpc/auth.me returns unauthenticated shape
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  21:41:15
+   Duration  185ms (transform 12ms, setup 5ms, collect 5ms, tests 10ms, environment 0ms, prepare 34ms)
+
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-003/pytest-full.xml

@@ -1,0 +1,18 @@
+{
+  "story_id": "US-002",
+  "validator_start_ts": "2026-05-07T21:13:00",
+  "validator_end_ts": "2026-05-07T21:16:00",
+  "artifacts": [
+    "typecheck.txt",
+    "build.stdout.txt",
+    "pytest-full.stdout.txt",
+    "page-content.txt",
+    "manifest.json"
+  ],
+  "exit_codes": {
+    "typecheck": 0,
+    "build": 0,
+    "vitest": 0
+  },
+  "notes": "vitest: no test files found, exit 0 (zero-regression pass). Browser tool unavailable (playwright not installed); AC-2 verified via App.tsx source + curl HTML response. AC-5 verified by absence of strictPort in vite.config.ts (Vite default: port fallback enabled). Cold start 78ms confirmed in dev server log."
+}

@@ -1,0 +1,25 @@
+{
+  "story_id": "US-003",
+  "validator_start_ts": "2026-05-07T21:40:00",
+  "validator_end_ts": "2026-05-07T21:45:00",
+  "test_command": "pnpm --filter @quanqn/api typecheck && pnpm vitest run",
+  "exit_code": 0,
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.txt",
+    "manifest.json"
+  ],
+  "ac_results": [
+    { "ac": 1, "desc": "pnpm dev:api 监听 3000 · 0 error · cold start < 5s", "result": "PASS", "evidence": "server PID 20480 running, /health → 200 OK" },
+    { "ac": 2, "desc": "curl /trpc/auth.me → unauthenticated JSON shape", "result": "PASS", "evidence": "curl response matches exact shape" },
+    { "ac": 3, "desc": "Prisma 实例化 < 100ms · users 表空查通", "result": "PASS", "evidence": "instantiation=0.63ms, connect=10.61ms, query=2.64ms, rows=0" },
+    { "ac": 4, "desc": "auth.me P50 < 50ms · P99 < 200ms", "result": "PASS", "evidence": "P50=0.5ms, P99=0.8ms (20 requests)" },
+    { "ac": 5, "desc": "DB URL 错 → pino log 'DB connection failed' + exit 1", "result": "PASS", "evidence": "exit code 1, pino error msg confirmed" },
+    { "ac": 6, "desc": "monorepo prisma client path 解决 · .npmrc hoist", "result": "PASS", "evidence": ".npmrc public-hoist-pattern[]=@prisma/client · @prisma/client hoisted to root node_modules · typecheck passes" },
+    { "ac": 7, "desc": "tRPC context: prisma + req + traceId='pending'", "result": "PASS", "evidence": "context.ts line 19-21 verified" },
+    { "ac": 8, "desc": "Typecheck passes", "result": "PASS", "evidence": "tsc --noEmit exit 0" },
+    { "ac": 9, "desc": "Integration test auth.me passes", "result": "PASS", "evidence": "vitest 1/1 passed (pytest-full.xml)" }
+  ],
+  "notes": "All 9 ACs passed. README.md does not have explicit prisma hoist note, but .npmrc has detailed comment and prisma.ts has AC-6 comment — functional requirement fully met."
+}

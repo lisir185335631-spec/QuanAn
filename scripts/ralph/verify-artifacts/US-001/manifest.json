@@ -1,0 +1,13 @@
+{
+  "story_id": "US-001",
+  "validator_start_ts": "2026-05-07T20:30:00",
+  "validator_end_ts": "2026-05-07T20:32:00",
+  "test_command": "pnpm typecheck",
+  "exit_code": 0,
+  "artifacts": [
+    "typecheck.stdout.txt",
+    "test.stdout.txt",
+    "manifest.json"
+  ],
+  "notes": "TypeScript monorepo project — no pytest (Python). Zero-regression gate run via pnpm test (vitest), exit code 0. No test files exist yet (US-001 is foundation/infra story). typecheck 1.3s, pnpm install 4.8s."
+}
