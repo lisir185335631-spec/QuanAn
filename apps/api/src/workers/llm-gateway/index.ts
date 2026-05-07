@@ -14,7 +14,7 @@
 
 import type { z } from 'zod';
 import { logger } from '@/lib/logger';
-import type { ModelTier } from '@/server/agents/base/types';
+import type { ModelTier } from '@/agents/base/types';
 
 // ============== 类型 ==============
 
@@ -56,10 +56,10 @@ export interface ToolDef {
 
 // ============== 模型路由 ==============
 
-const MODEL_BY_TIER: Record<ModelTier, { primary: string; fallback: string }> = {
+const MODEL_BY_TIER = {
   reasoning:   { primary: 'claude-sonnet-4-6',  fallback: 'gpt-4o' },
   lightweight: { primary: 'claude-haiku-4-5',   fallback: 'gpt-4o-mini' },
-};
+} as const satisfies Record<ModelTier, { primary: string; fallback: string }>;
 
 // ============== Gateway 实现 ==============
 

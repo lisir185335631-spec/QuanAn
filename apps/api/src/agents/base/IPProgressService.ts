@@ -18,8 +18,8 @@ export interface IPProgress {
 
 class IPProgressService {
   /** 计算单账号 9 步进度 */
-  async progress(accountId: number): Promise<IPProgress> {
-    // TODO P1 · prisma.stepData.findMany({ where: { accountId, status: 'completed' } })
+  async progress(_accountId: number): Promise<IPProgress> {
+    // TODO P1 · prisma.stepData.findMany({ where: { accountId: _accountId, status: 'completed' } })
     const completedKeys: string[] = [];
 
     const completed = STEPS.filter((s) => completedKeys.includes(s.key));

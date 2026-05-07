@@ -16,7 +16,7 @@ import type {
   SpecialistConfig,
   AssembledContext,
 } from '../base/types';
-import { llmGateway } from '@/server/workers/llm-gateway';
+import { llmGateway } from '@/workers/llm-gateway';
 
 // ============== 输入 + 输出 schema ==============
 
@@ -94,8 +94,8 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
     input: SpecialistInput<CopywritingInput>,
     ctx: AssembledContext,
   ): Promise<SpecialistOutput<CopywritingResult>> {
-    // 1. 输入校验(zod · 严格 · void 显式表示丢弃返回值)
-    void CopywritingInputSchema.parse(input.payload);
+    // 1. 输入校验(zod · 严格)
+    const payload = CopywritingInputSchema.parse(input.payload);
     const ModeSchema = z.enum(['step7', 'free', 'boom', 'acquisition']);
     const mode = ModeSchema.parse(input.mode ?? 'free');
 
