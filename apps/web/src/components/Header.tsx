@@ -1,4 +1,4 @@
-import { Menu, LogOut, Plus, ChevronDown, Wrench, User, Cpu } from 'lucide-react';
+import { Menu, LogOut, Plus, ChevronDown, Wrench, User, Cpu, LogIn } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,9 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/hooks/useAuth';
 
-// ── Mock data ──────────────────────────────────────────────────────────────────
-
-const MOCK_USER = {
-  name: 'Mock User',
-  email: 'mock@quanqn.dev',
-  avatar: '',
-} as const;
+// ── Static data ────────────────────────────────────────────────────────────────
 
 const MOCK_ACCOUNTS = [
   { id: 'acc-1', name: '个人IP号', platform: '抖音', active: true },
@@ -28,7 +23,6 @@ const MOCK_ACCOUNTS = [
   { id: 'acc-3', name: '测试账号', platform: 'B站', active: false },
 ] as const;
 
-// 14 tools from ARCHITECTURE §2.4
 const TOOLS_14 = [
   { label: '全网爆款库', href: '/trending', category: '市场洞察' },
   { label: '爆款文案解析', href: '/video-analysis', category: '市场洞察' },
@@ -46,7 +40,6 @@ const TOOLS_14 = [
   { label: '方法论知识库', href: '/knowledge', category: '智能工具' },
 ] as const;
 
-// 6 new modules from ARCHITECTURE §2.5
 const NEW_MODULES_6 = [
   { label: 'IP 诊断', href: '/diagnosis' },
   { label: '每日任务', href: '/daily-tasks' },
@@ -59,6 +52,29 @@ const NEW_MODULES_6 = [
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function UserDropdown() {
+  const { user, login, logout } = useAuth();
+
+  if (!user) {
+    return (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-1.5 h-8 px-2 text-on-surface"
+        aria-label="登录"
+        data-testid="header-login-button"
+        onClick={login}
+      >
+        <LogIn className="h-4 w-4" />
+        <span className="text-label-md font-medium">登录</span>
+      </Button>
+    );
+  }
+
+  const initials = user.name
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('');
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -70,21 +86,16 @@ function UserDropdown() {
           data-testid="header-user-trigger"
         >
           <Avatar className="h-7 w-7">
-            <AvatarImage src={MOCK_USER.avatar} alt={MOCK_USER.name} />
-            <AvatarFallback className="text-[10px]">
-              {MOCK_USER.name
-                .split(' ')
-                .map((n) => n[0])
-                .join('')}
-            </AvatarFallback>
+            <AvatarImage src="" alt={user.name} />
+            <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56" data-testid="header-user-menu">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col gap-0.5">
-            <span className="text-body-sm font-medium text-on-surface">{MOCK_USER.name}</span>
-            <span className="text-label-md text-muted-foreground">{MOCK_USER.email}</span>
+            <span className="text-body-sm font-medium text-on-surface">{user.name}</span>
+            <span className="text-label-md text-muted-foreground">{user.email}</span>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -93,7 +104,11 @@ function UserDropdown() {
           个人设置
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive-foreground focus:text-destructive-foreground">
+        <DropdownMenuItem
+          className="text-destructive-foreground focus:text-destructive-foreground"
+          onClick={logout}
+          data-testid="header-logout-button"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           退出登录
         </DropdownMenuItem>
@@ -183,6 +198,8 @@ function ToolsDropdown() {
 // ── Mobile sheet navigation ────────────────────────────────────────────────────
 
 function MobileNav() {
+  const { user, login, logout } = useAuth();
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -199,15 +216,26 @@ function MobileNav() {
       <SheetContent side="left" className="w-72 p-0" data-testid="header-mobile-sheet">
         <SheetHeader className="px-4 pt-5 pb-3 border-b border-border">
           <SheetTitle className="text-h2">QuanQn</SheetTitle>
-          <div className="flex flex-col gap-0.5 mt-1">
-            <span className="text-body-sm font-medium text-on-surface">{MOCK_USER.name}</span>
-            <span className="text-label-md text-muted-foreground">{MOCK_USER.email}</span>
-          </div>
+          {user ? (
+            <div className="flex flex-col gap-0.5 mt-1">
+              <span className="text-body-sm font-medium text-on-surface">{user.name}</span>
+              <span className="text-label-md text-muted-foreground">{user.email}</span>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-1 w-fit gap-1.5 text-primary"
+              onClick={login}
+            >
+              <LogIn className="h-4 w-4" />
+              登录
+            </Button>
+          )}
         </SheetHeader>
 
         <ScrollArea className="flex-1 h-[calc(100vh-100px)]">
           <div className="px-3 py-3 space-y-1">
-            {/* IP Accounts */}
             <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">IP 账号</p>
             {MOCK_ACCOUNTS.map((acc) => (
               <button
@@ -226,7 +254,6 @@ function MobileNav() {
 
             <Separator className="my-2" />
 
-            {/* 14 Tools */}
             <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">14 工具</p>
             {TOOLS_14.map((tool) => (
               <button
@@ -239,7 +266,6 @@ function MobileNav() {
 
             <Separator className="my-2" />
 
-            {/* 6 New Modules */}
             <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">新模块</p>
             {NEW_MODULES_6.map((mod) => (
               <button
@@ -252,10 +278,15 @@ function MobileNav() {
 
             <Separator className="my-2" />
 
-            <button className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-body-sm text-destructive-foreground">
-              <LogOut className="h-4 w-4" />
-              退出登录
-            </button>
+            {user && (
+              <button
+                className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-accent text-body-sm text-destructive-foreground"
+                onClick={logout}
+              >
+                <LogOut className="h-4 w-4" />
+                退出登录
+              </button>
+            )}
           </div>
         </ScrollArea>
       </SheetContent>
@@ -272,20 +303,17 @@ export function Header() {
       data-testid="app-header"
     >
       <div className="container flex h-12 items-center gap-2">
-        {/* Logo */}
         <div className="flex items-center gap-2 mr-3">
           <span className="text-body-md font-display font-semibold text-primary tracking-tight select-none">
             QuanQn
           </span>
         </div>
 
-        {/* Desktop: 3 dropdowns */}
         <div className="hidden sm:flex items-center gap-1 flex-1">
           <AccountDropdown />
           <ToolsDropdown />
         </div>
 
-        {/* Right-side: user dropdown (desktop) + hamburger (mobile) */}
         <div className="ml-auto flex items-center gap-1">
           <div className="hidden sm:block">
             <UserDropdown />

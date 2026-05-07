@@ -4,7 +4,8 @@ import path from 'node:path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      // API path alias — used when unit tests import from apps/api/src/**
+      '@': path.resolve(__dirname, 'apps/api/src'),
     },
   },
   test: {

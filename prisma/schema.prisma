@@ -40,11 +40,23 @@ model User {
   feedbackLogs   FeedbackLog[]
   auditLogs      AuditLog[]
   costLogs       CostLog[]
+  sessions       Session[]
 
   @@index([email])
   @@index([openId])
   @@index([activeAccountId])
   @@map("users")
+}
+
+/// GLOBAL TABLE · Lucia v3 sessions
+model Session {
+  id        String   @id
+  userId    Int      @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
 }
 
 /// GLOBAL TABLE · 邀请码池
