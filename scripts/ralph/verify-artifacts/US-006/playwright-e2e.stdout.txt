@@ -1,0 +1,113 @@
+
+Running 6 tests using 5 workers
+
+[1A[2K[1/6] [chromium] › tests/e2e/header.spec.ts:10:3 › Header 三 dropdown › Header 可见
+[1A[2K[2/6] [chromium] › tests/e2e/header.spec.ts:24:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开
+[1A[2K[3/6] [chromium] › tests/e2e/header.spec.ts:46:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏
+[1A[2K[4/6] [chromium] › tests/e2e/header.spec.ts:14:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开
+[1A[2K  1) [chromium] › tests/e2e/header.spec.ts:24:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ───────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     pnpm exec playwright install                           ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-chromium/error-context.md
+
+
+[1A[2K  2) [chromium] › tests/e2e/header.spec.ts:46:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏 
+
+    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     pnpm exec playwright install                           ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/header-Header-三-dropdown-移-2a446-示-hamburger-·-三-dropdown-隐藏-chromium/error-context.md
+
+
+[1A[2K[5/6] [chromium] › tests/e2e/header.spec.ts:35:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开
+[1A[2K  3) [chromium] › tests/e2e/header.spec.ts:10:3 › Header 三 dropdown › Header 可见 ────────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     pnpm exec playwright install                           ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/header-Header-三-dropdown-Header-可见-chromium/error-context.md
+
+
+[1A[2K  4) [chromium] › tests/e2e/header.spec.ts:14:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 ────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     pnpm exec playwright install                           ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-chromium/error-context.md
+
+
+[1A[2K  5) [chromium] › tests/e2e/header.spec.ts:35:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     pnpm exec playwright install                           ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-chromium/error-context.md
+
+
+[1A[2K[6/6] [chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet
+[1A[2K  6) [chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet ───────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell
+    ╔════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright was just installed or updated.       ║
+    ║ Please run the following command to download new browsers: ║
+    ║                                                            ║
+    ║     pnpm exec playwright install                           ║
+    ║                                                            ║
+    ║ <3 Playwright Team                                         ║
+    ╚════════════════════════════════════════════════════════════╝
+
+    Error Context: test-results/header-Header-三-dropdown-移动端-hamburger-点开-Sheet-chromium/error-context.md
+
+
+[1A[2K  6 failed
+    [chromium] › tests/e2e/header.spec.ts:10:3 › Header 三 dropdown › Header 可见 ─────────────────────
+    [chromium] › tests/e2e/header.spec.ts:14:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 ─────────
+    [chromium] › tests/e2e/header.spec.ts:24:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ────────
+    [chromium] › tests/e2e/header.spec.ts:35:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ─────────
+    [chromium] › tests/e2e/header.spec.ts:46:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏 
+    [chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet ────────
+::error file=tests/e2e/header.spec.ts,title=[chromium] › tests/e2e/header.spec.ts:10:3 › Header 三 dropdown › Header 可见::  1) [chromium] › tests/e2e/header.spec.ts:10:3 › Header 三 dropdown › Header 可见 ────────────────────%0A    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell%0A    ╔════════════════════════════════════════════════════════════╗%0A    ║ Looks like Playwright was just installed or updated.       ║%0A    ║ Please run the following command to download new browsers: ║%0A    ║                                                            ║%0A    ║     pnpm exec playwright install                           ║%0A    ║                                                            ║%0A    ║ <3 Playwright Team                                         ║%0A    ╚════════════════════════════════════════════════════════════╝
+::error file=tests/e2e/header.spec.ts,title=[chromium] › tests/e2e/header.spec.ts:14:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开::  2) [chromium] › tests/e2e/header.spec.ts:14:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 ────────%0A    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell%0A    ╔════════════════════════════════════════════════════════════╗%0A    ║ Looks like Playwright was just installed or updated.       ║%0A    ║ Please run the following command to download new browsers: ║%0A    ║                                                            ║%0A    ║     pnpm exec playwright install                           ║%0A    ║                                                            ║%0A    ║ <3 Playwright Team                                         ║%0A    ╚════════════════════════════════════════════════════════════╝
+::error file=tests/e2e/header.spec.ts,title=[chromium] › tests/e2e/header.spec.ts:24:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开::  3) [chromium] › tests/e2e/header.spec.ts:24:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ───────%0A    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell%0A    ╔════════════════════════════════════════════════════════════╗%0A    ║ Looks like Playwright was just installed or updated.       ║%0A    ║ Please run the following command to download new browsers: ║%0A    ║                                                            ║%0A    ║     pnpm exec playwright install                           ║%0A    ║                                                            ║%0A    ║ <3 Playwright Team                                         ║%0A    ╚════════════════════════════════════════════════════════════╝
+::error file=tests/e2e/header.spec.ts,title=[chromium] › tests/e2e/header.spec.ts:35:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开::  4) [chromium] › tests/e2e/header.spec.ts:35:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ────────%0A    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell%0A    ╔════════════════════════════════════════════════════════════╗%0A    ║ Looks like Playwright was just installed or updated.       ║%0A    ║ Please run the following command to download new browsers: ║%0A    ║                                                            ║%0A    ║     pnpm exec playwright install                           ║%0A    ║                                                            ║%0A    ║ <3 Playwright Team                                         ║%0A    ╚════════════════════════════════════════════════════════════╝
+::error file=tests/e2e/header.spec.ts,title=[chromium] › tests/e2e/header.spec.ts:46:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏::  5) [chromium] › tests/e2e/header.spec.ts:46:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏 %0A    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell%0A    ╔════════════════════════════════════════════════════════════╗%0A    ║ Looks like Playwright was just installed or updated.       ║%0A    ║ Please run the following command to download new browsers: ║%0A    ║                                                            ║%0A    ║     pnpm exec playwright install                           ║%0A    ║                                                            ║%0A    ║ <3 Playwright Team                                         ║%0A    ╚════════════════════════════════════════════════════════════╝
+::error file=tests/e2e/header.spec.ts,title=[chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet::  6) [chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet ───────%0A    Error: browserType.launch: Executable doesn't exist at /Users/return/Library/Caches/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-mac-arm64/chrome-headless-shell%0A    ╔════════════════════════════════════════════════════════════╗%0A    ║ Looks like Playwright was just installed or updated.       ║%0A    ║ Please run the following command to download new browsers: ║%0A    ║                                                            ║%0A    ║     pnpm exec playwright install                           ║%0A    ║                                                            ║%0A    ║ <3 Playwright Team                                         ║%0A    ╚════════════════════════════════════════════════════════════╝
+::notice title=🎭 Playwright Run Summary::  6 failed%0A    [chromium] › tests/e2e/header.spec.ts:10:3 › Header 三 dropdown › Header 可见 ─────────────────────%0A    [chromium] › tests/e2e/header.spec.ts:14:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 ─────────%0A    [chromium] › tests/e2e/header.spec.ts:24:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ────────%0A    [chromium] › tests/e2e/header.spec.ts:35:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ─────────%0A    [chromium] › tests/e2e/header.spec.ts:46:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏 %0A    [chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet ────────

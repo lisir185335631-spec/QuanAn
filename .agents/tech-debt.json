@@ -77,6 +77,19 @@
       "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
     },
     {
+      "id": "TD-007",
+      "category": "lint-quality",
+      "title": "US-006 round 4 后 apps/web 3 lint errors(no-misused-promises × 2 + no-unsafe-assignment × 1)",
+      "discovered_at": "2026-05-08",
+      "discovered_by": "Opus audit US-006 round 4",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "Header.tsx L65/L229 · onClick={asyncFn} 应改 onClick={() => void asyncFn()} · useAuth.ts L11 · fetch().json() 没显式类型断言导致 any",
+      "root_cause": "ralph 修 OAuth 关键 bug 时聚焦 security · 没扫 lint · typecheck 过 + 26 tests 过 · 但 lint 3 边缘 errors 残留",
+      "scheduled_fix_in": "下次 web changes 时 ralph 应 lint clean · 简单 5 行改动 · 不阻塞 US-006 approve · 因为 typecheck + tests + 安全核心全过",
+      "audit_exemption": "US-006 approve 时豁免 · 主要 risk=high security-critical 全 cover(CSRF 旁路修 · attack scenario 测试加 · prod-mock guard 加)· lint marginal 不影响 security/functionality"
+    },
+    {
       "id": "TD-006",
       "category": "process-gap",
       "title": "ralph daemon 重启时未 detect ralph round 9 已 commit · 我误以为 stuck 接管二次实施",

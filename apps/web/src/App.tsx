@@ -1,4 +1,5 @@
 import { Toaster } from 'sonner';
+
 import { Header } from '@/components/Header';
 
 export function App() {

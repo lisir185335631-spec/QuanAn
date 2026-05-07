@@ -7,10 +7,11 @@
  * TD: switch to TypeScript project references in P1.
  */
 
-import type { AppRouter, AuthMeOutput } from '@quanqn/clients/router-types';
-import { createTRPCReact } from '@trpc/react-query';
-import { httpBatchStreamLink } from '@trpc/client';
 import { QueryClient } from '@tanstack/react-query';
+import { httpBatchStreamLink } from '@trpc/client';
+import { createTRPCReact } from '@trpc/react-query';
+
+import type { AppRouter, AuthMeOutput } from '@quanqn/clients/router-types';
 
 export type { AuthMeOutput };
 export type { AppRouter };
