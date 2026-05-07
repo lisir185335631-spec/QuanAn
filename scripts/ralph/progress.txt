@@ -313,3 +313,53 @@
   - x-trace-id 响应头需加到 CORS exposeHeaders 才能被浏览器 JS 读取
   - Header 大小写: HTTP/2 全小写 · Hono c.req.header() 不区分大小写 · fetch API Headers.get() 也不区分大小写 · 统一用小写更安全
 ---
+
+--- [RALPH] Iteration 7 ended: US-007 (22分钟 51秒) ---
+
+## Codebase Patterns(PRD-1 提炼 · 2026-05-08 · 跨 PRD 永久 · 归档时不清)
+
+### Monorepo · workspace
+- monorepo 用 pnpm + apps/{web,admin,api} + packages/{schemas,ui,clients}
+- 路径 alias 三轨同步: tsconfig.base paths + apps tsconfig + apps/web vite.config alias + vitest.config alias
+- monorepo prisma client 解: 加 .npmrc public-hoist-pattern[]=@prisma/client; prisma migrate/generate 在 root 跑
+
+### TS strict + ESM
+- tsconfig.base.json 全开 strict + noUncheckedIndexedAccess + noUnusedLocals + noUnusedParameters
+- 抽象方法 protected abstract; 未使用参数 prefix _ 而非删
+- ESM 全栈 type:module + target ES2022 + moduleResolution: Bundler
+
+### LD-015 token 派生
+- tailwind v3 config 必须 .js · JSDoc 类型注解 + unit test 等价 TS strict
+- DESIGN.md YAML 派生 token · 文字段忽略
+- CSS vars HSL space + theme('colors.X') runtime 解析 · grep hardcode hex 必 0
+- shadcn copy-paste 模式 + @radix-ui + cn(twMerge+clsx); 共享场景需 lift packages/ui
+
+### OAuth + 安全(★ risk=high 关键)
+- requiresCsrfCheck 单参 providerName · 不接 attacker-controllable input(?mock=true 不能短路)
+- session cookie 隔离 'app_session' ≠ 'admin_session'(REJ-026)
+- Lucia v3 + arctic v3 PKCE + secure=isProduction + sameSite=Lax
+- Hono CORS origin 单值 + credentials:true · 不 wildcard
+- callback deleteCookie state + code_verifier 防重放
+- validateStartupConfig: SESSION_SECRET ≥32 + OAUTH_PROVIDER 合法 + prod-mock guard
+
+### Trace + Logging
+- AsyncLocalStorage traceStore + pino mixin · 自动跨异步 chain 注入 traceId
+- tRPC middleware traceStore.run({ traceId }, () => next(...))
+- pino structured JSON Lines · level/time/traceId 5 字段
+- 严禁 console.log(AGENTS §6.9)· 全用 logger
+
+### Specialist 抽象
+- abstract class BaseSpecialist<P,R> · 子类只 implements execute()
+- run() 不可重写 · 处理 trace + validateInput + assemble + try/catch + timing + audit
+- LD-001 95% Workflow · execute 单次 · 不循环
+- LD-012 LLM Gateway 唯一入口 · 严禁直 import @anthropic-ai/sdk / openai
+
+### Ralph daemon SOP(本项目 CLAUDE.md §9)
+- 启 daemon 前必先启 Monitor(persistent · grep PENDING_DETECTED 等 10 关键词)
+- size_hint=large 必拆; prompt > 12K 拒启
+- fail-over 前必跑 git log --since='10 min ago' 看是否已 commit
+- 5 min no-output 立即介入(不等 30 min)
+
+### Validator 产物
+- audit-artifacts manifest exit_code 缺(TS 项目)· 走 Cheat Sheet §1.7 partial fake 补跑(typecheck + lint)
+- 多 iter timestamps span > 1h 报 FAKE 是自然 · 不阻塞 approve

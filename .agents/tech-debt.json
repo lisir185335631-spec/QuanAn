@@ -72,7 +72,7 @@
       "severity": "medium",
       "status": "scheduled",
       "evidence": "git show ce1ed9a · 12 shadcn 组件全部写在 apps/web/src/components/ui/* · 而 PRD US-005 AC + SCAFFOLD §A.1 要求 packages/ui/src/base/* (workspace 共享)",
-      "root_cause": "ralph 用 shadcn 默认路径(shadcn CLI 默认配)· 没读 SCAFFOLD §A.1 monorepo 拓扑 · 选了"装在调用 app"路径(apps/web/...)而非"共享包"路径(packages/ui/...) · prd.json AC 说了路径但 ralph 注重 shadcn 标准更胜",
+      "root_cause": "ralph 用 shadcn 默认路径(shadcn CLI 默认配)· 没读 SCAFFOLD §A.1 monorepo 拓扑 · 选了「装在调用 app」路径(apps/web/...)而非「共享包」路径(packages/ui/...) · prd.json AC 说了路径但 ralph 注重 shadcn 标准更胜",
       "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanqn/ui/base import · 同时 apps/web 改用 @quanqn/ui/base · 单 web 用时无影响 · admin 复用时必修",
       "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
     },
