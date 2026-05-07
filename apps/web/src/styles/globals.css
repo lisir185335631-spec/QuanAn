@@ -2,6 +2,30 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* shadcn/ui CSS variable tokens — values in HSL space (no hsl() wrapper) */
+  --background: 240 7% 8%;
+  --foreground: 270 5% 90%;
+  --card: 240 5% 13%;
+  --card-foreground: 270 5% 90%;
+  --popover: 240 5% 13%;
+  --popover-foreground: 270 5% 90%;
+  --primary: 43 87% 63%;
+  --primary-foreground: 40 100% 12%;
+  --secondary: 240 3% 21%;
+  --secondary-foreground: 270 5% 90%;
+  --muted: 240 3% 17%;
+  --muted-foreground: 40 26% 75%;
+  --accent: 240 3% 21%;
+  --accent-foreground: 43 87% 63%;
+  --destructive: 356 100% 29%;
+  --destructive-foreground: 4 100% 84%;
+  --border: 42 12% 54%;
+  --input: 240 5% 13%;
+  --ring: 43 87% 63%;
+  --radius: 0.5rem;
+}
+
 body {
   margin: 0;
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
@@ -13,6 +37,5 @@ body {
 #root {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
