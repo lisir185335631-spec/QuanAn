@@ -4,14 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server/index.ts",
-    "start": "tsx src/server/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts --max-warnings=0"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.30.0",
+    "@hono/node-server": "^2.0.1",
     "@prisma/client": "^5.22.0",
     "@quanqn/schemas": "workspace:*",
     "@trpc/server": "^11.0.0-rc.0",
