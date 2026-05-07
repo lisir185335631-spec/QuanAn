@@ -363,3 +363,5 @@
 ### Validator 产物
 - audit-artifacts manifest exit_code 缺(TS 项目)· 走 Cheat Sheet §1.7 partial fake 补跑(typecheck + lint)
 - 多 iter timestamps span > 1h 报 FAKE 是自然 · 不阻塞 approve
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-08 07:54 ---
