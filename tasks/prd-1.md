@@ -115,16 +115,19 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:shadcn / radix-ui · 注 · shadcn 组件 copy-paste 而非 npm install · 详 ADR-014 if exists)
 - **测试配额** · 0 单元(组件 stories) · 0 集成 · 1 E2E(Header 三 dropdown 可见 + 点开)· 0 Judge
 
-### US-006 · Google OAuth(dev 模式 · localhost:5173 跑通)
+### US-006 · OAuth 集成(2 阶段交付 · mock provider 优先 · 真 Google dev OAuth 后置)
 
 - **As** · IP 起号者(同上)
-- **I want** · 点 Header → "登录" → 跳 Google OAuth → 回调 → 头像 dropdown 显示我的 email
-- **So that** · 满足 ARCHITECTURE §9.2 P0 退出条件"用户能登录"
+- **I want** · 点 Header → "登录" → 拿到 session(mock 阶段)/ 真实 Google OAuth(后置阶段)→ 头像 dropdown 显示我的 email
+- **So that** · 满足 ARCHITECTURE §9.2 P0 退出条件"用户能登录" · 同时不被外部 OAuth 申请阻塞 ralph 进度
 - **risk_level** · high(OAuth 安全 · session 管理 · LD-008 / R-006)
 - **depends_on** · [US-003, US-005]
-- **anti_patterns** · 由 prd skill 注入(关键词:oauth / lucia / session secret / cookie httpOnly + sameSite)
-- **测试配额** · 3 单元(callback 解析 token / session 创建 / logout)· 1 集成(完整 OAuth flow with mock)· 1 E2E(用户能登录 · 看到 email)· 0 Judge
-- **★ 用户介入** · 启动前用户必须申 Google dev OAuth 应用(localhost:5173/auth/callback)填到 .env 的 GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET
+- **anti_patterns** · 由 prd skill 注入(关键词:oauth / lucia / session secret / cookie httpOnly + sameSite / mock provider / state CSRF)
+- **测试配额** · 4 单元(callback 解析 token / session 创建 / logout / OAuth provider 抽象)· 2 集成(mock OAuth flow · Google OAuth flow with mock callback)· 2 E2E(mock 用户能登录 · Google dev 用户能登录)· 0 Judge
+- **2 阶段交付** ·
+  - **阶段 A · mock provider**(★ ralph 优先做 · 不阻塞)· 实施 OAuth provider 抽象 + mock provider · 默认走 mock(假用户 dev@local.test)· 跑通完整 session 链路 · ★ 满足"用户能登录" P0 退出条件
+  - **阶段 B · Google dev provider**(★ 用户介入后做)· 用户预先在 Google Cloud Console 申 dev OAuth(redirect_uri=http://localhost:5173/auth/callback)· 填 .env GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET · ralph 切到 google provider · 端到端跑通
+- **★ 用户介入触发** · 当 ralph 走完阶段 A · audit-gate 显示"等待用户填 .env" · 用户做完后 ralph 继续阶段 B(无介入也可以接受 · 仅 mock 也算 P0 通)
 
 ### US-007 · Agent 抽象层骨架 + trace_id 中间件 + pino logger
 
@@ -300,26 +303,42 @@ status_history:
 
 ---
 
-### AC-006-H(US-006 happy)
+### AC-006-H1(US-006 happy · 阶段 A · mock provider)★ 必含
 
-- **Given** · US-003 已通 · US-005 已通 · 用户已申 Google dev OAuth · 填好 .env(GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET)
-- **When** · 访问 localhost:5173 · 点登录 → 跳 Google OAuth · 授权 → 回调
+- **Given** · US-003 已通 · US-005 已通 · OAUTH_PROVIDER=mock(默认 · .env 设)· 假用户 dev@local.test 默认配置已就位
+- **When** · 访问 localhost:5173 · 点登录 → mock provider 直接 redirect 回 callback(无外部跳转)
 - **Then** ·
   - lucia session 创建 · cookie 写入(httpOnly + sameSite=lax + secure=false 仅 dev)
-  - 重定向到首页 · Header 显示用户 email + avatar
+  - 重定向到首页 · Header 显示 dev@local.test + 默认 avatar
+  - tRPC `auth.me` 返回 `{ ok: true, user: { id, email: "dev@local.test", name: "Dev User" } }`
+  - DB users 表新增 1 行(openId="mock-dev-001" · email="dev@local.test")
+  - audit_log 写 `event: auth.login · provider: mock`
+
+### AC-006-H2(US-006 happy · 阶段 B · Google dev provider)★ 用户介入后
+
+- **Given** · 阶段 A 已通 · 用户已申 Google dev OAuth · 填好 .env(GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET · OAUTH_PROVIDER=google)
+- **When** · 访问 localhost:5173 · 点登录 → 跳 Google OAuth · 授权 → 回调
+- **Then** ·
+  - lucia session 创建 · cookie 写入
+  - 重定向到首页 · Header 显示真实 Google 邮箱 + 头像
   - tRPC `auth.me` 返回 `{ ok: true, user: { id, email, name } }`
-  - DB users 表新增 1 行 · openId / email 写入
+  - DB users 表新增 1 行 · openId(Google sub) / email 写入
+  - audit_log 写 `event: auth.login · provider: google`
 
-### AC-006-E(US-006 error)
+### AC-006-E(US-006 error · 共享 mock + google)
 
-- **场景 E1** · OAuth callback state 不匹配(CSRF 攻击)
-  - Given · 攻击者构造伪造 callback URL
+- **场景 E1(★ 仅 google)** · OAuth callback state 不匹配(CSRF 攻击)
+  - Given · OAUTH_PROVIDER=google · 攻击者构造伪造 callback URL
   - When · 访问 callback URL · state 跟 cookie 不一致
   - Then · 返回 401 · 不创 session · 写 audit_log(security_alert · oauth_state_mismatch)
-- **场景 E2** · GOOGLE_CLIENT_ID 没设 / 错
-  - Given · .env GOOGLE_CLIENT_ID = ""
+- **场景 E2(★ 仅 google)** · GOOGLE_CLIENT_ID 没设 · OAUTH_PROVIDER=google
+  - Given · .env OAUTH_PROVIDER=google + GOOGLE_CLIENT_ID=""
   - When · 点登录
-  - Then · 后端返 500 · log 含"GOOGLE_CLIENT_ID missing" · 前端 toast"OAuth 暂不可用"
+  - Then · 后端返 500 · log 含"GOOGLE_CLIENT_ID missing for google provider" · 前端 toast"OAuth 暂不可用 · 请联系管理员"
+- **场景 E3(★ 共享)** · OAUTH_PROVIDER 值非法
+  - Given · .env OAUTH_PROVIDER=foo
+  - When · 后端启动
+  - Then · 启动报错 + log "unknown OAuth provider: foo · expected mock|google" · 进程退出 1
 
 ### AC-006-B(US-006 boundary)
 
@@ -416,10 +435,11 @@ status_history:
 
 | 类别 | 数量 | 范围 | 工具 |
 |---|:-:|---|---|
-| 单元 | 11(US-002 1 + US-003 2 + US-004 1 + US-005 0 + US-006 3 + US-007 4) | 占位渲染 / Prisma 实例 / token 解析 / OAuth flow / Specialist 抽象 / trace_id | vitest |
-| 集成 | 3(US-003 1 + US-006 1 + US-007 1) | curl auth.me · OAuth flow with mock · trace_id 透传 | vitest + supertest |
-| E2E | 2(US-005 1 + US-006 1) | Header 三 dropdown · OAuth login flow | playwright |
+| 单元 | 12(US-002 1 + US-003 2 + US-004 1 + US-005 0 + US-006 4 + US-007 4) | 占位渲染 / Prisma 实例 / token 解析 / OAuth provider 抽象 + mock + google + logout / Specialist 抽象 / trace_id | vitest |
+| 集成 | 4(US-003 1 + US-006 2 + US-007 1) | curl auth.me · mock OAuth flow · Google OAuth flow w/ mock callback · trace_id 透传 | vitest + supertest |
+| E2E | 3(US-005 1 + US-006 2) | Header 三 dropdown · mock OAuth login · Google dev OAuth login(用户填 .env 后跑) | playwright |
 | LLM Judge | 0 | P0 无 Specialist 实施 · 0 金标准 | — |
+| **总** | **19 用例**(原 16 + US-006 拆 mock/google 新增 3) | — | — |
 
 ---
 
@@ -446,11 +466,11 @@ P0 · 基础设施(2 周)
 
 **总和验收清单**:
 - [ ] ARCHITECTURE §9.2 退出条件 4 项全部满足(npm run dev / 用户登录 / 三 dropdown / auth.me)
-- [ ] PRD §1 7 个 US 全部 AC-XXX-H 通过
+- [ ] PRD §1 7 个 US 全部 AC-XXX-H 通过(US-006 含 H1 mock + H2 google · H1 必通 / H2 用户填 .env 后必通)
 - [ ] PRD §1 7 个 US 全部 AC-XXX-E 通过(关键错误场景)
 - [ ] PRD §1 7 个 US 全部 AC-XXX-B 通过(关键边界)
 - [ ] PRD §1 7 个 US 全部 AC-XXX-P 满足性能阈值
-- [ ] §5 测试配额 16 用例全部达成(11 单元 + 3 集成 + 2 E2E + 0 Judge)
+- [ ] §5 测试配额 19 用例全部达成(12 单元 + 4 集成 + 3 E2E + 0 Judge)
 - [ ] AGENTS § 红线 0 触发(grep 检测 17 R)
 - [ ] §4 6 个高风险无未缓解项
 - [ ] LD-013 strict TS 全 workspace typecheck 通过
@@ -474,6 +494,7 @@ P0 · 基础设施(2 周)
 ## §8 修订记录
 
 - v0.1 · 2026-05-07 · prd skill (Opus) · 初版 · 7 US 4 类 AC 35 反例就位 · risk=foundation 升档生效
+- v0.2 · 2026-05-07 · 用户 review · US-006 拆 2 阶段(mock provider 优先 + Google dev OAuth 后置 · 用户介入推迟)· 19 测试用例(原 16+3)
 
 ---
 
