@@ -15,6 +15,32 @@
       "root_cause": "v0.1 src/ 单包阶段 tailwind.config.js 直接 hardcode color · 未走 ui/aurelian_dark/DESIGN.md YAML token 派生(LD-015)",
       "scheduled_fix_in": "US-004 (PRD-1) · Tailwind 引 Aurelian Dark token 时统一收敛(AC-004-H · grep '#[0-9a-f]{6}' 命中 0)",
       "audit_exemption": "US-001 approve 时豁免 · 因为 US-001 范围只是 typecheck 修复 · 不是 tailwind 改造"
+    },
+    {
+      "id": "TD-002",
+      "category": "design-drift",
+      "title": "apps/web/src/styles/globals.css 新引入硬编码颜色违 LD-015",
+      "discovered_at": "2026-05-07",
+      "discovered_by": "Opus audit US-002",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "globals.css L7-9 · body background:#0a0a0a · color:#e5e5e5 · 2 处新 hardcode color",
+      "root_cause": "US-002 ralph 写 globals.css 基础 CSS reset 时 · 此时 Aurelian Dark token 还未派生(US-004 才派生)· ralph 用 hardcode 占位",
+      "scheduled_fix_in": "US-004 (PRD-1) · token 派生后改 var(--bg-deep) / var(--text-primary) · 跟 TD-001 一起在 US-004 收敛",
+      "audit_exemption": "US-002 approve 时豁免 · token 还未存在 · ralph 用 hardcode 占位是合理的(等价于 TODO P1 标记)"
+    },
+    {
+      "id": "TD-003",
+      "category": "process-gap",
+      "title": "audit-artifacts.py manifest 缺 exit_code(Validator 产物流程不完整)",
+      "discovered_at": "2026-05-07",
+      "discovered_by": "Opus audit US-002",
+      "severity": "low",
+      "status": "open",
+      "evidence": "audit-artifacts.py US-002 报 ARTIFACTS FAKE or INVALID: ['manifest'] · manifest missing field: exit_code",
+      "root_cause": "Validator Agent 写 verify-artifacts/<US>/manifest.json 时缺 exit_code 字段 · audit-artifacts.py 默认期望此字段(Python 项目用)· TS 项目跑 pnpm typecheck 没产出 exit_code 字段",
+      "scheduled_fix_in": "PRD-2 实施期 · Validator 产物模板补 exit_code(从 pnpm typecheck 退出码取)· 或改 audit-artifacts.py 容忍 TS 项目无 exit_code",
+      "audit_exemption": "US-001/US-002 approve 时豁免 · 因为 pnpm typecheck 实测过 · 零回归核心目标已达成 · 走 Cheat Sheet Step 1.7 partial fake 补跑流程"
     }
   ]
 }
