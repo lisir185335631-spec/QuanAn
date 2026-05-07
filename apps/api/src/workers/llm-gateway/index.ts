@@ -64,6 +64,14 @@ const MODEL_BY_TIER = {
 // ============== Gateway 实现 ==============
 
 class LLMGateway {
+  /**
+   * AC-3 (US-007): tier selector stub — P0 pass-through; P3 adds cost-based routing.
+   * reasoning=anthropic claude-sonnet / lightweight=openai gpt-4o-mini
+   */
+  selectTier(modelHint: ModelTier, _costBudget: number): ModelTier {
+    return modelHint;
+  }
+
   /** 单次调用 · 含限流 / 熔断 / 降级 / 计费 / Trace */
   async complete(req: CompleteRequest): Promise<CompleteResponse> {
     const startedAt = Date.now();

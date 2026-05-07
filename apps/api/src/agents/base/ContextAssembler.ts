@@ -4,10 +4,19 @@
  *
  * 6 路并行 · L2 Core / L4 Profile / L4 Diagnosis / L4 Samples / 常量 / RAG
  * Specialist 不允许自拼 prompt(grep 检测)
+ * US-007: IContextAssembler interface + assembleStep stub
  */
 
 import type { AssembledContext, SpecialistId } from './types';
 import { piiMask } from '@/lib/compliance/pii-mask';
+
+/** AC-2 (US-007): ContextAssembler interface for step-scoped context assembly */
+export interface IContextAssembler {
+  assembleStep(
+    step: string,
+    accountId: number,
+  ): Promise<{ step: string; accountId: number; lastResults: Record<string, unknown> }>;
+}
 
 export interface AssembleRequest {
   agentId: SpecialistId;
@@ -18,7 +27,15 @@ export interface AssembleRequest {
   needLayers?: readonly string[];
 }
 
-class ContextAssembler {
+class ContextAssembler implements IContextAssembler {
+  /** AC-2 (US-007): stub returns { step, accountId, lastResults: {} }; P3 fills real layers */
+  async assembleStep(
+    step: string,
+    accountId: number,
+  ): Promise<{ step: string; accountId: number; lastResults: Record<string, unknown> }> {
+    return { step, accountId, lastResults: {} };
+  }
+
   async assemble(req: AssembleRequest): Promise<AssembledContext> {
     // 1. PII 脱敏(LD-018 R-14)· 输入端处理
     const maskedInput = piiMask(req.userInput);

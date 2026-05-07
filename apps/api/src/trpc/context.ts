@@ -1,9 +1,11 @@
 /**
- * tRPC context factory — US-003 (extended in US-006)
- * AC-7: prisma + req/res + traceId(='pending' until US-007 trace middleware lands)
+ * tRPC context factory — US-003 (extended in US-006, US-007)
+ * AC-7: prisma + req/res + traceId(=X-Trace-Id header or generated nanoid-16)
  * US-006: adds `user` from lucia session cookie
+ * US-007: reads X-Trace-Id from request header (replaces 'pending' placeholder)
  */
 
+import { randomBytes } from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
 import type { Context as HonoCtx } from 'hono';
 import type { User } from 'lucia';
@@ -33,9 +35,16 @@ export async function createContext(c: HonoCtx): Promise<TRPCContext> {
     }
   }
 
+  // Reads X-Trace-Id from Hono request; tRPC traceMiddleware will re-read from ctx.req
+  // and run traceStore.run() to propagate into pino mixin.
+  const traceId =
+    c.req.header('x-trace-id') ??
+    c.req.header('X-Trace-Id') ??
+    randomBytes(8).toString('hex');
+
   return {
     prisma,
-    traceId: 'pending',
+    traceId,
     req: c.req.raw,
     user,
     sessionId: resolvedSessionId,

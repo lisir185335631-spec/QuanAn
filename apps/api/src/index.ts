@@ -4,8 +4,10 @@
  * AC-1: listen :3000 · cold start < 5s
  * AC-5: DATABASE_URL invalid → log 'DB connection failed' + exit 1
  * US-006: OAuth routes + CORS + startup validation
+ * US-007: Hono trace middleware — echoes X-Trace-Id in every response
  */
 
+import { randomBytes } from 'node:crypto';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -16,7 +18,7 @@ import { appRouter } from '@/trpc/routers/_app';
 import { createContext } from '@/trpc/context';
 import { checkDbConnection } from '@/lib/prisma';
 import { prisma } from '@/lib/prisma';
-import { logger } from '@/lib/logger';
+import { logger, traceStore } from '@/lib/logger';
 import { lucia } from '@/lib/auth/lucia';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
 
@@ -32,10 +34,24 @@ app.use(
   cors({
     origin: allowedOrigin,
     credentials: true,
-    allowHeaders: ['Content-Type', 'Authorization', 'trpc-accept'],
+    allowHeaders: ['Content-Type', 'Authorization', 'trpc-accept', 'x-trace-id', 'X-Trace-Id'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    exposeHeaders: ['x-trace-id'],
   }),
 );
+
+// ── Trace middleware — AC-5/AC-6 (US-007) ─────────────────────────────────────
+// Sets X-Trace-Id response header and propagates traceId via AsyncLocalStorage.
+app.use('*', async (c, next) => {
+  const traceId =
+    c.req.header('x-trace-id') ??
+    c.req.header('X-Trace-Id') ??
+    randomBytes(8).toString('hex');
+  await traceStore.run({ traceId }, async () => {
+    await next();
+  });
+  c.header('x-trace-id', traceId);
+});
 
 app.get('/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
@@ -81,7 +97,8 @@ app.get('/auth/callback', async (c) => {
   const state = searchParams['state'] ?? '';
   const storedState = getCookie(c, 'oauth_state') ?? '';
   const codeVerifier = getCookie(c, 'oauth_code_verifier');
-  const traceId = 'pending'; // US-007 will inject real trace_id
+  // US-007: real traceId from AsyncLocalStorage (set by Hono trace middleware above)
+  const traceId = traceStore.getStore()?.traceId ?? randomBytes(8).toString('hex');
 
   let provider;
   try {
