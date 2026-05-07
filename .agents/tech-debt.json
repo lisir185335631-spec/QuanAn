@@ -2,5 +2,19 @@
   "$schema": "../scripts/ralph/TECH-DEBT-SCHEMA.md",
   "version": "1.0",
   "created_at": "2026-05-07",
-  "items": []
+  "items": [
+    {
+      "id": "TD-001",
+      "category": "design-drift",
+      "title": "tailwind.config.js 硬编码颜色违 LD-015",
+      "discovered_at": "2026-05-07",
+      "discovered_by": "Opus audit US-001",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "grep '#[0-9a-fA-F]{6}' apps/web/tailwind.config.js 命中 surface / surface-bright / surface-container-lowest 等多处",
+      "root_cause": "v0.1 src/ 单包阶段 tailwind.config.js 直接 hardcode color · 未走 ui/aurelian_dark/DESIGN.md YAML token 派生(LD-015)",
+      "scheduled_fix_in": "US-004 (PRD-1) · Tailwind 引 Aurelian Dark token 时统一收敛(AC-004-H · grep '#[0-9a-f]{6}' 命中 0)",
+      "audit_exemption": "US-001 approve 时豁免 · 因为 US-001 范围只是 typecheck 修复 · 不是 tailwind 改造"
+    }
+  ]
 }
