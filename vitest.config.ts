@@ -30,6 +30,7 @@ export default defineConfig({
       ],
     },
     include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],
+    passWithNoTests: true,
     testTimeout: 30000,
     hookTimeout: 60000,
   },
