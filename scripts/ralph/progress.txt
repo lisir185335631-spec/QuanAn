@@ -287,3 +287,29 @@
 --- [RALPH] Iteration 5 started: US-006 at 2026-05-08 01:59 ---
 
 --- [RALPH] Iteration 6 started: US-006 at 2026-05-08 02:29 ---
+
+--- [RALPH] Iteration 6 ended: US-006 (33分钟 27秒) ---
+
+--- [RALPH] Iteration 7 started: US-007 at 2026-05-08 03:03 ---
+
+## [2026-05-08 03:20] - US-007
+- 实现 Agent 抽象层骨架 + trace_id 中间件 + pino structured logger
+- 更改的文件:
+  - apps/api/src/lib/logger.ts: 加 AsyncLocalStorage traceStore + pino mixin 自动注入 traceId
+  - apps/api/src/trpc/trpc.ts: export middleware + 内联 traceMiddleware(读 X-Trace-Id 或 generateTraceId) + publicProcedure.use(traceMiddleware)
+  - apps/api/src/trpc/middleware/trace.ts (新建): re-exports traceMiddleware/generateTraceId from trpc.ts + extractTraceId() 工具函数
+  - apps/api/src/trpc/context.ts: createContext 读 x-trace-id 头 (替换 'pending' 占位)
+  - apps/api/src/index.ts: Hono trace 全局中间件(traceStore.run + x-trace-id 响应头) + OAuth callback 改用 traceStore.getStore()
+  - apps/api/src/agents/base/ContextAssembler.ts: IContextAssembler interface + assembleStep stub → { step, accountId, lastResults:{} }
+  - apps/api/src/workers/llm-gateway/index.ts: +selectTier(modelHint, _costBudget): ModelTier pass-through
+  - apps/web/src/lib/trpc.ts: httpBatchStreamLink.fetch 注入 x-trace-id: genTraceId()
+  - tests/unit/agents/base.test.ts (新建): 8 单元测试(BaseSpecialist/ContextAssembler/LLMGateway/trace_id)
+  - tests/integration/api/trace.test.ts (新建): 2 集成测试(X-Trace-Id 回响 + 自动生成)
+- 结果: pnpm typecheck ✅ · pnpm test 36/36 ✅ (含新增 10 个测试)
+- **未来迭代的学习:**
+  - tRPC middleware 与 initTRPC 同实例定义可避免循环依赖 — trace.ts re-export 只需 import from trpc.ts(单向依赖)
+  - Hono trace 中间件必须在 CORS 之后、所有业务路由之前注册 · 且用 traceStore.run(async()=>{await next()}) 才能让 AsyncLocalStorage 跨异步链传播
+  - pino mixin() 钩子是最轻量的"自动注入 traceId"方式 — 每次 log 调用都从 traceStore 读取当前 traceId · 不需要调用方手动传
+  - x-trace-id 响应头需加到 CORS exposeHeaders 才能被浏览器 JS 读取
+  - Header 大小写: HTTP/2 全小写 · Hono c.req.header() 不区分大小写 · fetch API Headers.get() 也不区分大小写 · 统一用小写更安全
+---

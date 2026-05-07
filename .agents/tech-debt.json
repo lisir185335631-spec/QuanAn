@@ -77,6 +77,19 @@
       "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
     },
     {
+      "id": "TD-008",
+      "category": "naming-confusion",
+      "title": "generateTraceId 同名 2 函数(不同签名 · 不同 layer)",
+      "discovered_at": "2026-05-08",
+      "discovered_by": "Opus audit US-007",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "apps/api/src/trpc/trpc.ts:17 · generateTraceId(): string(无参 · 16-char hex · HTTP layer) vs apps/api/src/agents/base/types.ts:90 · generateTraceId(accountId, agentId): string(结构化 · Specialist layer)",
+      "root_cause": "ralph 在 US-003 / US-007 不同时期 / 不同 layer 各定义一个 · 没意识到同名 · 实际语义不同(HTTP fallback vs Specialist struct)",
+      "scheduled_fix_in": "PRD-2 实施期 · 重命名 · trpc 的改 generateHttpTraceId · types 的改 generateSpecialistTraceId · 或加 namespace 前缀",
+      "audit_exemption": "US-007 approve 时豁免 · 不影响功能 / 测试 / 安全 · 仅命名混淆"
+    },
+    {
       "id": "TD-007",
       "category": "lint-quality",
       "title": "US-006 round 4 后 apps/web 3 lint errors(no-misused-promises × 2 + no-unsafe-assignment × 1)",

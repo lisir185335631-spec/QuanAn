@@ -1,0 +1,24 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/integration/api/auth.me.test.ts (1 test) 12ms
+ ✓ tests/unit/parseDesignTokens.test.ts (10 tests) 5ms
+ ✓ tests/integration/api/trace.test.ts (2 tests) 15ms
+{"level":"error","time":"2026-05-07T19:22:02.408Z","pid":43896,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
+{"level":"error","time":"2026-05-07T19:22:02.409Z","pid":43896,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-07T19:22:02.409Z","pid":43896,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
+ ✓ tests/unit/auth/providers.test.ts (9 tests) 3ms
+{"level":"info","time":"2026-05-07T19:22:02.425Z","pid":43894,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778181722425_u00v","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
+{"level":"error","time":"2026-05-07T19:22:02.425Z","pid":43894,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778181722425_u00v","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:66:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:35:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":0,"msg":"specialist.failed"}
+ ✓ tests/unit/agents/base.test.ts (8 tests) 6ms
+ ✓ tests/integration/api/auth.test.ts (6 tests) 69ms
+
+ Test Files  6 passed (6)
+      Tests  36 passed (36)
+   Start at  03:22:02
+   Duration  242ms (transform 89ms, setup 22ms, collect 185ms, tests 111ms, environment 0ms, prepare 192ms)
+

@@ -330,8 +330,8 @@
         "US-003"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "[risk-upgrade] foundation due to abstract class + middleware + trace_id 全 PRD downstream(PRD-2/4/8 全 depend)",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
