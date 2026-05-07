@@ -7,6 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      '@quanqn/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
+      '@quanqn/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      '@quanqn/clients': path.resolve(__dirname, '../../packages/clients/src'),
     },
   },
   server: {

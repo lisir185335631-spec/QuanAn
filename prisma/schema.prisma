@@ -20,41 +20,41 @@ datasource db {
 
 /// GLOBAL TABLE · Google OAuth 用户主表
 model User {
-  id              Int       @id @default(autoincrement())
-  openId          String    @unique @db.VarChar(64) @map("open_id")
-  name            String    @db.VarChar(100)
-  email           String    @unique @db.VarChar(255)
-  loginMethod     String    @default("google") @db.VarChar(32) @map("login_method")
-  role            String    @default("user") @db.VarChar(16)
-  isActivated     Boolean   @default(false) @map("is_activated")
-  industry        String?   @db.VarChar(64)
-  activeAccountId Int?      @map("active_account_id")
+  id              Int     @id @default(autoincrement())
+  openId          String  @unique @map("open_id") @db.VarChar(64)
+  name            String  @db.VarChar(100)
+  email           String  @unique @db.VarChar(255)
+  loginMethod     String  @default("google") @map("login_method") @db.VarChar(32)
+  role            String  @default("user") @db.VarChar(16)
+  isActivated     Boolean @default(false) @map("is_activated")
+  industry        String? @db.VarChar(64)
+  activeAccountId Int?    @map("active_account_id")
 
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-  lastSignedIn    DateTime? @map("last_signed_in")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  lastSignedIn DateTime? @map("last_signed_in")
 
-  ipAccounts      IpAccount[]
-  invitesCreated  InviteCode[]    @relation("InviteCreator")
-  invitesUsed     InviteCode[]    @relation("InviteUser")
-  feedbackLogs    FeedbackLog[]
-  auditLogs       AuditLog[]
-  costLogs        CostLog[]
+  ipAccounts     IpAccount[]
+  invitesCreated InviteCode[]  @relation("InviteCreator")
+  invitesUsed    InviteCode[]  @relation("InviteUser")
+  feedbackLogs   FeedbackLog[]
+  auditLogs      AuditLog[]
+  costLogs       CostLog[]
 
-  @@map("users")
   @@index([email])
   @@index([openId])
   @@index([activeAccountId])
+  @@map("users")
 }
 
 /// GLOBAL TABLE · 邀请码池
 model InviteCode {
-  id          Int       @id @default(autoincrement())
-  code        String    @unique @db.VarChar(32)
-  isActive    Boolean   @default(true) @map("is_active")
-  maxUses     Int       @default(1) @map("max_uses")
-  usedCount   Int       @default(0) @map("used_count")
-  expiresAt   DateTime? @map("expires_at")
+  id        Int       @id @default(autoincrement())
+  code      String    @unique @db.VarChar(32)
+  isActive  Boolean   @default(true) @map("is_active")
+  maxUses   Int       @default(1) @map("max_uses")
+  usedCount Int       @default(0) @map("used_count")
+  expiresAt DateTime? @map("expires_at")
 
   createdById Int?      @map("created_by_id")
   createdBy   User?     @relation("InviteCreator", fields: [createdById], references: [id], onDelete: SetNull)
@@ -62,49 +62,49 @@ model InviteCode {
   usedBy      User?     @relation("InviteUser", fields: [usedById], references: [id], onDelete: SetNull)
   usedAt      DateTime? @map("used_at")
 
-  campaign    String?   @db.VarChar(64)
-  notes       String?   @db.Text
-  createdAt   DateTime  @default(now()) @map("created_at")
+  campaign  String?  @db.VarChar(64)
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("invite_codes")
   @@index([code])
   @@index([campaign])
   @@index([createdById])
   @@index([isActive, expiresAt])
+  @@map("invite_codes")
 }
 
 /// GLOBAL TABLE · 全网爆款缓存(L5)
 model TrendingItem {
-  id              Int       @id @default(autoincrement())
-  platform        String    @db.VarChar(32)
-  sourceUrl       String?   @db.VarChar(512) @map("source_url")
-  sourceItemId    String?   @db.VarChar(128) @map("source_item_id")
-  vendor          String    @db.VarChar(32)
+  id           Int     @id @default(autoincrement())
+  platform     String  @db.VarChar(32)
+  sourceUrl    String? @map("source_url") @db.VarChar(512)
+  sourceItemId String? @map("source_item_id") @db.VarChar(128)
+  vendor       String  @db.VarChar(32)
 
-  title           String    @db.Text
-  contentText     String?   @db.Text @map("content_text")
+  title       String  @db.Text
+  contentText String? @map("content_text") @db.Text
 
-  industry        String?   @db.VarChar(64)
-  presentStyle    String?   @db.VarChar(64) @map("present_style")
-  authorName      String?   @db.VarChar(100) @map("author_name")
-  authorFollowers Int?      @map("author_followers")
+  industry        String? @db.VarChar(64)
+  presentStyle    String? @map("present_style") @db.VarChar(64)
+  authorName      String? @map("author_name") @db.VarChar(100)
+  authorFollowers Int?    @map("author_followers")
 
-  viewCount       BigInt    @default(0) @map("view_count")
-  likeCount       Int       @default(0) @map("like_count")
-  shareCount      Int       @default(0) @map("share_count")
-  commentCount    Int       @default(0) @map("comment_count")
+  viewCount    BigInt @default(0) @map("view_count")
+  likeCount    Int    @default(0) @map("like_count")
+  shareCount   Int    @default(0) @map("share_count")
+  commentCount Int    @default(0) @map("comment_count")
 
   contentEmbedding Unsupported("vector(1536)")? @map("content_embedding")
 
-  publishedAt     DateTime? @map("published_at")
-  crawledAt       DateTime  @default(now()) @map("crawled_at")
+  publishedAt DateTime? @map("published_at")
+  crawledAt   DateTime  @default(now()) @map("crawled_at")
 
-  @@map("trending_items")
   @@unique([platform, sourceItemId])
   @@index([platform, industry])
   @@index([platform, presentStyle])
   @@index([crawledAt(sort: Desc)])
   @@index([viewCount(sort: Desc)])
+  @@map("trending_items")
 }
 
 // ============================================================
@@ -112,21 +112,21 @@ model TrendingItem {
 // ============================================================
 
 model IpAccount {
-  id              Int       @id @default(autoincrement())
-  userId          Int       @map("user_id")
-  name            String    @db.VarChar(100)
-  industry        String    @db.VarChar(64)
-  platform        String    @db.VarChar(32)
-  stage           String    @default("starter") @db.VarChar(32)
-  personalInfo    String?   @db.Text @map("personal_info")
-  targetAudience  String?   @db.Text @map("target_audience")
-  followersRange  String    @default("0-1000") @db.VarChar(32) @map("followers_range")
-  ipPositioning   String?   @db.VarChar(255) @map("ip_positioning")
-  goal            String?   @db.VarChar(64)
-  currentRevenue  String?   @db.VarChar(32) @map("current_revenue")
+  id             Int     @id @default(autoincrement())
+  userId         Int     @map("user_id")
+  name           String  @db.VarChar(100)
+  industry       String  @db.VarChar(64)
+  platform       String  @db.VarChar(32)
+  stage          String  @default("starter") @db.VarChar(32)
+  personalInfo   String? @map("personal_info") @db.Text
+  targetAudience String? @map("target_audience") @db.Text
+  followersRange String  @default("0-1000") @map("followers_range") @db.VarChar(32)
+  ipPositioning  String? @map("ip_positioning") @db.VarChar(255)
+  goal           String? @db.VarChar(64)
+  currentRevenue String? @map("current_revenue") @db.VarChar(32)
 
-  isActive        Boolean   @default(true) @map("is_active")
-  archivedAt      DateTime? @map("archived_at")
+  isActive   Boolean   @default(true) @map("is_active")
+  archivedAt DateTime? @map("archived_at")
 
   user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   stepDataList         StepData[]
@@ -143,15 +143,15 @@ model IpAccount {
   dailyTasks           DailyTask[]
   costLogs             CostLog[]
 
-  traceId         String?   @db.VarChar(64) @map("trace_id")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  traceId   String?  @map("trace_id") @db.VarChar(64)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("ip_accounts")
   @@index([userId])
   @@index([userId, isActive])
   @@index([industry])
   @@index([platform])
+  @@map("ip_accounts")
 }
 
 // ============================================================
@@ -159,31 +159,31 @@ model IpAccount {
 // ============================================================
 
 model StepData {
-  id            Int       @id @default(autoincrement())
-  accountId     Int       @map("account_id")
-  stepKey       String    @db.VarChar(16) @map("step_key")
+  id            Int     @id @default(autoincrement())
+  accountId     Int     @map("account_id")
+  stepKey       String  @map("step_key") @db.VarChar(16)
   inputs        Json
   result        Json?
-  version       Int       @default(0)
-  schemaVersion String    @default("3.0") @db.VarChar(8) @map("schema_version")
-  status        String    @default("completed") @db.VarChar(16)
-  isFallback    Boolean   @default(false) @map("is_fallback")
+  version       Int     @default(0)
+  schemaVersion String  @default("3.0") @map("schema_version") @db.VarChar(8)
+  status        String  @default("completed") @db.VarChar(16)
+  isFallback    Boolean @default(false) @map("is_fallback")
 
-  durationMs    Int?      @map("duration_ms")
-  tokensUsed    Int?      @map("tokens_used")
-  modelUsed     String?   @db.VarChar(64) @map("model_used")
-  agentId       String    @db.VarChar(64) @map("agent_id")
-  traceId       String?   @db.VarChar(64) @map("trace_id")
+  durationMs Int?    @map("duration_ms")
+  tokensUsed Int?    @map("tokens_used")
+  modelUsed  String? @map("model_used") @db.VarChar(64)
+  agentId    String  @map("agent_id") @db.VarChar(64)
+  traceId    String? @map("trace_id") @db.VarChar(64)
 
-  ipAccount     IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("step_data")
   @@unique([accountId, stepKey])
   @@index([accountId])
   @@index([accountId, status])
+  @@map("step_data")
 }
 
 // ============================================================
@@ -191,115 +191,115 @@ model StepData {
 // ============================================================
 
 model History {
-  id           Int       @id @default(autoincrement())
-  accountId    Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  agentId      String    @db.VarChar(64) @map("agent_id")
-  agentMode    String?   @db.VarChar(32) @map("agent_mode")
-  sourceType   String    @db.VarChar(32) @map("source_type")
-  inputSummary String    @db.VarChar(255) @map("input_summary")
+  agentId      String  @map("agent_id") @db.VarChar(64)
+  agentMode    String? @map("agent_mode") @db.VarChar(32)
+  sourceType   String  @map("source_type") @db.VarChar(32)
+  inputSummary String  @map("input_summary") @db.VarChar(255)
 
-  content      String    @db.Text
-  contentType  String    @default("markdown") @db.VarChar(16) @map("content_type")
-  scriptType   String?   @db.VarChar(32) @map("script_type")
-  elements     String[]  @default([])
+  content     String   @db.Text
+  contentType String   @default("markdown") @map("content_type") @db.VarChar(16)
+  scriptType  String?  @map("script_type") @db.VarChar(32)
+  elements    String[] @default([])
 
-  tokensUsed   Int?      @map("tokens_used")
-  modelUsed    String?   @db.VarChar(64) @map("model_used")
-  durationMs   Int?      @map("duration_ms")
+  tokensUsed Int?    @map("tokens_used")
+  modelUsed  String? @map("model_used") @db.VarChar(64)
+  durationMs Int?    @map("duration_ms")
 
-  isFallback   Boolean   @default(false) @map("is_fallback")
-  isFavorited  Boolean   @default(false) @map("is_favorited")
-  ratingGood   Int       @default(0) @map("rating_good")
-  ratingBad    Int       @default(0) @map("rating_bad")
+  isFallback  Boolean @default(false) @map("is_fallback")
+  isFavorited Boolean @default(false) @map("is_favorited")
+  ratingGood  Int     @default(0) @map("rating_good")
+  ratingBad   Int     @default(0) @map("rating_bad")
 
-  traceId      String?   @db.VarChar(64) @map("trace_id")
-  ipAccount    IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  feedbacks    FeedbackLog[]
+  traceId   String?       @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  feedbacks FeedbackLog[]
 
   contentEmbedding Unsupported("vector(1536)")? @map("content_embedding")
 
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("histories")
   @@index([accountId])
   @@index([accountId, agentId])
   @@index([accountId, scriptType])
   @@index([accountId, createdAt(sort: Desc)])
   @@index([accountId, isFavorited])
   @@index([traceId])
+  @@map("histories")
 }
 
 model Topic {
-  id                 Int       @id @default(autoincrement())
-  accountId          Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  title              String    @db.VarChar(255)
-  hook               String    @db.Text
-  structure          String?   @db.Text
-  formula            String?   @db.Text
-  category           String?   @db.VarChar(32)
-  presentStyle       String?   @db.VarChar(32) @map("present_style")
-  platform           String?   @db.VarChar(32)
-  difficulty         String?   @db.VarChar(16)
-  viralPotential     String?   @db.VarChar(16) @map("viral_potential")
-  logicType          String?   @db.VarChar(32) @map("logic_type")
+  title          String  @db.VarChar(255)
+  hook           String  @db.Text
+  structure      String? @db.Text
+  formula        String? @db.Text
+  category       String? @db.VarChar(32)
+  presentStyle   String? @map("present_style") @db.VarChar(32)
+  platform       String? @db.VarChar(32)
+  difficulty     String? @db.VarChar(16)
+  viralPotential String? @map("viral_potential") @db.VarChar(16)
+  logicType      String? @map("logic_type") @db.VarChar(32)
 
-  sourceType         String    @db.VarChar(32) @map("source_type")
-  sourceTrendingId   Int?      @map("source_trending_id")
-  userTags           String[]  @default([]) @map("user_tags")
+  sourceType       String   @map("source_type") @db.VarChar(32)
+  sourceTrendingId Int?     @map("source_trending_id")
+  userTags         String[] @default([]) @map("user_tags")
 
   isUsed             Boolean   @default(false) @map("is_used")
   usedAt             DateTime? @map("used_at")
   generatedHistoryId Int?      @map("generated_history_id")
 
-  traceId            String?   @db.VarChar(64) @map("trace_id")
-  ipAccount          IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt          DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("topics")
   @@index([accountId])
   @@index([accountId, category])
   @@index([accountId, isUsed])
   @@index([accountId, createdAt(sort: Desc)])
+  @@map("topics")
 }
 
 model Asset {
-  id               Int       @id @default(autoincrement())
-  accountId        Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  assetType        String    @db.VarChar(32) @map("asset_type")
-  fileName         String    @db.VarChar(255) @map("file_name")
-  mimeType         String    @db.VarChar(100) @map("mime_type")
-  sizeBytes        Int       @map("size_bytes")
+  assetType String @map("asset_type") @db.VarChar(32)
+  fileName  String @map("file_name") @db.VarChar(255)
+  mimeType  String @map("mime_type") @db.VarChar(100)
+  sizeBytes Int    @map("size_bytes")
 
-  storageProvider  String    @default("s3") @db.VarChar(16) @map("storage_provider")
-  storageKey       String    @db.VarChar(512) @map("storage_key")
-  publicUrl        String?   @db.VarChar(512) @map("public_url")
+  storageProvider String  @default("s3") @map("storage_provider") @db.VarChar(16)
+  storageKey      String  @map("storage_key") @db.VarChar(512)
+  publicUrl       String? @map("public_url") @db.VarChar(512)
 
-  relatedStepKey   String?   @db.VarChar(16) @map("related_step_key")
-  relatedHistoryId Int?      @map("related_history_id")
+  relatedStepKey   String? @map("related_step_key") @db.VarChar(16)
+  relatedHistoryId Int?    @map("related_history_id")
 
-  generationPrompt String?   @db.Text @map("generation_prompt")
-  generationModel  String?   @db.VarChar(64) @map("generation_model")
+  generationPrompt String? @map("generation_prompt") @db.Text
+  generationModel  String? @map("generation_model") @db.VarChar(64)
 
-  parsedText       String?   @db.Text @map("parsed_text")
-  parsingStatus    String    @default("pending") @db.VarChar(16) @map("parsing_status")
-  parsingError     String?   @db.Text @map("parsing_error")
+  parsedText    String? @map("parsed_text") @db.Text
+  parsingStatus String  @default("pending") @map("parsing_status") @db.VarChar(16)
+  parsingError  String? @map("parsing_error") @db.Text
 
-  traceId          String?   @db.VarChar(64) @map("trace_id")
-  ipAccount        IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("assets")
   @@index([accountId])
   @@index([accountId, assetType])
   @@index([accountId, relatedStepKey])
   @@index([parsingStatus])
+  @@map("assets")
 }
 
 // ============================================================
@@ -307,61 +307,60 @@ model Asset {
 // ============================================================
 
 model DiagnosisReport {
-  id               Int       @id @default(autoincrement())
-  accountId        Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
   answers          Json
   dimensions       Json
-  overallScore     Int       @map("overall_score")
-  inferredStage    String    @db.VarChar(32) @map("inferred_stage")
-  topPriority      String    @db.Text @map("top_priority")
-  recommendedSteps String[]  @default([]) @map("recommended_steps")
+  overallScore     Int      @map("overall_score")
+  inferredStage    String   @map("inferred_stage") @db.VarChar(32)
+  topPriority      String   @map("top_priority") @db.Text
+  recommendedSteps String[] @default([]) @map("recommended_steps")
 
-  agentId          String    @default("DiagnosisAgent") @db.VarChar(64) @map("agent_id")
-  modelUsed        String?   @db.VarChar(64) @map("model_used")
-  tokensUsed       Int?      @map("tokens_used")
-  durationMs       Int?      @map("duration_ms")
-  isFallback       Boolean   @default(false) @map("is_fallback")
+  agentId    String  @default("DiagnosisAgent") @map("agent_id") @db.VarChar(64)
+  modelUsed  String? @map("model_used") @db.VarChar(64)
+  tokensUsed Int?    @map("tokens_used")
+  durationMs Int?    @map("duration_ms")
+  isFallback Boolean @default(false) @map("is_fallback")
 
-  traceId          String?   @db.VarChar(64) @map("trace_id")
-  ipAccount        IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("diagnosis_reports")
   @@index([accountId])
   @@index([accountId, createdAt(sort: Desc)])
+  @@map("diagnosis_reports")
 }
 
 model FeedbackLog {
-  id                  Int       @id @default(autoincrement())
-  accountId           Int       @map("account_id")
-  userId              Int?      @map("user_id")
+  id        Int  @id @default(autoincrement())
+  accountId Int  @map("account_id")
+  userId    Int? @map("user_id")
 
-  historyId           Int?      @map("history_id")
-  rateableType        String    @db.VarChar(32) @map("rateable_type")
-  rateableId          Int       @map("rateable_id")
+  historyId    Int?   @map("history_id")
+  rateableType String @map("rateable_type") @db.VarChar(32)
+  rateableId   Int    @map("rateable_id")
 
-  rating              String    @db.VarChar(8)
-  comment             String?   @db.Text
+  rating  String  @db.VarChar(8)
+  comment String? @db.Text
 
-  agentId             String    @db.VarChar(64) @map("agent_id")
-  agentMode           String?   @db.VarChar(32) @map("agent_mode")
-  scriptType          String?   @db.VarChar(32) @map("script_type")
-  elements            String[]  @default([])
+  agentId    String   @map("agent_id") @db.VarChar(64)
+  agentMode  String?  @map("agent_mode") @db.VarChar(32)
+  scriptType String?  @map("script_type") @db.VarChar(32)
+  elements   String[] @default([])
 
   consumedByEvolution Boolean   @default(false) @map("consumed_by_evolution")
   consumedAt          DateTime? @map("consumed_at")
   consumedByInsightId Int?      @map("consumed_by_insight_id")
 
-  traceId             String?   @db.VarChar(64) @map("trace_id")
-  ipAccount           IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  user                User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  history             History?  @relation(fields: [historyId], references: [id], onDelete: SetNull)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  history   History?  @relation(fields: [historyId], references: [id], onDelete: SetNull)
 
-  createdAt           DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("feedback_logs")
   @@index([accountId])
   @@index([accountId, rating])
   @@index([accountId, consumedByEvolution])
@@ -369,67 +368,68 @@ model FeedbackLog {
   @@index([accountId, createdAt(sort: Desc)])
   @@index([traceId])
   @@index([userId])
+  @@map("feedback_logs")
 }
 
 model EvolutionProfile {
-  id                   Int       @id @default(autoincrement())
-  accountId            Int       @unique @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @unique @map("account_id")
 
-  level                String    @default("L1") @db.VarChar(4)
-  feedbackCountGood    Int       @default(0) @map("feedback_count_good")
-  feedbackCountBad     Int       @default(0) @map("feedback_count_bad")
-  feedbackCountTotal   Int       @default(0) @map("feedback_count_total")
-  satisfactionRate     Float?    @map("satisfaction_rate")
+  level              String @default("L1") @db.VarChar(4)
+  feedbackCountGood  Int    @default(0) @map("feedback_count_good")
+  feedbackCountBad   Int    @default(0) @map("feedback_count_bad")
+  feedbackCountTotal Int    @default(0) @map("feedback_count_total")
+  satisfactionRate   Float? @map("satisfaction_rate")
 
-  currentDirection     String    @default("综合") @db.VarChar(32) @map("current_direction")
-  autoEvolutionEnabled Boolean   @default(false) @map("auto_evolution_enabled")
+  currentDirection     String  @default("综合") @map("current_direction") @db.VarChar(32)
+  autoEvolutionEnabled Boolean @default(false) @map("auto_evolution_enabled")
 
-  latestInsightId      Int?      @map("latest_insight_id")
-  latestInsight        Json?     @map("latest_insight")
-  deepLearningCount    Int       @default(0) @map("deep_learning_count")
+  latestInsightId   Int?  @map("latest_insight_id")
+  latestInsight     Json? @map("latest_insight")
+  deepLearningCount Int   @default(0) @map("deep_learning_count")
 
-  lastEvolvedAt        DateTime? @map("last_evolved_at")
-  lastUpgradedAt       DateTime? @map("last_upgraded_at")
+  lastEvolvedAt  DateTime? @map("last_evolved_at")
+  lastUpgradedAt DateTime? @map("last_upgraded_at")
 
-  ipAccount            IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt            DateTime  @default(now()) @map("created_at")
-  updatedAt            DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("evolution_profiles")
   @@index([level])
   @@index([accountId, level])
+  @@map("evolution_profiles")
 }
 
 model EvolutionInsight {
-  id                Int       @id @default(autoincrement())
-  accountId         Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  triggerType       String    @db.VarChar(32) @map("trigger_type")
-  direction         String    @db.VarChar(32)
-  content           Json
+  triggerType String @map("trigger_type") @db.VarChar(32)
+  direction   String @db.VarChar(32)
+  content     Json
 
-  sourceFeedbackIds Int[]     @default([]) @map("source_feedback_ids")
-  sourceSampleIds   Int[]     @default([]) @map("source_sample_ids")
+  sourceFeedbackIds Int[] @default([]) @map("source_feedback_ids")
+  sourceSampleIds   Int[] @default([]) @map("source_sample_ids")
 
-  agentId           String    @default("EvolutionAgent") @db.VarChar(64) @map("agent_id")
-  modelUsed         String?   @db.VarChar(64) @map("model_used")
-  tokensUsed        Int?      @map("tokens_used")
-  durationMs        Int?      @map("duration_ms")
-  isFallback        Boolean   @default(false) @map("is_fallback")
+  agentId    String  @default("EvolutionAgent") @map("agent_id") @db.VarChar(64)
+  modelUsed  String? @map("model_used") @db.VarChar(64)
+  tokensUsed Int?    @map("tokens_used")
+  durationMs Int?    @map("duration_ms")
+  isFallback Boolean @default(false) @map("is_fallback")
 
-  levelBefore       String?   @db.VarChar(4) @map("level_before")
-  levelAfter        String?   @db.VarChar(4) @map("level_after")
+  levelBefore String? @map("level_before") @db.VarChar(4)
+  levelAfter  String? @map("level_after") @db.VarChar(4)
 
-  traceId           String?   @db.VarChar(64) @map("trace_id")
-  ipAccount         IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt         DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("evolution_insights")
   @@index([accountId])
   @@index([accountId, createdAt(sort: Desc)])
   @@index([accountId, levelAfter])
+  @@map("evolution_insights")
 }
 
 // ============================================================
@@ -437,86 +437,86 @@ model EvolutionInsight {
 // ============================================================
 
 model DeepLearningArchive {
-  id              Int       @id @default(autoincrement())
-  accountId       Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  sourceType      String    @db.VarChar(16) @map("source_type")
-  sourceAssetId   Int?      @map("source_asset_id")
+  sourceType    String @map("source_type") @db.VarChar(16)
+  sourceAssetId Int?   @map("source_asset_id")
 
-  sample          String    @db.Text
-  sampleHash      String    @db.VarChar(64) @map("sample_hash")
-  summary         String?   @db.Text
+  sample     String  @db.Text
+  sampleHash String  @map("sample_hash") @db.VarChar(64)
+  summary    String? @db.Text
 
-  styleVector     Unsupported("vector(1536)")? @map("style_vector")
-  tags            String[]  @default([])
-  styleProfile    Json?     @map("style_profile")
+  styleVector  Unsupported("vector(1536)")? @map("style_vector")
+  tags         String[]                     @default([])
+  styleProfile Json?                        @map("style_profile")
 
-  learningStatus  String    @default("pending") @db.VarChar(16) @map("learning_status")
-  learningError   String?   @db.Text @map("learning_error")
+  learningStatus String  @default("pending") @map("learning_status") @db.VarChar(16)
+  learningError  String? @map("learning_error") @db.Text
 
-  userTitle       String?   @db.VarChar(100) @map("user_title")
-  userTags        String[]  @default([]) @map("user_tags")
-  isActive        Boolean   @default(true) @map("is_active")
+  userTitle String?  @map("user_title") @db.VarChar(100)
+  userTags  String[] @default([]) @map("user_tags")
+  isActive  Boolean  @default(true) @map("is_active")
 
-  agentId         String    @default("DeepLearnAgent") @db.VarChar(64) @map("agent_id")
-  modelUsed       String?   @db.VarChar(64) @map("model_used")
-  tokensUsed      Int?      @map("tokens_used")
+  agentId    String  @default("DeepLearnAgent") @map("agent_id") @db.VarChar(64)
+  modelUsed  String? @map("model_used") @db.VarChar(64)
+  tokensUsed Int?    @map("tokens_used")
 
-  traceId         String?   @db.VarChar(64) @map("trace_id")
-  ipAccount       IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("deep_learning_archives")
   @@unique([accountId, sampleHash])
   @@index([accountId])
   @@index([accountId, learningStatus])
   @@index([accountId, isActive])
+  @@map("deep_learning_archives")
 }
 
 model KnowledgeFavorite {
-  id        Int       @id @default(autoincrement())
-  accountId Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  itemType  String    @db.VarChar(32) @map("item_type")
-  itemKey   String    @db.VarChar(128) @map("item_key")
-  userTags  String[]  @default([]) @map("user_tags")
-  noteId    Int?      @map("note_id")
+  itemType String   @map("item_type") @db.VarChar(32)
+  itemKey  String   @map("item_key") @db.VarChar(128)
+  userTags String[] @default([]) @map("user_tags")
+  noteId   Int?     @map("note_id")
 
-  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  ipAccount IpAccount      @relation(fields: [accountId], references: [id], onDelete: Cascade)
   note      KnowledgeNote? @relation("FavoriteNote", fields: [noteId], references: [id], onDelete: SetNull)
 
-  traceId   String?   @db.VarChar(64) @map("trace_id")
-  createdAt DateTime  @default(now()) @map("created_at")
+  traceId   String?  @map("trace_id") @db.VarChar(64)
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("knowledge_favorites")
   @@unique([accountId, itemType, itemKey])
   @@index([accountId])
   @@index([accountId, itemType])
+  @@map("knowledge_favorites")
 }
 
 model KnowledgeNote {
-  id        Int       @id @default(autoincrement())
-  accountId Int       @map("account_id")
+  id        Int @id @default(autoincrement())
+  accountId Int @map("account_id")
 
-  itemType  String?   @db.VarChar(32) @map("item_type")
-  itemKey   String?   @db.VarChar(128) @map("item_key")
-  content   String    @db.Text
-  title     String?   @db.VarChar(200)
-  tags      String[]  @default([])
+  itemType String?  @map("item_type") @db.VarChar(32)
+  itemKey  String?  @map("item_key") @db.VarChar(128)
+  content  String   @db.Text
+  title    String?  @db.VarChar(200)
+  tags     String[] @default([])
 
-  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  ipAccount IpAccount           @relation(fields: [accountId], references: [id], onDelete: Cascade)
   favorites KnowledgeFavorite[] @relation("FavoriteNote")
 
-  traceId   String?   @db.VarChar(64) @map("trace_id")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  traceId   String?  @map("trace_id") @db.VarChar(64)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("knowledge_notes")
   @@index([accountId])
   @@index([accountId, itemType, itemKey])
   @@index([accountId, updatedAt(sort: Desc)])
+  @@map("knowledge_notes")
 }
 
 // ============================================================
@@ -524,41 +524,40 @@ model KnowledgeNote {
 // ============================================================
 
 model CostLog {
-  id               BigInt    @id @default(autoincrement())
-  accountId        Int?      @map("account_id")
-  userId           Int?      @map("user_id")
+  id        BigInt @id @default(autoincrement())
+  accountId Int?   @map("account_id")
+  userId    Int?   @map("user_id")
 
-  agentId          String    @db.VarChar(64) @map("agent_id")
-  agentMode        String?   @db.VarChar(32) @map("agent_mode")
-  callType         String    @db.VarChar(32) @map("call_type")
-  modelTier        String    @db.VarChar(16) @map("model_tier")
-  modelUsed        String    @db.VarChar(64) @map("model_used")
-  provider         String    @db.VarChar(32)
+  agentId   String  @map("agent_id") @db.VarChar(64)
+  agentMode String? @map("agent_mode") @db.VarChar(32)
+  callType  String  @map("call_type") @db.VarChar(32)
+  modelTier String  @map("model_tier") @db.VarChar(16)
+  modelUsed String  @map("model_used") @db.VarChar(64)
+  provider  String  @db.VarChar(32)
 
-  promptTokens     Int       @default(0) @map("prompt_tokens")
-  completionTokens Int       @default(0) @map("completion_tokens")
-  totalTokens      Int       @default(0) @map("total_tokens")
-  imageCount       Int?      @map("image_count")
-  audioSeconds     Int?      @map("audio_seconds")
-  charactersIn     Int?      @map("characters_in")
+  promptTokens     Int  @default(0) @map("prompt_tokens")
+  completionTokens Int  @default(0) @map("completion_tokens")
+  totalTokens      Int  @default(0) @map("total_tokens")
+  imageCount       Int? @map("image_count")
+  audioSeconds     Int? @map("audio_seconds")
+  charactersIn     Int? @map("characters_in")
 
-  costUsd          Decimal   @db.Decimal(10, 6) @map("cost_usd")
-  durationMs       Int       @map("duration_ms")
+  costUsd    Decimal @map("cost_usd") @db.Decimal(10, 6)
+  durationMs Int     @map("duration_ms")
 
-  success          Boolean   @default(true)
-  errorCode        String?   @db.VarChar(32) @map("error_code")
-  isFallback       Boolean   @default(false) @map("is_fallback")
-  fallbackFrom     String?   @db.VarChar(64) @map("fallback_from")
-  fallbackTo       String?   @db.VarChar(64) @map("fallback_to")
-  fallbackReason   String?   @db.VarChar(128) @map("fallback_reason")
+  success        Boolean @default(true)
+  errorCode      String? @map("error_code") @db.VarChar(32)
+  isFallback     Boolean @default(false) @map("is_fallback")
+  fallbackFrom   String? @map("fallback_from") @db.VarChar(64)
+  fallbackTo     String? @map("fallback_to") @db.VarChar(64)
+  fallbackReason String? @map("fallback_reason") @db.VarChar(128)
 
-  traceId          String?   @db.VarChar(64) @map("trace_id")
-  ipAccount        IpAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
-  user             User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  traceId   String?    @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  createdAt        DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("cost_log")
   @@index([userId, createdAt(sort: Desc)])
   @@index([accountId, createdAt(sort: Desc)])
   @@index([agentId, createdAt(sort: Desc)])
@@ -566,61 +565,561 @@ model CostLog {
   @@index([provider, success, createdAt(sort: Desc)])
   @@index([traceId])
   @@index([createdAt(sort: Desc)])
+  @@map("cost_log")
 }
 
 model AuditLog {
-  id            BigInt   @id @default(autoincrement())
-  userId        Int?     @map("user_id")
-  accountId     Int?     @map("account_id")
+  id        BigInt @id @default(autoincrement())
+  userId    Int?   @map("user_id")
+  accountId Int?   @map("account_id")
 
-  eventType     String   @db.VarChar(64) @map("event_type")
-  eventCategory String   @db.VarChar(32) @map("event_category")
-  resourceType  String?  @db.VarChar(32) @map("resource_type")
-  resourceId    Int?     @map("resource_id")
+  eventType     String  @map("event_type") @db.VarChar(64)
+  eventCategory String  @map("event_category") @db.VarChar(32)
+  resourceType  String? @map("resource_type") @db.VarChar(32)
+  resourceId    Int?    @map("resource_id")
   payload       Json?
 
-  ipAddress     String?  @db.VarChar(45) @map("ip_address")
-  userAgent     String?  @db.Text @map("user_agent")
-  success       Boolean  @default(true)
-  errorCode     String?  @db.VarChar(32) @map("error_code")
-  errorMessage  String?  @db.Text @map("error_message")
+  ipAddress    String? @map("ip_address") @db.VarChar(45)
+  userAgent    String? @map("user_agent") @db.Text
+  success      Boolean @default(true)
+  errorCode    String? @map("error_code") @db.VarChar(32)
+  errorMessage String? @map("error_message") @db.Text
 
-  traceId       String?  @db.VarChar(64) @map("trace_id")
-  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  traceId String? @map("trace_id") @db.VarChar(64)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  createdAt     DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("audit_log")
   @@index([userId, createdAt(sort: Desc)])
   @@index([accountId, createdAt(sort: Desc)])
   @@index([eventType, createdAt(sort: Desc)])
   @@index([traceId])
   @@index([createdAt(sort: Desc)])
+  @@map("audit_log")
 }
 
 model DailyTask {
-  id             Int       @id @default(autoincrement())
-  accountId      Int       @map("account_id")
-  taskDate       DateTime  @db.Date @map("task_date")
+  id        Int      @id @default(autoincrement())
+  accountId Int      @map("account_id")
+  taskDate  DateTime @map("task_date") @db.Date
 
   tasks          Json
-  completedCount Int       @default(0) @map("completed_count")
-  totalCount     Int       @default(0) @map("total_count")
+  completedCount Int  @default(0) @map("completed_count")
+  totalCount     Int  @default(0) @map("total_count")
 
-  agentId        String    @default("DailyTaskAgent") @db.VarChar(64) @map("agent_id")
-  modelUsed      String?   @db.VarChar(64) @map("model_used")
-  isFallback     Boolean   @default(false) @map("is_fallback")
-  inputSnapshot  Json?     @map("input_snapshot")
+  agentId       String  @default("DailyTaskAgent") @map("agent_id") @db.VarChar(64)
+  modelUsed     String? @map("model_used") @db.VarChar(64)
+  isFallback    Boolean @default(false) @map("is_fallback")
+  inputSnapshot Json?   @map("input_snapshot")
 
-  traceId        String?   @db.VarChar(64) @map("trace_id")
-  ipAccount      IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  traceId   String?   @map("trace_id") @db.VarChar(64)
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("daily_tasks")
   @@unique([accountId, taskDate])
   @@index([accountId])
   @@index([taskDate])
   @@index([accountId, taskDate(sort: Desc)])
+  @@map("daily_tasks")
+}
+
+// ============================================================
+// §13 admin 子系统 13 表 + P2 后续 4 表(派生 DATA-MODEL.md §13)
+// · 全部 DISABLE RLS(参 prisma/migrations/manual_admin_rls.sql)
+// · 字段名 camelCase(无 @map)· 跟主应用 snake_case 不同 · 由 ADR-021 admin 独立部署兜底
+// · 应用层硬约束 · 普通用户 procedure 不允许 query 这 17 张表(参 AGENTS §10 R-A4)
+// ============================================================
+
+/// admin 操作审计 · 全量记录 · 跟用户 audit_log 分开
+model AdminAuditLog {
+  id Int @id @default(autoincrement())
+
+  /// actor(admin · 不是 user)
+  actorAdminId Int
+  actorRole    String // 'super_admin' | 'admin' | 'readonly_admin'
+  actorMode    String? // 'cs' | 'reviewer' | 'finance' | 'legal' | null
+
+  /// event
+  eventCategory String // 'auth' | 'data_query' | 'data_mutation' |
+  // 'cross_account_query' | 'high_risk_action' |
+  // 'config_change' | 'export' | 'security_alert'
+  eventType     String // 'admin_login' / 'mfa_check' /
+  // 'cross_account_query' / 'change_user_plan' /
+  // 'ban_user' / 'force_evolution_rebuild' / ...
+
+  /// target
+  targetUserId    Int?
+  targetAccountId Int?
+  targetEntity    String?
+  targetEntityId  String?
+
+  /// payload
+  payloadHash String @db.VarChar(64) // SHA-256 · 防篡改
+  payload     Json?
+
+  /// 关联 Approval(高风险动作)
+  approvalRequestId Int?
+
+  /// trace
+  traceId String @db.VarChar(64)
+
+  /// 上下文
+  ip        String @db.VarChar(45)
+  userAgent String @db.VarChar(500)
+  sessionId String @db.VarChar(64)
+
+  /// 结果
+  success      Boolean @default(true)
+  errorCode    String?
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+
+  approvalRequest ApprovalRequest? @relation(fields: [approvalRequestId], references: [id])
+
+  @@index([actorAdminId, createdAt(sort: Desc)])
+  @@index([eventCategory, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
+  @@index([targetUserId, createdAt(sort: Desc)])
+  @@index([targetAccountId, createdAt(sort: Desc)])
+  @@index([traceId])
+  @@index([approvalRequestId])
+  @@index([createdAt(sort: Desc)])
+  @@map("admin_audit_log")
+}
+
+/// Approval Gates 高风险操作两步审批
+model ApprovalRequest {
+  id Int @id @default(autoincrement())
+
+  /// 申请人
+  requesterAdminId Int
+  requesterRole    String
+
+  /// 申请什么
+  actionType          String // 'change_user_plan' / 'ban_user' / ...
+  actionPayload       Json
+  actionContext       Json?
+  riskLevel           String // 'low' | 'medium' | 'high' | 'critical'
+  requireDualApproval Boolean @default(false)
+  isEmergency         Boolean @default(false)
+  requesterReason     String  @db.Text
+
+  /// 决策
+  status                String // 'pending' | 'approved' | 'rejected' |
+  // 'expired' | 'auto_executed' | 'cancelled'
+  approverAdminId       Int?
+  decisionReason        String? @db.Text
+  secondApproverAdminId Int?
+  secondDecisionReason  String? @db.Text
+
+  /// 时间
+  createdAt    DateTime  @default(now())
+  decidedAt    DateTime?
+  expiresAt    DateTime
+  executedAt   DateTime?
+  postReviewAt DateTime?
+
+  auditLogs AdminAuditLog[]
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([requesterAdminId, createdAt(sort: Desc)])
+  @@index([approverAdminId])
+  @@index([riskLevel, status])
+  @@index([expiresAt])
+  @@map("approval_requests")
+}
+
+/// Specialist Prompt 版本(每次 admin 改动一条记录)
+model PromptVersion {
+  id Int @id @default(autoincrement())
+
+  /// 哪个 Specialist · 哪个 mode
+  specialistId String
+  mode         String?
+
+  /// 版本
+  version     Int
+  content     String @db.Text
+  contentHash String @db.VarChar(64)
+
+  /// 状态
+  status String // 'draft' | 'staged' | 'active' | 'archived' | 'rolled_back'
+
+  /// LLM Judge 评分(对 100 金标准 · 阈值 4.0)
+  judgeScore     Decimal? @db.Decimal(3, 2)
+  judgeRunId     String?
+  judgeReportUrl String?
+
+  /// 操作人
+  createdByAdminId  Int
+  createdAt         DateTime  @default(now())
+  approvedByAdminId Int?
+  approvedAt        DateTime?
+
+  canaryConfigs     PromptCanaryConfig[] @relation("currentVersion")
+  canaryConfigsNext PromptCanaryConfig[] @relation("nextVersion")
+
+  @@unique([specialistId, mode, version])
+  @@index([specialistId, mode, status])
+  @@index([status, createdAt(sort: Desc)])
+  @@map("prompt_versions")
+}
+
+/// 灰度发布配置
+model PromptCanaryConfig {
+  id           Int     @id @default(autoincrement())
+  specialistId String
+  mode         String?
+
+  currentVersionId Int
+  nextVersionId    Int?
+  canaryPct        Int    @default(0)
+  strategy         String // 'user_id_hash' | 'account_id_hash' | 'random'
+
+  canaryStartedAt DateTime?
+  canaryEndsAt    DateTime?
+
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  currentVersion PromptVersion  @relation("currentVersion", fields: [currentVersionId], references: [id])
+  nextVersion    PromptVersion? @relation("nextVersion", fields: [nextVersionId], references: [id])
+
+  @@unique([specialistId, mode])
+  @@index([canaryPct])
+  @@map("prompt_canary_config")
+}
+
+/// 用户配额状态(每用户 1 行 · 跟 LLMGateway Redis token bucket 对照)
+model UserQuota {
+  id     Int @id @default(autoincrement())
+  userId Int @unique
+
+  plan String // 'free' | 'pro' | 'enterprise'
+
+  dailyQuota      Int
+  dailyUsed       Int @default(0)
+  monthlyQuota    Int
+  monthlyUsed     Int @default(0)
+  imageDailyQuota Int @default(0)
+  imageDailyUsed  Int @default(0)
+
+  dailyResetAt   DateTime
+  monthlyResetAt DateTime
+
+  isOnWhitelist      Boolean   @default(false)
+  whitelistExpiresAt DateTime?
+
+  updatedAt DateTime @updatedAt
+
+  adjustments QuotaAdjustmentLog[]
+
+  @@index([plan])
+  @@index([dailyResetAt])
+  @@index([whitelistExpiresAt])
+  @@map("user_quota")
+}
+
+/// 配额调整记录(admin 临时调整 · 24h 自动失效)
+model QuotaAdjustmentLog {
+  id          Int     @id @default(autoincrement())
+  userQuotaId Int
+  userId      Int
+  adminId     Int
+  adminMode   String?
+
+  field    String // 'dailyQuota' / 'monthlyQuota' / 'imageDailyQuota' / 'whitelist'
+  oldValue Int?
+  newValue Int?
+  delta    Int?
+  reason   String @db.Text
+
+  expiresAt DateTime
+  isExpired Boolean   @default(false)
+  expiredAt DateTime?
+
+  approvalRequestId Int?
+
+  createdAt DateTime @default(now())
+
+  userQuota UserQuota @relation(fields: [userQuotaId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([adminId, createdAt(sort: Desc)])
+  @@index([expiresAt, isExpired])
+  @@index([approvalRequestId])
+  @@map("quota_adjustment_log")
+}
+
+/// NSM 仪表盘历史趋势(预聚合)
+model KpiSnapshot {
+  id           Int      @id @default(autoincrement())
+  snapshotDate DateTime @db.Date
+  granularity  String // 'day' | 'week' | 'month'
+
+  activeAccounts7d     Int
+  step9CompleteRate    Decimal @db.Decimal(5, 4)
+  feedbackRate         Decimal @db.Decimal(5, 4)
+  evolutionUpgradeRate Decimal @db.Decimal(5, 4)
+  d30Retention         Decimal @db.Decimal(5, 4)
+
+  userPersonaDistribution Json
+  industryDistribution    Json
+  platformDistribution    Json
+
+  funnelData Json
+
+  computedAt DateTime @default(now())
+
+  @@unique([snapshotDate, granularity])
+  @@index([granularity, snapshotDate(sort: Desc)])
+  @@map("kpi_snapshots")
+}
+
+/// admin 内部备注(用户看不到)
+model IpAccountAdminNote {
+  id                  Int      @id @default(autoincrement())
+  accountId           Int
+  adminId             Int
+  note                String   @db.Text
+  visibleToOtherAdmin Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([adminId])
+  @@map("ip_account_admin_notes")
+}
+
+/// 异常账号标记(自动跑批写入 · admin 复审)
+model IpAccountAnomalyFlag {
+  id                Int       @id @default(autoincrement())
+  accountId         Int
+  anomalyType       String // 'inactive_no_feedback' | 'evolution_stalled' | ...
+  detectedAt        DateTime  @default(now())
+  severity          String // 'low' | 'medium' | 'high'
+  evidence          Json
+  resolvedAt        DateTime?
+  resolvedByAdminId Int?
+  resolution        String?
+
+  @@index([accountId])
+  @@index([anomalyType, detectedAt(sort: Desc)])
+  @@index([severity, resolvedAt])
+  @@map("ip_account_anomaly_flags")
+}
+
+/// 营销 campaign 元数据
+model InviteCampaign {
+  id               Int     @id @default(autoincrement())
+  campaignKey      String  @unique
+  name             String
+  description      String? @db.Text
+  createdByAdminId Int
+
+  totalQuota Int
+  usedCount  Int      @default(0)
+  startsAt   DateTime
+  endsAt     DateTime
+
+  status String // 'draft' | 'active' | 'paused' | 'ended'
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, startsAt])
+  @@index([createdByAdminId])
+  @@map("invite_campaigns")
+}
+
+/// TrendingScraper 抓回的内容 → 入审核队列
+model TrendingReviewQueue {
+  id             Int    @id @default(autoincrement())
+  sourcePlatform String // 'douyin' / 'xiaohongshu' / 'bilibili' / ...
+  sourceItemId   String
+  sourceUrl      String
+
+  rawContent Json
+  fetchedAt  DateTime @default(now())
+
+  autoScanResult Json
+  autoVerdict    String // 'auto_approved' | 'auto_rejected' | 'needs_review'
+
+  status          String // 'pending' | 'approved' | 'rejected' | 'auto_approved' | 'auto_rejected'
+  reviewerAdminId Int?
+  reviewedAt      DateTime?
+  rejectReason    String?   @db.Text
+
+  trendingItemId Int?
+
+  @@unique([sourcePlatform, sourceItemId])
+  @@index([status, fetchedAt(sort: Desc)])
+  @@index([sourcePlatform, status])
+  @@index([autoVerdict])
+  @@index([reviewerAdminId])
+  @@map("trending_review_queue")
+}
+
+/// 已上架 TrendingItem 后续被下架
+model TrendingTakedown {
+  id                Int      @id @default(autoincrement())
+  trendingItemId    Int
+  reason            String // 'reported' | 'auto_rule' | 'admin_judgment'
+  takedownByAdminId Int?
+  takedownAt        DateTime @default(now())
+
+  hasAppeal        Boolean   @default(false)
+  appealResolution String? // 'restored' | 'final_takedown'
+  appealResolvedAt DateTime?
+
+  @@index([trendingItemId])
+  @@index([takedownAt(sort: Desc)])
+  @@map("trending_takedown")
+}
+
+/// 自动审核规则配置(super_admin 配 · 自动驳回阈值 / 抽样比例)
+model AutoReviewRule {
+  id               Int      @id @default(autoincrement())
+  ruleType         String // 'banned_word' | 'sampling_rate' | 'industry_quota'
+  ruleKey          String
+  ruleValue        Json
+  enabled          Boolean  @default(true)
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@unique([ruleType, ruleKey])
+  @@index([ruleType, enabled])
+  @@map("auto_review_rules")
+}
+
+/// 用户上传 → 入审核队列
+model DeepLearnReviewQueue {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  accountId Int
+
+  fileName   String
+  fileMime   String
+  fileSize   Int
+  fileUrl    String
+  uploadedAt DateTime @default(now())
+
+  autoScanResult Json
+  autoVerdict    String // 'auto_approved' | 'auto_rejected' | 'needs_review'
+
+  status          String // 'pending' | 'approved' | 'rejected' | 'auto_approved' | 'auto_rejected'
+  reviewerAdminId Int?
+  reviewedAt      DateTime?
+  rejectReason    String?   @db.Text
+
+  archiveId Int?
+
+  @@index([status, uploadedAt(sort: Desc)])
+  @@index([userId, status])
+  @@index([accountId])
+  @@index([autoVerdict])
+  @@map("deep_learn_review_queue")
+}
+
+/// 用户违规累计(累计 ≥ 3 警告 / ≥ 5 暂停)
+model UserViolationLog {
+  id                 Int       @id @default(autoincrement())
+  userId             Int
+  violationType      String // 'pii_upload' | 'banned_content' | 'trending_abuse' | ...
+  count              Int       @default(1)
+  lastViolationAt    DateTime  @default(now())
+  lastReviewItemId   Int?
+  warningCount       Int       @default(0)
+  suspendedAt        DateTime?
+  suspendedByAdminId Int?
+  suspendedReason    String?
+
+  @@unique([userId, violationType])
+  @@index([userId])
+  @@index([violationType, count(sort: Desc)])
+  @@map("user_violation_log")
+}
+
+/// 进化档案异常标记(冲突反馈 / styleAdjustments 翻转)
+model EvolutionAnomalyFlag {
+  id          Int       @id @default(autoincrement())
+  accountId   Int
+  anomalyType String // 'conflicting_insights' | 'frequent_style_flip' | ...
+  severity    String // 'low' | 'medium' | 'high'
+  evidence    Json
+  detectedAt  DateTime  @default(now())
+  resolvedAt  DateTime?
+  resolution  String? // 'auto_resolved' | 'admin_force_rebuild' | 'false_positive'
+
+  @@index([accountId])
+  @@index([anomalyType, detectedAt(sort: Desc)])
+  @@index([severity, resolvedAt])
+  @@map("evolution_anomaly_flags")
+}
+
+// ============================================================
+// §13.7 P2 后续 4 张表(占位 · P9.4 实施)
+// ============================================================
+
+/// P2 · A/B 测试实验(域 ⑭)
+model AbExperiment {
+  id                Int       @id @default(autoincrement())
+  experimentKey     String    @unique
+  name              String
+  description       String?   @db.Text
+  variantConfig     Json
+  trafficAllocation Json
+  status            String // 'draft' | 'running' | 'stopped' | 'completed'
+  startedAt         DateTime?
+  stoppedAt         DateTime?
+  resultSummary     Json?
+  createdByAdminId  Int
+
+  @@index([status])
+  @@map("ab_experiments")
+}
+
+/// P2 · A/B 用户分组
+model AbAssignment {
+  id           Int      @id @default(autoincrement())
+  experimentId Int
+  userId       Int
+  variant      String // 'control' | 'variant_a' | 'variant_b'
+  assignedAt   DateTime @default(now())
+
+  @@unique([experimentId, userId])
+  @@index([userId, experimentId])
+  @@map("ab_assignments")
+}
+
+/// P2 · Feature flags(域 ⑯)
+model FeatureFlag {
+  id               Int      @id @default(autoincrement())
+  flagKey          String   @unique
+  description      String?  @db.Text
+  flagType         String // 'boolean' | 'percentage' | 'targeted'
+  defaultValue     Json
+  rolloutConfig    Json?
+  enabled          Boolean  @default(false)
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@index([enabled])
+  @@map("feature_flags")
+}
+
+/// P2 · 系统配置(域 ⑯)
+model SystemConfig {
+  id               Int      @id @default(autoincrement())
+  configKey        String   @unique
+  configValue      Json
+  description      String?  @db.Text
+  isEmergency      Boolean  @default(false)
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@index([isEmergency])
+  @@map("system_config")
 }

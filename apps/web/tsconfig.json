@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@quanqn/schemas": ["../../packages/schemas/src"],
+      "@quanqn/schemas/*": ["../../packages/schemas/src/*"],
+      "@quanqn/ui": ["../../packages/ui/src"],
+      "@quanqn/ui/*": ["../../packages/ui/src/*"],
+      "@quanqn/clients": ["../../packages/clients/src"],
+      "@quanqn/clients/*": ["../../packages/clients/src/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}
