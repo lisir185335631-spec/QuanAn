@@ -1,0 +1,7 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run --reporter\=junit --outputFile\=scripts/ralph/verify-artifacts/US-006/vitest-full-new.xml
+
+{"level":"error","time":1778175141041,"service":"quanqn","msg":"SESSION_SECRET must be at least 32 characters"}
+{"level":"error","time":1778175141041,"service":"quanqn","msg":"unknown OAuth provider: facebook · expected mock|google"}
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-006/vitest-full-new.xml
