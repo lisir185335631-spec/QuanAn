@@ -1,15 +1,36 @@
 /**
  * QuanQn · Tailwind 配置
  *
- * 颜色派生自 ui/aurelian_dark/DESIGN.md YAML frontmatter(LD-015 权威源)
+ * 颜色全部派生自 ui/aurelian_dark/DESIGN.md YAML frontmatter(LD-015 权威源)
  * 字体跟 AGENTS §2.1 一致 · Manrope / Plus Jakarta Sans / Inter
  *
- * ⚠️ 不要 hardcode 颜色 · 全部走 theme('colors.X')
- * ⚠️ 不要从文字段取颜色 · YAML 优先(详见 AGENTS §3 LD-015)
+ * ⚠️ 不要 hardcode 颜色 · 全部走 tokens.colors.X
+ * ⚠️ YAML 优先于文字段(LD-015 · text section 中的颜色值不作数)
  */
 
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import animatePlugin from 'tailwindcss-animate';
-const animate = animatePlugin.default ?? animatePlugin;  // CJS 包 default 兼容
+import { parseTokensFromFile } from './src/lib/parseDesignTokens.js';
+
+const animate = animatePlugin.default ?? animatePlugin;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Pass explicit path so tests can override; tailwind runs from apps/web/
+const tokens = parseTokensFromFile(
+  path.resolve(__dirname, '../../ui/aurelian_dark/DESIGN.md')
+);
+const c = tokens.colors;
+
+/** Convert a 6-char hex color to rgba(r, g, b, alpha) without hardcoding hex literals. */
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -23,55 +44,61 @@ export default {
     },
     extend: {
       colors: {
-        // === Surface(7 档 · 来自 DESIGN.md YAML) ===
-        surface: '#131316',
-        'surface-bright': '#39393c',
-        'surface-container-lowest': '#0e0e11',
-        'surface-container-low': '#1b1b1e',
-        'surface-container': '#1f1f22',
-        'surface-container-high': '#2a2a2d',
-        'surface-container-highest': '#343437',
+        // === Surface (DESIGN.md YAML) ===
+        surface: c['surface'],
+        'surface-dim': c['surface-dim'],
+        'surface-bright': c['surface-bright'],
+        'surface-container-lowest': c['surface-container-lowest'],
+        'surface-container-low': c['surface-container-low'],
+        'surface-container': c['surface-container'],
+        'surface-container-high': c['surface-container-high'],
+        'surface-container-highest': c['surface-container-highest'],
 
-        'on-surface': '#e4e2e5',
-        'on-surface-variant': '#d0c5af',
-        'inverse-surface': '#e4e2e5',
-        'inverse-on-surface': '#303033',
+        'on-surface': c['on-surface'],
+        'on-surface-variant': c['on-surface-variant'],
+        'inverse-surface': c['inverse-surface'],
+        'inverse-on-surface': c['inverse-on-surface'],
 
-        // === Primary Gold(YAML 权威 · 文字段是 hover/active 变体) ===
+        // === Primary Gold (YAML is authoritative · text section lists hover/active variants) ===
         primary: {
-          DEFAULT: '#f2ca50',
-          container: '#d4af37',
-          fixed: '#ffe088',
-          'fixed-dim': '#e9c349',
+          DEFAULT: c['primary'],
+          container: c['primary-container'],
+          fixed: c['primary-fixed'],
+          'fixed-dim': c['primary-fixed-dim'],
         },
-        'on-primary': '#3c2f00',
-        'on-primary-container': '#554300',
-        'on-primary-fixed-variant': '#574500',
+        'on-primary': c['on-primary'],
+        'on-primary-container': c['on-primary-container'],
+        'inverse-primary': c['inverse-primary'],
+        'on-primary-fixed-variant': c['on-primary-fixed-variant'],
 
         // === Secondary / Tertiary ===
-        secondary: '#eac249',
-        'on-secondary': '#3d2f00',
-        'secondary-container': '#b08c10',
+        secondary: c['secondary'],
+        'on-secondary': c['on-secondary'],
+        'secondary-container': c['secondary-container'],
 
-        tertiary: '#ffc551',
-        'on-tertiary': '#412d00',
-        'tertiary-container': '#e1aa36',
+        tertiary: c['tertiary'],
+        'on-tertiary': c['on-tertiary'],
+        'tertiary-container': c['tertiary-container'],
 
         // === Error ===
-        error: '#ffb4ab',
-        'on-error': '#690005',
-        'error-container': '#93000a',
-        'on-error-container': '#ffdad6',
+        error: c['error'],
+        'on-error': c['on-error'],
+        'error-container': c['error-container'],
+        'on-error-container': c['on-error-container'],
 
         // === Outline ===
-        outline: '#99907c',
-        'outline-variant': '#4d4635',
+        outline: c['outline'],
+        'outline-variant': c['outline-variant'],
 
-        // === Background(= surface) ===
-        background: '#131316',
-        'on-background': '#e4e2e5',
+        // === Background ===
+        background: c['background'],
+        'on-background': c['on-background'],
 
-        // === shadcn 兼容(让 shadcn/ui 默认组件能直接用) ===
+        // === Misc ===
+        'surface-tint': c['surface-tint'],
+        'surface-variant': c['surface-variant'],
+
+        // === shadcn/ui CSS-var tokens (reference CSS custom properties, not hex) ===
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -98,14 +125,14 @@ export default {
         },
       },
       fontFamily: {
-        // === DESIGN.md typography 段 ===
+        // === DESIGN.md typography segment ===
         display: ['Manrope', 'system-ui', 'sans-serif'],
         sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
         label: ['Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        // === DESIGN.md typography 字号 ===
+        // === DESIGN.md typography scale ===
         'display-xl': ['48px', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
         'display-lg': ['36px', { lineHeight: '1.2', letterSpacing: '-0.02em', fontWeight: '600' }],
         h1: ['30px', { lineHeight: '1.3', fontWeight: '600' }],
@@ -117,25 +144,25 @@ export default {
         'label-sm': ['11px', { lineHeight: '1', letterSpacing: '0.08em', fontWeight: '600' }],
       },
       borderRadius: {
-        // === DESIGN.md rounded 段 ===
-        sm: '0.125rem',
-        DEFAULT: '0.25rem',
-        md: '0.375rem',
-        lg: '0.5rem',
-        xl: '0.75rem',
-        full: '9999px',
+        // === DESIGN.md rounded segment ===
+        sm: String(tokens.rounded['sm']),
+        DEFAULT: String(tokens.rounded['DEFAULT']),
+        md: String(tokens.rounded['md']),
+        lg: String(tokens.rounded['lg']),
+        xl: String(tokens.rounded['xl']),
+        full: String(tokens.rounded['full']),
       },
       spacing: {
-        // === 4px Rule ===
-        xs: '4px',
-        sm: '8px',
-        md: '16px',
-        lg: '24px',
-        xl: '40px',
-        '2xl': '64px',
+        // === DESIGN.md spacing (4px Rule) ===
+        xs: String(tokens.spacing['xs']),
+        sm: String(tokens.spacing['sm']),
+        md: String(tokens.spacing['md']),
+        lg: String(tokens.spacing['lg']),
+        xl: String(tokens.spacing['xl']),
+        '2xl': String(tokens.spacing['2xl']),
       },
       animation: {
-        // === 5 个核心动效(参 ARCHITECTURE §8.8) ===
+        // === ARCHITECTURE §8.8 core animations ===
         'light-sweep': 'light-sweep 600ms ease',
         'gold-glow-pulse': 'gold-glow-pulse 1.5s ease-in-out infinite',
         'card-lift': 'card-lift 200ms ease',
@@ -149,8 +176,8 @@ export default {
           '100%': { transform: 'translateX(200%) skewX(-20deg)', opacity: '0' },
         },
         'gold-glow-pulse': {
-          '0%, 100%': { boxShadow: '0 0 0 2px rgba(212, 175, 55, 0.15)' },
-          '50%': { boxShadow: '0 0 0 4px rgba(212, 175, 55, 0.3)' },
+          '0%, 100%': { boxShadow: `0 0 0 2px ${hexToRgba(c['primary'], 0.15)}` },
+          '50%': { boxShadow: `0 0 0 4px ${hexToRgba(c['primary'], 0.3)}` },
         },
         'card-lift': {
           '0%': { transform: 'translateY(0)' },

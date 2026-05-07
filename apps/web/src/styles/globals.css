@@ -4,9 +4,9 @@
 
 body {
   margin: 0;
-  font-family: 'Manrope', 'Inter', sans-serif;
-  background: #0a0a0a;
-  color: #e5e5e5;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  background-color: theme('colors.background');
+  color: theme('colors.on-background');
   -webkit-font-smoothing: antialiased;
 }
 
