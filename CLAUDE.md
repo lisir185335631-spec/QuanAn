@@ -219,4 +219,71 @@ Ralph 套件未到位 · P0-2 跑 `~/.claude/scripts/ralph/sync-to-project.sh /U
 
 ---
 
+### 9.6 Large Story 拆分硬规则(★ RCA-002 配套)
+
+> **派生** · [.agents/rca/RCA-002-developer-timeout.md](.agents/rca/RCA-002-developer-timeout.md)
+> **背景** · 2026-05-07 US-005(size=large)Developer 超时 3 次 · 90 min 0 输出 · 任务粒度太大
+> **配合** · 全局 CLAUDE.md "Story 大小:第一规则 · 必须能在一次 Ralph 迭代完成"
+
+#### 9.6.1 size_hint 决策表(prd skill 转 prd.json 时强制)
+
+| 指标 | small | medium | **large(★ 必拆)** |
+|---|:-:|:-:|:-:|
+| AC 条数 | ≤ 5 | 6-9 | > 10(警告) |
+| files_to_create | ≤ 5 | 6-12 | **> 12 · 必拆** |
+| 描述长度 | 1 句 | 2-3 句 | 难用 3 句描述 → 必拆 |
+| 涉及"+ 多组件"/"+ 多文件" | 否 | 边缘 | **是 · 必拆** |
+| 涉及 e2e + impl 同 story | 否 | 否 | **是 · e2e 拆为独立 story** |
+| 涉及 schema + impl + UI 同 story | 否 | 否 | **是 · 必拆 ≥3 子 story** |
+
+#### 9.6.2 large story 触发响应(本项目本 PRD 起强制)
+
+**prd skill 输出** · `size_hint=large` 必带警告:
+```
+⚠️ US-XXX size_hint=large · 违反 Story 大小第一规则
+建议拆为 ≥ 3 子 story · 否则 ralph daemon 90% 概率超时
+```
+
+**ralph skill 转 prd.json** · 拒绝输出 large story · 提示 prd skill 重写。
+
+**Opus 主对话(我)** · 看见 large story 主动 push back 给用户 · 不让进 ralph。
+
+#### 9.6.3 prompt 字节阈值(防 stuck)
+
+| prompt 字节 | 行为 |
+|:-:|---|
+| < 7K | ✅ 正常(US-001~004 实测 6-7K · 全部通过) |
+| 7-10K | 🟡 监控(可能边界) |
+| 10-12K | 🟠 警告 · 大概率 single round 跑不完 |
+| **> 12K** | 🔴 **拒启 daemon** · ralph.py warning + abort · 强制 prd skill 重 split |
+
+实测对照 · US-005 失败时 prompt **11.6K** · US-001~004 成功时 6-7K · 11K+ 是危险区。
+
+#### 9.6.4 失败响应 SOP
+
+ralph round 出现以下任一信号 · **立即** kill + 拆 story:
+- "Agent 已 5 分钟无新输出"(stdout block-buffer 嫌疑或 claude hang)
+- dev log 0 bytes 持续 > 5 min
+- retryCount ≥ 2 同 story Developer 超时
+- 单 story round ≥ 6(异常)
+
+**不要** 让 ralph 跑到 max retry(5)再 blocked · 浪费 30+ min/round。
+
+#### 9.6.5 失败 → 拆分 → 重启 流程(20 min 内完成)
+
+```
+1. kill 所有 ralph 进程 · pkill -9 -f ralph.py · pkill -9 -f "claude --print" · pkill -9 -f watch-audit
+2. rm lock · rm -f scripts/ralph/ralph-lock.json scripts/ralph/audit-gate.json
+3. 备份 prd.json · cp prd.json prd.json.bak.before-rca-XXX
+4. 改 prd.json · 拆 large story · size_hint=medium · retryCount=0 · notes 加 [RCA-XXX] 标记
+5. 写 RCA-XXX 文档 · .agents/rca/
+6. 重启 daemon · 按 §9.1 5 步 SOP
+```
+
+#### 9.6.6 跨 PRD 应用
+
+本 §9.6 是 PRD-1 → PRD-14 共通规则。每次新 PRD 用 prd skill 时 · 必须自检 size_hint=large 不存在(或拆完)。
+
+---
+
 > **本文件由 Claude(Opus 4.7)在 P0 启动期写 · 2026-05-07 · 跟全局 CLAUDE.md 互补使用。**
