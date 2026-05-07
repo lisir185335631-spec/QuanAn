@@ -40,7 +40,20 @@
       "evidence": "audit-artifacts.py US-002 报 ARTIFACTS FAKE or INVALID: ['manifest'] · manifest missing field: exit_code",
       "root_cause": "Validator Agent 写 verify-artifacts/<US>/manifest.json 时缺 exit_code 字段 · audit-artifacts.py 默认期望此字段(Python 项目用)· TS 项目跑 pnpm typecheck 没产出 exit_code 字段",
       "scheduled_fix_in": "PRD-2 实施期 · Validator 产物模板补 exit_code(从 pnpm typecheck 退出码取)· 或改 audit-artifacts.py 容忍 TS 项目无 exit_code",
-      "audit_exemption": "US-001/US-002 approve 时豁免 · 因为 pnpm typecheck 实测过 · 零回归核心目标已达成 · 走 Cheat Sheet Step 1.7 partial fake 补跑流程"
+      "audit_exemption": "US-001/US-002 approve 时豁免 · 因为 pnpm typecheck 实测过 · 零回归核心目标已达成 · 走 Cheat Sheet Step 1.7 partial fake 补跑流程 · US-003 已自然修(Validator 产物完整 · pytest-full 1/1 passed)"
+    },
+    {
+      "id": "TD-004",
+      "category": "scope-creep",
+      "title": "ralph 在 US-003 跑了 prisma migrate baseline(1245 行 init.sql · 38 表)· 超出 PRD-1 P0 范围",
+      "discovered_at": "2026-05-07",
+      "discovered_by": "Opus audit US-003",
+      "severity": "medium",
+      "status": "accepted",
+      "evidence": "git show 665f13e · prisma/migrations/20260507000000_init/migration.sql 1245 行 · 主应用 18 + admin 16 + P2 4 = 38 张表 baseline applied",
+      "root_cause": "PRD-1 §3 范围排除 14 写 'RLS 启用 · 排到 PRD-2'· 但 prisma migration 不在排除列表 · ralph 为了让 US-003 prisma client + integration test 跑通 · 必须先创 schema · 自然跑 migrate · 这是范围模糊导致的爬出",
+      "scheduled_fix_in": "PRD-2 启动时不 重做 init migration · 只跑 manual_rls.sql 启 RLS · 应直接 reuse 现 baseline · 在 PRD-2 §0 引用清单显式标注 'init migration 已由 PRD-1 US-003 跑 · 不重做'",
+      "audit_exemption": "US-003 approve 时接受 · 因为不创 schema 则 prisma client + integration test 不能跑(US-003 AC 必需) · 实务必需"
     }
   ]
 }
