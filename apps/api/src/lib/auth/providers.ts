@@ -119,11 +119,13 @@ export function getProvider(): OAuthProvider {
 }
 
 /**
- * Returns true if CSRF state validation must be enforced for this request.
- * Skipped for mock requests (?mock=true) and the mock provider.
+ * Returns true if CSRF state validation must be enforced.
+ * Only the mock provider skips CSRF (local dev · trusted runtime).
+ * The ?mock=true query param does NOT influence this decision —
+ * it is attacker-controllable input and must never short-circuit security.
  */
-export function requiresCsrfCheck(isMockRequest: boolean, providerName: string): boolean {
-  return !isMockRequest && providerName !== 'mock';
+export function requiresCsrfCheck(providerName: string): boolean {
+  return providerName !== 'mock';
 }
 
 /** Validate startup invariants: SESSION_SECRET length + OAUTH_PROVIDER value. */
@@ -137,6 +139,11 @@ export function validateStartupConfig(): void {
   const providerName = process.env.OAUTH_PROVIDER ?? 'mock';
   if (providerName !== 'mock' && providerName !== 'google') {
     logger.error(`unknown OAuth provider: ${providerName} · expected mock|google`);
+    process.exit(1);
+  }
+  // AC-15 extension: mock provider must not run in production
+  if (process.env.NODE_ENV === 'production' && providerName === 'mock') {
+    logger.error('OAUTH_PROVIDER=mock not allowed in production');
     process.exit(1);
   }
 }

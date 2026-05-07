@@ -77,7 +77,6 @@ app.get('/auth/login', (c) => {
 
 app.get('/auth/callback', async (c) => {
   const searchParams = c.req.query();
-  const isMock = searchParams['mock'] === 'true';
   const code = searchParams['code'] ?? '';
   const state = searchParams['state'] ?? '';
   const storedState = getCookie(c, 'oauth_state') ?? '';
@@ -93,8 +92,8 @@ app.get('/auth/callback', async (c) => {
     return c.json({ error: msg }, 500);
   }
 
-  // CSRF check — skip for mock provider (no state round-trip)
-  if (requiresCsrfCheck(isMock, provider.name)) {
+  // CSRF check — only the mock provider skips this; ?mock=true query param is never consulted
+  if (requiresCsrfCheck(provider.name)) {
     if (!state || state !== storedState) {
       logger.warn({ traceId }, 'oauth_state_mismatch');
       await prisma.auditLog

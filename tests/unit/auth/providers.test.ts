@@ -24,10 +24,12 @@ describe('MockProvider', () => {
 describe('validateStartupConfig', () => {
   const origSecret = process.env['SESSION_SECRET'];
   const origProvider = process.env['OAUTH_PROVIDER'];
+  const origNodeEnv = process.env['NODE_ENV'];
 
   afterEach(() => {
     process.env['SESSION_SECRET'] = origSecret;
     process.env['OAUTH_PROVIDER'] = origProvider;
+    process.env['NODE_ENV'] = origNodeEnv;
     vi.restoreAllMocks();
   });
 
@@ -51,23 +53,39 @@ describe('validateStartupConfig', () => {
     expect(() => validateStartupConfig()).toThrow('exit');
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
+
+  it('calls process.exit(1) when NODE_ENV=production and OAUTH_PROVIDER=mock', () => {
+    process.env['SESSION_SECRET'] = 'a'.repeat(32);
+    process.env['OAUTH_PROVIDER'] = 'mock';
+    process.env['NODE_ENV'] = 'production';
+    const exitSpy = vi
+      .spyOn(process, 'exit')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .mockImplementation((_code?: number) => { throw new Error('exit'); }) as any;
+    expect(() => validateStartupConfig()).toThrow('exit');
+    expect(exitSpy).toHaveBeenCalledWith(1);
+  });
 });
 
 // AC-8: CSRF enforcement logic
 describe('requiresCsrfCheck', () => {
-  it('returns false when request is explicitly mock (?mock=true)', () => {
-    expect(requiresCsrfCheck(true, 'google')).toBe(false);
+  it('returns false for mock provider (name=mock) — dev only', () => {
+    expect(requiresCsrfCheck('mock')).toBe(false);
   });
 
-  it('returns false for mock provider (name=mock)', () => {
-    expect(requiresCsrfCheck(false, 'mock')).toBe(false);
-  });
-
-  it('returns true for google provider on non-mock request', () => {
-    expect(requiresCsrfCheck(false, 'google')).toBe(true);
+  it('returns true for google provider — always enforced', () => {
+    expect(requiresCsrfCheck('google')).toBe(true);
   });
 
   it('returns true for any unknown real provider', () => {
-    expect(requiresCsrfCheck(false, 'github')).toBe(true);
+    expect(requiresCsrfCheck('github')).toBe(true);
+  });
+
+  it('attack scenario: ?mock=true query param cannot bypass CSRF for google provider', () => {
+    // Before fix: requiresCsrfCheck(isMockRequest=true, 'google') returned false — VULNERABLE.
+    // After fix: requiresCsrfCheck only inspects providerName, never attacker-controlled query params.
+    // An attacker constructing /auth/callback?mock=true&code=X&state=W against a google-configured
+    // server will still hit CSRF validation and receive 401.
+    expect(requiresCsrfCheck('google')).toBe(true);
   });
 });
