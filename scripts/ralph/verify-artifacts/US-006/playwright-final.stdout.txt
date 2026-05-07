@@ -1,0 +1,30 @@
+<testsuites id="" name="" tests="12" failures="0" skipped="0" errors="0" time="2.356939">
+<testsuite name="header.spec.ts" timestamp="2026-05-07T18:58:50.508Z" hostname="chromium" tests="6" failures="0" skipped="0" time="2.434" errors="0">
+<testcase name="Header 三 dropdown › Header 可见" classname="header.spec.ts" time="0.414">
+</testcase>
+<testcase name="Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock)" classname="header.spec.ts" time="0.49">
+</testcase>
+<testcase name="Header 三 dropdown › IP 账号 dropdown 可见 + 点开" classname="header.spec.ts" time="0.419">
+</testcase>
+<testcase name="Header 三 dropdown › 工具入口 dropdown 可见 + 点开" classname="header.spec.ts" time="0.467">
+</testcase>
+<testcase name="Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏" classname="header.spec.ts" time="0.387">
+</testcase>
+<testcase name="Header 三 dropdown › 移动端 hamburger 点开 Sheet" classname="header.spec.ts" time="0.257">
+</testcase>
+</testsuite>
+<testsuite name="header.spec.ts" timestamp="2026-05-07T18:58:50.508Z" hostname="mobile" tests="6" failures="0" skipped="0" time="4.328" errors="0">
+<testcase name="Header 三 dropdown › Header 可见" classname="header.spec.ts" time="0.704">
+</testcase>
+<testcase name="Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock)" classname="header.spec.ts" time="0.976">
+</testcase>
+<testcase name="Header 三 dropdown › IP 账号 dropdown 可见 + 点开" classname="header.spec.ts" time="0.814">
+</testcase>
+<testcase name="Header 三 dropdown › 工具入口 dropdown 可见 + 点开" classname="header.spec.ts" time="0.862">
+</testcase>
+<testcase name="Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏" classname="header.spec.ts" time="0.558">
+</testcase>
+<testcase name="Header 三 dropdown › 移动端 hamburger 点开 Sheet" classname="header.spec.ts" time="0.414">
+</testcase>
+</testsuite>
+</testsuites>
