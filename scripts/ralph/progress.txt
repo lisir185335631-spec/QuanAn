@@ -15,8 +15,25 @@
 - vitest 必须加 passWithNoTests: true，P0 阶段 tests/ 下无测试文件时否则 exit code 1 导致 CI 失败
 - tRPC monorepo cross-package 类型: web 用 initTRPC 构建 shadow router → typeof 得 AppRouter type · 避免 rootDir 跨包报错 · 不要直接 import API src
 - vitest 跑 API 单元测试需要在 vitest.config.ts 加 alias: { '@': path.resolve(__dirname, 'apps/api/src') } 让 @/lib/* 路径别名正确解析
+- tRPC v11 httpBatchStreamLink 发送 trpc-accept: application/jsonl 头 · Hono CORS allowHeaders 必须包含 'trpc-accept' 否则所有 tRPC browser 请求被 CORS preflight 拦截
+- tRPC v11 httpBatchStreamLink 响应格式是压缩 JSONL(多行 back-reference 格式) · Playwright 不能用 route.fulfill 直接 mock · 改用真实 mock OAuth flow(goto /auth/login → waitForURL) 替代
+- Playwright E2E 测试 desktop-only 元素(hidden sm:block/flex)时 · mobile 项目需先 page.setViewportSize({ width: 1280, height: 720 }) 强制桌面视口
 
 ## 执行日志(按 story 倒序)
+## [2026-05-08 03:00] - US-006 (迭代 4 · 最终修复)
+- 根因 AC-3/AC-17 失败: ① trpc.ts 曾直接 import { initTRPC } from '@trpc/server' 导致 @trpc/server 在浏览器执行报错 ② CORS 缺少 'trpc-accept' 头导致所有 tRPC 请求被 preflight 拦截 ③ E2E mock 格式与 tRPC v11 JSONL 格式不匹配
+- 修复 apps/api/src/index.ts: allowHeaders 加 'trpc-accept'
+- 修复 apps/web/src/lib/trpc.ts: 改用 import type { AppRouter } from @quanqn/clients/router-types (esbuild strips type-only imports)
+- 修复 packages/clients/src/router-types.ts: shadow router 移到此文件 · web 侧用 import type 隔离
+- 修复 apps/web/src/styles/globals.css: 补 @tailwind directives
+- 修复 tests/e2e/header.spec.ts: auth mock 改用真实 mock OAuth flow · 桌面专属测试加 setViewportSize(1280,720)
+- 结果: pnpm typecheck ✅ · pnpm test 26/26 ✅ · playwright 12/12 ✅
+- **未来迭代的学习:**
+  - tRPC v11 httpBatchStreamLink 需要 CORS allowHeaders 包含 'trpc-accept'
+  - tRPC v11 response 是压缩 JSONL 格式(多行 back-reference) · Playwright route mock 无法直接还原 · 改用真实 OAuth session 创建
+  - Playwright desktop-only 元素测试需 setViewportSize 强制视口
+---
+
 ## [2026-05-07 22:07] - US-004
 - 实现 Tailwind Aurelian Dark token 派生: YAML frontmatter 权威源, 无硬编码 hex
 - 创建 apps/web/src/lib/parseDesignTokens.js: 读取 ui/aurelian_dark/DESIGN.md YAML frontmatter, 提取 colors/typography/rounded/spacing, 错误时抛出 'YAML frontmatter parse failed at L<n>'
@@ -251,3 +268,22 @@
 --- [RALPH] Iteration 3 ended: US-006 (22分钟 46秒) ---
 
 --- [RALPH] Iteration 4 started: US-006 at 2026-05-08 01:40 ---
+
+## [2026-05-08 01:44] - US-006 (迭代 2 · Opus reject 修复)
+- 修复 requiresCsrfCheck CSRF 安全漏洞(Opus 审计 RCA: ?mock=true query param 可旁路 CSRF)
+- 更改的文件:
+  - apps/api/src/lib/auth/providers.ts: requiresCsrfCheck(isMockRequest, providerName) → requiresCsrfCheck(providerName) 单参; validateStartupConfig() 加 prod+mock 校验(exit 1)
+  - apps/api/src/index.ts: 移除 isMock 变量; requiresCsrfCheck(provider.name) 去掉 isMock 参数
+  - tests/unit/auth/providers.test.ts: 删除 buggy '?mock=true returns false for google' 测试; 重写 requiresCsrfCheck 单参测试(3条) + 攻击场景测试; 加 validateStartupConfig prod+mock exit(1) 测试
+- 结果: 26 tests pass · typecheck 全 workspace 退出码 0
+- **未来迭代的学习:**
+  - OAuth CSRF 防御铁律: 安全检查逻辑永远不接受 client 可控的 query param 作为输入; 只看服务端已知的 provider.name
+  - requiresCsrfCheck 的正确参数是 provider name(服务端配置) · 不是 isMockRequest(client 可控)
+  - 生产环境 mock provider 必须在 validateStartupConfig() 启动时校验退出, 而不是运行时 fallback
+---
+
+--- [RALPH] Iteration 4 ended: US-006 (18分钟 46秒) ---
+
+--- [RALPH] Iteration 5 started: US-006 at 2026-05-08 01:59 ---
+
+--- [RALPH] Iteration 6 started: US-006 at 2026-05-08 02:29 ---
