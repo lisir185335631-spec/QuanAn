@@ -18,7 +18,7 @@ import { checkDbConnection } from '@/lib/prisma';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { lucia } from '@/lib/auth/lucia';
-import { getProvider, validateStartupConfig } from '@/lib/auth/providers';
+import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
 
 // Validate env at module load — exits early on misconfiguration (AC-10, AC-14)
 validateStartupConfig();
@@ -94,7 +94,7 @@ app.get('/auth/callback', async (c) => {
   }
 
   // CSRF check — skip for mock provider (no state round-trip)
-  if (!isMock && provider.name !== 'mock') {
+  if (requiresCsrfCheck(isMock, provider.name)) {
     if (!state || state !== storedState) {
       logger.warn({ traceId }, 'oauth_state_mismatch');
       await prisma.auditLog

@@ -118,6 +118,14 @@ export function getProvider(): OAuthProvider {
   process.exit(1);
 }
 
+/**
+ * Returns true if CSRF state validation must be enforced for this request.
+ * Skipped for mock requests (?mock=true) and the mock provider.
+ */
+export function requiresCsrfCheck(isMockRequest: boolean, providerName: string): boolean {
+  return !isMockRequest && providerName !== 'mock';
+}
+
 /** Validate startup invariants: SESSION_SECRET length + OAUTH_PROVIDER value. */
 export function validateStartupConfig(): void {
   const secret = process.env.SESSION_SECRET ?? '';

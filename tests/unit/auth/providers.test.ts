@@ -1,10 +1,10 @@
 /**
  * Unit tests for OAuth provider abstraction — US-006
- * AC-1, AC-10, AC-14: provider selection + startup validation
+ * AC-1, AC-8, AC-10, AC-14: provider selection + CSRF check + startup validation
  */
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { MockProvider, validateStartupConfig } from '../../../apps/api/src/lib/auth/providers';
+import { MockProvider, validateStartupConfig, requiresCsrfCheck } from '../../../apps/api/src/lib/auth/providers';
 
 describe('MockProvider', () => {
   it('validateCallback always returns mock dev user', async () => {
@@ -50,5 +50,24 @@ describe('validateStartupConfig', () => {
       .mockImplementation((_code?: number) => { throw new Error('exit'); }) as any;
     expect(() => validateStartupConfig()).toThrow('exit');
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+});
+
+// AC-8: CSRF enforcement logic
+describe('requiresCsrfCheck', () => {
+  it('returns false when request is explicitly mock (?mock=true)', () => {
+    expect(requiresCsrfCheck(true, 'google')).toBe(false);
+  });
+
+  it('returns false for mock provider (name=mock)', () => {
+    expect(requiresCsrfCheck(false, 'mock')).toBe(false);
+  });
+
+  it('returns true for google provider on non-mock request', () => {
+    expect(requiresCsrfCheck(false, 'google')).toBe(true);
+  });
+
+  it('returns true for any unknown real provider', () => {
+    expect(requiresCsrfCheck(false, 'github')).toBe(true);
   });
 });
