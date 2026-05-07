@@ -14,7 +14,11 @@
       "evidence": "grep '#[0-9a-fA-F]{6}' apps/web/tailwind.config.js 命中 surface / surface-bright / surface-container-lowest 等多处",
       "root_cause": "v0.1 src/ 单包阶段 tailwind.config.js 直接 hardcode color · 未走 ui/aurelian_dark/DESIGN.md YAML token 派生(LD-015)",
       "scheduled_fix_in": "US-004 (PRD-1) · Tailwind 引 Aurelian Dark token 时统一收敛(AC-004-H · grep '#[0-9a-f]{6}' 命中 0)",
-      "audit_exemption": "US-001 approve 时豁免 · 因为 US-001 范围只是 typecheck 修复 · 不是 tailwind 改造"
+      "audit_exemption": "US-001 approve 时豁免 · 因为 US-001 范围只是 typecheck 修复 · 不是 tailwind 改造",
+      "closed_at": "2026-05-07",
+      "closed_by": "Opus audit US-004",
+      "close_evidence": "US-004 commit 2652217 · tailwind.config.js 全文 grep '#[0-9a-f]{6}' 命中 0 · parseDesignTokens.js 解 DESIGN.md YAML 派生 token · 11/11 unit test passed",
+      "status": "closed"
     },
     {
       "id": "TD-002",
@@ -27,7 +31,11 @@
       "evidence": "globals.css L7-9 · body background:#0a0a0a · color:#e5e5e5 · 2 处新 hardcode color",
       "root_cause": "US-002 ralph 写 globals.css 基础 CSS reset 时 · 此时 Aurelian Dark token 还未派生(US-004 才派生)· ralph 用 hardcode 占位",
       "scheduled_fix_in": "US-004 (PRD-1) · token 派生后改 var(--bg-deep) / var(--text-primary) · 跟 TD-001 一起在 US-004 收敛",
-      "audit_exemption": "US-002 approve 时豁免 · token 还未存在 · ralph 用 hardcode 占位是合理的(等价于 TODO P1 标记)"
+      "audit_exemption": "US-002 approve 时豁免 · token 还未存在 · ralph 用 hardcode 占位是合理的(等价于 TODO P1 标记)",
+      "closed_at": "2026-05-07",
+      "closed_by": "Opus audit US-004",
+      "close_evidence": "US-004 commit 2652217 · globals.css 改用 theme('colors.background') + theme('colors.on-background') · 0 hardcode hex",
+      "status": "closed"
     },
     {
       "id": "TD-003",
