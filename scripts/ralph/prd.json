@@ -210,8 +210,8 @@
         "US-004"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "[RCA-002 v0.2 · 断点续跑] 2026-05-07 23:30 拆细 US-005 + 让 ralph 从断点续跑\n\n★ ralph round 6/7/8 (3 次 30min Developer 超时) 实际产出 (在 working tree 未 commit) ·\n  · apps/web/package.json · 加 10 @radix-ui deps (avatar/dialog/dropdown-menu/scroll-area/select/separator/slot/tabs/toast/tooltip)\n  · pnpm-lock.yaml · 部分更新 (pnpm install 可能没跑完)\n  · apps/web/src/components/ui/{12 shadcn 组件}.tsx · 已写\n    (button/input/dropdown-menu/avatar/dialog/sheet/separator/scroll-area/toast/tooltip/tabs/select)\n  · apps/web/src/components/Header.tsx · 已写\n  · apps/web/src/lib/utils.ts · 已写 (cn 函数)\n  · apps/web/src/App.tsx · 已改\n  · apps/web/src/styles/globals.css · 已改\n\n★ 你的任务 (round 9 fresh start · 不要重写) ·\n  1. 跑 pnpm install (装 @radix-ui 10 deps · 可能上次没跑完)\n  2. 跑 pnpm --filter @quanqn/web typecheck (修任何 typecheck 错)\n  3. 跑 pnpm typecheck (全 workspace 验证零回归)\n  4. git add + git commit -m \"feat: [US-005] - shadcn 12 基础组件 + Header 简化版 (从 round 6-8 断点续跑)\"\n  5. 退出 (退出后 ralph.py 会激活 audit-gate 等 Opus 审)\n\n★ 不要 ·\n  · 不要重写 12 shadcn 组件 (已存在 · 用 git status 看)\n  · 不要重写 Header.tsx\n  · 不要在 packages/ui/src/base/ 创建文件 (现实是 shadcn 默认路径 apps/web/src/components/ui/ · 接受这个偏差 · 写到 audit-exemption)\n\n注 · 范围已简化 (size large → medium · 17 文件 → 13 · 移除 4 子组件 + e2e · 留 PRD-2)",
+      "passes": true,
+      "notes": "[Opus 接管 fail-over] ralph round 9 实际 4min 跑通 commit ce1ed9a · daemon 被 Opus 误 kill · Opus 接管 lint:fix + 二次 commit 9c23e84 + 标 passes=true · 走 RCA-002 §9.6.4 fail-over 流程",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [

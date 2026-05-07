@@ -272,6 +272,10 @@ ralph round 出现以下任一信号 · **立即** kill + 拆 story:
 #### 9.6.5 失败 → 拆分 → 重启 流程(20 min 内完成)
 
 ```
+0. ★ 必先做 · git log --since='10 minutes ago' --oneline · 看 ralph 是否已 commit
+   · 如果有"feat: [US-XXX]" commit · ralph 实际 OK · 跳过 kill · 直接审 audit
+   · 如果没 · 才进 kill 流程
+   (TD-006 教训 · 2026-05-07 · 我误判 stuck 时 ralph 已 commit · 二次 fail-over 浪费 5 min)
 1. kill 所有 ralph 进程 · pkill -9 -f ralph.py · pkill -9 -f "claude --print" · pkill -9 -f watch-audit
 2. rm lock · rm -f scripts/ralph/ralph-lock.json scripts/ralph/audit-gate.json
 3. 备份 prd.json · cp prd.json prd.json.bak.before-rca-XXX

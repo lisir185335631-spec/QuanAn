@@ -62,6 +62,32 @@
       "root_cause": "PRD-1 §3 范围排除 14 写 'RLS 启用 · 排到 PRD-2'· 但 prisma migration 不在排除列表 · ralph 为了让 US-003 prisma client + integration test 跑通 · 必须先创 schema · 自然跑 migrate · 这是范围模糊导致的爬出",
       "scheduled_fix_in": "PRD-2 启动时不 重做 init migration · 只跑 manual_rls.sql 启 RLS · 应直接 reuse 现 baseline · 在 PRD-2 §0 引用清单显式标注 'init migration 已由 PRD-1 US-003 跑 · 不重做'",
       "audit_exemption": "US-003 approve 时接受 · 因为不创 schema 则 prisma client + integration test 不能跑(US-003 AC 必需) · 实务必需"
+    },
+    {
+      "id": "TD-005",
+      "category": "scope-mismatch",
+      "title": "US-005 shadcn 12 组件路径偏差 · 写 apps/web/src/components/ui/ 而非 PRD 指定 packages/ui/src/base/",
+      "discovered_at": "2026-05-07",
+      "discovered_by": "Opus audit US-005(fail-over 接管时)",
+      "severity": "medium",
+      "status": "scheduled",
+      "evidence": "git show ce1ed9a · 12 shadcn 组件全部写在 apps/web/src/components/ui/* · 而 PRD US-005 AC + SCAFFOLD §A.1 要求 packages/ui/src/base/* (workspace 共享)",
+      "root_cause": "ralph 用 shadcn 默认路径(shadcn CLI 默认配)· 没读 SCAFFOLD §A.1 monorepo 拓扑 · 选了"装在调用 app"路径(apps/web/...)而非"共享包"路径(packages/ui/...) · prd.json AC 说了路径但 ralph 注重 shadcn 标准更胜",
+      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanqn/ui/base import · 同时 apps/web 改用 @quanqn/ui/base · 单 web 用时无影响 · admin 复用时必修",
+      "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
+    },
+    {
+      "id": "TD-006",
+      "category": "process-gap",
+      "title": "ralph daemon 重启时未 detect ralph round 9 已 commit · 我误以为 stuck 接管二次实施",
+      "discovered_at": "2026-05-07",
+      "discovered_by": "Opus 复盘",
+      "severity": "low",
+      "status": "open",
+      "evidence": "ralph round 9 (23:35-23:36) 实际 4min 内 commit ce1ed9a · 但因为 daemon 被我之前 kill + audit-gate.json 不存在 + 我没看 git log · 我误以为还 stuck · 又跑 lint:fix + 二次 commit 9c23e84",
+      "root_cause": "Opus fail-over 流程缺一步 · 在接管 dev 前 · 应 git log --since='5 min ago' 看是否有 ralph 新 commit · 避免重复劳动 + 错误覆盖",
+      "scheduled_fix_in": "改 CLAUDE.md §9.6.4 加 'fail-over 前必跑 git log 看 ralph 是否已 commit' 步骤",
+      "audit_exemption": "本次 fail-over 重复劳动浪费 ~5 min · 但产出无害(lint clean 是 plus)· 接受为 process 教训"
     }
   ]
 }
