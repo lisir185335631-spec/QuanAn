@@ -152,4 +152,71 @@ Ralph 套件未到位 · P0-2 跑 `~/.claude/scripts/ralph/sync-to-project.sh /U
 
 ---
 
+## 9 · Ralph daemon 启动 SOP + Audit Monitor 硬规则(★ RCA-001 配套)
+
+> **派生** · [.agents/rca/RCA-001-audit-delay.md](.agents/rca/RCA-001-audit-delay.md)
+> **背景** · 2026-05-07 US-001 audit 等了 **31 分钟空窗** · 因为没启 Monitor · 系统通知没到 Opus
+> **历史** · 全局 CLAUDE.md 已警告 PRD-3 US-001(2026-04-20)同类问题 · 现写硬规则不再容忍
+
+### 9.1 启动 5 步 SOP(顺序不可调)
+
+```
+1. 确认 prd.json 就位
+   · ls scripts/ralph/prd.json
+   · python3 scripts/ralph/ralph-tools.py status  # 看 N stories PENDING
+
+2. ★ 先启 Monitor(persistent=true · 订阅 ralph-output.log 关键事件)
+   · 必须在启 daemon 之前!
+   · Monitor 命令(用 Monitor 工具 · 不是 Bash)·
+     command = tail -n 0 -F scripts/ralph/ralph-output.log 2>/dev/null \
+              | grep -E --line-buffered \
+                "PENDING_DETECTED|审计门禁已激活|APPROVED|REJECTED|\
+                 所有任务已完成|All stories resolved|非零退出码|\
+                 最大重试次数|级联阻断|通过 Opus 质量审查|⛔|Traceback|Error:"
+     persistent = true
+     timeout_ms = 3600000(1 小时 · 长跑用)
+
+3. 启 ralph daemon
+   · /Users/return/.local/bin/python3.11 scripts/ralph/ralph.py --model sonnet --daemon
+   · ⚠️ Python 3.9 不行 · dashboard.py 用 3.10+ syntax · 必须用 python3.11
+
+4. 等 Monitor 通知 PENDING_DETECTED:US-XXX
+   · 通常 ralph 一个 story 5-30 分钟出 audit-gate
+   · Monitor 命中关键词后立即给我发 chat 通知 · 不靠系统通知
+
+5. 审完 → ralph-tools.py approve / reject → ralph 自动继续下一 story
+```
+
+### 9.2 红线(违反 = workflow 失败 · 不是技术失败)
+
+- ❌ **不允许启 daemon 后不启 Monitor** · RCA-001 根因 · 任何借口都不允许
+- ❌ **不允许靠"系统通知 + 屏幕前用户转告"** · 这是 31 分钟空窗的来源 · 用户离屏 / 没注意 · 链路就断
+- ❌ **不允许把"等用户输入"当成"等 audit"** · 两件事是分开的 · 我可以等用户的同时让 Monitor 守 audit
+- ❌ **不允许 ralph daemon 多实例并发** · 启动前必 pgrep -f ralph · 有残留 kill -9 + rm 旧 lock
+- ❌ **不允许 prd.json 没 cp 自 prd-N.json 就启 daemon** · prd.json 是运行时副本 · prd-N.json 才是稳定源
+
+### 9.3 Audit cycle 时间预算(monitoring 改进后)
+
+| 阶段 | 预算 | 实测(US-001 改进前)| 目标(US-002+ 改进后) |
+|---|:-:|:-:|:-:|
+| ralph dev + validator | 5-30 min | 18 min(2 iter)| 同 |
+| audit-gate write → Opus 通知 | < 30s | **31 min** ❌ | **< 30s** ✅ |
+| Opus 审 + approve | 5-15 min | 5 min | 5-15 min |
+| **总 cycle** | 10-45 min | **34 min** | **10-30 min** |
+
+### 9.4 Monitor 失效兜底
+
+如果 Monitor 任务挂了(timeout / 误 TaskStop)·
+- pgrep -fa ralph 看 daemon + watch-audit-gate 是否还活
+- python3 scripts/ralph/ralph-tools.py audit-status 手动查 audit-gate 状态
+- 必要时 TaskStop 现 Monitor + 重新启一个
+
+### 9.5 跨项目应用
+
+本 §9 适用于**本项目所有 PRD**(PRD-1 到 PRD-14)· 不是只 PRD-1。每次启 ralph daemon 都跑 5 步 SOP。
+
+未来跨项目复用 · 把本 §9 抽成全局 SOP 写到 ~/.claude/CLAUDE.md(待 v3 评估 · 留 PRR)。
+
+---
+
 > **本文件由 Claude(Opus 4.7)在 P0 启动期写 · 2026-05-07 · 跟全局 CLAUDE.md 互补使用。**

@@ -53,6 +53,7 @@ scripts/ralph/progress.txt
 scripts/ralph/agent-logs/       # ralph 跑时写的 prompt log · 不入库
 scripts/ralph/backups/          # ralph 自动 prd.json 备份 · 不入库
 scripts/ralph/__pycache__/      # python 缓存 · 不入库
+scripts/ralph/verify-artifacts/ # audit-artifacts.py 产物 · 不入库
 .agents/tech-debt.json.bak
 .agents/plans/
 
