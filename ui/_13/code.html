@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>我的选题库 - Aethelgard IP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdea6",
+                        "surface-container-high": "#2a2a2d",
+                        "on-tertiary-container": "#5b4000",
+                        "outline-variant": "#4d4635",
+                        "inverse-primary": "#735c00",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0e0e11",
+                        "secondary": "#eac249",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1f1f22",
+                        "surface-container-low": "#1b1b1e",
+                        "error-container": "#93000a",
+                        "surface-dim": "#131316",
+                        "tertiary-fixed-dim": "#f7bd48",
+                        "tertiary": "#ffc551",
+                        "surface-bright": "#39393c",
+                        "primary-container": "#d4af37",
+                        "on-secondary-container": "#352800",
+                        "on-primary-container": "#554300",
+                        "on-secondary-fixed-variant": "#584400",
+                        "surface": "#131316",
+                        "secondary-fixed": "#ffe08b",
+                        "on-primary": "#3c2f00",
+                        "surface-variant": "#343437",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-container-highest": "#343437",
+                        "inverse-surface": "#e4e2e5",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#303033",
+                        "surface-tint": "#e9c349",
+                        "on-primary-fixed": "#241a00",
+                        "primary": "#f2ca50",
+                        "on-surface-variant": "#d0c5af",
+                        "on-tertiary-fixed": "#271900",
+                        "primary-fixed-dim": "#e9c349",
+                        "primary-fixed": "#ffe088",
+                        "on-tertiary": "#412d00",
+                        "on-surface": "#e4e2e5",
+                        "on-secondary": "#3d2f00",
+                        "secondary-fixed-dim": "#eac249",
+                        "tertiary-container": "#e1aa36",
+                        "background": "#131316",
+                        "secondary-container": "#b08c10",
+                        "outline": "#99907c",
+                        "on-primary-fixed-variant": "#574500",
+                        "on-background": "#e4e2e5",
+                        "on-tertiary-fixed-variant": "#5d4200"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "2xl": "64px",
+                        "xs": "4px",
+                        "unit": "4px",
+                        "xl": "40px",
+                        "gutter": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h1": ["Manrope"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "display-xl": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "h2": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .sweep-hover:hover {
+            position: relative;
+            overflow: hidden;
+        }
+        .sweep-hover:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-45deg);
+            animation: sweep 1s forwards;
+        }
+        @keyframes sweep {
+            100% { left: 200%; }
+        }
+        .card-inner-light {
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, transparent 100%);
+        }
+        .glass-panel {
+            background: rgba(28, 28, 30, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(45, 45, 48, 0.5);
+        }
+        /* 方案 B: 背景呼吸光 */
+        .bg-glow {
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(242, 202, 80, 0.03) 0%, transparent 70%);
+            filter: blur(60px);
+            z-index: -1;
+            animation: breathe 8s infinite ease-in-out;
+        }
+        @keyframes breathe {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        /* 收藏动态反馈 */
+        .bookmark-active {
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col"><div class="bg-glow"></div>
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 border-b border-[#2D2D30] bg-[#0A0A0B]/90 backdrop-blur-md shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase font-manrope antialiased tracking-tight">
+                AETHEL IP
+            </div>
+<nav class="hidden md:flex space-x-8 h-full items-center">
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 h-full flex items-center px-4" href="#">创作中心</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 h-full flex items-center px-4" href="#">选题策划</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 h-full flex items-center px-4" href="#">智能分析</a>
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] h-full flex items-center px-4" href="#">选题资产</a>
+</nav>
+<div class="flex items-center space-x-6">
+<button class="text-zinc-500 hover:text-[#D4AF37] transition-colors duration-300">
+<span class="material-symbols-outlined select-none" data-icon="notifications">notifications</span>
+</button>
+<div class="flex items-center space-x-3 cursor-pointer group">
+<img alt="User profile" class="w-8 h-8 rounded-full border border-[#2D2D30] group-hover:border-[#D4AF37] transition-colors" data-alt="A close up portrait of a professional individual in a minimalist studio setting. Soft, directional studio lighting highlights subtle facial features. The aesthetic is clean, modern, and monochromatic with a slight warm undertone to fit a premium SaaS environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyolURSzt3LQi7rmjx8lIHGnZW46B7stQIlRrYntjeUzNq8XVW7eQeM6OAQHqYg6S24WWs5uPRIKMGYrHo11LMJOu1kFFEBByxlNrrfcFEvd3V-1W-H6BcQOG6WAaSIW3Br0QS8tUt6bgTKCyls-alo5h8dpsUjlx70W184GMLgr360lUxw2s4Fp-6Yks58XjiEVw3jRfogS4tXY2dDiJGNBDUV9dnliMEqBiYWg-IRpuAXYX4cF9wU-vMKaI8ITY-FsTW4Tw8Zphv"/>
+<span class="material-symbols-outlined select-none" data-icon="logout">logout</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-[120px] pb-2xl px-12 max-w-[1440px] mx-auto w-full flex flex-col gap-lg">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-sm">我的选题库</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">管理并沉淀高价值内容资产，打造核心竞争力。</p>
+</div>
+<button class="sweep-hover bg-primary-container text-[#0A0A0B] px-6 py-3 rounded-DEFAULT font-label-md text-label-md flex items-center gap-2 transition-transform duration-200 hover:scale-95 shadow-[0_0_20px_rgba(212,175,55,0.15)]">
+<span class="material-symbols-outlined select-none" data-icon="download">download</span>
+                一键导出资产
+            </button>
+</div>
+<!-- Filter & Search Panel -->
+<div class="glass-panel rounded-xl p-md flex flex-col md:flex-row gap-lg items-center justify-between card-inner-light shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+<!-- Tabs -->
+<div class="flex space-x-1 p-1 bg-[#0A0A0B] rounded-lg border border-[#2D2D30]">
+<button class="px-4 py-2 rounded-md bg-[#1C1C1E] text-primary-container font-label-md text-label-md border border-[#2D2D30] shadow-sm">全部选题</button>
+<button class="px-4 py-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-[#1C1C1E] transition-colors font-label-md text-label-md">流量型</button>
+<button class="px-4 py-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-[#1C1C1E] transition-colors font-label-md text-label-md">变现型</button>
+<button class="px-4 py-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-[#1C1C1E] transition-colors font-label-md text-label-md">人设型</button>
+<button class="px-4 py-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-[#1C1C1E] transition-colors font-label-md text-label-md">认知型</button>
+<button class="px-4 py-2 rounded-md text-on-surface-variant hover:text-on-surface hover:bg-[#1C1C1E] transition-colors font-label-md text-label-md">案例型</button>
+</div>
+<!-- Search -->
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined select-none" data-icon="search">search</span>
+<input class="w-full bg-[#0A0A0B] border border-[#2D2D30] rounded-lg py-2.5 pl-10 pr-4 text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]" placeholder="搜索钩子或关键词..." type="text"/>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Card 1 -->
+<div class="bg-[#1C1C1E] rounded-xl border border-[#2D2D30] p-lg flex flex-col gap-md hover:-translate-y-[2px] hover:border-primary-container/50 transition-all duration-300 card-inner-light group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start">
+<span class="px-2.5 py-1 bg-[#2D2D30]/50 border border-[#2D2D30] rounded-md text-[10px] font-label-sm text-primary-container uppercase tracking-wider">流量型</span>
+<button class="text-primary-container hover:scale-110 transition-transform active:scale-90 transition-transform">
+<span class="material-symbols-outlined select-none" data-icon="bookmark" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface leading-snug group-hover:text-primary-container transition-colors">如何用「逆向思维」在红海市场找到蓝海客户？</h3>
+<div class="bg-[#0A0A0B] rounded-lg p-md border border-[#2D2D30] mt-auto">
+<div class="mb-sm">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">钩子拆解</span>
+<p class="font-body-sm text-body-sm text-on-surface">反常识引入 + 痛点放大 + 独家解决方案承诺</p>
+</div>
+<div>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">创作公式</span>
+<p class="font-label-md text-label-md text-tertiary-fixed">【现象】+【多数人的误区】+【我的逆向解法】</p>
+</div>
+</div>
+<div class="text-[10px] text-on-surface-variant/50 font-label-sm text-right mt-2">收藏于 2024.10.15</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-[#1C1C1E] rounded-xl border border-[#2D2D30] p-lg flex flex-col gap-md hover:-translate-y-[2px] hover:border-primary-container/50 transition-all duration-300 card-inner-light group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start">
+<span class="px-2.5 py-1 bg-[#2D2D30]/50 border border-[#2D2D30] rounded-md text-[10px] font-label-sm text-on-surface uppercase tracking-wider">变现型</span>
+<button class="text-on-surface-variant hover:text-primary-container hover:scale-110 transition-all active:scale-90 transition-transform"><span class="material-symbols-outlined" data-icon="bookmark">bookmark</span></button>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface leading-snug group-hover:text-primary-container transition-colors">高客单价产品发售，如何设计「静默成交」诱饵？</h3>
+<div class="bg-[#0A0A0B] rounded-lg p-md border border-[#2D2D30] mt-auto">
+<div class="mb-sm">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">钩子拆解</span>
+<p class="font-body-sm text-body-sm text-on-surface">结果前置 + 隐秘痛点揭示 + 稀缺性门槛</p>
+</div>
+<div>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">创作公式</span>
+<p class="font-label-md text-label-md text-tertiary-fixed">【高价值结果】+【低门槛路径】+【限时限量】</p>
+</div>
+</div>
+<div class="text-[10px] text-on-surface-variant/50 font-label-sm text-right mt-2">收藏于 2024.10.12</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-[#1C1C1E] rounded-xl border border-[#2D2D30] p-lg flex flex-col gap-md hover:-translate-y-[2px] hover:border-primary-container/50 transition-all duration-300 card-inner-light group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start">
+<span class="px-2.5 py-1 bg-[#2D2D30]/50 border border-[#2D2D30] rounded-md text-[10px] font-label-sm text-on-surface uppercase tracking-wider">人设型</span>
+<button class="text-primary-container hover:scale-110 transition-transform active:scale-90 transition-transform">
+<span class="material-symbols-outlined select-none" data-icon="bookmark" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface leading-snug group-hover:text-primary-container transition-colors">创业低谷期，我靠这3个微小习惯触底反弹。</h3>
+<div class="bg-[#0A0A0B] rounded-lg p-md border border-[#2D2D30] mt-auto">
+<div class="mb-sm">
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">钩子拆解</span>
+<p class="font-body-sm text-body-sm text-on-surface">脆弱面暴露 + 共情连接 + 实用翻盘策略</p>
+</div>
+<div>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider block mb-1">创作公式</span>
+<p class="font-label-md text-label-md text-tertiary-fixed">【至暗时刻】+【核心顿悟】+【具体行动清单】</p>
+</div>
+</div>
+<div class="text-[10px] text-on-surface-variant/50 font-label-sm text-right mt-2">收藏于 2024.10.10</div>
+</div>
+</div>
+<!-- Load More (Ghost Button) -->
+<div class="flex justify-center mt-md">
+<button class="text-on-surface-variant hover:text-primary-container font-label-md text-label-md py-2 px-6 transition-colors duration-300 flex items-center gap-2">
+                加载更多资产 <span class="material-symbols-outlined select-none" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#2D2D30] mt-auto bg-[#0A0A0B]">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto">
+<p class="text-[12px] font-manrope uppercase tracking-widest text-[#D4AF37]">
+                © 2024 Aethelgard IP. All Rights Reserved.
+            </p>
+<div class="flex space-x-6">
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">服务条款</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">隐私政策</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">技术支持</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">API 接口</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AETHEL IP - 操作历史记录</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdea6",
+                        "surface-container-high": "#2a2a2d",
+                        "on-tertiary-container": "#5b4000",
+                        "outline-variant": "#4d4635",
+                        "inverse-primary": "#735c00",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#0e0e11",
+                        "secondary": "#eac249",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1f1f22",
+                        "surface-container-low": "#1b1b1e",
+                        "error-container": "#93000a",
+                        "surface-dim": "#131316",
+                        "tertiary-fixed-dim": "#f7bd48",
+                        "tertiary": "#ffc551",
+                        "surface-bright": "#39393c",
+                        "primary-container": "#d4af37",
+                        "on-secondary-container": "#352800",
+                        "on-primary-container": "#554300",
+                        "on-secondary-fixed-variant": "#584400",
+                        "surface": "#131316",
+                        "secondary-fixed": "#ffe08b",
+                        "on-primary": "#3c2f00",
+                        "surface-variant": "#343437",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-container-highest": "#343437",
+                        "inverse-surface": "#e4e2e5",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#303033",
+                        "surface-tint": "#e9c349",
+                        "on-primary-fixed": "#241a00",
+                        "primary": "#f2ca50",
+                        "on-surface-variant": "#d0c5af",
+                        "on-tertiary-fixed": "#271900",
+                        "primary-fixed-dim": "#e9c349",
+                        "primary-fixed": "#ffe088",
+                        "on-tertiary": "#412d00",
+                        "on-surface": "#e4e2e5",
+                        "on-secondary": "#3d2f00",
+                        "secondary-fixed-dim": "#eac249",
+                        "tertiary-container": "#e1aa36",
+                        "background": "#131316",
+                        "secondary-container": "#b08c10",
+                        "outline": "#99907c",
+                        "on-primary-fixed-variant": "#574500",
+                        "on-background": "#e4e2e5",
+                        "on-tertiary-fixed-variant": "#5d4200"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "2xl": "64px",
+                        "xs": "4px",
+                        "unit": "4px",
+                        "xl": "40px",
+                        "gutter": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h1": ["Manrope"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "display-xl": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "h2": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .hover-sweep {
+            position: relative;
+            overflow: hidden;
+        }
+        .hover-sweep::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-45deg);
+            transition: left 0.5s ease;
+        }
+        .hover-sweep:hover::after {
+            left: 150%;
+        }
+        .card-inner-border {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+        }
+        .gold-glow:focus-within {
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 border-b border-[#2D2D30] bg-[#0A0A0B]/90 backdrop-blur-md shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<!-- Brand Logo -->
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase font-manrope">
+                AETHEL IP
+            </div>
+<!-- Navigation Links -->
+<div class="hidden md:flex space-x-lg h-full items-end pb-4 font-manrope tracking-tight">
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] transition-colors duration-300" href="#">Creation</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] transition-colors duration-300" href="#">Planning</a>
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4 -mb-4" href="#">Intelligence</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] transition-colors duration-300" href="#">Assets</a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center space-x-md">
+<button class="hidden md:block font-label-md text-zinc-500 hover:text-[#D4AF37] transition-colors duration-300">Switch Account</button>
+<div class="flex items-center space-x-sm">
+<button aria-label="notifications" class="p-2 text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 rounded transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button aria-label="logout" class="p-2 text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 rounded transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden ml-2">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A tightly cropped, high-contrast black and white portrait of a confident male executive looking directly at the camera. The lighting is dramatic, casting deep shadows that emphasize facial structure, fitting a premium, minimalist aesthetic. The background is a solid, deep black void. The overall mood is authoritative and sharply focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFtHAGkwLXezZoRyKLDJDgApI_muGeipTC05YnKzjsRVCa7hgcilgiYB7lnOGi9QblePZEQahyg1WDYFBRrB_2rXzmNM3oH_6KC-6apGr7_lvsYR-cQGx3tEjE1VSu375HyxqbhDgje3U1yZQP7ztVKcHlvMfpnlNycgN5lN5Fl60cyGodMJ27xxvLGmse7J5aIfGOAftDgjEN8x8vpu1Oj0bLtfTZULlzs6nK1P6LGig5PpJdXUjOHGsQBdPNOovVqQyFLTVHSHbX"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow pt-2xl px-lg md:px-2xl max-w-[1440px] mx-auto w-full flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar Navigation (Contextual to Intelligence/History) -->
+<aside class="hidden md:flex flex-col w-64 shrink-0 bg-[#141416] border-r border-[#2D2D30] min-h-[calc(100vh-80px)] py-lg">
+<div class="px-md mb-lg">
+<h2 class="font-label-sm text-on-surface-variant uppercase text-zinc-500 tracking-widest">Intelligence Hub</h2>
+</div>
+<nav class="flex flex-col space-y-xs">
+<a class="flex items-center px-md py-sm text-zinc-400 hover:text-[#D4AF37] hover:bg-surface-container-low transition-all font-body-sm" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="analytics">analytics</span>
+                    Performance Analytics
+                </a>
+<a class="flex items-center px-md py-sm text-[#D4AF37] bg-surface-container-low border-l-2 border-[#D4AF37] transition-all font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="history" data-weight="fill" style="font-variation-settings: 'FILL' 1;">history</span>
+                    History &amp; Logs
+                </a>
+<a class="flex items-center px-md py-sm text-zinc-400 hover:text-[#D4AF37] hover:bg-surface-container-low transition-all font-body-sm" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="troubleshoot">troubleshoot</span>
+                    Diagnostic Reports
+                </a>
+</nav>
+</aside>
+<!-- Canvas -->
+<div class="flex-grow py-lg flex flex-col gap-lg">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-md border-b border-[#2D2D30] pb-md">
+<div>
+<h1 class="font-display-lg text-on-background mb-xs">操作历史记录</h1>
+<p class="font-body-md text-on-surface-variant">Review your platform generation timeline and historical actions.</p>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap gap-sm">
+<button class="px-md py-sm rounded-DEFAULT border border-[#D4AF37] text-[#D4AF37] font-label-md bg-surface-container-low transition-colors duration-300">全部类型</button>
+<button class="px-md py-sm rounded-DEFAULT border border-[#2D2D30] text-zinc-400 font-label-md hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors duration-300 bg-transparent">诊断报告</button>
+<button class="px-md py-sm rounded-DEFAULT border border-[#2D2D30] text-zinc-400 font-label-md hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors duration-300 bg-transparent">文案生成</button>
+<button class="px-md py-sm rounded-DEFAULT border border-[#2D2D30] text-zinc-400 font-label-md hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors duration-300 bg-transparent">直播方案</button>
+</div>
+</header>
+<!-- Search Bar -->
+<div class="w-full relative gold-glow rounded-DEFAULT transition-all">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-zinc-500" data-icon="search">search</span>
+<input class="w-full bg-[#0A0A0B] border border-[#2D2D30] rounded-DEFAULT py-md pl-xl pr-md text-on-background font-body-sm focus:outline-none focus:border-[#D4AF37] transition-colors placeholder:text-zinc-600 sunken-feel card-inner-border" placeholder="Search by keyword, type, or date..." type="text"/>
+</div>
+<!-- Timeline List -->
+<div class="flex flex-col gap-xl">
+<!-- Date Group: Today -->
+<div class="relative">
+<div class="sticky top-20 z-10 bg-background/90 backdrop-blur-sm py-sm mb-md inline-block">
+<span class="font-label-sm text-[#D4AF37] uppercase tracking-widest border border-[#D4AF37]/30 px-sm py-xs rounded-DEFAULT bg-surface-container-low">Today, Oct 26</span>
+</div>
+<div class="flex flex-col gap-md pl-md border-l border-[#2D2D30] ml-md">
+<!-- Timeline Item 1 -->
+<div class="relative bg-[#1C1C1E] border border-[#2D2D30] rounded-lg p-md card-inner-border hover:-translate-y-[2px] hover:border-[#D4AF37]/50 transition-all duration-300 group">
+<!-- Timeline Dot -->
+<div class="absolute -left-[25px] top-lg w-[10px] h-[10px] rounded-full bg-[#0A0A0B] border-2 border-[#D4AF37] ring-4 ring-background"></div>
+<div class="flex flex-col md:flex-row justify-between gap-md">
+<div class="flex-grow flex flex-col gap-xs">
+<div class="flex items-center gap-sm mb-xs">
+<span class="p-xs bg-surface-container-high rounded-sm text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="campaign">campaign</span>
+</span>
+<span class="font-label-sm text-zinc-400">直播方案</span>
+<span class="font-label-sm text-zinc-600">•</span>
+<span class="font-label-sm text-zinc-500">14:30 PM</span>
+</div>
+<h3 class="font-h2 text-on-background">Q4 Product Launch Live Strategy</h3>
+<div class="flex flex-wrap gap-xs mt-sm">
+<span class="font-label-sm text-[#D4AF37] bg-[#D4AF37]/10 px-sm py-xs rounded-sm">High Conversion</span>
+<span class="font-label-sm text-zinc-300 bg-surface-container-high px-sm py-xs rounded-sm">Tech Focus</span>
+</div>
+<p class="font-body-sm text-on-surface-variant mt-sm line-clamp-2 max-w-2xl">
+                                        Strategic outline for the upcoming quarter launch, focusing on technical specifications and early-bird conversion tactics during the 2-hour live session.
+                                    </p>
+</div>
+<!-- Actions -->
+<div class="flex items-start md:items-center gap-sm shrink-0 mt-md md:mt-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<button class="p-sm text-zinc-400 hover:text-[#D4AF37] border border-transparent hover:border-[#2D2D30] rounded transition-all" title="View Details">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-sm text-zinc-400 hover:text-[#D4AF37] border border-transparent hover:border-[#2D2D30] rounded transition-all" title="Copy Content">
+<span class="material-symbols-outlined" data-icon="content_copy">content_copy</span>
+</button>
+<button class="p-sm text-zinc-400 hover:text-[#D4AF37] border border-transparent hover:border-[#2D2D30] rounded transition-all" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-sm text-zinc-400 hover:text-error border border-transparent hover:border-[#2D2D30] rounded transition-all" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Load More -->
+<div class="mt-lg flex justify-center">
+<button class="font-label-md text-zinc-400 hover:text-[#D4AF37] py-sm px-lg border border-[#2D2D30] rounded-DEFAULT hover:border-[#D4AF37] transition-all duration-300 bg-transparent flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
+                    Load Older Records
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#2D2D30] mt-auto bg-[#0A0A0B] flat no shadows">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto">
+<div class="text-[12px] font-manrope uppercase tracking-widest text-[#D4AF37]">
+                © 2024 Aethelgard IP. All Rights Reserved.
+            </div>
+<div class="flex space-x-lg text-[12px] font-manrope uppercase tracking-widest">
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors linear-gradient-to-r from-transparent via-white/5 to-transparent hover:animate-sweep" href="#">Terms</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors linear-gradient-to-r from-transparent via-white/5 to-transparent hover:animate-sweep" href="#">Privacy</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors linear-gradient-to-r from-transparent via-white/5 to-transparent hover:animate-sweep" href="#">Support</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors linear-gradient-to-r from-transparent via-white/5 to-transparent hover:animate-sweep" href="#">API</a>
+</div>
+</div>
+</footer>
+</body></html>

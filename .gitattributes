@@ -1,0 +1,36 @@
+# 强制 LF 行尾(参 AGENTS.md §2 锁定)
+# 防止跨平台 commit 时 CRLF 污染 prisma migrations / sql 文件 / shell 脚本
+
+* text=auto eol=lf
+
+# 二进制资源
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.svg   text=auto eol=lf
+*.webp  binary
+*.zip   binary
+*.gz    binary
+*.tar   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+
+# 显式锁定关键文件 LF
+*.sh    text eol=lf
+*.py    text eol=lf
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.sql   text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.prisma text eol=lf
+
+# 大文件标记(LFS 不强制 · 仅警示)
+stitch_premium_gold_ip_workflow.zip filter=lfs diff=lfs merge=lfs -text

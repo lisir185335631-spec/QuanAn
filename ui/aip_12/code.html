@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AIP - 控制台</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#99907c",
+                        "primary-fixed-dim": "#e9c349",
+                        "on-background": "#e4e2e5",
+                        "on-secondary-fixed": "#241a00",
+                        "secondary-fixed-dim": "#eac249",
+                        "on-primary-fixed": "#241a00",
+                        "on-error": "#690005",
+                        "surface-container": "#1f1f22",
+                        "primary-fixed": "#ffe088",
+                        "surface-container-highest": "#343437",
+                        "outline-variant": "#4d4635",
+                        "inverse-on-surface": "#303033",
+                        "surface-container-low": "#1b1b1e",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#ffe08b",
+                        "on-surface": "#e4e2e5",
+                        "tertiary-fixed-dim": "#f7bd48",
+                        "surface-container-high": "#2a2a2d",
+                        "on-secondary-fixed-variant": "#584400",
+                        "inverse-primary": "#735c00",
+                        "on-tertiary": "#412d00",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#e1aa36",
+                        "surface-tint": "#e9c349",
+                        "surface-variant": "#343437",
+                        "on-secondary": "#3d2f00",
+                        "on-surface-variant": "#d0c5af",
+                        "surface-dim": "#131316",
+                        "tertiary-fixed": "#ffdea6",
+                        "primary-container": "#d4af37",
+                        "on-primary": "#3c2f00",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#574500",
+                        "on-secondary-container": "#352800",
+                        "primary": "#f2ca50",
+                        "surface": "#131316",
+                        "background": "#131316",
+                        "on-primary-container": "#554300",
+                        "on-tertiary-container": "#5b4000",
+                        "on-tertiary-fixed": "#271900",
+                        "secondary-container": "#b08c10",
+                        "secondary": "#eac249",
+                        "tertiary": "#ffc551",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "surface-bright": "#39393c",
+                        "inverse-surface": "#e4e2e5",
+                        "surface-container-lowest": "#0e0e11"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "40px",
+                        "lg": "24px",
+                        "2xl": "64px",
+                        "container-max": "1440px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "h1": ["Manrope"],
+                        "display-xl": ["Manrope"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "h2": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }]
+                    },
+                    "animation": {
+                        'page-enter': 'pageFadeIn 0.8s ease-out forwards',
+                        'gradient-shift': 'gradientShift 3s ease infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    "keyframes": {
+                        pageFadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        gradientShift: {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .group:hover .hover\:animate-sweep::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-45deg);
+            animation: sweep 1s forwards;
+        }
+        @keyframes sweep {
+            100% { left: 200%; }
+        }
+        @keyframes breathing {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        .animate-breathing {
+            animation: breathing 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .card-inner-glow {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-gradient-glow {
+            background: linear-gradient(90deg, #d4af37, #f2ca50, #ffe088, #d4af37);
+            background-size: 200% auto;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-gradient-glow:hover {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+            background-position: right center;
+        }
+        .interactive-card {
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.4) !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col pt-20 animate-page-enter">
+<div class="fixed inset-0 pointer-events-none z-[-1] opacity-10 animate-breathing" style="background-image: linear-gradient(rgba(212, 175, 55, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 175, 55, 0.2) 1px, transparent 1px); background-size: 32px 32px;"></div>
+<!-- TopNavBar -->
+<header class="bg-[#0A0A0B]/90 backdrop-blur-md fixed top-0 w-full z-50 border-b border-[#2D2D30] font-manrope antialiased tracking-tight shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-12">
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase">AIP</div>
+<nav class="hidden md:flex gap-8 items-center h-full pt-4">
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 pb-4" href="#">创作</a>
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4" href="#">规划</a>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 pb-4" href="#">情报</a>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 pb-4" href="#">资产</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 p-2 rounded-full h-10 w-10 flex items-center justify-center">
+<i class="w-5 h-5" data-lucide="bell"></i>
+</button>
+<button class="text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 p-2 rounded-full h-10 w-10 flex items-center justify-center">
+<i class="w-5 h-5" data-lucide="log-out"></i>
+</button>
+</div>
+<div class="h-8 w-px bg-[#2D2D30]"></div>
+<button class="text-label-md font-label-md text-zinc-300 hover:text-[#D4AF37] transition-colors uppercase tracking-widest">切换账号</button>
+<div class="h-10 w-10 rounded-full bg-surface-container-high border border-[#2D2D30] overflow-hidden">
+<img alt="用户头像" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_6g0rCu48JR8hMq0P0wU2CcMZEpFCJK-KuFqjjXMd32zh6V0y-sUbPvcWEnaenfmB0pTzAO0W6cxmuZDT8hctJpg69Avo78g1AfKLOn94SQ0CkKs483x9mPjgyeR1EHKt8TWZxBGLjc528ReKmtj4yvxNEq_4h-YsupkELCUehTsC04NIxdGrYDuKBJXkngIAYPzBznuXrmaEzVqnqvWaD-M12MenxUTJmzMsA38XnQWrc7AmzPJhzb-FQd5uXVo02BAt61x1WRha"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-12 py-xl flex flex-col gap-2xl relative z-10">
+<!-- Header Section -->
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-background mb-sm">执行总览</h1>
+<p class="font-body-lg text-body-lg text-zinc-300">管理并扩展您的知识产权组合。</p>
+</div>
+<button class="btn-gradient-glow text-background font-label-md text-label-md uppercase tracking-widest px-lg py-md rounded flex items-center gap-2 active:scale-95" style="transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);"><i class="w-4 h-4" data-lucide="plus"></i>新建项目</button>
+</div>
+<!-- Progress Overview & Quick Actions Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Progress Overview (Spans 8 cols) -->
+<div class="lg:col-span-8 bg-surface-container-low border rounded-xl p-xl relative overflow-hidden card-inner-glow transition-all duration-300 hover:border-outline-variant flex flex-col justify-between min-h-[300px] border-outline-variant/50 interactive-card">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container/5 blur-[100px] rounded-full pointer-events-none"></div>
+<div>
+<div class="flex justify-between items-center mb-lg">
+<h2 class="font-h2 text-h2 text-on-background">资产组合成熟度</h2>
+<span class="font-display-lg text-display-lg text-primary-container">78%</span>
+</div>
+<p class="font-body-md text-body-md max-w-2xl text-zinc-300">
+                        您的知识产权策略目前处于扩张后期阶段。请专注于商业化架构，以达到100%的平台就绪状态。
+                    </p>
+</div>
+<div class="mt-xl">
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden mb-sm">
+<div class="bg-primary-container h-full rounded-full w-[78%] relative">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+</div>
+</div>
+<div class="flex justify-between text-label-sm font-label-sm uppercase tracking-widest text-zinc-300">
+<span>启动阶段</span>
+<span>开发阶段</span>
+<span class="text-primary-fixed-dim">扩张阶段</span>
+<span>成熟阶段</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions (Spans 4 cols) -->
+<div class="lg:col-span-4 bg-surface-container-low border rounded-xl p-lg card-inner-glow transition-all duration-300 hover:border-outline-variant flex flex-col gap-sm border-outline-variant/50 interactive-card">
+<h3 class="font-label-md text-label-md uppercase tracking-widest mb-sm px-sm text-zinc-300">快速操作</h3>
+<button class="w-full text-left bg-surface-container hover:bg-surface-container-highest border border-transparent hover:border-[#2D2D30] p-md rounded-lg flex items-center gap-md transition-all group transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5">
+<div class="h-10 w-10 rounded bg-background flex items-center justify-center text-primary-container border border-[#2D2D30] group-hover:border-primary-container/50 transition-colors">
+<i class="w-5 h-5" data-lucide="file-edit"></i>
+</div>
+<div>
+<div class="font-body-md text-body-md font-medium text-on-background group-hover:text-primary-fixed-dim transition-colors">生成文案</div>
+<div class="font-label-sm text-label-sm uppercase tracking-wider text-zinc-300">人工智能内容引擎</div>
+</div>
+</button>
+<button class="w-full text-left bg-surface-container hover:bg-surface-container-highest border border-transparent hover:border-[#2D2D30] p-md rounded-lg flex items-center gap-md transition-all group transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5">
+<div class="h-10 w-10 rounded bg-background flex items-center justify-center text-primary-container border border-[#2D2D30] group-hover:border-primary-container/50 transition-colors">
+<i class="w-5 h-5" data-lucide="trending-up"></i>
+</div>
+<div>
+<div class="font-body-md text-body-md font-medium text-on-background group-hover:text-primary-fixed-dim transition-colors">分析趋势</div>
+<div class="font-label-sm text-label-sm uppercase tracking-wider text-zinc-300">市场情报</div>
+</div>
+</button>
+<button class="w-full text-left bg-surface-container hover:bg-surface-container-highest border border-transparent hover:border-[#2D2D30] p-md rounded-lg flex items-center gap-md transition-all group transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-0.5">
+<div class="h-10 w-10 rounded bg-background flex items-center justify-center text-primary-container border border-[#2D2D30] group-hover:border-primary-container/50 transition-colors">
+<i class="w-5 h-5" data-lucide="copyright"></i>
+</div>
+<div>
+<div class="font-body-md text-body-md font-medium text-on-background group-hover:text-primary-fixed-dim transition-colors">注册资产</div>
+<div class="font-label-sm text-label-sm uppercase tracking-wider text-zinc-300">法律框架</div>
+</div>
+</button>
+</div>
+</div>
+<!-- Module Entry Grid -->
+<div>
+<div class="flex items-center justify-between mb-lg">
+<h2 class="font-h2 text-h2 text-on-background">平台模块</h2>
+<a class="font-label-md text-label-md text-primary-container uppercase tracking-widest hover:text-primary-fixed transition-colors flex items-center gap-xs" href="#">查看全部 <i class="w-4 h-4" data-lucide="arrow-right"></i></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Market Insight -->
+<a class="group bg-surface-container-low border rounded-xl p-lg card-inner-glow transition-all duration-300 hover:-translate-y-[4px] hover:border-primary-container/40 hover:shadow-[0_20px_40px_rgba(212,175,55,0.05)] relative overflow-hidden flex flex-col h-[280px] border-outline-variant/50 interactive-card" href="#">
+<div class="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="h-12 w-12 rounded bg-background flex items-center justify-center text-on-surface border border-[#2D2D30] mb-auto group-hover:text-primary-container group-hover:border-primary-container/30 transition-all">
+<i class="w-6 h-6" data-lucide="line-chart"></i>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-background mb-xs">市场洞察</h3>
+<p class="font-body-sm text-body-sm text-zinc-300">有关知识产权估值和行业趋势的实时数据。</p>
+</div>
+</a>
+<!-- Monetization Design -->
+<a class="group bg-surface-container-low border rounded-xl p-lg card-inner-glow transition-all duration-300 hover:-translate-y-[4px] hover:border-primary-container/40 hover:shadow-[0_20px_40px_rgba(212,175,55,0.05)] relative overflow-hidden flex flex-col h-[280px] border-outline-variant/50 interactive-card" href="#">
+<div class="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="h-12 w-12 rounded bg-background flex items-center justify-center text-on-surface border border-[#2D2D30] mb-auto group-hover:text-primary-container group-hover:border-primary-container/30 transition-all">
+<i class="w-6 h-6" data-lucide="landmark"></i>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-background mb-xs">商业化</h3>
+<p class="font-body-sm text-body-sm text-zinc-300">构建许可和创收模式。</p>
+</div>
+</a>
+<!-- Content Creation -->
+<a class="group bg-surface-container-low border rounded-xl p-lg card-inner-glow transition-all duration-300 hover:-translate-y-[4px] hover:border-primary-container/40 hover:shadow-[0_20px_40px_rgba(212,175,55,0.05)] relative overflow-hidden flex flex-col h-[280px] border-outline-variant/50 interactive-card" href="#">
+<div class="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="h-12 w-12 rounded bg-background flex items-center justify-center text-on-surface border border-[#2D2D30] mb-auto group-hover:text-primary-container group-hover:border-primary-container/30 transition-all">
+<i class="w-6 h-6" data-lucide="pen-tool"></i>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-background mb-xs">内容引擎</h3>
+<p class="font-body-sm text-body-sm text-zinc-300">人工智能驱动的基础知识产权资产生成。</p>
+</div>
+</a>
+<!-- Smart Tools -->
+<a class="group bg-surface-container-low border rounded-xl p-lg card-inner-glow transition-all duration-300 hover:-translate-y-[4px] hover:border-primary-container/40 hover:shadow-[0_20px_40px_rgba(212,175,55,0.05)] relative overflow-hidden flex flex-col h-[280px] border-outline-variant/50 interactive-card" href="#">
+<div class="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="h-12 w-12 rounded bg-background flex items-center justify-center text-on-surface border border-[#2D2D30] mb-auto group-hover:text-primary-container group-hover:border-primary-container/30 transition-all">
+<i class="w-6 h-6" data-lucide="wrench"></i>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-on-background mb-xs">智能工具</h3>
+<p class="font-body-sm text-body-sm text-zinc-300">用于合同审查和商标扫描的实用程序。</p>
+</div>
+</a>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#2D2D30] mt-auto bg-[#0A0A0B] text-[12px] font-manrope uppercase tracking-widest text-[#D4AF37] relative z-10">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto">
+<div class="text-zinc-600">© 2024 Aethelgard IP. 保留所有权利。</div>
+<nav class="flex gap-6">
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">创作</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">规划</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">情报</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">资产</a>
+</nav>
+</div>
+</footer>
+<script>
+    lucide.createIcons();
+</script>
+</body></html>

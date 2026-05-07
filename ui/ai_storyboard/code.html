@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AETHEL IP - AI 视频分镜表生成器</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Inter:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#241a00",
+                        "on-primary-fixed": "#241a00",
+                        "tertiary-fixed-dim": "#f7bd48",
+                        "surface": "#131316",
+                        "inverse-on-surface": "#303033",
+                        "tertiary": "#ffc551",
+                        "surface-container-low": "#1b1b1e",
+                        "on-secondary-container": "#352800",
+                        "outline-variant": "#4d4635",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-error": "#690005",
+                        "secondary-container": "#b08c10",
+                        "outline": "#99907c",
+                        "on-primary-container": "#554300",
+                        "on-tertiary-fixed": "#271900",
+                        "on-secondary": "#3d2f00",
+                        "secondary-fixed-dim": "#eac249",
+                        "on-tertiary": "#412d00",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e4e2e5",
+                        "on-surface": "#e4e2e5",
+                        "secondary-fixed": "#ffe08b",
+                        "on-primary-fixed-variant": "#574500",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#ffe088",
+                        "on-surface-variant": "#d0c5af",
+                        "inverse-primary": "#735c00",
+                        "surface-dim": "#131316",
+                        "surface-container-high": "#2a2a2d",
+                        "tertiary-container": "#e1aa36",
+                        "on-secondary-fixed-variant": "#584400",
+                        "primary": "#f2ca50",
+                        "surface-container-lowest": "#0e0e11",
+                        "on-background": "#e4e2e5",
+                        "tertiary-fixed": "#ffdea6",
+                        "on-primary": "#3c2f00",
+                        "surface-container-highest": "#343437",
+                        "primary-fixed-dim": "#e9c349",
+                        "secondary": "#eac249",
+                        "primary-container": "#d4af37",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#5b4000",
+                        "surface-container": "#1f1f22",
+                        "surface-bright": "#39393c",
+                        "surface-variant": "#343437",
+                        "background": "#131316",
+                        "surface-tint": "#e9c349"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "xl": "40px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "2xl": "64px",
+                        "container-max": "1440px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Manrope"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Manrope"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-xl": ["Manrope"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "h1": ["Manrope"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .sweep-hover {
+            position: relative;
+            overflow: hidden;
+        }
+        .sweep-hover::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .sweep-hover:hover::after {
+            transform: rotate(45deg) translateX(100%);
+        }
+        .micro-lift {
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .micro-lift:hover {
+            transform: translateY(-2px);
+            border-color: #D4AF37;
+        }
+        .gold-glow:focus-within {
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 border-b border-[#2D2D30] bg-[#0A0A0B]/90 backdrop-blur-md shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto font-manrope antialiased tracking-tight">
+<div class="flex items-center gap-xl">
+<span class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase">AETHEL IP</span>
+<nav class="hidden md:flex gap-lg">
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4" href="#">Creation</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300" href="#">Planning</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300" href="#">Intelligence</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300" href="#">Assets</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300">Switch Account</button>
+<div class="flex items-center gap-sm">
+<button class="p-2 text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="p-2 text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+</button>
+<img alt="User profile" class="w-10 h-10 rounded-full border border-[#2D2D30] ml-2" data-alt="A sophisticated headshot of a professional individual set against a dark, minimalist background. The lighting is cinematic, highlighting the subject's features with a subtle gold rim light, perfectly matching the high-end, exclusive SaaS aesthetic. The image exudes calm authority and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRSvuqtKTUDJJg-DamtdOTvO7LAf38DxG_HiKo0Z5F8inPx41Nxur8OdUUQ2z9GIMrFYVG_6NNfRv4aXWJXRBtl23HUdDrgLTKUHMnM9nV1FZ6I2a9zZV_47yPYxLXkd06ARJONE9suX6xuzTid7dDpgEJ7fOboU7mWhOWw4qAleyg9qMPAXwLhUgPUSTTEqTDUn1x3s28aq9zhUy5yRvjqRM1U4h4s3Y66cDFAnqdff7jzpHHQkNaLTYBMy4YkhwRiXAK8u7w7iLD"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-20 p-12 max-w-container-max mx-auto w-full grid grid-cols-12 gap-gutter relative z-10">
+<!-- Left Column: Input Context -->
+<aside class="col-span-12 md:col-span-4 flex flex-col gap-lg h-[calc(100vh-80px-96px)] sticky top-20 py-lg">
+<div class="bg-surface-container-low border border-[#2D2D30] rounded-xl p-lg flex flex-col h-full relative overflow-hidden micro-lift shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<!-- Inner light edge -->
+<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-b from-white/10 to-transparent"></div>
+<h1 class="font-h1 text-h1 text-on-surface mb-md">AI 视频分镜生成</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-xl">输入您的短视频文案或剧本核心概念，AI 将自动解析结构并生成专业级的 6-12 个镜头分镜表，包含景别、运镜及视觉参考。</p>
+<div class="flex-1 flex flex-col gap-md">
+<div class="flex flex-col gap-sm gold-glow">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest" for="script-input">视频文案 / 剧本</label>
+<textarea class="w-full bg-[#0A0A0B] border border-[#2D2D30] rounded-lg p-md text-on-surface font-body-md resize-none flex-1 focus:outline-none focus:ring-0 transition-colors" id="script-input" placeholder="在此输入您的文案，例如：霓虹灯闪烁的赛博朋克城市街道，雨水倒映着招牌。主角穿着黑色风衣，从阴影中走出，眼神坚毅..."></textarea>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs gold-glow">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">视频时长</label>
+<select class="w-full bg-[#0A0A0B] border border-[#2D2D30] rounded-lg p-sm text-on-surface font-body-sm focus:outline-none focus:ring-0 appearance-none">
+<option>15秒 (短平快)</option>
+<option selected="">30秒 (标准短片)</option>
+<option>60秒 (完整故事)</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs gold-glow">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">视觉风格</label>
+<select class="w-full bg-[#0A0A0B] border border-[#2D2D30] rounded-lg p-sm text-on-surface font-body-sm focus:outline-none focus:ring-0 appearance-none">
+<option>电影质感 (Cinematic)</option>
+<option>赛博朋克 (Cyberpunk)</option>
+<option>极简主义 (Minimalist)</option>
+<option>超现实 (Surreal)</option>
+</select>
+</div>
+</div>
+</div>
+<div class="mt-lg pt-lg border-t border-[#2D2D30] flex flex-col gap-md">
+<button class="w-full bg-primary-container text-[#0A0A0B] font-body-md font-semibold py-md px-lg rounded-lg sweep-hover flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        生成分镜表
+                    </button>
+<button class="w-full bg-transparent border border-[#2D2D30] text-on-surface hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors font-body-md font-semibold py-sm px-lg rounded-lg flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                        导入文档
+                    </button>
+</div>
+</div>
+</aside>
+<!-- Right Column: Storyboard Canvas (Bento Grid) -->
+<section class="col-span-12 md:col-span-8 flex flex-col gap-lg py-lg">
+<!-- Toolbar -->
+<div class="flex justify-between items-center bg-surface-container-low border border-[#2D2D30] rounded-lg p-sm px-md">
+<div class="flex items-center gap-md">
+<span class="font-label-md text-label-md text-[#D4AF37] uppercase tracking-widest flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                        生成完成
+                    </span>
+<span class="text-[#2D2D30]">|</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">共 8 个镜头 · 预计 30秒</span>
+</div>
+<div class="flex gap-sm">
+<button class="text-on-surface-variant hover:text-[#D4AF37] transition-colors p-sm flex items-center justify-center rounded-lg border border-transparent hover:border-[#2D2D30]">
+<span class="material-symbols-outlined text-[20px]">view_list</span>
+</button>
+<button class="text-[#D4AF37] bg-zinc-900/50 p-sm flex items-center justify-center rounded-lg border border-[#2D2D30]">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+</button>
+<div class="w-px h-6 bg-[#2D2D30] self-center mx-xs"></div>
+<button class="flex items-center gap-xs text-on-surface-variant hover:text-[#D4AF37] transition-colors font-label-md text-label-md uppercase px-sm rounded-lg border border-transparent hover:border-[#2D2D30]">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        导出 PDF
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Boards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md auto-rows-max pb-2xl">
+<!-- Board 1 -->
+<div class="bg-surface-container-low border border-[#2D2D30] rounded-xl overflow-hidden micro-lift flex flex-col relative group">
+<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-b from-white/10 to-transparent z-10"></div>
+<div class="relative h-[200px] bg-[#0A0A0B] border-b border-[#2D2D30]">
+<img alt="Shot 1 Reference" class="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-500" data-alt="A highly detailed cinematic shot of a futuristic microchip macro, illuminated by harsh, angular neon lighting that reflects off circuit pathways. The dark, minimalist aesthetic is punctuated by sharp, high-contrast gold and deep black tones, perfectly aligning with a high-end, premium SaaS visual language. The mood is tense, precise, and technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJnmToTsQ73ypnFW2UXivrqjhLFqS34hXWNVRexqt6TS__vK6DtrxYGF3ax5Y4XL32LfP5snDwBHS9bXSLiY1McSSA2waqysa6q1Z9CA9z1znAVPPHbE85ucXhSqbf7fdVgDrhDHSBRqXb71ZW3ZNssQABRgM16PsO0xaUyt6bh8pV81-l9wHQjdfzQruJZaYoVjOPdfnvjIC0AvnrVcwcNLKSNw7X7RFGOY5ELMo7pSHFkxoJNfuScxaOK1YD5-ytiWc9tTAx2tGB"/>
+<div class="absolute top-sm left-sm bg-[#0A0A0B]/80 backdrop-blur border border-[#2D2D30] px-xs py-1 rounded font-label-sm text-label-sm text-[#D4AF37]">SHOT 01</div>
+</div>
+<div class="p-md flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-[#1C1C1E] border border-[#2D2D30] px-2 py-1 rounded">特写 (CU)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-[#1C1C1E] border border-[#2D2D30] px-2 py-1 rounded ml-xs">平视</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">0:00 - 0:03</span>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface mt-xs">核心组件激活</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">摄像机缓慢推进（Push in）。微距镜头展现芯片表面的精密纹理，一道金色的光芒从中心向四周扩散蔓延。</p>
+<div class="mt-auto pt-sm border-t border-[#2D2D30]/50 flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px] text-zinc-500">campaign</span>
+<span class="font-body-sm text-body-sm text-zinc-400 italic">"在极光纪元，算力即是权力。"</span>
+</div>
+</div>
+</div>
+<!-- Board 2 -->
+<div class="bg-surface-container-low border border-[#2D2D30] rounded-xl overflow-hidden micro-lift flex flex-col relative group">
+<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-b from-white/10 to-transparent z-10"></div>
+<div class="relative h-[200px] bg-[#0A0A0B] border-b border-[#2D2D30]">
+<img alt="Shot 2 Reference" class="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-500" data-alt="A wide, establishing shot of a monolithic server room bathed in minimal, clinical lighting. The environment is dark and expansive, featuring monolithic black structures with subtle gold glowing accents. The composition is highly symmetrical and architectural, emphasizing a feeling of cold, quiet power consistent with a luxury tech brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcsWbNJS0sm3WDvtT1q_YYW5XPFS-UpCBqBkG2Svd1cVsjEP0DW3IvkdfPOmYeIeADKNQ980ZvaJ-38MdMkcbc-urOYrajUIipoNsJgKTvT7BZRWp4YE__1K4kJs-hrj7ZcXaF8x73ipd-gBHLC2_4kfC5pdbGFgHHP87t6fxXA4NUqWOKIcynwEY-HmTWQOZL744s9awallk0dLwiCXLs6PJ5SmIq4AGUMmGUDgJV_73WeyiPatxrAiloMJXMQa7_Ou9hXl1yMi7y"/>
+<div class="absolute top-sm left-sm bg-[#0A0A0B]/80 backdrop-blur border border-[#2D2D30] px-xs py-1 rounded font-label-sm text-label-sm text-[#D4AF37]">SHOT 02</div>
+</div>
+<div class="p-md flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-[#1C1C1E] border border-[#2D2D30] px-2 py-1 rounded">全景 (WS)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-[#1C1C1E] border border-[#2D2D30] px-2 py-1 rounded ml-xs">俯拍</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">0:03 - 0:07</span>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface mt-xs">矩阵全貌</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">镜头向上摇起并后退（Tilt up &amp; Pull out）。展现如同庞大黑色巨石碑阵列的服务器机房，冰冷肃穆。</p>
+<div class="mt-auto pt-sm border-t border-[#2D2D30]/50 flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px] text-zinc-500">volume_up</span>
+<span class="font-body-sm text-body-sm text-zinc-400 italic">[低频的机械轰鸣声，带有回音]</span>
+</div>
+</div>
+</div>
+<!-- Add empty state / generic card to show style -->
+<div class="bg-surface-container-low border border-[#2D2D30] border-dashed rounded-xl overflow-hidden flex flex-col items-center justify-center p-xl min-h-[350px] opacity-50 hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-[48px] text-[#D4AF37] mb-md" style="font-variation-settings: 'wght' 200;">add_box</span>
+<p class="font-body-md text-on-surface-variant">点击添加自定义镜头</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#2D2D30] mt-auto bg-[#0A0A0B] z-20 relative">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto">
+<p class="text-[12px] font-manrope uppercase tracking-widest text-[#D4AF37]">© 2024 Aethelgard IP. All Rights Reserved.</p>
+<nav class="flex gap-lg">
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Terms</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Privacy</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Support</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">API</a>
+</nav>
+</div>
+</footer>
+</body></html>

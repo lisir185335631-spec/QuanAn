@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>STEP 05 · 爆款选题库 | AETHEL IP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Inter:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed": "#241a00", "on-primary-fixed": "#241a00", "tertiary-fixed-dim": "#f7bd48",
+                        "surface": "#131316", "inverse-on-surface": "#303033", "tertiary": "#ffc551",
+                        "surface-container-low": "#1b1b1e", "on-secondary-container": "#352800", "outline-variant": "#4d4635",
+                        "on-tertiary-fixed-variant": "#5d4200", "on-error": "#690005", "secondary-container": "#b08c10",
+                        "outline": "#99907c", "on-primary-container": "#554300", "on-tertiary-fixed": "#271900",
+                        "on-secondary": "#3d2f00", "secondary-fixed-dim": "#eac249", "on-tertiary": "#412d00",
+                        "on-error-container": "#ffdad6", "inverse-surface": "#e4e2e5", "on-surface": "#e4e2e5",
+                        "secondary-fixed": "#ffe08b", "on-primary-fixed-variant": "#574500", "error-container": "#93000a",
+                        "primary-fixed": "#ffe088", "on-surface-variant": "#d0c5af", "inverse-primary": "#735c00",
+                        "surface-dim": "#131316", "surface-container-high": "#2a2a2d", "tertiary-container": "#e1aa36",
+                        "on-secondary-fixed-variant": "#584400", "primary": "#f2ca50", "surface-container-lowest": "#0e0e11",
+                        "on-background": "#e4e2e5", "tertiary-fixed": "#ffdea6", "on-primary": "#3c2f00",
+                        "surface-container-highest": "#343437", "primary-fixed-dim": "#e9c349", "secondary": "#eac249",
+                        "primary-container": "#d4af37", "error": "#ffb4ab", "on-tertiary-container": "#5b4000",
+                        "surface-container": "#1f1f22", "surface-bright": "#39393c", "surface-variant": "#343437",
+                        "background": "#131316", "surface-tint": "#e9c349"
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                    spacing: { "lg": "24px", "md": "16px", "sm": "8px", "xl": "40px", "unit": "4px", "gutter": "24px", "2xl": "64px", "container-max": "1440px", "xs": "4px" },
+                    fontFamily: {
+                        "h2": ["Manrope"], "body-md": ["Plus Jakarta Sans"], "display-lg": ["Manrope"],
+                        "body-lg": ["Plus Jakarta Sans"], "display-xl": ["Manrope"], "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"], "h1": ["Manrope"], "label-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .sweep-hover:hover::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            transform: skewX(-45deg);
+            animation: sweep 0.6s ease-in-out forwards;
+        }
+        @keyframes sweep { 100% { left: 200%; } }
+        .inner-glow { box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar (JSON Executed) -->
+<nav class="bg-[#0A0A0B]/90 backdrop-blur-md font-manrope antialiased tracking-tight fixed top-0 w-full z-50 border-b border-[#2D2D30] shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase">AETHEL IP</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300" href="#">Creation</a>
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4 relative top-[2px]" href="#">Planning</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300" href="#">Intelligence</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300" href="#">Assets</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-zinc-400 font-label-md tracking-widest uppercase hover:text-[#D4AF37] transition-colors">Switch Account</button>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-zinc-500 hover:text-[#D4AF37] cursor-pointer transition-colors">notifications</span>
+<span class="material-symbols-outlined text-zinc-500 hover:text-[#D4AF37] cursor-pointer transition-colors">logout</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-grow pt-[140px] pb-24 px-12 max-w-[1440px] mx-auto w-full flex flex-col gap-12 relative z-10">
+<!-- Hero Section -->
+<header class="flex flex-col gap-6 max-w-4xl relative">
+<div class="absolute -top-20 -left-20 w-96 h-96 bg-primary-container/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="flex items-center gap-3">
+<span class="font-label-md text-primary tracking-widest uppercase bg-primary/10 px-3 py-1 rounded border border-primary/20">STEP 05</span>
+<span class="font-label-md text-on-surface-variant uppercase tracking-widest">Planning Module</span>
+</div>
+<h1 class="font-display-xl text-on-surface">爆款选题库</h1>
+<p class="font-body-lg text-on-surface-variant leading-relaxed">
+                精选100个经过市场验证的高转化选题模型。基于数据归因分析，涵盖流量、变现、人设等多维度架构，支持一键注入业务语境生成专属爆款文案框架。
+            </p>
+</header>
+<!-- Dynamic Filter Bar -->
+<div class="flex flex-wrap items-center gap-4 border-b border-[#2D2D30] pb-6 sticky top-[80px] bg-surface-container-lowest/90 backdrop-blur-md z-40 py-4">
+<button class="font-label-sm text-surface bg-primary px-5 py-2.5 rounded hover:bg-primary-fixed transition-colors">全部 (100)</button>
+<button class="font-label-sm text-on-surface-variant px-5 py-2.5 rounded border border-[#2D2D30] hover:border-primary/50 hover:text-primary transition-all">流量型 (24)</button>
+<button class="font-label-sm text-on-surface-variant px-5 py-2.5 rounded border border-[#2D2D30] hover:border-primary/50 hover:text-primary transition-all">变现型 (18)</button>
+<button class="font-label-sm text-on-surface-variant px-5 py-2.5 rounded border border-[#2D2D30] hover:border-primary/50 hover:text-primary transition-all">人设型 (32)</button>
+<button class="font-label-sm text-on-surface-variant px-5 py-2.5 rounded border border-[#2D2D30] hover:border-primary/50 hover:text-primary transition-all">认知型 (15)</button>
+<button class="font-label-sm text-on-surface-variant px-5 py-2.5 rounded border border-[#2D2D30] hover:border-primary/50 hover:text-primary transition-all">案例型 (11)</button>
+<div class="ml-auto flex items-center gap-3 bg-[#1C1C1E] border border-[#2D2D30] rounded px-4 py-2 focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
+<input class="bg-transparent border-none outline-none font-body-sm text-on-surface placeholder:text-on-surface-variant/50 w-64 focus:ring-0" placeholder="搜索选题关键字..." type="text"/>
+</div>
+</div>
+<!-- Bento Grid: Topic Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1: 流量型 -->
+<div class="group relative bg-[#1C1C1E] border border-[#2D2D30] rounded-lg p-8 flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/40 hover:shadow-[0_10px_30px_rgba(212,175,55,0.05)] overflow-hidden inner-glow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<span class="font-label-sm text-primary border border-primary/30 px-2 py-1 rounded">流量型</span>
+<div class="flex text-primary gap-0.5">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#2D2D30] group-hover:text-primary transition-colors duration-300">open_in_new</span>
+</div>
+<h3 class="font-h2 text-on-surface group-hover:text-primary transition-colors duration-300">为什么90%的[目标人群]都在犯这个致命错误？</h3>
+<div class="flex flex-col gap-4 mt-2">
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-on-surface-variant/70 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">psychology</span> 钩子拆解</span>
+<p class="font-body-sm text-on-surface/90 bg-[#0A0A0B] p-4 rounded border border-[#2D2D30]">制造群体焦虑 + 揭示隐蔽雷区 + 承诺唯一解法</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-on-surface-variant/70 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">functions</span> 创作公式</span>
+<p class="font-body-sm text-on-surface/90 bg-[#0A0A0B] p-4 rounded border border-[#2D2D30]">痛点前置 (3s) + 归因反转 (10s) + 权威背书 + 闭环指令</p>
+</div>
+</div>
+<button class="mt-4 w-full py-3 border border-[#2D2D30] text-on-surface font-label-md uppercase tracking-widest rounded transition-all duration-300 group-hover:border-primary group-hover:text-primary flex items-center justify-center gap-2 relative overflow-hidden sweep-hover bg-transparent">
+<span class="material-symbols-outlined text-[18px]">edit_document</span> 载入选题并生成
+                </button>
+</div>
+<!-- Card 2: 变现型 -->
+<div class="group relative bg-[#1C1C1E] border border-[#2D2D30] rounded-lg p-8 flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/40 hover:shadow-[0_10px_30px_rgba(212,175,55,0.05)] overflow-hidden inner-glow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<span class="font-label-sm text-secondary border border-secondary/30 px-2 py-1 rounded">变现型</span>
+<div class="flex text-secondary gap-0.5">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px] text-[#2D2D30]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#2D2D30] group-hover:text-secondary transition-colors duration-300">open_in_new</span>
+</div>
+<h3 class="font-h2 text-on-surface group-hover:text-secondary transition-colors duration-300">我是如何用[极低成本]撬动[超预期收益]的？</h3>
+<div class="flex flex-col gap-4 mt-2">
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-on-surface-variant/70 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">psychology</span> 钩子拆解</span>
+<p class="font-body-sm text-on-surface/90 bg-[#0A0A0B] p-4 rounded border border-[#2D2D30]">极高杠杆比 + 真实数据背书 + 激发模仿欲望</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-on-surface-variant/70 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">functions</span> 创作公式</span>
+<p class="font-body-sm text-on-surface/90 bg-[#0A0A0B] p-4 rounded border border-[#2D2D30]">结果抛出 + 拆解关键变量 + 引入付费壁垒 + 转化承接</p>
+</div>
+</div>
+<button class="mt-4 w-full py-3 border border-[#2D2D30] text-on-surface font-label-md uppercase tracking-widest rounded transition-all duration-300 group-hover:border-secondary group-hover:text-secondary flex items-center justify-center gap-2 relative overflow-hidden sweep-hover bg-transparent">
+<span class="material-symbols-outlined text-[18px]">edit_document</span> 载入选题并生成
+                </button>
+</div>
+<!-- Card 3: 认知型 -->
+<div class="group relative bg-[#1C1C1E] border border-[#2D2D30] rounded-lg p-8 flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/40 hover:shadow-[0_10px_30px_rgba(212,175,55,0.05)] overflow-hidden inner-glow">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<span class="font-label-sm text-tertiary-fixed-dim border border-tertiary-fixed-dim/30 px-2 py-1 rounded">认知型</span>
+<div class="flex text-tertiary-fixed-dim gap-0.5">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#2D2D30] group-hover:text-tertiary-fixed-dim transition-colors duration-300">open_in_new</span>
+</div>
+<h3 class="font-h2 text-on-surface group-hover:text-tertiary-fixed-dim transition-colors duration-300">别再用[常规方法]做[某事]了，底层逻辑其实是...</h3>
+<div class="flex flex-col gap-4 mt-2">
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-on-surface-variant/70 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">psychology</span> 钩子拆解</span>
+<p class="font-body-sm text-on-surface/90 bg-[#0A0A0B] p-4 rounded border border-[#2D2D30]">打破固有常识 + 降维打击感 + 重塑价值共识</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-on-surface-variant/70 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">functions</span> 创作公式</span>
+<p class="font-body-sm text-on-surface/90 bg-[#0A0A0B] p-4 rounded border border-[#2D2D30]">否定大众认知 + 抛出新概念(造词) + 模型论证 + 升华降临</p>
+</div>
+</div>
+<button class="mt-4 w-full py-3 border border-[#2D2D30] text-on-surface font-label-md uppercase tracking-widest rounded transition-all duration-300 group-hover:border-tertiary-fixed-dim group-hover:text-tertiary-fixed-dim flex items-center justify-center gap-2 relative overflow-hidden sweep-hover bg-transparent">
+<span class="material-symbols-outlined text-[18px]">edit_document</span> 载入选题并生成
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer (JSON Executed) -->
+<footer class="bg-[#0A0A0B] w-full border-t border-[#2D2D30] mt-auto text-[12px] font-manrope uppercase tracking-widest flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto flat no shadows">
+<div class="text-zinc-600">© 2024 Aethelgard IP. All Rights Reserved.</div>
+<div class="flex gap-8">
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Terms</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Privacy</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Support</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">API</a>
+</div>
+</footer>
+</body></html>

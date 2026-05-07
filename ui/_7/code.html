@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AIP - 私域成交流程</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "primary-fixed": "#ffe088",
+                "on-tertiary": "#412d00",
+                "on-surface": "#e4e2e5",
+                "on-secondary": "#3d2f00",
+                "secondary-fixed-dim": "#eac249",
+                "tertiary-container": "#e1aa36",
+                "background": "#131316",
+                "secondary-container": "#b08c10",
+                "outline": "#99907c",
+                "on-primary-fixed-variant": "#574500",
+                "on-background": "#e4e2e5",
+                "on-tertiary-fixed-variant": "#5d4200",
+                "surface-variant": "#343437",
+                "on-secondary-fixed": "#241a00",
+                "surface-container-highest": "#343437",
+                "inverse-surface": "#e4e2e5",
+                "error": "#ffb4ab",
+                "inverse-on-surface": "#303033",
+                "surface-tint": "#e9c349",
+                "on-primary-fixed": "#241a00",
+                "primary": "#f2ca50",
+                "on-surface-variant": "#d0c5af",
+                "on-tertiary-fixed": "#271900",
+                "primary-fixed-dim": "#e9c349",
+                "surface-container-low": "#1b1b1e",
+                "error-container": "#93000a",
+                "surface-dim": "#131316",
+                "tertiary-fixed-dim": "#f7bd48",
+                "tertiary": "#ffc551",
+                "surface-bright": "#39393c",
+                "primary-container": "#d4af37",
+                "on-secondary-container": "#352800",
+                "on-primary-container": "#554300",
+                "on-secondary-fixed-variant": "#584400",
+                "surface": "#131316",
+                "secondary-fixed": "#ffe08b",
+                "on-primary": "#3c2f00",
+                "tertiary-fixed": "#ffdea6",
+                "surface-container-high": "#2a2a2d",
+                "on-tertiary-container": "#5b4000",
+                "outline-variant": "#4d4635",
+                "inverse-primary": "#735c00",
+                "on-error": "#690005",
+                "surface-container-lowest": "#0e0e11",
+                "secondary": "#eac249",
+                "on-error-container": "#ffdad6",
+                "surface-container": "#1f1f22"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+              },
+              "spacing": {
+                "sm": "8px",
+                "lg": "24px",
+                "gutter": "24px",
+                "container-max": "1440px",
+                "unit": "4px",
+                "xl": "40px",
+                "md": "16px",
+                "2xl": "64px",
+                "xs": "4px"
+              },
+              "fontFamily": {
+                "h1": ["Manrope"],
+                "body-md": ["Plus Jakarta Sans"],
+                "label-md": ["Inter"],
+                "label-sm": ["Inter"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "body-sm": ["Plus Jakarta Sans"],
+                "h2": ["Manrope"],
+                "display-xl": ["Manrope"],
+                "display-lg": ["Manrope"]
+              },
+              "fontSize": {
+                "h1": ["30px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "label-sm": ["11px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "h2": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "display-lg": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+              },
+              "animation": {
+                'fade-in': 'fadeIn 0.5s ease-out forwards',
+                'bg-breathe': 'bgBreathe 8s infinite alternate ease-in-out',
+                'gradient-shift': 'gradientShift 3s infinite linear',
+                'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+              },
+              "keyframes": {
+                fadeIn: {
+                  '0%': { opacity: '0', transform: 'translateY(10px)' },
+                  '100%': { opacity: '1', transform: 'translateY(0)' }
+                },
+                bgBreathe: {
+                  '0%': { backgroundSize: '100% 100%' },
+                  '100%': { backgroundSize: '110% 110%' }
+                },
+                gradientShift: {
+                  '0%': { backgroundPosition: '0% 50%' },
+                  '100%': { backgroundPosition: '200% 50%' }
+                },
+                pulseGlow: {
+                  '0%, 100%': { boxShadow: '0 0 0 0 rgba(212, 175, 55, 0)' },
+                  '50%': { boxShadow: '0 0 10px 0 rgba(212, 175, 55, 0.2)' }
+                }
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%), 
+                              linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
+        }
+        .gradient-top-border {
+            position: relative;
+        }
+        .gradient-top-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5), transparent);
+        }
+        
+        .btn-gradient-shift {
+            background: linear-gradient(90deg, #b08c10, #f2ca50, #b08c10, #f2ca50, #b08c10);
+            background-size: 200% auto;
+            animation: gradient-shift 3s linear infinite;
+            transition: all 0.3s ease;
+        }
+        .btn-gradient-shift:hover {
+            box-shadow: 0 0 20px rgba(242, 202, 80, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Hide scrollbar for clean look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container animate-fade-in animate-bg-breathe">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 border-b border-[#2D2D30] bg-[#0A0A0B]/90 backdrop-blur-md shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-12">
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase font-manrope antialiased tracking-tight">
+                    AIP
+                </div>
+<nav class="hidden md:flex gap-8">
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 px-3 py-2 rounded font-body-md" href="#">创作</a>
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4 px-3 mt-4 hover:bg-zinc-900/50 transition-all duration-300 font-body-md" href="#">规划</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 px-3 py-2 rounded font-body-md" href="#">智能</a>
+<a class="text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 px-3 py-2 rounded font-body-md" href="#">资产</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-zinc-500 font-medium hover:text-[#D4AF37] transition-all duration-300 font-body-sm hidden md:block">切换账号</button>
+<button class="text-zinc-500 hover:text-[#D4AF37] transition-colors duration-300 flex items-center justify-center">
+<i class="w-5 h-5" data-lucide="bell"></i>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container border border-[#2D2D30] overflow-hidden flex items-center justify-center cursor-pointer hover:border-[#D4AF37] transition-colors">
+<img alt="用户头像" class="w-full h-full object-cover" data-alt="高端商务人士头像特写，光影柔和带有金色轮廓光，背景为深色极简办公环境" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhJkWp5DEFKQwmPkiFskGAXcKJGCdyo7Lw970vyQFD7UzKNnXrRu-IbmyISCc71HMjkBLm5bwYcCN3c1oFMPCkJgEvQurTj0USdnrcnSexWheHnsXIXgNG_9x_8b0GeSVEi3Zepp3Amw9m-PWBS2sAM1b9-p5XecnXDH5D6Pl9-4_dYyJyxvb96kxvBiyBja3g2p1EdxXwPaUsjwOZ-Fzxwh3EErQbodTq9bG1HELHZBOhR4eZoQ0W-wMBNRcxKDTB_DrUl0vzN5fL"/>
+</div>
+<button class="text-zinc-500 hover:text-[#D4AF37] transition-colors duration-300 flex items-center justify-center">
+<i class="w-5 h-5" data-lucide="log-out"></i>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-32 pb-2xl px-md md:px-gutter max-w-container-max mx-auto w-full flex flex-col gap-xl">
+<!-- Page Header -->
+<div class="flex flex-col gap-sm">
+<h1 class="font-h1 text-h1 text-on-surface">私域成交流程</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+                专业的六阶段私域转化模型，通过精准话术生成，助力高净值客户的信任建立与转化。
+            </p>
+</div>
+<div class="flex flex-col lg:flex-row gap-xl w-full">
+<!-- Left Side: Tabs Navigation -->
+<div class="w-full lg:w-64 flex-shrink-0">
+<div class="bg-surface-container-low border border-[#2D2D30] rounded-xl p-md flex flex-row lg:flex-col gap-sm overflow-x-auto lg:overflow-visible no-scrollbar sticky top-32 gradient-top-border shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<!-- Tab 1: Active -->
+<button class="flex items-center gap-md p-md rounded-lg bg-surface-container border-l-2 border-primary-container group transition-all duration-300 flex-shrink-0 w-48 lg:w-auto relative overflow-hidden animate-pulse-glow">
+<div class="w-8 h-8 rounded bg-primary-container/10 flex items-center justify-center text-primary-container shrink-0">
+<i class="w-4 h-4" data-lucide="hand"></i>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="font-label-md text-label-md text-primary-container tracking-wider">阶段 01</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">欢迎话术</span>
+</div>
+</button>
+<!-- Tab 2: Inactive -->
+<button class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container/50 border-l-2 border-transparent hover:border-[#2D2D30] group transition-all duration-300 flex-shrink-0 w-48 lg:w-auto">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0 group-hover:text-primary-container transition-colors">
+<i class="w-4 h-4" data-lucide="handshake"></i>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="font-label-md text-label-md text-on-surface-variant tracking-wider group-hover:text-primary-container/70 transition-colors">阶段 02</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">破冰暖场</span>
+</div>
+</button>
+<!-- Tab 3: Inactive -->
+<button class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container/50 border-l-2 border-transparent hover:border-[#2D2D30] group transition-all duration-300 flex-shrink-0 w-48 lg:w-auto">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0 group-hover:text-primary-container transition-colors">
+<i class="w-4 h-4" data-lucide="shield-check"></i>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="font-label-md text-label-md text-on-surface-variant tracking-wider group-hover:text-primary-container/70 transition-colors">阶段 03</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">信任建立</span>
+</div>
+</button>
+<!-- Tab 4: Inactive -->
+<button class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container/50 border-l-2 border-transparent hover:border-[#2D2D30] group transition-all duration-300 flex-shrink-0 w-48 lg:w-auto">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0 group-hover:text-primary-container transition-colors">
+<i class="w-4 h-4" data-lucide="search"></i>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="font-label-md text-label-md text-on-surface-variant tracking-wider group-hover:text-primary-container/70 transition-colors">阶段 04</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">需求挖掘</span>
+</div>
+</button>
+<!-- Tab 5: Inactive -->
+<button class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container/50 border-l-2 border-transparent hover:border-[#2D2D30] group transition-all duration-300 flex-shrink-0 w-48 lg:w-auto">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0 group-hover:text-primary-container transition-colors">
+<i class="w-4 h-4" data-lucide="circle-dollar-sign"></i>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="font-label-md text-label-md text-on-surface-variant tracking-wider group-hover:text-primary-container/70 transition-colors">阶段 05</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">成交话术</span>
+</div>
+</button>
+<!-- Tab 6: Inactive -->
+<button class="flex items-center gap-md p-md rounded-lg hover:bg-surface-container/50 border-l-2 border-transparent hover:border-[#2D2D30] group transition-all duration-300 flex-shrink-0 w-48 lg:w-auto">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant shrink-0 group-hover:text-primary-container transition-colors">
+<i class="w-4 h-4" data-lucide="headphones"></i>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="font-label-md text-label-md text-on-surface-variant tracking-wider group-hover:text-primary-container/70 transition-colors">阶段 06</span>
+<span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">售后跟进</span>
+</div>
+</button>
+</div>
+</div>
+<!-- Right Side: Content Area (Active Tab Content) -->
+<div class="flex-grow flex flex-col gap-lg">
+<!-- Input Section -->
+<div class="bg-[#1C1C1E] border border-[#2D2D30] rounded-xl p-lg gradient-top-border transition-transform duration-300 relative z-10">
+<div class="flex items-center gap-sm mb-lg">
+<i class="text-primary-container w-5 h-5" data-lucide="sliders-horizontal"></i>
+<h2 class="font-h2 text-h2 text-on-surface">配置阶段参数</h2>
+</div>
+<div class="flex flex-col gap-md">
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface-variant tracking-widest">产品/服务名称</label>
+<input class="bg-[#0A0A0B] border border-[#2D2D30] rounded-lg px-md py-3 font-body-md text-on-surface focus:outline-none focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 transition-all w-full placeholder:text-zinc-600" placeholder="例如：高端企业内训服务" type="text"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface-variant tracking-widest">客户标签/画像 (可选)</label>
+<input class="bg-[#0A0A0B] border border-[#2D2D30] rounded-lg px-md py-3 font-body-md text-on-surface focus:outline-none focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 transition-all w-full placeholder:text-zinc-600" placeholder="例如：企业创始人、对效率敏感" type="text"/>
+</div>
+<div class="flex justify-end mt-sm">
+<button class="text-[#0A0A0B] font-body-sm font-semibold px-6 py-3 rounded-lg flex items-center gap-sm transition-all btn-gradient-shift">
+<i class="w-4 h-4" data-lucide="wand-2"></i>
+                                生成欢迎话术
+                            </button>
+</div>
+</div>
+</div>
+<!-- Results Section -->
+<div class="bg-[#1C1C1E] border border-[#2D2D30] rounded-xl p-lg gradient-top-border h-full min-h-[400px] flex flex-col relative z-10">
+<div class="flex items-center justify-between mb-lg border-b border-[#2D2D30] pb-sm">
+<div class="flex items-center gap-sm">
+<i class="text-primary-container w-5 h-5" data-lucide="sparkles"></i>
+<h2 class="font-h2 text-h2 text-on-surface">生成结果</h2>
+</div>
+<div class="flex gap-sm">
+<button class="text-zinc-400 hover:text-primary-container transition-colors p-sm rounded bg-[#0A0A0B] border border-[#2D2D30] hover:border-primary-container" title="复制全部">
+<i class="w-4 h-4" data-lucide="copy"></i>
+</button>
+<button class="text-zinc-400 hover:text-primary-container transition-colors p-sm rounded bg-[#0A0A0B] border border-[#2D2D30] hover:border-primary-container" title="重新生成">
+<i class="w-4 h-4" data-lucide="rotate-cw"></i>
+</button>
+</div>
+</div>
+<!-- Generated Content Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md flex-grow">
+<!-- Card 1 -->
+<div class="bg-[#0A0A0B] border border-[#2D2D30] rounded-lg p-md relative group hover:border-[#D4AF37] hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-primary-container bg-primary-container/10 px-2 py-1 rounded">风格一：专业稳重</span>
+<button class="text-zinc-500 opacity-0 group-hover:opacity-100 hover:text-primary-container transition-all">
+<i class="w-4 h-4" data-lucide="copy"></i>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed text-justify">
+                                您好！很高兴您能关注[高端企业内训服务]。我是您的专属顾问，在接下来的时间里，我将为您提供专业的咨询服务，协助您解答任何关于服务的疑问。为了更好地为您提供价值，能否简单分享一下您目前最关注的业务环节？
+                            </p>
+</div>
+<!-- Card 2 -->
+<div class="bg-[#0A0A0B] border border-[#2D2D30] rounded-lg p-md relative group hover:border-[#D4AF37] hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-primary-container bg-primary-container/10 px-2 py-1 rounded">风格二：热情亲切</span>
+<button class="text-zinc-500 opacity-0 group-hover:opacity-100 hover:text-primary-container transition-all">
+<i class="w-4 h-4" data-lucide="copy"></i>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed text-justify">
+                                终于等到您啦！欢迎了解[高端企业内训服务]。我是小A，很高兴认识您。希望我们的专业知识能为您带来切实的帮助。您今天主要想了解哪方面的细节呢？随时可以告诉我哦，我随时在线为您解答。
+                            </p>
+</div>
+<!-- Card 3 -->
+<div class="bg-[#0A0A0B] border border-[#2D2D30] rounded-lg p-md relative group hover:border-[#D4AF37] hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300 md:col-span-2">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-primary-container bg-primary-container/10 px-2 py-1 rounded">风格三：价值导向（推荐）</span>
+<button class="text-zinc-500 opacity-0 group-hover:opacity-100 hover:text-primary-container transition-all">
+<i class="w-4 h-4" data-lucide="copy"></i>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed text-justify">
+                                您好，感谢您对[高端企业内训服务]的认可。我们专注于帮助企业实现效能的指数级增长。作为您的对接顾问，我已经准备好为您提供一对一的深度解析。在开始之前，冒昧请教，贵司目前在团队效能上面临的最大挑战是什么？这将帮助我为您匹配最精准的解决方案。
+                            </p>
+<div class="mt-4 pt-4 border-t border-[#2D2D30] flex items-center gap-2">
+<i class="text-zinc-500 w-4 h-4" data-lucide="lightbulb"></i>
+<span class="font-label-sm text-label-sm text-zinc-400">使用建议：适合高净值客户，开门见山展示价值，并以提问收尾引导互动。</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#2D2D30] mt-auto bg-[#0A0A0B] relative z-10">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto text-[12px] font-manrope tracking-widest">
+<div class="text-zinc-600">
+                © 2024 AIP. 保留所有权利。
+            </div>
+<div class="flex gap-8">
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">服务条款</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">隐私政策</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">帮助支持</a>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">接口文档</a>
+</div>
+</div>
+</footer>
+<script>
+        lucide.createIcons();
+    </script>
+</body></html>

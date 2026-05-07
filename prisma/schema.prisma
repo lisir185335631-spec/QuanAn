@@ -1,0 +1,626 @@
+// QuanQn · Prisma schema
+// 单一真理来源 · 跟 DATA-MODEL.md 三方对齐(prisma + DATA-MODEL + zod)
+// 改动顺序 · 改 DATA-MODEL.md → 改本文件 → 改 src/lib/schemas/entities/* → 跑 schema:diff
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
+}
+
+// ============================================================
+// §2 全局表(3 张 · 不带 account_id · LD-009 例外)
+// ============================================================
+
+/// GLOBAL TABLE · Google OAuth 用户主表
+model User {
+  id              Int       @id @default(autoincrement())
+  openId          String    @unique @db.VarChar(64) @map("open_id")
+  name            String    @db.VarChar(100)
+  email           String    @unique @db.VarChar(255)
+  loginMethod     String    @default("google") @db.VarChar(32) @map("login_method")
+  role            String    @default("user") @db.VarChar(16)
+  isActivated     Boolean   @default(false) @map("is_activated")
+  industry        String?   @db.VarChar(64)
+  activeAccountId Int?      @map("active_account_id")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  lastSignedIn    DateTime? @map("last_signed_in")
+
+  ipAccounts      IpAccount[]
+  invitesCreated  InviteCode[]    @relation("InviteCreator")
+  invitesUsed     InviteCode[]    @relation("InviteUser")
+  feedbackLogs    FeedbackLog[]
+  auditLogs       AuditLog[]
+  costLogs        CostLog[]
+
+  @@map("users")
+  @@index([email])
+  @@index([openId])
+  @@index([activeAccountId])
+}
+
+/// GLOBAL TABLE · 邀请码池
+model InviteCode {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique @db.VarChar(32)
+  isActive    Boolean   @default(true) @map("is_active")
+  maxUses     Int       @default(1) @map("max_uses")
+  usedCount   Int       @default(0) @map("used_count")
+  expiresAt   DateTime? @map("expires_at")
+
+  createdById Int?      @map("created_by_id")
+  createdBy   User?     @relation("InviteCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  usedById    Int?      @map("used_by_id")
+  usedBy      User?     @relation("InviteUser", fields: [usedById], references: [id], onDelete: SetNull)
+  usedAt      DateTime? @map("used_at")
+
+  campaign    String?   @db.VarChar(64)
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("invite_codes")
+  @@index([code])
+  @@index([campaign])
+  @@index([createdById])
+  @@index([isActive, expiresAt])
+}
+
+/// GLOBAL TABLE · 全网爆款缓存(L5)
+model TrendingItem {
+  id              Int       @id @default(autoincrement())
+  platform        String    @db.VarChar(32)
+  sourceUrl       String?   @db.VarChar(512) @map("source_url")
+  sourceItemId    String?   @db.VarChar(128) @map("source_item_id")
+  vendor          String    @db.VarChar(32)
+
+  title           String    @db.Text
+  contentText     String?   @db.Text @map("content_text")
+
+  industry        String?   @db.VarChar(64)
+  presentStyle    String?   @db.VarChar(64) @map("present_style")
+  authorName      String?   @db.VarChar(100) @map("author_name")
+  authorFollowers Int?      @map("author_followers")
+
+  viewCount       BigInt    @default(0) @map("view_count")
+  likeCount       Int       @default(0) @map("like_count")
+  shareCount      Int       @default(0) @map("share_count")
+  commentCount    Int       @default(0) @map("comment_count")
+
+  contentEmbedding Unsupported("vector(1536)")? @map("content_embedding")
+
+  publishedAt     DateTime? @map("published_at")
+  crawledAt       DateTime  @default(now()) @map("crawled_at")
+
+  @@map("trending_items")
+  @@unique([platform, sourceItemId])
+  @@index([platform, industry])
+  @@index([platform, presentStyle])
+  @@index([crawledAt(sort: Desc)])
+  @@index([viewCount(sort: Desc)])
+}
+
+// ============================================================
+// §3 账号聚合根
+// ============================================================
+
+model IpAccount {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @map("user_id")
+  name            String    @db.VarChar(100)
+  industry        String    @db.VarChar(64)
+  platform        String    @db.VarChar(32)
+  stage           String    @default("starter") @db.VarChar(32)
+  personalInfo    String?   @db.Text @map("personal_info")
+  targetAudience  String?   @db.Text @map("target_audience")
+  followersRange  String    @default("0-1000") @db.VarChar(32) @map("followers_range")
+  ipPositioning   String?   @db.VarChar(255) @map("ip_positioning")
+  goal            String?   @db.VarChar(64)
+  currentRevenue  String?   @db.VarChar(32) @map("current_revenue")
+
+  isActive        Boolean   @default(true) @map("is_active")
+  archivedAt      DateTime? @map("archived_at")
+
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepDataList         StepData[]
+  histories            History[]
+  topics               Topic[]
+  assets               Asset[]
+  diagnosisReports     DiagnosisReport[]
+  feedbackLogs         FeedbackLog[]
+  evolutionProfile     EvolutionProfile?
+  evolutionInsights    EvolutionInsight[]
+  deepLearningArchives DeepLearningArchive[]
+  knowledgeFavorites   KnowledgeFavorite[]
+  knowledgeNotes       KnowledgeNote[]
+  dailyTasks           DailyTask[]
+  costLogs             CostLog[]
+
+  traceId         String?   @db.VarChar(64) @map("trace_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("ip_accounts")
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([industry])
+  @@index([platform])
+}
+
+// ============================================================
+// §4 9 步主线
+// ============================================================
+
+model StepData {
+  id            Int       @id @default(autoincrement())
+  accountId     Int       @map("account_id")
+  stepKey       String    @db.VarChar(16) @map("step_key")
+  inputs        Json
+  result        Json?
+  version       Int       @default(0)
+  schemaVersion String    @default("3.0") @db.VarChar(8) @map("schema_version")
+  status        String    @default("completed") @db.VarChar(16)
+  isFallback    Boolean   @default(false) @map("is_fallback")
+
+  durationMs    Int?      @map("duration_ms")
+  tokensUsed    Int?      @map("tokens_used")
+  modelUsed     String?   @db.VarChar(64) @map("model_used")
+  agentId       String    @db.VarChar(64) @map("agent_id")
+  traceId       String?   @db.VarChar(64) @map("trace_id")
+
+  ipAccount     IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("step_data")
+  @@unique([accountId, stepKey])
+  @@index([accountId])
+  @@index([accountId, status])
+}
+
+// ============================================================
+// §5 历史 + 资产(3 张)
+// ============================================================
+
+model History {
+  id           Int       @id @default(autoincrement())
+  accountId    Int       @map("account_id")
+
+  agentId      String    @db.VarChar(64) @map("agent_id")
+  agentMode    String?   @db.VarChar(32) @map("agent_mode")
+  sourceType   String    @db.VarChar(32) @map("source_type")
+  inputSummary String    @db.VarChar(255) @map("input_summary")
+
+  content      String    @db.Text
+  contentType  String    @default("markdown") @db.VarChar(16) @map("content_type")
+  scriptType   String?   @db.VarChar(32) @map("script_type")
+  elements     String[]  @default([])
+
+  tokensUsed   Int?      @map("tokens_used")
+  modelUsed    String?   @db.VarChar(64) @map("model_used")
+  durationMs   Int?      @map("duration_ms")
+
+  isFallback   Boolean   @default(false) @map("is_fallback")
+  isFavorited  Boolean   @default(false) @map("is_favorited")
+  ratingGood   Int       @default(0) @map("rating_good")
+  ratingBad    Int       @default(0) @map("rating_bad")
+
+  traceId      String?   @db.VarChar(64) @map("trace_id")
+  ipAccount    IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  feedbacks    FeedbackLog[]
+
+  contentEmbedding Unsupported("vector(1536)")? @map("content_embedding")
+
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("histories")
+  @@index([accountId])
+  @@index([accountId, agentId])
+  @@index([accountId, scriptType])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([accountId, isFavorited])
+  @@index([traceId])
+}
+
+model Topic {
+  id                 Int       @id @default(autoincrement())
+  accountId          Int       @map("account_id")
+
+  title              String    @db.VarChar(255)
+  hook               String    @db.Text
+  structure          String?   @db.Text
+  formula            String?   @db.Text
+  category           String?   @db.VarChar(32)
+  presentStyle       String?   @db.VarChar(32) @map("present_style")
+  platform           String?   @db.VarChar(32)
+  difficulty         String?   @db.VarChar(16)
+  viralPotential     String?   @db.VarChar(16) @map("viral_potential")
+  logicType          String?   @db.VarChar(32) @map("logic_type")
+
+  sourceType         String    @db.VarChar(32) @map("source_type")
+  sourceTrendingId   Int?      @map("source_trending_id")
+  userTags           String[]  @default([]) @map("user_tags")
+
+  isUsed             Boolean   @default(false) @map("is_used")
+  usedAt             DateTime? @map("used_at")
+  generatedHistoryId Int?      @map("generated_history_id")
+
+  traceId            String?   @db.VarChar(64) @map("trace_id")
+  ipAccount          IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  @@map("topics")
+  @@index([accountId])
+  @@index([accountId, category])
+  @@index([accountId, isUsed])
+  @@index([accountId, createdAt(sort: Desc)])
+}
+
+model Asset {
+  id               Int       @id @default(autoincrement())
+  accountId        Int       @map("account_id")
+
+  assetType        String    @db.VarChar(32) @map("asset_type")
+  fileName         String    @db.VarChar(255) @map("file_name")
+  mimeType         String    @db.VarChar(100) @map("mime_type")
+  sizeBytes        Int       @map("size_bytes")
+
+  storageProvider  String    @default("s3") @db.VarChar(16) @map("storage_provider")
+  storageKey       String    @db.VarChar(512) @map("storage_key")
+  publicUrl        String?   @db.VarChar(512) @map("public_url")
+
+  relatedStepKey   String?   @db.VarChar(16) @map("related_step_key")
+  relatedHistoryId Int?      @map("related_history_id")
+
+  generationPrompt String?   @db.Text @map("generation_prompt")
+  generationModel  String?   @db.VarChar(64) @map("generation_model")
+
+  parsedText       String?   @db.Text @map("parsed_text")
+  parsingStatus    String    @default("pending") @db.VarChar(16) @map("parsing_status")
+  parsingError     String?   @db.Text @map("parsing_error")
+
+  traceId          String?   @db.VarChar(64) @map("trace_id")
+  ipAccount        IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("assets")
+  @@index([accountId])
+  @@index([accountId, assetType])
+  @@index([accountId, relatedStepKey])
+  @@index([parsingStatus])
+}
+
+// ============================================================
+// §6 诊断 + 进化(4 张 · 反馈飞轮核心)
+// ============================================================
+
+model DiagnosisReport {
+  id               Int       @id @default(autoincrement())
+  accountId        Int       @map("account_id")
+
+  answers          Json
+  dimensions       Json
+  overallScore     Int       @map("overall_score")
+  inferredStage    String    @db.VarChar(32) @map("inferred_stage")
+  topPriority      String    @db.Text @map("top_priority")
+  recommendedSteps String[]  @default([]) @map("recommended_steps")
+
+  agentId          String    @default("DiagnosisAgent") @db.VarChar(64) @map("agent_id")
+  modelUsed        String?   @db.VarChar(64) @map("model_used")
+  tokensUsed       Int?      @map("tokens_used")
+  durationMs       Int?      @map("duration_ms")
+  isFallback       Boolean   @default(false) @map("is_fallback")
+
+  traceId          String?   @db.VarChar(64) @map("trace_id")
+  ipAccount        IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@map("diagnosis_reports")
+  @@index([accountId])
+  @@index([accountId, createdAt(sort: Desc)])
+}
+
+model FeedbackLog {
+  id                  Int       @id @default(autoincrement())
+  accountId           Int       @map("account_id")
+  userId              Int?      @map("user_id")
+
+  historyId           Int?      @map("history_id")
+  rateableType        String    @db.VarChar(32) @map("rateable_type")
+  rateableId          Int       @map("rateable_id")
+
+  rating              String    @db.VarChar(8)
+  comment             String?   @db.Text
+
+  agentId             String    @db.VarChar(64) @map("agent_id")
+  agentMode           String?   @db.VarChar(32) @map("agent_mode")
+  scriptType          String?   @db.VarChar(32) @map("script_type")
+  elements            String[]  @default([])
+
+  consumedByEvolution Boolean   @default(false) @map("consumed_by_evolution")
+  consumedAt          DateTime? @map("consumed_at")
+  consumedByInsightId Int?      @map("consumed_by_insight_id")
+
+  traceId             String?   @db.VarChar(64) @map("trace_id")
+  ipAccount           IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user                User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  history             History?  @relation(fields: [historyId], references: [id], onDelete: SetNull)
+
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@map("feedback_logs")
+  @@index([accountId])
+  @@index([accountId, rating])
+  @@index([accountId, consumedByEvolution])
+  @@index([accountId, agentId])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([traceId])
+  @@index([userId])
+}
+
+model EvolutionProfile {
+  id                   Int       @id @default(autoincrement())
+  accountId            Int       @unique @map("account_id")
+
+  level                String    @default("L1") @db.VarChar(4)
+  feedbackCountGood    Int       @default(0) @map("feedback_count_good")
+  feedbackCountBad     Int       @default(0) @map("feedback_count_bad")
+  feedbackCountTotal   Int       @default(0) @map("feedback_count_total")
+  satisfactionRate     Float?    @map("satisfaction_rate")
+
+  currentDirection     String    @default("综合") @db.VarChar(32) @map("current_direction")
+  autoEvolutionEnabled Boolean   @default(false) @map("auto_evolution_enabled")
+
+  latestInsightId      Int?      @map("latest_insight_id")
+  latestInsight        Json?     @map("latest_insight")
+  deepLearningCount    Int       @default(0) @map("deep_learning_count")
+
+  lastEvolvedAt        DateTime? @map("last_evolved_at")
+  lastUpgradedAt       DateTime? @map("last_upgraded_at")
+
+  ipAccount            IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  @@map("evolution_profiles")
+  @@index([level])
+  @@index([accountId, level])
+}
+
+model EvolutionInsight {
+  id                Int       @id @default(autoincrement())
+  accountId         Int       @map("account_id")
+
+  triggerType       String    @db.VarChar(32) @map("trigger_type")
+  direction         String    @db.VarChar(32)
+  content           Json
+
+  sourceFeedbackIds Int[]     @default([]) @map("source_feedback_ids")
+  sourceSampleIds   Int[]     @default([]) @map("source_sample_ids")
+
+  agentId           String    @default("EvolutionAgent") @db.VarChar(64) @map("agent_id")
+  modelUsed         String?   @db.VarChar(64) @map("model_used")
+  tokensUsed        Int?      @map("tokens_used")
+  durationMs        Int?      @map("duration_ms")
+  isFallback        Boolean   @default(false) @map("is_fallback")
+
+  levelBefore       String?   @db.VarChar(4) @map("level_before")
+  levelAfter        String?   @db.VarChar(4) @map("level_after")
+
+  traceId           String?   @db.VarChar(64) @map("trace_id")
+  ipAccount         IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@map("evolution_insights")
+  @@index([accountId])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([accountId, levelAfter])
+}
+
+// ============================================================
+// §7 学习 + 知识(3 张)
+// ============================================================
+
+model DeepLearningArchive {
+  id              Int       @id @default(autoincrement())
+  accountId       Int       @map("account_id")
+
+  sourceType      String    @db.VarChar(16) @map("source_type")
+  sourceAssetId   Int?      @map("source_asset_id")
+
+  sample          String    @db.Text
+  sampleHash      String    @db.VarChar(64) @map("sample_hash")
+  summary         String?   @db.Text
+
+  styleVector     Unsupported("vector(1536)")? @map("style_vector")
+  tags            String[]  @default([])
+  styleProfile    Json?     @map("style_profile")
+
+  learningStatus  String    @default("pending") @db.VarChar(16) @map("learning_status")
+  learningError   String?   @db.Text @map("learning_error")
+
+  userTitle       String?   @db.VarChar(100) @map("user_title")
+  userTags        String[]  @default([]) @map("user_tags")
+  isActive        Boolean   @default(true) @map("is_active")
+
+  agentId         String    @default("DeepLearnAgent") @db.VarChar(64) @map("agent_id")
+  modelUsed       String?   @db.VarChar(64) @map("model_used")
+  tokensUsed      Int?      @map("tokens_used")
+
+  traceId         String?   @db.VarChar(64) @map("trace_id")
+  ipAccount       IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("deep_learning_archives")
+  @@unique([accountId, sampleHash])
+  @@index([accountId])
+  @@index([accountId, learningStatus])
+  @@index([accountId, isActive])
+}
+
+model KnowledgeFavorite {
+  id        Int       @id @default(autoincrement())
+  accountId Int       @map("account_id")
+
+  itemType  String    @db.VarChar(32) @map("item_type")
+  itemKey   String    @db.VarChar(128) @map("item_key")
+  userTags  String[]  @default([]) @map("user_tags")
+  noteId    Int?      @map("note_id")
+
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  note      KnowledgeNote? @relation("FavoriteNote", fields: [noteId], references: [id], onDelete: SetNull)
+
+  traceId   String?   @db.VarChar(64) @map("trace_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("knowledge_favorites")
+  @@unique([accountId, itemType, itemKey])
+  @@index([accountId])
+  @@index([accountId, itemType])
+}
+
+model KnowledgeNote {
+  id        Int       @id @default(autoincrement())
+  accountId Int       @map("account_id")
+
+  itemType  String?   @db.VarChar(32) @map("item_type")
+  itemKey   String?   @db.VarChar(128) @map("item_key")
+  content   String    @db.Text
+  title     String?   @db.VarChar(200)
+  tags      String[]  @default([])
+
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  favorites KnowledgeFavorite[] @relation("FavoriteNote")
+
+  traceId   String?   @db.VarChar(64) @map("trace_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("knowledge_notes")
+  @@index([accountId])
+  @@index([accountId, itemType, itemKey])
+  @@index([accountId, updatedAt(sort: Desc)])
+}
+
+// ============================================================
+// §8 运维表(3 张 · 不开 RLS)
+// ============================================================
+
+model CostLog {
+  id               BigInt    @id @default(autoincrement())
+  accountId        Int?      @map("account_id")
+  userId           Int?      @map("user_id")
+
+  agentId          String    @db.VarChar(64) @map("agent_id")
+  agentMode        String?   @db.VarChar(32) @map("agent_mode")
+  callType         String    @db.VarChar(32) @map("call_type")
+  modelTier        String    @db.VarChar(16) @map("model_tier")
+  modelUsed        String    @db.VarChar(64) @map("model_used")
+  provider         String    @db.VarChar(32)
+
+  promptTokens     Int       @default(0) @map("prompt_tokens")
+  completionTokens Int       @default(0) @map("completion_tokens")
+  totalTokens      Int       @default(0) @map("total_tokens")
+  imageCount       Int?      @map("image_count")
+  audioSeconds     Int?      @map("audio_seconds")
+  charactersIn     Int?      @map("characters_in")
+
+  costUsd          Decimal   @db.Decimal(10, 6) @map("cost_usd")
+  durationMs       Int       @map("duration_ms")
+
+  success          Boolean   @default(true)
+  errorCode        String?   @db.VarChar(32) @map("error_code")
+  isFallback       Boolean   @default(false) @map("is_fallback")
+  fallbackFrom     String?   @db.VarChar(64) @map("fallback_from")
+  fallbackTo       String?   @db.VarChar(64) @map("fallback_to")
+  fallbackReason   String?   @db.VarChar(128) @map("fallback_reason")
+
+  traceId          String?   @db.VarChar(64) @map("trace_id")
+  ipAccount        IpAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  user             User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@map("cost_log")
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([agentId, createdAt(sort: Desc)])
+  @@index([modelUsed, createdAt(sort: Desc)])
+  @@index([provider, success, createdAt(sort: Desc)])
+  @@index([traceId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model AuditLog {
+  id            BigInt   @id @default(autoincrement())
+  userId        Int?     @map("user_id")
+  accountId     Int?     @map("account_id")
+
+  eventType     String   @db.VarChar(64) @map("event_type")
+  eventCategory String   @db.VarChar(32) @map("event_category")
+  resourceType  String?  @db.VarChar(32) @map("resource_type")
+  resourceId    Int?     @map("resource_id")
+  payload       Json?
+
+  ipAddress     String?  @db.VarChar(45) @map("ip_address")
+  userAgent     String?  @db.Text @map("user_agent")
+  success       Boolean  @default(true)
+  errorCode     String?  @db.VarChar(32) @map("error_code")
+  errorMessage  String?  @db.Text @map("error_message")
+
+  traceId       String?  @db.VarChar(64) @map("trace_id")
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("audit_log")
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
+  @@index([traceId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model DailyTask {
+  id             Int       @id @default(autoincrement())
+  accountId      Int       @map("account_id")
+  taskDate       DateTime  @db.Date @map("task_date")
+
+  tasks          Json
+  completedCount Int       @default(0) @map("completed_count")
+  totalCount     Int       @default(0) @map("total_count")
+
+  agentId        String    @default("DailyTaskAgent") @db.VarChar(64) @map("agent_id")
+  modelUsed      String?   @db.VarChar(64) @map("model_used")
+  isFallback     Boolean   @default(false) @map("is_fallback")
+  inputSnapshot  Json?     @map("input_snapshot")
+
+  traceId        String?   @db.VarChar(64) @map("trace_id")
+  ipAccount      IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@map("daily_tasks")
+  @@unique([accountId, taskDate])
+  @@index([accountId])
+  @@index([taskDate])
+  @@index([accountId, taskDate(sort: Desc)])
+}

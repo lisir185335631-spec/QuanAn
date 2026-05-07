@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AIP 平台：智能 IP 咨询顾问</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Inter:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#241a00",
+                        "on-primary-fixed": "#241a00",
+                        "tertiary-fixed-dim": "#f7bd48",
+                        "surface": "#131316",
+                        "inverse-on-surface": "#303033",
+                        "tertiary": "#ffc551",
+                        "surface-container-low": "#1b1b1e",
+                        "on-secondary-container": "#352800",
+                        "outline-variant": "#4d4635",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-error": "#690005",
+                        "secondary-container": "#b08c10",
+                        "outline": "#99907c",
+                        "on-primary-container": "#554300",
+                        "on-tertiary-fixed": "#271900",
+                        "on-secondary": "#3d2f00",
+                        "secondary-fixed-dim": "#eac249",
+                        "on-tertiary": "#412d00",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e4e2e5",
+                        "on-surface": "#e4e2e5",
+                        "secondary-fixed": "#ffe08b",
+                        "on-primary-fixed-variant": "#574500",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#ffe088",
+                        "on-surface-variant": "#d0c5af",
+                        "inverse-primary": "#735c00",
+                        "surface-dim": "#131316",
+                        "surface-container-high": "#2a2a2d",
+                        "tertiary-container": "#e1aa36",
+                        "on-secondary-fixed-variant": "#584400",
+                        "primary": "#f2ca50",
+                        "surface-container-lowest": "#0e0e11",
+                        "on-background": "#e4e2e5",
+                        "tertiary-fixed": "#ffdea6",
+                        "on-primary": "#3c2f00",
+                        "surface-container-highest": "#343437",
+                        "primary-fixed-dim": "#e9c349",
+                        "secondary": "#eac249",
+                        "primary-container": "#d4af37",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#5b4000",
+                        "surface-container": "#1f1f22",
+                        "surface-bright": "#39393c",
+                        "surface-variant": "#343437",
+                        "background": "#131316",
+                        "surface-tint": "#e9c349"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "xl": "40px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "2xl": "64px",
+                        "container-max": "1440px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Manrope"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Manrope"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-xl": ["Manrope"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"],
+                        "h1": ["Manrope"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 border-b border-[#2D2D30] bg-[#0A0A0B]/90 backdrop-blur-md font-manrope antialiased tracking-tight shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-xl">
+<span class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase">AETHEL IP</span>
+<div class="hidden md:flex gap-lg items-center mt-unit">
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300" href="#">Creation</a>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300" href="#">Planning</a>
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4" href="#">Intelligence</a>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300" href="#">Assets</a>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 p-sm rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 p-sm rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-8 w-px bg-surface-variant mx-sm"></div>
+<button class="text-body-sm font-label-md text-zinc-400 hover:text-primary-container transition-colors">Switch Account</button>
+<img alt="User profile" class="w-10 h-10 rounded-full border border-[#2D2D30] object-cover hover:border-primary-container transition-colors cursor-pointer" data-alt="A highly detailed close-up portrait of a professional in a minimalist setting. The lighting is moody and cinematic, with deep shadows and soft highlights reflecting the sophisticated, high-end visual style of the application. The background is a muted dark gray, ensuring the focus remains entirely on the subject. The overall aesthetic perfectly matches the luxurious Aurelian Dark minimal design theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ7Rk-hrdhnyIzbmBC2cXPWhMsWg3K1ayMzlYnxj2VgLJ9nFAYOTAls5IgQQUUmdIBWqfAPShN5nQgPyIwyJ55ZqexlC4G6CrXvvZyUf7uUyyBno7tWbgPt_9gX4MFFfauolZfRBMk_I4NmKug-BYioFrZF8gXfQjf8gePHksl37i_G24uZdlUEtdBudUMEUQVdecBLAcM2aHOdmCOKnR3vdJN_PyLeyK4QjOqhMTO8Zb0sLoAN051jl_0smt7eCkgOaf-zFxn2sI0"/>
+<button class="text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 p-sm rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="flex-grow flex pt-20 max-w-[1440px] mx-auto w-full h-[calc(100vh-80px)] overflow-hidden">
+<!-- Sidebar: History -->
+<aside class="w-[320px] bg-[#141416] border-r border-[#2D2D30] flex flex-col h-full flex-shrink-0">
+<div class="p-lg flex items-center justify-between border-b border-surface-variant/50">
+<h2 class="font-h2 text-h2 text-on-surface">会话历史</h2>
+<button class="p-sm text-on-surface-variant hover:text-primary-container transition-colors flex items-center justify-center bg-surface-container-low rounded-DEFAULT border border-transparent hover:border-outline-variant">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex-grow overflow-y-auto p-md space-y-sm custom-scrollbar">
+<!-- Today -->
+<div class="mb-lg">
+<span class="font-label-sm text-label-sm text-on-surface-variant/70 uppercase tracking-widest block mb-sm pl-sm">今天</span>
+<div class="relative group cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-[2px] bg-primary-container rounded-r-DEFAULT"></div>
+<div class="p-md bg-surface-container-low rounded-DEFAULT border border-[#2D2D30] group-hover:bg-surface-container-high transition-colors ml-xs">
+<h3 class="font-body-md text-body-md text-primary-container truncate mb-xs">评估生物科技专利资产池</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">关于近期收购组合的战略分析...</p>
+</div>
+</div>
+</div>
+<!-- Yesterday -->
+<div class="mb-lg">
+<span class="font-label-sm text-label-sm text-on-surface-variant/70 uppercase tracking-widest block mb-sm pl-sm">昨天</span>
+<div class="relative group cursor-pointer mb-sm">
+<div class="p-md rounded-DEFAULT border border-transparent hover:border-[#2D2D30] hover:bg-surface-container-low transition-colors ml-xs">
+<h3 class="font-body-md text-body-md text-on-surface group-hover:text-primary-container transition-colors truncate mb-xs">新能源汽车商标布局策略</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">针对欧洲市场的品牌保护建议</p>
+</div>
+</div>
+<div class="relative group cursor-pointer">
+<div class="p-md rounded-DEFAULT border border-transparent hover:border-[#2D2D30] hover:bg-surface-container-low transition-colors ml-xs">
+<h3 class="font-body-md text-body-md text-on-surface group-hover:text-primary-container transition-colors truncate mb-xs">版权侵权监控报告解读</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">第二季度数字内容分发异常分析</p>
+</div>
+</div>
+</div>
+<!-- Previous 7 Days -->
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant/70 uppercase tracking-widest block mb-sm pl-sm">过去 7 天</span>
+<div class="relative group cursor-pointer mb-sm">
+<div class="p-md rounded-DEFAULT border border-transparent hover:border-[#2D2D30] hover:bg-surface-container-low transition-colors ml-xs">
+<h3 class="font-body-md text-body-md text-on-surface group-hover:text-primary-container transition-colors truncate mb-xs">跨国诉讼费用预估模型</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">基于历史数据的加州法院案例分析</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Chat Area -->
+<div class="flex-grow flex flex-col h-full bg-[#0A0A0B] relative">
+<!-- Background Ambient Glow -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] bg-primary-container/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-surface-container-highest/30 rounded-full blur-[100px]"></div>
+</div>
+<!-- Chat Header -->
+<header class="p-lg border-b border-[#2D2D30] flex justify-between items-center bg-[#0A0A0B]/80 backdrop-blur-md z-10">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-DEFAULT bg-surface-container-low border border-outline-variant flex items-center justify-center text-primary-container shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</div>
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">智能 IP 咨询顾问</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Aethelgard 专属人工智能</p>
+</div>
+</div>
+<div class="flex gap-md">
+<button class="p-sm text-on-surface-variant hover:text-primary-container border border-transparent hover:border-[#2D2D30] rounded-DEFAULT transition-all">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</header>
+<!-- Chat Messages -->
+<div class="flex-grow overflow-y-auto p-xl space-y-xl z-10 custom-scrollbar">
+<!-- System Prompt / Intro -->
+<div class="flex justify-center mb-2xl">
+<div class="text-center max-w-2xl">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container-low border border-primary-container/30 text-primary-container mb-md shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+<span class="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-sm">为您提供专业的 IP 战略咨询</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">我可以协助您分析专利组合、制定商标策略或评估潜在风险。请直接向我提问或使用语音输入。</p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="max-w-[70%] flex gap-md items-start flex-row-reverse">
+<img alt="User profile" class="w-8 h-8 rounded-full border border-[#2D2D30] object-cover flex-shrink-0" data-alt="A highly detailed close-up portrait of a professional in a minimalist setting. The lighting is moody and cinematic, with deep shadows and soft highlights reflecting the sophisticated, high-end visual style of the application. The background is a muted dark gray, ensuring the focus remains entirely on the subject. The overall aesthetic perfectly matches the luxurious Aurelian Dark minimal design theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOVzXiEjAxAMDNBj-AqPtKfRfE76Z6UScCz8AdiK9vl0h8OUKsAqFa0ehTbyOgvAAr4dMCMVdPBA6q_igajntMsh8arR05AM9QQf9VHRwdxv0Fn9MiiuPjl21v9CAlg_AjIRmmcaoWMtbKzhb4qSysrxoJc9RiOTdpShr5VDe0xJgmK7KkFXNfMFpR1JkmG99csSKwYleZt0Wthypv49UpFm9FMoafNI43jFkJHdyvOvBQbZavi1rYql_tHI0BqnklecQd7EKlaWm2"/>
+<div class="bg-surface-container-low border border-[#2D2D30] rounded-xl rounded-tr-none p-md shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
+<p class="font-body-md text-body-md text-on-surface">帮我评估一下我们近期准备收购的那批生物科技专利资产池的核心价值和潜在风险，主要集中在基因编辑技术方向。</p>
+</div>
+</div>
+</div>
+<!-- AI Message -->
+<div class="flex justify-start">
+<div class="max-w-[85%] flex gap-md items-start">
+<div class="w-8 h-8 rounded-DEFAULT bg-primary-container/10 border border-primary-container/30 flex items-center justify-center text-primary-container flex-shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
+<span class="material-symbols-outlined text-sm" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="w-full">
+<div class="flex items-center gap-md mb-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant">AETHEL AI顾问</span>
+<button class="text-on-surface-variant hover:text-primary-container transition-colors flex items-center gap-unit text-xs" title="播放语音">
+<span class="material-symbols-outlined text-sm" data-icon="volume_up">volume_up</span>
+<span class="font-label-sm">TTS</span>
+</button>
+</div>
+<!-- Structured Markdown Output Structure -->
+<div class="bg-[#1C1C1E] border border-[#2D2D30] rounded-xl rounded-tl-none p-xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden group hover:-translate-y-[2px] transition-transform duration-300">
+<!-- Top Highlight Gradient -->
+<div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+<div class="prose prose-invert max-w-none font-body-md text-on-surface space-y-md">
+<p class="text-body-lg text-on-surface mb-lg">针对您提及的生物科技（基因编辑方向）专利资产池，我已基于当前数据库进行了初步战略评估。以下是核心价值与潜在风险的分析摘要：</p>
+<h3 class="font-h2 text-h2 text-primary-container flex items-center gap-sm mt-xl mb-md">
+<span class="material-symbols-outlined text-xl" data-icon="diamond">diamond</span>
+                                        核心价值分析 (Core Value Proposition)
+                                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-xl">
+<div class="bg-[#0A0A0B] p-md rounded-lg border border-[#2D2D30]">
+<h4 class="font-label-sm text-label-sm text-primary-container uppercase tracking-widest mb-sm">基础技术壁垒</h4>
+<p class="font-body-sm text-on-surface-variant">包含3项关键的 CRISPR-Cas 变体底层架构专利，在提高靶向精确度方面具有显著的排他性优势。</p>
+</div>
+<div class="bg-[#0A0A0B] p-md rounded-lg border border-[#2D2D30]">
+<h4 class="font-label-sm text-label-sm text-primary-container uppercase tracking-widest mb-sm">商业转化潜力</h4>
+<p class="font-body-sm text-on-surface-variant">其中涉及特定罕见病基因疗法的应用专利，目前已进入临床二期，具有极高的近期授权变现潜力。</p>
+</div>
+</div>
+<h3 class="font-h2 text-h2 text-error-container flex items-center gap-sm mt-xl mb-md">
+<span class="material-symbols-outlined text-xl" data-icon="warning">warning</span>
+                                        潜在风险评估 (Risk Assessment)
+                                    </h3>
+<ul class="space-y-sm list-none pl-0">
+<li class="flex items-start gap-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-error mt-2 flex-shrink-0"></div>
+<span class="text-on-surface-variant"><strong class="text-on-surface">效力不稳定性：</strong> 该资产池中有2件核心欧洲专利目前正面临异议程序(Opposition Proceedings)，存在权利要求被缩限的风险。</span>
+</li>
+<li class="flex items-start gap-sm">
+<div class="w-1.5 h-1.5 rounded-full bg-error mt-2 flex-shrink-0"></div>
+<span class="text-on-surface-variant"><strong class="text-on-surface">自由实施(FTO)盲区：</strong> 递送系统(Delivery System，如LNP技术)的专利覆盖不足，实际商业化时可能需要寻求第三方交叉许可。</span>
+</li>
+</ul>
+</div>
+<div class="mt-lg pt-md border-t border-[#2D2D30] flex gap-md">
+<button class="font-label-md text-label-md text-primary-container hover:text-white transition-colors flex items-center gap-unit uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                                        导出详细报告
+                                    </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-white transition-colors flex items-center gap-unit uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm" data-icon="share">share</span>
+                                        分享分析
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Typing Indicator -->
+<div class="flex justify-start">
+<div class="max-w-[85%] flex gap-md items-start">
+<div class="w-8 h-8 rounded-DEFAULT bg-primary-container/10 border border-primary-container/30 flex items-center justify-center text-primary-container flex-shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="bg-[#1C1C1E] border border-[#2D2D30] rounded-xl rounded-tl-none p-md flex items-center gap-sm w-24 h-12">
+<div class="w-2 h-2 bg-primary-container rounded-full animate-pulse"></div>
+<div class="w-2 h-2 bg-primary-container rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+<div class="w-2 h-2 bg-primary-container rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-lg bg-[#0A0A0B] border-t border-[#2D2D30] z-20">
+<div class="max-w-4xl mx-auto relative">
+<div class="absolute -top-12 left-0 flex gap-sm">
+<button class="px-md py-sm bg-[#1C1C1E] border border-[#2D2D30] rounded-full font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container hover:border-primary-container/50 transition-all shadow-md">
+                            生成 FTO 报告框架
+                        </button>
+<button class="px-md py-sm bg-[#1C1C1E] border border-[#2D2D30] rounded-full font-body-sm text-body-sm text-on-surface-variant hover:text-primary-container hover:border-primary-container/50 transition-all shadow-md">
+                            对比同类资产
+                        </button>
+</div>
+<div class="relative flex items-end gap-sm bg-[#131316] border border-[#2D2D30] rounded-xl focus-within:border-[#D4AF37] focus-within:shadow-[0_0_0_2px_rgba(212,175,55,0.15)] transition-all p-unit group">
+<!-- Voice Input Button -->
+<button class="p-md rounded-lg text-primary-container bg-primary-container/10 hover:bg-primary-container/20 transition-colors flex items-center justify-center flex-shrink-0 relative">
+<span class="absolute inset-0 rounded-lg border border-primary-container/30 animate-ping"></span>
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+<textarea class="w-full bg-transparent border-none text-on-surface font-body-md placeholder-on-surface-variant/50 focus:ring-0 resize-none py-md px-sm max-h-[200px] min-h-[56px] custom-scrollbar" placeholder="输入您的问题，或点击麦克风开始语音输入..." rows="1"></textarea>
+<div class="flex items-center gap-xs p-unit mb-sm mr-sm">
+<button class="p-sm text-on-surface-variant hover:text-white transition-colors rounded-DEFAULT">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<!-- Send Button -->
+<button class="w-10 h-10 rounded-DEFAULT bg-[#D4AF37] text-[#0A0A0B] flex items-center justify-center hover:bg-[#e9c349] transition-colors relative overflow-hidden group/btn">
+<span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-[sweep_1s_ease-in-out]"></span>
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+<div class="text-center mt-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant/50">AI 生成的内容可能不完全准确，请结合专业法律意见参考。</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#2D2D30] mt-auto bg-[#0A0A0B] font-manrope">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto">
+<p class="text-[#D4AF37] text-[12px] uppercase tracking-widest">© 2024 Aethelgard IP. All Rights Reserved.</p>
+<div class="flex gap-lg">
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Terms</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Privacy</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">Support</a>
+<a class="text-[12px] font-manrope uppercase tracking-widest text-zinc-600 hover:text-[#D4AF37] transition-colors" href="#">API</a>
+</div>
+</div>
+</footer>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2D2D30;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4d4635;
+        }
+        @keyframes sweep {
+            0% { transform: translateX(-100%) skewX(-15deg); }
+            100% { transform: translateX(200%) skewX(-15deg); }
+        }
+    </style>
+</body></html>

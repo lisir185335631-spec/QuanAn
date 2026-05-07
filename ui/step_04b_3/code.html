@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>变现路径规划 - AIP</title>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#e4e2e5",
+                        "primary-fixed-dim": "#e9c349",
+                        "inverse-primary": "#735c00",
+                        "on-secondary-fixed": "#241a00",
+                        "on-primary": "#3c2f00",
+                        "tertiary-fixed-dim": "#f7bd48",
+                        "on-secondary-fixed-variant": "#584400",
+                        "on-secondary": "#3d2f00",
+                        "surface-container-low": "#1b1b1e",
+                        "on-error": "#690005",
+                        "on-background": "#e4e2e5",
+                        "inverse-surface": "#e4e2e5",
+                        "on-tertiary": "#412d00",
+                        "on-primary-fixed-variant": "#574500",
+                        "on-primary-container": "#554300",
+                        "inverse-on-surface": "#303033",
+                        "surface": "#131316",
+                        "on-surface-variant": "#d0c5af",
+                        "surface-container-highest": "#343437",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#e1aa36",
+                        "surface-container": "#1f1f22",
+                        "tertiary-fixed": "#ffdea6",
+                        "surface-container-high": "#2a2a2d",
+                        "background": "#131316",
+                        "surface-container-lowest": "#0e0e11",
+                        "primary-container": "#d4af37",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "outline-variant": "#4d4635",
+                        "error-container": "#93000a",
+                        "outline": "#99907c",
+                        "secondary-fixed": "#ffe08b",
+                        "on-tertiary-fixed": "#271900",
+                        "on-primary-fixed": "#241a00",
+                        "on-secondary-container": "#352800",
+                        "surface-tint": "#e9c349",
+                        "tertiary": "#ffc551",
+                        "secondary": "#eac249",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#131316",
+                        "surface-bright": "#39393c",
+                        "surface-variant": "#343437",
+                        "secondary-container": "#b08c10",
+                        "secondary-fixed-dim": "#eac249",
+                        "on-tertiary-container": "#5b4000",
+                        "primary": "#f2ca50",
+                        "primary-fixed": "#ffe088"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "md": "16px",
+                        "2xl": "64px",
+                        "xs": "4px",
+                        "xl": "40px",
+                        "lg": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "display-lg": ["Manrope"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Manrope"],
+                        "display-xl": ["Manrope"],
+                        "h1": ["Manrope"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base styles forcing exact fonts */
+        body {
+            background-color: #131316; /* Config 'background' */
+            color: #e4e2e5; /* Config 'on-surface' */
+            background-image: 
+                linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .breathing-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(19,19,22,0) 60%);
+            z-index: -1;
+            pointer-events: none;
+            animation: breathe 6s infinite alternate ease-in-out;
+        }
+        
+        /* Machined Edge Border Highlight */
+        .machined-edge {
+            position: relative;
+        }
+        .machined-edge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Gold Glow Sweep Hover */
+        .gold-sweep-hover:hover {
+            box-shadow: 0 0 30px 0 rgba(212, 175, 55, 0.1);
+        }
+        
+        /* Subtle Inner Lift */
+        .micro-lift {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .micro-lift:hover {
+            transform: translateY(-2px);
+            border-color: #4d4635; /* outline-variant */
+            box-shadow: 0 8px 24px -8px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Dynamic Gradient Shift for Buttons */
+        .btn-gradient-shift {
+            background-size: 200% auto;
+            background-image: linear-gradient(to right, #b08c10, #f2ca50, #b08c10);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #131316 !important;
+            border: none;
+        }
+        .btn-gradient-shift:hover {
+            background-position: right center;
+            box-shadow: 0 0 15px rgba(242, 202, 80, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .text-gradient-hover {
+            transition: all 0.3s ease;
+        }
+        .text-gradient-hover:hover {
+            background: linear-gradient(to right, #d4af37, #ffe088);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateY(-1px);
+        }
+
+        @keyframes breathe {
+            0% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased flex flex-col min-h-screen">
+<div class="breathing-bg"></div>
+<!-- TopNavBar -->
+<nav class="bg-[#0A0A0B]/90 text-[#D4AF37] font-manrope antialiased tracking-tight fixed top-0 w-full z-50 border-b border-[#2D2D30] shadow-[0_20px_40px_rgba(0,0,0,0.4)] backdrop-blur-md" style="border-bottom: 1px solid #2D2D30;">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<!-- Brand -->
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase">
+                AIP
+            </div>
+<!-- Navigation Links -->
+<ul class="hidden md:flex items-center gap-xl">
+<li>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 px-4 py-2 rounded-lg" href="#">创作</a>
+</li>
+<li>
+<!-- Active State -->
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4 px-4" href="#">规划</a>
+</li>
+<li>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 px-4 py-2 rounded-lg" href="#">情报</a>
+</li>
+<li>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 px-4 py-2 rounded-lg" href="#">资产</a>
+</li>
+</ul>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-md">
+<button class="hidden lg:block text-label-md font-label-md uppercase tracking-widest text-on-surface-variant hover:text-primary-container transition-colors">切换账号</button>
+<div class="flex gap-sm">
+<button class="p-2 text-zinc-500 hover:text-[#D4AF37] transition-all duration-300 rounded-full hover:bg-zinc-900/50 hover:scale-110">
+<i class="w-5 h-5" data-lucide="bell"></i>
+</button>
+<button class="p-2 text-zinc-500 hover:text-[#D4AF37] transition-all duration-300 rounded-full hover:bg-zinc-900/50 hover:scale-110">
+<i class="w-5 h-5" data-lucide="log-out"></i>
+</button>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[120px] pb-2xl px-gutter max-w-container-max mx-auto w-full relative z-10">
+<!-- Header Section -->
+<header class="mb-xl max-w-3xl">
+<div class="flex items-center gap-sm mb-sm">
+<span class="h-[2px] w-8 bg-primary-container"></span>
+<span class="font-label-sm text-label-sm text-primary-container uppercase">阶段四 B</span>
+</div>
+<h1 class="font-display-xl text-display-xl text-on-surface mb-md">变现路径规划</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                知识产权变现的战略蓝图。构建从初步验证到大规模扩展的阶梯式收入生态系统。
+            </p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- 1. Three-Tier Path -->
+<section class="lg:col-span-12 bg-surface-container/90 backdrop-blur-sm machined-edge border border-surface-container-highest rounded-xl p-lg flex flex-col justify-between micro-lift transition-all duration-300">
+<div class="flex justify-between items-center mb-xl border-b border-surface-variant pb-md">
+<h2 class="font-h2 text-h2 text-on-surface flex items-center gap-sm">
+<i class="text-primary-container w-6 h-6" data-lucide="activity"></i>
+                        三阶梯变现路径
+                    </h2>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest px-sm py-xs border border-surface-variant rounded">收益进阶</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter relative">
+<!-- Connecting Line -->
+<div class="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-surface-variant -z-10"></div>
+<!-- Tier 1 -->
+<div class="bg-surface/90 backdrop-blur-md relative z-10 p-md rounded-lg border border-surface-container-highest flex flex-col gap-sm">
+<div class="flex items-center justify-between mb-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline/30">
+<i class="text-on-surface-variant w-5 h-5" data-lucide="flag"></i>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-lowest px-2 py-1 rounded">第一阶段</span>
+</div>
+<h3 class="font-h1 text-h1 text-on-surface">0-90万</h3>
+<p class="font-label-md text-label-md text-primary-container uppercase">验证与现金流</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-sm">专注于高客单价的一对一咨询，紧密的反馈循环，并建立初步的市场权威。</p>
+</div>
+<!-- Tier 2 -->
+<div class="bg-surface/90 backdrop-blur-md relative z-10 p-md rounded-lg border border-surface-container-highest flex flex-col gap-sm">
+<div class="flex items-center justify-between mb-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline/30">
+<i class="text-on-surface-variant w-5 h-5" data-lucide="trending-up"></i>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-lowest px-2 py-1 rounded">第二阶段</span>
+</div>
+<h3 class="font-h1 text-h1 text-on-surface">100万-1000万</h3>
+<p class="font-label-md text-label-md text-primary-container uppercase">系统化与规模化</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-sm">向基于群组的模型、自动化漏斗和标准化产品化服务过渡。</p>
+</div>
+<!-- Tier 3 (Highlight) -->
+<div class="bg-surface/90 backdrop-blur-md relative z-10 p-md rounded-lg border border-primary-container/30 shadow-[0_0_20px_rgba(212,175,55,0.05)] flex flex-col gap-sm border-opacity-50">
+<div class="flex items-center justify-between mb-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center border border-primary-container/50">
+<i class="text-primary-container w-5 h-5" data-lucide="landmark"></i>
+</div>
+<span class="font-label-sm text-label-sm text-primary-container bg-primary-container/10 px-2 py-1 rounded border border-primary-container/20">第三阶段</span>
+</div>
+<h3 class="font-h1 text-h1 text-primary-container">1000万-1亿</h3>
+<p class="font-label-md text-label-md text-primary-container uppercase">生态与资本</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-sm">平台化运作、知识产权授权、软件集成以及基于股权的顾问模型。</p>
+</div>
+</div>
+</section>
+<!-- 2. Product Matrix -->
+<section class="lg:col-span-8 bg-surface-container/90 backdrop-blur-sm machined-edge border border-surface-container-highest rounded-xl p-lg micro-lift transition-all duration-300">
+<div class="flex items-center gap-sm mb-lg">
+<i class="text-on-surface-variant w-6 h-6" data-lucide="layout-grid"></i>
+<h2 class="font-h2 text-h2 text-on-surface">产品矩阵架构</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md h-[calc(100%-48px)]">
+<!-- Driver -->
+<div class="bg-surface/90 backdrop-blur-md p-md rounded border border-surface-container-highest hover:border-outline/50 transition-colors flex gap-md items-start">
+<div class="mt-1">
+<i class="text-on-surface-variant w-5 h-5" data-lucide="magnet"></i>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-xs">引流品</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">低阻力的入门资产。免费模板、迷你课程，旨在实现大规模获客和线索捕获。</p>
+</div>
+</div>
+<!-- Trust -->
+<div class="bg-surface/90 backdrop-blur-md p-md rounded border border-surface-container-highest hover:border-outline/50 transition-colors flex gap-md items-start">
+<div class="mt-1">
+<i class="text-on-surface-variant w-5 h-5" data-lucide="shield-check"></i>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-xs">信任品</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">中等客单价的大师课或审计。目标是收回获客成本并建立无可辩驳的权威。</p>
+</div>
+</div>
+<!-- Profit -->
+<div class="bg-surface/90 backdrop-blur-md p-md rounded border border-surface-container-highest hover:border-outline/50 transition-colors flex gap-md items-start">
+<div class="mt-1">
+<i class="text-primary-container w-5 h-5" data-lucide="gem"></i>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary-container uppercase tracking-widest mb-xs">利润品</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">核心转型产品。产生主要利润的高客单价咨询、密集训练营。</p>
+</div>
+</div>
+<!-- Backend -->
+<div class="bg-surface/90 backdrop-blur-md p-md rounded border border-surface-container-highest hover:border-outline/50 transition-colors flex gap-md items-start">
+<div class="mt-1">
+<i class="text-on-surface-variant w-5 h-5" data-lucide="infinity"></i>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-xs">后端产品</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">经常性收入和生命周期价值最大化。智囊团、私人社区或软件服务订阅。</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Market Analysis -->
+<section class="lg:col-span-4 bg-surface-container/90 backdrop-blur-sm machined-edge border border-surface-container-highest rounded-xl p-lg flex flex-col justify-between micro-lift transition-all duration-300">
+<div class="flex items-center gap-sm mb-lg">
+<i class="text-on-surface-variant w-6 h-6" data-lucide="pie-chart"></i>
+<h2 class="font-h2 text-h2 text-on-surface">市场分析洞察</h2>
+</div>
+<div class="space-y-lg">
+<div>
+<div class="flex justify-between font-label-md text-label-md text-on-surface-variant mb-xs">
+<span>高客单准备度</span>
+<span class="text-primary-container">78%</span>
+</div>
+<div class="h-2 w-full bg-surface rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[78%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-label-md text-label-md text-on-surface-variant mb-xs">
+<span>市场饱和度</span>
+<span>34%</span>
+</div>
+<div class="h-2 w-full bg-surface rounded-full overflow-hidden">
+<div class="h-full bg-surface-variant w-[34%]"></div>
+</div>
+</div>
+<div class="mt-md p-md bg-surface/90 backdrop-blur-md border border-surface-variant rounded">
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+<span class="text-primary-container font-semibold">洞察:</span> 当前市场对定制咨询服务表现出高弹性。当务之急应是将资源从低端的海量获客转移到高意向的培育上。
+                        </p>
+</div>
+</div>
+</section>
+<!-- 4. Traffic & Conversion Strategy -->
+<section class="lg:col-span-6 bg-surface-container/90 backdrop-blur-sm machined-edge border border-surface-container-highest rounded-xl p-lg micro-lift transition-all duration-300">
+<div class="flex items-center gap-sm mb-lg">
+<i class="text-on-surface-variant w-6 h-6" data-lucide="git-branch"></i>
+<h2 class="font-h2 text-h2 text-on-surface">流量策略与转化</h2>
+</div>
+<div class="flex flex-col md:flex-row gap-md items-stretch h-[calc(100%-48px)]">
+<!-- Inbound -->
+<div class="flex-1 bg-surface/90 backdrop-blur-md p-md rounded border border-surface-container-highest flex flex-col justify-center items-center text-center">
+<i class="text-on-surface-variant w-8 h-8 mb-sm" data-lucide="radio"></i>
+<h5 class="font-label-md text-label-md text-on-surface uppercase mb-xs">入境权威</h5>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">SEO 优化的思想领导力与播客</p>
+</div>
+<div class="hidden md:flex items-center justify-center text-surface-variant">
+<i class="w-5 h-5" data-lucide="arrow-right"></i>
+</div>
+<!-- Funnel -->
+<div class="flex-1 bg-surface/90 backdrop-blur-md p-md rounded border border-primary-container/30 flex flex-col justify-center items-center text-center relative overflow-hidden border-opacity-50">
+<div class="absolute inset-0 bg-primary-container/5"></div>
+<i class="text-primary-container w-8 h-8 mb-sm relative z-10" data-lucide="filter"></i>
+<h5 class="font-label-md text-label-md text-primary-container uppercase mb-xs relative z-10">无感孵化</h5>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs relative z-10">自动化邮件序列与视频销售信筛选</p>
+</div>
+<div class="hidden md:flex items-center justify-center text-surface-variant">
+<i class="w-5 h-5" data-lucide="arrow-right"></i>
+</div>
+<!-- Conversion -->
+<div class="flex-1 bg-surface/90 backdrop-blur-md p-md rounded border border-surface-container-highest flex flex-col justify-center items-center text-center">
+<i class="text-on-surface-variant w-8 h-8 mb-sm" data-lucide="handshake"></i>
+<h5 class="font-label-md text-label-md text-on-surface uppercase mb-xs">成交与入职</h5>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-xs">诊断性咨询与白手套入职服务</p>
+</div>
+</div>
+</section>
+<!-- 5. Success Cases -->
+<section class="lg:col-span-6 bg-surface-container/90 backdrop-blur-sm machined-edge border border-surface-container-highest rounded-xl p-lg micro-lift transition-all duration-300">
+<div class="flex items-center justify-between mb-lg">
+<div class="flex items-center gap-sm">
+<i class="text-on-surface-variant w-6 h-6" data-lucide="award"></i>
+<h2 class="font-h2 text-h2 text-on-surface">成功案例参考</h2>
+</div>
+<button class="font-label-md text-label-md text-primary-container px-4 py-2 rounded uppercase text-gradient-hover flex items-center gap-xs btn-gradient-shift">
+    查看数据库 <i class="w-4 h-4 ml-1" data-lucide="arrow-up-right"></i>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-md h-[calc(100%-48px)]">
+<!-- Case 1 -->
+<div class="relative rounded overflow-hidden group cursor-pointer border border-surface-variant h-full min-h-[140px]" data-alt="A luxurious, high-end professional workspace seen through a cinematic lens. The environment features dark oak textures, sleek matte black surfaces, and subtle, warm gold accent lighting. An abstract, minimalist data visualization is displayed on a sleek monitor. The mood is powerful, focused, and wealthy, embodying a minimalist dark mode aesthetic with deep shadows and sharp, precise details." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDSMwrcjVSuil3-iXQS5MXIso3YZ90YNUz7gIix3rJWHmWP1_nvpcAUFNmjYJ64jtRmQfQTmY2szHv8QQmcbvN_N_3dGncUxvL-XdlmN6bz23aZvKYAu3JEXYLCi0xy-0ZJattT6wQzYcmof4KcxjTTmgG0SXul5y6cGtDgN4958oFdFRdJk0nD7DjdYJBjqkuSlYRToqktfzh43HwOVGmmgNA5K6SbgotgvyA6wObUdbVN2wj-BT1QONi-5bxh7NMoV7Kb-vNwRLJF'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-[#0A0A0B]/60 to-transparent group-hover:via-[#0A0A0B]/40 transition-all duration-300"></div>
+<div class="absolute bottom-0 left-0 p-md w-full">
+<span class="font-label-sm text-label-sm text-primary-container bg-background/50 backdrop-blur border border-primary-container/20 px-2 py-1 rounded mb-xs inline-block">企业级软件服务</span>
+<h5 class="font-h2 text-[18px] text-white">黑曜石项目</h5>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">18个月内从0到1000万美元</p>
+</div>
+</div>
+<!-- Case 2 -->
+<div class="relative rounded overflow-hidden group cursor-pointer border border-surface-variant h-full min-h-[140px]" data-alt="A sophisticated architectural interior space representing growth and scale. Dark, monolithic structures are illuminated by thin, precise streams of golden light. The scene is abstract and conceptual, conveying a sense of high-level strategy and massive financial success. The lighting is dramatic, emphasizing high-end minimalist luxury with deep blacks (#0A0A0B) and metallic gold accents (#D4AF37)." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBnFdaD6CTRiZBAriJch8qoCvxwyaz5igunCiwHUHyMklA1H2gqtoGtfxo0QEffymqGM1-h9PrdRKscZCqHDr91dzdAOxKscV_118qRwpiN4L46uY0p2_n3VxcRA3FE_87EXL_jfM9qaxAJ_Pkk2F0uAoLeAoexdCR0P4RdZoxMOOTq1PyW8NvHn5197k2y7D7zcfhcAHejLJu7LED4KPpfNjtWyDCBddgSGS_J89QeJnWEDPvkJdujL-lcErwgP9_LFJvAuUwuE3bw'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-[#0A0A0B]/60 to-transparent group-hover:via-[#0A0A0B]/40 transition-all duration-300"></div>
+<div class="absolute bottom-0 left-0 p-md w-full">
+<span class="font-label-sm text-label-sm text-primary-container bg-background/50 backdrop-blur border border-primary-container/20 px-2 py-1 rounded mb-xs inline-block">创作者 AIP</span>
+<h5 class="font-h2 text-[18px] text-white">光环生态系统</h5>
+<p class="font-label-md text-label-md text-on-surface-variant mt-1">高客单价扩展模型</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0A0A0B] text-[12px] font-manrope uppercase tracking-widest w-full border-t border-[#2D2D30] mt-auto relative z-10" style="border-top: 1px solid #2D2D30;">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto">
+<!-- Copyright -->
+<div class="text-zinc-600">
+                © 2024 埃塞尔 AIP。保留所有权利。
+            </div>
+<!-- Links -->
+<ul class="flex items-center gap-xl">
+<li>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-all duration-300 hover:-translate-y-0.5 inline-block" href="#">条款</a>
+</li>
+<li>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-all duration-300 hover:-translate-y-0.5 inline-block" href="#">隐私</a>
+</li>
+<li>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-all duration-300 hover:-translate-y-0.5 inline-block" href="#">支持</a>
+</li>
+<li>
+<a class="text-zinc-600 hover:text-[#D4AF37] transition-all duration-300 hover:-translate-y-0.5 inline-block" href="#">接口</a>
+</li>
+</ul>
+</div>
+</footer>
+<script>
+    lucide.createIcons();
+</script>
+</body></html>

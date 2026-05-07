@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AIP 方法论知识库 - 核心构架</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#241a00",
+                      "on-primary-fixed": "#241a00",
+                      "tertiary-fixed-dim": "#f7bd48",
+                      "surface": "#131316",
+                      "inverse-on-surface": "#303033",
+                      "tertiary": "#ffc551",
+                      "surface-container-low": "#1b1b1e",
+                      "on-secondary-container": "#352800",
+                      "outline-variant": "#4d4635",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "on-error": "#690005",
+                      "secondary-container": "#b08c10",
+                      "outline": "#99907c",
+                      "on-primary-container": "#554300",
+                      "on-tertiary-fixed": "#271900",
+                      "on-secondary": "#3d2f00",
+                      "secondary-fixed-dim": "#eac249",
+                      "on-tertiary": "#412d00",
+                      "on-error-container": "#ffdad6",
+                      "inverse-surface": "#e4e2e5",
+                      "on-surface": "#e4e2e5",
+                      "secondary-fixed": "#ffe08b",
+                      "on-primary-fixed-variant": "#574500",
+                      "error-container": "#93000a",
+                      "primary-fixed": "#ffe088",
+                      "on-surface-variant": "#d0c5af",
+                      "inverse-primary": "#735c00",
+                      "surface-dim": "#131316",
+                      "surface-container-high": "#2a2a2d",
+                      "tertiary-container": "#e1aa36",
+                      "on-secondary-fixed-variant": "#584400",
+                      "primary": "#f2ca50",
+                      "surface-container-lowest": "#0e0e11",
+                      "on-background": "#e4e2e5",
+                      "tertiary-fixed": "#ffdea6",
+                      "on-primary": "#3c2f00",
+                      "surface-container-highest": "#343437",
+                      "primary-fixed-dim": "#e9c349",
+                      "secondary": "#eac249",
+                      "primary-container": "#d4af37",
+                      "error": "#ffb4ab",
+                      "on-tertiary-container": "#5b4000",
+                      "surface-container": "#1f1f22",
+                      "surface-bright": "#39393c",
+                      "surface-variant": "#343437",
+                      "background": "#131316",
+                      "surface-tint": "#e9c349"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "md": "16px",
+                      "sm": "8px",
+                      "xl": "40px",
+                      "unit": "4px",
+                      "gutter": "24px",
+                      "2xl": "64px",
+                      "container-max": "1440px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "h2": ["Manrope"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "display-lg": ["Manrope"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "display-xl": ["Manrope"],
+                      "body-sm": ["Plus Jakarta Sans"],
+                      "label-sm": ["Inter"],
+                      "h1": ["Manrope"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "h2": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                      "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                      "display-lg": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                      "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                      "label-sm": ["11px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                      "h1": ["30px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                      "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for deep dark theme */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0e0e11; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar (Rendered exactly from JSON logic) -->
+<nav class="fixed top-0 w-full z-50 border-b border-[#2D2D30] bg-[#0A0A0B]/90 backdrop-blur-md shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center h-20 px-12 max-w-[1440px] mx-auto">
+<!-- Brand Logo -->
+<div class="text-xl font-bold tracking-[0.2em] text-[#D4AF37] uppercase font-manrope antialiased tracking-tight">
+                AETHEL IP
+            </div>
+<!-- Navigation Links -->
+<div class="hidden md:flex space-x-8">
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 font-manrope antialiased tracking-tight" href="#">Creation</a>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 font-manrope antialiased tracking-tight" href="#">Planning</a>
+<!-- Active State applied to Intelligence as it fits "Knowledge Base" -->
+<a class="text-[#D4AF37] font-semibold border-b-2 border-[#D4AF37] pb-4 font-manrope antialiased tracking-tight h-20 flex items-center pt-4" href="#">Intelligence</a>
+<a class="text-zinc-500 font-medium hover:text-zinc-200 transition-colors duration-300 font-manrope antialiased tracking-tight" href="#">Assets</a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center space-x-6">
+<button class="hidden md:block text-zinc-500 font-medium hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 font-manrope antialiased tracking-tight px-4 py-2 rounded">
+                    Switch Account
+                </button>
+<div class="flex space-x-4">
+<span class="material-symbols-outlined text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 cursor-pointer p-2 rounded-full active:scale-95">notifications</span>
+<span class="material-symbols-outlined text-zinc-500 hover:text-[#D4AF37] hover:bg-zinc-900/50 transition-all duration-300 cursor-pointer p-2 rounded-full active:scale-95">logout</span>
+</div>
+<img alt="User profile" class="w-10 h-10 rounded-full border-2 border-[#2D2D30]" data-alt="A macro portrait of a serious professional in a dimly lit, high-end studio environment. The lighting is heavily side-directional, creating deep shadows on one half of the face while softly illuminating the other. The background is a pure, textureless black. The overall mood is intense, authoritative, and exclusively tailored for a luxury brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAluyw1B5FgTKvar3s3yGrWkDAu1cXNPiANGBaEkhpNuIvB-P2_NM7-BND6tHvqOQBPfcTlfrpr7mvvr5f8xCjm5VcMVO6WUEPE9qYsAMEYx8si4veJL2kNS0G7KYr67ERlpN7fbXMQcF3zrWL9GbKhKHmIAUq6K2ZwhNHYea4LvR-ehm949M0xSRUXXfe2SY4JTweig6LWSd3jc0GcmaQSlhR_wx0kI9dNMt1kpBhVwYvgj88LG2gA54Ct6ejE-KNIoQYhIDl7F5oS"/>
+</div>
+</div>
+</nav>
+<!-- Main Layout Grid -->
+<main class="flex-1 w-full max-w-container-max mx-auto px-gutter pt-[120px] pb-2xl flex gap-xl relative">
+<!-- Sidebar Navigation (Categories) -->
+<aside class="w-64 flex-shrink-0 hidden lg:block sticky top-[120px] h-[calc(100vh-160px)] overflow-y-auto">
+<!-- Search Input -->
+<div class="relative mb-8 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded focus:border-primary focus:ring-1 focus:ring-primary text-on-surface py-3 pl-10 pr-4 outline-none transition-all font-body-sm text-body-sm placeholder:text-outline shadow-inner" placeholder="检索全息库..." type="text"/>
+</div>
+<!-- Directory -->
+<nav class="space-y-6">
+<div>
+<h3 class="font-label-md text-label-md text-outline uppercase tracking-[0.1em] mb-3 px-4">系统分类</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 py-2.5 px-4 border-l-2 border-primary bg-surface-container/50 text-primary font-body-sm text-body-sm transition-colors relative group overflow-hidden" href="#methodology">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+<span class="material-symbols-outlined text-sm relative z-10">architecture</span>
+<span class="relative z-10">20类 脚本方法论</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-2.5 px-4 border-l-2 border-transparent text-on-surface hover:text-primary hover:bg-surface-container/30 font-body-sm text-body-sm transition-colors" href="#psychology">
+<span class="material-symbols-outlined text-sm">psychology</span>
+<span>22个 爆款元素心理学</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 py-2.5 px-4 border-l-2 border-transparent text-on-surface hover:text-primary hover:bg-surface-container/30 font-body-sm text-body-sm transition-colors" href="#formulas">
+<span class="material-symbols-outlined text-sm">functions</span>
+<span>32个 核心创作公式</span>
+</a>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-outline uppercase tracking-[0.1em] mb-3 px-4">最近更新</h3>
+<ul class="space-y-2 px-4">
+<li class="flex items-start gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mt-2"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">倒置悬念法 v2.1 迭代</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mt-2"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary cursor-pointer transition-colors">用户心智剥离模型</span>
+</li>
+</ul>
+</div>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<article class="flex-1 min-w-0 flex flex-col gap-2xl pb-2xl">
+<!-- Page Header -->
+<header class="border-b border-surface-container-high pb-12 relative">
+<div class="absolute right-0 top-0 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[180px] text-primary" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container border border-outline-variant rounded-full mb-6">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">AIP / Base</span>
+</div>
+<h1 class="font-display-xl text-display-xl text-on-surface mb-6 tracking-tight">方法论全息词典</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl leading-relaxed">
+                    解构并重组高阶内容引擎的底层代码。本库系统性收录已被验证的逻辑结构、心智触点与数据模型，为您提供超越经验主义的确定性创作依据。
+                </p>
+</header>
+<!-- Section: Highlighted Quote (Premium Dark Gold Texture) -->
+<section class="w-full">
+<div class="relative p-10 rounded-xl bg-surface-container-lowest border border-outline-variant shadow-[0_20px_40px_rgba(0,0,0,0.6)] overflow-hidden group hover:-translate-y-[2px] transition-transform duration-500">
+<!-- Machined Light Edge -->
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-on-surface/20 to-transparent"></div>
+<!-- Thick Gold Anchor Line -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary shadow-[0_0_15px_rgba(212,175,55,0.3)]"></div>
+<div class="absolute right-8 top-1/2 -translate-y-1/2 opacity-5 mix-blend-screen transition-transform duration-700 group-hover:scale-110">
+<span class="material-symbols-outlined text-[160px] text-primary" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+<div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full border border-primary/30 bg-primary/10">
+<span class="material-symbols-outlined text-primary">psychology_alt</span>
+</div>
+<div>
+<h3 class="font-h2 text-h2 text-primary mb-4 tracking-tight">第一性原理：情绪即媒介</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-4xl">
+                                “在信息极度冗余的数字场域中，逻辑框架仅仅是载体，唯有高浓度的情绪势能才能穿透心智防御。每一个成功的爆款元素，其本质都是在用户认知网络中精准引爆的一枚‘情绪定宽炸弹’。”
+                            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 1: Methodology (Bento Grid) -->
+<section class="scroll-mt-[160px] flex flex-col gap-8" id="methodology">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">architecture</span>
+<h2 class="font-h1 text-h1 text-on-surface">20类脚本方法论</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline border border-outline-variant px-3 py-1 rounded">结构引擎</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Featured Large Card -->
+<div class="col-span-1 md:col-span-2 bg-surface-container-low border border-outline-variant rounded-xl p-8 relative group hover:-translate-y-1 hover:border-primary/50 transition-all duration-300">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+<div class="flex justify-between items-start mb-16">
+<div class="w-12 h-12 bg-surface-container-lowest rounded-lg border border-outline-variant flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-on-surface group-hover:text-primary transition-colors">timeline</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded">M-01 叙事重构</span>
+</div>
+<h4 class="font-h2 text-h2 text-on-surface mb-3 group-hover:text-primary transition-colors">倒置悬念结构 (Inverted Suspense)</h4>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed max-w-lg">
+                            强制剥离线性叙事的因果链，将最具冲击力的高潮结果前置于时间轴的前3秒。利用认知失调原理，在用户心智中撕开“悬念缺口”，迫使对方为寻求逻辑闭环而产生深度停留。
+                        </p>
+</div>
+<!-- Vertical Stack Card -->
+<div class="col-span-1 flex flex-col gap-6">
+<div class="flex-1 bg-surface-container-low border border-outline-variant rounded-xl p-6 relative group hover:-translate-y-1 hover:border-primary/50 transition-all duration-300">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+<span class="material-symbols-outlined text-outline mb-4 group-hover:text-primary transition-colors">layers</span>
+<h4 class="font-h2 text-h2 text-on-surface mb-2 text-lg">多维叠层共情法</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">同步构建身份认同、隐秘痛点与阶层渴望的三重映射。</p>
+</div>
+<div class="flex-1 bg-surface-container-low border border-outline-variant rounded-xl p-6 relative group hover:-translate-y-1 hover:border-primary/50 transition-all duration-300">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+<span class="material-symbols-outlined text-outline mb-4 group-hover:text-primary transition-colors">compress</span>
+<h4 class="font-h2 text-h2 text-on-surface mb-2 text-lg">极值对立模型</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">将两个极端矛盾的视觉或逻辑元素并置，产生概念张力。</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Formulas (Glassmorphism List style) -->
+<section class="scroll-mt-[160px] flex flex-col gap-8" id="formulas">
+<div class="flex items-center justify-between border-b border-surface-container-high pb-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">functions</span>
+<h2 class="font-h1 text-h1 text-on-surface">32个核心创作公式</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline border border-outline-variant px-3 py-1 rounded">变量演演</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Formula Row 1 -->
+<div class="group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-surface-container-low/50 backdrop-blur-sm border border-outline-variant rounded-xl hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-6 mb-4 md:mb-0">
+<div class="font-display-lg text-display-lg text-outline group-hover:text-primary transition-colors opacity-30">01</div>
+<div>
+<h4 class="font-h2 text-h2 text-on-surface mb-1">信任降阻公式</h4>
+<div class="font-mono text-sm text-primary tracking-wider bg-surface-container-lowest px-3 py-1 rounded border border-surface-container-high inline-block mt-2">
+                                    [专业背书] × [反共识真诚] ÷ [商业图谋感] = 高效信任
+                                </div>
+</div>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant text-outline hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Formula Row 2 -->
+<div class="group flex flex-col md:flex-row items-start md:items-center justify-between p-6 bg-surface-container-low/50 backdrop-blur-sm border border-outline-variant rounded-xl hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-6 mb-4 md:mb-0">
+<div class="font-display-lg text-display-lg text-outline group-hover:text-primary transition-colors opacity-30">02</div>
+<div>
+<h4 class="font-h2 text-h2 text-on-surface mb-1">价值感知放大器</h4>
+<div class="font-mono text-sm text-primary tracking-wider bg-surface-container-lowest px-3 py-1 rounded border border-surface-container-high inline-block mt-2">
+                                    (稀缺性提供 + 极速获得感) ^ 视觉冲击力
+                                </div>
+</div>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant text-outline hover:text-primary hover:border-primary transition-all">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+</article>
+</main>
+<!-- Footer (Rendered exactly from JSON logic) -->
+<footer class="bg-[#0A0A0B] w-full border-t border-[#2D2D30] mt-auto">
+<div class="flex justify-between items-center py-12 px-12 max-w-[1440px] mx-auto text-[12px] font-manrope uppercase tracking-widest text-zinc-600">
+<!-- Copyright -->
+<div class="font-manrope">
+                © 2024 Aethelgard IP. All Rights Reserved.
+            </div>
+<!-- Links -->
+<div class="flex space-x-8">
+<a class="hover:text-[#D4AF37] transition-colors relative group overflow-hidden" href="#">
+<span class="relative z-10">Terms</span>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+</a>
+<a class="hover:text-[#D4AF37] transition-colors relative group overflow-hidden" href="#">
+<span class="relative z-10">Privacy</span>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+</a>
+<a class="hover:text-[#D4AF37] transition-colors relative group overflow-hidden" href="#">
+<span class="relative z-10">Support</span>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+</a>
+<a class="hover:text-[#D4AF37] transition-colors relative group overflow-hidden" href="#">
+<span class="relative z-10">API</span>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+</a>
+</div>
+</div>
+</footer>
+</body></html>
