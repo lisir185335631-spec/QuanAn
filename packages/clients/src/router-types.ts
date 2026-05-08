@@ -67,6 +67,47 @@ export type IpAccountSwitchOutput = { ok: boolean; activeAccountId: number };
 export type IpAccountListOutput = NonNullable<IpAccountOutput>[];
 export type StepDataListOutput = NonNullable<StepDataOutput>[];
 
+export type DiagnosisReportOutput = {
+  id: number;
+  answers: unknown;
+  dimensions: unknown;
+  overallScore: number;
+  inferredStage: string;
+  topPriority: string;
+  recommendedSteps: unknown[];
+  agentId: string;
+  traceId: string | null;
+  createdAt: string;
+} | null;
+
+export type EvolutionInsightItem = {
+  id: number;
+  triggerType: string;
+  direction: string;
+  content: string;
+  levelBefore: string;
+  levelAfter: string;
+  createdAt: string;
+};
+
+export type KnowledgeRecommendationItem = {
+  itemType: string;
+  itemKey: string;
+  title: string;
+};
+
+export type TrendingItem = {
+  id: number;
+  platform: string;
+  title: string;
+  industry: string | null;
+  presentStyle: string | null;
+  likeCount: number;
+  shareCount: number;
+  commentCount: number;
+  crawledAt: Date;
+};
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -76,8 +117,24 @@ const _shadowRouter = _t.router({
       return { ok: false, error: 'unauthenticated' };
     }),
   }),
+  diagnosis: _t.router({
+    latest: _t.procedure.query((): DiagnosisReportOutput => null),
+  }),
   evolution: _t.router({
     getProfile: _t.procedure.query((): EvolutionProfileOutput => null),
+    history: _t.procedure
+      .input((x: unknown) => x as { limit?: number; offset?: number } | undefined)
+      .query((): EvolutionInsightItem[] => []),
+  }),
+  knowledge: _t.router({
+    getRecommendations: _t.procedure
+      .input((x: unknown) => x as { limit?: number } | undefined)
+      .query((): KnowledgeRecommendationItem[] => []),
+  }),
+  trending: _t.router({
+    fetch: _t.procedure
+      .input((x: unknown) => x as { platform?: string; limit?: number } | undefined)
+      .query((): TrendingItem[] => []),
   }),
   ipAccounts: _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),
