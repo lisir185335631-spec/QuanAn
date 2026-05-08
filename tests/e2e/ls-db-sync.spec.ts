@@ -21,7 +21,7 @@ async function trpcMutate(
       const res = await fetch(`${base}/trpc/${proc}?batch=1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ '0': { json: inp } }),
+        body: JSON.stringify({ '0': inp }),
         credentials: 'include',
       });
       const data = (await res.json()) as Array<{ result: { data: unknown } }>;
@@ -39,7 +39,7 @@ async function trpcQuery(
 ): Promise<unknown> {
   return page.evaluate(
     async ({ base, proc, inp }: { base: string; proc: string; inp: unknown }) => {
-      const encoded = encodeURIComponent(JSON.stringify({ '0': { json: inp } }));
+      const encoded = encodeURIComponent(JSON.stringify({ '0': inp }));
       const res = await fetch(`${base}/trpc/${proc}?batch=1&input=${encoded}`, {
         credentials: 'include',
       });

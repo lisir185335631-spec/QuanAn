@@ -50,15 +50,16 @@ export const ipAccountsRouter = router({
     return account ?? null;
   }),
 
-  /** Creates a new ip_account for the current user */
-  create: protectedProcedure
+  /** Creates a new ip_account for the current user (globalProcedure: no activeAccountId required) */
+  create: globalProcedure
     .input(createIpAccountInput)
     .mutation(async ({ ctx, input }) => {
       const { prisma, user, traceId } = ctx;
+      if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
       return prisma.ipAccount.create({
         data: {
           ...input,
-          userId: user!.id,
+          userId: user.id,
           traceId: traceId ?? null,
         },
         select: ACCOUNT_SELECT,

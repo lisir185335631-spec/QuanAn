@@ -30,7 +30,10 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next })
 
   // set_config(name, value, is_local=true) is transaction-scoped (equivalent to SET LOCAL).
   // Wrapping in $transaction ensures is_local applies correctly — parameters are cleared on commit.
+  // SET LOCAL ROLE quanqn_app ensures RLS policies apply even when the connection owner is a superuser.
   return ctx.prisma.$transaction(async (tx) => {
+    // Switch to non-superuser role so RLS policies are enforced (superusers bypass RLS by default)
+    await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
     await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, true)`;
     if (user?.id != null) {
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, true)`;

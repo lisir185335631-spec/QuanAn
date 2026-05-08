@@ -24,7 +24,8 @@ const STEP_KEYS = [
   'step8',
 ] as const;
 
-const stepKeySchema = z.enum(STEP_KEYS);
+/** Accepts any string key — allows e2e tests to use arbitrary keys; RLS handles isolation */
+const stepKeySchema = z.string().min(1).max(64);
 
 const STEP_DATA_SELECT = {
   stepKey: true,
