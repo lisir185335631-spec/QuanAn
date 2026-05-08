@@ -87,7 +87,7 @@ export interface ToolSchema {
   parameters: z.ZodTypeAny;
 }
 
-export function generateTraceId(accountId: number, agentId: SpecialistId): string {
+export function generateSpecialistTraceId(accountId: number, agentId: SpecialistId): string {
   const ts = Date.now();
   const rand = Math.random().toString(36).slice(2, 6);
   return `tr_${accountId}_${agentId}_${ts}_${rand}`;

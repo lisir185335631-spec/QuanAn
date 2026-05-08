@@ -62,7 +62,7 @@ function UserDropdown() {
         className="gap-1.5 h-8 px-2 text-on-surface"
         aria-label="登录"
         data-testid="header-login-button"
-        onClick={login}
+        onClick={() => void login()}
       >
         <LogIn className="h-4 w-4" />
         <span className="text-label-md font-medium">登录</span>
@@ -226,7 +226,7 @@ function MobileNav() {
               variant="ghost"
               size="sm"
               className="mt-1 w-fit gap-1.5 text-primary"
-              onClick={login}
+              onClick={() => void login()}
             >
               <LogIn className="h-4 w-4" />
               登录

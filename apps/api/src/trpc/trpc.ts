@@ -19,8 +19,8 @@ const t = initTRPC.context<TRPCContext>().meta<Meta>().create();
 export const router = t.router;
 export const middleware = t.middleware;
 
-/** Generate a 16-char hex trace ID (equivalent to nanoid(16)) */
-export function generateTraceId(): string {
+/** Generate a 16-char hex trace ID for HTTP layer (no params, nanoid(16) equivalent) */
+export function generateHttpTraceId(): string {
   return randomBytes(8).toString('hex');
 }
 
@@ -32,7 +32,7 @@ export function generateTraceId(): string {
 export const traceMiddleware = t.middleware(async ({ ctx, next }) => {
   const headers = ctx.req.headers;
   const traceId =
-    headers.get('x-trace-id') ?? headers.get('X-Trace-Id') ?? generateTraceId();
+    headers.get('x-trace-id') ?? headers.get('X-Trace-Id') ?? generateHttpTraceId();
   return traceStore.run({ traceId }, () => next({ ctx: { ...ctx, traceId } }));
 });
 

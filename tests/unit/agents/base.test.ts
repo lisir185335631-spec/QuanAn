@@ -3,14 +3,14 @@
  *   1. BaseSpecialist — abstract execute contract (concrete subclass works)
  *   2. ContextAssembler — assembleStep stub returns { step, accountId, lastResults:{} }
  *   3. LLMGateway tier — selectTier pass-through
- *   4. trace_id propagation — extractTraceId / generateTraceId
+ *   4. trace_id propagation — extractTraceId / generateHttpTraceId
  */
 
 import { describe, it, expect } from 'vitest';
 import { BaseSpecialist } from '@/agents/base/BaseSpecialist';
 import { contextAssembler } from '@/agents/base/ContextAssembler';
 import { llmGateway } from '@/workers/llm-gateway';
-import { extractTraceId, generateTraceId } from '@/trpc/middleware/trace';
+import { extractTraceId, generateHttpTraceId } from '@/trpc/middleware/trace';
 import type { SpecialistInput, SpecialistOutput, SpecialistConfig, AssembledContext } from '@/agents/base/types';
 
 // ── 1. BaseSpecialist abstract execute contract ───────────────────────────────
@@ -82,13 +82,13 @@ describe('trace_id propagation', () => {
     expect(extractTraceId(headers)).toBe('');
   });
 
-  it('generateTraceId returns a 16-char hex string', () => {
-    const id = generateTraceId();
+  it('generateHttpTraceId returns a 16-char hex string', () => {
+    const id = generateHttpTraceId();
     expect(id).toMatch(/^[0-9a-f]{16}$/);
   });
 
-  it('generateTraceId is unique per call', () => {
-    const ids = new Set(Array.from({ length: 20 }, () => generateTraceId()));
+  it('generateHttpTraceId is unique per call', () => {
+    const ids = new Set(Array.from({ length: 20 }, () => generateHttpTraceId()));
     expect(ids.size).toBe(20);
   });
 });

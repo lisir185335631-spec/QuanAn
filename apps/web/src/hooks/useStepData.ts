@@ -10,15 +10,15 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
-import { trpc } from '@/lib/trpc';
 import { stepLsKey, pruneLsNamespaces } from '@/lib/ls-namespace';
+import { trpc } from '@/lib/trpc';
 
 export function useStepData(accountId: number | null, stepKey: string) {
   const saveStepData = trpc.step.saveStepData.useMutation();
 
   const save = useCallback(
     (inputs: Record<string, unknown>): void => {
-      if (accountId == null) return;
+      if (accountId === null) return;
 
       // AC-1: LS write first — fast, synchronous, never rolled back
       try {
@@ -54,7 +54,7 @@ export function useStepData(accountId: number | null, stepKey: string) {
   );
 
   const load = useCallback((): Record<string, unknown> | null => {
-    if (accountId == null) return null;
+    if (accountId === null) return null;
     const raw = localStorage.getItem(stepLsKey(accountId, stepKey));
     return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
   }, [accountId, stepKey]);

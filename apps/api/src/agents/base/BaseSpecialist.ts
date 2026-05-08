@@ -14,7 +14,7 @@ import type {
   AssembledContext,
   SpecialistId,
 } from './types';
-import { generateTraceId } from './types';
+import { generateSpecialistTraceId } from './types';
 import { contextAssembler } from './ContextAssembler';
 
 export abstract class BaseSpecialist<P = unknown, R = unknown> {
@@ -26,7 +26,7 @@ export abstract class BaseSpecialist<P = unknown, R = unknown> {
    * 处理 · trace_id 生成 · 输入校验 · ContextAssembler 调用 · 异常捕获 · 耗时统计 · 审计日志
    */
   async run(input: SpecialistInput<P>): Promise<SpecialistOutput<R>> {
-    const traceId = input.trace_id ?? generateTraceId(input.accountId, this.id);
+    const traceId = input.trace_id ?? generateSpecialistTraceId(input.accountId, this.id);
     const startedAt = Date.now();
 
     logger.info({ traceId, agentId: this.id, accountId: input.accountId }, 'specialist.start');

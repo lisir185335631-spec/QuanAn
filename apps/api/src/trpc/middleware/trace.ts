@@ -7,7 +7,7 @@
  * This file re-exports it and provides the standalone extractTraceId utility for testing.
  */
 
-export { traceMiddleware, generateTraceId } from '@/trpc/trpc';
+export { traceMiddleware, generateHttpTraceId } from '@/trpc/trpc';
 
 /**
  * Extract trace ID from request headers.

@@ -9,8 +9,9 @@
 
 import { useCallback } from 'react';
 
-import { trpc } from '@/lib/trpc';
 import { clearLsNamespace } from '@/lib/ls-namespace';
+import { trpc } from '@/lib/trpc';
+
 import type { ActiveAccountOutput } from '@quanqn/clients/router-types';
 
 export type { ActiveAccountOutput };
@@ -36,7 +37,7 @@ export function useActiveAccount() {
         {
           onSuccess() {
             // AC-6: clear old namespace from LS — must be 0 hits for old prefix
-            if (oldAccountId != null && oldAccountId !== newAccountId) {
+            if (oldAccountId !== null && oldAccountId !== newAccountId) {
               clearLsNamespace(localStorage, oldAccountId);
             }
             void refetch();

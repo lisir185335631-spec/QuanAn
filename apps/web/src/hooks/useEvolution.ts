@@ -8,22 +8,23 @@
 
 import { useEffect, useMemo } from 'react';
 
-import { trpc } from '@/lib/trpc';
 import { evolutionLsKey } from '@/lib/ls-namespace';
+import { trpc } from '@/lib/trpc';
+
 import type { EvolutionProfileOutput } from '@quanqn/clients/router-types';
 
 export type { EvolutionProfileOutput };
 
 export function useEvolution(accountId: number | null): EvolutionProfileOutput {
   const { data } = trpc.evolution.getProfile.useQuery(undefined, {
-    enabled: accountId != null,
+    enabled: accountId !== null,
     staleTime: 60_000,
     retry: false,
   });
 
   // AC-3: cache fresh DB data to LS (non-blocking, silent on failure)
   useEffect(() => {
-    if (accountId == null || data === undefined) return;
+    if (accountId === null || data === undefined) return;
     try {
       localStorage.setItem(evolutionLsKey(accountId), JSON.stringify(data));
     } catch {
@@ -33,7 +34,7 @@ export function useEvolution(accountId: number | null): EvolutionProfileOutput {
 
   // LS cache: instant read on mount before DB response arrives (AC-9 LS read < 1ms)
   const lsCached = useMemo<EvolutionProfileOutput>(() => {
-    if (accountId == null) return null;
+    if (accountId === null) return null;
     const raw = localStorage.getItem(evolutionLsKey(accountId));
     if (!raw) return null;
     try {
