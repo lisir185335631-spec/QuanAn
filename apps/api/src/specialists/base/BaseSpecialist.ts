@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
-import { contextAssembler as _contextAssembler } from '@/agents/base/ContextAssembler';
+import { contextAssembler as _contextAssembler } from '@/services/context-assembler/ContextAssembler';
 import { llmGateway as _llmGateway } from '@/workers/llm-gateway';
 import type { SpecialistId } from '@/agents/base/types';
 import type {

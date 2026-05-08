@@ -24,7 +24,7 @@ import type {
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('@/agents/base/ContextAssembler', () => ({
+vi.mock('@/services/context-assembler/ContextAssembler', () => ({
   contextAssembler: {
     assemble: vi.fn().mockResolvedValue({
       systemPrompt: '[system-stub]',
@@ -166,7 +166,7 @@ describe('BaseSpecialist — output schema validation', () => {
 
 describe('BaseSpecialist — template method 4 steps', () => {
   it('AC-8: execute() calls contextAssembler.assemble before invokeLLM', async () => {
-    const { contextAssembler } = await import('@/agents/base/ContextAssembler');
+    const { contextAssembler } = await import('@/services/context-assembler/ContextAssembler');
     const spyAssemble = vi.spyOn(contextAssembler, 'assemble');
     const mockGateway = makeMockGateway();
     const agent = new TestSpecialist(mockGateway);

@@ -15,7 +15,7 @@ import type {
   SpecialistId,
 } from './types';
 import { generateSpecialistTraceId } from './types';
-import { contextAssembler } from './ContextAssembler';
+import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
 
 export abstract class BaseSpecialist<P = unknown, R = unknown> {
   abstract readonly id: SpecialistId;
@@ -40,7 +40,7 @@ export abstract class BaseSpecialist<P = unknown, R = unknown> {
         mode: input.mode,
         userInput: input.payload,
         needRag: this.config.knowledge.rag,
-      });
+      }) as unknown as AssembledContext;
 
       const result = await this.execute(input, ctx);
 

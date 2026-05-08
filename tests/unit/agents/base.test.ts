@@ -1,14 +1,14 @@
 /**
- * US-007 · Unit tests (4):
+ * US-007 · Unit tests (3):
  *   1. BaseSpecialist — abstract execute contract (concrete subclass works)
- *   2. ContextAssembler — assembleStep stub returns { step, accountId, lastResults:{} }
- *   3. LLMGateway tier — selectTier pass-through
- *   4. trace_id propagation — extractTraceId / generateHttpTraceId
+ *   2. LLMGateway tier — selectTier pass-through
+ *   3. trace_id propagation — extractTraceId / generateHttpTraceId
+ * Note: assembleStep stub test removed — PRD-2 stub deleted; real ContextAssembler
+ * is in services/context-assembler/ and tested in tests/unit/services/context-assembler.test.ts
  */
 
 import { describe, it, expect } from 'vitest';
 import { BaseSpecialist } from '@/agents/base/BaseSpecialist';
-import { contextAssembler } from '@/agents/base/ContextAssembler';
 import { llmGateway } from '@/workers/llm-gateway';
 import { extractTraceId, generateHttpTraceId } from '@/trpc/middleware/trace';
 import type { SpecialistInput, SpecialistOutput, SpecialistConfig, AssembledContext } from '@/agents/base/types';
@@ -48,16 +48,7 @@ describe('BaseSpecialist abstract contract', () => {
   });
 });
 
-// ── 2. ContextAssembler.assembleStep stub ─────────────────────────────────────
-
-describe('ContextAssembler.assembleStep', () => {
-  it('returns { step, accountId, lastResults:{} }', async () => {
-    const result = await contextAssembler.assembleStep('step3', 42);
-    expect(result).toEqual({ step: 'step3', accountId: 42, lastResults: {} });
-  });
-});
-
-// ── 3. LLMGateway.selectTier pass-through ────────────────────────────────────
+// ── 2. LLMGateway.selectTier pass-through ────────────────────────────────────
 
 describe('LLMGateway.selectTier', () => {
   it('returns reasoning for reasoning hint', () => {
@@ -69,7 +60,7 @@ describe('LLMGateway.selectTier', () => {
   });
 });
 
-// ── 4. trace_id propagation ───────────────────────────────────────────────────
+// ── 3. trace_id propagation ───────────────────────────────────────────────────
 
 describe('trace_id propagation', () => {
   it('extractTraceId returns the X-Trace-Id header value', () => {

@@ -13,8 +13,8 @@ export interface AssembleRequest {
   accountId: number;
   mode?: string;
   userInput: unknown;
-  needRag?: readonly ('knowledge_cases' | 'trending' | 'user_samples' | 'history')[];
-  needLayers?: readonly ('L2_step_data' | 'L4_profile' | 'L4_samples' | 'L5_trending')[];
+  needRag?: readonly string[];
+  needLayers?: readonly string[];
 }
 
 /** §6.4 ContextAssembler 调用出参(与 specialists/base/types 结构兼容) */
