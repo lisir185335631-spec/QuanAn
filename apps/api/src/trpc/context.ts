@@ -1,8 +1,9 @@
 /**
- * tRPC context factory — US-003 (extended in US-006, US-007)
+ * tRPC context factory — US-003 (extended in US-006, US-007, US-001/PRD-2)
  * AC-7: prisma + req/res + traceId(=X-Trace-Id header or generated nanoid-16)
  * US-006: adds `user` from lucia session cookie
  * US-007: reads X-Trace-Id from request header (replaces 'pending' placeholder)
+ * PRD-2 US-001: adds `activeAccountId` for RLS enforcement
  */
 
 import { randomBytes } from 'node:crypto';
@@ -18,6 +19,8 @@ export interface TRPCContext {
   req: Request;
   user: User | null;
   sessionId: string | null;
+  /** Active IP account for the current request — used by RLS middleware (PRD-2 US-001) */
+  activeAccountId: number | null;
 }
 
 export async function createContext(c: HonoCtx): Promise<TRPCContext> {
@@ -48,5 +51,6 @@ export async function createContext(c: HonoCtx): Promise<TRPCContext> {
     req: c.req.raw,
     user,
     sessionId: resolvedSessionId,
+    activeAccountId: user?.activeAccountId ?? null,
   };
 }

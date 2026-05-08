@@ -17,7 +17,11 @@ export const lucia = new Lucia(prismaAdapter, {
     },
   },
   getUserAttributes(attrs) {
-    return { email: attrs.email, name: attrs.name };
+    return {
+      email: attrs.email,
+      name: attrs.name,
+      activeAccountId: attrs.activeAccountId,
+    };
   },
 });
 
@@ -25,6 +29,10 @@ declare module 'lucia' {
   interface Register {
     Lucia: typeof lucia;
     UserId: number;
-    DatabaseUserAttributes: { email: string; name: string };
+    DatabaseUserAttributes: {
+      email: string;
+      name: string;
+      activeAccountId: number | null;
+    };
   }
 }

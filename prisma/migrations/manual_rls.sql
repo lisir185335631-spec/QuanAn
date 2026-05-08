@@ -27,8 +27,9 @@ ALTER TABLE deep_learning_archives  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE knowledge_favorites     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE knowledge_notes         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_tasks             ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cost_log                ENABLE ROW LEVEL SECURITY;
 
--- 全局表 + 运维表显式不启用(users / invite_codes / trending_items / cost_log / audit_log)
+-- 全局表 + 运维表显式不启用(users / invite_codes / trending_items / audit_log)
 
 -- ============================================================
 -- 2. IpAccount · 按 user_id 隔离
@@ -36,60 +37,64 @@ ALTER TABLE daily_tasks             ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY ip_account_user_isolation ON ip_accounts
   FOR ALL
-  USING (user_id = current_setting('app.current_user_id', true)::int)
-  WITH CHECK (user_id = current_setting('app.current_user_id', true)::int);
+  USING (user_id = NULLIF(current_setting('app.current_user_id', true), '')::int)
+  WITH CHECK (user_id = NULLIF(current_setting('app.current_user_id', true), '')::int);
 
 -- ============================================================
 -- 3. 11 张子表 · 按 account_id 隔离(通用模板)
 -- ============================================================
 
 CREATE POLICY step_data_account_isolation ON step_data
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY histories_account_isolation ON histories
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY topics_account_isolation ON topics
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY assets_account_isolation ON assets
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY diagnosis_reports_account_isolation ON diagnosis_reports
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY feedback_logs_account_isolation ON feedback_logs
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY evolution_profiles_account_isolation ON evolution_profiles
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY evolution_insights_account_isolation ON evolution_insights
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY deep_learning_archives_account_isolation ON deep_learning_archives
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY knowledge_favorites_account_isolation ON knowledge_favorites
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY knowledge_notes_account_isolation ON knowledge_notes
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 CREATE POLICY daily_tasks_account_isolation ON daily_tasks
-  FOR ALL USING (account_id = current_setting('app.current_account_id', true)::int)
-  WITH CHECK (account_id = current_setting('app.current_account_id', true)::int);
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
+
+CREATE POLICY cost_log_account_isolation ON cost_log
+  FOR ALL USING (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int)
+  WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 -- ============================================================
 -- 4. admin role · 跨账号查询(白名单 bypass)
@@ -132,6 +137,9 @@ CREATE POLICY admin_full_access_knowledge_notes ON knowledge_notes
   FOR ALL USING (current_setting('app.role', true) = 'admin');
 
 CREATE POLICY admin_full_access_daily_tasks ON daily_tasks
+  FOR ALL USING (current_setting('app.role', true) = 'admin');
+
+CREATE POLICY admin_full_access_cost_log ON cost_log
   FOR ALL USING (current_setting('app.role', true) = 'admin');
 
 -- ============================================================

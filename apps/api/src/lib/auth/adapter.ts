@@ -23,7 +23,11 @@ export const prismaAdapter: Adapter = {
     };
     const user: DatabaseUser = {
       id: row.userId,
-      attributes: { email: row.user.email, name: row.user.name },
+      attributes: {
+        email: row.user.email,
+        name: row.user.name,
+        activeAccountId: row.user.activeAccountId,
+      },
     };
     return [session, user];
   },
