@@ -6,6 +6,8 @@ export default defineConfig({
     alias: {
       // API path alias — used when unit tests import from apps/api/src/**
       '@': path.resolve(__dirname, 'apps/api/src'),
+      // zod lives in apps/api/node_modules (not root) — expose to root vitest
+      'zod': path.resolve(__dirname, 'apps/api/node_modules/zod'),
     },
   },
   test: {
