@@ -31,15 +31,64 @@
 
 **存在任何一项验收标准未通过时：**
 - 将 passes 设回 `false`
-- 在 notes 字段写入失败详情，格式如下：
-  ```
-  [验证失败 - 第N次] YYYY-MM-DD HH:mm
-  - 失败项1：具体描述（例如：点击"新建笔记"按钮后无反应，控制台报错 TypeError: xxx）
-  - 失败项2：具体描述
-  - 建议修复方向：...
-  ```
+- 在 notes 字段写入失败详情，**严格按 SUSPECTED/CONFIRMED 区分格式**(见下方 §SUSPECTED/CONFIRMED 强制格式)
 - 将 retryCount 加 1
 - 如果 retryCount 已经达到 5：还需将 blocked 设为 `true`，并在 notes 末尾追加 `[BLOCKED: 已达到最大重试次数，跳过此 story]`
+
+### SUSPECTED/CONFIRMED 强制格式(2026-05-08 · PRD-3 US-006 经验)
+
+> **背景**: PRD-3 US-006 第 2 次 Validator 把 mobile e2e 失败推测成 "mutation 没触发 / DB 累积污染 / dropdown click 异常" — **3 个推测全错**(真根因是 ScrollArea 缺失导致 viewport overflow)。下一轮 ralph dev 100% 信任 notes 改错地方,死循环到 retryCount=5 触发 blocked。教训:**Validator 推测当事实写,会让 ralph 死循环**。
+
+failure notes 必须**明确区分两类**,绝对不允许混写:
+
+```
+[验证失败 - 第N次] YYYY-MM-DD HH:mm
+
+## CONFIRMED(实测复现 + 命令 + 输出 · 100% 事实)
+- 失败项1：<一句话描述>
+  · 复现命令: <可粘贴可重跑的 shell 命令>
+  · 实际错误: <错误消息片段 · 必含 file:line>
+  · 失败定位: <具体哪个 file 哪行报错>
+
+## SUSPECTED(推测原因 · 仅候选 · 待复现验证)
+- 推测1：<可能原因>
+  · 推测依据: <为什么觉得是这个 · 比如"看代码逻辑像是" / "类似 X 之前坑">
+  · ⚠️ 必须先 reproduce 验证 · 不要直接改代码
+  · 验证命令(建议): <可执行命令 · 让 ralph 先跑确认>
+
+## 建议修复方向(仅基于 CONFIRMED 给)
+- <方向 1>
+- <方向 2>
+```
+
+**核心规则**:
+1. **CONFIRMED 必须包含可复现命令** + 实际输出片段(file:line)。如果你不能给出"我怎么跑出这个错误"的命令,那就不是 CONFIRMED,只是 SUSPECTED。
+2. **SUSPECTED 必须带 ⚠️ 警示** 让下游 ralph 知道是推测。
+3. **建议修复方向只基于 CONFIRMED**。不要根据 SUSPECTED 推测的原因建议 ralph 改代码 — 那会让 ralph 改错地方。
+4. 如果**整个失败原因都不能 CONFIRMED**(比如 e2e 在你环境跑过但报告失败), 整段 notes 全写 SUSPECTED + 在结尾加 `## ⚠️ 重要提示给 ralph dev: 上述全部为推测,必须先复现确认再动手`
+
+**正反例对比**(PRD-3 US-006 真实案例):
+
+✅ **好的 CONFIRMED**(应该这样写):
+```
+## CONFIRMED
+- 失败项1: mobile project click 'account-item-83' timeout 30s
+  · 复现命令: pnpm playwright test tests/e2e/account-switch.spec.ts --project=mobile
+  · 实际错误: locator.click: Test timeout of 30000ms exceeded · 56 × element is outside of the viewport
+  · 失败定位: tests/e2e/account-switch.spec.ts:83
+```
+
+❌ **坏的写法**(PRD-3 US-006 第 2 次 Validator 实犯):
+```
+- 失败项1 (AC-2): ip-plan.spec.ts 切换账号后 /ip-plan 重新 fetch 进度 — page.waitForNavigation 30s 超时
+  根因分析: DB 中 dev@local.test 用户累积了 30+ 个 IP 账号 ...
+  switchTo(newAccountId) 调用后 mutation 可能因以下原因未触发 reload:
+  (1) 测试结束态 active_account_id 被其他并发测试改成了 newAccountId → idempotent check 命中
+  (2) 下拉菜单 Radix UI item 在 overflow 区域...
+```
+**问题**: "可能因以下原因" + "(1)(2)" 全是推测,但用"根因分析"标题 → ralph dev 当事实信任 → 改错地方死循环。
+
+---
 
 ## 浏览器测试流程（重要）
 

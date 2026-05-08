@@ -425,6 +425,47 @@ pytest --collect-only -q backend/tests/ | tail -1
 
 ---
 
+### H. Frontend list/dropdown PRD(2026-05-08 · QuanQn PRD-3 US-006 经验)
+
+> **背景**: PRD-3 US-006 实证 — `AccountDropdown` 漏写 `<ScrollArea>`,DB 累积 30+ accounts 时新建 item 在 dropdown viewport 外,playwright click 56 × retry 30s timeout。**ralph 12 iter blocked,Opus 接管 30min 才发现真根因**。`ToolsDropdown` 同 codebase 内有正确模式(`<ScrollArea className="h-52">`),但被遗漏。
+>
+> **触发条件**: PRD 含**任何 list/dropdown/select/combobox/grid 类组件**(Radix DropdownMenu / Select / Command / 自实现 list)— 不分前端/全栈 PRD。
+
+```bash
+# H1: list 类组件套 ScrollArea 检查
+# 找 .map(...) 直接渲染 list items 的 dropdown/menu/select(没套 ScrollArea)
+grep -rB2 -A3 "DropdownMenuContent\|SelectContent\|CommandList\|PopoverContent" \
+  apps/web/src apps/admin/src --include='*.tsx' 2>/dev/null \
+  | grep -E "\.map\(" \
+  | grep -v "ScrollArea"
+# 命中后人工看是否真的需要 ScrollArea(N>8 必须 · N≤8 推荐)
+
+# H2: ScrollArea 必带显式高度(ScrollArea 没 h-N 不工作)
+grep -rE "<ScrollArea\s" apps/web/src apps/admin/src --include='*.tsx' \
+  | grep -v -E "h-\d+|max-h-\d+|h-\[\d+|className=\".*h-"
+# 命中说明 ScrollArea 没高度 · 视觉无 scroll(Radix viewport 会按 children height 撑开)
+
+# H3: e2e 测试是否覆盖大 N 数据场景
+grep -rE "(beforeAll|test\.beforeAll)" tests/e2e --include='*.spec.ts' \
+  | grep -v "cleanup\|reset\|truncate"
+# 命中说明 e2e 没 beforeAll cleanup · DB 累积可能让 list 测试 flaky
+
+# H4: shared dev user e2e workers=1 配置(防 active_account_id race)
+grep -E "workers" playwright.config.ts apps/web/playwright.config.ts 2>/dev/null
+# fullyParallel=true 时 · 共享 user 的 list e2e 必须明确 workers=1 或 use isolation
+```
+
+**判决标准**:
+- H1 命中 + N 可能 > 8(账号 / 工具 / 任务列表等)→ **必须**修(套 ScrollArea + h-N)· 阻断 audit
+- H1 命中但 N ≤ 8 固定数(如 14 工具 · 5 状态)→ 推荐套 · 不阻断
+- H2 命中 → 必须修(给 ScrollArea 加高度)
+- H3 命中 + e2e 用共享 dev user → 推荐加 beforeAll cleanup · 不阻断 · TD 留下个 PRD
+- H4 命中 → 推荐 · 不阻断
+
+**反例库链接**: `~/.claude/playbooks/reject-examples.jsonl` 关键词 `viewport overflow / ScrollArea / dropdown click timeout` 可检索 PRD-3 US-006 实证。
+
+---
+
 ## Audit 记录格式(每个 Story 审完写 notes)
 
 ```
