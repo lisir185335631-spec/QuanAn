@@ -32,3 +32,13 @@ export const getStepDataInput = z.object({
 
 export type SaveStepDataInput = z.infer<typeof saveStepDataInput>;
 export type GetStepDataInput = z.infer<typeof getStepDataInput>;
+
+export const stepDataSchema = z.object({
+  stepKey: stepKeySchema,
+  inputs: z.record(z.unknown()),
+  result: z.unknown().nullable(),
+  version: z.number(),
+  updatedAt: z.date(),
+});
+
+export type StepData = z.infer<typeof stepDataSchema>;
