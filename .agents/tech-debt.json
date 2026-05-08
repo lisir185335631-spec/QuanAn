@@ -10,15 +10,14 @@
       "discovered_at": "2026-05-07",
       "discovered_by": "Opus audit US-001",
       "severity": "low",
-      "status": "scheduled",
+      "status": "closed",
       "evidence": "grep '#[0-9a-fA-F]{6}' apps/web/tailwind.config.js 命中 surface / surface-bright / surface-container-lowest 等多处",
       "root_cause": "v0.1 src/ 单包阶段 tailwind.config.js 直接 hardcode color · 未走 ui/aurelian_dark/DESIGN.md YAML token 派生(LD-015)",
       "scheduled_fix_in": "US-004 (PRD-1) · Tailwind 引 Aurelian Dark token 时统一收敛(AC-004-H · grep '#[0-9a-f]{6}' 命中 0)",
       "audit_exemption": "US-001 approve 时豁免 · 因为 US-001 范围只是 typecheck 修复 · 不是 tailwind 改造",
       "closed_at": "2026-05-07",
       "closed_by": "Opus audit US-004",
-      "close_evidence": "US-004 commit 2652217 · tailwind.config.js 全文 grep '#[0-9a-f]{6}' 命中 0 · parseDesignTokens.js 解 DESIGN.md YAML 派生 token · 11/11 unit test passed",
-      "status": "closed"
+      "close_evidence": "US-004 commit 2652217 · tailwind.config.js 全文 grep '#[0-9a-f]{6}' 命中 0 · parseDesignTokens.js 解 DESIGN.md YAML 派生 token · 11/11 unit test passed"
     },
     {
       "id": "TD-002",
@@ -27,15 +26,14 @@
       "discovered_at": "2026-05-07",
       "discovered_by": "Opus audit US-002",
       "severity": "low",
-      "status": "scheduled",
+      "status": "closed",
       "evidence": "globals.css L7-9 · body background:#0a0a0a · color:#e5e5e5 · 2 处新 hardcode color",
       "root_cause": "US-002 ralph 写 globals.css 基础 CSS reset 时 · 此时 Aurelian Dark token 还未派生(US-004 才派生)· ralph 用 hardcode 占位",
       "scheduled_fix_in": "US-004 (PRD-1) · token 派生后改 var(--bg-deep) / var(--text-primary) · 跟 TD-001 一起在 US-004 收敛",
       "audit_exemption": "US-002 approve 时豁免 · token 还未存在 · ralph 用 hardcode 占位是合理的(等价于 TODO P1 标记)",
       "closed_at": "2026-05-07",
       "closed_by": "Opus audit US-004",
-      "close_evidence": "US-004 commit 2652217 · globals.css 改用 theme('colors.background') + theme('colors.on-background') · 0 hardcode hex",
-      "status": "closed"
+      "close_evidence": "US-004 commit 2652217 · globals.css 改用 theme('colors.background') + theme('colors.on-background') · 0 hardcode hex"
     },
     {
       "id": "TD-003",
@@ -114,6 +112,46 @@
       "root_cause": "Opus fail-over 流程缺一步 · 在接管 dev 前 · 应 git log --since='5 min ago' 看是否有 ralph 新 commit · 避免重复劳动 + 错误覆盖",
       "scheduled_fix_in": "改 CLAUDE.md §9.6.4 加 'fail-over 前必跑 git log 看 ralph 是否已 commit' 步骤",
       "audit_exemption": "本次 fail-over 重复劳动浪费 ~5 min · 但产出无害(lint clean 是 plus)· 接受为 process 教训"
+    },
+    {
+      "id": "TD-009",
+      "category": "process-gap",
+      "title": "ralph.py 网络故障(ECONNRESET / 503)消耗 retryCount",
+      "discovered_at": "2026-05-08",
+      "discovered_by": "Opus /goal-verify PRD-3",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "PRD-3 US-006 retry 3-5 全是 'API Error: Unable to connect to API (ECONNRESET)' · dev iter 4-5 min 即非零退出 · log 0 byte · retryCount 3→4→5 触发 blocked · 实际代码已接近通过 · 浪费 30+ min",
+      "root_cause": "ralph.py 把所有 dev iter 非零退出码当 '代码问题' 算入 retryCount · 不区分网络故障 / 服务端 503 / API 限流",
+      "scheduled_fix_in": "PRD-4 启动前 · ralph.py build_developer_prompt 后捕获 stderr · 检测 ECONNRESET / 'Unable to connect' / '503' 等网络错误关键词 · 不消耗 retryCount · 改为指数退避重试",
+      "fix_hint": "在 ralph.py iter loop 里 grep stderr · 网络故障 → time.sleep(min(2**attempt, 60)) · retryCount 不 +1 · attempt += 1 限制 max 10 次"
+    },
+    {
+      "id": "TD-010",
+      "category": "process-gap",
+      "title": "Validator notes 推测原因 vs 事实未区分,误导后续 dev",
+      "discovered_at": "2026-05-08",
+      "discovered_by": "Opus /goal-verify PRD-3",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "PRD-3 US-006 第 2 次 validator 推测的 3 个失败原因(mutation 没触发 / DB 累积污染 / dropdown click 异常)全是猜测,没有一个是真根因(viewport overflow)。Ralph 下一轮读 notes 改错地方,死循环到 retryCount=5",
+      "root_cause": "VALIDATOR.md 没要求 validator 区分 'CONFIRMED:' 实测事实 vs 'SUSPECTED:' 推测原因 · ralph dev prompt 100% 信任 notes · 改错地方",
+      "scheduled_fix_in": "PRD-4 启动前 · VALIDATOR.md 升级 notes 模板 · failure_evidence 必须含 reproduction_steps + actual_error_message · 区分确认 vs 推测",
+      "fix_hint": "VALIDATOR.md 加规则: '失败原因报告时,先复现 → 写 CONFIRMED · 没复现写 SUSPECTED · ralph dev prompt 看 SUSPECTED 必须先复现确认再动手'"
+    },
+    {
+      "id": "TD-011",
+      "category": "ux-debt",
+      "title": "AccountDropdown ScrollArea 在 N=1-3 accounts 时 240px 空旷",
+      "discovered_at": "2026-05-08",
+      "discovered_by": "Opus /goal-verify PRD-3 · US-006 收官",
+      "severity": "low",
+      "status": "open",
+      "evidence": "apps/web/src/components/Header.tsx AccountDropdown 套 <ScrollArea className='h-60'>(240px) · 邀请制内测期典型用户 1-3 accounts · dropdown 大量空白",
+      "root_cause": "Radix DropdownMenu 自适应 max-h 配合 ScrollArea inner viewport 兼容性需要专门处理 · h-N 是简单稳定方案,代价是空旷",
+      "scheduled_fix_in": "PRD-4 UI polish · 测试 max-h-60 + ScrollArea viewport overflow:auto 是否兼容 Radix DropdownMenu · 兼容则改 max-h",
+      "fix_hint": "<ScrollArea className='max-h-60'> · 内部 viewport 需 height:auto + max-height inherit · 实测 Radix dropdown portal 是否会 break · 不兼容回 h-60"
     }
-  ]
+  ],
+  "last_updated": "2026-05-08"
 }
