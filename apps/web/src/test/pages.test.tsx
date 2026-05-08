@@ -26,9 +26,16 @@ vi.mock('@/lib/trpc', () => ({
     costLog: { logFeedback: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) } },
     diagnosis: { latest: { useQuery: () => ({ data: null, isLoading: false }) } },
     evolution: { history: { useQuery: () => ({ data: [], isLoading: false }) } },
-    ipAccounts: { list: { useQuery: () => ({ data: [], isLoading: false }) } },
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     knowledge: { getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) } },
     trending: { fetch: { useQuery: () => ({ data: [], isLoading: false }) } },
+    stepData: {
+      save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+    },
   },
   queryClient: {},
   trpcClient: {},
