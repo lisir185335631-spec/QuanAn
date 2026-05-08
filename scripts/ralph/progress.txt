@@ -691,3 +691,146 @@
   - @testing-library/jest-dom v6 与 vitest 兼容，直接在 setup.ts import 即可，无需额外配置
   - 工具页 index.ts barrel export 便于 Validator 扫描导出是否完整
 ---
+
+--- [RALPH] Iteration 2 ended: US-002 (17分钟 36秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-08 12:33 ---
+
+## 2026-05-08 12:40 - US-002 (retry 2)
+- 修复验证失败的 AC1/AC2：
+  - 创建 Step2.tsx（受众研究与竞品分析）+ Step9.tsx（品牌商业化与社群运营）
+  - 在 stepConfig 加 step2/step9 条目
+  - router.tsx 将 Step3b→Step2、Step4b→Step9，路由 step/3b→step/2、step/4b→step/9
+  - 创建 Copywriting.tsx（爆款文案创作工具页）
+  - router.tsx 将 VideoAnalysis→Copywriting，路由 video-analysis→copywriting
+  - Header.tsx TOOLS_14 更新入口至 /copywriting
+  - tools/index.ts 加 Copywriting export，移除 VideoAnalysis export
+  - 测试更新：stepConfig 9 key 改为 step1~9，新增 Step2/Step9/Copywriting 渲染测试
+- 更改文件：Step2.tsx, Step9.tsx, Copywriting.tsx, stepConfig.ts, router.tsx, Header.tsx, tools/index.ts, pages.test.tsx
+- 质量检查：typecheck 0 错误，14 tests 全通过
+- **未来迭代的学习：**
+  - 验证失败 notes 中的"替代"措辞要仔细读：Step3b "替代" Step2 意思是"Step3b 被错误当成了 Step2 的位置"，修复是新增 Step2/Step9 并替换路由，而非在 3b/4b 旁边并行添加
+  - Validator 通过项可以信任，只需针对失败项修复，不要碰已通过的 AC
+---
+
+--- [RALPH] Iteration 3 ended: US-002 (11分钟 10秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-08 12:44 ---
+
+## [2026-05-08 12:51] - US-003
+- 9 页全部实现: 5 个 tRPC hook 页 + 4 个纯占位页
+- tRPC hook 页: Diagnosis(diagnosis.latest) · Evolution(evolution.history) · Accounts(ipAccounts.list) · Knowledge(knowledge.getRecommendations) · Trending(trending.fetch)
+- 纯占位页: DailyTasks · MyTopics · History · Settings
+- 更新 packages/clients/src/router-types.ts: 新增 diagnosis/knowledge/trending shadow router + evolution.history + 5 个输出类型
+- 测试: 24 tests pass (新增 9 个 module + 1 个 tool 测试) · vi.mock('@/lib/trpc') 允许 tRPC hook 页在 jsdom 环境无 provider 渲染
+- 更改文件: apps/web/src/pages/modules/{Diagnosis,Evolution,Accounts}.tsx · apps/web/src/pages/tools/{Knowledge,Trending}.tsx · packages/clients/src/router-types.ts · apps/web/src/test/pages.test.tsx
+- **未来迭代的学习:**
+  - vitest 测试 tRPC hook 组件 · 必须用 vi.mock('@/lib/trpc') mock 整个模块 · 否则 useQuery() 报 "missing Provider" runtime 错误
+  - shadow router 新增 procedure 时 · 用 `.input((x: unknown) => x as T | undefined)` 建模可选输入的 Zod default 参数 · 比 Partial<T> 更精确
+  - 测试 tRPC hook 页的 empty state · mock 返回 `{ data: [], isLoading: false }` 或 `{ data: null, isLoading: false }` · 比 loading state 更有验证意义
+---
+
+--- [RALPH] Iteration 4 ended: US-003 (9分钟 55秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-08 12:54 ---
+
+## [2026-05-08 13:01] - US-004 (PRD-3 · IP 账号切换器 · reload + 预热 + clearLsNamespace)
+- useActiveAccount.ts: 移除 refetch · 加 idempotency check(same id return) · onSuccess 改 clearLsNamespace+window.location.reload · onError 加 toast.error('切换失败 · 请重试')
+- Header.tsx: AccountDropdown 改用 useActiveAccount+trpc.ipAccounts.list.useQuery(预热) · 移除 MOCK_ACCOUNTS · 每个 account item 加 onClick+data-testid · MobileNav 同步更新
+- tests/e2e/account-switch.spec.ts: 新增 E2E 测试(mock OAuth 登录 → 创建 2 账号 → 设 LS key → 切换 → 验证 key 清空)
+- pnpm typecheck ✅ · pnpm test 186/186 ✅
+- **未来迭代的学习:**
+  - window.location.reload() 在 Playwright 中用 waitForNavigation({ waitUntil: 'domcontentloaded' }) 配合 Promise.all([wait, click]) 捕获
+  - trpc.ipAccounts.list.useQuery 的预热语义: 仅需 useQuery 挂载即可触发 cache · 不需要手动 prefetch
+  - MobileNav 与 AccountDropdown 同样调用 useActiveAccount+list.useQuery · React Query 自动 dedup · 不产生额外请求
+---
+
+--- [RALPH] Iteration 5 ended: US-004 (12分钟 5秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-08 13:06 ---
+
+## [2026-05-08 13:20] - US-005 (PRD-3 · /ip-plan 进度可视化 · IPProgressService + StepProgress + FeedbackButton)
+- IPProgressService: 完整实施 · 从 stub 改为真实 prisma.stepData.findMany({ where: { accountId } })
+- 创建 apps/api/src/trpc/routers/costLog.ts: logFeedback mutation → audit_log (P0 trace; PRD-7 留)
+- 更新 apps/api/src/trpc/routers/_app.ts: 加 costLogRouter
+- 更新 packages/clients/src/router-types.ts: 加 costLog shadow router
+- 创建 apps/web/src/components/StepProgress.tsx: 9 step 进度条 (金/蓝/灰) + loading skeleton
+- 创建 apps/web/src/components/FeedbackButton.tsx: placeholder · trpc.costLog.logFeedback
+- 创建 apps/web/src/layouts/StepLayout.tsx: 嵌套路由 wrapper · useLocation 提取 stepKey
+- 更新 apps/web/src/pages/IpPlan.tsx: 完整实施 (trpc.stepData.progress + skeleton)
+- 更新 apps/web/src/router.tsx: step 路由改为嵌套在 StepLayout 下 (9 child routes)
+- 创建 apps/web/src/components/StepProgress.test.tsx: 6 unit tests (jsdom + Testing Library)
+- 创建 tests/unit/api/ip-progress.test.ts: 6 unit tests (prisma mock)
+- pnpm typecheck ✅ · pnpm test 192/192 ✅ · pnpm --filter @quanqn/web test 30/30 ✅
+- **未来迭代的学习:**
+  - StepLayout 嵌套路由比修改 9 个 step 文件更清洁 · useLocation().pathname 提取 stepKey
+  - vitest web 组件测试必须放在 apps/web/src/ 下 (vitest config include: src/**/*.{test,spec}.{ts,tsx})
+  - tests/unit/web/*.test.ts 走 root vitest (node 环境) · 不适合 jsdom React 渲染测试
+  - STEP_ORDER 需要在 web 端维护副本 (API 的 constants/steps.ts 不能直接 import · P1 移到 @quanqn/schemas)
+  - costLog.logFeedback 写 audit_log 而非 CostLog (CostLog 有大量 LLM 必填字段不适合 feedback trace)
+  - router.test.ts 用静态数组验证路由 · 不 import 实际 router 对象 · 嵌套路由不影响测试通过
+---
+
+--- [RALPH] Iteration 6 ended: US-005 (14分钟 26秒) ---
+
+--- [RALPH] Iteration 7 started: US-005 at 2026-05-08 13:21 ---
+
+## [2026-05-08 13:23] - US-005 (retry 2 · AC-4 修复)
+- 修复 AC-4: 将 FeedbackButton 补全至全部 11 个 step 页面(Step1~Step9 含 Step3b/4b)
+- 修复 vitest mock: pages.test.tsx 的 trpc mock 补加 costLog.logFeedback.useMutation
+- 30 tests pass · typecheck pass
+- 更改的文件:
+  - apps/web/src/pages/step/Step{1,2,3,3b,4,4b,5,6,7,8,9}.tsx (各加 FeedbackButton import + 组件)
+  - apps/web/src/test/pages.test.tsx (mock 补 costLog)
+- **未来迭代的学习：**
+  - 新增使用 useMutation 的组件时，需同步在所有 vitest 单元测试的 trpc mock 中补充对应的 mutation stub，否则渲染报错
+  - 步骤页面结构统一，批量修改可用 Python 脚本 + f-string 一次完成，不需要逐文件 Edit
+---
+
+--- [RALPH] Iteration 7 ended: US-005 (6分钟 50秒) ---
+
+--- [RALPH] Iteration 8 started: US-006 at 2026-05-08 13:27 ---
+
+## [2026-05-08 13:38] - US-006 (PRD-3 收官)
+- lint clean: 23 errors cleared across @quanqn/web
+  - import/order: Header.tsx / main.tsx / StepLayout.tsx / all Step1-9.tsx / pages.test.tsx
+  - import/no-duplicates: StepLayout.tsx merged double react-router-dom import
+  - jsx-a11y/heading-has-content: card.tsx CardTitle explicit {children}
+  - tsconfig include: added vitest.config.ts to apps/web/tsconfig.json include
+- new e2e: tests/e2e/routes-34.spec.ts (32 routes accessible + no error boundary)
+- new e2e: tests/e2e/ip-plan.spec.ts (0/9 display + account switch refetch)
+- new e2e: tests/e2e/feedback-button.spec.ts (request intercept spy on logFeedback)
+- new unit: tests/unit/web/step-config.test.ts (+9 tests)
+- new web unit: apps/web/src/test/step-progress.test.tsx (+10 tests)
+- new web unit: apps/web/src/test/feedback-button.test.tsx (+8 tests)
+- pnpm typecheck 6/6 workspace 0 error ✅
+- pnpm --filter @quanqn/web lint 0 error ✅
+- vitest 201/201 ✅ (原 192 + 新 9)
+- **未来迭代的学习:**
+  - vitest 根 config(vitest.config.ts at monorepo root) 只 include tests/unit/** + tests/integration/**; apps/web/src/test/ 下的测试由 web app 自己的 vitest.config.ts 管理 · 两套互不重叠
+  - tsconfig include 加 vitest.config.ts 后 ESLint parserOptions.project 可正常解析该文件
+  - jsx-a11y/heading-has-content rule 要求 <h2> 必须有显式 children(不能靠 {...props} spread) · forwardRef 组件改为解构 {children, ...props} 再 <h2>{children}</h2>
+  - import/no-duplicates 对同一模块的两行 import 报错 · 合并为一行即可
+  - Playwright request intercept: page.on('request', ...) 在 page.goto() 之前注册才能捕获所有请求
+---
+
+--- [RALPH] Iteration 8 ended: US-006 (15分钟 11秒) ---
+
+--- [RALPH] Iteration 9 started: US-006 at 2026-05-08 13:43 ---
+
+## [2026-05-08 13:58] - US-006 (PRD-3 · e2e 测试 + lint clean + 收官 · retry 2)
+- 根因1: StepLayout + 各 Step 页面都渲染 FeedbackButton → Playwright strict mode 违反(2 elements)
+  修复: 移除 Step1-9/Step3b/Step4b 页面内的 FeedbackButton 和 import · 保留 StepLayout 的
+- 根因2: account-isolation.spec.ts + ls-db-sync.spec.ts 使用了已删除的 alias router 名称
+  step.saveStepData → stepData.save (alias router 已在 US-001 删除 · _app.ts 只有 stepData)
+  account.switchActive → ipAccounts.switchActive (同上)
+- 更改文件:
+  apps/web/src/pages/step/Step1-9.tsx + Step3b.tsx + Step4b.tsx (各移除 FeedbackButton import + JSX)
+  tests/e2e/account-isolation.spec.ts (2 处 procedure 名 fix)
+  tests/e2e/ls-db-sync.spec.ts (2 处 procedure 名 fix)
+- 验证: playwright 100/100 (chromium+mobile) · vitest 201/201 · typecheck 0 error · lint 0 warning
+- **未来迭代的学习:**
+  - Layout 层已渲染共享 UI(如 FeedbackButton)时 · 页面组件不要再重复渲染(strict mode 会拒绝)
+  - e2e 测试的 tRPC procedure 名必须与 _app.ts 中的 router key 完全匹配 · 不要用旧 alias 名
+  - TD-012 删除 alias router 后 · 测试文件(unit + e2e)中所有引用 step.* / account.* 都要迁移
+---
