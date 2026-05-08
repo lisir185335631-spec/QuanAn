@@ -18,8 +18,50 @@
 - tRPC v11 httpBatchStreamLink 发送 trpc-accept: application/jsonl 头 · Hono CORS allowHeaders 必须包含 'trpc-accept' 否则所有 tRPC browser 请求被 CORS preflight 拦截
 - tRPC v11 httpBatchStreamLink 响应格式是压缩 JSONL(多行 back-reference 格式) · Playwright 不能用 route.fulfill 直接 mock · 改用真实 mock OAuth flow(goto /auth/login → waitForURL) 替代
 - Playwright E2E 测试 desktop-only 元素(hidden sm:block/flex)时 · mobile 项目需先 page.setViewportSize({ width: 1280, height: 720 }) 强制桌面视口
+- RLS 测试必须用 `SET LOCAL ROLE <app_role>` 绕过 PostgreSQL superuser BYPASSRLS · dev 本地 DB owner 通常是 superuser · FORCE ROW LEVEL SECURITY 对 superuser 无效
+- RLS policy 中 `current_setting(..., true)::int` 在 setting 为空字符串时抛 invalid input · 必须用 `NULLIF(current_setting(..., true), '')::int`
+- tRPC v11 middleware 内部函数通过 `._middlewares[0]` 取得(不是 ._def.fn) · 用于 vitest 直接测试
+- 直接 import `@trpc/server` 在 vitest 根级别测试文件失败(包在 apps/api/node_modules 非根) · 改从 `@/trpc/middleware/...` 间接导入或避免直接引用类名
 
 ## 执行日志(按 story 倒序)
+## [2026-05-08 10:20] - US-007 (PRD-2 · LLMGateway 真 callProvider)
+- 实现 LLMGateway 真实 callProvider: Anthropic SDK + OpenAI SDK 路由(仅 index.ts import,AC-7/8 R-1)
+- 创建 anthropic-provider.ts: buildAnthropicPayload + parseAnthropicResponse(无 SDK import)
+- 创建 openai-provider.ts: buildOpenAIPayload + parseOpenAIResponse(无 SDK import)
+- 创建 rate-limiter.ts: @upstash/ratelimit token bucket + RateLimitError 类
+- 创建 cost-logger.ts: prisma.costLog.create,失败 log 不 crash
+- 更新 index.ts: SDK imports 集中(AC-7/8)+ retry 1 + fallback + both_failed 模板 + AC-5 早期 key 检查
+- 创建 tests/unit/api/llm-gateway-rate.test.ts: 6 单元测试
+- 创建 tests/unit/api/llm-gateway-fallback.test.ts: 9 单元测试(vi.spyOn 私有方法)
+- 创建 tests/integration/api/llm-gateway-real.test.ts: 1 集成测试(nock 14)
+- pnpm typecheck ✅ · pnpm test 159/159 ✅
+- **未来迭代的学习:**
+  - vi.mock('@anthropic-ai/sdk') 对 singleton(let _client = null)不可靠 · 可靠方案: vi.spyOn(instance as any, '_callAnthropic')
+  - nock 14 支持 undici/native fetch 拦截(nock 13 不行); Node 18+ 必须用 nock 14
+  - vi.mock 工厂引用外部变量必须 vi.hoisted() — 否则 "Cannot access X before initialization"
+  - AC-5 "API key missing throw" 需在 try/catch 外早期检查,否则被 retry/fallback 吞掉
+  - rate-limiter 需 UPSTASH_REDIS_REST_URL; 未配置时 warning pass-through
+---
+
+## [2026-05-08 08:15] - US-001 (PRD-2 · RLS + account-isolation middleware)
+- 切换到 branch ralph/prd-2-p1-data-foundation
+- 更新 prisma/migrations/manual_rls.sql: 添加 cost_log RLS + 修复所有 policy 用 NULLIF-safe cast
+- 扩展 lucia.ts DatabaseUserAttributes 增加 activeAccountId
+- 更新 adapter.ts 在 getSessionAndUser 中暴露 activeAccountId
+- 更新 context.ts: TRPCContext 增加 activeAccountId: number | null
+- 更新 trpc.ts: 添加 Meta { isGlobal? } 类型
+- 创建 account-isolation.ts middleware: set_config + $transaction + isGlobal bypass
+- 创建 tests/unit/api/account-isolation.test.ts: 8 条 AC-2/4/5 单元测试
+- 创建 tests/integration/api/rls-isolation.test.ts: 4 条 SET LOCAL ROLE 集成测试
+- 结果: pnpm typecheck ✅ · pnpm test 49/49 ✅
+- **未来迭代的学习:**
+  - RLS 集成测试必须 SET LOCAL ROLE 到非 superuser 角色 · dev DB 的 owner 是 superuser · FORCE ROW LEVEL SECURITY 对 superuser 无效
+  - policy NULLIF-safe cast 是必须的: `NULLIF(current_setting(...), '')::int`
+  - tRPC middleware._middlewares[0] 是原始函数入口 · 单元测试用这个直接调
+  - vitest 根级 test 不能直接 import @trpc/server(包只在 apps/api/node_modules) · 改走 @/ 路径
+  - quanqn_app 角色已创建并 GRANT 到 test DB · 集成测试使用 SET LOCAL ROLE quanqn_app
+---
+
 ## [2026-05-08 03:00] - US-006 (迭代 4 · 最终修复)
 - 根因 AC-3/AC-17 失败: ① trpc.ts 曾直接 import { initTRPC } from '@trpc/server' 导致 @trpc/server 在浏览器执行报错 ② CORS 缺少 'trpc-accept' 头导致所有 tRPC 请求被 preflight 拦截 ③ E2E mock 格式与 tRPC v11 JSONL 格式不匹配
 - 修复 apps/api/src/index.ts: allowHeaders 加 'trpc-accept'
@@ -365,3 +407,190 @@
 - 多 iter timestamps span > 1h 报 FAKE 是自然 · 不阻塞 approve
 
 --- [RALPH] Iteration 1 started: US-001 at 2026-05-08 07:54 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (24分钟 56秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-08 08:19 ---
+
+## [2026-05-08 08:30] - US-002 (PRD-2 · LS↔DB 双写 hooks)
+- 实现 apps/web/src/lib/ls-namespace.ts: stepLsKey/evolutionLsKey/accountLsPrefix + clearLsNamespace + lsUsedBytes + pruneLsNamespaces · 接受 Storage 参数方便 node 环境测试
+- 实现 apps/web/src/hooks/useStepData.ts: LS 先写 aiip_memory_acc_{id}_{stepKey} + tRPC.step.saveStepData 后写 · DB 失败 toast + pruneLsNamespaces
+- 实现 apps/web/src/hooks/useActiveAccount.ts: trpc.account.getActive 查询 + switchTo() 先 clearLsNamespace 旧 id + switchActive mutation
+- 实现 apps/web/src/hooks/useEvolution.ts: trpc.evolution.getProfile 查 + useEffect 写 LS aiip_memory_acc_{id}_evolution + useMemo 读 LS 缓存
+- 新增 apps/api/src/trpc/routers/step.ts: saveStepData mutation (upsert StepData · inputs as Prisma.InputJsonValue · agentId='web-client')
+- 新增 apps/api/src/trpc/routers/evolution.ts: getProfile query (protectedProcedure)
+- 新增 apps/api/src/trpc/routers/account.ts: getActive + switchActive(globalProcedure · 手动校验 account.userId)
+- 更新 packages/clients/src/router-types.ts: 新增 step/evolution/account shadow routes · EvolutionProfileOutput 日期用 string|null (tRPC 序列化)
+- 创建 tests/unit/web/ls-namespace.test.ts: 18 tests · MockStorage(Map-based node 环境) · 全通过
+- pnpm typecheck ✅ · pnpm test 67/67 ✅
+- **未来迭代的学习:**
+  - Prisma Json 字段接受 z.record(z.unknown()) 时需 `as Prisma.InputJsonValue` 显式转型 否则 tsc 报 array type 不兼容
+  - tRPC 通过 wire 序列化后 Date → string · shadow router 的 Date 类型字段必须用 string 否则 web 侧 typecheck 失败
+  - MockStorage(Map-based) 在 node vitest 环境可替代 jsdom · 不需要安装 @vitest/environment-jsdom · 性价比高
+  - globalProcedure 跳过 set_config + $transaction · 用于修改 User 表(GLOBAL TABLE per AGENTS.md) · 需要手动 where: { userId: user.id } 做 ownership 校验
+---
+
+--- [RALPH] Iteration 2 ended: US-002 (13分钟 0秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-08 08:32 ---
+
+## 2026-05-08 08:40 - US-002 (retry 2 · fix AC-5 + AC-11)
+- 修复 AC-5: useStepData.ts onError 补写 traceId 日志 (crypto.randomUUID + fallback, console.error '[useStepData] DB write failed' { traceId, stepKey, accountId })
+- 修复 AC-11: 创建 tests/unit/web/hooks.test.ts (16 tests · MockStorage-based LS contract tests for useStepData/useActiveAccount/useEvolution)
+- 更改的文件: apps/web/src/hooks/useStepData.ts, tests/unit/web/hooks.test.ts
+- **未来迭代的学习:**
+  - vitest.config.ts 的 @ alias 指向 apps/api/src · web hooks 在 node env 下无法直接 import (tRPC/React 依赖) · 改用 MockStorage 测试 LS contracts 是正确 pattern
+  - hooks 单元测试的正确粒度: 测 LS 契约(key format, isolation, prune) · 不测 React render/tRPC wire(需 jsdom + @testing-library)
+  - crypto.randomUUID 在 onError 闭包内捕获 traceId · 不依赖 trpc.ts 内部 genTraceId · 保持模块独立
+---
+
+--- [RALPH] Iteration 3 ended: US-002 (10分钟 20秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-08 08:42 ---
+
+## [2026-05-08 08:55] - US-003 (PRD-2 · ipAccounts + stepData router)
+- 创建 apps/api/src/trpc/routers/ipAccounts.ts: 6 procedure (list/active/create/update/delete/switchActive)
+  - list/active/create/update/delete → protectedProcedure (accountIsolationMiddleware 全过)
+  - switchActive → globalProcedure: 更新 user.activeAccountId + 写 audit_log 'account.switch'
+  - ip_accounts RLS 用 user_id 隔离(非 account_id) → list 不需手写 where:{userId} RLS 兜底
+  - ACCOUNT_SELECT 常量 + satisfies Prisma.IpAccountSelect 确保 select 类型安全
+- 创建 apps/api/src/trpc/routers/stepData.ts: 4 procedure (get/getAll/save/progress)
+  - 全 protectedProcedure · 读操作不加 where:{accountId}(step_data RLS account_id 隔离兜底)
+  - save 用 accountId_stepKey 复合 unique key 做 upsert(RLS WITH CHECK 确保只写当前 account)
+  - progress 返回 STEP_KEYS[9] 中已有 stepData 的数量
+- 创建 packages/schemas/src/entities/ipAccount.schema.ts: 7 字段 zod schema + create/update input
+- 创建 packages/schemas/src/entities/stepData.schema.ts: stepKey enum(9) + save/get input
+- 更新 apps/api/src/trpc/routers/_app.ts: 注册 ipAccounts + stepData
+- 更新 packages/clients/src/router-types.ts: shadow router 扩展 ipAccounts + stepData
+- 创建 tests/unit/api/ipAccounts-stepData.test.ts: 18 unit tests(AC-11 ≥10/procedure ≥1)
+  - makeCtx 扩展 $transaction mock(shared methods ref · tx === prisma.methods)
+- 结果: pnpm typecheck ✅ · pnpm test 98/98 ✅
+- **未来迭代的学习:**
+  - apps/api tsconfig 有 rootDir:./src 约束 · 不能从 @quanqn/schemas 直接 import 源文件(违反 rootDir) · 
+    API 路由内用内联 zod schema(与现有 account.ts/step.ts 一致) · schemas package 只给 client 侧用
+  - ip_accounts RLS 用 user_id 隔离(其他 11 张表用 account_id) · list 可返回 user 全部 account
+  - protectedProcedure createCaller 单测需 $transaction mock · tx 与 prisma 共享 vi.fn ref 即可
+  - switchActive 用 globalProcedure(绕 RLS) · 需手动 if(!user) UNAUTHORIZED + where:{userId} 验证
+---
+
+--- [RALPH] Iteration 4 ended: US-003 (16分钟 31秒) ---
+
+--- [RALPH] Iteration 5 started: US-003 at 2026-05-08 08:59 ---
+
+## [2026-05-08 09:01] - US-003 (iter 2 · AC-4 fix)
+- AC-4 修复：packages/schemas/src/entities/stepData.schema.ts 新增 stepDataSchema entity-level schema（stepKey/inputs/result/version/updatedAt）+ export StepData type
+- Prisma model 有 result Json?（nullable）但 zod schema 文件遗漏了对应 entity 类型，validator 发现后本 iter 针对性修复
+- 更改文件：packages/schemas/src/entities/stepData.schema.ts（+10 行）
+- Typecheck: @quanqn/schemas + @quanqn/api 均 exit 0 · 15/15 tests passed
+- **未来迭代的学习：**
+  - Prisma model 有字段 ≠ zod schema 有导出 — 每新增 entity schema 文件时，必须对照 Prisma model 字段逐一核查，尤其 nullable Json 字段（result?、metadata? 等）
+  - Input schema（saveStepDataInput）≠ Entity schema（stepDataSchema）— 两者职责不同：前者是 mutation 参数，后者是 DB row 的完整类型；不要只写 input schema 忘写 entity schema
+---
+
+--- [RALPH] Iteration 5 ended: US-003 (7分钟 10秒) ---
+
+--- [RALPH] Iteration 6 started: US-004 at 2026-05-08 09:06 ---
+
+--- [RALPH] Iteration 1 started: US-004 at 2026-05-08 09:14 ---
+
+## [2026-05-08 09:14] - US-004
+- 实现了 5 个 Specialist mock router: copywriting(4 procedure) + videoAnalysis(2) + videoProduction(3) + boomGenerate(1) + monetization(1)
+- 每个 mutation 写 History 表并传入 trace_id(AC-7)·不调 LLMGateway(AC-8)
+- Zod schemas 放在 packages/schemas/src/specialist-io/(6 文件: 5 schema + index.ts)
+- API routers 内联 schema(rootDir: "./src" 约束无法跨 packages/ 导入) — 与 ipAccounts/stepData 一致
+- 注册到 _app.ts: 5 new routers
+- 创建 tests/unit/api/specialists-creation.test.ts: 11 单元测试全过
+- **未来迭代的学习：**
+  - API tsconfig rootDir: "./src" 不能直接 import @quanqn/schemas — Zod schemas 必须在 router 内内联(同 ipAccounts/stepData 模式)
+  - traceMiddleware 在 publicProcedure 上覆盖 ctx.traceId(读 X-Trace-Id header 或生成随机值)·单元测试需在 mock Request 里加 'x-trace-id' 头才能断言确定性 traceId 值
+  - 测试 protectedProcedure 时 $transaction mock 需在 tx 对象里包含所有被 resolver 调用的 prisma model(否则 tx.xxx 是 undefined)
+---
+
+## [2026-05-08 09:22] - US-004 (PRD-2 · 5 Specialist mock router)
+- 验证已提交的 US-004 实现(commit bb0786b)全部通过
+- Opus 注入的 notes 描述了 round 6 daemon 崩溃前的 dirty working tree 状态(无 commit)，已不存在
+- 实际状态: 5 router 文件 + 5 schema 文件已正确 committed，11/11 unit tests + typecheck 全过
+- traceId 断言修正测试: makeCtx 的 req 带 x-trace-id 头，traceMiddleware 正确读取为 'test-trace-001' 传入 ctx · .toBe('test-trace-001') 断言是正确的，不需要改为 regex
+- 更改的文件: 无(验证轮，代码已就位)
+- **未来迭代的学习:**
+  - 当 Opus 注入 notes 描述 dirty-tree 状态时，先 `git log --oneline -3` 确认 commit 是否已存在，再决定是否需要重写代码
+  - traceMiddleware 从 ctx.req.headers.get('x-trace-id') 读取 traceId · 测试 makeCtx 提供的 x-trace-id header 会被正确传播 · 单元测试 .toBe(hardcode) 是稳定的
+---
+
+--- [RALPH] Iteration 1 ended: US-004 (13分钟 35秒) ---
+
+--- [RALPH] Iteration 2 started: US-005 at 2026-05-08 09:28 ---
+
+--- [RALPH] Iteration 1 started: US-005 at 2026-05-08 09:31 ---
+
+--- [RALPH] Iteration 3 started: US-005 at 2026-05-08 09:31 ---
+
+--- [RALPH] Iteration 1 started: US-005 at 2026-05-08 09:31 ---
+
+## [2026-05-08 09:40] - US-005 (4 Specialist router 骨架 mock · 流程类)
+- 创建 apps/api/src/trpc/routers/privateDomain.ts: 1 procedure(generate)· protectedProcedure · writes History row · agentId=private_domain
+- 创建 apps/api/src/trpc/routers/diagnosis.ts: 3 procedure(generate/history/latest)· generate writes DiagnosisReport · isFallback=true · latest uses findFirst
+- 扩展 apps/api/src/trpc/routers/evolution.ts: 保留 US-002 getProfile · 新增 7 procedure(evolve/getConfig/updateConfig/history/recentFeedback/feedbackTrend/moduleRanking)
+- 创建 apps/api/src/trpc/routers/deepLearning.ts: 5 procedure(list/create/createFromFile/learn/delete)· create 用 Buffer.base64url 做 sampleHash · createFromFile 存 [file-content-pending] · learn/delete 用 update(isActive=false)
+- 更新 apps/api/src/trpc/routers/_app.ts: 新增 privateDomain/diagnosis/deepLearning 3 router
+- 创建 packages/schemas/src/specialist-io/privateDomain.schema.ts + diagnosis.schema.ts + evolution.schema.ts + deepLearning.schema.ts
+- 更新 packages/schemas/src/specialist-io/index.ts: re-export 4 新 schema
+- 创建 tests/unit/api/specialists-flow.test.ts: 20 unit tests(AC-8 门禁 ≥16 ✅)
+- 结果: pnpm typecheck 全 workspace ✅ · pnpm test 129/129 ✅
+- **未来迭代的学习:**
+  - evolution router 可以原地扩展 — 保留 US-002 getProfile · 追加新 procedure 不冲突
+  - diagnosisReport.create JSON 字段需要 `as unknown as Prisma.InputJsonValue` cast — 同 stepData 模式
+  - feedbackTrend / moduleRanking 纯 mock 返回(无 DB 调用)· 仍过 accountIsolationMiddleware · test makeCtx 只需 $transaction + $executeRaw
+  - deepLearning.list 的 where: onlyActive ? { isActive: true } : undefined · Prisma 接受 where:undefined 等价 no-filter
+  - vitest test makeCtx 必须把新 model 同时加到 tx 和 prisma 两个对象(accountIsolationMiddleware 会把 tx 作为 ctx.prisma)
+---
+
+--- [RALPH] Iteration 1 ended: US-005 (12分钟 35秒) ---
+
+--- [RALPH] Iteration 2 started: US-006 at 2026-05-08 09:44 ---
+
+## [2026-05-08 09:54] - US-006 (knowledge router + trending + invite 辅助)
+- 创建 apps/api/src/trpc/routers/knowledge.ts: 7 procedures (getRecommendations/getScriptCases/getFavorites/addFavorite/removeFavorite/getNotes/addNote) · protectedProcedure · per-account RLS · getRecommendations/getScriptCases mock 留 PRD-9
+- 创建 apps/api/src/trpc/routers/trending.ts: 3 procedures (fetch/listByIndustry/listByStyle) · globalProcedure · 全局表无 RLS · mock 留 PRD-6 真抓取 · BigInt(viewCount) 省略避免 JSON 序列化问题
+- 创建 apps/api/src/trpc/routers/invite.ts: redeem · findUnique + CONFLICT 409(重复/已用/过期) + update(usedById/usedAt/usedCount++) · globalProcedure · 手动检查 ctx.user(UNAUTHORIZED)
+- 更新 apps/api/src/trpc/routers/_app.ts: wire 3 new routers → 17 routers total (15 Specialist + auth + account + step + evolution + stepData + ipAccounts)
+- 创建 packages/schemas/src/entities/knowledge/trending/invite schemas + 更新 index.ts
+- 创建 tests/unit/api/knowledge.test.ts(7 tests) + trending.test.ts(3 tests) + invite.test.ts(4 tests) = 14 新增
+- 结果: pnpm typecheck ✅ · 143/143 tests ✅
+- **未来迭代的学习:**
+  - 直接 import @trpc/server 在根级 vitest test 文件失败(包在 apps/api/node_modules 非根) · 用 toMatchObject({ code: 'CONFLICT' }) 代替 toBeInstanceOf(TRPCError)
+  - globalProcedure 测试 ctx 不需要 $transaction mock · protectedProcedure 测试需要 $transaction + tx.$executeRaw
+  - removeFavorite 用 deleteMany(where: {accountId, itemType, itemKey}) 实现幂等删除(不报 NOT_FOUND)
+  - invite.redeem 重复检查: usedAt != null OR usedCount >= maxUses OR !isActive OR 过期 → CONFLICT
+---
+
+--- [RALPH] Iteration 2 ended: US-006 (13分钟 1秒) ---
+
+--- [RALPH] Iteration 3 started: US-007 at 2026-05-08 09:57 ---
+
+--- [RALPH] Iteration 3 ended: US-007 (29分钟 12秒) ---
+
+--- [RALPH] Iteration 4 started: US-008 at 2026-05-08 10:26 ---
+
+## [2026-05-08 10:42] - US-008 (PRD-2 · ≥50 procedure 单元测试 + 多账号 e2e + LS↔DB e2e + TD-007/TD-008)
+- TD-008: 全局重命名 generateTraceId → generateHttpTraceId(trpc.ts · HTTP layer, 无参) + generateTraceId → generateSpecialistTraceId(agents/base/types.ts · Specialist layer, 带 accountId+agentId)
+  - 更新: apps/api/src/trpc/trpc.ts, apps/api/src/trpc/middleware/trace.ts(re-export), apps/api/src/agents/base/BaseSpecialist.ts, tests/unit/agents/base.test.ts
+- TD-007: 修复全部 14 个 web lint 错误
+  - Header.tsx: onClick={login} × 2 → onClick={() => void login()} (no-misused-promises)
+  - useAuth.ts: 添加 ImportMetaEnv interface 到 vite-env.d.ts 消除 import.meta.env 的 unsafe-any
+  - useActiveAccount.ts + useEvolution.ts + useStepData.ts: 修 import/order × 5 + eqeqeq × 6
+  - 用 eslint --fix 自动修复 import 排序
+- 新增 tests/unit/api/account-step-auth.test.ts: 15 个单元测试
+  - account.getActive (3 tests: null/found/ctx query)
+  - account.switchActive (5 tests: success/NOT_FOUND/UNAUTHORIZED/zod-0/zod-float)
+  - step.saveStepData (4 tests: success/traceId传播/zod-too-long/empty-inputs)
+  - auth.me (3 tests: unauthenticated/authenticated/fields只暴露id+email+name)
+- 新增 tests/e2e/account-isolation.spec.ts: 多账号 RLS 隔离 E2E(page.evaluate fetch + cookie)
+- 新增 tests/e2e/ls-db-sync.spec.ts: LS↔DB 双写 E2E(先写LS验证/后写DB验证/LS==DB)
+- 结果: pnpm typecheck 6/6 ✅ · pnpm lint clean ✅ · pnpm test 174/174 ✅
+- **未来迭代的学习:**
+  - generateHttpTraceId vs generateSpecialistTraceId 命名区分 HTTP layer(无参)和 Specialist layer(带 accountId+agentId) — TD-008 根因: 同名函数不同签名在重构时易混用
+  - Playwright E2E tRPC 调用: 用 page.evaluate 发 fetch(credentials:'include') 可复用 OAuth session cookie; GET query 用 encodeURIComponent(JSON.stringify({'0':{json:input}})), POST mutation 用 body={'0':{json:input}}
+  - vite-env.d.ts 必须声明 ImportMetaEnv interface 才能让 import.meta.env.VITE_* 避免 unsafe-any — 不声明就是 any 类型
+  - ESLint import/order 中 @quanqn/* 是 external group · @/* 是 internal group — 两者之间需要空行 + @quanqn/* 必须在 @/* 之前
+---
