@@ -5,6 +5,7 @@
  * 跟踪 9 步进度 · 服务 /ip-plan · /daily-tasks · /evolution
  */
 
+import { prisma } from '@/lib/prisma';
 import { STEPS, type Step } from '@/lib/constants/steps';
 
 export interface IPProgress {
@@ -17,13 +18,16 @@ export interface IPProgress {
 }
 
 class IPProgressService {
-  /** 计算单账号 9 步进度 */
-  async progress(_accountId: number): Promise<IPProgress> {
-    // TODO P1 · prisma.stepData.findMany({ where: { accountId: _accountId, status: 'completed' } })
-    const completedKeys: string[] = [];
+  /** 计算单账号 9 步进度 · 读 stepData 表; P1 将加权计算部分完成状态 */
+  async progress(accountId: number): Promise<IPProgress> {
+    const rows = await prisma.stepData.findMany({
+      where: { accountId },
+      select: { stepKey: true },
+    });
 
-    const completed = STEPS.filter((s) => completedKeys.includes(s.key));
-    const pending = STEPS.filter((s) => !completedKeys.includes(s.key));
+    const completedSet = new Set(rows.map((r) => r.stepKey));
+    const completed = STEPS.filter((s) => completedSet.has(s.key));
+    const pending = STEPS.filter((s) => !completedSet.has(s.key));
     const nextStep = pending[0] ?? null;
 
     return {

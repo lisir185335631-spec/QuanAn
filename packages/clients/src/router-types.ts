@@ -185,6 +185,11 @@ const _shadowRouter = _t.router({
       completedKeys: [],
     })),
   }),
+  costLog: _t.router({
+    logFeedback: _t.procedure
+      .input((x: unknown) => x as { stepKey: string; type: 'good' | 'bad' })
+      .mutation((): { ok: boolean } => ({ ok: true })),
+  }),
 });
 
 export type AppRouter = typeof _shadowRouter;

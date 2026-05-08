@@ -1,5 +1,6 @@
 /**
  * PRD-3 US-001 · createBrowserRouter · 34 routes
+ * PRD-3 US-005: step routes wrapped in StepLayout (adds FeedbackButton to all step pages)
  * Route groups (chunks):
  *   step/*      → step chunk (9 routes)
  *   tools/*     → 14 tool pages (lazy individually, shared vite chunk via webpackChunkName)
@@ -11,6 +12,7 @@ import { lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import { RootLayout } from '@/layouts/RootLayout';
+import { StepLayout } from '@/layouts/StepLayout';
 import NotFound from '@/pages/NotFound';
 
 // ── Step pages (9) — one shared chunk ────────────────────────────────────────
@@ -61,16 +63,22 @@ export const router = createBrowserRouter([
       // Root redirect
       { index: true, element: <Navigate to="/step/1" replace /> },
 
-      // ── Step routes (9) ──────────────────────────────────────────────────
-      { path: 'step/1', element: <Step1 /> },
-      { path: 'step/2', element: <Step2 /> },
-      { path: 'step/3', element: <Step3 /> },
-      { path: 'step/4', element: <Step4 /> },
-      { path: 'step/5', element: <Step5 /> },
-      { path: 'step/6', element: <Step6 /> },
-      { path: 'step/7', element: <Step7 /> },
-      { path: 'step/8', element: <Step8 /> },
-      { path: 'step/9', element: <Step9 /> },
+      // ── Step routes (9) — nested under StepLayout (adds FeedbackButton) ──
+      {
+        path: 'step',
+        element: <StepLayout />,
+        children: [
+          { path: '1', element: <Step1 /> },
+          { path: '2', element: <Step2 /> },
+          { path: '3', element: <Step3 /> },
+          { path: '4', element: <Step4 /> },
+          { path: '5', element: <Step5 /> },
+          { path: '6', element: <Step6 /> },
+          { path: '7', element: <Step7 /> },
+          { path: '8', element: <Step8 /> },
+          { path: '9', element: <Step9 /> },
+        ],
+      },
 
       // ── Tool routes (14) ─────────────────────────────────────────────────
       { path: 'trending', element: <Trending /> },

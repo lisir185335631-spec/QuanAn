@@ -19,6 +19,7 @@ import { deepLearningRouter } from '@/trpc/routers/deepLearning';
 import { knowledgeRouter } from '@/trpc/routers/knowledge';
 import { trendingRouter } from '@/trpc/routers/trending';
 import { inviteRouter } from '@/trpc/routers/invite';
+import { costLogRouter } from '@/trpc/routers/costLog';
 
 export const appRouter = router({
   auth: authRouter,
@@ -36,6 +37,7 @@ export const appRouter = router({
   knowledge: knowledgeRouter,
   trending: trendingRouter,
   invite: inviteRouter,
+  costLog: costLogRouter,
 });
 
 export type AppRouter = typeof appRouter;
