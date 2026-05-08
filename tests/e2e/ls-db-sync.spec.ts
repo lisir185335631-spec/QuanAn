@@ -67,7 +67,7 @@ test.describe('LS↔DB 双写 E2E', () => {
       stage: 'growth',
     })) as { id: number };
 
-    await trpcMutate(page, 'account.switchActive', { accountId: account.id });
+    await trpcMutate(page, 'ipAccounts.switchActive', { accountId: account.id });
 
     const stepKey = 'e2e-ls-db-step';
     const testInputs = { content: 'ls-db-dual-write-test', value: 99 };
@@ -89,7 +89,7 @@ test.describe('LS↔DB 双写 E2E', () => {
     expect(lsParsed['value']).toBe(99);
 
     // Write to DB via tRPC (second part of dual-write)
-    const saveResult = (await trpcMutate(page, 'step.saveStepData', {
+    const saveResult = (await trpcMutate(page, 'stepData.save', {
       stepKey,
       inputs: testInputs,
     })) as { ok: boolean };

@@ -78,8 +78,8 @@ test.describe('多账号 RLS 隔离 E2E', () => {
     expect(accountB.id).toBeGreaterThan(0);
 
     // Switch to account A and save step data
-    await trpcMutate(page, 'account.switchActive', { accountId: accountA.id });
-    const saveResult = (await trpcMutate(page, 'step.saveStepData', {
+    await trpcMutate(page, 'ipAccounts.switchActive', { accountId: accountA.id });
+    const saveResult = (await trpcMutate(page, 'stepData.save', {
       stepKey: 'e2e-iso',
       inputs: { owner: 'account-A', secret: 42 },
     })) as { ok: boolean };
@@ -90,14 +90,14 @@ test.describe('多账号 RLS 隔离 E2E', () => {
     expect(dataA.length).toBeGreaterThan(0);
 
     // Switch to account B — account B has NO step data
-    await trpcMutate(page, 'account.switchActive', { accountId: accountB.id });
+    await trpcMutate(page, 'ipAccounts.switchActive', { accountId: accountB.id });
 
     // RLS isolation: account B must see zero rows
     const dataB = (await trpcQuery(page, 'stepData.getAll')) as Array<unknown>;
     expect(dataB.length).toBe(0);
 
     // Switch back to A — data must still be there (not deleted)
-    await trpcMutate(page, 'account.switchActive', { accountId: accountA.id });
+    await trpcMutate(page, 'ipAccounts.switchActive', { accountId: accountA.id });
     const dataAAgain = (await trpcQuery(page, 'stepData.getAll')) as Array<unknown>;
     expect(dataAAgain.length).toBeGreaterThan(0);
   });

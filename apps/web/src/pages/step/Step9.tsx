@@ -1,4 +1,3 @@
-import { FeedbackButton } from '@/components/FeedbackButton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { stepConfig } from '@/lib/stepConfig';
 
@@ -17,9 +16,6 @@ export default function Step9() {
           <p className="mt-4 text-body-sm text-on-surface-variant">PRD-3 占位 · 实施 PRD-4</p>
         </CardContent>
       </Card>
-      <div className="mt-4">
-        <FeedbackButton stepKey="step9" />
-      </div>
     </main>
   );
 }
