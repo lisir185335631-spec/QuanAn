@@ -24,6 +24,26 @@
 - 直接 import `@trpc/server` 在 vitest 根级别测试文件失败(包在 apps/api/node_modules 非根) · 改从 `@/trpc/middleware/...` 间接导入或避免直接引用类名
 
 ## 执行日志(按 story 倒序)
+## [2026-05-08 12:07] - US-001 (PRD-3 · TD-012 merge + React Router v6 + 34 路由)
+- 删 apps/api/src/trpc/routers/{account,step}.ts(alias routers)
+- _app.ts 移除 step/account import + spread
+- useActiveAccount: trpc.account.* → trpc.ipAccounts.* (getActive→active, switchActive→switchActive)
+- useStepData: trpc.step.saveStepData → trpc.stepData.save
+- router-types.ts: 移除 step/account shadow routes
+- account-step-auth.test.ts: 迁移到 ipAccountsRouter/stepDataRouter(含 auditLog.create mock)
+- 新增 apps/web/src/router.tsx: createBrowserRouter(34 routes: 1 index + 9 step + 14 tools + 6 modules + 3 aux + 1 catch-all)
+- 新增 apps/web/src/layouts/RootLayout.tsx: Header + Suspense outlet + PageSkeleton
+- 新增 33 占位 page 组件(step/tools/modules 三层目录 + 4 顶级 auxiliary)
+- main.tsx: App → RouterProvider + import router
+- 新增 tests/unit/web/router.test.ts: 11 路由结构验证测试
+- pnpm typecheck ✅ · pnpm test 186/186 ✅(从 174 增加到 186,+12 新测试)
+- **未来迭代的学习:**
+  - vitest include 只匹配 *.test.ts 不匹配 *.test.tsx · web 端测试如不需要 JSX 渲染就用 .ts 扩展名
+  - 删 alias router 后必须同步更新 account-step-auth.test.ts · 否则 vitest 找不到 import 报错
+  - stepData.save 返回 { ok, data } 而非 { ok } · 迁移测试时断言要更新
+  - ipAccountsRouter.switchActive 写 auditLog · mock ctx 需要 auditLog.create vi.fn()
+  - webpackChunkName 注释可按模块分组(step/tools/modules)实现 chunk 共享
+---
 ## [2026-05-08 10:20] - US-007 (PRD-2 · LLMGateway 真 callProvider)
 - 实现 LLMGateway 真实 callProvider: Anthropic SDK + OpenAI SDK 路由(仅 index.ts import,AC-7/8 R-1)
 - 创建 anthropic-provider.ts: buildAnthropicPayload + parseAnthropicResponse(无 SDK import)
