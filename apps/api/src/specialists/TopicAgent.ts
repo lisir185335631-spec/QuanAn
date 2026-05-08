@@ -23,6 +23,7 @@ import type {
   InvokeLLMResult,
   AssembledContext,
   ILLMGateway,
+  LLMCompleteRequest,
 } from './base/types';
 
 // ── Topic item schema (共用) ────────────────────────────────────────────────────
@@ -155,7 +156,8 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
 
   /**
    * AC-3: 走 SSE 流式 · 累积 delta → JSON.parse
-   * AC-12: 断流/JSON.parse 失败 → throw → BaseSpecialist retry 1 次
+   * AC-12: 断流/JSON.parse 失败 → 内部 retry stream 1 次 → 仍失败返回 isFallback(null content)
+   *        → BaseSpecialist safeParse 失败 → retry → SchemaValidationError
    */
   protected async invokeLLM(
     ctx: AssembledContext,
@@ -168,12 +170,7 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
     }
 
     const userPrompt = this._buildUserPrompt(req.userInput, ctx);
-
-    let accumulated = '';
-    let finalTokens: { prompt: number; completion: number; total: number } | undefined;
-
-    // AC-3: SSE streaming — 防 22KB 单次 timeout
-    for await (const chunk of gateway.stream({
+    const streamReq: LLMCompleteRequest = {
       model_tier: this.config.execution.model_tier,
       systemPrompt: ctx.systemPrompt,
       userPrompt,
@@ -185,23 +182,31 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
         userId: 0, // TODO: P1 — thread userId through SpecialistRequest
       },
       timeout_ms: this.config.execution.timeout_ms,
-    })) {
-      if (chunk.delta) accumulated += chunk.delta;
-      if (chunk.type === 'done') finalTokens = chunk.tokens;
-      if (chunk.type === 'error') {
-        // AC-12: stream error → throw → BaseSpecialist retries
-        throw new Error(`LLM stream error: ${chunk.error?.message ?? 'unknown'}`);
-      }
-    }
+    };
 
-    // AC-12: JSON.parse 失败 → throw → BaseSpecialist retry 1 次
+    // AC-3: SSE streaming — 防 22KB 单次 timeout
+    let { accumulated, tokens: finalTokens } = await this._consumeStream(gateway.stream, streamReq);
+
+    // AC-12: JSON.parse 失败 → retry stream 1 次 → fallback
     let content: unknown;
     try {
       content = JSON.parse(accumulated);
-    } catch (_parseErr) {
-      throw new Error(
-        `stream_incomplete: JSON.parse failed after ${accumulated.length} chars`,
-      );
+    } catch {
+      // Internal retry (AC-12 "retry 1")
+      const retry = await this._consumeStream(gateway.stream, streamReq);
+      try {
+        content = JSON.parse(retry.accumulated);
+        finalTokens = retry.tokens;
+      } catch {
+        // Both stream attempts produced non-parseable JSON → return isFallback
+        // BaseSpecialist.safeParse(null) fails → BaseSpecialist retry → SchemaValidationError
+        return {
+          content: null,
+          tokens: finalTokens ?? { prompt: 0, completion: 0, total: 0 },
+          model: 'claude-sonnet-4-6',
+          isFallback: true,
+        };
+      }
     }
 
     return {
@@ -209,6 +214,23 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
       tokens: finalTokens ?? { prompt: 0, completion: 0, total: 0 },
       model: 'claude-sonnet-4-6',
     };
+  }
+
+  /** Consume SSE stream: accumulate delta text + capture final tokens */
+  private async _consumeStream(
+    streamFn: NonNullable<ILLMGateway['stream']>,
+    req: LLMCompleteRequest,
+  ): Promise<{ accumulated: string; tokens: { prompt: number; completion: number; total: number } | undefined }> {
+    let accumulated = '';
+    let tokens: { prompt: number; completion: number; total: number } | undefined;
+    for await (const chunk of streamFn(req)) {
+      if (chunk.delta) accumulated += chunk.delta;
+      if (chunk.type === 'done') tokens = chunk.tokens;
+      if (chunk.type === 'error') {
+        throw new Error(`LLM stream error: ${chunk.error?.message ?? 'unknown'}`);
+      }
+    }
+    return { accumulated, tokens };
   }
 
   private _buildUserPrompt(userInput: TopicInput, _ctx: AssembledContext): string {
