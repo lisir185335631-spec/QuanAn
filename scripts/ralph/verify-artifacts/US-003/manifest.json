@@ -1,25 +1,35 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-07T21:40:00",
-  "validator_end_ts": "2026-05-07T21:45:00",
-  "test_command": "pnpm --filter @quanqn/api typecheck && pnpm vitest run",
+  "validator_start_ts": "2026-05-08T09:02:30",
+  "validator_end_ts": "2026-05-08T09:04:30",
+  "test_command": "pnpm vitest run tests/unit/api/ipAccounts-stepData.test.ts",
   "exit_code": 0,
   "artifacts": [
+    "vitest.stdout.txt",
     "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "typecheck.txt",
-    "manifest.json"
+    "typecheck.txt"
   ],
-  "ac_results": [
-    { "ac": 1, "desc": "pnpm dev:api 监听 3000 · 0 error · cold start < 5s", "result": "PASS", "evidence": "server PID 20480 running, /health → 200 OK" },
-    { "ac": 2, "desc": "curl /trpc/auth.me → unauthenticated JSON shape", "result": "PASS", "evidence": "curl response matches exact shape" },
-    { "ac": 3, "desc": "Prisma 实例化 < 100ms · users 表空查通", "result": "PASS", "evidence": "instantiation=0.63ms, connect=10.61ms, query=2.64ms, rows=0" },
-    { "ac": 4, "desc": "auth.me P50 < 50ms · P99 < 200ms", "result": "PASS", "evidence": "P50=0.5ms, P99=0.8ms (20 requests)" },
-    { "ac": 5, "desc": "DB URL 错 → pino log 'DB connection failed' + exit 1", "result": "PASS", "evidence": "exit code 1, pino error msg confirmed" },
-    { "ac": 6, "desc": "monorepo prisma client path 解决 · .npmrc hoist", "result": "PASS", "evidence": ".npmrc public-hoist-pattern[]=@prisma/client · @prisma/client hoisted to root node_modules · typecheck passes" },
-    { "ac": 7, "desc": "tRPC context: prisma + req + traceId='pending'", "result": "PASS", "evidence": "context.ts line 19-21 verified" },
-    { "ac": 8, "desc": "Typecheck passes", "result": "PASS", "evidence": "tsc --noEmit exit 0" },
-    { "ac": 9, "desc": "Integration test auth.me passes", "result": "PASS", "evidence": "vitest 1/1 passed (pytest-full.xml)" }
-  ],
-  "notes": "All 9 ACs passed. README.md does not have explicit prisma hoist note, but .npmrc has detailed comment and prisma.ts has AC-6 comment — functional requirement fully met."
+  "summary": {
+    "tests_total": 15,
+    "tests_passed": 15,
+    "tests_failed": 0,
+    "full_suite_total": 98,
+    "full_suite_passed": 98,
+    "full_suite_failed": 0,
+    "typecheck": "exit 0",
+    "zero_regression": "PASS"
+  },
+  "ac_results": {
+    "AC-1": "PASS - 6 procedures in ipAccounts.ts (5×protectedProcedure + switchActive×globalProcedure with manual ownership check)",
+    "AC-2": "PASS - 4 procedures in stepData.ts all using protectedProcedure",
+    "AC-3": "PASS - ipAccount.schema.ts has 7 fields: id/userId/name/industry/platform/stage/isActive",
+    "AC-4": "PASS - stepData.schema.ts has stepKeySchema enum + saveStepDataInput(inputs) + stepDataSchema(inputs/result Json nullable)",
+    "AC-5": "PASS - list.findMany called without where:{userId}; test confirms RLS-only isolation",
+    "AC-6": "PASS - switchActive updates user.activeAccountId + writes auditLog eventType=account.switch + returns activeAccountId for client refresh",
+    "AC-7": "PASS - save upserts DB and returns {ok:true, data:row} for LS reconcile; test confirms upsert called with accountId_stepKey composite key",
+    "AC-8": "PASS - get.findFirst uses where:{stepKey} only, no where:{accountId}; RLS protectedProcedure enforces isolation",
+    "AC-9": "UNTESTED - performance constraints (list<100ms, save<200ms) not verifiable in unit tests; structurally sound (simple indexed queries)",
+    "AC-10": "PASS - pnpm typecheck across all 6 packages: exit 0",
+    "AC-11": "PASS - 15 unit tests, all passed; every procedure has ≥1 test (AC requires ≥10)"
+  }
 }

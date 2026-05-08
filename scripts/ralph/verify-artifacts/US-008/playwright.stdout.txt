@@ -1,0 +1,8 @@
+
+Running 4 tests using 4 workers
+
+[1A[2K[1/4] [chromium] › tests/e2e/ls-db-sync.spec.ts:54:3 › LS↔DB 双写 E2E › stepData save 写 LS + DB · 顺序先 LS 后 DB
+[1A[2K[2/4] [chromium] › tests/e2e/account-isolation.spec.ts:54:3 › 多账号 RLS 隔离 E2E › account A 的 stepData 在 switch 到 account B 后不可见
+[1A[2K[3/4] [mobile] › tests/e2e/ls-db-sync.spec.ts:54:3 › LS↔DB 双写 E2E › stepData save 写 LS + DB · 顺序先 LS 后 DB
+[1A[2K[4/4] [mobile] › tests/e2e/account-isolation.spec.ts:54:3 › 多账号 RLS 隔离 E2E › account A 的 stepData 在 switch 到 account B 后不可见
+[1A[2K  4 passed (1.0s)

@@ -20,8 +20,8 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
-      "notes": "[risk-upgrade] foundation due to LD-009 RLS 红线 · 全 PRD downstream depends on 数据隔离正确",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -78,10 +78,12 @@
         "Typecheck passes",
         "Tests pass"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 2,
-      "passes": false,
-      "notes": "medium · LS namespace 关键(REJ-010)+ ADR-010 双写策略",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -132,10 +134,13 @@
         "Typecheck passes",
         "Tests pass · ≥ 10 unit(每 procedure ≥ 1)"
       ],
-      "depends_on": ["US-001", "US-002"],
+      "depends_on": [
+        "US-001",
+        "US-002"
+      ],
       "priority": 3,
-      "passes": false,
-      "notes": "medium · CRUD 标准模式 · 关键是过 RLS middleware 验证",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -179,10 +184,12 @@
         "Typecheck passes",
         "Tests pass · ≥ 11 unit(每 procedure 1)"
       ],
-      "depends_on": ["US-003"],
+      "depends_on": [
+        "US-003"
+      ],
       "priority": 4,
-      "passes": false,
-      "notes": "medium · mock 简单 · 关键是 zod schema 完整",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -221,10 +228,12 @@
         "Typecheck passes",
         "Tests pass · ≥ 16 unit(总 procedure 数)"
       ],
-      "depends_on": ["US-003"],
+      "depends_on": [
+        "US-003"
+      ],
       "priority": 5,
-      "passes": false,
-      "notes": "medium · 流程类 mock · evolution 7 procedure 最多",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -261,10 +270,12 @@
         "Typecheck passes",
         "Tests pass · ≥ 11 unit"
       ],
-      "depends_on": ["US-003"],
+      "depends_on": [
+        "US-003"
+      ],
       "priority": 6,
-      "passes": false,
-      "notes": "medium · knowledge mock · 实际 RAG 留 PRD-9 · trending mock 留 PRD-6 真抓取",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -306,7 +317,9 @@
         "Typecheck passes",
         "Tests pass · 单元 ≥ 6(用 vi.mock 不真调 SDK)+ 集成 1(真调 mock anthropic 用 nock)"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 7,
       "passes": false,
       "notes": "[risk-upgrade] high (security-critical · auth/credential 关键字命中) · LD-012 R-1 唯一入口 · 不允许 rubber-stamp · OPUS-AUDIT-CHEATSHEET 严审",
@@ -366,7 +379,13 @@
         "Typecheck passes",
         "Tests pass(全 ≥ 57)"
       ],
-      "depends_on": ["US-003", "US-004", "US-005", "US-006", "US-007"],
+      "depends_on": [
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007"
+      ],
       "priority": 8,
       "passes": false,
       "notes": "medium · 测试聚合 + TD cleanup · 顺带修 PRD-1 留下的 lint + naming 尾巴",

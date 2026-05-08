@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="49" failures="0" errors="0" time="0.32">
+    <testsuite name="tests/unit/parseDesignTokens.test.ts" timestamp="2026-05-08T00:14:29.724Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.005811875">
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts color tokens from YAML frontmatter" time="0.001640542">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts typography tokens including all three font families" time="0.00019625">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts rounded tokens" time="0.000348792">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts spacing tokens" time="0.000331292">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; YAML wins over text section — text section hex values are not in tokens" time="0.001617417">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; primary color comes from YAML, not from text-section editorial hint" time="0.000180375">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing opening ---" time="0.000282292">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing closing ---" time="0.000060542">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on corrupt YAML with line number in message" time="0.000325208">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; returns empty objects for missing optional sections" time="0.000256708">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/agents/base.test.ts" timestamp="2026-05-08T00:14:29.725Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.008032083">
+        <testcase classname="tests/unit/agents/base.test.ts" name="BaseSpecialist abstract contract &gt; concrete subclass implements execute and can be instantiated" time="0.004889166">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="ContextAssembler.assembleStep &gt; returns { step, accountId, lastResults:{} }" time="0.000489292">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="LLMGateway.selectTier &gt; returns reasoning for reasoning hint" time="0.000159542">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="LLMGateway.selectTier &gt; returns lightweight for lightweight hint" time="0.00016425">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; extractTraceId returns the X-Trace-Id header value" time="0.000843916">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; extractTraceId returns empty string when header absent" time="0.00011925">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; generateTraceId returns a 16-char hex string" time="0.000436708">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; generateTraceId is unique per call" time="0.000249792">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/account-isolation.test.ts" timestamp="2026-05-08T00:14:29.725Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.003635709">
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-4: throws FORBIDDEN when activeAccountId is null" time="0.001678083">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-4: calls next=false (does not proceed) when activeAccountId missing" time="0.000481333">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-5: skips RLS and calls next when meta.isGlobal=true" time="0.000190875">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-5: isGlobal skips even when activeAccountId is present" time="0.000109125">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: sets app.current_account_id via set_config for valid context" time="0.000422">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: sets app.current_user_id when user.id is present" time="0.000154583">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: skips app.current_user_id when user is null" time="0.000084333">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: calls next with updated ctx including transaction prisma" time="0.000095375">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: wraps resolver in $transaction (ensures set_config is LOCAL)" time="0.000079709">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/auth/providers.test.ts" timestamp="2026-05-08T00:14:29.725Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.005092166">
+        <testcase classname="tests/unit/auth/providers.test.ts" name="MockProvider &gt; validateCallback always returns mock dev user" time="0.000733125">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="MockProvider &gt; getAuthorizationUrl returns URL with /auth/callback?mock=true" time="0.00014775">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when SESSION_SECRET &lt; 32 chars" time="0.001613958">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when OAUTH_PROVIDER is unknown" time="0.000588334">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when NODE_ENV=production and OAUTH_PROVIDER=mock" time="0.000493083">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns false for mock provider (name=mock) — dev only" time="0.000136958">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns true for google provider — always enforced" time="0.000089666">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns true for any unknown real provider" time="0.000069417">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; attack scenario: ?mock=true query param cannot bypass CSRF for google provider" time="0.000073708">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/auth.me.test.ts" timestamp="2026-05-08T00:14:29.725Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.019304167">
+        <testcase classname="tests/integration/api/auth.me.test.ts" name="auth.me HTTP endpoint &gt; GET /trpc/auth.me returns unauthenticated shape" time="0.018733625">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/auth.test.ts" timestamp="2026-05-08T00:14:29.725Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.111702875">
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Integration] mock login flow &gt; AC-2/3/5: mock login creates session cookie + DB row" time="0.028598625">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Integration] mock login flow &gt; AC-4: auth.me with valid session returns authenticated user" time="0.015286542">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[E2E] CSRF + session lifecycle &gt; AC-8: mock provider bypasses CSRF — mismatched state still completes login" time="0.010260583">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[E2E] CSRF + session lifecycle &gt; AC-11: expired session → auth.me returns unauthenticated" time="0.021601791">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Perf] login flow timing &gt; AC-13: full mock login flow (callback → session) &lt; 500ms" time="0.005140708">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Perf] login flow timing &gt; AC-13: auth.me with valid session &lt; 100ms" time="0.003550292">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/rls-isolation.test.ts" timestamp="2026-05-08T00:14:29.726Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.110473291">
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-3: user A (correct account) sees their own step_data rows" time="0.011081792">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-3: user B (different account) sees 0 rows from step_data" time="0.007736166">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)" time="0.002623584">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-7: set_config round-trip overhead &lt; 50ms on localhost" time="0.00376625">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/trace.test.ts" timestamp="2026-05-08T00:14:29.726Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.014783875">
+        <testcase classname="tests/integration/api/trace.test.ts" name="[Integration] trace_id propagation &gt; echoes provided X-Trace-Id in response header" time="0.011651792">
+        </testcase>
+        <testcase classname="tests/integration/api/trace.test.ts" name="[Integration] trace_id propagation &gt; generates 16-char hex trace ID when header is absent" time="0.002781375">
+        </testcase>
+    </testsuite>
+</testsuites>

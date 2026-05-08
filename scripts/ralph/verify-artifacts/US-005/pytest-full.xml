@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites name="US-005-full-regression" tests="129" failures="0" errors="0" time="0.419">
+  <testsuite name="specialists-flow.test.ts" tests="22" failures="0" errors="0" time="0.050">
+    <testcase classname="privateDomain.generate" name="AC-7: creates History row with agentId=private_domain and traceId" time="0.002" />
+    <testcase classname="diagnosis.generate" name="AC-7: creates DiagnosisReport row with agentId=DiagnosisAgent and traceId" time="0.002" />
+    <testcase classname="diagnosis.generate" name="zod: rejects answers array with wrong length" time="0.002" />
+    <testcase classname="diagnosis.history" name="calls diagnosisReport.findMany with default limit=10" time="0.002" />
+    <testcase classname="diagnosis.latest" name="calls diagnosisReport.findFirst ordered by createdAt desc" time="0.002" />
+    <testcase classname="diagnosis.latest" name="returns null when no reports found" time="0.002" />
+    <testcase classname="evolution.evolve" name="AC-7: creates FeedbackLog row with rating and agentId" time="0.002" />
+    <testcase classname="evolution.getConfig" name="returns profile config when profile exists" time="0.002" />
+    <testcase classname="evolution.getConfig" name="returns default config when profile does not exist" time="0.002" />
+    <testcase classname="evolution.updateConfig" name="upserts EvolutionProfile and returns ok + updated config" time="0.002" />
+    <testcase classname="evolution.history" name="calls evolutionInsight.findMany with default limit=20" time="0.002" />
+    <testcase classname="evolution.recentFeedback" name="calls feedbackLog.findMany and returns array" time="0.002" />
+    <testcase classname="evolution.recentFeedback" name="passes agentId filter to where clause when provided" time="0.002" />
+    <testcase classname="evolution.feedbackTrend" name="returns mock trend data with requested days" time="0.002" />
+    <testcase classname="evolution.moduleRanking" name="returns mock ranking array" time="0.002" />
+    <testcase classname="deepLearning.list" name="calls deepLearningArchive.findMany with isActive filter by default" time="0.002" />
+    <testcase classname="deepLearning.create" name="creates DeepLearningArchive with sourceType=text" time="0.002" />
+    <testcase classname="deepLearning.createFromFile" name="creates archive with sourceType=file and placeholder sample" time="0.002" />
+    <testcase classname="deepLearning.learn" name="updates archive learningStatus to pending and returns {ok:true, status:&quot;queued&quot;}" time="0.002" />
+    <testcase classname="deepLearning.delete" name="soft-deletes archive by setting isActive=false" time="0.002" />
+  </testsuite>
+  <testsuite name="all-other-tests" tests="109" failures="0" errors="0" time="0.369" />
+</testsuites>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="83" failures="0" errors="0" time="0.376">
+    <testsuite name="tests/unit/parseDesignTokens.test.ts" timestamp="2026-05-08T00:40:15.009Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.004245">
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts color tokens from YAML frontmatter" time="0.0016885">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts typography tokens including all three font families" time="0.000236125">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts rounded tokens" time="0.000183417">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts spacing tokens" time="0.000169167">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; YAML wins over text section — text section hex values are not in tokens" time="0.000397333">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; primary color comes from YAML, not from text-section editorial hint" time="0.00010225">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing opening ---" time="0.000249417">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing closing ---" time="0.000057334">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on corrupt YAML with line number in message" time="0.000284125">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; returns empty objects for missing optional sections" time="0.000239916">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/agents/base.test.ts" timestamp="2026-05-08T00:40:15.010Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.00903025">
+        <testcase classname="tests/unit/agents/base.test.ts" name="BaseSpecialist abstract contract &gt; concrete subclass implements execute and can be instantiated" time="0.006403666">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="ContextAssembler.assembleStep &gt; returns { step, accountId, lastResults:{} }" time="0.00024075">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="LLMGateway.selectTier &gt; returns reasoning for reasoning hint" time="0.000072042">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="LLMGateway.selectTier &gt; returns lightweight for lightweight hint" time="0.000172667">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; extractTraceId returns the X-Trace-Id header value" time="0.000765625">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; extractTraceId returns empty string when header absent" time="0.000178417">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; generateTraceId returns a 16-char hex string" time="0.000201916">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; generateTraceId is unique per call" time="0.000113">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/account-isolation.test.ts" timestamp="2026-05-08T00:40:15.011Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.005225708">
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-4: throws FORBIDDEN when activeAccountId is null" time="0.002872125">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-4: calls next=false (does not proceed) when activeAccountId missing" time="0.000546333">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-5: skips RLS and calls next when meta.isGlobal=true" time="0.000215">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-5: isGlobal skips even when activeAccountId is present" time="0.00011325">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: sets app.current_account_id via set_config for valid context" time="0.000407625">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: sets app.current_user_id when user.id is present" time="0.000150791">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: skips app.current_user_id when user is null" time="0.000087917">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: calls next with updated ctx including transaction prisma" time="0.000094125">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: wraps resolver in $transaction (ensures set_config is LOCAL)" time="0.000074792">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/auth/providers.test.ts" timestamp="2026-05-08T00:40:15.011Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.004117625">
+        <testcase classname="tests/unit/auth/providers.test.ts" name="MockProvider &gt; validateCallback always returns mock dev user" time="0.000560625">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="MockProvider &gt; getAuthorizationUrl returns URL with /auth/callback?mock=true" time="0.000139125">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when SESSION_SECRET &lt; 32 chars" time="0.00189025">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when OAUTH_PROVIDER is unknown" time="0.000512708">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when NODE_ENV=production and OAUTH_PROVIDER=mock" time="0.000343125">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns false for mock provider (name=mock) — dev only" time="0.000061916">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns true for google provider — always enforced" time="0.00003975">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns true for any unknown real provider" time="0.00003425">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; attack scenario: ?mock=true query param cannot bypass CSRF for google provider" time="0.000034791">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/hooks.test.ts" timestamp="2026-05-08T00:40:15.011Z" hostname="returndeMacBook-Pro.local" tests="16" failures="0" errors="0" skipped="0" time="0.003852959">
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; save writes inputs under account-namespaced key (AC-1)" time="0.000857958">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; load reads the LS value back for the same account (AC-1)" time="0.000619083">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; load returns null when key is absent (AC-1)" time="0.000181125">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; LS is NOT rolled back after simulated DB failure (AC-1)" time="0.00014075">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; accountId=null: save writes nothing to LS (AC-1 guard)" time="0.000120459">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; different step keys produce distinct LS entries (AC-1)" time="0.000129458">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; save prunes non-active namespaces when LS is near 5 MB (AC-8)" time="0.000223125">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; switchTo clears all LS keys of the old account namespace (AC-2, AC-6)" time="0.000184833">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; switchTo preserves new account namespace (AC-2)" time="0.0001715">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; grep simulation: 0 hits for old namespace after switch (AC-6)" time="0.000085125">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; multiple tabs: each tab has its own storage — LS does not bleed (AC-7)" time="0.000047542">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; caches evolution profile to LS with account-namespaced key (AC-3)" time="0.000068584">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; returns null when no LS cache for evolution (AC-3 initial state)" time="0.00003">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; LS cache key is account-specific — no bleed between accounts (AC-7)" time="0.000042">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; LS cache for switched-from account is cleared; new account cache intact (AC-3)" time="0.000048708">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; handles malformed LS JSON gracefully (parse safety)" time="0.000053333">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/ls-namespace.test.ts" timestamp="2026-05-08T00:40:15.012Z" hostname="returndeMacBook-Pro.local" tests="18" failures="0" errors="0" skipped="0" time="0.0021835">
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-01: stepLsKey account=1 step=step1" time="0.000512042">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-02: stepLsKey account=1 step=step2" time="0.0000635">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-03: stepLsKey account=1 step=step3" time="0.000050666">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-04: stepLsKey account=1 step=step4" time="0.000041959">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-05: stepLsKey account=1 step=step5" time="0.000035083">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-06: stepLsKey account=1 step=step6" time="0.000040209">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-07: stepLsKey account=1 step=step7" time="0.000033083">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-08: stepLsKey account=1 step=step8" time="0.000028375">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-09: stepLsKey account=1 step=step9" time="0.000254">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-10: evolutionLsKey account=1" time="0.000077166">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-11: stepLsKey account=42 must use account 42 namespace" time="0.000040875">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-12: evolutionLsKey account=42" time="0.000030459">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-13: accountLsPrefix has trailing underscore" time="0.000035917">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-14: LS_PREFIX is correct" time="0.000029042">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-15: stepLsKey account=0 is well-formed" time="0.0000265">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="clearLsNamespace &gt; key-16: removes all keys for the target account namespace" time="0.000105875">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="clearLsNamespace &gt; key-17: preserves keys from other account namespaces (AC-6 isolation)" time="0.000039791">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="lsUsedBytes and pruneLsNamespaces &gt; key-18: pruneLsNamespaces removes non-active keys when limit exceeded" time="0.000076542">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/auth.me.test.ts" timestamp="2026-05-08T00:40:15.013Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.013369875">
+        <testcase classname="tests/integration/api/auth.me.test.ts" name="auth.me HTTP endpoint &gt; GET /trpc/auth.me returns unauthenticated shape" time="0.012837708">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/auth.test.ts" timestamp="2026-05-08T00:40:15.013Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.158992208">
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Integration] mock login flow &gt; AC-2/3/5: mock login creates session cookie + DB row" time="0.046077334">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Integration] mock login flow &gt; AC-4: auth.me with valid session returns authenticated user" time="0.01241225">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[E2E] CSRF + session lifecycle &gt; AC-8: mock provider bypasses CSRF — mismatched state still completes login" time="0.005397125">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[E2E] CSRF + session lifecycle &gt; AC-11: expired session → auth.me returns unauthenticated" time="0.007306333">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Perf] login flow timing &gt; AC-13: full mock login flow (callback → session) &lt; 500ms" time="0.006209209">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Perf] login flow timing &gt; AC-13: auth.me with valid session &lt; 100ms" time="0.008221">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/rls-isolation.test.ts" timestamp="2026-05-08T00:40:15.014Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.143921792">
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-3: user A (correct account) sees their own step_data rows" time="0.004402959">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-3: user B (different account) sees 0 rows from step_data" time="0.004958333">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)" time="0.002643375">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-7: set_config round-trip overhead &lt; 50ms on localhost" time="0.00706375">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/trace.test.ts" timestamp="2026-05-08T00:40:15.014Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.027685167">
+        <testcase classname="tests/integration/api/trace.test.ts" name="[Integration] trace_id propagation &gt; echoes provided X-Trace-Id in response header" time="0.023976625">
+        </testcase>
+        <testcase classname="tests/integration/api/trace.test.ts" name="[Integration] trace_id propagation &gt; generates 16-char hex trace ID when header is absent" time="0.003114208">
+        </testcase>
+    </testsuite>
+</testsuites>

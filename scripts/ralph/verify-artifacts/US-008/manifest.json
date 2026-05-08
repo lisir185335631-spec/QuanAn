@@ -1,0 +1,41 @@
+{
+  "story_id": "US-008",
+  "validator_start_ts": "2026-05-08T08:29:00",
+  "validator_end_ts": "2026-05-08T08:35:00",
+  "test_command": "pnpm vitest run && pnpm playwright test tests/e2e/account-isolation.spec.ts tests/e2e/ls-db-sync.spec.ts && pnpm --filter @quanqn/web lint && pnpm typecheck",
+  "exit_code": 0,
+  "verdict": "PASS",
+  "artifacts": [
+    "vitest-full.xml",
+    "vitest-full.stdout.txt",
+    "typecheck.txt",
+    "lint-web.txt",
+    "playwright.stdout.txt"
+  ],
+  "summary": {
+    "vitest_total": 174,
+    "vitest_passed": 174,
+    "vitest_failed": 0,
+    "vitest_unit": 160,
+    "vitest_integration": 14,
+    "vitest_procedure_tests": 84,
+    "vitest_time_s": 0.52,
+    "playwright_passed": 4,
+    "playwright_failed": 0,
+    "playwright_time_s": 1.0,
+    "typecheck_workspaces": 6,
+    "typecheck_errors": 0,
+    "lint_errors": 0
+  },
+  "ac_results": {
+    "AC1_vitest_unit_ge_50": "PASS (84 procedure tests, 17 routers, 174 total)",
+    "AC2_playwright_e2e_ge_2": "PASS (4 tests / 2 specs × 2 browsers)",
+    "AC3_exit_code_0": "PASS",
+    "AC4_typecheck_6_workspaces": "PASS (admin/api/web/schemas/ui/clients all 0 errors)",
+    "AC5_TD007_lint_clean": "PASS (exit 0, --max-warnings=0)",
+    "AC6_TD008_rename": "PASS (generateHttpTraceId + generateSpecialistTraceId, no old generateTraceId)",
+    "AC7_timing": "PASS (vitest 0.52s, playwright 1.0s)",
+    "AC8_typecheck_passes": "PASS",
+    "AC9_tests_pass_ge_57": "PASS (174 vitest + 4 playwright = 178 total)"
+  }
+}

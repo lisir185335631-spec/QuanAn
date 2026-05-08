@@ -1,0 +1,24 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.list > AC-5: calls findMany without explicit where:{userId} (RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns the active account by activeAccountId
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns null when account not found
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.create > creates account with user.id from context
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.update > updates the active account (where:{id: activeAccountId})
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.delete > soft-deletes by setting isActive=false + archivedAt
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: updates user.activeAccountId and writes audit_log
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws UNAUTHORIZED when user is null
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws NOT_FOUND when account does not belong to user
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > AC-8: queries by stepKey only (no accountId — RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > returns null when stepKey not found
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.getAll > calls findMany without where:{accountId} (RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.save > AC-7: upserts with accountId_stepKey composite key
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns completed/total counts for the current account
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns zero completed when no step data exists
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  09:02:39
+   Duration  198ms (transform 26ms, setup 6ms, collect 34ms, tests 6ms, environment 0ms, prepare 26ms)
+

@@ -1,38 +1,13 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ tests/integration/api/auth.me.test.ts > auth.me HTTP endpoint > GET /trpc/auth.me returns unauthenticated shape
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts color tokens from YAML frontmatter
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts typography tokens including all three font families
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts rounded tokens
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts spacing tokens
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > YAML wins over text section — text section hex values are not in tokens
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > primary color comes from YAML, not from text-section editorial hint
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing opening ---
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing closing ---
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on corrupt YAML with line number in message
- ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > returns empty objects for missing optional sections
-{"level":"error","time":1778175992012,"service":"quanqn","msg":"SESSION_SECRET must be at least 32 characters"}
-{"level":"error","time":1778175992013,"service":"quanqn","msg":"unknown OAuth provider: facebook · expected mock|google"}
-{"level":"error","time":1778175992013,"service":"quanqn","msg":"OAUTH_PROVIDER=mock not allowed in production"}
- ✓ tests/unit/auth/providers.test.ts > MockProvider > validateCallback always returns mock dev user
- ✓ tests/unit/auth/providers.test.ts > MockProvider > getAuthorizationUrl returns URL with /auth/callback?mock=true
- ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when SESSION_SECRET < 32 chars
- ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when OAUTH_PROVIDER is unknown
- ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when NODE_ENV=production and OAUTH_PROVIDER=mock
- ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > returns false for mock provider (name=mock) — dev only
- ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > returns true for google provider — always enforced
- ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > returns true for any unknown real provider
- ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > attack scenario: ?mock=true query param cannot bypass CSRF for google provider
- ✓ tests/integration/api/auth.test.ts > [Integration] mock login flow > AC-2/3/5: mock login creates session cookie + DB row
- ✓ tests/integration/api/auth.test.ts > [Integration] mock login flow > AC-4: auth.me with valid session returns authenticated user
- ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-8: mock provider bypasses CSRF — mismatched state still completes login
- ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-11: expired session → auth.me returns unauthenticated
- ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: full mock login flow (callback → session) < 500ms
- ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: auth.me with valid session < 100ms
+ ✓ tests/unit/api/trending.test.ts (3 tests) 2ms
+ ✓ tests/unit/api/invite.test.ts (4 tests) 4ms
+ ✓ tests/unit/api/knowledge.test.ts (7 tests) 4ms
 
- Test Files  4 passed (4)
-      Tests  26 passed (26)
-   Start at  01:46:31
-   Duration  213ms (transform 36ms, setup 17ms, collect 85ms, tests 76ms, environment 0ms, prepare 109ms)
+ Test Files  3 passed (3)
+      Tests  14 passed (14)
+   Start at  09:55:57
+   Duration  171ms (transform 49ms, setup 19ms, collect 102ms, tests 10ms, environment 0ms, prepare 81ms)
 
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-006/pytest-full.xml

@@ -1,0 +1,13 @@
+{
+  "story_id": "US-005",
+  "validator_start_ts": "2026-05-08T09:42:00",
+  "validator_end_ts": "2026-05-08T09:43:30",
+  "test_command": "pnpm test -- --reporter=verbose (vitest run)",
+  "exit_code": 0,
+  "artifacts": [
+    "typecheck.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt"
+  ],
+  "notes": "AC-1~AC-8 all PASS. 22 unit tests in specialists-flow.test.ts (>= 16 required). Full regression: 129 tests, 0 failures. Typecheck exit 0."
+}

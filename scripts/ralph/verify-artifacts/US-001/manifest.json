@@ -1,13 +1,26 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-07T20:30:00",
-  "validator_end_ts": "2026-05-07T20:32:00",
-  "test_command": "pnpm typecheck",
+  "validator_start_ts": "2026-05-08T00:11:00",
+  "validator_end_ts": "2026-05-08T00:15:30",
+  "test_command": "pnpm test && pnpm typecheck",
   "exit_code": 0,
   "artifacts": [
-    "typecheck.stdout.txt",
-    "test.stdout.txt",
-    "manifest.json"
+    "typecheck.txt",
+    "vitest.stdout.txt",
+    "pytest-full.xml",
+    "grep-executeraw.txt"
   ],
-  "notes": "TypeScript monorepo project — no pytest (Python). Zero-regression gate run via pnpm test (vitest), exit code 0. No test files exist yet (US-001 is foundation/infra story). typecheck 1.3s, pnpm install 4.8s."
+  "ac_results": {
+    "AC-1": "PASS — manual_rls.sql applied successfully; 14 business tables + trending_items RLS enabled (listed tables match AC list; '12' in AC text is a count mismatch vs. the enumerated list of 14)",
+    "AC-2": "PASS — apps/api/src/trpc/middleware/account-isolation.ts exists; uses tx.$executeRaw with set_config('app.current_account_id') inside $transaction",
+    "AC-3": "PASS — rls-isolation.test.ts: userA sees 1 row, userB sees 0 rows (integration test passes)",
+    "AC-4": "PASS — unit test: throws FORBIDDEN + logger.warn 'no_active_account' when activeAccountId=null",
+    "AC-5": "PASS — globalProcedure exported with meta({isGlobal:true}); middleware skips SET when meta.isGlobal=true (unit tests verify)",
+    "AC-6": "PASS — grep 'prisma.$executeRaw' apps/api/src finds 1 comment-only hit; actual code uses tx.$executeRaw only inside middleware (LD-009 compliant)",
+    "AC-7": "PASS — account_id btree indexes exist on all 14 tables; Index Scan confirmed with enable_seqscan=off; set_config overhead 2.5ms round-trip in test",
+    "AC-8": "PASS — pnpm typecheck: all 6 workspace packages pass with 0 errors",
+    "AC-9": "PASS — 49 tests pass: 9 unit (account-isolation) + 4 integration (rls-isolation) + 36 others; 0 failures"
+  },
+  "zero_regression": "49 tests passed, 0 failures, 0 errors",
+  "notes": "AC-7: integration test uses 50ms threshold; actual round-trip 2.5ms. AC-6: grep hit is in JSDoc comment only, not executable code. Index Scan confirmed with enable_seqscan=off on step_data."
 }

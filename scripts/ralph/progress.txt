@@ -615,3 +615,35 @@
   - stepData.get/save 的 stepKey 校验: 生产用 z.enum 过于严格 · 改 z.string().max(N) 更灵活 · RLS 已保障跨账号隔离
   - SET LOCAL ROLE 必须在 account-isolation $transaction 内最先执行 · 否则 superuser 连接 BYPASSRLS
 ---
+
+--- [RALPH] Iteration 6 ended: US-008 (13分钟 15秒) ---
+
+## Codebase Patterns(PRD-2 提炼 · 2026-05-08 · 追加 PRD-1 之后 · 跨 PRD 永久)
+
+### RLS middleware(LD-009 关键)
+- set_config(name, value, true) 必须在 $transaction 内才生效(is_local 限 transaction scope)
+- pass tx client as prisma 给 resolver · 否则 query 不同 connection · set_config 无效
+- protectedProcedure 走 RLS · globalProcedure 跳全局表(User/InviteCode/TrendingItem)
+- $executeRaw 仅 middleware 内合法 · 其他位置 grep 必 0 命中
+
+### LS↔DB 双写(ADR-010)
+- LS key aiip_memory_acc_{accountId}_{suffix} 必含 account namespace
+- LS 先写 · DB 后写 · DB 失败时 LS 不回滚 + toast 提示
+- 切账号 clearLsNamespace(localStorage, oldAccountId) · grep 旧 prefix 命中 0
+
+### LLMGateway R-1 唯一入口(LD-012)
+- @anthropic-ai/sdk + openai SDK 仅 llm-gateway/index.ts import · grep 全栈 0 命中其他
+- API key 仅 process.env 读 · throw error 不含 key 值
+- MODEL_BY_TIER as const satisfies · reasoning(sonnet→gpt-4o)/ lightweight(haiku→gpt-4o-mini)
+- @upstash/ratelimit token bucket · nock mock SDK 测试不真调外部
+
+### tRPC 命名分层(TD-008 修后 · 永久规则)
+- generateHttpTraceId() · HTTP layer · 无参 · 16-char hex
+- generateSpecialistTraceId(accountId, agentId) · Specialist layer · 结构化
+- 禁止同名 generateTraceId · 必须 layer 前缀
+
+### Ralph daemon 操作 SOP(本项目硬规则)
+- pgrep -fa ralph.py macOS 不稳 · 用 ps aux | grep ralph
+- pkill -f "claude --print" 会误杀 ralph 子进程 · 测试 claude CLI 用 timeout 命令
+- 启动前必 kill 所有 ralph 残留(含 watch-audit-gate.py)+ rm lock + audit-gate
+- 双 daemon 同跑撞 prd.json · 启前 ps aux | grep -E "ralph|watch-audit" 必 0

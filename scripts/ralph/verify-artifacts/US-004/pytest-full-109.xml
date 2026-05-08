@@ -1,0 +1,8 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/hooks.test.ts (16 tests) 5ms

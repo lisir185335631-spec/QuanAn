@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="15" failures="0" errors="0" time="0.193">
+    <testsuite name="tests/unit/api/ipAccounts-stepData.test.ts" timestamp="2026-05-08T00:54:57.574Z" hostname="returndeMacBook-Pro.local" tests="15" failures="0" errors="0" skipped="0" time="0.006513417">
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.list &gt; AC-5: calls findMany without explicit where:{userId} (RLS handles it)" time="0.001674042">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.active &gt; returns the active account by activeAccountId" time="0.000907">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.active &gt; returns null when account not found" time="0.000204084">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.create &gt; creates account with user.id from context" time="0.000543959">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.update &gt; updates the active account (where:{id: activeAccountId})" time="0.000296417">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.delete &gt; soft-deletes by setting isActive=false + archivedAt" time="0.00029325">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.switchActive &gt; AC-6: updates user.activeAccountId and writes audit_log" time="0.000432083">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.switchActive &gt; AC-6: throws UNAUTHORIZED when user is null" time="0.000369583">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.switchActive &gt; AC-6: throws NOT_FOUND when account does not belong to user" time="0.000222791">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.get &gt; AC-8: queries by stepKey only (no accountId — RLS handles it)" time="0.000244916">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.get &gt; returns null when stepKey not found" time="0.000158833">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.getAll &gt; calls findMany without where:{accountId} (RLS handles it)" time="0.000119584">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.save &gt; AC-7: upserts with accountId_stepKey composite key" time="0.000226791">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.progress &gt; returns completed/total counts for the current account" time="0.000223042">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.progress &gt; returns zero completed when no step data exists" time="0.000101542">
+        </testcase>
+    </testsuite>
+</testsuites>

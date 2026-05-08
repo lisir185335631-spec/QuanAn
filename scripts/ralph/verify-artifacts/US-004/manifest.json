@@ -1,17 +1,13 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-07T22:12:00",
-  "validator_end_ts": "2026-05-07T22:14:00",
-  "test_command": "pnpm vitest run tests/unit/parseDesignTokens.test.ts + pnpm vitest run (全量)",
+  "validator_start_ts": "2026-05-08T09:17:00",
+  "validator_end_ts": "2026-05-08T09:25:00",
+  "test_command": "pnpm test (vitest run · 全量 109 tests) + pnpm typecheck",
   "exit_code": 0,
   "artifacts": [
     "typecheck.txt",
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "ac5-yaml-corrupt.txt",
-    "ac6-yaml-wins.txt"
+    "pytest-full.xml"
   ],
-  "notes": ""
+  "notes": "Validator re-run 2026-05-08: 全量 109 tests pass (12 test files) · typecheck 0 error · 11 specialists-creation tests verified · all 5 routers confirmed · zero regression"
 }

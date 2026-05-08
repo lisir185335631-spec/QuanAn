@@ -1,18 +1,14 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-07T21:13:00",
-  "validator_end_ts": "2026-05-07T21:16:00",
+  "validator_start_ts": "2026-05-08T08:38:00",
+  "validator_end_ts": "2026-05-08T08:42:00",
+  "test_command": "pnpm test (vitest run 83/83) + pnpm --filter @quanqn/web typecheck",
+  "exit_code": 0,
   "artifacts": [
+    "vitest.xml",
+    "vitest.stdout.txt",
     "typecheck.txt",
-    "build.stdout.txt",
-    "pytest-full.stdout.txt",
-    "page-content.txt",
-    "manifest.json"
+    "pytest-full.xml"
   ],
-  "exit_codes": {
-    "typecheck": 0,
-    "build": 0,
-    "vitest": 0
-  },
-  "notes": "vitest: no test files found, exit 0 (zero-regression pass). Browser tool unavailable (playwright not installed); AC-2 verified via App.tsx source + curl HTML response. AC-5 verified by absence of strictPort in vite.config.ts (Vite default: port fallback enabled). Cold start 78ms confirmed in dev server log."
+  "notes": "PASS: all 11 ACs verified. Zero-regression: 83/83 vitest pass (10 test files, +16 new hooks tests). Typecheck: 0 errors. AC-5 fixed: trace_id logged in onError (useStepData.ts:48). AC-11 fixed: hooks.test.ts created with 16 tests covering useStepData/useActiveAccount/useEvolution LS logic via MockStorage."
 }
