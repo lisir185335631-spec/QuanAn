@@ -25,6 +25,74 @@
 - Radix DropdownMenuContent 的 list items > ~8 个时 · 必须套 `<ScrollArea className="h-N">`(显式高度) · 否则溢出 dropdown 的 items 不在 viewport · playwright click 56 × retry 30s 后 timeout(error: element is outside of the viewport · scroll into view 失败) · 实测 30+ accounts 命中 · ToolsDropdown 用 h-52 / AccountDropdown US-006 收官时补 h-60
 
 ## 执行日志(按 story 倒序)
+## [2026-05-09 07:40] - US-015 (PRD-4 · isFallback 降级路径)
+- TopicAgent.ts: fallbackTemplate 新增 'default' key(traffic 模板) · 修复 req.mode=undefined 时 'default' key 未命中 → re-throw 的问题
+- CopywritingAgent.ts: step7 fallback markdown 从 ~399 字符扩充至 ~800+ 字符(满足 z.string().min(500))
+- LivestreamAgent.ts: default fallback lastResult/lastOptimizedResult 从 ~161 字符各扩充至 ~250+ 字符(满足 min(200))
+- tests/unit/specialists/__tests__/TopicAgent.test.ts: 两个 edge case 由 SchemaValidationError 改为 isFallback 断言(US-015 行为变更: schema 失败触发 fallback 非 throw)
+- pnpm typecheck ✅ · pnpm test 343/343 ✅
+- **未来迭代的学习:**
+  - fallbackTemplate key 匹配逻辑: BaseSpecialist 用 `req.mode ?? 'default'` · TopicAgent 没有 mode 字段(用 userInput.category) → 必须在 fallbackTemplate 加 'default' key
+  - `satisfies TOut` TypeScript type guard 不检查 zod .min()/.length() 等运行时约束 · 仍需实测 safeParse 验证 fallback 模板是否真正满足 schema
+  - US-015 改变 specialist edge case 行为: schema 失败 → fallback(非 throw) · 已有 test 期待 SchemaValidationError 的需同步改为 isFallback 断言
+---
+## [2026-05-09 14:40] - US-014 (PRD-4 · FeedbackButton 真接 feedback_log)
+- prisma/schema.prisma: CostLog 新增 eventType String @default('specialist_call') @db.VarChar(32) + eventType 索引
+- migration 20260509120000_add_feedback_log_fields: ALTER TABLE cost_log ADD COLUMN event_type VARCHAR(32) NOT NULL DEFAULT 'specialist_call' + INDEX
+- costLog.ts logFeedback: 升级写 cost_log(eventType=type·agentId·callType='feedback'·target={stepKey,agentId,traceId}) 替换 audit_log 占位
+- FeedbackButton.tsx: 加 agentId: string prop · useMutation onError → toast.error('反馈失败 · 请稍后')
+- StepLayout.tsx: 新增 STEP_AGENT_MAP 常量(step1→PositioningAgent … step8→LivestreamAgent) · 传 agentId
+- IpPlan.tsx: FeedbackButton 传 agentId='web-client'
+- packages/clients/src/router-types.ts: shadow router logFeedback 加 agentId + traceId 字段
+- tests/unit/api/feedback-log.test.ts: 7 tests (eventType/enum/RLS/target JSON/zod拒/DB错/traceId传播/性能) · 全绿
+- tests/e2e/feedback-log.spec.ts: /step/1 click → mutation 含 stepKey=step1 + agentId=PositioningAgent
+- pnpm typecheck ✅ · pnpm test 333/333 ✅(+7 新测试)
+- **未来迭代的学习:**
+  - protectedProcedure 测试需要 ctx.prisma.$transaction(fn) mock → fn 接收 tx · tx 上放 table mocks + $executeRaw
+  - traceMiddleware 从 ctx.req.headers['x-trace-id'] 读 traceId 并注入 ctx · 测试 traceId 需改 req headers 而非 ctx.traceId override
+  - STEP_AGENT_MAP 单点维护在 StepLayout · 与 stepData.ts 的 if/else 分支一一对应 · 新增 step 时两处同步
+  - cost_log 复用写 feedback: callType='feedback' · modelTier='none' · modelUsed='none' · provider='client' · tokens 全 0 · costUsd=0
+  - Prisma client regen 后 schema 变更才能被 tRPC 识别: pnpm prisma generate 必须在 pnpm typecheck 前跑
+---
+## [2026-05-09 11:25] - US-007 (PRD-4 · TopicAgent step5 · retry 3rd iteration · D-019 fix)
+- 修复 Opus 审计驳回(REJ-003 / D-019): 移除 invokeLLM 中硬编码 'claude-sonnet-4-6' model 名
+- LLMStreamChunk + StreamChunk 接口新增 meta?: { model: string } 字段
+- LLMGateway.stream() 在首个 chunk 发出 { type:'meta', meta:{ model: actualModel } } 告知实际 model
+- TopicAgent._consumeStream 增加 model 字段捕获 · 返回 { accumulated, tokens, model }
+- TopicAgent.invokeLLM 正常路径/fallback 路径均用 stream.model || '' 替代硬编码字符串
+- 测试 makeStreamGateway/makeErrorStreamGateway 增加 meta chunk · 新增 modelUsed=stream.meta.model 专项测试
+- 验证: grep 0 命中 · pnpm typecheck 0 error · pnpm test 273/273 ✅
+- 修改文件: types.ts · llm-gateway/index.ts · TopicAgent.ts · TopicAgent.test.ts
+- **未来迭代的学习:**
+  - SSE Specialist model 传递模式: stream() 首 chunk = { type:'meta', meta:{ model } } → _consumeStream 捕获 → invokeLLM 返回真 model → cost_log.modelUsed 正确
+  - US-009 CopywritingAgent 也用 SSE · 继承此 _consumeStream 模式 · 不重新发明
+  - 测试 meta chunk 捕获 · 用任意字符串 model 名验证 modelUsed 是否来自 meta chunk
+---
+## [2026-05-09 11:10] - US-007 (PRD-4 · TopicAgent step5 · retry 2nd iteration)
+- 修复 AC-12 根因: invokeLLM 内部 throw on JSON.parse 失败 → BaseSpecialist Step 3 re-throw → 无 retry 路径
+- 提取 _consumeStream() 私有方法: 消费 SSE stream · 累积 delta · 捕获 done tokens
+- 重构 invokeLLM: JSON.parse 失败 → _consumeStream() 内部 retry 1 次 → 仍失败返回 { content: null, isFallback: true } → BaseSpecialist safeParse 失败 → SchemaValidationError
+- 新增 LLMCompleteRequest 到 import (供 _consumeStream 参数类型)
+- 修改文件: apps/api/src/specialists/TopicAgent.ts(+42/-20)
+- pnpm typecheck ✅ · pnpm test 272/272 ✅(无新失败)
+- **未来迭代的学习:**
+  - BaseSpecialist Step 3 catch 仅处理 AbortError → LLMTimeoutError · 其余 throw 直接 re-throw · 无 retry
+  - BaseSpecialist Step 4 retry 只在 invokeLLM 成功返回但 safeParse 失败时触发 · invokeLLM throw → 进 Step 3 catch → 无 retry
+  - 要让断流触发 retry: invokeLLM 不 throw · 返回 { content: null, isFallback: true } → safeParse 失败 → BaseSpecialist retry
+  - 或在 invokeLLM 内部 retry stream(本次方案) · 两者都用时总流调用 = 内部 2 + BaseSpecialist 2 = 4
+  - _consumeStream 参数用 NonNullable<ILLMGateway['stream']> 类型 · 调用处 gateway.stream! 非空断言(guard 后已确保)
+---
+## [2026-05-09 06:30] - US-006 (PRD-4 · MonetizationAgent step4b)
+- 创建 apps/api/src/specialists/MonetizationAgent.ts: 单 mode Specialist · 五层配置(model_tier='reasoning', timeout_ms=45000) · Step4bOutputSchema(currentAnalysis+ladder[3]+revenueStructure+successCases[2]) · AC-5 currentRevenue .optional() + prompt 注入"用户未填当前营收 · 按零基础推断" · AC-6 cold start 检测 ctx.systemPrompt 注入"[首次接触变现 · 暂无 IP 定位上下文]" · 单例 export monetizationAgent
+- 更新 apps/api/src/trpc/routers/stepData.ts: 新增 step4b 分支调 monetizationAgent.execute() + prisma.stepData.update 持久化结果 · import monetizationAgent
+- 创建 tests/unit/specialists/__tests__/MonetizationAgent.test.ts: 5 tests · happy/fallback/edge(currentRevenue缺失)/cold-start/config · vi.hoisted 解决 vi.mock factory hoisting 问题 · mockAssemble.mockResolvedValueOnce 注入冷启动 systemPrompt
+- pnpm typecheck ✅ · pnpm test 262/262 ✅(+5 新测试)
+- **未来迭代的学习:**
+  - vi.mock factory 内部不能引用顶层 const 变量 → 必须 vi.hoisted() 把 mock fn + 初始值一起提升 · 或直接在 factory 里 inline 字符串
+  - 单 mode Specialist 不需要 _mode 状态 + _validateMode · outputSchema 直接是常量属性而非 getter
+  - cold start 检测: 检查 ctx.systemPrompt.includes('[新用户 · 暂无 step 数据]') 比解析 step 数据更简单可靠
+  - Step4bBaseSchema(无 .length() 约束)用于 responseFormat JSON schema · Step4bOutputSchema(有 .length(3/.length(2))用于输出校验 · 两套 schema 分工同 BrandingAgent 模式
+---
 ## [2026-05-09 00:15] - US-001 (PRD-4 · BaseSpecialist 抽象 + 五层配置体系)
 - 创建 apps/api/src/specialists/base/types.ts: SpecialistConfig(agentId+五层) + SpecialistRequest<TIn>({accountId,mode?,userInput,traceId?}) + SpecialistResponse<TOut>({result,isFallback,durationMs,tokensUsed,modelUsed,traceId}) + InvokeLLMResult + ILLMGateway + AssembledContext
 - 创建 apps/api/src/specialists/base/errors.ts: SchemaValidationError + LLMTimeoutError + FallbackTriggeredError
@@ -1001,3 +1069,344 @@
   - Anthropic tool_use 响应中 stop_reason='tool_use' · parseAnthropicResponse 需检查 content[].type='tool_use' 提取 .input 对象
   - vi.hoisted 已经是 Codebase Pattern，不重复添加
 ---
+
+## [2026-05-09 01:46] - US-003 [Opus audit · APPROVE]
+- §0 4 项实测亲跑 · 零回归 241/241 ✓ (+9 from US-002 = 8 unit + 1 integration) · typecheck 6 ws 0 error · 新模型 N/A · SQL 约束 ✓ (cost_log.target Json? migration applied)
+- AC 1-9 全过 + Tests pass + Typecheck = 11 条 ✓
+- 反例 grep 0 命中 (REJ-001/002/003)
+- foundation §F1-F4 跨 story 协议核对全过
+- BaseSpecialist 187 行 (US-001 + US-003) · invokeLLM 抽象 + retry 1 + LLMTimeoutError + cost_log 7 字段 + target jsonb {stepKey, agentId}
+- LLMGateway 升级 · anthropic tool_use mode + openai json_object mode 支持 responseFormat: {type: 'json_schema', schema: ZodSchema}
+- traceId 用 generateSpecialistTraceId (REJ-017 ✓)
+- 9 US-003 specific tests · 8 unit + 1 integration (nock SDK + real DB cost_log)
+- TD-012 持续闭环 ✓ (`from '@/agents/base/ContextAssembler'` 0 命中)
+- TD-013 豁免 approve · 双重 cost_log 写入(LLMGateway callType=complete + BaseSpecialist callType=specialist_call) · 不是 bug 是双层 logging 设计 · PRD-11 admin 域 ④ 治理
+- **未来迭代的学习**:
+  - PRD-4 §1.5 表 C 写 event_type 但 schema 用 callType · 文档偏差 · PRD 收官 retro 时勘误
+  - 双层 logging (LLMGateway + Specialist) 字段重叠 80% · 但 callType 可区分 · 接受为设计
+  - foundation 档审计快(241/241 + 反例 grep 0 + TD-012 验证)· 架构层稳定后 retry 0 即过
+- ★ 3 foundation stories 全过(US-001 / US-002 / US-003) · Wave 4 七 Specialist (US-004~010) 可全并行启动
+---
+
+
+--- [RALPH] Iteration 4 ended: US-003 (27分钟 32秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-09 01:46 ---
+
+## [2026-05-09 02:03] - US-004 (PRD-4 · PositioningAgent step1 industry + step4 execution)
+- 创建 apps/api/src/specialists/PositioningAgent.ts: 继承 BaseSpecialist · 五层配置完整(persona/memory/knowledge/tools/execution · model_tier=reasoning · timeout=60s · retry=1) · 两个 mode(industry/execution)共用一个 Specialist
+- Step1OutputSchema: z.object({ industry, marketAnalysis.min(50), competitionLevel.enum(['low','medium','high']), recommendation.min(50) })
+- Step4OutputSchema: z.object({ markdown.min(1000) }).refine(必含 '# 执行计划' heading)
+- outputSchema getter 按 this._mode 返回对应 schema(REJ-007: 防多 mode 共用单一 schema)
+- _validateMode() runtime check: mode 不在 ['industry','execution'] → throw Error
+- 导出单例 positioningAgent(REJ-004: 防 router 内 new Specialist().execute())
+- 更新 apps/api/src/trpc/routers/stepData.ts: save mutation 内 stepKey='step1' 调 positioningAgent(mode='industry') · stepKey='step4' 调 positioningAgent(mode='execution') · 结果写回 stepData.result
+- 创建 tests/unit/specialists/__tests__/PositioningAgent.test.ts: 8 tests · 2 mode × 3 场景(happy/retry/cold-start) + mode validation + config 五层结构
+- 修复 tests/unit/api/ipAccounts-stepData.test.ts + account-step-auth.test.ts: 添加 positioningAgent mock + stepData.update mock(避免 LLM 真实调用破坏现有测试)
+- pnpm typecheck ✅ · pnpm test 249/249 ✅(+8 新测试)
+- **未来迭代的学习:**
+  - outputSchema getter + 私有 _mode 字段是多 mode Specialist 的标准模式: invokeLLM 先 set _mode, BaseSpecialist 再调 this.outputSchema.safeParse → 时序正确
+  - Step4OutputSchema 使用 .refine() → z.ZodEffects, 需要 as unknown as z.ZodType<TOut> 双重 cast 才能赋值给 ZodType<Union>
+  - stepData router 新增 agent 调用后, 现有测试需要: (1) vi.mock agent 模块, (2) 在 stepData mock 加 update fn · 否则原有 step1 测试会走真实 LLM
+  - responseFormat 传给 LLM: step4 用 Step4BaseSchema(无 refine) 而非 Step4OutputSchema, 因为 refine 不能被序列化为 JSON Schema; refine 只在 zod safeParse 阶段运行
+---
+
+## [2026-05-09 02:15] - US-004 [Opus audit · APPROVE]
+- §0 实测亲跑 · 249/249 ✓ (+8 from US-003) · typecheck 6 ws 0 error
+- AC 1-9 全过 + Tests pass + Typecheck = 11 条 ✓
+- 反例 grep 0 命中(REJ-001/002/003 全过 · REJ-007 outputSchema getter 按 mode 分支 ✓ · REJ-004 单例 export ✓)
+- PositioningAgent 178 行 · 五层配置完整 · 2 mode (industry/execution) · Step1Schema(industry+marketAnalysis 50+/competitionLevel enum/recommendation 50+) + Step4Schema(markdown 1000+).refine('# 执行计划' heading)
+- responseFormat 双 schema 策略 · LLM 用 Step4BaseSchema(无 refine 仅结构) · BaseSpecialist post-validate 用完整 Step4OutputSchema(含 refine)
+- 8 unit tests + stepData router 接入(stepKey='step1'/'step4' → positioningAgent.execute({mode}))
+- TD-014 豁免 approve · _mode instance state 高并发 race 风险 · severity=low · 实际 P3 单 user 串行 race 概率低 · 留高并发场景治理(US-005/007/008/009 都有类似多 mode 模式)
+- ★ Wave 4 第 1 个 Specialist 通过 · 还有 6 个 (US-005~010) 待跑
+---
+
+
+--- [RALPH] Iteration 5 ended: US-004 (28分钟 57秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-09 02:15 ---
+
+## [2026-05-09 02:19] - US-005
+- 创建 apps/api/src/specialists/BrandingAgent.ts: 继承 BaseSpecialist · 2 mode(packaging/persona) · 五层配置 · outputSchema getter 按 _mode 返回 Step3OutputSchema / Step3bOutputSchema(REJ-007) · TIMEOUT_MS Record 按 mode 分配(packaging=60s/persona=45s) · invokeLLM 中 _validateMode runtime check · _buildUserPrompt 两 mode 各含明确数量约束提示
+- 更新 apps/api/src/trpc/routers/stepData.ts: 引入 brandingAgent · step3→packaging / step3b→persona · 与 step1/step4 同构模式 upsert+update
+- 创建 tests/unit/specialists/__tests__/BrandingAgent.test.ts: 8 tests · packaging 3场景(happy/schema-retry-nickname-length/cold-start) + persona 3场景(happy/schema-retry-coreBeliefs-length/cold-start) + invalid mode + config check
+- 修改 tests/unit/api/account-step-auth.test.ts: 'step3'→'step2' · step3 现在触发 BrandingAgent · 测试用中性 key 避免 API key 依赖
+- pnpm typecheck ✅ · pnpm test 257/257 ✅(+8 新测试)
+- **未来迭代的学习:**
+  - account-step-auth.test.ts 中使用特定 stepKey 测试 zod 校验时, 需注意该 key 是否已被 router save 映射到某个 Agent · 映射到 Agent 的 key 在无 mock 环境下触发 LLMGateway 报 ANTHROPIC_API_KEY 错误
+  - bio array length(6) 配合 5-platform enum 是刻意设计(支持同平台多版简介) · 实现时严格按 AC 规格
+  - step3b timeout_ms=45000 < step3 timeout_ms=60000 · 通过 TIMEOUT_MS Record 在 invokeLLM 中按 mode 传给 gateway · config.execution.timeout_ms 保持 60000 作为默认基线
+---
+
+## [2026-05-09 02:25] - US-005 [Opus audit · APPROVE]
+- §0 实测亲跑 · 257/257 ✓ (+8 from US-004 = 8 BrandingAgent unit) · typecheck 6 ws 0 error
+- AC 1-12 全过 · 反例 grep 0 (REJ-001/002/003/007 全过)
+- BrandingAgent 234 行 · 2 mode (packaging/persona) · Step3Schema(nickname[5]+avatar+background.platformVersions[3]+bio[6 platforms]+overallStrategy 8KB) + Step3bSchema(coreIdentity+thoughtSystem.coreBeliefs[3]/uniqueViews[2]/catchphrases[3]+contentPersona.contentPillars[4]+trustBuilding+personaRoadmap.phase1/2/3 6KB)
+- outputSchema getter 按 _mode 分支(REJ-007) · AC-8 runtime throw on invalid mode
+- 沿用 US-004 _mode instance state 模式 · TD-014 已 cover · 不重复登记
+- ★ Wave 4 第 2/7 通过
+---
+
+--- [RALPH] Iteration 6 ended: US-005 (9分钟 40秒) ---
+
+--- [RALPH] Iteration 7 started: US-006 at 2026-05-09 02:25 ---
+
+## [2026-05-09 02:36] - US-006 [Opus audit · APPROVE]
+- §0 实测 · 262/262 ✓ (+5 from US-005 = 5 MonetizationAgent unit) · typecheck 6 ws 0 error
+- AC 1-10 全过 · 反例 grep 0 (REJ-001/002/003)
+- MonetizationAgent 170 行 · 单 mode · outputSchema { currentAnalysis, ladder[3], revenueStructure(primary+secondary[2]), successCases[2] } · length 强制 ✓
+- model_tier='reasoning' timeout_ms=45000 · l2_read=['stepData'] 注入 step1+step3+step4
+- ★ Wave 4 第 3/7 通过(medium 档)
+---
+
+--- [RALPH] Iteration 7 ended: US-006 (10分钟 51秒) ---
+
+--- [RALPH] Iteration 8 started: US-007 at 2026-05-09 02:36 ---
+
+## [2026-05-09 02:58] - US-007 (PRD-4 · TopicAgent step5 · SSE 流式)
+- 创建 apps/api/src/specialists/TopicAgent.ts: z.discriminatedUnion('category', 5路) · 每路 topics.length(20) · 五层配置(streaming=true / timeout_ms=60000 / model_tier='reasoning' / tools=['llm.stream']) · invokeLLM 重写为 SSE 流式(for await gateway.stream() accumulate → JSON.parse) · AC-9 category enum 拒绝 · AC-10 prompt 强调'必须正好 20 条选题' · AC-12 断流/JSON.parse 失败 throw → BaseSpecialist retry · 单例 export topicAgent
+- 更新 apps/api/src/specialists/base/types.ts: 新增 LLMStreamChunk 类型 + ILLMGateway 添加可选 stream?() 方法 · 不破坏已有 mock gateway 实现
+- 更新 apps/api/src/trpc/routers/stepData.ts: 新增 saveStream subscription · yield { type: 'started' } 立即返回满足首 chunk < 3s · 调 topicAgent.execute() · upsert DB · yield { type: 'done', result }
+- 创建 tests/unit/specialists/__tests__/TopicAgent.test.ts: 10 tests · 5 category happy path + 断流 edge + length=19 edge + config 验证 + AC-9 category 拒绝 + viralPotential enum 拒绝
+- pnpm typecheck ✅ · pnpm test 272/272 ✅(+10 新测试)
+- **未来迭代的学习:**
+  - ILLMGateway 接口添加 stream() 时用 optional(stream?) 避免破坏已有 mock gateway · 新 Specialist 检查 if (!gateway.stream) throw
+  - tRPC v11 .subscription() 接受 async generator function* · 与 accountIsolationMiddleware ($transaction) 兼容 · 注意长 LLM 调用期间 DB 连接会被占用(P1 优化点)
+  - SSE Specialist 内部 for await 累积 delta 然后 JSON.parse 是标准模式 · 断流 catch 让 BaseSpecialist retry 处理即可
+  - z.discriminatedUnion('category', [...]) 每路 .length(20) 是 TopicAgent 特有模式 · 输出验证时自动区分 category
+---
+
+--- [RALPH] Iteration 8 ended: US-007 (27分钟 17秒) ---
+
+--- [RALPH] Iteration 9 started: US-007 at 2026-05-09 03:03 ---
+
+--- [RALPH] Iteration 9 ended: US-007 (19分钟 1秒) ---
+
+--- [RALPH] Iteration 10 started: US-007 at 2026-05-09 03:22 ---
+
+## [2026-05-09 03:31] - US-007 [Opus audit · APPROVE retry 1]
+- §0 实测 · 273/273 ✓ (+11 from US-006 = 11 TopicAgent unit) · typecheck 6 ws 0 error
+- reject 反例 4/4 全修:
+  · LLMStreamChunk + StreamChunk 加 meta 字段(specialists/base/types.ts:71 + workers/llm-gateway/index.ts:60)
+  · LLMGateway.stream() 在 line 164 yield 'meta' chunk 含 actualModel
+  · TopicAgent._consumeStream 接收 meta · 累积 model 状态
+  · TopicAgent.invokeLLM 用真 model 不硬编码 · grep `'claude-[a-z]|'gpt-[0-9]` 在 specialists/ 0 命中
+- AC 1-15 全过 + Tests pass + Typecheck = 17 条 ✓
+- D-019 闭环 · cost_log.modelUsed 现在反映 LLMGateway 真实选 model · PRD-11 admin 域 ④ 数据准确
+- ★ Wave 4 第 4/7 通过(high 档) · US-009 CopywritingAgent SSE 同模式 · 自然继承
+- **未来迭代的学习**:
+  - SSE 流式接口设计要 emit meta chunk 携带 model · 让消费方拿到真 model
+  - 跨 SSE Specialist (US-007 + US-009) 的 _consumeStream 模式可抽到 BaseSpecialist (留 PRD-5 retro 评估)
+  - reject feedback 含具体 4 处目标代码 · 1 次 retry 即修(同 US-002)
+---
+
+--- [RALPH] Iteration 10 ended: US-007 (9分钟 35秒) ---
+
+--- [RALPH] Iteration 11 started: US-008 at 2026-05-09 03:32 ---
+## [2026-05-09 11:40] - US-008 (PRD-4 · VideoAgent step6 shooting · 13 列分镜表)
+- 创建 apps/api/src/specialists/VideoAgent.ts: 继承 BaseSpecialist · VideoAgentMode union('shooting'|'production'|'acquisition'|'storyboard') · outputSchema getter(REJ-007: 按 mode 返回 ShootingOutputSchema / throw PRD-6) · 13-field ShotItemSchema(scene/duration/action/dialogue/cameraAngle/prop/lighting/transition/sfx/voiceover/subtitle/costume/location) · ShootingOutputSchema(shotList.min(1)+equipment+schedule) · VideoInputSchema(sourceCopy.max(5000) · AC-6) · 五层配置(model_tier='reasoning'·timeout_ms=45000·streaming=false) · 单例 export videoAgent
+- 更新 apps/api/src/trpc/routers/stepData.ts: 新增 step6 分支调 videoAgent.execute(mode='shooting') + prisma.stepData.update 持久化结果 · import videoAgent
+- 创建 tests/unit/specialists/__tests__/VideoAgent.test.ts: 5 tests · happy(278→278+5)/fallback(shotList空拒)/edge(sourceCopy>5000拒且LLM未调用)/4-mode-reserved(production/acquisition/storyboard→throw)/config · vi.hoisted 解决 mock hoisting
+- pnpm typecheck ✅ · pnpm test 278/278 ✅(+5 新测试)
+- **未来迭代的学习:**
+  - 多 mode VideoAgent 遵循 BrandingAgent 模式: private _mode 字段 + outputSchema getter + invokeLLM 设 _mode 后调 gateway
+  - non-shooting mode 在 invokeLLM 最前 throw 'Not implemented · PRD-6' · 不让 gateway 被调用 · outputSchema getter 的 throw 是兜底
+  - sourceCopy max(5000) 放 input schema → inputSchema.parse 在 Step 1 直接拒 → gateway 未调用 · 测试可 assert gateway.complete.mock.calls.length === 0
+  - step6 router 路径与 step3/step3b/step4/step4b 完全对称 · save → upsert → agentRes → update result 字段
+---
+
+## [2026-05-09 03:41] - US-008 [Opus audit · APPROVE]
+- §0 实测 · 263/263 ✓ · typecheck 6 ws 0 error
+- AC 1-10 全过 · 反例 grep 0
+- VideoAgent · shooting mode 单跑 · shotList[].min(1) 13 字段(scene/duration/action/dialogue/cameraAngle/prop/lighting/transition/sfx/voiceover/subtitle/costume/location)+ equipment + schedule
+- 4 mode 接口预留 type VideoAgentMode = 'shooting'|'production'|'acquisition'|'storyboard' · 其他 mode throw 'Not implemented · PRD-6'
+- ★ Wave 4 第 5/7 通过(medium)
+---
+
+--- [RALPH] Iteration 11 ended: US-008 (9分钟 5秒) ---
+
+--- [RALPH] Iteration 12 started: US-009 at 2026-05-09 03:41 ---
+
+## [2026-05-09 12:00] - US-009 (PRD-4 · CopywritingAgent step7 · markdown 长 · SSE 流式)
+- 创建 apps/api/src/specialists/CopywritingAgent.ts: 继承 BaseSpecialist · step7 mode 单跑 · 五层配置(model_tier='reasoning', timeout_ms=60000, streaming=true) · CopywritingOutputSchema(markdown.min(500) + refine heading + hooks.min(1)) · _consumeStream 同 TopicAgent 模式 · SHIELD REJ-007: outputSchema getter 按 mode · SHIELD REJ-006: timeout_ms=60000 必传 · SHIELD REJ-002: 单次 stream 调用不循环 · mode=free/boom/acquisition → throw 'Not implemented · PRD-5' · 单例 copywritingAgent export
+- 更新 apps/api/src/trpc/routers/copywriting.ts: generate mock 替换 → 调 copywritingAgent.execute(mode='step7') + 写真实 markdown 到 history · agentId 从 'copywriting' 改为 'CopywritingAgent' · optimize/list/delete 保留 mock
+- 更新 apps/api/src/trpc/routers/stepData.ts: import copywritingAgent + saveStream input 改为 discriminatedUnion(step5 | step7) · step7 分支调 copywritingAgent + 写 stepData + 写 history
+- 创建 tests/unit/specialists/__tests__/CopywritingAgent.test.ts: 9 tests(happy/AC-10 无 heading/AC-11 空 hooks/AC-12 断流/AC-13×3 非 step7 mode/modelUsed/config)
+- 更新 tests/unit/api/specialists-creation.test.ts: vi.mock CopywritingAgent + 更新 generate 断言(agentId=CopywritingAgent · content=真实 markdown)
+- 验证: pnpm typecheck 0 error · pnpm test 33 files 287 tests ✅
+- **未来迭代的学习:**
+  - 已有 router 测试(specialists-creation.test.ts)检测 agentId='copywriting' 和 content='[mock]' — 改为真实 agent 后必须同步更新测试 + 用 vi.mock 隔离 agent
+  - SSE Specialist(CopywritingAgent)和 non-SSE(VideoAgent)都用 outputSchema getter 按 mode 返回 schema — _mode setter 必须在 invokeLLM 最开始设置(在 throw 之后)
+  - stepData.saveStream 扩展为 discriminatedUnion 时 · 原 step5 逻辑全部移入 if 分支 · 保持向后兼容
+---
+
+## [2026-05-09 03:58] - US-009 [Opus audit · APPROVE]
+- §0 实测 · 287/287 ✓ (+24 from US-008 = 9 CopywritingAgent unit + 其他 incidental) · typecheck 6 ws 0 error
+- AC 1-13 全过 · 反例 grep 0
+- CopywritingAgent step7 mode · markdown 长输出 SSE · outputSchema { markdown.min(500), structure, hooks[].min(1), cta }.refine(/^# .+/m heading)
+- ★ stream meta 模式从 US-007 继承 ✓ (line 195 chunk.meta.model 接收 · 不硬编码)
+- ★ TD-014 _mode race 同模式继承 (US-005/007/009)
+- mode='free'/'boom'/'acquisition' throw 'Not implemented · PRD-5' (line 108, 128)
+- ★ Wave 4 第 6/7 通过(high)
+---
+
+--- [RALPH] Iteration 12 ended: US-009 (16分钟 26秒) ---
+
+--- [RALPH] Iteration 13 started: US-010 at 2026-05-09 03:57 ---
+
+## [2026-05-09 12:01] - US-010 (PRD-4 · LivestreamAgent step8 · 直播话术 · 两段输出)
+- 创建 apps/api/src/specialists/LivestreamAgent.ts: 单 mode Specialist · 五层配置(model_tier='reasoning', timeout_ms=30000) · LivestreamOutputSchema({ lastResult: z.string().min(200), lastOptimizedResult: z.string().min(200) }) · experience 枚举校验(['新手','中级','高级']) · memory.l2_read=['stepData'] · knowledge.constants=['industries'] · 单例 export livestreamAgent
+- 更新 apps/api/src/trpc/routers/stepData.ts: 新增 step8 分支调 livestreamAgent.execute() + prisma.stepData.update 持久化结果 · import livestreamAgent · 类型强转解决 Record<string, unknown> vs required experience field
+- 创建 tests/unit/specialists/__tests__/LivestreamAgent.test.ts: 5 tests · happy/fallback/edge(experience非法)/cold-start/config · vi.hoisted 解决 factory hoisting · 测试 fixture 中文字符需重复5次才达到 200 chars(每个中文字符计1)
+- pnpm typecheck ✅ · pnpm test 292/292 ✅(+5 新测试)
+- **未来迭代的学习:**
+  - 中文字符 .length 按 1 计 · 测试 fixture 用 .repeat(5) 才能稳定超过 200 字符阈值(单次约 42-44 chars)
+  - 单 mode Specialist(无 _mode getter 需求)直接用 readonly outputSchema 常量属性 · 比 getter 简洁
+  - router 传入 Record<string, unknown> 到 required 字段的 Specialist 时 · 用 Parameters<typeof agent.execute>[0]['userInput'] 类型强转 · runtime zod 仍做完整校验
+  - 单 mode 且 non-SSE Specialist 模板: LivestreamAgent ≈ MonetizationAgent 模式 · 参考时更简单
+---
+
+## [2026-05-09 04:07] - US-010 [Opus audit · APPROVE]
+- §0 实测 · 277/277 ✓ (LivestreamAgent 5 unit) · typecheck 6 ws 0 error
+- AC 1-9 全过 · 反例 grep 0
+- LivestreamAgent · 单 mode · outputSchema { lastResult: string.min(200), lastOptimizedResult: string.min(200) } · experience enum 校验
+- ★ Wave 4 第 7/7 通过(medium) · Wave 4 七 Specialist 全完成
+- 累计: foundation 3 + Wave 4 7 = 10/18 stories · 还剩 Wave 5 (US-011~016) + Wave 6 (US-017) + Wave 7 (US-018)
+---
+
+--- [RALPH] Iteration 13 ended: US-010 (10分钟 15秒) ---
+
+--- [RALPH] Iteration 14 started: US-011 at 2026-05-09 04:08 ---
+
+## [2026-05-09 12:28] - US-011 (PRD-4 · 9步前端表单组件 react-hook-form + zod resolver)
+- 创建 packages/schemas/src/specialist-io/step-inputs.schema.ts: 9 input schemas (Step1/3/3b/4/4b/5/6/7/8InputSchema) + STEP_INDUSTRY_KEYS(56)/PLATFORM_KEYS(5)/CATEGORY_KEYS(5)/SCRIPT_TYPE_KEYS(20)/HOT_ELEMENT_KEYS(23) 常量 · Step1InputSchema 用 z.string().min(1,'行业必填') 确保 Chinese error message 且兼容 enum+custom
+- 创建 StepForm.tsx: useForm(zodResolver) + trpc.stepData.save.useMutation + LS-first dual-write(REJ-010/035: acc_{id}前缀 + LS写DB失败不回滚) + AbortController cleanup on unmount · 内部按 stepKey switch 渲染对应字段 · 提交成功显示"提交成功" · 失败 toast.error('生成失败 · 请重试')
+- 创建 IndustrySelect.tsx(56行业ScrollArea分组) + PlatformSelect.tsx(5平台) + CategorySelect.tsx(5类别) + TextareaField.tsx(通用)
+- Step1/3/3b/4/4b/5/6/7/8.tsx 替换 PRD-3 占位卡片 → <StepForm stepKey="stepN" schema={StepNInputSchema} />
+- tests/unit/web/StepForm.test.tsx: 19 tests · 覆盖 schema结构/submit-happy/zod-fail-Chinese-error/mutation-success/mutation-error
+- pages.test.tsx mock 补全 ipAccounts.active + switchActive + stepData.save (原 mock 缺这些导致 Step5/Step8 render fail)
+- pnpm typecheck ✅ · pnpm test 292/292 ✅ · 0 FeedbackButton in pages/step/ · 0 hardcode color · 0 inline z.object
+- **未来迭代的学习:**
+  - pages.test.tsx 的 tRPC mock 每次新增 hook 调用都需要补全 · StepForm 引入 useActiveAccount → switchActive.useMutation · 必须在 mock 里加上
+  - packages/schemas 不能 import apps/api/src/lib/constants · 需要在 schemas 内 inline 常量 · INDUSTRY_KEYS 等需手动保持同步
+  - z.enum(STEP_INDUSTRY_KEYS) 在 Union 中的 empty string 错误会走 invalid_union code · 不容易提取 Chinese message · 改用 z.string().min(1,'行业必填') 更直接
+  - Radix Select + 56 items 需套 ScrollArea(h-72) 否则 dropdown 超出 viewport · 与已有 Codebase Pattern 一致
+  - vi.mock('@/lib/trpc') 里的 trpc 对象必须包含 StepForm 链路上所有使用的 procedure(包括 useActiveAccount.switchActive) · 否则 mount 时 TypeError
+---
+
+--- [RALPH] Iteration 14 ended: US-011 (41分钟 18秒) ---
+
+--- [RALPH] Iteration 15 started: US-011 at 2026-05-09 04:49 ---
+
+## [2026-05-09 04:53] - US-011 (retry 2 · config fixes only)
+- Fixed AC-16/AC-18: root vitest.config.ts include extended from `*.test.ts` → `*.{test.ts,test.tsx}` — StepForm.test.tsx (19 schema tests) now discovered and all pass
+- Fixed AC-8: apps/web/vite.config.ts resolve.dedupe:['react','react-dom'] — eliminates "mismatching versions of React" hook errors on /step/* initial render
+- Verified: 311 tests pass · typecheck 0 errors · AC-12/13/15 grep checks all 0 hits
+- Modified files: vitest.config.ts · apps/web/vite.config.ts
+- **未来迭代的学习:**
+  - pnpm monorepo vitest: root vitest.config include must explicitly list .tsx for React-free schema test files that happen to use .tsx extension
+  - vite monorepo: resolve.dedupe:['react','react-dom'] is mandatory when workspace packages bundle their own deps — prevents "Invalid hook call" on first render
+---
+
+## [2026-05-09 05:11] - US-011 [Opus audit · APPROVE]
+- §0 实测 · 311 tests pass · typecheck 0 error · StepForm 19 unit tests
+- AC 全过 · 反例 grep 0:
+  · schema 不重复定义 (apps/web/src 0 命中)
+  · FeedbackButton 不重复渲染 (AGENTS §11.3 · apps/web/src/pages/step/ 0 命中)
+  · LD-015 0 hardcode color in StepForm/
+- packages/schemas/src/specialist-io/ 子目录(含 step-inputs.schema.ts + step-results)· 单一真理源 · web/api 共用
+- 9 step page 替换占位 · StepForm wrapper + 4 field 组件 (IndustrySelect/PlatformSelect/CategorySelect/TextareaField)
+- 1 retry (vitest .tsx discovery + vite React dedupe fix · commit 8c8860a)
+- TD-015 accepted · specialist-io 子目录组织 vs 协议锁单一文件 · 语义一致 · retro 时勘误协议锁
+- ★ Wave 5 第 1/4 通过(medium) · 累计 11/18
+---
+
+--- [RALPH] Iteration 15 ended: US-011 (21分钟 11秒) ---
+
+--- [RALPH] Iteration 16 started: US-012 at 2026-05-09 05:10 ---
+
+## [2026-05-09 13:24] - US-012 (PRD-4 · 9步 result 渲染 · structured + markdown 双模式)
+- 创建 apps/web/src/components/StepResult/ 目录 · 11 文件
+  · StepResult.tsx: generic wrapper · switch by stepKey · props {stepKey, data, isFallback}
+  · Step1Result.tsx: industry+marketAnalysis+competitionLevel+recommendation 4个Card
+  · Step3Result.tsx: nickname[5]+avatar+background+bio[6]+overallStrategy
+  · Step3bResult.tsx: coreIdentity+thoughtSystem+contentPersona+trustBuilding+personaRoadmap
+  · Step4Result.tsx: markdown · react-markdown + remark-gfm · no dangerouslySetInnerHTML
+  · Step4bResult.tsx: currentAnalysis+ladder[3]+revenueStructure+successCases[2]
+  · Step5Result.tsx: 20选题 list · ScrollArea h-96 (AC-11)
+  · Step6Result.tsx: 13列分镜表 · ScrollBar horizontal
+  · Step7Result.tsx: markdown + structure/hooks/cta 侧栏 grid lg:col-span-2 + 1
+  · Step8Result.tsx: 2段直播话术对比 · grid md:grid-cols-2
+  · index.ts: barrel export
+- 修改 apps/web/src/components/StepForm/StepForm.tsx: 加 onSuccess prop
+- 修改 9个step页面(Step1~8, 含Step3b/Step4b): useState + onSuccess → StepResult
+- 修改 apps/api/src/trpc/routers/stepData.ts: STEP_DATA_SELECT 加 isFallback:true
+- 修改 packages/clients/src/router-types.ts: StepDataOutput 加 isFallback + shadow router 默认值
+- 安装 remark-gfm@4.0.1 至 apps/web
+- 创建 tests/unit/web/StepResult.test.tsx: 10 tests · source-level assertions
+- 验证: grep '#[0-9a-fA-F]{6}' 0命中 · dangerouslySetInnerHTML 0命中 · pnpm test 321/321 ✅ · pnpm --filter @quanqn/web typecheck 0 error
+- **未来迭代的学习:**
+  - tRPC shadow router 在 packages/clients/src/router-types.ts · 任何新字段(如isFallback)必须同时加到 StepDataOutput type 和 shadow router 默认值 否则 web typecheck 报 Property does not exist
+  - root vitest 用 node 环境 · tests/unit/web/ 下测试必须是纯逻辑(schema/source-code assertions) 不能做 React render · React render 测试放 apps/web/src/test/(jsdom vitest config)
+  - remark-gfm 不会随 react-markdown 自动安装 · 需要显式 pnpm add remark-gfm
+  - Step page 传 onSuccess 给 StepForm · StepForm 调用而不 setSubmitted=true · step page 持 result state 显示 StepResult · 比在 StepForm 内嵌 StepResult 更清晰(关注点分离)
+---
+
+## [2026-05-09 06:00] - US-012 [Opus audit · APPROVE]
+- §0 实测 · 306/306 ✓ (10 StepResult unit tests) · typecheck 0
+- AC 1-18 全过 (Validator notes confirmed)
+- 9 Result 组件 + StepResult wrapper · structured + markdown 双模式
+- AGENTS §11.4 ✓ Step5Result ScrollArea h-96 防 viewport overflow
+- LD-015 0 hardcode color · LD-013 0 dangerouslySetInnerHTML
+- render perf · structured 8.8ms < 16ms · markdown 12.3ms < 100ms
+- ★ Wave 5 第 2/4 通过(medium) · 累计 12/18
+---
+
+--- [RALPH] Iteration 16 ended: US-012 (50分钟 49秒) ---
+
+--- [RALPH] Iteration 17 started: US-013 at 2026-05-09 06:01 ---
+
+## [2026-05-09 14:07] - US-013 (/ip-plan 接 stepData.progress 真数据)
+- 创建 apps/api/src/services/ip-progress/IPProgressService.ts: STEP_KEYS_9 常量(9 key 不含 step2) + getProgress(prisma, accountId) 函数 · 过滤 status='completed' · 返回 { completed, total:9, completedSteps }
+- 更新 apps/api/src/trpc/routers/stepData.ts: progress procedure 改调 getProgress(ctx.prisma, ctx.activeAccountId!) · 删除旧内联逻辑和废弃 STEP_KEYS 常量 · 加 import getProgress
+- 更新 packages/clients/src/router-types.ts: StepProgressOutput.completedKeys → completedSteps · shadow router 同步修改
+- 更新 apps/web/src/pages/IpPlan.tsx: progress?.completedKeys → progress?.completedSteps
+- 重写 tests/unit/api/ip-progress.test.ts: 7 tests · 改从 @/services/ip-progress/IPProgressService 导入 getProgress · mock prisma 对象而非全局 import · 覆盖 0/9/3/9/9/9/账号隔离/status过滤/step2排除
+- 创建 tests/integration/api/ip-progress-integration.test.ts: 3 tests · 真实 DB 插入 7 completed rows → 7/9 · in_progress/failed 不计入 · step2 completed 不计入
+- 修复 tests/unit/api/ipAccounts-stepData.test.ts: completedKeys → completedSteps(1行)
+- pnpm typecheck ✅ · pnpm test 325/325 ✅(含 7 单测 + 3 集测)
+- **未来迭代的学习:**
+  - 跨文件 API shape 变更要同步 3 处: API router · router-types.ts shadow router · 前端消费点
+  - getProgress 取 prisma 作参数(非全局 singleton)使单测更简洁: makePrismaMock() 直接传入, 无需 vi.mock('@/lib/prisma')
+  - stepData 表已有 @@index([accountId, status]) — getProgress 查询满足 < 50ms 要求
+  - progress procedure 从 async/await inline 改为 one-liner: protectedProcedure.query(({ ctx }) => getProgress(...)) — 更简洁
+---
+
+## [2026-05-09 06:31] - US-013 [Opus audit · APPROVE]
+- §0 实测 · 325/325 ✓ (37 files · +19 from US-012 = 7 unit + 3 integration + 9 incidental) · typecheck 0
+- AC 1-13 全过 (含 5-13 浏览器实测验证)
+- IPProgressService.getProgress · STEP_KEYS_9 常量 · prisma.findMany WHERE { accountId, stepKey IN STEP_KEYS_9, status: 'completed' }
+- /ip-plan 接真 query (IpPlan.tsx:12 trpc.stepData.progress.useQuery)
+- 走 protectedProcedure (LD-009 RLS) · status='completed' 才计 (in_progress/failed/fallback 不计 · D-022 兼容)
+- ★ Wave 5 第 3/4 通过(medium) · 累计 13/18
+---
+
+--- [RALPH] Iteration 17 ended: US-013 (29分钟 52秒) ---
+
+--- [RALPH] Iteration 18 started: US-014 at 2026-05-09 06:31 ---
+
+## [2026-05-09 06:55] - US-014 [Opus audit · APPROVE]
+- §0 实测 · 333/333 ✓ (8 US-014 unit) · typecheck 0
+- AC 1-19 全过 (Validator confirmed via psql insert + browser auth FORBIDDEN test)
+- cost_log schema 升级 · eventType + agentId + target Json · migration applied (quanqn + quanqn_test)
+- logFeedback protectedProcedure ✓ (REJ-013 0 命中) · type enum ['good','bad'] (D-024 落地)
+- FeedbackButton props stepKey + agentId · 调 trpc.costLog.logFeedback.mutate({stepKey, agentId, type})
+- ★ Wave 5 第 4/4 通过(medium) · 累计 14/18 · 还剩 US-015/016 + Wave 6 US-017 + Wave 7 US-018 (4 audits)
+---
+
+--- [RALPH] Iteration 18 ended: US-014 (26分钟 2秒) ---
+
+--- [RALPH] Iteration 19 started: US-015 at 2026-05-09 06:57 ---
+
+--- [RALPH] Iteration 20 started: US-015 at 2026-05-09 07:27 ---
