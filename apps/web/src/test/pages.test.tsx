@@ -23,6 +23,7 @@ import Trending from '@/pages/tools/Trending';
 // Mock tRPC — pages that call useQuery hooks need this to render without a real provider
 vi.mock('@/lib/trpc', () => ({
   trpc: {
+    costLog: { logFeedback: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) } },
     diagnosis: { latest: { useQuery: () => ({ data: null, isLoading: false }) } },
     evolution: { history: { useQuery: () => ({ data: [], isLoading: false }) } },
     ipAccounts: { list: { useQuery: () => ({ data: [], isLoading: false }) } },
