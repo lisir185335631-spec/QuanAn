@@ -2570,6 +2570,52 @@ grep -q "QUANQN_ADMIN_CLIENT_ID" apps/admin/.env.production || exit 1
 
 ---
 
+## §11 前端实施沉淀(动态 · PRD-3 起累加)
+
+> **来源** · 各 PRD 收官 retro 的"文档回流候选" · 经用户确认后追加到本章。
+> **性质** · 不是 LD 锁定决策 · 是已实施的事实约束 + 高频陷阱 · 防 ralph 在 PRD-(N+1) 重蹈覆辙。
+> **更新规则** · 仅追加 · 引用 file:line · 跨 PRD 累加(类似 §3 LD 但语义更轻)。
+
+### §11.1 路由架构(PRD-3 US-001 沉淀 · `apps/web/src/router.tsx:58-114`)
+
+- 入口 · `apps/web/src/main.tsx` 用 `<RouterProvider router={router}>`
+- 34 路由 = 9 step + 14 工具 + 6 模块 + 3 辅助(/ip-plan, /settings, /login)+ index 重定向 + catch-all `/*`
+- **同模块共享 chunk**(防 34 chunk 太碎)· `React.lazy(() => import(/* webpackChunkName: "step|tools|modules" */ '@/pages/...'))`
+- 嵌套结构 · `RootLayout`(共享 Header)→ `StepLayout`(/step/* 子路由 · 共享 FeedbackButton)→ 各页
+
+**给后续 PRD ralph** · 加新页时按现有 chunk 分组放(step → step chunk · tool → tools chunk · 新模块 → modules chunk · 辅助页独立 chunk)。
+
+### §11.2 跨包类型共享(PRD-3 US-003 沉淀 · `packages/clients/router-types.ts`)
+
+- `apps/api/src/trpc/_app.ts` 的 `AppRouter` type 不能直接 import 进 `apps/web`(monorepo cross-package + tsc rootDir 报错)
+- 用 `packages/clients/router-types.ts` 做 shadow `initTRPC` · 导出 `AppRouter` type · web/admin 共用
+- **新加 router 时不要直接在 web 内 inline AppRouter** · 改 packages/clients
+
+### §11.3 Layout 共享组件防重复(PRD-3 US-005/006 沉淀 · `apps/web/src/layouts/StepLayout.tsx`)
+
+- `StepLayout` 已渲染共享 `<FeedbackButton>` · **11 step 页内不要再渲染 FeedbackButton**
+- 否则 `getByTestId('feedback-good')` 命中 2 个 element · playwright strict mode 拒绝
+- **泛化规则** · Layout 层共享 UI(toast / FeedbackButton / breadcrumb / etc)时 · 子页面不要重复
+- grep 检测 · `grep -rn "FeedbackButton" apps/web/src/pages/step` 应只在 import 不在 JSX 渲染
+
+### §11.4 列表 viewport overflow 防御(PRD-3 US-006 沉淀 · `apps/web/src/components/Header.tsx:140-160`)
+
+- Radix DropdownMenuContent / SelectContent / CommandList 套 `.map(items)` 时 · **items 可能 > 8 必须套 `<ScrollArea className="h-N">`**
+- 否则大 N 数据(30+)items 溢出 dropdown viewport · playwright click 56× retry 30s timeout · 用户也无法点击底部新建项
+- 同 codebase `ToolsDropdown` 用 `h-52`(208px · 14 工具) · `AccountDropdown` 用 `h-60`(240px · 邀请制内测期 1-3 accounts 默认空旷 · TD-011 留 polish)
+- **泛化规则** · 任何 list 组件,N 不可控时套 ScrollArea + 显式高度
+- audit grep · 见 `scripts/ralph/AUDIT-CHECKLIST-TEMPLATE.md §H Frontend list/dropdown 域`
+
+### §11.5 IP 账号切换契约(PRD-3 US-004 沉淀 · `apps/web/src/hooks/useActiveAccount.ts:30-58`)
+
+- 切账号 = `trpc.ipAccounts.switchActive.mutate(...)` → onSuccess: `clearLsNamespace(localStorage, oldAccountId)` → `window.location.reload()`
+- 预热 · `AccountDropdown` 拉 `trpc.ipAccounts.list` 用 `staleTime: 30_000` · 切换前 list 已在 React Query cache
+- 幂等 · `currentAccountId === newAccountId` 直接 return · 不 reload(AC-4)
+- 失败 · `onError` 触发 `toast.error('切换失败 · 请重试')` · 不 reload(AC-5)
+- **不要在其他位置自己实现切账号** · 全部走 `useActiveAccount.switchTo`
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充
@@ -2589,3 +2635,9 @@ grep -q "QUANQN_ADMIN_CLIENT_ID" apps/admin/.env.production || exit 1
   - §10.4 · admin 专属 audit_commands 5 类(LD-A 检测 / R-A 红线 / 集成测试 / 审计闭环 / 部署 gate)
   - §10.5 · 测试要求(60+ admin 集成 · 8 admin E2E · Approval 闭环 100%)
   - §10.6 · admin 跟主应用文档映射(ADR-019/020/021 + DATA-MODEL §11 + SCAFFOLD §A)
+- **2026-05-08 v0.3** · 加 §11 前端实施沉淀(动态 · PRD-3 起累加 · /prd-retro 文档回流)
+  - §11.1 · 路由架构(34 路由 · 同模块共享 chunk · React.lazy webpackChunkName)
+  - §11.2 · 跨包类型共享(packages/clients/router-types.ts shadow AppRouter)
+  - §11.3 · Layout 共享组件防重复(StepLayout 已渲染 FeedbackButton · 11 step 页不重复)
+  - §11.4 · 列表 viewport overflow 防御(Radix DropdownMenu N>8 必须 ScrollArea + h-N)
+  - §11.5 · IP 账号切换契约(useActiveAccount.switchTo · clearLsNamespace + reload)
