@@ -140,20 +140,22 @@ function AccountDropdown() {
       <DropdownMenuContent align="center" className="w-52" data-testid="header-account-menu">
         <DropdownMenuLabel>IP 账号</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {accounts.map((acc) => (
-          <DropdownMenuItem
-            key={acc.id}
-            className="gap-2"
-            onClick={() => switchTo(acc.id)}
-            data-testid={`account-item-${acc.id}`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rounded-full shrink-0 ${acc.id === activeAccount?.id ? 'bg-primary' : 'bg-border'}`}
-            />
-            <span className="flex-1 truncate text-body-sm">{acc.name}</span>
-            <span className="text-label-md text-muted-foreground">{acc.platform}</span>
-          </DropdownMenuItem>
-        ))}
+        <ScrollArea className="h-60">
+          {accounts.map((acc) => (
+            <DropdownMenuItem
+              key={acc.id}
+              className="gap-2"
+              onClick={() => switchTo(acc.id)}
+              data-testid={`account-item-${acc.id}`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full shrink-0 ${acc.id === activeAccount?.id ? 'bg-primary' : 'bg-border'}`}
+              />
+              <span className="flex-1 truncate text-body-sm">{acc.name}</span>
+              <span className="text-label-md text-muted-foreground">{acc.platform}</span>
+            </DropdownMenuItem>
+          ))}
+        </ScrollArea>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="gap-2 text-primary focus:text-primary">
           <Plus className="h-4 w-4" />
