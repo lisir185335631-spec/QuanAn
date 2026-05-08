@@ -32,7 +32,7 @@ export default defineConfig({
         '**/index.ts',
       ],
     },
-    include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],
+    include: ['tests/unit/**/*.{test.ts,test.tsx}', 'tests/integration/**/*.test.ts'],
     passWithNoTests: true,
     testTimeout: 30000,
     hookTimeout: 60000,

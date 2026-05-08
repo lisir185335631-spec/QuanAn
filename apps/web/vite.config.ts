@@ -12,6 +12,7 @@ export default defineConfig({
       '@quanqn/ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@quanqn/clients': path.resolve(__dirname, '../../packages/clients/src'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   server: {
     port: 5173,
