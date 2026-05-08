@@ -3,6 +3,7 @@
  * AC-2: 4 procedures (get/getAll/save/progress) · all pass RLS middleware
  * AC-7: stepData.save writes DB + returns updated row (client reconciles LS optimistic write)
  * AC-8: stepData.get returns current account's data (RLS account_id isolation → cross-account=0)
+ * US-007: adds saveStream SSE subscription for step5 (TopicAgent · 22KB · 5 category SSE)
  * SHIELD: do NOT add where:{accountId} to reads — RLS (account_id isolation) handles it
  * Note: Zod schemas inlined — @quanqn/schemas/entities has the canonical definition for client use
  */
@@ -14,6 +15,7 @@ import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { positioningAgent } from '@/specialists/PositioningAgent';
 import { brandingAgent } from '@/specialists/BrandingAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
+import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -178,6 +180,73 @@ export const stepDataRouter = router({
       }
 
       return { ok: true, data: row };
+    }),
+
+  /**
+   * AC-8 (US-007): SSE subscription for step5 TopicAgent (22KB · 5 category)
+   * Yields { type: 'started' } immediately (首 chunk < 3s) then runs topicAgent.execute()
+   * and yields { type: 'done', result } on completion.
+   * Note: runs within accountIsolationMiddleware transaction — connection held for LLM duration.
+   */
+  saveStream: protectedProcedure
+    .input(
+      z.object({
+        stepKey: z.literal('step5'),
+        category: z.enum(TOPIC_CATEGORIES),
+        inputs: z.record(z.unknown()),
+      }),
+    )
+    .subscription(async function* ({ ctx, input }) {
+      const { prisma, activeAccountId, traceId } = ctx;
+
+      // AC-14: yield started immediately → 首 chunk < 3s
+      yield { type: 'started' as const, traceId: traceId ?? '' };
+
+      try {
+        const agentRes = await topicAgent.execute({
+          accountId: activeAccountId!,
+          userInput: { category: input.category, ...input.inputs },
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+
+        // Persist result to stepData
+        await prisma.stepData.upsert({
+          where: {
+            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+          },
+          update: {
+            inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'TopicAgent',
+            version: { increment: 1 },
+            traceId: traceId ?? null,
+          },
+          create: {
+            accountId: activeAccountId!,
+            stepKey: input.stepKey,
+            inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'TopicAgent',
+            traceId: traceId ?? null,
+          },
+        });
+
+        yield { type: 'done' as const, result: agentRes.result };
+      } catch (err) {
+        yield {
+          type: 'error' as const,
+          message: err instanceof Error ? err.message : String(err),
+        };
+      }
     }),
 
   /** Returns completion progress: how many of the 9 steps have data for the current account */

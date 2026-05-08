@@ -64,9 +64,19 @@ export interface InvokeLLMResult {
   isFallback?: boolean;
 }
 
+/** SSE 流式 chunk(与 workers/llm-gateway StreamChunk 对齐) */
+export interface LLMStreamChunk {
+  type: 'meta' | 'delta' | 'done' | 'error';
+  delta?: string;
+  tokens?: { prompt: number; completion: number; total: number };
+  error?: { code: string; message: string };
+}
+
 /** 最小化 LLMGateway 接口(DI 用) */
 export interface ILLMGateway {
   complete(req: LLMCompleteRequest): Promise<InvokeLLMResult>;
+  /** 流式调用 · TopicAgent / CopywritingAgent 等 streaming=true 的 Specialist 需要 */
+  stream?(req: LLMCompleteRequest): AsyncIterable<LLMStreamChunk>;
 }
 
 /** invokeLLM 内部调用 gateway 时使用的请求结构 */
