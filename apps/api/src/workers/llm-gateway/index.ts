@@ -10,11 +10,27 @@
  *   5. Trace 贯穿(metadata.trace_id)
  *
  * ⚠️ R-1 · 应用代码严禁 import OpenAI / Anthropic SDK · 必须经过本入口
+ * AC-7: `from '@anthropic-ai/sdk'` — only this file in the entire codebase
+ * AC-8: `from 'openai'` — only this file in the entire codebase
  */
+
+// ⬇️ SDK imports STAY HERE ONLY (AC-7 + AC-8)
+import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
 import type { z } from 'zod';
 import { logger } from '@/lib/logger';
 import type { ModelTier } from '@/agents/base/types';
+import {
+  buildAnthropicPayload,
+  parseAnthropicResponse,
+  isAnthropicModel,
+} from './anthropic-provider';
+import { buildOpenAIPayload, parseOpenAIResponse } from './openai-provider';
+import { checkRateLimit, RateLimitError } from './rate-limiter';
+import { writeCostLog } from './cost-logger';
+
+export { RateLimitError };
 
 // ============== 类型 ==============
 
@@ -57,17 +73,30 @@ export interface ToolDef {
 // ============== 模型路由 ==============
 
 const MODEL_BY_TIER = {
-  reasoning:   { primary: 'claude-sonnet-4-6',  fallback: 'gpt-4o' },
-  lightweight: { primary: 'claude-haiku-4-5',   fallback: 'gpt-4o-mini' },
+  reasoning:   { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
+  lightweight: { primary: 'claude-haiku-4-5',  fallback: 'gpt-4o-mini' },
 } as const satisfies Record<ModelTier, { primary: string; fallback: string }>;
+
+// Lazy-created SDK clients (API keys never logged — AC-9)
+let _anthropicClient: Anthropic | null = null;
+let _openaiClient: OpenAI | null = null;
+
+function getAnthropicClient(tier: string): Anthropic {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error(`ANTHROPIC_API_KEY missing for ${tier} tier`);
+  return (_anthropicClient ??= new Anthropic({ apiKey: key }));
+}
+
+function getOpenAIClient(): OpenAI {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) throw new Error('OPENAI_API_KEY missing for fallback tier');
+  return (_openaiClient ??= new OpenAI({ apiKey: key }));
+}
 
 // ============== Gateway 实现 ==============
 
 class LLMGateway {
-  /**
-   * AC-3 (US-007): tier selector stub — P0 pass-through; P3 adds cost-based routing.
-   * reasoning=anthropic claude-sonnet / lightweight=openai gpt-4o-mini
-   */
+  /** Tier selector — P0 pass-through; P3 adds cost-based routing */
   selectTier(modelHint: ModelTier, _costBudget: number): ModelTier {
     return modelHint;
   }
@@ -75,50 +104,61 @@ class LLMGateway {
   /** 单次调用 · 含限流 / 熔断 / 降级 / 计费 / Trace */
   async complete(req: CompleteRequest): Promise<CompleteResponse> {
     const startedAt = Date.now();
-    const { trace_id } = req.metadata;
+    const { trace_id, userId } = req.metadata;
 
-    // 1. 限流(P3 实现 · Upstash Ratelimit)
-    await this.checkRateLimit(req.metadata.userId);
+    // 1. 限流 — throws RateLimitError if quota exhausted (AC-2, AC-11)
+    await checkRateLimit(userId);
 
-    // 2. 熔断检查 + 选模型
-    const { primary } = MODEL_BY_TIER[req.model_tier];
-    const model = primary; // P3 加熔断逻辑
+    const { primary, fallback: fallbackModel } = MODEL_BY_TIER[req.model_tier];
 
-    // 3. 主调用(带 retry)
-    let response: CompleteResponse;
-    try {
-      response = await this.callProvider(model, req);
-    } catch (err) {
-      logger.warn({ trace_id, err, model }, 'llm.primary_failed_fallback');
-      // 4. 降级到 fallback 模型
-      const fallbackModel = MODEL_BY_TIER[req.model_tier].fallback;
-      response = await this.callProvider(fallbackModel, req);
-      response.fallback = { from: model, to: fallbackModel, reason: String(err) };
+    // AC-5: fail fast on missing API keys — do not fall back with a config error
+    if (isAnthropicModel(primary) && !process.env.ANTHROPIC_API_KEY) {
+      throw new Error(`ANTHROPIC_API_KEY missing for ${req.model_tier} tier`);
     }
 
-    // 5. 写 cost_log
-    await this.writeCostLog({
-      ...req.metadata,
-      model: response.model,
-      tokens: response.tokens,
-      durationMs: Date.now() - startedAt,
-      success: true,
-      isFallback: !!response.fallback,
-    });
+    // 2. Primary call with 1 automatic retry (AC-3)
+    let response: CompleteResponse;
+    try {
+      response = await this._callWithRetry(primary, req, 1);
+    } catch (primaryErr) {
+      logger.warn({ trace_id, model: primary, err: String(primaryErr) }, 'llm.primary_failed_fallback');
 
-    return { ...response, duration_ms: Date.now() - startedAt, trace_id };
+      // 3. Fallback model (AC-3)
+      try {
+        response = await this._callWithRetry(fallbackModel, req, 0);
+        response.fallback = { from: primary, to: fallbackModel, reason: String(primaryErr) };
+      } catch (fallbackErr) {
+        // 4. Both providers failed — return template (AC-4)
+        logger.error(
+          { trace_id, primary, fallback: fallbackModel, err: String(fallbackErr) },
+          'llm.both_failed',
+        );
+        const failedResponse: CompleteResponse = {
+          content: '抱歉，AI 服务暂时不可用，请稍后再试。如问题持续，请联系客服。',
+          tokens: { prompt: 0, completion: 0, total: 0 },
+          model: fallbackModel,
+          duration_ms: Date.now() - startedAt,
+          trace_id,
+          fallback: { from: primary, to: fallbackModel, reason: String(fallbackErr) },
+        };
+        await writeCostLog({ req, res: failedResponse, success: false, errorCode: 'BOTH_FAILED' });
+        return failedResponse;
+      }
+    }
+
+    // 5. Write cost_log (AC-6)
+    const finalDuration = Date.now() - startedAt;
+    await writeCostLog({ req, res: { ...response, duration_ms: finalDuration }, success: true });
+
+    return { ...response, duration_ms: finalDuration, trace_id };
   }
 
   /** 流式调用 · CopywritingAgent / VideoAgent / VoiceChatAgent 用 */
   async *stream(req: CompleteRequest): AsyncIterable<StreamChunk> {
     const { trace_id } = req.metadata;
     const startedAt = Date.now();
-
     yield { type: 'meta', trace_id };
-
-    // TODO P3 · 真实流式实现 · SDK 流式接口 + 句子边界切片
-    // 此 stub 仅证明类型签名
-
+    // TODO P3 · 真实流式实现
     yield { type: 'done', trace_id, duration_ms: Date.now() - startedAt };
   }
 
@@ -131,23 +171,75 @@ class LLMGateway {
 
   // ============== 私有 ==============
 
-  private async checkRateLimit(_userId: number): Promise<void> {
-    // TODO P3 · token bucket(Free 50/日 · Pro 500/日 · Enterprise 5000/日)
+  /** Retry wrapper: attempts = 1 + maxRetries total */
+  private async _callWithRetry(
+    model: string,
+    req: CompleteRequest,
+    maxRetries: number,
+  ): Promise<CompleteResponse> {
+    let lastErr: unknown;
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this._callProvider(model, req);
+      } catch (err) {
+        lastErr = err;
+        if (attempt < maxRetries) {
+          logger.warn(
+            { model, attempt, err: String(err), trace_id: req.metadata.trace_id },
+            'llm.retry',
+          );
+        }
+      }
+    }
+    throw lastErr;
   }
 
-  private async callProvider(model: string, _req: CompleteRequest): Promise<CompleteResponse> {
-    // TODO P3 · 根据 model 路由到 Anthropic SDK / OpenAI SDK
-    return {
-      content: '[LLMGateway stub · P3 fills real call]',
-      tokens: { prompt: 0, completion: 0, total: 0 },
-      model,
-      duration_ms: 0,
-      trace_id: '',
-    };
+  /** Dispatch to Anthropic or OpenAI based on model name prefix */
+  private async _callProvider(model: string, req: CompleteRequest): Promise<CompleteResponse> {
+    const timeoutMs =
+      req.timeout_ms ?? (req.model_tier === 'reasoning' ? 60_000 : 30_000);
+
+    return isAnthropicModel(model)
+      ? this._callAnthropic(model, req, timeoutMs)
+      : this._callOpenAI(model, req, timeoutMs);
   }
 
-  private async writeCostLog(_data: unknown): Promise<void> {
-    // TODO P3 · prisma.costLog.create
+  private async _callAnthropic(
+    model: string,
+    req: CompleteRequest,
+    timeoutMs: number,
+  ): Promise<CompleteResponse> {
+    const startedAt = Date.now();
+    const client = getAnthropicClient(req.model_tier);
+    const payload = buildAnthropicPayload(model, req);
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const raw = await client.messages.create(payload, { signal: controller.signal });
+      return parseAnthropicResponse(raw, model, startedAt, req);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  private async _callOpenAI(
+    model: string,
+    req: CompleteRequest,
+    timeoutMs: number,
+  ): Promise<CompleteResponse> {
+    const startedAt = Date.now();
+    const client = getOpenAIClient();
+    const payload = buildOpenAIPayload(model, req);
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const raw = await client.chat.completions.create(payload, { signal: controller.signal });
+      return parseOpenAIResponse(raw, model, startedAt, req);
+    } finally {
+      clearTimeout(timer);
+    }
   }
 }
 
