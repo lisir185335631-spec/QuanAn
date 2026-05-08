@@ -43,11 +43,12 @@ vi.mock('@/lib/logger', () => ({
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /** Build a gateway that streams the given content as a single delta chunk */
-function makeStreamGateway(content: unknown): ILLMGateway {
+function makeStreamGateway(content: unknown, model = 'test-model-mock'): ILLMGateway {
   const json = JSON.stringify(content);
   return {
     complete: vi.fn() as unknown as ILLMGateway['complete'],
     stream: vi.fn().mockImplementation(async function* (): AsyncIterable<LLMStreamChunk> {
+      yield { type: 'meta', meta: { model } };
       yield { type: 'delta', delta: json };
       yield { type: 'done', tokens: { prompt: 200, completion: 2000, total: 2200 } };
     }),
@@ -59,6 +60,7 @@ function makeErrorStreamGateway(): ILLMGateway {
   return {
     complete: vi.fn() as unknown as ILLMGateway['complete'],
     stream: vi.fn().mockImplementation(async function* (): AsyncIterable<LLMStreamChunk> {
+      yield { type: 'meta', meta: { model: 'test-model-mock' } };
       yield { type: 'delta', delta: '{"category":"traffic","topics":[{"title":"test"' };
       // simulate network cut — no more chunks → JSON.parse will fail
       yield { type: 'done', tokens: { prompt: 100, completion: 50, total: 150 } };
@@ -135,6 +137,14 @@ describe('TopicAgent', () => {
     await expect(
       agent.execute({ ...BASE_REQ, userInput: { category: 'traffic' } }),
     ).rejects.toBeInstanceOf(SchemaValidationError);
+  });
+
+  // AC-3 / D-019: modelUsed captured from stream meta chunk — not hardcoded
+  it('modelUsed reflects stream meta chunk model (D-019 / REJ-003)', async () => {
+    const content = makeContent('traffic');
+    const agent = new TopicAgent(makeStreamGateway(content, 'mock-reasoning-model-v99'));
+    const res = await agent.execute({ ...BASE_REQ, userInput: { category: 'traffic' } });
+    expect(res.modelUsed).toBe('mock-reasoning-model-v99');
   });
 
   // Config shape

@@ -185,7 +185,7 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
     };
 
     // AC-3: SSE streaming — 防 22KB 单次 timeout
-    let { accumulated, tokens: finalTokens } = await this._consumeStream(gateway.stream, streamReq);
+    let { accumulated, tokens: finalTokens, model } = await this._consumeStream(gateway.stream, streamReq);
 
     // AC-12: JSON.parse 失败 → retry stream 1 次 → fallback
     let content: unknown;
@@ -197,13 +197,14 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
       try {
         content = JSON.parse(retry.accumulated);
         finalTokens = retry.tokens;
+        model = retry.model || model;
       } catch {
         // Both stream attempts produced non-parseable JSON → return isFallback
         // BaseSpecialist.safeParse(null) fails → BaseSpecialist retry → SchemaValidationError
         return {
           content: null,
           tokens: finalTokens ?? { prompt: 0, completion: 0, total: 0 },
-          model: 'claude-sonnet-4-6',
+          model: model || '',  // D-019 / REJ-003: 真实 model · 空字符串兜底，不硬编码
           isFallback: true,
         };
       }
@@ -212,25 +213,27 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
     return {
       content,
       tokens: finalTokens ?? { prompt: 0, completion: 0, total: 0 },
-      model: 'claude-sonnet-4-6',
+      model: model || '',  // D-019 / REJ-003: 真实 model 从 stream meta 拿 · 空字符串兜底
     };
   }
 
-  /** Consume SSE stream: accumulate delta text + capture final tokens */
+  /** Consume SSE stream: accumulate delta text + capture final tokens + model from meta */
   private async _consumeStream(
     streamFn: NonNullable<ILLMGateway['stream']>,
     req: LLMCompleteRequest,
-  ): Promise<{ accumulated: string; tokens: { prompt: number; completion: number; total: number } | undefined }> {
+  ): Promise<{ accumulated: string; tokens: { prompt: number; completion: number; total: number } | undefined; model: string }> {
     let accumulated = '';
     let tokens: { prompt: number; completion: number; total: number } | undefined;
+    let model = '';
     for await (const chunk of streamFn(req)) {
-      if (chunk.delta) accumulated += chunk.delta;
+      if (chunk.type === 'meta' && chunk.meta) model = chunk.meta.model;
+      if (chunk.type === 'delta' && chunk.delta) accumulated += chunk.delta;
       if (chunk.type === 'done') tokens = chunk.tokens;
       if (chunk.type === 'error') {
         throw new Error(`LLM stream error: ${chunk.error?.message ?? 'unknown'}`);
       }
     }
-    return { accumulated, tokens };
+    return { accumulated, tokens, model };
   }
 
   private _buildUserPrompt(userInput: TopicInput, _ctx: AssembledContext): string {

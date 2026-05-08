@@ -56,6 +56,8 @@ export interface CompleteResponse {
 
 export interface StreamChunk {
   type: 'meta' | 'delta' | 'tool_call' | 'tool_result' | 'done' | 'error';
+  /** stream 启动时告知实际使用的 model · D-019 / REJ-003 */
+  meta?: { model: string };
   trace_id?: string;
   delta?: string;
   result?: unknown;
@@ -157,7 +159,9 @@ class LLMGateway {
   async *stream(req: CompleteRequest): AsyncIterable<StreamChunk> {
     const { trace_id } = req.metadata;
     const startedAt = Date.now();
-    yield { type: 'meta', trace_id };
+    // D-019 / REJ-003: emit actual model in first chunk — consumers read stream.meta.model
+    const actualModel = MODEL_BY_TIER[req.model_tier].primary;
+    yield { type: 'meta', trace_id, meta: { model: actualModel } };
     // TODO P3 · 真实流式实现
     yield { type: 'done', trace_id, duration_ms: Date.now() - startedAt };
   }

@@ -67,6 +67,8 @@ export interface InvokeLLMResult {
 /** SSE 流式 chunk(与 workers/llm-gateway StreamChunk 对齐) */
 export interface LLMStreamChunk {
   type: 'meta' | 'delta' | 'done' | 'error';
+  /** stream 启动时 LLMGateway 通过 meta chunk 告知实际使用的 model · D-019 / REJ-003 */
+  meta?: { model: string };
   delta?: string;
   tokens?: { prompt: number; completion: number; total: number };
   error?: { code: string; message: string };
