@@ -14,14 +14,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/hooks/useAuth';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { trpc } from '@/lib/trpc';
 
 // ── Static data ────────────────────────────────────────────────────────────────
-
-const MOCK_ACCOUNTS = [
-  { id: 'acc-1', name: '个人IP号', platform: '抖音', active: true },
-  { id: 'acc-2', name: '企业品牌号', platform: '小红书', active: false },
-  { id: 'acc-3', name: '测试账号', platform: 'B站', active: false },
-] as const;
 
 const TOOLS_14 = [
   { label: '全网爆款库', href: '/trending', category: '市场洞察' },
@@ -118,7 +114,11 @@ function UserDropdown() {
 }
 
 function AccountDropdown() {
-  const activeAccount = MOCK_ACCOUNTS.find((a) => a.active) ?? MOCK_ACCOUNTS[0];
+  const { account: activeAccount, switchTo } = useActiveAccount();
+  // AC-2: pre-warm account list into useQuery cache before switch
+  const { data: accounts = [] } = trpc.ipAccounts.list.useQuery(undefined, {
+    staleTime: 30_000,
+  });
 
   return (
     <DropdownMenu>
@@ -131,17 +131,24 @@ function AccountDropdown() {
           data-testid="header-account-trigger"
         >
           <Cpu className="h-3.5 w-3.5 text-primary" />
-          <span className="text-label-md font-medium max-w-[90px] truncate">{activeAccount.name}</span>
+          <span className="text-label-md font-medium max-w-[90px] truncate">
+            {activeAccount?.name ?? '—'}
+          </span>
           <ChevronDown className="h-3 w-3 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" className="w-52" data-testid="header-account-menu">
         <DropdownMenuLabel>IP 账号</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {MOCK_ACCOUNTS.map((acc) => (
-          <DropdownMenuItem key={acc.id} className="gap-2">
+        {accounts.map((acc) => (
+          <DropdownMenuItem
+            key={acc.id}
+            className="gap-2"
+            onClick={() => switchTo(acc.id)}
+            data-testid={`account-item-${acc.id}`}
+          >
             <span
-              className={`h-1.5 w-1.5 rounded-full shrink-0 ${acc.active ? 'bg-primary' : 'bg-border'}`}
+              className={`h-1.5 w-1.5 rounded-full shrink-0 ${acc.id === activeAccount?.id ? 'bg-primary' : 'bg-border'}`}
             />
             <span className="flex-1 truncate text-body-sm">{acc.name}</span>
             <span className="text-label-md text-muted-foreground">{acc.platform}</span>
@@ -199,6 +206,10 @@ function ToolsDropdown() {
 
 function MobileNav() {
   const { user, login, logout } = useAuth();
+  const { account: activeAccount, switchTo } = useActiveAccount();
+  const { data: accounts = [] } = trpc.ipAccounts.list.useQuery(undefined, {
+    staleTime: 30_000,
+  });
 
   return (
     <Sheet>
@@ -237,12 +248,15 @@ function MobileNav() {
         <ScrollArea className="flex-1 h-[calc(100vh-100px)]">
           <div className="px-3 py-3 space-y-1">
             <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">IP 账号</p>
-            {MOCK_ACCOUNTS.map((acc) => (
+            {accounts.map((acc) => (
               <button
                 key={acc.id}
                 className="w-full flex items-center gap-2.5 px-2 py-2 rounded-md hover:bg-accent text-body-sm text-on-surface"
+                onClick={() => switchTo(acc.id)}
               >
-                <span className={`h-1.5 w-1.5 rounded-full ${acc.active ? 'bg-primary' : 'bg-border'}`} />
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${acc.id === activeAccount?.id ? 'bg-primary' : 'bg-border'}`}
+                />
                 {acc.name}
                 <span className="ml-auto text-label-md text-muted-foreground">{acc.platform}</span>
               </button>

@@ -1,13 +1,13 @@
 /**
- * useActiveAccount — PRD-2 US-002
+ * useActiveAccount — PRD-3 US-004
  *
- * AC-2: returns current active IpAccount; switchTo() clears old LS namespace
- *       and updates activeAccountId server-side.
- * AC-6: after switch, old namespace keys are removed from localStorage.
- * AC-7: React state is per-tab by nature — each tab has independent activeAccountId.
+ * AC-3: switch → clearLsNamespace(old) → window.location.reload()
+ * AC-4: idempotent — clicking the already-active account is a no-op
+ * AC-5: on switchActive failure → sonner toast '切换失败 · 请重试', no reload
  */
 
 import { useCallback } from 'react';
+import { toast } from 'sonner';
 
 import { clearLsNamespace } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
@@ -19,7 +19,6 @@ export type { ActiveAccountOutput };
 export function useActiveAccount() {
   const {
     data: account,
-    refetch,
     isLoading,
   } = trpc.ipAccounts.active.useQuery(undefined, {
     staleTime: 30_000,
@@ -30,22 +29,31 @@ export function useActiveAccount() {
 
   const switchTo = useCallback(
     (newAccountId: number): void => {
-      const oldAccountId = (account as ActiveAccountOutput)?.id ?? null;
+      const currentAccountId = (account as ActiveAccountOutput)?.id ?? null;
+
+      // AC-4: idempotent — same account, skip
+      if (currentAccountId !== null && currentAccountId === newAccountId) {
+        return;
+      }
 
       switchActiveMutation.mutate(
         { accountId: newAccountId },
         {
           onSuccess() {
-            // AC-6: clear old namespace from LS — must be 0 hits for old prefix
-            if (oldAccountId !== null && oldAccountId !== newAccountId) {
-              clearLsNamespace(localStorage, oldAccountId);
+            // AC-3: clear old LS namespace then full reload — new account state served fresh
+            if (currentAccountId !== null) {
+              clearLsNamespace(localStorage, currentAccountId);
             }
-            void refetch();
+            window.location.reload();
+          },
+          onError() {
+            // AC-5: toast on failure, no reload
+            toast.error('切换失败 · 请重试');
           },
         },
       );
     },
-    [account, switchActiveMutation, refetch],
+    [account, switchActiveMutation],
   );
 
   return {
