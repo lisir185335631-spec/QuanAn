@@ -1,8 +1,9 @@
 /**
- * copywriting router — PRD-2 US-004
- * AC-1: 4 procedures (generate/optimize/list/delete) · all return mock data
- * AC-7: mutations write History row with trace_id
- * AC-8: no LLM call — CopywritingAgent 留 PRD-3+
+ * copywriting router — PRD-2 US-004 · PRD-4 US-009
+ * AC-1: 4 procedures (generate/optimize/list/delete)
+ * US-009 AC-5: generate → 改调 copywritingAgent(mode='step7')· 写真实 markdown 到 history
+ *              optimize / list / delete 保留现有 mock(留 PRD-5)
+ * US-009 AC-7: generate 写 history 表(memory.l2_write=['history'])
  * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
  */
 
@@ -10,6 +11,7 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { copywritingAgent } from '@/specialists/CopywritingAgent';
 
 const generateCopywritingInput = z.object({
   stepKey: z.string().min(1).max(64),
@@ -42,19 +44,33 @@ const HISTORY_SELECT = {
 } satisfies Prisma.HistorySelect;
 
 export const copywritingRouter = router({
-  /** Generate copywriting via CopywritingAgent (P1 mock) */
+  /**
+   * US-009 AC-5: generate → 改调 copywritingAgent(step7 mode)
+   * AC-7: 写 history 表(memory.l2_write=['history'])
+   */
   generate: protectedProcedure
     .input(generateCopywritingInput)
-    .mutation(async ({ ctx, input: _input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
-      // AC-7: write History row; AC-8: content is mock, no LLM call
+
+      // US-009: call CopywritingAgent (step7 mode) with user context
+      const agentRes = await copywritingAgent.execute({
+        accountId: activeAccountId!,
+        mode: 'step7',
+        userInput: input.context ?? {},
+        traceId: traceId ?? undefined,
+        stepKey: input.stepKey,
+      });
+
+      // AC-7: write History row with real markdown result
+      const markdown = agentRes.result.markdown;
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'copywriting',
+          agentId: 'CopywritingAgent',
           sourceType: 'user',
-          inputSummary: '[mock]',
-          content: '[mock]',
+          inputSummary: input.stepKey,
+          content: markdown,
           traceId: traceId ?? null,
         },
         select: HISTORY_SELECT,
@@ -62,7 +78,7 @@ export const copywritingRouter = router({
       return row;
     }),
 
-  /** Optimize existing copywriting (P1 mock) */
+  /** Optimize existing copywriting (P1 mock · PRD-5) */
   optimize: protectedProcedure
     .input(optimizeCopywritingInput)
     .mutation(async ({ ctx, input: _input }) => {

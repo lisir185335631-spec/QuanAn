@@ -17,6 +17,7 @@ import { brandingAgent } from '@/specialists/BrandingAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
 import { videoAgent } from '@/specialists/VideoAgent';
+import { copywritingAgent } from '@/specialists/CopywritingAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -211,63 +212,125 @@ export const stepDataRouter = router({
 
   /**
    * AC-8 (US-007): SSE subscription for step5 TopicAgent (22KB · 5 category)
-   * Yields { type: 'started' } immediately (首 chunk < 3s) then runs topicAgent.execute()
+   * US-009 AC-4: extends to step7 CopywritingAgent (long markdown · SSE)
+   * Yields { type: 'started' } immediately (首 chunk < 3s) then runs agent.execute()
    * and yields { type: 'done', result } on completion.
    * Note: runs within accountIsolationMiddleware transaction — connection held for LLM duration.
    */
   saveStream: protectedProcedure
     .input(
-      z.object({
-        stepKey: z.literal('step5'),
-        category: z.enum(TOPIC_CATEGORIES),
-        inputs: z.record(z.unknown()),
-      }),
+      z.discriminatedUnion('stepKey', [
+        z.object({
+          stepKey: z.literal('step5'),
+          category: z.enum(TOPIC_CATEGORIES),
+          inputs: z.record(z.unknown()),
+        }),
+        z.object({
+          stepKey: z.literal('step7'),
+          inputs: z.record(z.unknown()),
+        }),
+      ]),
     )
     .subscription(async function* ({ ctx, input }) {
       const { prisma, activeAccountId, traceId } = ctx;
 
-      // AC-14: yield started immediately → 首 chunk < 3s
+      // yield started immediately → 首 chunk < 3s
       yield { type: 'started' as const, traceId: traceId ?? '' };
 
       try {
-        const agentRes = await topicAgent.execute({
-          accountId: activeAccountId!,
-          userInput: { category: input.category, ...input.inputs },
-          traceId: traceId ?? undefined,
-          stepKey: input.stepKey,
-        });
-
-        // Persist result to stepData
-        await prisma.stepData.upsert({
-          where: {
-            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
-          },
-          update: {
-            inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'TopicAgent',
-            version: { increment: 1 },
-            traceId: traceId ?? null,
-          },
-          create: {
+        if (input.stepKey === 'step5') {
+          const agentRes = await topicAgent.execute({
             accountId: activeAccountId!,
+            userInput: { category: input.category, ...input.inputs },
+            traceId: traceId ?? undefined,
             stepKey: input.stepKey,
-            inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'TopicAgent',
-            traceId: traceId ?? null,
-          },
-        });
+          });
 
-        yield { type: 'done' as const, result: agentRes.result };
+          // Persist result to stepData
+          await prisma.stepData.upsert({
+            where: {
+              accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+            },
+            update: {
+              inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
+              result: agentRes.result as Prisma.InputJsonValue,
+              isFallback: agentRes.isFallback,
+              durationMs: agentRes.durationMs,
+              tokensUsed: agentRes.tokensUsed.total,
+              modelUsed: agentRes.modelUsed,
+              agentId: 'TopicAgent',
+              version: { increment: 1 },
+              traceId: traceId ?? null,
+            },
+            create: {
+              accountId: activeAccountId!,
+              stepKey: input.stepKey,
+              inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
+              result: agentRes.result as Prisma.InputJsonValue,
+              isFallback: agentRes.isFallback,
+              durationMs: agentRes.durationMs,
+              tokensUsed: agentRes.tokensUsed.total,
+              modelUsed: agentRes.modelUsed,
+              agentId: 'TopicAgent',
+              traceId: traceId ?? null,
+            },
+          });
+
+          yield { type: 'done' as const, result: agentRes.result };
+        } else {
+          // input.stepKey === 'step7': US-009 CopywritingAgent
+          const agentRes = await copywritingAgent.execute({
+            accountId: activeAccountId!,
+            mode: 'step7',
+            userInput: input.inputs,
+            traceId: traceId ?? undefined,
+            stepKey: input.stepKey,
+          });
+
+          // Persist result to stepData (for step completion tracking)
+          await prisma.stepData.upsert({
+            where: {
+              accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+            },
+            update: {
+              inputs: input.inputs as Prisma.InputJsonValue,
+              result: agentRes.result as Prisma.InputJsonValue,
+              isFallback: agentRes.isFallback,
+              durationMs: agentRes.durationMs,
+              tokensUsed: agentRes.tokensUsed.total,
+              modelUsed: agentRes.modelUsed,
+              agentId: 'CopywritingAgent',
+              version: { increment: 1 },
+              traceId: traceId ?? null,
+            },
+            create: {
+              accountId: activeAccountId!,
+              stepKey: input.stepKey,
+              inputs: input.inputs as Prisma.InputJsonValue,
+              result: agentRes.result as Prisma.InputJsonValue,
+              isFallback: agentRes.isFallback,
+              durationMs: agentRes.durationMs,
+              tokensUsed: agentRes.tokensUsed.total,
+              modelUsed: agentRes.modelUsed,
+              agentId: 'CopywritingAgent',
+              traceId: traceId ?? null,
+            },
+          });
+
+          // AC-7: write to history table (memory.l2_write=['history'])
+          await prisma.history.create({
+            data: {
+              accountId: activeAccountId!,
+              agentId: 'CopywritingAgent',
+              sourceType: 'user',
+              inputSummary: input.stepKey,
+              content: agentRes.result.markdown,
+              traceId: traceId ?? null,
+            },
+          });
+
+          yield { type: 'done' as const, result: agentRes.result };
+        }
       } catch (err) {
         yield {
           type: 'error' as const,

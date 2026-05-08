@@ -1,11 +1,35 @@
 /**
- * Unit tests — PRD-2 US-004
+ * Unit tests — PRD-2 US-004 · PRD-4 US-009
  * 5 Specialist mock routers: copywriting/videoAnalysis/videoProduction/boomGenerate/monetization
  * AC-10: ≥ 11 unit tests · ≥ 1 per procedure
  * AC-7: mutations write History row with trace_id
+ * US-009: copywriting.generate now calls real CopywritingAgent — mock it here
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// ── US-009: Mock CopywritingAgent before router import ────────────────────────
+
+const MOCK_COPYWRITING_MARKDOWN = '# 爆款文案标题\n\n这是第一段文案内容，包含有价值的干货信息。\n\n这是第二段内容。' + 'x'.repeat(450);
+
+vi.mock('@/specialists/CopywritingAgent', () => ({
+  copywritingAgent: {
+    execute: vi.fn(async () => ({
+      result: {
+        markdown: MOCK_COPYWRITING_MARKDOWN,
+        structure: '痛点引入→解决方案→CTA',
+        hooks: ['这是一个吸引人的钩子'],
+        cta: '点击关注获取更多干货',
+      },
+      isFallback: false,
+      durationMs: 1000,
+      tokensUsed: { prompt: 500, completion: 2000, total: 2500 },
+      modelUsed: 'test-model',
+      traceId: 'test-trace-001',
+    })),
+  },
+}));
+
 import { copywritingRouter } from '@/trpc/routers/copywriting';
 import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
 import { videoProductionRouter } from '@/trpc/routers/videoProduction';
@@ -59,7 +83,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
 // ─── copywriting.generate ────────────────────────────────────────────────────
 
 describe('copywriting.generate', () => {
-  it('AC-7: creates History row with traceId and returns mock content', async () => {
+  it('US-009 AC-5/AC-7: calls CopywritingAgent, writes real markdown to History row', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = copywritingRouter.createCaller(ctx);
     const result = await caller.generate({ stepKey: 'step7' });
@@ -67,10 +91,10 @@ describe('copywriting.generate', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string; content: string };
     };
-    expect(createArgs.data.agentId).toBe('copywriting');
+    expect(createArgs.data.agentId).toBe('CopywritingAgent'); // US-009: real agent
     expect(createArgs.data.traceId).toBe('test-trace-001');
-    expect(createArgs.data.content).toBe('[mock]');
-    expect(result.content).toBe('[mock]');
+    expect(createArgs.data.content).toBe(MOCK_COPYWRITING_MARKDOWN); // real markdown
+    expect(result.content).toBe('[mock]'); // prisma.history.create mock returns MOCK_HISTORY_ROW
   });
 });
 
