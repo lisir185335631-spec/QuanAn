@@ -18,6 +18,7 @@ import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
 import { videoAgent } from '@/specialists/VideoAgent';
 import { copywritingAgent } from '@/specialists/CopywritingAgent';
+import { livestreamAgent } from '@/specialists/LivestreamAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -201,6 +202,32 @@ export const stepDataRouter = router({
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
             agentId: 'VideoAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
+
+      // AC-3(US-010): call LivestreamAgent for step8 (直播话术 · 两段话术输出)
+      if (input.stepKey === 'step8') {
+        const agentRes = await livestreamAgent.execute({
+          accountId: activeAccountId!,
+          // Runtime inputSchema.parse validates experience enum; cast here for TS only
+          userInput: input.inputs as Parameters<typeof livestreamAgent.execute>[0]['userInput'],
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        const updatedRow = await prisma.stepData.update({
+          where: {
+            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+          },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'LivestreamAgent',
           },
           select: STEP_DATA_SELECT,
         });
