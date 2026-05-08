@@ -15,18 +15,18 @@ import NotFound from '@/pages/NotFound';
 
 // ── Step pages (9) — one shared chunk ────────────────────────────────────────
 const Step1 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step1'));
+const Step2 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step2'));
 const Step3 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step3'));
-const Step3b = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step3b'));
 const Step4 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step4'));
-const Step4b = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step4b'));
 const Step5 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step5'));
 const Step6 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step6'));
 const Step7 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step7'));
 const Step8 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step8'));
+const Step9 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step9'));
 
 // ── Tool pages (14) — shared tools chunk ─────────────────────────────────────
 const Trending = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Trending'));
-const VideoAnalysis = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VideoAnalysis'));
+const Copywriting = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Copywriting'));
 const PresentStyles = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PresentStyles'));
 const Monetization = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Monetization'));
 const PrivateDomain = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PrivateDomain'));
@@ -63,18 +63,18 @@ export const router = createBrowserRouter([
 
       // ── Step routes (9) ──────────────────────────────────────────────────
       { path: 'step/1', element: <Step1 /> },
+      { path: 'step/2', element: <Step2 /> },
       { path: 'step/3', element: <Step3 /> },
-      { path: 'step/3b', element: <Step3b /> },
       { path: 'step/4', element: <Step4 /> },
-      { path: 'step/4b', element: <Step4b /> },
       { path: 'step/5', element: <Step5 /> },
       { path: 'step/6', element: <Step6 /> },
       { path: 'step/7', element: <Step7 /> },
       { path: 'step/8', element: <Step8 /> },
+      { path: 'step/9', element: <Step9 /> },
 
       // ── Tool routes (14) ─────────────────────────────────────────────────
       { path: 'trending', element: <Trending /> },
-      { path: 'video-analysis', element: <VideoAnalysis /> },
+      { path: 'copywriting', element: <Copywriting /> },
       { path: 'present-styles', element: <PresentStyles /> },
       { path: 'monetization', element: <Monetization /> },
       { path: 'private-domain', element: <PrivateDomain /> },

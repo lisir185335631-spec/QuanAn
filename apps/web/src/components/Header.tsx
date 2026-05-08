@@ -25,7 +25,7 @@ const MOCK_ACCOUNTS = [
 
 const TOOLS_14 = [
   { label: '全网爆款库', href: '/trending', category: '市场洞察' },
-  { label: '爆款文案解析', href: '/video-analysis', category: '市场洞察' },
+  { label: '爆款文案创作', href: '/copywriting', category: '内容创作' },
   { label: '14 呈现形式', href: '/present-styles', category: '市场洞察' },
   { label: 'IP 变现模型', href: '/monetization', category: '变现设计' },
   { label: '私域成交', href: '/private-domain', category: '变现设计' },

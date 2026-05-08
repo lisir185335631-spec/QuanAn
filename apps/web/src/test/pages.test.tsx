@@ -5,8 +5,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { stepConfig } from '@/lib/stepConfig';
 import Step1 from '@/pages/step/Step1';
+import Step2 from '@/pages/step/Step2';
 import Step5 from '@/pages/step/Step5';
 import Step8 from '@/pages/step/Step8';
+import Step9 from '@/pages/step/Step9';
+import Copywriting from '@/pages/tools/Copywriting';
 import Generate from '@/pages/tools/Generate';
 import Trending from '@/pages/tools/Trending';
 
@@ -17,7 +20,7 @@ function BrokenComponent(): never {
 
 describe('stepConfig', () => {
   it('has all 9 step keys', () => {
-    const keys = ['step1', 'step3', 'step3b', 'step4', 'step4b', 'step5', 'step6', 'step7', 'step8'];
+    const keys = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'step7', 'step8', 'step9'];
     for (const key of keys) {
       expect(stepConfig.has(key)).toBe(true);
     }
@@ -37,6 +40,11 @@ describe('Step pages render', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 定位与身份建立');
   });
 
+  it('Step2 renders h1 with correct title', () => {
+    render(<Step2 />);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('受众研究与竞品分析');
+  });
+
   it('Step5 renders h1 with correct title', () => {
     render(<Step5 />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('发布与运营');
@@ -45,6 +53,11 @@ describe('Step pages render', () => {
   it('Step8 renders h1 with correct title', () => {
     render(<Step8 />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('持续迭代与升级');
+  });
+
+  it('Step9 renders h1 with correct title', () => {
+    render(<Step9 />);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('品牌商业化与社群运营');
   });
 });
 
@@ -57,6 +70,11 @@ describe('Tool pages render', () => {
   it('Trending renders h1 heading', () => {
     render(<Trending />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款库');
+  });
+
+  it('Copywriting renders h1 heading', () => {
+    render(<Copywriting />);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款文案创作');
   });
 });
 
