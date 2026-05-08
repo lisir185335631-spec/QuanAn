@@ -876,3 +876,6 @@
 - PRD-3 收官: US-001~US-006 全 PASSED, 6/6 ✓
 ---
 
+
+--- [PRD-4 START] P3 IP 主流程 9 步 · 18 US · 7 Specialist 真接 LLMGateway · risk=high · at 2026-05-08 23:30 ---
+
