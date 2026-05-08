@@ -11,6 +11,7 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { positioningAgent } from '@/specialists/PositioningAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -62,6 +63,7 @@ export const stepDataRouter = router({
   /**
    * AC-7: upserts StepData for the current account
    * Returns updated row so client hook can reconcile LS optimistic write
+   * AC-5(US-004): step1 → positioningAgent(industry mode), step4 → positioningAgent(execution mode)
    */
   save: protectedProcedure
     .input(
@@ -92,6 +94,34 @@ export const stepDataRouter = router({
         },
         select: STEP_DATA_SELECT,
       });
+
+      // AC-5(US-004): call PositioningAgent for step1 and step4
+      if (input.stepKey === 'step1' || input.stepKey === 'step4') {
+        const mode = input.stepKey === 'step1' ? 'industry' : 'execution';
+        const agentRes = await positioningAgent.execute({
+          accountId: activeAccountId!,
+          mode,
+          userInput: input.inputs,
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        // Persist agent result back to the same row
+        const updatedRow = await prisma.stepData.update({
+          where: {
+            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+          },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'PositioningAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
 
       return { ok: true, data: row };
     }),

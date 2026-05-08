@@ -10,6 +10,20 @@ import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
 import { stepDataRouter } from '@/trpc/routers/stepData';
 import { authRouter } from '@/trpc/routers/auth';
 
+// Mock PositioningAgent so stepData.save tests don't hit real LLM (US-004 integration)
+vi.mock('@/specialists/PositioningAgent', () => ({
+  positioningAgent: {
+    execute: vi.fn().mockResolvedValue({
+      result: { industry: 'beauty', marketAnalysis: 'mock', competitionLevel: 'high', recommendation: 'mock' },
+      isFallback: false,
+      durationMs: 50,
+      tokensUsed: { prompt: 10, completion: 20, total: 30 },
+      modelUsed: 'claude-sonnet-4-6',
+      traceId: 'mock-trace',
+    }),
+  },
+}));
+
 // ─── Helper: build a minimal tRPC context mock ────────────────────────────────
 
 function makeCtx(overrides: Record<string, unknown> = {}) {
@@ -28,6 +42,13 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
       inputs: args.create['inputs'],
       result: null,
       version: 0,
+      updatedAt: new Date(),
+    })),
+    update: vi.fn(async (args: { data: Record<string, unknown>; where: unknown }) => ({
+      stepKey: 'step1',
+      inputs: {},
+      result: args.data['result'] ?? null,
+      version: 1,
       updatedAt: new Date(),
     })),
   };
