@@ -12,6 +12,7 @@ import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { positioningAgent } from '@/specialists/PositioningAgent';
+import { brandingAgent } from '@/specialists/BrandingAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -117,6 +118,33 @@ export const stepDataRouter = router({
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
             agentId: 'PositioningAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
+
+      // AC-4(US-005): call BrandingAgent for step3(packaging) and step3b(persona)
+      if (input.stepKey === 'step3' || input.stepKey === 'step3b') {
+        const mode = input.stepKey === 'step3' ? 'packaging' : 'persona';
+        const agentRes = await brandingAgent.execute({
+          accountId: activeAccountId!,
+          mode,
+          userInput: input.inputs,
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        const updatedRow = await prisma.stepData.update({
+          where: {
+            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+          },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'BrandingAgent',
           },
           select: STEP_DATA_SELECT,
         });

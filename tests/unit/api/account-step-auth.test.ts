@@ -213,7 +213,7 @@ describe('stepData.save', () => {
   it('zod: accepts empty inputs object', async () => {
     const { ctx } = makeCtx();
     const caller = stepDataRouter.createCaller(ctx);
-    await expect(caller.save({ stepKey: 'step3', inputs: {} })).resolves.toMatchObject({ ok: true });
+    await expect(caller.save({ stepKey: 'step2', inputs: {} })).resolves.toMatchObject({ ok: true });
   });
 });
 
