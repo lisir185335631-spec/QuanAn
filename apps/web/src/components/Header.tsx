@@ -13,8 +13,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { useAuth } from '@/hooks/useAuth';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { useAuth } from '@/hooks/useAuth';
 import { trpc } from '@/lib/trpc';
 
 // ── Static data ────────────────────────────────────────────────────────────────

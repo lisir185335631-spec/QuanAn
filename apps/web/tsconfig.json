@@ -13,6 +13,6 @@
       "@quanqn/clients/*": ["../../packages/clients/src/*"]
     }
   },
-  "include": ["src", "vite.config.ts"],
+  "include": ["src", "vite.config.ts", "vitest.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

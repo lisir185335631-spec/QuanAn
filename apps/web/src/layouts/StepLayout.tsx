@@ -3,8 +3,7 @@
  * Renders FeedbackButton at the bottom of each step page without modifying 9 page files.
  */
 
-import { useLocation } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import { FeedbackButton } from '@/components/FeedbackButton';
 

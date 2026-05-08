@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { FeedbackButton } from '@/components/FeedbackButton';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { stepConfig } from '@/lib/stepConfig';
 
 const data = stepConfig.get('step9')!;
