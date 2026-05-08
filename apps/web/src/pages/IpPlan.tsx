@@ -31,7 +31,7 @@ export default function IpPlan() {
         />
       )}
 
-      <FeedbackButton stepKey="ip-plan" />
+      <FeedbackButton stepKey="ip-plan" agentId="web-client" />
     </main>
   );
 }

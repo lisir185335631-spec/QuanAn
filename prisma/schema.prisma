@@ -542,6 +542,7 @@ model CostLog {
 
   agentId   String  @map("agent_id") @db.VarChar(64)
   agentMode String? @map("agent_mode") @db.VarChar(32)
+  eventType String  @default("specialist_call") @map("event_type") @db.VarChar(32)
   callType  String  @map("call_type") @db.VarChar(32)
   modelTier String  @map("model_tier") @db.VarChar(16)
   modelUsed String  @map("model_used") @db.VarChar(64)
@@ -576,6 +577,7 @@ model CostLog {
   @@index([agentId, createdAt(sort: Desc)])
   @@index([modelUsed, createdAt(sort: Desc)])
   @@index([provider, success, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
   @@index([traceId])
   @@index([createdAt(sort: Desc)])
   @@map("cost_log")

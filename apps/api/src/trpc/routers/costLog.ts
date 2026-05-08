@@ -1,33 +1,60 @@
 /**
- * costLog router — PRD-3 US-005
- * AC-4: feedback button click → write traceId to audit_log (P0 trace-only; PRD-7 triggers evolution)
+ * costLog router — PRD-4 US-014
+ * logFeedback: writes feedback event to cost_log (event_type='good'/'bad')
+ * AC-16: protectedProcedure — ctx.activeAccountId injected, no input.accountId
+ * AC-11: traceId fallback → generateHttpTraceId() if not provided
+ * AC-12: DB error → logged; caller receives { ok: false } (non-blocking)
  */
 
 import { z } from 'zod';
+import { Decimal } from '@prisma/client/runtime/library';
 import { router } from '@/trpc/trpc';
+import { generateHttpTraceId } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { logger } from '@/lib/logger';
 
 export const costLogRouter = router({
-  /** P0 trace-only: writes feedback event to audit_log. PRD-7 will trigger evolution. */
+  /** AC-3: writes feedback event to cost_log with eventType='good'|'bad' */
   logFeedback: protectedProcedure
     .input(
       z.object({
         stepKey: z.string().min(1).max(64),
+        agentId: z.string().min(1).max(64),
         type: z.enum(['good', 'bad']),
+        traceId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { prisma, user, activeAccountId, traceId } = ctx;
-      await prisma.auditLog.create({
-        data: {
-          userId: user?.id ?? null,
-          accountId: activeAccountId,
-          eventType: 'feedback.step',
-          eventCategory: 'feedback',
-          payload: { stepKey: input.stepKey, type: input.type, traceId: traceId ?? null },
-          success: true,
-        },
-      });
-      return { ok: true };
+      const { prisma, activeAccountId, traceId: ctxTraceId } = ctx;
+      // AC-11: traceId fallback chain — ctx → input → generated
+      const traceId = ctxTraceId ?? input.traceId ?? generateHttpTraceId();
+
+      try {
+        await prisma.costLog.create({
+          data: {
+            agentId: input.agentId,
+            accountId: activeAccountId,
+            eventType: input.type,
+            callType: 'feedback',
+            modelTier: 'none',
+            modelUsed: 'none',
+            provider: 'client',
+            promptTokens: 0,
+            completionTokens: 0,
+            totalTokens: 0,
+            costUsd: new Decimal('0.000000'),
+            durationMs: 0,
+            success: true,
+            traceId,
+            // AC-15: target JSON for PRD-8 EvolutionAgent stepKey indexing
+            target: { stepKey: input.stepKey, agentId: input.agentId, traceId },
+          },
+        });
+        return { ok: true };
+      } catch (err) {
+        // AC-12: DB error must not crash UX — log and return failure
+        logger.error({ err, traceId }, 'costLog.logFeedback.db_error');
+        return { ok: false };
+      }
     }),
 });

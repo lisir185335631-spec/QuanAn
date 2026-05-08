@@ -18,49 +18,49 @@ vi.mock('@/lib/trpc', () => ({
 
 describe('FeedbackButton', () => {
   it('renders thumbs-up and thumbs-down buttons', () => {
-    render(<FeedbackButton stepKey="step1" />);
+    render(<FeedbackButton stepKey="step1" agentId="PositioningAgent" />);
     expect(screen.getByLabelText('有帮助')).toBeInTheDocument();
     expect(screen.getByLabelText('没帮助')).toBeInTheDocument();
   });
 
   it('renders helper text', () => {
-    render(<FeedbackButton stepKey="step1" />);
+    render(<FeedbackButton stepKey="step1" agentId="PositioningAgent" />);
     expect(screen.getByText('内容有帮助吗？')).toBeInTheDocument();
   });
 
-  it('calls mutate with good type on thumbs-up click', async () => {
+  it('calls mutate with good type and agentId on thumbs-up click', async () => {
     const user = userEvent.setup();
-    render(<FeedbackButton stepKey="step1" />);
+    render(<FeedbackButton stepKey="step1" agentId="PositioningAgent" />);
     await user.click(screen.getByLabelText('有帮助'));
-    expect(mockMutate).toHaveBeenCalledWith({ stepKey: 'step1', type: 'good' });
+    expect(mockMutate).toHaveBeenCalledWith({ stepKey: 'step1', agentId: 'PositioningAgent', type: 'good' });
   });
 
-  it('calls mutate with bad type on thumbs-down click', async () => {
+  it('calls mutate with bad type and agentId on thumbs-down click', async () => {
     const user = userEvent.setup();
-    render(<FeedbackButton stepKey="step2" />);
+    render(<FeedbackButton stepKey="step2" agentId="web-client" />);
     await user.click(screen.getByLabelText('没帮助'));
-    expect(mockMutate).toHaveBeenCalledWith({ stepKey: 'step2', type: 'bad' });
+    expect(mockMutate).toHaveBeenCalledWith({ stepKey: 'step2', agentId: 'web-client', type: 'bad' });
   });
 
-  it('passes stepKey correctly for ip-plan', async () => {
+  it('passes stepKey and agentId correctly for ip-plan', async () => {
     const user = userEvent.setup();
-    render(<FeedbackButton stepKey="ip-plan" />);
+    render(<FeedbackButton stepKey="ip-plan" agentId="web-client" />);
     await user.click(screen.getByLabelText('有帮助'));
-    expect(mockMutate).toHaveBeenCalledWith({ stepKey: 'ip-plan', type: 'good' });
+    expect(mockMutate).toHaveBeenCalledWith({ stepKey: 'ip-plan', agentId: 'web-client', type: 'good' });
   });
 
   it('has data-testid feedback-buttons wrapper', () => {
-    render(<FeedbackButton stepKey="step1" />);
+    render(<FeedbackButton stepKey="step1" agentId="PositioningAgent" />);
     expect(screen.getByTestId('feedback-buttons')).toBeInTheDocument();
   });
 
   it('has data-testid feedback-good on thumbs-up button', () => {
-    render(<FeedbackButton stepKey="step1" />);
+    render(<FeedbackButton stepKey="step1" agentId="PositioningAgent" />);
     expect(screen.getByTestId('feedback-good')).toBeInTheDocument();
   });
 
   it('has data-testid feedback-bad on thumbs-down button', () => {
-    render(<FeedbackButton stepKey="step1" />);
+    render(<FeedbackButton stepKey="step1" agentId="PositioningAgent" />);
     expect(screen.getByTestId('feedback-bad')).toBeInTheDocument();
   });
 });

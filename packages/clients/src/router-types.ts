@@ -188,7 +188,10 @@ const _shadowRouter = _t.router({
   }),
   costLog: _t.router({
     logFeedback: _t.procedure
-      .input((x: unknown) => x as { stepKey: string; type: 'good' | 'bad' })
+      .input(
+        (x: unknown) =>
+          x as { stepKey: string; agentId: string; type: 'good' | 'bad'; traceId?: string },
+      )
       .mutation((): { ok: boolean } => ({ ok: true })),
   }),
 });
