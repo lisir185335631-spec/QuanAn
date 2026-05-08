@@ -42,6 +42,8 @@ export interface SpecialistRequest<TIn> {
   mode?: string;
   userInput: TIn;
   traceId?: string;
+  /** IP 流程步骤标识 · cost_log.target.stepKey */
+  stepKey?: string;
 }
 
 /** 调用出参(所有 PRD-4 Specialist 共用) */
@@ -72,6 +74,7 @@ export interface LLMCompleteRequest {
   model_tier: ModelTier;
   systemPrompt: string;
   userPrompt: string;
+  responseFormat?: { type: 'json_schema'; schema: import('zod').ZodTypeAny };
   metadata: {
     trace_id: string;
     agentId: string;
@@ -79,6 +82,7 @@ export interface LLMCompleteRequest {
     userId: number;
   };
   timeout_ms?: number;
+  retry?: number;
 }
 
 /** ContextAssembler 注入后的上下文(与 agents/base/types 兼容) */

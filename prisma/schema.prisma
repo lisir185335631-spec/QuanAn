@@ -565,6 +565,7 @@ model CostLog {
   fallbackReason String? @map("fallback_reason") @db.VarChar(128)
 
   traceId   String?    @map("trace_id") @db.VarChar(64)
+  target    Json?      @map("target")
   ipAccount IpAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
   user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
 
