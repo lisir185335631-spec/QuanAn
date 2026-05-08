@@ -21,12 +21,12 @@ export function useActiveAccount() {
     data: account,
     refetch,
     isLoading,
-  } = trpc.account.getActive.useQuery(undefined, {
+  } = trpc.ipAccounts.active.useQuery(undefined, {
     staleTime: 30_000,
     retry: false,
   });
 
-  const switchActiveMutation = trpc.account.switchActive.useMutation();
+  const switchActiveMutation = trpc.ipAccounts.switchActive.useMutation();
 
   const switchTo = useCallback(
     (newAccountId: number): void => {

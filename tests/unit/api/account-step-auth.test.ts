@@ -1,14 +1,13 @@
 /**
- * Unit tests — PRD-2 US-008
- * account router: getActive / switchActive (2 procedures)
- * step router: saveStepData (1 procedure)
- * auth router: me (1 procedure)
- * AC-1: all procedures covered · zod validation tested
+ * Unit tests — PRD-3 US-001 (TD-012 merge)
+ * Migrated from alias routers (account/step) → canonical routers (ipAccounts/stepData)
+ * ipAccounts.active / ipAccounts.switchActive / stepData.save / auth.me
+ * AC-8: TD-012 合并不破坏现有 174 tests
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { accountRouter } from '@/trpc/routers/account';
-import { stepRouter } from '@/trpc/routers/step';
+import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
+import { stepDataRouter } from '@/trpc/routers/stepData';
 import { authRouter } from '@/trpc/routers/auth';
 
 // ─── Helper: build a minimal tRPC context mock ────────────────────────────────
@@ -17,59 +16,66 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
   const ipAccount = {
     findUnique: vi.fn(async () => null as unknown),
     findFirst: vi.fn(async () => null as unknown),
+    create: vi.fn(async (args: { data: Record<string, unknown> }) => ({ id: 99, ...args.data })),
     update: vi.fn(async (args: { data: Record<string, unknown> }) => args.data),
   };
   const user = {
     update: vi.fn(async () => ({})),
   };
   const stepData = {
-    upsert: vi.fn(async () => ({
-      stepKey: 'test-step',
-      inputs: {},
+    upsert: vi.fn(async (args: { create: Record<string, unknown> }) => ({
+      stepKey: args.create['stepKey'] as string,
+      inputs: args.create['inputs'],
       result: null,
       version: 0,
       updatedAt: new Date(),
     })),
   };
+  const auditLog = {
+    create: vi.fn(async () => ({})),
+  };
   const tx = {
     ipAccount,
     user,
     stepData,
+    auditLog,
     $executeRaw: vi.fn(async () => 0),
   };
   const prisma = {
     ipAccount,
     user,
     stepData,
+    auditLog,
     $transaction: vi.fn(async (fn: (tx: typeof tx) => Promise<unknown>) => fn(tx)),
     _tx: tx,
   };
 
   return {
     ctx: {
-      traceId: 'test-trace-us008',
+      traceId: 'test-trace-us001-td012',
       activeAccountId: 1 as number | null,
       user: { id: 7, activeAccountId: 1 } as { id: number; activeAccountId: number | null } | null,
       prisma,
-      req: new Request('http://localhost', { headers: { 'x-trace-id': 'test-trace-us008' } }),
-      sessionId: 'sess-us008',
+      req: new Request('http://localhost', { headers: { 'x-trace-id': 'test-trace-us001-td012' } }),
+      sessionId: 'sess-us001',
       ...overrides,
     },
     prisma,
     ipAccount,
-    user: user,
+    user,
     stepData,
+    auditLog,
     tx,
   };
 }
 
-// ─── account.getActive ────────────────────────────────────────────────────────
+// ─── ipAccounts.active (replaces account.getActive) ──────────────────────────
 
-describe('account.getActive', () => {
+describe('ipAccounts.active', () => {
   it('returns null when no account found', async () => {
     const { ctx } = makeCtx();
-    const caller = accountRouter.createCaller(ctx);
-    const result = await caller.getActive();
+    const caller = ipAccountsRouter.createCaller(ctx);
+    const result = await caller.active();
     expect(result).toBeNull();
   });
 
@@ -82,45 +88,45 @@ describe('account.getActive', () => {
       stage: 'growth',
       industry: 'beauty',
       followersRange: '10k-50k',
+      isActive: true,
     };
     ipAccount.findUnique.mockResolvedValueOnce(mockAccount);
-    const caller = accountRouter.createCaller(ctx);
-    const result = await caller.getActive();
+    const caller = ipAccountsRouter.createCaller(ctx);
+    const result = await caller.active();
     expect(result).toMatchObject({ id: 1, name: 'Test Account', platform: 'douyin' });
-    expect(ipAccount.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 1 } }),
-    );
   });
 
   it('queries with activeAccountId from ctx', async () => {
     const { ctx, ipAccount } = makeCtx({ activeAccountId: 42 });
-    const caller = accountRouter.createCaller(ctx);
-    await caller.getActive();
+    const caller = ipAccountsRouter.createCaller(ctx);
+    await caller.active();
     expect(ipAccount.findUnique).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 42 } }),
     );
   });
 });
 
-// ─── account.switchActive ─────────────────────────────────────────────────────
+// ─── ipAccounts.switchActive (replaces account.switchActive) ──────────────────
 
-describe('account.switchActive', () => {
-  it('updates user.activeAccountId and returns { ok: true }', async () => {
-    const { ctx, tx, user } = makeCtx();
+describe('ipAccounts.switchActive', () => {
+  it('updates user.activeAccountId and writes audit_log', async () => {
+    const { ctx, tx, user, auditLog } = makeCtx();
     const mockFoundAccount = { id: 5 };
     tx.ipAccount.findFirst.mockResolvedValueOnce(mockFoundAccount);
-    const caller = accountRouter.createCaller(ctx);
+    const caller = ipAccountsRouter.createCaller(ctx);
     const result = await caller.switchActive({ accountId: 5 });
-    expect(result).toEqual({ ok: true });
+    expect(result).toMatchObject({ ok: true, activeAccountId: 5 });
     expect(user.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: { activeAccountId: 5 } }),
+    );
+    expect(auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ eventType: 'account.switch' }) }),
     );
   });
 
   it('throws NOT_FOUND when account does not belong to user', async () => {
     const { ctx } = makeCtx();
-    // findFirst returns null — account not found for this user
-    const caller = accountRouter.createCaller(ctx);
+    const caller = ipAccountsRouter.createCaller(ctx);
     await expect(caller.switchActive({ accountId: 999 })).rejects.toMatchObject({
       code: 'NOT_FOUND',
       message: 'account_not_found',
@@ -129,7 +135,7 @@ describe('account.switchActive', () => {
 
   it('throws UNAUTHORIZED when no user in ctx', async () => {
     const { ctx } = makeCtx({ user: null });
-    const caller = accountRouter.createCaller(ctx);
+    const caller = ipAccountsRouter.createCaller(ctx);
     await expect(caller.switchActive({ accountId: 1 })).rejects.toMatchObject({
       code: 'UNAUTHORIZED',
     });
@@ -137,57 +143,56 @@ describe('account.switchActive', () => {
 
   it('zod: rejects non-positive accountId', async () => {
     const { ctx } = makeCtx();
-    const caller = accountRouter.createCaller(ctx);
+    const caller = ipAccountsRouter.createCaller(ctx);
     await expect(caller.switchActive({ accountId: 0 })).rejects.toThrow();
     await expect(caller.switchActive({ accountId: -1 })).rejects.toThrow();
   });
 
   it('zod: rejects non-integer accountId', async () => {
     const { ctx } = makeCtx();
-    const caller = accountRouter.createCaller(ctx);
+    const caller = ipAccountsRouter.createCaller(ctx);
     await expect(caller.switchActive({ accountId: 1.5 })).rejects.toThrow();
   });
 });
 
-// ─── step.saveStepData ────────────────────────────────────────────────────────
+// ─── stepData.save (replaces step.saveStepData) ───────────────────────────────
 
-describe('step.saveStepData', () => {
-  it('upserts step data and returns { ok: true }', async () => {
+describe('stepData.save', () => {
+  it('upserts step data and returns { ok: true, data }', async () => {
     const { ctx, tx } = makeCtx();
-    const caller = stepRouter.createCaller(ctx);
-    const result = await caller.saveStepData({ stepKey: 'step-1', inputs: { text: 'hello' } });
-    expect(result).toEqual({ ok: true });
+    const caller = stepDataRouter.createCaller(ctx);
+    const result = await caller.save({ stepKey: 'step1', inputs: { text: 'hello' } });
+    expect(result).toMatchObject({ ok: true });
+    expect(result).toHaveProperty('data');
     expect(tx.stepData.upsert).toHaveBeenCalledOnce();
     const upsertCall = tx.stepData.upsert.mock.calls[0]?.[0] as {
       where: { accountId_stepKey: { accountId: number; stepKey: string } };
       create: { stepKey: string; inputs: unknown; traceId: string | null };
     };
-    expect(upsertCall.where.accountId_stepKey).toMatchObject({ accountId: 1, stepKey: 'step-1' });
+    expect(upsertCall.where.accountId_stepKey).toMatchObject({ accountId: 1, stepKey: 'step1' });
     expect(upsertCall.create.inputs).toEqual({ text: 'hello' });
   });
 
   it('passes traceId from ctx to upsert', async () => {
     const { ctx, tx } = makeCtx();
-    const caller = stepRouter.createCaller(ctx);
-    await caller.saveStepData({ stepKey: 'step-2', inputs: {} });
+    const caller = stepDataRouter.createCaller(ctx);
+    await caller.save({ stepKey: 'step2', inputs: {} });
     const upsertCall = tx.stepData.upsert.mock.calls[0]?.[0] as {
       update: { traceId: string | null };
     };
-    expect(upsertCall.update.traceId).toBe('test-trace-us008');
+    expect(upsertCall.update.traceId).toBe('test-trace-us001-td012');
   });
 
-  it('zod: rejects stepKey longer than 16 chars', async () => {
+  it('zod: rejects empty stepKey', async () => {
     const { ctx } = makeCtx();
-    const caller = stepRouter.createCaller(ctx);
-    await expect(
-      caller.saveStepData({ stepKey: 'this-key-is-too-long-17', inputs: {} }),
-    ).rejects.toThrow();
+    const caller = stepDataRouter.createCaller(ctx);
+    await expect(caller.save({ stepKey: '', inputs: {} })).rejects.toThrow();
   });
 
   it('zod: accepts empty inputs object', async () => {
     const { ctx } = makeCtx();
-    const caller = stepRouter.createCaller(ctx);
-    await expect(caller.saveStepData({ stepKey: 'k', inputs: {} })).resolves.toEqual({ ok: true });
+    const caller = stepDataRouter.createCaller(ctx);
+    await expect(caller.save({ stepKey: 'step3', inputs: {} })).resolves.toMatchObject({ ok: true });
   });
 });
 

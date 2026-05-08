@@ -2,8 +2,7 @@
  * Shared AppRouter type for tRPC client packages — US-006
  * Lives here so apps/web can import it via 'import type' and keep @trpc/server
  * out of the browser bundle. Mirrors apps/api/src/trpc/routers/_app.ts.
- * PRD-2 US-002: adds step, evolution, account shadow routes.
- * PRD-2 US-003: adds ipAccounts, stepData shadow routes.
+ * PRD-3 US-001: removed step/account alias shadow routes (TD-012).
  * TD: replace with TypeScript project references in P1.
  */
 
@@ -77,19 +76,8 @@ const _shadowRouter = _t.router({
       return { ok: false, error: 'unauthenticated' };
     }),
   }),
-  step: _t.router({
-    saveStepData: _t.procedure
-      .input((x: unknown) => x as SaveStepDataInput)
-      .mutation((): { ok: boolean } => ({ ok: true })),
-  }),
   evolution: _t.router({
     getProfile: _t.procedure.query((): EvolutionProfileOutput => null),
-  }),
-  account: _t.router({
-    getActive: _t.procedure.query((): ActiveAccountOutput => null),
-    switchActive: _t.procedure
-      .input((x: unknown) => x as SwitchActiveInput)
-      .mutation((): { ok: boolean } => ({ ok: true })),
   }),
   ipAccounts: _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),

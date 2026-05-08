@@ -647,3 +647,5 @@
 - pkill -f "claude --print" 会误杀 ralph 子进程 · 测试 claude CLI 用 timeout 命令
 - 启动前必 kill 所有 ralph 残留(含 watch-audit-gate.py)+ rm lock + audit-gate
 - 双 daemon 同跑撞 prd.json · 启前 ps aux | grep -E "ralph|watch-audit" 必 0
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-08 11:55 ---

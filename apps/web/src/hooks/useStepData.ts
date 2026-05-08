@@ -14,7 +14,7 @@ import { stepLsKey, pruneLsNamespaces } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
 export function useStepData(accountId: number | null, stepKey: string) {
-  const saveStepData = trpc.step.saveStepData.useMutation();
+  const saveStepData = trpc.stepData.save.useMutation();
 
   const save = useCallback(
     (inputs: Record<string, unknown>): void => {
