@@ -25,6 +25,21 @@
 - Radix DropdownMenuContent 的 list items > ~8 个时 · 必须套 `<ScrollArea className="h-N">`(显式高度) · 否则溢出 dropdown 的 items 不在 viewport · playwright click 56 × retry 30s 后 timeout(error: element is outside of the viewport · scroll into view 失败) · 实测 30+ accounts 命中 · ToolsDropdown 用 h-52 / AccountDropdown US-006 收官时补 h-60
 
 ## 执行日志(按 story 倒序)
+## [2026-05-09 00:15] - US-001 (PRD-4 · BaseSpecialist 抽象 + 五层配置体系)
+- 创建 apps/api/src/specialists/base/types.ts: SpecialistConfig(agentId+五层) + SpecialistRequest<TIn>({accountId,mode?,userInput,traceId?}) + SpecialistResponse<TOut>({result,isFallback,durationMs,tokensUsed,modelUsed,traceId}) + InvokeLLMResult + ILLMGateway + AssembledContext
+- 创建 apps/api/src/specialists/base/errors.ts: SchemaValidationError + LLMTimeoutError + FallbackTriggeredError
+- 创建 apps/api/src/specialists/base/BaseSpecialist.ts: 模板方法 execute() 4步(inputSchema.parse → contextAssembler.assemble → invokeLLM子类实现 → outputSchema.safeParse → writeCostLog) · LLMGateway DI注入 · writeCostLog写7字段(agentId/accountId/traceId/modelUsed/promptTokens/completionTokens/durationMs)
+- 创建 tests/unit/specialists/base.test.ts: 16 tests · 覆盖 input/output schema校验 + 模板4步 + 五层配置完整性 + mock LLMGateway注入 + cost_log 7字段 + 性能(100次<1s)
+- 修改 vitest.config.ts: 添加 zod resolve alias(apps/api/node_modules/zod → root) 解决 root vitest 找不到 zod 问题
+- AC-4/5/6 grep: 0 hits(无循环/无SDK直接import/无model硬编码)
+- pnpm typecheck ✅ · pnpm test 217/217 ✅(+16 新测试)
+- **未来迭代的学习:**
+  - specialists/ 是 PRD-4 新目录 · 与旧 agents/ 并存 · US-002~010 全继承 specialists/base/BaseSpecialist
+  - invokeLLM 是子类 hook · 通过 this.llmGateway.complete() 调用 · 不直接 import SDK
+  - zod 在 apps/api/node_modules 而非 root · root vitest.config.ts 需加 zod alias
+  - contextAssembler.assemble 期望 agentId: SpecialistId(union) · 子类 config.agentId 是 string · 调用时须 as SpecialistId cast
+  - cost_log 7字段: agentId/accountId/traceId/modelUsed/promptTokens/completionTokens/durationMs 全必填
+---
 ## [2026-05-08 12:07] - US-001 (PRD-3 · TD-012 merge + React Router v6 + 34 路由)
 - 删 apps/api/src/trpc/routers/{account,step}.ts(alias routers)
 - _app.ts 移除 step/account import + spread
@@ -879,3 +894,110 @@
 
 --- [PRD-4 START] P3 IP 主流程 9 步 · 18 US · 7 Specialist 真接 LLMGateway · risk=high · at 2026-05-08 23:30 ---
 
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-09 00:04 ---
+
+## [2026-05-09 00:25] - US-001 [Opus audit · APPROVE with TD-012]
+- §0 4 项实测亲跑 · 零回归 217/217 ✓ · typecheck 0 ✓ · 新模型 N/A · SQL N/A
+- AC 11/11 PASS · 通用 4 维度全过(REJ-001/002/003 grep 0 命中)· REJ-003 1 partial hit 是 provider 判断逻辑非 model 硬编码 · 豁免
+- foundation §F1-F4 跨 story 协议核对 · 命名/语义/shared 文件全过
+- 16 unit tests breakdown · input/output schema 4 + 模板 4 步 2 + 五层 2 + DI mock 2 + cost_log 1 + 性能 2 + 错误类 3
+- TD-012 豁免 approve · 双 base 目录冲突(agents/base/ vs specialists/base/) · agents/base/ 是 PRD-2 US-007 历史 stub · LLMGateway 仍 import ModelTier · ralph 用合理 · US-002 实施 ContextAssembler 时统一(services/context-assembler/ + 改 BaseSpecialist import + 删除 ContextAssembler 旧 stub)
+- 影响评估 · 不影响 US-001 功能 · 强制要求 US-002 修(audit 时 grep 检测)
+- **未来迭代的学习**:
+  - PRD-4 协议锁 §1.5 表 A 在写 PRD 时未对照既有代码现状(agents/base/ 已有 stub)· 导致 ralph 实施时撞双路径
+  - foundation 档审计的协议核对要"既有代码现状 + PRD 协议锁双对账" · 不只看 PRD 协议
+  - PRD-2 US-007 LLMGateway 时铺垫 BaseSpecialist + ContextAssembler stub 是合理预实施 · 但下游 PRD 接管时容易产生双路径
+---
+
+
+--- [RALPH] Iteration 1 ended: US-001 (24分钟 21秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-09 00:28 ---
+
+## [2026-05-09 00:47] - US-002 (PRD-4 · ContextAssembler 完整实现)
+- 创建 apps/api/src/services/context-assembler/ContextAssembler.ts: 4 路并行 fetch(Promise.allSettled + 5s timeout) · L2 真实 prisma.stepData.findMany · L4/L5 降级跑空 · MethodologyQueryWorker 真接常量 · 完整 prompt 拼接(§5.5 模板 5 段)
+- 创建 apps/api/src/services/context-assembler/types.ts: AssembleRequest(§6.4 接口) + AssembledContext
+- 创建 apps/api/src/services/context-assembler/templates/{positioning,branding,monetization,topic,video,copywriting,livestream}.ts: 7 Specialist persona + methodology 模板
+- 创建 apps/api/src/services/context-assembler/templates/index.ts: SPECIALIST_TEMPLATES barrel
+- 创建 apps/api/src/workers/methodology-query/index.ts: MethodologyQueryWorker(get/getAll · in-memory · 零 DB)
+- 创建 tests/unit/services/context-assembler.test.ts: 16 tests · 覆盖 4 路 fetch/timeout/降级/cold-start/7agentId/模板/token/metadata/R-001/性能/accountId 隔离
+- pnpm typecheck ✅ · pnpm test 233/233 ✅ (+16 新测试)
+- **未来迭代的学习:**
+  - vi.mock 工厂函数内不能引用 outer scope 变量(hoisting 限制) · 用 vi.mocked(module.method) 在 beforeEach 内设值
+  - ContextAssembler 的 Promise.allSettled 5s timeout 会让 timeout 测试本身需要 8s timeout · vitest 测试要传 { timeout: 8000 } 第三参数
+  - services/context-assembler/ 是 PRD-4 新目录 · 与旧 agents/base/ContextAssembler.ts 并存(后者是 PRD-1 stub) · US-003+ Specialist 引用新路径
+  - R-001 grep 扫的是源码文件 · 注释里也不能出现 BASE_LLM_URL/LLM_API_KEY/sk- 字样(否则 grep 命中 fail)
+  - MethodologyQueryWorker 读 in-memory 常量(无 DB) · 不需要 mock · 测试自然穿透
+  - prisma.stepData.findMany 必须带 where: { accountId } · 反例 REJ-008 已验证(accountId 隔离测试通过)
+---
+
+--- [RALPH] Iteration 2 ended: US-002 (29分钟 32秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-09 00:58 ---
+
+## [2026-05-09 01:10] - US-002 (PRD-4 · ContextAssembler 完整实现 · TD-012 修复迭代)
+- 修复 Opus 驳回 4 项(retryCount=1 → 修完重提):
+  1. specialists/base/BaseSpecialist.ts:15 import 路径改 agents/base/ → services/context-assembler/
+  2. rm apps/api/src/agents/base/ContextAssembler.ts (PRD-2 stub 彻底删除)
+  3. tests/unit/specialists/base.test.ts: vi.mock + dynamic import 路径同步
+  4. tests/unit/agents/base.test.ts: 移除 assembleStep stub 测试(方法已从实现移除)
+- 额外修复: services/context-assembler/types.ts needRag/needLayers → readonly string[]
+- 额外修复: agents/base/BaseSpecialist.ts import 路径更新 + AssembledContext 类型转换
+- 验证全通: grep 0 命中 · ls No such file · pnpm typecheck 6ws 0 err · 232 tests pass
+- 更改文件:
+  - apps/api/src/specialists/base/BaseSpecialist.ts (import 路径)
+  - apps/api/src/agents/base/BaseSpecialist.ts (import + 类型转换)
+  - apps/api/src/agents/base/ContextAssembler.ts (deleted)
+  - apps/api/src/services/context-assembler/types.ts (needRag/needLayers 宽化)
+  - tests/unit/specialists/base.test.ts (mock 路径)
+  - tests/unit/agents/base.test.ts (import + assembleStep 测试移除)
+- **未来迭代的学习:**
+  - 删旧 stub 时必须同时检查所有引用该 stub 的文件(tests/ 和其他 src/)
+  - 类型放宽: 新实现严格 union 类型 vs 旧 stub readonly string[] → 选 readonly string[] 更安全
+  - "死代码"文件在 monorepo 里仍然参与 typecheck · 删依赖前必须检查 dead code 引用
+---
+
+## [2026-05-09 01:18] - US-002 [Opus audit · APPROVE retry 1]
+- §0 4 项实测亲跑 · 零回归 232/232 ✓ (1 减少是删除 agents/base/ContextAssembler.ts 时连带删 assembleStep stub test) · typecheck 6 ws 0 error · 新模型 N/A · SQL N/A
+- AC 11/11 PASS · 通用 4 维度全过
+- ContextAssembler 实施 170 行 · 对齐 ARCHITECTURE §6.4 · 4 路并行 Promise.allSettled · 各路 withTimeout(5s) · L4 Profile/L4 Samples/L5 RAG 降级跑空 · L2 stepData 真接 + 常量真接 methodologyQueryWorker
+- D-020 (4 路并行 + 5s timeout + 降级) ✓ · D-025 (RAG 降级跑空) ✓
+- foundation §F1-F4 跨 story 协议核对 · 命名/接口/shared 文件/SQL RLS 全过
+- 16 unit tests · context-assembler.test.ts(218 行)
+- 7 Specialist 模板片段 · positioning/branding/monetization/topic/video/copywriting/livestream/index
+- methodology-query/index.ts 41 行 · PRD-2 stub 升级
+- TD-012 closed (US-001 audit 登记 → US-002 retry 1 修复闭环) · agents/base/ContextAssembler.ts 已删 · 双 ContextAssembler 协议漂移已治理
+- **未来迭代的学习**:
+  - foundation 档审计的 reject feedback 必含具体反例 + 验证命令 · ralph 才能精准修复(retry 1 对 TD-012 4 项全修)
+  - 协议锁修复一次 reject 即闭环 · 比 PRD-3 US-006 viewport overflow 12 iter 高效
+  - ralph 在收到精确 reject feedback 时 · 一轮即修(从 retry 0 直接到完整修)
+---
+
+
+--- [RALPH] Iteration 3 ended: US-002 (21分钟 6秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-09 01:19 ---
+
+## [2026-05-09 01:35] - US-003 (PRD-4 · LLMGateway 集成 BaseSpecialist + zod 校验 + cost_log 写入)
+- 更新 apps/api/src/specialists/base/errors.ts: SchemaValidationError 接受 ZodError|string + llmRawOutput(向后兼容)
+- 更新 apps/api/src/specialists/base/types.ts: SpecialistRequest 加 stepKey?; LLMCompleteRequest 加 responseFormat? + retry?
+- 重构 apps/api/src/specialists/base/BaseSpecialist.ts:
+  · 用 generateSpecialistTraceId(@/agents/base/types) 替换私有 _generateTraceId(AC-5)
+  · schema 校验失败 → retry invokeLLM 1 次 → 二次失败 throw SchemaValidationError(zodError, llmRawOutput)(AC-3)
+  · catch AbortError from invokeLLM → throw LLMTimeoutError(agentId, timeout_ms)(AC-6)
+  · cost_log callType='specialist_call' + target jsonb{stepKey,agentId}(AC-4) · 失败不crash(AC-8)
+- 更新 apps/api/src/workers/llm-gateway/anthropic-provider.ts: responseFormat:json_schema → tool_use mode(AC-2)
+- 更新 apps/api/src/workers/llm-gateway/openai-provider.ts: responseFormat:json_schema → json_object mode + JSON.parse(AC-2)
+- 更新 prisma/schema.prisma: CostLog 加 target Json? @map("target") 字段
+- 创建 prisma/migrations/20260509000000_add_cost_log_target/migration.sql + ALTER TABLE applied to quanqn+quanqn_test
+- 创建 tests/unit/specialists/base.llm.test.ts: 8 tests(schema retry/timeout→LLMTimeoutError/traceId pattern/cost_log target/responseFormat)
+- 创建 tests/integration/api/specialist-llm.test.ts: 1 test(nock tool_use + real DB cost_log 查 SQL)
+- pnpm typecheck ✅ · pnpm test 241/241 ✅(+9 新测试)
+- **未来迭代的学习:**
+  - vi.mock factory 引用外部变量必须用 vi.hoisted() — "Cannot access X before initialization"(Codebase Patterns 已记录)
+  - Anthropic SDK tool_use input_schema 必须有 type: 'object' 字符串字面量 — Record<string,unknown> 不满足 InputSchema 类型约束
+  - LLMGateway.complete 内部同时写两次 cost_log: gateway 自身 cost-logger(userId必须有效) + BaseSpecialist._writeCostLog(accountId有效即可). 集成测试只需保证 accountId FK 满足即可
+  - Anthropic tool_use 响应中 stop_reason='tool_use' · parseAnthropicResponse 需检查 content[].type='tool_use' 提取 .input 对象
+  - vi.hoisted 已经是 Codebase Pattern，不重复添加
+---
