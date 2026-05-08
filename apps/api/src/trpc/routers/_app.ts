@@ -4,6 +4,7 @@
  * PRD-2 US-002: adds step, evolution, account routers (LS↔DB dual-write foundation)
  * PRD-2 US-003: adds ipAccounts, stepData routers (full CRUD + RLS procedures)
  * PRD-2 US-004: adds 5 Specialist mock routers (copywriting/videoAnalysis/videoProduction/boomGenerate/monetization)
+ * PRD-2 US-005: adds 4 Specialist mock routers (privateDomain/diagnosis/deepLearning) + extends evolution
  */
 
 import { router } from '@/trpc/trpc';
@@ -18,6 +19,9 @@ import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
 import { videoProductionRouter } from '@/trpc/routers/videoProduction';
 import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
 import { monetizationRouter } from '@/trpc/routers/monetization';
+import { privateDomainRouter } from '@/trpc/routers/privateDomain';
+import { diagnosisRouter } from '@/trpc/routers/diagnosis';
+import { deepLearningRouter } from '@/trpc/routers/deepLearning';
 
 export const appRouter = router({
   auth: authRouter,
@@ -31,6 +35,9 @@ export const appRouter = router({
   videoProduction: videoProductionRouter,
   boomGenerate: boomGenerateRouter,
   monetization: monetizationRouter,
+  privateDomain: privateDomainRouter,
+  diagnosis: diagnosisRouter,
+  deepLearning: deepLearningRouter,
 });
 
 export type AppRouter = typeof appRouter;
