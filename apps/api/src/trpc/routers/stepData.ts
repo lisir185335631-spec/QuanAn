@@ -16,6 +16,7 @@ import { positioningAgent } from '@/specialists/PositioningAgent';
 import { brandingAgent } from '@/specialists/BrandingAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
+import { videoAgent } from '@/specialists/VideoAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -173,6 +174,32 @@ export const stepDataRouter = router({
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
             agentId: 'MonetizationAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
+
+      // AC-4(US-008): call VideoAgent for step6 (shooting mode)
+      if (input.stepKey === 'step6') {
+        const agentRes = await videoAgent.execute({
+          accountId: activeAccountId!,
+          mode: 'shooting',
+          userInput: input.inputs,
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        const updatedRow = await prisma.stepData.update({
+          where: {
+            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+          },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'VideoAgent',
           },
           select: STEP_DATA_SELECT,
         });
