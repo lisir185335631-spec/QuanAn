@@ -39,6 +39,7 @@ const STEP_DATA_SELECT = {
   stepKey: true,
   inputs: true,
   result: true,
+  isFallback: true,
   version: true,
   updatedAt: true,
 } satisfies Prisma.StepDataSelect;

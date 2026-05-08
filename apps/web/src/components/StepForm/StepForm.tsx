@@ -59,11 +59,12 @@ interface StepFormProps {
   stepKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: ZodTypeAny;
+  onSuccess?: (payload: { result: unknown; isFallback: boolean }) => void;
 }
 
 // ── StepForm ──────────────────────────────────────────────────────────────────
 
-export function StepForm({ stepKey, schema }: StepFormProps) {
+export function StepForm({ stepKey, schema, onSuccess }: StepFormProps) {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
@@ -97,9 +98,13 @@ export function StepForm({ stepKey, schema }: StepFormProps) {
     }
 
     try {
-      await saveMutation.mutateAsync({ stepKey, inputs: data });
+      const res = await saveMutation.mutateAsync({ stepKey, inputs: data });
       if (!abortRef.current.signal.aborted) {
-        setSubmitted(true);
+        if (onSuccess) {
+          onSuccess({ result: res.data.result, isFallback: res.data.isFallback });
+        } else {
+          setSubmitted(true);
+        }
       }
     } catch {
       if (!abortRef.current.signal.aborted) {

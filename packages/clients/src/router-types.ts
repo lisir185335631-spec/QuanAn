@@ -53,6 +53,7 @@ export type StepDataOutput = {
   stepKey: string;
   inputs: Record<string, unknown>;
   result: Record<string, unknown> | null;
+  isFallback: boolean;
   version: number;
   updatedAt: string;
 } | null;
@@ -177,7 +178,7 @@ const _shadowRouter = _t.router({
       .input((x: unknown) => x as SaveStepDataInput)
       .mutation((): { ok: boolean; data: NonNullable<StepDataOutput> } => ({
         ok: true,
-        data: { stepKey: '', inputs: {}, result: null, version: 0, updatedAt: '' },
+        data: { stepKey: '', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
       })),
     progress: _t.procedure.query((): StepProgressOutput => ({
       completed: 0,
