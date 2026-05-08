@@ -13,6 +13,7 @@ import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { positioningAgent } from '@/specialists/PositioningAgent';
 import { brandingAgent } from '@/specialists/BrandingAgent';
+import { monetizationAgent } from '@/specialists/MonetizationAgent';
 
 const STEP_KEYS = [
   'step1',
@@ -145,6 +146,31 @@ export const stepDataRouter = router({
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
             agentId: 'BrandingAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
+
+      // AC-3(US-006): call MonetizationAgent for step4b
+      if (input.stepKey === 'step4b') {
+        const agentRes = await monetizationAgent.execute({
+          accountId: activeAccountId!,
+          userInput: input.inputs,
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        const updatedRow = await prisma.stepData.update({
+          where: {
+            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
+          },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'MonetizationAgent',
           },
           select: STEP_DATA_SELECT,
         });
