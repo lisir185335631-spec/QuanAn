@@ -12,6 +12,7 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { getProgress } from '@/services/ip-progress/IPProgressService';
 import { positioningAgent } from '@/specialists/PositioningAgent';
 import { brandingAgent } from '@/specialists/BrandingAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
@@ -19,18 +20,6 @@ import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
 import { videoAgent } from '@/specialists/VideoAgent';
 import { copywritingAgent } from '@/specialists/CopywritingAgent';
 import { livestreamAgent } from '@/specialists/LivestreamAgent';
-
-const STEP_KEYS = [
-  'step1',
-  'step3',
-  'step3b',
-  'step4',
-  'step4b',
-  'step5',
-  'step6',
-  'step7',
-  'step8',
-] as const;
 
 /** Accepts any string key — allows e2e tests to use arbitrary keys; RLS handles isolation */
 const stepKeySchema = z.string().min(1).max(64);
@@ -367,16 +356,12 @@ export const stepDataRouter = router({
       }
     }),
 
-  /** Returns completion progress: how many of the 9 steps have data for the current account */
-  progress: protectedProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
-    // ✅ No where:{accountId} — RLS auto-filters
-    const rows = await prisma.stepData.findMany({
-      select: { stepKey: true },
-    });
-    const completedKeys = new Set(rows.map((r) => r.stepKey));
-    const total = STEP_KEYS.length;
-    const completed = STEP_KEYS.filter((k) => completedKeys.has(k)).length;
-    return { completed, total, completedKeys: [...completedKeys] };
-  }),
+  /**
+   * US-013: Returns true completion progress — only status='completed' stepData rows count.
+   * step2 永远不计入(STEP_KEYS_9 不含 step2).
+   * protectedProcedure ensures RLS + activeAccountId; explicit accountId is belt-and-suspenders.
+   */
+  progress: protectedProcedure.query(({ ctx }) =>
+    getProgress(ctx.prisma, ctx.activeAccountId!)
+  ),
 });

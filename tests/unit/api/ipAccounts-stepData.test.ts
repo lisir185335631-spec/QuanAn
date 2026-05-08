@@ -262,7 +262,7 @@ describe('stepData.progress', () => {
     const result = await caller.progress();
     expect(result.total).toBe(9);
     expect(result.completed).toBe(3);
-    expect(result.completedKeys).toContain('step1');
+    expect(result.completedSteps).toContain('step1');
   });
 
   it('returns zero completed when no step data exists', async () => {

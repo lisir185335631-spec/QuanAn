@@ -61,7 +61,7 @@ export type StepDataOutput = {
 export type StepProgressOutput = {
   completed: number;
   total: number;
-  completedKeys: string[];
+  completedSteps: string[];
 };
 
 export type IpAccountSwitchOutput = { ok: boolean; activeAccountId: number };
@@ -183,7 +183,7 @@ const _shadowRouter = _t.router({
     progress: _t.procedure.query((): StepProgressOutput => ({
       completed: 0,
       total: 9,
-      completedKeys: [],
+      completedSteps: [],
     })),
   }),
   costLog: _t.router({

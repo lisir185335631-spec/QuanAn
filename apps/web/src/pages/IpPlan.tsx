@@ -26,7 +26,7 @@ export default function IpPlan() {
         <StepProgress completedSteps={[]} isLoading={false} />
       ) : (
         <StepProgress
-          completedSteps={progress?.completedKeys ?? []}
+          completedSteps={progress?.completedSteps ?? []}
           isLoading={isLoading}
         />
       )}

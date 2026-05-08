@@ -1,106 +1,99 @@
 /**
- * ip-progress.test.ts — PRD-3 US-005 · AC-8
- * IPProgressService unit tests
+ * ip-progress.test.ts — US-013
+ * getProgress unit tests: 0/9 · 3/9 · 9/9 · account isolation · status filter
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { PrismaClient } from '@prisma/client';
 
-// Mock prisma before importing the service
-vi.mock('@/lib/prisma', () => ({
-  prisma: {
+import { getProgress, STEP_KEYS_9 } from '@/services/ip-progress/IPProgressService';
+
+function makePrismaMock(rows: { stepKey: string }[]) {
+  return {
     stepData: {
-      findMany: vi.fn(),
+      findMany: vi.fn().mockResolvedValue(rows),
     },
-  },
-}));
+  } as unknown as PrismaClient;
+}
 
-import { prisma } from '@/lib/prisma';
-import { ipProgressService } from '@/agents/base/IPProgressService';
-
-const mockFindMany = prisma.stepData.findMany as ReturnType<typeof vi.fn>;
-
-describe('IPProgressService.progress', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
+describe('getProgress', () => {
   it('returns 0/9 with empty completedSteps when no stepData rows exist', async () => {
-    mockFindMany.mockResolvedValue([]);
-
-    const result = await ipProgressService.progress(42);
+    const prisma = makePrismaMock([]);
+    const result = await getProgress(prisma, 42);
 
     expect(result.completed).toBe(0);
     expect(result.total).toBe(9);
-    expect(result.percentage).toBe(0);
     expect(result.completedSteps).toHaveLength(0);
-    expect(result.pendingSteps).toHaveLength(9);
-    expect(result.nextStep).not.toBeNull();
-    expect(result.nextStep?.key).toBe('step1');
   });
 
-  it('correctly counts completed steps from DB rows', async () => {
-    mockFindMany.mockResolvedValue([
+  it('returns 3/9 when 3 completed-status rows returned', async () => {
+    const prisma = makePrismaMock([
       { stepKey: 'step1' },
       { stepKey: 'step3' },
       { stepKey: 'step5' },
     ]);
-
-    const result = await ipProgressService.progress(1);
+    const result = await getProgress(prisma, 1);
 
     expect(result.completed).toBe(3);
-    expect(result.percentage).toBe(33);
+    expect(result.total).toBe(9);
     expect(result.completedSteps).toContain('step1');
     expect(result.completedSteps).toContain('step3');
     expect(result.completedSteps).toContain('step5');
   });
 
-  it('sets nextStep to first incomplete step', async () => {
-    mockFindMany.mockResolvedValue([{ stepKey: 'step1' }, { stepKey: 'step3' }]);
-
-    const result = await ipProgressService.progress(1);
-
-    // step1 and step3 done → step3b is next
-    expect(result.nextStep?.key).toBe('step3b');
-  });
-
-  it('returns nextStep=null when all 9 steps completed', async () => {
-    mockFindMany.mockResolvedValue([
-      { stepKey: 'step1' },
-      { stepKey: 'step3' },
-      { stepKey: 'step3b' },
-      { stepKey: 'step4' },
-      { stepKey: 'step4b' },
-      { stepKey: 'step5' },
-      { stepKey: 'step6' },
-      { stepKey: 'step7' },
-      { stepKey: 'step8' },
-    ]);
-
-    const result = await ipProgressService.progress(1);
+  it('returns 9/9 when all 9 steps completed', async () => {
+    const allSteps = [...STEP_KEYS_9].map((key) => ({ stepKey: key }));
+    const prisma = makePrismaMock(allSteps);
+    const result = await getProgress(prisma, 7);
 
     expect(result.completed).toBe(9);
-    expect(result.percentage).toBe(100);
-    expect(result.nextStep).toBeNull();
-    expect(result.pendingSteps).toHaveLength(0);
+    expect(result.total).toBe(9);
+    expect(result.completedSteps).toHaveLength(9);
   });
 
-  it('ignores unknown stepKeys (not in STEPS constant)', async () => {
-    mockFindMany.mockResolvedValue([{ stepKey: 'step1' }, { stepKey: 'unknown-key' }]);
+  it('passes correct accountId for account isolation', async () => {
+    const prisma = makePrismaMock([]);
+    await getProgress(prisma, 99);
 
-    const result = await ipProgressService.progress(1);
-
-    // Only step1 counted — unknown-key ignored
-    expect(result.completed).toBe(1);
+    expect(prisma.stepData.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ accountId: 99 }) })
+    );
   });
 
-  it('queries DB with correct accountId', async () => {
-    mockFindMany.mockResolvedValue([]);
+  it('queries only status=completed rows (belt-and-suspenders beyond RLS)', async () => {
+    const prisma = makePrismaMock([]);
+    await getProgress(prisma, 1);
 
-    await ipProgressService.progress(99);
+    expect(prisma.stepData.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ status: 'completed' }),
+      })
+    );
+  });
 
-    expect(mockFindMany).toHaveBeenCalledWith({
-      where: { accountId: 99 },
-      select: { stepKey: true },
-    });
+  it('queries only STEP_KEYS_9 (step2 excluded)', async () => {
+    const prisma = makePrismaMock([]);
+    await getProgress(prisma, 1);
+
+    const call = (prisma.stepData.findMany as ReturnType<typeof vi.fn>).mock.calls[0]![0];
+    expect(call.where.stepKey.in).toHaveLength(9);
+    expect(call.where.stepKey.in).not.toContain('step2');
+  });
+
+  it('switching account ID returns independent progress', async () => {
+    const prismaA = makePrismaMock([{ stepKey: 'step1' }]);
+    const prismaB = makePrismaMock([]);
+
+    const resultA = await getProgress(prismaA, 10);
+    const resultB = await getProgress(prismaB, 20);
+
+    expect(resultA.completed).toBe(1);
+    expect(resultB.completed).toBe(0);
+    expect(prismaA.stepData.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ accountId: 10 }) })
+    );
+    expect(prismaB.stepData.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ accountId: 20 }) })
+    );
   });
 });
