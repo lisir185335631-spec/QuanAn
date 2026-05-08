@@ -6,4 +6,5 @@
 //
 // 注意 · barrel export 会触发 tree-shaking 风险 · 后续 P1 实施期可拆细 · 当前 P0 占位
 
-export {};
+export * from './entities/ipAccount.schema';
+export * from './entities/stepData.schema';
