@@ -11,8 +11,7 @@ import {
   TOPIC_CATEGORIES,
   type TopicCategory,
 } from '@/specialists/TopicAgent';
-import { SchemaValidationError } from '@/specialists/base/errors';
-import type { ILLMGateway, InvokeLLMResult, LLMStreamChunk } from '@/specialists/base/types';
+import type { ILLMGateway, LLMStreamChunk } from '@/specialists/base/types';
 
 // ── Hoisted shared state ───────────────────────────────────────────────────────
 
@@ -113,16 +112,19 @@ describe('TopicAgent', () => {
     },
   );
 
-  // Edge: 断流 → JSON.parse 失败 → BaseSpecialist retry → second stream also broken → SchemaValidationError
-  it('edge: 断流(incomplete JSON) → retry → SchemaValidationError on second failure', async () => {
-    // Both attempts yield partial JSON
+  // Edge: 断流 → JSON.parse 失败 → BaseSpecialist retry → second stream also broken → fallback (US-015)
+  it('edge: 断流(incomplete JSON) → retry → fallback (US-015)', async () => {
+    // Both attempts yield partial JSON → schema fails → fallback path triggered (AC-1 US-015)
     const agent = new TopicAgent(makeErrorStreamGateway());
-    await expect(agent.execute({ ...BASE_REQ, userInput: { category: 'traffic' } })).rejects.toThrow();
+    const res = await agent.execute({ ...BASE_REQ, userInput: { category: 'traffic' } });
+    expect(res.isFallback).toBe(true);
+    expect(TopicOutputSchema.safeParse(res.result).success).toBe(true);
+    expect(res.result.topics).toHaveLength(20);
   });
 
-  // Edge: length 失败(19 条) → outputSchema.safeParse fails → retry → second also 19 → SchemaValidationError
-  it('edge: topics length=19 → zod length(20) 失败 → retry → SchemaValidationError', async () => {
-    // First call: 19 topics. Second call (retry): also 19 topics.
+  // Edge: length 失败(19 条) → outputSchema.safeParse fails → retry → second also 19 → fallback (US-015)
+  it('edge: topics length=19 → zod length(20) 失败 → retry → fallback (US-015)', async () => {
+    // First call: 19 topics. Second call (retry): also 19 topics → fallback path triggered (AC-1 US-015)
     let callIdx = 0;
     const gateway: ILLMGateway = {
       complete: vi.fn() as unknown as ILLMGateway['complete'],
@@ -134,9 +136,10 @@ describe('TopicAgent', () => {
       }),
     };
     const agent = new TopicAgent(gateway);
-    await expect(
-      agent.execute({ ...BASE_REQ, userInput: { category: 'traffic' } }),
-    ).rejects.toBeInstanceOf(SchemaValidationError);
+    const res = await agent.execute({ ...BASE_REQ, userInput: { category: 'traffic' } });
+    expect(res.isFallback).toBe(true);
+    expect(TopicOutputSchema.safeParse(res.result).success).toBe(true);
+    expect(res.result.topics).toHaveLength(20);
   });
 
   // AC-3 / D-019: modelUsed captured from stream meta chunk — not hardcoded

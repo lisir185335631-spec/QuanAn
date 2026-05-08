@@ -145,10 +145,38 @@ const TOPIC_CONFIG: SpecialistConfig = {
 
 // ── TopicAgent ─────────────────────────────────────────────────────────────────
 
+// Helper to generate 20 placeholder topics for a given category label
+function _makeFallbackTopics(label: string): Array<{
+  title: string;
+  hook: string;
+  structure: string;
+  formula: string;
+  viralPotential: 'low' | 'medium' | 'high';
+}> {
+  return Array.from({ length: 20 }, (_, i) => ({
+    title: `${label}系列选题 ${i + 1}（系统繁忙备用内容，请稍后重试）`,
+    hook: '系统繁忙，请稍后重试以获取 AI 精准生成的爆款选题钩子文案',
+    structure: '吸引注意力→建立共鸣→提供价值→引导行动',
+    formula: '通用内容爆款公式',
+    viralPotential: 'medium' as const,
+  }));
+}
+
 export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
   readonly config: SpecialistConfig = TOPIC_CONFIG;
   readonly inputSchema = TopicInputSchema;
   readonly outputSchema = TopicOutputSchema;
+
+  // US-015 AC-2: fallback templates for all 5 categories · 20 topics each
+  // 'default' used when req.mode is undefined (e.g. TopicAgent routes category via userInput not mode)
+  static override readonly fallbackTemplate = {
+    traffic: { category: 'traffic' as const, topics: _makeFallbackTopics('流量') },
+    monetize: { category: 'monetize' as const, topics: _makeFallbackTopics('变现') },
+    persona: { category: 'persona' as const, topics: _makeFallbackTopics('人设') },
+    cognition: { category: 'cognition' as const, topics: _makeFallbackTopics('认知') },
+    case: { category: 'case' as const, topics: _makeFallbackTopics('案例') },
+    default: { category: 'traffic' as const, topics: _makeFallbackTopics('流量') },
+  } satisfies Record<string, TopicOutput>;
 
   constructor(gateway?: ILLMGateway) {
     super(gateway);

@@ -94,6 +94,16 @@ export class LivestreamAgent extends BaseSpecialist<LivestreamInput, LivestreamO
   readonly inputSchema = LivestreamInputSchema;
   readonly outputSchema = LivestreamOutputSchema;
 
+  // US-015 AC-2: fallback template (single mode → 'default' key)
+  static override readonly fallbackTemplate = {
+    default: {
+      lastResult:
+        '欢迎来到我的直播间！今天我们来聊一个很多人都关心的话题——如何在内容创作领域实现稳定变现。不管你现在有多少粉丝，只要你找对了方法，变现其实没有你想象中那么难。今天我会分享三个关键步骤帮助你建立自己的变现体系。第一步是明确你的 IP 定位，第二步是持续输出有价值的原创内容，第三步是搭建私域流量池沉淀忠实用户。每一步都至关重要，缺一不可。请大家先给我扣个 1，让我知道你们都在认真听！今天的分享干货满满，记得收藏。系统繁忙，此为备用话术，请稍后重试以获取针对您 IP 定位的个性化直播话术内容。',
+      lastOptimizedResult:
+        '各位宝子们好！今天直播间来了好多新朋友，超级欢迎大家！你们知道吗，其实粉丝变收入这件事没有你想的那么难，关键是找到对的方法！给我扣个对！好，今天我就手把手教你三招让你的账号从 0 到稳定变现——第一招精准定位，第二招持续输出，第三招私域沉淀，环环相扣，缺一不可！这些都是我亲测有效的实战经验，不是纸上谈兵！想要完整的方法论记得关注我，我会持续更新更多干货内容！系统繁忙，此为备用话术，请稍后重试以获取个性化内容。',
+    } satisfies LivestreamOutput,
+  };
+
   constructor(gateway?: ILLMGateway) {
     super(gateway);
   }
