@@ -19,8 +19,8 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
-      "notes": "medium · 路由 config 是 PRD-3 基础 · TD-012 顺带清",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -55,10 +55,12 @@
         "Typecheck passes",
         "Tests pass · ≥ 5 unit(关键页渲染)"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 2,
-      "passes": false,
-      "notes": "medium · 23 页 page 占位 · 简单",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -92,10 +94,12 @@
         "Typecheck passes",
         "Tests pass · ≥ 3 unit(关键页渲染)"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 3,
-      "passes": false,
-      "notes": "medium · 9 页占位",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -132,10 +136,12 @@
         "Typecheck passes",
         "Tests pass · 1 e2e 切账号正确"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 4,
-      "passes": false,
-      "notes": "medium · 关键路径(ARCHITECTURE 风险点 · 多账号 reload 副作用)",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -172,10 +178,12 @@
         "Typecheck passes",
         "Tests pass · ≥ 4 unit(IPProgressService + 进度条组件)"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 5,
-      "passes": false,
-      "notes": "medium · IPProgressService 已 PRD-1 stub · 完整实施",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -209,10 +217,16 @@
         "Typecheck passes",
         "Tests pass(全套)"
       ],
-      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005"],
+      "depends_on": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005"
+      ],
       "priority": 6,
-      "passes": false,
-      "notes": "medium · PRD-3 收官 e2e + lint cleanup",
+      "passes": true,
+      "notes": "[Opus 接管修复 + APPROVE] 2026-05-08 20:30\n根因: AccountDropdown 漏 ScrollArea, DB 30+ accounts 时新建账号 viewport 外, playwright click 56 retry 后 timeout 30s. 之前 prd.json notes / manifest 推测的 mutation/reload 问题是误判.\n修复: apps/web/src/components/Header.tsx AccountDropdown 套 ScrollArea h-60 (与 ToolsDropdown 同模式).\n实测验证 (commit dbdfecd 后):\n  ✓ AC-1: routes-34.spec.ts 33+33 全过 (chromium+mobile)\n  ✓ AC-2: ip-plan.spec.ts 全过 (chromium+mobile, 0/9 显示 + 切账号 fetch + feedback button)\n  ✓ AC-3: feedback-button.spec.ts 4+4 全过 (chromium+mobile)\n  ✓ AC-4: vitest 201/201 passed (>= 200 ✓)\n  ✓ AC-5: playwright 100/100 pass (22.3s, 含 PRD-2 4 + PRD-3 4 + 其他 = 8+)\n  ✓ AC-6: pnpm typecheck 6 ws 0 error\n  ✓ AC-7: pnpm --filter @quanqn/web lint 0 warnings (max-warnings=0)\n  ✓ AC-8: Typecheck passes\n  ✓ AC-9: Tests pass 全套\n失败历史 (供 retro):\n  - retry 1-2: validator 跑 e2e 失败但误判 mutation/reload (实际是 viewport overflow)\n  - retry 3-5: Anthropic API ECONNRESET, dev iter 没真正跑, retryCount 因网络故障被错误消耗 → blocked\n  - 决策: Opus 主对话接管, 复现 + 修代码 + 验证 + commit + audit 一气呵成\nAudit (Opus, medium risk):\n  · §0 4 项实测: vitest 201/201 ✓ · typecheck 0 ✓ · 无新模型 import (N/A) · 无 SQL 约束 (N/A)\n  · 通用 4 维度: AC 9/9 通过 · AGENTS LD 0 命中 · 无安全风险 · PRD 一致 (修的就是 PRD-3 US-004 ScrollArea 缺陷, 让 US-006 e2e 收官)\n  · 风险: 无. ScrollArea h-60 在 N=1-8 时空旷 (预期可改 max-h, 但 ToolsDropdown 同模式无投诉, 留 TD 给 PRD-4 优化)\n  · 结论: APPROVE",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
