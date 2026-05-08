@@ -669,3 +669,25 @@
 - 双 daemon 同跑撞 prd.json · 启前 ps aux | grep -E "ralph|watch-audit" 必 0
 
 --- [RALPH] Iteration 1 started: US-001 at 2026-05-08 11:55 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (20分钟 26秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-08 12:15 ---
+
+## [2026-05-08 12:27] - US-002 (PRD-3 · 9 step 页 + 14 工具页占位)
+- 新增 apps/web/src/components/ui/card.tsx: shadcn Card/CardHeader/CardContent/CardFooter/CardTitle/CardDescription
+- 新增 apps/web/src/lib/stepConfig.ts: Map<stepKey, {title, description, phase}> 9 个 step 静态配置
+- 新增 apps/web/src/components/ErrorBoundary.tsx: React class ErrorBoundary + Aurelian Dark fallback UI + 重置按钮
+- 更新 9 step 页(Step1/3/3b/4/4b/5/6/7/8): Card + stepConfig.get(stepKey) 动态标题/描述/阶段 badge
+- 更新 14 工具页: 全部升级为 Card + shadcn tokens 占位卡片(零 hex 颜色)
+- 新增 apps/web/src/pages/tools/index.ts: 14 工具页 barrel export
+- 新增 apps/web/vitest.config.ts: web 专属 jsdom 测试环境 + @/ 路径别名
+- 新增 apps/web/src/test/setup.ts + pages.test.tsx: 11 unit tests
+- 更新 apps/web/package.json: test 脚本 + vitest/testing-library devDeps
+- typecheck ✅ · 11/11 tests ✅ · zero hex colors ✅
+- **未来迭代的学习:**
+  - React class component 中 getDerivedStateFromError 是 static 方法，不加 override；componentDidCatch 和 render 是实例方法，需加 override
+  - Web package 需要独立 vitest.config.ts(jsdom env + @/ alias)，不能复用根级 vitest.config.ts(指向 api/src)
+  - @testing-library/jest-dom v6 与 vitest 兼容，直接在 setup.ts import 即可，无需额外配置
+  - 工具页 index.ts barrel export 便于 Validator 扫描导出是否完整
+---
