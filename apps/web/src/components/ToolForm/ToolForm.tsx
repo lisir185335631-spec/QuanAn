@@ -37,11 +37,12 @@ interface ToolFormProps {
   onSubmit: (data: Record<string, unknown>) => Promise<unknown>;
   onSuccess?: (result: unknown) => void;
   defaultValues?: Record<string, unknown>;
+  submitLabel?: string;
 }
 
 // ── ToolForm ──────────────────────────────────────────────────────────────────
 
-export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues }: ToolFormProps) {
+export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, submitLabel }: ToolFormProps) {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
@@ -122,7 +123,7 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues }
         disabled={isPending}
         className="w-full sm:w-auto"
       >
-        {isPending ? '生成中…' : '开始生成'}
+        {isPending ? '生成中…' : (submitLabel ?? '开始生成')}
       </Button>
     </form>
   );
