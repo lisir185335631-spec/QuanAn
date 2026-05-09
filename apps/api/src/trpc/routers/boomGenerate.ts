@@ -1,47 +1,104 @@
 /**
- * boomGenerate router — PRD-2 US-004
- * AC-4: 1 procedure (generate) · mock
- * AC-7: mutation writes History row with trace_id
- * AC-8: no LLM call — CopywritingAgent(boom mode) 留 PRD-3+
- * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
+ * boomGenerate router — PRD-5 US-005
+ * AC-1: generate · protectedProcedure · 调 copywritingAgent.execute({ mode: 'boom', userInput })
+ * AC-2: history.create · content=candidates.join('\n\n---\n\n')(D-032) · full fields
+ * AC-5: elements 空 → "elements 至少 1 项" · elements > 8 → "elements 最多 8 项"
+ * AC-7: cost_log 由 BaseSpecialist 自动写入(eventType="specialist_call" · target.agentMode="boom")
+ * AC-8: industry 未提供 → 从 DB 读 activeAccount.industry
  */
 
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { copywritingAgent, type BoomOutput } from '@/specialists/CopywritingAgent';
+
+// ── Input schema ──────────────────────────────────────────────────────────────
+
+const HOT_ELEMENT_ENUM = [
+  'greed', 'fear', 'curiosity', 'contrast',
+  'resonance', 'empathy', 'social_proof', 'authority', 'leverage', 'worst',
+  'reveal', 'controversy', 'challenge', 'transformation', 'anger', 'surprise',
+  'trend', 'list', 'scarcity', 'small_big', 'low_cost_high', 'low_cost_unknown',
+] as const;
 
 const generateBoomInput = z.object({
-  stepKey: z.string().min(1).max(64),
-  theme: z.string().max(64).optional(),
-  tone: z.string().max(32).optional(),
-  context: z.record(z.unknown()).optional(),
+  elements: z
+    .array(z.enum(HOT_ELEMENT_ENUM))
+    .min(1, 'elements 至少 1 项')
+    .max(8, 'elements 最多 8 项'),
+  industry: z.string().max(64).optional(),
+  theme: z.string().max(200).optional(),
 });
 
-const HISTORY_SELECT = {
+// ── Select ────────────────────────────────────────────────────────────────────
+
+const HISTORY_BOOM_SELECT = {
   id: true,
   content: true,
+  contentType: true,
   agentId: true,
+  agentMode: true,
+  scriptType: true,
+  elements: true,
+  isFallback: true,
+  tokensUsed: true,
+  modelUsed: true,
+  durationMs: true,
   traceId: true,
   createdAt: true,
 } satisfies Prisma.HistorySelect;
 
 export const boomGenerateRouter = router({
-  /** Generate boom content (P1 mock) */
+  /**
+   * AC-1: generate(protectedProcedure · input generateBoomInput · 调 copywritingAgent.execute(boom))
+   * AC-2: history.create · D-032 content format · full fields
+   */
   generate: protectedProcedure
     .input(generateBoomInput)
-    .mutation(async ({ ctx, input: _input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
+
+      // AC-8: industry 未提供 → 读 activeAccount.industry
+      let effectiveIndustry = input.industry;
+      if (!effectiveIndustry) {
+        const account = await prisma.ipAccount.findUnique({
+          where: { id: activeAccountId! },
+          select: { industry: true },
+        });
+        effectiveIndustry = account?.industry ?? undefined;
+      }
+
+      const agentRes = await copywritingAgent.execute({
+        accountId: activeAccountId!,
+        mode: 'boom',
+        userInput: { ...input, industry: effectiveIndustry },
+        traceId: traceId ?? undefined,
+      });
+
+      const boomResult = agentRes.result as BoomOutput;
+      // D-032: 5 篇 candidates 用 '\n\n---\n\n' 分隔合并为单行 content
+      const content = boomResult.candidates.join('\n\n---\n\n');
+      const inputSummary = (input.theme ?? input.industry ?? 'boom').substring(0, 100);
+
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
           agentId: 'CopywritingAgent',
+          agentMode: 'boom',
           sourceType: 'user',
-          inputSummary: '[mock]',
-          content: '[mock]',
+          inputSummary,
+          content,
+          contentType: 'markdown',
+          scriptType: null,
+          elements: input.elements,
+          isFallback: agentRes.isFallback,
+          tokensUsed: agentRes.tokensUsed.total,
+          modelUsed: agentRes.modelUsed,
+          durationMs: agentRes.durationMs,
           traceId: traceId ?? null,
         },
-        select: HISTORY_SELECT,
+        select: HISTORY_BOOM_SELECT,
       });
       return row;
     }),

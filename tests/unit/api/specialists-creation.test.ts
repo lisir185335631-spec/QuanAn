@@ -12,21 +12,44 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const MOCK_COPYWRITING_MARKDOWN = '# 爆款文案标题\n\n这是第一段文案内容，包含有价值的干货信息。\n\n这是第二段内容。' + 'x'.repeat(450);
 
+const MOCK_BOOM_CANDIDATE = '候选文案内容备用'.padEnd(210, '爆款创作方法论，精准触达目标受众，快速积累内容影响力。');
+
 vi.mock('@/specialists/CopywritingAgent', () => ({
   copywritingAgent: {
-    execute: vi.fn(async () => ({
-      result: {
-        markdown: MOCK_COPYWRITING_MARKDOWN,
-        structure: '痛点引入→解决方案→CTA',
-        hooks: ['这是一个吸引人的钩子'],
-        cta: '点击关注获取更多干货',
-      },
-      isFallback: false,
-      durationMs: 1000,
-      tokensUsed: { prompt: 500, completion: 2000, total: 2500 },
-      modelUsed: 'test-model',
-      traceId: 'test-trace-001',
-    })),
+    execute: vi.fn(async (req: { mode?: string }) => {
+      if (req.mode === 'boom') {
+        return {
+          result: {
+            candidates: [
+              MOCK_BOOM_CANDIDATE,
+              MOCK_BOOM_CANDIDATE,
+              MOCK_BOOM_CANDIDATE,
+              MOCK_BOOM_CANDIDATE,
+              MOCK_BOOM_CANDIDATE,
+            ],
+            metadata: { count: 5 as const, elements: ['curiosity'] },
+          },
+          isFallback: false,
+          durationMs: 1000,
+          tokensUsed: { prompt: 500, completion: 2000, total: 2500 },
+          modelUsed: 'test-model',
+          traceId: 'test-trace-001',
+        };
+      }
+      return {
+        result: {
+          markdown: MOCK_COPYWRITING_MARKDOWN,
+          structure: '痛点引入→解决方案→CTA',
+          hooks: ['这是一个吸引人的钩子'],
+          cta: '点击关注获取更多干货',
+        },
+        isFallback: false,
+        durationMs: 1000,
+        tokensUsed: { prompt: 500, completion: 2000, total: 2500 },
+        modelUsed: 'test-model',
+        traceId: 'test-trace-001',
+      };
+    }),
   },
 }));
 
@@ -55,13 +78,19 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     delete: vi.fn(async () => ({})),
   };
 
+  const ipAccount = {
+    findUnique: vi.fn(async () => ({ industry: '教育' })),
+  };
+
   const tx = {
     history,
+    ipAccount,
     $executeRaw: vi.fn(async () => 0),
   };
 
   const prisma = {
     history,
+    ipAccount,
     $transaction: vi.fn(async (fn: (tx: typeof tx) => Promise<unknown>) => fn(tx)),
     _tx: tx,
   };
@@ -231,9 +260,9 @@ describe('boomGenerate.generate', () => {
   it('AC-7: creates History row with agentId=CopywritingAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = boomGenerateRouter.createCaller(ctx);
-    const result = await caller.generate({ stepKey: 'boom_generate' });
-    expect(prisma.history.create).toHaveBeenCalledOnce();
-    const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
+    const result = await caller.generate({ elements: ['curiosity', 'contrast'] });
+    expect(prisma._tx.history.create).toHaveBeenCalledOnce();
+    const createArgs = prisma._tx.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
     expect(createArgs.data.agentId).toBe('CopywritingAgent');
