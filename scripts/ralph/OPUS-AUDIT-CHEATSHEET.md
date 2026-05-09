@@ -217,6 +217,16 @@ cat backend/app/<本 story 改动的 __init__.py>
 # F4. SQL schema 完整审 (若是 schema/model story)
 sqlite3 backend/data/test.db ".schema <table_name>"
 # 对照 prd 定义, 字段类型 / NOT NULL / FK ondelete / 索引 全部核对
+
+# F5. 协议锁与既有代码现状双对账 (2026-05-09 · QuanQn PRD-4 TD-012 经验)
+# 防止 PRD 协议锁锁定新路径 · 但既有代码已有 stub 在旧路径 · 双路径并存
+# 提取 PRD §1.5 / §7.5 协议锁锁定的所有新文件路径
+grep -E "^\| .*\.(ts|tsx|py|sql|prisma|json)" tasks/prd-N.md | head -20
+# 对每个锁定路径 · grep 既有代码看是否已存在同名/同 dir
+for path in <锁定路径列表>; do
+  basename=$(basename "$path")
+  find apps packages backend -name "$basename" -type f 2>/dev/null | grep -v "$path"
+done
 ```
 
 **判决标准 (foundation 档独有)**:
@@ -224,6 +234,10 @@ sqlite3 backend/data/test.db ".schema <table_name>"
 - 本 story 字段语义与下游 AC 假设**不符** → reject (下游会构建错误)
 - shared 文件 (conftest / `__init__.py`) **未同步更新** → reject 或 TD 登记
 - 下游 story 数 ≥5 但本 story 测试覆盖 <80% → 至少加 SHIELD 等级 TD
+- **F5 命中既有 stub** (协议锁路径与既有代码冲突) → **reject 给 prd skill 修锁**, feedback 模板:
+  > "PRD §1.5 协议锁路径 `<新锁定路径>` 与既有代码 `<既有 stub 路径>` 冲突 · 选 A 复用既有 / B 改协议锁文件名 / C 删旧 stub · 修后重提"
+  >
+  > **实证** (QuanQn PRD-4 US-001) · 协议锁锁 `apps/api/src/specialists/base/BaseSpecialist.ts` · 但 PRD-2 stub 在 `apps/api/src/agents/base/BaseSpecialist.ts` · ralph 选 import 既有 stub 产生 TD-012 · US-002 retry 1 才闭环。**F5 在 audit US-001 时跑会一次拦下,省 1 retry (~30 min)**。
 
 ---
 

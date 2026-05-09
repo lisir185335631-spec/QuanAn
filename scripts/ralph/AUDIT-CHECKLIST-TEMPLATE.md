@@ -466,6 +466,78 @@ grep -E "workers" playwright.config.ts apps/web/playwright.config.ts 2>/dev/null
 
 ---
 
+### I. Multi-mode Specialist race window(2026-05-09 · QuanQn PRD-4 TD-014 经验)
+
+> **背景**: PRD-4 7 Specialist 中 4 个用 multi-mode(`PositioningAgent` industry/execution · `BrandingAgent` packaging/persona · `VideoAgent` 4 mode · `CopywritingAgent` 4 mode)。ralph 用 `private _mode` instance state + `outputSchema` getter 按 mode 返回 schema · `invokeLLM` 改 _mode → BaseSpecialist safeParse 读 _mode · **await 间隙其他 execute() 切入 race window**。P3 单 user 串行不触发 · 但**架构层 design smell**。
+>
+> **触发条件**: PRD 含**多 mode Specialist** 类组件(同一 class 按 req.mode 输出不同 schema)。
+
+```bash
+# I1: instance state `_mode` race 检查
+grep -B2 "_mode" apps/api/src/specialists/<Agent>.ts \
+  | grep -E "private\s+_mode|this\._mode\s*="
+# 命中说明用 instance state · 高并发场景 race 风险
+
+# I2: outputSchema 是 getter 还是 method?
+grep -E "outputSchema" apps/api/src/specialists/<Agent>.ts \
+  | grep -E "get\s+outputSchema|outputSchema\s*\("
+# getter + instance state → race 风险(approve · 文档化 TD-014)
+# method (req) => schema → 安全(approve)
+
+# I3: 单例 export(REJ-004) + multi-mode 是否文档化 race window
+grep -E "export const \w+Agent" apps/api/src/specialists/<Agent>.ts
+# 命中 + multi-mode → 必须文档化"P3 单 user 串行场景安全 · 高并发治理留 PRD-7+"
+```
+
+**判决标准**:
+- I1 命中 + I2 getter + I3 单例 → **approve · 必须**在 audit notes 写 "⚠️ TD-014 模式继承 · 高并发治理留 PRD-7+"
+- I1 命中 + I2 method → **approve**(stateless 安全)
+- I1 不命中 + I2 getter(outputSchema 是常量属性 · 单 mode)→ **approve · 单 mode 模板**
+
+**反例库链接**: `~/.claude/playbooks/reject-examples.jsonl` 关键词 `multi-mode race / instance state / outputSchema getter` 可检索 PRD-4 TD-014 实证。
+
+**TD-014 文档化模板**:
+```
+⚠️ Multi-mode Specialist · _mode race window
+- 当前实施 · _mode instance state + outputSchema getter
+- P3 单 user 串行安全 · race window 短(BaseSpecialist execute 内 invokeLLM → safeParse 同 await chain)
+- 高并发治理 · 留 PRD-7+(选项 A · outputSchema 改 method · 选项 B · AsyncLocalStorage 隔离)
+```
+
+---
+
+### J. Cross-cut router coverage(2026-05-09 · QuanQn PRD-4 US-017 经验)
+
+> **背景**: PRD-4 US-017 9 步 e2e 才发现 stepData.save handler 漏 step5/7 · UI skeleton 永挂 · 浪费 1 次 e2e 跑(~30 min)。原因是 Specialist Wave 4 时各 US 只加自己的 step branch · **没人负责"全 N step coverage"的 cross-cut audit**。
+>
+> **触发条件**: PRD 含**N-step / N-route / N-mode router**(stepData.save / 9 step / 14 工具 / 多 mode 调度)。
+
+```bash
+# J1: router handler 全 N coverage 检查
+grep -E "case '(step|route|mode)\w+'" apps/api/src/trpc/routers/<router>.ts
+# 输出全部 case · 与 PRD §1 列出的 N 项对账(数量 + 命名一致)
+
+# J2: e2e spec 全 N 路径覆盖
+grep -rE "await page\.goto\('/(step|tool|module)/" tests/e2e --include='*.spec.ts' \
+  | sort -u | wc -l
+# 与 PRD §1 列出的全 N 路径数量对账
+
+# J3: handler 漏 step → save 返回 null → UI skeleton 永挂
+# 检查 router save 默认分支
+grep -A3 "default:" apps/api/src/trpc/routers/<router>.ts \
+  | grep -E "return null|return undefined|throw"
+# 默认 throw 比 return null 安全(漏 step 立刻报错而非静默失败)
+```
+
+**判决标准**:
+- J1 case 数 < PRD §1 列表数 → **reject · 必须**补全所有 case
+- J2 e2e 覆盖 < PRD §1 列表数(如 9 步全 e2e)→ **TD 登记**(本期不阻断 · 留下 PRD 收尾补)
+- J3 默认分支 return null → **approve · 必须**在 audit notes 写 "建议改 throw('Unsupported X') 防漏 case 静默失败"
+
+**反例库链接**: `~/.claude/playbooks/reject-examples.jsonl` 关键词 `router cross-cut / handler missing case / save return null` 可检索 PRD-4 US-017 实证。
+
+---
+
 ## Audit 记录格式(每个 Story 审完写 notes)
 
 ```

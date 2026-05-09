@@ -235,6 +235,51 @@ cd backend && .venv/Scripts/pytest -q \
 
 ---
 
+## Router cross-cut coverage 验证(2026-05-09 · QuanQn PRD-4 US-017 经验)
+
+> **背景**: PRD-4 US-017 9 步 e2e 才发现 stepData.save handler 漏 step5/7 → UI skeleton 永挂 → 浪费 1 次 e2e 跑(~30 min)。Validator 当时只验当前 story scope · 没 catch cross-cut 漏。
+
+### 触发条件
+
+story 涉及以下任一时,Validator **必须**额外产物化 router-coverage.txt:
+- 修改大型 router(stepData.save / 14 工具调度 / 9 step / N route handler)
+- 加新 step / 新 mode / 新 route 到既有 router
+- e2e 测试覆盖 N 路径
+
+### 产物模板
+
+写到 `scripts/ralph/verify-artifacts/<US>/router-coverage.txt`:
+
+```bash
+# 1. router handler 全 N case 覆盖
+echo "=== <router>.<action> handler cases ===" > router-coverage.txt
+grep -E "case '(step|route|mode)\w+'" apps/api/src/trpc/routers/<router>.ts >> router-coverage.txt
+echo "" >> router-coverage.txt
+
+# 2. e2e spec 全 N 路径覆盖
+echo "=== e2e spec 全 N 路径 ===" >> router-coverage.txt
+grep -rE "await page\.goto\('/(step|tool|module)/" tests/e2e --include='*.spec.ts' \
+  | sort -u >> router-coverage.txt
+echo "" >> router-coverage.txt
+
+# 3. 默认分支安全检查
+echo "=== default 分支(防漏 case 静默失败)===" >> router-coverage.txt
+grep -A3 "default:" apps/api/src/trpc/routers/<router>.ts >> router-coverage.txt
+```
+
+### Notes 强制格式
+
+```
+## CONFIRMED · Router cross-cut coverage
+- <router>.<action> 覆盖 step1/3/3b/4/4b/5/6/7/8 全 9 step (case 数 = 9)
+- e2e tests/e2e/*.spec.ts 覆盖 9 step 路径(/step/1 ~ /step/8 + /step/3b /step/4b)
+- default 分支 throw('Unsupported X') 防静默失败 ✓
+```
+
+漏 case → re-throw failure · ralph 必补全。
+
+---
+
 ## 重要约束
 
 - 你只负责验证，不负责修复代码
