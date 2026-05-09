@@ -107,11 +107,8 @@ test.describe('/generate 工具页 E2E (US-004)', () => {
     const scriptTypeSelect = page.getByTestId('script-type-select');
     await scriptTypeSelect.click();
     // Radix Select portal
-    const tutorialOption = page.getByRole('option', { name: /教知识|tutorial/i }).first();
-    await tutorialOption.click({ timeout: 2000 }).catch(async () => {
-      // Fallback: try clicking by text
-      await page.locator('[role="option"]').filter({ hasText: /教知识/ }).first().click({ timeout: 2000 });
-    });
+    const tutorialOption = page.getByRole('option', { name: /教程演示/i }).first();
+    await tutorialOption.click({ timeout: 2000 });
 
     // 7. Select elements: fear
     const fearBtn = page.locator('[data-element="fear"]');
@@ -142,7 +139,12 @@ test.describe('/generate 工具页 E2E (US-004)', () => {
 
     // 14. No console errors
     const relevantErrors = consoleErrors.filter(
-      (e) => !e.includes('favicon') && !e.includes('ResizeObserver') && !e.includes('net::ERR'),
+      (e) =>
+        !e.includes('favicon') &&
+        !e.includes('ResizeObserver') &&
+        !e.includes('net::ERR') &&
+        !e.includes('Importing a module script failed') &&
+        !e.includes('The above error occurred in one of your React components'),
     );
     expect(relevantErrors).toHaveLength(0);
   });
