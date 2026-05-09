@@ -6,9 +6,11 @@
  * <VideoAnalysisResult> JSON.parse(data.content) → elements Badge tag + insights Card + rewriteVersion markdown
  * FeedbackButton: agentId=AnalysisAgent
  * AbortController on unmount
+ * US-011: ?historyId → trpc.history.detail.useQuery → 预填 lastCopy(inputSummary) + setResult(历史 content)
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { FeedbackButton } from '@/components/FeedbackButton';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
@@ -20,12 +22,30 @@ import type { VideoAnalysisHistoryRow } from '@quanqn/clients/router-types';
 
 export default function VideoAnalysis() {
   const [result, setResult] = useState<VideoAnalysisHistoryRow | null>(null);
+  const [searchParams] = useSearchParams();
+  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
 
   const abortRef = useRef<AbortController>(null!);
   useEffect(() => {
     abortRef.current = new AbortController();
     return () => { abortRef.current.abort(); };
   }, []);
+
+  // US-011: ?historyId pre-fill
+  const { data: historyDetail } = trpc.history.detail.useQuery(
+    { id: historyId! },
+    { enabled: !!historyId },
+  );
+
+  useEffect(() => {
+    if (historyDetail) {
+      setResult(historyDetail as unknown as VideoAnalysisHistoryRow);
+    }
+  }, [historyDetail]);
+
+  const historyDefaults = historyDetail
+    ? { lastCopy: historyDetail.inputSummary, lastTitle: '' }
+    : undefined;
 
   const mutation = trpc.videoAnalysis.analyze.useMutation();
 
@@ -58,6 +78,7 @@ export default function VideoAnalysis() {
         onSubmit={handleSubmit}
         onSuccess={handleSuccess}
         submitLabel="开始深度解析"
+        defaultValues={historyDefaults}
       />
 
       {result && (

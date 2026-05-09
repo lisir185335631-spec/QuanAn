@@ -6,9 +6,11 @@
  * submit → trpc.boomGenerate.generate.mutate → onSuccess setResult → <BoomGenerateResult>
  * <BoomGenerateResult> split content '---' → 5 Card grid md:grid-cols-2
  * AbortController on unmount
+ * US-011: ?historyId → trpc.history.detail.useQuery → 预填 elements/industry/theme + setResult(历史 content)
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { FeedbackButton } from '@/components/FeedbackButton';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
@@ -25,6 +27,8 @@ export default function BoomGenerate() {
   const accountId = (account as { id: number } | null)?.id ?? null;
 
   const [result, setResult] = useState<BoomGenerateHistoryRow | null>(null);
+  const [searchParams] = useSearchParams();
+  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
 
   // AbortController on unmount
   const abortRef = useRef<AbortController>(null!);
@@ -48,8 +52,28 @@ export default function BoomGenerate() {
     return undefined;
   });
 
-  // Merge: LS > account industry default
-  const resolvedDefaults: Record<string, unknown> = lsDefaults ?? {
+  // US-011: ?historyId pre-fill
+  const { data: historyDetail } = trpc.history.detail.useQuery(
+    { id: historyId! },
+    { enabled: !!historyId },
+  );
+
+  useEffect(() => {
+    if (historyDetail) {
+      setResult(historyDetail as unknown as BoomGenerateHistoryRow);
+    }
+  }, [historyDetail]);
+
+  const historyDefaults = historyDetail
+    ? {
+        elements: historyDetail.elements ?? [],
+        industry: industryDefault,
+        theme: '',
+      }
+    : undefined;
+
+  // Merge: history > LS > account industry default
+  const resolvedDefaults: Record<string, unknown> = historyDefaults ?? lsDefaults ?? {
     elements: [],
     industry: industryDefault,
     theme: '',

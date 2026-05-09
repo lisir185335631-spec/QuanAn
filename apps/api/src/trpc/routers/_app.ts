@@ -21,6 +21,7 @@ import { trendingRouter } from '@/trpc/routers/trending';
 import { inviteRouter } from '@/trpc/routers/invite';
 import { costLogRouter } from '@/trpc/routers/costLog';
 import { analysisRouter } from '@/trpc/routers/analysis';
+import { historyRouter } from '@/trpc/routers/history';
 
 export const appRouter = router({
   auth: authRouter,
@@ -40,6 +41,7 @@ export const appRouter = router({
   invite: inviteRouter,
   costLog: costLogRouter,
   analysis: analysisRouter,
+  history: historyRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -125,7 +125,24 @@ export type FreeGenerateHistoryRow = {
   createdAt: Date;
 };
 
-export type HistoryDetailOutput = FreeGenerateHistoryRow | null;
+export type HistoryDetailOutput = HistoryListRow | null;
+
+export type HistoryListRow = {
+  id: number;
+  agentId: string;
+  agentMode: string | null;
+  sourceType: string;
+  inputSummary: string;
+  content: string;
+  contentType: string;
+  scriptType: string | null;
+  elements: string[];
+  isFallback: boolean;
+  traceId: string | null;
+  createdAt: Date | string;
+};
+
+export type HistoryListOutput = HistoryListRow[];
 
 export type BoomGenerateHistoryRow = FreeGenerateHistoryRow;
 
@@ -263,9 +280,25 @@ const _shadowRouter = _t.router({
       })),
   }),
   history: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            agentId?: string;
+            agentMode?: string;
+            sourceType?: string;
+            dateRange?: 'last_7d' | 'last_30d' | 'all';
+            limit?: number;
+            offset?: number;
+          },
+      )
+      .query((): HistoryListOutput => []),
     detail: _t.procedure
       .input((x: unknown) => x as { id: number })
       .query((): HistoryDetailOutput => null),
+    delete: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .mutation((): { ok: true } => ({ ok: true })),
   }),
   analysis: _t.router({
     analyze: _t.procedure

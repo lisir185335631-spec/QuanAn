@@ -6,9 +6,11 @@
  * <AnalysisResult> JSON.parse(data.content) → 5 维度 Progress bar
  * FeedbackButton: agentId=AnalysisAgent
  * AbortController on unmount
+ * US-011: ?historyId → trpc.history.detail.useQuery → 预填 copy(inputSummary) + setResult(历史 content)
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { FeedbackButton } from '@/components/FeedbackButton';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
@@ -20,12 +22,30 @@ import type { AnalysisHistoryRow } from '@quanqn/clients/router-types';
 
 export default function Analysis() {
   const [result, setResult] = useState<AnalysisHistoryRow | null>(null);
+  const [searchParams] = useSearchParams();
+  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
 
   const abortRef = useRef<AbortController>(null!);
   useEffect(() => {
     abortRef.current = new AbortController();
     return () => { abortRef.current.abort(); };
   }, []);
+
+  // US-011: ?historyId pre-fill
+  const { data: historyDetail } = trpc.history.detail.useQuery(
+    { id: historyId! },
+    { enabled: !!historyId },
+  );
+
+  useEffect(() => {
+    if (historyDetail) {
+      setResult(historyDetail as unknown as AnalysisHistoryRow);
+    }
+  }, [historyDetail]);
+
+  const historyDefaults = historyDetail
+    ? { copy: historyDetail.inputSummary }
+    : undefined;
 
   const mutation = trpc.analysis.analyze.useMutation();
 
@@ -58,6 +78,7 @@ export default function Analysis() {
         onSubmit={handleSubmit}
         onSuccess={handleSuccess}
         submitLabel="开始分析"
+        defaultValues={historyDefaults}
       />
 
       {result && (
