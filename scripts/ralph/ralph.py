@@ -136,6 +136,39 @@ def _check_claude_health(timeout: int = 5) -> bool:
         return False
 
 
+def _is_network_error(label: str, max_age_sec: int = 120) -> bool:
+    """TD-009 (PRD-5 retro · 网络故障不算 retryCount)
+    检测最新 agent log 末尾是否含 ECONNRESET / 503 / ETIMEDOUT 等网络错误关键词。
+    必须 mtime 在 max_age_sec 内 (避免读旧 log 误判)。
+    """
+    try:
+        safe_label = label.replace(" ", "_")
+        matches = list(AGENT_LOG_DIR.glob(f"*_{safe_label}.log"))
+        if not matches:
+            return False
+        latest = max(matches, key=lambda p: p.stat().st_mtime)
+        if (time.time() - latest.stat().st_mtime) > max_age_sec:
+            return False
+        size = latest.stat().st_size
+        with open(latest, "rb") as f:
+            f.seek(max(0, size - 4096))
+            tail = f.read().decode("utf-8", errors="replace")
+        return any(p in tail for p in (
+            "ECONNRESET",
+            "503 Service Unavailable",
+            "504 Gateway Timeout",
+            "ETIMEDOUT",
+            "ENETUNREACH",
+            "EAI_AGAIN",
+            "API Error: Unable to connect",
+            "Anthropic API error: 503",
+            "Anthropic API error: 502",
+            "Anthropic API error: 429",
+        ))
+    except Exception:
+        return False
+
+
 def _write_blocked_audit_gate(has_pass: bool) -> bool:
     """M-1 (PRD-5 RCA-003 教训): BLOCKED 必须写 audit-gate(needs_attention) · 不静默 exit
     返回 True if 有 BLOCKED stories 已写入 audit-gate · False if 0 blocked.
@@ -1194,9 +1227,21 @@ def run_developer(iteration: int, story_id: str | None) -> tuple[bool, bool]:
             print(f"[FAIL] claude CLI 2 次 health check 全失败 · 标记 crashed (避免 30 min hang)")
             return False, True  # crashed=True · 算 retryCount 但 1 min 内 fail-fast
 
-    prompt = build_developer_prompt(story_id)
-    timed_out, exit_code, duration = run_agent(prompt, "开发迭代", TIMEOUT_SECONDS)
-    log_cost(story_id, "developing", duration, iteration)
+    # TD-009 (PRD-5 retro): 网络故障不算 retryCount · exponential backoff · max 3 次内重试
+    timed_out = False
+    exit_code: int | None = None
+    duration = 0.0
+    for net_attempt in range(3):
+        prompt = build_developer_prompt(story_id)
+        timed_out, exit_code, duration = run_agent(prompt, "开发迭代", TIMEOUT_SECONDS)
+        log_cost(story_id, "developing", duration, iteration)
+        crashed = (not timed_out and exit_code is not None and exit_code != 0)
+        if crashed and net_attempt < 2 and _is_network_error("开发迭代"):
+            wait = min(2 ** net_attempt * 30, 120)  # 30s · 60s · 120s
+            print(f"  [NET-ERR] 检测到网络故障 (ECONNRESET/503/ETIMEDOUT) · sleep {wait}s · 不算 retryCount · attempt {net_attempt+2}/3")
+            time.sleep(wait)
+            continue
+        break
     crashed = (not timed_out and exit_code is not None and exit_code != 0)
     if crashed:
         print(f"  [WARN]  开发 Agent 异常退出 (code={exit_code})，跳过本轮验证")
@@ -1219,8 +1264,18 @@ def run_validator(iteration: int, story_id: str | None) -> None:
             print(f"[FAIL] claude CLI 2 次 health check 全失败 · 跳过本轮 validation (避免 hang)")
             return
 
-    prompt = build_validator_prompt(story_id)
-    timed_out, exit_code, duration = run_agent(prompt, "验证", VALIDATOR_TIMEOUT_SECONDS)
+    # TD-009 (PRD-5 retro): 网络故障不算 retryCount · max 3 次重试
+    duration = 0.0
+    for net_attempt in range(3):
+        prompt = build_validator_prompt(story_id)
+        timed_out, exit_code, duration = run_agent(prompt, "验证", VALIDATOR_TIMEOUT_SECONDS)
+        crashed = (not timed_out and exit_code is not None and exit_code != 0)
+        if crashed and net_attempt < 2 and _is_network_error("验证"):
+            wait = min(2 ** net_attempt * 30, 120)
+            print(f"  [NET-ERR] Validator 检测到网络故障 · sleep {wait}s · 不算 retryCount · attempt {net_attempt+2}/3")
+            time.sleep(wait)
+            continue
+        break
     log_cost(story_id, "validating", duration, iteration)
 
     # 安全措施：Validator 未正常完成时（超时 / 非零退出 / 启动异常），不能信任 passes 状态

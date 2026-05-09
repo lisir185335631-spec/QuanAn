@@ -120,11 +120,13 @@
       "discovered_at": "2026-05-08",
       "discovered_by": "Opus /goal-verify PRD-3",
       "severity": "medium",
-      "status": "open",
+      "status": "resolved",
       "evidence": "PRD-3 US-006 retry 3-5 全是 'API Error: Unable to connect to API (ECONNRESET)' · dev iter 4-5 min 即非零退出 · log 0 byte · retryCount 3→4→5 触发 blocked · 实际代码已接近通过 · 浪费 30+ min",
       "root_cause": "ralph.py 把所有 dev iter 非零退出码当 '代码问题' 算入 retryCount · 不区分网络故障 / 服务端 503 / API 限流",
       "scheduled_fix_in": "PRD-4 启动前 · ralph.py build_developer_prompt 后捕获 stderr · 检测 ECONNRESET / 'Unable to connect' / '503' 等网络错误关键词 · 不消耗 retryCount · 改为指数退避重试",
-      "fix_hint": "在 ralph.py iter loop 里 grep stderr · 网络故障 → time.sleep(min(2**attempt, 60)) · retryCount 不 +1 · attempt += 1 限制 max 10 次"
+      "fix_hint": "在 ralph.py iter loop 里 grep stderr · 网络故障 → time.sleep(min(2**attempt, 60)) · retryCount 不 +1 · attempt += 1 限制 max 10 次 · APPLIED: ralph.py _is_network_error() helper + run_developer/validator net_attempt loop with exponential backoff (30s/60s/120s) · max 3 retry · 不算 retryCount",
+      "resolved_in_prd": "PRD-5 (retro 5 historical TD batch B)",
+      "resolved_at": "2026-05-09T23:06:52"
     },
     {
       "id": "TD-010",
@@ -133,11 +135,13 @@
       "discovered_at": "2026-05-08",
       "discovered_by": "Opus /goal-verify PRD-3",
       "severity": "medium",
-      "status": "open",
+      "status": "resolved",
       "evidence": "PRD-3 US-006 第 2 次 validator 推测的 3 个失败原因(mutation 没触发 / DB 累积污染 / dropdown click 异常)全是猜测,没有一个是真根因(viewport overflow)。Ralph 下一轮读 notes 改错地方,死循环到 retryCount=5",
       "root_cause": "VALIDATOR.md 没要求 validator 区分 'CONFIRMED:' 实测事实 vs 'SUSPECTED:' 推测原因 · ralph dev prompt 100% 信任 notes · 改错地方",
       "scheduled_fix_in": "PRD-4 启动前 · VALIDATOR.md 升级 notes 模板 · failure_evidence 必须含 reproduction_steps + actual_error_message · 区分确认 vs 推测",
-      "fix_hint": "VALIDATOR.md 加规则: '失败原因报告时,先复现 → 写 CONFIRMED · 没复现写 SUSPECTED · ralph dev prompt 看 SUSPECTED 必须先复现确认再动手'"
+      "fix_hint": "VALIDATOR.md 加规则: '失败原因报告时,先复现 → 写 CONFIRMED · 没复现写 SUSPECTED · ralph dev prompt 看 SUSPECTED 必须先复现确认再动手' · APPLIED: ralph CLAUDE.md 加规则 · ralph dev 看 SUSPECTED 必须先跑验证命令复现 · 复现成功才改 · 失败回 CONFIRMED 找其他方向",
+      "resolved_in_prd": "PRD-5 (retro 5 historical TD batch B)",
+      "resolved_at": "2026-05-09T23:06:52"
     },
     {
       "id": "TD-011",
@@ -311,5 +315,5 @@
       "resolved_at": "2026-05-09T22:18:02"
     }
   ],
-  "last_updated": "2026-05-09T22:18:02"
+  "last_updated": "2026-05-09T23:06:52"
 }

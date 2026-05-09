@@ -167,6 +167,11 @@ python scripts/ralph/ralph-tools.py audit-status         # 查看门禁状态
 - 保持 CI 绿色
 - 在开始之前阅读 progress.txt 中的 Codebase Patterns 部分
 - **务必检查注入的 anti_patterns 段** (2026-05-04 新增): 编排器在 prompt 末尾注入 `### [SHIELD] 历史反例 (anti_patterns)` 段, 这些是其他类似 story 被 Opus reject 时的"绝对不能"列表. **实现前必须读, 实现时主动避开**. 这是从全局反例库 `~/.claude/playbooks/reject-examples.jsonl` 检索而来,跨 PRD 沉淀知识.
+- **TD-010 (PRD-5 retro · 2026-05-09 新增) · Validator notes 中的 `## SUSPECTED` 必须先复现再动手**: 如果 Validator notes 含 `## SUSPECTED` 段或 `⚠️ 必须先 reproduce 验证` 字样, **禁止直接根据 SUSPECTED 推测改代码**. 必须先按 SUSPECTED 给的"验证命令(建议)"实跑 1 次:
+  - 复现成功 = 真原因 → 才改代码
+  - 复现失败 = 推测错误 → 不要改 SUSPECTED 提到的位置 · 回到 `## CONFIRMED` 段或重读 AC 找其他方向
+  - 整段 notes 全是 SUSPECTED 时 (无 CONFIRMED) · 必须先 git log 看上次 commit 是否已修 + 自己跑 test 看现在到底失败哪 · 不要按 SUSPECTED 盲改
+  - **教训** (PRD-3 US-006): Validator 把 mobile e2e 失败推测成 3 个原因(全错 · 真根因 ScrollArea overflow)· ralph dev 当事实信任死循环到 retryCount=5 触 BLOCKED.
 - **禁止修改或删除 `audit-gate.json`** — 这是编排器（ralph.py）与 Opus 之间的审计门禁通信文件，由 ralph.py 自动管理。你完成 story 后正常退出即可，编排器会在你退出后自动激活审计门禁等待 Opus 审查
 - **禁止修改或删除 `ralph-lock.json`** — 这是 ralph.py 的进程锁文件，用于防止多实例并发和崩溃恢复
 - **禁止修改或删除 `cost-log.jsonl`** — 这是 ralph.py 的成本追踪日志，仅由编排器追加写入
