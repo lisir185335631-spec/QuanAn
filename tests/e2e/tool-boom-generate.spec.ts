@@ -116,9 +116,11 @@ test.describe('/boom-generate 工具页 E2E (US-006)', () => {
     const fearBtn = page.locator('[data-element="fear"]');
     await fearBtn.click({ timeout: 2000 });
 
-    // 7. Select elements: scarcity
+    // 7. Select elements: scarcity — scarcity 属于 信息密度 组(默认折叠) · 先展开
+    const infoGroupBtn = page.locator('button').filter({ hasText: '信息密度' });
+    await infoGroupBtn.click({ timeout: 2000 });
     const scarcityBtn = page.locator('[data-element="scarcity"]');
-    await scarcityBtn.click({ timeout: 2000 });
+    await scarcityBtn.click({ timeout: 3000 });
 
     // 8. Fill theme input
     const themeInput = page.locator('#tool-boom-theme');
