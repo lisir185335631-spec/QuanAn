@@ -29,11 +29,13 @@ export function maskString(input: string): PiiMaskResult {
     }
   };
 
+  // 顺序敏感: 长固定长度 (id_card 18/bank_card 16-19) 必须在 phone_intl 前 ·
+  // 否则 phone_intl 弹性 regex (max 20 位) 提前吃掉 bank/id 字段 (TD-016 修发现的 PRD-1 bug)
   apply(EMAIL_RE,      'email',      '<EMAIL>');
-  apply(PHONE_RE_CN,   'phone_cn',   '<PHONE>');
-  apply(PHONE_RE_INTL, 'phone_intl', '<PHONE>');
   apply(ID_CARD_RE,    'id_card',    '<ID_CARD>');
   apply(BANK_CARD_RE,  'bank_card',  '<BANK_CARD>');
+  apply(PHONE_RE_CN,   'phone_cn',   '<PHONE>');
+  apply(PHONE_RE_INTL, 'phone_intl', '<PHONE>');
 
   return { text, hits };
 }

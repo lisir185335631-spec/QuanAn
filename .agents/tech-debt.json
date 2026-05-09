@@ -233,10 +233,10 @@
       "detected_in_prd": "PRD-5",
       "detected_in_story": "goal-verify §0.4 (GSD codebase mapper 实测 grep)",
       "fix_by": "PRD-6 启动前 (ASAP) · PRR 上线前必修",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A: ContextAssembler._formatUserPrompt() 强制走 maskString() · BaseSpecialist 末尾按 industry 走 appendDisclaimerIfSensitive · audit-ld.sh 加 grep 强制(配 TD-018)\n选 B: 先 fix audit-redlines.sh + audit-ld.sh (TD-017 + TD-018) 让 audit catch · 再 PRD-6 启动时 1 个 story 接线",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-5 (goal-verify §0 fix)",
+      "resolved_at": "2026-05-09T22:18:02"
     },
     {
       "id": "TD-017",
@@ -257,10 +257,10 @@
       "detected_in_prd": "PRD-5",
       "detected_in_story": "goal-verify §0.4 (GSD CONCERNS mapper 实测)",
       "fix_by": "PRD-6 启动前 (配 TD-016 / TD-018 一起修)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "改 scripts/audit-redlines.sh 全部 grep 路径: src/ → apps/api/src/, packages/*/src/ + tests/. 加 monorepo workspace iter 循环 · 跑通后 17 红线全实测",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-5 (goal-verify §0 fix)",
+      "resolved_at": "2026-05-09T22:18:02"
     },
     {
       "id": "TD-018",
@@ -281,11 +281,35 @@
       "detected_in_prd": "PRD-5",
       "detected_in_story": "goal-verify §0.4 (GSD CONCERNS mapper)",
       "fix_by": "PRD-6 启动前 (配 TD-016 / TD-017)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "新建 scripts/audit-ld.sh · 内容: 18 LD 各 1-2 grep 验证 (LD-001 95/5 编排 → grep -c 'while\\|for.*await' apps/api/src · LD-009 RLS → grep -c 'set_config' apps/api/src · LD-012 LLMGateway → grep -c '@anthropic-ai/sdk' apps · 等等)",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-5 (goal-verify §0 fix)",
+      "resolved_at": "2026-05-09T22:18:02"
+    },
+    {
+      "id": "TD-019",
+      "title": "design-drift: knowledge.ts getFavorites + getNotes 漏 explicit accountId (LD-009 双层防护违反)",
+      "description": "audit-redlines.sh (TD-017 修后) catch 到 knowledge router 2 处 prisma 查询只用 RLS auto-filter, 无 explicit where: { accountId }. 已统一改用 LD-009 双层防护模式 (explicit accountId + RLS).",
+      "scope": [
+        "apps/api/src/trpc/routers/knowledge.ts:97-105",
+        "apps/api/src/trpc/routers/knowledge.ts:142-156",
+        "AGENTS.md#3-locked-decisions LD-009"
+      ],
+      "impact": "audit-redlines.sh 修复后第一次 catch · 历史 PRD-3 设计选择 RLS-only · 现统一双层防护更稳",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "security"
+      ],
+      "created_in_prd": "PRD-3 (knowledge router 首次写时)",
+      "detected_in_prd": "PRD-5",
+      "detected_in_story": "goal-verify §0 fix (TD-017 audit-redlines.sh 修复后)",
+      "fix_by": "PRD-5 (goal-verify §0 fix · 已修)",
+      "status": "resolved",
+      "fix_hint": "已改 explicit { accountId: activeAccountId!, ...其他 filters }",
+      "resolved_in_prd": "PRD-5 (goal-verify §0 fix)",
+      "resolved_at": "2026-05-09T22:18:02"
     }
   ],
-  "last_updated": "2026-05-09T21:33:53"
+  "last_updated": "2026-05-09T22:18:02"
 }

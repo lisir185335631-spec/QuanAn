@@ -20,6 +20,7 @@ import { Decimal } from '@prisma/client/runtime/library';
 
 import { generateSpecialistTraceId } from '@/agents/base/types';
 import type { SpecialistId } from '@/agents/base/types';
+import { appendDisclaimerIfSensitive, attachDisclaimerMeta } from '@/lib/compliance/disclaimer';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { contextAssembler as _contextAssembler } from '@/services/context-assembler/ContextAssembler';
@@ -135,8 +136,11 @@ export abstract class BaseSpecialist<TIn, TOut> {
         isFallback: raw.isFallback ?? false,
       });
 
+      // LD-018 R-14 (TD-016 修): 输出 disclaimer (按 input.industry · 敏感行业医疗/法律/金融)
+      const finalResult = this._applyDisclaimer(parsed.data, req.userInput);
+
       return {
-        result: parsed.data,
+        result: finalResult,
         isFallback: raw.isFallback ?? false,
         durationMs,
         tokensUsed: raw.tokens,
@@ -188,6 +192,24 @@ export abstract class BaseSpecialist<TIn, TOut> {
         traceId,
       };
     }
+  }
+
+  /**
+   * LD-018 R-14: 输出 disclaimer 自动注入 (TD-016 修)
+   * - markdown 字段 (CopywritingAgent free/step7 mode): 末尾追加免责
+   * - 其他 JSON 结构 (boom candidates / analysis JSON): 加 _disclaimer 元数据
+   * - input 没 industry / 非敏感行业 → 原样返回
+   */
+  private _applyDisclaimer(result: TOut, userInput: TIn): TOut {
+    const industryRaw = (userInput as { industry?: unknown } | null | undefined)?.industry;
+    const industry = typeof industryRaw === 'string' ? industryRaw : '';
+    if (!industry || !result || typeof result !== 'object') return result;
+
+    const obj = result as Record<string, unknown>;
+    if (typeof obj.markdown === 'string') {
+      return { ...obj, markdown: appendDisclaimerIfSensitive(obj.markdown, industry) } as TOut;
+    }
+    return attachDisclaimerMeta(obj, industry) as TOut;
   }
 
   /**

@@ -90,13 +90,16 @@ export const knowledgeRouter = router({
       return [{ itemType: 'script_case', itemKey: 'mock-001', title: '[mock script case]', industry: input.industry ?? null }];
     }),
 
-  /** List favorites for current account (RLS auto-filters by accountId) */
+  /** List favorites for current account (LD-009 双层防护: explicit accountId + RLS · TD-019 修) */
   getFavorites: protectedProcedure
     .input(getFavoritesInput)
     .query(async ({ ctx, input }) => {
-      const { prisma } = ctx;
+      const { prisma, activeAccountId } = ctx;
       return prisma.knowledgeFavorite.findMany({
-        where: input.itemType ? { itemType: input.itemType } : undefined,
+        where: {
+          accountId: activeAccountId!,
+          ...(input.itemType ? { itemType: input.itemType } : {}),
+        },
         select: FAVORITE_SELECT,
         orderBy: { createdAt: 'desc' },
         take: input.limit,
@@ -136,13 +139,14 @@ export const knowledgeRouter = router({
       return { ok: true };
     }),
 
-  /** List notes for current account (RLS auto-filters by accountId) */
+  /** List notes for current account (LD-009 双层防护: explicit accountId + RLS · TD-019 修) */
   getNotes: protectedProcedure
     .input(getNotesInput)
     .query(async ({ ctx, input }) => {
-      const { prisma } = ctx;
+      const { prisma, activeAccountId } = ctx;
       return prisma.knowledgeNote.findMany({
         where: {
+          accountId: activeAccountId!,
           ...(input.itemType ? { itemType: input.itemType } : {}),
           ...(input.itemKey ? { itemKey: input.itemKey } : {}),
         },

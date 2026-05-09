@@ -9,6 +9,7 @@
  * AC-10: systemPrompt 禁止包含 LLM 密钥或 API URL(R-001 安全红线)
  */
 
+import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
 
@@ -167,7 +168,9 @@ export class ContextAssembler {
   }
 
   private _formatUserPrompt(input: unknown): string {
-    const body = typeof input === 'string' ? input : JSON.stringify(input);
+    // LD-018 R-14 (TD-016 修): PII 脱敏 (email/phone/id_card/bank_card) 防原文进 LLM
+    const masked = piiMask(input);
+    const body = typeof masked === 'string' ? masked : JSON.stringify(masked);
     return `<user_input>${body}</user_input>`;
   }
 }
