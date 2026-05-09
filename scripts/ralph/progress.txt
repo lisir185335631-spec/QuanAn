@@ -16,7 +16,7 @@
 - tRPC monorepo cross-package 类型: web 用 initTRPC 构建 shadow router → typeof 得 AppRouter type · 避免 rootDir 跨包报错 · 不要直接 import API src
 - vitest 跑 API 单元测试需要在 vitest.config.ts 加 alias: { '@': path.resolve(__dirname, 'apps/api/src') } 让 @/lib/* 路径别名正确解析
 - tRPC v11 httpBatchStreamLink 发送 trpc-accept: application/jsonl 头 · Hono CORS allowHeaders 必须包含 'trpc-accept' 否则所有 tRPC browser 请求被 CORS preflight 拦截
-- tRPC v11 httpBatchStreamLink 响应格式是压缩 JSONL(多行 back-reference 格式) · Playwright 不能用 route.fulfill 直接 mock · 改用真实 mock OAuth flow(goto /auth/login → waitForURL) 替代
+- tRPC v11 httpBatchStreamLink 响应格式是压缩 JSONL · Playwright 不能用 route.fulfill 直接 mock(JSON 格式) · 改用 page.addInitScript 替换 window.fetch: 返回三行 JSONL: HEAD={"0":[[{result:0}],["result",0,0]]} + chunk0=[0,0,[[{data:0}],["data",0,1]]] + chunk1=[1,0,[[D]]] · locator.click 必须加 { timeout: 2000 } 防占满 test budget
 - Playwright E2E 测试 desktop-only 元素(hidden sm:block/flex)时 · mobile 项目需先 page.setViewportSize({ width: 1280, height: 720 }) 强制桌面视口
 - RLS 测试必须用 `SET LOCAL ROLE <app_role>` 绕过 PostgreSQL superuser BYPASSRLS · dev 本地 DB owner 通常是 superuser · FORCE ROW LEVEL SECURITY 对 superuser 无效
 - RLS policy 中 `current_setting(..., true)::int` 在 setting 为空字符串时抛 invalid input · 必须用 `NULLIF(current_setting(..., true), '')::int`
@@ -1410,3 +1410,23 @@
 --- [RALPH] Iteration 19 started: US-015 at 2026-05-09 06:57 ---
 
 --- [RALPH] Iteration 20 started: US-015 at 2026-05-09 07:27 ---
+
+--- [RALPH] Iteration 20 ended: US-015 (19分钟 6秒) ---
+
+--- [RALPH] Iteration 21 started: US-015 at 2026-05-09 07:46 ---
+## [2026-05-09 08:10] - US-015 (PRD-4 · isFallback 降级路径 · 第3次迭代 · e2e 修复)
+- 根因: tests/e2e/fallback.spec.ts line64 locator [data-testid=industry-select] 不存在 → 30s timeout 占满 test budget → line70 page closed
+- 修复 locator: 改为 [data-testid=step-form-step1] [role=combobox] + { timeout: 2000 } 快速失败兜底
+- 修复 tRPC mock: route.fulfill(JSON) 无法 mock httpBatchStreamLink(期望 JSONL stream) · 改用 page.addInitScript 替换 window.fetch 返回正确三行 JSONL
+- 修复 combobox 交互: click 后选第一个 option([role=option]) 关闭 dropdown · 避免 dropdown 遮挡 submit 按钮
+- 修复 strict mode 冲突: getByText('系统繁忙') 匹配 2 个元素 → 改为 getByTestId('fallback-banner').getByText(...)
+- 修改文件: tests/e2e/fallback.spec.ts
+- 更新 Codebase Patterns: tRPC JSONL mock 正确方式 (覆盖原"改用 auth flow"的误导说明)
+- chromium 1.5s · mobile 1.8s · vitest 325/325 · typecheck ✅
+- **未来迭代的学习:**
+  - Playwright locator.click() 默认 timeout = test timeout(30s) · 不存在的 testid 会耗尽整个 test budget · 非关键 click 必须加 { timeout: 2000 }
+  - tRPC v11 httpBatchStreamLink 三行 JSONL HEAD 格式: placeholder=0, PROMISE_TYPE=0, FULFILLED=0
+  - page.addInitScript(fn, arg) arg 必须 JSON-serializable · Date 用 .toISOString() 传字符串
+  - Radix Select open dropdown 遮挡后续元素 · 必须先 click option 或 Escape 关闭再找 submit button
+  - getByText substring 匹配可能命中多个元素 → strict mode 报错 → 用 getByTestId().getByText() 限定范围
+---
