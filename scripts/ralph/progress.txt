@@ -1879,3 +1879,16 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 --- [RALPH] Iteration 2 started: US-012 at 2026-05-09 20:09 ---
 
 --- [RALPH] Iteration 3 started: US-012 at 2026-05-09 20:12 ---
+
+## [2026-05-09 20:43] - US-012 (PRD-5 收官 · LLM Judge 4 mode + 4 工具 e2e + lint clean + typecheck + 全套绿灯门禁)
+- 全部实现已在上一次 ralph 迭代 commit 81017b4 完成 · 4 judge 文件(8 golden case) + tools-integration.spec.ts + manifest.json + lint clean
+- 本次修复: MOCK_HISTORY_LIST 4 个 row 缺少 content/scriptType/elements 字段 → History.tsx row.content.substring(0,80) TypeError → React error boundary 接管 → history-page testid 不可见 → e2e Step 5 fail
+- 根因分析: MOCK_HISTORY_LIST 是用于 history.list 的 mock 数据，但缺少 content 字段；history-flow.spec.ts 的 MOCK_HISTORY_ROW 有 content 字段，是 AC-6 对照
+- 修复: tests/e2e/tools-integration.spec.ts MOCK_HISTORY_LIST 4 rows 补 content/scriptType/elements
+- 更新: scripts/ralph/verify-artifacts/US-012/manifest.json(反映真实 e2e 结果 126 passed)
+- 验证: pnpm test:judge 22/22 ✅ · pnpm test 542/542 ✅ · pnpm test:e2e 126/128(2 skipped) ✅ · typecheck 6ws 0 ✅ · lint web+api 0 ✅
+- **未来迭代的学习:**
+  - e2e mock 数据必须与真实 API response 的 SELECT 完全匹配 · 即使 TypeScript type 允许 Partial · 运行时访问缺失字段会导致 TypeError
+  - history-flow.spec.ts 的 MOCK_HISTORY_ROW 有 content 但 tools-integration 的 MOCK_HISTORY_LIST 没有 → 跨文件 mock 数据不一致是常见错误源
+  - tRPC serial e2e mock 中 history.list 返回 Array 时用 [[array]] 包装；history-flow.spec.ts 用 [[[singleRow]]] 包装 → 两者格式相同但命名不同容易混淆
+---
