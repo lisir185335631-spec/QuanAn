@@ -93,8 +93,86 @@ PRD_FILE = SCRIPT_DIR / "prd.json"
 PROGRESS_FILE = SCRIPT_DIR / "progress.txt"
 LOCK_FILE = SCRIPT_DIR / "ralph-lock.json"
 AUDIT_GATE_FILE = SCRIPT_DIR / "audit-gate.json"
-COST_LOG_FILE = SCRIPT_DIR / "cost-log.jsonl"
+COST_LOG_FILE = SCRIPT_DIR / "cost-log.jsonl"  # M-4 fallback · 实际写入用 _get_cost_log_path()
 BACKUP_DIR = SCRIPT_DIR / "backups"
+
+
+# ─────────────────────────────────────────────
+# PRD-5 retro M-1/M-2/M-4 helpers (2026-05-09 加)
+# ─────────────────────────────────────────────
+
+def _get_cost_log_path() -> "Path":
+    """M-4 (PRD-5 retro · cost-log per-PRD 防跨 PRD 累积污染)
+    按 prd.json branchName 推 PRD 编号写到独立 cost-log-{branch}.jsonl.
+    """
+    try:
+        if PRD_FILE.exists():
+            prd = json.loads(PRD_FILE.read_text(encoding="utf-8"))
+            branch = (prd.get("branchName") or "").replace("/", "-")
+            if branch:
+                return SCRIPT_DIR / f"cost-log-{branch}.jsonl"
+    except Exception:
+        pass
+    return COST_LOG_FILE
+
+
+def _check_claude_health(timeout: int = 5) -> bool:
+    """M-2 (PRD-5 RCA-003 教训): 5s 内 'say OK' 测试 · 防 claude --print 系统级 hang
+    返回 True if claude CLI 健康 · False if hang/timeout/error.
+    """
+    if AGENT == "codex":
+        return True  # codex 不在范围
+    try:
+        cmd = build_cmd()
+        result = subprocess.run(
+            cmd,
+            input="Say only OK and nothing else.",
+            text=True,
+            timeout=timeout,
+            capture_output=True,
+        )
+        return result.returncode == 0 and "OK" in (result.stdout or "").upper()
+    except Exception:
+        return False
+
+
+def _write_blocked_audit_gate(has_pass: bool) -> bool:
+    """M-1 (PRD-5 RCA-003 教训): BLOCKED 必须写 audit-gate(needs_attention) · 不静默 exit
+    返回 True if 有 BLOCKED stories 已写入 audit-gate · False if 0 blocked.
+    """
+    try:
+        if not PRD_FILE.exists():
+            return False
+        prd = json.loads(PRD_FILE.read_text(encoding="utf-8"))
+        blocked = [s for s in prd.get("userStories", []) if s.get("blocked")]
+        if not blocked:
+            return False
+        blocked_ids = [s.get("id") for s in blocked]
+        audit_data = {
+            "status": "blocked_needs_attention",
+            "blocked_stories": blocked_ids,
+            "has_passed": has_pass,
+            "message": f"{len(blocked)} stories BLOCKED · 需用户介入决策 (approve / reject / split / quit)",
+            "timestamp": datetime.now().isoformat(),
+        }
+        AUDIT_GATE_FILE.write_text(
+            json.dumps(audit_data, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        print(f"\n[AUDIT-GATE] BLOCKED audit-gate 已写入 · {len(blocked)} stories: {blocked_ids}")
+        print(f"[AUDIT-GATE] 等用户决策 · 不静默 exit · 详 {AUDIT_GATE_FILE}")
+        # macOS notify (best effort · 不阻塞)
+        try:
+            subprocess.run(
+                ["osascript", "-e",
+                 f'display notification "{len(blocked)} stories BLOCKED · 需 attention" with title "Ralph daemon"'],
+                capture_output=True, timeout=3,
+            )
+        except Exception:
+            pass
+        return True
+    except Exception as e:
+        print(f"[WARN] 写 BLOCKED audit-gate 失败: {e}")
+        return False
 
 
 # ─────────────────────────────────────────────
@@ -458,8 +536,10 @@ def log_cost(story_id: str | None, phase: str, duration_seconds: float,
         "phase": phase,
         "duration_seconds": round(duration_seconds, 1),
     }
+    # M-4 (PRD-5 retro): per-PRD cost-log 防跨 PRD 污染
+    cost_log_path = _get_cost_log_path()
     try:
-        with open(COST_LOG_FILE, "a", encoding="utf-8") as f:
+        with open(cost_log_path, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except Exception as e:
         print(f"[WARN]  成本日志写入失败: {e}")
@@ -1106,6 +1186,14 @@ def run_developer(iteration: int, story_id: str | None) -> tuple[bool, bool]:
         print(f"[FAIL] 错误: {CLAUDE_INSTRUCTION_FILE} 不存在")
         return False, True
 
+    # M-2 (PRD-5 RCA-003): claude CLI 健康检测 · 防 30 min 0 bytes hang
+    if not _check_claude_health():
+        print(f"[WARN] claude CLI health check 失败 · sleep 60s 重试 1 次")
+        time.sleep(60)
+        if not _check_claude_health():
+            print(f"[FAIL] claude CLI 2 次 health check 全失败 · 标记 crashed (避免 30 min hang)")
+            return False, True  # crashed=True · 算 retryCount 但 1 min 内 fail-fast
+
     prompt = build_developer_prompt(story_id)
     timed_out, exit_code, duration = run_agent(prompt, "开发迭代", TIMEOUT_SECONDS)
     log_cost(story_id, "developing", duration, iteration)
@@ -1122,6 +1210,14 @@ def run_validator(iteration: int, story_id: str | None) -> None:
     if not VALIDATOR_INSTRUCTION_FILE.exists():
         print(f"[WARN]  警告: {VALIDATOR_INSTRUCTION_FILE} 不存在，跳过验证")
         return
+
+    # M-2 (PRD-5 RCA-003): claude CLI 健康检测 · 防 hang
+    if not _check_claude_health():
+        print(f"[WARN] claude CLI health check 失败 · sleep 60s 重试 1 次")
+        time.sleep(60)
+        if not _check_claude_health():
+            print(f"[FAIL] claude CLI 2 次 health check 全失败 · 跳过本轮 validation (避免 hang)")
+            return
 
     prompt = build_validator_prompt(story_id)
     timed_out, exit_code, duration = run_agent(prompt, "验证", VALIDATOR_TIMEOUT_SECONDS)
@@ -1422,15 +1518,20 @@ def main():
                     dashboard.set_state(phase="done")
                     elapsed = time.time() - total_start_time
                     has_pass = any_story_passed()
-                    if has_pass:
-                        print("[OK] 所有任务已完成（部分可能 BLOCKED）!")
+                    # M-1 (PRD-5 RCA-003 教训): BLOCKED 必须写 audit-gate · 不静默 exit
+                    blocked_attn = _write_blocked_audit_gate(has_pass)
+                    if has_pass and blocked_attn:
+                        print("[OK] 部分 PASSED + 部分 BLOCKED · audit-gate(needs_attention) 写入 · 等用户决策")
+                    elif has_pass:
+                        print("[OK] 所有任务已完成 · 全部 PASSED")
                     else:
                         print("[BLOCK] 所有任务均已 BLOCKED，无一通过!")
                     print(f"[TIME]  总运行时间: {format_duration(elapsed)}")
                     print_cost_summary()
                     print_next_step_hints(has_pass)
                     clear_lock()
-                    sys.exit(0 if has_pass else 2)
+                    # 有 BLOCKED 时 exit 2 即使 has_pass · 让 CI 能 catch
+                    sys.exit(0 if (has_pass and not blocked_attn) else 2)
                 else:
                     # 诊断：可能是依赖循环或依赖了不存在的 story
                     prd_diag = read_prd()
@@ -1544,8 +1645,12 @@ def main():
                 dashboard.set_state(phase="done")
                 elapsed = time.time() - total_start_time
                 has_pass = any_story_passed()
-                if has_pass:
-                    print("[OK] 所有任务已完成（部分可能 BLOCKED）!")
+                # M-1 (PRD-5 RCA-003 教训): BLOCKED 必须写 audit-gate · 不静默 exit
+                blocked_attn = _write_blocked_audit_gate(has_pass)
+                if has_pass and blocked_attn:
+                    print("[OK] 部分 PASSED + 部分 BLOCKED · audit-gate(needs_attention) 写入 · 等用户决策")
+                elif has_pass:
+                    print("[OK] 所有任务已完成 · 全部 PASSED")
                 else:
                     print("[BLOCK] 所有任务均已 BLOCKED，无一通过!")
                 print(f"[TIME]  总运行时间: {format_duration(elapsed)}")
@@ -1553,7 +1658,8 @@ def main():
                 write_prd_metric(elapsed)
                 print_next_step_hints(has_pass)
                 clear_lock()
-                sys.exit(0 if has_pass else 2)
+                # 有 BLOCKED 时 exit 2 即使 has_pass · 让 CI 能 catch
+                sys.exit(0 if (has_pass and not blocked_attn) else 2)
 
         except KeyboardInterrupt:
             elapsed = time.time() - total_start_time
