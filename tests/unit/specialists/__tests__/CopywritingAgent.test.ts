@@ -115,9 +115,9 @@ describe('CopywritingAgent', () => {
     expect(CopywritingOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
-  // AC-10: markdown 不含 # heading → refine 失败 → retry → SchemaValidationError
-  it('AC-10: markdown without # heading → refine fails → SchemaValidationError', async () => {
-    // No "# heading" line — fails the refine check
+  // AC-10: markdown 不含 # heading → refine 失败 → retry → fallback (US-015 AC-1)
+  it('AC-10: markdown without # heading → refine fails → fallback (US-015)', async () => {
+    // US-015: with fallbackTemplate.step7, schema errors trigger fallback instead of throw
     const noHeadingContent = {
       markdown: '这段文案没有标题行，完全没有以 # 开头的行。' + '内容'.repeat(250),
       structure: '痛点→方案',
@@ -125,13 +125,14 @@ describe('CopywritingAgent', () => {
       cta: '关注我',
     };
     const agent = new CopywritingAgent(makeStreamGateway(noHeadingContent));
-    await expect(
-      agent.execute({ ...BASE_REQ, userInput: {} }),
-    ).rejects.toBeInstanceOf(SchemaValidationError);
+    const res = await agent.execute({ ...BASE_REQ, userInput: {} });
+    expect(res.isFallback).toBe(true);
+    expect(CopywritingOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
-  // AC-11: hooks 数组为空 → min(1) 失败 → retry → SchemaValidationError
-  it('AC-11: hooks empty array → zod min(1) fails → SchemaValidationError', async () => {
+  // AC-11: hooks 数组为空 → min(1) 失败 → retry → fallback (US-015 AC-1)
+  it('AC-11: hooks empty array → zod min(1) fails → fallback (US-015)', async () => {
+    // US-015: with fallbackTemplate.step7, schema errors trigger fallback
     const noHooksContent = {
       markdown: makeValidMarkdown(),
       structure: '痛点→方案',
@@ -139,29 +140,26 @@ describe('CopywritingAgent', () => {
       cta: '关注我',
     };
     const agent = new CopywritingAgent(makeStreamGateway(noHooksContent));
-    await expect(
-      agent.execute({ ...BASE_REQ, userInput: {} }),
-    ).rejects.toBeInstanceOf(SchemaValidationError);
+    const res = await agent.execute({ ...BASE_REQ, userInput: {} });
+    expect(res.isFallback).toBe(true);
+    expect(CopywritingOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
-  // AC-12: 断流 → JSON.parse 失败 → retry → both fail → SchemaValidationError
-  it('AC-12: 断流(incomplete JSON) → retry → SchemaValidationError', async () => {
+  // AC-12: 断流 → JSON.parse 失败 → retry → both fail → fallback (US-015 AC-1)
+  it('AC-12: 断流(incomplete JSON) → retry → fallback (US-015)', async () => {
+    // US-015: stream error → invokeLLM returns isFallback → SchemaValidationError → fallback
     const agent = new CopywritingAgent(makeErrorStreamGateway());
-    await expect(
-      agent.execute({ ...BASE_REQ, userInput: {} }),
-    ).rejects.toThrow();
+    const res = await agent.execute({ ...BASE_REQ, userInput: {} });
+    expect(res.isFallback).toBe(true);
   });
 
-  // AC-13: non-step7 modes throw 'Not implemented · PRD-5'
-  it.each(['free', 'boom', 'acquisition'])(
-    'AC-13: mode=%s → throws Not implemented · PRD-5',
-    async (mode) => {
-      const agent = new CopywritingAgent(makeStreamGateway(makeValidContent()));
-      await expect(
-        agent.execute({ ...BASE_REQ, mode, userInput: {} }),
-      ).rejects.toThrow('Not implemented · PRD-5');
-    },
-  );
+  // AC-13 updated (D-035): acquisition throws 'Not implemented · PRD-6'
+  it('AC-13: mode=acquisition → throws Not implemented · PRD-6 (D-035)', async () => {
+    const agent = new CopywritingAgent(makeStreamGateway(makeValidContent()));
+    await expect(
+      agent.execute({ ...BASE_REQ, mode: 'acquisition', userInput: {} }),
+    ).rejects.toThrow('Not implemented · PRD-6');
+  });
 
   // D-019: modelUsed captured from stream meta chunk — not hardcoded
   it('modelUsed reflects stream meta chunk model (D-019 pattern)', async () => {
@@ -183,5 +181,143 @@ describe('CopywritingAgent', () => {
     expect(agent.config.memory.l2_read).toContain('stepData');
     expect(agent.config.memory.l2_read).toContain('history'); // AC-6
     expect(agent.config.memory.l2_write).toContain('history'); // AC-7
+  });
+
+  // ── free mode × 4 scenarios (PRD-5 US-002) ───────────────────────────────────
+
+  function makeFreeContent() {
+    // markdown must satisfy min(400) — 'P' × 410 safely exceeds threshold
+    const md = '# 自由创作文案\n\n' + 'P'.repeat(410);
+    return {
+      markdown: md,
+      metadata: {
+        scriptType: 'tutorial' as const,
+        elements: ['curiosity', 'contrast'] as ['curiosity', 'contrast'],
+        structureSummary: '钩子→价值输出→行动引导',
+        estimatedDuration: '60-90 秒',
+      },
+    };
+  }
+
+  it('free happy path: returns valid copywritingFreeOutput with markdown >= 400 chars', async () => {
+    const content = makeFreeContent();
+    const agent = new CopywritingAgent(makeStreamGateway(content));
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'free',
+      userInput: { scriptType: 'tutorial', elements: ['curiosity'], topic: '如何快速涨粉' },
+    });
+
+    expect(res.isFallback).toBe(false);
+    expect(res.result).toHaveProperty('markdown');
+    expect(res.result).toHaveProperty('metadata');
+    const result = res.result as typeof content;
+    expect(result.markdown.length).toBeGreaterThanOrEqual(400);
+    expect(result.metadata.scriptType).toBe('tutorial');
+  });
+
+  it('free fallback: schema validation failure → isFallback=true', async () => {
+    const badContent = {
+      markdown: '短', // < min(400)
+      metadata: { scriptType: 'tutorial', elements: [], structureSummary: '', estimatedDuration: '' },
+    };
+    const agent = new CopywritingAgent(makeStreamGateway(badContent));
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'free',
+      userInput: { scriptType: 'tutorial', elements: ['curiosity'], topic: '话题' },
+    });
+
+    expect(res.isFallback).toBe(true);
+  });
+
+  it('free mode: stream断流 → retry → fallback (同 step7 断流模式)', async () => {
+    const agent = new CopywritingAgent(makeErrorStreamGateway());
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'free',
+      userInput: { scriptType: 'debate', elements: ['fear'], topic: '话题' },
+    });
+
+    expect(res.isFallback).toBe(true);
+  });
+
+  it('free mode: modelUsed reflects stream meta chunk (D-019)', async () => {
+    const content = makeFreeContent();
+    const agent = new CopywritingAgent(makeStreamGateway(content, 'free-model-v1'));
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'free',
+      userInput: { scriptType: 'tutorial', elements: ['curiosity'], topic: '话题' },
+    });
+
+    expect(res.modelUsed).toBe('free-model-v1');
+  });
+
+  // ── boom mode × 4 scenarios (PRD-5 US-002) ───────────────────────────────────
+
+  function makeBoomContent() {
+    // each candidate must satisfy min(200) max(500) — 'C' × 210 safely within bounds
+    const cand = 'C'.repeat(210);
+    return {
+      candidates: [cand, cand, cand, cand, cand] as [string, string, string, string, string],
+      metadata: {
+        count: 5 as const,
+        elements: ['curiosity', 'contrast'] as ['curiosity', 'contrast'],
+      },
+    };
+  }
+
+  it('boom happy path: returns boomOutput with 5 candidates', async () => {
+    const content = makeBoomContent();
+    const agent = new CopywritingAgent(makeStreamGateway(content));
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'boom',
+      userInput: { elements: ['curiosity', 'contrast'], theme: '如何快速涨粉' },
+    });
+
+    expect(res.isFallback).toBe(false);
+    const result = res.result as typeof content;
+    expect(result.candidates).toHaveLength(5);
+    expect(result.metadata.count).toBe(5);
+  });
+
+  it('boom fallback: bad candidates length → isFallback=true', async () => {
+    const badContent = {
+      candidates: ['只有一篇候选文案'], // length !== 5
+      metadata: { count: 1, elements: [] },
+    };
+    const agent = new CopywritingAgent(makeStreamGateway(badContent));
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'boom',
+      userInput: { elements: ['curiosity'], theme: '话题' },
+    });
+
+    expect(res.isFallback).toBe(true);
+  });
+
+  it('boom mode: 断流 → retry → fallback', async () => {
+    const agent = new CopywritingAgent(makeErrorStreamGateway());
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'boom',
+      userInput: { elements: ['fear', 'contrast'], theme: '话题' },
+    });
+
+    expect(res.isFallback).toBe(true);
+  });
+
+  it('boom mode: modelUsed reflects stream meta chunk (D-019)', async () => {
+    const content = makeBoomContent();
+    const agent = new CopywritingAgent(makeStreamGateway(content, 'boom-model-v2'));
+    const res = await agent.execute({
+      accountId: 42,
+      mode: 'boom',
+      userInput: { elements: ['curiosity'], theme: '话题' },
+    });
+
+    expect(res.modelUsed).toBe('boom-model-v2');
   });
 });

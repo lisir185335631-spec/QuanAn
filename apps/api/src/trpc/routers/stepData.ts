@@ -18,7 +18,7 @@ import { brandingAgent } from '@/specialists/BrandingAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
 import { videoAgent } from '@/specialists/VideoAgent';
-import { copywritingAgent } from '@/specialists/CopywritingAgent';
+import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
 import { livestreamAgent } from '@/specialists/LivestreamAgent';
 
 /** Accepts any string key — allows e2e tests to use arbitrary keys; RLS handles isolation */
@@ -256,7 +256,7 @@ export const stepDataRouter = router({
             agentId: 'CopywritingAgent',
             sourceType: 'user',
             inputSummary: input.stepKey,
-            content: agentRes.result.markdown,
+            content: (agentRes.result as CopywritingOutput).markdown,
             traceId: traceId ?? null,
           },
         });
@@ -411,7 +411,7 @@ export const stepDataRouter = router({
               agentId: 'CopywritingAgent',
               sourceType: 'user',
               inputSummary: input.stepKey,
-              content: agentRes.result.markdown,
+              content: (agentRes.result as CopywritingOutput).markdown,
               traceId: traceId ?? null,
             },
           });

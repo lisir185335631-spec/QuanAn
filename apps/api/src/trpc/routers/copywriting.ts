@@ -11,7 +11,7 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
-import { copywritingAgent } from '@/specialists/CopywritingAgent';
+import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
 
 const generateCopywritingInput = z.object({
   stepKey: z.string().min(1).max(64),
@@ -62,8 +62,8 @@ export const copywritingRouter = router({
         stepKey: input.stepKey,
       });
 
-      // AC-7: write History row with real markdown result
-      const markdown = agentRes.result.markdown;
+      // AC-7: write History row with real markdown result (step7 mode always returns CopywritingOutput)
+      const markdown = (agentRes.result as CopywritingOutput).markdown;
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
