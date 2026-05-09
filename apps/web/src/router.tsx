@@ -15,11 +15,13 @@ import { RootLayout } from '@/layouts/RootLayout';
 import { StepLayout } from '@/layouts/StepLayout';
 import NotFound from '@/pages/NotFound';
 
-// ── Step pages (9) — one shared chunk ────────────────────────────────────────
+// ── Step pages (9 + 2 sub-steps) — one shared chunk ──────────────────────────
 const Step1 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step1'));
 const Step2 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step2'));
 const Step3 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step3'));
+const Step3b = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step3b'));
 const Step4 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step4'));
+const Step4b = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step4b'));
 const Step5 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step5'));
 const Step6 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step6'));
 const Step7 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step7'));
@@ -63,7 +65,7 @@ export const router = createBrowserRouter([
       // Root redirect
       { index: true, element: <Navigate to="/step/1" replace /> },
 
-      // ── Step routes (9) — nested under StepLayout (adds FeedbackButton) ──
+      // ── Step routes (9 core + 2 sub-steps) — nested under StepLayout ──────
       {
         path: 'step',
         element: <StepLayout />,
@@ -71,7 +73,9 @@ export const router = createBrowserRouter([
           { path: '1', element: <Step1 /> },
           { path: '2', element: <Step2 /> },
           { path: '3', element: <Step3 /> },
+          { path: '3b', element: <Step3b /> },
           { path: '4', element: <Step4 /> },
+          { path: '4b', element: <Step4b /> },
           { path: '5', element: <Step5 /> },
           { path: '6', element: <Step6 /> },
           { path: '7', element: <Step7 /> },

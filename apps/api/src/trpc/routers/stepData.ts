@@ -110,6 +110,7 @@ export const stepDataRouter = router({
           data: {
             result: agentRes.result as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
@@ -137,6 +138,7 @@ export const stepDataRouter = router({
           data: {
             result: agentRes.result as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
@@ -162,6 +164,7 @@ export const stepDataRouter = router({
           data: {
             result: agentRes.result as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
@@ -188,12 +191,74 @@ export const stepDataRouter = router({
           data: {
             result: agentRes.result as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
             agentId: 'VideoAgent',
           },
           select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
+
+      // US-017: call TopicAgent for step5 via save (sync · 允许 e2e 走 UI form 路径)
+      if (input.stepKey === 'step5') {
+        const inputs = input.inputs as Record<string, unknown>;
+        const category = ((inputs['lastCategory'] as string) || 'traffic') as typeof TOPIC_CATEGORIES[number];
+        const agentRes = await topicAgent.execute({
+          accountId: activeAccountId!,
+          userInput: { category, ...inputs },
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        const updatedRow = await prisma.stepData.update({
+          where: { accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey } },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'TopicAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        return { ok: true, data: updatedRow };
+      }
+
+      // US-017: call CopywritingAgent for step7 via save (sync · 允许 e2e 走 UI form 路径)
+      if (input.stepKey === 'step7') {
+        const agentRes = await copywritingAgent.execute({
+          accountId: activeAccountId!,
+          mode: 'step7',
+          userInput: input.inputs,
+          traceId: traceId ?? undefined,
+          stepKey: input.stepKey,
+        });
+        const updatedRow = await prisma.stepData.update({
+          where: { accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey } },
+          data: {
+            result: agentRes.result as Prisma.InputJsonValue,
+            isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
+            durationMs: agentRes.durationMs,
+            tokensUsed: agentRes.tokensUsed.total,
+            modelUsed: agentRes.modelUsed,
+            agentId: 'CopywritingAgent',
+          },
+          select: STEP_DATA_SELECT,
+        });
+        await prisma.history.create({
+          data: {
+            accountId: activeAccountId!,
+            agentId: 'CopywritingAgent',
+            sourceType: 'user',
+            inputSummary: input.stepKey,
+            content: agentRes.result.markdown,
+            traceId: traceId ?? null,
+          },
         });
         return { ok: true, data: updatedRow };
       }
@@ -214,6 +279,7 @@ export const stepDataRouter = router({
           data: {
             result: agentRes.result as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,
             tokensUsed: agentRes.tokensUsed.total,
             modelUsed: agentRes.modelUsed,
@@ -272,6 +338,7 @@ export const stepDataRouter = router({
               inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
               result: agentRes.result as Prisma.InputJsonValue,
               isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
               durationMs: agentRes.durationMs,
               tokensUsed: agentRes.tokensUsed.total,
               modelUsed: agentRes.modelUsed,
@@ -285,6 +352,7 @@ export const stepDataRouter = router({
               inputs: { category: input.category, ...input.inputs } as Prisma.InputJsonValue,
               result: agentRes.result as Prisma.InputJsonValue,
               isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
               durationMs: agentRes.durationMs,
               tokensUsed: agentRes.tokensUsed.total,
               modelUsed: agentRes.modelUsed,
@@ -313,6 +381,7 @@ export const stepDataRouter = router({
               inputs: input.inputs as Prisma.InputJsonValue,
               result: agentRes.result as Prisma.InputJsonValue,
               isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
               durationMs: agentRes.durationMs,
               tokensUsed: agentRes.tokensUsed.total,
               modelUsed: agentRes.modelUsed,
@@ -326,6 +395,7 @@ export const stepDataRouter = router({
               inputs: input.inputs as Prisma.InputJsonValue,
               result: agentRes.result as Prisma.InputJsonValue,
               isFallback: agentRes.isFallback,
+            status: agentRes.isFallback ? 'fallback' : 'completed',
               durationMs: agentRes.durationMs,
               tokensUsed: agentRes.tokensUsed.total,
               modelUsed: agentRes.modelUsed,
