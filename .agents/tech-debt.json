@@ -151,7 +151,65 @@
       "root_cause": "Radix DropdownMenu 自适应 max-h 配合 ScrollArea inner viewport 兼容性需要专门处理 · h-N 是简单稳定方案,代价是空旷",
       "scheduled_fix_in": "PRD-4 UI polish · 测试 max-h-60 + ScrollArea viewport overflow:auto 是否兼容 Radix DropdownMenu · 兼容则改 max-h",
       "fix_hint": "<ScrollArea className='max-h-60'> · 内部 viewport 需 height:auto + max-height inherit · 实测 Radix dropdown portal 是否会 break · 不兼容回 h-60"
+    },
+    {
+      "id": "TD-012",
+      "category": "design-drift",
+      "title": "双 base 目录冲突 · agents/base/ 历史 stub vs specialists/base/ 新协议锁",
+      "discovered_at": "2026-05-09",
+      "discovered_by": "Opus audit US-001 PRD-4",
+      "severity": "medium",
+      "status": "closed",
+      "evidence": "apps/api/src/agents/base/{BaseSpecialist,ContextAssembler,types}.ts (PRD-2 US-007 历史 stub) · apps/api/src/specialists/base/{BaseSpecialist,types,errors}.ts (PRD-4 US-001 新建) · BaseSpecialist (US-001) import @/agents/base/ContextAssembler + @/agents/base/types · LLMGateway PRD-2 import @/agents/base/types ModelTier",
+      "root_cause": "PRD-2 US-007 在 agents/base/ 写 BaseSpecialist + ContextAssembler stub (LLMGateway 铺垫) · PRD-4 §1.5 协议锁锁定路径在 specialists/base/ + services/context-assembler/ · ralph US-001 严格按 §1 创建在 specialists/base/ 但 import 既有 agents/base/ stub · 双路径并存",
+      "scheduled_fix_in": "PRD-4 US-002 (ContextAssembler 真实施) · ContextAssembler 在 services/context-assembler/ 真实施 + 改 BaseSpecialist 的 import 路径(@/services/context-assembler/ContextAssembler) + 删除 apps/api/src/agents/base/ContextAssembler.ts 旧 stub (避免双 ContextAssembler) · 不修视为协议漂移 reject",
+      "audit_exemption": "US-001 approve 时豁免 · US-001 代码符合 §1 文件路径要求(specialists/base/) · import 用既有 stub 是合理选择(避免破坏 LLMGateway 的 @/agents/base/types ModelTier import) · 删除/迁移是 US-002 范围 · 不影响 US-001 本身功能",
+      "fix_hint": "US-002 实施时: 1) services/context-assembler/ContextAssembler.ts 真实施 4 路并行 fetch + AssembledContext schema 2) BaseSpecialist.ts:15 import path 从 @/agents/base/ContextAssembler 改 @/services/context-assembler/ContextAssembler 3) base.test.ts:27 vi.mock 路径同步改 4) 删除 apps/api/src/agents/base/ContextAssembler.ts (LLMGateway import 的 ModelTier 留 agents/base/types 不动) · audit 时 grep `from '@/agents/base/ContextAssembler` 应 0 命中",
+      "closed_at": "2026-05-09",
+      "closed_by": "Opus audit US-002 retry 1",
+      "close_evidence": "US-002 commit 4289068 (retry 1 修 reject 反馈) · 4 项全过: (1) ContextAssembler 真实施 services/context-assembler/ContextAssembler.ts 170 行(D-020 Promise.allSettled + 5s timeout + D-025 RAG 降级跑空)(2) BaseSpecialist.ts:15 import 改 @/services/context-assembler/ContextAssembler (3) apps/api/src/agents/base/ContextAssembler.ts 已删除(grep `from \\'@/agents/base/ContextAssembler` 0 命中)(4) base.test.ts:27,169 vi.mock 路径同步改 · 232/232 vitest pass + 6 ws typecheck 0 error · TD-012 完全闭环"
+    },
+    {
+      "id": "TD-013",
+      "category": "design-drift",
+      "title": "双重 cost_log 写入 · LLMGateway + BaseSpecialist 各写一条 · 同 trace_id 2 条记录",
+      "discovered_at": "2026-05-09",
+      "discovered_by": "Opus audit US-003 PRD-4",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "apps/api/src/workers/llm-gateway/index.ts:144,151 调 writeCostLog (callType='complete' · 记 LLM 调用维度) · apps/api/src/specialists/base/BaseSpecialist.ts:106,161 调 prisma.costLog.create (callType='specialist_call' · 记 Specialist 调用维度 · 含 target.stepKey)。同一 Specialist 调用产生 2 条 cost_log 记录 · trace_id 相同 · token/duration 字段重叠 ~80%",
+      "root_cause": "LLMGateway PRD-2 US-007 已自带 cost_log 写入(callType='complete')· BaseSpecialist US-003 实施 D-023 时再写一次(callType='specialist_call' · target jsonb)· 双层 logging 设计 · 不是 bug",
+      "scheduled_fix_in": "PRD-11 admin 后台域 ④ 成本仪表盘实施时治理 · 选项 A · UI 按 callType 区分(LLM cost vs Specialist 调用 cost · 维度互补可保留双写)· 选项 B · 合并到 LLMGateway 单写(BaseSpecialist 不写 · LLMGateway 多记 target.stepKey 从 metadata 传)· 选项 C · 文档化双写(API 文档说明 callType 区分)",
+      "audit_exemption": "US-003 approve 时豁免 · 不是 bug · 是双层 logging 设计 · 字段虽重叠 80% 但 callType 可区分 · 不影响功能 · PRD-11 admin 实施时再统一",
+      "fix_hint": "PRD-11 admin 域 ④ 时:1) 仪表盘按 callType 分组(complete vs specialist_call) 2) 文档化双写语义(LLM 调用 = 1 条 complete · 经 Specialist 调用 = 1 specialist_call + 1 complete) 3) 看是否合并到 LLMGateway 单写(取决于是否有 LLM 调用不经 Specialist 的场景 · 如果有则双写合理)",
+      "additional_finding": "PRD-4 §1.5 表 C 写的是 cost_log.event_type · 但实际 schema 用 callType · 文档偏差 · 不是 schema 错误 · PRD-4 §1.5 表 C 应该改 callType(留 PRD-4 收官 retro 时勘误)"
+    },
+    {
+      "id": "TD-014",
+      "category": "design-drift",
+      "title": "PositioningAgent _mode instance state · 高并发 race 风险",
+      "discovered_at": "2026-05-09",
+      "discovered_by": "Opus audit US-004 PRD-4",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "apps/api/src/specialists/PositioningAgent.ts:90 `_mode: Mode = 'industry'` instance state · invokeLLM line 114 改 _mode · outputSchema getter line 96-101 读 _mode · BaseSpecialist 内 safeParse 在 invokeLLM 之后 · await 间隙其他 execute() 调用可能切入改 _mode · race window",
+      "root_cause": "PRD-4 §1 PositioningAgent 接 step1+step4 双 mode · ralph 用 instance state 保存 mode 让 outputSchema getter 按 mode 返回 schema · 单例 export(REJ-004 合规)+ Node.js 异步 await · 同实例多并发 execute 间隙切入 race · 实际触发概率低(单 user 串行做 9 step · 不会并发 industry + execution)",
+      "scheduled_fix_in": "PRD-7+ 高并发场景治理 / 或 PRD-4 retro 时统一所有多 mode Specialist (US-005 BrandingAgent / US-007 TopicAgent / US-008 VideoAgent / US-009 CopywritingAgent 都有类似模式)",
+      "audit_exemption": "US-004 approve 时豁免 · 实际并发 race 概率低(P3 IP 主流程单 user 串行)· LLMGateway 限流保护 · race window 短 · 不影响 US-004 功能 · 留高并发场景前治理",
+      "fix_hint": "选项 A · BaseSpecialist 接口改成 outputSchema 是 method (req: SpecialistRequest) => ZodSchema 而非 getter · 让子类按 req.mode 直接返回 schema 不用 instance state · 工作量改 7 Specialist + base + tests 中 (~200 行) · 选项 B · 用 AsyncLocalStorage 隔离 _mode (每 execute() 独立 storage 上下文) · 工作量小但增加复杂度 · 选项 C · 接受当前实施 · 文档化"
+    },
+    {
+      "id": "TD-015",
+      "category": "design-drift",
+      "title": "specialist-io schema 子目录组织 vs PRD-4 §1.5 协议锁单一文件路径",
+      "discovered_at": "2026-05-09",
+      "discovered_by": "Opus audit US-011 PRD-4",
+      "severity": "low",
+      "status": "accepted",
+      "evidence": "PRD-4 §1.5 表 A 锁定 packages/schemas/src/specialist-io.ts (单一文件) · ralph 实际实施在 packages/schemas/src/specialist-io/ (子目录) 含 step-inputs.schema.ts + step-results · 路径偏差但语义一致(schema 单一真理源 · web/api 共用)",
+      "root_cause": "PRD 协议锁写单一文件 · ralph 选子目录组织(更清晰可扩展含 step-results)· 实际项目结构更合理",
+      "audit_exemption": "approve · 实际效果完全符合协议锁意图 · 子目录组织更清晰 · 不影响功能 · 后续 PRD 收官 retro 时改协议锁文档对齐实际"
     }
   ],
-  "last_updated": "2026-05-08"
+  "last_updated": "2026-05-09"
 }
