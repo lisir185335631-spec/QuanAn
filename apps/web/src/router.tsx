@@ -37,6 +37,7 @@ const PrivateDomain = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages
 const BoomGenerate = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/BoomGenerate'));
 const Generate = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Generate'));
 const Analysis = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Analysis'));
+const VideoAnalysis = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VideoAnalysis'));
 const VideoProduction = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/VideoProduction'));
 const AcquisitionVideo = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/AcquisitionVideo'));
 const AiVideo = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/AiVideo'));
@@ -93,6 +94,7 @@ export const router = createBrowserRouter([
       { path: 'boom-generate', element: <BoomGenerate /> },
       { path: 'generate', element: <Generate /> },
       { path: 'analysis', element: <Analysis /> },
+      { path: 'video-analysis', element: <VideoAnalysis /> },
       { path: 'video-production', element: <VideoProduction /> },
       { path: 'acquisition-video', element: <AcquisitionVideo /> },
       { path: 'ai-video', element: <AiVideo /> },
