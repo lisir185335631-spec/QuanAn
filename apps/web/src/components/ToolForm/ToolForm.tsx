@@ -230,12 +230,25 @@ function renderToolFields(
         </>
       );
 
-    case 'analysis':
+    case 'analysis': {
+      const copyValue = (watch('copy') as string) ?? '';
+      const charCount = copyValue.length;
       return (
         <div className="space-y-1.5">
-          <label htmlFor="tool-analysis-copy" className="text-body-sm font-medium text-on-surface">
-            文案内容<span className="text-error ml-0.5">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="tool-analysis-copy" className="text-body-sm font-medium text-on-surface">
+              文案内容<span className="text-error ml-0.5">*</span>
+            </label>
+            <span
+              className={cn(
+                'text-body-xs tabular-nums',
+                charCount < 10 ? 'text-error' : 'text-muted-foreground',
+              )}
+              data-testid="analysis-char-count"
+            >
+              {charCount} / 3000
+            </span>
+          </div>
           <textarea
             id="tool-analysis-copy"
             {...register('copy')}
@@ -251,6 +264,7 @@ function renderToolFields(
           )}
         </div>
       );
+    }
 
     case 'video-analysis':
       return (
