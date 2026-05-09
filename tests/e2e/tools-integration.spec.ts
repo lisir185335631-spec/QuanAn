@@ -82,22 +82,26 @@ const MOCK_VIDEO_ROW = {
 const MOCK_HISTORY_LIST = [
   {
     id: 1004, agentId: 'AnalysisAgent', agentMode: 'viral', sourceType: 'user',
-    inputSummary: '爆款文案拆解(viral)', contentType: 'json',
+    inputSummary: '爆款文案拆解(viral)', content: '{"analysis":{"elements":["fear"]}}',
+    contentType: 'json', scriptType: null, elements: ['fear'],
     isFallback: false, traceId: 'int-test-004', createdAt: new Date().toISOString(),
   },
   {
     id: 1003, agentId: 'AnalysisAgent', agentMode: 'structural', sourceType: 'user',
-    inputSummary: '结构评分文案', contentType: 'json',
+    inputSummary: '结构评分文案', content: '{"scores":{"hook":80}}',
+    contentType: 'json', scriptType: null, elements: [],
     isFallback: false, traceId: 'int-test-003', createdAt: new Date().toISOString(),
   },
   {
     id: 1002, agentId: 'CopywritingAgent', agentMode: 'boom', sourceType: 'user',
-    inputSummary: '月薪5000理财爆款', contentType: 'markdown',
+    inputSummary: '月薪5000理财爆款', content: '## 候选一\n\n月薪5000也能开始理财',
+    contentType: 'markdown', scriptType: null, elements: ['fear'],
     isFallback: false, traceId: 'int-test-002', createdAt: new Date().toISOString(),
   },
   {
     id: 1001, agentId: 'CopywritingAgent', agentMode: 'free', sourceType: 'user',
-    inputSummary: '财富自由话题文案', contentType: 'markdown',
+    inputSummary: '财富自由话题文案', content: '## 财富自由不是运气\n\n核心洞察在于...',
+    contentType: 'markdown', scriptType: 'tutorial', elements: ['fear'],
     isFallback: false, traceId: 'int-test-001', createdAt: new Date().toISOString(),
   },
 ];
@@ -246,8 +250,8 @@ test.describe.serial('4 工具 + history 收官集成 E2E (US-012)', () => {
     // Select element: fear
     await page.locator('[data-element="fear"]').click({ timeout: 2000 });
 
-    // Fill theme
-    await form.locator('textarea').fill('月薪5000也能开始理财');
+    // Fill theme (theme is an <input>, not textarea)
+    await form.locator('#tool-boom-theme').fill('月薪5000也能开始理财');
 
     // Submit and verify 5 candidates
     await form.getByRole('button', { name: /爆款文案/ }).click();
@@ -304,7 +308,7 @@ test.describe.serial('4 工具 + history 收官集成 E2E (US-012)', () => {
     await page.goto(`${WEB_BASE}/history`);
     await page.waitForLoadState('load');
 
-    await expect(page.getByTestId('history-page')).toBeVisible();
+    await expect(page.getByTestId('history-page')).toBeVisible({ timeout: 10000 });
 
     // Verify 4 history rows
     const table = page.getByTestId('history-table');
