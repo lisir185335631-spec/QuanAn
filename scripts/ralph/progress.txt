@@ -25,6 +25,25 @@
 - Radix DropdownMenuContent 的 list items > ~8 个时 · 必须套 `<ScrollArea className="h-N">`(显式高度) · 否则溢出 dropdown 的 items 不在 viewport · playwright click 56 × retry 30s 后 timeout(error: element is outside of the viewport · scroll into view 失败) · 实测 30+ accounts 命中 · ToolsDropdown 用 h-52 / AccountDropdown US-006 收官时补 h-60
 
 ## 执行日志(按 story 倒序)
+## [2026-05-09 12:27] - US-001 (PRD-5 · Foundation)
+- 新建 packages/schemas/src/specialist-io/constants.ts (HOT_ELEMENT_KEYS_22 22项·4组 + SCRIPT_TYPE_KEYS_20 20项)
+- 新建 packages/schemas/src/specialist-io/analysis.schema.ts (viral/structural input+output 4个 schema)
+- 重写 copywriting.schema.ts (保留 PRD-2 compat + 新加 freeGenerate input/output)
+- 重写 boomGenerate.schema.ts (删除 stepKey-based · 改 element-based)
+- 重写 videoAnalysis.schema.ts (删除 URL-based · 改 lastTitle/lastCopy copy-based)
+- 更新 specialist-io/index.ts (加 constants + analysis barrel export)
+- 新建 apps/api/src/services/context-assembler/templates/analysis.ts
+- 更新 context-assembler/templates/index.ts (AnalysisAgent 加入 SPECIALIST_TEMPLATES)
+- 新建 ToolForm.tsx/ScriptTypeSelect.tsx/ElementsMultiSelect.tsx + ToolResult.tsx + 4 sub-components
+- 更新 ls-namespace.ts (加 getToolLsKey D-031)
+- TD-016: 7 router agentId 全改大写 Class name + 更新对应测试
+- pnpm test 402/402 ✅ · pnpm typecheck ✅ · audit grep 0命中
+- **未来迭代的学习:**
+  - @quanqn/schemas 主 barrel 只导出 entities · specialist-io 须用 @quanqn/schemas/specialist-io 路径
+  - as const satisfies ReadonlyArray<...> 跨包 map() 时需显式类型标注回调参数
+  - 改 agentId 须同步更新存量测试 (specialists-creation/flow)
+  - LS-first dual-write: LS 先写 → DB call → DB fail LS 保留 + toast.error (不回滚)
+---
 ## [2026-05-09 15:30] - US-017 (PRD-4 · 9步 e2e 集成)
 - playwright.config.ts: 新增 timeout=600_000(10 min · 真 LLM 调用)
 - apps/web/src/router.tsx: 补 step/3b + step/4b 路由(原先缺失导致 404)
@@ -1548,3 +1567,5 @@ TD 累计 15 items · open 6 / scheduled 5 / accepted 1 / closed 3 ·
 ---
 
 --- [RALPH] Iteration 25 ended: US-018 (27分钟 6秒) ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-09 12:09 ---
