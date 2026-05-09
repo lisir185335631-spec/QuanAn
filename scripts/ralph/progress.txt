@@ -1936,3 +1936,14 @@ prd.json.passes = true | retryCount = 0 | notes = ""
   · 当 ralph daemon 跑不动时, Opus 路径 B (主对话直接接管) 是确定可执行的 fallback; 但要保证 audit 严格度不降低
 - PRD-5 12/12 全 PASSED · COMPLETE.
 ---
+
+## Codebase Patterns - PRD-5 贡献 (goal-verify §5 于 2026-05-09 提炼)
+- LLM Judge 模式: vi.hoisted({ mockComplete }) + vi.mock('@/workers/llm-gateway') + golden case 数组(input + actualOutput + criteria + expectedKeyFields) + runJudge(case_) 中央调度 · 11 files × 2 cases = 22 tests · eventType='judge_call' 中央设(judge-runner.ts:74)
+- e2e tRPC v11 httpBatchStreamLink mock 必须 3-line JSONL 模式 · page.addInitScript 替换 window.fetch · 不能 route.fulfill (JSON 格式跟 v11 不匹配)· locator.click 必须加 timeout: 2000 防 retry budget 占满
+- e2e 跨工具集成 spec 用 test.describe.serial + sharedPage in beforeAll · workers=1 + fullyParallel=false · 因 dev@local.test 共享 user activeAccountId 会 race
+- 多 mode Specialist 模式继承(TD-014): _mode + outputSchema getter(按 mode 返回不同 schema)+ invokeLLM 内 _buildUserPrompt(mode) prompt 分支. 5 处复用(Copywriting/Analysis/Positioning/Branding/Video). 不用 z.discriminatedUnion (PRD 一致性优先 over stateless safety)
+- packages/schemas 不能 import apps/api (跨包 cycle 风险) → 共享常量必须 inline. 跟 apps/api/src/lib/constants/ 手动同步(audit grep diff)
+- ToolForm wrapper 跟 StepForm 分离 · 因为 stepKey 必填 vs toolKey 可选 + LS namespace 不同(acc_{id}_step_{key} vs acc_{id}_tool_{tool}). 不要在 StepForm 加 optional toolKey (API 复杂)
+- history 接入策略: 单 history.list procedure + 各 router 自然写入(分散写 集中读). 工具页 useEffect(?historyId) 调 history.detail 预填. 不要每 router 各自 list (前端复杂度爆炸)
+- TD-016 教训: 7+ router 写 history.agentId 时统一用 PascalCase Class name(CopywritingAgent / AnalysisAgent etc)· 不用 lowercase. audit grep `agentId: '[a-z]'` apps/api/src 应 0 命中
+- 收官 e2e spec mock 数据 4 条 history rows 必须含 'content' 字段(否则 History.tsx row.content.substring() TypeError) · cc00e6c 教训

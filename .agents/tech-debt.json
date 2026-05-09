@@ -209,7 +209,83 @@
       "evidence": "PRD-4 §1.5 表 A 锁定 packages/schemas/src/specialist-io.ts (单一文件) · ralph 实际实施在 packages/schemas/src/specialist-io/ (子目录) 含 step-inputs.schema.ts + step-results · 路径偏差但语义一致(schema 单一真理源 · web/api 共用)",
       "root_cause": "PRD 协议锁写单一文件 · ralph 选子目录组织(更清晰可扩展含 step-results)· 实际项目结构更合理",
       "audit_exemption": "approve · 实际效果完全符合协议锁意图 · 子目录组织更清晰 · 不影响功能 · 后续 PRD 收官 retro 时改协议锁文档对齐实际"
+    },
+    {
+      "id": "TD-016",
+      "title": "design-drift: LD-018 PII mask + disclaimer 0 接线 (R-14 违规)",
+      "description": "apps/api/src/lib/compliance/{pii-mask,disclaimer}.ts 文件存在(60+30 行) 但 grep -rn 'import.*compliance|maskString|appendDisclaimerIfSensitive' apps/api/src 0 处外部调用. ContextAssembler._formatUserPrompt() 直接拼 stepData/userInput 不 maskString. BaseSpecialist 没 hook disclaimer. 8 个 active Specialist 全部 0 接线.",
+      "scope": [
+        "apps/api/src/lib/compliance/pii-mask.ts",
+        "apps/api/src/lib/compliance/disclaimer.ts",
+        "apps/api/src/services/context-assembler/ContextAssembler.ts",
+        "apps/api/src/specialists/base/BaseSpecialist.ts",
+        "AGENTS.md#3-locked-decisions LD-018",
+        "AGENTS.md#4-红线 R-14"
+      ],
+      "impact": "上线即合规风险(中国数据保护法 + 行业准入). 用户输入(品牌名/姓名/联系方式)原文进 LLM prompt + history 表 + 可能 leak. PRD-1~5 期间所有 Specialist 调用都未 mask.",
+      "severity": "High",
+      "categories": [
+        "design-drift",
+        "security",
+        "compliance"
+      ],
+      "created_in_prd": "PRD-1 / PRD-2 (compliance/ 文件首次写时未接线)",
+      "detected_in_prd": "PRD-5",
+      "detected_in_story": "goal-verify §0.4 (GSD codebase mapper 实测 grep)",
+      "fix_by": "PRD-6 启动前 (ASAP) · PRR 上线前必修",
+      "status": "open",
+      "fix_hint": "选 A: ContextAssembler._formatUserPrompt() 强制走 maskString() · BaseSpecialist 末尾按 industry 走 appendDisclaimerIfSensitive · audit-ld.sh 加 grep 强制(配 TD-018)\n选 B: 先 fix audit-redlines.sh + audit-ld.sh (TD-017 + TD-018) 让 audit catch · 再 PRD-6 启动时 1 个 story 接线",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-017",
+      "title": "design-drift: scripts/audit-redlines.sh 路径过期 (17 红线 grep 假绿灯)",
+      "description": "scripts/audit-redlines.sh grep 路径用 src/ 而 monorepo 是 apps/api/src/. 17 红线 grep 全部命中 0 行 = 假绿灯. 这是 PRD-1~5 audit 漏 catch PII drift (TD-016) 的根因.",
+      "scope": [
+        "scripts/audit-redlines.sh",
+        "package.json:23 (audit:redlines script ref)"
+      ],
+      "impact": "所有 PRD audit 红线检查全部假绿灯 · 17 条红线无任何实际 grep 验证 · TD-016 PII drift 之所以漏 5 个 PRD 没 catch 就是这个根因.",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "tooling",
+        "audit-integrity"
+      ],
+      "created_in_prd": "PRD-1 (audit script 首次写时路径就错)",
+      "detected_in_prd": "PRD-5",
+      "detected_in_story": "goal-verify §0.4 (GSD CONCERNS mapper 实测)",
+      "fix_by": "PRD-6 启动前 (配 TD-016 / TD-018 一起修)",
+      "status": "open",
+      "fix_hint": "改 scripts/audit-redlines.sh 全部 grep 路径: src/ → apps/api/src/, packages/*/src/ + tests/. 加 monorepo workspace iter 循环 · 跑通后 17 红线全实测",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-018",
+      "title": "design-drift: scripts/audit-ld.sh 不存在 (package.json:24 引用断链)",
+      "description": "package.json scripts.audit:ld 引用 scripts/audit-ld.sh, 但文件不存在. pnpm audit:ld 直接 fail.",
+      "scope": [
+        "scripts/audit-ld.sh (missing)",
+        "package.json:24 (audit:ld script ref)"
+      ],
+      "impact": "audit:ld 命令完全无法跑 · 18 LD 无任何 audit 工具支撑 · 配 TD-017 一起让 PRD-1~5 audit 全部假绿灯 / 缺失",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "tooling",
+        "audit-integrity"
+      ],
+      "created_in_prd": "PRD-1 (package.json 加 ref 时忘了写脚本)",
+      "detected_in_prd": "PRD-5",
+      "detected_in_story": "goal-verify §0.4 (GSD CONCERNS mapper)",
+      "fix_by": "PRD-6 启动前 (配 TD-016 / TD-017)",
+      "status": "open",
+      "fix_hint": "新建 scripts/audit-ld.sh · 内容: 18 LD 各 1-2 grep 验证 (LD-001 95/5 编排 → grep -c 'while\\|for.*await' apps/api/src · LD-009 RLS → grep -c 'set_config' apps/api/src · LD-012 LLMGateway → grep -c '@anthropic-ai/sdk' apps · 等等)",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ],
-  "last_updated": "2026-05-09"
+  "last_updated": "2026-05-09T21:33:53"
 }
