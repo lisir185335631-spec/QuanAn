@@ -1,0 +1,24 @@
+
+> quanqn@0.1.0 test:judge /Users/return/Desktop/QuanQn
+> vitest run --config vitest.judge.config.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/judge/livestream.judge.ts (2 tests) 2ms
+ ✓ tests/judge/copywriting-boom.judge.ts (2 tests) 1ms
+ ✓ tests/judge/video.judge.ts (2 tests) 2ms
+ ✓ tests/judge/copywriting.judge.ts (2 tests) 4ms
+ ✓ tests/judge/analysis-viral.judge.ts (2 tests) 2ms
+ ✓ tests/judge/analysis-structural.judge.ts (2 tests) 3ms
+ ✓ tests/judge/branding.judge.ts (2 tests) 4ms
+ ✓ tests/judge/copywriting-free.judge.ts (2 tests) 4ms
+ ✓ tests/judge/monetization.judge.ts (2 tests) 4ms
+ ✓ tests/judge/positioning.judge.ts (2 tests) 2ms
+ ✓ tests/judge/topic.judge.ts (2 tests) 12ms
+
+ Test Files  11 passed (11)
+      Tests  22 passed (22)
+   Start at  20:43:17
+   Duration  423ms (transform 177ms, setup 0ms, collect 441ms, tests 41ms, environment 1ms, prepare 455ms)
+

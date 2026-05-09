@@ -305,8 +305,7 @@ test.describe.serial('4 工具 + history 收官集成 E2E (US-012)', () => {
 
   test('Step 5: /history → 4条 → 点 boom row → /boom-generate?historyId=1002 预填', async () => {
     const page = sharedPage;
-    await page.goto(`${WEB_BASE}/history`);
-    await page.waitForLoadState('load');
+    await page.goto(`${WEB_BASE}/history`, { waitUntil: 'networkidle' });
 
     await expect(page.getByTestId('history-page')).toBeVisible({ timeout: 10000 });
 
