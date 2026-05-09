@@ -2616,6 +2616,93 @@ grep -q "QUANQN_ADMIN_CLIENT_ID" apps/admin/.env.production || exit 1
 
 ---
 
+## §11.6 后端 Specialist 实施沉淀(PRD-4 起累加)
+
+> **来源** · PRD-4 retro §8 文档回流候选 7 条 · commit 事实驱动 · 经 v0.4 用户确认追加。
+> **性质** · 7 Specialist 真接 LLMGateway 后沉淀的事实约束 + 高频陷阱 · 防 PRD-5+ 新 Specialist 重蹈覆辙。
+
+### §11.6.1 BaseSpecialist 模板方法(PRD-4 US-001 沉淀 · `apps/api/src/specialists/base/BaseSpecialist.ts:1-250`)
+
+- **统一抽象** · 7 Specialist 全继承 `abstract class BaseSpecialist<TIn, TOut>` · 模板方法 4 步 ·
+  1. `inputSchema.parse(req.userInput)` ← 输入校验
+  2. `await this.contextAssembler.assemble(req)` ← 装配 prompt(L2/L4/L5 + 常量)
+  3. `await this.invokeLLM(systemPrompt, userPrompt, ...)` ← **子类实现**
+  4. `outputSchema.safeParse(llmResp.content)` ← 输出校验 + retry 1 → 二次失败 throw SchemaValidationError
+  5. `_writeCostLog(...)` ← cost_log 7 字段(agentId/accountId/traceId/modelUsed/promptTokens/completionTokens/durationMs/callType='specialist_call'/eventType/target jsonb)
+- **子类只填** · `config(五层 persona/memory/knowledge/tools/execution)` + `inputSchema` + `outputSchema` + `invokeLLM` 4 项 · **不重写 execute()** 模板方法
+- **单实例 export**(REJ-004) · `export const positioningAgent = new PositioningAgent()` · router 调 `specialist.execute(...)` 不要 `new Specialist().execute()`
+- **TraceId** · 用 `generateSpecialistTraceId(accountId, agentId)`(REJ-017 · 不要用 `generateHttpTraceId`)
+- **错误类** · `SchemaValidationError(zodError, llmRawOutput)` / `LLMTimeoutError(agentId, timeout_ms)` / `FallbackTriggeredError`(`apps/api/src/specialists/base/errors.ts`)
+
+### §11.6.2 ContextAssembler 4 路并行 + 降级(PRD-4 US-002 沉淀 · `apps/api/src/services/context-assembler/ContextAssembler.ts:1-170`)
+
+- **接口** · `assemble(req: AssembleRequest) => Promise<AssembledContext>` · 完全对齐 ARCHITECTURE §6.4
+- **4 路并行** · `Promise.allSettled` 不用 `Promise.all`(D-020)· 各路独立 `withTimeout(5000)` · 任一失败降级注入空段不阻断主流程
+- **L2 stepData fetch** · 真接 `prisma.stepData.findMany({ where: { accountId } })`(REJ-008 RLS 必)
+- **L4 EvolutionProfile / L4 Samples** · 本期降级跑空(留 PRD-7+)· 注入 `[L1 阶段 · 暂无进化档案]` 占位
+- **L5 RAG** · 本期 D-025 降级跑空 · `ragResult` 总返 `[]` · `needRag` 字段保留接口
+- **MethodologyQueryWorker** · 真接(`apps/api/src/workers/methodology-query/index.ts`)· in-memory 常量(industries / hotElements / scriptTypes)
+- **AssembledContext.metadata** · `layersUsed: string[]` 真实反映哪些层 fetched 成功 · `contextTokens` 用 `chars/4` 粗算(本期接受)
+- **R-001 grep** · 注释里也不能含 `BASE_LLM_URL` / `LLM_API_KEY` / `sk-` 字样 · 否则 grep 命中 fail
+
+### §11.6.3 多 mode Specialist 模板 + race window 警示(PRD-4 US-004/005/008/009 沉淀)
+
+- **触发** · 同一 Specialist 接多个 step / mode(`PositioningAgent` industry+execution / `BrandingAgent` packaging+persona / `VideoAgent` 4 mode / `CopywritingAgent` 4 mode)
+- **模板** ·
+  - `private _mode: Mode` instance state
+  - `outputSchema` getter 按 `this._mode` 返回对应 schema(REJ-007 · 防多 mode 共用单一 schema)
+  - `invokeLLM` 最先 `set _mode`(在 throw mode 不合法之后)→ BaseSpecialist safeParse 才能读对的 schema
+  - `TIMEOUT_MS Record` 按 mode 分配(packaging=60s / persona=45s)
+- **⚠️ TD-014 race window** · `_mode instance state + outputSchema getter` 在**单 user 串行场景安全**(P3 主流程 9 step)· **高并发治理留 PRD-7+**(选项 A · `outputSchema` 改 method `(req) => schema` · 选项 B · `AsyncLocalStorage` 隔离 _mode · 选项 C · 接受文档化)
+- **跨 PRD 复用** · PRD-5 解锁 `CopywritingAgent` free/boom/acquisition mode 时**仍按现模式实施** · TD-014 留高并发场景治理(影响 4 → 5+ Specialist 同模式)
+- **audit grep** · 见 `scripts/ralph/AUDIT-CHECKLIST-TEMPLATE.md §I Multi-mode Specialist race window 域`
+
+### §11.6.4 SSE Specialist 模式 + stream meta chunk(PRD-4 US-007/009 沉淀 · `apps/api/src/specialists/{TopicAgent,CopywritingAgent}.ts`)
+
+- **触发** · `streaming=true` Specialist(TopicAgent step5 · CopywritingAgent step7)· `model_tier='reasoning'` · `timeout_ms=60000`
+- **invokeLLM 重写 SSE** ·
+  - `for await (const chunk of gateway.stream(...))` accumulate → `JSON.parse`
+  - `_consumeStream()` 私有方法封装 stream 消费 · 失败 throw 让 BaseSpecialist retry
+- **★ stream meta chunk 模式**(D-019 闭环) ·
+  - `LLMGateway.stream()` 首 chunk emit `{ type: 'meta', meta: { model: actualModel } }`
+  - Specialist `_consumeStream` 接收 model · `invokeLLM` 返回真 model
+  - `cost_log.modelUsed` 反映 LLMGateway **真选 model**(不硬编码 `'claude-sonnet-4-6'` 等)· REJ-003 grep 0 命中
+- **跨 SSE Specialist 复用** · TopicAgent + CopywritingAgent 全用此模式 · PRD-5 起新 SSE Agent 直接继承
+- **retry 路径** · invokeLLM **不 throw** · 改返回 `{ content: null, isFallback: true }` 让 BaseSpecialist Step 4 safeParse 失败触发 retry(BaseSpecialist Step 3 catch 仅处理 AbortError → LLMTimeoutError · 不 cover 断流)
+
+### §11.6.5 responseFormat 双 schema 策略(PRD-4 US-004/009 沉淀)
+
+- **触发** · outputSchema 含 `.refine()`(如 `Step4OutputSchema` markdown.min(1000).refine('# 执行计划' heading))
+- **问题** · `.refine()` 不能序列化为 JSON Schema · 不能直接传给 LLM `responseFormat`
+- **方案** · 双 schema ·
+  - `Step4BaseSchema` = `z.object({...})` ← **无 refine** · 给 LLM `responseFormat` 用(序列化为 JSON Schema)
+  - `Step4OutputSchema` = `z.object({...}).refine(...)` ← **含 refine** · BaseSpecialist post-validate 用(运行时校验 heading)
+- **类型双重 cast** · `Step4OutputSchema as unknown as z.ZodType<TOut>`(因为 `.refine()` 返回 `z.ZodEffects` 不能直接赋值给 `ZodType<Union>`)
+- **实证** · PositioningAgent step4 + CopywritingAgent step7 · 全用此模式
+
+### §11.6.6 stepData.save handler 必覆盖全 9 step(PRD-4 US-017 教训 · `apps/api/src/trpc/routers/stepData.ts`)
+
+- **背景** · PRD-4 US-017 e2e 跑时发现 save handler 漏 `step5/step7` · 返回 `null` result → UI skeleton 永挂 · 浪费 1 次 e2e 跑(~30 min)
+- **铁律** · `stepData.save` handler **必须覆盖全 9 step**(step1/3/3b/4/4b/5/6/7/8)· **save 路径漏任一 step → UI skeleton 永挂 / save 返回 null**
+- **router cross-cut audit 在每个 PRD 收官前必跑** · `grep -E "case 'step\w+'" apps/api/src/trpc/routers/stepData.ts | wc -l` 应 = 9
+- **default 分支安全** · `default: throw new Error('Unsupported stepKey')` 比 `return null` 安全(漏 step 立刻报错而非静默失败)
+- **同模式适用** · 14 工具调度 router / 6 模块 router · N-step / N-route handler 都遵守
+- **audit grep** · 见 `scripts/ralph/AUDIT-CHECKLIST-TEMPLATE.md §J Cross-cut router coverage 域` + `scripts/ralph/VALIDATOR.md Router cross-cut coverage 验证`
+
+### §11.6.7 LLM Judge 测试套件(PRD-4 US-016 沉淀 · `tests/judge/`)
+
+- **目的** · 验证 7 Specialist 输出质量(用 LLM 评分而非死规则)· cost 控制 + 自动化覆盖
+- **架构** ·
+  - 独立 `vitest.judge.config.ts`(@/ alias 与主 vitest.config.ts 一致)
+  - `tests/judge/judge-runner.ts` 共享 `runJudge(case_)` · `model_tier='lightweight'`(haiku / 4o-mini)· `timeout_ms=10000` · `retry=1` 内置
+  - 7 Specialist × 1-2 golden case · `tests/judge/{positioning,branding,monetization,topic,video,copywriting,livestream}.judge.ts`
+  - `package.json` 加 `"test:judge": "vitest run --config vitest.judge.config.ts"` script
+- **cost_log 区分** · `eventType='judge_call'`(不污染 specialist_call 数据)· `cost-logger.ts` 通过 `req.metadata.eventType` 穿透
+- **触发** · CI 跑(无需 RUN_LIVE_TESTS · lightweight model cost 可控)· `pnpm test:judge` 14/14 pass
+- **PRD-5 起新 Specialist** · 必加 1-2 golden case 到 `tests/judge/` · 走同 judge-runner · 复用 lightweight model
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充
@@ -2641,3 +2728,11 @@ grep -q "QUANQN_ADMIN_CLIENT_ID" apps/admin/.env.production || exit 1
   - §11.3 · Layout 共享组件防重复(StepLayout 已渲染 FeedbackButton · 11 step 页不重复)
   - §11.4 · 列表 viewport overflow 防御(Radix DropdownMenu N>8 必须 ScrollArea + h-N)
   - §11.5 · IP 账号切换契约(useActiveAccount.switchTo · clearLsNamespace + reload)
+- **2026-05-09 v0.4** · 加 §11.6 后端 Specialist 实施沉淀(PRD-4 retro 文档回流 · 7 候选 commit 事实驱动)
+  - §11.6.1 · BaseSpecialist 模板方法(`abstract class BaseSpecialist<TIn, TOut>` · 4 步模板 · 子类只填 config + inputSchema + outputSchema + invokeLLM · 单实例 export REJ-004 · TraceId 用 generateSpecialistTraceId REJ-017)
+  - §11.6.2 · ContextAssembler 4 路并行 + 降级(Promise.allSettled + 5s timeout · L2 真接 / L4/L5 降级跑空 D-020/D-025 · MethodologyQueryWorker 真接常量)
+  - §11.6.3 · 多 mode Specialist 模板 + race window 警示(`_mode + outputSchema getter` · ⚠️ TD-014 race window · 单 user 串行安全 · 高并发治理留 PRD-7+)
+  - §11.6.4 · SSE Specialist 模式 + stream meta chunk(`{type:'meta',meta:{model:actualModel}}` 首 chunk · cost_log.modelUsed 反映真 model · D-019 闭环 · invokeLLM 不 throw 改返回 isFallback 让 BaseSpecialist retry)
+  - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
+  - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
+  - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
