@@ -109,6 +109,24 @@ export type TrendingItem = {
   crawledAt: Date;
 };
 
+export type FreeGenerateHistoryRow = {
+  id: number;
+  content: string;
+  contentType: string | null;
+  agentId: string;
+  agentMode: string | null;
+  scriptType: string | null;
+  elements: string[];
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  traceId: string | null;
+  createdAt: Date;
+};
+
+export type HistoryDetailOutput = FreeGenerateHistoryRow | null;
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -193,6 +211,33 @@ const _shadowRouter = _t.router({
           x as { stepKey: string; agentId: string; type: 'good' | 'bad'; traceId?: string },
       )
       .mutation((): { ok: boolean } => ({ ok: true })),
+  }),
+  copywriting: _t.router({
+    freeGenerate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { scriptType: string; elements: string[]; topic: string },
+      )
+      .mutation((): FreeGenerateHistoryRow => ({
+        id: 0,
+        content: '',
+        contentType: 'markdown',
+        agentId: 'CopywritingAgent',
+        agentMode: 'free',
+        scriptType: null,
+        elements: [],
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
+  history: _t.router({
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query((): HistoryDetailOutput => null),
   }),
 });
 

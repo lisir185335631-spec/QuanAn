@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 
 import { ElementsMultiSelect } from './ElementsMultiSelect';
 import { ScriptTypeSelect } from './ScriptTypeSelect';
+import { TextareaField } from '@/components/StepForm/TextareaField';
 
 import type { FieldError, FieldErrors } from 'react-hook-form';
 import type { ZodTypeAny } from 'zod';
@@ -25,7 +26,7 @@ import type { HotElementKey, ScriptTypeKey } from '@quanqn/schemas/specialist-io
 
 // ── Tool types ────────────────────────────────────────────────────────────────
 
-export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis';
+export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues }
   const [restoredDefaults] = useState<Record<string, unknown>>(() => {
     if (accountId === null) return resolvedDefaults;
     try {
-      const stored = localStorage.getItem(getToolLsKey(accountId, toolKey, 'form'));
+      const stored = localStorage.getItem(getToolLsKey(accountId, toolKey, 'input'));
       if (stored) {
         const parsed = JSON.parse(stored) as Record<string, unknown>;
         return { ...resolvedDefaults, ...parsed };
@@ -83,7 +84,7 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues }
     // REJ-035: LS先写 — DB fail 时 LS 保留(不回滚)
     if (accountId !== null) {
       try {
-        localStorage.setItem(getToolLsKey(accountId, toolKey, 'form'), JSON.stringify(data));
+        localStorage.setItem(getToolLsKey(accountId, toolKey, 'input'), JSON.stringify(data));
       } catch {
         // Storage full — continue to submit
       }
@@ -138,6 +139,32 @@ function renderToolFields(
   errors: Record<string, FieldError | undefined>,
 ) {
   switch (toolKey) {
+    case 'freeGenerate':
+      return (
+        <>
+          <ScriptTypeSelect
+            value={(watch('scriptType') as string) ?? ''}
+            onChange={(v: ScriptTypeKey) => setValue('scriptType', v, { shouldValidate: true })}
+            error={errors['scriptType']}
+          />
+          <ElementsMultiSelect
+            value={(watch('elements') as HotElementKey[]) ?? []}
+            onChange={(v) => setValue('elements', v, { shouldValidate: true })}
+            error={errors['elements'] as FieldError | undefined}
+            maxSelect={8}
+          />
+          <TextareaField
+            label="话题方向"
+            value={(watch('topic') as string) ?? ''}
+            onChange={(v) => setValue('topic', v, { shouldValidate: true })}
+            error={errors['topic']}
+            placeholder="例如：为什么有的人30岁就财富自由 / 减肥打卡 / 职场晋升（最多500字）"
+            rows={3}
+            required
+          />
+        </>
+      );
+
     case 'generate':
       return (
         <>
@@ -268,6 +295,8 @@ function renderToolFields(
 
 function getDefaultValues(toolKey: ToolKey): Record<string, unknown> {
   switch (toolKey) {
+    case 'freeGenerate':
+      return { scriptType: '', elements: [], topic: '' };
     case 'generate':
       return { scriptType: '', elements: [], topic: '' };
     case 'boom-generate':
