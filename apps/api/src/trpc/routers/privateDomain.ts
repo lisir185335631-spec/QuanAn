@@ -33,7 +33,7 @@ export const privateDomainRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'private_domain',
+          agentId: 'PrivateDomainAgent',
           sourceType: 'user',
           inputSummary: '[mock]',
           content: '[mock]',

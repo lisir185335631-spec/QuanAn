@@ -109,7 +109,7 @@ describe('copywriting.optimize', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('copywriting');
+    expect(createArgs.data.agentId).toBe('CopywritingAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -143,7 +143,7 @@ describe('copywriting.delete', () => {
 // ─── videoAnalysis.analyze ───────────────────────────────────────────────────
 
 describe('videoAnalysis.analyze', () => {
-  it('AC-7: creates History row with agentId=video_analysis and traceId', async () => {
+  it('AC-7: creates History row with agentId=AnalysisAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = videoAnalysisRouter.createCaller(ctx);
     const result = await caller.analyze({ videoUrl: 'https://example.com/v.mp4' });
@@ -151,7 +151,7 @@ describe('videoAnalysis.analyze', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('video_analysis');
+    expect(createArgs.data.agentId).toBe('AnalysisAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -168,7 +168,7 @@ describe('videoAnalysis.rewrite', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('video_analysis');
+    expect(createArgs.data.agentId).toBe('AnalysisAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -185,7 +185,7 @@ describe('videoProduction.generate', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('video_production');
+    expect(createArgs.data.agentId).toBe('VideoAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -202,7 +202,7 @@ describe('videoProduction.generateStoryboard', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('video_production');
+    expect(createArgs.data.agentId).toBe('VideoAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -219,7 +219,7 @@ describe('videoProduction.generateSceneImage', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('video_production');
+    expect(createArgs.data.agentId).toBe('VideoAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -228,7 +228,7 @@ describe('videoProduction.generateSceneImage', () => {
 // ─── boomGenerate.generate ───────────────────────────────────────────────────
 
 describe('boomGenerate.generate', () => {
-  it('AC-7: creates History row with agentId=boom_generate and traceId', async () => {
+  it('AC-7: creates History row with agentId=CopywritingAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = boomGenerateRouter.createCaller(ctx);
     const result = await caller.generate({ stepKey: 'boom_generate' });
@@ -236,7 +236,7 @@ describe('boomGenerate.generate', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('boom_generate');
+    expect(createArgs.data.agentId).toBe('CopywritingAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });
@@ -253,7 +253,7 @@ describe('monetization.generate', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
-    expect(createArgs.data.agentId).toBe('monetization');
+    expect(createArgs.data.agentId).toBe('MonetizationAgent');
     expect(createArgs.data.traceId).toBe('test-trace-001');
     expect(result.content).toBe('[mock]');
   });

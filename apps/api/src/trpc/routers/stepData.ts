@@ -86,7 +86,7 @@ export const stepDataRouter = router({
           accountId: activeAccountId!,
           stepKey: input.stepKey,
           inputs: input.inputs as Prisma.InputJsonValue,
-          agentId: 'web-client',
+          agentId: 'WebClient',
           traceId: traceId ?? null,
         },
         select: STEP_DATA_SELECT,

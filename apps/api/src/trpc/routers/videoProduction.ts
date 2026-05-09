@@ -47,7 +47,7 @@ export const videoProductionRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'video_production',
+          agentId: 'VideoAgent',
           sourceType: 'user',
           inputSummary: '[mock]',
           content: '[mock]',
@@ -66,7 +66,7 @@ export const videoProductionRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'video_production',
+          agentId: 'VideoAgent',
           sourceType: 'user',
           inputSummary: '[mock storyboard]',
           content: '[mock]',
@@ -85,7 +85,7 @@ export const videoProductionRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'video_production',
+          agentId: 'VideoAgent',
           sourceType: 'user',
           inputSummary: '[mock scene]',
           content: '[mock]',

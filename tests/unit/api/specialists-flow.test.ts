@@ -135,7 +135,7 @@ const DIAGNOSIS_ANSWERS = Array.from({ length: 8 }, (_, i) => ({
 // ─── privateDomain.generate ──────────────────────────────────────────────────
 
 describe('privateDomain.generate', () => {
-  it('AC-7: creates History row with agentId=private_domain and traceId', async () => {
+  it('AC-7: creates History row with agentId=PrivateDomainAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = privateDomainRouter.createCaller(ctx);
     const result = await caller.generate({ stepKey: 'step_pd' });
@@ -143,7 +143,7 @@ describe('privateDomain.generate', () => {
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string; content: string };
     };
-    expect(createArgs.data.agentId).toBe('private_domain');
+    expect(createArgs.data.agentId).toBe('PrivateDomainAgent');
     expect(createArgs.data.traceId).toBe('test-trace-005');
     expect(result.content).toBe('[mock]');
   });

@@ -86,7 +86,7 @@ export const copywritingRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'copywriting',
+          agentId: 'CopywritingAgent',
           sourceType: 'user',
           inputSummary: '[mock optimize]',
           content: '[mock]',
@@ -103,7 +103,7 @@ export const copywritingRouter = router({
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
       return prisma.history.findMany({
-        where: { agentId: 'copywriting' },
+        where: { agentId: 'CopywritingAgent' },
         select: HISTORY_SELECT,
         orderBy: { createdAt: 'desc' },
         take: input.limit,

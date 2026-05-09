@@ -26,6 +26,11 @@ export function evolutionLsKey(accountId: number): string {
   return `${LS_PREFIX}_${accountId}_evolution`;
 }
 
+/** Tool data key (D-031): aiip_memory_acc_{accountId}_tool_{toolKey}_{suffix} */
+export function getToolLsKey(accountId: number, toolKey: string, suffix: string): string {
+  return `${LS_PREFIX}_${accountId}_tool_${toolKey}_${suffix}`;
+}
+
 /** Prefix covering all keys for a given account */
 export function accountLsPrefix(accountId: number): string {
   return `${LS_PREFIX}_${accountId}_`;

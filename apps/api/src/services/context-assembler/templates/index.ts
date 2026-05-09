@@ -1,6 +1,6 @@
 /**
- * 7 Specialist system prompt 模板 barrel
- * PRD-4 US-002 · AC-3
+ * 8 Specialist system prompt 模板 barrel
+ * PRD-4 US-002 · AC-3 + PRD-5 US-001 (AnalysisAgent)
  */
 
 import { POSITIONING_TEMPLATE }  from './positioning';
@@ -10,6 +10,7 @@ import { TOPIC_TEMPLATE }         from './topic';
 import { VIDEO_TEMPLATE }         from './video';
 import { COPYWRITING_TEMPLATE }   from './copywriting';
 import { LIVESTREAM_TEMPLATE }    from './livestream';
+import { ANALYSIS_TEMPLATE }      from './analysis';
 import type { SpecialistId }      from '@/agents/base/types';
 
 export interface SpecialistTemplate {
@@ -17,7 +18,7 @@ export interface SpecialistTemplate {
   methodology: string;
 }
 
-/** 7 PRD-4 Specialist → 模板映射 */
+/** 8 Specialist → 模板映射 (PRD-4 × 7 + PRD-5 AnalysisAgent) */
 export const SPECIALIST_TEMPLATES: Partial<Record<SpecialistId, SpecialistTemplate>> = {
   PositioningAgent:  POSITIONING_TEMPLATE,
   BrandingAgent:     BRANDING_TEMPLATE,
@@ -26,6 +27,7 @@ export const SPECIALIST_TEMPLATES: Partial<Record<SpecialistId, SpecialistTempla
   VideoAgent:        VIDEO_TEMPLATE,
   CopywritingAgent:  COPYWRITING_TEMPLATE,
   LivestreamAgent:   LIVESTREAM_TEMPLATE,
+  AnalysisAgent:     ANALYSIS_TEMPLATE,
 } as const;
 
 export {
@@ -36,4 +38,5 @@ export {
   VIDEO_TEMPLATE,
   COPYWRITING_TEMPLATE,
   LIVESTREAM_TEMPLATE,
+  ANALYSIS_TEMPLATE,
 };

@@ -35,7 +35,7 @@ export const boomGenerateRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'boom_generate',
+          agentId: 'CopywritingAgent',
           sourceType: 'user',
           inputSummary: '[mock]',
           content: '[mock]',

@@ -34,7 +34,7 @@ export const monetizationRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'monetization',
+          agentId: 'MonetizationAgent',
           sourceType: 'user',
           inputSummary: '[mock]',
           content: '[mock]',

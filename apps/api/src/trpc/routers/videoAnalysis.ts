@@ -40,7 +40,7 @@ export const videoAnalysisRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'video_analysis',
+          agentId: 'AnalysisAgent',
           sourceType: 'user',
           inputSummary: '[mock]',
           content: '[mock]',
@@ -59,7 +59,7 @@ export const videoAnalysisRouter = router({
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
-          agentId: 'video_analysis',
+          agentId: 'AnalysisAgent',
           sourceType: 'user',
           inputSummary: '[mock rewrite]',
           content: '[mock]',
