@@ -14,6 +14,37 @@ const MOCK_COPYWRITING_MARKDOWN = '# 爆款文案标题\n\n这是第一段文案
 
 const MOCK_BOOM_CANDIDATE = '候选文案内容备用'.padEnd(210, '爆款创作方法论，精准触达目标受众，快速积累内容影响力。');
 
+// ── US-009 (PRD-5): Mock AnalysisAgent before router import ──────────────────
+
+const MOCK_VIRAL_RESULT_CREATION = {
+  analysis: {
+    elements: ['curiosity', 'contrast'],
+    structure: '钩子→痛点→案例→CTA',
+    hookType: 'opening_5s',
+    viralFormula: '好奇+反差→情绪共鸣→行动',
+  },
+  insights: [
+    { element: 'curiosity', explanation: '触发点击冲动', impact: '高' },
+    { element: 'contrast', explanation: '加深情绪共鸣', impact: '高' },
+    { element: 'resonance', explanation: '触发认同感', impact: '中' },
+  ],
+  rewriteVersion:
+    '这是基于爆款元素心理学重写的仿写版文案，融入了好奇心钩子和反差情绪两个核心要素，完整呈现了一套高转化内容结构。',
+};
+
+vi.mock('@/specialists/AnalysisAgent', () => ({
+  analysisAgent: {
+    execute: vi.fn(async () => ({
+      result: MOCK_VIRAL_RESULT_CREATION,
+      isFallback: false,
+      durationMs: 1000,
+      tokensUsed: { prompt: 150, completion: 350, total: 500 },
+      modelUsed: 'claude-sonnet-4-6',
+      traceId: 'test-trace-001',
+    })),
+  },
+}));
+
 vi.mock('@/specialists/CopywritingAgent', () => ({
   copywritingAgent: {
     execute: vi.fn(async (req: { mode?: string }) => {
@@ -170,29 +201,16 @@ describe('copywriting.delete', () => {
 });
 
 // ─── videoAnalysis.analyze ───────────────────────────────────────────────────
+// US-009: analyze uses viral mode via AnalysisAgent (mocked above) · rewrite deleted(D-028)
 
 describe('videoAnalysis.analyze', () => {
-  it('AC-7: creates History row with agentId=AnalysisAgent and traceId', async () => {
+  it('AC-7: calls AnalysisAgent(viral), creates History row with agentId=AnalysisAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = videoAnalysisRouter.createCaller(ctx);
-    const result = await caller.analyze({ videoUrl: 'https://example.com/v.mp4' });
-    expect(prisma.history.create).toHaveBeenCalledOnce();
-    const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
-      data: { agentId: string; traceId: string };
-    };
-    expect(createArgs.data.agentId).toBe('AnalysisAgent');
-    expect(createArgs.data.traceId).toBe('test-trace-001');
-    expect(result.content).toBe('[mock]');
-  });
-});
-
-// ─── videoAnalysis.rewrite ───────────────────────────────────────────────────
-
-describe('videoAnalysis.rewrite', () => {
-  it('AC-7: creates History row for rewrite with traceId', async () => {
-    const { ctx, prisma } = makeCtx();
-    const caller = videoAnalysisRouter.createCaller(ctx);
-    const result = await caller.rewrite({ historyId: 2 });
+    const result = await caller.analyze({
+      lastCopy: '这是一篇需要拆解的爆款文案内容，包含超过十个字符的正文用于测试分析功能。',
+      lastTitle: '爆款测试标题',
+    });
     expect(prisma.history.create).toHaveBeenCalledOnce();
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };

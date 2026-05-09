@@ -1,71 +1,84 @@
 /**
- * videoAnalysis router — PRD-2 US-004
- * AC-2: 2 procedures (analyze/rewrite) · mock
- * AC-7: mutations write History row with trace_id
- * AC-8: no LLM call — AnalysisAgent 留 PRD-3+
- * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
+ * videoAnalysis router — PRD-5 US-009
+ * AC-1: analyze · protectedProcedure · input analyzeVideoInput · 调 analysisAgent.execute({ mode: 'viral', userInput })
+ * AC-2: history.create · agentId='AnalysisAgent' · agentMode='viral' · contentType='json' · full fields
+ * AC-3: rewrite procedure 已删(D-028 · viral mode 已含 rewriteVersion · 减表面积)
+ * SHIELD REJ-013: protectedProcedure(非 publicProcedure)
+ * SHIELD REJ-007: outputSchema getter 按 mode · AnalysisAgent 已实现
  */
 
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { analysisAgent, type AnalysisViralOutput } from '@/specialists/AnalysisAgent';
+
+// ── Input schema (viral mode: lastCopy + optional lastTitle) ──────────────────
 
 const analyzeVideoInput = z.object({
-  videoUrl: z.string().url(),
-  platform: z.string().max(32).optional(),
-  analysisType: z.enum(['full', 'quick']).default('full'),
+  lastTitle: z.string().max(200).optional(),
+  lastCopy: z
+    .string()
+    .min(10, 'lastCopy 至少 10 字')
+    .max(3000, 'lastCopy 最多 3000 字'),
 });
 
-const rewriteVideoInput = z.object({
-  historyId: z.number().int().positive(),
-  rewriteStyle: z.string().max(64).optional(),
-  targetPlatform: z.string().max(32).optional(),
-});
+// ── Select ────────────────────────────────────────────────────────────────────
 
-const HISTORY_SELECT = {
+const HISTORY_VIDEO_SELECT = {
   id: true,
   content: true,
+  contentType: true,
   agentId: true,
+  agentMode: true,
+  scriptType: true,
+  elements: true,
+  isFallback: true,
+  tokensUsed: true,
+  modelUsed: true,
+  durationMs: true,
   traceId: true,
   createdAt: true,
 } satisfies Prisma.HistorySelect;
 
 export const videoAnalysisRouter = router({
-  /** Analyze a video URL (P1 mock) */
+  /**
+   * AC-1: analyze(protectedProcedure · input analyzeVideoInput · 调 analysisAgent viral)
+   * AC-2: history.create with full fields · elements=analysis.elements 数组
+   * AC-3: rewrite procedure 已删(D-028)
+   */
   analyze: protectedProcedure
     .input(analyzeVideoInput)
-    .mutation(async ({ ctx, input: _input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
-      const row = await prisma.history.create({
-        data: {
-          accountId: activeAccountId!,
-          agentId: 'AnalysisAgent',
-          sourceType: 'user',
-          inputSummary: '[mock]',
-          content: '[mock]',
-          traceId: traceId ?? null,
-        },
-        select: HISTORY_SELECT,
-      });
-      return row;
-    }),
 
-  /** Rewrite video script based on analysis (P1 mock) */
-  rewrite: protectedProcedure
-    .input(rewriteVideoInput)
-    .mutation(async ({ ctx, input: _input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const agentRes = await analysisAgent.execute({
+        accountId: activeAccountId!,
+        mode: 'viral',
+        userInput: { lastCopy: input.lastCopy, lastTitle: input.lastTitle },
+        traceId: traceId ?? undefined,
+      });
+
+      const viralResult = agentRes.result as AnalysisViralOutput;
+
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
           agentId: 'AnalysisAgent',
+          agentMode: 'viral',
           sourceType: 'user',
-          inputSummary: '[mock rewrite]',
-          content: '[mock]',
+          inputSummary: input.lastTitle ?? input.lastCopy.substring(0, 100),
+          content: JSON.stringify(viralResult),
+          contentType: 'json',
+          scriptType: null,
+          elements: viralResult.analysis.elements,
+          isFallback: agentRes.isFallback,
+          tokensUsed: agentRes.tokensUsed.total,
+          modelUsed: agentRes.modelUsed,
+          durationMs: agentRes.durationMs,
           traceId: traceId ?? null,
         },
-        select: HISTORY_SELECT,
+        select: HISTORY_VIDEO_SELECT,
       });
       return row;
     }),
