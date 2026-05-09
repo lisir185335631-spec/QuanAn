@@ -5,9 +5,11 @@
  */
 
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
+
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 const listInput = z.object({
   limit: z.number().int().min(1).max(50).default(20),

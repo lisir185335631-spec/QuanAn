@@ -6,11 +6,14 @@
  * Note: Zod schemas inlined — @quanqn/schemas/entities has the canonical definition for client use
  */
 
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
+import { z } from 'zod';
+
 import { protectedProcedure, globalProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
+
 
 const ACCOUNT_SELECT = {
   id: true,

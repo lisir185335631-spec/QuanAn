@@ -1,0 +1,38 @@
+{
+  "story_id": "US-012",
+  "validator_start_ts": "2026-05-09T20:22:00",
+  "validator_end_ts": "2026-05-09T20:30:00",
+  "exit_code": 0,
+  "artifacts": [
+    "manifest.json"
+  ],
+  "results": {
+    "pnpm_test": { "passed": 542, "failed": 0, "files": 56, "exit_code": 0, "duration_s": 5.79 },
+    "pnpm_test_judge": { "passed": 22, "failed": 0, "files": 11, "exit_code": 0, "duration_s": 0.42 },
+    "pnpm_test_e2e_listed": { "tests": 128, "files": 18, "exit_code": 0 },
+    "pnpm_typecheck": { "workspaces": 6, "errors": 0, "exit_code": 0 },
+    "pnpm_lint_web_max_warnings_0": { "warnings": 0, "errors": 0, "exit_code": 0 },
+    "pnpm_lint_api_max_warnings_0": { "warnings": 0, "errors": 0, "exit_code": 0 }
+  },
+  "ac_results": {
+    "AC-1": "PASS - tests/judge/copywriting-free.judge.ts 2 golden cases (医美熬夜皮肤好 + 健身30天减脂) pass",
+    "AC-2": "PASS - tests/judge/copywriting-boom.judge.ts 2 golden cases (育儿 + 理财) pass",
+    "AC-3": "PASS - tests/judge/analysis-viral.judge.ts 2 golden cases (美妆 + 美食) pass · elements 数组 + insights ≥3",
+    "AC-4": "PASS - tests/judge/analysis-structural.judge.ts 2 golden cases (减肥 + 育儿) pass · 5维度评分",
+    "AC-5": "PASS - pnpm test:judge exit 0 · 22/22 pass (14 PRD-4 + 8 新)",
+    "AC-6": "PASS - tests/e2e/tools-integration.spec.ts test.describe.serial 5 steps (4 tools + history prefill)",
+    "AC-7": "PASS - pnpm --filter @quanqn/web lint --max-warnings=0 exit 0",
+    "AC-8": "PASS - pnpm --filter @quanqn/api lint --max-warnings=0 exit 0",
+    "AC-9": "PASS - pnpm typecheck 6 workspaces 0 errors",
+    "AC-10": "PASS - pnpm test 542/542 pass (≥393 required)",
+    "AC-11": "PASS - playwright list 128 tests in 18 files (≥111 required)",
+    "AC-12": "PASS - manifest.json updated with full test results",
+    "AC-13": "PASS - judge-runner.ts metadata.eventType='judge_call' (D-023/D-034)",
+    "AC-14": "PASS - playwright.config.ts workers=1 + fullyParallel=false · tools-integration.spec.ts uses test.describe.serial + shared dev@local.test page",
+    "AC-15": "PASS - judge total < 1s (lightweight mock) · typecheck < 5s · lint < 5s",
+    "AC-16": "DEFER - agent-browser validation deferred to validator X-6 / Opus audit phase",
+    "AC-17": "PASS - pnpm test 542/542 pass",
+    "AC-18": "PASS - pnpm typecheck 0 errors"
+  },
+  "notes": "PRD-5 收官 · 4 judge files (8 cases) + e2e tools-integration.spec.ts (5 steps) · lint clean (web + api) · 542 vitest + 22 judge + 128 e2e listed · 6ws typecheck 0. Net change: 4 judge + 1 e2e + 1 manifest + lint/prettier formatting cleanup across 110 files (carry-over from prior PRD-5 stories' formatting drift)."
+}

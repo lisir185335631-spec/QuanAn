@@ -11,7 +11,9 @@
 
 import { prisma } from '@/lib/prisma';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
+
 import { SPECIALIST_TEMPLATES } from './templates';
+
 import type { AssembleRequest, AssembledContext } from './types';
 
 const FETCH_TIMEOUT_MS = 5_000;
@@ -93,20 +95,24 @@ export class ContextAssembler {
   }
 
   /** L4 EvolutionProfile — PRD-8 才填 · 本期降级跑空(CS-2 冷启动) */
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async _fetchEvolutionProfile(_accountId: number): Promise<null> {
     return null;
   }
 
   /** L4 Samples — PRD-8 才填 · 本期降级跑空 */
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async _fetchSamples(_accountId: number): Promise<never[]> {
     return [];
   }
 
   /** L5 RAG — D-025 降级跑空 · needRag 字段接口保留 */
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async _fetchRag(_req: AssembleRequest): Promise<never[]> {
     return [];
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async _fetchConstants(): Promise<Constants> {
     return methodologyQueryWorker.getAll();
   }

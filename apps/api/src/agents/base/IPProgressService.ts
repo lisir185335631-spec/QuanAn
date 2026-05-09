@@ -5,8 +5,8 @@
  * 跟踪 9 步进度 · 服务 /ip-plan · /daily-tasks · /evolution
  */
 
-import { prisma } from '@/lib/prisma';
 import { STEPS, type Step } from '@/lib/constants/steps';
+import { prisma } from '@/lib/prisma';
 
 export interface IPProgress {
   completed: number;

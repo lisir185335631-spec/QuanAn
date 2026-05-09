@@ -11,7 +11,9 @@
  */
 
 import { z } from 'zod';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,
@@ -135,6 +137,49 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
    * Default 'packaging' — overwritten on every execute() call via invokeLLM.
    */
   private _mode: Mode = 'packaging';
+
+  // US-015 AC-2: fallback templates · satisfies ensures type correctness
+  static override readonly fallbackTemplate = {
+    packaging: {
+      nickname: ['创业日记', '成长实录', '职场进化', '人生赛道', '创作者小屋'],
+      avatar: {
+        prompt: '专业、亲切的商务风格头像，背景简洁明亮，体现专业感',
+        style: '写实商务风',
+      },
+      background: {
+        prompt: '简洁的品牌背景，包含账号主题元素，色调统一和谐',
+        platformVersions: ['抖音版：16:9 横版', '小红书版：1:1 方版', '公众号版：2.35:1 宽版'],
+      },
+      bio: [
+        { platform: 'douyin' as const, text: '每天分享 IP 起号干货 · 已帮助千位创作者实现变现' },
+        { platform: 'xiaohongshu' as const, text: '内容创作 · 变现路径 · 每周更新' },
+        { platform: 'wechat' as const, text: '专注 IP 孵化与内容变现，每周深度分享实战经验' },
+        { platform: 'kuaishou' as const, text: '实战 IP 运营，接地气的变现干货分享' },
+        { platform: 'bilibili' as const, text: 'UP 主成长路上的 IP 运营实战指南' },
+        { platform: 'douyin' as const, text: '内容创作者 · 分享成长与变现的真实经历' },
+      ],
+      overallStrategy:
+        '系统繁忙，此为备用账号包装方案。建议稍后重试获取针对您 IP 定位的个性化包装策略，包括昵称优化、视觉设计和平台简介定制。',
+    } satisfies Step3Output,
+    persona: {
+      coreIdentity: '专注内容创作与 IP 孵化的实战派博主（系统繁忙备用内容，请稍后重试）',
+      thoughtSystem: {
+        coreBeliefs: ['持续输出比一夜爆红更重要', '真实比完美更能打动人心', '用户价值是流量的根本'],
+        uniqueViews: ['IP 孵化是一场长期主义的修行', '内容变现需要从第一条视频开始规划'],
+        catchphrases: ['一起成长吧', '干货不废话', '今天你更新了吗'],
+      },
+      contentPersona: {
+        contentPillars: ['实战经验分享', '工具方法论', '案例复盘', '行业动态解读'],
+      },
+      trustBuilding:
+        '通过持续高质量内容输出建立专业权威形象，真实分享个人成长历程以增强受众共鸣，用数据和案例佐证每一个观点。',
+      personaRoadmap: {
+        phase1: '前 3 个月：账号冷启动，建立内容基础调性，测试受众反应',
+        phase2: '3-6 个月：扩大影响力，探索初步变现路径，开始品牌合作',
+        phase3: '6-12 个月：规模化运营，建立稳定变现体系，发展私域社群',
+      },
+    } satisfies Step3bOutput,
+  };
 
   readonly config: SpecialistConfig = BRANDING_CONFIG;
   readonly inputSchema: z.ZodType<BrandingInput> = z.record(z.unknown());

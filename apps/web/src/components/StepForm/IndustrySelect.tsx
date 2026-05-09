@@ -1,4 +1,3 @@
-import type { FieldError } from 'react-hook-form';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -10,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+import type { FieldError } from 'react-hook-form';
 
 // Industry display data — mirrors apps/api/src/lib/constants/industries.ts
 const INDUSTRY_GROUPS = [
@@ -105,11 +106,11 @@ interface IndustrySelectProps {
 export function IndustrySelect({ value, onChange, error }: IndustrySelectProps) {
   return (
     <div className="space-y-1.5">
-      <label className="text-body-sm font-medium text-on-surface">
+      <label htmlFor="industry-select" className="text-body-sm font-medium text-on-surface">
         所属行业<span className="text-error ml-0.5">*</span>
       </label>
       <Select value={value || undefined} onValueChange={onChange}>
-        <SelectTrigger className={error ? 'border-error focus:ring-error' : ''}>
+        <SelectTrigger id="industry-select" className={error ? 'border-error focus:ring-error' : ''}>
           <SelectValue placeholder="请选择行业" />
         </SelectTrigger>
         <SelectContent>

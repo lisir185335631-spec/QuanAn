@@ -6,8 +6,9 @@
  */
 
 import { z } from 'zod';
-import { router } from '@/trpc/trpc';
+
 import { globalProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
 
 const fetchInput = z.object({
   platform: z.string().max(32).optional(),
@@ -40,21 +41,21 @@ export const trendingRouter = router({
   /** Fetch trending items (P1 mock — actual crawl 留 PRD-6) */
   fetch: globalProcedure
     .input(fetchInput)
-    .query(async ({ input: _input }) => {
+    .query(({ input: _input }) => {
       return [{ ...MOCK_BASE }];
     }),
 
   /** List trending items filtered by industry (P1 mock) */
   listByIndustry: globalProcedure
     .input(listByIndustryInput)
-    .query(async ({ input }) => {
+    .query(({ input }) => {
       return [{ ...MOCK_BASE, industry: input.industry }];
     }),
 
   /** List trending items filtered by present style (P1 mock) */
   listByStyle: globalProcedure
     .input(listByStyleInput)
-    .query(async ({ input }) => {
+    .query(({ input }) => {
       return [{ ...MOCK_BASE, presentStyle: input.presentStyle }];
     }),
 });

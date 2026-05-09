@@ -6,12 +6,12 @@
  * AC-12: DB error → logged; caller receives { ok: false } (non-blocking)
  */
 
-import { z } from 'zod';
 import { Decimal } from '@prisma/client/runtime/library';
-import { router } from '@/trpc/trpc';
-import { generateHttpTraceId } from '@/trpc/trpc';
-import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { z } from 'zod';
+
 import { logger } from '@/lib/logger';
+import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router , generateHttpTraceId } from '@/trpc/trpc';
 
 export const costLogRouter = router({
   /** AC-3: writes feedback event to cost_log with eventType='good'|'bad' */

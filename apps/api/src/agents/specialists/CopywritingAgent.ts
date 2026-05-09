@@ -9,14 +9,17 @@
  */
 
 import { z } from 'zod';
+
+import { llmGateway } from '@/workers/llm-gateway';
+
 import { BaseSpecialist } from '../base/BaseSpecialist';
+
 import type {
   SpecialistInput,
   SpecialistOutput,
   SpecialistConfig,
   AssembledContext,
 } from '../base/types';
-import { llmGateway } from '@/workers/llm-gateway';
 
 // ============== 输入 + 输出 schema ==============
 

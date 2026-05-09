@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import type { ZodTypeAny } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,6 +22,9 @@ import { CategorySelect } from './CategorySelect';
 import { IndustrySelect } from './IndustrySelect';
 import { PlatformSelect } from './PlatformSelect';
 import { TextareaField } from './TextareaField';
+
+import type { FieldError } from 'react-hook-form';
+import type { ZodTypeAny } from 'zod';
 
 // ── Hot element display data for step7 ───────────────────────────────────────
 const HOT_ELEMENTS = [
@@ -127,7 +129,7 @@ export function StepForm({ stepKey, schema, onSuccess }: StepFormProps) {
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={(e) => { void onSubmit(e); }}
       className="max-w-2xl space-y-6"
       data-testid={`step-form-${stepKey}`}
       noValidate
@@ -161,7 +163,7 @@ function renderStepFields(
         <IndustrySelect
           value={(watch('lastIndustry') as string) ?? ''}
           onChange={(v) => setValue('lastIndustry', v, { shouldValidate: true })}
-          error={errors['lastIndustry'] as import('react-hook-form').FieldError | undefined}
+          error={errors['lastIndustry'] as FieldError | undefined}
         />
       );
 
@@ -171,13 +173,13 @@ function renderStepFields(
           <PlatformSelect
             value={(watch('lastPlatform') as string) ?? ''}
             onChange={(v) => setValue('lastPlatform', v, { shouldValidate: true })}
-            error={errors['lastPlatform'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPlatform'] as FieldError | undefined}
           />
           <TextareaField
             label="个人信息"
             value={(watch('lastPersonalInfo') as string) ?? ''}
             onChange={(v) => setValue('lastPersonalInfo', v, { shouldValidate: true })}
-            error={errors['lastPersonalInfo'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPersonalInfo'] as FieldError | undefined}
             placeholder="描述你的职业、背景、经历（至少20字）"
             rows={4}
             required
@@ -186,14 +188,15 @@ function renderStepFields(
             label="目标受众"
             value={(watch('lastTargetAudience') as string) ?? ''}
             onChange={(v) => setValue('lastTargetAudience', v, { shouldValidate: true })}
-            error={errors['lastTargetAudience'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastTargetAudience'] as FieldError | undefined}
             placeholder="描述你的目标受众（至少5字）"
             rows={2}
             required
           />
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">当前账号状态</label>
+            <label htmlFor="step3-current-account" className="text-body-sm font-medium text-on-surface">当前账号状态</label>
             <input
+              id="step3-current-account"
               {...register('lastCurrentAccount')}
               className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               placeholder="新账号"
@@ -208,13 +211,13 @@ function renderStepFields(
           <PlatformSelect
             value={(watch('lastPlatform') as string) ?? ''}
             onChange={(v) => setValue('lastPlatform', v, { shouldValidate: true })}
-            error={errors['lastPlatform'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPlatform'] as FieldError | undefined}
           />
           <TextareaField
             label="详细个人信息"
             value={(watch('lastPersonalInfo') as string) ?? ''}
             onChange={(v) => setValue('lastPersonalInfo', v, { shouldValidate: true })}
-            error={errors['lastPersonalInfo'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPersonalInfo'] as FieldError | undefined}
             placeholder="详细描述你的职业、背景、经历（至少50字）"
             rows={5}
             required
@@ -223,7 +226,7 @@ function renderStepFields(
             label="目标受众"
             value={(watch('lastTargetAudience') as string) ?? ''}
             onChange={(v) => setValue('lastTargetAudience', v, { shouldValidate: true })}
-            error={errors['lastTargetAudience'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastTargetAudience'] as FieldError | undefined}
             placeholder="描述你的目标受众"
             rows={2}
           />
@@ -231,7 +234,7 @@ function renderStepFields(
             label="个人优势"
             value={(watch('lastStrengths') as string) ?? ''}
             onChange={(v) => setValue('lastStrengths', v, { shouldValidate: true })}
-            error={errors['lastStrengths'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastStrengths'] as FieldError | undefined}
             placeholder="你有哪些独特优势？"
             rows={2}
           />
@@ -239,7 +242,7 @@ function renderStepFields(
             label="个人故事"
             value={(watch('lastStory') as string) ?? ''}
             onChange={(v) => setValue('lastStory', v, { shouldValidate: true })}
-            error={errors['lastStory'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastStory'] as FieldError | undefined}
             placeholder="分享一个能体现你价值观的故事"
             rows={4}
           />
@@ -252,17 +255,17 @@ function renderStepFields(
           <PlatformSelect
             value={(watch('lastPlatform') as string) ?? ''}
             onChange={(v) => setValue('lastPlatform', v, { shouldValidate: true })}
-            error={errors['lastPlatform'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPlatform'] as FieldError | undefined}
           />
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step4-followers" className="text-body-sm font-medium text-on-surface">
               当前粉丝数量<span className="text-error ml-0.5">*</span>
             </label>
             <Select
               value={(watch('lastFollowers') as string) || undefined}
               onValueChange={(v) => setValue('lastFollowers', v, { shouldValidate: true })}
             >
-              <SelectTrigger className={errors['lastFollowers'] ? 'border-error' : ''}>
+              <SelectTrigger id="step4-followers" className={errors['lastFollowers'] ? 'border-error' : ''}>
                 <SelectValue placeholder="请选择粉丝量级" />
               </SelectTrigger>
               <SelectContent>
@@ -274,7 +277,7 @@ function renderStepFields(
             </Select>
             {errors['lastFollowers'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastFollowers'] as import('react-hook-form').FieldError).message}
+                {(errors['lastFollowers'] as FieldError).message}
               </p>
             )}
           </div>
@@ -282,20 +285,20 @@ function renderStepFields(
             label="个人信息"
             value={(watch('lastPersonalInfo') as string) ?? ''}
             onChange={(v) => setValue('lastPersonalInfo', v, { shouldValidate: true })}
-            error={errors['lastPersonalInfo'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPersonalInfo'] as FieldError | undefined}
             placeholder="详细描述你的背景和现状（至少50字）"
             rows={4}
             required
           />
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step4-goals" className="text-body-sm font-medium text-on-surface">
               当前目标<span className="text-error ml-0.5">*</span>
             </label>
             <Select
               value={(watch('lastGoals') as string) || undefined}
               onValueChange={(v) => setValue('lastGoals', v, { shouldValidate: true })}
             >
-              <SelectTrigger className={errors['lastGoals'] ? 'border-error' : ''}>
+              <SelectTrigger id="step4-goals" className={errors['lastGoals'] ? 'border-error' : ''}>
                 <SelectValue placeholder="请选择目标阶段" />
               </SelectTrigger>
               <SelectContent>
@@ -307,7 +310,7 @@ function renderStepFields(
             </Select>
             {errors['lastGoals'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastGoals'] as import('react-hook-form').FieldError).message}
+                {(errors['lastGoals'] as FieldError).message}
               </p>
             )}
           </div>
@@ -321,7 +324,7 @@ function renderStepFields(
             label="产品/服务描述"
             value={(watch('lastProductDesc') as string) ?? ''}
             onChange={(v) => setValue('lastProductDesc', v, { shouldValidate: true })}
-            error={errors['lastProductDesc'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastProductDesc'] as FieldError | undefined}
             placeholder="描述你的产品或服务（至少20字）"
             rows={4}
             required
@@ -330,27 +333,28 @@ function renderStepFields(
             label="目标受众"
             value={(watch('lastTargetAudience') as string) ?? ''}
             onChange={(v) => setValue('lastTargetAudience', v, { shouldValidate: true })}
-            error={errors['lastTargetAudience'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastTargetAudience'] as FieldError | undefined}
             placeholder="描述你的目标买家"
             rows={2}
           />
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">IP 定位</label>
+            <label htmlFor="step4b-ip" className="text-body-sm font-medium text-on-surface">IP 定位</label>
             <input
+              id="step4b-ip"
               {...register('lastIpPositioning')}
               className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               placeholder="你的IP定位方向"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step4b-revenue" className="text-body-sm font-medium text-on-surface">
               当前营收<span className="text-error ml-0.5">*</span>
             </label>
             <Select
               value={(watch('lastCurrentRevenue') as string) || undefined}
               onValueChange={(v) => setValue('lastCurrentRevenue', v, { shouldValidate: true })}
             >
-              <SelectTrigger className={errors['lastCurrentRevenue'] ? 'border-error' : ''}>
+              <SelectTrigger id="step4b-revenue" className={errors['lastCurrentRevenue'] ? 'border-error' : ''}>
                 <SelectValue placeholder="请选择营收范围" />
               </SelectTrigger>
               <SelectContent>
@@ -363,7 +367,7 @@ function renderStepFields(
             </Select>
             {errors['lastCurrentRevenue'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastCurrentRevenue'] as import('react-hook-form').FieldError).message}
+                {(errors['lastCurrentRevenue'] as FieldError).message}
               </p>
             )}
           </div>
@@ -374,10 +378,11 @@ function renderStepFields(
       return (
         <>
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step5-industry" className="text-body-sm font-medium text-on-surface">
               所属行业<span className="text-error ml-0.5">*</span>
             </label>
             <input
+              id="step5-industry"
               {...register('lastIndustry')}
               className={cn(
                 'flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
@@ -387,7 +392,7 @@ function renderStepFields(
             />
             {errors['lastIndustry'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastIndustry'] as import('react-hook-form').FieldError).message}
+                {(errors['lastIndustry'] as FieldError).message}
               </p>
             )}
           </div>
@@ -395,7 +400,7 @@ function renderStepFields(
             label="产品/服务"
             value={(watch('lastProduct') as string) ?? ''}
             onChange={(v) => setValue('lastProduct', v, { shouldValidate: true })}
-            error={errors['lastProduct'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastProduct'] as FieldError | undefined}
             placeholder="你的核心产品或服务是什么？（至少5字）"
             rows={3}
             required
@@ -403,7 +408,7 @@ function renderStepFields(
           <CategorySelect
             value={(watch('lastCategory') as string) ?? ''}
             onChange={(v) => setValue('lastCategory', v, { shouldValidate: true })}
-            error={errors['lastCategory'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastCategory'] as FieldError | undefined}
           />
         </>
       );
@@ -414,7 +419,7 @@ function renderStepFields(
           label="原稿内容"
           value={(watch('lastSourceCopy') as string) ?? ''}
           onChange={(v) => setValue('lastSourceCopy', v, { shouldValidate: true })}
-          error={errors['lastSourceCopy'] as import('react-hook-form').FieldError | undefined}
+          error={errors['lastSourceCopy'] as FieldError | undefined}
           placeholder="粘贴你的原始文案或脚本（至少50字）"
           rows={10}
           required
@@ -425,14 +430,14 @@ function renderStepFields(
       return (
         <>
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step7-script-type" className="text-body-sm font-medium text-on-surface">
               脚本类型<span className="text-error ml-0.5">*</span>
             </label>
             <Select
               value={(watch('lastScriptType') as string) || undefined}
               onValueChange={(v) => setValue('lastScriptType', v, { shouldValidate: true })}
             >
-              <SelectTrigger className={errors['lastScriptType'] ? 'border-error' : ''}>
+              <SelectTrigger id="step7-script-type" className={errors['lastScriptType'] ? 'border-error' : ''}>
                 <SelectValue placeholder="请选择脚本类型" />
               </SelectTrigger>
               <SelectContent>
@@ -443,12 +448,12 @@ function renderStepFields(
             </Select>
             {errors['lastScriptType'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastScriptType'] as import('react-hook-form').FieldError).message}
+                {(errors['lastScriptType'] as FieldError).message}
               </p>
             )}
           </div>
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">爆款元素（最多5个）</label>
+            <p className="text-body-sm font-medium text-on-surface">爆款元素（最多5个）</p>
             <div className="grid grid-cols-3 gap-2">
               {HOT_ELEMENTS.map((el) => {
                 const selected = ((watch('lastElements') as string[]) ?? []).includes(el.key);
@@ -477,15 +482,16 @@ function renderStepFields(
             </div>
             {errors['lastElements'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastElements'] as import('react-hook-form').FieldError).message}
+                {(errors['lastElements'] as FieldError).message}
               </p>
             )}
           </div>
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step7-topic" className="text-body-sm font-medium text-on-surface">
               话题方向<span className="text-error ml-0.5">*</span>
             </label>
             <input
+              id="step7-topic"
               {...register('lastTopic')}
               className={cn(
                 'flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
@@ -495,7 +501,7 @@ function renderStepFields(
             />
             {errors['lastTopic'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastTopic'] as import('react-hook-form').FieldError).message}
+                {(errors['lastTopic'] as FieldError).message}
               </p>
             )}
           </div>
@@ -508,13 +514,13 @@ function renderStepFields(
           <PlatformSelect
             value={(watch('lastPlatform') as string) ?? ''}
             onChange={(v) => setValue('lastPlatform', v, { shouldValidate: true })}
-            error={errors['lastPlatform'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastPlatform'] as FieldError | undefined}
           />
           <TextareaField
             label="产品信息"
             value={(watch('lastProductInfo') as string) ?? ''}
             onChange={(v) => setValue('lastProductInfo', v, { shouldValidate: true })}
-            error={errors['lastProductInfo'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastProductInfo'] as FieldError | undefined}
             placeholder="描述你要直播销售的产品"
             rows={3}
           />
@@ -522,19 +528,19 @@ function renderStepFields(
             label="目标受众"
             value={(watch('lastTargetAudience') as string) ?? ''}
             onChange={(v) => setValue('lastTargetAudience', v, { shouldValidate: true })}
-            error={errors['lastTargetAudience'] as import('react-hook-form').FieldError | undefined}
+            error={errors['lastTargetAudience'] as FieldError | undefined}
             placeholder="描述你的直播目标观众"
             rows={2}
           />
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="step8-experience" className="text-body-sm font-medium text-on-surface">
               直播经验<span className="text-error ml-0.5">*</span>
             </label>
             <Select
               value={(watch('lastExperience') as string) || undefined}
               onValueChange={(v) => setValue('lastExperience', v, { shouldValidate: true })}
             >
-              <SelectTrigger className={errors['lastExperience'] ? 'border-error' : ''}>
+              <SelectTrigger id="step8-experience" className={errors['lastExperience'] ? 'border-error' : ''}>
                 <SelectValue placeholder="请选择经验等级" />
               </SelectTrigger>
               <SelectContent>
@@ -545,7 +551,7 @@ function renderStepFields(
             </Select>
             {errors['lastExperience'] && (
               <p className="text-body-xs text-error" role="alert">
-                {(errors['lastExperience'] as import('react-hook-form').FieldError).message}
+                {(errors['lastExperience'] as FieldError).message}
               </p>
             )}
           </div>

@@ -3,8 +3,9 @@
  * Implements the Adapter interface using @prisma/client Session model.
  */
 
-import type { Adapter, DatabaseSession, DatabaseUser } from 'lucia';
 import { prisma } from '@/lib/prisma';
+
+import type { Adapter, DatabaseSession, DatabaseUser } from 'lucia';
 
 export const prismaAdapter: Adapter = {
   async getSessionAndUser(
@@ -46,7 +47,7 @@ export const prismaAdapter: Adapter = {
     await prisma.session.create({
       data: {
         id: session.id,
-        userId: session.userId as number,
+        userId: session.userId,
         expiresAt: session.expiresAt,
       },
     });
@@ -61,7 +62,7 @@ export const prismaAdapter: Adapter = {
   },
 
   async deleteUserSessions(userId: number): Promise<void> {
-    await prisma.session.deleteMany({ where: { userId: userId as number } });
+    await prisma.session.deleteMany({ where: { userId: userId } });
   },
 
   async deleteExpiredSessions(): Promise<void> {

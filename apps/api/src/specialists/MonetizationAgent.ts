@@ -9,7 +9,9 @@
  */
 
 import { z } from 'zod';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,
@@ -103,6 +105,47 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
   readonly config: SpecialistConfig = MONETIZATION_CONFIG;
   readonly inputSchema = MonetizationInputSchema;
   readonly outputSchema = Step4bOutputSchema;
+
+  // US-015 AC-2: fallback template (single mode → 'default' key)
+  static override readonly fallbackTemplate = {
+    default: {
+      currentAnalysis:
+        '系统繁忙，暂时无法完成当前变现阶段分析。建议稍后重试以获取针对您 IP 定位的精准变现路径规划。',
+      ladder: [
+        {
+          stage: '阶段一：信任建立期',
+          revenue: '0-3k 元/月',
+          action: '持续输出高质量内容，积累基础粉丝群体，建立行业权威形象',
+        },
+        {
+          stage: '阶段二：初步变现期',
+          revenue: '3k-2w 元/月',
+          action: '推出知识付费产品（课程/专栏），开启品牌合作，尝试直播带货',
+        },
+        {
+          stage: '阶段三：规模化变现期',
+          revenue: '2w+ 元/月',
+          action: '建立私域社群，拓展高客单价服务，发展代理分销体系',
+        },
+      ],
+      revenueStructure: {
+        primary: '知识付费（课程、咨询、社群会员）',
+        secondary: ['品牌合作与软广收入', '直播带货佣金'],
+      },
+      successCases: [
+        {
+          title: '内容创作者变现案例',
+          summary:
+            '从 0 粉丝起步，通过持续输出垂直领域干货，6 个月积累 5 万粉丝，知识付费月收入突破 3 万元。',
+        },
+        {
+          title: '行业专家 IP 商业化',
+          summary:
+            '深耕细分赛道，建立专业权威形象，以高客单价咨询服务为主要收入，年营收超过 100 万元。',
+        },
+      ],
+    } satisfies Step4bOutput,
+  };
 
   constructor(gateway?: ILLMGateway) {
     super(gateway);

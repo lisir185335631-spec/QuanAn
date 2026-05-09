@@ -10,11 +10,13 @@
  * SHIELD REJ-008: explicit accountId where + RLS via protectedProcedure
  */
 
-import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
-import { router } from '@/trpc/trpc';
+import { z } from 'zod';
+
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

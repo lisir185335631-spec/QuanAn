@@ -8,10 +8,12 @@
  */
 
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
-import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+
 import { analysisAgent, type AnalysisViralOutput } from '@/specialists/AnalysisAgent';
+import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 // ── Input schema (viral mode: lastCopy + optional lastTitle) ──────────────────
 

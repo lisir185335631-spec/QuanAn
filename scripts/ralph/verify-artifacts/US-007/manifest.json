@@ -1,47 +1,16 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-08T10:23:00",
-  "validator_end_ts": "2026-05-08T10:25:00",
-  "test_command": "pnpm vitest run && pnpm typecheck",
+  "validator_start_ts": "2026-05-09T07:37:00",
+  "validator_end_ts": "2026-05-09T07:38:50",
+  "test_command": "pnpm vitest run tests/unit/api/analysis-router.test.ts tests/integration/api/analysis-structural-llm.test.ts",
   "exit_code": 0,
   "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "typecheck.txt",
-    "unit-tests.stdout.txt",
-    "pytest-full.stdout.txt"
+    "manifest.json"
   ],
-  "summary": {
-    "total_tests": 159,
-    "passed": 159,
-    "failed": 0,
-    "llm_gateway_unit": 15,
-    "llm_gateway_integration": 1,
-    "typecheck": "PASS"
-  },
-  "ac_verdict": {
-    "AC-1":  "PASS - callProvider 真实施; @anthropic-ai/sdk + openai 均已 import; MODEL_BY_TIER reasoning={primary:'claude-sonnet-4-6', fallback:'gpt-4o'}, lightweight={primary:'claude-haiku-4-5', fallback:'gpt-4o-mini'}; _callAnthropic 调 client.messages.create(), _callOpenAI 调 client.chat.completions.create()",
-    "AC-2":  "PASS - @upstash/ratelimit Ratelimit.tokenBucket(limit, '1d', limit); PLAN_LIMITS={free:50,pro:500,enterprise:5000}; env 缺失时 warn+skip(local dev); 生产路径单次 Upstash 查询 <5ms by design",
-    "AC-3":  "PASS - _callWithRetry(primary, req, 1) = 1 retry; 两次 primary 失败后 _callWithRetry(fallbackModel, req, 0); response.fallback={from,to,reason} 已设; 测试 AC-3 用例确认 Anthropic 被调 2 次, OpenAI 1 次",
-    "AC-4":  "PASS - 两 provider 均失败 → 返 fallback 模板字符串; logger.error('llm.both_failed') 已触发; writeCostLog({success:false, errorCode:'BOTH_FAILED'}) 调用确认",
-    "AC-5":  "PASS - getAnthropicClient(): if(!key) throw new Error(`ANTHROPIC_API_KEY missing for ${tier} tier`); 测试 AC-5 用例 rejects.toThrow(/ANTHROPIC_API_KEY missing for reasoning tier/) 通过",
-    "AC-6":  "PASS - writeCostLog 写: userId/accountId/agentId/modelUsed/promptTokens/completionTokens/totalTokens/costUsd/durationMs/success/isFallback/fallbackFrom/fallbackTo/traceId 全部覆盖; Decimal 精度 6 位",
-    "AC-7":  "PASS - grep \"from '@anthropic-ai/sdk'\" apps/ 仅命中 apps/api/src/workers/llm-gateway/index.ts 1 文件; anthropic-provider.ts 不 import SDK (只用 RawAnthropicResponse 类型)",
-    "AC-8":  "PASS - grep \"from 'openai'\" apps/ 仅命中 apps/api/src/workers/llm-gateway/index.ts 1 文件; openai-provider.ts 不 import SDK",
-    "AC-9":  "PASS - grep ANTHROPIC_API_KEY|OPENAI_API_KEY + log|console|logger: 0 命中; key 仅在 getAnthropicClient/getOpenAIClient 内以变量传递, 从不记录",
-    "AC-10": "NOTE - P50/P99/cost 是生产 SLA, 不可 unit test; 实现使用 reasoning timeout=60_000ms, lightweight=30_000ms, 成本估算 claude-sonnet-4-6 $3/M+$15/M output → 典型请求远 <$0.30; 架构符合",
-    "AC-11": "PASS - checkRateLimit(userId) 是 complete() 第一步; 抛 RateLimitError 后直接 throw 不触发 _callProvider; 测试: callProviderSpy not.toHaveBeenCalled() 通过",
-    "AC-12": "PASS - pnpm typecheck exit 0; 6 packages (api/web/admin/schemas/ui/clients) 全通过",
-    "AC-13": "PASS - 单元 15 个(fallback×9, rate×6, vi.mock 不真调 SDK) + 集成 1(nock 拦截 Anthropic HTTP) = 16/16 通过; ≥6 单元要求满足"
-  },
-  "security_grep": {
-    "anthropic_sdk_files": ["apps/api/src/workers/llm-gateway/index.ts"],
-    "openai_sdk_files":    ["apps/api/src/workers/llm-gateway/index.ts"],
-    "api_key_log_hits":    0
-  },
-  "zero_regression": {
-    "total_files": 19,
-    "total_tests": 159,
-    "failed": 0,
-    "exit_code": 0
-  },
-  "verdict": "PASS"
+  "notes": "Story-specific: 4 unit + 1 integration = 5 passed (pytest.xml). Full suite: 481/481 passed (pytest-full.xml). Typecheck: all 6 packages clean. AC-10 (P95 < 8s) is production SLA; integration mock completes in 40ms well within bound."
 }

@@ -3,25 +3,25 @@
  * PRD-3 US-001: removes step/account alias routers (TD-012) → canonical ipAccounts/stepData only
  */
 
-import { router } from '@/trpc/trpc';
+import { analysisRouter } from '@/trpc/routers/analysis';
 import { authRouter } from '@/trpc/routers/auth';
-import { evolutionRouter } from '@/trpc/routers/evolution';
-import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
-import { stepDataRouter } from '@/trpc/routers/stepData';
-import { copywritingRouter } from '@/trpc/routers/copywriting';
-import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
-import { videoProductionRouter } from '@/trpc/routers/videoProduction';
 import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
+import { copywritingRouter } from '@/trpc/routers/copywriting';
+import { costLogRouter } from '@/trpc/routers/costLog';
+import { deepLearningRouter } from '@/trpc/routers/deepLearning';
+import { diagnosisRouter } from '@/trpc/routers/diagnosis';
+import { evolutionRouter } from '@/trpc/routers/evolution';
+import { historyRouter } from '@/trpc/routers/history';
+import { inviteRouter } from '@/trpc/routers/invite';
+import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
+import { knowledgeRouter } from '@/trpc/routers/knowledge';
 import { monetizationRouter } from '@/trpc/routers/monetization';
 import { privateDomainRouter } from '@/trpc/routers/privateDomain';
-import { diagnosisRouter } from '@/trpc/routers/diagnosis';
-import { deepLearningRouter } from '@/trpc/routers/deepLearning';
-import { knowledgeRouter } from '@/trpc/routers/knowledge';
+import { stepDataRouter } from '@/trpc/routers/stepData';
 import { trendingRouter } from '@/trpc/routers/trending';
-import { inviteRouter } from '@/trpc/routers/invite';
-import { costLogRouter } from '@/trpc/routers/costLog';
-import { analysisRouter } from '@/trpc/routers/analysis';
-import { historyRouter } from '@/trpc/routers/history';
+import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
+import { videoProductionRouter } from '@/trpc/routers/videoProduction';
+import { router } from '@/trpc/trpc';
 
 export const appRouter = router({
   auth: authRouter,

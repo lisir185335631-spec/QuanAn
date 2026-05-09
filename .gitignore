@@ -68,3 +68,4 @@ scripts/ralph/verify-artifacts/ # audit-artifacts.py 产物 · 不入库
 *.tmp
 .cache
 scripts/ralph/prd.json.bak.*
+.gstack/

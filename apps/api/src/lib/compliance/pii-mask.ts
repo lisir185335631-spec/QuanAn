@@ -44,7 +44,7 @@ export function piiMask<T>(input: T): T {
     return maskString(input).text as unknown as T;
   }
   if (Array.isArray(input)) {
-    return input.map((v) => piiMask(v)) as unknown as T;
+    return (input as unknown[]).map((v: unknown) => piiMask(v)) as unknown as T;
   }
   if (input && typeof input === 'object') {
     // 白名单 · 特殊对象不递归 · 防破坏内部状态

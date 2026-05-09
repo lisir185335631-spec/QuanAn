@@ -4,6 +4,8 @@
  * AC-2(US-001)
  */
 
+import type { ZodTypeAny } from 'zod';
+
 /** LLM tier(ADR-013) */
 export type ModelTier = 'reasoning' | 'lightweight';
 
@@ -86,7 +88,7 @@ export interface LLMCompleteRequest {
   model_tier: ModelTier;
   systemPrompt: string;
   userPrompt: string;
-  responseFormat?: { type: 'json_schema'; schema: import('zod').ZodTypeAny };
+  responseFormat?: { type: 'json_schema'; schema: ZodTypeAny };
   metadata: {
     trace_id: string;
     agentId: string;

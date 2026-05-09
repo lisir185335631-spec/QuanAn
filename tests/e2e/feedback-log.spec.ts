@@ -41,8 +41,10 @@ test.describe('FeedbackLog e2e (US-014)', () => {
     await page.waitForTimeout(500);
 
     expect(payloads.length).toBeGreaterThan(0);
-    const body = payloads[0] as Record<string, unknown>;
-    const json = (body['json'] ?? body) as Record<string, unknown>;
+    // tRPC httpBatchStreamLink sends: {"0": {"json": {...}}} or {"json": {...}}
+    const raw = payloads[0] as Record<string, unknown>;
+    const batchItem = (raw['0'] ?? raw) as Record<string, unknown>;
+    const json = (batchItem['json'] ?? batchItem) as Record<string, unknown>;
     expect(json['stepKey']).toBe('step1');
     expect(json['agentId']).toBe('PositioningAgent');
     expect(json['type']).toBe('good');

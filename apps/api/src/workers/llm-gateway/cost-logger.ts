@@ -4,8 +4,10 @@
  */
 
 import { Decimal } from '@prisma/client/runtime/library';
-import { prisma } from '@/lib/prisma';
+
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
+
 import type { CompleteRequest, CompleteResponse } from './index';
 
 // Approximate cost per 1M tokens (USD) — used for cost estimation only

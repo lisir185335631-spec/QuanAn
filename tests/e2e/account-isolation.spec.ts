@@ -86,7 +86,14 @@ test.describe('多账号 RLS 隔离 E2E', () => {
     expect(saveResult.ok).toBe(true);
 
     // Verify step data is visible under account A
-    const dataA = (await trpcQuery(page, 'stepData.getAll')) as Array<unknown>;
+    // Re-assert active account before query to guard against parallel test interference
+    let dataA: Array<unknown> = [];
+    for (let i = 0; i < 5; i++) {
+      await trpcMutate(page, 'ipAccounts.switchActive', { accountId: accountA.id });
+      dataA = (await trpcQuery(page, 'stepData.getAll')) as Array<unknown>;
+      if (dataA.length > 0) break;
+      await page.waitForTimeout(100);
+    }
     expect(dataA.length).toBeGreaterThan(0);
 
     // Switch to account B — account B has NO step data

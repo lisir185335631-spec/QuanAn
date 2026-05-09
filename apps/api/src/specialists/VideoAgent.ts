@@ -15,7 +15,9 @@
  */
 
 import { z } from 'zod';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,
@@ -117,6 +119,61 @@ export class VideoAgent extends BaseSpecialist<VideoInput, ShootingOutput> {
 
   readonly config: SpecialistConfig = VIDEO_CONFIG;
   readonly inputSchema = VideoInputSchema;
+
+  // US-015 AC-2: fallback template for shooting mode
+  static override readonly fallbackTemplate = {
+    shooting: {
+      shotList: [
+        {
+          scene: '开场画面',
+          duration: '3-5秒',
+          action: '主持人入镜，面向镜头',
+          dialogue: '大家好，欢迎来到今天的内容（系统繁忙备用内容，请稍后重试获取个性化拍摄计划）',
+          cameraAngle: '正面中景',
+          prop: '无',
+          lighting: '自然光或柔光灯',
+          transition: '切入',
+          sfx: '开场音效',
+          voiceover: '欢迎收看本期视频',
+          subtitle: '欢迎收看',
+          costume: '专业整洁服装',
+          location: '室内摄影棚或办公室',
+        },
+        {
+          scene: '内容主体',
+          duration: '30-60秒',
+          action: '讲解核心内容，搭配手势或道具',
+          dialogue: '今天我要分享的内容非常重要，相信看完的你一定会有所收获',
+          cameraAngle: '正面中景与近景切换',
+          prop: '白板或道具',
+          lighting: '补光灯辅助',
+          transition: '淡出淡入',
+          sfx: '轻音乐背景',
+          voiceover: '核心要点一二三',
+          subtitle: '重点内容提炼',
+          costume: '同开场',
+          location: '同开场',
+        },
+        {
+          scene: '结尾引导',
+          duration: '5-10秒',
+          action: '面向镜头，引导用户关注互动',
+          dialogue: '如果觉得有用，请点击关注，我们下期再见',
+          cameraAngle: '正面中景',
+          prop: '无',
+          lighting: '同开场',
+          transition: '淡出',
+          sfx: '结尾音效',
+          voiceover: '点赞关注不迷路',
+          subtitle: '点赞关注',
+          costume: '同开场',
+          location: '同开场',
+        },
+      ],
+      equipment: ['手机或相机', '三脚架', '补光灯', '麦克风'],
+      schedule: '拍摄时间约 1-2 小时，建议在光线充足的上午（9-11点）或下午（14-16点）进行（系统繁忙备用拍摄计划）',
+    } satisfies ShootingOutput,
+  };
 
   // AC-1 / SHIELD REJ-007: getter 按 mode 返回 schema · 不共用单一 schema
   get outputSchema(): z.ZodType<ShootingOutput> {

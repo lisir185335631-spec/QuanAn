@@ -1,26 +1,1017 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<testsuites name="US-005-full-regression" tests="129" failures="0" errors="0" time="0.419">
-  <testsuite name="specialists-flow.test.ts" tests="22" failures="0" errors="0" time="0.050">
-    <testcase classname="privateDomain.generate" name="AC-7: creates History row with agentId=private_domain and traceId" time="0.002" />
-    <testcase classname="diagnosis.generate" name="AC-7: creates DiagnosisReport row with agentId=DiagnosisAgent and traceId" time="0.002" />
-    <testcase classname="diagnosis.generate" name="zod: rejects answers array with wrong length" time="0.002" />
-    <testcase classname="diagnosis.history" name="calls diagnosisReport.findMany with default limit=10" time="0.002" />
-    <testcase classname="diagnosis.latest" name="calls diagnosisReport.findFirst ordered by createdAt desc" time="0.002" />
-    <testcase classname="diagnosis.latest" name="returns null when no reports found" time="0.002" />
-    <testcase classname="evolution.evolve" name="AC-7: creates FeedbackLog row with rating and agentId" time="0.002" />
-    <testcase classname="evolution.getConfig" name="returns profile config when profile exists" time="0.002" />
-    <testcase classname="evolution.getConfig" name="returns default config when profile does not exist" time="0.002" />
-    <testcase classname="evolution.updateConfig" name="upserts EvolutionProfile and returns ok + updated config" time="0.002" />
-    <testcase classname="evolution.history" name="calls evolutionInsight.findMany with default limit=20" time="0.002" />
-    <testcase classname="evolution.recentFeedback" name="calls feedbackLog.findMany and returns array" time="0.002" />
-    <testcase classname="evolution.recentFeedback" name="passes agentId filter to where clause when provided" time="0.002" />
-    <testcase classname="evolution.feedbackTrend" name="returns mock trend data with requested days" time="0.002" />
-    <testcase classname="evolution.moduleRanking" name="returns mock ranking array" time="0.002" />
-    <testcase classname="deepLearning.list" name="calls deepLearningArchive.findMany with isActive filter by default" time="0.002" />
-    <testcase classname="deepLearning.create" name="creates DeepLearningArchive with sourceType=text" time="0.002" />
-    <testcase classname="deepLearning.createFromFile" name="creates archive with sourceType=file and placeholder sample" time="0.002" />
-    <testcase classname="deepLearning.learn" name="updates archive learningStatus to pending and returns {ok:true, status:&quot;queued&quot;}" time="0.002" />
-    <testcase classname="deepLearning.delete" name="soft-deletes archive by setting isActive=false" time="0.002" />
-  </testsuite>
-  <testsuite name="all-other-tests" tests="109" failures="0" errors="0" time="0.369" />
+{"level":"warn","time":"2026-05-09T06:54:38.683Z","pid":70725,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-09T06:54:38.683Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-09T06:54:38.684Z","pid":70725,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-09T06:54:38.684Z","pid":70725,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-09T06:54:38.684Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-09T06:54:38.684Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-09T06:54:38.685Z","pid":70725,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-09T06:54:38.685Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-09T06:54:38.685Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-09T06:54:38.686Z","pid":70725,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-09T06:54:38.686Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-09T06:54:38.686Z","pid":70725,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-09T06:54:38.686Z","pid":70725,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-09T06:54:38.796Z","pid":70735,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanQn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
+{"level":"warn","time":"2026-05-09T06:54:38.834Z","pid":70742,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
+{"level":"warn","time":"2026-05-09T06:54:38.835Z","pid":70742,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
+{"level":"error","time":"2026-05-09T06:54:38.871Z","pid":70729,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:42:26\n\n  39 const costUsd = estimateCostUsd(res.model, res.tokens);\n  40 \n  41 try {\n→ 42   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:42:26\n\n  39 const costUsd = estimateCostUsd(res.model, res.tokens);\n  40 \n  41 try {\n→ 42   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:42:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:153:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:87:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1778309678836","msg":"cost_log.write_failed"}
+{"level":"error","time":"2026-05-09T06:54:38.998Z","pid":70754,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
+{"level":"error","time":"2026-05-09T06:54:38.998Z","pid":70754,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-09T06:54:38.998Z","pid":70754,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
+{"level":"info","time":"2026-05-09T06:54:39.187Z","pid":70762,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778309679187_m9pw","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
+{"level":"error","time":"2026-05-09T06:54:39.187Z","pid":70762,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778309679187_m9pw","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:66:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:35:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":0,"msg":"specialist.failed"}
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="448" failures="0" errors="0" time="5.508">
+    <testsuite name="tests/unit/parseDesignTokens.test.ts" timestamp="2026-05-09T06:54:43.406Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.007706333">
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts color tokens from YAML frontmatter" time="0.003132084">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts typography tokens including all three font families" time="0.000389375">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts rounded tokens" time="0.000290209">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts spacing tokens" time="0.000257667">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; YAML wins over text section — text section hex values are not in tokens" time="0.000776083">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; primary color comes from YAML, not from text-section editorial hint" time="0.000212084">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing opening ---" time="0.00057325">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing closing ---" time="0.000187375">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on corrupt YAML with line number in message" time="0.000903458">
+        </testcase>
+        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; returns empty objects for missing optional sections" time="0.000293167">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/agents/base.test.ts" timestamp="2026-05-09T06:54:43.407Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.005423916">
+        <testcase classname="tests/unit/agents/base.test.ts" name="BaseSpecialist abstract contract &gt; concrete subclass implements execute and can be instantiated" time="0.003943125">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="LLMGateway.selectTier &gt; returns reasoning for reasoning hint" time="0.000101875">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="LLMGateway.selectTier &gt; returns lightweight for lightweight hint" time="0.000038458">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; extractTraceId returns the X-Trace-Id header value" time="0.000405625">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; extractTraceId returns empty string when header absent" time="0.000056625">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; generateHttpTraceId returns a 16-char hex string" time="0.000177542">
+        </testcase>
+        <testcase classname="tests/unit/agents/base.test.ts" name="trace_id propagation &gt; generateHttpTraceId is unique per call" time="0.000103334">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/account-isolation.test.ts" timestamp="2026-05-09T06:54:43.408Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.004925208">
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-4: throws FORBIDDEN when activeAccountId is null" time="0.001609375">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-4: calls next=false (does not proceed) when activeAccountId missing" time="0.000495">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-5: skips RLS and calls next when meta.isGlobal=true" time="0.000192042">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-5: isGlobal skips even when activeAccountId is present" time="0.000105333">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: sets app.current_account_id via set_config for valid context" time="0.000988">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: sets app.current_user_id when user.id is present" time="0.000447542">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: skips app.current_user_id when user is null" time="0.000214208">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: calls next with updated ctx including transaction prisma" time="0.000222417">
+        </testcase>
+        <testcase classname="tests/unit/api/account-isolation.test.ts" name="accountIsolationMiddleware &gt; AC-2: wraps resolver in $transaction (ensures set_config is LOCAL)" time="0.000209042">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/account-step-auth.test.ts" timestamp="2026-05-09T06:54:43.408Z" hostname="returndeMacBook-Pro.local" tests="15" failures="0" errors="0" skipped="0" time="0.007141166">
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.active &gt; returns null when no account found" time="0.001427958">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.active &gt; returns account data when found" time="0.000503958">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.active &gt; queries with activeAccountId from ctx" time="0.00082475">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.switchActive &gt; updates user.activeAccountId and writes audit_log" time="0.000778583">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.switchActive &gt; throws NOT_FOUND when account does not belong to user" time="0.000468541">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.switchActive &gt; throws UNAUTHORIZED when no user in ctx" time="0.000214375">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.switchActive &gt; zod: rejects non-positive accountId" time="0.00061525">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="ipAccounts.switchActive &gt; zod: rejects non-integer accountId" time="0.000190917">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="stepData.save &gt; upserts step data and returns { ok: true, data }" time="0.000592542">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="stepData.save &gt; passes traceId from ctx to upsert" time="0.000210125">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="stepData.save &gt; zod: rejects empty stepKey" time="0.000184125">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="stepData.save &gt; zod: accepts empty inputs object" time="0.000195542">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="auth.me &gt; returns unauthenticated stub when no user in ctx" time="0.000110375">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="auth.me &gt; returns user info when authenticated" time="0.000102">
+        </testcase>
+        <testcase classname="tests/unit/api/account-step-auth.test.ts" name="auth.me &gt; exposes only id, email, name (not password or session data)" time="0.000285292">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/boom-generate-router.test.ts" timestamp="2026-05-09T06:54:43.409Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.005894542">
+        <testcase classname="tests/unit/api/boom-generate-router.test.ts" name="boomGenerate.generate — happy path &gt; calls CopywritingAgent(mode=boom), writes history with D-032 --- separator + full fields" time="0.0037845">
+        </testcase>
+        <testcase classname="tests/unit/api/boom-generate-router.test.ts" name="boomGenerate.generate — zod validation &gt; empty elements array → TRPCError BAD_REQUEST" time="0.000551542">
+        </testcase>
+        <testcase classname="tests/unit/api/boom-generate-router.test.ts" name="boomGenerate.generate — fallback path &gt; agent returns isFallback=true → history written with isFallback=true" time="0.000380916">
+        </testcase>
+        <testcase classname="tests/unit/api/boom-generate-router.test.ts" name="boomGenerate.generate — agentMode field &gt; agentMode=&quot;boom&quot; is always written to history" time="0.000551584">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/copywriting-router.test.ts" timestamp="2026-05-09T06:54:43.409Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.004745375">
+        <testcase classname="tests/unit/api/copywriting-router.test.ts" name="copywriting.freeGenerate — happy path &gt; calls CopywritingAgent(mode=free), writes history with full fields, returns row" time="0.003268083">
+        </testcase>
+        <testcase classname="tests/unit/api/copywriting-router.test.ts" name="copywriting.freeGenerate — zod validation &gt; empty topic → TRPCError BAD_REQUEST" time="0.000674667">
+        </testcase>
+        <testcase classname="tests/unit/api/copywriting-router.test.ts" name="copywriting.freeGenerate — fallback path &gt; agent returns isFallback=true → history written with isFallback=true" time="0.000228125">
+        </testcase>
+        <testcase classname="tests/unit/api/copywriting-router.test.ts" name="copywriting.freeGenerate — agentMode field &gt; agentMode=&quot;free&quot; is always written to history regardless of result" time="0.000181125">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/feedback-log.test.ts" timestamp="2026-05-09T06:54:43.409Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.0137805">
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-18-1: logFeedback writes cost_log with eventType=good and correct fields" time="0.005091">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-18-2: event_type enum — &apos;bad&apos; maps correctly" time="0.000671208">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-18-3: RLS isolation — accountId comes from ctx.activeAccountId, not input" time="0.000530833">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-18-4: target JSON complete — stepKey + agentId + traceId all present" time="0.000513209">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-10: type not in [good,bad] → zod input rejection" time="0.001208625">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-12: DB error → returns { ok: false } without throwing" time="0.004588292">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-11: traceId propagated from x-trace-id header into cost_log" time="0.000296375">
+        </testcase>
+        <testcase classname="tests/unit/api/feedback-log.test.ts" name="costLog.logFeedback &gt; AC-20: logFeedback &lt; 50ms (single INSERT with mock DB)" time="0.000167625">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/invite.test.ts" timestamp="2026-05-09T06:54:43.409Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.006049166">
+        <testcase classname="tests/unit/api/invite.test.ts" name="invite.redeem — success &gt; AC-3: calls findUnique then update with usedById=user.id and returns updated invite" time="0.003699375">
+        </testcase>
+        <testcase classname="tests/unit/api/invite.test.ts" name="invite.redeem — duplicate &gt; AC-4: already-used invite code → throws CONFLICT 409" time="0.001207917">
+        </testcase>
+        <testcase classname="tests/unit/api/invite.test.ts" name="invite.redeem — not found &gt; unknown code → throws NOT_FOUND" time="0.000251459">
+        </testcase>
+        <testcase classname="tests/unit/api/invite.test.ts" name="invite.redeem — unauthenticated &gt; no user session → throws UNAUTHORIZED" time="0.000195209">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/ip-progress.test.ts" timestamp="2026-05-09T06:54:43.410Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.003139125">
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; returns 0/9 with empty completedSteps when no stepData rows exist" time="0.001034125">
+        </testcase>
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; returns 3/9 when 3 completed-status rows returned" time="0.000230041">
+        </testcase>
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; returns 9/9 when all 9 steps completed" time="0.000114166">
+        </testcase>
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; passes correct accountId for account isolation" time="0.000724917">
+        </testcase>
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; queries only status=completed rows (belt-and-suspenders beyond RLS)" time="0.000114833">
+        </testcase>
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; queries only STEP_KEYS_9 (step2 excluded)" time="0.000108375">
+        </testcase>
+        <testcase classname="tests/unit/api/ip-progress.test.ts" name="getProgress &gt; switching account ID returns independent progress" time="0.000196208">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/ipAccounts-stepData.test.ts" timestamp="2026-05-09T06:54:43.410Z" hostname="returndeMacBook-Pro.local" tests="15" failures="0" errors="0" skipped="0" time="0.008666416">
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.list &gt; AC-5: calls findMany without explicit where:{userId} (RLS handles it)" time="0.001690375">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.active &gt; returns the active account by activeAccountId" time="0.000973542">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.active &gt; returns null when account not found" time="0.000208666">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.create &gt; creates account with user.id from context" time="0.000528125">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.update &gt; updates the active account (where:{id: activeAccountId})" time="0.000292209">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.delete &gt; soft-deletes by setting isActive=false + archivedAt" time="0.00029475">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.switchActive &gt; AC-6: updates user.activeAccountId and writes audit_log" time="0.000610916">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.switchActive &gt; AC-6: throws UNAUTHORIZED when user is null" time="0.00093575">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="ipAccounts.switchActive &gt; AC-6: throws NOT_FOUND when account does not belong to user" time="0.000677083">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.get &gt; AC-8: queries by stepKey only (no accountId — RLS handles it)" time="0.000732125">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.get &gt; returns null when stepKey not found" time="0.000226833">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.getAll &gt; calls findMany without where:{accountId} (RLS handles it)" time="0.00014375">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.save &gt; AC-7: upserts with accountId_stepKey composite key" time="0.000393333">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.progress &gt; returns completed/total counts for the current account" time="0.0002645">
+        </testcase>
+        <testcase classname="tests/unit/api/ipAccounts-stepData.test.ts" name="stepData.progress &gt; returns zero completed when no step data exists" time="0.000112083">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/knowledge.test.ts" timestamp="2026-05-09T06:54:43.410Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.0052745">
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.getRecommendations &gt; returns mock recommendation array without DB calls" time="0.002200708">
+        </testcase>
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.getScriptCases &gt; returns mock script case array and echoes industry filter" time="0.000391375">
+        </testcase>
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.getFavorites &gt; calls knowledgeFavorite.findMany and returns favorites array" time="0.000672583">
+        </testcase>
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.addFavorite &gt; AC-6: creates favorite with activeAccountId (per-account isolation)" time="0.000763917">
+        </testcase>
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.removeFavorite &gt; calls knowledgeFavorite.deleteMany with accountId+itemType+itemKey and returns {ok:true}" time="0.000283334">
+        </testcase>
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.getNotes &gt; calls knowledgeNote.findMany and returns notes array" time="0.000193292">
+        </testcase>
+        <testcase classname="tests/unit/api/knowledge.test.ts" name="knowledge.addNote &gt; creates note with activeAccountId and content" time="0.00016975">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/llm-gateway-fallback.test.ts" timestamp="2026-05-09T06:54:43.411Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.005224167">
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-3: happy path — primary succeeds, no fallback field" time="0.001461416">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-3: primary fails both attempts → falls back to gpt-4o" time="0.001201167">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-3: retry once — fails first, succeeds second (same primary)" time="0.000232791">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-4: both providers fail → returns fallback template string" time="0.00018825">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-4: both fail → cost_log written with success=false" time="0.000675708">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-5: ANTHROPIC_API_KEY missing → throws specific error" time="0.000421875">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-6: cost_log written on success with correct fields" time="0.000172167">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; AC-6: cost_log res.fallback present when fallback used" time="0.00016975">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-fallback.test.ts" name="LLMGateway · fallback &gt; lightweight tier: primary is haiku, fallback is gpt-4o-mini" time="0.000110209">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/llm-gateway-rate.test.ts" timestamp="2026-05-09T06:54:43.411Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.007589125">
+        <testcase classname="tests/unit/api/llm-gateway-rate.test.ts" name="LLMGateway · rate limiting &gt; AC-11: throws RateLimitError when quota exceeded, no LLM call" time="0.002452459">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-rate.test.ts" name="LLMGateway · rate limiting &gt; AC-11: RateLimitError has correct userId and code" time="0.000988667">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-rate.test.ts" name="LLMGateway · rate limiting &gt; AC-11: checkRateLimit is called with userId from metadata" time="0.001950375">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-rate.test.ts" name="LLMGateway · rate limiting &gt; checkRateLimit called once per complete() call" time="0.000366334">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-rate.test.ts" name="LLMGateway · rate limiting &gt; RateLimitError constructor sets message and code" time="0.000896333">
+        </testcase>
+        <testcase classname="tests/unit/api/llm-gateway-rate.test.ts" name="LLMGateway · rate limiting &gt; complete() succeeds when rate limit passes" time="0.000277125">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/specialists-creation.test.ts" timestamp="2026-05-09T06:54:43.411Z" hostname="returndeMacBook-Pro.local" tests="11" failures="0" errors="0" skipped="0" time="0.005161666">
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="copywriting.generate &gt; US-009 AC-5/AC-7: calls CopywritingAgent, writes real markdown to History row" time="0.001849083">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="copywriting.optimize &gt; AC-7: creates History row for optimization with traceId" time="0.000368292">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="copywriting.list &gt; returns array of history entries without hitting history.create" time="0.000300375">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="copywriting.delete &gt; calls history.delete with the given historyId and returns {ok: true}" time="0.0006115">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="videoAnalysis.analyze &gt; AC-7: creates History row with agentId=AnalysisAgent and traceId" time="0.000257375">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="videoAnalysis.rewrite &gt; AC-7: creates History row for rewrite with traceId" time="0.000203667">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="videoProduction.generate &gt; AC-7: creates History row with agentId=video_production" time="0.000199791">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="videoProduction.generateStoryboard &gt; AC-7: creates History row for storyboard with traceId" time="0.000176625">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="videoProduction.generateSceneImage &gt; AC-7: creates History row for scene image with traceId" time="0.000166667">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="boomGenerate.generate &gt; AC-7: creates History row with agentId=CopywritingAgent and traceId" time="0.000320791">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-creation.test.ts" name="monetization.generate &gt; AC-7: creates History row with agentId=monetization and traceId" time="0.000170292">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/specialists-flow.test.ts" timestamp="2026-05-09T06:54:43.411Z" hostname="returndeMacBook-Pro.local" tests="20" failures="0" errors="0" skipped="0" time="0.008606292">
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="privateDomain.generate &gt; AC-7: creates History row with agentId=PrivateDomainAgent and traceId" time="0.002076708">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="diagnosis.generate &gt; AC-7: creates DiagnosisReport row with agentId=DiagnosisAgent and traceId" time="0.000559125">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="diagnosis.generate &gt; zod: rejects answers array with wrong length" time="0.0008075">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="diagnosis.history &gt; calls diagnosisReport.findMany with default limit=10" time="0.000251292">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="diagnosis.latest &gt; calls diagnosisReport.findFirst ordered by createdAt desc" time="0.000227542">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="diagnosis.latest &gt; returns null when no reports found" time="0.000191666">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.evolve &gt; AC-7: creates FeedbackLog row with rating and agentId" time="0.000264917">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.getConfig &gt; returns profile config when profile exists" time="0.000429875">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.getConfig &gt; returns default config when profile does not exist" time="0.0001795">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.updateConfig &gt; upserts EvolutionProfile and returns ok + updated config" time="0.000239708">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.history &gt; calls evolutionInsight.findMany with default limit=20" time="0.00060175">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.recentFeedback &gt; calls feedbackLog.findMany and returns array" time="0.000180875">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.recentFeedback &gt; passes agentId filter to where clause when provided" time="0.000128417">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.feedbackTrend &gt; returns mock trend data with requested days" time="0.000137542">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="evolution.moduleRanking &gt; returns mock ranking array" time="0.000120042">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="deepLearning.list &gt; calls deepLearningArchive.findMany with isActive filter by default" time="0.000164959">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="deepLearning.create &gt; creates DeepLearningArchive with sourceType=text" time="0.000225583">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="deepLearning.createFromFile &gt; creates archive with sourceType=file and placeholder sample" time="0.000138917">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="deepLearning.learn &gt; updates archive learningStatus to pending and returns {ok:true, status:&quot;queued&quot;}" time="0.000824125">
+        </testcase>
+        <testcase classname="tests/unit/api/specialists-flow.test.ts" name="deepLearning.delete &gt; soft-deletes archive by setting isActive=false" time="0.000237958">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/trending.test.ts" timestamp="2026-05-09T06:54:43.412Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.002492958">
+        <testcase classname="tests/unit/api/trending.test.ts" name="trending.fetch &gt; AC-5: returns mock TrendingItem array without RLS transaction" time="0.001554834">
+        </testcase>
+        <testcase classname="tests/unit/api/trending.test.ts" name="trending.listByIndustry &gt; returns mock items with the requested industry" time="0.000316375">
+        </testcase>
+        <testcase classname="tests/unit/api/trending.test.ts" name="trending.listByStyle &gt; returns mock items with the requested presentStyle" time="0.000154334">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/auth/providers.test.ts" timestamp="2026-05-09T06:54:43.412Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.00374875">
+        <testcase classname="tests/unit/auth/providers.test.ts" name="MockProvider &gt; validateCallback always returns mock dev user" time="0.001134709">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="MockProvider &gt; getAuthorizationUrl returns URL with /auth/callback?mock=true" time="0.000317083">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when SESSION_SECRET &lt; 32 chars" time="0.001168042">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when OAUTH_PROVIDER is unknown" time="0.000166334">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="validateStartupConfig &gt; calls process.exit(1) when NODE_ENV=production and OAUTH_PROVIDER=mock" time="0.000125416">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns false for mock provider (name=mock) — dev only" time="0.000051083">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns true for google provider — always enforced" time="0.000036084">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; returns true for any unknown real provider" time="0.000027958">
+        </testcase>
+        <testcase classname="tests/unit/auth/providers.test.ts" name="requiresCsrfCheck &gt; attack scenario: ?mock=true query param cannot bypass CSRF for google provider" time="0.000029334">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/schemas/specialist-io.test.ts" timestamp="2026-05-09T06:54:43.413Z" hostname="returndeMacBook-Pro.local" tests="26" failures="0" errors="0" skipped="0" time="0.004055333">
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="constants &gt; HOT_ELEMENT_KEYS_22 has exactly 22 items" time="0.000458">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="constants &gt; SCRIPT_TYPE_KEYS_20 has exactly 20 items" time="0.000058292">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="constants &gt; HOT_ELEMENT_KEYS_22 contains expected keys" time="0.00037375">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="constants &gt; SCRIPT_TYPE_KEYS_20 contains expected keys" time="0.000086125">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="constants &gt; HOT_ELEMENT_KEYS_22 has no duplicates" time="0.000039333">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisStructuralInput &gt; passes with valid copy ≥10 chars" time="0.000349209">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisStructuralInput &gt; fails when copy is too short (&lt;10 chars)" time="0.000179417">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisStructuralInput &gt; fails when copy exceeds 3000 chars" time="0.000056542">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisViralInput &gt; passes with lastCopy only (lastTitle optional)" time="0.000064416">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisViralInput &gt; passes with both lastTitle and lastCopy" time="0.000050083">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisViralInput &gt; fails when lastCopy is missing" time="0.000048583">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisViralInput &gt; fails when lastTitle exceeds 200 chars" time="0.000056375">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisStructuralOutput &gt; passes with valid structural output" time="0.0002095">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisStructuralOutput &gt; fails when optimizations has fewer than 3 items" time="0.00007025">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisStructuralOutput &gt; fails when score value exceeds 100" time="0.000071875">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisViralOutput &gt; passes with valid viral output" time="0.000103667">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analysisViralOutput &gt; fails when insights has fewer than 3 items" time="0.000060292">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="copywritingFreeGenerateInput &gt; passes with valid input" time="0.000049125">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="copywritingFreeGenerateInput &gt; fails when elements is empty" time="0.000048917">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="generateBoomInput &gt; passes with elements only" time="0.0000425">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="generateBoomInput &gt; fails when elements is empty" time="0.000042083">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="boomOutput &gt; passes with exactly 5 candidates" time="0.000083667">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="boomOutput &gt; fails with 4 candidates (must be exactly 5)" time="0.000048167">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analyzeVideoInput (PRD-5 rewrite) &gt; passes with lastCopy only" time="0.000045166">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="analyzeVideoInput (PRD-5 rewrite) &gt; no longer accepts videoUrl field (PRD-2 removed)" time="0.000033333">
+        </testcase>
+        <testcase classname="tests/unit/schemas/specialist-io.test.ts" name="copywritingFreeOutput &gt; fails when markdown is too short (&lt;400 chars)" time="0.000057459">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/services/context-assembler.test.ts" timestamp="2026-05-09T06:54:43.413Z" hostname="returndeMacBook-Pro.local" tests="16" failures="0" errors="0" skipped="0" time="5.01098425">
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; all routes succeed → AssembledContext 结构完整" time="0.002122166">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; stepData 非空 → layersUsed 包含 L2_step_data" time="0.000264333">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; stepData 为空 → 注入占位 [新用户 · 暂无 step 数据]" time="0.0002265">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; L4 EvolutionProfile 降级 → 注入 [L1 阶段 · 暂无进化档案]" time="0.000129375">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; L5 RAG 降级 → ragHits 为空数组" time="0.000149584">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; L2 stepData fetch timeout → 占位注入 · constants 层不受影响" time="5.0016485">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; L2 fetch reject → 降级占位 · assemble 不抛出" time="0.000827125">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; 7 PRD-4 Specialist agentId 全有模板覆盖" time="0.00061875">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; 每个模板 persona 和 methodology 字段非空" time="0.000400542">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; MethodologyQueryWorker 拉常量 → systemPrompt 含脚本类型和爆款元素" time="0.000229708">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; contextTokens 等于 chars/4 粗算" time="0.000275208">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; metadata.layersUsed 仅含成功层(L2 失败时不含 L2)" time="0.000303625">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; R-001: systemPrompt 不含 BASE_LLM_URL / LLM_API_KEY / sk-" time="0.000309125">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; assemble 耗时 ≤ 800ms(并行 4 路 · 模拟正常 DB 响应)" time="0.000201">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; prisma.stepData.findMany 调用时传入正确 accountId(反模式 REJ-008)" time="0.001880375">
+        </testcase>
+        <testcase classname="tests/unit/services/context-assembler.test.ts" name="ContextAssembler &gt; 无模板的 agentId(DiagnosisAgent) → fallback persona · 不抛出" time="0.000184667">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/base.llm.test.ts" timestamp="2026-05-09T06:54:43.414Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.004063875">
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation pass (no retry) &gt; valid LLM output passes on first invokeLLM call — gateway called once" time="0.001340833">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation fail → retry → pass &gt; invalid first output retries, second valid output succeeds — gateway called twice" time="0.000367916">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError &gt; two consecutive invalid outputs throw SchemaValidationError" time="0.000487334">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError &gt; SchemaValidationError carries llmRawOutput" time="0.000227959">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-4: cost_log callType + target &gt; cost_log written with callType=specialist_call and target.agentId" time="0.000205709">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-5: traceId uses generateSpecialistTraceId pattern &gt; auto-generated traceId follows tr_accountId_agentId_... format" time="0.000143">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-6: LLMTimeoutError from AbortError &gt; AbortError from invokeLLM is converted to LLMTimeoutError" time="0.000145125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-1: responseFormat json_schema passed to gateway &gt; invokeLLM passes responseFormat:{type:json_schema} to llmGateway.complete" time="0.000690042">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/base.test.ts" timestamp="2026-05-09T06:54:43.414Z" hostname="returndeMacBook-Pro.local" tests="16" failures="0" errors="0" skipped="0" time="0.010374584">
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — input schema validation &gt; AC-8: valid input passes inputSchema.parse and proceeds" time="0.002289833">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — input schema validation &gt; AC-8: invalid input (empty topic) throws ZodError before LLM call" time="0.001784083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — output schema validation &gt; AC-8: SchemaValidationError thrown when output fails outputSchema.safeParse" time="0.000274125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — output schema validation &gt; AC-8: valid output passes safeParse and returns SpecialistResponse" time="0.000226041">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — template method 4 steps &gt; AC-8: execute() calls contextAssembler.assemble before invokeLLM" time="0.001994666">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — template method 4 steps &gt; AC-8: execute() result contains tokensUsed matching gateway response" time="0.000147708">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 五层配置完整性 &gt; AC-8: config has all 5 required layers (persona/memory/knowledge/tools/execution)" time="0.000102667">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 五层配置完整性 &gt; AC-8: config.execution.model_tier drives model selection (no hardcoded model names)" time="0.000064833">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — mock LLMGateway injection &gt; AC-8: injected gateway.complete is called with model_tier from config" time="0.000149625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — mock LLMGateway injection &gt; AC-8: isFallback=true propagated when gateway returns isFallback" time="0.000085416">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — cost_log 写入字段完整(AC-7) &gt; AC-8: writeCostLog called with all 7 required fields" time="0.000167">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 性能(AC-9) &gt; AC-9: class instantiation &lt; 5ms" time="0.000093875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 性能(AC-9) &gt; AC-9: 100 mock execute() runs without LLM &lt; 1s" time="0.001898291">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="Error classes &gt; SchemaValidationError has correct name and issues" time="0.000112666">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="Error classes &gt; LLMTimeoutError has correct name, agentId, timeoutMs" time="0.000061291">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="Error classes &gt; FallbackTriggeredError has correct name and reason" time="0.000046708">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/fallback.test.ts" timestamp="2026-05-09T06:54:43.415Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.015773334">
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; PositioningAgent industry: invalid LLM output → fallback · output satisfies Step1OutputSchema (AC-16)" time="0.002234458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; BrandingAgent packaging: invalid output → fallback · output satisfies Step3OutputSchema (AC-16)" time="0.00268925">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; MonetizationAgent: invalid output → fallback · output satisfies Step4bOutputSchema (AC-16)" time="0.000374709">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; VideoAgent shooting: invalid output → fallback · output satisfies ShootingOutputSchema (AC-16)" time="0.000277541">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; CopywritingAgent step7: stream invalid JSON → fallback · output satisfies CopywritingOutputSchema (AC-16)" time="0.000468458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; LivestreamAgent: invalid output (short strings) → fallback · output satisfies LivestreamOutputSchema (AC-16)" time="0.0007335">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; TopicAgent traffic: stream invalid JSON → fallback · 20 topics in output (AC-16)" time="0.003134834">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; AC-9: specialist without fallbackTemplate re-throws the error on schema failure" time="0.001572125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; AC-10: all fallbackTemplates pass their respective outputSchema (type guard)" time="0.000504875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/fallback.test.ts" name="US-015 · isFallback 降级路径 &gt; AC-13: LLMTimeoutError on a non-mode specialist triggers fallback cost_log with model=fallback" time="0.00285325">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/StepForm.test.tsx" timestamp="2026-05-09T06:54:43.415Z" hostname="returndeMacBook-Pro.local" tests="19" failures="0" errors="0" skipped="0" time="0.005269167">
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="render: StepForm schema structure &gt; Step1InputSchema has lastIndustry field" time="0.000802042">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="render: StepForm schema structure &gt; STEP_INDUSTRY_KEYS has 56 industries" time="0.000193625">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="render: StepForm schema structure &gt; STEP_PLATFORM_KEYS has 5 platforms" time="0.000124667">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="render: StepForm schema structure &gt; STEP_CATEGORY_KEYS has 5 categories" time="0.000458833">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="render: StepForm schema structure &gt; Step7InputSchema has lastElements array with max 5" time="0.000347875">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="submit happy: valid data passes zod parse &gt; Step1InputSchema passes with valid industry key" time="0.000744917">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="submit happy: valid data passes zod parse &gt; Step3InputSchema passes with valid platform and strings" time="0.00017275">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="submit happy: valid data passes zod parse &gt; Step5InputSchema passes with valid category" time="0.000073">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="submit happy: valid data passes zod parse &gt; Step6InputSchema passes with ≥50 chars source copy" time="0.000068208">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="submit happy: valid data passes zod parse &gt; Step8InputSchema passes with all required fields" time="0.000072292">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="zod fail inline error: Chinese error messages &gt; Step1InputSchema shows 行业必填 when industry is empty" time="0.000187459">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="zod fail inline error: Chinese error messages &gt; Step3InputSchema shows error when personalInfo is too short" time="0.000109667">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="zod fail inline error: Chinese error messages &gt; Step3InputSchema shows error when platform missing" time="0.000183417">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="zod fail inline error: Chinese error messages &gt; Step6InputSchema shows error when sourceCopy is too short" time="0.000060292">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="zod fail inline error: Chinese error messages &gt; Step7InputSchema shows error when topic is too short" time="0.000141584">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="mutation success: full valid payloads pass all schemas &gt; Step7InputSchema passes with script type + elements + topic" time="0.000356041">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="mutation success: full valid payloads pass all schemas &gt; Step7InputSchema rejects more than 5 elements" time="0.000060541">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="mutation error toast: error structures are consistent &gt; Step5InputSchema fails with Chinese error when product too short" time="0.000058">
+        </testcase>
+        <testcase classname="tests/unit/web/StepForm.test.tsx" name="mutation error toast: error structures are consistent &gt; Step8InputSchema fails with readable error when experience invalid" time="0.000074917">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/StepResult.test.tsx" timestamp="2026-05-09T06:54:43.415Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.005049">
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step1Result &gt; render: handles valid step1 output shape (industry + marketAnalysis + competitionLevel + recommendation)" time="0.0014415">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step3Result &gt; render: handles valid step3 output shape (nickname[5] + avatar + background + bio[6] + strategy)" time="0.000440958">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step3bResult &gt; render: handles valid step3b output shape (coreIdentity + thoughtSystem + contentPersona + trustBuilding + personaRoadmap)" time="0.000343709">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step4Result &gt; render: handles markdown output — uses react-markdown, no dangerouslySetInnerHTML" time="0.000198417">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step4bResult &gt; render: handles valid step4b output shape (currentAnalysis + ladder[3] + revenueStructure + successCases[2])" time="0.000099875">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step5Result &gt; render: 20 topics list wrapped in ScrollArea h-96 (AGENTS.md §11.4)" time="0.000265917">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step6Result &gt; render: 13-column shot table with horizontal scroll" time="0.000277042">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step7Result &gt; render: markdown + structure/hooks/cta sidebar layout" time="0.000216833">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="Step8Result &gt; render: 2-segment livestream script comparison (lastResult + lastOptimizedResult)" time="0.000232458">
+        </testcase>
+        <testcase classname="tests/unit/web/StepResult.test.tsx" name="StepResult generic wrapper &gt; routes all 9 stepKeys to correct components" time="0.000317">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/ToolForm.test.tsx" timestamp="2026-05-09T06:54:43.416Z" hostname="returndeMacBook-Pro.local" tests="20" failures="0" errors="0" skipped="0" time="0.00278275">
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="getToolLsKey (D-031) &gt; generates correct LS key format" time="0.000407542">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="getToolLsKey (D-031) &gt; includes toolKey in the namespace (not stepKey pattern)" time="0.000115">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="getToolLsKey (D-031) &gt; includes accountId in the namespace for isolation" time="0.0002055">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="getToolLsKey (D-031) &gt; includes suffix parameter" time="0.0000425">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="generate tool schema (copywritingFreeGenerateInput) &gt; passes with valid scriptType + elements + topic" time="0.000411875">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="generate tool schema (copywritingFreeGenerateInput) &gt; fails with invalid scriptType" time="0.000195083">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="generate tool schema (copywritingFreeGenerateInput) &gt; fails with more than 8 elements" time="0.000080792">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="boom-generate tool schema (generateBoomInput) &gt; passes with elements only" time="0.000066958">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="boom-generate tool schema (generateBoomInput) &gt; accepts optional industry and theme" time="0.000058708">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="analysis tool schema (analysisStructuralInput) &gt; passes with valid copy" time="0.000062292">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="analysis tool schema (analysisStructuralInput) &gt; fails with copy shorter than 10 chars" time="0.000052084">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="video-analysis tool schema (analyzeVideoInput) &gt; passes with lastCopy" time="0.000051625">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="video-analysis tool schema (analyzeVideoInput) &gt; accepts optional lastTitle" time="0.000038209">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; uses AbortController on unmount" time="0.000105834">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; implements LS-first dual-write (REJ-035)" time="0.000066084">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; keeps LS on DB fail and shows toast (not rollback)" time="0.00006775">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; accepts defaultValues prop" time="0.00006675">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; uses zodResolver" time="0.000063541">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; has data-testid for each toolKey" time="0.000067041">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolForm.test.tsx" name="ToolForm component (source inspection) &gt; handles all 4 toolKeys in switch statement" time="0.000087916">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/ToolResult.test.tsx" timestamp="2026-05-09T06:54:43.416Z" hostname="returndeMacBook-Pro.local" tests="13" failures="0" errors="0" skipped="0" time="0.006273">
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: switch by toolKey &gt; handles generate case → FreeGenerateResult" time="0.000504417">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: switch by toolKey &gt; handles boom-generate case → BoomGenerateResult" time="0.000100167">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: switch by toolKey &gt; handles analysis case → AnalysisResult" time="0.000073958">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: switch by toolKey &gt; handles video-analysis case → VideoAnalysisResult" time="0.000058958">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: no dangerouslySetInnerHTML in any result component &gt; ToolResult.tsx is safe" time="0.00008975">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: no dangerouslySetInnerHTML in any result component &gt; FreeGenerateResult.tsx is safe" time="0.000067709">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: no dangerouslySetInnerHTML in any result component &gt; BoomGenerateResult.tsx is safe" time="0.000058791">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: no dangerouslySetInnerHTML in any result component &gt; AnalysisResult.tsx is safe" time="0.000063458">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: no dangerouslySetInnerHTML in any result component &gt; VideoAnalysisResult.tsx is safe" time="0.000057834">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: data-testid in each sub-component &gt; FreeGenerateResult has data-testid" time="0.000065458">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: data-testid in each sub-component &gt; BoomGenerateResult has data-testid" time="0.000049459">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: data-testid in each sub-component &gt; AnalysisResult has data-testid" time="0.002106791">
+        </testcase>
+        <testcase classname="tests/unit/web/ToolResult.test.tsx" name="ToolResult: data-testid in each sub-component &gt; VideoAnalysisResult has data-testid" time="0.0002095">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/hooks.test.ts" timestamp="2026-05-09T06:54:43.417Z" hostname="returndeMacBook-Pro.local" tests="16" failures="0" errors="0" skipped="0" time="0.004585875">
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; save writes inputs under account-namespaced key (AC-1)" time="0.000973333">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; load reads the LS value back for the same account (AC-1)" time="0.00048975">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; load returns null when key is absent (AC-1)" time="0.000130459">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; LS is NOT rolled back after simulated DB failure (AC-1)" time="0.000165667">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; accountId=null: save writes nothing to LS (AC-1 guard)" time="0.000129542">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; different step keys produce distinct LS entries (AC-1)" time="0.000133334">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useStepData LS logic &gt; save prunes non-active namespaces when LS is near 5 MB (AC-8)" time="0.000281042">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; switchTo clears all LS keys of the old account namespace (AC-2, AC-6)" time="0.000317916">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; switchTo preserves new account namespace (AC-2)" time="0.000124208">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; grep simulation: 0 hits for old namespace after switch (AC-6)" time="0.000129334">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useActiveAccount LS logic &gt; multiple tabs: each tab has its own storage — LS does not bleed (AC-7)" time="0.000087334">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; caches evolution profile to LS with account-namespaced key (AC-3)" time="0.000135417">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; returns null when no LS cache for evolution (AC-3 initial state)" time="0.000071917">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; LS cache key is account-specific — no bleed between accounts (AC-7)" time="0.000133083">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; LS cache for switched-from account is cleared; new account cache intact (AC-3)" time="0.000075458">
+        </testcase>
+        <testcase classname="tests/unit/web/hooks.test.ts" name="useEvolution LS logic &gt; handles malformed LS JSON gracefully (parse safety)" time="0.000063792">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/ls-namespace.test.ts" timestamp="2026-05-09T06:54:43.417Z" hostname="returndeMacBook-Pro.local" tests="18" failures="0" errors="0" skipped="0" time="0.002881209">
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-01: stepLsKey account=1 step=step1" time="0.001038416">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-02: stepLsKey account=1 step=step2" time="0.0001455">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-03: stepLsKey account=1 step=step3" time="0.000139708">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-04: stepLsKey account=1 step=step4" time="0.000060417">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-05: stepLsKey account=1 step=step5" time="0.000041958">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-06: stepLsKey account=1 step=step6" time="0.0000445">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-07: stepLsKey account=1 step=step7" time="0.000036709">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-08: stepLsKey account=1 step=step8" time="0.000033">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-09: stepLsKey account=1 step=step9" time="0.000034666">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-10: evolutionLsKey account=1" time="0.000047791">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-11: stepLsKey account=42 must use account 42 namespace" time="0.000030417">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-12: evolutionLsKey account=42" time="0.000027">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-13: accountLsPrefix has trailing underscore" time="0.000032875">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-14: LS_PREFIX is correct" time="0.000030292">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="ls-namespace key builders &gt; key-15: stepLsKey account=0 is well-formed" time="0.000029416">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="clearLsNamespace &gt; key-16: removes all keys for the target account namespace" time="0.000110166">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="clearLsNamespace &gt; key-17: preserves keys from other account namespaces (AC-6 isolation)" time="0.000040792">
+        </testcase>
+        <testcase classname="tests/unit/web/ls-namespace.test.ts" name="lsUsedBytes and pruneLsNamespaces &gt; key-18: pruneLsNamespaces removes non-active keys when limit exceeded" time="0.00007575">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/router.test.ts" timestamp="2026-05-09T06:54:43.417Z" hostname="returndeMacBook-Pro.local" tests="12" failures="0" errors="0" skipped="0" time="0.008136875">
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; has exactly 9 step routes" time="0.001086375">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; has exactly 14 tool routes" time="0.000236667">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; has exactly 6 new module routes" time="0.000111125">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; has 3 auxiliary routes + catch-all = 4 extra" time="0.000153209">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; total router children = 34 (33 path routes + 1 root index redirect)" time="0.000111209">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; covers all 9 step keys from ARCHITECTURE §3.6.4" time="0.005317792">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; includes /ip-plan route (AC-001 §9.4 exit condition)" time="0.0001105">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; includes /accounts route (AC-001 account switcher)" time="0.00006025">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; catch-all wildcard present for /404 fallback (AC-001)" time="0.000048292">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; no duplicate routes" time="0.0000525">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; all tool hrefs from Header.tsx TOOLS_14 are covered" time="0.000177333">
+        </testcase>
+        <testcase classname="tests/unit/web/router.test.ts" name="router route count (AC-001) &gt; all new module hrefs from Header.tsx NEW_MODULES_6 are covered" time="0.000085125">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/step-config.test.ts" timestamp="2026-05-09T06:54:43.418Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.002239042">
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; has exactly 9 entries" time="0.000781375">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; contains all expected step keys" time="0.000321083">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; every entry has non-empty title" time="0.000156833">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; every entry has non-empty description" time="0.00010425">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; every entry has non-empty phase" time="0.000090417">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; step1 has correct title" time="0.000042625">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; step9 has correct title" time="0.000034791">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; step5 phase is 运营" time="0.000036583">
+        </testcase>
+        <testcase classname="tests/unit/web/step-config.test.ts" name="stepConfig &gt; returns undefined for unknown key" time="0.000041083">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" timestamp="2026-05-09T06:54:43.418Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.008900916">
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; viral happy path: returns valid AnalysisViralOutput" time="0.003867959">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; viral fallback: schema validation failure triggers isFallback=true" time="0.000923667">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; viral cold-start: no userInput context still calls LLM (passthrough inputSchema)" time="0.00040275">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; viral config: model_tier=lightweight, streaming=false, timeout_ms=30000" time="0.000937459">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; structural happy path: returns valid AnalysisStructuralOutput" time="0.00078975">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; structural fallback: bad schema (missing optimizations) → isFallback=true" time="0.000455625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; structural cold-start: LLM called with structural responseFormat schema" time="0.0004275">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/AnalysisAgent.test.ts" name="AnalysisAgent &gt; structural config: agentId=AnalysisAgent, singleton export works" time="0.000321792">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/BrandingAgent.test.ts" timestamp="2026-05-09T06:54:43.418Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.009024625">
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; packaging mode (step3) &gt; happy path: returns valid Step3Output with 5 nicknames, 6 bios, writes cost_log" time="0.004362667">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; packaging mode (step3) &gt; schema retry: nickname wrong length → schema fails twice → fallback (US-015 AC-1)" time="0.000932042">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; packaging mode (step3) &gt; cold start: succeeds with empty userInput (新用户 · 无历史 stepData)" time="0.000361959">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; persona mode (step3b) &gt; happy path: returns valid Step3bOutput with correct array lengths" time="0.00062825">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; persona mode (step3b) &gt; schema retry: coreBeliefs wrong length → schema fails twice → fallback (US-015 AC-1)" time="0.000477084">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; persona mode (step3b) &gt; cold start: succeeds with empty userInput" time="0.000280458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; throws on invalid mode (AC-8 runtime check)" time="0.000805958">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; config: has correct five-layer structure (AC-1)" time="0.000395708">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" timestamp="2026-05-09T06:54:43.418Z" hostname="returndeMacBook-Pro.local" tests="15" failures="0" errors="0" skipped="0" time="0.005895833">
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; happy path: step7 returns valid CopywritingOutput with # heading" time="0.002184542">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-10: markdown without # heading → refine fails → fallback (US-015)" time="0.000410459">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-11: hooks empty array → zod min(1) fails → fallback (US-015)" time="0.000312833">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-12: 断流(incomplete JSON) → retry → fallback (US-015)" time="0.000176166">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-13: mode=acquisition → throws Not implemented · PRD-6 (D-035)" time="0.000446333">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; modelUsed reflects stream meta chunk model (D-019 pattern)" time="0.00011625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; config has required 5-layer structure" time="0.000374542">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free happy path: returns valid copywritingFreeOutput with markdown &gt;= 400 chars" time="0.000259125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free fallback: schema validation failure → isFallback=true" time="0.000168083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free mode: stream断流 → retry → fallback (同 step7 断流模式)" time="0.000145916">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free mode: modelUsed reflects stream meta chunk (D-019)" time="0.00009">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom happy path: returns boomOutput with 5 candidates" time="0.000251208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom fallback: bad candidates length → isFallback=true" time="0.000193625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom mode: 断流 → retry → fallback" time="0.00010625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom mode: modelUsed reflects stream meta chunk (D-019)" time="0.000072667">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" timestamp="2026-05-09T06:54:43.419Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.003678542">
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; happy path: returns lastResult + lastOptimizedResult ≥200 chars each, writes cost_log" time="0.001873">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; fallback: lastResult &lt; 200 chars → schema fails → fallback (US-015 AC-1)" time="0.000432125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; edge: invalid experience value → ZodError before LLM call (AC-5)" time="0.000634583">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; cold start: no step data in context → still produces valid output" time="0.000157375">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; config: five-layer structure, model_tier=reasoning, timeout_ms=30000, industries constant (AC-1/AC-6/AC-7)" time="0.000221458">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/MonetizationAgent.test.ts" timestamp="2026-05-09T06:54:43.419Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.003645583">
+        <testcase classname="tests/unit/specialists/__tests__/MonetizationAgent.test.ts" name="MonetizationAgent &gt; happy path: returns valid Step4bOutput with ladder[3], successCases[2], writes cost_log" time="0.002276042">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/MonetizationAgent.test.ts" name="MonetizationAgent &gt; fallback: ladder has 4 stages → schema fails twice → returns fallback result (US-015 AC-1)" time="0.000451125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/MonetizationAgent.test.ts" name="MonetizationAgent &gt; edge: currentRevenue missing → prompt contains zero-base note, output is valid (AC-5)" time="0.000182083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/MonetizationAgent.test.ts" name="MonetizationAgent &gt; cold start: succeeds with empty userInput; prompt contains cold-start note (AC-6)" time="0.000153625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/MonetizationAgent.test.ts" name="MonetizationAgent &gt; config: five-layer structure and model_tier correct (AC-1)" time="0.0001915">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/PositioningAgent.test.ts" timestamp="2026-05-09T06:54:43.419Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.004997459">
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; industry mode (step1) &gt; happy path: returns valid Step1Output and writes cost_log" time="0.002351583">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; industry mode (step1) &gt; schema retry: two invalid responses → fallback (US-015 AC-1)" time="0.000473916">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; industry mode (step1) &gt; cold start: succeeds with empty userInput (新用户 · 无历史 stepData)" time="0.000169583">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; execution mode (step4) &gt; happy path: returns markdown starting with # 执行计划" time="0.000289959">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; execution mode (step4) &gt; schema retry: wrong heading → schema fails → fallback (US-015 AC-1)" time="0.00024025">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; execution mode (step4) &gt; cold start: succeeds with minimal input (无 step3 数据)" time="0.000110875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; throws on invalid mode (AC-8 runtime check)" time="0.000459">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/PositioningAgent.test.ts" name="PositioningAgent &gt; config: has correct five-layer structure (AC-1)" time="0.000263">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/TopicAgent.test.ts" timestamp="2026-05-09T06:54:43.419Z" hostname="returndeMacBook-Pro.local" tests="11" failures="0" errors="0" skipped="0" time="0.009678">
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; happy path: category=traffic returns 20 topics" time="0.002455458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; happy path: category=monetize returns 20 topics" time="0.000316666">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; happy path: category=persona returns 20 topics" time="0.000625708">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; happy path: category=cognition returns 20 topics" time="0.000729917">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; happy path: category=case returns 20 topics" time="0.00095425">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; edge: 断流(incomplete JSON) → retry → fallback (US-015)" time="0.000581125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; edge: topics length=19 → zod length(20) 失败 → retry → fallback (US-015)" time="0.00035075">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; modelUsed reflects stream meta chunk model (D-019 / REJ-003)" time="0.002109375">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; config has required 5-layer structure" time="0.000483208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; AC-9: invalid category rejects with ZodError" time="0.000523875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/TopicAgent.test.ts" name="TopicAgent &gt; viralPotential not in enum → outputSchema fails" time="0.000102834">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/VideoAgent.test.ts" timestamp="2026-05-09T06:54:43.420Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.005067167">
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; happy path: returns valid ShootingOutput with shotList[1+], equipment[], schedule, writes cost_log" time="0.003073083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; fallback: empty shotList → schema fails → fallback (US-015 AC-1)" time="0.000438958">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; edge: sourceCopy exceeding 5000 chars → ZodError before LLM call (AC-6)" time="0.000608667">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; mode interface reserved: production / acquisition / storyboard throw &quot;Not implemented · PRD-6&quot; (AC-5)" time="0.000254166">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; config: five-layer structure, model_tier=reasoning, timeout_ms=45000 (AC-8)" time="0.000191917">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/pages/Generate.test.tsx" timestamp="2026-05-09T06:54:43.420Z" hostname="returndeMacBook-Pro.local" tests="22" failures="0" errors="0" skipped="0" time="0.004923583">
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="表单 render: Generate.tsx structure &gt; imports and uses ToolForm with toolKey freeGenerate" time="0.000472209">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="表单 render: Generate.tsx structure &gt; uses copywritingFreeGenerateInput schema" time="0.000086792">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="表单 render: Generate.tsx structure &gt; ToolForm freeGenerate case renders ScriptTypeSelect + ElementsMultiSelect + TextareaField" time="0.000113708">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="表单 render: Generate.tsx structure &gt; renders ToolResult with freeGenerate toolKey after submit" time="0.000077625">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="表单 render: Generate.tsx structure &gt; renders FeedbackButton with CopywritingAgent agentId" time="0.000071875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="zod 校验: copywritingFreeGenerateInput &gt; passes with valid scriptType + elements + topic" time="0.000680333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="zod 校验: copywritingFreeGenerateInput &gt; fails when scriptType is invalid" time="0.000459542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="zod 校验: copywritingFreeGenerateInput &gt; fails when elements is empty" time="0.000179">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="zod 校验: copywritingFreeGenerateInput &gt; fails when topic exceeds 500 chars" time="0.000162084">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="zod 校验: copywritingFreeGenerateInput &gt; fails when elements exceed 8 items" time="0.000097917">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="mutation success: Generate.tsx shows ToolResult on success &gt; calls trpc.copywriting.freeGenerate.useMutation" time="0.000092083">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="mutation success: Generate.tsx shows ToolResult on success &gt; calls setResult on success (handleSuccess)" time="0.000063792">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="mutation success: Generate.tsx shows ToolResult on success &gt; result state controls ToolResult visibility" time="0.000061958">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="mutation error toast: ToolForm toast.error on failure &gt; ToolForm shows toast.error on mutation failure (REJ-035)" time="0.000069792">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="mutation error toast: ToolForm toast.error on failure &gt; Generate.tsx does not manually rollback LS on error (REJ-035)" time="0.000328708">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="LS 预填: freeGenerate namespace (D-031 AC-3) &gt; getToolLsKey generates correct key for freeGenerate input" time="0.000171042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="LS 预填: freeGenerate namespace (D-031 AC-3) &gt; Generate.tsx uses getToolLsKey with freeGenerate and input suffix" time="0.000261417">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="LS 预填: freeGenerate namespace (D-031 AC-3) &gt; ToolForm uses input suffix for LS (not form)" time="0.000221083">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="LS 预填: freeGenerate namespace (D-031 AC-3) &gt; LS-first dual-write: localStorage.setItem in Generate.tsx handleSubmit" time="0.000146375">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="LS 预填: freeGenerate namespace (D-031 AC-3) &gt; AbortController on unmount prevents state update after navigate away (AC-8)" time="0.000151292">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="US-011 stub: history.detail pre-fill &gt; Generate.tsx uses trpc.history.detail.useQuery with historyId" time="0.000216875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Generate.test.tsx" name="US-011 stub: history.detail pre-fill &gt; query is disabled when historyId is absent (enabled: !!historyId)" time="0.0000945">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/auth.me.test.ts" timestamp="2026-05-09T06:54:43.420Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.013055459">
+        <testcase classname="tests/integration/api/auth.me.test.ts" name="auth.me HTTP endpoint &gt; GET /trpc/auth.me returns unauthenticated shape" time="0.012680917">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/auth.test.ts" timestamp="2026-05-09T06:54:43.420Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.113851958">
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Integration] mock login flow &gt; AC-2/3/5: mock login creates session cookie + DB row" time="0.0200995">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Integration] mock login flow &gt; AC-4: auth.me with valid session returns authenticated user" time="0.019823666">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[E2E] CSRF + session lifecycle &gt; AC-8: mock provider bypasses CSRF — mismatched state still completes login" time="0.00739925">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[E2E] CSRF + session lifecycle &gt; AC-11: expired session → auth.me returns unauthenticated" time="0.016867375">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Perf] login flow timing &gt; AC-13: full mock login flow (callback → session) &lt; 500ms" time="0.00901775">
+        </testcase>
+        <testcase classname="tests/integration/api/auth.test.ts" name="[Perf] login flow timing &gt; AC-13: auth.me with valid session &lt; 100ms" time="0.0121425">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/boom-generate-llm.test.ts" timestamp="2026-05-09T06:54:43.420Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.048116666">
+        <testcase classname="tests/integration/api/boom-generate-llm.test.ts" name="US-005 AC-3: boomGenerate.generate integration — nock SDK + real DB &gt; generate: calls mock stream, writes 1 history row with --- separator + cost_log to real DB" time="0.021933333">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/copywriting-free-llm.test.ts" timestamp="2026-05-09T06:54:43.420Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.047766209">
+        <testcase classname="tests/integration/api/copywriting-free-llm.test.ts" name="US-003 AC-4: copywriting.freeGenerate integration — nock SDK + real DB &gt; freeGenerate: calls mock stream, writes history + cost_log to real DB with correct fields" time="0.021873584">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/ip-progress-integration.test.ts" timestamp="2026-05-09T06:54:43.421Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.0716315">
+        <testcase classname="tests/integration/api/ip-progress-integration.test.ts" name="getProgress integration &gt; creates account → inserts 7 stepData completed → progress = 7/9" time="0.015285791">
+        </testcase>
+        <testcase classname="tests/integration/api/ip-progress-integration.test.ts" name="getProgress integration &gt; in_progress and failed status rows are NOT counted" time="0.007202417">
+        </testcase>
+        <testcase classname="tests/integration/api/ip-progress-integration.test.ts" name="getProgress integration &gt; step2 is never counted (not in STEP_KEYS_9)" time="0.001782375">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/llm-gateway-real.test.ts" timestamp="2026-05-09T06:54:43.421Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.035584208">
+        <testcase classname="tests/integration/api/llm-gateway-real.test.ts" name="LLMGateway · integration (nock) &gt; complete() calls Anthropic API and returns parsed response" time="0.035020084">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/rls-isolation.test.ts" timestamp="2026-05-09T06:54:43.421Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.078525375">
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-3: user A (correct account) sees their own step_data rows" time="0.004109416">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-3: user B (different account) sees 0 rows from step_data" time="0.002752083">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)" time="0.001366">
+        </testcase>
+        <testcase classname="tests/integration/api/rls-isolation.test.ts" name="[Integration] RLS account isolation via set_config &gt; AC-7: set_config round-trip overhead &lt; 50ms on localhost" time="0.001850917">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/specialist-llm.test.ts" timestamp="2026-05-09T06:54:43.421Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.083096834">
+        <testcase classname="tests/integration/api/specialist-llm.test.ts" name="US-003 AC-10: specialist integration — nock LLM + real DB cost_log &gt; execute() calls Anthropic tool_use, returns valid result, writes cost_log to DB" time="0.044462583">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/trace.test.ts" timestamp="2026-05-09T06:54:43.421Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.016136584">
+        <testcase classname="tests/integration/api/trace.test.ts" name="[Integration] trace_id propagation &gt; echoes provided X-Trace-Id in response header" time="0.012467708">
+        </testcase>
+        <testcase classname="tests/integration/api/trace.test.ts" name="[Integration] trace_id propagation &gt; generates 16-char hex trace ID when header is absent" time="0.003011375">
+        </testcase>
+    </testsuite>
 </testsuites>

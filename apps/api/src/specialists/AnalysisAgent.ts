@@ -16,7 +16,9 @@
  */
 
 import { z } from 'zod';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,

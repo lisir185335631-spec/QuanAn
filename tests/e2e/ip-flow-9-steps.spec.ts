@@ -43,10 +43,10 @@ test.describe.serial('IP Flow 9步 E2E (US-017 · 真 LLM · 手动跑)', () => 
   test('全程跑通: step1→step3→step3b→step4→step4b→step5→step6→step7→step8 → /ip-plan 9/9', async ({
     page,
   }) => {
-    // AC-20: CI 关闭
+    // AC-20: 默认跳过 · 手动触发: RUN_LIVE_TESTS=1 pnpm playwright test tests/e2e/ip-flow-9-steps.spec.ts --project=chromium
     test.skip(
-      !!process.env.CI,
-      'CI 跳过 · 手动: pnpm playwright test tests/e2e/ip-flow-9-steps.spec.ts --project=chromium',
+      !process.env.RUN_LIVE_TESTS,
+      '手动跑: RUN_LIVE_TESTS=1 pnpm playwright test tests/e2e/ip-flow-9-steps.spec.ts --project=chromium',
     );
 
     // AC-2: 桌面视口 (desktop-only 元素需要 1280px)

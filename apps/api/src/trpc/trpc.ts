@@ -4,10 +4,12 @@
  * PRD-2 US-001: adds Meta type for isGlobal · exports protectedProcedure + globalProcedure
  */
 
-import { initTRPC } from '@trpc/server';
 import { randomBytes } from 'node:crypto';
-import type { TRPCContext } from '@/trpc/context';
+
+import { initTRPC } from '@trpc/server';
+
 import { traceStore } from '@/lib/logger';
+import type { TRPCContext } from '@/trpc/context';
 
 /** Procedure metadata — used by accountIsolationMiddleware to skip RLS on global procedures */
 interface Meta {

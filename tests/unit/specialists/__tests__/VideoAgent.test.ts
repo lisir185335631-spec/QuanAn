@@ -132,10 +132,13 @@ describe('VideoAgent', () => {
 
   // ── fallback / schema retry (AC-3) ───────────────────────────────────────
 
-  it('fallback: throws SchemaValidationError when shotList is empty (min(1) violated)', async () => {
+  it('fallback: empty shotList → schema fails → fallback (US-015 AC-1)', async () => {
+    // US-015: with fallbackTemplate.shooting, schema errors trigger fallback instead of throw
     const badContent = { ...VALID_SHOOTING_CONTENT, shotList: [] };
     const agent = new VideoAgent(makeGateway([badContent, badContent]));
-    await expect(agent.execute(BASE_REQ)).rejects.toThrow(SchemaValidationError);
+    const res = await agent.execute(BASE_REQ);
+    expect(res.isFallback).toBe(true);
+    expect(ShootingOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
   // ── edge: sourceCopy > 5000 chars (AC-6) ─────────────────────────────────

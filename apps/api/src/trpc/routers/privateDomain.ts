@@ -6,9 +6,11 @@
  */
 
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
+
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 const generatePrivateDomainInput = z.object({
   stepKey: z.string().min(1).max(64),

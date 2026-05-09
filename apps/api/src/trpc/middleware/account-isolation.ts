@@ -10,9 +10,11 @@
  */
 
 import { TRPCError } from '@trpc/server';
-import type { PrismaClient } from '@prisma/client';
-import { middleware, publicProcedure } from '@/trpc/trpc';
+
 import { logger } from '@/lib/logger';
+import { middleware, publicProcedure } from '@/trpc/trpc';
+
+import type { PrismaClient } from '@prisma/client';
 
 export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next }) => {
   // AC-5: global procedures bypass RLS
@@ -23,7 +25,7 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next })
   const { activeAccountId, user } = ctx;
 
   // AC-4: no active account → FORBIDDEN
-  if (activeAccountId == null) {
+  if (activeAccountId === null || activeAccountId === undefined) {
     logger.warn({ traceId: ctx.traceId }, 'no_active_account');
     throw new TRPCError({ code: 'FORBIDDEN', message: 'no_active_account' });
   }
@@ -35,7 +37,7 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next })
     // Switch to non-superuser role so RLS policies are enforced (superusers bypass RLS by default)
     await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
     await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, true)`;
-    if (user?.id != null) {
+    if (user?.id !== null && user?.id !== undefined) {
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, true)`;
     }
     // Pass the transaction client as prisma so resolver queries are inside the same transaction

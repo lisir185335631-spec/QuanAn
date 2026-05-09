@@ -4,8 +4,10 @@
  * US-007: AsyncLocalStorage traceStore + pino mixin 自动注入 traceId
  */
 
-import pino from 'pino';
 import { AsyncLocalStorage } from 'node:async_hooks';
+
+// eslint-disable-next-line import/no-named-as-default
+import pino from 'pino';
 
 /** trace_id 上下文存储 — trace middleware 设置，logger 自动读取 */
 export const traceStore = new AsyncLocalStorage<{ traceId: string }>();
@@ -19,6 +21,7 @@ export const logger = pino({
   formatters: {
     level: (label) => ({ level: label }),
   },
+  // eslint-disable-next-line import/no-named-as-default-member
   timestamp: pino.stdTimeFunctions.isoTime,
   mixin() {
     const store = traceStore.getStore();

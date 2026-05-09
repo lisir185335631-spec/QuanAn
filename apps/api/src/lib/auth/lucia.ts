@@ -4,6 +4,7 @@
  */
 
 import { Lucia } from 'lucia';
+
 import { prismaAdapter } from './adapter';
 
 const isProduction = process.env.NODE_ENV === 'production';

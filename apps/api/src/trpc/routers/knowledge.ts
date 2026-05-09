@@ -6,9 +6,11 @@
  */
 
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
+
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 const getRecommendationsInput = z.object({
   limit: z.number().int().min(1).max(50).default(10),
@@ -77,14 +79,14 @@ export const knowledgeRouter = router({
   /** Get content recommendations for current account (P1 mock — actual RAG 留 PRD-9) */
   getRecommendations: protectedProcedure
     .input(getRecommendationsInput)
-    .query(async ({ input: _input }) => {
+    .query(({ input: _input }) => {
       return [{ itemType: 'script_case', itemKey: 'mock-001', title: '[mock recommendation]' }];
     }),
 
   /** Get script case studies (P1 mock — actual RAG 留 PRD-9) */
   getScriptCases: protectedProcedure
     .input(getScriptCasesInput)
-    .query(async ({ input }) => {
+    .query(({ input }) => {
       return [{ itemType: 'script_case', itemKey: 'mock-001', title: '[mock script case]', industry: input.industry ?? null }];
     }),
 

@@ -6,6 +6,7 @@
  * US-011 stub: ?historyId=xxx → trpc.history.detail.useQuery → 预填 defaultValues
  */
 
+import { copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -15,7 +16,6 @@ import { ToolResult } from '@/components/ToolResult/ToolResult';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
-import { copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
 
 import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
 

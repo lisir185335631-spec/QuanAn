@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { TextareaField } from '@/components/StepForm/TextareaField';
 import { Button } from '@/components/ui/button';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
@@ -18,11 +19,10 @@ import { cn } from '@/lib/utils';
 
 import { ElementsMultiSelect } from './ElementsMultiSelect';
 import { ScriptTypeSelect } from './ScriptTypeSelect';
-import { TextareaField } from '@/components/StepForm/TextareaField';
 
-import type { FieldError, FieldErrors } from 'react-hook-form';
-import type { ZodTypeAny } from 'zod';
 import type { HotElementKey, ScriptTypeKey } from '@quanqn/schemas/specialist-io';
+import type { FieldError } from 'react-hook-form';
+import type { ZodTypeAny } from 'zod';
 
 // ── Tool types ────────────────────────────────────────────────────────────────
 
@@ -77,7 +77,7 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, 
   });
 
   const { setValue, watch, formState: { errors: rawErrors }, register } = form;
-  const errors = rawErrors as FieldErrors<Record<string, unknown>>;
+  const errors = rawErrors;
 
   const handleSubmit = form.handleSubmit(async (data) => {
     if (abortRef.current.signal.aborted) return;
@@ -151,7 +151,7 @@ function renderToolFields(
           <ElementsMultiSelect
             value={(watch('elements') as HotElementKey[]) ?? []}
             onChange={(v) => setValue('elements', v, { shouldValidate: true })}
-            error={errors['elements'] as FieldError | undefined}
+            error={errors['elements']}
             maxSelect={8}
           />
           <TextareaField
@@ -177,7 +177,7 @@ function renderToolFields(
           <ElementsMultiSelect
             value={(watch('elements') as HotElementKey[]) ?? []}
             onChange={(v) => setValue('elements', v, { shouldValidate: true })}
-            error={errors['elements'] as FieldError | undefined}
+            error={errors['elements']}
             maxSelect={8}
           />
           <div className="space-y-1.5">
@@ -206,7 +206,7 @@ function renderToolFields(
           <ElementsMultiSelect
             value={(watch('elements') as HotElementKey[]) ?? []}
             onChange={(v) => setValue('elements', v, { shouldValidate: true })}
-            error={errors['elements'] as FieldError | undefined}
+            error={errors['elements']}
             maxSelect={8}
           />
           <div className="space-y-1.5">

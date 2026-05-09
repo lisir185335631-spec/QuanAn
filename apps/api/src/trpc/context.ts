@@ -7,11 +7,13 @@
  */
 
 import { randomBytes } from 'node:crypto';
+
+import { lucia } from '@/lib/auth/lucia';
+import { prisma } from '@/lib/prisma';
+
 import type { PrismaClient } from '@prisma/client';
 import type { Context as HonoCtx } from 'hono';
 import type { User } from 'lucia';
-import { prisma } from '@/lib/prisma';
-import { lucia } from '@/lib/auth/lucia';
 
 export interface TRPCContext {
   prisma: PrismaClient;

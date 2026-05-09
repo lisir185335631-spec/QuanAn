@@ -6,9 +6,11 @@
  */
 
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
+
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 // ─── Shared selects ──────────────────────────────────────────────────────────
 
@@ -168,7 +170,7 @@ export const evolutionRouter = router({
   /** Feedback trend by day (P1 mock — real aggregation 留 PRD-8+) */
   feedbackTrend: protectedProcedure
     .input(feedbackTrendInput)
-    .query(async ({ ctx: _ctx, input }) => {
+    .query(({ ctx: _ctx, input }) => {
       return {
         data: [] as Array<{ date: string; good: number; bad: number }>,
         days: input.days,
@@ -178,7 +180,7 @@ export const evolutionRouter = router({
   /** Module satisfaction ranking (P1 mock — real aggregation 留 PRD-8+) */
   moduleRanking: protectedProcedure
     .input(moduleRankingInput)
-    .query(async ({ ctx: _ctx, input: _input }) => {
+    .query(({ ctx: _ctx, input: _input }) => {
       return {
         ranking: [] as Array<{
           agentId: string;

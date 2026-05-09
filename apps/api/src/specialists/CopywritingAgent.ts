@@ -14,7 +14,9 @@
  */
 
 import { z } from 'zod';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,
@@ -273,16 +275,17 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       throw new Error('CopywritingAgent requires a streaming LLM gateway');
     }
 
+    const streamFn = gateway.stream.bind(gateway);
     if (mode === 'step7') {
-      return this._invokeStep7(ctx, req, gateway.stream);
+      return this._invokeStep7(ctx, req, streamFn);
     }
     if (mode === 'free') {
       // D-019: stream.meta.model captured via meta chunk, not hardcoded
-      return this._invokeFree(ctx, req, gateway.stream);
+      return this._invokeFree(ctx, req, streamFn);
     }
     // boom
     // D-019: stream.meta.model captured via meta chunk, not hardcoded
-    return this._invokeBoom(ctx, req, gateway.stream);
+    return this._invokeBoom(ctx, req, streamFn);
   }
 
   private async _invokeStep7(
@@ -304,7 +307,9 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       timeout_ms: this.config.execution.timeout_ms,
     };
 
-    let { accumulated, tokens: finalTokens, model } = await this._consumeStream(streamFn, streamReq);
+    const step7Result = await this._consumeStream(streamFn, streamReq);
+    const { accumulated } = step7Result;
+    let { tokens: finalTokens, model } = step7Result;
 
     let content: unknown;
     try {
@@ -352,7 +357,9 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
     };
 
     // D-019: stream.meta.model captured from SSE meta chunk (not hardcoded · REJ-003)
-    let { accumulated, tokens: finalTokens, model } = await this._consumeStream(streamFn, streamReq);
+    const freeResult = await this._consumeStream(streamFn, streamReq);
+    const { accumulated } = freeResult;
+    let { tokens: finalTokens, model } = freeResult;
 
     let content: unknown;
     try {
@@ -400,7 +407,9 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
     };
 
     // D-019: stream.meta.model captured from SSE meta chunk (not hardcoded · REJ-003)
-    let { accumulated, tokens: finalTokens, model } = await this._consumeStream(streamFn, streamReq);
+    const boomResult = await this._consumeStream(streamFn, streamReq);
+    const { accumulated } = boomResult;
+    let { tokens: finalTokens, model } = boomResult;
 
     let content: unknown;
     try {

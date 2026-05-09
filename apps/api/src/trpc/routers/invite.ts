@@ -5,11 +5,14 @@
  * Uses globalProcedure: InviteCode is a global table (LD-009 exception, no per-account RLS)
  */
 
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
+import { z } from 'zod';
+
 import { globalProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
+
 
 const redeemInput = z.object({
   code: z.string().min(1).max(32),
@@ -52,8 +55,8 @@ export const inviteRouter = router({
       if (
         !invite.isActive ||
         invite.usedCount >= invite.maxUses ||
-        invite.usedAt != null ||
-        (invite.expiresAt != null && invite.expiresAt < new Date())
+        invite.usedAt !== null ||
+        (invite.expiresAt !== null && invite.expiresAt < new Date())
       ) {
         throw new TRPCError({ code: 'CONFLICT', message: 'invite_code_already_used' });
       }

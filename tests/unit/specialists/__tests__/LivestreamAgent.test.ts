@@ -109,13 +109,16 @@ describe('LivestreamAgent', () => {
 
   // ── fallback: lastResult < 200 chars → zod min(200) fails → retry → SchemaValidationError (AC-4) ──
 
-  it('fallback: lastResult shorter than 200 chars → SchemaValidationError after retry', async () => {
+  it('fallback: lastResult < 200 chars → schema fails → fallback (US-015 AC-1)', async () => {
+    // US-015: with fallbackTemplate.default, schema errors trigger fallback instead of throw
     const shortContent = {
       lastResult: '短话术不足200字',
       lastOptimizedResult: '优化版也不足200字',
     };
     const agent = new LivestreamAgent(makeGateway([shortContent, shortContent]));
-    await expect(agent.execute(BASE_REQ)).rejects.toThrow(SchemaValidationError);
+    const res = await agent.execute(BASE_REQ);
+    expect(res.isFallback).toBe(true);
+    expect(LivestreamOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
   // ── edge: experience 非法 → input zod 拒 (AC-5) ──────────────────────────

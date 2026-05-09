@@ -1,14 +1,19 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-08T08:38:00",
-  "validator_end_ts": "2026-05-08T08:42:00",
-  "test_command": "pnpm test (vitest run 83/83) + pnpm --filter @quanqn/web typecheck",
+  "validator_start_ts": "2026-05-09T05:06:50",
+  "validator_end_ts": "2026-05-09T05:08:10",
+  "test_command": "pnpm test (vitest run)",
   "exit_code": 0,
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "typecheck.txt",
-    "pytest-full.xml"
+    "pytest-full.stdout.txt",
+    "typecheck.txt"
   ],
-  "notes": "PASS: all 11 ACs verified. Zero-regression: 83/83 vitest pass (10 test files, +16 new hooks tests). Typecheck: 0 errors. AC-5 fixed: trace_id logged in onError (useStepData.ts:48). AC-11 fixed: hooks.test.ts created with 16 tests covering useStepData/useActiveAccount/useEvolution LS logic via MockStorage."
+  "summary": {
+    "total_tests": 416,
+    "failed": 0,
+    "AnalysisAgent_tests": 8,
+    "CopywritingAgent_tests": 15,
+    "typecheck": "pass"
+  },
+  "notes": "AC-11 grep returns 2 hits (1 is JSDoc comment, 1 is real export) — actual singleton correct. AC-15 total is 15 (not 17) because PRD-4 US-009 baseline was 7 (not 9); US-002 correctly added 8 new tests (4 free + 4 boom). AC-19 real-LLM perf cannot be validated in mock unit tests; config correctly sets model_tier=lightweight + timeouts."
 }

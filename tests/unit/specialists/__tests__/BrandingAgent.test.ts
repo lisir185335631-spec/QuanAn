@@ -134,16 +134,17 @@ describe('BrandingAgent', () => {
       );
     });
 
-    it('schema retry: throws SchemaValidationError when nickname has wrong length (AC-5)', async () => {
-      // AC-5: nickname has 4 items instead of 5 → length(5) fails → retry → throw
+    it('schema retry: nickname wrong length → schema fails twice → fallback (US-015 AC-1)', async () => {
+      // US-015: with fallbackTemplate.packaging, schema errors now trigger fallback instead of throw
       const badContent = {
         ...VALID_STEP3_CONTENT,
-        nickname: ['名字1', '名字2', '名字3', '名字4'], // only 4
+        nickname: ['名字1', '名字2', '名字3', '名字4'], // only 4 → fails length(5)
       };
       const agent = makeAgent(makeGateway([badContent, badContent]));
-      await expect(agent.execute({ ...BASE_REQ, mode: 'packaging' })).rejects.toThrow(
-        SchemaValidationError,
-      );
+      const res = await agent.execute({ ...BASE_REQ, mode: 'packaging' });
+      expect(res.isFallback).toBe(true);
+      expect(res.modelUsed).toBe('fallback');
+      expect(Step3OutputSchema.safeParse(res.result).success).toBe(true);
     });
 
     it('cold start: succeeds with empty userInput (新用户 · 无历史 stepData)', async () => {
@@ -176,8 +177,8 @@ describe('BrandingAgent', () => {
       expect(mockCostLogCreate).toHaveBeenCalledOnce();
     });
 
-    it('schema retry: throws SchemaValidationError when coreBeliefs has wrong length (AC-7)', async () => {
-      // AC-7: coreBeliefs has 5 items instead of 3 → length(3) fails → retry → throw
+    it('schema retry: coreBeliefs wrong length → schema fails twice → fallback (US-015 AC-1)', async () => {
+      // US-015: with fallbackTemplate.persona, schema errors now trigger fallback instead of throw
       const badContent = {
         ...VALID_STEP3B_CONTENT,
         thoughtSystem: {
@@ -186,9 +187,10 @@ describe('BrandingAgent', () => {
         },
       };
       const agent = makeAgent(makeGateway([badContent, badContent]));
-      await expect(agent.execute({ ...BASE_REQ, mode: 'persona' })).rejects.toThrow(
-        SchemaValidationError,
-      );
+      const res = await agent.execute({ ...BASE_REQ, mode: 'persona' });
+      expect(res.isFallback).toBe(true);
+      expect(res.modelUsed).toBe('fallback');
+      expect(Step3bOutputSchema.safeParse(res.result).success).toBe(true);
     });
 
     it('cold start: succeeds with empty userInput', async () => {

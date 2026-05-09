@@ -7,6 +7,10 @@
  */
 
 import { logger } from '@/lib/logger';
+import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
+
+import { generateSpecialistTraceId } from './types';
+
 import type {
   SpecialistInput,
   SpecialistOutput,
@@ -14,8 +18,6 @@ import type {
   AssembledContext,
   SpecialistId,
 } from './types';
-import { generateSpecialistTraceId } from './types';
-import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
 
 export abstract class BaseSpecialist<P = unknown, R = unknown> {
   abstract readonly id: SpecialistId;

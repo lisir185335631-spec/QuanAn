@@ -2,22 +2,31 @@
  * QuanQn · PRD-4 BaseSpecialist 抽象类(模板方法模式)
  * US-001: execute() 4步模板 · 子类只实现 invokeLLM + 3 abstract 属性
  * US-003: LLMGateway 集成 + zod 校验 retry + cost_log 完整字段 + LLMTimeoutError
+ * US-015: fallback 路径 · SchemaValidationError/LLMTimeoutError/5xx → fallbackTemplate → status='fallback'
  *
- * AC-1: invokeLLM 抽象方法 · 子类按 streaming 与否实现 · 默认走 this.llmGateway.complete()
- * AC-3: outputSchema.safeParse 失败 → retry 1 次 → 二次失败 throw SchemaValidationError
- * AC-5: traceId 用 generateSpecialistTraceId (不用 generateHttpTraceId)
- * AC-6: AbortError → throw LLMTimeoutError(agentId, timeout_ms)
- * AC-4/AC-8: cost_log callType='specialist_call' + target jsonb(stepKey+agentId)
+ * AC-1(US-001): invokeLLM 抽象方法 · 子类按 streaming 与否实现
+ * AC-3(US-001): outputSchema.safeParse 失败 → retry 1 次 → 二次失败 throw SchemaValidationError
+ * AC-5(US-001): traceId 用 generateSpecialistTraceId (不用 generateHttpTraceId)
+ * AC-6(US-001): AbortError → throw LLMTimeoutError(agentId, timeout_ms)
+ * AC-4/AC-8(US-001): cost_log callType='specialist_call' + target jsonb(stepKey+agentId)
+ * AC-1(US-015): fallback catch → fallbackTemplate?[mode] → cost_log(model='fallback',tokens=0)
+ * AC-9(US-015): no fallbackTemplate → re-throw (让用户看真错)
+ * AC-11(US-015): DB write fallback flag 失败 → log only · 不影响主返回
+ * AC-13(US-015): cost_log event_type='specialist_call' · tokens=0 · model='fallback'
  */
 
-import { z } from 'zod';
-import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
 import { Decimal } from '@prisma/client/runtime/library';
-import { contextAssembler as _contextAssembler } from '@/services/context-assembler/ContextAssembler';
-import { llmGateway as _llmGateway } from '@/workers/llm-gateway';
+
+
 import { generateSpecialistTraceId } from '@/agents/base/types';
 import type { SpecialistId } from '@/agents/base/types';
+import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
+import { contextAssembler as _contextAssembler } from '@/services/context-assembler/ContextAssembler';
+import { llmGateway as _llmGateway } from '@/workers/llm-gateway';
+
+import { SchemaValidationError, LLMTimeoutError } from './errors';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,
@@ -26,7 +35,7 @@ import type {
   ILLMGateway,
   AssembledContext,
 } from './types';
-import { SchemaValidationError, LLMTimeoutError } from './errors';
+import type { z } from 'zod';
 
 export abstract class BaseSpecialist<TIn, TOut> {
   /** 五层配置(AC-2) */
@@ -35,6 +44,13 @@ export abstract class BaseSpecialist<TIn, TOut> {
   abstract readonly inputSchema: z.ZodType<TIn>;
   /** 出参 zod schema · execute() 第 4 步用 */
   abstract readonly outputSchema: z.ZodType<TOut>;
+
+  /**
+   * US-015 AC-1: 子类提供各 mode 的降级模板
+   * key = req.mode ?? 'default' · value = 符合 outputSchema 的占位内容
+   * 未提供 → 触发 fallback 时 re-throw(AC-9)
+   */
+  static readonly fallbackTemplate?: Record<string, unknown>;
 
   /** LLMGateway(DI · 测试时注入 mock) */
   protected readonly llmGateway: ILLMGateway;
@@ -46,6 +62,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
   /**
    * 模板方法 — 子类不覆写此方法
    * 4 步: inputSchema.parse → contextAssembler.assemble → invokeLLM(retry 1次) → writeCostLog
+   * US-015: 外层 try-catch · SchemaValidationError/LLMTimeoutError/5xx → fallback path
    */
   async execute(req: SpecialistRequest<TIn>): Promise<SpecialistResponse<TOut>> {
     // AC-5: 用 generateSpecialistTraceId，不用 generateHttpTraceId
@@ -55,76 +72,122 @@ export abstract class BaseSpecialist<TIn, TOut> {
     );
     const startedAt = Date.now();
 
-    // Step 1: 入参校验(throws ZodError on failure)
-    this.inputSchema.parse(req.userInput);
-
-    // Step 2: ContextAssembler 注入上下文
-    const ctx = await _contextAssembler.assemble({
-      agentId: this.config.agentId as SpecialistId,
-      accountId: req.accountId,
-      mode: req.mode,
-      userInput: req.userInput,
-      needRag: this.config.knowledge.rag,
-    }) as AssembledContext;
-
-    // Step 3: 子类实现的单次 LLM 调用 + AC-3 retry
-    let raw: InvokeLLMResult;
     try {
-      raw = await this.invokeLLM(ctx, { ...req, traceId });
-    } catch (err) {
-      // AC-6: AbortError (timeout) → LLMTimeoutError
-      if (err instanceof Error && err.name === 'AbortError') {
-        throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
-      }
-      throw err;
-    }
+      // Step 1: 入参校验(throws ZodError on failure)
+      this.inputSchema.parse(req.userInput);
 
-    // Step 4: 出参校验(AC-3: retry 1 次)
-    let parsed = this.outputSchema.safeParse(raw.content);
-    if (!parsed.success) {
-      logger.warn(
-        { agentId: this.config.agentId, traceId, issues: parsed.error.message },
-        'specialist.schema_validation.retry',
-      );
+      // Step 2: ContextAssembler 注入上下文
+      const ctx = await _contextAssembler.assemble({
+        agentId: this.config.agentId as SpecialistId,
+        accountId: req.accountId,
+        mode: req.mode,
+        userInput: req.userInput,
+        needRag: this.config.knowledge.rag,
+      }) as AssembledContext;
+
+      // Step 3: 子类实现的单次 LLM 调用 + AC-3 retry
+      let raw: InvokeLLMResult;
       try {
         raw = await this.invokeLLM(ctx, { ...req, traceId });
       } catch (err) {
+        // AC-6: AbortError (timeout) → LLMTimeoutError
         if (err instanceof Error && err.name === 'AbortError') {
           throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
         }
         throw err;
       }
-      parsed = this.outputSchema.safeParse(raw.content);
+
+      // Step 4: 出参校验(AC-3: retry 1 次)
+      let parsed = this.outputSchema.safeParse(raw.content);
       if (!parsed.success) {
-        throw new SchemaValidationError(parsed.error, raw.content);
+        logger.warn(
+          { agentId: this.config.agentId, traceId, issues: parsed.error.message },
+          'specialist.schema_validation.retry',
+        );
+        try {
+          raw = await this.invokeLLM(ctx, { ...req, traceId });
+        } catch (err) {
+          if (err instanceof Error && err.name === 'AbortError') {
+            throw new LLMTimeoutError(this.config.agentId, this.config.execution.timeout_ms);
+          }
+          throw err;
+        }
+        parsed = this.outputSchema.safeParse(raw.content);
+        if (!parsed.success) {
+          throw new SchemaValidationError(parsed.error, raw.content);
+        }
       }
+
+      const durationMs = Date.now() - startedAt;
+
+      // Step 5: writeCostLog(AC-4/AC-8 完整字段)
+      await this._writeCostLog({
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        stepKey: req.stepKey,
+        traceId,
+        modelUsed: raw.model,
+        modelTier: this.config.execution.model_tier,
+        promptTokens: raw.tokens.prompt,
+        completionTokens: raw.tokens.completion,
+        totalTokens: raw.tokens.total,
+        durationMs,
+        isFallback: raw.isFallback ?? false,
+      });
+
+      return {
+        result: parsed.data,
+        isFallback: raw.isFallback ?? false,
+        durationMs,
+        tokensUsed: raw.tokens,
+        modelUsed: raw.model,
+        traceId,
+      };
+    } catch (err) {
+      // US-015 AC-1: fallback path — only for LLM/schema errors, not input validation errors
+      const isFallbackable =
+        err instanceof SchemaValidationError ||
+        err instanceof LLMTimeoutError ||
+        (err instanceof Error && err.message?.includes('5xx'));
+
+      if (!isFallbackable) throw err;
+
+      // AC-9: no fallbackTemplate → re-throw (让用户看真错 · 不静默)
+      const ctor = this.constructor as { fallbackTemplate?: Record<string, unknown> };
+      const fallback = ctor.fallbackTemplate?.[req.mode ?? 'default'];
+      if (fallback === undefined) throw err;
+
+      const durationMs = Date.now() - startedAt;
+
+      logger.warn(
+        { agentId: this.config.agentId, traceId, err: err instanceof Error ? err.message : String(err) },
+        'specialist.fallback_triggered',
+      );
+
+      // AC-13: cost_log with model='fallback', tokens=0
+      await this._writeCostLog({
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        stepKey: req.stepKey,
+        traceId,
+        modelUsed: 'fallback',
+        modelTier: this.config.execution.model_tier,
+        promptTokens: 0,
+        completionTokens: 0,
+        totalTokens: 0,
+        durationMs,
+        isFallback: true,
+      });
+
+      return {
+        result: fallback as TOut,
+        isFallback: true,
+        durationMs,
+        tokensUsed: { prompt: 0, completion: 0, total: 0 },
+        modelUsed: 'fallback',
+        traceId,
+      };
     }
-
-    const durationMs = Date.now() - startedAt;
-
-    // Step 5: writeCostLog(AC-4/AC-8 完整字段)
-    await this._writeCostLog({
-      agentId: this.config.agentId,
-      accountId: req.accountId,
-      stepKey: req.stepKey,
-      traceId,
-      modelUsed: raw.model,
-      modelTier: this.config.execution.model_tier,
-      promptTokens: raw.tokens.prompt,
-      completionTokens: raw.tokens.completion,
-      totalTokens: raw.tokens.total,
-      durationMs,
-      isFallback: raw.isFallback ?? false,
-    });
-
-    return {
-      result: parsed.data,
-      isFallback: raw.isFallback ?? false,
-      durationMs,
-      tokensUsed: raw.tokens,
-      modelUsed: raw.model,
-      traceId,
-    };
   }
 
   /**
@@ -155,7 +218,12 @@ export abstract class BaseSpecialist<TIn, TOut> {
     durationMs: number;
     isFallback: boolean;
   }): Promise<void> {
-    const provider = data.modelUsed.startsWith('claude-') ? 'anthropic' : 'openai';
+    // fallback model has no provider prefix — use 'none' to avoid false detection
+    const provider = data.modelUsed.startsWith('claude-')
+      ? 'anthropic'
+      : data.modelUsed.startsWith('gpt-')
+        ? 'openai'
+        : 'none';
 
     try {
       await prisma.costLog.create({
@@ -179,7 +247,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
         },
       });
     } catch (err) {
-      // AC-8: cost_log 失败不 crash 业务
+      // AC-8/AC-11: cost_log 失败不 crash 业务
       logger.error({ err, traceId: data.traceId }, 'specialist.cost_log.write_failed');
     }
   }

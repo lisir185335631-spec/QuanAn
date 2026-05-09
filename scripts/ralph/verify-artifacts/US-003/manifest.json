@@ -1,35 +1,13 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-08T09:02:30",
-  "validator_end_ts": "2026-05-08T09:04:30",
-  "test_command": "pnpm vitest run tests/unit/api/ipAccounts-stepData.test.ts",
+  "validator_start_ts": "2026-05-09T05:31:00",
+  "validator_end_ts": "2026-05-09T05:34:10",
+  "test_command": "pnpm test tests/unit/api/copywriting-router.test.ts tests/integration/api/copywriting-free-llm.test.ts && pnpm --filter api typecheck",
   "exit_code": 0,
   "artifacts": [
-    "vitest.stdout.txt",
     "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "typecheck.txt"
   ],
-  "summary": {
-    "tests_total": 15,
-    "tests_passed": 15,
-    "tests_failed": 0,
-    "full_suite_total": 98,
-    "full_suite_passed": 98,
-    "full_suite_failed": 0,
-    "typecheck": "exit 0",
-    "zero_regression": "PASS"
-  },
-  "ac_results": {
-    "AC-1": "PASS - 6 procedures in ipAccounts.ts (5×protectedProcedure + switchActive×globalProcedure with manual ownership check)",
-    "AC-2": "PASS - 4 procedures in stepData.ts all using protectedProcedure",
-    "AC-3": "PASS - ipAccount.schema.ts has 7 fields: id/userId/name/industry/platform/stage/isActive",
-    "AC-4": "PASS - stepData.schema.ts has stepKeySchema enum + saveStepDataInput(inputs) + stepDataSchema(inputs/result Json nullable)",
-    "AC-5": "PASS - list.findMany called without where:{userId}; test confirms RLS-only isolation",
-    "AC-6": "PASS - switchActive updates user.activeAccountId + writes auditLog eventType=account.switch + returns activeAccountId for client refresh",
-    "AC-7": "PASS - save upserts DB and returns {ok:true, data:row} for LS reconcile; test confirms upsert called with accountId_stepKey composite key",
-    "AC-8": "PASS - get.findFirst uses where:{stepKey} only, no where:{accountId}; RLS protectedProcedure enforces isolation",
-    "AC-9": "UNTESTED - performance constraints (list<100ms, save<200ms) not verifiable in unit tests; structurally sound (simple indexed queries)",
-    "AC-10": "PASS - pnpm typecheck across all 6 packages: exit 0",
-    "AC-11": "PASS - 15 unit tests, all passed; every procedure has ≥1 test (AC requires ≥10)"
-  }
+  "notes": "Zero-regression: 421/421 tests pass across 45 test files. AC-9 (P95<45s) is a production performance metric not verifiable in unit/integration suite; implementation uses timeout_ms=60000 per BaseSpecialist config."
 }

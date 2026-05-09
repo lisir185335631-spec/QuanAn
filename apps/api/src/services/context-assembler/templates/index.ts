@@ -3,15 +3,17 @@
  * PRD-4 US-002 · AC-3 + PRD-5 US-001 (AnalysisAgent)
  */
 
-import { POSITIONING_TEMPLATE }  from './positioning';
+import type { SpecialistId }      from '@/agents/base/types';
+
+import { ANALYSIS_TEMPLATE }      from './analysis';
 import { BRANDING_TEMPLATE }      from './branding';
-import { MONETIZATION_TEMPLATE }  from './monetization';
-import { TOPIC_TEMPLATE }         from './topic';
-import { VIDEO_TEMPLATE }         from './video';
 import { COPYWRITING_TEMPLATE }   from './copywriting';
 import { LIVESTREAM_TEMPLATE }    from './livestream';
-import { ANALYSIS_TEMPLATE }      from './analysis';
-import type { SpecialistId }      from '@/agents/base/types';
+import { MONETIZATION_TEMPLATE }  from './monetization';
+import { POSITIONING_TEMPLATE }  from './positioning';
+import { TOPIC_TEMPLATE }         from './topic';
+import { VIDEO_TEMPLATE }         from './video';
+
 
 export interface SpecialistTemplate {
   persona: string;

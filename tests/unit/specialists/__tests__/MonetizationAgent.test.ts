@@ -120,18 +120,22 @@ describe('MonetizationAgent', () => {
 
   // ── fallback / schema retry ───────────────────────────────────────────────
 
-  it('fallback: throws SchemaValidationError when ladder has 4 stages instead of 3 (AC-4)', async () => {
+  it('fallback: ladder has 4 stages → schema fails twice → returns fallback result (US-015 AC-1)', async () => {
+    // US-015: with fallbackTemplate, schema errors no longer throw — they trigger fallback
     const badContent = {
       ...VALID_STEP4B_CONTENT,
       ladder: [
         { stage: '阶段一', revenue: '0-1k', action: '动作1' },
         { stage: '阶段二', revenue: '1k-5k', action: '动作2' },
         { stage: '阶段三', revenue: '5k-2w', action: '动作3' },
-        { stage: '阶段四', revenue: '2w+', action: '动作4' }, // 4 instead of 3
+        { stage: '阶段四', revenue: '2w+', action: '动作4' }, // 4 instead of 3 → fails schema
       ],
     };
     const agent = new MonetizationAgent(makeGateway([badContent, badContent]));
-    await expect(agent.execute(BASE_REQ)).rejects.toThrow(SchemaValidationError);
+    const res = await agent.execute(BASE_REQ);
+    expect(res.isFallback).toBe(true);
+    expect(res.modelUsed).toBe('fallback');
+    expect(Step4bOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
   // ── edge: currentRevenue missing (AC-5) ──────────────────────────────────

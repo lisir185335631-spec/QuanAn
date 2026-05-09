@@ -8,19 +8,20 @@
  */
 
 import { randomBytes } from 'node:crypto';
+
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
-import { generateState } from 'arctic';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
-import { appRouter } from '@/trpc/routers/_app';
-import { createContext } from '@/trpc/context';
-import { checkDbConnection } from '@/lib/prisma';
-import { prisma } from '@/lib/prisma';
-import { logger, traceStore } from '@/lib/logger';
+import { generateState } from 'arctic';
+import { Hono } from 'hono';
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
+import { cors } from 'hono/cors';
+
 import { lucia } from '@/lib/auth/lucia';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
+import { logger, traceStore } from '@/lib/logger';
+import { checkDbConnection , prisma } from '@/lib/prisma';
+import { createContext } from '@/trpc/context';
+import { appRouter } from '@/trpc/routers/_app';
 
 // Validate env at module load — exits early on misconfiguration (AC-10, AC-14)
 validateStartupConfig();
@@ -222,7 +223,7 @@ async function start(): Promise<void> {
   logger.info({ port: PORT }, 'server.starting');
 }
 
-start().catch((err) => {
+start().catch((err: unknown) => {
   logger.error({ err }, 'server.start.failed');
   process.exit(1);
 });

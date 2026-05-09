@@ -33,7 +33,7 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -121,7 +121,7 @@
         "US-001"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -197,7 +197,7 @@
         "US-002"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -267,7 +267,7 @@
         "US-003"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -319,7 +319,7 @@
         "US-002"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -389,7 +389,7 @@
         "US-005"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -435,7 +435,7 @@
         "US-002"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -507,7 +507,7 @@
         "US-007"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -554,7 +554,7 @@
         "US-002"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -626,7 +626,7 @@
         "US-009"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -682,7 +682,7 @@
         "US-009"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -759,8 +759,8 @@
       ],
       "priority": 12,
       "passes": false,
-      "notes": "",
-      "retryCount": 0,
+      "notes": "[Developer 超时] 开发未完成，passes 重置，retryCount +1\n[Developer 超时] 开发未完成，passes 重置，retryCount +1\n[Developer 崩溃] Agent 非零退出码，passes 重置，retryCount +1\n[Developer 崩溃] Agent 非零退出码，passes 重置，retryCount +1\n[Developer 崩溃] Agent 非零退出码，passes 重置，retryCount +1\n[编排器兜底] retryCount=5 >= MAX_RETRIES=5，自动标记 blocked\n[2026-05-09T19:37:00 RCA-003 恢复] 5 次失败因 Claude API ECONNRESET 网络抖动 (18:47-18:55) · 不是 large story / 不是代码问题 · prompt 10K 在安全区 · 网络已恢复 (HTTP 405 + DNS 正常) · 重启 daemon 让 US-012 重跑\n[Developer 超时] 开发未完成，passes 重置，retryCount +1\n[Developer 崩溃] Agent 非零退出码，passes 重置，retryCount +1",
+      "retryCount": 2,
       "blocked": false,
       "files_to_create": [
         "tests/judge/copywriting-free.judge.ts",

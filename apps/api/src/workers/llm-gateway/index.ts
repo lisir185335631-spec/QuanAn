@@ -15,20 +15,24 @@
  */
 
 // ⬇️ SDK imports STAY HERE ONLY (AC-7 + AC-8)
+// eslint-disable-next-line import/no-named-as-default
 import Anthropic from '@anthropic-ai/sdk';
+// eslint-disable-next-line import/no-named-as-default
 import OpenAI from 'openai';
 
-import type { z } from 'zod';
-import { logger } from '@/lib/logger';
 import type { ModelTier } from '@/agents/base/types';
+import { logger } from '@/lib/logger';
+
 import {
   buildAnthropicPayload,
   parseAnthropicResponse,
   isAnthropicModel,
 } from './anthropic-provider';
+import { writeCostLog } from './cost-logger';
 import { buildOpenAIPayload, parseOpenAIResponse } from './openai-provider';
 import { checkRateLimit, RateLimitError } from './rate-limiter';
-import { writeCostLog } from './cost-logger';
+
+import type { z } from 'zod';
 
 export { RateLimitError };
 
@@ -156,6 +160,7 @@ class LLMGateway {
   }
 
   /** 流式调用 · CopywritingAgent / VideoAgent / VoiceChatAgent 用 */
+  // eslint-disable-next-line @typescript-eslint/require-await
   async *stream(req: CompleteRequest): AsyncIterable<StreamChunk> {
     const { trace_id } = req.metadata;
     const startedAt = Date.now();
@@ -167,10 +172,10 @@ class LLMGateway {
   }
 
   /** Embedding(用于 RAG · pgvector) */
-  async embed(text: string): Promise<number[]> {
+  embed(text: string): Promise<number[]> {
     // TODO P3 · OpenAI text-embedding-3-small · 1536 维
     void text;
-    return new Array(1536).fill(0);
+    return Promise.resolve(new Array<number>(1536).fill(0));
   }
 
   // ============== 私有 ==============

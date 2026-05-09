@@ -5,8 +5,8 @@
  */
 
 import { INDUSTRIES, HOT_ELEMENTS, SCRIPT_TYPES } from '@/lib/constants';
-import type { Industry } from '@/lib/constants/industries';
 import type { HotElement } from '@/lib/constants/hotElements';
+import type { Industry } from '@/lib/constants/industries';
 import type { ScriptType } from '@/lib/constants/scriptTypes';
 
 export type ConstantName = 'industries' | 'hotElements' | 'scriptTypes';

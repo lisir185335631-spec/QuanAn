@@ -1,63 +1,22 @@
 {
-  "storyId": "US-018",
-  "title": "PRD-4 收官 · 集成测试 + LLM Judge + lint clean + typecheck",
-  "verifiedAt": "2026-05-09T02:05:00Z",
+  "story_id": "US-018",
+  "validator_start_ts": "2026-05-09T01:59:13",
+  "validator_end_ts": "2026-05-09T02:02:45",
+  "exit_code": 0,
+  "artifacts": [
+    "vitest-full.stdout.txt",
+    "judge.stdout.txt",
+    "e2e.stdout.txt",
+    "typecheck.stdout.txt",
+    "lint.stdout.txt",
+    "manifest.json"
+  ],
   "results": {
-    "pnpm_test": {
-      "command": "pnpm test",
-      "testFiles": 39,
-      "tests": 343,
-      "passed": 343,
-      "failed": 0,
-      "durationMs": 5300,
-      "status": "PASS"
-    },
-    "pnpm_test_judge": {
-      "command": "pnpm test:judge",
-      "testFiles": 7,
-      "tests": 14,
-      "passed": 14,
-      "failed": 0,
-      "durationMs": 186,
-      "status": "PASS"
-    },
-    "pnpm_test_e2e": {
-      "command": "pnpm test:e2e",
-      "tests": 108,
-      "passed": 106,
-      "failed": 0,
-      "skipped": 2,
-      "durationMs": 108000,
-      "note": "2 skipped = ip-flow-9-steps (RUN_LIVE_TESTS not set · requires real LLM). workers=1 to prevent shared-user activeAccountId race conditions.",
-      "status": "PASS"
-    },
-    "pnpm_typecheck": {
-      "command": "pnpm typecheck",
-      "workspaces": 6,
-      "errors": 0,
-      "status": "PASS"
-    },
-    "pnpm_lint": {
-      "command": "pnpm --filter @quanqn/web lint --max-warnings=0",
-      "warnings": 0,
-      "status": "PASS"
-    }
+    "pnpm_test": { "passed": 343, "failed": 0, "files": 39, "exit_code": 0, "duration_s": 5.31 },
+    "pnpm_test_judge": { "passed": 14, "failed": 0, "files": 7, "exit_code": 0, "duration_s": 0.49 },
+    "pnpm_test_e2e": { "passed": 106, "skipped": 2, "failed": 0, "exit_code": 0, "duration_s": 103.49 },
+    "pnpm_typecheck": { "workspaces": 6, "errors": 0, "exit_code": 0, "duration_s": 2.84 },
+    "pnpm_lint_web": { "warnings": 0, "errors": 0, "exit_code": 0, "duration_s": 3.68 }
   },
-  "ac_compliance": {
-    "AC-1": { "requirement": "pnpm test >= 259", "actual": 343, "status": "PASS" },
-    "AC-2": { "requirement": "pnpm test:judge 7 cases", "actual": 14, "status": "PASS" },
-    "AC-3": { "requirement": "pnpm test:e2e >= 104", "actual": 106, "status": "PASS" },
-    "AC-4": { "requirement": "pnpm typecheck 0 errors", "actual": 0, "status": "PASS" },
-    "AC-5": { "requirement": "pnpm lint 0 warnings", "actual": 0, "status": "PASS" },
-    "AC-13": { "requirement": "Tests pass", "status": "PASS" },
-    "AC-14": { "requirement": "Typecheck passes", "status": "PASS" }
-  },
-  "fixes_applied": [
-    {
-      "issue": "e2e race condition: shared dev@local.test user.activeAccountId mutated by concurrent tests",
-      "fix": "playwright.config.ts workers=1 + fullyParallel=false",
-      "affected_tests": ["account-switch.spec.ts", "account-isolation.spec.ts", "ls-db-sync.spec.ts"],
-      "root_cause": "chromium + mobile projects run in parallel sharing the same mock OAuth user, concurrent switchActive calls create non-deterministic activeAccountId"
-    }
-  ]
+  "notes": "All AC passed. ip-flow-9-steps 2 tests skipped (real LLM manual-run per spec design). 343 vitest >= 259 AC. 106 e2e >= 104 AC. 6ws typecheck 0 errors. lint 0 warnings."
 }

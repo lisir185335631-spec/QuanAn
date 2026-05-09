@@ -9,17 +9,19 @@
  */
 
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { router } from '@/trpc/trpc';
-import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+
 import { getProgress } from '@/services/ip-progress/IPProgressService';
-import { positioningAgent } from '@/specialists/PositioningAgent';
 import { brandingAgent } from '@/specialists/BrandingAgent';
-import { monetizationAgent } from '@/specialists/MonetizationAgent';
-import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
-import { videoAgent } from '@/specialists/VideoAgent';
 import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
 import { livestreamAgent } from '@/specialists/LivestreamAgent';
+import { monetizationAgent } from '@/specialists/MonetizationAgent';
+import { positioningAgent } from '@/specialists/PositioningAgent';
+import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
+import { videoAgent } from '@/specialists/VideoAgent';
+import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { router } from '@/trpc/trpc';
+
+import type { Prisma } from '@prisma/client';
 
 /** Accepts any string key — allows e2e tests to use arbitrary keys; RLS handles isolation */
 const stepKeySchema = z.string().min(1).max(64);
@@ -204,7 +206,7 @@ export const stepDataRouter = router({
 
       // US-017: call TopicAgent for step5 via save (sync · 允许 e2e 走 UI form 路径)
       if (input.stepKey === 'step5') {
-        const inputs = input.inputs as Record<string, unknown>;
+        const inputs = input.inputs;
         const category = ((inputs['lastCategory'] as string) || 'traffic') as typeof TOPIC_CATEGORIES[number];
         const agentRes = await topicAgent.execute({
           accountId: activeAccountId!,

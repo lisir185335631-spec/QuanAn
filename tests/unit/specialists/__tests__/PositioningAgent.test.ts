@@ -116,12 +116,13 @@ describe('PositioningAgent', () => {
       );
     });
 
-    it('schema retry: throws SchemaValidationError after two invalid LLM responses', async () => {
+    it('schema retry: two invalid responses → fallback (US-015 AC-1)', async () => {
+      // US-015: with fallbackTemplate.industry, schema errors trigger fallback instead of throw
       const badContent = { wrong_field: 'data' };
       const agent = makeAgent(makeGateway([badContent, badContent]));
-      await expect(agent.execute({ ...BASE_REQ, mode: 'industry' })).rejects.toThrow(
-        SchemaValidationError,
-      );
+      const res = await agent.execute({ ...BASE_REQ, mode: 'industry' });
+      expect(res.isFallback).toBe(true);
+      expect(Step1OutputSchema.safeParse(res.result).success).toBe(true);
     });
 
     it('cold start: succeeds with empty userInput (新用户 · 无历史 stepData)', async () => {
@@ -151,15 +152,15 @@ describe('PositioningAgent', () => {
       expect(mockCostLogCreate).toHaveBeenCalledOnce();
     });
 
-    it('schema retry: throws SchemaValidationError when markdown missing # 执行计划 heading', async () => {
-      // markdown present but wrong heading — fails refine
+    it('schema retry: wrong heading → schema fails → fallback (US-015 AC-1)', async () => {
+      // US-015: with fallbackTemplate.execution, schema errors trigger fallback instead of throw
       const badContent = {
         markdown: '## 错误的标题\n\n' + '执行计划内容'.repeat(150),
       };
       const agent = makeAgent(makeGateway([badContent, badContent]));
-      await expect(agent.execute({ ...BASE_REQ, mode: 'execution' })).rejects.toThrow(
-        SchemaValidationError,
-      );
+      const res = await agent.execute({ ...BASE_REQ, mode: 'execution' });
+      expect(res.isFallback).toBe(true);
+      expect(Step4OutputSchema.safeParse(res.result).success).toBe(true);
     });
 
     it('cold start: succeeds with minimal input (无 step3 数据)', async () => {

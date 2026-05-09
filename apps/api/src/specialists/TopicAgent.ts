@@ -16,7 +16,9 @@
  */
 
 import { z } from 'zod';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
+
 import type {
   SpecialistConfig,
   SpecialistRequest,
@@ -213,7 +215,10 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
     };
 
     // AC-3: SSE streaming — 防 22KB 单次 timeout
-    let { accumulated, tokens: finalTokens, model } = await this._consumeStream(gateway.stream, streamReq);
+    const streamFn = gateway.stream.bind(gateway);
+    const topicResult = await this._consumeStream(streamFn, streamReq);
+    const { accumulated } = topicResult;
+    let { tokens: finalTokens, model } = topicResult;
 
     // AC-12: JSON.parse 失败 → retry stream 1 次 → fallback
     let content: unknown;
@@ -221,7 +226,7 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
       content = JSON.parse(accumulated);
     } catch {
       // Internal retry (AC-12 "retry 1")
-      const retry = await this._consumeStream(gateway.stream, streamReq);
+      const retry = await this._consumeStream(streamFn, streamReq);
       try {
         content = JSON.parse(retry.accumulated);
         finalTokens = retry.tokens;

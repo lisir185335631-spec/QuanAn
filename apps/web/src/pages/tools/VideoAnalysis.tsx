@@ -9,6 +9,7 @@
  * US-011: ?historyId → trpc.history.detail.useQuery → 预填 lastCopy(inputSummary) + setResult(历史 content)
  */
 
+import { analyzeVideoInput } from '@quanqn/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -16,7 +17,6 @@ import { FeedbackButton } from '@/components/FeedbackButton';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
 import { VideoAnalysisResult } from '@/components/ToolResult/VideoAnalysisResult';
 import { trpc } from '@/lib/trpc';
-import { analyzeVideoInput } from '@quanqn/schemas/specialist-io';
 
 import type { VideoAnalysisHistoryRow } from '@quanqn/clients/router-types';
 

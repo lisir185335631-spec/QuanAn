@@ -5,6 +5,7 @@
  */
 
 import { Google, generateCodeVerifier, decodeIdToken } from 'arctic';
+
 import { logger } from '@/lib/logger';
 
 export interface OAuthUserInfo {
@@ -38,13 +39,13 @@ export class MockProvider implements OAuthProvider {
     return { url };
   }
 
-  async validateCallback(_params: {
+  validateCallback(_params: {
     code: string;
     state: string;
     storedState: string;
     codeVerifier?: string;
   }): Promise<OAuthUserInfo> {
-    return { openId: 'mock-dev-001', email: 'dev@local.test', name: 'Dev User' };
+    return Promise.resolve({ openId: 'mock-dev-001', email: 'dev@local.test', name: 'Dev User' });
   }
 }
 

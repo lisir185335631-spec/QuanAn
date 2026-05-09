@@ -3,17 +3,17 @@
  * 4 组 collapsible sections · ScrollArea h-96 · max 8 elements
  */
 
-import { useState } from 'react';
-
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
 import {
   HOT_ELEMENT_GROUPS,
   HOT_ELEMENT_LABELS,
 } from '@quanqn/schemas/specialist-io';
+import { useState } from 'react';
 
-import type { FieldError } from 'react-hook-form';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+
 import type { HotElementKey } from '@quanqn/schemas/specialist-io';
+import type { FieldError } from 'react-hook-form';
 
 interface ElementsMultiSelectProps {
   value: HotElementKey[];
