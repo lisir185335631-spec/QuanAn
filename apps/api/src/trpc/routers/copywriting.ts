@@ -1,9 +1,11 @@
 /**
- * copywriting router — PRD-2 US-004 · PRD-4 US-009
- * AC-1: 4 procedures (generate/optimize/list/delete)
+ * copywriting router — PRD-2 US-004 · PRD-4 US-009 · PRD-5 US-003
+ * AC-1: 4 procedures (generate/optimize/list/delete) + freeGenerate(PRD-5)
  * US-009 AC-5: generate → 改调 copywritingAgent(mode='step7')· 写真实 markdown 到 history
  *              optimize / list / delete 保留现有 mock(留 PRD-5)
  * US-009 AC-7: generate 写 history 表(memory.l2_write=['history'])
+ * US-003 AC-1: freeGenerate protectedProcedure · 调 copywritingAgent(mode='free')
+ * US-003 AC-2: history.create 写完整字段(agentMode/contentType/scriptType/elements/isFallback/tokensUsed/modelUsed/durationMs)
  * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
  */
 
@@ -11,7 +13,29 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { router } from '@/trpc/trpc';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
-import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
+import { copywritingAgent, type CopywritingOutput, type CopywritingFreeOutput } from '@/specialists/CopywritingAgent';
+
+// ── PRD-5 US-003: freeGenerate input schema (inline equiv of @quanqn/schemas/specialist-io copywritingFreeGenerateInput) ──
+
+const SCRIPT_TYPE_ENUM = [
+  'tutorial', 'review', 'case_study', 'pov', 'monologue',
+  'debate', 'list_pop', 'before_after', 'street_interview', 'qa_short',
+  'reaction', 'mixcut', 'screen_record', 'animation', 'vlog',
+  'plot', 'voice_only', 'comparison', 'storytelling', 'duo_chat',
+] as const;
+
+const HOT_ELEMENT_ENUM = [
+  'greed', 'fear', 'curiosity', 'contrast',
+  'resonance', 'empathy', 'social_proof', 'authority', 'leverage', 'worst',
+  'reveal', 'controversy', 'challenge', 'transformation', 'anger', 'surprise',
+  'trend', 'list', 'scarcity', 'small_big', 'low_cost_high', 'low_cost_unknown',
+] as const;
+
+const copywritingFreeGenerateInput = z.object({
+  scriptType: z.enum(SCRIPT_TYPE_ENUM),
+  elements: z.array(z.enum(HOT_ELEMENT_ENUM)).min(1).max(8),
+  topic: z.string().min(1).max(500),
+});
 
 const generateCopywritingInput = z.object({
   stepKey: z.string().min(1).max(64),
@@ -39,6 +63,23 @@ const HISTORY_SELECT = {
   id: true,
   content: true,
   agentId: true,
+  traceId: true,
+  createdAt: true,
+} satisfies Prisma.HistorySelect;
+
+// Extended select for freeGenerate — includes all fields written by US-003
+const HISTORY_FREE_SELECT = {
+  id: true,
+  content: true,
+  contentType: true,
+  agentId: true,
+  agentMode: true,
+  scriptType: true,
+  elements: true,
+  isFallback: true,
+  tokensUsed: true,
+  modelUsed: true,
+  durationMs: true,
   traceId: true,
   createdAt: true,
 } satisfies Prisma.HistorySelect;
@@ -118,5 +159,47 @@ export const copywritingRouter = router({
       const { prisma } = ctx;
       await prisma.history.delete({ where: { id: input.historyId } });
       return { ok: true };
+    }),
+
+  /**
+   * PRD-5 US-003 AC-1: freeGenerate — /generate 工具页后端
+   * D-026 选项 B: 不动既有 generate procedure · 新增独立 freeGenerate
+   * AC-2: history.create 写完整字段(agentMode/contentType/scriptType/elements/isFallback等)
+   * AC-7: SchemaValidationError → BaseSpecialist fallback path → agentRes.isFallback=true
+   * AC-8: cost_log 由 BaseSpecialist 自动写入(eventType="specialist_call")
+   */
+  freeGenerate: protectedProcedure
+    .input(copywritingFreeGenerateInput)
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, activeAccountId, traceId } = ctx;
+
+      const agentRes = await copywritingAgent.execute({
+        accountId: activeAccountId!,
+        mode: 'free',
+        userInput: input,
+        traceId: traceId ?? undefined,
+      });
+
+      const freeResult = agentRes.result as CopywritingFreeOutput;
+      const row = await prisma.history.create({
+        data: {
+          accountId: activeAccountId!,
+          agentId: 'CopywritingAgent',
+          agentMode: 'free',
+          sourceType: 'user',
+          inputSummary: input.topic.substring(0, 100),
+          content: freeResult.markdown,
+          contentType: 'markdown',
+          scriptType: input.scriptType,
+          elements: input.elements,
+          isFallback: agentRes.isFallback,
+          tokensUsed: agentRes.tokensUsed.total,
+          modelUsed: agentRes.modelUsed,
+          durationMs: agentRes.durationMs,
+          traceId: traceId ?? null,
+        },
+        select: HISTORY_FREE_SELECT,
+      });
+      return row;
     }),
 });
