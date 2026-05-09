@@ -11,7 +11,7 @@ import { HOT_ELEMENT_KEYS_22 } from './constants';
 
 /** structural mode 输入: 用户自己的文案 */
 export const analysisStructuralInput = z.object({
-  copy: z.string().min(10).max(3000),
+  copy: z.string().min(10, { message: '文案至少10字' }).max(3000, { message: '文案不超过3000字' }),
 });
 
 /** viral mode 输入: 爆款文案 + 可选标题 */

@@ -159,7 +159,7 @@ describe('Schema validation: analysisStructuralInput', () => {
     expect(res.success).toBe(false);
     if (!res.success) {
       const msg = res.error.errors[0]?.message ?? '';
-      expect(msg).toBeTruthy();
+      expect(msg).toContain('字');
     }
   });
 
