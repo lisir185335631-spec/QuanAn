@@ -40,7 +40,7 @@ export interface CompleteRequest {
   userPrompt: string;
   tools?: ToolDef[];
   responseFormat?: { type: 'text' } | { type: 'json_schema'; schema: z.ZodTypeAny };
-  metadata: { trace_id: string; agentId: string; accountId: number; userId: number };
+  metadata: { trace_id: string; agentId: string; accountId: number; userId: number; eventType?: string };
   timeout_ms?: number;
   retry?: number;
 }

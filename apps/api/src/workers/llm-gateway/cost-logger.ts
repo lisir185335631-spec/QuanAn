@@ -44,6 +44,7 @@ export async function writeCostLog(data: CostLogData): Promise<void> {
         userId: req.metadata.userId,
         accountId: req.metadata.accountId,
         agentId: req.metadata.agentId,
+        eventType: req.metadata.eventType ?? 'specialist_call',
         callType: 'complete',
         modelTier: req.model_tier,
         modelUsed: res.model,
