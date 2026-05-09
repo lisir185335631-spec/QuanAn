@@ -1,4 +1,13 @@
 
+## [2026-05-09 21:22] - US-012 (验证 · 全套绿灯确认)
+- 发现并确认已有 commit 47a76c9 包含两处 e2e 修复: (1) Step2 boom-generate theme 选择器从 textarea 改 #tool-boom-theme(input 非 textarea) · (2) Step5 /history goto 改 waitUntil:'networkidle' 解决 lazy-load 时序问题
+- 重跑验证: pnpm typecheck 0 errors · pnpm test 542/542 · pnpm test:judge 22/22 · pnpm test:e2e chromium 63/64+mobile 63/64 (1 skip/proj = ip-flow-9-steps) · lint web/api 0 warnings
+- Working tree clean · 所有变更已在前序 commits 提交 · US-012 story 实现完整
+- **未来迭代的学习:**
+  - tools-integration 多 step 共享页面时 goto networkidle > waitForLoadState('load') · lazy chunk 加载在 load 事件前未完成
+  - BoomGenerate theme 字段是 input 非 textarea · ToolForm boom-generate case 用 <input> 不是 <textarea>
+---
+
 ## [2026-05-09 20:30] - US-012 (PRD-5 收官 · LLM Judge 4 mode + 4 工具 e2e + lint clean + typecheck + 全套绿灯门禁)
 - 新建 tests/judge/copywriting-free.judge.ts (2 cases · 医美熬夜皮肤好 + 健身30天减脂) · markdown hook + 干货 + cta + 0 编造数据 · runJudge mock llmGateway/lightweight tier
 - 新建 tests/judge/copywriting-boom.judge.ts (2 cases · 育儿 + 理财) · 5 篇候选风格差异验证
