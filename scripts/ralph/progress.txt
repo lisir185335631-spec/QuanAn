@@ -1892,3 +1892,17 @@ prd.json.passes = true | retryCount = 0 | notes = ""
   - history-flow.spec.ts 的 MOCK_HISTORY_ROW 有 content 但 tools-integration 的 MOCK_HISTORY_LIST 没有 → 跨文件 mock 数据不一致是常见错误源
   - tRPC serial e2e mock 中 history.list 返回 Array 时用 [[array]] 包装；history-flow.spec.ts 用 [[[singleRow]]] 包装 → 两者格式相同但命名不同容易混淆
 ---
+
+## [2026-05-09 20:50] - US-012 (PRD-5 · 收官 · LLM Judge 4 mode + 4 工具 e2e + lint clean + typecheck + 全套绿灯门禁)
+- 4 新 judge 文件已存在(copywriting-free/boom + analysis-viral/structural) · 22/22 judge tests pass
+- tests/e2e/tools-integration.spec.ts 已存在(5 steps × 2 browsers) · 修复 2 个 bug:
+  - Bug 1: Step 2 用 form.locator('textarea') 但 boom-generate 用 <input id="tool-boom-theme"> → 改为 #tool-boom-theme
+  - Bug 2: Step 5 MOCK_HISTORY_LIST 缺少 content/scriptType/elements 字段 → row.content.substring TypeError → 组件崩溃
+  - Bug 3: Step 5 waitForLoadState('load') 在懒加载时不够 → 改为 { waitUntil: 'networkidle' }
+- manifest.json 写入全套结果: 542 unit + 22 judge + 126 e2e + typecheck 0 + lint 0 warnings
+- 全套绿灯: pnpm typecheck ✅ · pnpm test 542/542 ✅ · pnpm test:judge 22/22 ✅ · pnpm test:e2e 126/128 ✅(2 skipped ip-flow-9-steps)
+- **未来迭代的学习:**
+  - boom-generate form theme 字段是 <input id="tool-boom-theme"> 不是 textarea · e2e 测试必须用 #tool-boom-theme 而非 locator('textarea')
+  - MOCK_HISTORY_LIST 必须包含 HistoryListRow 全部字段(content/scriptType/elements) · History.tsx 在表格渲染时直接访问 row.content.substring · 缺少字段会 TypeError + 组件卸载
+  - 懒加载路由 goto 后需用 { waitUntil: 'networkidle' } 确保 React chunk 加载完毕 · waitForLoadState('load') 只等 HTML/CSS/scripts 初始加载
+---
