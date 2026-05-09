@@ -3,10 +3,11 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 600_000, // AC-17 (US-017): 10 min · 真 LLM 调用慢
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // workers=1: prevents shared-user activeAccountId race conditions across concurrent projects
+  workers: 1,
   reporter: [['html'], ['github']],
 
   use: {

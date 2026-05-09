@@ -1,0 +1,63 @@
+{
+  "storyId": "US-018",
+  "title": "PRD-4 收官 · 集成测试 + LLM Judge + lint clean + typecheck",
+  "verifiedAt": "2026-05-09T02:05:00Z",
+  "results": {
+    "pnpm_test": {
+      "command": "pnpm test",
+      "testFiles": 39,
+      "tests": 343,
+      "passed": 343,
+      "failed": 0,
+      "durationMs": 5300,
+      "status": "PASS"
+    },
+    "pnpm_test_judge": {
+      "command": "pnpm test:judge",
+      "testFiles": 7,
+      "tests": 14,
+      "passed": 14,
+      "failed": 0,
+      "durationMs": 186,
+      "status": "PASS"
+    },
+    "pnpm_test_e2e": {
+      "command": "pnpm test:e2e",
+      "tests": 108,
+      "passed": 106,
+      "failed": 0,
+      "skipped": 2,
+      "durationMs": 108000,
+      "note": "2 skipped = ip-flow-9-steps (RUN_LIVE_TESTS not set · requires real LLM). workers=1 to prevent shared-user activeAccountId race conditions.",
+      "status": "PASS"
+    },
+    "pnpm_typecheck": {
+      "command": "pnpm typecheck",
+      "workspaces": 6,
+      "errors": 0,
+      "status": "PASS"
+    },
+    "pnpm_lint": {
+      "command": "pnpm --filter @quanqn/web lint --max-warnings=0",
+      "warnings": 0,
+      "status": "PASS"
+    }
+  },
+  "ac_compliance": {
+    "AC-1": { "requirement": "pnpm test >= 259", "actual": 343, "status": "PASS" },
+    "AC-2": { "requirement": "pnpm test:judge 7 cases", "actual": 14, "status": "PASS" },
+    "AC-3": { "requirement": "pnpm test:e2e >= 104", "actual": 106, "status": "PASS" },
+    "AC-4": { "requirement": "pnpm typecheck 0 errors", "actual": 0, "status": "PASS" },
+    "AC-5": { "requirement": "pnpm lint 0 warnings", "actual": 0, "status": "PASS" },
+    "AC-13": { "requirement": "Tests pass", "status": "PASS" },
+    "AC-14": { "requirement": "Typecheck passes", "status": "PASS" }
+  },
+  "fixes_applied": [
+    {
+      "issue": "e2e race condition: shared dev@local.test user.activeAccountId mutated by concurrent tests",
+      "fix": "playwright.config.ts workers=1 + fullyParallel=false",
+      "affected_tests": ["account-switch.spec.ts", "account-isolation.spec.ts", "ls-db-sync.spec.ts"],
+      "root_cause": "chromium + mobile projects run in parallel sharing the same mock OAuth user, concurrent switchActive calls create non-deterministic activeAccountId"
+    }
+  ]
+}
