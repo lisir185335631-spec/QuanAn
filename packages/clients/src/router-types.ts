@@ -129,6 +129,8 @@ export type HistoryDetailOutput = FreeGenerateHistoryRow | null;
 
 export type BoomGenerateHistoryRow = FreeGenerateHistoryRow;
 
+export type AnalysisHistoryRow = FreeGenerateHistoryRow;
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -262,6 +264,25 @@ const _shadowRouter = _t.router({
     detail: _t.procedure
       .input((x: unknown) => x as { id: number })
       .query((): HistoryDetailOutput => null),
+  }),
+  analysis: _t.router({
+    analyze: _t.procedure
+      .input((x: unknown) => x as { copy: string })
+      .mutation((): AnalysisHistoryRow => ({
+        id: 0,
+        content: '',
+        contentType: 'json',
+        agentId: 'AnalysisAgent',
+        agentMode: 'structural',
+        scriptType: null,
+        elements: [],
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
+        traceId: null,
+        createdAt: new Date(),
+      })),
   }),
 });
 
