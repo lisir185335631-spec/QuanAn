@@ -5,6 +5,7 @@ Coding 3.0 升级：崩溃恢复 + 成本追踪 + 显式 Story ID 传递 + prd.j
 """
 
 import json
+import re
 import signal
 import sys
 import subprocess
@@ -813,6 +814,62 @@ def clear_audit_gate() -> None:
         pass
 
 
+def _check_existing_commit(story_id: str, since: str = "30 minutes ago") -> str | None:
+    """TD-006 PATH-B: git log 查找 story_id 对应的已提交 commit.
+
+    返回 7 位 commit hash 如果在 since 时间窗口内找到 [story_id] commit · 否则 None.
+    since='30 minutes ago' 防跨 PRD 扫到上一 PRD 的残留 commit.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", f"--since={since}", "--oneline"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            cwd=str(PROJECT_ROOT),
+        )
+        if result.returncode != 0:
+            return None
+        pattern = re.compile(re.escape(f"[{story_id}]"))
+        for line in result.stdout.splitlines():
+            if pattern.search(line):
+                parts = line.split(None, 1)
+                if parts:
+                    return parts[0]
+        return None
+    except Exception as e:
+        print(f"  [WARN] _check_existing_commit 失败: {e}")
+        return None
+
+
+def _write_path_b_audit_gate(story_id: str, commit_hash: str) -> bool:
+    """TD-006 PATH-B: 写入 audit-gate.json 触发 Opus 审查 (含 PATH-B 元数据).
+
+    返回 True if 写入成功.
+    """
+    gate = {
+        "story_id": story_id,
+        "status": "pending",
+        "commit_hash": commit_hash,
+        "reason": "路径 B 自动触发: ralph 实际已 commit · daemon validate 误报",
+        "timestamp": datetime.now().isoformat(),
+    }
+    tmp_path = AUDIT_GATE_FILE.with_suffix(".json.tmp")
+    try:
+        tmp_path.write_text(json.dumps(gate, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp_path.replace(AUDIT_GATE_FILE)
+    except Exception as e:
+        print(f"[WARN]  PATH-B audit-gate 写入失败: {e}")
+        tmp_path.unlink(missing_ok=True)
+        return False
+    print(f"PENDING_DETECTED: {story_id} at {datetime.now().isoformat()}")
+    print(f"\n{'─'*48}")
+    print(f"  [PATH-B] 审计门禁已激活 (路径 B 自动触发): {story_id}")
+    print(f"  commit: {commit_hash}")
+    print(f"{'─'*48}")
+    return True
+
+
 def wait_for_audit(story_id: str, timeout: int | None = None) -> str:
     """
     轮询 audit-gate.json，等待 Opus 写入 approved 或 rejected。
@@ -1606,6 +1663,24 @@ def main():
             if prd_check and current_story:
                 s_check = get_story_by_id(prd_check, current_story)
                 if s_check and s_check.get("retryCount", 0) >= MAX_RETRIES and not s_check.get("blocked", False):
+                    # TD-006 PATH-B: 先检查 git log 是否已有该 story 的 commit
+                    existing_notes = s_check.get("notes", "") or ""
+                    path_b_tried = "[PATH-B]" in existing_notes
+                    commit_hash = _check_existing_commit(current_story) if not path_b_tried else None
+                    if commit_hash:
+                        print(f"  [PATH-B] story={current_story} retry={s_check.get('retryCount', 0)} git_log_hit={commit_hash} · 自动 audit-gate(pending)")
+                        # 设 passes=True: 代码已提交, 让 Opus 审查判断质量
+                        s_check["passes"] = True
+                        path_b_note = f"[PATH-B] commit={commit_hash} 自动触发 Opus 审查"
+                        s_check["notes"] = f"{existing_notes}\n{path_b_note}".strip() if existing_notes else path_b_note
+                        write_prd_safe(prd_check)
+                        if not NO_AUDIT_GATE and _write_path_b_audit_gate(current_story, commit_hash):
+                            write_lock(i, "waiting_audit", current_story)
+                            dashboard.set_state(phase="waiting_audit")
+                            wait_for_audit(current_story)
+                            handle_audit_result(current_story)
+                        continue
+                    # PATH-B 未命中 (无 commit 或已尝试过 PATH-B) → 原有 BLOCKED 行为
                     s_check["blocked"] = True
                     existing = s_check.get("notes", "").strip()
                     block_note = f"[编排器兜底] retryCount={s_check['retryCount']} >= MAX_RETRIES={MAX_RETRIES}，自动标记 blocked"
