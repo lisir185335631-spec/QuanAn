@@ -293,6 +293,7 @@ model Asset {
 
   relatedStepKey   String? @map("related_step_key") @db.VarChar(16)
   relatedHistoryId Int?    @map("related_history_id")
+  sceneIndex       Int?    @map("scene_index") // PRD-6 · storyboard 镜头序号(1-based · null=非 scene image)
 
   generationPrompt String? @map("generation_prompt") @db.Text
   generationModel  String? @map("generation_model") @db.VarChar(64)
@@ -310,6 +311,7 @@ model Asset {
   @@index([accountId])
   @@index([accountId, assetType])
   @@index([accountId, relatedStepKey])
+  @@index([accountId, relatedStepKey, sceneIndex])
   @@index([parsingStatus])
   @@map("assets")
 }

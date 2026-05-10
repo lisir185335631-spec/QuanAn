@@ -8,3 +8,10 @@
 
 export * from './entities/ipAccount.schema';
 export * from './entities/stepData.schema';
+
+// PRD-6 US-001 · 5 video-domain schemas (video-prefixed avoid name collision)
+export * from './specialist-io/videoProduction.schema';
+export * from './specialist-io/acquisitionVideo.schema';
+export * from './specialist-io/aiVideo.schema';
+export * from './specialist-io/acquisitionCopywriting.schema';
+export * from './specialist-io/imageGen.schema';

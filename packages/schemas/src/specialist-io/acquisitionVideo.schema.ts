@@ -1,39 +1,39 @@
 /**
- * VideoAgent production mode I/O schemas — PRD-6 US-001
- * production mode: 文案 → 完整视频方案(分镜 + 设备 + 日程)
+ * VideoAgent acquisition mode I/O schemas — PRD-6 US-001
+ * acquisition mode: 文案 → 获客型视频方案(转化导向 · 必含 CTA)
  */
 
 import { z } from 'zod';
 
 // ── Input ────────────────────────────────────────────────────────────────────
 
-export const videoProductionInput = z.object({
+export const acquisitionVideoInput = z.object({
   sourceCopy: z.string().min(10).max(3000, '原始文案不能超过3000字符'),
-  videoType: z.enum(['short_form', 'long_form']).optional(),
-  duration: z.enum(['15s', '30s', '60s', '180s']).optional(),
+  conversionGoal: z.enum(['wechat', 'comment', 'private_msg']),
+  ctaText: z.string().max(50).optional(),
   additionalContext: z.string().optional(),
 });
 
 // ── Output ───────────────────────────────────────────────────────────────────
 
-const shotItemSchema = z.object({
+const acquisitionShotSchema = z.object({
   index: z.number().int().positive(),
   shot: z.string().min(5).max(200),
   action: z.string().min(5).max(300),
-  dialogue: z.string().optional(),
+  ctaPoint: z.boolean().optional(),
   camera: z.string().min(3).max(100),
   duration: z.string(),
 });
 
-export const videoProductionOutput = z.object({
-  shotList: z.array(shotItemSchema).min(3).max(20),
+export const acquisitionVideoOutput = z.object({
+  shotList: z.array(acquisitionShotSchema).min(3).max(20),
+  ctaSuggestion: z.string().min(10).max(200),
   equipment: z.string().min(10),
-  schedule: z.string().min(10),
   totalDuration: z.string(),
 });
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export type VideoProductionInput = z.infer<typeof videoProductionInput>;
-export type VideoProductionOutput = z.infer<typeof videoProductionOutput>;
-export type ShotItem = z.infer<typeof shotItemSchema>;
+export type AcquisitionVideoInput = z.infer<typeof acquisitionVideoInput>;
+export type AcquisitionVideoOutput = z.infer<typeof acquisitionVideoOutput>;
+export type AcquisitionShot = z.infer<typeof acquisitionShotSchema>;
