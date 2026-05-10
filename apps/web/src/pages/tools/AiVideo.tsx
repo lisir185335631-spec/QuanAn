@@ -1,18 +1,159 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+/**
+ * AiVideo.tsx — /ai-video 工具页 · PRD-6 US-008
+ * 真表单: ToolForm(toolKey=ai-video) + sourceCopy textarea + scenesCount select 5-8 + imageStyle select
+ * submit → trpc.aiVideo.generateStoryboard.mutate → historyId + jobIds
+ * 提交后立即跳结果区 AiVideoResult(polling 5-8 镜头 skeleton → 真图)
+ * LS-first dual-write (SHIELD REJ-010): getToolLsKey(accountId, 'ai-video', 'active_polling') → { historyId, jobIds }
+ * SHIELD REJ-035: polling fail 不清 LS lastHistoryId
+ * ?historyId=N: 恢复 polling 当前 historyId · 镜头网格继续显示
+ * rate limit (TOO_MANY_REQUESTS) → '今日已达上限 · 明日再来' + disabled 按钮
+ */
+
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { AiVideoResult } from '@/components/ToolResult/AiVideoResult';
+import { ToolForm } from '@/components/ToolForm/ToolForm';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { getToolLsKey } from '@/lib/ls-namespace';
+import { aiVideoFrontendInput } from '@/lib/schemas/aiVideoFrontend';
+import { trpc } from '@/lib/trpc';
+
+import type { GenerateStoryboardOutput } from '@quanqn/clients/router-types';
+
+// ── LS types ──────────────────────────────────────────────────────────────────
+
+interface PollingLsData {
+  historyId: number;
+  jobIds: string[];
+}
+
+// ── Page component ────────────────────────────────────────────────────────────
 
 export default function AiVideo() {
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+
+  const [searchParams] = useSearchParams();
+  const queryHistoryId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
+
+  const [activeHistory, setActiveHistory] = useState<{ historyId: number; jobIds: string[] } | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+
+  const abortRef = useRef<AbortController>(null!);
+  useEffect(() => {
+    abortRef.current = new AbortController();
+    return () => { abortRef.current.abort(); };
+  }, []);
+
+  // ?historyId=N: show history polling view (AC-16)
+  useEffect(() => {
+    if (queryHistoryId && !activeHistory) {
+      setActiveHistory({ historyId: queryHistoryId, jobIds: [] });
+    }
+  }, [queryHistoryId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // LS restore on mount (SHIELD REJ-010 · AC-15)
+  useEffect(() => {
+    if (accountId === null || activeHistory || queryHistoryId) return;
+    try {
+      const stored = localStorage.getItem(getToolLsKey(accountId, 'ai-video', 'active_polling'));
+      if (stored) {
+        const parsed = JSON.parse(stored) as PollingLsData;
+        if (parsed.historyId) {
+          setActiveHistory({ historyId: parsed.historyId, jobIds: parsed.jobIds ?? [] });
+        }
+      }
+    } catch {
+      // ignore malformed LS
+    }
+  }, [accountId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const mutation = trpc.aiVideo.generateStoryboard.useMutation();
+
+  async function handleSubmit(data: Record<string, unknown>) {
+    if (abortRef.current.signal.aborted) throw new Error('aborted');
+
+    let result: GenerateStoryboardOutput;
+    try {
+      result = await mutation.mutateAsync({
+        sourceCopy: data.sourceCopy as string,
+        scenesCount: data.scenesCount as number,
+        imageStyle: data.imageStyle as 'vivid' | 'natural',
+      });
+    } catch (err: unknown) {
+      // AC-13: TOO_MANY_REQUESTS → rate limit UI
+      const errData = (err as { data?: { code?: string }; message?: string }) ?? {};
+      if (errData?.data?.code === 'TOO_MANY_REQUESTS' || String(errData?.message ?? '').includes('TOO_MANY_REQUESTS')) {
+        setIsRateLimited(true);
+        toast.error('今日已达上限 · 明日再来');
+      }
+      throw err;
+    }
+
+    if (abortRef.current.signal.aborted) throw new Error('aborted');
+    return result;
+  }
+
+  function handleSuccess(row: unknown) {
+    const result = row as GenerateStoryboardOutput;
+    const { historyId, jobIds } = result;
+
+    // SHIELD REJ-010: LS write with account namespace (not plain key)
+    if (accountId !== null) {
+      try {
+        localStorage.setItem(
+          getToolLsKey(accountId, 'ai-video', 'active_polling'),
+          JSON.stringify({ historyId, jobIds } satisfies PollingLsData),
+        );
+      } catch {
+        // Storage full — continue
+      }
+    }
+
+    setActiveHistory({ historyId, jobIds });
+    setIsRateLimited(false);
+  }
+
   return (
-    <main className="flex-1 container py-8">
-      <h1 className="text-h1 font-display text-on-surface mb-6">一键生成视频</h1>
-      <Card className="max-w-2xl">
-        <CardHeader>
-          <span className="text-label-sm font-label text-primary uppercase tracking-wide">智能工具</span>
-        </CardHeader>
-        <CardContent>
-          <p className="text-body-md text-muted-foreground">AI 自动生成短视频，降低内容生产门槛</p>
-          <p className="mt-4 text-body-sm text-on-surface-variant">PRD-3 占位 · 实施 PRD-4</p>
-        </CardContent>
-      </Card>
+    <main className="flex-1 container py-8 space-y-8">
+      <div>
+        <span className="text-label-sm font-label text-primary uppercase tracking-wide">内容创作</span>
+        <h1 className="mt-1 text-h1 font-display text-on-surface">一键生成 AI 视频</h1>
+        <p className="mt-2 text-body-md text-muted-foreground">从原始文案自动生成分镜脚本 + AI 配图，一键出片</p>
+      </div>
+
+      {/* Rate limit banner (AC-13) */}
+      {isRateLimited && (
+        <div
+          className="rounded-lg border border-error bg-error/5 px-4 py-3 flex items-center justify-between"
+          data-testid="ai-video-rate-limit-banner"
+          role="alert"
+        >
+          <span className="text-body-sm text-error">今日已达上限 · 明日再来</span>
+          <button
+            type="button"
+            disabled
+            className="px-4 py-1.5 text-body-sm rounded-md bg-muted text-muted-foreground cursor-not-allowed"
+            data-testid="ai-video-rate-limit-button"
+          >
+            生成 AI 视频
+          </button>
+        </div>
+      )}
+
+      <ToolForm
+        toolKey="ai-video"
+        schema={aiVideoFrontendInput}
+        onSubmit={handleSubmit}
+        onSuccess={handleSuccess}
+        submitLabel="生成 AI 视频"
+      />
+
+      {activeHistory && (
+        <AiVideoResult historyId={activeHistory.historyId} />
+      )}
     </main>
   );
 }

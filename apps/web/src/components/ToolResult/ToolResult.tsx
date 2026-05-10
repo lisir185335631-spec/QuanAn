@@ -4,13 +4,14 @@
  */
 
 import { AcquisitionVideoResult } from './AcquisitionVideoResult';
+import { AiVideoResult } from './AiVideoResult';
 import { AnalysisResult } from './AnalysisResult';
 import { BoomGenerateResult } from './BoomGenerateResult';
 import { FreeGenerateResult } from './FreeGenerateResult';
 import { VideoAnalysisResult } from './VideoAnalysisResult';
 import { VideoProductionResult } from './VideoProductionResult';
 
-export type ToolResultKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video';
+export type ToolResultKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video' | 'ai-video';
 
 interface ToolResultProps {
   toolKey: ToolResultKey;
@@ -34,6 +35,10 @@ export function ToolResult({ toolKey, data, isFallback }: ToolResultProps) {
       return <VideoProductionResult data={data} />;
     case 'acquisition-video':
       return <AcquisitionVideoResult data={data} />;
+    case 'ai-video': {
+      const historyId = (data as { historyId?: number })?.historyId;
+      return historyId ? <AiVideoResult historyId={historyId} /> : null;
+    }
     default:
       return null;
   }

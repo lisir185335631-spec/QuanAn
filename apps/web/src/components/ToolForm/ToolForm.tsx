@@ -26,7 +26,7 @@ import type { ZodTypeAny } from 'zod';
 
 // ── Tool types ────────────────────────────────────────────────────────────────
 
-export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video';
+export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video' | 'ai-video';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -382,6 +382,59 @@ function renderToolFields(
         </>
       );
 
+    case 'ai-video':
+      return (
+        <>
+          <div className="space-y-1.5">
+            <label htmlFor="tool-aiv-source-copy" className="text-body-sm font-medium text-on-surface">
+              原始文案<span className="text-error ml-0.5">*</span>
+            </label>
+            <textarea
+              id="tool-aiv-source-copy"
+              {...register('sourceCopy')}
+              rows={8}
+              className={cn(
+                'flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y min-h-[120px]',
+                errors['sourceCopy'] && 'border-error',
+              )}
+              placeholder="粘贴视频文案，AI 自动生成分镜画面（10-3000字）"
+              data-testid="tool-aiv-source-copy"
+            />
+            {errors['sourceCopy'] && (
+              <p className="text-body-xs text-error" role="alert">{errors['sourceCopy']?.message}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label htmlFor="tool-aiv-scenes-count" className="text-body-sm font-medium text-on-surface">镜头数量</label>
+              <select
+                id="tool-aiv-scenes-count"
+                {...register('scenesCount')}
+                className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                data-testid="tool-aiv-scenes-count"
+              >
+                <option value="5">5 镜头</option>
+                <option value="6">6 镜头</option>
+                <option value="7">7 镜头</option>
+                <option value="8">8 镜头</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="tool-aiv-image-style" className="text-body-sm font-medium text-on-surface">图片风格</label>
+              <select
+                id="tool-aiv-image-style"
+                {...register('imageStyle')}
+                className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                data-testid="tool-aiv-image-style"
+              >
+                <option value="natural">自然风格</option>
+                <option value="vivid">鲜艳风格</option>
+              </select>
+            </div>
+          </div>
+        </>
+      );
+
     case 'acquisition-video':
       return (
         <>
@@ -482,6 +535,8 @@ function getDefaultValues(toolKey: ToolKey): Record<string, unknown> {
       return { sourceCopy: '', videoType: '', duration: '', additionalContext: '' };
     case 'acquisition-video':
       return { sourceCopy: '', conversionGoal: '', platform: '', duration: '' };
+    case 'ai-video':
+      return { sourceCopy: '', scenesCount: '5', imageStyle: 'natural' };
     default:
       return {};
   }
