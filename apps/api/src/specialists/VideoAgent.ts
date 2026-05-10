@@ -1,22 +1,28 @@
 /**
- * QuanQn · PRD-4 US-008
- * VideoAgent — step6(拍摄计划 · shooting mode · 13 列分镜表)
+ * QuanQn · PRD-4 US-008 + PRD-6 US-002
+ * VideoAgent — 4 mode: shooting / production / acquisition / storyboard
  *
- * AC-1: 继承 BaseSpecialist · shooting mode 单跑 · 接口预留 4 mode type
+ * PRD-4:
+ * AC-1: 继承 BaseSpecialist · shooting mode · 接口预留 4 mode type
  * AC-2: outputSchema getter shooting → 13 字段 shotList schema
  * AC-3: shotList.min(1) · 13 字段全填 · zod object 强制
- * AC-4: router stepData.save step6 → videoAgent.execute(mode='shooting')
- * AC-5: production / acquisition / storyboard → throw 'Not implemented · PRD-6'
+ * AC-5: production / acquisition / storyboard → throw 'Not implemented · PRD-6' (已由 PRD-6 US-002 解锁)
  * AC-6: sourceCopy > 5000 字符 → input zod 拒(防 token 爆)
  * AC-7: memory.l2_read = ['stepData'] · 注入 step7 文案(若有)
  * AC-8: config 五层 · model_tier='reasoning' timeout_ms=45000
- * AC-9: tests ≥ 4 (happy / fallback / edge / 4 mode 接口预留)
- * AC-10: reasoning 5KB 输出 < 45s
+ *
+ * PRD-6 US-002:
+ * AC-1: production/acquisition/storyboard mode 解锁 (移除 throw · 按 mode 走 invokeLLM 分支)
+ * AC-2: outputSchema getter 完整 switch (4 mode · D-028 模式)
+ * AC-3: _buildUserPrompt(mode) 4 分支
+ * AC-4: storyboard imagePromptEn ASCII post-validate · retry 1 · 失败 throw SchemaValidationError
+ * SHIELD REJ-007: outputSchema getter 按 mode · 不用 z.discriminatedUnion
  */
 
 import { z } from 'zod';
 
 import { BaseSpecialist } from './base/BaseSpecialist';
+import { SchemaValidationError } from './base/errors';
 
 import type {
   SpecialistConfig,
@@ -30,7 +36,7 @@ import type {
 
 export type VideoAgentMode = 'shooting' | 'production' | 'acquisition' | 'storyboard';
 
-// ── AC-2: 13-field shot item schema ──────────────────────────────────────────
+// ── Shared 13-field shot item schema ──────────────────────────────────────────
 
 const ShotItemSchema = z.object({
   scene: z.string(),
@@ -48,14 +54,14 @@ const ShotItemSchema = z.object({
   location: z.string(),
 });
 
-// AC-2: shooting mode output schema — shotList min(1) · 13 字段
+// ── shooting mode schemas ─────────────────────────────────────────────────────
+
 export const ShootingOutputSchema = z.object({
   shotList: z.array(ShotItemSchema).min(1),
   equipment: z.array(z.string()),
   schedule: z.string(),
 });
 
-// Base schema for responseFormat (no .min(1) — avoids JSON schema serialization issues)
 const ShootingBaseSchema = z.object({
   shotList: z.array(ShotItemSchema),
   equipment: z.array(z.string()),
@@ -63,6 +69,76 @@ const ShootingBaseSchema = z.object({
 });
 
 export type ShootingOutput = z.infer<typeof ShootingOutputSchema>;
+
+// ── production mode schemas ───────────────────────────────────────────────────
+
+export const ProductionOutputSchema = z.object({
+  shotList: z.array(ShotItemSchema).min(1),
+  equipment: z.array(z.string()),
+  schedule: z.string(),
+});
+
+const ProductionBaseSchema = z.object({
+  shotList: z.array(ShotItemSchema),
+  equipment: z.array(z.string()),
+  schedule: z.string(),
+});
+
+export type ProductionOutput = z.infer<typeof ProductionOutputSchema>;
+
+// ── acquisition mode schemas (VideoAgent) ─────────────────────────────────────
+
+export const VideoAcquisitionOutputSchema = z.object({
+  script: z.string().min(100),
+  cta: z.string().min(10),
+  conversionPath: z.string(),
+  keyMessages: z.array(z.string()).min(1),
+});
+
+const VideoAcquisitionBaseSchema = z.object({
+  script: z.string(),
+  cta: z.string(),
+  conversionPath: z.string(),
+  keyMessages: z.array(z.string()),
+});
+
+export type VideoAcquisitionOutput = z.infer<typeof VideoAcquisitionOutputSchema>;
+
+// ── storyboard mode schemas ───────────────────────────────────────────────────
+
+const StoryboardSceneSchema = z.object({
+  scene: z.string(),
+  duration: z.string(),
+  description: z.string(),
+  imagePromptEn: z.string(), // AC-4: post-validate ASCII-only
+  voiceover: z.string(),
+  music: z.string(),
+});
+
+export const StoryboardOutputSchema = z.object({
+  scenes: z.array(StoryboardSceneSchema).min(5).max(8),
+  title: z.string(),
+  totalDuration: z.string(),
+});
+
+const StoryboardBaseSchema = z.object({
+  scenes: z.array(z.object({
+    scene: z.string(),
+    duration: z.string(),
+    description: z.string(),
+    imagePromptEn: z.string(),
+    voiceover: z.string(),
+    music: z.string(),
+  })),
+  title: z.string(),
+  totalDuration: z.string(),
+});
+
+export type StoryboardOutput = z.infer<typeof StoryboardOutputSchema>;
+
+// ── VideoMultiOutput union ────────────────────────────────────────────────────
+
+export type VideoMultiOutput = ShootingOutput | ProductionOutput | VideoAcquisitionOutput | StoryboardOutput;
 
 // ── AC-6: input schema — sourceCopy > 5000 chars → zod 拒 ────────────────────
 
@@ -108,20 +184,20 @@ const VIDEO_CONFIG: SpecialistConfig = {
 
 // ── VideoAgent ─────────────────────────────────────────────────────────────────
 
-export class VideoAgent extends BaseSpecialist<VideoInput, ShootingOutput> {
+export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
   /**
    * Stores the mode for the current invocation.
    * Set in invokeLLM() BEFORE BaseSpecialist calls this.outputSchema.safeParse().
    * Default 'shooting' — overwritten on every execute() call via invokeLLM.
-   * (REJ-007: outputSchema getter 按 mode 返回对应 schema)
+   * (SHIELD REJ-007: outputSchema getter 按 mode 返回对应 schema · D-028)
    */
   private _mode: VideoAgentMode = 'shooting';
 
   readonly config: SpecialistConfig = VIDEO_CONFIG;
   readonly inputSchema = VideoInputSchema;
 
-  // US-015 AC-2: fallback template for shooting mode
-  static override readonly fallbackTemplate = {
+  // US-015 AC-2: fallback templates for all 4 modes
+  static override readonly fallbackTemplate: Record<string, unknown> = {
     shooting: {
       shotList: [
         {
@@ -173,13 +249,123 @@ export class VideoAgent extends BaseSpecialist<VideoInput, ShootingOutput> {
       equipment: ['手机或相机', '三脚架', '补光灯', '麦克风'],
       schedule: '拍摄时间约 1-2 小时，建议在光线充足的上午（9-11点）或下午（14-16点）进行（系统繁忙备用拍摄计划）',
     } satisfies ShootingOutput,
+
+    production: {
+      shotList: [
+        {
+          scene: '制作开场',
+          duration: '3s',
+          action: '镜头从产品特写拉远至全景',
+          dialogue: '无',
+          cameraAngle: '近景拉远',
+          prop: '产品或主题道具',
+          lighting: '三点布光：主光/补光/轮廓光',
+          transition: '缓推',
+          sfx: '无',
+          voiceover: '开场旁白（系统繁忙备用）',
+          subtitle: '开场字幕',
+          costume: '与品牌调性一致',
+          location: '摄影棚或专业场景',
+        },
+        {
+          scene: '核心内容展示',
+          duration: '30s',
+          action: '详细展示核心内容，多角度切换',
+          dialogue: '系统繁忙备用台词，请稍后重试获取个性化方案',
+          cameraAngle: '多角度切换',
+          prop: '演示用品或图表',
+          lighting: '补光灯辅助',
+          transition: '跳切',
+          sfx: '背景音乐',
+          voiceover: '核心卖点阐述',
+          subtitle: '关键信息字幕',
+          costume: '同开场',
+          location: '同开场',
+        },
+        {
+          scene: '结尾收尾',
+          duration: '5s',
+          action: '展示品牌标识或联系方式',
+          dialogue: '感谢观看',
+          cameraAngle: '正面中景',
+          prop: '品牌 Logo 卡片',
+          lighting: '同主体',
+          transition: '淡出',
+          sfx: '结尾音效',
+          voiceover: '关注我们',
+          subtitle: '关注引导',
+          costume: '同开场',
+          location: '同开场',
+        },
+      ],
+      equipment: ['专业相机或手机', '三脚架 + 稳定器', '三点布光套装', '收音麦克风', '反光板'],
+      schedule: '制作拍摄约 2-3 小时，后期剪辑约 1-2 小时（系统繁忙备用制作计划）',
+    } satisfies ProductionOutput,
+
+    acquisition: {
+      script: '你是否曾经遇到这个问题？每天花大量时间做内容，但粉丝增长却停滞不前？今天分享一个经过验证的方法，帮助你快速突破瓶颈，实现精准涨粉。我们的系统已帮助数百位创作者从 0 到 10 万粉丝，现在这个机会也属于你（系统繁忙备用文案·请稍后重试）。',
+      cta: '立即扫描下方二维码，免费获取详细方案（系统繁忙备用 CTA）',
+      conversionPath: '视频引流→扫码→咨询群→成交',
+      keyMessages: ['经验证的涨粉方法', '针对创作者的专属方案', '免费咨询了解详情'],
+    } satisfies VideoAcquisitionOutput,
+
+    storyboard: {
+      title: 'Content Creator Story (Fallback Template)',
+      totalDuration: '60s',
+      scenes: [
+        {
+          scene: '开场钩子',
+          duration: '5s',
+          description: '创作者面对镜头，展示成果对比',
+          imagePromptEn: 'A confident content creator facing camera in modern studio, warm golden lighting, professional setup, cinematic portrait style',
+          voiceover: '你也想实现这样的转变吗',
+          music: 'upbeat background music',
+        },
+        {
+          scene: '痛点共鸣',
+          duration: '10s',
+          description: '展示创作者的困境和挑战',
+          imagePromptEn: 'A person sitting at desk looking at phone with low view count, frustrated expression, dim room, realistic style',
+          voiceover: '我知道那种感觉，内容做了很久但没有效果',
+          music: 'soft melancholic tone',
+        },
+        {
+          scene: '解决方案',
+          duration: '20s',
+          description: '介绍核心方法和工具',
+          imagePromptEn: 'Split screen showing before and after: left dark office with stressed person, right bright modern workspace with happy creator, high contrast',
+          voiceover: '直到我发现了这个方法',
+          music: 'building momentum music',
+        },
+        {
+          scene: '社会证明',
+          duration: '15s',
+          description: '展示成功案例和数据',
+          imagePromptEn: 'Dashboard showing growing analytics charts with green upward arrows, clean modern UI design, data visualization, optimistic colors',
+          voiceover: '已经帮助了超过一千位创作者',
+          music: 'positive uplifting background',
+        },
+        {
+          scene: '行动召唤',
+          duration: '10s',
+          description: '明确 CTA，引导用户行动',
+          imagePromptEn: 'Mobile phone screen showing QR code with call to action button, clean white background, modern minimalist design, focus lighting',
+          voiceover: '立即扫码，免费获取你的专属方案',
+          music: 'confident energetic close',
+        },
+      ],
+    } satisfies StoryboardOutput,
   };
 
-  // AC-1 / SHIELD REJ-007: getter 按 mode 返回 schema · 不共用单一 schema
-  get outputSchema(): z.ZodType<ShootingOutput> {
-    if (this._mode === 'shooting') return ShootingOutputSchema;
-    // AC-5: other modes are reserved for PRD-6
-    throw new Error('Not implemented · PRD-6');
+  // AC-2 / SHIELD REJ-007: getter 按 mode 返回对应 schema · D-028 模式
+  get outputSchema(): z.ZodType<VideoMultiOutput> {
+    switch (this._mode) {
+      case 'shooting':    return ShootingOutputSchema as z.ZodType<VideoMultiOutput>;
+      case 'production':  return ProductionOutputSchema as z.ZodType<VideoMultiOutput>;
+      case 'acquisition': return VideoAcquisitionOutputSchema as z.ZodType<VideoMultiOutput>;
+      case 'storyboard':  return StoryboardOutputSchema as z.ZodType<VideoMultiOutput>;
+      default:            throw new Error(`Unknown VideoAgent mode: ${this._mode as string}`);
+    }
   }
 
   constructor(gateway?: ILLMGateway) {
@@ -192,35 +378,136 @@ export class VideoAgent extends BaseSpecialist<VideoInput, ShootingOutput> {
   ): Promise<InvokeLLMResult> {
     const mode = (req.mode ?? 'shooting') as VideoAgentMode;
 
-    // AC-5: non-shooting modes throw before any LLM call
-    if (mode !== 'shooting') {
-      throw new Error('Not implemented · PRD-6');
-    }
-
-    // Set _mode BEFORE returning so outputSchema getter works correctly
+    // Set _mode BEFORE any LLM call so outputSchema getter is correct (SHIELD REJ-007)
     this._mode = mode;
 
-    const userPrompt = this._buildUserPrompt(req.userInput, ctx);
+    if (mode === 'shooting')    return this._invokeShooting(ctx, req);
+    if (mode === 'production')  return this._invokeProduction(ctx, req);
+    if (mode === 'acquisition') return this._invokeVideoAcquisition(ctx, req);
+    if (mode === 'storyboard')  return this._invokeStoryboard(ctx, req);
+    throw new Error(`Unknown VideoAgent mode: ${mode as string}`);
+  }
 
+  // ── shooting mode ─────────────────────────────────────────────────────────
+
+  private async _invokeShooting(
+    ctx: AssembledContext,
+    req: SpecialistRequest<VideoInput>,
+  ): Promise<InvokeLLMResult> {
     return this.llmGateway.complete({
       model_tier: this.config.execution.model_tier,
       systemPrompt: ctx.systemPrompt,
-      userPrompt,
+      userPrompt: this._buildUserPrompt(req.userInput, ctx, 'shooting'),
       responseFormat: { type: 'json_schema' as const, schema: ShootingBaseSchema },
       metadata: {
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: 0,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
     });
   }
 
-  private _buildUserPrompt(userInput: VideoInput, ctx: AssembledContext): string {
-    const inputJson = JSON.stringify(userInput);
+  // ── production mode ───────────────────────────────────────────────────────
 
+  private async _invokeProduction(
+    ctx: AssembledContext,
+    req: SpecialistRequest<VideoInput>,
+  ): Promise<InvokeLLMResult> {
+    return this.llmGateway.complete({
+      model_tier: this.config.execution.model_tier,
+      systemPrompt: ctx.systemPrompt,
+      userPrompt: this._buildUserPrompt(req.userInput, ctx, 'production'),
+      responseFormat: { type: 'json_schema' as const, schema: ProductionBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: 0,
+      },
+      timeout_ms: this.config.execution.timeout_ms,
+      retry: this.config.execution.retry,
+    });
+  }
+
+  // ── acquisition mode ──────────────────────────────────────────────────────
+
+  private async _invokeVideoAcquisition(
+    ctx: AssembledContext,
+    req: SpecialistRequest<VideoInput>,
+  ): Promise<InvokeLLMResult> {
+    return this.llmGateway.complete({
+      model_tier: this.config.execution.model_tier,
+      systemPrompt: ctx.systemPrompt,
+      userPrompt: this._buildUserPrompt(req.userInput, ctx, 'acquisition'),
+      responseFormat: { type: 'json_schema' as const, schema: VideoAcquisitionBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: 0,
+      },
+      timeout_ms: this.config.execution.timeout_ms,
+      retry: this.config.execution.retry,
+    });
+  }
+
+  // ── storyboard mode — AC-4 ASCII post-validate ───────────────────────────
+
+  private async _invokeStoryboard(
+    ctx: AssembledContext,
+    req: SpecialistRequest<VideoInput>,
+    asciiRetryCount = 0,
+  ): Promise<InvokeLLMResult> {
+    const result = await this.llmGateway.complete({
+      model_tier: this.config.execution.model_tier,
+      systemPrompt: ctx.systemPrompt,
+      userPrompt: this._buildUserPrompt(req.userInput, ctx, 'storyboard'),
+      responseFormat: { type: 'json_schema' as const, schema: StoryboardBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: 0,
+      },
+      timeout_ms: this.config.execution.timeout_ms,
+      retry: this.config.execution.retry,
+    });
+
+    // Check schema first; if schema invalid, return as-is for BaseSpecialist retry
+    const parsed = StoryboardOutputSchema.safeParse(result.content);
+    if (!parsed.success) return result;
+
+    // AC-4: post-validate imagePromptEn must be ASCII-only English
+    const asciiRe = /^[\x00-\x7F]+$/;
+    const allAscii = parsed.data.scenes.every((s) => asciiRe.test(s.imagePromptEn));
+    if (allAscii) return result;
+
+    // ASCII check failed — retry once
+    if (asciiRetryCount < 1) return this._invokeStoryboard(ctx, req, 1);
+
+    // Both attempts failed — throw SchemaValidationError (triggers fallback via BaseSpecialist)
+    throw new SchemaValidationError(
+      'storyboard imagePromptEn must be ASCII-only English (regex /^[\\x00-\\x7F]+$/)',
+      result.content,
+    );
+  }
+
+  // ── AC-3: _buildUserPrompt(mode) 4 分支 ───────────────────────────────────
+
+  private _buildUserPrompt(userInput: VideoInput, ctx: AssembledContext, mode: VideoAgentMode): string {
+    switch (mode) {
+      case 'shooting':    return this._buildShootingPrompt(userInput, ctx);
+      case 'production':  return this._buildProductionPrompt(userInput, ctx);
+      case 'acquisition': return this._buildAcquisitionVideoPrompt(userInput, ctx);
+      case 'storyboard':  return this._buildStoryboardPrompt(userInput, ctx);
+    }
+  }
+
+  private _buildShootingPrompt(userInput: VideoInput, ctx: AssembledContext): string {
+    const inputJson = JSON.stringify(userInput);
     return [
       ctx.userPrompt,
       '',
@@ -229,34 +516,90 @@ export class VideoAgent extends BaseSpecialist<VideoInput, ShootingOutput> {
       '',
       '请以 JSON 格式返回拍摄计划:',
       '{',
-      '  "shotList": [',
-      '    {',
-      '      "scene": "场景描述",',
-      '      "duration": "预计时长(如:3s)",',
-      '      "action": "动作描述",',
-      '      "dialogue": "台词/旁白(无则填\'无\')",',
-      '      "cameraAngle": "镜头角度(如:近景/中景/全景)",',
-      '      "prop": "道具(无则填\'无\')",',
-      '      "lighting": "光线设置",',
-      '      "transition": "转场方式(如:切换/叠化)",',
-      '      "sfx": "音效(无则填\'无\')",',
-      '      "voiceover": "画外音(无则填\'无\')",',
-      '      "subtitle": "字幕(无则填\'无\')",',
-      '      "costume": "服装/妆容",',
-      '      "location": "拍摄地点"',
-      '    }',
-      '    // 根据内容需要填写足够数量的分镜，至少 1 个',
-      '  ],',
-      '  "equipment": ["设备1", "设备2"],',
-      '  "schedule": "拍摄时间安排(如:上午10点开始，预计2小时)"',
+      '  "shotList": [{ "scene": "场景描述", "duration": "预计时长", "action": "动作", "dialogue": "台词", "cameraAngle": "镜头角度", "prop": "道具", "lighting": "光线", "transition": "转场", "sfx": "音效", "voiceover": "旁白", "subtitle": "字幕", "costume": "服装", "location": "地点" }],',
+      '  "equipment": ["设备1"],',
+      '  "schedule": "拍摄时间安排"',
       '}',
       '',
       '⚠️ 严格约束:',
-      '- shotList 至少包含 1 个分镜，每个分镜的 13 个字段必须全部填写',
-      '- 无内容的字段填\'无\'，不能留空',
-      '- equipment 列出所有必要设备',
-      '- schedule 给出具体可执行的时间安排',
-      '- 结合上下文中的 step7 文案(若有)与 IP 定位进行定制',
+      '- shotList 至少 1 个分镜 · 13 字段全填 · 无内容填"无"',
+      '- 结合 step7 文案(若有)与 IP 定位定制',
+    ].join('\n');
+  }
+
+  private _buildProductionPrompt(userInput: VideoInput, ctx: AssembledContext): string {
+    const inputJson = JSON.stringify(userInput);
+    return [
+      ctx.userPrompt,
+      '',
+      '[视频制作计划任务 · production mode]',
+      `用户输入: ${inputJson}`,
+      '',
+      '请以 JSON 格式返回制作执行计划(与拍摄脚本配套):',
+      '{',
+      '  "shotList": [{ "scene": "制作场景", "duration": "时长", "action": "制作动作/要点", "dialogue": "台词", "cameraAngle": "机位", "prop": "道具/设备", "lighting": "布光方案", "transition": "转场/剪辑方式", "sfx": "音效/配乐", "voiceover": "旁白", "subtitle": "字幕", "costume": "服装/妆造", "location": "拍摄地点" }],',
+      '  "equipment": ["专业设备清单"],',
+      '  "schedule": "制作时间排期"',
+      '}',
+      '',
+      '⚠️ 严格约束:',
+      '- shotList 至少 1 个分镜 · 13 字段全填 · 从制作角度标注设备调度和技术要求',
+      '- equipment 包含完整专业设备 · 含备用方案',
+      '- schedule 按场景集中拍摄 · 减少换场成本',
+    ].join('\n');
+  }
+
+  private _buildAcquisitionVideoPrompt(userInput: VideoInput, ctx: AssembledContext): string {
+    const inputJson = JSON.stringify(userInput);
+    return [
+      ctx.userPrompt,
+      '',
+      '[获客视频脚本任务 · acquisition mode]',
+      `用户输入: ${inputJson}`,
+      '',
+      '请以 JSON 格式返回获客视频方案:',
+      '{',
+      '  "script": "完整视频脚本文案(至少 100 字 · 含钩子+价值+CTA · 转化导向)",',
+      '  "cta": "明确行动号召(至少 10 字 · 具体可操作：扫码/私信/点击链接)",',
+      '  "conversionPath": "转化路径描述(视频→CTA行动→落地页→成交)",',
+      '  "keyMessages": ["核心卖点1", "核心卖点2"]',
+      '}',
+      '',
+      '⚠️ 严格约束:',
+      '- script 前 5 秒必须命中痛点 · CTA 出现在中段和结尾',
+      '- cta 必须具体可操作 · 不能模糊',
+      '- keyMessages 最多 3 个 · 聚焦核心转化点',
+    ].join('\n');
+  }
+
+  private _buildStoryboardPrompt(userInput: VideoInput, ctx: AssembledContext): string {
+    const inputJson = JSON.stringify(userInput);
+    return [
+      ctx.userPrompt,
+      '',
+      '[AI 分镜故事板任务 · storyboard mode]',
+      `用户输入: ${inputJson}`,
+      '',
+      '请以 JSON 格式返回 5-8 场景的完整故事板:',
+      '{',
+      '  "title": "视频标题",',
+      '  "totalDuration": "总时长(如: 60s)",',
+      '  "scenes": [',
+      '    {',
+      '      "scene": "场景名称",',
+      '      "duration": "时长(如: 5s)",',
+      '      "description": "场景中文描述",',
+      '      "imagePromptEn": "English-only image generation prompt for AI (Stable Diffusion / DALL-E format · must be ASCII)",',
+      '      "voiceover": "中文旁白/配音文案",',
+      '      "music": "background music description in English"',
+      '    }',
+      '  ]',
+      '}',
+      '',
+      '⚠️ 严格约束:',
+      '- scenes 必须 5-8 个 · 构成完整叙事弧线',
+      '- imagePromptEn 必须是纯英文 ASCII · 不含中文 · 格式: "subject, setting, lighting, style"',
+      '- imagePromptEn 示例: "Professional woman in modern office, warm bokeh lighting, cinematic portrait"',
     ].join('\n');
   }
 }

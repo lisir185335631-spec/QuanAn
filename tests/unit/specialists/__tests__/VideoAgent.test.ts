@@ -1,11 +1,18 @@
 /**
- * Unit tests — PRD-4 US-008
- * VideoAgent: shooting mode · 4 场景(happy / fallback / edge(sourceCopy过长) / 4 mode 接口预留)
- * AC-9: ≥ 4 tests
+ * Unit tests — PRD-4 US-008 + PRD-6 US-002
+ * VideoAgent: 4 mode (shooting / production / acquisition / storyboard)
+ * PRD-4 AC-9: ≥ 4 tests
+ * PRD-6 AC-8: +9 unit (production 3 + acquisition 3 + storyboard 3)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { VideoAgent, ShootingOutputSchema } from '@/specialists/VideoAgent';
+import {
+  VideoAgent,
+  ShootingOutputSchema,
+  ProductionOutputSchema,
+  VideoAcquisitionOutputSchema,
+  StoryboardOutputSchema,
+} from '@/specialists/VideoAgent';
 import { SchemaValidationError } from '@/specialists/base/errors';
 import type { ILLMGateway, InvokeLLMResult } from '@/specialists/base/types';
 
@@ -154,19 +161,6 @@ describe('VideoAgent', () => {
     expect((gateway.complete as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
   });
 
-  // ── 4 mode interface reserved (AC-5) ─────────────────────────────────────
-
-  it('mode interface reserved: production / acquisition / storyboard throw "Not implemented · PRD-6" (AC-5)', async () => {
-    const reservedModes = ['production', 'acquisition', 'storyboard'] as const;
-
-    for (const mode of reservedModes) {
-      const agent = new VideoAgent(makeGateway([VALID_SHOOTING_CONTENT]));
-      await expect(
-        agent.execute({ ...BASE_REQ, mode }),
-      ).rejects.toThrow('Not implemented · PRD-6');
-    }
-  });
-
   // ── config validation (AC-8) ─────────────────────────────────────────────
 
   it('config: five-layer structure, model_tier=reasoning, timeout_ms=45000 (AC-8)', () => {
@@ -177,5 +171,150 @@ describe('VideoAgent', () => {
     expect(agent.config.execution.model_tier).toBe('reasoning');
     expect(agent.config.execution.timeout_ms).toBe(45_000);
     expect(agent.config.execution.streaming).toBe(false);
+  });
+
+  // ── PRD-6 US-002: production mode (+3) ───────────────────────────────────
+
+  it('production happy: returns valid ProductionOutput (shotList + equipment + schedule)', async () => {
+    const productionContent = {
+      shotList: [{ ...VALID_SHOT, scene: '制作开场', action: '三点布光调试' }],
+      equipment: ['专业相机', '三点布光套装', '稳定器', '收音麦克风'],
+      schedule: '制作拍摄 2 小时，后期剪辑 1 小时',
+    };
+    const agent = new VideoAgent(makeGateway([productionContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'production' });
+
+    expect(ProductionOutputSchema.safeParse(res.result).success).toBe(true);
+    const result = res.result as typeof productionContent;
+    expect(result.shotList.length).toBeGreaterThanOrEqual(1);
+    expect(Array.isArray(result.equipment)).toBe(true);
+    expect(typeof result.schedule).toBe('string');
+    expect(res.isFallback).toBe(false);
+  });
+
+  it('production outputSchema getter: result validates against ProductionOutputSchema', async () => {
+    const productionContent = {
+      shotList: [VALID_SHOT, { ...VALID_SHOT, scene: '主体拍摄' }],
+      equipment: ['手机', '三脚架'],
+      schedule: '上午9点开始，共2小时',
+    };
+    const agent = new VideoAgent(makeGateway([productionContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'production' });
+    expect(ProductionOutputSchema.safeParse(res.result).success).toBe(true);
+    expect(ShootingOutputSchema.safeParse(res.result).success).toBe(true); // same shape
+  });
+
+  it('production schema fail: empty shotList → fallback (US-015 AC-1)', async () => {
+    const badContent = { shotList: [], equipment: [], schedule: '' };
+    const agent = new VideoAgent(makeGateway([badContent, badContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'production' });
+    expect(res.isFallback).toBe(true);
+    expect(ProductionOutputSchema.safeParse(res.result).success).toBe(true);
+  });
+
+  // ── PRD-6 US-002: acquisition mode (+3) ──────────────────────────────────
+
+  it('acquisition happy: returns valid VideoAcquisitionOutput (script + cta + conversionPath + keyMessages)', async () => {
+    const acquisitionContent = {
+      // script must be >= 100 chars (VideoAcquisitionOutputSchema.min(100))
+      script: '你是否还在为内容没有粉丝而烦恼？今天分享一个经过验证的涨粉方法，帮助创作者实现精准增长，真正建立属于自己的内容影响力。我们的系统已帮助超过 500 位创作者成功起号，从 0 粉到万粉的突破，现在这个机会也属于你。立即扫码，免费获取你的专属涨粉方案。',
+      cta: '立即扫描下方二维码，免费获取你的专属涨粉方案',
+      conversionPath: '视频引流→扫码→咨询群→成交',
+      keyMessages: ['经验证的涨粉方法', '500+ 创作者见证', '免费专属方案'],
+    };
+    const agent = new VideoAgent(makeGateway([acquisitionContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition' });
+
+    expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
+    const result = res.result as typeof acquisitionContent;
+    expect(result.script.length).toBeGreaterThanOrEqual(100);
+    expect(result.cta.length).toBeGreaterThanOrEqual(10);
+    expect(result.keyMessages.length).toBeGreaterThanOrEqual(1);
+    expect(res.isFallback).toBe(false);
+  });
+
+  it('acquisition outputSchema getter: mode switch returns VideoAcquisitionOutputSchema', async () => {
+    const acquisitionContent = {
+      script: 'x'.repeat(100),
+      cta: 'y'.repeat(10),
+      conversionPath: '视频→扫码→成交',
+      keyMessages: ['卖点A', '卖点B'],
+    };
+    const agent = new VideoAgent(makeGateway([acquisitionContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition' });
+    expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
+  });
+
+  it('acquisition schema fail: missing keyMessages → fallback (US-015 AC-1)', async () => {
+    const badContent = { script: 'x'.repeat(100), cta: 'y'.repeat(10), conversionPath: '视频→成交', keyMessages: [] };
+    const agent = new VideoAgent(makeGateway([badContent, badContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition' });
+    expect(res.isFallback).toBe(true);
+    expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
+  });
+
+  // ── PRD-6 US-002: storyboard mode (+3) ───────────────────────────────────
+
+  const VALID_STORYBOARD_SCENE = {
+    scene: '开场',
+    duration: '5s',
+    description: '创作者面向镜头自信介绍',
+    imagePromptEn: 'Professional content creator facing camera in modern studio, warm lighting, cinematic style',
+    voiceover: '你也想实现这样的转变吗',
+    music: 'upbeat background music',
+  };
+
+  it('storyboard happy: 5 scenes all ASCII imagePromptEn → valid StoryboardOutput', async () => {
+    const storyboardContent = {
+      title: 'IP 起号成长故事',
+      totalDuration: '60s',
+      scenes: Array.from({ length: 5 }, (_, i) => ({
+        ...VALID_STORYBOARD_SCENE,
+        scene: `场景${i + 1}`,
+        imagePromptEn: `Scene ${i + 1}: Professional creator in modern studio, bright lighting, cinematic portrait`,
+      })),
+    };
+    const agent = new VideoAgent(makeGateway([storyboardContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'storyboard' });
+
+    expect(StoryboardOutputSchema.safeParse(res.result).success).toBe(true);
+    const result = res.result as typeof storyboardContent;
+    expect(result.scenes.length).toBeGreaterThanOrEqual(5);
+    expect(result.scenes.length).toBeLessThanOrEqual(8);
+    expect(typeof result.title).toBe('string');
+    expect(res.isFallback).toBe(false);
+  });
+
+  it('storyboard non-ASCII imagePromptEn: retry once → still fails → fallback (AC-4)', async () => {
+    const nonAsciiContent = {
+      title: '故事板测试',
+      totalDuration: '60s',
+      // 5 scenes with Chinese in imagePromptEn (non-ASCII)
+      scenes: Array.from({ length: 5 }, (_, i) => ({
+        ...VALID_STORYBOARD_SCENE,
+        scene: `场景${i + 1}`,
+        imagePromptEn: `场景${i + 1}：专业创作者展示内容 professional creator`, // contains Chinese
+      })),
+    };
+    // Both attempts return non-ASCII → should trigger SchemaValidationError → fallback
+    const agent = new VideoAgent(makeGateway([nonAsciiContent, nonAsciiContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'storyboard' });
+    expect(res.isFallback).toBe(true);
+    expect(StoryboardOutputSchema.safeParse(res.result).success).toBe(true);
+  });
+
+  it('storyboard outputSchema getter: result validates against StoryboardOutputSchema', async () => {
+    const storyboardContent = {
+      title: 'Test Storyboard',
+      totalDuration: '45s',
+      scenes: Array.from({ length: 5 }, (_, i) => ({
+        ...VALID_STORYBOARD_SCENE,
+        scene: `Scene ${i + 1}`,
+        imagePromptEn: `Scene ${i + 1} in bright modern studio, professional lighting`,
+      })),
+    };
+    const agent = new VideoAgent(makeGateway([storyboardContent]));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'storyboard' });
+    expect(StoryboardOutputSchema.safeParse(res.result).success).toBe(true);
   });
 });

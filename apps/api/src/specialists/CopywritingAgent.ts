@@ -90,10 +90,33 @@ export const BoomOutputSchema = z.object({
   }),
 });
 
+// acquisition mode output schema (D-035 落地 · PRD-6 US-002 AC-5)
+// markdown 200-500字 + metadata { ctaPosition, conversionGoal }
+export const CopywritingAcquisitionOutputSchema = z
+  .object({
+    markdown: z.string().min(200).max(500),
+    metadata: z.object({
+      ctaPosition: z.string(),
+      conversionGoal: z.string(),
+    }),
+  })
+  .refine((v) => v.metadata.ctaPosition.length > 0, {
+    message: 'acquisition mode 必含 CTA · ctaPosition 不能为空',
+  });
+
+const CopywritingAcquisitionBaseSchema = z.object({
+  markdown: z.string(),
+  metadata: z.object({
+    ctaPosition: z.string(),
+    conversionGoal: z.string(),
+  }),
+});
+
 export type CopywritingOutput = z.infer<typeof CopywritingOutputSchema>;
 export type CopywritingFreeOutput = z.infer<typeof CopywritingFreeOutputSchema>;
 export type BoomOutput = z.infer<typeof BoomOutputSchema>;
-export type CopywritingMultiOutput = CopywritingOutput | CopywritingFreeOutput | BoomOutput;
+export type CopywritingAcquisitionOutput = z.infer<typeof CopywritingAcquisitionOutputSchema>;
+export type CopywritingMultiOutput = CopywritingOutput | CopywritingFreeOutput | BoomOutput | CopywritingAcquisitionOutput;
 
 // ── Input schema ──────────────────────────────────────────────────────────────
 
@@ -193,16 +216,16 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
   readonly config: SpecialistConfig = COPYWRITING_CONFIG;
   readonly inputSchema = CopywritingInputSchema;
 
-  // SHIELD REJ-007: getter per mode (AC-6 — 4 mode 全 cover)
+  // SHIELD REJ-007: getter per mode (AC-6 — 4 mode 全 cover · D-035 落地 PRD-6 US-002)
   get outputSchema(): z.ZodType<CopywritingMultiOutput> {
     if (this._mode === 'step7') return CopywritingOutputSchema as z.ZodType<CopywritingMultiOutput>;
     if (this._mode === 'free') return CopywritingFreeOutputSchema as z.ZodType<CopywritingMultiOutput>;
     if (this._mode === 'boom') return BoomOutputSchema as z.ZodType<CopywritingMultiOutput>;
-    if (this._mode === 'acquisition') throw new Error('Not implemented · PRD-6'); // D-035
+    if (this._mode === 'acquisition') return CopywritingAcquisitionOutputSchema as z.ZodType<CopywritingMultiOutput>;
     throw new Error(`Unknown mode: ${this._mode as string}`);
   }
 
-  // AC-8: fallback for step7 / free / boom modes
+  // AC-8: fallback for step7 / free / boom / acquisition modes
   static override readonly fallbackTemplate: Record<string, unknown> = {
     step7: {
       markdown: [
@@ -251,6 +274,20 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
         elements: ['curiosity', 'contrast'],
       },
     },
+
+    acquisition: {
+      markdown: [
+        '你是否正在寻找一个能帮你快速增长的解决方案？今天我们为你提供一个经过验证的方法。',
+        '',
+        '这套方案已经帮助数百位创作者实现了从 0 到起步的突破。我们专注于帮助 IP 创作者建立可持续的内容体系，让你的每一条内容都能为账号带来精准流量。',
+        '',
+        '现在就行动，扫描二维码获取你的免费咨询（系统繁忙备用文案 · 请稍后重试获取个性化内容）。',
+      ].join('\n'),
+      metadata: {
+        ctaPosition: '结尾段落',
+        conversionGoal: '扫码咨询 · 了解详情',
+      },
+    } satisfies CopywritingAcquisitionOutput,
   };
 
   constructor(gateway?: ILLMGateway) {
@@ -263,11 +300,7 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
   ): Promise<InvokeLLMResult> {
     const mode = (req.mode ?? 'step7') as CopywritingMode;
 
-    if (mode === 'acquisition') {
-      throw new Error('Not implemented · PRD-6'); // D-035
-    }
-
-    // Set _mode BEFORE any returns so outputSchema getter works correctly
+    // Set _mode BEFORE any returns so outputSchema getter works correctly (SHIELD REJ-007)
     this._mode = mode;
 
     const gateway = this.llmGateway;
@@ -283,9 +316,12 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       // D-019: stream.meta.model captured via meta chunk, not hardcoded
       return this._invokeFree(ctx, req, streamFn);
     }
-    // boom
-    // D-019: stream.meta.model captured via meta chunk, not hardcoded
-    return this._invokeBoom(ctx, req, streamFn);
+    if (mode === 'boom') {
+      // D-019: stream.meta.model captured via meta chunk, not hardcoded
+      return this._invokeBoom(ctx, req, streamFn);
+    }
+    // acquisition — D-035 落地 · PRD-6 US-002 AC-5
+    return this._invokeAcquisition(ctx, req, streamFn);
   }
 
   private async _invokeStep7(
@@ -498,6 +534,80 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       '⚠️ 严格约束:',
       '- markdown 正文至少 400 字 · 必须有 5 秒钩子开场',
       '- 基于所选脚本类型和元素组合创作',
+    ].join('\n');
+  }
+
+  private async _invokeAcquisition(
+    ctx: AssembledContext,
+    req: SpecialistRequest<CopywritingInput>,
+    streamFn: NonNullable<ILLMGateway['stream']>,
+  ): Promise<InvokeLLMResult> {
+    const streamReq: LLMCompleteRequest = {
+      model_tier: this.config.execution.model_tier,
+      systemPrompt: ctx.systemPrompt,
+      userPrompt: this._buildAcquisitionUserPrompt(req.userInput),
+      responseFormat: { type: 'json_schema' as const, schema: CopywritingAcquisitionBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: 0,
+      },
+      timeout_ms: this.config.execution.timeout_ms,
+    };
+
+    const result = await this._consumeStream(streamFn, streamReq);
+    const { accumulated } = result;
+    let { tokens: finalTokens, model } = result;
+
+    let content: unknown;
+    try {
+      content = JSON.parse(accumulated);
+    } catch {
+      const retry = await this._consumeStream(streamFn, streamReq);
+      try {
+        content = JSON.parse(retry.accumulated);
+        finalTokens = retry.tokens;
+        model = retry.model || model;
+      } catch {
+        return {
+          content: null,
+          tokens: finalTokens ?? { prompt: 0, completion: 0, total: 0 },
+          model: model || '',
+          isFallback: true,
+        };
+      }
+    }
+
+    return {
+      content,
+      tokens: finalTokens ?? { prompt: 0, completion: 0, total: 0 },
+      model: model || '',
+    };
+  }
+
+  private _buildAcquisitionUserPrompt(userInput: CopywritingInput): string {
+    const input = userInput as Record<string, unknown>;
+    return [
+      '[获客文案任务 · acquisition mode]',
+      '',
+      `获客目标: ${String(input['acquisitionGoal'] ?? input['topic'] ?? '未指定')}`,
+      `目标用户: ${String(input['targetAudience'] ?? '未指定')}`,
+      `行业: ${String(input['industry'] ?? '通用')}`,
+      '',
+      '请以 JSON 格式返回:',
+      '{',
+      '  "markdown": "获客文案正文(200-500字 · 含钩子+价值+明确CTA · 转化导向)",',
+      '  "metadata": {',
+      '    "ctaPosition": "CTA 在文案中的位置(如: 结尾/中段结尾双出现)",',
+      '    "conversionGoal": "转化目标描述(如: 扫码咨询/私信了解/点击链接)"',
+      '  }',
+      '}',
+      '',
+      '⚠️ 严格约束:',
+      '- markdown 必须 200-500 字 · 不能超出范围',
+      '- CTA 必须明确出现在文案中 · ctaPosition 不能为空',
+      '- 转化导向 · 每句话都服务于最终转化目标',
     ].join('\n');
   }
 

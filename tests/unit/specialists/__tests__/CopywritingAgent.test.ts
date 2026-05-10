@@ -153,12 +153,54 @@ describe('CopywritingAgent', () => {
     expect(res.isFallback).toBe(true);
   });
 
-  // AC-13 updated (D-035): acquisition throws 'Not implemented · PRD-6'
-  it('AC-13: mode=acquisition → throws Not implemented · PRD-6 (D-035)', async () => {
-    const agent = new CopywritingAgent(makeStreamGateway(makeValidContent()));
-    await expect(
-      agent.execute({ ...BASE_REQ, mode: 'acquisition', userInput: {} }),
-    ).rejects.toThrow('Not implemented · PRD-6');
+  // PRD-6 US-002 AC-9: acquisition mode +3 tests (happy + CTA missing fail + markdown boundary)
+
+  function makeAcquisitionContent(overrides?: Partial<{ markdown: string; ctaPosition: string; conversionGoal: string }>) {
+    // markdown must be >= 200 chars (CopywritingAcquisitionOutputSchema.min(200))
+    // Use ASCII chars to avoid Unicode counting confusion
+    const defaultMd = 'A'.repeat(200) + ' CTA: scan QR code now to get your free consultation.';
+    return {
+      markdown: overrides?.markdown ?? defaultMd,
+      metadata: {
+        ctaPosition: overrides?.ctaPosition ?? '结尾段落',
+        conversionGoal: overrides?.conversionGoal ?? '扫码咨询获取免费方案',
+      },
+    };
+  }
+
+  it('acquisition happy: returns valid CopywritingAcquisitionOutput (markdown 200-500 + ctaPosition)', async () => {
+    const content = makeAcquisitionContent();
+    const agent = new CopywritingAgent(makeStreamGateway(content));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition', userInput: {} });
+
+    expect(res.isFallback).toBe(false);
+    const result = res.result as typeof content;
+    expect(result.markdown.length).toBeGreaterThanOrEqual(200);
+    expect(result.markdown.length).toBeLessThanOrEqual(500);
+    expect(result.metadata.ctaPosition.length).toBeGreaterThan(0);
+    expect(typeof result.metadata.conversionGoal).toBe('string');
+  });
+
+  it('acquisition CTA missing: ctaPosition empty → refine fails → fallback (AC-9)', async () => {
+    // ctaPosition empty string → schema refine fails → retry → fallback
+    const contentNoCta = makeAcquisitionContent({ ctaPosition: '' });
+    const agent = new CopywritingAgent(makeStreamGateway(contentNoCta));
+    const res = await agent.execute({ ...BASE_REQ, mode: 'acquisition', userInput: {} });
+    expect(res.isFallback).toBe(true);
+  });
+
+  it('acquisition markdown boundary: <200 chars fails schema, 200-500 passes (AC-9)', async () => {
+    // Under 200 chars → schema min(200) fails → fallback
+    const shortMd = makeAcquisitionContent({ markdown: '短文案不够字数'.repeat(10) }); // ~70 chars
+    const agentShort = new CopywritingAgent(makeStreamGateway(shortMd));
+    const resShort = await agentShort.execute({ ...BASE_REQ, mode: 'acquisition', userInput: {} });
+    expect(resShort.isFallback).toBe(true);
+
+    // Exactly 200 chars → passes
+    const exactly200Md = makeAcquisitionContent({ markdown: 'a'.repeat(200) });
+    const agentOk = new CopywritingAgent(makeStreamGateway(exactly200Md));
+    const resOk = await agentOk.execute({ ...BASE_REQ, mode: 'acquisition', userInput: {} });
+    expect(resOk.isFallback).toBe(false);
   });
 
   // D-019: modelUsed captured from stream meta chunk — not hardcoded
