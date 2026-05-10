@@ -117,8 +117,7 @@ def _get_cost_log_path() -> "Path":
 
 
 def _check_claude_health(timeout: int = 20) -> bool:
-    """M-2 (PRD-5 RCA-003 教训) + RCA-004 (PRD-6 2026-05-10): 20s 内 'say OK' 测试
-    · 防 claude --print 系统级 hang
+    """M-2 + RCA-004 (PRD-7 US-005 · 2026-05-10 · 全局 sync): 20s 内 'say OK' 测试 · 防 claude --print 系统级 hang
     · timeout 5s 在 PRD-6 实测会误杀 (claude --print cold start ≈ 10s · Mac M3 + 健康 CLI)
     · 20s 给 2x 余量 · 真 hang (>30 min) 仍能快速探测
     返回 True if claude CLI 健康 · False if hang/timeout/error.
@@ -1399,39 +1398,6 @@ class _TeeWriter:
 
 
 # ─────────────────────────────────────────────
-# 跨 PRD 残留清理
-# ─────────────────────────────────────────────
-def _cleanup_stale_verify_artifacts(threshold_hours: int = 24) -> int:
-    """删除 verify-artifacts/US-*/ 下 mtime 超过 threshold_hours 的旧文件.
-
-    防止 audit-artifacts.py 误报 timestamps 60h+ 跨度.
-    返回删除的文件数.
-    """
-    import time as _time
-    verify_dir = SCRIPT_DIR / "verify-artifacts"
-    if not verify_dir.exists():
-        return 0
-
-    threshold_secs = threshold_hours * 3600
-    now = _time.time()
-    removed = 0
-
-    for story_dir in sorted(verify_dir.glob("US-*")):
-        if not story_dir.is_dir():
-            continue
-        for fpath in story_dir.iterdir():
-            if not fpath.is_file():
-                continue
-            age = now - fpath.stat().st_mtime
-            if age > threshold_secs:
-                fpath.unlink()
-                removed += 1
-
-    print(f"[CLEANUP] Removed {removed} stale files (>{threshold_hours}h) in verify-artifacts/")
-    return removed
-
-
-# ─────────────────────────────────────────────
 # Daemon 模式：自守护进程（跨平台）
 # ─────────────────────────────────────────────
 def _daemon_relaunch():
@@ -1446,9 +1412,6 @@ def _daemon_relaunch():
     # 构建子进程参数：去掉 --daemon，保留其他所有参数
     child_args = [sys.executable, str(Path(__file__).resolve())]
     child_args += [a for a in sys.argv[1:] if a != "--daemon"]
-
-    # 清理跨 PRD 旧 verify-artifacts 残留（防 audit-artifacts.py 误报时间戳）
-    _cleanup_stale_verify_artifacts()
 
     try:
         log_handle = open(LOG_FILE, "a", encoding="utf-8")

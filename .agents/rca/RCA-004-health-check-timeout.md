@@ -3,7 +3,7 @@
 > **派生** · PRD-6 启动 · 2026-05-10 09:14
 > **影响范围** · 跨 PRD(项目级 BUG · ralph.py 同步到所有项目)
 > **关联 RCA** · RCA-001(audit-delay 31m)/ RCA-003(us012-econnreset claude hang)
-> **状态** · ✅ 本项目 ralph.py 已修(timeout 5 → 20)· ⏭️ 全局 sync 留 PRR
+> **状态** · ✅ resolved — 本项目 ralph.py 已修(timeout 5 → 20)· 全局 sync 已落地(PRD-7 US-005 · 2026-05-11)
 
 ---
 
@@ -102,6 +102,7 @@ def _check_claude_health(timeout: int = 5) -> bool:
 - 同步本次 timeout fix 到 `~/.claude/scripts/ralph/ralph.py`(影响所有项目 · 同 BUG)
 - 运行 `~/.claude/scripts/ralph/sync-to-project.sh <project>` 把改动推到现有项目
 - **更新条件**: PRD-6 跑完 audit 验证修复有效 → 再 sync 全局(避免修复本身有 bug)
+- ✅ **PRD-7 US-005 落地 · 2026-05-11** — 全局 `~/.claude/scripts/ralph/ralph.py` timeout 5 → 20 已写入 · sync-to-project.sh 加 `_check_ralph_version()` + `--force` 逻辑 · 状态标 resolved
 
 ### 5.3 监控加固
 
