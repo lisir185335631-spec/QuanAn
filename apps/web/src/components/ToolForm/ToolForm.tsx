@@ -26,7 +26,7 @@ import type { ZodTypeAny } from 'zod';
 
 // ── Tool types ────────────────────────────────────────────────────────────────
 
-export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video' | 'ai-video';
+export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video' | 'ai-video' | 'acquisition';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -514,6 +514,59 @@ function renderToolFields(
         </>
       );
 
+    case 'acquisition':
+      return (
+        <>
+          <ScriptTypeSelect
+            value={(watch('scriptType') as string) ?? ''}
+            onChange={(v: ScriptTypeKey) => setValue('scriptType', v, { shouldValidate: true })}
+            error={errors['scriptType']}
+          />
+          <ElementsMultiSelect
+            value={(watch('elements') as HotElementKey[]) ?? []}
+            onChange={(v) => setValue('elements', v, { shouldValidate: true })}
+            error={errors['elements']}
+            maxSelect={8}
+          />
+          <div className="space-y-1.5">
+            <label htmlFor="tool-acq-conversion-goal" className="text-body-sm font-medium text-on-surface">
+              转化目标<span className="text-error ml-0.5">*</span>
+            </label>
+            <input
+              id="tool-acq-conversion-goal"
+              {...register('conversionGoal')}
+              className={cn(
+                'flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                errors['conversionGoal'] && 'border-error',
+              )}
+              placeholder="例如：关注公众号 / 私信咨询 / 点击购买链接"
+              data-testid="tool-acq-conversion-goal"
+            />
+            {errors['conversionGoal'] && (
+              <p className="text-body-xs text-error" role="alert">{errors['conversionGoal']?.message}</p>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="tool-acq-topic" className="text-body-sm font-medium text-on-surface">
+              话题方向<span className="text-error ml-0.5">*</span>
+            </label>
+            <input
+              id="tool-acq-topic"
+              {...register('topic')}
+              className={cn(
+                'flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                errors['topic'] && 'border-error',
+              )}
+              placeholder="例如：理财入门 / 职场晋升 / 健康养生"
+              data-testid="tool-acq-topic"
+            />
+            {errors['topic'] && (
+              <p className="text-body-xs text-error" role="alert">{errors['topic']?.message}</p>
+            )}
+          </div>
+        </>
+      );
+
     default:
       return (
         <p className="text-body-sm text-muted-foreground">该工具暂无需填写内容</p>
@@ -541,6 +594,8 @@ function getDefaultValues(toolKey: ToolKey): Record<string, unknown> {
       return { sourceCopy: '', conversionGoal: '', platform: '', duration: '' };
     case 'ai-video':
       return { sourceCopy: '', scenesCount: '5', imageStyle: 'natural' };
+    case 'acquisition':
+      return { scriptType: '', elements: [], conversionGoal: '', topic: '' };
     default:
       return {};
   }

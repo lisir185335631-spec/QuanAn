@@ -1,12 +1,14 @@
 /**
- * Generate.tsx — /generate 工具页 · PRD-5 US-004
- * 真表单: ToolForm(toolKey=freeGenerate) + ScriptTypeSelect + ElementsMultiSelect + TextareaField topic
- * LS-first dual-write (REJ-035): getToolLsKey(accountId, "freeGenerate", "input") (D-031)
+ * Generate.tsx — /generate 工具页 · PRD-5 US-004 · PRD-6 US-012
+ * mode select: 'free'(自由创作) | 'acquisition'(获客文案)
+ * free mode: ToolForm(toolKey=freeGenerate) + copywritingFreeGenerateInput → trpc.copywriting.freeGenerate
+ * acquisition mode: ToolForm(toolKey=acquisition) + acquisitionCopywritingInputSchema → trpc.copywriting.acquisitionGenerate
+ * LS-first dual-write per mode namespace (D-031)
  * AbortController on unmount (AC-8)
  * US-011 stub: ?historyId=xxx → trpc.history.detail.useQuery → 预填 defaultValues
  */
 
-import { copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
+import { acquisitionCopywritingInputSchema, copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -15,14 +17,18 @@ import { ToolForm } from '@/components/ToolForm/ToolForm';
 import { ToolResult } from '@/components/ToolResult/ToolResult';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
+import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
 
 import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
+
+type GenerateMode = 'free' | 'acquisition';
 
 export default function Generate() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
+  const [mode, setMode] = useState<GenerateMode>('free');
   const [result, setResult] = useState<FreeGenerateHistoryRow | null>(null);
   const [searchParams] = useSearchParams();
   const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
@@ -63,9 +69,10 @@ export default function Generate() {
 
   const resolvedDefaults = historyDefaults ?? lsDefaults;
 
-  const mutation = trpc.copywriting.freeGenerate.useMutation();
+  const freeMutation = trpc.copywriting.freeGenerate.useMutation();
+  const acquisitionMutation = trpc.copywriting.acquisitionGenerate.useMutation();
 
-  async function handleSubmit(data: Record<string, unknown>) {
+  async function handleFreeSubmit(data: Record<string, unknown>) {
     // REJ-035: LS先写 — DB fail 时 LS 保留(不回滚)
     if (accountId !== null) {
       try {
@@ -80,8 +87,30 @@ export default function Generate() {
 
     if (abortRef.current.signal.aborted) throw new Error('aborted');
 
-    const row = await mutation.mutateAsync(
+    const row = await freeMutation.mutateAsync(
       data as { scriptType: string; elements: string[]; topic: string },
+    );
+
+    if (abortRef.current.signal.aborted) throw new Error('aborted');
+    return row;
+  }
+
+  async function handleAcquisitionSubmit(data: Record<string, unknown>) {
+    if (accountId !== null) {
+      try {
+        localStorage.setItem(
+          getToolLsKey(accountId, 'acquisition', 'input'),
+          JSON.stringify(data),
+        );
+      } catch {
+        // Storage full — continue
+      }
+    }
+
+    if (abortRef.current.signal.aborted) throw new Error('aborted');
+
+    const row = await acquisitionMutation.mutateAsync(
+      data as { scriptType: string; elements: string[]; conversionGoal: string; topic: string },
     );
 
     if (abortRef.current.signal.aborted) throw new Error('aborted');
@@ -92,6 +121,12 @@ export default function Generate() {
     setResult(row as FreeGenerateHistoryRow);
   }
 
+  // Reset result when mode changes
+  function handleModeChange(newMode: GenerateMode) {
+    setMode(newMode);
+    setResult(null);
+  }
+
   return (
     <main className="flex-1 container py-8 space-y-8">
       <div>
@@ -100,22 +135,66 @@ export default function Generate() {
         <p className="mt-2 text-body-md text-muted-foreground">智能生成符合 IP 定位的高质量内容脚本</p>
       </div>
 
-      <ToolForm
-        toolKey="freeGenerate"
-        schema={copywritingFreeGenerateInput}
-        onSubmit={handleSubmit}
-        onSuccess={handleSuccess}
-        defaultValues={resolvedDefaults}
-      />
+      {/* Mode selector */}
+      <div className="flex gap-2" role="tablist" aria-label="生成模式">
+        <button
+          role="tab"
+          aria-selected={mode === 'free'}
+          onClick={() => handleModeChange('free')}
+          className={cn(
+            'px-4 py-1.5 rounded-full text-body-sm font-medium transition-colors',
+            mode === 'free'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
+          )}
+          data-testid="mode-tab-free"
+        >
+          自由创作
+        </button>
+        <button
+          role="tab"
+          aria-selected={mode === 'acquisition'}
+          onClick={() => handleModeChange('acquisition')}
+          className={cn(
+            'px-4 py-1.5 rounded-full text-body-sm font-medium transition-colors',
+            mode === 'acquisition'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
+          )}
+          data-testid="mode-tab-acquisition"
+        >
+          获客文案
+        </button>
+      </div>
+
+      {mode === 'free' && (
+        <ToolForm
+          toolKey="freeGenerate"
+          schema={copywritingFreeGenerateInput}
+          onSubmit={handleFreeSubmit}
+          onSuccess={handleSuccess}
+          defaultValues={resolvedDefaults}
+        />
+      )}
+
+      {mode === 'acquisition' && (
+        <ToolForm
+          toolKey="acquisition"
+          schema={acquisitionCopywritingInputSchema}
+          onSubmit={handleAcquisitionSubmit}
+          onSuccess={handleSuccess}
+          submitLabel="生成获客文案"
+        />
+      )}
 
       {result && (
         <div className="space-y-4">
           <ToolResult
-            toolKey="freeGenerate"
+            toolKey={mode === 'acquisition' ? 'acquisition' : 'freeGenerate'}
             data={result}
             isFallback={result.isFallback}
           />
-          <FeedbackButton stepKey="freeGenerate" agentId="CopywritingAgent" />
+          <FeedbackButton stepKey={mode === 'acquisition' ? 'acquisitionGenerate' : 'freeGenerate'} agentId="CopywritingAgent" />
         </div>
       )}
     </main>

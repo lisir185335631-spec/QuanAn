@@ -591,13 +591,14 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
     return [
       '[获客文案任务 · acquisition mode]',
       '',
-      `获客目标: ${String(input['acquisitionGoal'] ?? input['topic'] ?? '未指定')}`,
-      `目标用户: ${String(input['targetAudience'] ?? '未指定')}`,
-      `行业: ${String(input['industry'] ?? '通用')}`,
+      `脚本类型: ${String(input['scriptType'] ?? '未指定')}`,
+      `爆款元素: ${JSON.stringify(input['elements'] ?? [])}`,
+      `转化目标: ${String(input['conversionGoal'] ?? '未指定')}`,
+      `话题方向: ${String(input['topic'] ?? '未指定')}`,
       '',
       '请以 JSON 格式返回:',
       '{',
-      '  "markdown": "获客文案正文(200-500字 · 含钩子+价值+明确CTA · 转化导向)",',
+      '  "markdown": "获客文案正文(200-500字 · 含钩子+价值+明确CTA · 转化导向 · 结尾必须含关注/私信/点击/获取/领取等行动引导词)",',
       '  "metadata": {',
       '    "ctaPosition": "CTA 在文案中的位置(如: 结尾/中段结尾双出现)",',
       '    "conversionGoal": "转化目标描述(如: 扫码咨询/私信了解/点击链接)"',
@@ -606,7 +607,8 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       '',
       '⚠️ 严格约束:',
       '- markdown 必须 200-500 字 · 不能超出范围',
-      '- CTA 必须明确出现在文案中 · ctaPosition 不能为空',
+      '- CTA 必须明确出现在文案中 · 必须含「关注」「私信」「点击」「获取」「领取」之一',
+      '- ctaPosition 不能为空',
       '- 转化导向 · 每句话都服务于最终转化目标',
     ].join('\n');
   }

@@ -287,6 +287,26 @@ const _shadowRouter = _t.router({
         traceId: null,
         createdAt: new Date(),
       })),
+    acquisitionGenerate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { scriptType: string; elements: string[]; conversionGoal: string; topic: string },
+      )
+      .mutation((): FreeGenerateHistoryRow => ({
+        id: 0,
+        content: '',
+        contentType: 'markdown',
+        agentId: 'CopywritingAgent',
+        agentMode: 'acquisition',
+        scriptType: null,
+        elements: [],
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
+        traceId: null,
+        createdAt: new Date(),
+      })),
   }),
   boomGenerate: _t.router({
     generate: _t.procedure
