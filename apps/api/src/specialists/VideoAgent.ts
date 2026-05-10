@@ -119,7 +119,8 @@ const StoryboardSceneSchema = z.object({
   imagePromptEn: z
     .string()
     .min(20)
-    .regex(/^[ -~\t\n\r]+$/, 'imagePromptEn 必须是英文 ASCII'),
+    // eslint-disable-next-line no-control-regex
+    .regex(/^[\x00-\x7F]+$/, 'imagePromptEn 必须是英文 ASCII'),
   duration: z.string(),
 });
 

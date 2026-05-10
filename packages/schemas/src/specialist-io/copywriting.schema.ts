@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+
 import { HOT_ELEMENT_KEYS_22, SCRIPT_TYPE_KEYS_20 } from './constants';
 
 // ── PRD-2 backward-compat schemas (step7 mode) ────────────────────────────────

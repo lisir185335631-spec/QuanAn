@@ -8,6 +8,7 @@
  * SHIELD REJ-008: explicit accountId where · 双层防护
  */
 
+import { aiVideoInput } from '@quanqn/schemas/specialist-io';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -16,19 +17,6 @@ import { videoAgent, type StoryboardOutput } from '@/specialists/VideoAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 import { imageGenQueue } from '@/workers/image-gen/queue';
-
-// ── Input schemas ─────────────────────────────────────────────────────────────
-
-const generateStoryboardInputSchema = z.object({
-  sourceCopy: z.string().min(10, 'sourceCopy 至少 10 个字符').max(3000, '原始文案不超过3000字符'),
-  scenesCount: z
-    .number()
-    .int()
-    .min(5, '镜头数应在 5-8 之间')
-    .max(8, '镜头数应在 5-8 之间')
-    .default(5),
-  imageStyle: z.enum(['vivid', 'natural']).default('vivid'),
-});
 
 // ── Internal scene type stored in history.content ─────────────────────────────
 
@@ -56,7 +44,7 @@ export const aiVideoRouter = router({
    * AC-5: history.scenes jsonb · { index, description, imagePromptEn, duration, sceneImageUrl: null, jobId, status: 'pending' }
    */
   generateStoryboard: protectedProcedure
-    .input(generateStoryboardInputSchema)
+    .input(aiVideoInput)
     .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
 

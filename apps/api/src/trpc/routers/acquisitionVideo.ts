@@ -8,23 +8,14 @@
  * SHIELD REJ-008: explicit accountId where + RLS via protectedProcedure
  */
 
+import { acquisitionVideoInput } from '@quanqn/schemas/specialist-io';
 import { TRPCError } from '@trpc/server';
-import { z } from 'zod';
 
 import { videoAgent, type VideoAcquisitionOutput } from '@/specialists/VideoAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
 import type { Prisma } from '@prisma/client';
-
-// ── Input schema ──────────────────────────────────────────────────────────────
-
-const acquisitionVideoInputSchema = z.object({
-  sourceCopy: z.string().min(10, 'sourceCopy 至少 10 个字符').max(3000, '原始文案不能超过3000字符'),
-  conversionGoal: z.string().min(1, '转化目标必填'),
-  platform: z.string().optional(),
-  duration: z.enum(['15s', '30s', '60s', '180s']).optional(),
-});
 
 // ── Select ────────────────────────────────────────────────────────────────────
 
@@ -51,7 +42,7 @@ export const acquisitionVideoRouter = router({
    * AC-4: ctaScript mapped from cta field · must contain CTA keywords
    */
   generate: protectedProcedure
-    .input(acquisitionVideoInputSchema)
+    .input(acquisitionVideoInput)
     .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
 

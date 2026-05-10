@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+
 import { HOT_ELEMENT_KEYS_22 } from './constants';
 
 /** /boom-generate 工具页输入: 元素 + 可选行业/主题 */

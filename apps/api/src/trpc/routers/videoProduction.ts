@@ -9,9 +9,9 @@
  * Note: generateStoryboard 保留为 stub — PRD-6 US-007 真接
  */
 
+import { videoProductionInput } from '@quanqn/schemas/specialist-io';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-
 
 import { checkImageGenRateLimit } from '@/lib/rate-limit/image-gen';
 import { videoAgent, type ProductionOutput } from '@/specialists/VideoAgent';
@@ -21,15 +21,6 @@ import type { ImageGenJobPayload } from '@/workers/image-gen/index';
 import { imageGenQueue } from '@/workers/image-gen/queue';
 
 import type { Prisma } from '@prisma/client';
-
-// ── Input schema (inline equiv of @quanqn/schemas/specialist-io videoProductionInput) ──
-
-const videoProductionInputSchema = z.object({
-  sourceCopy: z.string().min(10, 'sourceCopy 至少 10 个字符').max(3000, '原始文案不能超过3000字符'),
-  videoType: z.enum(['short_form', 'long_form']).optional(),
-  duration: z.enum(['15s', '30s', '60s', '180s']).optional(),
-  additionalContext: z.string().optional(),
-});
 
 // ── Stub schemas (legacy mocks · PRD-2 US-004) ───────────────────────────────
 
@@ -79,7 +70,7 @@ export const videoProductionRouter = router({
    * AC-4: cost_log 由 BaseSpecialist 自动写(callType='specialist_call')
    */
   generate: protectedProcedure
-    .input(videoProductionInputSchema)
+    .input(videoProductionInput)
     .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
 

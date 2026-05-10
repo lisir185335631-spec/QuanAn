@@ -11,6 +11,11 @@
  * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
  */
 
+import {
+  acquisitionCopywritingInputSchema,
+  SCRIPT_TYPE_KEYS_20,
+  HOT_ELEMENT_KEYS_22,
+} from '@quanqn/schemas/specialist-io';
 import { z } from 'zod';
 
 import { copywritingAgent, type CopywritingOutput, type CopywritingFreeOutput, type CopywritingAcquisitionOutput } from '@/specialists/CopywritingAgent';
@@ -19,33 +24,11 @@ import { router } from '@/trpc/trpc';
 
 import type { Prisma } from '@prisma/client';
 
-// ── PRD-5 US-003: freeGenerate input schema (inline equiv of @quanqn/schemas/specialist-io copywritingFreeGenerateInput) ──
-
-const SCRIPT_TYPE_ENUM = [
-  'tutorial', 'review', 'case_study', 'pov', 'monologue',
-  'debate', 'list_pop', 'before_after', 'street_interview', 'qa_short',
-  'reaction', 'mixcut', 'screen_record', 'animation', 'vlog',
-  'plot', 'voice_only', 'comparison', 'storytelling', 'duo_chat',
-] as const;
-
-const HOT_ELEMENT_ENUM = [
-  'greed', 'fear', 'curiosity', 'contrast',
-  'resonance', 'empathy', 'social_proof', 'authority', 'leverage', 'worst',
-  'reveal', 'controversy', 'challenge', 'transformation', 'anger', 'surprise',
-  'trend', 'list', 'scarcity', 'small_big', 'low_cost_high', 'low_cost_unknown',
-] as const;
+// ── PRD-5 US-003: freeGenerate input schema (canonical via packages/schemas constants) ──
 
 const copywritingFreeGenerateInput = z.object({
-  scriptType: z.enum(SCRIPT_TYPE_ENUM),
-  elements: z.array(z.enum(HOT_ELEMENT_ENUM)).min(1).max(8),
-  topic: z.string().min(1).max(500),
-});
-
-// US-012: acquisitionGenerate input schema (inline equiv of @quanqn/schemas/specialist-io acquisitionCopywritingInputSchema)
-const acquisitionCopywritingInputSchema = z.object({
-  scriptType: z.enum(SCRIPT_TYPE_ENUM),
-  elements: z.array(z.enum(HOT_ELEMENT_ENUM)).min(1).max(8),
-  conversionGoal: z.string().min(1, '转化目标必填'),
+  scriptType: z.enum(SCRIPT_TYPE_KEYS_20),
+  elements: z.array(z.enum(HOT_ELEMENT_KEYS_22)).min(1).max(8),
   topic: z.string().min(1).max(500),
 });
 

@@ -1,23 +1,14 @@
 /**
- * CopywritingAgent acquisition mode I/O schemas — PRD-6 US-001 + US-012
+ * CopywritingAgent acquisition mode I/O schemas — PRD-6 US-001 + US-012, PRD-7 US-001
  * acquisition mode: 产品信息 → 获客文案(转化导向 · 含 CTA · 200-500 字)
- * acquisitionCopywritingInputSchema: PRD-6 US-012 · scriptType+elements+conversionGoal+topic
+ * TD-022: legacy acquisitionCopywritingInput deleted · only acquisitionCopywritingInputSchema retained
  */
 
 import { z } from 'zod';
 
 import { HOT_ELEMENT_KEYS_22, SCRIPT_TYPE_KEYS_20 } from './constants';
 
-// ── Input (PRD-6 US-001 legacy) ──────────────────────────────────────────────
-
-export const acquisitionCopywritingInput = z.object({
-  productInfo: z.string().min(10).max(1000, '产品信息不超过1000字'),
-  conversionGoal: z.enum(['wechat', 'comment', 'private_msg']),
-  ctaText: z.string().max(50).optional(),
-  additionalContext: z.string().optional(),
-});
-
-// ── Input (PRD-6 US-012 · /generate acquisition mode) ────────────────────────
+// ── Input (canonical · PRD-6 US-012) ──────────────────────────────────────────
 
 export const acquisitionCopywritingInputSchema = z.object({
   scriptType: z.enum(SCRIPT_TYPE_KEYS_20),
@@ -26,20 +17,21 @@ export const acquisitionCopywritingInputSchema = z.object({
   topic: z.string().min(1).max(500),
 });
 
-export type AcquisitionCopywritingInputNew = z.infer<typeof acquisitionCopywritingInputSchema>;
+// ── Output (canonical · SoT: CopywritingAgent.ts CopywritingAcquisitionOutputSchema) ──
 
-// ── Output ───────────────────────────────────────────────────────────────────
-
-export const acquisitionCopywritingOutput = z.object({
-  result: z.string().min(200).max(500),
-  metadata: z.object({
-    conversionGoal: z.string(),
-    ctaIncluded: z.boolean(),
-    estimatedDuration: z.string(),
-  }),
-});
+export const acquisitionCopywritingOutput = z
+  .object({
+    markdown: z.string().min(200).max(500),
+    metadata: z.object({
+      ctaPosition: z.string(),
+      conversionGoal: z.string(),
+    }),
+  })
+  .refine((v) => v.metadata.ctaPosition.length > 0, {
+    message: 'acquisition mode 必含 CTA · ctaPosition 不能为空',
+  });
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export type AcquisitionCopywritingInput = z.infer<typeof acquisitionCopywritingInput>;
+export type AcquisitionCopywritingInputSchema = z.infer<typeof acquisitionCopywritingInputSchema>;
 export type AcquisitionCopywritingOutput = z.infer<typeof acquisitionCopywritingOutput>;

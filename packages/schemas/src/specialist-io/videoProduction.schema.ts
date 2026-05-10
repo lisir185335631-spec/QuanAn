@@ -1,6 +1,7 @@
 /**
- * VideoAgent production mode I/O schemas — PRD-6 US-001
+ * VideoAgent production mode I/O schemas — PRD-6 US-001, PRD-7 US-001
  * production mode: 文案 → 完整视频方案(分镜 + 设备 + 日程)
+ * TD-022: canonical aligned with VideoAgent.ts ProductionOutputSchema (13+7 fields)
  */
 
 import { z } from 'zod';
@@ -16,20 +17,36 @@ export const videoProductionInput = z.object({
 
 // ── Output ───────────────────────────────────────────────────────────────────
 
+// 13 必填列 + 7 production mode optional 列(向后兼容)
+// SoT: VideoAgent.ts ProductionOutputSchema / PROMPTS §6.2 13 列分镜表
 const shotItemSchema = z.object({
-  index: z.number().int().positive(),
-  shot: z.string().min(5).max(200),
-  action: z.string().min(5).max(300),
-  dialogue: z.string().optional(),
-  camera: z.string().min(3).max(100),
+  scene: z.string(),
   duration: z.string(),
+  action: z.string(),
+  dialogue: z.string(),
+  cameraAngle: z.string(),
+  prop: z.string(),
+  lighting: z.string(),
+  transition: z.string(),
+  sfx: z.string(),
+  voiceover: z.string(),
+  subtitle: z.string(),
+  costume: z.string(),
+  location: z.string(),
+  // 7 production mode extension fields (optional · backward-compatible)
+  index: z.number().int().positive().optional(),
+  angle: z.string().optional(),
+  movement: z.string().optional(),
+  description: z.string().optional(),
+  bgm: z.string().optional(),
+  reference: z.string().optional(),
+  note: z.string().optional(),
 });
 
 export const videoProductionOutput = z.object({
-  shotList: z.array(shotItemSchema).min(3).max(20),
-  equipment: z.string().min(10),
-  schedule: z.string().min(10),
-  totalDuration: z.string(),
+  shotList: z.array(shotItemSchema).min(1),
+  equipment: z.array(z.string()),
+  schedule: z.string(),
 });
 
 // ── Types ─────────────────────────────────────────────────────────────────────

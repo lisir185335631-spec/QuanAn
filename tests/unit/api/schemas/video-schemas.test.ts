@@ -1,7 +1,7 @@
 /**
- * PRD-6 US-001 · 5 video schema 单元测试
+ * PRD-6 US-001, PRD-7 US-001 · 5 video schema 单元测试
  * 覆盖: happy path + boundary + rejection
- * AC-10: ≥10 unit · AC-11: boundary 场景全覆盖
+ * TD-022: assertions updated for canonical SoT field tables
  */
 
 import {
@@ -9,7 +9,7 @@ import {
   acquisitionVideoInput,
   aiVideoInput,
   aiVideoOutput,
-  acquisitionCopywritingInput,
+  acquisitionCopywritingInputSchema,
   imageGenJobPayload,
   imageGenJobResult,
 } from '@quanqn/schemas/specialist-io';
@@ -53,18 +53,30 @@ describe('acquisitionVideoInput', () => {
   it('happy path: valid acquisition video input parses successfully', () => {
     const result = acquisitionVideoInput.safeParse({
       sourceCopy: '这是一段获客型视频文案，需要引导用户关注我们的微信。',
-      conversionGoal: 'wechat',
-      ctaText: '扫码加微信',
+      conversionGoal: '关注微信公众号',
     });
     expect(result.success).toBe(true);
   });
 
-  it('reject: invalid conversionGoal fails', () => {
+  it('reject: empty conversionGoal fails with 转化目标必填', () => {
     const result = acquisitionVideoInput.safeParse({
-      sourceCopy: '这是一段获客型视频文案，测试无效的转化目标。',
-      conversionGoal: 'invalid_goal',
+      sourceCopy: '这是一段获客型视频文案，测试空转化目标。',
+      conversionGoal: '',
     });
     expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toBe('转化目标必填');
+    }
+  });
+
+  it('happy path: platform and duration optional fields pass', () => {
+    const result = acquisitionVideoInput.safeParse({
+      sourceCopy: '这是一段获客型视频文案，包含平台和时长字段。',
+      conversionGoal: '私信咨询',
+      platform: 'douyin',
+      duration: '30s',
+    });
+    expect(result.success).toBe(true);
   });
 });
 
@@ -118,6 +130,17 @@ describe('aiVideoInput', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('happy path: imageStyle defaults to vivid when omitted', () => {
+    const result = aiVideoInput.safeParse({
+      sourceCopy: '未指定 imageStyle 的分镜文案，测试默认值。',
+      scenesCount: 5,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.imageStyle).toBe('vivid');
+    }
+  });
 });
 
 // ── aiVideoOutput · imagePromptEn ASCII validation ────────────────────────────
@@ -134,9 +157,30 @@ describe('aiVideoOutput · imagePromptEn', () => {
     const result = aiVideoOutput.safeParse({
       scenes: [validScene, { ...validScene, index: 2 }, { ...validScene, index: 3 },
                { ...validScene, index: 4 }, { ...validScene, index: 5 }],
+      title: 'Test Video Title',
       totalDuration: '15s',
     });
     expect(result.success).toBe(true);
+  });
+
+  it('pass: output includes title field', () => {
+    const result = aiVideoOutput.safeParse({
+      scenes: Array.from({ length: 5 }, (_, i) => ({ ...validScene, index: i + 1 })),
+      title: 'IP 起号成长故事',
+      totalDuration: '60s',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.title).toBe('IP 起号成长故事');
+    }
+  });
+
+  it('reject: missing title fails', () => {
+    const result = aiVideoOutput.safeParse({
+      scenes: Array.from({ length: 5 }, (_, i) => ({ ...validScene, index: i + 1 })),
+      totalDuration: '15s',
+    });
+    expect(result.success).toBe(false);
   });
 
   it('reject: imagePromptEn contains Chinese fails with 必须是英文 ASCII', () => {
@@ -146,6 +190,7 @@ describe('aiVideoOutput · imagePromptEn', () => {
         { ...validScene, index: 2 }, { ...validScene, index: 3 },
         { ...validScene, index: 4 }, { ...validScene, index: 5 },
       ],
+      title: 'Test Title',
       totalDuration: '15s',
     });
     expect(result.success).toBe(false);
@@ -156,21 +201,39 @@ describe('aiVideoOutput · imagePromptEn', () => {
   });
 });
 
-// ── acquisitionCopywritingInput ───────────────────────────────────────────────
+// ── acquisitionCopywritingInputSchema ─────────────────────────────────────────
 
-describe('acquisitionCopywritingInput', () => {
+describe('acquisitionCopywritingInputSchema', () => {
   it('happy path: valid acquisition copywriting input parses', () => {
-    const result = acquisitionCopywritingInput.safeParse({
-      productInfo: '我们的产品是一款 AI 内容创作助手，帮助创作者提高效率。',
-      conversionGoal: 'comment',
+    const result = acquisitionCopywritingInputSchema.safeParse({
+      scriptType: 'tutorial',
+      elements: ['curiosity', 'contrast'],
+      conversionGoal: '关注公众号',
+      topic: '内容创作方法论',
     });
     expect(result.success).toBe(true);
   });
 
-  it('reject: productInfo < 10 chars fails', () => {
-    const result = acquisitionCopywritingInput.safeParse({
-      productInfo: '短产品',
-      conversionGoal: 'wechat',
+  it('reject: empty conversionGoal fails with 转化目标必填', () => {
+    const result = acquisitionCopywritingInputSchema.safeParse({
+      scriptType: 'tutorial',
+      elements: ['curiosity'],
+      conversionGoal: '',
+      topic: '内容创作',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issue = result.error.issues.find((i) => i.message.includes('转化目标'));
+      expect(issue).toBeDefined();
+    }
+  });
+
+  it('reject: empty elements array fails', () => {
+    const result = acquisitionCopywritingInputSchema.safeParse({
+      scriptType: 'review',
+      elements: [],
+      conversionGoal: '私信咨询',
+      topic: '产品测评',
     });
     expect(result.success).toBe(false);
   });
