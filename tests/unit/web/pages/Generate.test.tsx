@@ -163,10 +163,10 @@ describe('LS 预填: freeGenerate namespace (D-031 AC-3)', () => {
     expect(src).not.toContain("toolKey, 'form'");
   });
 
-  it('LS-first dual-write: localStorage.setItem in Generate.tsx handleSubmit', () => {
+  it('LS-first dual-write: localStorage.setItem in Generate.tsx handleFreeSubmit', () => {
     const src = readSrc(GENERATE_PAGE);
     expect(src).toContain('localStorage.setItem');
-    expect(src).toContain('handleSubmit');
+    expect(src).toContain('handleFreeSubmit');
   });
 
   it('AbortController on unmount prevents state update after navigate away (AC-8)', () => {
