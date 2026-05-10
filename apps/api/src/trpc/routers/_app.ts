@@ -3,6 +3,7 @@
  * PRD-3 US-001: removes step/account alias routers (TD-012) → canonical ipAccounts/stepData only
  */
 
+import { acquisitionVideoRouter } from '@/trpc/routers/acquisitionVideo';
 import { analysisRouter } from '@/trpc/routers/analysis';
 import { authRouter } from '@/trpc/routers/auth';
 import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
@@ -25,6 +26,7 @@ import { router } from '@/trpc/trpc';
 
 export const appRouter = router({
   auth: authRouter,
+  acquisitionVideo: acquisitionVideoRouter,
   evolution: evolutionRouter,
   ipAccounts: ipAccountsRouter,
   stepData: stepDataRouter,
