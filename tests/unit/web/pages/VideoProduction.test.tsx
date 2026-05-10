@@ -183,3 +183,36 @@ describe('?historyId 预填', () => {
     expect(src).toContain('拍摄排期');
   });
 });
+
+// ── 6 · header→key 13列映射正确 (AC-2 锁定) ────────────────────────────────
+
+describe('VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2)', () => {
+  it('景别列 key=angle · BGM列 key=bgm · 画面描述列 key=description', () => {
+    const src = readSrc(VP_RESULT);
+    // 景别 → angle (not transition)
+    expect(src).toContain("{ header: '景别', key: 'angle' }");
+    // BGM → bgm (not lighting)
+    expect(src).toContain("{ header: 'BGM', key: 'bgm' }");
+    // 画面描述 → description (not voiceover)
+    expect(src).toContain("{ header: '画面描述', key: 'description' }");
+    // 镜头号 → index (not scene)
+    expect(src).toContain("{ header: '镜头号', key: 'index' }");
+    // 运镜 → movement (not action)
+    expect(src).toContain("{ header: '运镜', key: 'movement' }");
+    // 参考 → reference (not costume)
+    expect(src).toContain("{ header: '参考', key: 'reference' }");
+    // 备注 → note (not location)
+    expect(src).toContain("{ header: '备注', key: 'note' }");
+  });
+
+  it('ShotItem interface contains 7 production-mode fields', () => {
+    const src = readSrc(VP_RESULT);
+    expect(src).toContain('index?: number');
+    expect(src).toContain('angle?: string');
+    expect(src).toContain('movement?: string');
+    expect(src).toContain('description?: string');
+    expect(src).toContain('bgm?: string');
+    expect(src).toContain('reference?: string');
+    expect(src).toContain('note?: string');
+  });
+});

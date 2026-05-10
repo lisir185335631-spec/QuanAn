@@ -15,6 +15,7 @@ import { Card, CardContent } from '@/components/ui/card';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface ShotItem {
+  // original 13 shooting-mode fields
   scene?: string;
   transition?: string;
   cameraAngle?: string;
@@ -28,6 +29,14 @@ interface ShotItem {
   prop?: string;
   costume?: string;
   location?: string;
+  // PRD-6 US-004 AC-2: production mode 13-column fields
+  index?: number;
+  angle?: string;
+  movement?: string;
+  description?: string;
+  bgm?: string;
+  reference?: string;
+  note?: string;
 }
 
 interface ProductionData {
@@ -47,19 +56,19 @@ interface VideoProductionResultProps {
 // ── 13 fixed column definitions ───────────────────────────────────────────────
 
 const COLUMNS: { header: string; key: keyof ShotItem }[] = [
-  { header: '镜头号', key: 'scene' },
-  { header: '景别', key: 'transition' },
+  { header: '镜头号', key: 'index' },
+  { header: '景别', key: 'angle' },
   { header: '角度', key: 'cameraAngle' },
-  { header: '运镜', key: 'action' },
+  { header: '运镜', key: 'movement' },
   { header: '时长', key: 'duration' },
-  { header: '画面描述', key: 'voiceover' },
+  { header: '画面描述', key: 'description' },
   { header: '台词', key: 'dialogue' },
   { header: '字幕', key: 'subtitle' },
   { header: '音效', key: 'sfx' },
-  { header: 'BGM', key: 'lighting' },
+  { header: 'BGM', key: 'bgm' },
   { header: '道具', key: 'prop' },
-  { header: '参考', key: 'costume' },
-  { header: '备注', key: 'location' },
+  { header: '参考', key: 'reference' },
+  { header: '备注', key: 'note' },
 ];
 
 // ── Main component ────────────────────────────────────────────────────────────
