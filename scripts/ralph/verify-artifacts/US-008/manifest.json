@@ -1,27 +1,26 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-10T17:05:00",
-  "validator_end_ts": "2026-05-10T17:25:00",
-  "test_command": "pnpm test tests/unit/web/pages/AiVideo.test.tsx && pnpm test:e2e tests/e2e/tool-ai-video.spec.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-11T01:45:00",
+  "validator_end_ts": "2026-05-11T01:55:00",
+  "test_command": "pnpm typecheck && pnpm lint --max-warnings=0 && pnpm test",
   "exit_code": 0,
+  "zero_regression": "PASS",
   "artifacts": [
-    "typecheck.txt",
-    "vitest.stdout.txt",
-    "vitest.xml",
-    "e2e.stdout.txt",
-    "e2e.xml",
-    "vitest-full.stdout.txt",
-    "vitest-full.xml"
+    "manifest.json",
+    "screenshot-1.png",
+    "screenshot-2.png",
+    "screenshot-3.png",
+    "screenshot-4.png"
   ],
   "browser_verification": {
-    "AC-7": "PASS - form fields visible via e2e test (chromium + mobile)",
-    "AC-8": "PASS - sourceCopy fill + scenesCount select + submit via e2e test",
-    "AC-9": "PASS - result area with 5 scene cards appears immediately via e2e test",
-    "AC-10": "PASS - polling mock → skeleton to real img via e2e test",
-    "AC-11": "PASS - completion banner shown, polling stops via e2e test",
-    "AC-12": "PASS - supplemental browser test: zod error '至少 10 个字符' shown, no submit",
-    "AC-13": "PASS - supplemental browser test: rate limit banner + disabled button shown",
-    "AC-16": "PASS - supplemental browser test: ?historyId=N shows completion banner + scene grid"
+    "AC-1": "PASS - AccountDropdown N-tiered: n>=4→ScrollArea h-60; n>=2→compact div max-h; n=1→plain div",
+    "AC-2": "PASS - Playwright test logged in via mock OAuth (dev@local.test) and clicked account trigger",
+    "AC-3": "PASS - N=1 dropdown compact (~60px); N=2-3 natural height; N=4 ScrollArea h-60",
+    "AC-4": "PASS - 4 screenshots saved: screenshot-1/2/3/4.png",
+    "AC-5": "PASS - No console errors, no Radix portal break (fallback path used: plain div for N<4)",
+    "AC-6": "PASS - pnpm typecheck 6ws 0 error; pnpm lint --max-warnings=0 全过",
+    "AC-7": "PASS - pnpm test 75 files 727 tests 0 failures",
+    "AC-8": "PASS - header.spec.ts IP账号dropdown can open; account-switch.spec.ts not broken"
   },
-  "notes": "No Python backend (pure TypeScript/tRPC). Zero-regression via pnpm test (72 files, 703 tests, all passed). AC-14/AC-15 code-verified: stall hint logic (pollingStallCount>=5) and LS restore (getToolLsKey mount effect) both present. E2e test runs chromium + mobile projects."
+  "notes": "AccountDropdown line 116- modified: removed unconditional ScrollArea h-60. Now: n>=4 uses ScrollArea className='h-60'; n=2-3 uses div with inline style maxHeight=n*44px overflowY auto; n=1 uses plain div (no ScrollArea). ToolsDropdown (line 188-) unchanged. Screenshots taken via Playwright after creating N test accounts, calling switchActive, reloading. ipAccounts.list uses protectedProcedure requiring activeAccountId — must switchActive before list query returns data."
 }

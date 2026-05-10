@@ -120,6 +120,33 @@ function AccountDropdown() {
     staleTime: 30_000,
   });
 
+  const n = accounts.length;
+
+  const accountItems = accounts.map((acc) => (
+    <DropdownMenuItem
+      key={acc.id}
+      className="gap-2"
+      onClick={() => switchTo(acc.id)}
+      data-testid={`account-item-${acc.id}`}
+    >
+      <span
+        className={`h-1.5 w-1.5 rounded-full shrink-0 ${acc.id === activeAccount?.id ? 'bg-primary' : 'bg-border'}`}
+      />
+      <span className="flex-1 truncate text-body-sm">{acc.name}</span>
+      <span className="text-label-md text-muted-foreground">{acc.platform}</span>
+    </DropdownMenuItem>
+  ));
+
+  // N-tiered rendering: N=1 → plain div (no ScrollArea); N=2-3 → compact max-h; N=4+ → ScrollArea h-60
+  const accountList =
+    n >= 4 ? (
+      <ScrollArea className="h-60">{accountItems}</ScrollArea>
+    ) : n >= 2 ? (
+      <div style={{ maxHeight: `${n * 44}px`, overflowY: 'auto' }}>{accountItems}</div>
+    ) : (
+      <div>{accountItems}</div>
+    );
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -140,22 +167,7 @@ function AccountDropdown() {
       <DropdownMenuContent align="center" className="w-52" data-testid="header-account-menu">
         <DropdownMenuLabel>IP 账号</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <ScrollArea className="h-60">
-          {accounts.map((acc) => (
-            <DropdownMenuItem
-              key={acc.id}
-              className="gap-2"
-              onClick={() => switchTo(acc.id)}
-              data-testid={`account-item-${acc.id}`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full shrink-0 ${acc.id === activeAccount?.id ? 'bg-primary' : 'bg-border'}`}
-              />
-              <span className="flex-1 truncate text-body-sm">{acc.name}</span>
-              <span className="text-label-md text-muted-foreground">{acc.platform}</span>
-            </DropdownMenuItem>
-          ))}
-        </ScrollArea>
+        {accountList}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="gap-2 text-primary focus:text-primary">
           <Plus className="h-4 w-4" />
