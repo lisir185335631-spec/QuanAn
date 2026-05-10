@@ -331,6 +331,15 @@
 - 直接 import `@trpc/server` 在 vitest 根级别测试文件失败(包在 apps/api/node_modules 非根) · 改从 `@/trpc/middleware/...` 间接导入或避免直接引用类名 · 同理: 若要 vi.mock('openai') 拦截 worker 里的 import, 需在 vitest.config.ts 加 alias: { 'openai': resolve(__, 'apps/api/node_modules/openai') } · 否则两边 resolve 到不同路径 → mock 无效 → 真实网络 30s timeout 吞掉测试
 - Radix DropdownMenuContent 的 list items > ~8 个时 · 必须套 `<ScrollArea className="h-N">`(显式高度) · 否则溢出 dropdown 的 items 不在 viewport · playwright click 56 × retry 30s 后 timeout(error: element is outside of the viewport · scroll into view 失败) · 实测 30+ accounts 命中 · ToolsDropdown 用 h-52 / AccountDropdown US-006 收官时补 h-60
 
+
+## Codebase Patterns - PRD-7 贡献(goal-verify 于 2026-05-11 提炼)
+- Schema SoT 三处一致原则(D-046)· packages/schemas + apps/api specialists inline + apps/api routers import 三处对同一逻辑 schema 字段名 + 类型 + boundary + enum + regex 100% 一致 · canonical 选择优先级 specialists inline > routers > packages/schemas(D-047)
+- monorepo cross-workspace import 时 apps/api/tsconfig.json 删 rootDir 即可(保留 baseUrl + paths)· 不需要 composite project + references(成本太高 · 留 PRR)
+- audit-artifacts.py manifest 含 zero_regression="PASS" 时跳过 timestamps 检查 · 缺 exit_code 硬 reject(防 Validator 偷懒) · partial FAKE 降级 INFO(仅缺 pytest-full.xml 时不阻断)
+- ralph.py daemon 启动期 _cleanup_stale_verify_artifacts(threshold_hours=24) 防跨 PRD 残留误报 + path B 自动触发 _check_existing_commit(since='30 minutes ago') 防 daemon 误报 stuck(retry≥5 + git log 命中 [US-XXX] commit · 写 audit-gate(pending) 让 Opus 接管)
+- AccountDropdown N 分档自适应模板:N=1 不渲染 ScrollArea(plain div) · N=2-3 紧凑 max-h={N*40-44}px overflowY:auto · N=4+ ScrollArea h-60 / max-h-60 · 防 1-3 accounts 时空旷 + 不破 Radix dropdown portal
+- 跨项目工具同步用 sync-to-project.sh --force · md5sum 比对全局 ~/.claude/scripts/ralph/* vs 项目副本 scripts/ralph/* · 不一致时自动 cp + 备份 .bak.before-sync-{timestamp}
+
 ## 执行日志(按 story 倒序)
 ## [2026-05-09 12:27] - US-001 (PRD-5 · Foundation)
 - 新建 packages/schemas/src/specialist-io/constants.ts (HOT_ELEMENT_KEYS_22 22项·4组 + SCRIPT_TYPE_KEYS_20 20项)
