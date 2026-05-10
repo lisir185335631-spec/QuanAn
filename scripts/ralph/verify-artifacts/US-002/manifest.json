@@ -1,40 +1,16 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-10T10:33:30",
-  "validator_end_ts": "2026-05-10T10:38:00",
-  "test_command": "pnpm test tests/unit/specialists/__tests__/VideoAgent.test.ts tests/unit/specialists/__tests__/CopywritingAgent.test.ts",
+  "validator_start_ts": "2026-05-11T08:40:00",
+  "validator_end_ts": "2026-05-11T08:42:00",
+  "test_command": "python3 -m pytest scripts/ralph/test_cleanup_stale.py -v + python3 -m py_compile ralph.py",
   "exit_code": 0,
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
-    "typecheck.txt",
-    "vitest.stdout.txt",
-    "vitest.xml",
+    "pytest.xml",
+    "pytest.stdout.txt",
     "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "manifest.json"
+    "pytest-full.stdout.txt"
   ],
-  "summary": {
-    "unit_tests_ms": 10,
-    "integration_test_ms": 49,
-    "full_suite_total": 593,
-    "full_suite_failures": 0,
-    "full_suite_errors": 0,
-    "typecheck_workspaces": 6,
-    "typecheck_errors": 0
-  },
-  "ac_verification": {
-    "AC-1":  "PASS - production/acquisition/storyboard modes call invokeLLM branches (VideoAgent.ts:372-376)",
-    "AC-2":  "PASS - outputSchema 4-case switch (VideoAgent.ts:349-357)",
-    "AC-3":  "PASS - _buildUserPrompt(mode) 4 branches + mode-specific prompts (VideoAgent.ts:469-572)",
-    "AC-4":  "PASS - StoryboardSceneSchema imagePromptEn regex /^[\\x00-\\x7F]+$/ (VideoAgent.ts:112-114); schema rejects non-ASCII",
-    "AC-5":  "PASS - CopywritingAgent acquisition mode: schema min(200)/max(500) + ctaPosition refine + invokeLLM branch",
-    "AC-6":  "PASS - video-production.ts + acquisition-video.ts + ai-video.ts all exist with persona+methodology",
-    "AC-7":  "PASS - templates/index.ts SPECIALIST_TEMPLATES 'VideoAgent:production/acquisition/storyboard' (lines 37-39)",
-    "AC-8":  "PASS - VideoAgent.test.ts: 14 tests (4 original + 10 PRD-6; production×3 + acquisition×3 + storyboard×4)",
-    "AC-9":  "PASS - CopywritingAgent.test.ts: 3 acquisition tests (happy + CTA missing + markdown boundary)",
-    "AC-10": "PASS - Integration nock test: 49ms < 3000ms; nock.isDone()=true",
-    "AC-11": "PASS - Unit tests: 10ms < 200ms",
-    "AC-12": "PASS - pnpm typecheck: 6 workspaces, 0 errors",
-    "AC-13": "PASS - pnpm test exits 0; 31 tests total"
-  },
-  "notes": "ALL 13 ACs PASS. Zero-regression gate: 593 tests 0 failures. Typecheck 6 ws 0 errors. Unit 10ms. Integration 49ms."
+  "notes": "All 8 pytest unit tests pass. _cleanup_stale_verify_artifacts() implemented at ralph.py:1404, called in _daemon_relaunch() at line 1451. Scans US-*/ glob, checks mtime > 24h, unlinks stale files. AC-7: cleanup ran but 0 files removed (all current files < 24h old, PRD-6 artifacts still fresh). AC-8: no 60h+ span in audit-artifacts.py output (reports 15.2h intra-PRD spread from multiple validation rounds - pre-existing issue not in US-002 scope). python3 -m py_compile: 0 errors."
 }

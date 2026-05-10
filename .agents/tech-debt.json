@@ -42,11 +42,14 @@
       "discovered_at": "2026-05-07",
       "discovered_by": "Opus audit US-002",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "audit-artifacts.py US-002 报 ARTIFACTS FAKE or INVALID: ['manifest'] · manifest missing field: exit_code",
       "root_cause": "Validator Agent 写 verify-artifacts/<US>/manifest.json 时缺 exit_code 字段 · audit-artifacts.py 默认期望此字段(Python 项目用)· TS 项目跑 pnpm typecheck 没产出 exit_code 字段",
       "scheduled_fix_in": "PRD-2 实施期 · Validator 产物模板补 exit_code(从 pnpm typecheck 退出码取)· 或改 audit-artifacts.py 容忍 TS 项目无 exit_code",
-      "audit_exemption": "US-001/US-002 approve 时豁免 · 因为 pnpm typecheck 实测过 · 零回归核心目标已达成 · 走 Cheat Sheet Step 1.7 partial fake 补跑流程 · US-003 已自然修(Validator 产物完整 · pytest-full 1/1 passed)"
+      "audit_exemption": "US-001/US-002 approve 时豁免 · 因为 pnpm typecheck 实测过 · 零回归核心目标已达成 · 走 Cheat Sheet Step 1.7 partial fake 补跑流程 · US-003 已自然修(Validator 产物完整 · pytest-full 1/1 passed)",
+      "resolved_in_prd": "PRD-7 US-006",
+      "resolved_at": "2026-05-11T01:30:30",
+      "close_evidence": "PRD-7 US-006 commit 3c6b28a · audit-artifacts.py L63 _check_exit_code(manifest: dict) -> tuple[bool, str] · L252 main 流程第一步调 + 失败 sys.exit(1) · 4 mock 场景全 PASS (缺/非int/非零/zero_regression+exit_code兼容) · 实测 US-001 audit 输出 [OK] exit_code=0 ✓ · 项目副本同步 diff 0 · vitest 727/727"
     },
     {
       "id": "TD-004",
@@ -107,11 +110,14 @@
       "discovered_at": "2026-05-07",
       "discovered_by": "Opus 复盘",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "ralph round 9 (23:35-23:36) 实际 4min 内 commit ce1ed9a · 但因为 daemon 被我之前 kill + audit-gate.json 不存在 + 我没看 git log · 我误以为还 stuck · 又跑 lint:fix + 二次 commit 9c23e84",
       "root_cause": "Opus fail-over 流程缺一步 · 在接管 dev 前 · 应 git log --since='5 min ago' 看是否有 ralph 新 commit · 避免重复劳动 + 错误覆盖",
       "scheduled_fix_in": "改 CLAUDE.md §9.6.4 加 'fail-over 前必跑 git log 看 ralph 是否已 commit' 步骤",
-      "audit_exemption": "本次 fail-over 重复劳动浪费 ~5 min · 但产出无害(lint clean 是 plus)· 接受为 process 教训"
+      "audit_exemption": "本次 fail-over 重复劳动浪费 ~5 min · 但产出无害(lint clean 是 plus)· 接受为 process 教训",
+      "resolved_in_prd": "PRD-7 US-007",
+      "resolved_at": "2026-05-11T01:43:30",
+      "close_evidence": "PRD-7 US-007 commit eab3070 · ralph.py:817 _check_existing_commit(story_id, since=30 minutes ago) · L846 _write_path_b_audit_gate · L1666-1684 retryCount>=5 detect + write audit-gate(pending) + path_b_tried 防循环 · 4 mock 场景全过 (AC-6/7/8 + git nonzero) · 全局/项目副本 diff 0 · vitest 727/727 + py_compile 0"
     },
     {
       "id": "TD-009",
@@ -150,11 +156,14 @@
       "discovered_at": "2026-05-08",
       "discovered_by": "Opus /goal-verify PRD-3 · US-006 收官",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "apps/web/src/components/Header.tsx AccountDropdown 套 <ScrollArea className='h-60'>(240px) · 邀请制内测期典型用户 1-3 accounts · dropdown 大量空白",
       "root_cause": "Radix DropdownMenu 自适应 max-h 配合 ScrollArea inner viewport 兼容性需要专门处理 · h-N 是简单稳定方案,代价是空旷",
       "scheduled_fix_in": "PRD-4 UI polish · 测试 max-h-60 + ScrollArea viewport overflow:auto 是否兼容 Radix DropdownMenu · 兼容则改 max-h",
-      "fix_hint": "<ScrollArea className='max-h-60'> · 内部 viewport 需 height:auto + max-height inherit · 实测 Radix dropdown portal 是否会 break · 不兼容回 h-60"
+      "fix_hint": "<ScrollArea className='max-h-60'> · 内部 viewport 需 height:auto + max-height inherit · 实测 Radix dropdown portal 是否会 break · 不兼容回 h-60",
+      "resolved_in_prd": "PRD-7 US-008",
+      "resolved_at": "2026-05-11T02:07:00",
+      "close_evidence": "PRD-7 US-008 commit 151765d · Header.tsx L140-147 三档渲染 (n>=4 ScrollArea h-60 / n>=2 div maxHeight=n*44px overflowY:auto / n=1 plain div) · browser 实测 N=1:133px / N=2:166px / N=3:199px / N=4:340px (scrollAreaH=240px) · 4 张截图 verify-artifacts/US-008/screenshot-1~4.png · pnpm typecheck 6 ws 0 + lint 0 + vitest 727/727 + e2e (account-step-auth/isolation 等) 全过"
     },
     {
       "id": "TD-012",
@@ -332,10 +341,11 @@
       "detected_in_prd": "PRD-6",
       "detected_in_story": "US-001 (Opus audit · audit-artifacts.py 报 FAKE)",
       "fix_by": "PRD-7 启动前 (或 ralph.py 启动期自动清 verify-artifacts/)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A: ralph.py daemon 启动时清 verify-artifacts/<US-XXX>/ 跨 PRD 残留 (按 mtime > 24h 删) · 选 B: audit-artifacts.py timestamps 检查仅看本 story 文件名 pattern (manifest/pytest/typecheck.{stdout,txt}) 而非全目录 · 选 A 简单直接.",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-7 US-002",
+      "resolved_at": "2026-05-11T00:58:00",
+      "close_evidence": "PRD-7 US-002 commit 1699296 · ralph.py:1404 _cleanup_stale_verify_artifacts(threshold_hours=24) + line 1451 _daemon_relaunch() 启动期调用 · pytest 8/8 pass · python3 -m py_compile 0 error · 本期实测 cleanup 0 files removed (本 PRD 文件 < 24h 保留 · 行为正确)"
     },
     {
       "id": "TD-021",
@@ -355,10 +365,11 @@
       "detected_in_prd": "PRD-6",
       "detected_in_story": "US-001 (Opus audit · F2 跨 story 协议核对)",
       "fix_by": "US-009 真接 (DALL-E 3 SDK wrapper)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-7 US-004",
+      "resolved_at": "2026-05-11T01:14:00",
+      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanqn/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
     },
     {
       "id": "TD-022",
@@ -383,10 +394,11 @@
       "detected_in_prd": "PRD-6",
       "detected_in_story": "US-002 (Opus audit · F1 跨 story 协议核对) + US-005 (Opus audit · acquisition mode router input schema · 3rd 显现) + US-006 (Opus 路径 B audit · acquisition 前端 13 分镜 vs schema 4 字段 · 4th 显现) + US-007 (Opus audit · aiVideo router · 5th 显现)",
       "fix_by": "PRD-7 启动前 (Wave 1 完后 prd skill 必须重新对齐 5 schema · 对齐 LLM 实际 output + PRD AC 锁定字段) · OR US-006 retry 时一并修 acquisition mode (前端真渲染时暴露)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A (推荐): US-002 retry 时 · ralph 一并改 packages/schemas videoProductionOutput + acquisitionVideoOutput 字段表跟 VideoAgent inline 13 字段对齐 (PROMPTS §6.2 SOT) · 改 tests/unit/api/schemas/video-schemas.test.ts 适配新字段 · 选 B: US-003 真接时 · router 内 import VideoAgent 的 ProductionOutputSchema 验证 trpc i/o (但导致 packages/schemas + apps/api 跨包反向 import · 不推荐) · 选 C: 新加 packages/schemas/src/specialist-io/_canonical/ 子目录 · 共享 13 字段 ShotItemSchema 给 schema 包 + worker 用 (干净但工作量大) · 紧急路径: 让 PRD-6.md 在 PRD-7 启动前补充 §1.X schema 字段 SoT (单一真理源) 表 · 5 schema (videoProduction/acquisitionVideo/aiVideo/acquisitionCopywriting/imageGen) input + output 字段全部锁字段名 + 类型 + boundary + enum + regex · 跨 packages/schemas + VideoAgent inline + router inline 三处必须 1:1 一致",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-7 US-001",
+      "resolved_at": "2026-05-11T00:50:00",
+      "close_evidence": "PRD-7 US-001 commit d4e3da8 (foundation 档 · retry 1) · 5 schema canonical SoT 三处 1:1 一致 · grep 验证全过(router inline output 0 命中 / 4 router import 全命中 / legacy acquisitionCopywritingInput 已删 / VideoAgent regex 改 ASCII /^[\\x00-\\x7F]+$/ 跟 packages/schemas 对齐 / videoProductionOutput shotList 13+7 字段三处一致) · 727/727 vitest pass · pnpm typecheck 6 ws 0 error · pnpm lint --max-warnings=0 0 warning · D-046~D-049 落地 PRD-7 §7"
     },
     {
       "id": "TD-023",
@@ -406,10 +418,11 @@
       "detected_in_prd": "PRD-6",
       "detected_in_story": "US-008 (Opus audit · Step 1.7 partial FAKE 补跑)",
       "fix_by": "PRD-7 启动前 (VALIDATOR.md 明确产物清单 · 包括 pytest-full.xml)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "VALIDATOR.md 加 'pytest-full.xml/stdout.txt 必须落产物' · audit-artifacts.py 对 manifest.json 显式 zero_regression 字段降级为 INFO 而非 WARN",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-7 US-003",
+      "resolved_at": "2026-05-11T01:09:30",
+      "close_evidence": "PRD-7 US-003 commit 0079f41 · ~/.claude/scripts/ralph/VALIDATOR.md L238 §5 产物清单(必落)章节 + manifest.json exit_code/zero_regression 字段示例 · ~/.claude/scripts/ralph/audit-artifacts.py L158-166 zero_regression skip + L260-261 partial FAKE INFO 降级 · 项目副本同步 · pytest 8/8 pass · 实测 US-003 audit 输出 timestamps check skipped: zero_regression=PASS · 新逻辑生效"
     }
   ],
   "last_updated": "2026-05-09T23:06:52"

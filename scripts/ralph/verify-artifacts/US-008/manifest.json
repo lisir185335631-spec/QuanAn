@@ -1,26 +1,39 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-11T01:45:00",
-  "validator_end_ts": "2026-05-11T01:55:00",
-  "test_command": "pnpm typecheck && pnpm lint --max-warnings=0 && pnpm test",
+  "validator_start_ts": "2026-05-11T02:00:00",
+  "validator_end_ts": "2026-05-11T02:15:00",
+  "test_command": "pnpm test (vitest) + pnpm typecheck + pnpm lint --max-warnings=0 + playwright header.spec.ts + playwright account-switch/isolation.spec.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
     "manifest.json",
+    "vitest-full.xml",
+    "vitest-full.stdout.txt",
+    "typecheck.txt",
+    "lint.txt",
     "screenshot-1.png",
     "screenshot-2.png",
     "screenshot-3.png",
     "screenshot-4.png"
   ],
-  "browser_verification": {
-    "AC-1": "PASS - AccountDropdown N-tiered: n>=4→ScrollArea h-60; n>=2→compact div max-h; n=1→plain div",
-    "AC-2": "PASS - Playwright test logged in via mock OAuth (dev@local.test) and clicked account trigger",
-    "AC-3": "PASS - N=1 dropdown compact (~60px); N=2-3 natural height; N=4 ScrollArea h-60",
+  "ac_results": {
+    "AC-1": "PASS - Header.tsx:140-148 N-tiered: n>=4→ScrollArea h-60; n>=2→div maxHeight=n*44px overflowY:auto; n=1→plain div",
+    "AC-2": "PASS - mock OAuth login as dev@local.test successful; AccountDropdown trigger clicked",
+    "AC-3": "PASS - N=1: totalH=133px no ScrollArea (account list ~44px ≤ 80px); N=2: totalH=166px no ScrollArea compact; N=3: totalH=199px no ScrollArea (account list ≈132px ≈120-160px range); N=4: ScrollArea=true scrollAreaH=240px ≤ 240px",
     "AC-4": "PASS - 4 screenshots saved: screenshot-1/2/3/4.png",
-    "AC-5": "PASS - No console errors, no Radix portal break (fallback path used: plain div for N<4)",
-    "AC-6": "PASS - pnpm typecheck 6ws 0 error; pnpm lint --max-warnings=0 全过",
-    "AC-7": "PASS - pnpm test 75 files 727 tests 0 failures",
-    "AC-8": "PASS - header.spec.ts IP账号dropdown can open; account-switch.spec.ts not broken"
+    "AC-5": "PASS - No console errors detected; no Radix portal break",
+    "AC-6": "PASS - pnpm typecheck 6 ws 0 errors; pnpm lint --max-warnings=0 全过",
+    "AC-7": "PASS - pnpm test 75 files 727 tests 0 failures (includes header unit tests)",
+    "AC-8": "PASS - account-step-auth.test.ts (15 tests) ✓; account-isolation.test.ts (9 tests) ✓; account-isolation.spec.ts (e2e) ✓; account-switch.spec.ts (e2e) ✓; header.spec.ts (6/6) ✓"
   },
-  "notes": "AccountDropdown line 116- modified: removed unconditional ScrollArea h-60. Now: n>=4 uses ScrollArea className='h-60'; n=2-3 uses div with inline style maxHeight=n*44px overflowY auto; n=1 uses plain div (no ScrollArea). ToolsDropdown (line 188-) unchanged. Screenshots taken via Playwright after creating N test accounts, calling switchActive, reloading. ipAccounts.list uses protectedProcedure requiring activeAccountId — must switchActive before list query returns data."
+  "zero_regression_detail": "75 test files, 727 tests, 0 failures. Pre-existing cost_log FK errors in integration tests are known pre-existing TD (not caused by US-008).",
+  "browser_test": {
+    "login": "dev@local.test via mock OAuth (/auth/login → /auth/callback)",
+    "N1": "totalH=133px, ScrollArea=false, items=1 - compact not spacious",
+    "N2": "totalH=166px, ScrollArea=false, items=2 - compact",
+    "N3": "totalH=199px, ScrollArea=false, items=3 - compact",
+    "N4": "totalH=340px, scrollAreaH=240px, ScrollArea=true, items=4 - scrollable"
+  }
 }

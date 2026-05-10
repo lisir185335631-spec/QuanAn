@@ -1,16 +1,15 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-10T08:40:00",
-  "validator_end_ts": "2026-05-10T08:42:30",
-  "test_command": "pnpm test tests/unit/api/ai-video-router.test.ts tests/integration/api/ai-video-flow.test.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-11T01:40:00",
+  "validator_end_ts": "2026-05-11T01:43:00",
+  "test_command": "python3.11 scripts/ralph/test_path_b.py (AC-6/7/8/3 mock) + python3.11 -m py_compile ralph.py + pnpm vitest run (727 zero-regression)",
   "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
     "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "typecheck.txt",
-    "manifest.json"
+    "pytest-full.stdout.txt"
   ],
-  "notes": "AC-4 minor: error message '今日图片生成次数已达上限，请明日再试' vs AC spec '今日生成已达上限 · 明日再来'; code=TOO_MANY_REQUESTS correct, unit test passes. AC-6 uses findFirst (correct Prisma pattern for multi-field where). scenesCount uses z.number().int().min(5).max(8) vs z.union([literal(5-8)]) — functionally equivalent."
+  "notes": "AC-1 PASS: _check_existing_commit(story_id, since='30 minutes ago') at ralph.py:817, subprocess.run git log + re.compile exact [story_id] + hash extraction. AC-2 PASS: used at ralph.py:1669 in retryCount>=5 block before BLOCKED. AC-3 PASS: _write_path_b_audit_gate writes {status:pending, story_id, commit_hash, reason:'路径 B 自动触发: ralph 实际已 commit · daemon validate 误报'} — AC-3 mock test confirmed. AC-4 PASS: no commit hit → s_check['blocked']=True at ralph.py:1684 (AC-7 mock confirmed). AC-5 PASS: [PATH-B] story={story_id} retry={retryCount} git_log_hit={hash} log at ralph.py:1671; _write_path_b_audit_gate emits PENDING_DETECTED to stdout (captured by daemon → ralph-output.log). AC-6 PASS: test_ac6_commit_found — hash '3c6b28a' returned. AC-7 PASS: test_ac7_no_commit + test_ac7_git_nonzero_exit — None returned. AC-8 PASS: since='30 minutes ago' passed to git --since; test_ac8_cross_prd_window confirms empty output → None. Typecheck PASS: python3.11 -m py_compile 0 errors (both global ~/.claude/scripts/ralph/ralph.py and project scripts/ralph/ralph.py). Zero-regression: 727/727 vitest tests pass (exit_code=0)."
 }

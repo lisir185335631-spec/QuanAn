@@ -1,0 +1,19 @@
+=== Sync from ~/.claude/scripts/ralph/ → /Users/return/Desktop/QuanQn/scripts/ralph/ ===
+  - ralph.py: already in sync
+  - VALIDATOR.md: already in sync
+  - CLAUDE.md: already in sync
+  - AUDIT-CHECKLIST-TEMPLATE.md: already in sync
+  - OPUS-AUDIT-CHEATSHEET.md: already in sync
+  - TECH-DEBT-SCHEMA.md: already in sync
+  - REJECT-TEMPLATE.md: already in sync
+  - audit-artifacts.py: already in sync
+  - ralph-tools.py: already in sync
+  - watch-audit-gate.py: already in sync
+  - dashboard.py: already in sync
+  - dashboard.html: already in sync
+  - dashboard-p.html: already in sync
+
+=== Summary: 0 synced, 13 unchanged ===
+
+Reminder: 项目本地 prd.json 和 progress.txt 不同步 (每项目独立).
+          只同步规则/指令/工具, 不同步 runtime state.

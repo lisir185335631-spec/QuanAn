@@ -235,6 +235,40 @@ cd backend && .venv/Scripts/pytest -q \
 
 ---
 
+### §5 · 产物清单 (必落)(2026-05-11)
+
+每个 story Validator 必须落盘以下产物到 `scripts/ralph/verify-artifacts/<story-id>/`：
+
+| 文件 | 必/选 | 说明 |
+|------|:-----:|------|
+| `manifest.json` | **必** | 元数据汇总 (含 exit_code / zero_regression) |
+| `pytest-full.xml` | **必** | 零回归 JUnit XML (X-6 门禁) |
+| `pytest-full.stdout.txt` | **必** | 零回归命令原始输出 |
+| `typecheck.stdout.txt` | 收官 story 必落 | typecheck 完整输出 (供 Opus 复核) |
+
+**manifest.json 字段示例** (含 exit_code / zero_regression):
+
+```json
+{
+  "story_id": "US-XXX",
+  "validator_start_ts": "2026-05-11T00:38:00",
+  "validator_end_ts": "2026-05-11T00:40:56",
+  "test_command": "pnpm vitest run + pnpm typecheck",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "artifacts": ["pytest-full.xml", "pytest-full.stdout.txt", "typecheck.stdout.txt"]
+}
+```
+
+`zero_regression` 取值: `"PASS"` / `"FAIL"` / `"SKIPPED"` 三选一。
+- `"PASS"` → 零回归全通过 · audit-artifacts.py 自动跳过 timestamps 检查 (防跨 session 旧文件误报)
+- `"FAIL"` → 零回归失败 · notes 必含失败命令 + 错误片段
+- `"SKIPPED"` → 纯文档 story (无 code changes) · notes 说明原因
+
+---
+
 ## Router cross-cut coverage 验证(2026-05-09 · QuanQn PRD-4 US-017 经验)
 
 > **背景**: PRD-4 US-017 9 步 e2e 才发现 stepData.save handler 漏 step5/7 → UI skeleton 永挂 → 浪费 1 次 e2e 跑(~30 min)。Validator 当时只验当前 story scope · 没 catch cross-cut 漏。

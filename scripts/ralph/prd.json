@@ -27,7 +27,7 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -86,7 +86,7 @@
       ],
       "depends_on": [],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -114,7 +114,7 @@
       ],
       "depends_on": [],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -144,9 +144,11 @@
         "AC-8: pnpm test 722 vitest 全过 (image-gen worker 既有 unit/integration test 不破)",
         "Typecheck passes"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -177,7 +179,7 @@
       ],
       "depends_on": [],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -208,9 +210,11 @@
         "AC-8: 跑 PRD-7 US-001 audit 时 · audit-artifacts.py 实际通过 (因为 Validator 写 manifest.exit_code=0 · 依赖 US-003 VALIDATOR.md 产物清单)",
         "Typecheck passes (Python 脚本无 typecheck · 但 audit-artifacts.py 不破 syntax · python3 -m py_compile audit-artifacts.py 0 error)"
       ],
-      "depends_on": ["US-003"],
+      "depends_on": [
+        "US-003"
+      ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -239,9 +243,11 @@
         "AC-8: 跨 PRD 兼容 · since='30 minutes ago' 不会扫到上一 PRD 残留 commit",
         "Typecheck passes (Python 脚本无 typecheck · 但 ralph.py 不破 syntax · python3 -m py_compile ~/.claude/scripts/ralph/ralph.py 0 error)"
       ],
-      "depends_on": ["US-002"],
+      "depends_on": [
+        "US-002"
+      ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,
@@ -272,7 +278,7 @@
       ],
       "depends_on": [],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "",
       "retryCount": 0,
       "blocked": false,

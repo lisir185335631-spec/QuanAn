@@ -1,16 +1,15 @@
 {
   "story_id": "US-006",
-  "validator_start_ts": "2026-05-10T13:50:00",
-  "validator_end_ts": "2026-05-10T14:02:00",
-  "test_command": "pnpm test tests/unit/web/pages/AcquisitionVideo.test.tsx && pnpm test:e2e tests/e2e/tool-acquisition-video.spec.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-11T01:40:00",
+  "validator_end_ts": "2026-05-11T01:50:00",
+  "test_command": "python3 -m py_compile audit-artifacts.py + mock manifest tests + pnpm test (vitest 727)",
   "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
     "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "typecheck.txt",
-    "e2e.stdout.txt"
+    "pytest-full.stdout.txt"
   ],
-  "notes": "Zero-regression gate: 654 vitest tests passed (0 failures). Unit tests: 22/22. E2E: 1/1. Typecheck: 6 workspaces 0 error. Browser ACs (5-9): all PASS via Playwright. AC-7: no history entries in fresh DB; graceful handling confirmed + code inspection verifies prefill pattern."
+  "notes": "AC-1 PASS: _check_exit_code(manifest: dict) -> tuple[bool, str] defined at line 63. AC-2 PASS: called in main() at line 252 as first step after manifest load. AC-3 PASS: missing exit_code → [FAIL] message + exit 1 (confirmed). AC-4 PASS: exit_code='0' (str) → type error reject (confirmed). AC-5 PASS: exit_code=1 → exit_code≠0 reject (confirmed). AC-6 PASS: zero_regression=PASS with exit_code=1 still rejects (confirmed). AC-7 PASS: all 4 mock scenarios pass. AC-8 PASS: audit-artifacts.py US-001 exits 0 ARTIFACTS VALID. Typecheck PASS: python3 -m py_compile 0 errors (both project + global). Zero-regression: 727/727 vitest tests pass."
 }

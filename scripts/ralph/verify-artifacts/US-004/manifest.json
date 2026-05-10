@@ -1,18 +1,13 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-10T13:09:00",
-  "validator_end_ts": "2026-05-10T13:14:00",
-  "test_command": "pnpm test tests/unit/web/pages/VideoProduction.test.tsx && pnpm test:e2e tests/e2e/tool-video-production.spec.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-11T01:12:00",
+  "validator_end_ts": "2026-05-11T01:13:30",
+  "test_command": "pnpm typecheck && pnpm test",
   "exit_code": 0,
   "artifacts": [
-    "typecheck.txt",
+    "typecheck.stdout.txt",
     "vitest.stdout.txt",
-    "vitest.xml",
-    "pytest-full.stdout.txt",
-    "pytest-full.xml",
-    "e2e.stdout.txt",
-    "e2e-junit.txt",
     "manifest.json"
   ],
-  "notes": "retry-2 validation PASS. Pure TypeScript monorepo — no Python backend. pytest-full is vitest full suite (624 tests, 0 failures, up from 622 — 2 new unit tests added by dev). Unit tests: 23/23 passed. E2E: 1/1 chromium passed. Typecheck: 6 workspaces 0 errors. Key fix verified: VideoProductionResult.tsx COLUMNS header→key mapping corrected (镜头号→index, 景别→angle, 画面描述→description, BGM→bgm, 运镜→movement, 参考→reference, 备注→note). Browser screenshots confirm AC-5/6/10/11."
+  "notes": "零回归门禁: vitest 727 passed (0 failed, 0 errors). Typecheck 6 ws 0 error. AC-5 grep 命中 0. AC-6 全 workers 用法 OK via re-export. No pytest (Node.js project)."
 }

@@ -2984,3 +2984,29 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 --- [RALPH] Iteration 8 ended: US-007 (12分钟 35秒) ---
 
 --- [RALPH] Iteration 9 started: US-008 at 2026-05-11 01:44 ---
+
+## [2026-05-11 02:07] - US-008 (Opus audit · PRD-7 Low · TD-011 治本)
+- risk_level: low · 9 AC · vitest 727 + 4 screenshots + playwright e2e
+- AC-1: Header.tsx L140-147 三档 N-tiered (n>=4 ScrollArea h-60 / n>=2 div maxHeight=n*44px / n=1 plain div)
+- AC-2-3: browser 实测 N=1/2/3/4 高度 133/166/199/340px · ScrollArea 仅 N=4 启用 ✓
+- AC-4: verify-artifacts/US-008/screenshot-1~4.png · 4 张截图保存 ✓
+- AC-5: 无控制台错误 · 无 Radix portal break ✓
+- AC-6/7/8: typecheck 0 + lint 0 + vitest 727 + account-step-auth/isolation/account-switch e2e 全过 ✓
+
+### TD 留痕
+- TD-011 → resolved
+- approve commit: 151765d (+ 02ca2a1 progress.txt update)
+
+## [2026-05-11 02:08] - PRD-7 Cleanup PRD · COMPLETE 🎉
+- 8/8 stories PASSED · 0 BLOCKED · 总耗时 ~2h (00:04 启动 → 02:08 收官 · 全自动)
+- 治本: TD-022 (Critical · 5 次显现) + TD-020 + TD-023 + TD-021 + TD-003 + TD-006 + TD-011 = 7 TD
+- 全局 sync: RCA-004 timeout 5→20 + sync-to-project.sh 加版本检测
+- D-046~D-049 落地 (SoT 三处一致 / canonical 选择 / cleanup 24h / 路径 B 触发)
+- 一轮通过率 ~88% (US-001 R1 reject AC-7 后 R2 修对 · 其他 7 stories 一次过)
+- audit-artifacts.py 双逻辑生效 (zero_regression skip + exit_code 硬 reject)
+- 反例库 anti_patterns 注入生效 (US-001 防 PRD-6 US-002/004 类错误)
+- 0 RCA · 0 daemon hang · 0 路径 B 救援 · 流程稳定
+- 下一步: /goal-verify (§0 GSD codebase mapper × 6 packages + AGENTS 对账) → /prd-retro (PRD-7 vs PRD-6 复盘 + reject-examples 反哺)
+---
+
+--- [RALPH] Iteration 9 ended: US-008 (24分钟 11秒) ---

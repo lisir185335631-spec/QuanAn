@@ -1,15 +1,15 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-10T02:56:00",
-  "validator_end_ts": "2026-05-10T03:02:00",
-  "test_command": "pnpm test tests/unit/api/video-production-router.test.ts tests/integration/api/video-production-llm.test.ts",
+  "validator_start_ts": "2026-05-11T01:05:00",
+  "validator_end_ts": "2026-05-11T01:08:00",
+  "test_command": "python3.11 -m pytest scripts/ralph/test_cleanup_stale.py -q",
   "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "typecheck.txt",
-    "pytest-full.stdout.txt",
-    "manifest.json"
+    "pytest-full.xml",
+    "pytest-full.stdout.txt"
   ],
-  "notes": "PRD-6 US-003 PASS. Zero-regression: 601/601 tests, 61 files, exit 0. Typecheck: 6 ws 0 errors. Story tests: 7/7 pass (6 unit + 1 integration). Known pre-existing issue (not blocking): LLMGateway cost-logger logs 'cost_log.write_failed' FK userId violation on integration tests — fire-and-forget, does not affect AC-4 (BaseSpecialist._writeCostLog with callType='specialist_call' succeeds independently). All 12 ACs verified PASS."
+  "notes": "8/8 tests passed. AC-1: VALIDATOR.md §5 章节含 4 产物+字段示例. AC-2: check_timestamp skip logic OK. AC-3: INFO降级不阻断. AC-4: US-001 audit 无 FAKE. AC-5: 项目副本同步. AC-6: 0 false positives. AC-7: syntax+import OK."
 }
