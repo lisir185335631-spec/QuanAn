@@ -79,6 +79,20 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, 
   const { setValue, watch, formState: { errors: rawErrors }, register } = form;
   const errors = rawErrors;
 
+  // Debounced LS write on every input change (D-031 · input change → LS · not submit-only)
+  const watchedValues = watch();
+  useEffect(() => {
+    if (accountId === null) return;
+    const handler = setTimeout(() => {
+      try {
+        localStorage.setItem(getToolLsKey(accountId, toolKey, 'input'), JSON.stringify(watchedValues));
+      } catch {
+        // Storage full
+      }
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [watchedValues, accountId, toolKey]);
+
   const handleSubmit = form.handleSubmit(async (data) => {
     if (abortRef.current.signal.aborted) return;
 
