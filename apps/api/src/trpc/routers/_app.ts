@@ -4,6 +4,7 @@
  */
 
 import { acquisitionVideoRouter } from '@/trpc/routers/acquisitionVideo';
+import { aiVideoRouter } from '@/trpc/routers/aiVideo';
 import { analysisRouter } from '@/trpc/routers/analysis';
 import { authRouter } from '@/trpc/routers/auth';
 import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
@@ -27,6 +28,7 @@ import { router } from '@/trpc/trpc';
 export const appRouter = router({
   auth: authRouter,
   acquisitionVideo: acquisitionVideoRouter,
+  aiVideo: aiVideoRouter,
   evolution: evolutionRouter,
   ipAccounts: ipAccountsRouter,
   stepData: stepDataRouter,

@@ -13,6 +13,8 @@ export default defineConfig({
       // ioredis + bullmq live in apps/api/node_modules — aliases so vi.mock resolves consistently (PRD-6 US-010)
       'ioredis': path.resolve(__dirname, 'apps/api/node_modules/ioredis'),
       'bullmq': path.resolve(__dirname, 'apps/api/node_modules/bullmq'),
+      // @trpc/server lives in apps/api/node_modules — expose so vi.hoisted test files can import TRPCError (PRD-6 US-007)
+      '@trpc/server': path.resolve(__dirname, 'apps/api/node_modules/@trpc/server'),
       // @quanqn/schemas subpath exports — PRD-6 US-001 schema tests
       '@quanqn/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
       '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),

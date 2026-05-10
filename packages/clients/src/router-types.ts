@@ -154,6 +154,31 @@ export type VideoProductionHistoryRow = FreeGenerateHistoryRow;
 
 export type AcquisitionVideoHistoryRow = FreeGenerateHistoryRow;
 
+export type GenerateStoryboardOutput = {
+  historyId: number;
+  jobIds: string[];
+  scenesPlaceholder: Array<{
+    index: number;
+    description: string;
+    imagePromptEn: string;
+    sceneImageUrl: null;
+    status: 'pending';
+  }>;
+};
+
+export type JobStatusOutput = {
+  total: number;
+  completed: number;
+  pending: number;
+  failed: number;
+  scenes: Array<{
+    index: number;
+    status: 'pending' | 'completed' | 'failed';
+    sceneImageUrl?: string;
+    error?: string;
+  }>;
+};
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -394,6 +419,31 @@ const _shadowRouter = _t.router({
         durationMs: null,
         traceId: null,
         createdAt: new Date(),
+      })),
+  }),
+  aiVideo: _t.router({
+    generateStoryboard: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            sourceCopy: string;
+            scenesCount?: number;
+            imageStyle?: 'vivid' | 'natural';
+          },
+      )
+      .mutation((): GenerateStoryboardOutput => ({
+        historyId: 0,
+        jobIds: [],
+        scenesPlaceholder: [],
+      })),
+    jobStatus: _t.procedure
+      .input((x: unknown) => x as { historyId: number })
+      .query((): JobStatusOutput => ({
+        total: 0,
+        completed: 0,
+        pending: 0,
+        failed: 0,
+        scenes: [],
       })),
   }),
 });
