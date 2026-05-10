@@ -1,8 +1,10 @@
 /**
- * History.tsx — /history 模块页 · PRD-5 US-011
+ * History.tsx — /history 模块页 · PRD-5 US-011 · PRD-6 US-013
  * 真表格: list query(agentMode filter + dateRange filter) + Table + 点行跳转工具页 ?historyId=N
  * 操作列: delete mutation → 刷新 list
  * agentMode → toolPath: free→generate / boom→boom-generate / structural→analysis / viral→video-analysis
+ * US-013: production→video-production / acquisition(VideoAgent)→acquisition-video /
+ *         storyboard→ai-video / acquisition(CopywritingAgent)→generate?mode=acquisition
  */
 
 import { Trash2 } from 'lucide-react';
@@ -17,7 +19,8 @@ import type { HistoryListRow } from '@quanqn/clients/router-types';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-type AgentModeFilter = 'all' | 'free' | 'boom' | 'structural' | 'viral';
+// US-013: added production / acquisition / storyboard
+type AgentModeFilter = 'all' | 'free' | 'boom' | 'structural' | 'viral' | 'production' | 'acquisition' | 'storyboard';
 type DateRangeFilter = 'all' | 'last_7d' | 'last_30d';
 
 const MODE_OPTIONS: { value: AgentModeFilter; label: string }[] = [
@@ -26,6 +29,9 @@ const MODE_OPTIONS: { value: AgentModeFilter; label: string }[] = [
   { value: 'boom', label: 'Boom' },
   { value: 'structural', label: 'Analysis' },
   { value: 'viral', label: 'VideoAnalysis' },
+  { value: 'production', label: '视频制作' },
+  { value: 'acquisition', label: '获客' },
+  { value: 'storyboard', label: 'AI 视频' },
 ];
 
 const DATE_OPTIONS: { value: DateRangeFilter; label: string }[] = [
@@ -34,11 +40,14 @@ const DATE_OPTIONS: { value: DateRangeFilter; label: string }[] = [
   { value: 'last_30d', label: '最近 30 天' },
 ];
 
+// 'acquisition' handled separately in handleRowClick (agentId disambiguates video vs copy)
 const TOOL_PATH = {
   free: 'generate',
   boom: 'boom-generate',
   structural: 'analysis',
   viral: 'video-analysis',
+  production: 'video-production',
+  storyboard: 'ai-video',
 } as const satisfies Record<string, string>;
 
 const MODE_LABEL = {
@@ -46,6 +55,8 @@ const MODE_LABEL = {
   boom: 'Boom',
   structural: 'Analysis',
   viral: 'VideoAnalysis',
+  production: '视频制作',
+  storyboard: 'AI 视频',
 } as const satisfies Record<string, string>;
 
 function formatDate(d: Date | string): string {
@@ -61,21 +72,32 @@ function formatDate(d: Date | string): string {
 // ── ModeBadge ─────────────────────────────────────────────────────────────────
 
 function ModeBadge({ agentId, agentMode }: { agentId: string; agentMode: string | null }) {
+  // US-013: 'acquisition' agentMode is shared between VideoAgent and CopywritingAgent
   const modeText =
-    agentMode && agentMode in MODE_LABEL
-      ? MODE_LABEL[agentMode as keyof typeof MODE_LABEL]
-      : (agentMode ?? agentId);
+    agentMode === 'acquisition'
+      ? agentId === 'VideoAgent' ? '获客视频' : '获客文案'
+      : agentMode && agentMode in MODE_LABEL
+        ? MODE_LABEL[agentMode as keyof typeof MODE_LABEL]
+        : (agentMode ?? agentId);
 
   const colorClass =
-    agentMode === 'free'
-      ? 'bg-primary/10 text-primary'
-      : agentMode === 'boom'
-        ? 'bg-amber-500/10 text-amber-600'
-        : agentMode === 'structural'
-          ? 'bg-emerald-500/10 text-emerald-600'
-          : agentMode === 'viral'
-            ? 'bg-purple-500/10 text-purple-600'
-            : 'bg-muted text-muted-foreground';
+    agentMode === 'production'
+      ? 'bg-blue-500/10 text-blue-600'
+      : agentMode === 'acquisition' && agentId === 'VideoAgent'
+        ? 'bg-red-500/10 text-red-600'
+        : agentMode === 'storyboard'
+          ? 'bg-violet-500/10 text-violet-600'
+          : agentMode === 'acquisition'
+            ? 'bg-green-500/10 text-green-600' // CopywritingAgent acquisition
+            : agentMode === 'free'
+              ? 'bg-primary/10 text-primary'
+              : agentMode === 'boom'
+                ? 'bg-amber-500/10 text-amber-600'
+                : agentMode === 'structural'
+                  ? 'bg-emerald-500/10 text-emerald-600'
+                  : agentMode === 'viral'
+                    ? 'bg-purple-500/10 text-purple-600'
+                    : 'bg-muted text-muted-foreground';
 
   return (
     <span
@@ -114,6 +136,17 @@ export default function History() {
 
   function handleRowClick(row: HistoryListRow) {
     const mode = row.agentMode ?? '';
+
+    // US-013 AC-5: acquisition needs agentId disambiguation
+    if (mode === 'acquisition') {
+      if (row.agentId === 'VideoAgent') {
+        navigate(`/acquisition-video?historyId=${row.id}`);
+      } else {
+        navigate(`/generate?historyId=${row.id}&mode=acquisition`);
+      }
+      return;
+    }
+
     if (!(mode in TOOL_PATH)) return;
     const toolPath = TOOL_PATH[mode as keyof typeof TOOL_PATH];
     navigate(`/${toolPath}?historyId=${row.id}`);

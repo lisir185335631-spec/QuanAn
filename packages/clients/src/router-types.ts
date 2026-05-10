@@ -125,7 +125,17 @@ export type FreeGenerateHistoryRow = {
   createdAt: Date;
 };
 
-export type HistoryDetailOutput = HistoryListRow | null;
+// US-013: storyboard scene item returned by history.detail
+export type HistoryDetailScene = {
+  index: number;
+  description: string;
+  imagePromptEn: string;
+  duration: string;
+  status: 'pending' | 'completed' | 'failed';
+  sceneImageUrl: string | null;
+};
+
+export type HistoryDetailOutput = (HistoryListRow & { scenes?: HistoryDetailScene[] }) | null;
 
 export type HistoryListRow = {
   id: number;
@@ -346,7 +356,7 @@ const _shadowRouter = _t.router({
       .query((): HistoryListOutput => []),
     detail: _t.procedure
       .input((x: unknown) => x as { id: number })
-      .query((): HistoryDetailOutput => null),
+      .query((): HistoryDetailOutput => null), // US-013: may include scenes[] for storyboard rows
     delete: _t.procedure
       .input((x: unknown) => x as { id: number })
       .mutation((): { ok: true } => ({ ok: true })),

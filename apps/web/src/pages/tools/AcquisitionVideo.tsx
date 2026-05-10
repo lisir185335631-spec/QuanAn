@@ -1,11 +1,12 @@
 /**
- * AcquisitionVideo.tsx — /acquisition-video 工具页 · PRD-6 US-006
+ * AcquisitionVideo.tsx — /acquisition-video 工具页 · PRD-6 US-006 · US-013
  * 真表单: ToolForm(toolKey=acquisition-video) + sourceCopy textarea min 10 + conversionGoal input required + platform select + duration select
  * LS-first dual-write: getToolLsKey(accountId, "acquisition-video", "input") — handled by ToolForm (D-031 · AC-4)
  * submit → trpc.acquisitionVideo.generate.mutate → onSuccess setResult → <AcquisitionVideoResult>
  * FeedbackButton: agentId=VideoAgent
  * AbortController on unmount
  * US-011 pattern: ?historyId → trpc.history.detail.useQuery → 预填 sourceCopy(inputSummary) + setResult(历史 content)
+ * US-013 SHIELD REJ-010: ?historyId pre-fill → write defaults to LS namespace for persistence
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -14,6 +15,8 @@ import { useSearchParams } from 'react-router-dom';
 import { FeedbackButton } from '@/components/FeedbackButton';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
 import { AcquisitionVideoResult } from '@/components/ToolResult/AcquisitionVideoResult';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { getToolLsKey } from '@/lib/ls-namespace';
 import { acquisitionVideoFrontendInput } from '@/lib/schemas/acquisitionVideoFrontend';
 import { trpc } from '@/lib/trpc';
 
@@ -22,6 +25,9 @@ import type { AcquisitionVideoHistoryRow } from '@quanqn/clients/router-types';
 export { acquisitionVideoFrontendInput } from '@/lib/schemas/acquisitionVideoFrontend';
 
 export default function AcquisitionVideo() {
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+
   const [result, setResult] = useState<AcquisitionVideoHistoryRow | null>(null);
   const [searchParams] = useSearchParams();
   const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
@@ -39,10 +45,16 @@ export default function AcquisitionVideo() {
   );
 
   useEffect(() => {
-    if (historyDetail) {
-      setResult(historyDetail as unknown as AcquisitionVideoHistoryRow);
-    }
-  }, [historyDetail]);
+    if (!historyDetail || accountId === null) return;
+    setResult(historyDetail as unknown as AcquisitionVideoHistoryRow);
+    // US-013 SHIELD REJ-010: write pre-filled input to LS so user doesn't lose state on navigation
+    try {
+      localStorage.setItem(
+        getToolLsKey(accountId, 'acquisition-video', 'input'),
+        JSON.stringify({ sourceCopy: historyDetail.inputSummary, conversionGoal: '', platform: '', duration: '' }),
+      );
+    } catch { /* storage full */ }
+  }, [historyDetail, accountId]);
 
   const historyDefaults = historyDetail
     ? { sourceCopy: historyDetail.inputSummary, conversionGoal: '', platform: '', duration: '' }

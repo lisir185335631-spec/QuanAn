@@ -1,13 +1,15 @@
 /**
- * history router — PRD-5 US-011
+ * history router — PRD-5 US-011 · PRD-6 US-013
  * AC-1: list query (protectedProcedure · agentId?, agentMode?, sourceType?, dateRange?, limit, offset)
  * AC-2: list select { id, agentId, agentMode, sourceType, inputSummary, content, contentType, scriptType, elements, isFallback, traceId, createdAt }
  * AC-3: detail query (findFirst + accountId · NOT_FOUND)
  * AC-4: delete mutation (deleteMany + accountId RLS · { ok: true })
  * AC-12: limit > 100 → zod max(100)
  * AC-13: detail not found → NOT_FOUND
+ * US-013 AC-2: detail storyboard → join Asset table → scenes[]{ index, description, imagePromptEn, duration, status, sceneImageUrl }
  * SHIELD REJ-013: protectedProcedure (non-publicProcedure)
  * SHIELD REJ-008: explicit accountId where + RLS via protectedProcedure
+ * SHIELD TD-019: explicit accountId double-layer guard (no RLS-only)
  */
 
 import { TRPCError } from '@trpc/server';
@@ -21,6 +23,17 @@ import type { Prisma } from '@prisma/client';
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const DATE_RANGE_VALUES = ['last_7d', 'last_30d', 'all'] as const;
+
+// ── Storyboard scene types (US-013 · mirrors StoredScene in aiVideo.ts) ────────
+
+interface StoredScene {
+  index: number;
+  description: string;
+  imagePromptEn: string;
+  duration: string;
+  sceneImageUrl: string | null;
+  status: 'pending' | 'completed' | 'failed';
+}
 
 // ── Select ────────────────────────────────────────────────────────────────────
 
@@ -85,6 +98,8 @@ export const historyRouter = router({
 
   /**
    * AC-3: detail by id — explicit accountId check → NOT_FOUND if missing
+   * US-013 AC-2: storyboard rows → join Asset table for sceneImageUrls
+   * SHIELD TD-019: where: { id, accountId } double-layer guard
    */
   detail: protectedProcedure
     .input(z.object({ id: z.number().int().positive() }))
@@ -98,6 +113,35 @@ export const historyRouter = router({
 
       if (!row) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'history_not_found' });
+      }
+
+      // US-013 AC-2: storyboard → join Asset for authoritative sceneImageUrls
+      if (row.agentMode === 'storyboard') {
+        let contentScenes: StoredScene[] = [];
+        try {
+          const parsed = JSON.parse(row.content) as { scenes?: StoredScene[] };
+          contentScenes = parsed.scenes ?? [];
+        } catch { /* non-JSON content — return empty scenes */ }
+
+        // Explicit accountId double-layer guard (LD-009 · TD-019)
+        const assets = await prisma.asset.findMany({
+          where: { relatedHistoryId: row.id, accountId: activeAccountId! },
+          select: { sceneIndex: true, publicUrl: true },
+          orderBy: { sceneIndex: 'asc' },
+        });
+
+        const assetMap = new Map(assets.map((a) => [a.sceneIndex, a.publicUrl]));
+
+        const scenes = contentScenes.map((s) => ({
+          index: s.index,
+          description: s.description,
+          imagePromptEn: s.imagePromptEn,
+          duration: s.duration,
+          status: s.status,
+          sceneImageUrl: assetMap.get(s.index) ?? s.sceneImageUrl ?? null,
+        }));
+
+        return { ...row, scenes };
       }
 
       return row;

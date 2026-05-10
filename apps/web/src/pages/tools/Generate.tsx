@@ -1,11 +1,12 @@
 /**
- * Generate.tsx — /generate 工具页 · PRD-5 US-004 · PRD-6 US-012
+ * Generate.tsx — /generate 工具页 · PRD-5 US-004 · PRD-6 US-012 · US-013
  * mode select: 'free'(自由创作) | 'acquisition'(获客文案)
  * free mode: ToolForm(toolKey=freeGenerate) + copywritingFreeGenerateInput → trpc.copywriting.freeGenerate
  * acquisition mode: ToolForm(toolKey=acquisition) + acquisitionCopywritingInputSchema → trpc.copywriting.acquisitionGenerate
  * LS-first dual-write per mode namespace (D-031)
  * AbortController on unmount (AC-8)
  * US-011 stub: ?historyId=xxx → trpc.history.detail.useQuery → 预填 defaultValues
+ * US-013 AC-6: ?mode=acquisition → switch to acquisition mode + write LS namespace (SHIELD REJ-010)
  */
 
 import { acquisitionCopywritingInputSchema, copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
@@ -32,6 +33,7 @@ export default function Generate() {
   const [result, setResult] = useState<FreeGenerateHistoryRow | null>(null);
   const [searchParams] = useSearchParams();
   const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
+  const searchParamsMode = searchParams.get('mode') as GenerateMode | null;
 
   // AbortController on unmount (AC-8)
   const abortRef = useRef<AbortController>(null!);
@@ -52,13 +54,33 @@ export default function Generate() {
     return undefined;
   });
 
-  // US-011 stub: ?historyId pre-fill (接入 US-011 再激活)
+  // US-013 AC-6: ?mode=acquisition → switch mode
+  useEffect(() => {
+    if (searchParamsMode === 'acquisition') {
+      setMode('acquisition');
+    }
+  }, [searchParamsMode]);
+
+  // US-011 stub: ?historyId pre-fill
   const { data: historyDetail } = trpc.history.detail.useQuery(
     { id: historyId! },
     { enabled: !!historyId },
   );
 
-  // Merge history pre-fill into defaults if historyId is present
+  // Merge history pre-fill into defaults; write to LS for the active mode (SHIELD REJ-010)
+  useEffect(() => {
+    if (!historyDetail || accountId === null) return;
+    const activeMode = searchParamsMode === 'acquisition' ? 'acquisition' : mode;
+    const toolNamespace = activeMode === 'acquisition' ? 'acquisition' : 'freeGenerate';
+    const inputDefaults =
+      activeMode === 'acquisition'
+        ? { scriptType: historyDetail.scriptType ?? '', elements: historyDetail.elements ?? [], conversionGoal: '', topic: '' }
+        : { scriptType: historyDetail.scriptType ?? '', elements: historyDetail.elements ?? [], topic: '' };
+    try {
+      localStorage.setItem(getToolLsKey(accountId, toolNamespace, 'input'), JSON.stringify(inputDefaults));
+    } catch { /* storage full */ }
+  }, [historyDetail, accountId, searchParamsMode, mode]);
+
   const historyDefaults = historyDetail
     ? {
         scriptType: historyDetail.scriptType ?? '',

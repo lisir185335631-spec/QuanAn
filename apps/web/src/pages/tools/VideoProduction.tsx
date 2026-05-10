@@ -1,11 +1,12 @@
 /**
- * VideoProduction.tsx — /video-production 工具页 · PRD-6 US-004
+ * VideoProduction.tsx — /video-production 工具页 · PRD-6 US-004 · US-013
  * 真表单: ToolForm(toolKey=video-production) + sourceCopy textarea min 10 + videoType select + duration select + additionalContext textarea
  * LS-first dual-write: getToolLsKey(accountId, "video-production", "input") — handled by ToolForm (D-031 · AC-4)
  * submit → trpc.videoProduction.generate.mutate → onSuccess setResult → <VideoProductionResult>
  * FeedbackButton: agentId=VideoAgent
  * AbortController on unmount
  * US-011 pattern: ?historyId → trpc.history.detail.useQuery → 预填 sourceCopy(inputSummary) + setResult(历史 content)
+ * US-013 SHIELD REJ-010: ?historyId pre-fill → write defaults to LS namespace for persistence
  */
 
 import { videoProductionInput } from '@quanqn/schemas/specialist-io';
@@ -15,11 +16,16 @@ import { useSearchParams } from 'react-router-dom';
 import { FeedbackButton } from '@/components/FeedbackButton';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
 import { VideoProductionResult } from '@/components/ToolResult/VideoProductionResult';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
 import type { VideoProductionHistoryRow } from '@quanqn/clients/router-types';
 
 export default function VideoProduction() {
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+
   const [result, setResult] = useState<VideoProductionHistoryRow | null>(null);
   const [searchParams] = useSearchParams();
   const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
@@ -37,10 +43,16 @@ export default function VideoProduction() {
   );
 
   useEffect(() => {
-    if (historyDetail) {
-      setResult(historyDetail as unknown as VideoProductionHistoryRow);
-    }
-  }, [historyDetail]);
+    if (!historyDetail || accountId === null) return;
+    setResult(historyDetail as unknown as VideoProductionHistoryRow);
+    // US-013 SHIELD REJ-010: write pre-filled input to LS so user doesn't lose state on navigation
+    try {
+      localStorage.setItem(
+        getToolLsKey(accountId, 'video-production', 'input'),
+        JSON.stringify({ sourceCopy: historyDetail.inputSummary, videoType: '', duration: '', additionalContext: '' }),
+      );
+    } catch { /* storage full */ }
+  }, [historyDetail, accountId]);
 
   const historyDefaults = historyDetail
     ? { sourceCopy: historyDetail.inputSummary, videoType: '', duration: '', additionalContext: '' }

@@ -1,11 +1,12 @@
 /**
- * AiVideo.tsx — /ai-video 工具页 · PRD-6 US-008
+ * AiVideo.tsx — /ai-video 工具页 · PRD-6 US-008 · US-013
  * 真表单: ToolForm(toolKey=ai-video) + sourceCopy textarea + scenesCount select 5-8 + imageStyle select
  * submit → trpc.aiVideo.generateStoryboard.mutate → historyId + jobIds
  * 提交后立即跳结果区 AiVideoResult(polling 5-8 镜头 skeleton → 真图)
  * LS-first dual-write (SHIELD REJ-010): getToolLsKey(accountId, 'ai-video', 'active_polling') → { historyId, jobIds }
  * SHIELD REJ-035: polling fail 不清 LS lastHistoryId
  * ?historyId=N: 恢复 polling 当前 historyId · 镜头网格继续显示
+ * US-013 SHIELD REJ-010: ?historyId 设置 activeHistory 时同步写入 LS namespace
  * rate limit (TOO_MANY_REQUESTS) → '今日已达上限 · 明日再来' + disabled 按钮
  */
 
@@ -55,12 +56,21 @@ export default function AiVideo() {
     return () => { abortRef.current.abort(); };
   }, []);
 
-  // ?historyId=N: show history polling view (AC-16)
+  // ?historyId=N: show history polling view + write to LS (US-013 SHIELD REJ-010)
   useEffect(() => {
     if (queryHistoryId && !activeHistory) {
-      setActiveHistory({ historyId: queryHistoryId, jobIds: [] });
+      const pollingData: PollingLsData = { historyId: queryHistoryId, jobIds: [] };
+      setActiveHistory(pollingData);
+      if (accountId !== null) {
+        try {
+          localStorage.setItem(
+            getToolLsKey(accountId, 'ai-video', 'active_polling'),
+            JSON.stringify(pollingData),
+          );
+        } catch { /* storage full */ }
+      }
     }
-  }, [queryHistoryId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [queryHistoryId, accountId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // LS restore on mount (SHIELD REJ-010 · AC-15)
   useEffect(() => {
