@@ -25,6 +25,7 @@ import type {
   ILLMGateway,
   LLMCompleteRequest,
 } from './base/types';
+import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io';
 
 // ── Mode type ─────────────────────────────────────────────────────────────────
 
@@ -115,7 +116,7 @@ const CopywritingAcquisitionBaseSchema = z.object({
 export type CopywritingOutput = z.infer<typeof CopywritingOutputSchema>;
 export type CopywritingFreeOutput = z.infer<typeof CopywritingFreeOutputSchema>;
 export type BoomOutput = z.infer<typeof BoomOutputSchema>;
-export type CopywritingAcquisitionOutput = z.infer<typeof CopywritingAcquisitionOutputSchema>;
+export type CopywritingAcquisitionOutput = AcquisitionCopywritingOutput;
 export type CopywritingMultiOutput = CopywritingOutput | CopywritingFreeOutput | BoomOutput | CopywritingAcquisitionOutput;
 
 // ── Input schema ──────────────────────────────────────────────────────────────
