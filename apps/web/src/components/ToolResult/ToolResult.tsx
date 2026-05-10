@@ -7,8 +7,9 @@ import { AnalysisResult } from './AnalysisResult';
 import { BoomGenerateResult } from './BoomGenerateResult';
 import { FreeGenerateResult } from './FreeGenerateResult';
 import { VideoAnalysisResult } from './VideoAnalysisResult';
+import { VideoProductionResult } from './VideoProductionResult';
 
-export type ToolResultKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate';
+export type ToolResultKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production';
 
 interface ToolResultProps {
   toolKey: ToolResultKey;
@@ -28,6 +29,8 @@ export function ToolResult({ toolKey, data, isFallback }: ToolResultProps) {
       return <AnalysisResult data={data} />;
     case 'video-analysis':
       return <VideoAnalysisResult data={data} />;
+    case 'video-production':
+      return <VideoProductionResult data={data} />;
     default:
       return null;
   }

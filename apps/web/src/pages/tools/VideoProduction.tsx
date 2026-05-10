@@ -1,18 +1,91 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+/**
+ * VideoProduction.tsx — /video-production 工具页 · PRD-6 US-004
+ * 真表单: ToolForm(toolKey=video-production) + sourceCopy textarea min 10 + videoType select + duration select + additionalContext textarea
+ * LS-first dual-write: getToolLsKey(accountId, "video-production", "input") — handled by ToolForm (D-031 · AC-4)
+ * submit → trpc.videoProduction.generate.mutate → onSuccess setResult → <VideoProductionResult>
+ * FeedbackButton: agentId=VideoAgent
+ * AbortController on unmount
+ * US-011 pattern: ?historyId → trpc.history.detail.useQuery → 预填 sourceCopy(inputSummary) + setResult(历史 content)
+ */
+
+import { videoProductionInput } from '@quanqn/schemas/specialist-io';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+import { FeedbackButton } from '@/components/FeedbackButton';
+import { ToolForm } from '@/components/ToolForm/ToolForm';
+import { VideoProductionResult } from '@/components/ToolResult/VideoProductionResult';
+import { trpc } from '@/lib/trpc';
+
+import type { VideoProductionHistoryRow } from '@quanqn/clients/router-types';
 
 export default function VideoProduction() {
+  const [result, setResult] = useState<VideoProductionHistoryRow | null>(null);
+  const [searchParams] = useSearchParams();
+  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
+
+  const abortRef = useRef<AbortController>(null!);
+  useEffect(() => {
+    abortRef.current = new AbortController();
+    return () => { abortRef.current.abort(); };
+  }, []);
+
+  // ?historyId pre-fill (US-011 pattern)
+  const { data: historyDetail } = trpc.history.detail.useQuery(
+    { id: historyId! },
+    { enabled: !!historyId },
+  );
+
+  useEffect(() => {
+    if (historyDetail) {
+      setResult(historyDetail as unknown as VideoProductionHistoryRow);
+    }
+  }, [historyDetail]);
+
+  const historyDefaults = historyDetail
+    ? { sourceCopy: historyDetail.inputSummary, videoType: '', duration: '', additionalContext: '' }
+    : undefined;
+
+  const mutation = trpc.videoProduction.generate.useMutation();
+
+  async function handleSubmit(data: Record<string, unknown>) {
+    if (abortRef.current.signal.aborted) throw new Error('aborted');
+
+    const row = await mutation.mutateAsync(
+      data as { sourceCopy: string; videoType?: 'short_form' | 'long_form'; duration?: '15s' | '30s' | '60s' | '180s'; additionalContext?: string },
+    );
+
+    if (abortRef.current.signal.aborted) throw new Error('aborted');
+    return row;
+  }
+
+  function handleSuccess(row: unknown) {
+    setResult(row as VideoProductionHistoryRow);
+  }
+
   return (
-    <main className="flex-1 container py-8">
-      <h1 className="text-h1 font-display text-on-surface mb-6">短视频制作</h1>
-      <Card className="max-w-2xl">
-        <CardHeader>
-          <span className="text-label-sm font-label text-primary uppercase tracking-wide">内容创作</span>
-        </CardHeader>
-        <CardContent>
-          <p className="text-body-md text-muted-foreground">全流程短视频制作指导，从策划到剪辑发布</p>
-          <p className="mt-4 text-body-sm text-on-surface-variant">PRD-3 占位 · 实施 PRD-4</p>
-        </CardContent>
-      </Card>
+    <main className="flex-1 container py-8 space-y-8">
+      <div>
+        <span className="text-label-sm font-label text-primary uppercase tracking-wide">内容创作</span>
+        <h1 className="mt-1 text-h1 font-display text-on-surface">短视频制作</h1>
+        <p className="mt-2 text-body-md text-muted-foreground">从原始文案生成完整制作方案：分镜脚本 + 设备清单 + 拍摄排期</p>
+      </div>
+
+      <ToolForm
+        toolKey="video-production"
+        schema={videoProductionInput}
+        onSubmit={handleSubmit}
+        onSuccess={handleSuccess}
+        submitLabel="生成方案"
+        defaultValues={historyDefaults}
+      />
+
+      {result && (
+        <div className="space-y-4">
+          <VideoProductionResult data={result} />
+          <FeedbackButton stepKey="video-production" agentId="VideoAgent" />
+        </div>
+      )}
     </main>
   );
 }

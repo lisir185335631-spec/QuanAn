@@ -8,7 +8,7 @@ import { z } from 'zod';
 // ── Input ────────────────────────────────────────────────────────────────────
 
 export const videoProductionInput = z.object({
-  sourceCopy: z.string().min(10).max(3000, '原始文案不能超过3000字符'),
+  sourceCopy: z.string().min(10, '原始文案至少 10 字符').max(3000, '原始文案不能超过3000字符'),
   videoType: z.enum(['short_form', 'long_form']).optional(),
   duration: z.enum(['15s', '30s', '60s', '180s']).optional(),
   additionalContext: z.string().optional(),

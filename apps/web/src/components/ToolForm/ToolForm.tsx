@@ -26,7 +26,7 @@ import type { ZodTypeAny } from 'zod';
 
 // ── Tool types ────────────────────────────────────────────────────────────────
 
-export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate';
+export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -299,6 +299,72 @@ function renderToolFields(
         </>
       );
 
+    case 'video-production':
+      return (
+        <>
+          <div className="space-y-1.5">
+            <label htmlFor="tool-vp-source-copy" className="text-body-sm font-medium text-on-surface">
+              原始文案<span className="text-error ml-0.5">*</span>
+            </label>
+            <textarea
+              id="tool-vp-source-copy"
+              {...register('sourceCopy')}
+              rows={8}
+              className={cn(
+                'flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y min-h-[120px]',
+                errors['sourceCopy'] && 'border-error',
+              )}
+              placeholder="粘贴视频原始文案，生成完整短视频制作方案（10-3000字）"
+              data-testid="tool-vp-source-copy"
+            />
+            {errors['sourceCopy'] && (
+              <p className="text-body-xs text-error" role="alert">{errors['sourceCopy']?.message}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label htmlFor="tool-vp-video-type" className="text-body-sm font-medium text-on-surface">视频类型</label>
+              <select
+                id="tool-vp-video-type"
+                {...register('videoType')}
+                className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                data-testid="tool-vp-video-type"
+              >
+                <option value="">请选择类型</option>
+                <option value="short_form">短视频</option>
+                <option value="long_form">长视频</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="tool-vp-duration" className="text-body-sm font-medium text-on-surface">视频时长</label>
+              <select
+                id="tool-vp-duration"
+                {...register('duration')}
+                className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                data-testid="tool-vp-duration"
+              >
+                <option value="">请选择时长</option>
+                <option value="15s">15秒</option>
+                <option value="30s">30秒</option>
+                <option value="60s">60秒</option>
+                <option value="180s">3分钟</option>
+              </select>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="tool-vp-additional" className="text-body-sm font-medium text-on-surface">补充说明（可选）</label>
+            <textarea
+              id="tool-vp-additional"
+              {...register('additionalContext')}
+              rows={3}
+              className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+              placeholder="例如：主角为女性 / 需要口播形式 / 适合快剪风格"
+              data-testid="tool-vp-additional"
+            />
+          </div>
+        </>
+      );
+
     default:
       return (
         <p className="text-body-sm text-muted-foreground">该工具暂无需填写内容</p>
@@ -320,6 +386,8 @@ function getDefaultValues(toolKey: ToolKey): Record<string, unknown> {
       return { copy: '' };
     case 'video-analysis':
       return { lastTitle: '', lastCopy: '' };
+    case 'video-production':
+      return { sourceCopy: '', videoType: '', duration: '', additionalContext: '' };
     default:
       return {};
   }
