@@ -8,6 +8,8 @@
  * AC-14: perf marker on table container
  */
 
+import { useLayoutEffect, useRef } from 'react';
+
 import { Card, CardContent } from '@/components/ui/card';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -65,12 +67,37 @@ const COLUMNS: { header: string; key: keyof ShotItem }[] = [
 export function VideoProductionResult({ data }: VideoProductionResultProps) {
   const row = (data ?? {}) as VideoProductionHistoryRowLike;
 
+  // AC-14: perf marker — hooks must come before early returns
+  const perfStartRef = useRef(performance.now());
+
   let parsed: ProductionData | null = null;
+  let parseError = false;
   try {
     if (row.content) {
       parsed = JSON.parse(row.content) as ProductionData;
     }
   } catch {
+    parseError = true;
+  }
+
+  const shotList = parsed?.shotList ?? [];
+  const equipment = parsed?.equipment ?? [];
+  const schedule = parsed?.schedule ?? '';
+
+  // AC-14: mark after storyboard table is painted; measure total render duration
+  useLayoutEffect(() => {
+    if (shotList.length > 0) {
+      performance.mark('vp-storyboard-painted');
+      try {
+        performance.measure('vp-storyboard-render', {
+          start: perfStartRef.current,
+          end: performance.now(),
+        });
+      } catch { /* mark may have been cleared */ }
+    }
+  }, [shotList.length]);
+
+  if (parseError) {
     return (
       <div
         className="rounded-lg border border-error bg-error/5 p-4"
@@ -89,10 +116,6 @@ export function VideoProductionResult({ data }: VideoProductionResultProps) {
       </div>
     );
   }
-
-  const shotList = parsed.shotList ?? [];
-  const equipment = parsed.equipment ?? [];
-  const schedule = parsed.schedule ?? '';
 
   return (
     <div className="space-y-6" data-testid="tool-result-video-production">
