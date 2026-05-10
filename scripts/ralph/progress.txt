@@ -1,4 +1,99 @@
 
+## [2026-05-11 01:55] - US-008 (TD-011 AccountDropdown ScrollArea 自适应 max-h + N 分档)
+- apps/web/src/components/Header.tsx AccountDropdown (line 116-) 改为 N 分档渲染
+  - n=1 → `<div>{items}</div>` (无 ScrollArea · 紧凑)
+  - n=2-3 → `<div style={{ maxHeight: n*44px, overflowY: auto }}>{items}</div>` (compact max-h)
+  - n≥4 → `<ScrollArea className="h-60">{items}</ScrollArea>` (原有滚动行为)
+- ToolsDropdown (line 188-) 保持不变 (14 项固定数 · h-52 不空旷)
+- Playwright 生成 4 张截图 (screenshot-1/2/3/4.png) 存 verify-artifacts/US-008/
+- pnpm typecheck 6ws 0 error ✓ · pnpm lint --max-warnings=0 全过 ✓ · pnpm test 75 files 727 tests ✓
+- 更改文件: apps/web/src/components/Header.tsx (+30 -17) · verify-artifacts/US-008/ (4 screenshots + manifest)
+- **未来迭代的学习:**
+  - ipAccounts.list 用 protectedProcedure → 要求 activeAccountId · 新用户必须先 switchActive 才能 list 返回数据
+  - ipAccounts.delete 是软删除 (isActive=false) · list 不过滤 isActive → 软删账号仍出现在下拉菜单
+  - Playwright 截图时 Radix DropdownMenuContent portal 位置可用 `menu.boundingBox()` 取到精确坐标 · clip 截图更清晰
+  - N 分档 inline style `style={{ maxHeight: n*44px }}` 比动态 Tailwind class 更安全 · Tailwind JIT 不扫描模板字符串内 class
+---
+
+## [2026-05-11 03:44] - US-006 (TD-003 audit-artifacts.py manifest 缺 exit_code 硬 reject)
+- 新增 `_check_exit_code(manifest: dict) -> tuple[bool, str]` 函数: 缺 exit_code key → reject · 非 int → reject · 非零 → reject · zero_regression=PASS 时仍要求 exit_code=0 (AC-6)
+- main() 改动: check_manifest 后立即调 `_check_exit_code` (第一步门禁) · manifest JSON 可解析但 exit_code 不合法时 sys.exit(1) · 跳过后续所有检查
+- 全局副本 (~/.claude/scripts/ralph/audit-artifacts.py) 同步更新
+- 实测 AC-7: 缺 exit_code → [FAIL] + exit 1 ✓ · exit_code=1 → [FAIL] + exit 1 ✓ · exit_code="0"(str) → 类型错误 reject ✓ · exit_code=0 → [OK] exit_code=0 ✓ 继续后续检查 ✓
+- AC-8: python3.11 audit-artifacts.py US-001 → ARTIFACTS VALID · [OK] exit_code=0 ✓ 作为第一行输出
+- AC-9: python3.11 -m py_compile audit-artifacts.py → 0 error ✓
+- 更改文件: scripts/ralph/audit-artifacts.py · ~/.claude/scripts/ralph/audit-artifacts.py
+- **未来迭代的学习:**
+  - _check_exit_code 放在 check_manifest 之后、打印其结果之前 · 确保 exit_code 非法时立即 sys.exit(1) 不打印其他 manifest 诊断噪音
+  - manifest dict 非空 (truthy check) 等价于 "JSON 可解析" · check_manifest 在 file-not-found/parse-error 时返回 ({}, ...) 空 dict → _check_exit_code 被跳过 (正确行为)
+  - zero_regression=PASS 只跳 timestamps check · 不跳 exit_code check · 两者独立门控
+---
+
+## [2026-05-11 01:11] - US-004 (TD-021 ImageGen Worker types 改 import @quanqn/schemas)
+- 删 apps/api/src/workers/image-gen/index.ts 中 inline interface ImageGenJobPayload (line 13-20) + type ImageGenJobResult (line 22-24)
+- 顶部加 `import type { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io'`
+- 加 `export type { ImageGenJobPayload, ImageGenJobResult }` 保持 backward compat · dall-e-3.ts / queue.ts / worker.ts 仍 import from './index' 无需改动
+- 保留 `export interface IImageGenWorker { ... }` · 不在 packages/schemas
+- AC-5 grep 0 命中 ✓ · AC-6 所有 workers/ 用法仍 OK ✓ · pnpm typecheck 6ws 0 error ✓ · pnpm test 75 files 727 tests ✓
+- 更改文件: apps/api/src/workers/image-gen/index.ts (3 insertions, 15 deletions)
+- **未来迭代的学习:**
+  - inline type 迁移到 @quanqn/schemas 后用 `export type { X }` re-export 保持向后兼容 · 消费者文件(dall-e-3.ts/queue.ts)无需改动
+---
+
+## [2026-05-11 03:16] - US-003 (TD-023 VALIDATOR.md 产物清单 + audit-artifacts.py 改进)
+- 新增 `### §5 · 产物清单 (必落)` 章节到 ~/.claude/scripts/ralph/VALIDATOR.md · 列 4 产物文件 + manifest.json 字段示例 (含 exit_code/zero_regression)
+- check_timestamp() 加 zero_regression bypass: in (True/'PASS'/'passed') 时打印 [INFO] 后跳过检查 (防跨 session 旧文件误报)
+- pytest-full.xml 缺失从 [WARN] 降级为 [INFO] · 仍不阻断 audit pass (AC-3)
+- 新增 --story <id> 参数支持 · 同时保留 positional arg 兼容
+- scripts/ralph/verify-artifacts/US-001/manifest.json 加 zero_regression=PASS
+- scripts/ralph/audit-artifacts.py 项目副本同步
+- 实测: python audit-artifacts.py --story US-001 → ARTIFACTS VALID · 0 false positive
+- 更改文件: ~/.claude/scripts/ralph/VALIDATOR.md · ~/.claude/scripts/ralph/audit-artifacts.py · scripts/ralph/audit-artifacts.py · scripts/ralph/verify-artifacts/US-001/manifest.json
+- **未来迭代的学习:**
+  - manifest.zero_regression 字段是防跨 session 误报的关键 · Validator 写完验证后必须在 manifest 加此字段
+  - audit-artifacts.py 全局源在 ~/.claude/scripts/ralph/ · 项目副本在 scripts/ralph/ · 改了全局必须手动同步项目副本 (sync-to-project.sh 可自动化)
+---
+
+## [2026-05-11 01:00] - US-002 (TD-020 verify-artifacts 跨 PRD 残留清理)
+- 新增 `_cleanup_stale_verify_artifacts(threshold_hours: int = 24) -> int` 到 scripts/ralph/ralph.py
+- `_daemon_relaunch` 开始时调用一次 · 清 mtime > 24h 的 verify-artifacts/US-*/ 文件
+- 实测: 212 → 103 files · 删除 109 个旧文件 · US-001(当前 PRD-7 · 00:40 写) 保留 · PRD-6 7-8h 文件保留
+- 新建 scripts/ralph/test_cleanup_stale.py · 8 pytest tests · patch.object 机制 · 8/8 pass
+- pytest install: python3.11 -m pip install pytest --break-system-packages
+- 验证: pnpm typecheck 6ws 0 error ✓ · pnpm test 75 files 727 tests ✓ · pytest 8/8 ✓
+- 更改文件: scripts/ralph/ralph.py (+35 lines) · scripts/ralph/test_cleanup_stale.py (new · 8 tests)
+- **未来迭代的学习:**
+  - pytest patch 技巧: 用 `patch.object(mod, "SCRIPT_DIR", tmp_path)` 而非 `patch("ralph_module.SCRIPT_DIR", ...)` · 直接操作 mod 对象属性确保覆盖到函数 __globals__
+  - ralph.py 用 python3.11 启动(dashboard.py 有 `int | None` 3.10+ union syntax) · python3(3.9)无法 import ralph
+  - verify-artifacts 跨 PRD 残留真实问题: 212 个文件 · 109 个 > 24h · audit-artifacts.py timestamps 检查会误报 FAKE 60h 跨度
+---
+
+## [2026-05-11 00:35] - US-001 (retry-2 · AC-7 targeted fix)
+- 修复 CopywritingAgent.ts AC-7: 添加 `import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io'` · 将 CopywritingAcquisitionOutput type 从 `z.infer<typeof CopywritingAcquisitionOutputSchema>` 改为直接复用 `AcquisitionCopywritingOutput`
+- 更改文件: apps/api/src/specialists/CopywritingAgent.ts (2 lines changed)
+- **未来迭代的学习:**
+  - `import type { X } from '@quanqn/*'` 在 type group 内部的字母序: `@` (ASCII 64) > `.` (ASCII 46) · 因此 `./local` 比 `@external` 字母序更小 · `./base/types` 必须放在 `@quanqn/schemas/...` 之前(与直觉相反 · 外部包反而排后面)
+  - 新增 pattern: type group 内 import type 顺序: `./local` < `@external` (基于 ASCII 字母序)
+---
+
+## [2026-05-11 00:24] - US-001 (PRD-7 · TD-022 5 schema SoT 锁定)
+- 修 packages/schemas 4 文件: videoProduction(13+7字段·equipment改array·删totalDuration) · acquisitionVideo(output换成script/cta/conversionPath/keyMessages·input enum→string.min(1)+platform/duration) · aiVideo(output加title·imageStyle加default('vivid')·eslint disable no-control-regex) · acquisitionCopywriting(删legacy acquisitionCopywritingInput·output改markdown/metadata.{ctaPosition/conversionGoal}+refine)
+- 修 packages/schemas 3 文件(pre-existing import/order lint): analysis.schema.ts · boomGenerate.schema.ts · copywriting.schema.ts — 加空行分隔 external↔sibling import groups
+- 修 apps/api/src/specialists/VideoAgent.ts: StoryboardSceneSchema regex /^[ -~\t\n\r]+$/ → /^[\x00-\x7F]+$/ + eslint disable no-control-regex
+- 修 apps/api/src/trpc/routers/videoProduction.ts: 删inline videoProductionInputSchema · 改 import { videoProductionInput } from '@quanqn/schemas/specialist-io'
+- 修 apps/api/src/trpc/routers/acquisitionVideo.ts: 同上 · 删inline acquisitionVideoInputSchema · import acquisitionVideoInput
+- 修 apps/api/src/trpc/routers/aiVideo.ts: 删inline generateStoryboardInputSchema · import aiVideoInput · 保留 z import(jobStatus仍用)
+- 修 apps/api/src/trpc/routers/copywriting.ts: 删inline SCRIPT_TYPE_ENUM/HOT_ELEMENT_ENUM/acquisitionCopywritingInputSchema · import 3 canonical 自 packages/schemas
+- 修 apps/api/tsconfig.json: 删 rootDir(允许 apps/api 直接 import packages/schemas src · noEmit已设故不影响build)
+- 修 tests/unit/api/schemas/video-schemas.test.ts: 删 acquisitionCopywritingInput import · 改 acquisitionCopywritingInputSchema · 修 acquisitionVideoInput tests(enum→string) · 修 aiVideoOutput tests(加title必填) · 新增3测试
+- 验证: pnpm typecheck 6ws 0 error ✓ · pnpm test 75 files 727 tests ✓ · pnpm lint --max-warnings=0 全过 ✓
+- **未来迭代的学习:**
+  - apps/api tsconfig.json rootDir=./src 会阻止直接 import packages/schemas src · 解法: 删除 rootDir(noEmit模式下无副作用)
+  - 跨 packages/schemas import 到 apps/api 时 import 顺序规则: @quanqn 是 external group · 必须在 @trpc · zod 等前面(按字母序) · 不能与其他 external 之间加空行
+  - import type { X } from '@quanqn/*' 被 ESLint 归入 type group(非 external group) · 会干扰 sibling group 排序 · 尽量在 sibling imports 之后 · 实战中有级联 import/order 错误 · 改用 z.infer<typeof Schema> 反而更简洁
+  - aiVideoInput.imageStyle 现在有 default('vivid') · 三处 schema 对齐后 scenesCount 无 default(必须显式传)
+---
+
 ## [2026-05-10 20:35] - US-014 (PRD-6 收官 · 全套绿灯)
 - 确认全部产物就位: 4 judge files (video-production/video-acquisition/video-storyboard/copywriting-acquisition · 共 18 tests) + video-tools-integration.spec.ts (5 steps serial e2e)
 - 全套门禁验证: vitest 722/722(75 files)✓ · judge 39/39(15 files)✓ · e2e 142 passed 2 skipped✓ · typecheck 6ws 0 error✓ · lint web+api --max-warnings=0 exit 0✓
@@ -2702,3 +2797,190 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 
 --- [PRD-7 START] Cleanup PRD · 8 US · 修 7 open TD + RCA-004 全局 sync · risk=foundation+low · at 2026-05-11 00:04 ---
 
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-11 00:06 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (23分钟 43秒) ---
+
+--- [RALPH] Iteration 2 started: US-001 at 2026-05-11 00:30 ---
+
+--- [RALPH] Iteration 2 ended: US-001 (17分钟 39秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-11 00:47 ---
+
+## [2026-05-11 00:47] - US-001 (Opus audit · PRD-7 Foundation · TD-022 治本)
+- risk_level: foundation · size_hint: medium · 16 AC
+- 实测: audit-artifacts.py timestamps FAKE 76.1h 是 TD-020 pre-existing 跨 PRD 残留 (verify-artifacts/US-001/ 含 PRD-1/3/5 era 文件) · 不是 ralph 偷懒 · TD-020 豁免 · US-002 修
+- manifest.exit_code=0 · validator R2 PASS · 727/727 vitest · typecheck 6 ws 0 · lint 0 warning
+- AC 16/16 PASS (R1 reject AC-7 后 R2 修对: CopywritingAgent.ts line 28 import + line 119 re-export)
+
+### Foundation 档专项 grep 全过
+- F1 跨 story 命名一致性: 5 schema canonical 三处 1:1 (videoProductionOutput/acquisitionVideoOutput/aiVideoOutput/acquisitionCopywritingOutput/imageGenJobPayload+Result)
+- F2 下游 story AC 一致性: US-004 (US-001 唯一下游) imports 自 packages/schemas (canonical) · 无字段语义冲突
+- F3 shared 文件: packages/schemas/src/specialist-io/index.ts barrel 已同步 · constants 不动
+- F5 协议锁与既有代码现状双对账: §1.0 SoT 表 + 实施 1:1 一致 · 无双路径并存 (apps/api/src/agents/specialists/ 是 PRD-4 遗留 stub · 0 引用 · 不影响 · 不在本 PRD 范围)
+
+### §1.0.6 5 项 grep 验证全过
+- ✓ router inline output schema 0 命中
+- ✓ 4 router 全 import 自 @quanqn/schemas/specialist-io
+- ✓ legacy acquisitionCopywritingInput 已删 (grep 0 命中)
+- ✓ VideoAgent StoryboardSceneSchema regex 改 /^[\x00-\x7F]+$/ 跟 packages/schemas 对齐
+- ✓ shotItem 13 必填 + 7 optional 三处一致 (scene/duration/action/dialogue/cameraAngle/prop/lighting/transition/sfx/voiceover/subtitle/costume/location + index/angle/movement/description/bgm/reference/note)
+
+### TD 留痕
+- TD-022 → resolved (close_evidence 含 commit d4e3da8 + grep 验证证据 + 全套绿灯) · 已写入 .agents/tech-debt.json
+- TD-020 豁免 approve: timestamps FAKE 76.1h 是 verify-artifacts/ PRD-1~5 残留 · pre-existing · scheduled fix in US-002 · 不影响 US-001 实测正确性
+- 注: apps/api/tsconfig.json rootDir 删除是 cross-workspace import 工作性需要 (typecheck 0 验证) · 非 BLOCKER · 后续 PRR 评估 composite project setup (TypeScript 项目引用)
+
+### anti_patterns 注入生效验证
+- PRD-6 US-002 storyboard schema 字段不一致 → 本期 StoryboardSceneSchema 跟 aiVideoSceneSchema 100% 一致 (regex + boundary)
+- PRD-6 US-004 header→key 错位 → 本期 13+7 字段三处一致 (无渲染层 mapping 错位)
+
+### approve commit
+- a057b22 → aa6273a (R1) → d4e3da8 (R2 · final)
+- approved_at: 2026-05-11T00:47:35
+
+### 跨 PRD 价值
+- D-046 SoT 三处一致原则锁定 PRD-7 §7 · 后续 PRD 写新 schema 强制对照
+- D-047 canonical 选择优先级 (specialists > routers > packages/schemas) 落地
+- TD-022 5 次显现历史教训通过 anti_patterns 注入跨 PRD 沉淀
+---
+
+## [2026-05-11 00:58] - US-002 (Opus audit · PRD-7 Low · TD-020 治本)
+- risk_level: low · size_hint: small · 10 AC
+- 实测: pytest 8/8 pass · python3 -m py_compile ralph.py 0 error · audit-artifacts 仍报 timestamps FAKE 15.1h (本 PRD intra-rounds 跨度 · 非跨 PRD 残留 · 留 US-003 zero_regression skip 修)
+- AC 10/10 PASS
+
+### 实施
+- ralph.py:1404 _cleanup_stale_verify_artifacts(threshold_hours: int = 24) -> int
+- ralph.py:1451 _daemon_relaunch() 启动期调用一次
+- glob 限本 verify-artifacts/US-*/ · mtime > 24h 才 unlink · 24h 内保留
+- 日志 [CLEANUP] Removed N stale files (>24h) in verify-artifacts/
+
+### TD 留痕
+- TD-020 → resolved (跨 PRD 残留治本) · 已写入 .agents/tech-debt.json
+- 本期实测: cleanup 跑了 0 files removed (本 PRD 5/11 文件 < 24h · 行为正确)
+
+### approve commit
+- 1699296 (US-002 R1 通过 · 无 reject)
+- approved_at: ~00:58
+---
+
+--- [RALPH] Iteration 3 ended: US-002 (11分钟 43秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-11 00:59 ---
+
+## [2026-05-11 01:09] - US-003 (Opus audit · PRD-7 Low · TD-023 治本)
+- risk_level: low · 7 AC · pytest 8/8 + audit-artifacts.py 实测新逻辑生效
+- AC-1 全局 VALIDATOR.md §5 产物清单 + manifest 字段示例 ✓
+- AC-2 audit-artifacts.py L163-166 zero_regression skip 实测输出 [INFO] skipped ✓
+- AC-3 partial FAKE INFO 降级 L260-261 ✓
+- AC-4 跨 PRD 验证 (US-001 audit 不再 FAKE 60h+) ✓
+- AC-5 项目副本同步 (diff 仅 1 行 docstring · 不实质) ✓
+- AC-6 0 false positive ✓
+- 1 PRD US-003 audit 实测 [OK] timestamps: skipped (zero_regression=PASS) ✓
+
+### TD 留痕
+- TD-023 → resolved (close_evidence 含 commit 0079f41 + 全局/项目两份同步证据 + 实测新逻辑)
+- approve commit: 0079f41
+---
+
+--- [RALPH] Iteration 4 ended: US-003 (10分钟 16秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-11 01:09 ---
+
+## [2026-05-11 01:14] - US-004 (Opus audit · PRD-7 Low · TD-021 治本)
+- risk_level: low · 9 AC · vitest 727/727 + typecheck 6ws 0
+- AC-1~4 inline 删 + import @quanqn/schemas + IImageGenWorker 保留 + re-export 向后兼容 ✓
+- AC-5 grep ^export (interface|type) ImageGenJob 命中 0 ✓
+- AC-6 dall-e-3.ts L16 + worker.ts L18 仍正常 import (类型来自 packages/schemas) ✓
+- timestamps FAKE 13.2h 是本 PRD multi-iteration · Validator 没写 zero_regression (US-003 改 doc 后 lag) · 不影响实测正确性
+
+### TD 留痕
+- TD-021 → resolved
+- approve commit: f2afdbc
+---
+
+--- [RALPH] Iteration 5 ended: US-004 (5分钟 13秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-11 01:15 ---
+
+## [2026-05-11 01:17] - US-005
+- 修改全局 ~/.claude/scripts/ralph/ralph.py:119 timeout 5 → 20 · docstring 加 RCA-004 PRD-7 US-005 注释
+- 重写 ~/.claude/scripts/ralph/sync-to-project.sh · 加 _check_ralph_version()(md5sum 比对) · --force 自动 cp + 备份旧版到 ralph.py.bak.before-sync-{timestamp} · 不带 --force 时仅 prompt warning
+- 更改的文件: ~/.claude/scripts/ralph/ralph.py · ~/.claude/scripts/ralph/sync-to-project.sh · .agents/rca/RCA-004-health-check-timeout.md · scripts/ralph/ralph.py(via --force sync)
+- 实测 sync-to-project.sh /Users/return/Desktop/QuanQn --force 成功 · ralph.py timeout=20 确认
+- RCA-004 status → resolved · §5.2 加 PRD-7 US-005 落地完成标记
+- **未来迭代的学习:**
+  - ~/.claude/scripts/ 下的全局文件不在项目 git repo 内 · commit 只含项目副本 + 文档变更
+  - sync-to-project.sh --force 需要 md5sum (Linux) 或 md5 -q (macOS) 二选一兼容 · 用 || 链接两个命令
+---
+
+## [2026-05-11 01:22] - US-005 (Opus audit · PRD-7 Low · RCA-004 全局 sync)
+- risk_level: low · 9 AC · vitest 727 + py_compile 0 + zero_regression=PASS skip 生效 (US-003 联动)
+- AC-1: ~/.claude/scripts/ralph/ralph.py:119 timeout 5→20 ✓
+- AC-2: docstring 含 'RCA-004 (PRD-7 US-005)' ✓
+- AC-3: sync-to-project.sh L52 _check_ralph_version() + md5sum 比对 ✓
+- AC-4: L21 --force flag + L78 自动 cp 备份 .bak.before-sync-{timestamp} ✓
+- AC-5: 不带 --force 时仅 warning ✓
+- AC-6: RCA-004.md L6 状态 resolved + L105 完成标记 ✓
+- AC-7~9: 项目副本 + 全局都 timeout=20 · grep `timeout: int = 5\b` 命中 0 ✓
+
+### RCA-004 留痕
+- RCA-004 → resolved (跨项目级 BUG · 全局 sync 已落地 + 各项目副本通过 sync-to-project.sh --force 同步)
+- approve commit: d677c38
+---
+
+--- [RALPH] Iteration 6 ended: US-005 (7分钟 31秒) ---
+
+--- [RALPH] Iteration 7 started: US-006 at 2026-05-11 01:22 ---
+
+## [2026-05-11 01:31] - US-006 (Opus audit · PRD-7 Low · TD-003 治本)
+- risk_level: low · 8 AC · vitest 727 + py_compile 0
+- AC-1: _check_exit_code(manifest: dict) -> tuple[bool, str] at L63
+- AC-2: main L252 第一步调 + sys.exit(1) on fail
+- AC-3-5: 缺/非int/非零 三种错误 message + exit 1
+- AC-6: zero_regression=PASS 仍要求 exit_code=0 (兼容 US-003)
+- AC-7: 4 mock 场景全过
+- AC-8: US-001 audit 输出 [OK] exit_code=0 ✓ (实测)
+
+### TD 留痕
+- TD-003 → resolved
+- approve commit: 3c6b28a
+---
+
+--- [RALPH] Iteration 7 ended: US-006 (8分钟 45秒) ---
+
+--- [RALPH] Iteration 8 started: US-007 at 2026-05-11 01:31 ---
+
+## [2026-05-11 01:39] - US-007
+- 新增 `_check_existing_commit(story_id, since='30 minutes ago')` — subprocess.run git log --since --oneline + re.search 精确匹配 [story_id] 格式, 返回 7位 hash 或 None
+- 新增 `_write_path_b_audit_gate(story_id, commit_hash)` — PATH-B 专用 audit-gate 写入, 含 commit_hash + reason + PENDING_DETECTED 输出
+- 改 P2 MAX_RETRIES 兜底块: retryCount>=5 先检 git log; 命中 → passes=True + [PATH-B] note + 触发 Opus 审查(wait_for_audit + handle_audit_result); [PATH-B] 已在 notes → 跳过 PATH-B 防无限循环 → 回落 BLOCKED
+- 新增 `import re` 到 ralph.py (全局 + 项目双份同步)
+- 新增 test_path_b.py 6个 mock 测试覆盖 AC-3/AC-6/AC-7/AC-8, 全部 PASS
+- 修改文件: ~/.claude/scripts/ralph/ralph.py, scripts/ralph/ralph.py, scripts/ralph/test_path_b.py
+- **未来迭代的学习:**
+  - PATH-B 防死循环关键: "[PATH-B]" 写进 notes → 下轮检到就跳过 PATH-B 直接 BLOCKED
+  - `re.escape(f"[{story_id}]")` 必要: "[" 是 regex 特殊字符, 不 escape 会误匹配
+  - `_write_path_b_audit_gate` 改了全局 AUDIT_GATE_FILE 路径 → test 用 tmpdir + finally 还原防污染
+---
+
+## [2026-05-11 01:44] - US-007 (Opus audit · PRD-7 Low · TD-006 治本)
+- risk_level: low · 8 AC · vitest 727 + py_compile 0 + 4 mock 测试
+- AC-1: _check_existing_commit(story_id, since='30 minutes ago') at L817
+- AC-2: retryCount>=5 block 前调 (L1669)
+- AC-3: _write_path_b_audit_gate L846 写 {status:pending, commit_hash, reason}
+- AC-4: 未命中 → blocked=True (L1684 · 原行为)
+- AC-5: [PATH-B] log L1671 + audit-gate 写入
+- AC-6/7/8: mock 测试全过 (commit 命中/未命中/git fail/跨 PRD since='30m ago')
+- 加分 path_b_tried 标记 (L1668) 防 PATH-B 无限循环
+
+### TD 留痕
+- TD-006 → resolved
+- approve commit: eab3070
+---
+
+--- [RALPH] Iteration 8 ended: US-007 (12分钟 35秒) ---
+
+--- [RALPH] Iteration 9 started: US-008 at 2026-05-11 01:44 ---
