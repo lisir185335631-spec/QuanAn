@@ -119,6 +119,42 @@ vi.mock('@/specialists/CopywritingAgent', () => ({
   },
 }));
 
+// ── US-010: Mock imageGenQueue + checkImageGenRateLimit before router import ──
+
+vi.mock('@/workers/image-gen/queue', () => ({
+  imageGenQueue: {
+    add: vi.fn().mockResolvedValue({ id: 'job-mock-001', name: 'scene-image' }),
+  },
+  IMAGE_GEN_QUEUE_NAME: 'image-gen',
+}));
+
+vi.mock('@/lib/rate-limit/image-gen', () => ({
+  checkImageGenRateLimit: vi.fn().mockResolvedValue(undefined),
+}));
+
+// ── Also mock ioredis to prevent real Redis connection on module load ─────────
+
+vi.mock('ioredis', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    incr: vi.fn().mockResolvedValue(1),
+    expire: vi.fn().mockResolvedValue(1),
+    duplicate: vi.fn().mockReturnThis(),
+    on: vi.fn().mockReturnThis(),
+    quit: vi.fn().mockResolvedValue('OK'),
+  })),
+}));
+
+vi.mock('bullmq', () => ({
+  Queue: vi.fn().mockImplementation(() => ({
+    add: vi.fn().mockResolvedValue({ id: 'job-mock-001' }),
+    close: vi.fn().mockResolvedValue(undefined),
+  })),
+  Worker: vi.fn().mockImplementation(() => ({
+    on: vi.fn().mockReturnThis(),
+    close: vi.fn().mockResolvedValue(undefined),
+  })),
+}));
+
 import { copywritingRouter } from '@/trpc/routers/copywriting';
 import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
 import { videoProductionRouter } from '@/trpc/routers/videoProduction';
@@ -296,17 +332,22 @@ describe('videoProduction.generateStoryboard', () => {
 // ─── videoProduction.generateSceneImage ──────────────────────────────────────
 
 describe('videoProduction.generateSceneImage', () => {
-  it('AC-7: creates History row for scene image with traceId', async () => {
-    const { ctx, prisma } = makeCtx();
+  it('AC-9: enqueues BullMQ job · returns jobId + historyId + sceneIndex', async () => {
+    const { ctx } = makeCtx();
     const caller = videoProductionRouter.createCaller(ctx);
-    const result = await caller.generateSceneImage({ storyboardHistoryId: 3, sceneIndex: 0 });
-    expect(prisma.history.create).toHaveBeenCalledOnce();
-    const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
-      data: { agentId: string; traceId: string };
-    };
-    expect(createArgs.data.agentId).toBe('VideoAgent');
-    expect(createArgs.data.traceId).toBe('test-trace-001');
-    expect(result.content).toBe('[mock]');
+    const result = await caller.generateSceneImage({
+      storyboardHistoryId: 3,
+      sceneIndex: 0,
+      imagePromptEn: 'A vibrant product close-up with studio lighting',
+    });
+    const { imageGenQueue } = await import('@/workers/image-gen/queue');
+    const { checkImageGenRateLimit } = await import('@/lib/rate-limit/image-gen');
+    expect(checkImageGenRateLimit).toHaveBeenCalledWith(1);
+    expect(imageGenQueue.add).toHaveBeenCalledWith(
+      'scene-image',
+      expect.objectContaining({ sceneIndex: 0, historyId: 3, accountId: 1 }),
+    );
+    expect(result).toMatchObject({ jobId: 'job-mock-001', historyId: 3, sceneIndex: 0 });
   });
 });
 

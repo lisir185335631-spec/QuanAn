@@ -6,16 +6,19 @@
  * SHIELD REJ-013: protectedProcedure (非 publicProcedure)
  * SHIELD REJ-017: cost_log 由 BaseSpecialist 自动写(含 traceId · accountId)
  * SHIELD REJ-008: explicit accountId where + RLS via protectedProcedure
- * Note: generateStoryboard/generateSceneImage 保留为 stub — PRD-6 US-004/US-005 真接
+ * Note: generateStoryboard 保留为 stub — PRD-6 US-007 真接
  */
 
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { checkImageGenRateLimit } from '@/lib/rate-limit/image-gen';
 import { videoAgent, type ProductionOutput } from '@/specialists/VideoAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
+import { imageGenQueue } from '@/workers/image-gen/queue';
 
+import type { ImageGenJobPayload } from '@/workers/image-gen/index';
 import type { Prisma } from '@prisma/client';
 
 // ── Input schema (inline equiv of @quanqn/schemas/specialist-io videoProductionInput) ──
@@ -38,7 +41,8 @@ const generateStoryboardInput = z.object({
 const generateSceneImageInput = z.object({
   storyboardHistoryId: z.number().int().positive(),
   sceneIndex: z.number().int().min(0),
-  prompt: z.string().min(1).max(500).optional(),
+  imagePromptEn: z.string().min(1).max(1000),
+  imageStyle: z.enum(['vivid', 'natural']).optional().default('vivid'),
 });
 
 // ── Select ────────────────────────────────────────────────────────────────────
@@ -137,22 +141,33 @@ export const videoProductionRouter = router({
       return row;
     }),
 
-  /** Generate scene image from storyboard stub (PRD-6 US-005 真接) */
+  /** Generate scene image — enqueues BullMQ job (AC-9: Redis error → 5xx) */
   generateSceneImage: protectedProcedure
     .input(generateSceneImageInput)
-    .mutation(async ({ ctx, input: _input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
-      const row = await prisma.history.create({
-        data: {
-          accountId: activeAccountId!,
-          agentId: 'VideoAgent',
-          sourceType: 'user',
-          inputSummary: '[mock scene]',
-          content: '[mock]',
-          traceId: traceId ?? null,
-        },
-        select: STUB_HISTORY_SELECT,
-      });
-      return row;
+    .mutation(async ({ ctx, input }) => {
+      const { activeAccountId, traceId } = ctx;
+
+      // AC-5: rate limit check (sliding window, throws TOO_MANY_REQUESTS if exceeded)
+      await checkImageGenRateLimit(activeAccountId!);
+
+      const payload: ImageGenJobPayload = {
+        sceneIndex: input.sceneIndex,
+        imagePromptEn: input.imagePromptEn,
+        accountId: activeAccountId!,
+        traceId: traceId ?? `gen-${Date.now()}`,
+        historyId: input.storyboardHistoryId,
+        imageStyle: input.imageStyle,
+      };
+
+      // AC-9: Queue.add() throws when Redis is unreachable → return 5xx
+      try {
+        const job = await imageGenQueue.add('scene-image', payload);
+        return { jobId: job.id, historyId: input.storyboardHistoryId, sceneIndex: input.sceneIndex };
+      } catch {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: '生成失败 · 请稍后再试',
+        });
+      }
     }),
 });
