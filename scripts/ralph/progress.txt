@@ -2698,3 +2698,7 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 ---
 
 --- [RALPH] Iteration 12 ended: US-014 (32分钟 46秒) ---
+
+
+--- [PRD-7 START] Cleanup PRD · 8 US · 修 7 open TD + RCA-004 全局 sync · risk=foundation+low · at 2026-05-11 00:04 ---
+
