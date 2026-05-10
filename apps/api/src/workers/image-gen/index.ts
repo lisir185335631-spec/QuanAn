@@ -4,24 +4,12 @@
  *
  * interface IImageGenWorker: generate(payload) → Promise<ImageGenJobResult>
  * DallE3ImageGenWorker: 占位 stub · US-009 解锁后真接
- *
- * Note: types inlined here — @quanqn/schemas/specialist-io imageGen.schema has canonical definition for client use
  */
 
-// ── Inline types (canonical: @quanqn/schemas/specialist-io imageGen.schema) ──
+import type { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io';
 
-export interface ImageGenJobPayload {
-  sceneIndex: number;
-  imagePromptEn: string;
-  accountId: number;
-  traceId: string;
-  historyId: number;
-  imageStyle: 'vivid' | 'natural';
-}
-
-export type ImageGenJobResult =
-  | { sceneImageUrl: string; costUsd: number; durationMs: number }
-  | { error: string; sceneImageUrl: string };
+// ── Re-export for backward compat (dall-e-3.ts / queue.ts import from ./index) ──
+export type { ImageGenJobPayload, ImageGenJobResult };
 
 // ── Interface ─────────────────────────────────────────────────────────────────
 
