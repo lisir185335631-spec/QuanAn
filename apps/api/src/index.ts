@@ -219,6 +219,15 @@ const PORT = Number(process.env.PORT ?? 3000);
 
 async function start(): Promise<void> {
   await checkDbConnection();
+
+  // Dev mode: run image-gen worker in-process (AC-11 US-010)
+  // Prod: worker runs as standalone `pnpm worker:image-gen` container
+  if (process.env.NODE_ENV === 'development') {
+    const { worker: imageWorker } = await import('./workers/image-gen/worker');
+    imageWorker.on('error', (err) => logger.error({ err }, 'image_gen_worker.error'));
+    logger.info('image_gen_worker.started_in_process');
+  }
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }
