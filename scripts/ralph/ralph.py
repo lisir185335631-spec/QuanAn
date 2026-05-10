@@ -1399,6 +1399,39 @@ class _TeeWriter:
 
 
 # ─────────────────────────────────────────────
+# 跨 PRD 残留清理
+# ─────────────────────────────────────────────
+def _cleanup_stale_verify_artifacts(threshold_hours: int = 24) -> int:
+    """删除 verify-artifacts/US-*/ 下 mtime 超过 threshold_hours 的旧文件.
+
+    防止 audit-artifacts.py 误报 timestamps 60h+ 跨度.
+    返回删除的文件数.
+    """
+    import time as _time
+    verify_dir = SCRIPT_DIR / "verify-artifacts"
+    if not verify_dir.exists():
+        return 0
+
+    threshold_secs = threshold_hours * 3600
+    now = _time.time()
+    removed = 0
+
+    for story_dir in sorted(verify_dir.glob("US-*")):
+        if not story_dir.is_dir():
+            continue
+        for fpath in story_dir.iterdir():
+            if not fpath.is_file():
+                continue
+            age = now - fpath.stat().st_mtime
+            if age > threshold_secs:
+                fpath.unlink()
+                removed += 1
+
+    print(f"[CLEANUP] Removed {removed} stale files (>{threshold_hours}h) in verify-artifacts/")
+    return removed
+
+
+# ─────────────────────────────────────────────
 # Daemon 模式：自守护进程（跨平台）
 # ─────────────────────────────────────────────
 def _daemon_relaunch():
@@ -1413,6 +1446,9 @@ def _daemon_relaunch():
     # 构建子进程参数：去掉 --daemon，保留其他所有参数
     child_args = [sys.executable, str(Path(__file__).resolve())]
     child_args += [a for a in sys.argv[1:] if a != "--daemon"]
+
+    # 清理跨 PRD 旧 verify-artifacts 残留（防 audit-artifacts.py 误报时间戳）
+    _cleanup_stale_verify_artifacts()
 
     try:
         log_handle = open(LOG_FILE, "a", encoding="utf-8")

@@ -1,21 +1,15 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-10T01:28:00",
-  "validator_end_ts": "2026-05-10T01:29:20",
-  "test_command": "pnpm test tests/unit/api/schemas/video-schemas.test.ts && pnpm typecheck && pnpm prisma migrate deploy",
+  "validator_start_ts": "2026-05-11T00:38:00",
+  "validator_end_ts": "2026-05-11T00:40:56",
+  "test_command": "pnpm vitest run + pnpm typecheck + pnpm lint --max-warnings=0",
   "exit_code": 0,
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
-    "pytest.stdout.txt",
     "pytest-full.stdout.txt",
     "typecheck.txt",
-    "perf.stdout.txt",
-    "manifest.json"
+    "lint.txt"
   ],
-  "summary": {
-    "story_tests": "19 passed (0 failed)",
-    "zero_regression": "582 passed across 58 test files (0 failed)",
-    "typecheck": "6 workspaces 0 errors",
-    "migrate_deploy": "exit 0 (no pending migrations)",
-    "perf_100x": "2.15ms (threshold 50ms)"
-  }
+  "notes": "727/727 tests pass, typecheck 6 ws 0 error, lint clean. AC-7 FIXED: CopywritingAgent.ts now imports AcquisitionCopywritingOutput from @quanqn/schemas/specialist-io and re-exports as CopywritingAcquisitionOutput. All 16 AC verified PASS."
 }

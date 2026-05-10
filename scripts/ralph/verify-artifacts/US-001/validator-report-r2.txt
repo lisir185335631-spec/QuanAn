@@ -1,0 +1,31 @@
+## 验证结果: US-001 [PASS]
+验证时间: 2026-05-11 00:38 ~ 00:41 (第 2 次 · retryCount=1 → 0)
+
+### AC 对照
+
+- AC-1: videoProduction.schema.ts 13 必填 (scene/duration/action/dialogue/cameraAngle/prop/lighting/transition/sfx/voiceover/subtitle/costume/location) + 7 optional (index/angle/movement/description/bgm/reference/note) + shotList.min(1) ✓
+- AC-2: acquisitionVideo.schema.ts output 4 字段 (script/cta/conversionPath/keyMessages) ✓ · input conversionGoal z.string().min(1) ✓
+- AC-3: aiVideo.schema.ts title: z.string() ✓ · scenesCount z.union([literal(5),literal(6),literal(7),literal(8)]) ✓
+- AC-4: acquisitionCopywriting.schema.ts 无 legacy acquisitionCopywritingInput export ✓ · output markdown/metadata{ctaPosition,conversionGoal} + .refine ✓
+- AC-5: imageGen.schema.ts 未变 ✓
+- AC-6: VideoAgent.ts StoryboardSceneSchema regex /^[\x00-\x7F]+$/ ✓ (matched aiVideoSceneSchema)
+- AC-7: CopywritingAgent.ts line 28 `import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io'` ✓ · line 119 `export type CopywritingAcquisitionOutput = AcquisitionCopywritingOutput` ✓ [FIXED from R1]
+- AC-8: videoProduction.ts `import { videoProductionInput } from '@quanqn/schemas/specialist-io'` ✓ (no inline schema)
+- AC-9: acquisitionVideo.ts `import { acquisitionVideoInput } from '@quanqn/schemas/specialist-io'` ✓
+- AC-10: aiVideo.ts `import { aiVideoInput } from '@quanqn/schemas/specialist-io'` ✓
+- AC-11: copywriting.ts `import { acquisitionCopywritingInputSchema, SCRIPT_TYPE_KEYS_20, HOT_ELEMENT_KEYS_22 } from '@quanqn/schemas/specialist-io'` ✓
+- AC-12: 4 test files all pass — video-schemas.test.ts (24) ✓ · VideoAgent.test.ts (14) ✓ · CopywritingAgent.test.ts (17) ✓ · copywriting-acquisition.test.ts (4) ✓
+- AC-13: 5 grep checks — router inline output=0 ✓ · 4 router imports found ✓ · legacy export deleted ✓ · 13 required fields match ✓ · 3-place schema diff=0 ✓
+- AC-14: pnpm vitest run 727/727 pass ✓ · typecheck 6 ws 0 error ✓ · lint --max-warnings=0 ✓
+- AC-15: AiVideo.test.tsx (21) ✓ · VideoProduction.test.tsx (23) ✓ · AcquisitionVideo.test.tsx (22) ✓ · ai-video-flow integration (2) ✓
+- AC-16: D-046 locked in tasks/prd-7.md §7 + SoT enforced across all 5 schemas ✓
+
+### 产物路径
+scripts/ralph/verify-artifacts/US-001/
+已生成: pytest-full.stdout.txt (727 passed) · typecheck.txt (6 ws 0 error) · lint.txt (0 warnings) · manifest.json
+
+### X-6 零回归门禁
+vitest run 727/727 pass · exit_code=0 ✓
+
+### 判决
+prd.json.passes = true · notes = "" · retryCount = 0

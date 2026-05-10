@@ -1,0 +1,11 @@
+
+> quanqn@0.1.0 lint /Users/return/Desktop/QuanQn
+> pnpm -r lint --max-warnings\=0
+
+Scope: 6 of 7 workspace projects
+packages/schemas lint$ eslint . --ext ts --max-warnings=0 --max-warnings\=0
+packages/schemas lint: Done
+apps/api lint$ eslint . --ext ts --max-warnings=0 --max-warnings\=0
+apps/api lint: Done
+apps/web lint$ eslint . --ext ts,tsx --max-warnings=0 --max-warnings\=0
+apps/web lint: Done

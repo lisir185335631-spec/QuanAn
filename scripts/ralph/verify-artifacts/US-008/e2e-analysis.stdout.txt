@@ -1,8 +1,0 @@
-
-Running 2 tests using 1 worker
-
-[1A[2K[1/2] [chromium] › tests/e2e/tool-analysis.spec.ts:82:3 › /analysis 工具页 E2E (US-008) › 创建账号 → /analysis → 粘贴文案 → submit → 5维度 progress bar + 3+ 优化建议 + rewriteSnippet + 无控制台错误
-[1A[2K[2/2] [mobile] › tests/e2e/tool-analysis.spec.ts:82:3 › /analysis 工具页 E2E (US-008) › 创建账号 → /analysis → 粘贴文案 → submit → 5维度 progress bar + 3+ 优化建议 + rewriteSnippet + 无控制台错误
-[1A[2K  2 passed (2.6s)
-::notice title=🎭 Playwright Run Summary::  2 passed (2.6s)
-exit_code: 0

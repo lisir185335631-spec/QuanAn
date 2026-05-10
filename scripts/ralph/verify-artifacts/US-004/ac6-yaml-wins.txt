@@ -1,3 +1,0 @@
-primary from YAML: #f2ca50
-Is YAML value (f2ca50)? true
-Text-section values not leaked: true

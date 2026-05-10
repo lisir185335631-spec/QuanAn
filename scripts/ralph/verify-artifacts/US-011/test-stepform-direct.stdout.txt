@@ -1,9 +1,0 @@
-npm warn Unknown project config "public-hoist-pattern". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
-
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
-
-filter:  tests/unit/web/StepForm.test.tsx
-include: tests/unit/**/*.test.ts, tests/integration/**/*.test.ts
-exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
-No test files found, exiting with code 0
-
