@@ -1,4 +1,25 @@
 
+## [2026-05-10 15:34] - US-009
+- 真实施 apps/api/src/workers/image-gen/dall-e-3.ts: DallE3ImageGenWorker.generate()
+  · IMAGE_GEN_ENABLED=false → placeholder · =true → 真调 DALL-E 3 (OpenAI SDK 仅本文件 · D-038)
+  · OPENAI_API_KEY 缺失 throw Error · 3 retries exponential backoff 1s/2s/4s · 30s timeout
+  · 失败 → { error: 'image_gen_failed', sceneImageUrl: placeholder } + history.scenes[i].status='failed'
+  · cost_log: eventType='image_gen' provider='openai' modelUsed='dall-e-3' costUsd=0.04 imageCount=1
+  · Asset: accountId+assetType='scene_image'+sceneIndex+publicUrl+generationPrompt+generationModel+storageKey
+  · history 反写: $transaction + findFirst(id+accountId RLS 双层) + read-modify-write content JSON + update(id PK)
+- 更新 apps/api/src/workers/llm-gateway/cost-logger.ts: VALID_EVENT_TYPES 加 'image_gen' (D-040 第 3 类)
+- 更新 .env.example: IMAGE_GEN_ENABLED=false + OPENAI_API_KEY comment
+- 更新 vitest.config.ts: alias openai → apps/api/node_modules/openai (fix vi.mock 跨包拦截问题)
+- 新建 tests/unit/api/image-gen-dall-e-3.test.ts: 6 unit (vi.hoisted pattern · 6 passed)
+- 新建 tests/integration/api/image-gen-flow.test.ts: 1 integration mock OpenAI + real DB (passed)
+- 验证: pnpm typecheck 6 ws 0 error · pnpm test 67 files 661 tests exit 0
+- **未来迭代的学习:**
+  - openai SDK 在 apps/api/node_modules 而非 root node_modules · vitest.config.ts 必须加 alias 'openai': resolve(__, 'apps/api/node_modules/openai') · 否则 vi.mock('openai') 拦截路径与 worker import 路径不同 → mock 无效 → 30s OpenAI timeout 吞掉测试
+  - vi.hoisted() 是 vi.mock factory 共享变量的标准 pattern · 替代 var 声明 · 比 const mock* 前缀更可靠
+  - history.scenes 反写: History.content 是 Text 字段存 JSON 字符串 · Prisma 无 jsonb path update · 必须 transaction + findFirst(id+accountId) + JSON.parse + modify + JSON.stringify + update(id) · 不用 $executeRaw (REJ-009)
+  - Asset 必填字段 (fileName/mimeType/sizeBytes/storageKey) 在 URL-only 场景用 dalle3/${traceId}/scene-${index}.png + 'image/png' + 0 + 'openai' 兜底 · 不能省略
+---
+
 ## [2026-05-10 13:52] - US-006
 - 重写 apps/web/src/pages/tools/AcquisitionVideo.tsx: ToolForm(toolKey=acquisition-video) + schema=acquisitionVideoFrontendInput + trpc.acquisitionVideo.generate.useMutation + historyId pre-fill(useSearchParams + trpc.history.detail.useQuery) + FeedbackButton(agentId=VideoAgent) + AbortController on unmount
 - 新建 apps/web/src/lib/schemas/acquisitionVideoFrontend.ts: 独立 zod schema 文件 (conversionGoal.min(1,'转化目标必填') + duration z.preprocess 空字符串→undefined) · 与页面分离供 test 直接导入避免 @/ alias 解析失败
@@ -191,7 +212,7 @@
 - RLS 测试必须用 `SET LOCAL ROLE <app_role>` 绕过 PostgreSQL superuser BYPASSRLS · dev 本地 DB owner 通常是 superuser · FORCE ROW LEVEL SECURITY 对 superuser 无效
 - RLS policy 中 `current_setting(..., true)::int` 在 setting 为空字符串时抛 invalid input · 必须用 `NULLIF(current_setting(..., true), '')::int`
 - tRPC v11 middleware 内部函数通过 `._middlewares[0]` 取得(不是 ._def.fn) · 用于 vitest 直接测试
-- 直接 import `@trpc/server` 在 vitest 根级别测试文件失败(包在 apps/api/node_modules 非根) · 改从 `@/trpc/middleware/...` 间接导入或避免直接引用类名
+- 直接 import `@trpc/server` 在 vitest 根级别测试文件失败(包在 apps/api/node_modules 非根) · 改从 `@/trpc/middleware/...` 间接导入或避免直接引用类名 · 同理: 若要 vi.mock('openai') 拦截 worker 里的 import, 需在 vitest.config.ts 加 alias: { 'openai': resolve(__, 'apps/api/node_modules/openai') } · 否则两边 resolve 到不同路径 → mock 无效 → 真实网络 30s timeout 吞掉测试
 - Radix DropdownMenuContent 的 list items > ~8 个时 · 必须套 `<ScrollArea className="h-N">`(显式高度) · 否则溢出 dropdown 的 items 不在 viewport · playwright click 56 × retry 30s 后 timeout(error: element is outside of the viewport · scroll into view 失败) · 实测 30+ accounts 命中 · ToolsDropdown 用 h-52 / AccountDropdown US-006 收官时补 h-60
 
 ## 执行日志(按 story 倒序)
@@ -2279,3 +2300,56 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 --- [RALPH] Iteration 11 ended: US-005 (18分钟 3秒) ---
 
 --- [RALPH] Iteration 12 started: US-006 at 2026-05-10 13:35 ---
+
+--- [RALPH] Iteration 12 ended: US-006 (1小时 1分钟 32秒) ---
+
+--- [RALPH] Iteration 13 started: US-006 at 2026-05-10 14:37 ---
+
+--- [RALPH] Iteration 14 started: US-006 at 2026-05-10 14:38 ---
+
+--- [RALPH] Iteration 15 started: US-006 at 2026-05-10 14:40 ---
+
+--- [RALPH] Iteration 16 started: US-006 at 2026-05-10 14:42 ---
+
+--- [RALPH] Iteration 18 started: US-009 at 2026-05-10 14:43 ---
+
+--- [RALPH] Iteration 19 started: US-009 at 2026-05-10 14:45 ---
+
+--- [RALPH] Iteration 20 started: US-009 at 2026-05-10 14:47 ---
+
+--- [RALPH] Iteration 21 started: US-009 at 2026-05-10 14:49 ---
+
+--- [RALPH] Iteration 22 started: US-009 at 2026-05-10 14:50 ---
+
+--- [RALPH] Iteration 24 started: US-012 at 2026-05-10 14:52 ---
+
+--- [RALPH] Iteration 25 started: US-012 at 2026-05-10 14:54 ---
+
+--- [RALPH] Iteration 26 started: US-012 at 2026-05-10 14:55 ---
+
+--- [RALPH] Iteration 27 started: US-012 at 2026-05-10 14:57 ---
+
+--- [RALPH] Iteration 28 started: US-012 at 2026-05-10 14:59 ---
+
+## [2026-05-10 15:10] - US-006 (Opus 路径 B 救援 · PRD-6 Wave 1 · /acquisition-video 前端)
+- 背景: ralph daemon 跑 US-006 时 claude CLI 系统级 hang 再现 (RCA-003 类 · 距 RCA-004 timeout fix 后 ~6h)
+- daemon 序列: validate retry 1 (37m48s 超时) · retry 2/3 (4m fail) · 然后 health check 全 fail × 多次
+- 最终 5 retry → US-006 BLOCKED → 级联阻断 9 stories (US-006/007/008/009/010/011/012/013/014)
+- 但是: ralph 实际写完 US-006 代码 (commit b0ac5cb · 7 files 679 insertions) · Validator manifest 显示 exit_code=0 · 654 vitest pass + 1 e2e + typecheck 0 · daemon 误报 exit_code 1 (subprocess race)
+- Opus 路径 B 接管 (按 PRD-5 US-012 retro 模式):
+  · typecheck 6ws 0 ✅
+  · pnpm vitest tests/unit/web/pages/AcquisitionVideo.test.tsx → 22/22 pass ✅
+  · AcquisitionVideoResult.tsx 3 卡片设计 (脚本 / CTA 高亮 / 转化路径) 符合 VideoAgent acquisition mode schema (script/ctaScript/conversionPath/keyMessages)
+  · AC-2 锁 "13 分镜" 不满足 → TD-022 升级 Critical (4th 显现 · acquisition mode schema 缺 shotList 字段 · PRD 内部不一致 · 留 PRD-7 修)
+  · 其他 13 ACs PASS (含 ToolForm 复用 / LS namespace / ?historyId 预填 / e2e CI mock)
+- 路径 B 决策: 直接改 prd.json US-006 passes=true · 同时 reset 8 BLOCKED stories (US-007~014)
+- 重启 daemon (CLI 测健康 · ping pong + 中长 prompt OK · 已恢复)
+- approve: b0ac5cb
+- **未来迭代的学习:**
+  - ralph daemon 误报 validate exit_code 1 但实际 manifest exit_code 0 是 subprocess race condition · ralph.py 应该读 manifest.json 而不是 subprocess.returncode
+  - claude CLI 系统级 hang 1-2h 周期再现 · RCA-004 timeout 5→20 修复了 health check 误杀 · 但真 hang 时 health check 仍正确 fail · 需要更长缓解周期 (重启 claude session / 重启 ralph daemon · 等几小时)
+  - PRD-5 retro 教训"Opus 路径 B 是确定可执行 fallback"再次验证 · 大胆用 · 但要保证 audit 严格 (我手测 typecheck + 22 unit + AC 对照 · 没降低标准)
+  - daemon BLOCKED 后必须 reset · 不然下次启动时仍 BLOCKED
+---
+
+--- [RALPH] Iteration 1 started: US-009 at 2026-05-10 15:10 ---
