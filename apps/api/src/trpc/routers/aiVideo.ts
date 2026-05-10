@@ -11,7 +11,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { checkImageGenRateLimit } from '@/lib/rate-limit/image-gen';
+import { checkImageGenRateLimit, getImageGenDailyUsage } from '@/lib/rate-limit/image-gen';
 import { videoAgent, type StoryboardOutput } from '@/specialists/VideoAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
@@ -154,6 +154,15 @@ export const aiVideoRouter = router({
           status: 'pending' as const,
         })),
       };
+    }),
+
+  /**
+   * US-011 AC-4: dailyUsage · read-only count + limit (no INCR)
+   * protectedProcedure: accountId from ctx (SHIELD REJ-013)
+   */
+  dailyUsage: protectedProcedure
+    .query(async ({ ctx }) => {
+      return getImageGenDailyUsage(ctx.activeAccountId!);
     }),
 
   /**

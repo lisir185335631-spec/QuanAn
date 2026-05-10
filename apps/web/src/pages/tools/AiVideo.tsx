@@ -41,6 +41,14 @@ export default function AiVideo() {
   const [activeHistory, setActiveHistory] = useState<{ historyId: number; jobIds: string[] } | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
 
+  // US-011 AC-4: daily usage query (read-only · no INCR)
+  const dailyUsageQuery = trpc.aiVideo.dailyUsage.useQuery(undefined, {
+    refetchInterval: 60_000,
+  });
+  const usageCount = dailyUsageQuery.data?.count ?? 0;
+  const usageLimit = dailyUsageQuery.data?.limit ?? 10;
+  const isOverLimit = usageCount >= usageLimit || isRateLimited;
+
   const abortRef = useRef<AbortController>(null!);
   useEffect(() => {
     abortRef.current = new AbortController();
@@ -87,6 +95,7 @@ export default function AiVideo() {
       const errData = (err as { data?: { code?: string }; message?: string }) ?? {};
       if (errData?.data?.code === 'TOO_MANY_REQUESTS' || String(errData?.message ?? '').includes('TOO_MANY_REQUESTS')) {
         setIsRateLimited(true);
+        void dailyUsageQuery.refetch();
         toast.error('今日已达上限 · 明日再来');
       }
       throw err;
@@ -114,6 +123,7 @@ export default function AiVideo() {
 
     setActiveHistory({ historyId, jobIds });
     setIsRateLimited(false);
+    void dailyUsageQuery.refetch();
   }
 
   return (
@@ -124,22 +134,14 @@ export default function AiVideo() {
         <p className="mt-2 text-body-md text-muted-foreground">从原始文案自动生成分镜脚本 + AI 配图，一键出片</p>
       </div>
 
-      {/* Rate limit banner (AC-13) */}
-      {isRateLimited && (
+      {/* US-011 AC-4: daily usage display */}
+      {dailyUsageQuery.data && (
         <div
-          className="rounded-lg border border-error bg-error/5 px-4 py-3 flex items-center justify-between"
-          data-testid="ai-video-rate-limit-banner"
-          role="alert"
+          className="flex items-center gap-2 text-body-sm text-muted-foreground"
+          data-testid="ai-video-daily-usage"
         >
-          <span className="text-body-sm text-error">今日已达上限 · 明日再来</span>
-          <button
-            type="button"
-            disabled
-            className="px-4 py-1.5 text-body-sm rounded-md bg-muted text-muted-foreground cursor-not-allowed"
-            data-testid="ai-video-rate-limit-button"
-          >
-            生成 AI 视频
-          </button>
+          <span>今日剩余 {Math.max(0, usageLimit - usageCount)} 次</span>
+          <span className="text-muted-foreground/50">({usageCount}/{usageLimit})</span>
         </div>
       )}
 
@@ -149,6 +151,8 @@ export default function AiVideo() {
         onSubmit={handleSubmit}
         onSuccess={handleSuccess}
         submitLabel="生成 AI 视频"
+        disabled={isOverLimit}
+        disabledLabel={`今日已达上限 (${usageCount}/${usageLimit}) · 明日再来`}
       />
 
       {activeHistory && (

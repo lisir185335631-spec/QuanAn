@@ -38,11 +38,15 @@ interface ToolFormProps {
   onSuccess?: (result: unknown) => void;
   defaultValues?: Record<string, unknown>;
   submitLabel?: string;
+  /** When true, submit button is disabled regardless of isPending */
+  disabled?: boolean;
+  /** Label shown on the button when disabled=true */
+  disabledLabel?: string;
 }
 
 // ── ToolForm ──────────────────────────────────────────────────────────────────
 
-export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, submitLabel }: ToolFormProps) {
+export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, submitLabel, disabled, disabledLabel }: ToolFormProps) {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
@@ -137,10 +141,10 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, 
 
       <Button
         type="submit"
-        disabled={isPending}
+        disabled={isPending || disabled}
         className="w-full sm:w-auto"
       >
-        {isPending ? '生成中…' : (submitLabel ?? '开始生成')}
+        {isPending ? '生成中…' : (disabled ? (disabledLabel ?? submitLabel ?? '开始生成') : (submitLabel ?? '开始生成'))}
       </Button>
     </form>
   );

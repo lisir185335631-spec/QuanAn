@@ -154,6 +154,8 @@ export type VideoProductionHistoryRow = FreeGenerateHistoryRow;
 
 export type AcquisitionVideoHistoryRow = FreeGenerateHistoryRow;
 
+export type DailyUsageOutput = { count: number; limit: number };
+
 export type GenerateStoryboardOutput = {
   historyId: number;
   jobIds: string[];
@@ -445,6 +447,8 @@ const _shadowRouter = _t.router({
         failed: 0,
         scenes: [],
       })),
+    dailyUsage: _t.procedure
+      .query((): DailyUsageOutput => ({ count: 0, limit: 10 })),
   }),
 });
 
