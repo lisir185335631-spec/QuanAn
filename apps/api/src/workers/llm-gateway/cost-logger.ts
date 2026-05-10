@@ -10,6 +10,17 @@ import { prisma } from '@/lib/prisma';
 
 import type { CompleteRequest, CompleteResponse } from './index';
 
+// D-040: Valid eventType values for cost_log
+// specialist_call = LLM text completions · account.switch/auth.login = behavior · image_gen = image diffusion
+export const VALID_EVENT_TYPES = [
+  'specialist_call',
+  'account.switch',
+  'auth.login',
+  'security_alert',
+  'image_gen',
+] as const;
+export type CostLogEventType = (typeof VALID_EVENT_TYPES)[number];
+
 // Approximate cost per 1M tokens (USD) — used for cost estimation only
 const COST_PER_M: Record<string, { input: number; output: number }> = {
   'claude-sonnet-4-6': { input: 3.0, output: 15.0 },

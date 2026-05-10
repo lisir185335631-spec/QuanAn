@@ -8,6 +8,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'apps/api/src'),
       // zod lives in apps/api/node_modules (not root) — expose to root vitest
       'zod': path.resolve(__dirname, 'apps/api/node_modules/zod'),
+      // openai lives in apps/api/node_modules — expose so vi.mock('openai') intercepts worker imports (PRD-6 US-009)
+      'openai': path.resolve(__dirname, 'apps/api/node_modules/openai'),
       // @quanqn/schemas subpath exports — PRD-6 US-001 schema tests
       '@quanqn/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
       '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
