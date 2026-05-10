@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="5" failures="0" errors="0" time="0.229">
+    <testsuite name="tests/unit/api/analysis-router.test.ts" timestamp="2026-05-09T07:38:34.153Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.0038335">
+        <testcase classname="tests/unit/api/analysis-router.test.ts" name="analysis.analyze — happy path &gt; calls AnalysisAgent(mode=structural), writes history with contentType=json + full fields" time="0.00254625">
+        </testcase>
+        <testcase classname="tests/unit/api/analysis-router.test.ts" name="analysis.analyze — zod validation &gt; copy &lt; 10 字 (empty string) → TRPCError BAD_REQUEST" time="0.0005255">
+        </testcase>
+        <testcase classname="tests/unit/api/analysis-router.test.ts" name="analysis.analyze — fallback path &gt; agent returns isFallback=true (SchemaValidationError caught internally) → history written isFallback=true" time="0.000246417">
+        </testcase>
+        <testcase classname="tests/unit/api/analysis-router.test.ts" name="analysis.analyze — agentMode field &gt; agentMode=&quot;structural&quot; is always written to history regardless of result" time="0.000172459">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/analysis-structural-llm.test.ts" timestamp="2026-05-09T07:38:34.154Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.040117333">
+        <testcase classname="tests/integration/api/analysis-structural-llm.test.ts" name="US-007 AC-5: analysis.analyze integration — nock SDK + real DB &gt; analyze: calls mock LLM, writes 1 history row (contentType=json) + cost_log to real DB" time="0.015509375">
+        </testcase>
+    </testsuite>
+</testsuites>

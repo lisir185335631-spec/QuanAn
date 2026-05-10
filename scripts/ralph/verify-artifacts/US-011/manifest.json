@@ -1,0 +1,17 @@
+{
+  "story_id": "US-011",
+  "validator_start_ts": "2026-05-10T09:38:00Z",
+  "validator_end_ts": "2026-05-10T09:51:55Z",
+  "test_command": "pnpm vitest run tests/unit/api/rate-limit-image-gen.test.ts",
+  "exit_code": 0,
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "typecheck.txt",
+    "validator-us-011-pass-1.png",
+    "validator-us-011-pass-2.png"
+  ],
+  "notes": "All 13 AC passed. Zero-regression: 73 files / 712 tests passed. Specific unit tests: 9/9 passed. Typecheck: 6 workspaces 0 errors. Browser: logged in with mock user, AI Video page shows daily usage indicator and disabled button on rate limit."
+}

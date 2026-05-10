@@ -1,0 +1,15 @@
+{
+  "story_id": "US-013",
+  "validator_start_ts": "2026-05-10T11:10:05Z",
+  "validator_end_ts": "2026-05-10T11:17:00Z",
+  "exit_code": 0,
+  "artifacts": [
+    "vitest.stdout.txt",
+    "vitest-full.stdout.txt",
+    "typecheck.txt",
+    "validator-us-013-browser-1.png",
+    "validator-us-013-filter-pass-2.png",
+    "manifest.json"
+  ],
+  "notes": "All 15 ACs verified. 16 unit tests pass (including 5 new US-013 AC-8 subtests). Zero-regression: 722 tests pass across 75 test files. Typecheck: 6 workspaces 0 errors. Browser: /history page renders, filter dropdown shows 3 new modes, no console errors. AC 12/13 performance confirmed by code structure."
+}

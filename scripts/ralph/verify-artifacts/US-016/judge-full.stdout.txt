@@ -1,0 +1,27 @@
+
+> quanqn@0.1.0 test:judge /Users/return/Desktop/QuanQn
+> vitest run --config vitest.judge.config.ts --reporter\=verbose
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/judge/topic.judge.ts > TopicAgent LLM Judge — traffic/health/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/topic.judge.ts > TopicAgent LLM Judge — traffic/health/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/branding.judge.ts > BrandingAgent LLM Judge — packaging/beauty/xiaohongshu golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/branding.judge.ts > BrandingAgent LLM Judge — packaging/beauty/xiaohongshu golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/video.judge.ts > VideoAgent LLM Judge — shooting/food/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/video.judge.ts > VideoAgent LLM Judge — shooting/food/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/positioning.judge.ts > PositioningAgent LLM Judge — industry/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/positioning.judge.ts > PositioningAgent LLM Judge — industry/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/copywriting.judge.ts > CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/copywriting.judge.ts > CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/livestream.judge.ts > LivestreamAgent LLM Judge — 新手/beauty/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/livestream.judge.ts > LivestreamAgent LLM Judge — 新手/beauty/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/monetization.judge.ts > MonetizationAgent LLM Judge — education/zero-revenue golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/monetization.judge.ts > MonetizationAgent LLM Judge — education/zero-revenue golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+
+ Test Files  7 passed (7)
+      Tests  14 passed (14)
+   Start at  08:28:41
+   Duration  183ms (transform 133ms, setup 0ms, collect 247ms, tests 17ms, environment 0ms, prepare 244ms)
+

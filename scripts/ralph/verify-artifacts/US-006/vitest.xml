@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="22" failures="0" errors="0" time="0.147">
+    <testsuite name="tests/unit/web/pages/AcquisitionVideo.test.tsx" timestamp="2026-05-10T05:51:51.697Z" hostname="returndeMacBook-Pro.local" tests="22" failures="0" errors="0" skipped="0" time="0.002454208">
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx &gt; imports and uses ToolForm with toolKey acquisition-video" time="0.000399333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx &gt; ToolForm has acquisition-video case with sourceCopy textarea and conversionGoal input" time="0.000119209">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx &gt; ToolForm acquisition-video case has platform select and duration select" time="0.000123">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx &gt; AcquisitionVideo page uses acquisitionVideoFrontendInput schema" time="0.000048042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx &gt; submitLabel 生成方案" time="0.000043167">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="zod 校验失败显示中文 message &gt; conversionGoal 留空 → 转化目标必填" time="0.000483541">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="zod 校验失败显示中文 message &gt; sourceCopy min 10 → 中文 error message" time="0.000077708">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="zod 校验失败显示中文 message &gt; valid input with required fields passes" time="0.000052">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="zod 校验失败显示中文 message &gt; valid input with all fields passes" time="0.0000645">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="zod 校验失败显示中文 message &gt; empty string duration preprocessed to undefined — valid" time="0.000063417">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="submit 调 trpc.acquisitionVideo.generate.useMutation &gt; AcquisitionVideo page calls trpc.acquisitionVideo.generate.useMutation" time="0.000046542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="submit 调 trpc.acquisitionVideo.generate.useMutation &gt; mutation result is passed to AcquisitionVideoResult" time="0.00004875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="submit 调 trpc.acquisitionVideo.generate.useMutation &gt; AcquisitionVideo page renders FeedbackButton with VideoAgent" time="0.000058333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="submit 调 trpc.acquisitionVideo.generate.useMutation &gt; ToolResult switch includes acquisition-video case" time="0.000050708">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="LS 写入 + 读取 (D-031 · SHIELD REJ-010) &gt; getToolLsKey generates correct namespaced key for acquisition-video" time="0.000050917">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="LS 写入 + 读取 (D-031 · SHIELD REJ-010) &gt; ToolForm handles LS for acquisition-video toolKey via getToolLsKey" time="0.000065209">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="LS 写入 + 读取 (D-031 · SHIELD REJ-010) &gt; AcquisitionVideoResult renders CTA card with data-testid" time="0.000047583">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="?historyId 预填 &gt; AcquisitionVideo page reads historyId from searchParams" time="0.000043375">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="?historyId 预填 &gt; AcquisitionVideo page calls trpc.history.detail.useQuery with historyId" time="0.000037042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="?historyId 预填 &gt; historyDefaults uses inputSummary for sourceCopy pre-fill" time="0.000036667">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="?historyId 预填 &gt; AcquisitionVideoResult handles JSON.parse failure → 解析失败" time="0.000041917">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/AcquisitionVideo.test.tsx" name="?historyId 预填 &gt; AcquisitionVideoResult renders conversion-path section" time="0.000044708">
+        </testcase>
+    </testsuite>
+</testsuites>

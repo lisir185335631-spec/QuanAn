@@ -1,26 +1,10 @@
-=== pnpm test:e2e (full suite) ===
-Date: 2026-05-09T20:39
-Command: pnpm test:e2e
-Duration: 2:02 (122s)
 
-Result: 126 passed, 2 skipped, 0 failed
-Files: 18 spec files
-Workers: 1 (workers=1 + fullyParallel=false per playwright.config.ts)
-Projects: chromium + mobile (iPhone 14 Pro)
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
-PRD-4 baseline: 106 passed + 2 skipped
-PRD-5 net add: +20 (incl. 5 from new tools-integration.spec.ts US-012)
-Compliance: 126 ≥ 111 (AC-11 target)
+ ✓ tests/integration/api/copywriting-acquisition-llm.test.ts > US-012 AC-11: copywriting.acquisitionGenerate integration — nock SDK + real DB > acquisitionGenerate: calls mock stream, writes history + cost_log to real DB with correct fields
 
-US-012 new spec results:
-  [124/128] tests/e2e/tools-integration.spec.ts:217:3 › Step 1: /generate → submit → 结果出现 ✓
-  [125/128] tests/e2e/tools-integration.spec.ts:242:3 › Step 2: /boom-generate → submit → 5 候选出现 ✓
-  [126/128] tests/e2e/tools-integration.spec.ts:264:3 › Step 3: /analysis → submit → 5维度评分出现 ✓
-  [127/128] tests/e2e/tools-integration.spec.ts:284:3 › Step 4: /video-analysis → submit → elements tag 出现 ✓
-  [128/128] tests/e2e/tools-integration.spec.ts:306:3 › Step 5: /history → 4条 → 点 boom row → /boom-generate?historyId=1002 预填 ✓
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  18:26:16
+   Duration  245ms (transform 40ms, setup 4ms, collect 72ms, tests 46ms, environment 0ms, prepare 25ms)
 
-Standalone US-012 spec timing: 2.3s (AC-15 target < 60s ✓)
-
-Skipped (2): 真 LLM ip-flow-9-steps.spec.ts (manual run · spec design per US-017 AC-17)
-
-Zero regression: confirmed (all PRD-1~PRD-4 specs still pass)

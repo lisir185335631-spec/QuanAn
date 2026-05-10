@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+stdout | tests/unit/api/schemas/video-schemas-perf.test.ts > 5 schema parse 100 times < 50ms
+100 iterations elapsed: 2.15ms
+
+ ✓ tests/unit/api/schemas/video-schemas-perf.test.ts > 5 schema parse 100 times < 50ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  09:29:17
+   Duration  184ms (transform 35ms, setup 5ms, collect 40ms, tests 3ms, environment 0ms, prepare 32ms)
+

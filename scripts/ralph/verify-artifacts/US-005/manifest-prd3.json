@@ -1,0 +1,16 @@
+{
+  "story_id": "US-005",
+  "validator_start_ts": "2026-05-08T13:19:30",
+  "validator_end_ts": "2026-05-08T13:20:30",
+  "test_command": "pnpm exec vitest run && pnpm --filter @quanqn/web test",
+  "exit_code": 1,
+  "artifacts": [
+    "vitest-prd3.stdout.txt",
+    "vitest-web.stdout.txt",
+    "vitest-api.stdout.txt",
+    "typecheck-prd3.txt",
+    "typecheck-api.txt",
+    "manifest-prd3.json"
+  ],
+  "notes": "AC-4 FAIL: FeedbackButton is present on /ip-plan page only. All 11 step pages (Step1.tsx..Step9.tsx, Step2.tsx, Step3b.tsx, Step4b.tsx) have no FeedbackButton import or usage. AC requires feedback button on ALL step pages + /ip-plan."
+}

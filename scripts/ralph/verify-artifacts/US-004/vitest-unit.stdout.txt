@@ -1,0 +1,31 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > imports and uses ToolForm with toolKey video-production
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > ToolForm has video-production case with sourceCopy textarea
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > ToolForm video-production case has videoType select and duration select
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > VideoProduction page uses videoProductionInput schema
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > submitLabel 生成方案
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > zod 校验失败显示中文 message > sourceCopy min 10 中文 error message
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > zod 校验失败显示中文 message > sourceCopy max 3000 中文 error message
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > zod 校验失败显示中文 message > videoType invalid enum value fails
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > zod 校验失败显示中文 message > valid input passes
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > submit 调 trpc.videoProduction.generate.useMutation > VideoProduction page calls trpc.videoProduction.generate.useMutation
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > submit 调 trpc.videoProduction.generate.useMutation > mutation result is passed to VideoProductionResult
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > submit 调 trpc.videoProduction.generate.useMutation > VideoProduction page renders FeedbackButton with VideoAgent
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > submit 调 trpc.videoProduction.generate.useMutation > ToolResult switch includes video-production case
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > LS 写入 + 读取 (D-031) > getToolLsKey generates correct namespaced key for video-production
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > LS 写入 + 读取 (D-031) > ToolForm handles LS restore for video-production toolKey
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > LS 写入 + 读取 (D-031) > VideoProductionResult renders storyboard table with data-testid
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > ?historyId 预填 > VideoProduction page reads historyId from searchParams
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > ?historyId 预填 > VideoProduction page calls trpc.history.detail.useQuery with historyId
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > ?historyId 预填 > historyDefaults uses inputSummary for sourceCopy
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > ?historyId 预填 > VideoProductionResult handles JSON.parse failure → 解析失败
+ ✓ tests/unit/web/pages/VideoProduction.test.tsx > ?historyId 预填 > VideoProductionResult renders equipment and schedule sections
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  12:00:51
+   Duration  144ms (transform 18ms, setup 5ms, collect 16ms, tests 2ms, environment 0ms, prepare 29ms)
+
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-004/vitest.xml

@@ -2655,3 +2655,46 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 --- [RALPH] Iteration 11 started: US-014 at 2026-05-10 19:51 ---
 
 --- [RALPH] Iteration 12 started: US-014 at 2026-05-10 20:21 ---
+
+## [2026-05-10 20:55] - US-014 (Opus audit · PRD-6 收官 · COMPLETE)
+- risk_level: medium · size_hint: large · 18 AC
+- audit-artifacts VALID ★ (首次 · timestamps fresh · mtimes 新 span 3min · 之前 PRD-1~5 残留干扰这次清干净)
+- 实测 (manifest + Opus 亲跑 lint 验证):
+  · vitest 722/722 pass (75 files) ≥ 620 ✓
+  · judge 39/39 pass (15 files) ≥ 30 ✓ (PRD-6 加 8 new + PRD-5 22 + 既有部分 = 39)
+  · e2e 142 passed 2 skipped ≥ 138 ✓
+  · typecheck 6ws 0 ✓
+  · lint web --max-warnings=0 exit 0 (Opus 亲跑) ✓
+  · lint api --max-warnings=0 exit 0 (Opus 亲跑) ✓
+- AC 18/18 全 PASS
+- 4 new judge files (5/10 19:29~19:30):
+  · video-production.judge.ts (2 case · 美妆 + 健身 · 13 列分镜检查)
+  · video-acquisition.judge.ts (2 case · 理财 + 教育 · CTA 必含)
+  · video-storyboard.judge.ts (2 case · 美食 + 旅游 · imagePromptEn ASCII)
+  · copywriting-acquisition.judge.ts (2 case · 育儿 + 医美 · 200-500 字 + CTA)
+- video-tools-integration.spec.ts (5 步收官 spec · workers=1 + fullyParallel=false 沿用 PRD-5 教训)
+- AC-13 cost_log 3 类 eventType (Opus 亲 grep):
+  · specialist_call (apps/api): 9 命中 ≥1 ✓
+  · judge_call (tests/judge): 11 命中 ≥1 ✓
+  · image_gen (apps/api/src/workers/image-gen): 1 命中 ≥1 ✓
+- browser 验证 (manifest): 4 工具页 load + form visible + 0 ErrorBoundary + 0 console error
+- approve: 7c391e3
+- **未来迭代的学习:**
+  - 收官 audit 必须 lint 亲跑 (--max-warnings=0 不 manifest 自报 · Opus 亲验)
+  - cost_log eventType 3 类区分 grep 是 PRD-6 收官硬验证 · 跨 PRD 沉淀验证 pattern
+  - audit-artifacts VALID 首次 (timestamps 不再受 PRD-1~5 残留干扰) · 因 US-014 是新 verify-artifacts 目录无残留
+---
+
+## [2026-05-10 20:55] - PRD-6 P5 视频模块 · COMPLETE 🎉
+- 14/14 stories PASSED · 总用时 ~12h (含 1 RCA-004 修 + 2 reject + 1 路径 B 救援)
+- Wave 0 Foundation: US-001 (5 schema + ImageGen 骨架) + US-002 (VideoAgent 解锁 3 mode)
+- Wave 1: US-003/004 (/video-production 后端+前端) + US-005/006 (/acquisition-video 后端+前端)
+- Wave 2: US-007 (/ai-video 后端 + queue) + US-008 (前端 polling) + US-009 (DALL-E 3) + US-010 (BullMQ) + US-011 (rate limit) + US-012 (/generate acquisition) + US-013 (history 接入)
+- 收官: US-014 (LLM Judge +8 + 4 工具 e2e + lint clean + 全套绿灯门禁)
+- TD 累积: TD-020/021/022/023 (TD-022 升 Critical · 5 次显现 · 留 PRD-7 启动前修)
+- RCA: RCA-004 (ralph.py timeout 5→20s · 防 health-check 误杀 · 全局 sync 留 PRR)
+- 反例库: 2 reject (US-002 storyboard / US-004 header 错位 · 跨 PRD 沉淀)
+- 下一步: /goal-verify §0 跑 /gsd-map-codebase × N 同步事实层 + 对账 AGENTS.md → /prd-retro 反哺 reject-examples.jsonl
+---
+
+--- [RALPH] Iteration 12 ended: US-014 (32分钟 46秒) ---

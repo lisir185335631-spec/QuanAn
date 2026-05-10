@@ -1,0 +1,13 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests/e2e/fallback.spec.ts:47:3 › FallbackBanner e2e (US-015) › AC-17: isFallback=true → FallbackBanner 显示 + 重试按钮 → 点击后清空结果显示表单
+[1A[2K  1 passed (1.4s)
+::notice title=🎭 Playwright Run Summary::  1 passed (1.4s)
+
+Running 2 tests using 2 workers
+
+[1A[2K[1/2] [mobile] › tests/e2e/fallback.spec.ts:47:3 › FallbackBanner e2e (US-015) › AC-17: isFallback=true → FallbackBanner 显示 + 重试按钮 → 点击后清空结果显示表单
+[1A[2K[2/2] [chromium] › tests/e2e/fallback.spec.ts:47:3 › FallbackBanner e2e (US-015) › AC-17: isFallback=true → FallbackBanner 显示 + 重试按钮 → 点击后清空结果显示表单
+[1A[2K  2 passed (1.9s)
+::notice title=🎭 Playwright Run Summary::  2 passed (1.9s)

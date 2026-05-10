@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.2">
+    <testsuite name="tests/unit/specialists/__tests__/BrandingAgent.test.ts" timestamp="2026-05-08T18:23:01.345Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.003927958">
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; packaging mode (step3) &gt; happy path: returns valid Step3Output with 5 nicknames, 6 bios, writes cost_log" time="0.001974166">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; packaging mode (step3) &gt; schema retry: throws SchemaValidationError when nickname has wrong length (AC-5)" time="0.000490875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; packaging mode (step3) &gt; cold start: succeeds with empty userInput (新用户 · 无历史 stepData)" time="0.000153125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; persona mode (step3b) &gt; happy path: returns valid Step3bOutput with correct array lengths" time="0.000248708">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; persona mode (step3b) &gt; schema retry: throws SchemaValidationError when coreBeliefs has wrong length (AC-7)" time="0.000170708">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; persona mode (step3b) &gt; cold start: succeeds with empty userInput" time="0.000121792">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; throws on invalid mode (AC-8 runtime check)" time="0.000217083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/BrandingAgent.test.ts" name="BrandingAgent &gt; config: has correct five-layer structure (AC-1)" time="0.000166416">
+        </testcase>
+    </testsuite>
+</testsuites>

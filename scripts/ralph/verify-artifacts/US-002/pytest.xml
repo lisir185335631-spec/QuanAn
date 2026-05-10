@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="30" failures="0" errors="0" time="0.23">
+    <testsuite name="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" timestamp="2026-05-10T01:52:02.434Z" hostname="returndeMacBook-Pro.local" tests="17" failures="0" errors="0" skipped="0" time="0.005960917">
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; happy path: step7 returns valid CopywritingOutput with # heading" time="0.001312042">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-10: markdown without # heading → refine fails → fallback (US-015)" time="0.000359792">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-11: hooks empty array → zod min(1) fails → fallback (US-015)" time="0.000270875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; AC-12: 断流(incomplete JSON) → retry → fallback (US-015)" time="0.000174833">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; acquisition happy: returns valid CopywritingAcquisitionOutput (markdown 200-500 + ctaPosition)" time="0.000201458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; acquisition CTA missing: ctaPosition empty → refine fails → fallback (AC-9)" time="0.00012875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; acquisition markdown boundary: &lt;200 chars fails schema, 200-500 passes (AC-9)" time="0.000211125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; modelUsed reflects stream meta chunk model (D-019 pattern)" time="0.000098667">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; config has required 5-layer structure" time="0.000392708">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free happy path: returns valid copywritingFreeOutput with markdown &gt;= 400 chars" time="0.000227667">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free fallback: schema validation failure → isFallback=true" time="0.000127167">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free mode: stream断流 → retry → fallback (同 step7 断流模式)" time="0.00011675">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; free mode: modelUsed reflects stream meta chunk (D-019)" time="0.000087083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom happy path: returns boomOutput with 5 candidates" time="0.000234083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom fallback: bad candidates length → isFallback=true" time="0.000129541">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom mode: 断流 → retry → fallback" time="0.000122208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/CopywritingAgent.test.ts" name="CopywritingAgent &gt; boom mode: modelUsed reflects stream meta chunk (D-019)" time="0.001381959">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/specialists/__tests__/VideoAgent.test.ts" timestamp="2026-05-10T01:52:02.436Z" hostname="returndeMacBook-Pro.local" tests="13" failures="0" errors="0" skipped="0" time="0.004852208">
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; happy path: returns valid ShootingOutput with shotList[1+], equipment[], schedule, writes cost_log" time="0.002073458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; fallback: empty shotList → schema fails → fallback (US-015 AC-1)" time="0.000373584">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; edge: sourceCopy exceeding 5000 chars → ZodError before LLM call (AC-6)" time="0.000577167">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; config: five-layer structure, model_tier=reasoning, timeout_ms=45000 (AC-8)" time="0.000181">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; production happy: returns valid ProductionOutput (shotList + equipment + schedule)" time="0.000198708">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; production outputSchema getter: result validates against ProductionOutputSchema" time="0.000139459">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; production schema fail: empty shotList → fallback (US-015 AC-1)" time="0.000140208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; acquisition happy: returns valid VideoAcquisitionOutput (script + cta + conversionPath + keyMessages)" time="0.000134167">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; acquisition outputSchema getter: mode switch returns VideoAcquisitionOutputSchema" time="0.000090666">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; acquisition schema fail: missing keyMessages → fallback (US-015 AC-1)" time="0.000115458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; storyboard happy: 5 scenes all ASCII imagePromptEn → valid StoryboardOutput" time="0.000214125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; storyboard non-ASCII imagePromptEn: retry once → still fails → fallback (AC-4)" time="0.000163125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/VideoAgent.test.ts" name="VideoAgent &gt; storyboard outputSchema getter: result validates against StoryboardOutputSchema" time="0.000105916">
+        </testcase>
+    </testsuite>
+</testsuites>

@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run tests/unit/api/schemas/video-schemas.test.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/api/schemas/video-schemas.test.ts (19 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  19 passed (19)
+   Start at  09:28:33
+   Duration  193ms (transform 36ms, setup 5ms, collect 41ms, tests 3ms, environment 0ms, prepare 33ms)
+

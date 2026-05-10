@@ -1,0 +1,11 @@
+
+> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
+> playwright test -- account-switch --reporter\=list
+
+
+Running 2 tests using 2 workers
+
+[1A[2K[1/2] [mobile] › tests/e2e/account-switch.spec.ts:41:3 › IP 账号切换 › 切换到不同账号 → clearLsNamespace + reload (AC-3/7)
+[1A[2K[2/2] [chromium] › tests/e2e/account-switch.spec.ts:41:3 › IP 账号切换 › 切换到不同账号 → clearLsNamespace + reload (AC-3/7)
+[1A[2K  2 passed (1.5s)
+::notice title=🎭 Playwright Run Summary::  2 passed (1.5s)

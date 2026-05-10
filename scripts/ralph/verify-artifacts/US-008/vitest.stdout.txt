@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run tests/unit/web/pages/AiVideo.test.tsx
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/pages/AiVideo.test.tsx (21 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  17:05:27
+   Duration  148ms (transform 19ms, setup 5ms, collect 18ms, tests 3ms, environment 0ms, prepare 29ms)
+

@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
+> playwright test tests/e2e/tool-ai-video.spec.ts --reporter\=junit --output\=scripts/ralph/verify-artifacts/US-008/e2e.xml
+
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="6.47254">
+<testsuite name="tool-ai-video.spec.ts" timestamp="2026-05-10T09:06:41.981Z" hostname="chromium" tests="1" failures="0" skipped="0" time="2.871" errors="0">
+<testcase name="/ai-video 工具页 E2E (US-008) › 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误" classname="tool-ai-video.spec.ts" time="2.871">
+</testcase>
+</testsuite>
+<testsuite name="tool-ai-video.spec.ts" timestamp="2026-05-10T09:06:41.981Z" hostname="mobile" tests="1" failures="0" skipped="0" time="2.984" errors="0">
+<testcase name="/ai-video 工具页 E2E (US-008) › 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误" classname="tool-ai-video.spec.ts" time="2.984">
+</testcase>
+</testsuite>
+</testsuites>

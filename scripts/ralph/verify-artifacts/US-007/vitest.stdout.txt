@@ -1,0 +1,15 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run tests/unit/api/ai-video-router.test.ts tests/integration/api/ai-video-flow.test.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/api/ai-video-router.test.ts (10 tests) 6ms
+ ✓ tests/integration/api/ai-video-flow.test.ts (2 tests) 37ms
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  16:40:45
+   Duration  244ms (transform 59ms, setup 7ms, collect 100ms, tests 43ms, environment 0ms, prepare 65ms)
+

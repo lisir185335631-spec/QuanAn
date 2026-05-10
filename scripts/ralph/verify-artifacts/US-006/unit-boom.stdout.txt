@@ -1,0 +1,38 @@
+npm warn Unknown project config "public-hoist-pattern". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > imports and uses ToolForm with toolKey boom-generate
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > uses generateBoomInput schema
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > uses submitLabel 一键生成爆款文案
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > ToolForm boom-generate case renders ElementsMultiSelect + industry + theme
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > renders FeedbackButton with CopywritingAgent agentId
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > result state controls BoomGenerateResult visibility
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 5篇 split: BoomGenerateResult > BoomGenerateResult.tsx splits content by /\n*---\n*/
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 5篇 split: BoomGenerateResult > renders grid md:grid-cols-2 for 5 candidates
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 5篇 split: BoomGenerateResult > shows 输出格式异常 when candidates.length !== 5
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 5篇 split: BoomGenerateResult > renders react-markdown for each candidate
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 5篇 split: BoomGenerateResult > split of 5-candidate content produces 5 items
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 5篇 split: BoomGenerateResult > split of malformed content (no ---) produces 1 item, not 5
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > copy button: BoomGenerateResult > renders copy button for each candidate (boom-copy-N)
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > copy button: BoomGenerateResult > calls navigator.clipboard.writeText on copy
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > copy button: BoomGenerateResult > shows toast.success on successful copy
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > copy button: BoomGenerateResult > shows toast.error on clipboard failure (AC-9)
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > LS 预填: boomGenerate namespace (D-031 AC-4) > getToolLsKey generates correct key for boomGenerate input
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > LS 预填: boomGenerate namespace (D-031 AC-4) > BoomGenerate.tsx uses getToolLsKey with boomGenerate and input suffix
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > LS 预填: boomGenerate namespace (D-031 AC-4) > BoomGenerate.tsx calls localStorage.setItem in handleSubmit (LS-first dual-write)
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > LS 预填: boomGenerate namespace (D-031 AC-4) > AbortController on unmount prevents state update after navigate away
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > LS 预填: boomGenerate namespace (D-031 AC-4) > BoomGenerate.tsx reads industry default from useActiveAccount (AC-5)
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > zod 校验: generateBoomInput > passes with valid elements
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > zod 校验: generateBoomInput > fails when elements is empty
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > zod 校验: generateBoomInput > fails when elements exceed 8 items
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > zod 校验: generateBoomInput > passes with optional industry and theme
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > zod 校验: generateBoomInput > fails with invalid element key
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > mutation: boomGenerate.generate > BoomGenerate.tsx calls trpc.boomGenerate.generate.useMutation
+ ✓ tests/unit/web/pages/BoomGenerate.test.tsx > mutation: boomGenerate.generate > BoomGenerate.tsx calls setResult on handleSuccess
+
+ Test Files  1 passed (1)
+      Tests  28 passed (28)
+   Start at  15:24:06
+   Duration  175ms (transform 32ms, setup 4ms, collect 38ms, tests 3ms, environment 0ms, prepare 21ms)
+

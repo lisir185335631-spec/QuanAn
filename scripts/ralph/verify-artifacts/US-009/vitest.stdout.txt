@@ -1,0 +1,16 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-1: IMAGE_GEN_ENABLED=true happy path > calls DALL-E 3, returns sceneImageUrl + costUsd=0.04, writes cost_log + Asset + history
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-2: IMAGE_GEN_ENABLED=false > returns placeholder URL without calling OpenAI or writing cost_log
+ ✓ tests/integration/api/image-gen-flow.test.ts > US-009 AC-13: ImageGen full flow integration — mock OpenAI + real DB > generate: mock DALL-E 3 → writes Asset to real DB → updates history.scenes[1].sceneImageUrl
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-3: network failure retry 3 times → failed result > retries 3 times on network error, returns { error: image_gen_failed, sceneImageUrl: placeholder } 3006ms
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-4: cost_log eventType=image_gen accurate > writes cost_log with eventType=image_gen provider=openai modelUsed=dall-e-3 costUsd=0.04
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-5: Asset write all fields > writes Asset with accountId, assetType=scene_image, sceneIndex, publicUrl, generationModel, relatedHistoryId
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-6: history.scenes 反写 correct > updates history content with sceneImageUrl merged into correct scene by index, untouched scene unchanged
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  15:38:09
+   Duration  3.18s (transform 43ms, setup 10ms, collect 68ms, tests 3.05s, environment 0ms, prepare 63ms)
+

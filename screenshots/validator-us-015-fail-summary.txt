@@ -1,0 +1,3 @@
+US-015 Validator Run 2026-05-08T23:44:53
+Unit: 10/10 passed
+E2E: FAIL - data-testid=industry-select missing in DOM

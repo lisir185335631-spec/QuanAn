@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > industry mode (step1) > happy path: returns valid Step1Output and writes cost_log
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > industry mode (step1) > schema retry: throws SchemaValidationError after two invalid LLM responses
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > industry mode (step1) > cold start: succeeds with empty userInput (新用户 · 无历史 stepData)
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > execution mode (step4) > happy path: returns markdown starting with # 执行计划
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > execution mode (step4) > schema retry: throws SchemaValidationError when markdown missing # 执行计划 heading
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > execution mode (step4) > cold start: succeeds with minimal input (无 step3 数据)
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > throws on invalid mode (AC-8 runtime check)
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > config: has correct five-layer structure (AC-1)
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  02:05:29
+   Duration  203ms (transform 36ms, setup 5ms, collect 71ms, tests 4ms, environment 0ms, prepare 23ms)
+

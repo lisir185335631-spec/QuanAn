@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.297">
+    <testsuite name="tests/unit/api/acquisition-video-router.test.ts" timestamp="2026-05-10T05:28:48.882Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.004635167">
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — happy path &gt; calls VideoAgent(mode=acquisition), writes history agentMode=acquisition, ctaScript contains CTA keyword" time="0.002693042">
+        </testcase>
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — zod validation &gt; conversionGoal 留空 → BAD_REQUEST (转化目标必填)" time="0.000535917">
+        </testcase>
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — zod validation &gt; sourceCopy 长度 10 (min boundary) → pass" time="0.000235667">
+        </testcase>
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — zod validation &gt; sourceCopy 长度 3000 (max boundary) → pass" time="0.000220417">
+        </testcase>
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — zod validation &gt; sourceCopy 长度 3001 → BAD_REQUEST" time="0.00020475">
+        </testcase>
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — fallback path (Specialist internal error) &gt; agent returns isFallback=true → history written with isFallback=true" time="0.000191666">
+        </testcase>
+        <testcase classname="tests/unit/api/acquisition-video-router.test.ts" name="acquisitionVideo.generate — cross-account RLS isolation &gt; findFirst returns null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR" time="0.00019125">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/acquisition-video-llm.test.ts" timestamp="2026-05-10T05:28:48.883Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.064485792">
+        <testcase classname="tests/integration/api/acquisition-video-llm.test.ts" name="US-005 AC-8: acquisitionVideo.generate integration — nock Anthropic SDK + real DB &gt; generate: nock intercepts Anthropic call, writes history + cost_log to real DB, ctaScript contains CTA keyword, &lt; 5s" time="0.035324459">
+        </testcase>
+    </testsuite>
+</testsuites>

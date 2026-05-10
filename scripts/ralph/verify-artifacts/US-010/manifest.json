@@ -1,0 +1,34 @@
+{
+  "story_id": "US-010",
+  "validator_start_ts": "2026-05-10T16:11:00",
+  "validator_end_ts": "2026-05-10T16:16:00",
+  "test_command": "pnpm typecheck && pnpm test tests/unit/api/image-gen-queue.test.ts tests/integration/api/image-gen-bullmq.test.ts && pnpm test (X-6 zero-regression)",
+  "exit_code": 0,
+  "artifacts": [
+    "typecheck.txt",
+    "vitest.stdout.txt",
+    "vitest.xml",
+    "pytest-full.stdout.txt"
+  ],
+  "ac_results": {
+    "AC-1": "PASS - queue.ts: imageGenQueue = new Queue('image-gen', { connection: redis, defaultJobOptions: { attempts: 3, backoff: { type: 'exponential', delay: 5000 } } })",
+    "AC-2": "PASS - worker.ts: concurrency: 2",
+    "AC-3": "PASS - worker.ts: new Worker('image-gen', async (job) => imageGen(job.data), { connection: redis, concurrency: 2 })",
+    "AC-4": "PASS - lib/redis.ts: ioredis singleton, maxRetriesPerRequest: null, REDIS_URL || 'redis://localhost:6379'",
+    "AC-5": "PASS - rate-limit/image-gen.ts: checkImageGenRateLimit(accountId), UTC key, INCR+EXPIRE, count>limit → TRPCError TOO_MANY_REQUESTS",
+    "AC-6": "PASS - new Date().toISOString().slice(0, 10) UTC date used in rate limit key",
+    "AC-7": "PASS - dall-e-3 updates history.scenes[i].sceneImageUrl + status='completed'; worker.on('completed') event logged",
+    "AC-8": "PASS - defaultJobOptions.attempts=3 (2 retries), dall-e-3 sets status='failed' on final failure",
+    "AC-9": "PASS (fixed in retry 2) - videoProduction.generateSceneImage: checkImageGenRateLimit → imageGenQueue.add('scene-image', payload) → try/catch → TRPCError INTERNAL_SERVER_ERROR '生成失败 · 请稍后再试'",
+    "AC-10": "PASS - root package.json: 'worker:image-gen': 'tsx apps/api/src/workers/image-gen/worker.ts'",
+    "AC-11": "PASS - index.ts: process.env.NODE_ENV === 'development' → dynamic import worker + same process",
+    "AC-12": "PASS - 8 unit tests all passed (vitest 8/8)",
+    "AC-13": "PASS - integration test 1/1: real BullMQ+Redis, job→worker tick→completed event→history.scenes反写 confirmed in DB",
+    "AC-14": "SUSPECTED - No explicit timing test. Redis INCR+EXPIRE on localhost is typically <1ms, well within 10ms threshold",
+    "AC-15": "SUSPECTED - No explicit timing test. Integration test queue.add + processing ~50ms total; queue.add alone <<50ms",
+    "AC-16": "SUSPECTED - No explicit timing test. BullMQ worker starts processing within integration test budget (<200ms observed)",
+    "AC-17": "PASS - pnpm typecheck 6 workspaces 0 error",
+    "AC-18": "PASS - exit code 0, 9 tests passed (8 unit + 1 integration)"
+  },
+  "zero_regression": "PASS - 670 vitest tests (69 test files) all passed"
+}

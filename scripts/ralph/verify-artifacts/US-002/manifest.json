@@ -1,19 +1,40 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-09T05:06:50",
-  "validator_end_ts": "2026-05-09T05:08:10",
-  "test_command": "pnpm test (vitest run)",
+  "validator_start_ts": "2026-05-10T10:33:30",
+  "validator_end_ts": "2026-05-10T10:38:00",
+  "test_command": "pnpm test tests/unit/specialists/__tests__/VideoAgent.test.ts tests/unit/specialists/__tests__/CopywritingAgent.test.ts",
   "exit_code": 0,
   "artifacts": [
+    "typecheck.txt",
+    "vitest.stdout.txt",
+    "vitest.xml",
+    "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.txt"
+    "manifest.json"
   ],
   "summary": {
-    "total_tests": 416,
-    "failed": 0,
-    "AnalysisAgent_tests": 8,
-    "CopywritingAgent_tests": 15,
-    "typecheck": "pass"
+    "unit_tests_ms": 10,
+    "integration_test_ms": 49,
+    "full_suite_total": 593,
+    "full_suite_failures": 0,
+    "full_suite_errors": 0,
+    "typecheck_workspaces": 6,
+    "typecheck_errors": 0
   },
-  "notes": "AC-11 grep returns 2 hits (1 is JSDoc comment, 1 is real export) — actual singleton correct. AC-15 total is 15 (not 17) because PRD-4 US-009 baseline was 7 (not 9); US-002 correctly added 8 new tests (4 free + 4 boom). AC-19 real-LLM perf cannot be validated in mock unit tests; config correctly sets model_tier=lightweight + timeouts."
+  "ac_verification": {
+    "AC-1":  "PASS - production/acquisition/storyboard modes call invokeLLM branches (VideoAgent.ts:372-376)",
+    "AC-2":  "PASS - outputSchema 4-case switch (VideoAgent.ts:349-357)",
+    "AC-3":  "PASS - _buildUserPrompt(mode) 4 branches + mode-specific prompts (VideoAgent.ts:469-572)",
+    "AC-4":  "PASS - StoryboardSceneSchema imagePromptEn regex /^[\\x00-\\x7F]+$/ (VideoAgent.ts:112-114); schema rejects non-ASCII",
+    "AC-5":  "PASS - CopywritingAgent acquisition mode: schema min(200)/max(500) + ctaPosition refine + invokeLLM branch",
+    "AC-6":  "PASS - video-production.ts + acquisition-video.ts + ai-video.ts all exist with persona+methodology",
+    "AC-7":  "PASS - templates/index.ts SPECIALIST_TEMPLATES 'VideoAgent:production/acquisition/storyboard' (lines 37-39)",
+    "AC-8":  "PASS - VideoAgent.test.ts: 14 tests (4 original + 10 PRD-6; production×3 + acquisition×3 + storyboard×4)",
+    "AC-9":  "PASS - CopywritingAgent.test.ts: 3 acquisition tests (happy + CTA missing + markdown boundary)",
+    "AC-10": "PASS - Integration nock test: 49ms < 3000ms; nock.isDone()=true",
+    "AC-11": "PASS - Unit tests: 10ms < 200ms",
+    "AC-12": "PASS - pnpm typecheck: 6 workspaces, 0 errors",
+    "AC-13": "PASS - pnpm test exits 0; 31 tests total"
+  },
+  "notes": "ALL 13 ACs PASS. Zero-regression gate: 593 tests 0 failures. Typecheck 6 ws 0 errors. Unit 10ms. Integration 49ms."
 }

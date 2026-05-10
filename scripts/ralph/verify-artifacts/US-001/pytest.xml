@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="16" failures="0" errors="0" time="0.464">
+    <testsuite name="tests/unit/specialists/base.test.ts" timestamp="2026-05-08T16:19:08.047Z" hostname="returndeMacBook-Pro.local" tests="16" failures="0" errors="0" skipped="0" time="0.020660417">
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — input schema validation &gt; AC-8: valid input passes inputSchema.parse and proceeds" time="0.003288958">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — input schema validation &gt; AC-8: invalid input (empty topic) throws ZodError before LLM call" time="0.001813208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — output schema validation &gt; AC-8: SchemaValidationError thrown when output fails outputSchema.safeParse" time="0.000578333">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — output schema validation &gt; AC-8: valid output passes safeParse and returns SpecialistResponse" time="0.000562042">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — template method 4 steps &gt; AC-8: execute() calls contextAssembler.assemble before invokeLLM" time="0.001667459">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — template method 4 steps &gt; AC-8: execute() result contains tokensUsed matching gateway response" time="0.000481083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 五层配置完整性 &gt; AC-8: config has all 5 required layers (persona/memory/knowledge/tools/execution)" time="0.000285709">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 五层配置完整性 &gt; AC-8: config.execution.model_tier drives model selection (no hardcoded model names)" time="0.000225375">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — mock LLMGateway injection &gt; AC-8: injected gateway.complete is called with model_tier from config" time="0.007328791">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — mock LLMGateway injection &gt; AC-8: isFallback=true propagated when gateway returns isFallback" time="0.000220833">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — cost_log 写入字段完整(AC-7) &gt; AC-8: writeCostLog called with all 7 required fields" time="0.000241917">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 性能(AC-9) &gt; AC-9: class instantiation &lt; 5ms" time="0.000126542">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="BaseSpecialist — 性能(AC-9) &gt; AC-9: 100 mock execute() runs without LLM &lt; 1s" time="0.002008458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="Error classes &gt; SchemaValidationError has correct name and issues" time="0.000264208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="Error classes &gt; LLMTimeoutError has correct name, agentId, timeoutMs" time="0.000159334">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.test.ts" name="Error classes &gt; FallbackTriggeredError has correct name and reason" time="0.000109333">
+        </testcase>
+    </testsuite>
+</testsuites>

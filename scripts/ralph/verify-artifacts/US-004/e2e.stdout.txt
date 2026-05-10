@@ -1,0 +1,10 @@
+
+> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
+> playwright test tests/e2e/tool-video-production.spec.ts --project\=chromium
+
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests/e2e/tool-video-production.spec.ts:127:3 › /video-production 工具页 E2E (US-004) › 创建账号 → /video-production → 填文案 + 选类型 + 选时长 → submit → 13列分镜表 + 设备清单 + 排期 + 无控制台错误
+[1A[2K  1 passed (1.3s)
+::notice title=🎭 Playwright Run Summary::  1 passed (1.3s)

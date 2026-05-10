@@ -1,25 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="10" failures="0" errors="0" time="0.162">
-    <testsuite name="tests/unit/parseDesignTokens.test.ts" timestamp="2026-05-07T14:12:24.365Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.003592417">
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts color tokens from YAML frontmatter" time="0.001492834">
+<testsuites name="vitest tests" tests="23" failures="0" errors="0" time="0.149">
+    <testsuite name="tests/unit/web/pages/VideoProduction.test.tsx" timestamp="2026-05-10T05:09:15.140Z" hostname="returndeMacBook-Pro.local" tests="23" failures="0" errors="0" skipped="0" time="0.002619583">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; imports and uses ToolForm with toolKey video-production" time="0.00039775">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts typography tokens including all three font families" time="0.000179292">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; ToolForm has video-production case with sourceCopy textarea" time="0.000103209">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts rounded tokens" time="0.000138">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; ToolForm video-production case has videoType select and duration select" time="0.000124834">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; extracts spacing tokens" time="0.000127541">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; VideoProduction page uses videoProductionInput schema" time="0.000048333">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; YAML wins over text section — text section hex values are not in tokens" time="0.000362834">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; submitLabel 生成方案" time="0.000042458">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; primary color comes from YAML, not from text-section editorial hint" time="0.000101834">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; sourceCopy min 10 中文 error message" time="0.000433042">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing opening ---" time="0.000239125">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; sourceCopy max 3000 中文 error message" time="0.000081916">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on missing closing ---" time="0.000056917">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; videoType invalid enum value fails" time="0.000143459">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; throws on corrupt YAML with line number in message" time="0.000307875">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; valid input passes" time="0.000058084">
         </testcase>
-        <testcase classname="tests/unit/parseDesignTokens.test.ts" name="parseTokensFromContent &gt; returns empty objects for missing optional sections" time="0.000230167">
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; VideoProduction page calls trpc.videoProduction.generate.useMutation" time="0.000054834">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; mutation result is passed to VideoProductionResult" time="0.000045709">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; VideoProduction page renders FeedbackButton with VideoAgent" time="0.000047291">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; ToolResult switch includes video-production case" time="0.000065959">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="LS 写入 + 读取 (D-031) &gt; getToolLsKey generates correct namespaced key for video-production" time="0.000032625">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="LS 写入 + 读取 (D-031) &gt; ToolForm handles LS restore for video-production toolKey" time="0.000074792">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="LS 写入 + 读取 (D-031) &gt; VideoProductionResult renders storyboard table with data-testid" time="0.000052042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProduction page reads historyId from searchParams" time="0.000045959">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProduction page calls trpc.history.detail.useQuery with historyId" time="0.000045667">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; historyDefaults uses inputSummary for sourceCopy" time="0.000035667">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProductionResult handles JSON.parse failure → 解析失败" time="0.000044333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProductionResult renders equipment and schedule sections" time="0.000051625">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2) &gt; 景别列 key=angle · BGM列 key=bgm · 画面描述列 key=description" time="0.000083292">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2) &gt; ShotItem interface contains 7 production-mode fields" time="0.000081541">
         </testcase>
     </testsuite>
 </testsuites>

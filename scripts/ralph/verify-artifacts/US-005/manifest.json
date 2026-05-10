@@ -1,13 +1,18 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-09T14:54:00",
-  "validator_end_ts": "2026-05-09T15:00:00",
-  "test_command": "pnpm test tests/unit/api/boom-generate-router.test.ts tests/integration/api/boom-generate-llm.test.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-10T05:26:00",
+  "validator_end_ts": "2026-05-10T05:29:30",
+  "test_command": "pnpm vitest run tests/unit/api/acquisition-video-router.test.ts tests/integration/api/acquisition-video-llm.test.ts && pnpm typecheck",
   "exit_code": 0,
   "artifacts": [
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "vitest-api.stdout.txt",
+    "vitest-integration.stdout.txt",
+    "typecheck.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.txt"
+    "vitest-full.stdout.txt"
   ],
-  "notes": "X-6 zero regression: 448 tests / 48 files all passed. Unit 4/4 passed. Integration 1/1 passed. Typecheck all workspaces clean."
+  "notes": "X-6 zero regression: 632 tests / 64 files all passed. Unit 7/7 passed. Integration 1/1 passed. Typecheck 6 workspaces clean. cost_log_user_id_fkey FK error is pre-existing TD (confirmed in US-003/004/010/011/017/018 artifacts) — caught in try-catch, non-blocking. Integration test passes via BaseSpecialist specialist_call write (callType=specialist_call). TD豁免: cost_log_user_id_fkey pre-existing (US-003~US-018 artifacts), not introduced by US-005."
 }

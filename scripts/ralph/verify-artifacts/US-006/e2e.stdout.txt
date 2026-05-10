@@ -1,0 +1,10 @@
+
+> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
+> playwright test tests/e2e/tool-acquisition-video.spec.ts --project\=chromium
+
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests/e2e/tool-acquisition-video.spec.ts:61:3 › /acquisition-video 工具页 E2E (US-006) › 创建账号 → /acquisition-video → 填文案 + 填转化目标 + 选平台 + 选时长 → submit → 视频脚本 + CTA 高亮 + 转化路径 + 无控制台错误
+[1A[2K  1 passed (1.2s)
+::notice title=🎭 Playwright Run Summary::  1 passed (1.2s)

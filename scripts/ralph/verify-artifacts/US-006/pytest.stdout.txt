@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run tests/unit/specialists/__tests__/MonetizationAgent.test.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts (5 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  02:33:21
+   Duration  199ms (transform 35ms, setup 5ms, collect 68ms, tests 3ms, environment 0ms, prepare 25ms)
+

@@ -1,0 +1,15 @@
+
+> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
+> vitest run --config vitest.config.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/components/StepProgress.test.tsx (6 tests) 18ms
+ ✓ src/test/pages.test.tsx (24 tests) 63ms
+
+ Test Files  2 passed (2)
+      Tests  30 passed (30)
+   Start at  13:19:37
+   Duration  542ms (transform 65ms, setup 52ms, collect 161ms, tests 82ms, environment 275ms, prepare 54ms)
+

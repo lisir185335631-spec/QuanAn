@@ -1,21 +1,27 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-09T08:03:00",
-  "validator_end_ts": "2026-05-09T08:22:00",
-  "test_command": "pnpm test && pnpm playwright test tests/e2e/tool-analysis.spec.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-10T17:05:00",
+  "validator_end_ts": "2026-05-10T17:25:00",
+  "test_command": "pnpm test tests/unit/web/pages/AiVideo.test.tsx && pnpm test:e2e tests/e2e/tool-ai-video.spec.ts && pnpm typecheck",
   "exit_code": 0,
   "artifacts": [
-    "pytest-full.stdout.txt",
-    "vitest-analysis.stdout.txt",
     "typecheck.txt",
-    "e2e-analysis.stdout.txt",
-    "manifest.json"
+    "vitest.stdout.txt",
+    "vitest.xml",
+    "e2e.stdout.txt",
+    "e2e.xml",
+    "vitest-full.stdout.txt",
+    "vitest-full.xml"
   ],
-  "screenshots": [
-    "screenshots/validator-us-008-initial-1.png",
-    "screenshots/validator-us-008-filled-2.png",
-    "screenshots/validator-us-008-pass-3.png",
-    "screenshots/validator-us-008-zodvalidation-4.png"
-  ],
-  "notes": "All 14 ACs verified. Zero regression: 507 unit tests passed, 26 Analysis-specific tests passed, 2 E2E tests passed, typecheck clean."
+  "browser_verification": {
+    "AC-7": "PASS - form fields visible via e2e test (chromium + mobile)",
+    "AC-8": "PASS - sourceCopy fill + scenesCount select + submit via e2e test",
+    "AC-9": "PASS - result area with 5 scene cards appears immediately via e2e test",
+    "AC-10": "PASS - polling mock → skeleton to real img via e2e test",
+    "AC-11": "PASS - completion banner shown, polling stops via e2e test",
+    "AC-12": "PASS - supplemental browser test: zod error '至少 10 个字符' shown, no submit",
+    "AC-13": "PASS - supplemental browser test: rate limit banner + disabled button shown",
+    "AC-16": "PASS - supplemental browser test: ?historyId=N shows completion banner + scene grid"
+  },
+  "notes": "No Python backend (pure TypeScript/tRPC). Zero-regression via pnpm test (72 files, 703 tests, all passed). AC-14/AC-15 code-verified: stall hint logic (pollingStallCount>=5) and LS restore (getToolLsKey mount effect) both present. E2e test runs chromium + mobile projects."
 }

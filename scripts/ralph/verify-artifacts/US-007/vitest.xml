@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="12" failures="0" errors="0" time="0.245">
+    <testsuite name="tests/unit/api/ai-video-router.test.ts" timestamp="2026-05-10T08:41:24.678Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.006256167">
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — happy path (5 scenes) &gt; returns historyId, jobIds(length=5), scenesPlaceholder(length=5) · history scenes 5 all sceneImageUrl=null" time="0.00334525">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — rate limit &gt; 11th call throws TOO_MANY_REQUESTS (AC-4)" time="0.000553417">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=9 → BAD_REQUEST (镜头数应在 5-8 之间)" time="0.000317333">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=4 → BAD_REQUEST (镜头数应在 5-8 之间)" time="0.000202333">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=5 → pass (AC-11 boundary)" time="0.000253875">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=8 → pass (AC-11 boundary)" time="0.00021925">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — isFallback=true (agent post-validate retry) &gt; agent isFallback=true (Chinese in imagePromptEn triggered fallback) → router still creates history + queues jobs" time="0.000246333">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — cross-account RLS isolation &gt; findFirst null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR" time="0.000189083">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.jobStatus — returns correct status counts &gt; returns total=5 completed=3 pending=1 failed=1 from stored scenes" time="0.000292584">
+        </testcase>
+        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.jobStatus — returns correct status counts &gt; NOT_FOUND when historyId does not belong to account" time="0.000203625">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/ai-video-flow.test.ts" timestamp="2026-05-10T08:41:24.679Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.03458425">
+        <testcase classname="tests/integration/api/ai-video-flow.test.ts" name="US-007 AC-10: aiVideo flow integration — queue mock + real DB &gt; generateStoryboard: 5 scenes → 5 jobs queued · history written to real DB · jobStatus returns completed=5 after worker mock" time="0.010687834">
+        </testcase>
+        <testcase classname="tests/integration/api/ai-video-flow.test.ts" name="US-007 AC-10: aiVideo flow integration — queue mock + real DB &gt; cross-account jobStatus: different accountId → NOT_FOUND" time="0.004077916">
+        </testcase>
+    </testsuite>
+</testsuites>

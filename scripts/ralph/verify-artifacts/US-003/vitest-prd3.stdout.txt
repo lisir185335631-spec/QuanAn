@@ -1,0 +1,38 @@
+
+> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
+> vitest run --config vitest.config.ts --reporter\=verbose --reporter\=junit --outputFile\=scripts/ralph/verify-artifacts/US-003/vitest-prd3.xml
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/test/pages.test.tsx > stepConfig > has all 9 step keys
+ ✓ src/test/pages.test.tsx > stepConfig > step1 has non-empty title and description
+ ✓ src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step2 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step5 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step8 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step9 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
+ ✓ src/test/pages.test.tsx > Tool pages render > Trending renders h1 heading
+ ✓ src/test/pages.test.tsx > Tool pages render > Copywriting renders h1 heading
+ ✓ src/test/pages.test.tsx > Tool pages render > Knowledge renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > Diagnosis renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > Diagnosis shows empty state when no data
+ ✓ src/test/pages.test.tsx > Module pages render > Evolution renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > Evolution shows empty state when no data
+ ✓ src/test/pages.test.tsx > Module pages render > Accounts renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > Accounts shows empty state when no data
+ ✓ src/test/pages.test.tsx > Module pages render > DailyTasks renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > MyTopics renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > History renders h1 heading
+ ✓ src/test/pages.test.tsx > ErrorBoundary > renders children when no error
+ ✓ src/test/pages.test.tsx > ErrorBoundary > renders fallback UI when child throws
+ ✓ src/test/pages.test.tsx > ErrorBoundary > renders custom fallback when provided
+ ✓ src/test/pages.test.tsx > ErrorBoundary > resets error state on button click
+
+ Test Files  1 passed (1)
+      Tests  24 passed (24)
+   Start at  12:52:41
+   Duration  494ms (transform 45ms, setup 20ms, collect 90ms, tests 60ms, environment 115ms, prepare 28ms)
+
+JUNIT report written to /Users/return/Desktop/QuanQn/apps/web/scripts/ralph/verify-artifacts/US-003/vitest-prd3.xml

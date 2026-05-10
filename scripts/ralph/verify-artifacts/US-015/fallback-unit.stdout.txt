@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/specialists/fallback.test.ts (10 tests) 5ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  08:09:58
+   Duration  227ms (transform 51ms, setup 6ms, collect 89ms, tests 5ms, environment 0ms, prepare 21ms)
+

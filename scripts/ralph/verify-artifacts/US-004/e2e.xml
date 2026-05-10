@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
+> playwright test tests/e2e/tool-video-production.spec.ts --reporter\=junit
+
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="2.606563">
+<testsuite name="tool-video-production.spec.ts" timestamp="2026-05-10T04:40:30.828Z" hostname="chromium" tests="1" failures="0" skipped="0" time="0.856" errors="0">
+<testcase name="/video-production 工具页 E2E (US-004) › 创建账号 → /video-production → 填文案 + 选类型 + 选时长 → submit → 13列分镜表 + 设备清单 + 排期 + 无控制台错误" classname="tool-video-production.spec.ts" time="0.856">
+</testcase>
+</testsuite>
+<testsuite name="tool-video-production.spec.ts" timestamp="2026-05-10T04:40:30.828Z" hostname="mobile" tests="1" failures="0" skipped="0" time="1.152" errors="0">
+<testcase name="/video-production 工具页 E2E (US-004) › 创建账号 → /video-production → 填文案 + 选类型 + 选时长 → submit → 13列分镜表 + 设备清单 + 排期 + 无控制台错误" classname="tool-video-production.spec.ts" time="1.152">
+</testcase>
+</testsuite>
+</testsuites>

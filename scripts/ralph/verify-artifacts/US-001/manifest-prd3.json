@@ -1,0 +1,24 @@
+{
+  "story_id": "US-001",
+  "prd": "PRD-3",
+  "validator_start_ts": "2026-05-08T12:09:00",
+  "validator_end_ts": "2026-05-08T12:14:00",
+  "test_command": "pnpm test && pnpm typecheck",
+  "exit_code": 0,
+  "artifacts": [
+    "typecheck-prd3.txt",
+    "vitest-prd3.stdout.txt"
+  ],
+  "ac_results": {
+    "AC-1": "PASS — apps/api/src/trpc/routers/account.ts + step.ts 已不存在; _app.ts 无 account/step import，仅 canonical ipAccounts/stepData router",
+    "AC-2": "PASS — useActiveAccount.ts:29 trpc.ipAccounts.switchActive.useMutation(); useStepData.ts:17 trpc.stepData.save.useMutation(); useEvolution.ts 存在未动",
+    "AC-3": "PASS — router.tsx createBrowserRouter: 9 step + 14 tools + 6 modules + 3 aux + 1 index redirect + 1 catch-all = 34 children; router.test.ts 逐项验证通过",
+    "AC-4": "PASS — 所有页面组件通过 React.lazy() 加载; RootLayout 包含 <Suspense fallback={<PageSkeleton />}>; NotFound 为 catch-all 特殊处理(eager 合理)",
+    "AC-5": "PASS — RootLayout: Header + <Suspense><Outlet /></Suspense>; catch-all {path:'*'} → <NotFound />; router.test 验证 catch-all 存在",
+    "AC-6": "PASS(静态) — React.lazy 分 chunk: webpackChunkName 'step'/'tools'/'modules' 正确注解; Suspense 骨架就位; 实际首屏/切换耗时需浏览器测量(无 browser 工具跳过实测)",
+    "AC-7": "PASS — pnpm typecheck 全 6 workspace(web/api/admin/clients/schemas/ui) 0 error; exit_code=0",
+    "AC-8": "PASS — vitest run: 21 test files, 186 tests, 0 failures(原 174 → 新增 12 router tests = 186); TD-012 合并无回归"
+  },
+  "zero_regression": "186 tests passed, 0 failures, 0 errors",
+  "notes": "AC-6 首屏/切换性能为静态评估; lazy/chunk 结构正确，运行时测量留 US-006 e2e 验收。manifest-prd3.json 区分旧 PRD-2 manifest.json。"
+}

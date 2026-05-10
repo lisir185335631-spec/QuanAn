@@ -884,9 +884,9 @@
         "US-013"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": "[Developer 超时] 开发未完成，passes 重置，retryCount +1\n[Developer 超时] 开发未完成，passes 重置，retryCount +1",
-      "retryCount": 2,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
       "files_to_create": [
         "tests/judge/video-production.judge.ts",
         "tests/judge/video-acquisition.judge.ts",

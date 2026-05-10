@@ -1,0 +1,20 @@
+{
+  "story_id": "US-009",
+  "validator_start_ts": "2026-05-10T07:37:00",
+  "validator_end_ts": "2026-05-10T07:38:15",
+  "test_command": "pnpm vitest run tests/unit/api/image-gen-dall-e-3.test.ts tests/integration/api/image-gen-flow.test.ts",
+  "exit_code": 0,
+  "artifacts": [
+    "typecheck.txt",
+    "vitest.stdout.txt",
+    "vitest.xml"
+  ],
+  "zero_regression": {
+    "command": "pnpm vitest run (full suite)",
+    "tests": 661,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0
+  },
+  "notes": ""
+}

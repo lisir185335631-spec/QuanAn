@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 1st call > count=1 → no throw (AC-7.1)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 10th call (boundary OK) > count=10 → no throw (AC-7.2 boundary)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 11th call > count=11 → TOO_MANY_REQUESTS with correct message (AC-7.3 · AC-2)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 11th call > boundary: count=10 passes, count=11 rejects (AC-8)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — cross-account isolation > accountId=1 count=10 不影响 accountId=2 count=0 (AC-7.4 · SHIELD REJ-008)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — cross-account isolation > 1000 accounts each have independent keys (AC-10 performance)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — day rollover > UTC date change resets count to 0 for new day (AC-7.5)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > getImageGenDailyUsage — read-only count > returns count=0 when key not set (AC-4)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > getImageGenDailyUsage — read-only count > returns current count from Redis (AC-4)
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  17:40:04
+   Duration  164ms (transform 20ms, setup 5ms, collect 17ms, tests 8ms, environment 0ms, prepare 21ms)
+
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-011/vitest.xml

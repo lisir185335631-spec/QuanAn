@@ -1,0 +1,17 @@
+{
+  "story_id": "US-015",
+  "validator_start_ts": "2026-05-09T08:09:00",
+  "validator_end_ts": "2026-05-09T08:15:00",
+  "test_command": "vitest run && playwright test tests/e2e/fallback.spec.ts",
+  "exit_code": 0,
+  "artifacts": [
+    "typecheck.txt",
+    "typecheck-web.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "fallback-unit.stdout.txt",
+    "e2e-fallback-new.txt",
+    "manifest.json"
+  ],
+  "notes": "All checks pass. Zero-regression: 343/343 unit tests pass. E2E: 2/2 (chromium + mobile) pass. Typecheck: API clean, Web clean. Unit fallback tests: 10/10 pass (includes AC-9/AC-10/AC-13)."
+}

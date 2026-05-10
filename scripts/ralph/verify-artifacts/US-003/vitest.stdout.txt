@@ -1,24 +1,16 @@
 
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run tests/unit/api/video-production-router.test.ts tests/integration/api/video-production-llm.test.ts
+
+
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.list > AC-5: calls findMany without explicit where:{userId} (RLS handles it)
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns the active account by activeAccountId
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns null when account not found
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.create > creates account with user.id from context
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.update > updates the active account (where:{id: activeAccountId})
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.delete > soft-deletes by setting isActive=false + archivedAt
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: updates user.activeAccountId and writes audit_log
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws UNAUTHORIZED when user is null
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws NOT_FOUND when account does not belong to user
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > AC-8: queries by stepKey only (no accountId — RLS handles it)
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > returns null when stepKey not found
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.getAll > calls findMany without where:{accountId} (RLS handles it)
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.save > AC-7: upserts with accountId_stepKey composite key
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns completed/total counts for the current account
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns zero completed when no step data exists
+ ✓ tests/unit/api/video-production-router.test.ts (6 tests) 5ms
+{"level":"error","time":"2026-05-10T02:56:55.662Z","pid":39426,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1778381815635","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:44:26\n\n  41 const costUsd = estimateCostUsd(res.model, res.tokens);\n  42 \n  43 try {\n→ 44   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:44:26\n\n  41 const costUsd = estimateCostUsd(res.model, res.tokens);\n  42 \n  43 try {\n→ 44   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:44:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/videoProduction.ts:81:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/video-production-llm.test.ts (1 test) 62ms
 
- Test Files  1 passed (1)
-      Tests  15 passed (15)
-   Start at  09:02:39
-   Duration  198ms (transform 26ms, setup 6ms, collect 34ms, tests 6ms, environment 0ms, prepare 26ms)
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  10:56:55
+   Duration  332ms (transform 72ms, setup 10ms, collect 159ms, tests 66ms, environment 0ms, prepare 57ms)
 

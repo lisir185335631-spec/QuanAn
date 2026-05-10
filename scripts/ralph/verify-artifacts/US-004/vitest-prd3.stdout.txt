@@ -1,0 +1,220 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run --reporter\=verbose --reporter\=junit --outputFile\=scripts/ralph/verify-artifacts/US-004/vitest-prd3.xml
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > save writes inputs under account-namespaced key (AC-1)
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > load reads the LS value back for the same account (AC-1)
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > load returns null when key is absent (AC-1)
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > LS is NOT rolled back after simulated DB failure (AC-1)
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > accountId=null: save writes nothing to LS (AC-1 guard)
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > different step keys produce distinct LS entries (AC-1)
+ ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > save prunes non-active namespaces when LS is near 5 MB (AC-8)
+ ✓ tests/unit/web/hooks.test.ts > useActiveAccount LS logic > switchTo clears all LS keys of the old account namespace (AC-2, AC-6)
+ ✓ tests/unit/web/hooks.test.ts > useActiveAccount LS logic > switchTo preserves new account namespace (AC-2)
+ ✓ tests/unit/web/hooks.test.ts > useActiveAccount LS logic > grep simulation: 0 hits for old namespace after switch (AC-6)
+ ✓ tests/unit/web/hooks.test.ts > useActiveAccount LS logic > multiple tabs: each tab has its own storage — LS does not bleed (AC-7)
+ ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > caches evolution profile to LS with account-namespaced key (AC-3)
+ ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > returns null when no LS cache for evolution (AC-3 initial state)
+ ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > LS cache key is account-specific — no bleed between accounts (AC-7)
+ ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > LS cache for switched-from account is cleared; new account cache intact (AC-3)
+ ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > handles malformed LS JSON gracefully (parse safety)
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getRecommendations > returns mock recommendation array without DB calls
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getScriptCases > returns mock script case array and echoes industry filter
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getFavorites > calls knowledgeFavorite.findMany and returns favorites array
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.addFavorite > AC-6: creates favorite with activeAccountId (per-account isolation)
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.removeFavorite > calls knowledgeFavorite.deleteMany with accountId+itemType+itemKey and returns {ok:true}
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getNotes > calls knowledgeNote.findMany and returns notes array
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.addNote > creates note with activeAccountId and content
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.list > AC-5: calls findMany without explicit where:{userId} (RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns the active account by activeAccountId
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns null when account not found
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.create > creates account with user.id from context
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.update > updates the active account (where:{id: activeAccountId})
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.delete > soft-deletes by setting isActive=false + archivedAt
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: updates user.activeAccountId and writes audit_log
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws UNAUTHORIZED when user is null
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws NOT_FOUND when account does not belong to user
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > AC-8: queries by stepKey only (no accountId — RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > returns null when stepKey not found
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.getAll > calls findMany without where:{accountId} (RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.save > AC-7: upserts with accountId_stepKey composite key
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns completed/total counts for the current account
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns zero completed when no step data exists
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.active > returns null when no account found
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.active > returns account data when found
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.active > queries with activeAccountId from ctx
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.switchActive > updates user.activeAccountId and writes audit_log
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.switchActive > throws NOT_FOUND when account does not belong to user
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.switchActive > throws UNAUTHORIZED when no user in ctx
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.switchActive > zod: rejects non-positive accountId
+ ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.switchActive > zod: rejects non-integer accountId
+ ✓ tests/unit/api/account-step-auth.test.ts > stepData.save > upserts step data and returns { ok: true, data }
+ ✓ tests/unit/api/account-step-auth.test.ts > stepData.save > passes traceId from ctx to upsert
+ ✓ tests/unit/api/account-step-auth.test.ts > stepData.save > zod: rejects empty stepKey
+ ✓ tests/unit/api/account-step-auth.test.ts > stepData.save > zod: accepts empty inputs object
+ ✓ tests/unit/api/account-step-auth.test.ts > auth.me > returns unauthenticated stub when no user in ctx
+ ✓ tests/unit/api/account-step-auth.test.ts > auth.me > returns user info when authenticated
+ ✓ tests/unit/api/account-step-auth.test.ts > auth.me > exposes only id, email, name (not password or session data)
+ ✓ tests/integration/api/auth.test.ts > [Integration] mock login flow > AC-2/3/5: mock login creates session cookie + DB row
+{"level":"warn","time":"2026-05-08T05:02:53.290Z","pid":75443,"hostname":"Mac","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-08T05:02:53.290Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-08T05:02:53.292Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-08T05:02:53.293Z","pid":75443,"hostname":"Mac","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-08T05:02:53.293Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-08T05:02:53.294Z","pid":75443,"hostname":"Mac","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-08T05:02:53.294Z","pid":75443,"hostname":"Mac","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: happy path — primary succeeds, no fallback field
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: primary fails both attempts → falls back to gpt-4o
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: retry once — fails first, succeeds second (same primary)
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-4: both providers fail → returns fallback template string
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-4: both fail → cost_log written with success=false
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-5: ANTHROPIC_API_KEY missing → throws specific error
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-6: cost_log written on success with correct fields
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-6: cost_log res.fallback present when fallback used
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > lightweight tier: primary is haiku, fallback is gpt-4o-mini
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-3: user A (correct account) sees their own step_data rows
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.generate > AC-7: creates History row with traceId and returns mock content
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.optimize > AC-7: creates History row for optimization with traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.list > returns array of history entries without hitting history.create
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.delete > calls history.delete with the given historyId and returns {ok: true}
+ ✓ tests/unit/api/specialists-creation.test.ts > videoAnalysis.analyze > AC-7: creates History row with agentId=video_analysis and traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > videoAnalysis.rewrite > AC-7: creates History row for rewrite with traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generate > AC-7: creates History row with agentId=video_production
+ ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generateStoryboard > AC-7: creates History row for storyboard with traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generateSceneImage > AC-7: creates History row for scene image with traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > boomGenerate.generate > AC-7: creates History row with agentId=boom_generate and traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > monetization.generate > AC-7: creates History row with agentId=monetization and traceId
+ ✓ tests/integration/api/auth.test.ts > [Integration] mock login flow > AC-4: auth.me with valid session returns authenticated user
+ ✓ tests/unit/api/specialists-flow.test.ts > privateDomain.generate > AC-7: creates History row with agentId=private_domain and traceId
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.generate > AC-7: creates DiagnosisReport row with agentId=DiagnosisAgent and traceId
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.generate > zod: rejects answers array with wrong length
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.history > calls diagnosisReport.findMany with default limit=10
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.latest > calls diagnosisReport.findFirst ordered by createdAt desc
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.latest > returns null when no reports found
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.evolve > AC-7: creates FeedbackLog row with rating and agentId
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.getConfig > returns profile config when profile exists
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.getConfig > returns default config when profile does not exist
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.updateConfig > upserts EvolutionProfile and returns ok + updated config
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.history > calls evolutionInsight.findMany with default limit=20
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.recentFeedback > calls feedbackLog.findMany and returns array
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.recentFeedback > passes agentId filter to where clause when provided
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.feedbackTrend > returns mock trend data with requested days
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.moduleRanking > returns mock ranking array
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.list > calls deepLearningArchive.findMany with isActive filter by default
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.create > creates DeepLearningArchive with sourceType=text
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.createFromFile > creates archive with sourceType=file and placeholder sample
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.learn > updates archive learningStatus to pending and returns {ok:true, status:"queued"}
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.delete > soft-deletes archive by setting isActive=false
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-3: user B (different account) sees 0 rows from step_data
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-7: set_config round-trip overhead < 50ms on localhost
+ ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-8: mock provider bypasses CSRF — mismatched state still completes login
+{"level":"warn","time":"2026-05-08T05:02:53.373Z","pid":75455,"hostname":"Mac","traceId":"test-trace-001","msg":"no_active_account"}
+{"level":"warn","time":"2026-05-08T05:02:53.375Z","pid":75455,"hostname":"Mac","traceId":"test-trace-001","msg":"no_active_account"}
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-4: throws FORBIDDEN when activeAccountId is null
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-4: calls next=false (does not proceed) when activeAccountId missing
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-5: skips RLS and calls next when meta.isGlobal=true
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-5: isGlobal skips even when activeAccountId is present
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-2: sets app.current_account_id via set_config for valid context
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-2: sets app.current_user_id when user.id is present
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-2: skips app.current_user_id when user is null
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-2: calls next with updated ctx including transaction prisma
+ ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-2: wraps resolver in $transaction (ensures set_config is LOCAL)
+ ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-11: expired session → auth.me returns unauthenticated
+ ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: full mock login flow (callback → session) < 500ms
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-01: stepLsKey account=1 step=step1
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-02: stepLsKey account=1 step=step2
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-03: stepLsKey account=1 step=step3
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-04: stepLsKey account=1 step=step4
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-05: stepLsKey account=1 step=step5
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-06: stepLsKey account=1 step=step6
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-07: stepLsKey account=1 step=step7
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-08: stepLsKey account=1 step=step8
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-09: stepLsKey account=1 step=step9
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-10: evolutionLsKey account=1
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-11: stepLsKey account=42 must use account 42 namespace
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-12: evolutionLsKey account=42
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-13: accountLsPrefix has trailing underscore
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-14: LS_PREFIX is correct
+ ✓ tests/unit/web/ls-namespace.test.ts > ls-namespace key builders > key-15: stepLsKey account=0 is well-formed
+ ✓ tests/unit/web/ls-namespace.test.ts > clearLsNamespace > key-16: removes all keys for the target account namespace
+ ✓ tests/unit/web/ls-namespace.test.ts > clearLsNamespace > key-17: preserves keys from other account namespaces (AC-6 isolation)
+ ✓ tests/unit/web/ls-namespace.test.ts > lsUsedBytes and pruneLsNamespaces > key-18: pruneLsNamespaces removes non-active keys when limit exceeded
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — success > AC-3: calls findUnique then update with usedById=user.id and returns updated invite
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — duplicate > AC-4: already-used invite code → throws CONFLICT 409
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — not found > unknown code → throws NOT_FOUND
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — unauthenticated > no user session → throws UNAUTHORIZED
+ ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: auth.me with valid session < 100ms
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has exactly 9 step routes
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has exactly 14 tool routes
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has exactly 6 new module routes
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has 3 auxiliary routes + catch-all = 4 extra
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > total router children = 34 (33 path routes + 1 root index redirect)
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > covers all 9 step keys from ARCHITECTURE §3.6.4
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > includes /ip-plan route (AC-001 §9.4 exit condition)
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > includes /accounts route (AC-001 account switcher)
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > catch-all wildcard present for /404 fallback (AC-001)
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > no duplicate routes
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > all tool hrefs from Header.tsx TOOLS_14 are covered
+ ✓ tests/unit/web/router.test.ts > router route count (AC-001) > all new module hrefs from Header.tsx NEW_MODULES_6 are covered
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts color tokens from YAML frontmatter
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts typography tokens including all three font families
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts rounded tokens
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts spacing tokens
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > YAML wins over text section — text section hex values are not in tokens
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > primary color comes from YAML, not from text-section editorial hint
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing opening ---
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing closing ---
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on corrupt YAML with line number in message
+ ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > returns empty objects for missing optional sections
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: throws RateLimitError when quota exceeded, no LLM call
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: RateLimitError has correct userId and code
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: checkRateLimit is called with userId from metadata
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > checkRateLimit called once per complete() call
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > RateLimitError constructor sets message and code
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > complete() succeeds when rate limit passes
+{"level":"error","time":"2026-05-08T05:02:53.583Z","pid":75471,"hostname":"Mac","msg":"SESSION_SECRET must be at least 32 characters"}
+{"level":"error","time":"2026-05-08T05:02:53.584Z","pid":75471,"hostname":"Mac","msg":"unknown OAuth provider: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-08T05:02:53.585Z","pid":75471,"hostname":"Mac","msg":"OAUTH_PROVIDER=mock not allowed in production"}
+ ✓ tests/unit/auth/providers.test.ts > MockProvider > validateCallback always returns mock dev user
+ ✓ tests/unit/auth/providers.test.ts > MockProvider > getAuthorizationUrl returns URL with /auth/callback?mock=true
+ ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when SESSION_SECRET < 32 chars
+ ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when OAUTH_PROVIDER is unknown
+ ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when NODE_ENV=production and OAUTH_PROVIDER=mock
+ ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > returns false for mock provider (name=mock) — dev only
+ ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > returns true for google provider — always enforced
+ ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > returns true for any unknown real provider
+ ✓ tests/unit/auth/providers.test.ts > requiresCsrfCheck > attack scenario: ?mock=true query param cannot bypass CSRF for google provider
+ ✓ tests/unit/api/trending.test.ts > trending.fetch > AC-5: returns mock TrendingItem array without RLS transaction
+ ✓ tests/unit/api/trending.test.ts > trending.listByIndustry > returns mock items with the requested industry
+ ✓ tests/unit/api/trending.test.ts > trending.listByStyle > returns mock items with the requested presentStyle
+ ✓ tests/integration/api/trace.test.ts > [Integration] trace_id propagation > echoes provided X-Trace-Id in response header
+ ✓ tests/integration/api/trace.test.ts > [Integration] trace_id propagation > generates 16-char hex trace ID when header is absent
+ ✓ tests/integration/api/auth.me.test.ts > auth.me HTTP endpoint > GET /trpc/auth.me returns unauthenticated shape
+{"level":"info","time":"2026-05-08T05:02:53.680Z","pid":75462,"hostname":"Mac","traceId":"tr_0_CopywritingAgent_1778216573679_ljt3","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
+{"level":"error","time":"2026-05-08T05:02:53.680Z","pid":75462,"hostname":"Mac","traceId":"tr_0_CopywritingAgent_1778216573679_ljt3","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:66:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:35:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":1,"msg":"specialist.failed"}
+ ✓ tests/unit/agents/base.test.ts > BaseSpecialist abstract contract > concrete subclass implements execute and can be instantiated
+ ✓ tests/unit/agents/base.test.ts > ContextAssembler.assembleStep > returns { step, accountId, lastResults:{} }
+ ✓ tests/unit/agents/base.test.ts > LLMGateway.selectTier > returns reasoning for reasoning hint
+ ✓ tests/unit/agents/base.test.ts > LLMGateway.selectTier > returns lightweight for lightweight hint
+ ✓ tests/unit/agents/base.test.ts > trace_id propagation > extractTraceId returns the X-Trace-Id header value
+ ✓ tests/unit/agents/base.test.ts > trace_id propagation > extractTraceId returns empty string when header absent
+ ✓ tests/unit/agents/base.test.ts > trace_id propagation > generateHttpTraceId returns a 16-char hex string
+ ✓ tests/unit/agents/base.test.ts > trace_id propagation > generateHttpTraceId is unique per call
+ ✓ tests/integration/api/llm-gateway-real.test.ts > LLMGateway · integration (nock) > complete() calls Anthropic API and returns parsed response
+
+ Test Files  21 passed (21)
+      Tests  186 passed (186)
+   Start at  13:02:52
+   Duration  703ms (transform 436ms, setup 59ms, collect 1.47s, tests 586ms, environment 2ms, prepare 760ms)
+
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-004/vitest-prd3.xml

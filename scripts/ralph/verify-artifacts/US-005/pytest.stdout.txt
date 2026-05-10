@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > happy path: returns valid Step3Output with 5 nicknames, 6 bios, writes cost_log
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > schema retry: throws SchemaValidationError when nickname has wrong length (AC-5)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > cold start: succeeds with empty userInput (新用户 · 无历史 stepData)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > happy path: returns valid Step3bOutput with correct array lengths
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > schema retry: throws SchemaValidationError when coreBeliefs has wrong length (AC-7)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > cold start: succeeds with empty userInput
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > throws on invalid mode (AC-8 runtime check)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > config: has correct five-layer structure (AC-1)
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  02:21:42
+   Duration  198ms (transform 37ms, setup 5ms, collect 70ms, tests 4ms, environment 0ms, prepare 21ms)
+

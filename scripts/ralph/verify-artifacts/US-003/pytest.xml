@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="9" failures="0" errors="0" time="0.244">
+    <testsuite name="tests/unit/specialists/base.llm.test.ts" timestamp="2026-05-08T17:41:24.775Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.003377209">
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation pass (no retry) &gt; valid LLM output passes on first invokeLLM call — gateway called once" time="0.0011715">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation fail → retry → pass &gt; invalid first output retries, second valid output succeeds — gateway called twice" time="0.000315541">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError &gt; two consecutive invalid outputs throw SchemaValidationError" time="0.000331958">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError &gt; SchemaValidationError carries llmRawOutput" time="0.00014825">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-4: cost_log callType + target &gt; cost_log written with callType=specialist_call and target.agentId" time="0.000151083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-5: traceId uses generateSpecialistTraceId pattern &gt; auto-generated traceId follows tr_accountId_agentId_... format" time="0.000117875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-6: LLMTimeoutError from AbortError &gt; AbortError from invokeLLM is converted to LLMTimeoutError" time="0.000118">
+        </testcase>
+        <testcase classname="tests/unit/specialists/base.llm.test.ts" name="US-003 AC-1: responseFormat json_schema passed to gateway &gt; invokeLLM passes responseFormat:{type:json_schema} to llmGateway.complete" time="0.0005865">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/specialist-llm.test.ts" timestamp="2026-05-08T17:41:24.776Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="0" time="0.046208666">
+        <testcase classname="tests/integration/api/specialist-llm.test.ts" name="US-003 AC-10: specialist integration — nock LLM + real DB cost_log &gt; execute() calls Anthropic tool_use, returns valid result, writes cost_log to DB" time="0.023623583">
+        </testcase>
+    </testsuite>
+</testsuites>

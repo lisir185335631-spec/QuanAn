@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="Generate.test.tsx" tests="22" failures="0" errors="0" timestamp="2026-05-09T06:33:20">
+    <testcase classname="表单 render" name="imports and uses ToolForm with toolKey freeGenerate" time="0.001" />
+    <testcase classname="表单 render" name="uses copywritingFreeGenerateInput schema" time="0.001" />
+    <testcase classname="表单 render" name="ToolForm freeGenerate case renders ScriptTypeSelect + ElementsMultiSelect + TextareaField" time="0.001" />
+    <testcase classname="表单 render" name="renders ToolResult with freeGenerate toolKey after submit" time="0.001" />
+    <testcase classname="表单 render" name="renders FeedbackButton with CopywritingAgent agentId" time="0.001" />
+    <testcase classname="zod 校验" name="passes with valid scriptType + elements + topic" time="0.001" />
+    <testcase classname="zod 校验" name="fails when scriptType is invalid" time="0.001" />
+    <testcase classname="zod 校验" name="fails when elements is empty" time="0.001" />
+    <testcase classname="zod 校验" name="fails when topic exceeds 500 chars" time="0.001" />
+    <testcase classname="zod 校验" name="fails when elements exceed 8 items" time="0.001" />
+    <testcase classname="mutation success" name="calls trpc.copywriting.freeGenerate.useMutation" time="0.001" />
+    <testcase classname="mutation success" name="calls setResult on success (handleSuccess)" time="0.001" />
+    <testcase classname="mutation success" name="result state controls ToolResult visibility" time="0.001" />
+    <testcase classname="mutation error toast" name="ToolForm shows toast.error on mutation failure (REJ-035)" time="0.001" />
+    <testcase classname="mutation error toast" name="Generate.tsx does not manually rollback LS on error (REJ-035)" time="0.001" />
+    <testcase classname="LS 预填" name="getToolLsKey generates correct key for freeGenerate input" time="0.001" />
+    <testcase classname="LS 预填" name="Generate.tsx uses getToolLsKey with freeGenerate and input suffix" time="0.001" />
+    <testcase classname="LS 预填" name="ToolForm uses input suffix for LS (not form)" time="0.001" />
+    <testcase classname="LS 预填" name="LS-first dual-write: localStorage.setItem in Generate.tsx handleSubmit" time="0.001" />
+    <testcase classname="LS 预填" name="AbortController on unmount prevents state update after navigate away (AC-8)" time="0.001" />
+    <testcase classname="US-011 stub" name="Generate.tsx uses trpc.history.detail.useQuery with historyId" time="0.001" />
+    <testcase classname="US-011 stub" name="query is disabled when historyId is absent (enabled: !!historyId)" time="0.001" />
+  </testsuite>
+</testsuites>

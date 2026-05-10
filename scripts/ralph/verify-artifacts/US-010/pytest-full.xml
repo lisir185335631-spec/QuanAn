@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="5" failures="0" errors="0" time="0.191">
+    <testsuite name="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" timestamp="2026-05-08T20:05:26.640Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.003118375">
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; happy path: returns lastResult + lastOptimizedResult ≥200 chars each, writes cost_log" time="0.001603959">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; fallback: lastResult shorter than 200 chars → SchemaValidationError after retry" time="0.00051125">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; edge: invalid experience value → ZodError before LLM call (AC-5)" time="0.000386792">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; cold start: no step data in context → still produces valid output" time="0.000140875">
+        </testcase>
+        <testcase classname="tests/unit/specialists/__tests__/LivestreamAgent.test.ts" name="LivestreamAgent &gt; config: five-layer structure, model_tier=reasoning, timeout_ms=30000, industries constant (AC-1/AC-6/AC-7)" time="0.000177042">
+        </testcase>
+    </testsuite>
+</testsuites>
