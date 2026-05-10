@@ -13,8 +13,9 @@ import { prisma } from '@/lib/prisma';
 import { redis } from '@/lib/redis';
 
 import { DallE3ImageGenWorker } from './dall-e-3';
-import type { ImageGenJobPayload } from './index';
 import { IMAGE_GEN_QUEUE_NAME } from './queue';
+
+import type { ImageGenJobPayload } from './index';
 
 const imageGenWorkerInstance = new DallE3ImageGenWorker();
 

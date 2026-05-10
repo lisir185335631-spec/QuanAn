@@ -116,8 +116,11 @@ def _get_cost_log_path() -> "Path":
     return COST_LOG_FILE
 
 
-def _check_claude_health(timeout: int = 5) -> bool:
-    """M-2 (PRD-5 RCA-003 教训): 5s 内 'say OK' 测试 · 防 claude --print 系统级 hang
+def _check_claude_health(timeout: int = 20) -> bool:
+    """M-2 (PRD-5 RCA-003 教训) + RCA-004 (PRD-6 2026-05-10): 20s 内 'say OK' 测试
+    · 防 claude --print 系统级 hang
+    · timeout 5s 在 PRD-6 实测会误杀 (claude --print cold start ≈ 10s · Mac M3 + 健康 CLI)
+    · 20s 给 2x 余量 · 真 hang (>30 min) 仍能快速探测
     返回 True if claude CLI 健康 · False if hang/timeout/error.
     """
     if AGENT == "codex":

@@ -1,0 +1,9 @@
+
+> @quanqn/web@0.1.0 lint /Users/return/Desktop/QuanQn/apps/web
+> eslint . --ext ts,tsx --max-warnings=0 --max-warnings\=0
+
+---
+
+> @quanqn/api@0.1.0 lint /Users/return/Desktop/QuanQn/apps/api
+> eslint . --ext ts --max-warnings=0 --max-warnings\=0
+

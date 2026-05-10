@@ -150,7 +150,7 @@ export const aiVideoRouter = router({
           index: s.index,
           description: s.description,
           imagePromptEn: s.imagePromptEn,
-          sceneImageUrl: null as null,
+          sceneImageUrl: null,
           status: 'pending' as const,
         })),
       };
@@ -200,8 +200,8 @@ export const aiVideoRouter = router({
         scenes: scenes.map((s) => ({
           index: s.index,
           status: s.status,
-          ...(s.sceneImageUrl != null && { sceneImageUrl: s.sceneImageUrl }),
-          ...(s.error != null && { error: s.error }),
+          ...(s.sceneImageUrl !== null && s.sceneImageUrl !== undefined && { sceneImageUrl: s.sceneImageUrl }),
+          ...(s.error !== null && s.error !== undefined && { error: s.error }),
         })),
       };
     }),

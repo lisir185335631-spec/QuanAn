@@ -14,8 +14,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { AiVideoResult } from '@/components/ToolResult/AiVideoResult';
 import { ToolForm } from '@/components/ToolForm/ToolForm';
+import { AiVideoResult } from '@/components/ToolResult/AiVideoResult';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { aiVideoFrontendInput } from '@/lib/schemas/aiVideoFrontend';

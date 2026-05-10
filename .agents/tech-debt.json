@@ -313,6 +313,103 @@
       "fix_hint": "已改 explicit { accountId: activeAccountId!, ...其他 filters }",
       "resolved_in_prd": "PRD-5 (goal-verify §0 fix)",
       "resolved_at": "2026-05-09T22:18:02"
+    },
+    {
+      "id": "TD-020",
+      "title": "verify-artifacts/US-XXX/ 残留 PRD-1~5 旧产物 · 触发 audit-artifacts.py timestamps FAKE 误判",
+      "description": "PRD-6 启动 audit US-001 时, audit-artifacts.py 报 'timestamps FAKE: span too wide 60.9h'. 实测 verify-artifacts/US-001/ 目录混 9 个 PRD-1~5 旧文件 (pytest.xml 5/9, pytest-full.xml 5/9, test.stdout.txt 5/7, typecheck.stdout.txt 5/7, typecheck-prd3.txt 5/8, manifest-prd3.json 5/8, vitest-prd3.stdout.txt 5/8, vitest.stdout.txt 5/8, grep-executeraw.txt 5/8) + 5 个本 PRD-6 新产物 (pytest.stdout.txt/pytest-full.stdout.txt/typecheck.txt/perf.stdout.txt/manifest.json 全 5/10 09:28). 跨 PRD 残留导致 timestamps span 超 1h 阈值 · 误判 FAKE.",
+      "scope": [
+        "scripts/ralph/verify-artifacts/US-XXX/ (PRD 启动期残留)",
+        "~/.claude/scripts/ralph/audit-artifacts.py (timestamps 检查可改进 · 仅看新文件)"
+      ],
+      "impact": "Low: Opus audit 需手动识别残留是 PRD-1~5 旧文件不是 Validator 偷懒 · 误判风险若 Opus 不细看 trail; 长期影响 verify-artifacts/ 占空间",
+      "severity": "Low",
+      "categories": [
+        "tooling",
+        "audit-integrity"
+      ],
+      "created_in_prd": "PRD-1 (verify-artifacts 首次启用)",
+      "detected_in_prd": "PRD-6",
+      "detected_in_story": "US-001 (Opus audit · audit-artifacts.py 报 FAKE)",
+      "fix_by": "PRD-7 启动前 (或 ralph.py 启动期自动清 verify-artifacts/)",
+      "status": "open",
+      "fix_hint": "选 A: ralph.py daemon 启动时清 verify-artifacts/<US-XXX>/ 跨 PRD 残留 (按 mtime > 24h 删) · 选 B: audit-artifacts.py timestamps 检查仅看本 story 文件名 pattern (manifest/pytest/typecheck.{stdout,txt}) 而非全目录 · 选 A 简单直接.",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-021",
+      "title": "ImageGen Worker types 双定义 (zod schema canonical + worker inline interface)",
+      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanqn/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
+      "scope": [
+        "apps/api/src/workers/image-gen/index.ts:14-26 (inline TS interface)",
+        "packages/schemas/src/specialist-io/imageGen.schema.ts (zod canonical)"
+      ],
+      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanqn/schemas 推断, types 漂移可能让 worker 接错字段",
+      "severity": "Low",
+      "categories": [
+        "tech-debt",
+        "type-safety"
+      ],
+      "created_in_prd": "PRD-6",
+      "detected_in_prd": "PRD-6",
+      "detected_in_story": "US-001 (Opus audit · F2 跨 story 协议核对)",
+      "fix_by": "US-009 真接 (DALL-E 3 SDK wrapper)",
+      "status": "open",
+      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-022",
+      "title": "design-drift CRITICAL (5 次显现): packages/schemas videoProductionOutput / acquisitionVideoOutput 字段简化版 vs VideoAgent inline schema 13 字段不一致",
+      "description": "PRD-6 US-002 audit 发现 · packages/schemas/src/specialist-io/{videoProduction,acquisitionVideo}.schema.ts 的 Output zod schema 字段过于简化 (US-001 ralph 写时未对照 PROMPTS §6.2 13 列分镜表 + ARCHITECTURE.md §6.6 VideoAgent mode 完整定义) · 而 VideoAgent.ts inline ProductionOutputSchema 用 13 字段 (符合 PROMPTS §6.2) + VideoAcquisitionOutputSchema 用 4 字段 (script/cta/conversionPath/keyMessages 跟 packages/schemas acquisitionVideoOutput 的 shotList[acquisitionShotSchema] 结构完全不同). 双 zod schema 并存 · 跨包 (packages/schemas vs apps/api/src/specialists) 字段语义不一致 · 风险: US-003/US-005 router 用 packages/schemas zod 验证 trpc i/o 时跟 LLM 实际 output 字段不匹配 · trpc i/o 验证 fail.\n\n**3rd 显现 (US-005 audit)**: router acquisitionVideoInputSchema 字段跟 packages/schemas acquisitionVideoInput 漂移 · conversionGoal: string vs enum (LD-013 降级) · 加 platform/duration 但删 ctaText/additionalContext · output schema 同样错位 (script/cta/conversionPath/keyMessages vs shotList/ctaSuggestion/equipment/totalDuration). 累积 3 mode (storyboard US-002 reject 修对 / production US-004 reject 修对 / acquisition US-005 approve+TD)。\n\n**4th 显现 (US-006 audit)**: PRD AC-2 锁 '13 分镜表 + CTA 高亮 + 转化路径列表' · 但 US-002 VideoAgent VideoAcquisitionOutputSchema 是 script/ctaScript/conversionPath/keyMessages 4 字段 (无 shotList) · ralph 实际渲染 3 卡片 (脚本 + CTA + 转化路径) 是符合实际 schema 的最大努力 · AC-2 字面要求 13 分镜不可能满足 (无 shotList 数据)\n\n**5th 显现 (US-007 audit)**: router generateStoryboardInputSchema scenesCount 用 z.number().int().min(5).max(8) · 跟 PRD-6 US-001 AC-3 锁定 z.union([literal(5/6/7/8)]) functional 等价但 zod 语法降级 · TypeScript 类型推断从 union 5|6|7|8 降为 number",
+      "scope": [
+        "packages/schemas/src/specialist-io/videoProduction.schema.ts:28-33 (videoProductionOutput · 5 字段简化)",
+        "packages/schemas/src/specialist-io/acquisitionVideo.schema.ts:21-32 (acquisitionVideoOutput · shotList 结构错位)",
+        "apps/api/src/specialists/VideoAgent.ts:75-82 (ProductionOutputSchema · 13 字段 inline · 对应 PROMPTS §6.2)",
+        "apps/api/src/specialists/VideoAgent.ts:91-96 (VideoAcquisitionOutputSchema · 4 字段 inline · 对应 PROMPTS §5.4 acquisition CTA)",
+        "PROMPTS.md §6.2 13 列分镜表 (source of truth)",
+        "ARCHITECTURE.md §6.6 VideoAgent 4 mode 字段定义"
+      ],
+      "impact": "Medium: US-003/US-005 真接 router 时 · 用 packages/schemas zod 验证 trpc input/output 跟 LLM 实际 13 字段产出不匹配 · 验证 fail · 需 router 内 import VideoAgent 的 inline schema 替代 packages/schemas zod (但 apps/web 前端用 packages/schemas type · 双源真理); 长期影响 history JSON shotList 字段不一致 · /history 接入 (US-013) 渲染逻辑需双 case 处理",
+      "severity": "Critical",
+      "categories": [
+        "design-drift",
+        "type-safety",
+        "schema-contract"
+      ],
+      "created_in_prd": "PRD-6 US-001 (ralph 写 schema 时 5 字段简化)",
+      "detected_in_prd": "PRD-6",
+      "detected_in_story": "US-002 (Opus audit · F1 跨 story 协议核对) + US-005 (Opus audit · acquisition mode router input schema · 3rd 显现) + US-006 (Opus 路径 B audit · acquisition 前端 13 分镜 vs schema 4 字段 · 4th 显现) + US-007 (Opus audit · aiVideo router · 5th 显现)",
+      "fix_by": "PRD-7 启动前 (Wave 1 完后 prd skill 必须重新对齐 5 schema · 对齐 LLM 实际 output + PRD AC 锁定字段) · OR US-006 retry 时一并修 acquisition mode (前端真渲染时暴露)",
+      "status": "open",
+      "fix_hint": "选 A (推荐): US-002 retry 时 · ralph 一并改 packages/schemas videoProductionOutput + acquisitionVideoOutput 字段表跟 VideoAgent inline 13 字段对齐 (PROMPTS §6.2 SOT) · 改 tests/unit/api/schemas/video-schemas.test.ts 适配新字段 · 选 B: US-003 真接时 · router 内 import VideoAgent 的 ProductionOutputSchema 验证 trpc i/o (但导致 packages/schemas + apps/api 跨包反向 import · 不推荐) · 选 C: 新加 packages/schemas/src/specialist-io/_canonical/ 子目录 · 共享 13 字段 ShotItemSchema 给 schema 包 + worker 用 (干净但工作量大) · 紧急路径: 让 PRD-6.md 在 PRD-7 启动前补充 §1.X schema 字段 SoT (单一真理源) 表 · 5 schema (videoProduction/acquisitionVideo/aiVideo/acquisitionCopywriting/imageGen) input + output 字段全部锁字段名 + 类型 + boundary + enum + regex · 跨 packages/schemas + VideoAgent inline + router inline 三处必须 1:1 一致",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-023",
+      "title": "Validator 偶发未产 pytest-full.xml/stdout.txt 凭证文件 (US-008 触发)",
+      "description": "PRD-6 US-008 audit 时 audit-artifacts.py 报 `[WARN] pytest-full: no pytest-full.xml (Validator 未产物化)`. manifest.json notes 说 'Zero-regression via pnpm test (72 files, 703 tests, all passed)' 但没产文件凭证. Opus 亲跑 pnpm test 补凭证 (Step 1.7 partial FAKE) · Test Files 72 passed · Tests 703 passed · 实测 OK. 但流程上 Validator 该落 pytest-full.xml/stdout.txt 让 audit-artifacts.py 自动校验.",
+      "scope": [
+        "scripts/ralph/verify-artifacts/US-008/ (pytest-full.xml/stdout.txt 缺)",
+        "~/.claude/scripts/ralph/VALIDATOR.md (产物流程)"
+      ],
+      "impact": "Low: Opus 亲跑 1 次 6.12s 补凭证 · 不影响审 quality; 长期影响每次 audit 需 manifest 检查 + 偶发亲跑",
+      "severity": "Low",
+      "categories": [
+        "tooling",
+        "audit-integrity"
+      ],
+      "created_in_prd": "PRD-6",
+      "detected_in_prd": "PRD-6",
+      "detected_in_story": "US-008 (Opus audit · Step 1.7 partial FAKE 补跑)",
+      "fix_by": "PRD-7 启动前 (VALIDATOR.md 明确产物清单 · 包括 pytest-full.xml)",
+      "status": "open",
+      "fix_hint": "VALIDATOR.md 加 'pytest-full.xml/stdout.txt 必须落产物' · audit-artifacts.py 对 manifest.json 显式 zero_regression 字段降级为 INFO 而非 WARN",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ],
   "last_updated": "2026-05-09T23:06:52"

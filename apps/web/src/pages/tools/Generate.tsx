@@ -18,8 +18,8 @@ import { ToolForm } from '@/components/ToolForm/ToolForm';
 import { ToolResult } from '@/components/ToolResult/ToolResult';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
-import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
+import { cn } from '@/lib/utils';
 
 import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
 

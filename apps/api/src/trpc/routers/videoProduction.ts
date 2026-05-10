@@ -12,13 +12,14 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+
 import { checkImageGenRateLimit } from '@/lib/rate-limit/image-gen';
 import { videoAgent, type ProductionOutput } from '@/specialists/VideoAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
+import type { ImageGenJobPayload } from '@/workers/image-gen/index';
 import { imageGenQueue } from '@/workers/image-gen/queue';
 
-import type { ImageGenJobPayload } from '@/workers/image-gen/index';
 import type { Prisma } from '@prisma/client';
 
 // ── Input schema (inline equiv of @quanqn/schemas/specialist-io videoProductionInput) ──

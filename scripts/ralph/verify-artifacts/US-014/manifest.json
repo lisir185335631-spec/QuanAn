@@ -1,0 +1,16 @@
+{
+  "story_id": "US-014",
+  "validator_start_ts": "2026-05-10T20:29:00",
+  "validator_end_ts": "2026-05-10T20:35:00",
+  "test_command": "pnpm test && pnpm test:judge && pnpm test:e2e && pnpm typecheck && pnpm --filter @quanqn/web lint --max-warnings=0 && pnpm --filter @quanqn/api lint --max-warnings=0",
+  "exit_code": 0,
+  "artifacts": [
+    "vitest-full.stdout.txt",
+    "judge.stdout.txt",
+    "e2e.stdout.txt",
+    "typecheck.stdout.txt",
+    "lint.stdout.txt",
+    "manifest.json"
+  ],
+  "notes": "US-014 收官门禁全绿: vitest 722/722 pass (75 files) ≥620✓ · judge 39/39 pass (15 files) ≥30✓ · e2e 142 passed 2 skipped ≥138✓ · typecheck 6ws 0 error✓ · lint web+api --max-warnings=0 exit 0✓ · AC-13 cost_log 3类 eventType grep全命中: specialist_call(apps/api/src ≥1)✓ judge_call(tests/judge ≥1)✓ image_gen(apps/api/src/workers/image-gen ≥1)✓ · video-tools-integration.spec.ts 5步全通过 · 4 judge files(video-production/video-acquisition/video-storyboard/copywriting-acquisition) 18 tests total✓"
+}

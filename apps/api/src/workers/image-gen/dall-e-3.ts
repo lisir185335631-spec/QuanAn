@@ -7,6 +7,7 @@
  */
 
 import { Decimal } from '@prisma/client/runtime/library';
+// eslint-disable-next-line import/no-named-as-default
 import OpenAI from 'openai';
 
 import { logger } from '@/lib/logger';

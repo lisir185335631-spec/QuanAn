@@ -1,4 +1,25 @@
 
+## [2026-05-10 20:35] - US-014 (PRD-6 收官 · 全套绿灯)
+- 确认全部产物就位: 4 judge files (video-production/video-acquisition/video-storyboard/copywriting-acquisition · 共 18 tests) + video-tools-integration.spec.ts (5 steps serial e2e)
+- 全套门禁验证: vitest 722/722(75 files)✓ · judge 39/39(15 files)✓ · e2e 142 passed 2 skipped✓ · typecheck 6ws 0 error✓ · lint web+api --max-warnings=0 exit 0✓
+- AC-13 cost_log 3类验证: grep eventType.*specialist_call apps/api/src(6 hits)✓ · grep judge_call tests/judge(9 files)✓ · grep image_gen apps/api/src/workers/image-gen(1 hit)✓
+- 更新 scripts/ralph/verify-artifacts/US-014/: 5 stdout 文件(vitest-full/judge/e2e/typecheck/lint) + manifest.json · audit-artifacts.py ARTIFACTS VALID✓
+- 更改文件: scripts/ralph/verify-artifacts/US-014/{manifest.json,vitest-full.stdout.txt,judge.stdout.txt,e2e.stdout.txt,typecheck.stdout.txt,lint.stdout.txt} + progress.txt
+- **未来迭代的学习:**
+  - audit-artifacts.py timestamp 检查看文件 mtime · 删除旧 validator 遗留文件(pytest-full.stdout.txt/typecheck.txt)后 span 从 37.8h 降到 3min · 收官时必先清理旧产物再跑新验证
+  - US-014 全部 judge/e2e 文件在前两次 Developer 超时前已由其他迭代写好 · 第三次迭代只需跑验证+收集产物 · "验证就位"≠"重新实现"
+---
+
+## [2026-05-10 18:24] - US-012 (retry-2 · 两处 CONFIRMED 修复)
+- 修复1: tests/unit/web/pages/Generate.test.tsx:169 - 将 `expect(src).toContain('handleSubmit')` 改为 `expect(src).toContain('handleFreeSubmit')` · 根因: US-012 将 handleSubmit 重命名为 handleFreeSubmit 但未同步更新测试
+- 修复2: 新建 tests/integration/api/copywriting-acquisition-llm.test.ts · 参考 copywriting-free-llm.test.ts 模式 · nock SDK mock + 真 DB · 验证 agentMode='acquisition' + cost_log + CTA keyword · 测试耗时 47ms (< 5s AC-11 要求)
+- 更改文件: tests/unit/web/pages/Generate.test.tsx · tests/integration/api/copywriting-acquisition-llm.test.ts (新建)
+- 验证: pnpm vitest run 75 files 717 tests exit 0 · pnpm typecheck 6 ws 0 error
+- **未来迭代的学习:**
+  - 页面 handleSubmit 重命名时(如 handleFreeSubmit / handleAcquisitionSubmit)·必须同步更新 tests/unit/web/pages/*.test.tsx 内对应函数名的 toContain 断言 · 否则源码检查类测试失败
+  - integration test 模板: 同 copywriting-free-llm.test.ts · vi.mock 3 处(rate-limiter/ContextAssembler/llm-gateway) + nock.disableNetConnect + 真 DB · mock JSON 必须满足 output schema 约束(acquisition: markdown 200-500字 + CTA keyword)
+---
+
 ## [2026-05-10 15:34] - US-009
 - 真实施 apps/api/src/workers/image-gen/dall-e-3.ts: DallE3ImageGenWorker.generate()
   · IMAGE_GEN_ENABLED=false → placeholder · =true → 真调 DALL-E 3 (OpenAI SDK 仅本文件 · D-038)
@@ -2413,3 +2434,224 @@ prd.json.passes = true | retryCount = 0 | notes = ""
   - Router 文件注释中如果写"保留为 stub — US-XXX 真接", Validator 会 grep 该 stub 是否已被替换 → 注释要同步更新
   - specialists-creation.test.ts 是 PRD-2 遗留综合测试, 加新 router mock 时要保证 vi.mock 在对应 import 前
 ---
+
+## [2026-05-10 16:21] - US-010 (Opus audit · PRD-6 Wave 2 · BullMQ 异步队列)
+- risk_level: high · size_hint: large (16 AC · 实际 18)
+- 实测: 670 vitest zero-regression · typecheck 6ws 0 · 8 unit + 1 integration (real BullMQ + Redis · DB confirmed)
+- AC 15/18 PASS + 3 SUSPECTED (timing tests · localhost INCR/queue.add/worker startup <50ms 实测达标 · 无显式 timing test 但合理)
+- BullMQ Queue: imageGenQueue · attempts=3 · backoff exponential delay=5000
+- Worker: concurrency=2 (D-039 cost 控制 · 同时 2 job · 第 3+ 排队)
+- ioredis singleton lib/redis.ts (REDIS_URL || localhost:6379)
+- rate-limit/image-gen.ts: checkImageGenRateLimit(accountId) · key=`rate:image_gen:user:${accountId}:${today}` UTC date · INCR + EXPIRE 86400s
+- IMAGE_GEN_DAILY_LIMIT_PER_USER env default 10
+- REJ-008 worker accountId 显式 (worker.ts line 64 where: { id, accountId })
+- jobStatus 状态机: pending=sceneImageUrl null · completed=set · failed=status='failed'
+- AC-9 retry fix: ralph 自我发现漏 wire generateSceneImage → imageGenQueue · commit dcda65a 补
+- approve: 0780753 (4 commits 累计)
+- **未来迭代的学习:**
+  - BullMQ Worker 跑在独立进程 · 不带 RLS context · 必须 job.data 显式 accountId 给 prisma where (REJ-008)
+  - rate-limit Redis key 用 ${today} UTC date 滑动窗口 · TTL 86400s 自动过期 · 不需手动清理
+  - timing AC (Redis INCR <10ms / queue.add <50ms / worker startup <200ms) 在 localhost 默认达标 · 但无显式 timing test 是 SUSPECTED · 边缘可接受
+  - root package.json 加 'worker:image-gen': 'tsx apps/api/src/workers/image-gen/worker.ts' 让 prod 可独立进程跑
+  - dev mode: index.ts process.env.NODE_ENV === 'development' → dynamic import worker · 同进程跑简化部署
+---
+
+--- [RALPH] Iteration 3 ended: US-010 (18分钟 13秒) ---
+
+--- [RALPH] Iteration 4 started: US-007 at 2026-05-10 16:20 ---
+
+## [2026-05-10 16:37] - US-007
+- 新建 apps/api/src/trpc/routers/aiVideo.ts: aiVideoRouter · generateStoryboard mutation (protectedProcedure → checkImageGenRateLimit → videoAgent(storyboard) → history.create → imageGenQueue.add × N → return { historyId, jobIds, scenesPlaceholder }) + jobStatus query (findFirst accountId+id 双层防护 → parse scenes → return counts)
+- 注册 aiVideo 到 _app.ts · 更新 packages/clients/src/router-types.ts shadow router
+- 新建 tests/unit/api/ai-video-router.test.ts (10 tests) + tests/integration/api/ai-video-flow.test.ts (2 tests)
+- 更新 vitest.config.ts: 加 @trpc/server alias → apps/api/node_modules/@trpc/server
+- 验证: pnpm typecheck 6 ws 0 error · pnpm test 71 files 682 tests exit 0
+- **未来迭代的学习:**
+  - protectedProcedure 通过 accountIsolationMiddleware 调 ctx.prisma.$transaction(async tx => ...) 并把 tx 传给 router 作为 ctx.prisma · unit test makeCtx 必须包含 $transaction + 事务内 tx(含 history + $executeRaw) · 断言用 prisma._tx.history.XXX · 不是 prisma.history.XXX (acquisition-video test pattern)
+  - vi.hoisted() + import TRPCError from '@trpc/server' 同一测试文件时 vite 报 "Failed to load url @trpc/server" · 根因: @trpc/server 在 apps/api/node_modules 非 root · vi.hoisted 改变 vite 模块解析上下文 · 修复: vitest.config.ts 加 alias '@trpc/server' → apps/api/node_modules/@trpc/server (与 ioredis/bullmq/openai 同模式)
+  - integration test vi.mock('@/lib/logger') 时必须用 importOriginal 保留 traceStore (AsyncLocalStorage) 否则 trpc.ts 调 traceStore.run 报 "No traceStore export" · 正确: vi.mock('@/lib/logger', async (importOriginal) => { const actual = await importOriginal(); return { ...actual, logger: {...} }; })
+  - imageGenQueue.add 返回 { id: string | undefined } · jobId 用 job.id ?? 'job-N' 兜底避免 undefined 进 jobIds 数组
+---
+
+## [2026-05-10 16:48] - US-007 (Opus audit · PRD-6 Wave 2 · /ai-video 后端 · storyboard + queue 入栈)
+- risk_level: high (跨 Specialist + Worker · 异步队列 + jobId 返回)
+- 实测: pytest 5/5 + pytest-full 682/682 zero-regression · typecheck 6ws 0 · 10 unit + 2 integration
+- AC 18/18 PASS (除 minor: AC-4 error message 文字微差 functional pass / scenesCount union vs min-max functional 等价)
+- LD-009 双层 (line 68/90/110/170 explicit accountId)
+- VideoAgent storyboard mode 真接 (line 67 videoAgent.execute({ mode: 'storyboard' }))
+- 5-8 scenes 入 queue (line 121-131 for loop · imageGenQueue.add 每个 scene · jobIds 收集)
+- rate limit (line 64 await checkImageGenRateLimit)
+- jobStatus query (line 163-170 protectedProcedure + accountId 双层 · 计 completed/pending/failed)
+- TD-016 PascalCase agentId='VideoAgent' agentMode='storyboard'
+- 10 unit cover: happy 5 scenes / rate limit 11th call / 4 zod 边界 (4/5/8/9) / isFallback=true / cross-account RLS / jobStatus 状态计数 (3/1/1)
+- 2 integration: 真 BullMQ + Redis · 5 jobs queued · jobStatus completed=5 / cross-account NOT_FOUND
+- TD-022 5th 显现 (router scenesCount min-max vs PRD AC-3 锁定 union literal · functional 等价 · 留 PRD-7 修)
+- approve: 1dbc5e2
+- **未来迭代的学习:**
+  - aiVideo router 异步队列流程: input → rate-limit → VideoAgent storyboard execute → history.create with sceneImageUrl=null + jobId=null → for scene in scenes: imageGenQueue.add → return { historyId, jobIds, scenesPlaceholder }
+  - 不等图片完成 · 立即返回 history row + jobIds (异步 UX)
+  - jobStatus 查 history.scenes 数 sceneImageUrl status=completed/failed/null=pending
+  - prd skill 转 prd.json 时 router inline schema 字段名 OK 但 zod 语法 (union literal 严格 vs min-max 功能等价) 容易漂移 · 留作未来 anti_patterns
+---
+
+--- [RALPH] Iteration 4 ended: US-007 (28分钟 3秒) ---
+
+--- [RALPH] Iteration 5 started: US-008 at 2026-05-10 16:48 ---
+
+## [2026-05-10 17:02] - US-008
+- 新建 apps/web/src/lib/schemas/aiVideoFrontend.ts (z.preprocess coerce scenesCount string→number · default imageStyle=natural)
+- 更新 apps/web/src/components/ToolForm/ToolForm.tsx (加 'ai-video' ToolKey + 三字段 case: sourceCopy textarea + scenesCount select 5-8 + imageStyle select vivid|natural + getDefaultValues)
+- 重写 apps/web/src/pages/tools/AiVideo.tsx (ToolForm wrapper · generateStoryboard mutation · LS-first dual-write getToolLsKey('ai-video','active_polling') · LS restore on mount · ?historyId 恢复 · rate limit banner)
+- 新建 apps/web/src/components/ToolResult/AiVideoResult.tsx (history.detail useQuery + jobStatus polling refetchInterval:3000 · merge StoredScene+jobStatus · 镜头卡片网格 grid-cols-2/3 · skeleton+spinner pending · <img> completed · retry button failed · allCompleted banner · stall hint)
+- 更新 apps/web/src/components/ToolResult/ToolResult.tsx (加 'ai-video' case + AiVideoResult import)
+- 新建 tests/unit/web/pages/AiVideo.test.tsx (21 unit tests: 表单渲染+zod fail+submit→结果区+polling:3000+scene完成img+全完成banner+重试button)
+- 新建 tests/e2e/tool-ai-video.spec.ts (E2E: 创建账号→表单→提交→5 skeleton→mock jobStatus完成→5真图+完成banner)
+- pnpm typecheck 6 ws 0 error ✅ · pnpm test 703/703 ✅
+- **未来迭代的学习:**
+  - tRPC v11 `useQuery` 不支持 `onSuccess` 回调 → 改用 `useEffect([jobStatus])` 检测完成/stall
+  - AiVideoResult 用 history.detail (含 StoredStoryboardContent.scenes) 获取 description/imagePromptEn/duration · jobStatus 只有 status+sceneImageUrl · 两者 merge 显示
+  - SHIELD REJ-010: polling LS key 必须 getToolLsKey(accountId, 'ai-video', 'active_polling') 含账号 namespace · 单元测试直接检验 source
+---
+
+## [2026-05-10 17:25] - US-008 (Opus audit · PRD-6 Wave 2 · /ai-video 前端 · 镜头网格 + polling)
+- risk_level: high · size_hint: large (17 AC)
+- 实测: vitest 703/703 (Step 1.7 Opus 亲跑补凭证 · TD-023 登记) · typecheck 6ws 0 · e2e chromium + mobile pass
+- AC 17/17 PASS (manifest browser_verification 8 项 e2e 实测 + AC-14/15 code-verified)
+- 表单 (sourceCopy textarea + scenesCount select 5-8 + imageStyle select)
+- polling (line 62 trpc.aiVideo.jobStatus.useQuery refetchInterval: allCompleted ? false : 3000)
+- 镜头网格 5-8 卡片 (responsive grid-cols-2/3 · 头部+中部 img/skeleton+底部 description+imagePromptEn 折叠)
+- 完成 banner ('所有镜头已完成 · 查看历史' · ai-video-complete-banner)
+- 失败 scene placeholder + 重试按钮 (toast 'PRD-7+' 占位)
+- skeleton placeholder when history detail not yet loaded
+- 7+ unit covers 表单渲染 + zod 校验 + submit + LS namespace + polling + ?historyId 预填
+- e2e (chromium + mobile · 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误)
+- TD-023 登记: Validator 偶发未产 pytest-full.xml (Step 1.7 Opus 亲跑补)
+- approve: 824c475
+- **未来迭代的学习:**
+  - tRPC v11 useQuery refetchInterval 动态: allCompleted ? false : 3000 · 完成后停 polling 节省请求
+  - 镜头网格 merge storedScenes (历史 description 等) + jobStatus (live status/sceneImageUrl)
+  - 失败 scene 重试按钮占位 (留 PRD-7+ 真接) · UI 不要等收官时才占位
+---
+
+--- [RALPH] Iteration 5 ended: US-008 (37分钟 20秒) ---
+
+--- [RALPH] Iteration 6 started: US-011 at 2026-05-10 17:25 ---
+
+## [2026-05-10 17:35] - US-011
+- 更新 apps/api/src/lib/rate-limit/image-gen.ts: 修复 error message → '今日生成已达上限 (10 次/天)' · 新增 getImageGenDailyUsage(accountId) 只读 GET(无 INCR 副作用) · 导出 _todayKey/_getLimit 供单测使用
+- 新增 aiVideo.ts dailyUsage query: protectedProcedure → getImageGenDailyUsage(ctx.activeAccountId!) (SHIELD REJ-013 · accountId 从 ctx 拿)
+- 更新 .env.example: 加 IMAGE_GEN_DAILY_LIMIT_PER_USER=10 + IMAGE_GEN_MAX_SCENES_PER_REQUEST=8
+- 更新 ToolForm.tsx: 新增 disabled + disabledLabel props · 按钮 disabled 时显示 disabledLabel
+- 更新 AiVideo.tsx: trpc.aiVideo.dailyUsage.useQuery · 显示 '今日剩余 N 次' (data-testid=ai-video-daily-usage) · isOverLimit = count >= limit || isRateLimited → ToolForm disabled + disabledLabel '今日已达上限 (N/N) · 明日再来'
+- 更新 packages/clients/src/router-types.ts: DailyUsageOutput type + dailyUsage shadow query
+- 新建 tests/unit/api/rate-limit-image-gen.test.ts: 9 tests (5 AC-7 + 1 boundary + 1000-concurrent + 2 getImageGenDailyUsage)
+- 验证: pnpm typecheck 6 ws 0 error · pnpm test 73 files 712 tests exit 0
+- **未来迭代的学习:**
+  - 读取 Redis 当前值用 GET (不 INCR) 实现只读 dailyUsage query · 避免 rate limit 误增
+  - ToolForm disabled prop 最小侵入: 不动 LS / abort / 表单逻辑 · 只在 Button 加 disabled OR isPending 条件
+  - dailyUsage query 在未登录状态返回 403 no_active_account · 前端用条件渲染 {dailyUsageQuery.data && ...} 而非 ??0 兜底 · 确保未登录不显示错误 UI
+  - vi.setSystemTime + _todayKey 导出联合测试 day rollover: 时间前后两个 key 不同 → counter 独立(直接验证 key 变化而非 Redis 过期)
+---
+
+## [2026-05-10 17:55] - US-011 (Opus audit · PRD-6 Wave 2 · Rate limit + cost 控制)
+- risk_level: medium · 13 AC
+- 实测: 712 vitest zero-regression · typecheck 6ws 0 · 9 unit + 2 browser screenshots
+- AC 13/13 PASS
+- rate limit 集成 aiVideo.generateStoryboard (line 64 await checkImageGenRateLimit · TOO_MANY_REQUESTS on 11th call)
+- env: IMAGE_GEN_DAILY_LIMIT_PER_USER=10 + IMAGE_GEN_MAX_SCENES_PER_REQUEST=8
+- getImageGenDailyUsage (read-only · no INCR side effect) + aiVideo.dailyUsage 新 query
+- 前端 UX: trpc.dailyUsage.useQuery → '今日剩余 N 次' + disabled={isOverLimit} + disabledLabel='今日已达上限 (N/N) · 明日再来'
+- 9 unit cover: AC-7 5 项 (1st/10th/11th/cross-account/day rollover) + boundary + 1000-concurrent atomic + getImageGenDailyUsage × 2
+- approve: 44de44b
+- **未来迭代的学习:**
+  - rate-limit 必须区分 INCR (写) 和 read-only get (读) · 否则前端显示 dailyUsage 时会触发 INCR side effect 把用户配额吃光
+  - ToolForm 加 disabled + disabledLabel props · 复用模式 · 让所有 rate-limited 工具页统一 UX
+---
+
+--- [RALPH] Iteration 6 ended: US-011 (28分钟 25秒) ---
+
+--- [RALPH] Iteration 7 started: US-012 at 2026-05-10 17:53 ---
+
+## [2026-05-10 18:03] - US-012
+- acquisitionGenerate procedure: copywriting.ts · protectedProcedure + accountId! 双层 + post-validate CTA retry
+- CTA_PATTERN = /关注|私信|点击|获取|领取/ · 缺失 retry 1 次 (isFallback=false 时才触发)
+- CopywritingAgent._buildAcquisitionUserPrompt: 改用 scriptType/elements/conversionGoal/topic 字段
+- acquisitionCopywritingInputSchema 新增到 @quanqn/schemas/specialist-io/acquisitionCopywriting.schema.ts
+- ToolForm: 'acquisition' toolKey + case (ScriptTypeSelect + ElementsMultiSelect + conversionGoal input + topic input)
+- ToolResult: 'acquisition' case → FreeGenerateResult (markdown 渲染复用)
+- Generate.tsx: mode state('free'|'acquisition') + pill tab selector + 两套 ToolForm + 两套 mutation
+- router-types.ts shadow router: copywriting.acquisitionGenerate 入
+- tests/unit/api/copywriting-acquisition.test.ts: 4/4 pass
+- pnpm typecheck 6 ws 0 error · pnpm test 4/4 ✅
+- **未来迭代的学习：**
+  - ToolResultKey 必须与 ToolKey 保持同步扩展 · 加新 toolKey 时记得同步更新 ToolResult.tsx
+  - mode select 用 pill tabs(button[role=tab]) 比 <select> 更符合 Aurelian Dark 设计语言
+  - CTA post-validate 仅在 isFallback=false 时触发 · fallback 路径不再重试(避免两次 fallback 成本)
+---
+
+--- [RALPH] Iteration 7 ended: US-012 (27分钟 11秒) ---
+
+--- [RALPH] Iteration 8 started: US-012 at 2026-05-10 18:21 ---
+
+## [2026-05-10 18:52] - US-012 (Opus audit · PRD-6 Wave 2 · /generate 后端扩展 · acquisition mode)
+- risk_level: medium · 14 AC
+- 实测 (Step 1.5 Opus 亲跑): 75 files · 717 tests passed (zero-regression) · typecheck 6ws 0
+- audit-artifacts.py 误报 'pytest-full: 1 failed' (抓 stale 旧 pytest-full.xml · 实测 0 failed)
+- AC 14/14 PASS · 4 unit + 1 integration (245ms < 5s) + 2 browser screenshots
+- D-026 模式: 不动既有 generate/optimize/list/delete · 新建 acquisitionGenerate procedure
+- inline schema (@quanqn/schemas/specialist-io acquisitionCopywritingInputSchema 注释 canonical)
+- history.create with agentId='CopywritingAgent' agentMode='acquisition' (TD-016)
+- 前端 Generate.tsx mode select union 'free'|'acquisition' · 双 mutation freeMutation + acquisitionMutation
+- shadow router types · acquisitionGenerate
+- D-035 落地: CopywritingAgent acquisition mode 真接 LLM (US-002 解锁的 invokeLLM 分支)
+- approve: 07717f1
+- **未来迭代的学习:**
+  - mode select 加新选项时 · ToolForm + mutation 双 swap pattern (free vs acquisition · 同 freeGenerate vs acquisitionGenerate procedure)
+  - audit-artifacts.py 偶发 stale pytest-full.xml 误报 (TD-020 范围) · Opus 亲跑实测确认 OK
+---
+
+--- [RALPH] Iteration 8 ended: US-012 (30分钟 36秒) ---
+
+--- [RALPH] Iteration 9 started: US-013 at 2026-05-10 18:51 ---
+
+## [2026-05-10 19:07] - US-013
+- 实现了 history.ts detail 增强: agentMode='storyboard' 时 join Asset 表查 sceneImageUrl (relatedHistoryId 关联)
+- 新增 HistoryDetailScene 类型到 router-types.ts, HistoryDetailOutput 扩展 scenes? 字段
+- History.tsx: 新增 3 个 agentMode filter 选项 (production/acquisition/storyboard) + 5 种新 badge 颜色 (蓝/红/紫/绿) + acquisition agentId 歧义消解路由
+- VideoProduction.tsx / AcquisitionVideo.tsx: SHIELD REJ-010 补充 LS 写入 (historyDetail 加载后写 getToolLsKey namespace)
+- AiVideo.tsx: ?historyId 处理时同步写入 LS namespace (SHIELD REJ-010)
+- Generate.tsx: 新增 useEffect 监听 ?mode=acquisition → 自动切换 acquisition 模式 + LS 写入
+- tests/unit/api/history-router.test.ts: +5 新测试 (production filter / acquisition(video) filter / storyboard scenes / Asset join sceneImageUrl / 跨账号 RLS 隔离)
+- 修改的文件: history.ts / router-types.ts / History.tsx / VideoProduction.tsx / AcquisitionVideo.tsx / AiVideo.tsx / Generate.tsx / history-router.test.ts
+- pnpm test (16/16) ✅ · pnpm typecheck 6 ws 0 error ✅
+- **未来迭代的学习:**
+  - protectedProcedure 的 tx 传播: middleware 用 $transaction + next({ ctx: { prisma: tx } }) · resolver 拿到的 prisma 实际是 tx · 测试 mock 中 asset 必须加在 tx 上，不只是 prisma 顶层
+  - History.tsx 的 acquisition 歧义: agentMode='acquisition' 被 VideoAgent + CopywritingAgent 共用 · 路由跳转和 badge 颜色必须按 agentId 区分 · filter dropdown 无法区分只能合并展示
+  - AiVideoResult 已能从 history.content 解析场景 (不需要改) · US-013 增加的 scenes 字段是 API 层的增强 · 不需要改 AiVideoResult 组件
+---
+
+## [2026-05-10 19:22] - US-013 (Opus audit · PRD-6 Wave 2 · /history 接入扩展)
+- risk_level: medium · 15 AC + 5 new AC-8 subtests
+- 实测: 722 vitest pass · typecheck 6ws 0 · 16 unit · 2 browser screenshots
+- AC 15/15 PASS
+- history.detail storyboard scenes JOIN Asset (line 127 prisma.asset.findMany · line 133 assetMap authoritative sceneImageUrls)
+- History.tsx 加 'production'/'acquisition'/'storyboard' 3 新 agentMode filter · 中文 label '视频制作'/'获客'/'AI 视频'
+- 跳转表: production→video-production · storyboard→ai-video · acquisition (VideoAgent)→acquisition-video · acquisition (CopywritingAgent)→generate?mode=acquisition
+- ★ Genius: agentMode='acquisition' 在 VideoAgent + CopywritingAgent 共用 · 用 agentId disambiguate 跳转目的
+- 4 工具页 ?historyId useEffect 预填 (VideoProduction/AcquisitionVideo/AiVideo/Generate)
+- AiVideo SHIELD REJ-010 LS-first dual-write (?historyId 恢复 polling)
+- audit-artifacts.py WARN pytest-full 缺 (TD-023 partial FAKE pattern · manifest 自验证 OK)
+- approve: 1cb7ada
+- **未来迭代的学习:**
+  - 共享 agentMode 名 (acquisition) 用 agentId disambiguate 是简洁 design · 避免每个 mode 唯一名 · 但跳转逻辑要双 check
+  - history.detail JOIN Asset 用 assetMap (Map<sceneIndex, publicUrl>) · 比 N+1 prisma 查询快
+  - 4 工具页 ?historyId 预填 patterns (URL 参数读 + trpc.history.detail.useQuery + setForm) 是项目标准 · 复用 US-011 pattern
+---
+
+--- [RALPH] Iteration 9 ended: US-013 (29分钟 38秒) ---
+
+--- [RALPH] Iteration 10 started: US-014 at 2026-05-10 19:21 ---
+
+--- [RALPH] Iteration 11 started: US-014 at 2026-05-10 19:51 ---
+
+--- [RALPH] Iteration 12 started: US-014 at 2026-05-10 20:21 ---

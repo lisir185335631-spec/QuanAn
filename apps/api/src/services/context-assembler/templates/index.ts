@@ -5,17 +5,17 @@
 
 import type { SpecialistId }      from '@/agents/base/types';
 
-import { ANALYSIS_TEMPLATE }      from './analysis';
-import { BRANDING_TEMPLATE }      from './branding';
-import { COPYWRITING_TEMPLATE }   from './copywriting';
-import { LIVESTREAM_TEMPLATE }    from './livestream';
-import { MONETIZATION_TEMPLATE }  from './monetization';
-import { POSITIONING_TEMPLATE }  from './positioning';
-import { TOPIC_TEMPLATE }         from './topic';
-import { VIDEO_TEMPLATE }         from './video';
-import { VIDEO_PRODUCTION_TEMPLATE } from './video-production';
 import { ACQUISITION_VIDEO_TEMPLATE } from './acquisition-video';
-import { AI_VIDEO_TEMPLATE }     from './ai-video';
+import { AI_VIDEO_TEMPLATE }          from './ai-video';
+import { ANALYSIS_TEMPLATE }          from './analysis';
+import { BRANDING_TEMPLATE }          from './branding';
+import { COPYWRITING_TEMPLATE }       from './copywriting';
+import { LIVESTREAM_TEMPLATE }        from './livestream';
+import { MONETIZATION_TEMPLATE }      from './monetization';
+import { POSITIONING_TEMPLATE }       from './positioning';
+import { TOPIC_TEMPLATE }             from './topic';
+import { VIDEO_TEMPLATE }             from './video';
+import { VIDEO_PRODUCTION_TEMPLATE }  from './video-production';
 
 
 export interface SpecialistTemplate {

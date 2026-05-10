@@ -41,6 +41,6 @@ export async function getImageGenDailyUsage(accountId: number): Promise<{ count:
   const key = _todayKey(accountId);
   const limit = _getLimit();
   const raw = await redis.get(key);
-  const count = raw != null ? parseInt(raw, 10) : 0;
+  const count = raw !== null ? parseInt(raw, 10) : 0;
   return { count, limit };
 }

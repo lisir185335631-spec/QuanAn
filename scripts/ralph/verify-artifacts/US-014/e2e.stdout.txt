@@ -1,0 +1,164 @@
+
+> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
+> playwright test
+
+
+Running 144 tests using 1 worker
+
+[1A[2K[1/144] [chromium] › tests/e2e/account-isolation.spec.ts:54:3 › 多账号 RLS 隔离 E2E › account A 的 stepData 在 switch 到 account B 后不可见
+[1A[2K[2/144] [chromium] › tests/e2e/account-switch.spec.ts:41:3 › IP 账号切换 › 切换到不同账号 → clearLsNamespace + reload (AC-3/7)
+[1A[2K[3/144] [chromium] › tests/e2e/debug-network.spec.ts:3:1 › debug: check React Query cache data
+[1A[2K[chromium] › tests/e2e/debug-network.spec.ts:3:1 › debug: check React Query cache data
+LOGIN_BTN_COUNT: [33m1[39m USER_TRIGGER_COUNT: [33m0[39m
+
+[1A[2KAUTH_STATE: {"rawData":[{"result":{"data":{"ok":true,"user":{"id":1,"email":"dev@local.test","name":"Dev User"}}}}],"isOk":true}
+
+[1A[2K[4/144] [chromium] › tests/e2e/fallback.spec.ts:47:3 › FallbackBanner e2e (US-015) › AC-17: isFallback=true → FallbackBanner 显示 + 重试按钮 → 点击后清空结果显示表单
+[1A[2K[5/144] [chromium] › tests/e2e/feedback-button.spec.ts:19:3 › FeedbackButton e2e › 点击 thumbs-up → costLog.logFeedback mutation 请求发出
+[1A[2K[6/144] [chromium] › tests/e2e/feedback-button.spec.ts:41:3 › FeedbackButton e2e › 点击 thumbs-down → costLog.logFeedback mutation 请求发出
+[1A[2K[7/144] [chromium] › tests/e2e/feedback-button.spec.ts:60:3 › FeedbackButton e2e › /ip-plan FeedbackButton fires with stepKey=ip-plan
+[1A[2K[8/144] [chromium] › tests/e2e/feedback-button.spec.ts:78:3 › FeedbackButton e2e › FeedbackButton visible on all 9 step pages
+[1A[2K[9/144] [chromium] › tests/e2e/feedback-log.spec.ts:19:3 › FeedbackLog e2e (US-014) › AC-19: /step/1 点击 thumbs-up → mutation 请求含 stepKey=step1 + agentId=PositioningAgent
+[1A[2K[10/144] [chromium] › tests/e2e/header.spec.ts:9:3 › Header 三 dropdown › Header 可见
+[1A[2K[11/144] [chromium] › tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock)
+[1A[2K[12/144] [chromium] › tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开
+[1A[2K[13/144] [chromium] › tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开
+[1A[2K[14/144] [chromium] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏
+[1A[2K[15/144] [chromium] › tests/e2e/header.spec.ts:65:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet
+[1A[2K[16/144] [chromium] › tests/e2e/history-flow.spec.ts:80:3 › /history 页面 E2E (US-011) › 创建账号 → /history → 表格渲染 → 筛选 Boom → 点行 → /boom-generate?historyId=777 → 结果区 + 无控制台错误
+[1A[2K[17/144] [chromium] › tests/e2e/ip-flow-9-steps.spec.ts:43:3 › IP Flow 9步 E2E (US-017 · 真 LLM · 手动跑) › 全程跑通: step1→step3→step3b→step4→step4b→step5→step6→step7→step8 → /ip-plan 9/9
+[1A[2K[18/144] [chromium] › tests/e2e/ip-flow-account-isolation.spec.ts:37:3 › IP Flow 账号隔离 E2E (US-017 AC-16/22 · LD-009 RLS) › acc2 无 stepData → /ip-plan 显示 0/9 · RLS 隔离验证
+[1A[2K[19/144] [chromium] › tests/e2e/ip-plan.spec.ts:40:3 › /ip-plan 进度可视化 › /ip-plan 显示 0/9 进度条
+[1A[2K[20/144] [chromium] › tests/e2e/ip-plan.spec.ts:51:3 › /ip-plan 进度可视化 › 切换账号后 /ip-plan 重新 fetch 进度
+[1A[2K[21/144] [chromium] › tests/e2e/ip-plan.spec.ts:81:3 › /ip-plan 进度可视化 › /ip-plan shows feedback button
+[1A[2K[22/144] [chromium] › tests/e2e/ls-db-sync.spec.ts:54:3 › LS↔DB 双写 E2E › stepData save 写 LS + DB · 顺序先 LS 后 DB
+[1A[2K[23/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/1 可达 · 无 error boundary
+[1A[2K[24/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/2 可达 · 无 error boundary
+[1A[2K[25/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/3 可达 · 无 error boundary
+[1A[2K[26/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/4 可达 · 无 error boundary
+[1A[2K[27/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/5 可达 · 无 error boundary
+[1A[2K[28/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/6 可达 · 无 error boundary
+[1A[2K[29/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/7 可达 · 无 error boundary
+[1A[2K[30/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/8 可达 · 无 error boundary
+[1A[2K[31/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/9 可达 · 无 error boundary
+[1A[2K[32/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /trending 可达 · 无 error boundary
+[1A[2K[33/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /copywriting 可达 · 无 error boundary
+[1A[2K[34/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /present-styles 可达 · 无 error boundary
+[1A[2K[35/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /monetization 可达 · 无 error boundary
+[1A[2K[36/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /private-domain 可达 · 无 error boundary
+[1A[2K[37/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /boom-generate 可达 · 无 error boundary
+[1A[2K[38/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /generate 可达 · 无 error boundary
+[1A[2K[39/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /analysis 可达 · 无 error boundary
+[1A[2K[40/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /video-production 可达 · 无 error boundary
+[1A[2K[41/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /acquisition-video 可达 · 无 error boundary
+[1A[2K[42/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ai-video 可达 · 无 error boundary
+[1A[2K[43/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /voice-chat 可达 · 无 error boundary
+[1A[2K[44/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /deep-learning 可达 · 无 error boundary
+[1A[2K[45/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /knowledge 可达 · 无 error boundary
+[1A[2K[46/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /diagnosis 可达 · 无 error boundary
+[1A[2K[47/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /daily-tasks 可达 · 无 error boundary
+[1A[2K[48/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /evolution 可达 · 无 error boundary
+[1A[2K[49/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /accounts 可达 · 无 error boundary
+[1A[2K[50/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /my-topics 可达 · 无 error boundary
+[1A[2K[51/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /history 可达 · 无 error boundary
+[1A[2K[52/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ip-plan 可达 · 无 error boundary
+[1A[2K[53/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /settings 可达 · 无 error boundary
+[1A[2K[54/144] [chromium] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /login 可达 · 无 error boundary
+[1A[2K[55/144] [chromium] › tests/e2e/routes-34.spec.ts:43:3 › 34 路由可访问性 › 总路由数覆盖 32 命名路由(34 含 index redirect + catch-all)
+[1A[2K[56/144] [chromium] › tests/e2e/tool-acquisition-video.spec.ts:61:3 › /acquisition-video 工具页 E2E (US-006) › 创建账号 → /acquisition-video → 填文案 + 填转化目标 + 选平台 + 选时长 → submit → 视频脚本 + CTA 高亮 + 转化路径 + 无控制台错误
+[1A[2K[57/144] [chromium] › tests/e2e/tool-ai-video.spec.ts:105:3 › /ai-video 工具页 E2E (US-008) › 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误
+[1A[2K[58/144] [chromium] › tests/e2e/tool-analysis.spec.ts:82:3 › /analysis 工具页 E2E (US-008) › 创建账号 → /analysis → 粘贴文案 → submit → 5维度 progress bar + 3+ 优化建议 + rewriteSnippet + 无控制台错误
+[1A[2K[59/144] [chromium] › tests/e2e/tool-boom-generate.spec.ts:62:3 › /boom-generate 工具页 E2E (US-006) › 创建账号 → /boom-generate → 选 elements + theme → submit → 5 卡片 grid + copy button + 无控制台错误
+[1A[2K[60/144] [chromium] › tests/e2e/tool-generate.spec.ts:53:3 › /generate 工具页 E2E (US-004) › 创建账号 → /generate → 选 scriptType + elements + topic → submit → 结果出现 + isFallback=false + 无控制台错误
+[1A[2K[61/144] [chromium] › tests/e2e/tool-video-analysis.spec.ts:89:3 › /video-analysis 工具页 E2E › 粘贴爆款文案 200+ 字 → submit → elements tag + insights + rewriteVersion 渲染
+[1A[2K[62/144] [chromium] › tests/e2e/tool-video-production.spec.ts:127:3 › /video-production 工具页 E2E (US-004) › 创建账号 → /video-production → 填文案 + 选类型 + 选时长 → submit → 13列分镜表 + 设备清单 + 排期 + 无控制台错误
+[1A[2K[63/144] [chromium] › tests/e2e/tools-integration.spec.ts:217:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 1: /generate → submit → 结果出现
+[1A[2K[64/144] [chromium] › tests/e2e/tools-integration.spec.ts:242:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 2: /boom-generate → submit → 5 候选出现
+[1A[2K[65/144] [chromium] › tests/e2e/tools-integration.spec.ts:264:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 3: /analysis → submit → 5维度评分出现
+[1A[2K[66/144] [chromium] › tests/e2e/tools-integration.spec.ts:284:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 4: /video-analysis → submit → elements tag 出现
+[1A[2K[67/144] [chromium] › tests/e2e/tools-integration.spec.ts:306:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 5: /history → 4条 → 点 boom row → /boom-generate?historyId=1002 预填
+[1A[2K[68/144] [chromium] › tests/e2e/video-tools-integration.spec.ts:287:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 1: /video-production → submit → 13列分镜表出现
+[1A[2K[69/144] [chromium] › tests/e2e/video-tools-integration.spec.ts:306:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 2: /acquisition-video → submit → CTA 高亮卡片出现
+[1A[2K[70/144] [chromium] › tests/e2e/video-tools-integration.spec.ts:326:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 3: /ai-video → submit → 5 镜头 skeleton → mock 完成 → 完成 banner
+[1A[2K[71/144] [chromium] › tests/e2e/video-tools-integration.spec.ts:348:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 4: /generate?mode=acquisition → submit → 结果出现
+[1A[2K[72/144] [chromium] › tests/e2e/video-tools-integration.spec.ts:377:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 5: /history → 4条 → 点 video-production row → /video-production?historyId=4001 预填
+[1A[2K[73/144] [mobile] › tests/e2e/account-isolation.spec.ts:54:3 › 多账号 RLS 隔离 E2E › account A 的 stepData 在 switch 到 account B 后不可见
+[1A[2K[74/144] [mobile] › tests/e2e/account-switch.spec.ts:41:3 › IP 账号切换 › 切换到不同账号 → clearLsNamespace + reload (AC-3/7)
+[1A[2K[75/144] [mobile] › tests/e2e/debug-network.spec.ts:3:1 › debug: check React Query cache data
+[1A[2K[mobile] › tests/e2e/debug-network.spec.ts:3:1 › debug: check React Query cache data
+LOGIN_BTN_COUNT: [33m1[39m USER_TRIGGER_COUNT: [33m0[39m
+
+[1A[2KAUTH_STATE: {"rawData":[{"result":{"data":{"ok":true,"user":{"id":1,"email":"dev@local.test","name":"Dev User"}}}}],"isOk":true}
+
+[1A[2K[76/144] [mobile] › tests/e2e/fallback.spec.ts:47:3 › FallbackBanner e2e (US-015) › AC-17: isFallback=true → FallbackBanner 显示 + 重试按钮 → 点击后清空结果显示表单
+[1A[2K[77/144] [mobile] › tests/e2e/feedback-button.spec.ts:19:3 › FeedbackButton e2e › 点击 thumbs-up → costLog.logFeedback mutation 请求发出
+[1A[2K[78/144] [mobile] › tests/e2e/feedback-button.spec.ts:41:3 › FeedbackButton e2e › 点击 thumbs-down → costLog.logFeedback mutation 请求发出
+[1A[2K[79/144] [mobile] › tests/e2e/feedback-button.spec.ts:60:3 › FeedbackButton e2e › /ip-plan FeedbackButton fires with stepKey=ip-plan
+[1A[2K[80/144] [mobile] › tests/e2e/feedback-button.spec.ts:78:3 › FeedbackButton e2e › FeedbackButton visible on all 9 step pages
+[1A[2K[81/144] [mobile] › tests/e2e/feedback-log.spec.ts:19:3 › FeedbackLog e2e (US-014) › AC-19: /step/1 点击 thumbs-up → mutation 请求含 stepKey=step1 + agentId=PositioningAgent
+[1A[2K[82/144] [mobile] › tests/e2e/header.spec.ts:9:3 › Header 三 dropdown › Header 可见
+[1A[2K[83/144] [mobile] › tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock)
+[1A[2K[84/144] [mobile] › tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开
+[1A[2K[85/144] [mobile] › tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开
+[1A[2K[86/144] [mobile] › tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏
+[1A[2K[87/144] [mobile] › tests/e2e/header.spec.ts:65:3 › Header 三 dropdown › 移动端 hamburger 点开 Sheet
+[1A[2K[88/144] [mobile] › tests/e2e/history-flow.spec.ts:80:3 › /history 页面 E2E (US-011) › 创建账号 → /history → 表格渲染 → 筛选 Boom → 点行 → /boom-generate?historyId=777 → 结果区 + 无控制台错误
+[1A[2K[89/144] [mobile] › tests/e2e/ip-flow-9-steps.spec.ts:43:3 › IP Flow 9步 E2E (US-017 · 真 LLM · 手动跑) › 全程跑通: step1→step3→step3b→step4→step4b→step5→step6→step7→step8 → /ip-plan 9/9
+[1A[2K[90/144] [mobile] › tests/e2e/ip-flow-account-isolation.spec.ts:37:3 › IP Flow 账号隔离 E2E (US-017 AC-16/22 · LD-009 RLS) › acc2 无 stepData → /ip-plan 显示 0/9 · RLS 隔离验证
+[1A[2K[91/144] [mobile] › tests/e2e/ip-plan.spec.ts:40:3 › /ip-plan 进度可视化 › /ip-plan 显示 0/9 进度条
+[1A[2K[92/144] [mobile] › tests/e2e/ip-plan.spec.ts:51:3 › /ip-plan 进度可视化 › 切换账号后 /ip-plan 重新 fetch 进度
+[1A[2K[93/144] [mobile] › tests/e2e/ip-plan.spec.ts:81:3 › /ip-plan 进度可视化 › /ip-plan shows feedback button
+[1A[2K[94/144] [mobile] › tests/e2e/ls-db-sync.spec.ts:54:3 › LS↔DB 双写 E2E › stepData save 写 LS + DB · 顺序先 LS 后 DB
+[1A[2K[95/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/1 可达 · 无 error boundary
+[1A[2K[96/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/2 可达 · 无 error boundary
+[1A[2K[97/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/3 可达 · 无 error boundary
+[1A[2K[98/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/4 可达 · 无 error boundary
+[1A[2K[99/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/5 可达 · 无 error boundary
+[1A[2K[100/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/6 可达 · 无 error boundary
+[1A[2K[101/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/7 可达 · 无 error boundary
+[1A[2K[102/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/8 可达 · 无 error boundary
+[1A[2K[103/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/9 可达 · 无 error boundary
+[1A[2K[104/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /trending 可达 · 无 error boundary
+[1A[2K[105/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /copywriting 可达 · 无 error boundary
+[1A[2K[106/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /present-styles 可达 · 无 error boundary
+[1A[2K[107/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /monetization 可达 · 无 error boundary
+[1A[2K[108/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /private-domain 可达 · 无 error boundary
+[1A[2K[109/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /boom-generate 可达 · 无 error boundary
+[1A[2K[110/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /generate 可达 · 无 error boundary
+[1A[2K[111/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /analysis 可达 · 无 error boundary
+[1A[2K[112/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /video-production 可达 · 无 error boundary
+[1A[2K[113/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /acquisition-video 可达 · 无 error boundary
+[1A[2K[114/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ai-video 可达 · 无 error boundary
+[1A[2K[115/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /voice-chat 可达 · 无 error boundary
+[1A[2K[116/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /deep-learning 可达 · 无 error boundary
+[1A[2K[117/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /knowledge 可达 · 无 error boundary
+[1A[2K[118/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /diagnosis 可达 · 无 error boundary
+[1A[2K[119/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /daily-tasks 可达 · 无 error boundary
+[1A[2K[120/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /evolution 可达 · 无 error boundary
+[1A[2K[121/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /accounts 可达 · 无 error boundary
+[1A[2K[122/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /my-topics 可达 · 无 error boundary
+[1A[2K[123/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /history 可达 · 无 error boundary
+[1A[2K[124/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ip-plan 可达 · 无 error boundary
+[1A[2K[125/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /settings 可达 · 无 error boundary
+[1A[2K[126/144] [mobile] › tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /login 可达 · 无 error boundary
+[1A[2K[127/144] [mobile] › tests/e2e/routes-34.spec.ts:43:3 › 34 路由可访问性 › 总路由数覆盖 32 命名路由(34 含 index redirect + catch-all)
+[1A[2K[128/144] [mobile] › tests/e2e/tool-acquisition-video.spec.ts:61:3 › /acquisition-video 工具页 E2E (US-006) › 创建账号 → /acquisition-video → 填文案 + 填转化目标 + 选平台 + 选时长 → submit → 视频脚本 + CTA 高亮 + 转化路径 + 无控制台错误
+[1A[2K[129/144] [mobile] › tests/e2e/tool-ai-video.spec.ts:105:3 › /ai-video 工具页 E2E (US-008) › 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误
+[1A[2K[130/144] [mobile] › tests/e2e/tool-analysis.spec.ts:82:3 › /analysis 工具页 E2E (US-008) › 创建账号 → /analysis → 粘贴文案 → submit → 5维度 progress bar + 3+ 优化建议 + rewriteSnippet + 无控制台错误
+[1A[2K[131/144] [mobile] › tests/e2e/tool-boom-generate.spec.ts:62:3 › /boom-generate 工具页 E2E (US-006) › 创建账号 → /boom-generate → 选 elements + theme → submit → 5 卡片 grid + copy button + 无控制台错误
+[1A[2K[132/144] [mobile] › tests/e2e/tool-generate.spec.ts:53:3 › /generate 工具页 E2E (US-004) › 创建账号 → /generate → 选 scriptType + elements + topic → submit → 结果出现 + isFallback=false + 无控制台错误
+[1A[2K[133/144] [mobile] › tests/e2e/tool-video-analysis.spec.ts:89:3 › /video-analysis 工具页 E2E › 粘贴爆款文案 200+ 字 → submit → elements tag + insights + rewriteVersion 渲染
+[1A[2K[134/144] [mobile] › tests/e2e/tool-video-production.spec.ts:127:3 › /video-production 工具页 E2E (US-004) › 创建账号 → /video-production → 填文案 + 选类型 + 选时长 → submit → 13列分镜表 + 设备清单 + 排期 + 无控制台错误
+[1A[2K[135/144] [mobile] › tests/e2e/tools-integration.spec.ts:217:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 1: /generate → submit → 结果出现
+[1A[2K[136/144] [mobile] › tests/e2e/tools-integration.spec.ts:242:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 2: /boom-generate → submit → 5 候选出现
+[1A[2K[137/144] [mobile] › tests/e2e/tools-integration.spec.ts:264:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 3: /analysis → submit → 5维度评分出现
+[1A[2K[138/144] [mobile] › tests/e2e/tools-integration.spec.ts:284:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 4: /video-analysis → submit → elements tag 出现
+[1A[2K[139/144] [mobile] › tests/e2e/tools-integration.spec.ts:306:3 › 4 工具 + history 收官集成 E2E (US-012) › Step 5: /history → 4条 → 点 boom row → /boom-generate?historyId=1002 预填
+[1A[2K[140/144] [mobile] › tests/e2e/video-tools-integration.spec.ts:287:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 1: /video-production → submit → 13列分镜表出现
+[1A[2K[141/144] [mobile] › tests/e2e/video-tools-integration.spec.ts:306:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 2: /acquisition-video → submit → CTA 高亮卡片出现
+[1A[2K[142/144] [mobile] › tests/e2e/video-tools-integration.spec.ts:326:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 3: /ai-video → submit → 5 镜头 skeleton → mock 完成 → 完成 banner
+[1A[2K[143/144] [mobile] › tests/e2e/video-tools-integration.spec.ts:348:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 4: /generate?mode=acquisition → submit → 结果出现
+[1A[2K[144/144] [mobile] › tests/e2e/video-tools-integration.spec.ts:377:3 › 4 视频工具 + history 收官集成 E2E (US-014) › Step 5: /history → 4条 → 点 video-production row → /video-production?historyId=4001 预填
+[1A[2K  2 skipped
+  142 passed (2.5m)
+::notice title=🎭 Playwright Run Summary::  2 skipped%0A  142 passed (2.5m)
