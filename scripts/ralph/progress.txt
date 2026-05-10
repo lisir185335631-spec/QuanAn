@@ -2353,3 +2353,47 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 ---
 
 --- [RALPH] Iteration 1 started: US-009 at 2026-05-10 15:10 ---
+
+## [2026-05-10 15:42] - US-009 (Opus audit · PRD-6 Wave 2 · ImageGen Worker · DALL-E 3 SDK)
+- risk_level: high (新模块 · 真 OpenAI image API · cost 控制)
+- 实测: 661 vitest zero-regression · typecheck 6ws 0 · 6 unit + 1 integration 全过
+- AC 18/18 全 PASS
+- D-038 ImageGen 不走 LLMGateway: grep 'llm-gateway' in dall-e-3.ts → 0 命中 · OpenAI SDK 直接 import (R-1 例外)
+- D-040 cost_log eventType='image_gen' 第 3 类: cost-logger.ts allow list line 20 加 'image_gen'
+- D-041 DALL-E 3 only: model='dall-e-3' size='1024x1024' style 取 payload.imageStyle quality='standard' (D-042 不用 HD)
+- LD-009 双层防护: line 84 findFirst({ id, accountId }) · 所有 prisma.create 含 accountId
+- TD-016 PascalCase: agentId='ImageGenWorker' (cost_log)
+- IMAGE_GEN_ENABLED env 开关 + OPENAI_API_KEY required 校验 (R-001 不暴露 key)
+- retry 3 次 exponential backoff (1s/2s/4s) · timeout 30s 硬上限
+- Asset 写入 (assetType='scene_image' + sceneIndex + publicUrl + generationPrompt=imagePromptEn + storageKey)
+- history.scenes 反写用 prisma.$transaction · prisma.history.update + JSON.parse 兜底 + sceneIdx -1 兜底 (REJ-009 不用 $executeRaw)
+- costUsd 用 Decimal (B2 金额安全)
+- approve: ed326bc
+- **未来迭代的学习:**
+  - ImageGen Worker 是独立模块 · 不复用 BaseSpecialist (因为不走 LLMGateway · 不写 specialist_call cost_log)
+  - cost_log eventType='image_gen' 是第 3 类 · provider='openai' · modelUsed='dall-e-3' · imageCount=1
+  - prisma.$transaction 包 findFirst + update 是 history.scenes JSON 反写的标准模式 · 比 $executeRaw 安全
+  - JSON.parse 兜底 (history.content 不是 JSON 时) + sceneIdx -1 兜底 (sceneIndex 不在 scenes 中) 是必需的防御性编程
+---
+
+--- [RALPH] Iteration 1 ended: US-009 (30分钟 58秒) ---
+
+--- [RALPH] Iteration 2 started: US-010 at 2026-05-10 15:41 ---
+
+## [2026-05-10 15:54] - US-010
+- 新建 apps/api/src/lib/redis.ts: ioredis 单例 (maxRetriesPerRequest: null · BullMQ + rate limit 同时复用 · AC-4)
+- 新建 apps/api/src/lib/rate-limit/image-gen.ts: checkImageGenRateLimit · sliding window INCR → count > limit throw TOO_MANY_REQUESTS · D-044 UTC date · IMAGE_GEN_DAILY_LIMIT_PER_USER env default 10 · 10 allowed → 11th throws
+- 更新 apps/api/src/workers/image-gen/queue.ts: 移除 startImageGenWorker stub · 改用共享 redis 单例 · backoff.delay 2000→5000 · attempts=3 保留
+- 新建 apps/api/src/workers/image-gen/worker.ts: new Worker('image-gen', imageGen, {concurrency:2}) · imageGen=DallE3ImageGenWorker.generate · completed/failed event logging · queryImageGenStatus(historyId,accountId)→{pending,completed,failed}
+- 更新 apps/api/src/index.ts: start() 加 NODE_ENV=development 动态 import worker.ts (同进程) · prod 留 standalone
+- 更新 package.json: 加 worker:image-gen script (tsx apps/api/src/workers/image-gen/worker.ts)
+- 更新 vitest.config.ts: 加 ioredis + bullmq aliases → apps/api/node_modules (vi.mock 路径一致)
+- 新建 tests/unit/api/image-gen-queue.test.ts: 8 unit (全 mock · vi.hoisted 捕获 workerOpts+queueOpts)
+- 新建 tests/integration/api/image-gen-bullmq.test.ts: 真 BullMQ+Redis · mock OpenAI · real DB · FLUSHDB · completed event → history 反写
+- 验证: pnpm typecheck 6 ws 0 error · pnpm test 69 files 670 tests exit 0
+- **未来迭代的学习:**
+  - vi.clearAllMocks() 会清除 vi.fn().mock.calls 历史 · 需要在 vi.mock factory 里用 vi.hoisted() 对象捕获构造参数 (mockState.workerOpts/queueOpts) · 不能在 beforeEach 后靠 mock.calls[0] 访问
+  - BullMQ Queue/Worker 构造时立即调用 connection.duplicate() · ioredis mock 必须实现 duplicate: vi.fn().mockReturnThis()
+  - ioredis + bullmq 在 apps/api/node_modules (非 root) · vitest.config.ts 需加 alias 让 vi.mock 路径与 worker import 路径一致
+  - rate limit count > limit (非 >=) → 允许恰好 limit 次 · 第 limit+1 次 throw · 单元测试用 vi.hoisted Map 模拟 per-key INCR
+---
