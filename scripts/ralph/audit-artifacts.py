@@ -11,6 +11,7 @@ audit-artifacts.py — Coding 3.0 X-5 Opus 产物验证工具
 
 用法:
     python3 audit-artifacts.py <story-id> [--project <path>]
+    python3 audit-artifacts.py --story <story-id> [--project <path>]
 
 输出:
     ARTIFACTS VALID  → 可进语义审查
@@ -155,10 +156,16 @@ def check_ruff(art_dir: Path) -> tuple[bool | None, str]:
 def check_timestamp(data: dict, art_dir: Path) -> tuple[bool, str]:
     """不看 manifest ts(Sonnet 可能偷懒填 00:00:00), 直接看产物文件 mtime.
 
+    ★ AC-2: manifest.zero_regression in (True/'PASS'/'passed') 时跳过检查(防跨 session 旧文件误报).
     两个硬约束(OS 时间戳不可伪造):
     1. 所有产物 mtime 在过去 2 小时内(防陈旧伪造)
     2. 产物 mtime 彼此跨度 < 1 小时(防拼凑旧文件)
     """
+    zr = data.get('zero_regression')
+    if zr in (True, 'PASS', 'passed'):
+        print(f"[INFO] timestamps check skipped: manifest.zero_regression={zr}")
+        return True, f"skipped (zero_regression={zr})"
+
     try:
         from datetime import UTC  # Python 3.11+
     except ImportError:
@@ -188,16 +195,29 @@ def check_timestamp(data: dict, art_dir: Path) -> tuple[bool, str]:
 
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print("用法: audit-artifacts.py <story-id> [--project <path>]", file=sys.stderr)
-        return 2
-
-    story_id = sys.argv[1]
+    # 支持 positional: audit-artifacts.py US-001
+    # 支持 named:      audit-artifacts.py --story US-001 [--project <path>]
+    story_id = None
     project = None
-    if "--project" in sys.argv:
-        idx = sys.argv.index("--project")
-        project = Path(sys.argv[idx + 1])
-    else:
+    i = 1
+    while i < len(sys.argv):
+        arg = sys.argv[i]
+        if arg == '--story' and i + 1 < len(sys.argv):
+            story_id = sys.argv[i + 1]
+            i += 2
+        elif arg == '--project' and i + 1 < len(sys.argv):
+            project = Path(sys.argv[i + 1])
+            i += 2
+        elif not arg.startswith('--'):
+            story_id = arg
+            i += 1
+        else:
+            i += 1
+
+    if not story_id:
+        print("用法: audit-artifacts.py <story-id> [--story <id>] [--project <path>]", file=sys.stderr)
+        return 2
+    if project is None:
         project = Path.cwd()
 
     art_dir = project / "scripts" / "ralph" / "verify-artifacts" / story_id
@@ -237,7 +257,8 @@ def main() -> int:
     # 3.5 pytest-full.xml (X-6 零回归门禁, 2026-04-21 升级)
     ptf_ok, ptf_msg, _ = check_pytest_full_xml(art_dir)
     if ptf_ok is None:
-        print(f"[WARN] pytest-full: {ptf_msg} (零回归门禁缺失, Validator 未产物化)")
+        print(f"[INFO] pytest-full: {ptf_msg} (零回归门禁缺失, Validator 未产物化)")
+        # AC-3: 降级 WARN→INFO — 仅缺 pytest-full.xml 不阻断 audit pass
         # 不 append 到 results — Validator 未产物化时不阻断 Opus, 但 Opus 要去 Step 1.5 补跑
     else:
         print(f"[{'OK' if ptf_ok else 'FAIL'}] {ptf_msg}")

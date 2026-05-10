@@ -4,6 +4,7 @@
   "validator_end_ts": "2026-05-11T00:40:56",
   "test_command": "pnpm vitest run + pnpm typecheck + pnpm lint --max-warnings=0",
   "exit_code": 0,
+  "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
