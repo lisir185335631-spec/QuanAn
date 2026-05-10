@@ -2397,3 +2397,19 @@ prd.json.passes = true | retryCount = 0 | notes = ""
   - ioredis + bullmq 在 apps/api/node_modules (非 root) · vitest.config.ts 需加 alias 让 vi.mock 路径与 worker import 路径一致
   - rate limit count > limit (非 >=) → 允许恰好 limit 次 · 第 limit+1 次 throw · 单元测试用 vi.hoisted Map 模拟 per-key INCR
 ---
+
+--- [RALPH] Iteration 2 ended: US-010 (20分钟 8秒) ---
+
+--- [RALPH] Iteration 3 started: US-010 at 2026-05-10 16:01 ---
+
+## 2026-05-10 16:06 - US-010 (retry fix)
+- AC-9 修复: generateSceneImage 从 stub (prisma.history.create mock) 改为真实 BullMQ dispatch
+- checkImageGenRateLimit + imageGenQueue.add + Redis-error catch → TRPCError INTERNAL_SERVER_ERROR
+- 更新 generateSceneImageInput: prompt → imagePromptEn (required) + imageStyle (default 'vivid')
+- 更新 specialists-creation.test.ts: 增加 vi.mock bullmq/ioredis/queue/rate-limit，断言新返回类型
+- 更改文件: apps/api/src/trpc/routers/videoProduction.ts · tests/unit/api/specialists-creation.test.ts
+- 全量 670 tests 通过 · typecheck 0 error
+- **未来迭代的学习:**
+  - Router 文件注释中如果写"保留为 stub — US-XXX 真接", Validator 会 grep 该 stub 是否已被替换 → 注释要同步更新
+  - specialists-creation.test.ts 是 PRD-2 遗留综合测试, 加新 router mock 时要保证 vi.mock 在对应 import 前
+---
