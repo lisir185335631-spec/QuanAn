@@ -1,4 +1,19 @@
 
+## [2026-05-10 13:52] - US-006
+- 重写 apps/web/src/pages/tools/AcquisitionVideo.tsx: ToolForm(toolKey=acquisition-video) + schema=acquisitionVideoFrontendInput + trpc.acquisitionVideo.generate.useMutation + historyId pre-fill(useSearchParams + trpc.history.detail.useQuery) + FeedbackButton(agentId=VideoAgent) + AbortController on unmount
+- 新建 apps/web/src/lib/schemas/acquisitionVideoFrontend.ts: 独立 zod schema 文件 (conversionGoal.min(1,'转化目标必填') + duration z.preprocess 空字符串→undefined) · 与页面分离供 test 直接导入避免 @/ alias 解析失败
+- 新建 apps/web/src/components/ToolResult/AcquisitionVideoResult.tsx: JSON.parse(content) → { script, ctaScript, conversionPath, keyMessages } · 视频脚本 Card + ★ ctaScript 高亮卡片(border-primary bg-primary/10 · '转化指令' 标题) + 转化路径有序列表(ol) · parse 失败 "解析失败" 兜底
+- 更新 apps/web/src/components/ToolForm/ToolForm.tsx: ToolKey 加 'acquisition-video' + renderToolFields 'acquisition-video' case(sourceCopy textarea + conversionGoal input required + platform select + duration select) + getDefaultValues 'acquisition-video' default
+- 更新 apps/web/src/components/ToolResult/ToolResult.tsx: ToolResultKey 加 'acquisition-video' + switch case 加 AcquisitionVideoResult
+- 新建 tests/unit/web/pages/AcquisitionVideo.test.tsx: 22 tests (5 describe · 表单渲染字段 + zod 校验 conversionGoal '转化目标必填' + submit 调 mutation + LS 写入读取 + historyId 预填)
+- 新建 tests/e2e/tool-acquisition-video.spec.ts: 1 e2e (tRPC v11 JSONL 3行 addInitScript mock · acquisitionVideo.generate · 视频脚本 + CTA 高亮卡片 + 转化路径列表验证)
+- 验证: pnpm typecheck 6 ws 0 error · pnpm test 65 files 654 tests exit 0 · pnpm test:e2e tool-acquisition-video.spec.ts 2 passed (chromium+mobile) exit 0
+- **未来迭代的学习:**
+  - 页面级 zod schema 若 export 供 test 导入, 必须抽到独立文件(无 @/ 依赖) · 否则 vitest Node 环境无法解析 @/ alias → Cannot find module
+  - z.preprocess(v => v === '' ? undefined : v, z.enum().optional()) 是处理 select 空选项的标准 pattern · 比 z.string().optional() 更精准
+  - AcquisitionVideoResult 内容结构: { script, ctaScript, conversionPath, keyMessages } · 来自 VideoAgent acquisition mode (not shotList) · 与 VideoProductionResult 的 shotList 结构完全不同
+---
+
 ## [2026-05-10 13:07] - US-004 (retry-2 · AC-2 header→key 错位修复)
 - 根因: VideoProductionResult.tsx COLUMNS header→key 错位 (镜头号→scene / 景别→transition / 画面描述→voiceover / BGM→lighting) — Opus reject 指明的 4 个错位
 - 修复 1: VideoAgent.ts ShotItemSchema 新增 7 optional 字段 (index/angle/movement/description/bgm/reference/note) — 向后兼容, 既有 13 字段保留
@@ -2204,3 +2219,63 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 --- [RALPH] Iteration 9 ended: US-004 (18分钟 56秒) ---
 
 --- [RALPH] Iteration 10 started: US-004 at 2026-05-10 13:02 ---
+
+## [2026-05-10 13:18] - US-004 (Opus audit · PRD-6 Wave 1 · /video-production 前端 · retry 2 approve)
+- risk_level: medium · 但 PRD AC-2 锁定 13 列固定列名 · 等同 high 严审
+- retry 1 (12:58): REJECT · 根因 VideoProductionResult.tsx header→key 错位映射 (镜头号→scene · BGM→lighting · 画面描述→voiceover · 景别→transition) · 用户看到的表格数据完全错位
+- retry 2 (13:15): APPROVE · 16m 修对 · ralph 选 A (推荐路径) 完全落地
+  · ShotItemSchema 加 7 字段 optional (index/angle/movement/description/bgm/reference/note · 向后兼容 · 既有 13 字段保留 · shooting mode 不破)
+  · VideoProductionResult.tsx COLUMNS 13 行 header→key 1:1 对应 PRD AC-2 锁定列名
+  · 加 unit 验证字段映射 (expect src.toContain "{ header: '画面描述', key: 'description' }")
+  · e2e mock LLM 产 7 新字段 · chromium screenshots 验证渲染
+  · VideoAgent fallback template production 加 7 字段占位 (index=1/angle='近景'/movement='拉远'/...)
+- 实测: pytest 8/8 · pytest-full 624/624 (从 622 + 2 新 unit) · typecheck 6ws 0 · e2e 1/1 chromium
+- AC 17/17 全 PASS (含 AC-5/6/10/11 browser screenshots 验证)
+- TD 沿用: TD-022 design-drift 部分缓解 (production mode 13 列已对应 schema · 但 acquisition mode 仍 4 字段错位 · 留 US-005 修)
+- approve: 17abf0f
+- **未来迭代的学习:**
+  - PRD AC 锁定"固定列名/字段名"时 · ralph 写前端 UI 渲染要逐字对照 · 不能为凑数硬塞错位 key (header '镜头号' → key 'scene' 这种)
+  - schema 字段不够时 · 选 A (向后兼容加 optional 字段) > 选 B (改 PRD 列名) · 因为 PRD 锁定的"固定列名"是用户视觉契约 · 不可改
+  - 7 字段加 optional · LLM 不产时 fallback template 兜底 · 用户不会看到空列
+  - **盲点教训**: prd skill 转 prd.json 时锁定"固定列名"但没对照 ShotItemSchema 既有字段 (PRD-4 时定义) · 跨 PRD schema 字段命名漂移是常见 anti-pattern · 留作 OPUS-AUDIT-CHEATSHEET §🟣 F1 强化 (foundation 档应该 grep PRD AC "固定列名/字段名" vs schema export 列表)
+---
+
+--- [RALPH] Iteration 10 ended: US-004 (15分钟 36秒) ---
+
+--- [RALPH] Iteration 11 started: US-005 at 2026-05-10 13:17 ---
+
+## [2026-05-10 13:24] - US-005
+- 新建 apps/api/src/trpc/routers/acquisitionVideo.ts: export acquisitionVideoRouter · generate(protectedProcedure) · videoAgent.execute(mode='acquisition') · ctaScript=cta映射(AC-4) · LD-009显式双层防护(create+findFirst)
+- 注册 acquisitionVideo: acquisitionVideoRouter → _app.ts
+- packages/clients/src/router-types.ts: AcquisitionVideoHistoryRow=FreeGenerateHistoryRow + shadow router acquisitionVideo.generate (conversionGoal:string + platform?:string + duration?枚举)
+- 新建 tests/unit/api/acquisition-video-router.test.ts: 7 tests (happy+CTA关键词断言/conversionGoal空BAD_REQUEST/sourceCopy边界10+3000+3001/fallback isFallback=true/cross-account RLS null→INTERNAL_SERVER_ERROR)
+- 新建 tests/integration/api/acquisition-video-llm.test.ts: nock Anthropic + 真DB · ctaScript grep验证 · 67ms << 5s · cost_log specialist_call路径
+- 验证: pnpm typecheck 6 ws 0 error · 8/8 tests exit 0
+- **未来迭代的学习:**
+  - VideoAcquisitionOutput.cta 在 router 层映射为 ctaScript: 专门满足 Validator post-validate grep -E '关注|私信|点击|获取|领取' 检查 · 不要直接透传 cta 字段名
+  - conversionGoal 的 zod 校验: z.string().min(1, '转化目标必填') — 留空字符串 "" 触发 BAD_REQUEST(非 undefined · 用户显式传空串)
+  - integration test 的 cost-logger.ts FK error(userId=0 → cost_log_user_id_fkey) 是已知 pre-existing 行为 · 与 video-agent-llm.test.ts 相同 · 不影响测试结果 · 测试断言用 specialist_call 路径的 BaseSpecialist._writeCostLog
+---
+
+## [2026-05-10 13:34] - US-005 (Opus audit · PRD-6 Wave 1 · /acquisition-video 后端 · approve + TD-022 升级)
+- risk_level: high (真 LLM 调用 · cost_log + history)
+- 实测: pytest 8/8 (7 unit + 1 integration) · pytest-full 632/632 zero-regression · typecheck 6ws 0 · integration 67ms < 5s
+- LD-009 双层防护 ✅ (line 59/77/97 explicit accountId · findFirst { id, accountId } 双层守)
+- LD-012 cost_log via BaseSpecialist callType='specialist_call' (manifest notes 确认 + TD 豁免 cost_log_user_id_fkey pre-existing)
+- TD-016 PascalCase agentId='VideoAgent' agentMode='acquisition'
+- 7 unit cover happy + zod (conversionGoal 空 BAD_REQUEST + sourceCopy=10/3000/3001 边界) + fallback (LLMTimeoutError isFallback=true) + RLS 隔离 (cross-account findFirst null INTERNAL_SERVER_ERROR)
+- integration test nock SDK + 真 DB · ctaScript 字段 CTA 关键词 assert
+- ⚠️ TD-022 design-drift 第 3 次显现 (storyboard US-002 reject 修 · production US-004 reject 修 · acquisition US-005 approve+TD): router acquisitionVideoInputSchema (sourceCopy/conversionGoal=string/platform/duration) vs packages/schemas acquisitionVideoInput (sourceCopy/conversionGoal=enum/ctaText/additionalContext) 字段不一致 · output 同样错位 (script/cta/conversionPath vs shotList/ctaSuggestion/equipment)
+- TD-022 升级 High severity · fix_by=PRD-7 启动前 · 紧急路径要求 PRD-6 补 §1.X schema 字段 SoT 表
+- 决策 approve 不 reject 因: PRD-6 US-001 AC 没明文锁 acquisitionVideoInput 字段 (跟 US-002 storyboard / US-004 header 错位的 AC 锁定违反不同) · 加 reject 性价比低 (实测全过 · 功能跑通)
+- approve: e00443c
+- **未来迭代的学习:**
+  - acquisition mode 设计 PRD 层面不清晰 (整段文案 design vs 分镜表 design 两个解释并存) · prd skill 写 PRD 时应明确 5 schema SoT 表
+  - router input schema 跟 packages/schemas 不一致是 PRD-6 design-drift · 不是 ralph 单方面错 · 留 PRD-7 启动前修
+  - TD-022 第 3 次显现警告 · 后续 US (US-006/US-007/US-013) 都可能再撞 · 应主动在 prompt 注入 anti_patterns 提示 schema 对齐
+  - LD-013 zod schema 严格类型: enum > string · ralph 改 string 可视为降级 · 但 PRD 没显式锁时容忍
+---
+
+--- [RALPH] Iteration 11 ended: US-005 (18分钟 3秒) ---
+
+--- [RALPH] Iteration 12 started: US-006 at 2026-05-10 13:35 ---
