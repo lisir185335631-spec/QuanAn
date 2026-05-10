@@ -150,6 +150,8 @@ export type AnalysisHistoryRow = FreeGenerateHistoryRow;
 
 export type VideoAnalysisHistoryRow = FreeGenerateHistoryRow;
 
+export type VideoProductionHistoryRow = FreeGenerateHistoryRow;
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -309,6 +311,33 @@ const _shadowRouter = _t.router({
         contentType: 'json',
         agentId: 'AnalysisAgent',
         agentMode: 'structural',
+        scriptType: null,
+        elements: [],
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
+  videoProduction: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            sourceCopy: string;
+            videoType?: 'short_form' | 'long_form';
+            duration?: '15s' | '30s' | '60s' | '180s';
+            additionalContext?: string;
+          },
+      )
+      .mutation((): VideoProductionHistoryRow => ({
+        id: 0,
+        content: '',
+        contentType: 'json',
+        agentId: 'VideoAgent',
+        agentMode: 'production',
         scriptType: null,
         elements: [],
         isFallback: false,

@@ -32,6 +32,41 @@ const MOCK_VIRAL_RESULT_CREATION = {
     '这是基于爆款元素心理学重写的仿写版文案，融入了好奇心钩子和反差情绪两个核心要素，完整呈现了一套高转化内容结构。',
 };
 
+// ── PRD-6 US-003: Mock VideoAgent (generate now calls real agent) ─────────────
+
+vi.mock('@/specialists/VideoAgent', () => ({
+  videoAgent: {
+    execute: vi.fn(async () => ({
+      result: {
+        shotList: [
+          {
+            scene: '开场',
+            duration: '5s',
+            action: '面向镜头',
+            dialogue: '大家好',
+            cameraAngle: '正面中景',
+            prop: '无',
+            lighting: '柔光',
+            transition: '切入',
+            sfx: '无',
+            voiceover: '欢迎',
+            subtitle: '开场',
+            costume: '休闲',
+            location: '室内',
+          },
+        ],
+        equipment: ['手机', '三脚架'],
+        schedule: '上午10点拍摄',
+      },
+      isFallback: false,
+      durationMs: 1000,
+      tokensUsed: { prompt: 100, completion: 200, total: 300 },
+      modelUsed: 'claude-sonnet-4-6',
+      traceId: 'test-trace-001',
+    })),
+  },
+}));
+
 vi.mock('@/specialists/AnalysisAgent', () => ({
   analysisAgent: {
     execute: vi.fn(async () => ({
@@ -106,6 +141,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
   const history = {
     create: vi.fn(async () => ({ ...MOCK_HISTORY_ROW })),
     findMany: vi.fn(async () => [{ ...MOCK_HISTORY_ROW }]),
+    findFirst: vi.fn(async () => ({ ...MOCK_HISTORY_ROW })),
     delete: vi.fn(async () => ({})),
   };
 
@@ -224,12 +260,14 @@ describe('videoAnalysis.analyze', () => {
 // ─── videoProduction.generate ────────────────────────────────────────────────
 
 describe('videoProduction.generate', () => {
-  it('AC-7: creates History row with agentId=video_production', async () => {
+  it('AC-7: calls VideoAgent(production), creates History row with agentId=VideoAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = videoProductionRouter.createCaller(ctx);
-    const result = await caller.generate({ stepKey: 'step6' });
+    const result = await caller.generate({
+      sourceCopy: '这是一段有效的视频制作文案素材，超过十个字符用于测试。',
+    });
     expect(prisma.history.create).toHaveBeenCalledOnce();
-    const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
+    const createArgs = prisma._tx.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string };
     };
     expect(createArgs.data.agentId).toBe('VideoAgent');
