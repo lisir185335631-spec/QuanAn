@@ -3,13 +3,14 @@
  * switch by toolKey → 4 sub-components
  */
 
+import { AcquisitionVideoResult } from './AcquisitionVideoResult';
 import { AnalysisResult } from './AnalysisResult';
 import { BoomGenerateResult } from './BoomGenerateResult';
 import { FreeGenerateResult } from './FreeGenerateResult';
 import { VideoAnalysisResult } from './VideoAnalysisResult';
 import { VideoProductionResult } from './VideoProductionResult';
 
-export type ToolResultKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production';
+export type ToolResultKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video';
 
 interface ToolResultProps {
   toolKey: ToolResultKey;
@@ -31,6 +32,8 @@ export function ToolResult({ toolKey, data, isFallback }: ToolResultProps) {
       return <VideoAnalysisResult data={data} />;
     case 'video-production':
       return <VideoProductionResult data={data} />;
+    case 'acquisition-video':
+      return <AcquisitionVideoResult data={data} />;
     default:
       return null;
   }

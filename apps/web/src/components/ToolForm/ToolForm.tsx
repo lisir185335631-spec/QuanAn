@@ -26,7 +26,7 @@ import type { ZodTypeAny } from 'zod';
 
 // ── Tool types ────────────────────────────────────────────────────────────────
 
-export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production';
+export type ToolKey = 'generate' | 'boom-generate' | 'analysis' | 'video-analysis' | 'freeGenerate' | 'video-production' | 'acquisition-video';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -382,6 +382,81 @@ function renderToolFields(
         </>
       );
 
+    case 'acquisition-video':
+      return (
+        <>
+          <div className="space-y-1.5">
+            <label htmlFor="tool-av-source-copy" className="text-body-sm font-medium text-on-surface">
+              原始文案<span className="text-error ml-0.5">*</span>
+            </label>
+            <textarea
+              id="tool-av-source-copy"
+              {...register('sourceCopy')}
+              rows={8}
+              className={cn(
+                'flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y min-h-[120px]',
+                errors['sourceCopy'] && 'border-error',
+              )}
+              placeholder="粘贴视频原始文案，生成转化导向的获客视频脚本（10-3000字）"
+              data-testid="tool-av-source-copy"
+            />
+            {errors['sourceCopy'] && (
+              <p className="text-body-xs text-error" role="alert">{errors['sourceCopy']?.message}</p>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="tool-av-conversion-goal" className="text-body-sm font-medium text-on-surface">
+              转化目标<span className="text-error ml-0.5">*</span>
+            </label>
+            <input
+              id="tool-av-conversion-goal"
+              {...register('conversionGoal')}
+              className={cn(
+                'flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                errors['conversionGoal'] && 'border-error',
+              )}
+              placeholder="例如：引导私信 / 扫码进群 / 点击链接购买"
+              data-testid="tool-av-conversion-goal"
+            />
+            {errors['conversionGoal'] && (
+              <p className="text-body-xs text-error" role="alert">{errors['conversionGoal']?.message}</p>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label htmlFor="tool-av-platform" className="text-body-sm font-medium text-on-surface">发布平台（可选）</label>
+              <select
+                id="tool-av-platform"
+                {...register('platform')}
+                className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                data-testid="tool-av-platform"
+              >
+                <option value="">请选择平台</option>
+                <option value="douyin">抖音</option>
+                <option value="xiaohongshu">小红书</option>
+                <option value="wechat_video">微信视频号</option>
+                <option value="bilibili">B站</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="tool-av-duration" className="text-body-sm font-medium text-on-surface">视频时长（可选）</label>
+              <select
+                id="tool-av-duration"
+                {...register('duration')}
+                className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 text-body-sm text-on-surface shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                data-testid="tool-av-duration"
+              >
+                <option value="">请选择时长</option>
+                <option value="15s">15秒</option>
+                <option value="30s">30秒</option>
+                <option value="60s">60秒</option>
+                <option value="180s">3分钟</option>
+              </select>
+            </div>
+          </div>
+        </>
+      );
+
     default:
       return (
         <p className="text-body-sm text-muted-foreground">该工具暂无需填写内容</p>
@@ -405,6 +480,8 @@ function getDefaultValues(toolKey: ToolKey): Record<string, unknown> {
       return { lastTitle: '', lastCopy: '' };
     case 'video-production':
       return { sourceCopy: '', videoType: '', duration: '', additionalContext: '' };
+    case 'acquisition-video':
+      return { sourceCopy: '', conversionGoal: '', platform: '', duration: '' };
     default:
       return {};
   }
