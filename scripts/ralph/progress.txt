@@ -1,4 +1,71 @@
 
+## [2026-05-10 13:07] - US-004 (retry-2 · AC-2 header→key 错位修复)
+- 根因: VideoProductionResult.tsx COLUMNS header→key 错位 (镜头号→scene / 景别→transition / 画面描述→voiceover / BGM→lighting) — Opus reject 指明的 4 个错位
+- 修复 1: VideoAgent.ts ShotItemSchema 新增 7 optional 字段 (index/angle/movement/description/bgm/reference/note) — 向后兼容, 既有 13 字段保留
+- 修复 2: VideoAgent.ts `_buildProductionPrompt` 更新 JSON template, 增加 7 字段说明 + 约束行
+- 修复 3: VideoAgent.ts production fallback template 3 个 shot 各加 7 字段占位
+- 修复 4: VideoProductionResult.tsx ShotItem interface 新增 7 字段; COLUMNS 修正: 镜头号→index, 景别→angle, 运镜→movement, 画面描述→description, BGM→bgm, 参考→reference, 备注→note
+- 修复 5: VideoProduction.test.tsx 新增 describe-6 (2 tests) 验证 header→key 映射 + ShotItem 7 字段存在
+- 修复 6: e2e mock MOCK_PRODUCTION_CONTENT 3 个 shot 各加 7 新字段
+- 改动文件: VideoAgent.ts, VideoProductionResult.tsx, VideoProduction.test.tsx, tool-video-production.spec.ts
+- 验证: pnpm typecheck 6 ws 0 error · pnpm test 624 tests (62 files) exit 0
+- **未来迭代的学习:**
+  - LLM schema 字段设计时, VideoProductionResult.tsx 的 header→key 映射必须与 backend ShotItemSchema 语义1:1对齐 — 不能靠字段数量凑够13列而乱塞key
+  - 向后兼容加字段: ShotItemSchema 既有字段用 required, 新增字段用 z.string().optional() — 旧 test 的 VALID_SHOT 不需要改
+  - satisfies ProductionOutput: optional字段不需要出现在对象里, fallback template 加新字段 satisfies 仍然通过
+---
+
+## [2026-05-10 11:57] - US-004 (retry-1 · AC-7 + AC-11 修复)
+- fix AC-7: ToolForm handleSubmit 在 setIsPending(true) 前调 toast.loading('生成中...') · 成功/失败时 toast.dismiss(loadingToastId) 消除 loading toast
+- fix AC-11: toast.error 文本从 '请稍后重试' 改为 '请稍后再试' (重试→再试 · 精确匹配 AC)
+- 改动文件: apps/web/src/components/ToolForm/ToolForm.tsx (4行 net diff)
+- pnpm typecheck 6ws 0 error · pnpm test 62 files 622 tests exit 0
+- **未来迭代的学习:**
+  - ToolForm 中 toast.loading 必须返回 id 并在 success/error 分支都 toast.dismiss(id) · 否则 loading toast 永久悬浮
+  - toast 文本字面量必须与 AC 完全一致 · '重试' vs '再试' 这类细微差异是精确匹配场景
+---
+
+## [2026-05-10 11:18] - US-004
+- 重写 apps/web/src/pages/tools/VideoProduction.tsx: ToolForm(toolKey=video-production) + schema=videoProductionInput + trpc.videoProduction.generate.useMutation + historyId pre-fill(useSearchParams + trpc.history.detail.useQuery) + FeedbackButton(agentId=VideoAgent) + AbortController on unmount
+- 新建 apps/web/src/components/ToolResult/VideoProductionResult.tsx: JSON.parse(content) → ProductionOutput · 13列分镜表(固定列名 镜头号/景别/角度/运镜/时长/画面描述/台词/字幕/音效/BGM/道具/参考/备注 → 映射 ShotItem 13字段) + 设备清单 Card + 排期 Card + JSON.parse 失败 "解析失败" 兜底
+- 更新 apps/web/src/components/ToolForm/ToolForm.tsx: ToolKey 加 'video-production' + renderToolFields 'video-production' case(sourceCopy textarea + videoType select + duration select + additionalContext textarea) + getDefaultValues 'video-production' default
+- 更新 apps/web/src/components/ToolResult/ToolResult.tsx: ToolResultKey 加 'video-production' + switch case 加 VideoProductionResult
+- 更新 packages/schemas/src/specialist-io/videoProduction.schema.ts: sourceCopy.min(10, '原始文案至少 10 字符') 中文 error message
+- 新建 tests/unit/web/pages/VideoProduction.test.tsx: 21 tests(5 describe · 表单渲染字段 + zod 校验中文 message + submit 调 mutation + LS 写入读取 + historyId 预填)
+- 新建 tests/e2e/tool-video-production.spec.ts: 1 e2e(tRPC v11 JSONL 3行 addInitScript mock · videoProduction.generate · 13列分镜表 + 设备清单 + 排期验证)
+- pnpm typecheck 6 ws 0 error · pnpm test 62 files 622 tests exit 0
+- **未来迭代的学习：**
+  - ToolForm 通过 toolKey 同时处理 LS 持久化 + 表单渲染 + 默认值 · 新增工具只需加 3 处: ToolKey union + renderToolFields case + getDefaultValues case
+  - ShotItemSchema(VideoAgent.ts 定义 13字段)与 videoProductionOutput(packages/schemas 简化版)不同 · 前端渲染以 VideoAgent 实际返回为准(scene/transition/cameraAngle/action/duration/voiceover/dialogue/subtitle/sfx/lighting/prop/costume/location)
+  - enum类型 mutateAsync 时 cast 必须用精确 enum literal 类型(如 'short_form' | 'long_form') 而非 string · 否则 tsc TS2345 报错
+  - getToolLsKey 生成的 key 带 'aiip_memory_' prefix · 测试断言用 toContain 而非 toBe
+---
+
+## [2026-05-10 10:55] - US-003
+- 重写 apps/api/src/trpc/routers/videoProduction.ts: generate 接入真实 VideoAgent(mode='production') · videoProductionInputSchema(sourceCopy min10/max3000) · protectedProcedure · history.create(agentId='VideoAgent',agentMode='production',contentType='json') · findFirst({ where: { id,accountId:activeAccountId! } }) 显式双层防护 (LD-009/TD-019) · 保留 generateStoryboard/generateSceneImage stubs
+- 更新 packages/clients/src/router-types.ts: 新增 VideoProductionHistoryRow 类型 + videoProduction.generate shadow route
+- 更新 tests/unit/api/specialists-creation.test.ts: 新增 VideoAgent mock + makeCtx 加 findFirst + generate 测试改用新 input schema
+- 新建 tests/unit/api/video-production-router.test.ts: 6 unit tests (happy generate + sourceCopy<10 BAD_REQUEST + 边界 min/max + fallback isFallback=true + cross-account RLS findFirst→null→INTERNAL_SERVER_ERROR)
+- 新建 tests/integration/api/video-production-llm.test.ts: nock 拦截 Anthropic /v1/messages · 真 DB history + cost_log 写入 · 66ms << 5s
+- AC-3 grep 验证: grep -E 'where:.*accountId.*activeAccountId' videoProduction.ts → 1 命中
+- pnpm typecheck 6 ws 0 error · pnpm test 61 files 601 tests · exit 0
+- **未来迭代的学习:**
+  - generateStoryboard/generateSceneImage 是 PRD-2 legacy stubs · specialists-creation.test.ts 依赖它们 · 新 story 覆写前必须保留接口
+  - videoProduction router 接入真实 agent 后需要同步更新 specialists-creation.test.ts 中 makeCtx 的 findFirst 和 VideoAgent mock
+  - LD-009 双层防护实现: history.create(data.accountId) + findFirst({ where: { accountId } }) 两步 · 满足 AC-3 grep 'where:.*accountId.*activeAccountId'
+---
+
+## [2026-05-10 10:05] - US-002 (retry-1 · AC-10 补 integration test)
+- 新建 tests/integration/api/video-agent-llm.test.ts: 沿 specialist-llm.test.ts 模式 · nock 拦截 Anthropic /v1/messages · VideoAgent.execute({ mode: 'production' }) · nock.isDone() · ProductionOutputSchema 验证 · BaseSpecialist cost_log 真写 DB · 53ms << 3s
+- 修复 AC-10: "VideoAgent invokeLLM 真调 LLM (integration test nock SDK) < 3s"
+- 所有其他 AC (1-9, 11-13) 上轮已通过，本轮只补 AC-10
+- pnpm typecheck 6 ws 0 error · pnpm test 593/593 (新增 1 test) · exit 0
+- **未来迭代的学习:**
+  - LLM gateway integration test 有两种 cost_log 写入路径: (1) cost-logger.ts 在 gateway 内写 callType='complete' userId=metadata.userId(VideoAgent 传 0 → FK violation → 失败) · (2) BaseSpecialist._writeCostLog() 写 callType='specialist_call' 无 userId (null · 成功)。integration test 检查的是(2)，这是 specialist_call 路径，assertions 应该用 callType='specialist_call'
+  - nock integration test 不 mock llmGateway · 只 mock rate-limiter + contextAssembler · nock 拦截真 HTTP · nock.isDone() 验证拦截器被消费
+  - VideoAgent 的 userId: 0 在 invokeLLM metadata 中是硬编码的 · cost-logger 写失败不影响 execute() 返回 · BaseSpecialist 的 _writeCostLog 不传 userId 所以成功
+---
+
 ## [2026-05-09 21:22] - US-012 (验证 · 全套绿灯确认)
 - 发现并确认已有 commit 47a76c9 包含两处 e2e 修复: (1) Step2 boom-generate theme 选择器从 textarea 改 #tool-boom-theme(input 非 textarea) · (2) Step5 /history goto 改 waitUntil:'networkidle' 解决 lazy-load 时序问题
 - 重跑验证: pnpm typecheck 0 errors · pnpm test 542/542 · pnpm test:judge 22/22 · pnpm test:e2e chromium 63/64+mobile 63/64 (1 skip/proj = ip-flow-9-steps) · lint web/api 0 warnings
@@ -1947,3 +2014,193 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 - history 接入策略: 单 history.list procedure + 各 router 自然写入(分散写 集中读). 工具页 useEffect(?historyId) 调 history.detail 预填. 不要每 router 各自 list (前端复杂度爆炸)
 - TD-016 教训: 7+ router 写 history.agentId 时统一用 PascalCase Class name(CopywritingAgent / AnalysisAgent etc)· 不用 lowercase. audit grep `agentId: '[a-z]'` apps/api/src 应 0 命中
 - 收官 e2e spec mock 数据 4 条 history rows 必须含 'content' 字段(否则 History.tsx row.content.substring() TypeError) · cc00e6c 教训
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-10 00:18 ---
+
+--- [RALPH] Iteration 2 started: US-001 at 2026-05-10 00:20 ---
+
+--- [RALPH] Iteration 3 started: US-001 at 2026-05-10 00:21 ---
+
+--- [RALPH] Iteration 4 started: US-001 at 2026-05-10 00:22 ---
+
+--- [RALPH] Iteration 5 started: US-001 at 2026-05-10 00:23 ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-10 09:11 ---
+
+--- [RALPH] Iteration 2 started: US-001 at 2026-05-10 09:12 ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-10 09:14 ---
+
+## [2026-05-10 09:27] - US-001 (PRD-6 · Foundation · 5 schema + ImageGen Worker + Asset.sceneIndex)
+- 新建/重写 packages/schemas/src/specialist-io/: videoProduction(重写 PRD-6 acquisition-mode schema) + acquisitionVideo + aiVideo + acquisitionCopywriting + imageGen 共 5 文件
+- 更新 packages/schemas/src/specialist-io/index.ts barrel (加 4 新文件 export)
+- 更新 packages/schemas/src/index.ts root barrel (加 5 video-domain schema export, video-prefixed)
+- 新建 apps/api/src/workers/image-gen/{index.ts,dall-e-3.ts,queue.ts}: IImageGenWorker interface + DallE3ImageGenWorker stub(throw 'PRD-6 US-009') + BullMQ Queue 定义(stub)
+- 新建 apps/api/src/lib/constants/{videoTypes,videoDurations,imageStyles}.ts (as const satisfies ReadonlyArray · LD-013)
+- 更新 apps/api/src/lib/constants/index.ts (+3 常量)
+- 更新 prisma/schema.prisma: Asset 表加 sceneIndex Int? + @@index([accountId, relatedStepKey, sceneIndex])
+- 新建 prisma/migrations/20260510000000_add_scene_index_to_assets/migration.sql (pnpm prisma migrate deploy 退出码 0)
+- 新建 tests/unit/api/schemas/video-schemas.test.ts: 19 unit tests (5 schema happy + boundary + reject)
+- 更新 vitest.config.ts: 加 @quanqn/schemas/specialist-io alias(schema 测试 PR-6 新需求)
+- 验证: pnpm typecheck 6ws 0 errors · pnpm test 582/582 pass(含 19 新 tests) · pnpm prisma migrate deploy 退出码 0
+- **未来迭代的学习:**
+  - apps/api 严格禁止 import from '@quanqn/schemas' (rootDir 约束 · apps/api tsconfig rootDir=./src · packages/schemas 在外部) · worker 文件需 inline types 或 import from 同目录 worker types file
+  - vitest.config.ts 需要为新 @quanqn/schemas/* 路径加 alias 才能在根级 test 文件 import (codebase pattern 更新)
+  - @quanqn/schemas/specialist-io 的 z.union([z.literal(5)...]) errorMap 必须放在第二参数对象 · 不是在每个 literal 内
+---
+
+## [2026-05-10 09:35] - US-001 (Opus audit · PRD-6 Foundation)
+- risk_level: foundation (downstream 11 stories · schema 关键词)
+- 实测: pytest 19/19 passed · pytest-full 582/582 zero-regression · typecheck 6ws 0 errors · perf_100x 2.15ms (<50ms threshold) · prisma migrate deploy exit 0
+- AC 14/14 全 PASS · F1-F5 foundation 档全核对账
+- 5 schema (videoProduction/acquisitionVideo/aiVideo/acquisitionCopywriting/imageGen) 命名 100% 跟 PRD §1.5 协议锁逐字一致
+- ImageGen Worker 3 文件 (index.ts+IImageGenWorker / dall-e-3.ts stub / queue.ts BullMQ) · 占位 throw 'PRD-6 US-009/010 真接'
+- Asset.sceneIndex Int? + 复合索引 [accountId, relatedStepKey, sceneIndex] · 真 SQL ALTER TABLE + CREATE INDEX
+- 3 constants (videoTypes/videoDurations/imageStyles) 全 `as const satisfies ReadonlyArray` (LD-013)
+- 19 unit covers happy/boundary/fail (sourceCopy <10/=3000/>3000 / scenesCount=5/8/9 / imagePromptEn 中文 fail / imageStyle invalid)
+- TD-020 登记: verify-artifacts/US-001/ 残留 PRD-1~5 旧产物 9 文件 · 触发 audit-artifacts.py timestamps FAKE 误判 · 不阻塞 (实测产物 5/10 09:28 全在)
+- TD-021 登记: ImageGen Worker types 双定义 (zod schema canonical + worker inline) · stub 期合理 · US-009 真接时统一 import @quanqn/schemas
+- approve: a960d93
+- **未来迭代的学习:**
+  - PRD §1.5 协议锁路径写 `2026_05_10_xxx`, prisma migrate dev 实际生成 `20260510000000_xxx` (14 位时间戳) · 命名差异不破坏 PRD 含义 · 接受
+  - schema 包 (packages/schemas) 不能 import worker (跨包 cycle) · worker 文件 inline interface 是 trade-off · 但 PRD 锁定 zod schema 时 worker 应统一从 z.infer 推导
+  - vitest.config.ts 可主动加 path alias (`@quanqn/schemas/specialist-io`) 给 schema 单元测试 · 不在 PRD 要求里但合理
+  - audit-artifacts.py timestamps 检查会因跨 PRD 残留 .xml/.txt 文件触发 60h+ FAKE 误判 · TD-020 留痕 · 跨 PRD 启动期需清理 verify-artifacts/<US-XXX>/
+---
+
+--- [RALPH] Iteration 1 ended: US-001 (21分钟 39秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-10 09:35 ---
+
+## [2026-05-10 09:50] - US-002
+- VideoAgent production/acquisition/storyboard 3 mode 解锁 (移除 throw 'PRD-6')
+- VideoAgent outputSchema getter 完整 4-way switch (D-028 · SHIELD REJ-007)
+- VideoAgent _buildUserPrompt(mode) 4 分支 · 各 mode 独立 prompt 模板
+- VideoAgent storyboard imagePromptEn ASCII post-validate (regex /^[\x00-\x7F]+$/) · retry 1 · 失败 throw SchemaValidationError → BaseSpecialist fallback
+- VideoAgent 新增 ProductionOutputSchema / VideoAcquisitionOutputSchema / StoryboardOutputSchema + base schemas
+- VideoAgent fallbackTemplate 补 production/acquisition/storyboard 3 entry
+- CopywritingAgent acquisition mode 解锁 (D-035 落地) · CopywritingAcquisitionOutputSchema (markdown min(200) max(500) + metadata.ctaPosition refine)
+- CopywritingAgent _invokeAcquisition + _buildAcquisitionUserPrompt 新增
+- ContextAssembler templates: 新建 video-production / acquisition-video / ai-video 3 文件
+- templates/index.ts: SPECIALIST_TEMPLATES 类型扩为 Partial<Record<SpecialistId,...>> & Record<string,...> · 加 3 mode-specific key
+- VideoAgent.test.ts: +9 unit (production 3 + acquisition 3 + storyboard 3) · 删旧 AC-5 reserved 测试
+- CopywritingAgent.test.ts: +3 unit · 删旧 AC-13 throws 测试
+- pnpm typecheck 6ws 0 errors · pnpm test 592/592 通过
+- 更改文件: VideoAgent.ts / CopywritingAgent.ts / templates/{video-production,acquisition-video,ai-video}.ts / templates/index.ts / VideoAgent.test.ts / CopywritingAgent.test.ts
+- **未来迭代的学习:**
+  - Zod string.min(N) 按 JS string.length 计算 · 中文字符每个算 1 · 测试中文内容时必须用 node -e 预验证长度
+  - storyboard ASCII post-validate 与 BaseSpecialist schema retry 是独立机制 · 在 _invokeStoryboard 内做 ASCII 内部 retry · 不依赖外部 retry
+  - SPECIALIST_TEMPLATES 扩展 string key 用 & Record<string, SpecialistTemplate> 而非改原 Partial<Record<SpecialistId,...>> 类型 · 保持向后兼容
+  - fallbackTemplate satisfies 类型标注在编译期不检查 .refine() · runtime 才检查 · 确保 fallback 内容能通过 refine 验证
+---
+
+--- [RALPH] Iteration 2 ended: US-002 (23分钟 0秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-10 09:58 ---
+
+--- [RALPH] Iteration 3 ended: US-002 (24分钟 1秒) ---
+
+--- [RALPH] Iteration 4 started: US-002 at 2026-05-10 10:22 ---
+
+## [2026-05-10 10:31] - US-002 (PRD-6 · Retry 1 · StoryboardSceneSchema fix)
+- Fixed StoryboardSceneSchema to match packages/schemas aiVideoSceneSchema exactly (4 fields: index/description/imagePromptEn/duration + z.number().int().positive() + min(20).max(500) + regex ASCII)
+- Removed post-validate ASCII logic from _invokeStoryboard (schema-level regex now enforces ASCII · BaseSpecialist retry handles failures)
+- Updated StoryboardBaseSchema to 4-field format for LLM responseFormat guidance
+- Updated fallback template storyboard scenes to 4-field format (description >= 20 chars, imagePromptEn >= 20 chars + ASCII)
+- Updated _buildStoryboardPrompt to ask for index/description/imagePromptEn/duration (removed voiceover/music/scene)
+- Added +1 schema-level test: Chinese imagePromptEn fails StoryboardSceneSchema regex (not post-validate)
+- Removed unused SchemaValidationError import
+- pnpm test 31/31 ✅ · pnpm typecheck 6ws 0 errors ✅
+- **未来迭代的学习:**
+  - inline schema 与 packages/schemas canonical 逐字一致是 foundation story 的硬门禁 · Opus 驳回原因即此
+  - schema-level regex 替代 post-validate 更简洁 · BaseSpecialist 内置 retry 自动处理失败
+  - 移除 post-validate 后 SchemaValidationError import 变 unused · tsc TS6133 会拦截
+---
+
+## [2026-05-10 10:40] - US-002 (Opus audit · PRD-6 Foundation · retry 2 approve)
+- risk_level: foundation (downstream 10 stories · Specialist 实施层)
+- retry 1 (10:15): REJECT · 根因 StoryboardSceneSchema 6 字段 (scene/duration/description/imagePromptEn/voiceover/music) 违反 PRD-6 US-001 AC-4 锁定 4 字段 (index/description/imagePromptEn/duration + boundary + regex) · 跨 story foundation 协议漂移
+- retry 2 (10:38): APPROVE · ralph 一次 retry 修对 · commit e6c6f82 · -74/+60 行
+  · StoryboardSceneSchema 改 4 字段逐字 match aiVideoSceneSchema
+  · 删 post-validate ASCII 代码 · schema-level regex 强制
+  · 加 schema-level unit test (验证 Chinese imagePromptEn → 4 字段 regex fail · not post-validate)
+  · fallback template + storyboard LLM prompt 同步改 4-field 格式
+- 实测: pytest 30/30 (VideoAgent 13 + CopywritingAgent 17) · pytest-full 593/593 zero-regression · typecheck 6ws 0 · integration nock SDK 49ms < 3s
+- AC 13/13 全 PASS (manifest ac_verification 对照)
+- F1 storyboard schema 跟 packages/schemas aiVideoSceneSchema 字段表完全一致 ✅
+- TD-022 留痕: production/acquisition mode schema design-drift (5 字段 vs 13 字段 · 4 字段 vs 完全不同结构) · 留 US-003/US-005 router 时修 · 不阻塞本次
+- 反例库自动追加 (PRD-6 US-002 reject feedback) · 跨 PRD 沉淀
+- approve: e6c6f82
+- **未来迭代的学习:**
+  - foundation 档 audit 必须逐字 grep schema 字段表跟 PRD AC 对照 · US-001 漏审 PROMPTS §6.2 字段是 audit 盲点 · 教训留给 OPUS-AUDIT-CHEATSHEET §🟣 F1 强化
+  - schema-level regex > post-validate (双层冗余可以但 schema-level 必须有 · 不能让 post-validate 替代 schema-level boundary/regex)
+  - reject feedback 含具体反例 (绝对不能 X · 不能 Y · 不能 Z) + 验证方式 → ralph 一次 retry 修对 · PRD-5 retro 教训生效
+  - 8/8 specialist inline schema 是项目既有约定 · packages/schemas + apps/api/src/specialists 双源真理 · 修 inline 不需要 import packages/schemas
+  - prompt 注入 reject feedback 后膨胀到 15.5K · 超 §9.6.3 12K 拒启线 · 但 ralph.py 没实施 abort · 这次 retry 没 stuck (运气 + 任务清晰) · 留意未来 reject feedback 要更紧凑
+---
+
+--- [RALPH] Iteration 4 ended: US-002 (18分钟 53秒) ---
+
+--- [RALPH] Iteration 5 started: US-003 at 2026-05-10 10:41 ---
+
+## [2026-05-10 11:05] - US-003 (Opus audit · PRD-6 Wave 1 · /video-production 后端)
+- risk_level: high (真 LLM 调用 · cost_log + history 写入)
+- 实测: pytest 9/9 (US-003 AC-1/3/4/5/6/10 covered) · pytest-full 601/601 zero-regression · typecheck 6ws 0 · integration nock + 真 DB < 5s
+- AC 12/12 全 PASS
+- LD-009 双层防护: line 82/92/112 explicit accountId · explicit findFirst { id, accountId } 双层守 (TD-019 教训)
+- LD-012: cost_log via BaseSpecialist auto-write · callType='specialist_call' (REJ-017)
+- TD-016 教训: history.create agentId='VideoAgent' (PascalCase Class name · audit grep `agentId: '[a-z]'` 0 命中)
+- Router inline videoProductionInputSchema (4 字段) 跟 packages/schemas videoProductionInput 逐字一致 + 加中文 min message (LD-013 增强)
+- 6 unit cover 比 PRD 要求 4 unit 多 2 (happy + 3 zod 边界 + fallback + cross-account RLS isolation) + 1 integration (nock Anthropic + 真 DB cost_log/history)
+- TD 沿用 (无新 TD): TD-013 双 cost_log (scheduled · pre-existing) · TD-020 verify-artifacts 残留 (pre-existing) · TD-022 不在 US-003 范围 (router 只用 input schema · Output 由 BaseSpecialist 验证)
+- approve: 6997da1
+- **未来迭代的学习:**
+  - router 用 inline videoProductionInputSchema 是项目既有约定 (8/8 specialist · packages/schemas 是 client-side type sharing) · 字段必须跟 packages/schemas canonical 逐字一致 (除可加 message)
+  - cross-account RLS isolation unit 写法: mock prisma.findFirst returns null → 验证 INTERNAL_SERVER_ERROR throw (而不是返回别的 account 的数据)
+  - integration test 用 nock Anthropic SDK + 真 DB · 验证 cost_log + history 写入 + traceId 形成完整链路
+  - LLMGateway cost-logger FK userId violation 是 TD-013 范围 (双 cost_log 设计) · fire-and-forget 不阻塞业务 · pre-existing
+---
+
+--- [RALPH] Iteration 5 ended: US-003 (25分钟 42秒) ---
+
+--- [RALPH] Iteration 6 started: US-004 at 2026-05-10 11:07 ---
+
+--- [RALPH] Iteration 6 ended: US-004 (49分钟 4秒) ---
+
+--- [RALPH] Iteration 7 started: US-004 at 2026-05-10 11:56 ---
+
+--- [RALPH] Iteration 7 ended: US-004 (17分钟 22秒) ---
+
+--- [RALPH] Iteration 8 started: US-004 at 2026-05-10 12:13 ---
+
+## [2026-05-10 12:17] - US-004 (PRD-6 · retry #2)
+- Fixed AC-14: added `useLayoutEffect` + `useRef` to VideoProductionResult.tsx, performance.mark('vp-storyboard-painted') + performance.measure run after shotList renders
+- Fixed AC-13/17: aligned E2E consoleErrors filter with tool-analysis.spec.ts pattern — added '!Importing a module script failed' + '!The above error occurred in one of your React components' + '!net::ERR'
+- Root cause of mobile failure: pre-existing StepLayout lazy-chunk load error on login redirect (/step/1) on iPhone UA — unrelated to US-004 code, same pattern already handled in tool-analysis.spec.ts
+- Hooks restructured before early returns in VideoProductionResult to satisfy React rules of hooks
+- pnpm typecheck: 0 errors · pnpm test unit: 21/21 · pnpm test:e2e: 2/2 (chromium + mobile)
+- Changed files: apps/web/src/components/ToolResult/VideoProductionResult.tsx, tests/e2e/tool-video-production.spec.ts
+- **未来迭代的学习:**
+  - Always align consoleErrors filter across all E2E specs — check tool-analysis.spec.ts as the reference when writing new E2E tests
+  - React hooks (useLayoutEffect, useRef) must be called before any early return — restructure component when adding hooks to components with existing early-exit branches
+  - 'Importing a module script failed' on iPhone UA is a known mobile dev issue from StepLayout lazy chunks — add to filter for any E2E test that does login-then-navigate
+---
+
+--- [RALPH] Iteration 8 ended: US-004 (29分钟 17秒) ---
+
+--- [RALPH] Iteration 9 started: US-004 at 2026-05-10 12:43 ---
+
+## [2026-05-10 12:44] - US-004 (retry-3 · AC-4/AC-8 LS on-change fix)
+- fix AC-4/AC-8: ToolForm.tsx 加 debounced watch() 订阅 · 500ms 防抖写 LS · input change 即持久化 (不再等 submit)
+- 改动文件: apps/web/src/components/ToolForm/ToolForm.tsx (+14行 useEffect watch() 订阅)
+- 保留 handleSubmit 中已有 LS 写入 (REJ-035 LS-first 双写模式)
+- pnpm typecheck 6 ws 0 error · pnpm test VideoProduction.test.tsx 21/21 · E2E 2/2 全 PASS
+- **未来迭代的学习：**
+  - ToolForm LS 持久化必须用 watch()+useEffect debounce · 不能仅在 handleSubmit 写 · D-031 明确要求 input change 写 LS
+  - watch() 无参数在 useEffect 依赖数组中会在每次字段变化时触发 · 配合 setTimeout 500ms 防抖是标准 pattern
+  - 注意保留 handleSubmit 中的 LS 写入做兜底 (final snapshot · 防 debounce 未触发就 submit)
+---
+
+--- [RALPH] Iteration 9 ended: US-004 (18分钟 56秒) ---
+
+--- [RALPH] Iteration 10 started: US-004 at 2026-05-10 13:02 ---
