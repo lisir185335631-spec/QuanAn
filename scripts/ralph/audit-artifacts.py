@@ -11,7 +11,6 @@ audit-artifacts.py — Coding 3.0 X-5 Opus 产物验证工具
 
 用法:
     python3 audit-artifacts.py <story-id> [--project <path>]
-    python3 audit-artifacts.py --story <story-id> [--project <path>]
 
 输出:
     ARTIFACTS VALID  → 可进语义审查
@@ -59,6 +58,21 @@ def check_manifest(art_dir: Path) -> tuple[bool, dict, list[str]]:
     if errors:
         return False, data, errors
     return True, data, []
+
+
+def _check_exit_code(manifest: dict) -> tuple[bool, str]:
+    """exit_code 硬校验 (AC-2 第一步门禁).
+    缺 exit_code / 非 int / 非零 → (False, reject message).
+    注: zero_regression=PASS 时仍要求 exit_code=0 (AC-6).
+    """
+    if "exit_code" not in manifest:
+        return False, "manifest 缺 exit_code 字段 · Validator 凭证不全 · 拒绝 audit · exit 1"
+    code = manifest["exit_code"]
+    if not isinstance(code, int):
+        return False, f"manifest exit_code 类型错误: {type(code).__name__} (期望 int) · 拒绝 audit · exit 1"
+    if code != 0:
+        return False, f"manifest exit_code={code} ≠ 0 · 拒绝 audit · exit 1"
+    return True, "exit_code=0 ✓"
 
 
 def _check_pytest_xml_file(xml_file: Path, label: str) -> tuple[bool | None, str, dict]:
@@ -232,6 +246,15 @@ def main() -> int:
 
     # 1. manifest
     ok, manifest, errs = check_manifest(art_dir)
+
+    # 1b. exit_code 硬校验 (AC-2: manifest load 后第一步 · 失败立即 sys.exit(1))
+    if manifest:  # JSON 已解析 (非空 dict)
+        ec_ok, ec_msg = _check_exit_code(manifest)
+        if not ec_ok:
+            print(f"[FAIL] {ec_msg}")
+            sys.exit(1)
+        print(f"[OK] {ec_msg}")
+
     if ok:
         print(f"[OK] manifest.json")
         results.append(("manifest", True))
