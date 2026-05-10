@@ -15,14 +15,13 @@
  * AC-1: production/acquisition/storyboard mode 解锁 (移除 throw · 按 mode 走 invokeLLM 分支)
  * AC-2: outputSchema getter 完整 switch (4 mode · D-028 模式)
  * AC-3: _buildUserPrompt(mode) 4 分支
- * AC-4: storyboard imagePromptEn ASCII post-validate · retry 1 · 失败 throw SchemaValidationError
+ * AC-4: storyboard imagePromptEn ASCII enforced via schema-level regex (StoryboardSceneSchema · matches aiVideoSceneSchema)
  * SHIELD REJ-007: outputSchema getter 按 mode · 不用 z.discriminatedUnion
  */
 
 import { z } from 'zod';
 
 import { BaseSpecialist } from './base/BaseSpecialist';
-import { SchemaValidationError } from './base/errors';
 
 import type {
   SpecialistConfig,
@@ -104,15 +103,16 @@ const VideoAcquisitionBaseSchema = z.object({
 
 export type VideoAcquisitionOutput = z.infer<typeof VideoAcquisitionOutputSchema>;
 
-// ── storyboard mode schemas ───────────────────────────────────────────────────
+// ── storyboard mode schemas (AC-4 · matches packages/schemas aiVideoSceneSchema exactly) ──────────
 
 const StoryboardSceneSchema = z.object({
-  scene: z.string(),
+  index: z.number().int().positive(),
+  description: z.string().min(20).max(500),
+  imagePromptEn: z
+    .string()
+    .min(20)
+    .regex(/^[\x00-\x7F]+$/, 'imagePromptEn 必须是英文 ASCII'),
   duration: z.string(),
-  description: z.string(),
-  imagePromptEn: z.string(), // AC-4: post-validate ASCII-only
-  voiceover: z.string(),
-  music: z.string(),
 });
 
 export const StoryboardOutputSchema = z.object({
@@ -123,12 +123,10 @@ export const StoryboardOutputSchema = z.object({
 
 const StoryboardBaseSchema = z.object({
   scenes: z.array(z.object({
-    scene: z.string(),
-    duration: z.string(),
+    index: z.number().int().positive(),
     description: z.string(),
     imagePromptEn: z.string(),
-    voiceover: z.string(),
-    music: z.string(),
+    duration: z.string(),
   })),
   title: z.string(),
   totalDuration: z.string(),
@@ -314,44 +312,34 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
       totalDuration: '60s',
       scenes: [
         {
-          scene: '开场钩子',
+          index: 1,
           duration: '5s',
-          description: '创作者面对镜头，展示成果对比',
+          description: '创作者面对镜头展示成果对比，展现IP起号前后的鲜明变化',
           imagePromptEn: 'A confident content creator facing camera in modern studio, warm golden lighting, professional setup, cinematic portrait style',
-          voiceover: '你也想实现这样的转变吗',
-          music: 'upbeat background music',
         },
         {
-          scene: '痛点共鸣',
+          index: 2,
           duration: '10s',
-          description: '展示创作者的困境和挑战',
+          description: '展示创作者的困境和挑战，引发目标用户强烈共鸣',
           imagePromptEn: 'A person sitting at desk looking at phone with low view count, frustrated expression, dim room, realistic style',
-          voiceover: '我知道那种感觉，内容做了很久但没有效果',
-          music: 'soft melancholic tone',
         },
         {
-          scene: '解决方案',
+          index: 3,
           duration: '20s',
-          description: '介绍核心方法和工具',
-          imagePromptEn: 'Split screen showing before and after: left dark office with stressed person, right bright modern workspace with happy creator, high contrast',
-          voiceover: '直到我发现了这个方法',
-          music: 'building momentum music',
+          description: '介绍核心方法和工具，清晰呈现解决方案的价值与差异化',
+          imagePromptEn: 'Split screen showing before and after: left dark office stressed person, right bright modern workspace happy creator, high contrast',
         },
         {
-          scene: '社会证明',
+          index: 4,
           duration: '15s',
-          description: '展示成功案例和数据',
+          description: '展示成功案例和数据，用真实社会证明强化方案的可信度',
           imagePromptEn: 'Dashboard showing growing analytics charts with green upward arrows, clean modern UI design, data visualization, optimistic colors',
-          voiceover: '已经帮助了超过一千位创作者',
-          music: 'positive uplifting background',
         },
         {
-          scene: '行动召唤',
+          index: 5,
           duration: '10s',
-          description: '明确 CTA，引导用户行动',
+          description: '明确行动召唤，引导用户立即行动，实现关键转化目标',
           imagePromptEn: 'Mobile phone screen showing QR code with call to action button, clean white background, modern minimalist design, focus lighting',
-          voiceover: '立即扫码，免费获取你的专属方案',
-          music: 'confident energetic close',
         },
       ],
     } satisfies StoryboardOutput,
@@ -454,14 +442,13 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
     });
   }
 
-  // ── storyboard mode — AC-4 ASCII post-validate ───────────────────────────
+  // ── storyboard mode — AC-4 ASCII enforced via schema-level regex ─────────
 
   private async _invokeStoryboard(
     ctx: AssembledContext,
     req: SpecialistRequest<VideoInput>,
-    asciiRetryCount = 0,
   ): Promise<InvokeLLMResult> {
-    const result = await this.llmGateway.complete({
+    return this.llmGateway.complete({
       model_tier: this.config.execution.model_tier,
       systemPrompt: ctx.systemPrompt,
       userPrompt: this._buildUserPrompt(req.userInput, ctx, 'storyboard'),
@@ -475,24 +462,6 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
     });
-
-    // Check schema first; if schema invalid, return as-is for BaseSpecialist retry
-    const parsed = StoryboardOutputSchema.safeParse(result.content);
-    if (!parsed.success) return result;
-
-    // AC-4: post-validate imagePromptEn must be ASCII-only English
-    const asciiRe = /^[\x00-\x7F]+$/;
-    const allAscii = parsed.data.scenes.every((s) => asciiRe.test(s.imagePromptEn));
-    if (allAscii) return result;
-
-    // ASCII check failed — retry once
-    if (asciiRetryCount < 1) return this._invokeStoryboard(ctx, req, 1);
-
-    // Both attempts failed — throw SchemaValidationError (triggers fallback via BaseSpecialist)
-    throw new SchemaValidationError(
-      'storyboard imagePromptEn must be ASCII-only English (regex /^[\\x00-\\x7F]+$/)',
-      result.content,
-    );
   }
 
   // ── AC-3: _buildUserPrompt(mode) 4 分支 ───────────────────────────────────
@@ -586,19 +555,18 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
       '  "totalDuration": "总时长(如: 60s)",',
       '  "scenes": [',
       '    {',
-      '      "scene": "场景名称",',
-      '      "duration": "时长(如: 5s)",',
-      '      "description": "场景中文描述",',
-      '      "imagePromptEn": "English-only image generation prompt for AI (Stable Diffusion / DALL-E format · must be ASCII)",',
-      '      "voiceover": "中文旁白/配音文案",',
-      '      "music": "background music description in English"',
+      '      "index": 1,',
+      '      "description": "场景中文描述(至少 20 字)",',
+      '      "imagePromptEn": "English-only ASCII image generation prompt, >= 20 chars (Stable Diffusion / DALL-E format)",',
+      '      "duration": "时长(如: 5s)"',
       '    }',
       '  ]',
       '}',
       '',
       '⚠️ 严格约束:',
       '- scenes 必须 5-8 个 · 构成完整叙事弧线',
-      '- imagePromptEn 必须是纯英文 ASCII · 不含中文 · 格式: "subject, setting, lighting, style"',
+      '- description 每场景至少 20 字符 · 中文描述场景内容与画面',
+      '- imagePromptEn 必须是纯英文 ASCII · 不含任何中文 · 至少 20 字符 · 格式: "subject, setting, lighting, style"',
       '- imagePromptEn 示例: "Professional woman in modern office, warm bokeh lighting, cinematic portrait"',
     ].join('\n');
   }

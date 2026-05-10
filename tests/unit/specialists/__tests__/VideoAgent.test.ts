@@ -253,15 +253,14 @@ describe('VideoAgent', () => {
     expect(VideoAcquisitionOutputSchema.safeParse(res.result).success).toBe(true);
   });
 
-  // ── PRD-6 US-002: storyboard mode (+3) ───────────────────────────────────
+  // ── PRD-6 US-002: storyboard mode (+3 + 1 schema-level test) ────────────
 
+  // AC-4: 4-field format matches packages/schemas aiVideoSceneSchema exactly
   const VALID_STORYBOARD_SCENE = {
-    scene: '开场',
+    index: 1,
     duration: '5s',
-    description: '创作者面向镜头自信介绍',
+    description: '创作者面向镜头自信介绍，展示专业形象与内容价值',
     imagePromptEn: 'Professional content creator facing camera in modern studio, warm lighting, cinematic style',
-    voiceover: '你也想实现这样的转变吗',
-    music: 'upbeat background music',
   };
 
   it('storyboard happy: 5 scenes all ASCII imagePromptEn → valid StoryboardOutput', async () => {
@@ -270,7 +269,7 @@ describe('VideoAgent', () => {
       totalDuration: '60s',
       scenes: Array.from({ length: 5 }, (_, i) => ({
         ...VALID_STORYBOARD_SCENE,
-        scene: `场景${i + 1}`,
+        index: i + 1,
         imagePromptEn: `Scene ${i + 1}: Professional creator in modern studio, bright lighting, cinematic portrait`,
       })),
     };
@@ -285,18 +284,17 @@ describe('VideoAgent', () => {
     expect(res.isFallback).toBe(false);
   });
 
-  it('storyboard non-ASCII imagePromptEn: retry once → still fails → fallback (AC-4)', async () => {
+  it('storyboard non-ASCII imagePromptEn: schema regex rejects Chinese → BaseSpecialist retry → fallback (AC-4)', async () => {
     const nonAsciiContent = {
       title: '故事板测试',
       totalDuration: '60s',
-      // 5 scenes with Chinese in imagePromptEn (non-ASCII)
       scenes: Array.from({ length: 5 }, (_, i) => ({
         ...VALID_STORYBOARD_SCENE,
-        scene: `场景${i + 1}`,
-        imagePromptEn: `场景${i + 1}：专业创作者展示内容 professional creator`, // contains Chinese
+        index: i + 1,
+        imagePromptEn: `场景${i + 1}：专业创作者在现代摄影棚展示内容 professional creator cinematic`, // contains Chinese
       })),
     };
-    // Both attempts return non-ASCII → should trigger SchemaValidationError → fallback
+    // Both attempts return non-ASCII → schema regex fails → BaseSpecialist retry → SchemaValidationError → fallback
     const agent = new VideoAgent(makeGateway([nonAsciiContent, nonAsciiContent]));
     const res = await agent.execute({ ...BASE_REQ, mode: 'storyboard' });
     expect(res.isFallback).toBe(true);
@@ -309,12 +307,32 @@ describe('VideoAgent', () => {
       totalDuration: '45s',
       scenes: Array.from({ length: 5 }, (_, i) => ({
         ...VALID_STORYBOARD_SCENE,
-        scene: `Scene ${i + 1}`,
-        imagePromptEn: `Scene ${i + 1} in bright modern studio, professional lighting`,
+        index: i + 1,
+        imagePromptEn: `Scene ${i + 1} in bright modern studio, professional lighting, cinematic portrait`,
       })),
     };
     const agent = new VideoAgent(makeGateway([storyboardContent]));
     const res = await agent.execute({ ...BASE_REQ, mode: 'storyboard' });
     expect(StoryboardOutputSchema.safeParse(res.result).success).toBe(true);
+  });
+
+  it('storyboard schema-level: Chinese imagePromptEn fails StoryboardSceneSchema regex (not post-validate)', () => {
+    // Schema-level validation: regex /^[\x00-\x7F]+$/ rejects Chinese chars
+    const chineseImagePrompt = '专业创作者在现代摄影棚展示内容制作流程 cinematic portrait style lighting';
+    const parsed = StoryboardOutputSchema.safeParse({
+      title: '测试故事板',
+      totalDuration: '30s',
+      scenes: Array.from({ length: 5 }, (_, i) => ({
+        index: i + 1,
+        duration: '5s',
+        description: '创作者面向镜头自信介绍，展示专业形象与内容价值',
+        imagePromptEn: chineseImagePrompt,
+      })),
+    });
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      const errorPaths = parsed.error.issues.map((issue) => issue.path.join('.'));
+      expect(errorPaths.some((p) => p.includes('imagePromptEn'))).toBe(true);
+    }
   });
 });
