@@ -91,16 +91,19 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, 
       }
     }
 
+    const loadingToastId = toast.loading('生成中...');
     setIsPending(true);
     try {
       const result = await onSubmit(data);
       if (!abortRef.current.signal.aborted) {
+        toast.dismiss(loadingToastId);
         onSuccess?.(result);
       }
     } catch {
       if (!abortRef.current.signal.aborted) {
         // REJ-035: DB fail → LS 保留 + toast.error
-        toast.error('生成失败 · 请稍后重试');
+        toast.dismiss(loadingToastId);
+        toast.error('生成失败 · 请稍后再试');
       }
     } finally {
       if (!abortRef.current.signal.aborted) {
