@@ -182,6 +182,37 @@ export type AcquisitionVideoHistoryRow = FreeGenerateHistoryRow;
 
 export type DailyUsageOutput = { count: number; limit: number };
 
+// PRD-8 US-008: daily tasks
+export type DailyTaskItem = {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  ctaUrl: string;
+  ctaText: string;
+  expectedOutcome: string;
+  estimatedMinutes: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  completed: boolean;
+};
+
+export type DailyTaskRow = {
+  id: number;
+  accountId: number;
+  taskDate: Date | string;
+  tasks: DailyTaskItem[];
+  completedCount: number;
+  totalCount: number;
+  agentId: string;
+  modelUsed: string | null;
+  isFallback: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+} | null;
+
+export type DailyTaskHistoryRow = NonNullable<DailyTaskRow>;
+export type DailyTaskListOutput = DailyTaskHistoryRow[];
+
 export type GenerateStoryboardOutput = {
   historyId: number;
   jobIds: string[];
@@ -475,6 +506,17 @@ const _shadowRouter = _t.router({
         traceId: null,
         createdAt: new Date(),
       })),
+  }),
+  dailyTasks: _t.router({
+    getToday: _t.procedure.query((): DailyTaskRow => null),
+    getHistory: _t.procedure
+      .input((x: unknown) => x as { limit?: number; offset?: number } | undefined)
+      .query((): DailyTaskListOutput => []),
+    markCompleted: _t.procedure
+      .input((x: unknown) => x as { dailyTaskId: number; taskId: string })
+      .mutation((): { ok: boolean; completedCount: number; totalCount: number } => ({ ok: true, completedCount: 0, totalCount: 0 })),
+    regenerateToday: _t.procedure
+      .mutation((): { ok: boolean; scheduledDate: string; jobId: string } => ({ ok: true, scheduledDate: '', jobId: '' })),
   }),
   aiVideo: _t.router({
     generateStoryboard: _t.procedure

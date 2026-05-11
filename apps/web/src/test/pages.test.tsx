@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -24,13 +25,24 @@ import Trending from '@/pages/tools/Trending';
 vi.mock('@/lib/trpc', () => ({
   trpc: {
     costLog: { logFeedback: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) } },
+    useUtils: () => ({
+      dailyTasks: {
+        getToday: { getData: vi.fn(() => null), setData: vi.fn() },
+      },
+    }),
+    dailyTasks: {
+      getToday: { useQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }) },
+      getHistory: { useQuery: () => ({ data: [], isLoading: false }) },
+      markCompleted: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true, completedCount: 0, totalCount: 0 }), isPending: false }) },
+      regenerateToday: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     diagnosis: { latest: { useQuery: () => ({ data: null, isLoading: false }) } },
     evolution: {
-      history: { useQuery: () => ({ data: [], isLoading: false }) },
       getProfile: { useQuery: () => ({ data: null, isLoading: false }) },
       getInsightHistory: { useQuery: () => ({ data: [], isLoading: false }) },
       getFeedbackTrend: { useQuery: () => ({ data: [], isLoading: false }) },
       getModuleRanking: { useQuery: () => ({ data: { ranking: [] }, isLoading: false }) },
+      history: { useQuery: () => ({ data: [], isLoading: false }) },
     },
     ipAccounts: {
       list: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -39,6 +51,15 @@ vi.mock('@/lib/trpc', () => ({
     },
     knowledge: { getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) } },
     trending: { fetch: { useQuery: () => ({ data: [], isLoading: false }) } },
+    copywriting: {
+      freeGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
+      acquisitionGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
+    },
+    history: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      detail: { useQuery: () => ({ data: null, isLoading: false }) },
+      delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     stepData: {
       save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
     },
@@ -97,7 +118,7 @@ describe('Step pages render', () => {
 
 describe('Tool pages render', () => {
   it('Generate renders h1 heading', () => {
-    render(<Generate />);
+    render(<MemoryRouter><Generate /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AI 智能生成');
   });
 
@@ -133,7 +154,7 @@ describe('Module pages render', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('进化中心');
   });
 
-  it('Evolution shows empty state when no data', () => {
+  it('Evolution shows cold-start state when no data', () => {
     render(<Evolution />);
     expect(screen.getByText('暂无 insight · 等累计 5 条反馈后自动生成')).toBeInTheDocument();
   });
@@ -149,7 +170,7 @@ describe('Module pages render', () => {
   });
 
   it('DailyTasks renders h1 heading', () => {
-    render(<DailyTasks />);
+    render(<MemoryRouter><DailyTasks /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('每日任务');
   });
 
@@ -159,7 +180,7 @@ describe('Module pages render', () => {
   });
 
   it('History renders h1 heading', () => {
-    render(<History />);
+    render(<MemoryRouter><History /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('历史记录');
   });
 });

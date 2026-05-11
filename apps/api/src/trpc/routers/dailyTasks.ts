@@ -55,7 +55,7 @@ export const dailyTasksRouter = router({
   }),
 
   /** 获取历史任务记录 */
-  list: protectedProcedure
+  getHistory: protectedProcedure
     .input(
       z.object({
         limit: z.number().int().min(1).max(30).default(7),
@@ -106,7 +106,7 @@ export const dailyTasksRouter = router({
   }),
 
   /** 标记任务完成 */
-  completeTask: protectedProcedure
+  markCompleted: protectedProcedure
     .input(
       z.object({
         dailyTaskId: z.number().int().positive(),
