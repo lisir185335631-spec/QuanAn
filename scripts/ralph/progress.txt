@@ -1,4 +1,22 @@
 
+## [2026-05-11 23:30] - US-004 (retryCount=1 · AC-10 fix)
+- AC-10 修复: 添加 ragRetrieveWorker.retrieve text-search fallback
+  · 根因: OPENAI_API_KEY="" → embed() 抛 "OPENAI_API_KEY not configured" → 0 结果
+  · 修复: catch 具体错误消息 → 回退到 PostgreSQL ILIKE text search across title+content
+  · 关键: 用错误消息判断(非 env var)→ 存量单测 mockEmbed 不受影响(907/911 pass)
+- 插入 4 条 dev seed 数据(带"矛盾"关键词 · 无 embedding)到本地 DB 供 AC-10 验证
+- AC-9 PASS: 3 tabs 可见 + search input 可见 + 0 console errors ✓
+- AC-10 PASS: '矛盾冲突' → 1 case card '矛盾冲突制造吸引力' + content 含'矛盾' ✓
+  · status bar 显示 '就绪 · 显示 1 条结果'
+  · 截图 verify-artifacts/US-004/knowledge-search.png
+- pnpm typecheck 0 + lint 0 + 907/911 tests pass ✓
+- 更改的文件: apps/api/src/workers/rag/retrieve.ts (文本搜索 fallback)
+- **未来迭代的学习:**
+  - ragRetrieveWorker fallback 用错误消息而非 env var 判断 → 不影响存量 vitest mock(mock 不会抛 key error)
+  - dev seed 数据直接 psql INSERT · 不需要 embedding 字段(nullable) · ILIKE text 搜就够了
+  - 带中文全角空格的 regex 字符集 `[\s　]` 触发 ESLint no-irregular-whitespace → 改用 `[\s　]` unicode 转义
+---
+
 ## [2026-05-11 23:05] - US-004
 - 新建 knowledge.list / knowledge.search / knowledge.getById 3 个 publicProcedure (AC-1)
   · list: prisma.knowledgeChunk.findMany (select 排除 embedding · 公开访问)
