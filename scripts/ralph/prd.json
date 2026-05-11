@@ -245,8 +245,8 @@
         "US-004"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "[CASCADE UNBLOCK 2026-05-11] US-002 已 Opus approve · 依赖满足 · 可执行",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [

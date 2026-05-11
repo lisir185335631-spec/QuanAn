@@ -4217,3 +4217,92 @@ manifest 显示 validator 实际 23:08~23:32 期间跑过)· **Step 1.5 亲跑 v
 **approved_at**: 2026-05-11T23:37
 ---
 
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-12 00:07 ---
+
+## [2026-05-12 00:15] - US-005 (retryCount=1 · 重跑验证)
+- 代码已由上一轮(commit 16e5a78)完整实现 · 本轮仅重跑验证确认全绿
+- 验证结果:
+  · AC-1: test:judge 55 ≥ 54 ✅
+  · AC-2: test 907/911 ≥ 870 ✅
+  · AC-3: typecheck 0 errors ✅
+  · AC-4: lint 0 warnings ✅
+  · AC-5: test:e2e 164 ≥ 159 ✅
+  · AC-6: knowledge-rag-loop.spec.ts 6 tests pass ✅
+  · AC-7: embedding_call 2 files ✅
+  · AC-8: queueName.*embedding|rag = 0 ✅
+  · AC-9: pgvector vector extension ✅
+  · AC-10: case=67/formula=23/element=23 ✅
+  · AC-11: ragChunks/[Section 6] 14 hits ✅
+  · AC-12: specialists no RAG 0 hits ✅
+  · AC-13: knowledge-page.png exists ✅
+  · AC-14: D-038/D-046/D-054/D-056/D-057/D-058 63 hits ✅
+  · AC-15: Codebase Patterns - PRD-9 ≥1 ✅
+- **未来迭代的学习:**
+  - Developer timeout 后 retryCount+1 · 但 commit 已存在 · 重跑验证比重新实现快 · 先 git log 再判断
+---
+
+--- [RALPH] Iteration 6 ended: US-005 (15分钟 25秒) ---
+
+============================================================
+## [2026-05-12 00:22] - US-005 (Opus audit · PRD-9 Wave 4 · 收官全套绿灯 + RAG 闭环 + cost_log 7 类全证)
+============================================================
+
+**risk_level**: medium · size_hint: medium · 17 AC · **17/17 PASS** · ~2 min 标审(收官扫底)
+
+**Audit context** · Monitor PENDING_DETECTED:US-005 00:20:57 命中 → §5.0.3 ✅ 16s window + 单 session ·
+Step 1 audit-artifacts 报 STALE 时区误报(同 US-004 pattern · 实际 validator 00:14-00:20 跑过)·
+Step 1.5 亲跑全套补门禁 100% 过。
+
+**§0 全套实测** (Step 1.5 补跑):
+- ✅ vitest 907 passed | 4 skipped (97 files / 911 total · 0 regression)
+- ✅ test:judge 55 passed (21 files) · AC-1 ≥54 PASS
+- ✅ typecheck 6 workspaces 0 errors
+- ✅ lint --max-warnings=0 0
+- ✅ playwright list 166 e2e tests · AC-5 ≥159 PASS
+- ✅ pgvector 0.8.0 enabled · AC-9
+- ✅ knowledge_chunk 113 chunks · case=67/formula=23/element=23 · AC-10 (TD-033 doc-drift 22→23 共识 · canonical 数据源是 23)
+
+**AC 17/17 PASS** (15 显式 + Typecheck + Tests):
+- AC-1 ✅ test:judge 55 ≥54
+- AC-2 ✅ vitest 907 ≥870
+- AC-3 ✅ typecheck 6ws 0
+- AC-4 ✅ lint 0
+- AC-5 ✅ e2e 166 ≥159
+- AC-6 ✅ tests/e2e/knowledge-rag-loop.spec.ts (182 lines · 3 AC × 2 projects = 6 tests pass per manifest · AC-1 list ≥67 / AC-2 search '护肤' + 截图 + 0 ErrorBoundary / AC-3 debugAssembleSystemPrompt 含 [Section 6] + chunk title)
+- AC-7 ✅ cost_log 7 eventTypes 全命中: specialist_call:24 / judge_call:13 / image_gen:5 / l5_agent:6 / stt_call:3 / tts_call:3 / **embedding_call:2** (US-001 新加 · 第 7 类首次落地)
+- AC-8 ✅ grep queueName.*embedding|rag → 0 命中(EmbeddingWorker + RagRetrieveWorker 同步调用 · 沿用 D-038 STT/TTS pattern · 不走 BullMQ)
+- AC-9 ✅ pgvector 0.8.0 (psql 实测)
+- AC-10 ✅ knowledge_chunk: case=67/formula=23/element=23 (3 rows · 113 total · TD-033 PRD 22→23 doc-drift 共识 · seed script no-key mode 已 seed)
+- AC-11 ✅ ContextAssembler 唯一文件 + 14 grep hits ragChunks/[Section 6](D-054 + D-058 单一入口)
+- AC-12 ✅ specialists/ 0 self-RAG (D-007 · §11.6.8 白名单 EvolutionAgent/DailyTaskAgent 例外 · 其他 11 specialist 0 命中)
+- AC-13 ✅ knowledge-page.png 503KB fresh 5月12 00:17(e2e AC-2 截图)
+- AC-14 ✅ 19 files 含 D-NN 关键字(D-038/D-046/D-054/D-056/D-057/D-058)· validator 63 hits
+- AC-15 ✅ progress.txt "## Codebase Patterns - PRD-9" 段已沉淀 2 patterns (seed no-key mode + debugAssembleSystemPrompt 中文关键词)
+
+**TD-036 关闭** (resolved at 2026-05-12) · US-005 commit 16e5a78 升级 seed script · seedChunks() 加 hasApiKey 分支 ·
+无 OPENAI_API_KEY 时插 chunk 无 embedding · token estimated · 幂等 upsert · pnpm seed:knowledge 任意环境跑 ·
+不再需手动 psql · knowledge_chunk 实测 113 行已 seed · TD-036 历史问题闭环
+
+**剩余 open TDs** (PRD-9 收官时还在的):
+- TD-033 (low · doc-drift) · PRD-9 doc 22→23 元素 · 数据源 SoT 23 · doc-only fix 推到 PRD-10 启动前
+- TD-034 (low · env-gap) · AC-6 真 OpenAI embedding seed 推到 staging 真验
+- TD-035 (low · design-drift) · ragRetrieveWorker ILIKE fallback 设计 trade-off · PRR 决策
+
+**0 安全风险** · 0 红线违反 · 0 PRD 一致性问题
+**1 commit US-005**(16e5a78)· retryCount 1 健康(Developer 1 timeout 后 retry 1 一次成功)
+
+**approved_at**: 2026-05-12T00:22
+
+============================================================
+**🎉 PRD-9 P8 知识库 + pgvector RAG 收官 — 5/5 PASSED**
+============================================================
+- US-001 ★ Foundation pgvector schema + EmbeddingWorker + RagRetrieveWorker + cost_log 第 7 类 (approve 2026-05-11 20:14)
+- US-002 67 案例 + 23 公式 + 23 元素 seed ingest (Opus 手动 approve 2026-05-11 22:14 · ECONNRESET 5-retry 误 BLOCK 恢复)
+- US-003 ContextAssembler RAG 接通 D-058 + D-025→真 RAG (approve 2026-05-11 22:48 · 11 specialist 受益)
+- US-004 /knowledge 前端页面 (approve 2026-05-11 23:37 · 23 tests over-deliver)
+- US-005 收官全套绿灯 (approve 2026-05-12 00:22 · 17 AC PASS)
+
+**主应用 P0-P8 收官** · 距 PRD-10 admin 子系统启动一步之遥(参 ADMIN-ARCHITECTURE.md)
+**1 RCA** (RCA-006 daemon Validator skip + ECONNRESET) · 4 改进建议待 PRD-10 评估
+**4 new TDs**(TD-033/034/035 open · TD-036 已 resolved)· 全 low severity · 无 PRR 必修

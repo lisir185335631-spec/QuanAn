@@ -625,11 +625,14 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus audit US-004",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "psql quanqn -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
       "root_cause": "ralph 实施 AC-10 时 · pgvector seed 需要 OPENAI_API_KEY · 走不通 · 改用 psql INSERT 直插 4 条 dummy chunks(只为截图能拿)· 没把 SQL 命令存到 migration 或 seed 文件",
       "scheduled_fix_in": "PRD-9 收官前 · 或在 apps/api/scripts/seed-dev-knowledge.ts 加一个 dev-only seed script · 写到 package.json scripts 'seed:dev-knowledge' · CI/staging 真 OPENAI_API_KEY 跑 pnpm seed:knowledge 真 seed · dev 跑 pnpm seed:dev-knowledge 拿 fallback 数据",
-      "audit_exemption": "US-004 approve 时豁免 · 因 4 条 dev seed 仅服务于本地 AC-10 截图验证 · 不污染 prod · 真 prod 走 TD-034 staging seed path · 不阻塞 PRD-9 收尾"
+      "audit_exemption": "US-004 approve 时豁免 · 因 4 条 dev seed 仅服务于本地 AC-10 截图验证 · 不污染 prod · 真 prod 走 TD-034 staging seed path · 不阻塞 PRD-9 收尾",
+      "resolved_at": "2026-05-12",
+      "resolved_by": "US-005 收官 commit 16e5a78",
+      "close_evidence": "apps/api/scripts/seed-knowledge-chunk.ts L102-107 + L119-168 · seedChunks() 加 hasApiKey 分支 · 无 OPENAI_API_KEY 时插 chunk 无 embedding(token estimated content.length/1.5)· 幂等 upsert by (type, title) · pnpm seed:knowledge 任意环境跑 · 不再需手动 psql · knowledge_chunk 实测 case=67/formula=23/element=23 = 113 行(dev DB 已 seed)"
     }
   ],
   "last_updated": "2026-05-09T23:06:52"
