@@ -50,7 +50,12 @@ vi.mock('@/lib/trpc', () => ({
       active: { useQuery: () => ({ data: null, isLoading: false }) },
       switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
-    knowledge: { getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) } },
+    knowledge: {
+      getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) },
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      search: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      getById: { useQuery: () => ({ data: null, isLoading: false }) },
+    },
     trending: { fetch: { useQuery: () => ({ data: [], isLoading: false }) } },
     copywriting: {
       freeGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },

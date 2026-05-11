@@ -114,6 +114,17 @@ export type KnowledgeRecommendationItem = {
   title: string;
 };
 
+/** PRD-9 US-004: public knowledge chunk shape (mirrors KnowledgeChunkContent from @quanqn/schemas) */
+export type KnowledgeChunkContent = {
+  id: number;
+  type: 'case' | 'formula' | 'element';
+  title: string;
+  content: string;
+  metadata: Record<string, unknown>;
+  tokens: number;
+  similarity?: number;
+};
+
 export type TrendingItem = {
   id: number;
   platform: string;
@@ -289,6 +300,15 @@ const _shadowRouter = _t.router({
     getRecommendations: _t.procedure
       .input((x: unknown) => x as { limit?: number } | undefined)
       .query((): KnowledgeRecommendationItem[] => []),
+    list: _t.procedure
+      .input((x: unknown) => x as { type?: 'case' | 'formula' | 'element'; limit?: number; offset?: number } | undefined)
+      .query((): KnowledgeChunkContent[] => []),
+    search: _t.procedure
+      .input((x: unknown) => x as { query: string; topK?: number; type?: 'case' | 'formula' | 'element' })
+      .mutation((): KnowledgeChunkContent[] => []),
+    getById: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query((): KnowledgeChunkContent | null => null),
   }),
   trending: _t.router({
     fetch: _t.procedure
