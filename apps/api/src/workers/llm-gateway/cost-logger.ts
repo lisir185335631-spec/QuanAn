@@ -12,12 +12,14 @@ import type { CompleteRequest, CompleteResponse } from './index';
 
 // D-040: Valid eventType values for cost_log
 // specialist_call = LLM text completions · account.switch/auth.login = behavior · image_gen = image diffusion
+// l5_agent = L5 Specialist 批量 agent 调用 (EvolutionAgent/DailyTaskAgent · PRD-8 US-003 扩展)
 export const VALID_EVENT_TYPES = [
   'specialist_call',
   'account.switch',
   'auth.login',
   'security_alert',
   'image_gen',
+  'l5_agent',
 ] as const;
 export type CostLogEventType = (typeof VALID_EVENT_TYPES)[number];
 

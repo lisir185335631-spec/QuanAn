@@ -2,11 +2,13 @@
  * Evolution router — PRD-2 US-002 + US-005
  * US-002 AC-3: getProfile returns EvolutionProfile for the active account (cached client-side in LS)
  * US-005 AC-3: 7 procedures (evolve/getConfig/updateConfig/history/recentFeedback/feedbackTrend/moduleRanking) · mock
- * Note: EvolutionAgent heartbeat + actual evolution logic 留 PRD-8+
+ * US-003 AC-8: evolve mutation hook → enqueueIfThresholdMet (async · 不阻塞 mutation)
  */
 
 import { z } from 'zod';
 
+import { enqueueIfThresholdMet } from '@/lib/evolution/trigger';
+import { logger } from '@/lib/logger';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -114,6 +116,14 @@ export const evolutionRouter = router({
         },
         select: FEEDBACK_LOG_SELECT,
       });
+
+      // AC-8: 异步调 enqueueIfThresholdMet · 不阻塞 mutation
+      void enqueueIfThresholdMet(activeAccountId!, traceId ?? row.traceId ?? 'unknown').catch(
+        (err: unknown) => {
+          logger.error({ err, accountId: activeAccountId }, 'evolution.evolve.trigger_failed');
+        },
+      );
+
       return { ok: true, feedbackId: row.id };
     }),
 

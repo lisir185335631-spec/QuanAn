@@ -94,6 +94,8 @@ export interface LLMCompleteRequest {
     agentId: string;
     accountId: number;
     userId: number;
+    /** D-040 扩展 · l5_agent/specialist_call/image_gen 等 */
+    eventType?: string;
   };
   timeout_ms?: number;
   retry?: number;
