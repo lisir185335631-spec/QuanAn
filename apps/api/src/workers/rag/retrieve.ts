@@ -33,11 +33,20 @@ async function retrieve(input: RetrieveInput): Promise<KnowledgeChunkContent[]> 
   const { query, topK, type, metadataFilter, accountId, traceId } = input;
 
   // Step 1: get query embedding via EmbeddingWorker
+  // Dev fallback: if OPENAI_API_KEY not configured, fall through to text search
   let queryEmbedding: number[];
   try {
     const result = await embeddingWorker.embed({ text: query, accountId, traceId });
     queryEmbedding = result.embedding;
   } catch (err) {
+    // When OPENAI_API_KEY is not configured, fall back to text search (dev environments)
+    if (
+      err instanceof Error &&
+      err.message === 'OPENAI_API_KEY not configured'
+    ) {
+      logger.info({ traceId }, 'rag.retrieve.text_search_fallback (no OPENAI_API_KEY)');
+      return textSearchFallback({ query, topK, type, metadataFilter, traceId });
+    }
     logger.error({ err, traceId }, 'rag.retrieve.embedding_failed');
     throw err;
   }
@@ -89,6 +98,65 @@ async function retrieve(input: RetrieveInput): Promise<KnowledgeChunkContent[]> 
       message: 'RAG 检索失败，请稍后重试',
       cause: err,
     });
+  }
+}
+
+/** Text search fallback when OPENAI_API_KEY is not set (dev/test environments) */
+async function textSearchFallback(input: {
+  query: string;
+  topK?: number;
+  type?: string;
+  metadataFilter?: Record<string, unknown>;
+  traceId: string;
+}): Promise<KnowledgeChunkContent[]> {
+  const { query, topK = 10, type, traceId } = input;
+  const limit = Math.min(topK, 20);
+
+  // Split query into keywords for partial matching
+  const keywords = query
+    .split(/[\s\u3000，,。.]+/)
+    .filter((w) => w.length >= 1)
+    .slice(0, 5);
+
+  if (keywords.length === 0) return [];
+
+  // Build ILIKE conditions — OR across all keywords, AND across title+content
+  const likeClauses = keywords.map((_, i) => `(title ILIKE $${i + 1} OR content ILIKE $${i + 1})`).join(' OR ');
+  const params: unknown[] = keywords.map((kw) => `%${kw}%`);
+
+  const typeClauses: string[] = [];
+  if (type) {
+    params.push(type);
+    typeClauses.push(`type = $${params.length}`);
+  }
+
+  params.push(limit);
+  const whereSQL =
+    typeClauses.length > 0
+      ? `WHERE (${likeClauses}) AND ${typeClauses.join(' AND ')}`
+      : `WHERE (${likeClauses})`;
+
+  try {
+    const rows = await prisma.$queryRawUnsafe<Omit<RawChunkRow, 'similarity'>[]>(
+      `SELECT id, type, title, content, metadata, tokens
+       FROM knowledge_chunk
+       ${whereSQL}
+       LIMIT $${params.length}`,
+      ...params,
+    );
+
+    return rows.map((row) => ({
+      id: Number(row.id),
+      type: row.type as 'case' | 'formula' | 'element',
+      title: row.title,
+      content: row.content,
+      metadata: row.metadata as Record<string, unknown>,
+      tokens: Number(row.tokens),
+      similarity: 1.0, // text search score placeholder
+    }));
+  } catch (err) {
+    logger.error({ err, traceId }, 'rag.retrieve.text_search_failed');
+    return [];
   }
 }
 

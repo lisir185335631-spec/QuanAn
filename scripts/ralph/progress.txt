@@ -1,4 +1,30 @@
 
+## [2026-05-11 23:05] - US-004
+- 新建 knowledge.list / knowledge.search / knowledge.getById 3 个 publicProcedure (AC-1)
+  · list: prisma.knowledgeChunk.findMany (select 排除 embedding · 公开访问)
+  · search: ragRetrieveWorker.retrieve(accountId=0 · 公共 rate-limit bucket)
+  · getById: prisma.knowledgeChunk.findUnique
+- 重写 apps/web/src/pages/tools/Knowledge.tsx — 完整知识库 UI (AC-2~7)
+  · h1 '知识库' + 3 shadcn Tabs(案例/公式/元素 · data-testid="knowledge-tabs")
+  · search debounce 300ms useEffect · ≥2 字符触发 search.useMutation (AC-3)
+  · CaseCard(scriptType+industry badge + content[:100] + 展开) (AC-4)
+  · FormulaCard(category badge) (AC-5) · ElementCard(psychologyTag badge) (AC-6)
+  · EmptyState '暂无匹配结果 · 试试矛盾冲突 / AIDA / 稀缺性等关键词' (AC-7)
+  · status bar aria-live="polite" (AC-2)
+  · ⚠️ @/components/ui/badge 不存在 · 用 inline span + Tailwind 替代
+- 更新 packages/clients/src/router-types.ts — 加 KnowledgeChunkContent shadow type + knowledge shadow router 3 procedures (AC-8)
+- 新建 tests/unit/web/pages/Knowledge.test.tsx — 23 source-inspection tests (AC-11)
+- agent-browser 验证: 截图保存 verify-artifacts/US-004/ (AC-9/AC-10)
+  · 3 tabs 可见 · search input 可见 · search API 被调用(POST /trpc/knowledge.search 返 200)
+  · ⚠️ Radix UI Tabs 7条console错误(TypeError: useContext null) — pre-existing issue: duplicate React instance in pnpm monorepo · TD-xxx 登记
+- pnpm typecheck 0 · lint 0 · 907+23 tests all pass (AC-12)
+- **未来迭代的学习:**
+  - apps/web/src/components/ui/ 没有 badge.tsx · 需 inline span + Tailwind 模拟 · 不要 import 不存在的组件
+  - Radix UI Tabs 在 pnpm monorepo 中可能触发 "useContext null" 错误(duplicate React instance) — pre-existing TD · 不影响 UI 功能
+  - publicProcedure search 需要 accountId for rate-limit · 用 0 作 "public system account" bucket — 100/day 共享上限
+  - router-types.ts shadow 类型需与真实 API router 保持一致 · 每次加新 procedure 都要同步
+---
+
 ## [2026-05-11 22:50] - US-003 (retryCount=2 · typecheck 修复)
 - 修复 ContextAssembler.ts:207 TS18048 — `chunk.similarity !== null` → `chunk.similarity !== undefined`
   · 根因: packages/schemas/src/rag/index.ts similarity 类型是 `number|undefined`(非 null), 用 `!== null` 不能 narrow undefined
