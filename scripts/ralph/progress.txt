@@ -1,4 +1,24 @@
 
+## [2026-05-11 09:11] - US-001 (PRD-8 · Foundation · 5 层记忆 schema + types + ContextAssembler 协议升级)
+- packages/schemas/src/specialist-io/evolution.schema.ts: 加 EvolutionInsightContentSchema + InsightsSchema + TriggerTypeSchema + 3 type aliases (AC-1 SoT §1.0.1)
+- packages/schemas/src/specialist-io/dailyTask.schema.ts: 新建 · TaskTypeEnum(7) + TaskItemSchema + DailyTaskOutputSchema + 3 types (AC-2 SoT §1.0.2)
+- packages/schemas/src/specialist-io/voiceChat.schema.ts: 新建 · VoiceChatTurnSchema + VoiceChatBufferSchema + VOICE_CHAT_TOOLS(5 工具) + 4 types (AC-3 SoT §1.0.3-4)
+- packages/schemas/src/specialist-io/index.ts: barrel 加 dailyTask + voiceChat 2 export (AC-9)
+- apps/api/src/memory/l1-buffer.ts: 真接 Redis · pushTurn/getTurns/clearBuffer · key voice_chat:acc_{id}:turns · LPUSH+LTRIM+LRANGE+EXPIRE · max 20 · TTL 1800s (AC-4)
+- apps/api/src/memory/l4-profile.ts: getLatestInsight(accountId) + getDeepLearningSamples(accountId, limit) · prisma queries (AC-5)
+- apps/api/src/memory/l5-trending.ts: placeholder · TrendingItem interface + getHotTrending() 返空数组 + TODO PRD-9 注释 (AC-6)
+- apps/api/src/services/context-assembler/types.ts: AssembledContext 加 evolutionInsight?: EvolutionInsightContent | null (AC-7)
+- apps/api/src/services/context-assembler/ContextAssembler.ts: assemble() 第 5 路 getLatestInsight 并行 fetch · 5s timeout · 失败 fallback null · layersUsed 加 L4_evolution_insight (AC-8)
+- tests/unit/api/memory/l1-buffer.test.ts: 5 tests (push/get/clear/maxLimit/TTL) 全过 ✓
+- tests/unit/api/schemas/memory-schemas.test.ts: 8 tests (3 schemas × happy+reject + VOICE_CHAT_TOOLS) 全过 ✓
+- pnpm typecheck 6ws 0 error ✓ · pnpm lint --max-warnings=0 全过 ✓ · pnpm test 77 files 740 tests ✓ (727+13)
+- **未来迭代的学习:**
+  - ESLint import/order type group: `@/` (internal via pathGroups) < `@quanqn/` (external) alphabetically · 两者在 type group 内属不同子组 · 需要 blank line 分隔
+  - ioredis mock 在 l1-buffer 测试中用 vi.hoisted + vi.mock('ioredis') + Map 模拟 LPUSH/LTRIM/LRANGE/EXPIRE/DEL · 与 BullMQ 测试同模式
+  - ContextAssembler assemble() 将 _fetchEvolutionProfile placeholder 替换为真 getLatestInsight 调用 · 更新 docstring "5路" + layersUsed 追踪
+  - type alias re-export: 每个新 schema 必须同时输出 z.infer<typeof XSchema> 和 export type X = z.infer<...> · 保证下游 import 不破 (PRD-7 R1 教训)
+---
+
 ## [2026-05-11 01:55] - US-008 (TD-011 AccountDropdown ScrollArea 自适应 max-h + N 分档)
 - apps/web/src/components/Header.tsx AccountDropdown (line 116-) 改为 N 分档渲染
   - n=1 → `<div>{items}</div>` (无 ScrollArea · 紧凑)
@@ -3023,3 +3043,5 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 
 --- [PRD-8 START] P7 智能模块 · 13 US · 3 L5 自治 Agent + 5 层记忆 + 反馈飞轮 + STT/TTS · risk=foundation+high · at 2026-05-11 08:57 ---
 
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-11 08:58 ---
