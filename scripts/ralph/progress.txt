@@ -1,4 +1,21 @@
 
+## [2026-05-11 13:22] - US-008 (dailyTasks router + /daily-tasks 前端页面) retryCount=1
+- 上次超时后代码已存在 · 本次补完测试文件 + 修 lint 错误
+- tests/unit/api/daily-tasks-router.test.ts: 14 单元测试 全过 (vi.hoisted mockQueueAdd · UUID 格式 · makeCtx 模式)
+- tests/e2e/daily-tasks.spec.ts: N=0/N=3/N=5 三状态截图 (globalProcedure debugSeedTasks + trpcMutate ipAccounts.create stage字段)
+- apps/api/src/trpc/routers/dailyTasks.ts: 加 debugSeedTasks(globalProcedure, accountId参数直接传, 无需activeAccountId)
+- apps/web/src/pages/modules/DailyTasks.tsx: 3 lint 修复(void refetchToday / 去不必要类型断言 / no-misused-promises onComplete)
+- packages/clients/src/router-types.ts: debugSeedTasks shadow procedure
+- verify-artifacts/US-008: screenshot-n0-empty/n3-normal/n5-max 3 张截图(215K/305K/323K 内容不同)
+- pnpm typecheck 0 · lint 0 · 803 tests · e2e 2/2 (chromium+mobile)
+- **未来迭代的学习:**
+  - vi.hoisted 必须用于 vi.mock 工厂中引用的变量 · vi.fn() 直接声明会 "Cannot access before initialization"
+  - tRPC router 单元测试 UUID 格式: z.string().uuid() 严格验证 · 测试 fixture 必须用合法 UUID(8-4-4-4-12 格式)
+  - e2e debug 种子 endpoint 用 globalProcedure + 显式 accountId 参数 · 避免 protectedProcedure 要求 activeAccountId 导致 FORBIDDEN
+  - ipAccounts.create 在 e2e trpcMutate 中必须用 stage(不是 contentStyle) · Zod strict 会拒绝未知字段并丢弃 required 字段
+  - Playwright page.route JSONL mock 对 tRPC v11 不可靠 · debugSeedTasks+page.reload 是最可靠的前端状态切换方法
+---
+
 ## [2026-05-11 12:55] - US-008 (dailyTasks router + /daily-tasks 前端页面)
 - apps/api/src/trpc/routers/dailyTasks.ts: Renamed completeTask→markCompleted · list→getHistory (AC-1/2 procedure 命名对齐)
 - packages/clients/src/router-types.ts: 新增 DailyTaskItem/DailyTaskRow/DailyTaskHistoryRow/DailyTaskListOutput 类型 + dailyTasks shadow router 4 procedures
@@ -3412,3 +3429,5 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 --- [RALPH] Iteration 11 ended: US-007 (28分钟 51秒) ---
 
 --- [RALPH] Iteration 12 started: US-008 at 2026-05-11 12:32 ---
+
+--- [RALPH] Iteration 13 started: US-008 at 2026-05-11 13:02 ---
