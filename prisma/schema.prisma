@@ -1140,3 +1140,27 @@ model SystemConfig {
   @@index([isEmergency])
   @@map("system_config")
 }
+
+// ============================================================
+// §P8 · 知识库 RAG(PRD-9 · pgvector · D-057)
+// ============================================================
+
+/// KnowledgeChunk · RAG 知识库单表 + type discriminator · D-057
+/// type: 'case' | 'formula' | 'element'
+/// embedding: pgvector 1536 dim (text-embedding-3-small)
+/// HNSW index 在手写 migration 中创建 · 不走 Prisma autoindex
+model KnowledgeChunk {
+  id        Int    @id @default(autoincrement())
+  type      String @db.VarChar(16)
+  title     String @db.VarChar(255)
+  content   String @db.Text
+  metadata  Json
+  embedding Unsupported("vector(1536)")?
+  tokens    Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([type])
+  @@map("knowledge_chunk")
+}

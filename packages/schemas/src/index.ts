@@ -15,3 +15,21 @@ export * from './specialist-io/acquisitionVideo.schema';
 export * from './specialist-io/aiVideo.schema';
 export * from './specialist-io/acquisitionCopywriting.schema';
 export * from './specialist-io/imageGen.schema';
+
+// PRD-9 US-001 · RAG 知识库 schemas
+export type {
+  KnowledgeChunkContent,
+  KnowledgeChunkTypeValue,
+  CaseMetadata,
+  FormulaMetadata,
+  ElementMetadata,
+  RagRetrieveParams,
+} from './rag';
+export {
+  KnowledgeChunkType,
+  knowledgeChunkContentSchema,
+  ragRetrieveParamsSchema,
+  caseMetadataSchema,
+  formulaMetadataSchema,
+  elementMetadataSchema,
+} from './rag';
