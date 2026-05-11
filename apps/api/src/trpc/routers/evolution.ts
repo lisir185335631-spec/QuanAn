@@ -333,38 +333,36 @@ export const evolutionRouter = router({
     const total = profile?.feedbackCountTotal ?? 5;
     const levelAfter = inferLevel(total);
 
-    await db.$transaction([
-      db.evolutionProfile.upsert({
-        where: { accountId },
-        create: {
-          accountId,
-          level: levelAfter,
-          latestInsight: testContent as unknown as Parameters<typeof db.evolutionProfile.create>[0]['data']['latestInsight'],
-          lastEvolvedAt: new Date(),
-        },
-        update: {
-          level: levelAfter,
-          latestInsight: testContent as unknown as Parameters<typeof db.evolutionProfile.update>[0]['data']['latestInsight'],
-          lastEvolvedAt: new Date(),
-        },
-      }),
-      db.evolutionInsight.create({
-        data: {
-          accountId,
-          triggerType: 'threshold:5',
-          direction: testContent.direction,
-          content: testContent as unknown as Parameters<typeof db.evolutionInsight.create>[0]['data']['content'],
-          agentId: 'EvolutionAgent',
-          modelUsed: 'test-seed',
-          tokensUsed: 0,
-          durationMs: 0,
-          isFallback: false,
-          levelBefore: 'L1',
-          levelAfter,
-          traceId: `debug-seed-${Date.now()}`,
-        },
-      }),
-    ]);
+    await db.evolutionProfile.upsert({
+      where: { accountId },
+      create: {
+        accountId,
+        level: levelAfter,
+        latestInsight: testContent as unknown as Parameters<typeof db.evolutionProfile.create>[0]['data']['latestInsight'],
+        lastEvolvedAt: new Date(),
+      },
+      update: {
+        level: levelAfter,
+        latestInsight: testContent as unknown as Parameters<typeof db.evolutionProfile.update>[0]['data']['latestInsight'],
+        lastEvolvedAt: new Date(),
+      },
+    });
+    await db.evolutionInsight.create({
+      data: {
+        accountId,
+        triggerType: 'threshold:5',
+        direction: testContent.direction,
+        content: testContent as unknown as Parameters<typeof db.evolutionInsight.create>[0]['data']['content'],
+        agentId: 'EvolutionAgent',
+        modelUsed: 'test-seed',
+        tokensUsed: 0,
+        durationMs: 0,
+        isFallback: false,
+        levelBefore: 'L1',
+        levelAfter,
+        traceId: `debug-seed-${Date.now()}`,
+      },
+    });
 
     return { ok: true, levelAfter };
   }),

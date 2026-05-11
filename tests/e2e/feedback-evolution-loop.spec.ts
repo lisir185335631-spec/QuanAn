@@ -9,7 +9,10 @@
  * AC-5: pnpm typecheck 0 + test 全过
  */
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { resolve, dirname } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import { test, expect } from '@playwright/test';
 
