@@ -18,6 +18,7 @@ import {
 } from '@/lib/constants/embeddingLimits';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
+import { checkEmbeddingRateLimit } from '@/lib/rate-limit/embedding';
 
 import type { IEmbeddingWorker, EmbedPayload, EmbedResult } from './index';
 
@@ -32,6 +33,9 @@ export class OpenAIEmbeddingWorker implements IEmbeddingWorker {
 
   async embed(payload: EmbedPayload): Promise<EmbedResult> {
     const { text, accountId, traceId } = payload;
+
+    // AC-7: rate limit check before OpenAI API call
+    await checkEmbeddingRateLimit(accountId);
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
