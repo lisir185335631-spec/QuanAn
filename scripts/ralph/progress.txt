@@ -1,4 +1,33 @@
 
+## [2026-05-11 20:09] - US-001 (retryCount=1 · AC-2/AC-7 针对性修复)
+- AC-2 修复: HNSW migration SQL 表名 `"KnowledgeChunk"` → `"knowledge_chunk"` (与 @@map 对齐) + 加 IF NOT EXISTS 防 dev DB 重复 index 报错
+- AC-7 修复: openai-embedding.ts embed() 开头 import + 调用 checkEmbeddingRateLimit(accountId) · rate limit 在 OpenAI API 调用前触发
+- 变更文件: prisma/migrations/20260511195403_add_knowledge_chunk_hnsw/migration.sql · apps/api/src/workers/embedding/openai-embedding.ts
+- prisma migrate deploy 成功应用 HNSW migration ✅
+- pnpm typecheck 6ws 0 errors · lint 0 warnings · 875 tests pass ✅
+- **未来迭代的学习:**
+  - Prisma @@map 改了表名 · 手写 migration SQL 必须用 @@map 后的 snake_case 名(`knowledge_chunk`) 而非 Prisma model 名(`KnowledgeChunk`)
+  - 手工 psql 预建的 index 会导致 migration 重复报错 · 手写 migration 一律加 `IF NOT EXISTS` 防止
+  - worker 层新建独立 rate-limit helper 后必须在 worker 的生产入口函数开头显式调用 · 不能只定义不接入
+---
+
+## [2026-05-11 19:59] - US-001
+- 建立 RAG 系统 foundation · KnowledgeChunk prisma schema + pgvector 1536 dim + HNSW index
+- 新建 packages/schemas/src/rag/index.ts (KnowledgeChunkContent + KnowledgeChunkType + RagRetrieveParams + 3 metadata schemas)
+- 修改 packages/schemas/src/index.ts (显式 barrel re-export · 防下游 import 失败)
+- 新建 apps/api/src/lib/constants/embeddingLimits.ts (EMBEDDING_MAX_TOKENS=8192 · DAILY_LIMIT=100 · cost=0.00002/1K)
+- 新建 apps/api/src/lib/rate-limit/embedding.ts (sliding window Redis INCR · 100/user/day)
+- 新建 apps/api/src/workers/embedding/openai-embedding.ts (D-038 独立 worker · encoding_format=float · cost_log embedding_call)
+- 新建 apps/api/src/workers/rag/retrieve.ts ($queryRawUnsafe pgvector <=> cosine top-K)
+- 新建 tests/unit/api/workers/embedding.test.ts (9 tests · nock)
+- 新建 tests/unit/api/workers/rag-retrieve.test.ts (5 tests · prisma mock)
+- pnpm typecheck 6ws 0 errors · lint 0 warnings · 875 tests 全过 ✅
+- **未来迭代的学习:**
+  - OpenAI SDK v4.70+ (实测 v4.104) embeddings.create() 默认 encoding_format='base64' 做性能优化 · 必须显式传 `encoding_format: 'float'` 才能得到 float[] · 否则 nock 返回 JSON array 时 SDK 误解 → 维度错误(1536→384)
+  - pgvector $queryRawUnsafe 传参: vectorLiteral 用 `[${vec.join(',')}]` 字符串 · $1::vector 语法 · topK 用 $2 integer · type/metadataFilter 动态追加 params[] + whereClauses[]
+  - KnowledgeChunk 手写 HNSW index migration 需在 Prisma 自动 migration 之后建独立目录 + 手动 psql 应用 · Prisma migrate dev 不自动跑手写 SQL
+---
+
 ## [2026-05-11 16:35] - US-012
 - 实现 /voice-chat 前端完整页面 · WebRTC 录音 + STT + voiceChat.start subscription + TTS + 多轮 UI
 - 修改 packages/clients/src/router-types.ts (新增 stt/tts/voiceChat shadow 类型 + 订阅 procedure)
@@ -3817,3 +3846,9 @@ PRD-8 retro 教训应用:
 预测一轮通过率:80-90% (per PRD-8 retro Playbook P-1~P-2)· 总耗时 5-7d
 
 ============================================================
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-11 19:50 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (15分钟 59秒) ---
+
+--- [RALPH] Iteration 2 started: US-001 at 2026-05-11 20:06 ---
