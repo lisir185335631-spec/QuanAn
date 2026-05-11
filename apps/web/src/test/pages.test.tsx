@@ -25,7 +25,13 @@ vi.mock('@/lib/trpc', () => ({
   trpc: {
     costLog: { logFeedback: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) } },
     diagnosis: { latest: { useQuery: () => ({ data: null, isLoading: false }) } },
-    evolution: { history: { useQuery: () => ({ data: [], isLoading: false }) } },
+    evolution: {
+      history: { useQuery: () => ({ data: [], isLoading: false }) },
+      getProfile: { useQuery: () => ({ data: null, isLoading: false }) },
+      getInsightHistory: { useQuery: () => ({ data: [], isLoading: false }) },
+      getFeedbackTrend: { useQuery: () => ({ data: [], isLoading: false }) },
+      getModuleRanking: { useQuery: () => ({ data: { ranking: [] }, isLoading: false }) },
+    },
     ipAccounts: {
       list: { useQuery: () => ({ data: [], isLoading: false }) },
       active: { useQuery: () => ({ data: null, isLoading: false }) },
@@ -129,7 +135,7 @@ describe('Module pages render', () => {
 
   it('Evolution shows empty state when no data', () => {
     render(<Evolution />);
-    expect(screen.getByText('暂无进化记录')).toBeInTheDocument();
+    expect(screen.getByText('暂无 insight · 等累计 5 条反馈后自动生成')).toBeInTheDocument();
   });
 
   it('Accounts renders h1 heading', () => {

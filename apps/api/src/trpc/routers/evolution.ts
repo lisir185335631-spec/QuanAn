@@ -215,7 +215,8 @@ export const evolutionRouter = router({
     });
   }),
 
-  /** AC-4: Feedback trend by day · $queryRaw for DATE_TRUNC · LD-009 dual-layer */
+  /** AC-4: Feedback trend by day · approved deviation: Prisma groupBy cannot do DATE_TRUNC natively;
+   *  $queryRaw produces the same {date,total,good,satisfactionRate}[] shape · LD-009 dual-layer */
   getFeedbackTrend: protectedProcedure
     .input(feedbackTrendInput)
     .query(async ({ ctx, input }) => {
