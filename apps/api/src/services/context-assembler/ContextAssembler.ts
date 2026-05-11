@@ -204,7 +204,7 @@ export class ContextAssembler {
       `[Section 6] RAG 知识库参考(top-${ragChunks.length} 相似案例 · 仅供生成参考 · 不抄)`,
     ];
     ragChunks.forEach((chunk, i) => {
-      const simStr = chunk.similarity !== null ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
+      const simStr = chunk.similarity !== undefined ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
       const preview = chunk.content.slice(0, 200);
       lines.push(`─ 案例 ${i + 1}: ${chunk.title}${simStr}· ${preview}`);
     });
