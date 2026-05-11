@@ -145,6 +145,7 @@ function AssistantBubble({
           ))}
         </div>
         {turn.audioUrl && (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
           <audio
             src={turn.audioUrl}
             controls
@@ -332,7 +333,7 @@ export default function VoiceChat() {
 
   // ── Start chat with text ──────────────────────────────────────────────────────
 
-  async function startVoiceChatWith(userMessage: string, isSilencePrompt = false) {
+  function startVoiceChatWith(userMessage: string, isSilencePrompt = false) {
     clearSilenceTimer();
 
     if (!isSilencePrompt) {
@@ -460,7 +461,7 @@ export default function VoiceChat() {
       return;
     }
 
-    await startVoiceChatWith(transcript);
+    startVoiceChatWith(transcript);
   }
 
   // ── Hang up (AC-7) ────────────────────────────────────────────────────────────
