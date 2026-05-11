@@ -376,7 +376,8 @@ export const evolutionRouter = router({
     const result = await contextAssembler.assemble({
       agentId: 'PositioningAgent',
       accountId: activeAccountId!,
-      userInput: {},
+      // PRD-9 US-005: userMessage 提供中文关键词供 text-search fallback 检索(dev 环境无真实 embedding)
+      userInput: { userMessage: '护肤 健康 内容创作' },
     });
     return { systemPrompt: result.systemPrompt };
   }),

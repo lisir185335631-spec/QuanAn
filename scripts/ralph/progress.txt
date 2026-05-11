@@ -1,4 +1,44 @@
 
+## Codebase Patterns - PRD-9
+- seed-knowledge-chunk.ts 无 OPENAI_API_KEY 时 → null embedding 模式(token 粗算 content.length/1.5) · 幂等 upsert by (type, title) · pnpm seed:knowledge 任意环境可重跑
+- debugAssembleSystemPrompt endpoint userInput.userMessage 传中文关键词供 text-search fallback · dev 环境(无 embedding)需确保关键词命中真实 knowledge_chunk content
+- knowledge-rag-loop.spec.ts 搜索测试: 用数据库里真实存在的关键词(护肤/健康) · 不用人工 dev seed 关键词 · 避免 beforeAll/afterAll 清理复杂度
+- HOT_ELEMENTS 实测 23 项(PRD doc 写 22 · doc-only drift · TD 已登记) · psql 验证时 element=23 是正确值
+
+## [2026-05-12 00:05] - US-005
+- 全套绿灯门禁验证 + 1 new e2e spec + seed knowledge 完整
+- 主要工作:
+  · 清理 US-004 dev seed 4 条数据 → 重新 pnpm seed:knowledge(113 chunks: case=67/formula=23/element=23)
+  · 修改 seed-knowledge-chunk.ts: 无 OPENAI_API_KEY 时 null embedding + 粗算 token 插入(AC-10 支撑)
+  · 修改 evolution.ts:debugAssembleSystemPrompt userInput.userMessage='护肤 健康 内容创作'(text-search 命中真实数据)
+  · 新建 tests/e2e/knowledge-rag-loop.spec.ts(3 AC 测试 · 6 playwright tests · 含 knowledge-page.png 截图)
+  · e2e 全套: 164 passed / 2 skipped(原 158 + 6 new)
+- 更改的文件:
+  · apps/api/scripts/seed-knowledge-chunk.ts (null embedding dev mode)
+  · apps/api/src/trpc/routers/evolution.ts (debugAssembleSystemPrompt 加 userMessage)
+  · tests/e2e/knowledge-rag-loop.spec.ts (新建 · 3 AC tests)
+- AC 验证摘要:
+  · AC-1: test:judge 55 ≥ 54 ✅
+  · AC-2: test 907+4skipped(911 total) ≥ 870 ✅
+  · AC-3: typecheck 6 workspaces 0 errors ✅
+  · AC-4: lint --max-warnings=0 0 errors ✅
+  · AC-5: test:e2e 164 passed ≥ 159 ✅
+  · AC-6: knowledge-rag-loop.spec.ts 3 AC tests pass ✅
+  · AC-7: embedding_call grep ≥1 file ✅
+  · AC-8: queueName.*embedding|rag = 0 hits ✅
+  · AC-9: pgvector extname=vector ✅
+  · AC-10: knowledge_chunk case=67/formula=23/element=23 ✅ (element=23 known doc drift)
+  · AC-11: ragChunks/[Section 6] grep in ContextAssembler ≥1 ✅
+  · AC-12: ragRetrieveWorker in specialists = 0 hits ✅
+  · AC-13: screenshots/knowledge-page.png via e2e spec ✅
+  · AC-14: D-038/D-046/D-054/D-056/D-057/D-058 63 hits ✅
+  · AC-15: ## Codebase Patterns - PRD-9 ≥1 ✅
+- **未来迭代的学习:**
+  - seed script 的"no-embed"模式 pattern: `if (!hasApiKey) { null embedding; estTokens = len/1.5 }` — PRD-10+ 可复用
+  - text-search fallback 的 ILIKE 关键词须是目标数据库里实际存在的中文词 · 不能用人工测试数据关键词
+  - e2e spec 搜索测试先 psql 查哪些关键词有数据 · 再写 spec · 不猜
+---
+
 ## [2026-05-11 23:30] - US-004 (retryCount=1 · AC-10 fix)
 - AC-10 修复: 添加 ragRetrieveWorker.retrieve text-search fallback
   · 根因: OPENAI_API_KEY="" → embed() 抛 "OPENAI_API_KEY not configured" → 0 结果

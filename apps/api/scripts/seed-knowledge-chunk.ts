@@ -99,7 +99,13 @@ const SEED_ACCOUNT_ID = 0; // system seed account
 
 /** Exported for integration tests — AC-7 */
 export async function seedChunks(chunks: SeedChunk[]): Promise<void> {
-  const worker = new OpenAIEmbeddingWorker();
+  const hasApiKey = Boolean(process.env.OPENAI_API_KEY);
+  const worker = hasApiKey ? new OpenAIEmbeddingWorker() : null;
+
+  if (!hasApiKey) {
+    console.log('⚠️  OPENAI_API_KEY not set — inserting chunks without embeddings (text-search-only mode)');
+  }
+
   let totalCostUsd = 0;
   let totalTokens = 0;
   let upserted = 0;
@@ -110,34 +116,56 @@ export async function seedChunks(chunks: SeedChunk[]): Promise<void> {
     const chunk = chunks[i]!;
     const traceId = `seed-knowledge-${chunk.type}-${i}`;
 
-    // AC-2: call embeddingWorker.embed
-    const { embedding, tokens, costUsd } = await worker.embed({
-      text: chunk.content,
-      accountId: SEED_ACCOUNT_ID,
-      traceId,
-    });
+    if (worker) {
+      // AC-2: call embeddingWorker.embed (when API key is available)
+      const { embedding, tokens, costUsd } = await worker.embed({
+        text: chunk.content,
+        accountId: SEED_ACCOUNT_ID,
+        traceId,
+      });
 
-    totalTokens += tokens;
-    totalCostUsd += costUsd;
+      totalTokens += tokens;
+      totalCostUsd += costUsd;
 
-    // AC-2: upsert by composite key (type + title)
-    await prisma.$executeRawUnsafe(
-      `INSERT INTO knowledge_chunk (type, title, content, metadata, embedding, tokens, created_at, updated_at)
-       VALUES ($1, $2, $3, $4::jsonb, $5::vector, $6, NOW(), NOW())
-       ON CONFLICT (type, title)
-       DO UPDATE SET
-         content    = EXCLUDED.content,
-         metadata   = EXCLUDED.metadata,
-         embedding  = EXCLUDED.embedding,
-         tokens     = EXCLUDED.tokens,
-         updated_at = NOW()`,
-      chunk.type,
-      chunk.title,
-      chunk.content,
-      JSON.stringify(chunk.metadata),
-      `[${embedding.join(',')}]`,
-      tokens,
-    );
+      // AC-2: upsert by composite key (type + title)
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO knowledge_chunk (type, title, content, metadata, embedding, tokens, created_at, updated_at)
+         VALUES ($1, $2, $3, $4::jsonb, $5::vector, $6, NOW(), NOW())
+         ON CONFLICT (type, title)
+         DO UPDATE SET
+           content    = EXCLUDED.content,
+           metadata   = EXCLUDED.metadata,
+           embedding  = EXCLUDED.embedding,
+           tokens     = EXCLUDED.tokens,
+           updated_at = NOW()`,
+        chunk.type,
+        chunk.title,
+        chunk.content,
+        JSON.stringify(chunk.metadata),
+        `[${embedding.join(',')}]`,
+        tokens,
+      );
+    } else {
+      // Dev/CI mode: insert without embedding — text-search fallback handles retrieval
+      const estTokens = Math.ceil(chunk.content.length / 1.5);
+      totalTokens += estTokens;
+
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO knowledge_chunk (type, title, content, metadata, tokens, created_at, updated_at)
+         VALUES ($1, $2, $3, $4::jsonb, $5, NOW(), NOW())
+         ON CONFLICT (type, title)
+         DO UPDATE SET
+           content    = EXCLUDED.content,
+           metadata   = EXCLUDED.metadata,
+           tokens     = EXCLUDED.tokens,
+           updated_at = NOW()`,
+        chunk.type,
+        chunk.title,
+        chunk.content,
+        JSON.stringify(chunk.metadata),
+        estTokens,
+      );
+    }
 
     upserted++;
 
@@ -149,9 +177,11 @@ export async function seedChunks(chunks: SeedChunk[]): Promise<void> {
   console.log('\n');
   console.log('=== seed-knowledge-chunk COMPLETE ===');
   console.log(`Upserted   : ${upserted} chunks`);
-  console.log(`Total tokens: ${totalTokens.toLocaleString()}`);
+  console.log(`Total tokens: ${totalTokens.toLocaleString()} (${hasApiKey ? 'real' : 'estimated'})`);
   console.log(`Total cost : $${totalCostUsd.toFixed(6)}`);
-  console.log(`Avg cost   : $${(totalCostUsd / upserted).toFixed(6)}/chunk`);
+  if (upserted > 0) {
+    console.log(`Avg cost   : $${(totalCostUsd / upserted).toFixed(6)}/chunk`);
+  }
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
