@@ -21,6 +21,7 @@ import { knowledgeRouter } from '@/trpc/routers/knowledge';
 import { monetizationRouter } from '@/trpc/routers/monetization';
 import { privateDomainRouter } from '@/trpc/routers/privateDomain';
 import { stepDataRouter } from '@/trpc/routers/stepData';
+import { sttRouter } from '@/trpc/routers/stt';
 import { trendingRouter } from '@/trpc/routers/trending';
 import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
 import { videoProductionRouter } from '@/trpc/routers/videoProduction';
@@ -34,6 +35,7 @@ export const appRouter = router({
   evolution: evolutionRouter,
   ipAccounts: ipAccountsRouter,
   stepData: stepDataRouter,
+  stt: sttRouter,
   copywriting: copywritingRouter,
   videoAnalysis: videoAnalysisRouter,
   videoProduction: videoProductionRouter,
