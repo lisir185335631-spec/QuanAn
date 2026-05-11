@@ -3797,3 +3797,23 @@ PRD-8 总耗时: 2026-05-11 09:04 daemon 启动 → 17:35 US-013 approve = ~8.5 
 **PRR 必修 (high severity)**: TD-027 (LLM Judge mock project-wide · 18 judge files 都不真 grade)
 
 ============================================================
+
+============================================================
+## PRD-9 启动 · 2026-05-11 19:30 · QuanQn P8 知识库 + pgvector RAG
+============================================================
+
+5 stories · 1w · risk=low · depends PRD-4/5/7/8(全已完成)
+
+切 PRD: cp scripts/ralph/prd-9.json scripts/ralph/prd.json
+branchName: ralph/prd-9-p8-knowledge-base-rag (注意: 沿用 PRD-8 branch 不切 · per PRD-MASTER §7.4 单 daemon · prd.json 切换即可)
+
+PRD-8 retro 教训应用:
+- ✓ kill stale Claude session 95773 (RCA-005 配套 · Step 5.0 SOP)
+- ✓ 3 个 Skill diff apply (Diff-1 stale session SOP / Diff-2 audit log / Diff-3 §2.6.13 anti_patterns)
+- ✓ anti_patterns 注入 US-001 (3 条 · D-038 + schema 三处一致 + type alias chain) + US-003 (3 条 · D-007 单一入口 + ContextAssembler 协议锁 + 11 specialist DRY)
+- ✓ .planning/codebase/ 重跑 7 文件 5487 lines (TD-032 resolved)
+- ✓ audit-artifacts.py stale mtime check (TD-029 resolved)
+
+预测一轮通过率:80-90% (per PRD-8 retro Playbook P-1~P-2)· 总耗时 5-7d
+
+============================================================
