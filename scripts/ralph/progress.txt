@@ -3045,3 +3045,60 @@ prd.json.passes = true | retryCount = 0 | notes = ""
 
 
 --- [RALPH] Iteration 1 started: US-001 at 2026-05-11 08:58 ---
+
+## [2026-05-11 09:23] - US-001 (Opus audit · PRD-8 Foundation · 5 层记忆 schema + ContextAssembler 协议)
+- risk_level: foundation · size_hint: large · 14 AC · downstream count 11
+- 实测: audit-artifacts ALL PASS (exit_code=0 + zero_regression=PASS + pytest 13/13 + pytest-full 740/740 · 首次首站清洁)
+- 12 文件 +515/-13 · 1 commit (30a07eb) · 0 reject(R1 直接过)
+- AC 14/14 PASS
+
+### Foundation 档专项 grep 全过
+- §1.0.5 验 1: 3 schema 文件 canonical 字段 + type alias re-export ✓ (evolution 18 exports · dailyTask 6 · voiceChat 8)
+- §1.0.5 验 3: VOICE_CHAT_TOOLS 5 工具 name 跨 packages/schemas 命中 5 (get_current_step / search_history / query_diagnosis / get_today_tasks / get_evolution_insights · 全 'as const')
+- §1.0.5 验 4: 7 task type grep 命中 7 (do_step/optimize_content/learn_methodology/review_diagnosis/upload_sample/set_goal/engage_community)
+- §1.0.5 验 5: type alias chain re-export 完整 (3 文件 × 平均 3 export type · z.infer + 显式 export · PRD-7 R1 教训防再现)
+- F1 跨 story 命名: TriggerTypeSchema 4 literal 跟 D-050 完全一致 · AssembledContext.evolutionInsight 字段加入
+- F3 shared barrel: index.ts 18 export 完整(原 15 + 3 新)
+- F5 协议锁与既有代码现状: 3 新 schema 仅在 packages/schemas/specialist-io/ · 无双路径冲突
+
+### 实测证据
+- pnpm test: 740/740 passed (5 L1 Buffer + 8 schema validation = 13 新)
+- pnpm typecheck: 6 ws 0 error
+- pnpm lint --max-warnings=0: 0 warning
+- manifest.exit_code = 0 + zero_regression='PASS'
+- R-001 验证: grep OPENAI_API_KEY/ANTHROPIC_API_KEY apps/web/src 0 命中 ✓
+
+### 实施亮点
+- l1-buffer.ts 完美: KEY_PREFIX='voice_chat:acc_' + LPUSH + LTRIM(0, MAX-1) + EXPIRE 1800s · D-053 锁定
+- l4-profile.ts 完美: getLatestInsight 用 EvolutionInsightContentSchema.safeParse 严格验证(防 stale 数据)· getDeepLearningSamples 复用 prisma
+- ContextAssembler.assemble() 加第 5 路 Promise.allSettled fetch latest insight · 5s timeout · failure fallback null · evolutionInsight 字段输出
+- 注: _composeSystemPrompt l4Section 仍是 '[L1 阶段 · 暂无进化档案]' 硬编码 · 这是 US-001 边界外(US-004 接通注入)
+- type alias chain re-export 显式 · PRD-7 R1 教训防再现 ✓
+
+### approve commit
+- 30a07eb (R1 直接过 · 0 reject)
+- approved_at: 2026-05-11T09:23
+---
+
+--- [RALPH] Iteration 1 ended: US-001 (19分钟 2秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-11 09:17 ---
+
+## [2026-05-11 09:34] - US-002
+- 新建 apps/api/src/specialists/EvolutionAgent.ts · 继承 BaseSpecialist · outputSchema=EvolutionInsightContentSchema · model_tier='reasoning' · timeout_ms=60000 · execute() → Promise.reject('PRD-8 US-003 真接')
+- 新建 apps/api/src/specialists/DailyTaskAgent.ts · outputSchema=DailyTaskOutputSchema · model_tier='lightweight' · timeout_ms=30000 · 7 task type 注释 SoT 验证通过
+- 新建 apps/api/src/specialists/VoiceChatAgent.ts · model_tier='reasoning' · tools=['llm.stream','llm.tools'] · export VOICE_CHAT_TOOLS (5 工具 canonical 定义) · SoT 验证 3 通过
+- 新建 apps/api/src/workers/evolution/queue.ts + index.ts · BullMQ Queue 'evolution' · Redis connection · 不启 Worker
+- 新建 apps/api/src/workers/daily-task/queue.ts + index.ts · BullMQ Queue 'daily-task' · Redis connection · 不启 Worker
+- 新建 apps/api/src/cron/daily-task-runner.ts · cron.schedule('0 0 * * *') 定义 · scheduled:false(US-007 才 start)
+- 新建 apps/api/src/cron/index.ts + apps/api/src/types/node-cron.d.ts (ambient type declaration)
+- 新建 apps/api/src/services/context-assembler/templates/evolution-agent.ts + daily-task-agent.ts + voice-chat-agent.ts (各 ~50 行 persona)
+- 更新 services/context-assembler/templates/index.ts · SPECIALIST_TEMPLATES 加 3 entries
+- 新建 tests/unit/specialists/EvolutionAgent.test.ts + DailyTaskAgent.test.ts + VoiceChatAgent.test.ts · 6 tests
+- pnpm typecheck 0 error · pnpm lint --max-warnings=0 ✅ · vitest 746/746 ✅
+- **未来迭代的学习:**
+  - 骨架 Specialist execute() 须用 Promise.reject() 而非 throw · throw 是同步异常 · vitest rejects.toThrow() 需要 rejected Promise
+  - node-cron v3 无 built-in types 也无 @types/node-cron · 需在 src/types/ 新建 ambient declare module
+  - ZodDefault 字段(_input 含 undefined · _output 不含)导致 BaseSpecialist<TIn, TOut> ZodType<TOut> 赋值报错 · fix: `as unknown as z.ZodType<TOut>`
+  - DailyTaskAgent SoT 验 4(7 task type grep ≥7 lines) 须在文件注释中列全 7 类型(每行 1 个)
+---
