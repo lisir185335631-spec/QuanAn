@@ -10,6 +10,7 @@ import { authRouter } from '@/trpc/routers/auth';
 import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
 import { copywritingRouter } from '@/trpc/routers/copywriting';
 import { costLogRouter } from '@/trpc/routers/costLog';
+import { dailyTasksRouter } from '@/trpc/routers/dailyTasks';
 import { deepLearningRouter } from '@/trpc/routers/deepLearning';
 import { diagnosisRouter } from '@/trpc/routers/diagnosis';
 import { evolutionRouter } from '@/trpc/routers/evolution';
@@ -29,6 +30,7 @@ export const appRouter = router({
   auth: authRouter,
   acquisitionVideo: acquisitionVideoRouter,
   aiVideo: aiVideoRouter,
+  dailyTasks: dailyTasksRouter,
   evolution: evolutionRouter,
   ipAccounts: ipAccountsRouter,
   stepData: stepDataRouter,

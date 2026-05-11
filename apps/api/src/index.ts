@@ -226,7 +226,17 @@ async function start(): Promise<void> {
     const { worker: imageWorker } = await import('./workers/image-gen/worker');
     imageWorker.on('error', (err) => logger.error({ err }, 'image_gen_worker.error'));
     logger.info('image_gen_worker.started_in_process');
+
+    // AC-6 US-007: daily-task worker in-process (dev mode)
+    const { dailyTaskWorker } = await import('./workers/daily-task/worker');
+    dailyTaskWorker.on('error', (err) => logger.error({ err }, 'daily_task_worker.error'));
+    logger.info('daily_task_worker.started_in_process');
   }
+
+  // AC-3 US-007: start daily-task cron (0 0 * * * Asia/Shanghai)
+  const { dailyTaskCron } = await import('./cron/daily-task-runner');
+  dailyTaskCron.start();
+  logger.info('daily_task_cron.started');
 
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
