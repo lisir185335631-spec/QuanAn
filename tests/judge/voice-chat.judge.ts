@@ -10,6 +10,16 @@ import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
+vi.mock('@/workers/llm-gateway', () => ({
+  llmGateway: {
+    complete: vi.fn().mockResolvedValue({
+      content: { pass: true, score: 8, reason: 'mock judge: all criteria satisfied' },
+    }),
+    stream: vi.fn(),
+  },
+  RateLimitError: class RateLimitError extends Error {},
+}));
+
 vi.mock('@/memory/l1-buffer', () => ({
   pushTurn: vi.fn().mockResolvedValue(undefined),
   getTurns: vi.fn().mockResolvedValue([]),
