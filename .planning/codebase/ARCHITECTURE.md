@@ -1,140 +1,190 @@
-<!-- refreshed: 2026-05-09 -->
+<!-- refreshed: 2026-05-11 -->
 # Architecture · QuanQn
 
-**Analysis Date:** 2026-05-09
-**Scope:** PRD-1 → PRD-5 完成期 · 12 stories PRD-5 全 PASSED · 8 / 14 Specialist 落地 · 2 子应用骨架 (apps/admin 占位)
-**Inputs:** AGENTS.md §1.7 / §3 (18 LD) / §4.7 (17 R) · ARCHITECTURE.md (战略骨架) · 实测 grep + file:line
-**对账原则:** 本文是"实际事实层" · 与 ARCHITECTURE.md "前瞻性设计" 偏差用 **DRIFT** 标记 + 引 `.agents/tech-debt.json`
+**Analysis Date:** 2026-05-11
+**Scope:** PRD-1 → PRD-8 完成期 · 14/14 Specialist 类全部存在(11 生成型 active · 3 L5 自治型走双路径)· 3 orchestrator(BullMQ + node-cron + tRPC subscription)· 5 路 ContextAssembler · L1 Buffer Redis
+**Inputs:** AGENTS.md §3(18 LD) / §4.5(单向依赖)/ §11.6(后端实施沉淀 8 条) · ARCHITECTURE.md(战略骨架)· apps/api/src 实测 grep + file:line · 与 PRD-5 期(8/14 Specialist · 4 路 ContextAssembler) 对比
+**对账原则:** 本文是 "实际事实层" · 与 ARCHITECTURE.md(战略)有偏差用 **DRIFT** 标记 + 引 `.agents/tech-debt.json`
 
 ---
 
 ## §1 System Overview
 
-### §1.1 顶层视图(实际)
+### §1.1 顶层视图(实际 · PRD-8 完成态)
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Browser (Chrome 120+ / Safari 17+ · ES2022 · React 18.3.1)                  │
-│  └─ apps/web (Vite 5 · SPA · 34 routes lazy-chunked)                         │
-│       ├─ RootLayout       `apps/web/src/layouts/RootLayout.tsx`              │
-│       ├─ StepLayout       `apps/web/src/layouts/StepLayout.tsx`              │
-│       ├─ pages/step/*     11 pages (step1~9 + step3b/4b)                    │
-│       ├─ pages/tools/*    15 pages (Trending/Copywriting/Analysis/...)      │
-│       ├─ pages/modules/*  6 pages (Diagnosis/Evolution/History/...)         │
-│       └─ components/{ui,ToolForm,StepForm,ToolResult,StepResult}             │
-└────────────────────────────┬────────────────────────────────────────────────┘
-                             │ HTTPS · cookies (app_session) + X-Trace-Id
-                             │ tRPC v11 batched POST /trpc/*
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  Browser (Chrome 120+ / Safari 17+ · ES2022 · React 18.3 · Vite 5 SPA)        │
+│  apps/web (105 ts/tsx files · 34 routes · React.lazy chunked)                 │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │ RootLayout (Header + Toaster + Suspense)                                │  │
+│  │ └─ StepLayout (FeedbackButton injection · STEP_AGENT_MAP)              │  │
+│  │     └─ pages/step/*  (Step1~9 + 3b/4b · 11 pages)                       │  │
+│  │ └─ pages/tools/*  (15 工具页 · Trending/Copywriting/.../VoiceChat)     │  │
+│  │ └─ pages/modules/*  (6 模块 · Accounts/DailyTasks/Evolution/History/…) │  │
+│  │ └─ pages/{Login,Settings,IpPlan,NotFound}                               │  │
+│  │ └─ hooks/{useAuth,useStepData,useActiveAccount,useEvolution}            │  │
+│  │ └─ components/{Header,FeedbackButton,StepForm,StepResult,ui/}           │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+└────────────────────────────┬─────────────────────────────────────────────────┘
+                             │ HTTPS · cookies (app_session) + X-Trace-Id 头
+                             │ tRPC v11 · httpBatchStreamLink + subscription
+                             │   credentials:'include' · responseType=streaming
                              ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  apps/api (Hono 4 + @hono/node-server · tRPC v11 · Node 20 · port 3000)     │
-│                                                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │ apps/api/src/index.ts        Hono app + CORS + trace mw + OAuth      │   │
-│  │   ├─ /auth/{login,callback,logout}  Lucia v3 + arctic OAuth          │   │
-│  │   └─ /trpc/*                  fetchRequestHandler → appRouter        │   │
-│  └──────────┬───────────────────────────────────────────────────────────┘   │
-│             ▼                                                                │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │ apps/api/src/trpc/                                                    │   │
-│  │   ├─ trpc.ts                  initTRPC + traceMiddleware              │   │
-│  │   ├─ context.ts               createContext (lucia → user)            │   │
-│  │   ├─ middleware/                                                      │   │
-│  │   │   └─ account-isolation.ts ★ protectedProcedure (RLS via $tx)     │   │
-│  │   └─ routers/                 19 routers (1 _app + 18 sub)            │   │
-│  │       ├─ auth.ts              auth.me (publicProcedure)               │   │
-│  │       ├─ ipAccounts.ts        list/active/create/update/del/switch    │   │
-│  │       ├─ stepData.ts          get/getAll/save/saveStream/progress     │   │
-│  │       ├─ copywriting.ts       generate/freeGenerate/optimize/...      │   │
-│  │       ├─ boomGenerate.ts      generate                                │   │
-│  │       ├─ analysis.ts          analyze (structural)                    │   │
-│  │       ├─ videoAnalysis.ts     analyze (viral)                         │   │
-│  │       ├─ history.ts           list/detail/delete                      │   │
-│  │       ├─ evolution.ts         getProfile/evolve/history/feedbackTrend │   │
-│  │       ├─ diagnosis.ts         latest                                  │   │
-│  │       ├─ knowledge.ts         getRecommendations/getFavorites/notes   │   │
-│  │       ├─ trending.ts          fetch/listByIndustry/listByStyle        │   │
-│  │       ├─ invite.ts            redeem                                  │   │
-│  │       ├─ costLog.ts           logFeedback                             │   │
-│  │       └─ {monetization,privateDomain,deepLearning,videoProduction}    │   │
-│  └──────────┬───────────────────────────────────────────────────────────┘   │
-│             ▼                                                                │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │ apps/api/src/specialists/  ★ 8 / 14 Specialist 实现 (PRD-1~5)        │   │
-│  │   ├─ base/BaseSpecialist.ts     PRD-4 模板方法 (active)               │   │
-│  │   ├─ base/types.ts              五层 SpecialistConfig                 │   │
-│  │   ├─ base/errors.ts             SchemaValidationError/LLMTimeoutError │   │
-│  │   ├─ PositioningAgent.ts        step1 (industry) + step4 (execution)  │   │
-│  │   ├─ BrandingAgent.ts           step3 (账号包装) + step3b (人设)      │   │
-│  │   ├─ MonetizationAgent.ts       step4b (变现路径)                     │   │
-│  │   ├─ TopicAgent.ts              step5 (爆款选题 · SSE)                │   │
-│  │   ├─ VideoAgent.ts              step6 (拍摄计划)                      │   │
-│  │   ├─ CopywritingAgent.ts        step7 (SSE) + free + boom             │   │
-│  │   ├─ LivestreamAgent.ts         step8 (直播策划)                      │   │
-│  │   └─ AnalysisAgent.ts           viral + structural (PRD-5)            │   │
-│  │   未实现 (PRD-6+):                                                    │   │
-│  │     PrivateDomainAgent · DiagnosisAgent · DeepLearnAgent ·            │   │
-│  │     VoiceChatAgent · EvolutionAgent · DailyTaskAgent                  │   │
-│  └──────────┬───────────────────────────────────────────────────────────┘   │
-│             │   每个 Specialist execute() 内部强制走                          │
-│             ▼                                                                │
-│  ┌──────────────────────┐    ┌────────────────────────────────────────┐    │
-│  │ services/             │    │ workers/llm-gateway/  ★ R-1 唯一入口   │    │
-│  │   context-assembler/  │←─┐ │   ├─ index.ts        LLMGateway        │    │
-│  │     ContextAssembler  │  │ │   ├─ anthropic-provider.ts             │    │
-│  │       4 路 fetch +    │  │ │   ├─ openai-provider.ts                │    │
-│  │       Promise.allSet- │  │ │   ├─ rate-limiter.ts (Upstash)         │    │
-│  │       tled + 5s cap   │  │ │   └─ cost-logger.ts                    │    │
-│  │   templates/ (8 mode) │  │ └────────┬───────────────────────────────┘    │
-│  │   ip-progress/         │  │          │ Anthropic SDK + OpenAI SDK         │
-│  │     IPProgressService │  │          │   (lazy · key 仅服务端)             │
-│  └───────────┬───────────┘  │          ▼                                     │
-│              │              │  ┌─────────────────────┐                       │
-│              │              │  │ ext: api.anthropic, │                       │
-│              │              │  │   api.openai.com    │                       │
-│              │              │  └─────────────────────┘                       │
-│              ▼              │                                                │
-│  ┌──────────────────────┐  │  ┌──────────────────────┐                       │
-│  │ workers/methodology- │  │  │ lib/                 │                       │
-│  │   query/             │  │  │   prisma.ts (single) │                       │
-│  │     getAll() / get() │  │  │   logger.ts (pino +  │                       │
-│  │     in-memory const  │  │  │     ALS traceStore)  │                       │
-│  └──────────────────────┘  │  │   auth/{lucia,       │                       │
-│                            │  │     adapter,         │                       │
-│                            │  │     providers}       │                       │
-│                            │  │   compliance/        │                       │
-│                            │  │     {pii-mask,       │                       │
-│                            │  │     disclaimer} 🔴   │                       │
-│                            │  │     ⚠️ 未接线 (§5.6) │                       │
-│                            │  │   constants/ (9 类)  │                       │
-│                            │  └──────────┬───────────┘                       │
-└────────────────────────────────┼─────────┼──────────────────────────────────┘
-                                 │ Prisma 5.22 ($transaction · SET LOCAL ROLE)
-                                 ▼
-                ┌────────────────────────────────────────────────┐
-                │ PostgreSQL 16 + pgvector 0.8                   │
-                │   prisma/schema.prisma · 39 models             │
-                │     - 18 主应用表 (RLS 启用 14 张)              │
-                │     - 13 admin 表 (RLS DISABLE · LD-A-3)        │
-                │     - 4 支持表 (User/Session/InviteCode/...)    │
-                │     - 4 P2 增量表                              │
-                │   manual_rls.sql (15 ENABLE RLS · 12 policies) │
-                │   manual_admin_rls.sql                         │
-                │   manual_vector_indexes.sql (pgvector)         │
-                └────────────────────────────────────────────────┘
-                                 │
-                                 ▼
-                ┌────────────────────────────────────────────────┐
-                │ Redis (Upstash REST · rate limit + future cache)│
-                │   prefix: quanqn:rl:{plan}                     │
-                │   token bucket 50/500/5000 calls/day            │
-                └────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  apps/api (Hono 4 + @hono/node-server · tRPC v11 · Node 20 · port 3000)      │
+│                                                                               │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ apps/api/src/index.ts                                                │    │
+│  │   · validateStartupConfig()  (启动前校验 env)                        │    │
+│  │   · CORS + trace mw (X-Trace-Id ALS)                                 │    │
+│  │   · /health · /auth/{login,callback,logout}  (Lucia v3 + arctic)     │    │
+│  │   · /trpc/*  → fetchRequestHandler → appRouter                       │    │
+│  │   · dev 模式 in-process: imageGenWorker + dailyTaskWorker           │    │
+│  │   · dailyTaskCron.start()  (0 0 * * * Asia/Shanghai)                 │    │
+│  └────────┬────────────────────────────────────────────────────────────┘    │
+│           ▼                                                                   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ apps/api/src/trpc/                                                   │    │
+│  │   trpc.ts                  initTRPC + Meta{isGlobal?} + traceMw      │    │
+│  │   context.ts               lucia session → user + activeAccountId   │    │
+│  │   middleware/                                                        │    │
+│  │     account-isolation.ts   ★ protectedProcedure ($tx + SET LOCAL)   │    │
+│  │     trace.ts               re-export traceMw + extractTraceId       │    │
+│  │   routers/                 25 routers (1 _app + 24 sub · 3302 LOC)   │    │
+│  │     ┌─────────────────────────────────────────────────────────────┐ │    │
+│  │     │ auth · ipAccounts · stepData · costLog · invite · history   │ │    │
+│  │     │ copywriting · boomGenerate · analysis · videoAnalysis       │ │    │
+│  │     │ videoProduction · acquisitionVideo · aiVideo                │ │    │
+│  │     │ monetization · privateDomain · diagnosis · deepLearning     │ │    │
+│  │     │ knowledge · trending · evolution · dailyTasks               │ │    │
+│  │     │ stt · tts · voiceChat (★ subscription)                      │ │    │
+│  │     └─────────────────────────────────────────────────────────────┘ │    │
+│  └────────┬────────────────────────────────────────────────────────────┘    │
+│           ▼                                                                   │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │ apps/api/src/specialists/  ★ 14/14 类全部存在 (3528 LOC)             │    │
+│  │   base/BaseSpecialist.ts   PRD-4 模板方法 (active · 276 LOC)         │    │
+│  │   base/errors.ts           SchemaValidationError/LLMTimeoutError    │    │
+│  │   base/types.ts            SpecialistConfig + SpecialistRequest     │    │
+│  │                                                                      │    │
+│  │   ┌── 11 生成型 (单路径 · 直接 active · 走 BaseSpecialist) ───────┐ │    │
+│  │   │ PositioningAgent.ts    step1 + step4 (industry+execution)    │ │    │
+│  │   │ BrandingAgent.ts        step3 + step3b (packaging+persona)   │ │    │
+│  │   │ MonetizationAgent.ts    step4b                                │ │    │
+│  │   │ TopicAgent.ts           step5 (SSE)                          │ │    │
+│  │   │ VideoAgent.ts           step6 + 3 mode (production/...)      │ │    │
+│  │   │ CopywritingAgent.ts     step7 + 3 mode (free/boom/acquis.)   │ │    │
+│  │   │ LivestreamAgent.ts      step8                                │ │    │
+│  │   │ AnalysisAgent.ts        viral + structural                   │ │    │
+│  │   │ PrivateDomainAgent.ts   私域(占位 + active)                  │ │    │
+│  │   │ DiagnosisAgent.ts       8 问卷 → 7 维度                       │ │    │
+│  │   │ DeepLearnAgent.ts       样本写记忆                            │ │    │
+│  │   └────────────────────────────────────────────────────────────┘ │    │
+│  │                                                                      │    │
+│  │   ┌── 3 L5 自治型 (双路径 · §11.6.8 TD-024) ──────────────────────┐ │    │
+│  │   │ EvolutionAgent.ts       12 行 re-export stub                  │ │    │
+│  │   │   ↳ @/agents/evolution/EvolutionAgent.ts  (429 LOC 真实施)    │ │    │
+│  │   │     · override execute() · $transaction · merge Rule 3       │ │    │
+│  │   │     · fallback → previousInsight (不写 insight)              │ │    │
+│  │   │ DailyTaskAgent.ts       107 LOC stub (throw US-007 真接)      │ │    │
+│  │   │   ↳ @/agents/specialists/DailyTaskAgent.ts (296 LOC 真实施)   │ │    │
+│  │   │     · 冷启动模板 / LLM lightweight / upsert 幂等              │ │    │
+│  │   │ VoiceChatAgent.ts       398 LOC (单路径 · 不走双路径)         │ │    │
+│  │   │   · executeStream() · LLM tools (5 个) · L1 Buffer            │ │    │
+│  │   │   · per-account session lock (Map)                            │ │    │
+│  │   └────────────────────────────────────────────────────────────┘ │    │
+│  └────────┬────────────────────────────────────────────────────────────┘    │
+│           │ 每个 Specialist execute() 调                                     │
+│           ▼                                                                   │
+│  ┌──────────────────────┐    ┌──────────────────────────────────────────┐   │
+│  │ services/             │    │ workers/llm-gateway/  ★ R-1 唯一 SDK 入口│   │
+│  │   context-assembler/ │←──┐│   index.ts        LLMGateway              │   │
+│  │     ContextAssembler │   ││     · complete() + stream()               │   │
+│  │       ★ 5 路 fetch + │   ││     · primary→fallback→template 三级降级 │   │
+│  │       Promise.allSet-│   ││     · MODEL_BY_TIER (reasoning/lightweight)│  │
+│  │       tled + 5s cap  │   ││   anthropic-provider.ts                    │  │
+│  │       (+ EvolutionIn-│   ││   openai-provider.ts                       │  │
+│  │       sight L4 latest│   ││   rate-limiter.ts (Upstash REST)           │  │
+│  │       第 5 路 PRD-8) │   ││   cost-logger.ts                           │  │
+│  │     templates/       │   │└──────────┬───────────────────────────────┘  │
+│  │     types.ts         │   │           │                                   │
+│  │   ip-progress/       │   │           ▼                                   │
+│  │     IPProgressService│   │  ┌─────────────────────┐                      │
+│  └──────────┬───────────┘   │  │ ext: api.anthropic, │                      │
+│             ▼               │  │   api.openai.com    │                      │
+│  ┌──────────────────────┐   │  └─────────────────────┘                      │
+│  │ memory/  ★ 5 层记忆  │   │                                                │
+│  │   l1-buffer.ts       │   │  ┌──────────────────────────────────────┐    │
+│  │     voice_chat:acc_  │   │  │ workers/ (9 个 · PRD-8 全到位)         │    │
+│  │     {id}:turns       │   │  │  llm-gateway/      唯一 LLM SDK 入口  │    │
+│  │     LPUSH/LTRIM/     │   │  │  methodology-query/ in-memory 常量    │    │
+│  │     EXPIRE 1800 sec  │   │  │  image-gen/        DALL-E 3 + BullMQ   │    │
+│  │   l4-profile.ts      │   │  │  daily-task/       BullMQ + Worker     │    │
+│  │     getLatestInsight │   │  │  evolution/        BullMQ + Worker     │    │
+│  │     getDeepLearning- │   │  │  stt/              Whisper-1 (PRD-8)   │    │
+│  │     Samples          │   │  │  tts/              OpenAI TTS-1 (PRD-8)│    │
+│  │   l5-trending.ts     │   │  │  trending-scraper/ 占位(LD-017 限制)  │    │
+│  │     getHotTrending() │   │  │  file-parser/      占位                │    │
+│  │     ⚠️ PRD-9 真接    │   │  └──────────────────────────────────────┘    │
+│  └──────────────────────┘   │                                                │
+│                              │  ┌──────────────────────────────────────┐    │
+│  ┌──────────────────────┐   │  │ cron/                                  │    │
+│  │ lib/                 │   │  │   daily-task-runner.ts                │    │
+│  │   prisma.ts          │   │  │     · node-cron 0 0 * * * Asia/Shanghai│   │
+│  │   logger.ts (pino    │   │  │     · runForAllActiveAccounts(date)   │    │
+│  │     + ALS)           │   │  │     · 7-day active + queue.add (jobId  │    │
+│  │   redis.ts (ioredis  │   │  │       = daily-task-{acc}-{date})       │    │
+│  │     · maxRetries:null│   │  └──────────────────────────────────────┘    │
+│  │     for BullMQ)      │   │                                                │
+│  │   auth/{lucia,       │   │  ┌──────────────────────────────────────┐    │
+│  │     adapter,         │   │  │ lib/voice-chat/tools-dispatcher.ts    │    │
+│  │     providers}       │   │  │   5 工具 prisma query (per-account    │    │
+│  │   compliance/        │   │  │     lock via Map)                     │    │
+│  │     {pii-mask,       │   │  └──────────────────────────────────────┘    │
+│  │     disclaimer}      │   │                                                │
+│  │   constants/ (15 类  │   │  ┌──────────────────────────────────────┐    │
+│  │     · industries/    │   │  │ lib/evolution/trigger.ts              │    │
+│  │     scriptTypes/     │   │  │   enqueueIfThresholdMet(acc, traceId) │    │
+│  │     hotElements/...) │   │  │     · INSERT ... ON CONFLICT UPDATE   │    │
+│  │   evolution/         │   │  │       RETURNING count (atomic race    │    │
+│  │     trigger.ts ★     │   │  │       protection)                     │    │
+│  │   rate-limit/        │   │  │     · count ∈ {5,20,50,100} → enqueue │    │
+│  │     {image-gen,      │   │  └──────────────────────────────────────┘    │
+│  │     stt, tts}        │   │                                                │
+│  │   voice-chat/        │   │                                                │
+│  │     tools-dispatcher │   │                                                │
+│  └──────────┬───────────┘   │                                                │
+└─────────────┼───────────────┼─────────────────────────────────────────────────┘
+              │ Prisma 5.22 ($transaction · SET LOCAL ROLE quanqn_app)
+              ▼
+   ┌──────────────────────────────────────────────────────────┐
+   │ PostgreSQL 16 + pgvector 0.8                              │
+   │   prisma/schema.prisma · 39 models                        │
+   │     · 18 主应用表 (RLS 启用 14 张 · LD-009)               │
+   │     · 13 admin 表 (RLS DISABLE · LD-A-3 · 留 PRD-10+)     │
+   │     · 4 支持表 (User/Session/InviteCode/TrendingItem)     │
+   │     · 4 增量表 (DailyTask/EvolutionInsight/...)           │
+   │   manual_rls.sql (15 ENABLE RLS · 12 policies)            │
+   └──────────────────────────────────────────────────────────┘
+              │
+              ▼
+   ┌──────────────────────────────────────────────────────────┐
+   │ Redis (ioredis singleton + Upstash REST · 双层)          │
+   │   ioredis (apps/api/src/lib/redis.ts) ·                  │
+   │     - BullMQ 3 Queue/Worker 用 (daily-task/evolution/    │
+   │       image-gen)                                          │
+   │     - rate-limit/{image-gen,stt,tts} INCR + EXPIRE 86400  │
+   │     - L1 Buffer voice_chat:acc_{id}:turns LPUSH/LTRIM     │
+   │   Upstash REST (workers/llm-gateway/rate-limiter.ts) ·   │
+   │     - LLMGateway 限流 token bucket (key prefix quanqn:rl:)│
+   └──────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  apps/admin (P0 占位 · ADR-021 独立部署)                                     │
-│    `apps/admin/src/index.ts` 仅 readme · 实施 P9.0 起 (PRD-10~14)           │
-│    R-A1 ✅ 实证: grep 'admin' apps/web/src → 0 命中                         │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  apps/admin (P0 占位 · ADR-021 独立部署 · PRD-10~14 启动)                     │
+│    apps/admin/src/index.ts 仅 12 行 readme · pages/ + components/ 空目录     │
+│    R-A1 ✅ 实证: grep 'admin' apps/web/src → 0 命中                          │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### §1.2 关键事实速查
@@ -144,13 +194,15 @@
 | Monorepo workspace 数 | **6** (apps × 3 + packages × 3) | `pnpm-workspace.yaml` |
 | TypeScript strict + noUncheckedIndexedAccess | ✅ | `tsconfig.base.json:17-29` |
 | Prisma models | **39** | `grep -c '^model ' prisma/schema.prisma` |
-| RLS-enabled tables | **15** | `grep -c 'ENABLE ROW LEVEL SECURITY' manual_rls.sql` |
-| tRPC routers (active) | **19** (1 _app + 18 sub) | `apps/api/src/trpc/routers/` |
-| Specialists 实现 / 总 | **8 / 14** | `apps/api/src/specialists/*.ts` (排 base/) |
-| LLM SDK 引用 | **1 处** (LLMGateway 唯一) | `grep '@anthropic-ai/sdk\|from openai' apps -r` |
-| 14 路由 routes | **34** (step 11 + tools 15 + modules 6 + aux 2) | `apps/web/src/router.tsx` |
-| 测试文件 | **79** (unit 38 + integration 11 + e2e 19 + judge 11) | `find tests -name '*.ts' \| wc -l` |
-| TS LOC (apps + packages) | ~16,000 | `wc -l` |
+| tRPC routers (active) | **25** (1 _app + 24 sub) | `apps/api/src/trpc/routers/` |
+| Specialist 类总数 / active | **14 / 14** (11 生成型 + 3 L5 自治) | `apps/api/src/specialists/*.ts` |
+| Worker 总数 | **9** | `apps/api/src/workers/` 9 子目录 |
+| LLM SDK 引用 | **3 处** (llm-gateway + workers/stt + workers/tts) | `grep '@anthropic-ai/sdk\|^import.*openai' apps/ -r` |
+| 前端 routes | **34** (step 11 + tools 15 + modules 6 + aux 2) | `apps/web/src/router.tsx` |
+| API LOC (ts) | ~12 000 | 125 ts files |
+| Web LOC (ts/tsx) | ~10 000 | 105 ts/tsx files |
+| 测试文件 | 总 130+ (unit 118 + e2e 27 + judge 21) | `find tests -name '*.ts'` |
+| 双路径 L5 | EvolutionAgent + DailyTaskAgent | `apps/api/src/specialists/{Evolution,DailyTask}Agent.ts` (re-export) → `apps/api/src/agents/...` |
 
 ---
 
@@ -158,697 +210,460 @@
 
 | Component | 职责 | 主文件 | LOC |
 |---|---|---|:-:|
-| **Hono app** | HTTP 入口 · CORS · trace · OAuth /auth/* · tRPC 挂载 | `apps/api/src/index.ts` | 230 |
-| **tRPC context** | lucia session 解析 · activeAccountId 注入 · X-Trace-Id 读取 | `apps/api/src/trpc/context.ts` | 58 |
-| **traceMiddleware** | X-Trace-Id 生成或传 + AsyncLocalStorage 写入 (pino mixin auto-attach) | `apps/api/src/trpc/trpc.ts:34-39` | — |
-| **accountIsolationMiddleware** | $transaction · SET LOCAL ROLE quanqn_app · set_config('app.current_account_id') · ★ 唯一允许 prisma.$executeRaw 处 | `apps/api/src/trpc/middleware/account-isolation.ts` | 58 |
-| **protectedProcedure** | publicProcedure + accountIsolationMiddleware (默认) | `account-isolation.ts:52` | — |
-| **globalProcedure** | publicProcedure + meta({isGlobal:true}) — 跳过 RLS · 仅用于 User/InviteCode/TrendingItem | `account-isolation.ts:58` | — |
-| **appRouter** | 18 sub-router 合并 → AppRouter type → 由 packages/clients 同名 shadow 镜像导出给前端 | `apps/api/src/trpc/routers/_app.ts` | 47 |
-| **BaseSpecialist (active)** | 模板方法 · execute() 4 步 (parse → assemble → invokeLLM with retry → writeCostLog) · fallback 路径 | `apps/api/src/specialists/base/BaseSpecialist.ts` | 254 |
-| **BaseSpecialist (legacy)** | 旧版 run() 模板方法 · ★ DRIFT · `agents/specialists/CopywritingAgent` 仍用此版 但全代码无 import (dead code) | `apps/api/src/agents/base/BaseSpecialist.ts` | 71 |
-| **8 Specialists** | 各 mode 子类 · 五层 SpecialistConfig · invokeLLM(ctx, req) → InvokeLLMResult | `apps/api/src/specialists/*.ts` | 162-530/file |
-| **ContextAssembler** | 4 路并行 fetch (stepData / evolutionProfile / samples / RAG / constants) · Promise.allSettled · 5s timeout · 8 模板拼 systemPrompt | `apps/api/src/services/context-assembler/ContextAssembler.ts` | 177 |
-| **LLMGateway** | ★ R-1 唯一 SDK 入口 · MODEL_BY_TIER (reasoning/lightweight) · primary→fallback→template 三级降级 · checkRateLimit (Upstash) · writeCostLog · stream/complete | `apps/api/src/workers/llm-gateway/index.ts` | 256 |
-| **methodologyQueryWorker** | in-memory 常量(industries/hotElements/scriptTypes) · ContextAssembler 拼 prompt 用 | `apps/api/src/workers/methodology-query/index.ts` | 42 |
-| **IPProgressService (active)** | getProgress(prisma, accountId) · 9 步进度 · 函数式 · 适配 RLS 事务 prisma | `apps/api/src/services/ip-progress/IPProgressService.ts` | 52 |
-| **IPProgressService (legacy)** | progress() 单例服务 · ★ DRIFT · 仅 `tests/unit/api/ip-progress.test.ts` 引 · 主代码已迁 | `apps/api/src/agents/base/IPProgressService.ts` | 45 |
-| **PII / Disclaimer** | maskString / appendDisclaimerIfSensitive · ★ DRIFT 严重 · 文件存在但 0 接线 (§5.6) | `apps/api/src/lib/compliance/{pii-mask,disclaimer}.ts` | 30+30 |
-| **Prisma client** | 单例 + globalThis cache (dev hot reload) · checkDbConnection() | `apps/api/src/lib/prisma.ts` | 44 |
-| **Lucia v3** | session cookie name=`app_session` (与 admin_session 区分 · LD-A-1) · prismaAdapter | `apps/api/src/lib/auth/lucia.ts` + `adapter.ts` + `providers.ts` | 40+76+151 |
-| **OAuth providers** | MockProvider (dev) + GoogleProvider (arctic) · validateStartupConfig 启动时校验 SESSION_SECRET 长度 + provider name · prod 禁 mock | `apps/api/src/lib/auth/providers.ts` | 151 |
-| **logger (pino)** | structured log · AsyncLocalStorage `traceStore` mixin auto-inject traceId · 严禁 console.log (LD-013) | `apps/api/src/lib/logger.ts` | 31 |
-| **packages/schemas** | zod schemas 真理来源 · entities + step-results + specialist-io + admin (占位) | `packages/schemas/src/` | 1300 |
-| **packages/clients** | 跨 app tRPC 共享 · router-types.ts 是 shadow router (避免前端 bundle @trpc/server) | `packages/clients/src/router-types.ts` | 343 |
-| **packages/ui** | 共享 UI · base + admin (占位) · ★ DRIFT TD-005: 12 shadcn 组件实际在 `apps/web/src/components/ui/` 而非 `packages/ui/src/base/` | `packages/ui/src/` | 占位 |
-| **apps/web router** | createBrowserRouter · 34 routes · React.lazy + webpackChunkName ("step", "tools", "modules") | `apps/web/src/router.tsx` | 122 |
-| **apps/web tRPC client** | createTRPCReact + httpBatchStreamLink · credentials:include · 自动注入 X-Trace-Id | `apps/web/src/lib/trpc.ts` | 57 |
-| **apps/web LS namespace** | aiip_memory_acc_{id}_{suffix} · per-account 隔离 · 5MB cap | `apps/web/src/lib/ls-namespace.ts` | 88 |
-| **apps/admin** | P0 占位 · ADR-021 独立部署 · README + index.ts 仅 stub | `apps/admin/src/index.ts` | 12 |
+| **Hono app** | HTTP 入口 · CORS · X-Trace-Id mw · OAuth /auth/* · dev in-process worker + cron 启动 | `apps/api/src/index.ts` | 233 |
+| **tRPC context** | lucia session 解析 · activeAccountId 注入 · X-Trace-Id 读 | `apps/api/src/trpc/context.ts` | 58 |
+| **traceMiddleware** | X-Trace-Id 生成或传 · AsyncLocalStorage 写 traceStore (pino mixin auto-attach) | `apps/api/src/trpc/trpc.ts:34-39` | — |
+| **accountIsolationMiddleware** | `$transaction` · `SET LOCAL ROLE quanqn_app` · `set_config('app.current_account_id', …, true)` · ★ 唯一允许 `prisma.$executeRaw` 处(LD-009 · R-009) | `apps/api/src/trpc/middleware/account-isolation.ts` | 58 |
+| **protectedProcedure** | publicProcedure + accountIsolationMw(默认) | `account-isolation.ts:52` | — |
+| **globalProcedure** | publicProcedure + `meta({isGlobal:true})` — 跳过 RLS · 仅 User/InviteCode/TrendingItem | `account-isolation.ts:58` | — |
+| **appRouter** | 24 sub-router 合并 → `AppRouter` type · packages/clients 同名 shadow 镜像导出 | `apps/api/src/trpc/routers/_app.ts` | 60 |
+| **BaseSpecialist (active)** | 模板方法 · `execute()` 5 步 (parse → assemble → invokeLLM with retry → safeParse → writeCostLog) · `fallbackTemplate` 路径 · disclaimer 自动注入 | `apps/api/src/specialists/base/BaseSpecialist.ts` | 276 |
+| **BaseSpecialist (legacy)** | 旧版 `run()` 模板方法 · ★ DRIFT · 仅 `apps/api/src/agents/specialists/CopywritingAgent` 旧拷贝引 · 主代码 0 import (dead code) | `apps/api/src/agents/base/BaseSpecialist.ts` | 71 |
+| **11 生成型 Specialist** | 各 mode 子类 · 五层 `SpecialistConfig` · `invokeLLM(ctx, req) → InvokeLLMResult` · 单实例 export | `apps/api/src/specialists/{Positioning,Branding,...}.ts` | 82-643/file |
+| **EvolutionAgent (L5)** | 真实施 override `execute()` · `recentFeedbacks(N=count/5) + samples(limit 10) + previousInsight` · `prisma.$transaction([profile.update, insight.create])` · merge Rule 3 (preferredCatchphrases ∪ prev 去重 top 10) · `inferLevel(count)` | `apps/api/src/agents/evolution/EvolutionAgent.ts`(真) + `apps/api/src/specialists/EvolutionAgent.ts`(stub re-export) | 429 + 12 |
+| **DailyTaskAgent (L5)** | 真实施 · `LLMGateway.complete(lightweight)` · 冷启动判定(stepData=0 OR EvolutionProfile=null → 5 模板任务 · `modelUsed='cold-start-template'`) | `apps/api/src/agents/specialists/DailyTaskAgent.ts`(真) + `apps/api/src/specialists/DailyTaskAgent.ts`(stub) | 296 + 107 |
+| **VoiceChatAgent (L5)** | `executeStream()` 真接 `LLMGateway.stream()` · 5 tools(get_current_step / search_history / query_diagnosis / get_today_tasks / get_evolution_insights)· module-level `_activeSessions: Map<number,boolean>` 防并发 · 单路径(不走双路径) | `apps/api/src/specialists/VoiceChatAgent.ts` | 398 |
+| **ContextAssembler** | ★ 5 路并行 fetch · `Promise.allSettled` · 各 5s timeout · 降级跑空 · 拼 `systemPrompt` (persona + L2 stepData + L4 EvolutionInsight Section 4 + constants) · `_formatUserPrompt` 调 `piiMask` | `apps/api/src/services/context-assembler/ContextAssembler.ts` | 205 |
+| **LLMGateway** | ★ R-1 唯一 SDK 入口 · `MODEL_BY_TIER` (reasoning=`claude-sonnet-4-6`→`gpt-4o` / lightweight=`claude-haiku-4-5`→`gpt-4o-mini`)· primary → fallback → template 三级降级 · `checkRateLimit`(Upstash)· `writeCostLog` · `complete()` + `stream()` (首 chunk `{type:'meta',meta:{model}}` D-019) | `apps/api/src/workers/llm-gateway/index.ts` | 256 |
+| **methodologyQueryWorker** | in-memory 常量 (industries / hotElements / scriptTypes) · `getAll()` / `get(name)` · ContextAssembler 拼 prompt 用 | `apps/api/src/workers/methodology-query/index.ts` | 42 |
+| **L1 Buffer** | Redis List `voice_chat:acc_{id}:turns` · `LPUSH` + `LTRIM 0 19` + `EXPIRE 1800` · `pushTurn`/`getTurns`/`clearBuffer` | `apps/api/src/memory/l1-buffer.ts` | 39 |
+| **L4 Profile helpers** | `getLatestInsight(accountId)` 读 `EvolutionProfile.latestInsight` · `getDeepLearningSamples(accountId, 10)` 读 `DeepLearningArchive` (isActive=true · learningStatus=completed) | `apps/api/src/memory/l4-profile.ts` | 33 |
+| **L5 Trending Cache** | `getHotTrending()` 占位返 `[]` · 留 PRD-9 真接 | `apps/api/src/memory/l5-trending.ts` | 22 |
+| **enqueueIfThresholdMet** | `prisma.$queryRaw INSERT ON CONFLICT DO UPDATE RETURNING` 原子递增 · count ∈ {5,20,50,100} → `evolutionQueue.add('evo:{acc}:{count}')` 去重 | `apps/api/src/lib/evolution/trigger.ts` | 60 |
+| **dailyTaskCron** | `node-cron schedule('0 0 * * *', cb, {scheduled:false, timezone:'Asia/Shanghai'})` · `dailyTaskCron.start()` 由 index.ts boot 时调 · `runForAllActiveAccounts(date)` 扫 7-day active + per-account enqueue | `apps/api/src/cron/daily-task-runner.ts` | 81 |
+| **BullMQ Workers (3)** | daily-task: concurrency 5 + `prisma.dailyTask.upsert` 幂等(@@unique([accountId,taskDate])) · evolution: concurrency 5 + jobId 去重 + dead-letter alert stub · image-gen: 3 retry exp backoff | `apps/api/src/workers/{daily-task,evolution,image-gen}/worker.ts` | 100/65/(...) |
+| **STTWorker (Whisper-1)** | 独立 worker · `OpenAI.audio.transcriptions.create` · WAV duration parse · `cost_usd` ($0.006/分钟) | `apps/api/src/workers/stt/whisper.ts` | (~150) |
+| **TTSWorker (OpenAI TTS-1)** | 独立 worker · `OpenAI.audio.speech.create` · `cost_usd` ($15/1M chars) · `publicUrl` 占位 (S3 留 PRR) | `apps/api/src/workers/tts/openai-tts.ts` | (~140) |
+| **DallE3ImageGenWorker** | 独立 worker · `OpenAI.images.generate` · BullMQ 'image-gen' queue · 3 retry · placeholder URL | `apps/api/src/workers/image-gen/dall-e-3.ts` | (~120) |
+| **voice-chat/tools-dispatcher** | 5 tools 映射 · per-accountId concurrency lock(`_lockMap: Map<number, Promise<void>>`) · 各 ≤2s · 用 `ctx.prisma` (RLS-scoped transaction client) | `apps/api/src/lib/voice-chat/tools-dispatcher.ts` | (~150) |
+| **Prisma client** | 单例 + globalThis cache (dev hot reload) · `checkDbConnection()` exit 1 on fail | `apps/api/src/lib/prisma.ts` | 44 |
+| **Redis client** | `ioredis` 单例 · `maxRetriesPerRequest: null` (BullMQ 必需) · 全 BullMQ / rate-limit / L1 Buffer 共用 | `apps/api/src/lib/redis.ts` | 11 |
+| **Lucia v3** | session cookie name=`app_session` (LD-A-1 与 admin 区分) · prismaAdapter | `apps/api/src/lib/auth/lucia.ts` + `adapter.ts` + `providers.ts` | 40+76+151 |
+| **OAuth providers** | MockProvider(dev only) + GoogleProvider(arctic) · `validateStartupConfig()` 启动校验 SESSION_SECRET 长度 + provider name · prod 禁 mock | `apps/api/src/lib/auth/providers.ts` | 151 |
+| **logger (pino)** | structured · AsyncLocalStorage `traceStore` mixin auto-inject traceId · 严禁 console.log (LD-013) | `apps/api/src/lib/logger.ts` | 31 |
+| **PII / Disclaimer** | `piiMask` (email/phone/id_card/bank_card) 接 ContextAssembler `_formatUserPrompt` · `appendDisclaimerIfSensitive`(行业) + `attachDisclaimerMeta` 接 BaseSpecialist `_applyDisclaimer` (TD-016 修) | `apps/api/src/lib/compliance/{pii-mask,disclaimer}.ts` | (~30+30) |
+| **rate-limit helpers** | 3 个 sliding window Redis INCR + EXPIRE 86400 · `_todayKey(acc)` UTC date · throws TRPCError TOO_MANY_REQUESTS · STT 50/day · TTS 100/day · image-gen 10/day | `apps/api/src/lib/rate-limit/{stt,tts,image-gen}.ts` | 33 each |
+| **15 constants** | industries / hotElements / scriptTypes / presentStyles / platforms / steps / evolution / diagnosis / sttLimits / ttsLimits / videoDurations / videoTypes / imageStyles / privateDomain | `apps/api/src/lib/constants/` | 740 total |
+| **packages/schemas** | zod schemas 真理来源 · entities (4 schemas) + step-results(空)+ specialist-io(19 schemas)+ admin(空 P9.0 起) | `packages/schemas/src/` | (~1500) |
+| **packages/clients** | 跨 app tRPC 共享 · `router-types.ts` 是 shadow router(避免前端 bundle `@trpc/server`)· 镜像 25 router · PRD-8 加 stt/tts/voiceChat shadow types | `packages/clients/src/router-types.ts` | ~700 |
+| **packages/ui** | 共享 UI · base + admin(占位)· ★ DRIFT TD-005: 12 shadcn 组件实际在 `apps/web/src/components/ui/` 而非 `packages/ui/src/base/` | `packages/ui/src/` | 占位 |
+| **apps/web router** | `createBrowserRouter` · 34 routes · `React.lazy` + `webpackChunkName`("step", "tools", "modules")· `RootLayout` → `StepLayout` 嵌套 | `apps/web/src/router.tsx` | 122 |
+| **apps/web tRPC client** | `createTRPCReact` + `httpBatchStreamLink` · `credentials:'include'` · `x-trace-id` 自动注入 · `staleTime: 30_000` | `apps/web/src/lib/trpc.ts` | 57 |
+| **apps/web hooks (4)** | `useAuth` (auth.me) · `useStepData` (LS↔DB dual-write LD-010)· `useActiveAccount` (switchTo + reload)· `useEvolution` (LS cache instant read) | `apps/web/src/hooks/{useAuth,useStepData,useActiveAccount,useEvolution}.ts` | (~50/file) |
+| **apps/web LS namespace** | `aiip_memory_acc_{id}_{suffix}` · per-account 隔离 · 5MB cap · `pruneLsNamespaces()` | `apps/web/src/lib/ls-namespace.ts` | 88 |
+| **apps/admin** | P0 占位 · ADR-021 独立部署 · README + index.ts 仅 12 行 stub | `apps/admin/src/index.ts` | 12 |
 
 ---
 
 ## §3 Pattern Overview
 
-**Overall:** **Layered Monorepo + 14 Specialist (8 实施) + LLMGateway 单入口 + RLS-tx-scoped 数据隔离**
+**Overall:** **Layered Monorepo + 14 Specialist (11 单路径 + 3 双路径 L5) + LLMGateway 单入口 + RLS-tx-scoped 数据隔离 + 3 Orchestrator (BullMQ / node-cron / tRPC subscription)**
 
-### §3.1 Locked Decisions(已实施部分)
+### §3.1 Key Characteristics
+
+- **95/5 编排范式** (LD-001) · 25 router 全是确定性 procedure · 0 处 `while.*llm.complete` · 唯三 L5 自治走外部 orchestrator (ADR-018)
+- **14 Specialist 全到位** · 11 生成型直接 active + 3 L5 走 §11.6.8 "双路径白名单" 模式 (re-export stub 在 `specialists/` · 真实施在 `agents/{evolution,specialists}/`)
+- **LLMGateway 单入口** · `grep '@anthropic-ai/sdk\|^import.*openai'` 仅 3 处:`workers/llm-gateway/index.ts` + `workers/stt/whisper.ts` + `workers/tts/openai-tts.ts` · D-038 允许 STT/TTS/image-gen 独立 worker 不走 Gateway (audio/image 不用 chat)
+- **ContextAssembler 唯一 prompt 入口** · 5 路 `Promise.allSettled` + 5s timeout (L2 stepData + L4 EvolutionInsight + L4 samples 跑空 + L5 RAG 跑空 + constants) · D-007 grep 在 `specialists/` 0 处自拼 systemPrompt
+- **RLS 3 道闸** (LD-009) · 闸 1 = `protectedProcedure` · 闸 2 = `$transaction + SET LOCAL ROLE + set_config('app.current_account_id')` · 闸 3 = Redis/LS 命名空间 (`voice_chat:acc_{id}:turns` / `aiip_memory_acc_{id}_*`)
+- **5 层记忆** (LD-006) · L1 Buffer (Redis) · L2 Core (stepData/feedbackLog/history)· L3 Recall(pgvector 留)· L4 Profile (EvolutionProfile)· L5 Trending (留)
+- **反馈飞轮 5 阶段** (LD-008) · 生成 → costLog.logFeedback → enqueueIfThresholdMet (count ∈ {5,20,50,100}) → evolutionQueue → EvolutionAgent · 全闭环
+
+### §3.2 关键 LD 实施状态(PRD-8 完成态)
 
 | LD | 设计目标 | 实际状态 | 实证 |
 |:-:|---|---|---|
-| **LD-001** | 95% Workflow + 5% Agent | ✅ 严格符合 · 全 router 都是确定性 procedure · 无自治循环 | `apps/api/src/trpc/routers/*.ts` 0 处 while/递归 |
-| **LD-002** | 14 能力域 Specialist | 🟡 8 / 14 (PRD-1~5 完成 · 6 个未实施 · `SpecialistId` type 已声明 14 个) | `apps/api/src/agents/base/types.ts:9-14` |
-| **LD-004** | 3 L5 自治 Agent 走外部 orchestrator (VoiceChatAgent/EvolutionAgent/DailyTaskAgent) | ⏭️ 未实施 (PRD-6+) | — |
-| **LD-005** | BaseSpecialist 抽象类 + 模板方法 | ✅ 实施 · 8 specialist 全部 extends BaseSpecialist | `apps/api/src/specialists/base/BaseSpecialist.ts:40` |
-| **LD-006** | 5 层记忆 (L1 hot / L2 core / L3 vector / L4 profile / L5 RAG) | 🟡 L2/L1 实施 · L3-L5 stub (return null/[]) · ContextAssembler `_fetchEvolutionProfile/_fetchSamples/_fetchRag` 全部 stub | `services/context-assembler/ContextAssembler.ts:97-113` |
-| **LD-007** | IpProgressService + ContextAssembler 注入 | ✅ ContextAssembler 在 BaseSpecialist 模板 step 2 强制注入 | `specialists/base/BaseSpecialist.ts:80-86` |
-| **LD-008** | 反馈飞轮 5 阶段 | 🟡 部分 · cost_log + feedback_log + EvolutionProfile 表存在 · 真实闭环留 PRD-6+ | `prisma/schema.prisma` (CostLog + FeedbackLog + EvolutionProfile) |
-| **LD-009** | IpAccount 聚合根 + 多账号隔离 3 道闸 (RLS + middleware + UI) | ✅ middleware 实施 · RLS 14 表 · scripts/audit-redlines.sh 路径过期 (TD-NEW-2) | `account-isolation.ts:36-46` + `manual_rls.sql:17-30` |
-| **LD-010** | LS↔DB 双写 4 规则 | ✅ 实施 · `apps/web/src/lib/ls-namespace.ts` + 各 page 用 stepLsKey/getToolLsKey | `apps/web/src/lib/ls-namespace.ts:21-31` |
-| **LD-012** | 全部 LLM 调用走 LLMGateway | ✅ 强制 · `grep '@anthropic-ai/sdk\|from openai' apps -r` 仅命中 LLMGateway 一处 | `workers/llm-gateway/index.ts:13-21` |
-| **LD-013** | 强类型 + zod | ✅ tsconfig.base.json strict + 6 严格子项 · 38 zod schemas in packages/schemas | `tsconfig.base.json:17-29` |
-| **LD-A-1** | admin 子系统独立部署 | ✅ apps/admin 占位 · 主 web 0 引用 · admin_session vs app_session cookie 名隔离 | `apps/admin/src/index.ts` (12 行 stub) + `lucia.ts:14` |
-| **LD-A-3** | admin 表 RLS DISABLE | ✅ admin 13 表不在 manual_rls.sql 启用列表 | `manual_rls.sql:32` 注释 |
-| **LD-018** | PII mask + 行业免责 | 🔴 **DRIFT** · 文件存在 · 0 import · 0 接线 · 上线即合规风险 | `.planning/codebase/CONCERNS.md §1.6` |
-
-**Key Characteristics:**
-- 单进程 Hono + 单 PrismaClient + 内存常量(`methodologyQueryWorker`)
-- 所有跨 layer 调用在 protectedProcedure transaction 内 — DB connection 持有时间 = 业务函数耗时(LLM 调用 5-30s 也在事务内)
-- 无 worker 队列 · 无 BullMQ 实际接入(虽然 `bullmq` 在依赖里 · `apps/api/src/workers/` 6 个子目录全部 `.gitkeep` empty)
-- 全 SDK lazy-load · API key 不入日志(`workers/llm-gateway/index.ts:86-100` AC-9 注释)
+| LD-001 | 95% Workflow + 5% Agent | ✅ 严格符合 · 25 router 0 处 while/递归 | `apps/api/src/trpc/routers/*.ts` |
+| LD-002 | 14 能力域 Specialist | ✅ 14/14 类全部存在 (11 active + 3 L5 双路径) | `apps/api/src/specialists/*.ts` |
+| LD-003 | 0 specialist 互调 | ✅ grep `specialists\.` in `apps/api/src/specialists/` 0 命中 | — |
+| LD-004 | 3 L5 走外部 orchestrator | ✅ Evolution→BullMQ + DailyTask→Cron+BullMQ + VoiceChat→tRPC subscription | `apps/api/src/workers/{evolution,daily-task}/queue.ts` + `cron/daily-task-runner.ts` + `trpc/routers/voiceChat.ts` |
+| LD-005 | BaseSpecialist 抽象 + 五层 | ✅ active 路径 14 / 14 继承 PRD-4 BaseSpecialist | `apps/api/src/specialists/base/BaseSpecialist.ts` |
+| LD-006 | 5 层记忆(无 Summarizer) | ✅ L1/L4 真接 · L2 走 stepData · L3/L5 占位 · 0 处 `Summarizer\|Portrait` | `apps/api/src/memory/` 3 文件 |
+| LD-007 | ContextAssembler 唯一 prompt 入口 | ✅ 11 生成型走 · 2 L5 走(Evolution + DailyTask)· VoiceChat 走但 5 工具 dispatcher 走 | `apps/api/src/services/context-assembler/ContextAssembler.ts` |
+| LD-008 | 反馈飞轮 5 阶段 · account 级 | ✅ enqueueIfThresholdMet → evolutionQueue → EvolutionAgent · profile.accountId 唯一索引 | `apps/api/src/lib/evolution/trigger.ts` + Prisma `EvolutionProfile` |
+| LD-009 | IpAccount 隔离 3 道闸 | ✅ 全 router 用 protectedProcedure · `SET LOCAL ROLE` + `set_config` · Redis/LS 命名空间 | `apps/api/src/trpc/middleware/account-isolation.ts` |
+| LD-010 | LS↔DB 双写 4 规则 | ✅ useStepData LS 先写 · DB 后 mutation · 失败 toast 不回滚 · 切账号 reload | `apps/web/src/hooks/useStepData.ts` + `useActiveAccount.ts` |
+| LD-011 | 不引向量库 SDK | ✅ pgvector(PG 扩展)· `package.json` 0 qdrant/pinecone/weaviate | — |
+| LD-012 | LLMGateway 唯一 SDK 入口 | ✅ `@anthropic-ai/sdk\|openai` 仅 3 处(D-038 白名单) | — |
+| LD-013 | zod + trace_id + 无 any | ✅ tsconfig strict + noUncheckedIndexedAccess · pino mixin 自动注 traceId | `tsconfig.base.json` + `apps/api/src/lib/logger.ts` |
+| LD-014 | LLM 失败重试 1 次 + 降级 | ✅ BaseSpecialist Step 4 safeParse retry · LLMGateway primary→fallback→template · EvolutionAgent $transaction | `apps/api/src/specialists/base/BaseSpecialist.ts:102-119` + `workers/llm-gateway/index.ts` |
+| LD-017 | 不自建爬虫 | ✅ workers/trending-scraper 空目录 · 0 puppeteer/playwright 引 | `apps/api/src/workers/trending-scraper/` 空 |
+| LD-018 | 行业合规 + PII 脱敏 | ✅ TD-016 修 · `piiMask` 接 ContextAssembler `_formatUserPrompt` · `appendDisclaimerIfSensitive` 接 BaseSpecialist `_applyDisclaimer` | `apps/api/src/services/context-assembler/ContextAssembler.ts:198` + `apps/api/src/specialists/base/BaseSpecialist.ts:203-213` |
 
 ---
 
 ## §4 Layers
 
-### §4.1 Presentation 层(`apps/web/`)
+> 派生 AGENTS §4.5 · 严格单向 (上层调下层 · 下层禁调上层) · 同层用接口隔离。
 
-- **Purpose:** SPA 用户界面 · LS 双写 · 实时与 API 同步 · 表单 zod 校验 · markdown 渲染
-- **Location:** `apps/web/src/`
-- **Contains:** React 18 components · pages · layouts · lib (trpc/utils/ls-namespace) · hooks · 4 大组件目录(StepForm/StepResult/ToolForm/ToolResult/ui)
-- **Depends on:** `@quanqn/schemas` (zod), `@quanqn/clients` (router types), `@quanqn/ui` (占位), 自身 `@/*`
-- **Used by:** Browser
+```
+┌────────────────────────────────────────────────┐
+│ L1 · UI (React 组件 · apps/web/src/pages|components) │ ← 顶层
+└────────────────────────────────────────────────┘
+                  │ ↓ 调
+┌────────────────────────────────────────────────┐
+│ L2 · Hooks (useXxx · apps/web/src/hooks)            │
+└────────────────────────────────────────────────┘
+                  │ ↓ 调
+┌────────────────────────────────────────────────┐
+│ L3 · tRPC Client (apps/web/src/lib/trpc.ts)         │
+└────────────────────────────────────────────────┘
+   ────── 网络分割线 (X-Trace-Id 贯穿) ──────
+                  │ ↓ 调
+┌────────────────────────────────────────────────┐
+│ L4 · tRPC Router (apps/api/src/trpc/routers · 24个)  │
+│   全用 protectedProcedure · 守 LD-009 闸 1+2         │
+└────────────────────────────────────────────────┘
+                  │ ↓ 调
+┌────────────────────────────────────────────────┐
+│ L5 · Specialist Agents (apps/api/src/specialists · 14)│
+│   + L5 真实施 (apps/api/src/agents/...) 双路径白名单 │
+└────────────────────────────────────────────────┘
+                  │ ↓ 调
+┌────────────────────────────────────────────────┐
+│ L6 · Services (apps/api/src/services)               │
+│   ContextAssembler / IPProgressService              │
+│   + Memory (apps/api/src/memory) L1/L4/L5 helpers   │
+│   + Lib (apps/api/src/lib · pii-mask/disclaimer/    │
+│        evolution/trigger/voice-chat/dispatcher)     │
+└────────────────────────────────────────────────┘
+                  │ ↓ 调
+┌────────────────────────────────────────────────┐
+│ L7 · Workers (apps/api/src/workers · 9 个)          │
+│   llm-gateway / methodology-query / image-gen /     │
+│   daily-task / evolution / stt / tts / trending /   │
+│   file-parser                                       │
+└────────────────────────────────────────────────┘ ← 底层
+                  │ ↓ 调
+External:   PostgreSQL 16 + pgvector · Redis · OpenAI · Anthropic
+```
 
-### §4.2 API 层(`apps/api/src/index.ts` + `apps/api/src/trpc/`)
-
-- **Purpose:** HTTP 入口 + OAuth + tRPC 路由分发
-- **Location:** `apps/api/src/index.ts` (Hono) + `apps/api/src/trpc/`
-- **Contains:** Hono routes(/health, /auth/*, /trpc/*) + 19 tRPC routers
-- **Depends on:** `lib/auth/lucia` · `lib/prisma` · `lib/logger` · `trpc/{context,trpc}` · `trpc/middleware/account-isolation`
-- **Used by:** apps/web (cookies + X-Trace-Id)
-
-### §4.3 Domain / Specialist 层(`apps/api/src/specialists/`)
-
-- **Purpose:** 8 个领域 Agent · 每个对应一个/多个 mode · 模板方法 · 注 ContextAssembler + LLMGateway
-- **Location:** `apps/api/src/specialists/`
-- **Contains:** BaseSpecialist 抽象类 + 8 子类 + base/types + base/errors
-- **Depends on:** `services/context-assembler` · `workers/llm-gateway` · `lib/{prisma,logger}` · `agents/base/types` (SpecialistId · ★ DRIFT TD-NEW-3 应迁)
-- **Used by:** routers/{copywriting, boomGenerate, analysis, videoAnalysis, stepData} 等
-
-### §4.4 Service 层(`apps/api/src/services/`)
-
-- **Purpose:** 跨 router 复用的纯逻辑 · 无 LLM
-- **Location:** `apps/api/src/services/`
-- **Contains:**
-  - `context-assembler/ContextAssembler.ts` (主) + types + 8 templates
-  - `ip-progress/IPProgressService.ts` (函数式 getProgress)
-- **Depends on:** `lib/prisma` · `workers/methodology-query`
-- **Used by:** BaseSpecialist (assemble) · stepData router (progress)
-
-### §4.5 Worker 层(`apps/api/src/workers/`)
-
-- **Purpose:** 长尾基础设施 · LLM / 限流 / 计费 / RAG 查询 / 媒体处理
-- **Location:** `apps/api/src/workers/`
-- **Contains:**
-  - `llm-gateway/{index, anthropic-provider, openai-provider, rate-limiter, cost-logger}.ts` (active)
-  - `methodology-query/index.ts` (active)
-  - `{file-parser, image-gen, stt, tts, trending-scraper}/.gitkeep` (占位 · 等 PRD-6+)
-- **Depends on:** Anthropic SDK + OpenAI SDK + Upstash Redis + lib/prisma
-- **Used by:** Specialists (LLMGateway 唯一) · ContextAssembler (methodologyQueryWorker)
-
-### §4.6 Infrastructure 层(`apps/api/src/lib/`)
-
-- **Purpose:** 跨切关注点 · DB 客户端 · 日志 · 鉴权 · 常量 · 合规
-- **Location:** `apps/api/src/lib/`
-- **Contains:**
-  - `prisma.ts` (单例 + globalThis cache)
-  - `logger.ts` (pino + AsyncLocalStorage `traceStore` mixin)
-  - `auth/{lucia, adapter, providers}.ts`
-  - `constants/` (9 类 · platforms/industries/hotElements/scriptTypes/...)
-  - `compliance/{pii-mask, disclaimer}.ts` (★ 未接线)
-- **Depends on:** Prisma · Lucia · Pino · arctic · @prisma/client/runtime
-- **Used by:** 全 layer
-
-### §4.7 Persistence 层(`prisma/` + PG + Redis)
-
-- **Purpose:** 数据持久化 + RLS 强制隔离 + pgvector 向量(P5+)
-- **Location:** `prisma/schema.prisma` + `prisma/migrations/`
-- **Contains:**
-  - 39 models (主 18 + admin 13 + global 4 + P2 4)
-  - 4 prisma migrations + 3 manual SQL(manual_rls / manual_admin_rls / manual_vector_indexes)
-  - 133 @@index/@@unique
-- **Depends on:** PostgreSQL 16 + pgvector 0.8 + Redis 8
-- **Used by:** lib/prisma
-
-### §4.8 Cross-cutting · packages/
-
-- **`@quanqn/schemas`** · zod schemas 真理来源 · 38 schemas across 5 sub-paths
-- **`@quanqn/clients`** · 跨 app tRPC 类型导出 + shadow router (避免前端 bundle @trpc/server)
-- **`@quanqn/ui`** · 主应用 + admin 共享 UI · ★ DRIFT 占位 · 12 shadcn 组件还在 apps/web/src/components/ui/ (TD-005)
+**禁止** · 跨层跳调 (如 L1 直接 import L5)· 必须经过 L3 tRPC。
 
 ---
 
 ## §5 Data Flow
 
-### §5.1 主路径 · 用户调 Specialist 工具(以 PRD-5 freeGenerate 为例)
+### §5.1 Primary Request Path (User 主线 — Step 7 文案生成)
 
-```text
-1. 用户填表单
-   apps/web/src/pages/tools/Generate.tsx (假设)
-   ├─ react-hook-form + zod resolver (copywritingFreeGenerateInput from @quanqn/schemas)
-   ├─ trpc.copywriting.freeGenerate.useMutation()
-   └─ POST /trpc/copywriting.freeGenerate
-      ↓
-2. apps/api/src/index.ts:206 (Hono /trpc/* handler)
-   ├─ trace mw 写 X-Trace-Id (index.ts:46-55) → traceStore.run()
-   ├─ CORS check → cors mw (index.ts:33-42)
-   └─ fetchRequestHandler → appRouter
-      ↓
-3. apps/api/src/trpc/context.ts:28 createContext(c)
-   ├─ lucia.readSessionCookie(cookie 'app_session')
-   ├─ lucia.validateSession() → user
-   └─ ctx = { prisma, traceId, req, user, sessionId, activeAccountId: user.activeAccountId }
-      ↓
-4. apps/api/src/trpc/trpc.ts:34 traceMiddleware
-   └─ traceStore.run({ traceId }, () => next({ ctx: { ...ctx, traceId } }))
-      ↓
-5. apps/api/src/trpc/middleware/account-isolation.ts:19 accountIsolationMiddleware
-   ├─ if (meta?.isGlobal) → next() (跳过 RLS · 仅 ipAccounts.create/switchActive 等用)
-   ├─ else if (!activeAccountId) → throw FORBIDDEN 'no_active_account'
-   └─ ctx.prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SET LOCAL ROLE quanqn_app`              // 切非 superuser
-        await tx.$executeRaw`SELECT set_config('app.current_account_id', ...)`
-        await tx.$executeRaw`SELECT set_config('app.current_user_id', ...)`
-        return next({ ctx: { ...ctx, prisma: tx } })  // ★ 后续 prisma 都是 tx
-      })
-      ↓
-6. apps/api/src/trpc/routers/copywriting.ts:173 freeGenerate.mutation
-   ├─ input zod parse: copywritingFreeGenerateInput
-   ├─ const agentRes = await copywritingAgent.execute({ accountId, mode:'free', userInput, traceId })
-      ↓
-7. apps/api/src/specialists/CopywritingAgent.ts (extends BaseSpecialist)
-   ↓ via BaseSpecialist.execute() template method
-8. apps/api/src/specialists/base/BaseSpecialist.ts:67-191 BaseSpecialist.execute()
-   ├─ Step 1: this.inputSchema.parse(req.userInput)   // zod 校验
-   ├─ Step 2: ctx = await contextAssembler.assemble({ agentId, accountId, mode, userInput, needRag })
-   │     ↓
-   │   apps/api/src/services/context-assembler/ContextAssembler.ts:39 assemble()
-   │   ├─ 4 路 Promise.allSettled (5s timeout each):
-   │   │   - _fetchStepData(accountId)        // L2 真实
-   │   │   - _fetchEvolutionProfile           // L4 stub return null (PRD-6+)
-   │   │   - _fetchSamples                    // L4 stub return [] (PRD-6+)
-   │   │   - _fetchRag                        // L5 stub return [] (D-025)
-   │   │   - _fetchConstants → methodologyQueryWorker.getAll()
-   │   ├─ _composeSystemPrompt(req, stepData, constants) → SPECIALIST_TEMPLATES[agentId].persona + ...
-   │   │     ⚠️ DRIFT: 直接拼 stepData/userInput · 不 maskString (§5.6 LD-018 缺口)
-   │   └─ return { systemPrompt, userPrompt, tools:[], metadata }
-   ├─ Step 3: raw = await this.invokeLLM(ctx, req)  // 子类实现
-   │     ↓
-   │   apps/api/src/specialists/CopywritingAgent.ts invokeLLM(ctx, req)
-   │   ├─ this._mode = req.mode ?? 'free'  // ⚠️ TD-014 _mode race
-   │   └─ return await this._consumeStream(this.llmGateway.stream({...}))
-   │        ↓
-   │      apps/api/src/workers/llm-gateway/index.ts:111 complete() / stream()
-   │      ├─ checkRateLimit(userId)  // Upstash · throws RateLimitError
-   │      ├─ MODEL_BY_TIER[req.model_tier] → primary='claude-sonnet-4-6' fallback='gpt-4o'
-   │      ├─ _callWithRetry(primary, req, 1)
-   │      │   ├─ _callAnthropic / _callOpenAI (按 model 前缀分发)
-   │      │   ├─ AbortController · timeout_ms (60s reasoning / 30s lightweight)
-   │      │   └─ buildAnthropicPayload → client.messages.create({ signal })
-   │      ├─ catch primary err → _callWithRetry(fallback, req, 0) → set fallback meta
-   │      └─ writeCostLog({ req, res, success:true })  ★ Layer 1 (callType='complete')
-   │           apps/api/src/workers/llm-gateway/cost-logger.ts:39
-   ├─ Step 4: parsed = this.outputSchema.safeParse(raw.content)
-   │   └─ if 失败 → retry 1 次 invokeLLM → 再失败 throw SchemaValidationError
-   ├─ Step 5: this._writeCostLog(...)  ★ Layer 2 (callType='specialist_call')
-   │           apps/api/src/specialists/base/BaseSpecialist.ts:208
-   │           ⚠️ TD-013 双写 cost_log
-   └─ return { result, isFallback, durationMs, tokensUsed, modelUsed, traceId }
+1. User clicks "生成文案" (`apps/web/src/pages/step/Step7.tsx`)
+2. Hook `useStepData(accountId, 'step7')` writes LS first (`apps/web/src/hooks/useStepData.ts:23`)
+3. `trpc.copywriting.generate.mutate({stepKey, ...})` (`apps/web/src/lib/trpc.ts`)
+   - 自动注 `x-trace-id` header + cookie `app_session`
+4. Hono 接到 POST `/trpc/copywriting.generate` (`apps/api/src/index.ts:200`)
+5. Trace mw 写 `traceStore.run({traceId}, async () => next())` (`index.ts:42-49`)
+6. `createContext(c)` lucia 验证 cookie · 注入 `user + activeAccountId` (`apps/api/src/trpc/context.ts:32`)
+7. tRPC trace mw 再读 X-Trace-Id (avoid 'pending')(`apps/api/src/trpc/trpc.ts:34`)
+8. `protectedProcedure` = publicProcedure + `accountIsolationMw` (`apps/api/src/trpc/middleware/account-isolation.ts:52`)
+9. `accountIsolationMw` 校验 `activeAccountId !== null` → 进入 `$transaction`:
+   - `SET LOCAL ROLE quanqn_app` (非超用户 · RLS 生效)
+   - `SELECT set_config('app.current_account_id', <id>, true)` (tx-scoped)
+   - `next({ctx: {...ctx, prisma: tx}})` (后续 resolver 用 tx)
+10. `copywriting.generate` resolver 调 `copywritingAgent.execute({...})` (`apps/api/src/trpc/routers/copywriting.ts`)
+11. `BaseSpecialist.execute()` (`apps/api/src/specialists/base/BaseSpecialist.ts:68`):
+    a. `inputSchema.parse(req.userInput)` → ZodError on fail
+    b. `contextAssembler.assemble({...})` → 5 路 `Promise.allSettled` · 5s cap
+    c. `invokeLLM(ctx, req)` → 子类实现 · 调 `llmGateway.complete()`
+    d. `outputSchema.safeParse(raw.content)` → retry 1 (再 `invokeLLM`) → 仍失败 throw `SchemaValidationError`
+    e. `_applyDisclaimer(result, userInput)` (industry → 敏感行业 · markdown 末尾追加免责)
+    f. `_writeCostLog(...)` → `prisma.costLog.create({...})` (callType='specialist_call' · target jsonb)
+12. Resolver 写 history (`prisma.history.create({...accountId})`)
+13. Response 经 tRPC batch stream → CORS 加 `x-trace-id` 头 → 客户端
+14. `useStepData` 不滚回 LS · `useMutation.onError` 显 toast `已保存到本地 · 网络恢复后同步`
 
-   catch (err) {  // SchemaValidationError | LLMTimeoutError | 5xx → fallback path
-     fallback = ctor.fallbackTemplate?.[req.mode]
-     if (fallback) → write cost_log(model='fallback', tokens=0) → return fallback as TOut
-     else throw err  // 让用户看真错(AC-9)
-   }
-      ↓
-9. apps/api/src/trpc/routers/copywriting.ts:186 写 history 表
-   ├─ prisma.history.create({
-   │     accountId: activeAccountId!,
-   │     agentId: 'CopywritingAgent', agentMode: 'free',
-   │     content: freeResult.markdown, contentType: 'markdown',
-   │     scriptType, elements, isFallback, tokensUsed, modelUsed, durationMs, traceId
-   │   })
-   ├─ select: HISTORY_FREE_SELECT
-   └─ return row  → tRPC 序列化
-      ↓
-10. tx COMMIT (set_config 自动清除 · isolation 离 mw 即失效)
-      ↓
-11. Response 走 Hono · X-Trace-Id 写 response header (index.ts:54)
-      ↓
-12. apps/web 收 response
-    └─ trpc.copywriting.freeGenerate.useMutation onSuccess
-        - 写 LS (getToolLsKey + result)
-        - setState 渲染 ToolResult (markdown via react-markdown + remark-gfm)
-```
+### §5.2 反馈飞轮闭环 (Feedback Loop · LD-008)
 
-### §5.2 Auth 路径 · OAuth 登录
+1. User clicks `<FeedbackButton>` good/bad (`apps/web/src/components/FeedbackButton.tsx`)
+2. `trpc.costLog.logFeedback.mutate({stepKey, agentId, type})`
+3. `costLogRouter.logFeedback` 写 `costLog (eventType=good|bad, callType=feedback)` (`apps/api/src/trpc/routers/costLog.ts:24`)
+4. **同步异步分离** · resolver hook 调 `enqueueIfThresholdMet(accountId, traceId)` 不 await
+5. `enqueueIfThresholdMet` (`apps/api/src/lib/evolution/trigger.ts:18`):
+   - `prisma.$queryRaw INSERT INTO evolution_profiles ... ON CONFLICT DO UPDATE RETURNING feedback_count_total`
+   - 原子递增 + 防 read-then-write race
+   - `if (count ∈ {5,20,50,100})` → `evolutionQueue.add('evo:{acc}:{count}', {accountId, triggerType: 'threshold:{count}'})` (jobId 去重)
+6. BullMQ evolutionWorker 拉 job (`apps/api/src/workers/evolution/worker.ts:24`)
+7. `evolutionAgent.execute({accountId, userInput: {accountId, triggerType}})` (`apps/api/src/agents/evolution/EvolutionAgent.ts:96`):
+   - `recentFeedbacks(N=count/5)` + `getDeepLearningSamples(10)` + `previousInsight (ctx.evolutionInsight)`
+   - `llmGateway.complete(reasoning · eventType='l5_agent')`
+   - merge Rule 3 (preferredCatchphrases ∪ prev top 10)
+   - `prisma.$transaction([evolutionProfile.update, evolutionInsight.create])` 原子 · 任一失败全回滚
+8. 下一次 Specialist 调用时 · ContextAssembler 第 5 路 `getLatestInsight(accountId)` 读 `EvolutionProfile.latestInsight` → 注入 systemPrompt `[Section 4] 用户偏好画像`
 
-```text
-1. /auth/login (apps/api/src/index.ts:61)
-   ├─ getProvider() (mock | google · OAUTH_PROVIDER env)
-   ├─ generateState() + provider.getAuthorizationUrl(state)
-   ├─ setCookie('oauth_state', state) + 'oauth_code_verifier' (PKCE)
-   └─ redirect → Google / mock callback URL
+### §5.3 DailyTask Cron 链路 (LD-004 / ADR-018)
 
-2. /auth/callback (apps/api/src/index.ts:95)
-   ├─ requiresCsrfCheck(provider.name) → state vs storedState 校验
-   │   失败 → audit_log 写 security_alert + 401
-   ├─ provider.validateCallback({code, state, codeVerifier}) → userInfo
-   ├─ prisma.user.upsert({ where:{openId}, update:{lastSignedIn}, create:{...} })
-   ├─ lucia.createSession(user.id, {})
-   ├─ setCookie(sessionCookie 'app_session' · httpOnly · sameSite:Lax · secure:isProd)
-   ├─ audit_log.create({ userId, eventType:'auth.login', payload:{provider}, traceId })
-   └─ redirect → APP_BASE_URL ('/')
+1. `dailyTaskCron.start()` 由 `index.ts:223` 启动 · cron expr `0 0 * * * Asia/Shanghai` (`apps/api/src/cron/daily-task-runner.ts:72`)
+2. 每天 0 点触发 → `runForAllActiveAccounts()`
+3. `prisma.ipAccount.findMany({isActive:true, updatedAt:{gt: 7-day-ago}})`
+4. `Promise.all(accounts.map(a => dailyTaskQueue.add('daily-task', {accountId,scheduledDate}, {jobId: 'daily-task-{acc}-{date}'})))` (幂等 jobId)
+5. BullMQ dailyTaskWorker (concurrency=5) 拉 job (`apps/api/src/workers/daily-task/worker.ts:36`)
+6. `dailyTaskAgent.execute({accountId, userInput:{accountId, taskDate}})`:
+   - 冷启动判定 · stepData=0 OR EvolutionProfile=null → 5 条模板 tasks(`modelUsed='cold-start-template'` · isFallback=false)
+   - 否则 `llmGateway.complete(lightweight · eventType='l5_agent')` 生成 3-5 个任务
+7. `prisma.dailyTask.upsert({where:{accountId_taskDate:{accountId,taskDate}}, ...})` (@@unique 保幂等)
+8. User 早上打开 `/daily-tasks` · `trpc.dailyTasks.getToday.useQuery()` 拉今日记录
 
-3. /auth/logout (apps/api/src/index.ts:188)
-   ├─ lucia.invalidateSession(sessionId)
-   ├─ blank cookie
-   └─ redirect → '/'
-```
+### §5.4 VoiceChat tRPC Subscription (L5 · 第 3 种 orchestrator)
 
-### §5.3 Step5 / Step7 SSE 流(saveStream subscription)
-
-```text
-apps/web step5/step7 调 trpc.stepData.saveStream.subscribe(input)
-  ↓
-apps/api/src/trpc/routers/stepData.ts:305 subscription async function*
-  ├─ yield { type: 'started', traceId } 立即(首 chunk < 3s)
-  ├─ const agentRes = await topicAgent.execute(...) | copywritingAgent.execute(...)
-  ├─ prisma.stepData.upsert(完整字段 · status='completed'/'fallback')
-  └─ yield { type: 'done', result }
-  ↓
-SSE chunks 经 trpc httpBatchStreamLink 流回 apps/web
-```
-
-### §5.4 RLS 强制路径
-
-```text
-任何 protectedProcedure → accountIsolationMiddleware → $transaction
-   ├─ SET LOCAL ROLE quanqn_app  (非 superuser · RLS 强制启用)
-   ├─ set_config('app.current_account_id', activeAccountId, true) ★ true=is_local=tx 范围
-   ├─ set_config('app.current_user_id', user.id, true)
-   └─ next({ ctx: { prisma: tx } })
-      ↓
-所有 prisma.<model>.<op>() 在 tx 内
-   ↓ Postgres
-RLS Policy 自动 WHERE: account_id = NULLIF(current_setting('app.current_account_id', true), '')::int
-   - 缺 setting → NULLIF→NULL→::int=NULL → 0 行
-   - 跨账号查 → 0 行
-   - admin 13 表 RLS DISABLE → super_admin 跨账号(P9.0+ 实施)
-   ↓
-COMMIT → set_config 自动清除
-```
-
-### §5.5 Cost / Audit 写入
-
-```text
-LLMGateway.complete() 成功 / 失败:
-  └─ cost-logger.ts:39 writeCostLog (callType='complete', userId, accountId, agentId,
-       modelTier, modelUsed, provider, tokens, costUsd estimate, durationMs, success,
-       fallback 字段, traceId)
-
-BaseSpecialist.execute() 完成:
-  └─ apps/api/src/specialists/base/BaseSpecialist.ts:208 _writeCostLog (callType='specialist_call',
-       agentId, accountId, traceId, model, tokens, durationMs, isFallback, target jsonb={stepKey,agentId})
-
-→ 同一 trace_id 2 行 cost_log · TD-013 待 PRD-11 admin 仪表盘治理
-```
-
-### §5.6 Feedback / Topic 写入
-
-```text
-trpc.costLog.logFeedback(stepKey, agentId, type='good'|'bad', traceId?)
-  ├─ generateHttpTraceId() fallback (apps/api/src/trpc/trpc.ts:25)
-  └─ prisma.costLog.create({ eventType: input.type, callType: 'feedback',
-       modelTier:'none', modelUsed:'none', provider:'client', tokens:0,
-       target: { stepKey, agentId, traceId } })
-       (apps/api/src/trpc/routers/costLog.ts:25-58)
-
-→ DB error 不 throw · log error + return { ok: false } (UX 不阻塞)
-```
+1. User 发起 voice → `trpc.voiceChat.start.subscription({userMessage, sessionId})` (`apps/web/src/pages/tools/VoiceChat.tsx`)
+2. tRPC subscription 用 `httpBatchStreamLink` (`apps/web/src/lib/trpc.ts:50`)
+3. `voiceChatRouter.start` async generator(`apps/api/src/trpc/routers/voiceChat.ts:20`):
+   - 校验 `activeAccountId !== null` → throw UNAUTHORIZED
+   - `dispatch = (name, args) => dispatchTool(name, args, activeAccountId, prisma)` (RLS-scoped)
+   - `yield* voiceChatAgent.executeStream({...}, dispatch)`
+4. `VoiceChatAgent.executeStream()` (`apps/api/src/specialists/VoiceChatAgent.ts`):
+   - check `_activeSessions.get(accountId)` → 拒并发 (AC-8 module-level Map)
+   - `getTurns(accountId, 10)` 读 L1 Buffer
+   - `llmGateway.stream({tier='reasoning', tools=VOICE_CHAT_TOOLS, ...})`
+   - for-await chunk → if `tool_use` → `dispatch(name, args)` → push `tool_result` chunk → continue
+   - 累积 delta · post-validate ≤ 80 字 截断 (AC-7)
+   - `pushTurn(accountId, {role:'user'|'assistant', content})` (LPUSH/LTRIM/EXPIRE 1800)
+5. yield 类型 · `delta | tool_call | tool_result | done | error` (5 种)
+6. `_activeSessions.delete(accountId)` finally
 
 ---
 
 ## §6 Key Abstractions
 
-### §6.1 BaseSpecialist (active · `apps/api/src/specialists/base/BaseSpecialist.ts`)
+### §6.1 SpecialistConfig (五层 · LD-005)
 
-**Purpose:** 统一所有 Specialist 的执行模板 · 强制 4 步 + fallback
+`apps/api/src/specialists/base/types.ts`
 
-```ts
-export abstract class BaseSpecialist<TIn, TOut> {
-  abstract readonly config: SpecialistConfig;
-  abstract readonly inputSchema: z.ZodType<TIn>;
-  abstract readonly outputSchema: z.ZodType<TOut>;
-  static readonly fallbackTemplate?: Record<string, unknown>;
-  protected readonly llmGateway: ILLMGateway;
-
-  async execute(req: SpecialistRequest<TIn>): Promise<SpecialistResponse<TOut>> {
-    /* Step 1-5 模板 */
-  }
-
-  protected abstract invokeLLM(ctx: AssembledContext, req: SpecialistRequest<TIn>): Promise<InvokeLLMResult>;
-  private async _writeCostLog(data: {...}): Promise<void> { /* 写 cost_log */ }
-}
-```
-
-**Five-Layer SpecialistConfig** (`specialists/base/types.ts`):
-1. **persona** · role / goal / boundaries[]
-2. **memory** · l1_readonly / l2_read / l2_write
-3. **knowledge** · constants / rag / refresh_interval_sec
-4. **tools** · llm.complete / llm.stream / image.generate / file.parse / tool.custom
-5. **execution** · timeout_ms / retry / model_tier / streaming / parallel_group?
-
-**已实施 8 specialists:**
-| Specialist | Modes | streaming | model_tier | parallel_group | 文件 |
-|---|---|:-:|---|---|---|
-| PositioningAgent | industry / execution | ❌ | reasoning | — | `specialists/PositioningAgent.ts` |
-| BrandingAgent | step3 / step3b | ❌ | reasoning | — | `specialists/BrandingAgent.ts` |
-| MonetizationAgent | step4b | ❌ | reasoning | — | `specialists/MonetizationAgent.ts` |
-| TopicAgent | step5 (5 categories SSE) | ✅ | reasoning | topic | `specialists/TopicAgent.ts` |
-| VideoAgent | step6 | ❌ | reasoning | — | `specialists/VideoAgent.ts` |
-| CopywritingAgent | step7 / free / boom (acquisition→PRD-6) | ✅ | reasoning | copywriting | `specialists/CopywritingAgent.ts` |
-| LivestreamAgent | step8 | ❌ | reasoning | — | `specialists/LivestreamAgent.ts` |
-| AnalysisAgent | viral / structural | ❌ | lightweight | — | `specialists/AnalysisAgent.ts` |
+- `agentId` (写 cost_log.agentId · 14 SpecialistId 之一)
+- `persona` (role / goal / boundaries[])
+- `memory` (l1_readonly / l2_read / l2_write)
+- `knowledge` (constants / rag / refresh_interval_sec)
+- `tools` (string[]) — VoiceChat 用
+- `execution` (timeout_ms / retry / model_tier / streaming / parallel_group?)
 
 ### §6.2 SpecialistRequest / SpecialistResponse
 
-```ts
-interface SpecialistRequest<TIn> {
-  accountId: number;
-  mode?: string;
-  userInput: TIn;
-  traceId?: string;
-  stepKey?: string;
-}
+- Request · `accountId` + `userInput` + `mode?` + `traceId?` + `stepKey?`
+- Response · `result` + `isFallback` + `durationMs` + `tokensUsed` + `modelUsed` + `traceId`
 
-interface SpecialistResponse<TOut> {
-  result: TOut;
-  isFallback: boolean;
-  durationMs: number;
-  tokensUsed: { prompt: number; completion: number; total: number };
-  modelUsed: string;
-  traceId: string;
-}
-```
+### §6.3 AssembledContext (ContextAssembler 输出)
 
-### §6.3 LLMGateway (`apps/api/src/workers/llm-gateway/index.ts`)
+`apps/api/src/services/context-assembler/types.ts`
 
-```ts
-class LLMGateway {
-  selectTier(modelHint, _costBudget): ModelTier { return modelHint; }   // P0 pass-through
-  async complete(req: CompleteRequest): Promise<CompleteResponse> { /* 限流→primary→fallback→template→costLog */ }
-  async *stream(req): AsyncIterable<StreamChunk> { /* TODO P3 真流式 · P0 yield meta+done */ }
-  embed(text): Promise<number[]> { /* TODO P3 OpenAI text-embedding-3-small */ }
-}
-const MODEL_BY_TIER = {
-  reasoning:   { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
-  lightweight: { primary: 'claude-haiku-4-5',  fallback: 'gpt-4o-mini' },
-};
-```
+- `systemPrompt` (拼 persona + L2 stepData + L4 EvolutionInsight Section 4 + constants methodology)
+- `userPrompt` (`<user_input>{piiMasked}</user_input>`)
+- `tools` (Specialist 用 · VoiceChat 5 个 + 其他空)
+- `evolutionInsight` (PRD-8 第 5 路 · `EvolutionInsightContent | null`)
+- `metadata` (`contextTokens` chars/4 粗算 + `layersUsed[]` + `ragHits[]`)
 
-### §6.4 ContextAssembler (`apps/api/src/services/context-assembler/ContextAssembler.ts`)
+### §6.4 InvokeLLMResult (Specialist 子类返)
 
-```ts
-class ContextAssembler {
-  async assemble(req: AssembleRequest): Promise<AssembledContext> {
-    // Promise.allSettled 4 路 + 5s cap
-    // _fetchStepData (real) + _fetchEvolutionProfile (stub) + _fetchSamples (stub) + _fetchRag (stub) + _fetchConstants (real)
-    // _composeSystemPrompt(req, stepData, constants) → SPECIALIST_TEMPLATES[agentId].persona/methodology
-    // _formatUserPrompt(input) → JSON string in <user_input>...</user_input>
-    return { systemPrompt, userPrompt, tools:[], metadata };
-  }
-}
-const FETCH_TIMEOUT_MS = 5_000;
-```
+- `content` (string | object)
+- `tokens` ({prompt, completion, total})
+- `model` (实际 model · 反 D-019 stream meta chunk)
+- `isFallback?` (boolean)
 
-**8 templates:** `services/context-assembler/templates/{positioning, branding, monetization, topic, video, copywriting, livestream, analysis}.ts`
+### §6.5 ModelTier (LLM 路由)
 
-### §6.5 protectedProcedure / globalProcedure
+- `reasoning` (主 `claude-sonnet-4-6` → fallback `gpt-4o`)
+- `lightweight` (主 `claude-haiku-4-5` → fallback `gpt-4o-mini`)
 
-```ts
-// apps/api/src/trpc/middleware/account-isolation.ts:52-58
-export const protectedProcedure = publicProcedure.use(accountIsolationMiddleware);
-export const globalProcedure = publicProcedure.meta({ isGlobal: true });
-```
+### §6.6 SpecialistId (14 个 · LD-002)
 
-**用法分布(实测):**
-- protectedProcedure · 49 处(全部业务 router 默认)
-- globalProcedure · 4 处:
-  - `routers/ipAccounts.ts:57` create (用户首次创账号 · 还无 activeAccountId)
-  - `routers/ipAccounts.ts:101` switchActive (切账号本身)
-  - `routers/invite.ts:39` redeem
-  - `routers/trending.ts:42-56` fetch + listByIndustry + listByStyle (TrendingItem 全局表)
-- publicProcedure · 1 处:`routers/auth.ts:9` me (允许未登录返回 ok:false)
+`apps/api/src/agents/base/types.ts:9-14`
 
-### §6.6 traceStore (AsyncLocalStorage · `apps/api/src/lib/logger.ts`)
-
-```ts
-export const traceStore = new AsyncLocalStorage<{ traceId: string }>();
-export const logger = pino({
-  ...,
-  mixin() {
-    const store = traceStore.getStore();
-    return store?.traceId ? { traceId: store.traceId } : {};
-  },
-});
-```
-
-→ Hono mw + tRPC traceMiddleware 都 `traceStore.run({ traceId }, () => next())` · pino 自动 inject
-
-### §6.7 Shadow Router (`packages/clients/src/router-types.ts`)
-
-```ts
-const _t = initTRPC.create();
-const _shadowRouter = _t.router({ auth: _t.router({ me: _t.procedure.query(...) }), ... });
-export type AppRouter = typeof _shadowRouter;
-```
-
-**Why:** 前端 import type AppRouter · TS 类型擦除 · @trpc/server 不进 browser bundle
-**TD:** P1 改 TypeScript project references(`packages/clients/src/router-types.ts:8` 注释)
+PositioningAgent · BrandingAgent · MonetizationAgent · TopicAgent · CopywritingAgent · VideoAgent · LivestreamAgent · PrivateDomainAgent · AnalysisAgent · DiagnosisAgent · DeepLearnAgent · VoiceChatAgent ★L5 · EvolutionAgent ★L5 · DailyTaskAgent ★L5
 
 ---
 
 ## §7 Entry Points
 
-### §7.1 apps/api · Hono server
+### §7.1 Web (apps/web)
 
-- **Location:** `apps/api/src/index.ts`
-- **Triggers:** `tsx watch src/index.ts` (dev) / `tsx src/index.ts` (start) / `tsc -b` (build)
-- **Port:** 3000 (default · `process.env.PORT`)
-- **Responsibilities:**
-  - validateStartupConfig() (env 校验 · prod 禁 mock · SESSION_SECRET ≥ 32)
-  - cors mw (origin = APP_BASE_URL || http://localhost:5173 · credentials:include)
-  - Hono trace mw (X-Trace-Id 写入 response + traceStore.run)
-  - /health (no-op)
-  - /auth/{login,callback,logout} (Lucia + arctic OAuth)
-  - /trpc/* (fetchRequestHandler → appRouter)
-  - checkDbConnection() 启动时验 DB · 失败 process.exit(1)
-- **Bind:** `serve({ fetch: app.fetch, port })`
+| Entry | 路径 | 职责 |
+|---|---|---|
+| `index.html` | `apps/web/index.html` | Vite 入口 · 加载 `/src/main.tsx` |
+| `main.tsx` | `apps/web/src/main.tsx` | createRoot + Provider 套 (`<trpc.Provider>` + `<QueryClientProvider>` + `<RouterProvider>`) |
+| `router.tsx` | `apps/web/src/router.tsx` | createBrowserRouter · 34 routes (lazy 4 chunks) |
+| `RootLayout` | `apps/web/src/layouts/RootLayout.tsx` | Header + Toaster + Suspense fallback |
+| `StepLayout` | `apps/web/src/layouts/StepLayout.tsx` | /step/* 嵌套 + FeedbackButton(STEP_AGENT_MAP) |
 
-### §7.2 apps/web · Vite SPA
+### §7.2 API (apps/api)
 
-- **Location:** `apps/web/src/main.tsx`
-- **Triggers:** `vite` (dev :5173 · proxy /api/trpc → :3000) / `vite build` (dist/) / `vite preview`
-- **Responsibilities:**
-  - createRoot('#root')
-  - StrictMode + trpc.Provider + QueryClientProvider + RouterProvider
-  - Aurelian Dark fonts (`@fontsource/{manrope,plus-jakarta-sans,inter}` self-hosted)
-  - 34 routes (createBrowserRouter 在 `apps/web/src/router.tsx`)
+| Entry | 路径 | 职责 |
+|---|---|---|
+| `index.ts` | `apps/api/src/index.ts` | Hono boot · 启 cron · dev 模式启 in-process workers |
+| `/trpc/*` | `apps/api/src/index.ts:200` | fetchRequestHandler · 25 router 合并 |
+| `/auth/{login,callback,logout}` | `apps/api/src/index.ts:62-181` | Lucia v3 + arctic OAuth |
+| `/health` | `apps/api/src/index.ts:59` | liveness probe |
 
-### §7.3 apps/admin · 占位
+### §7.3 Workers (apps/api/src/workers)
 
-- **Location:** `apps/admin/src/index.ts` (12 行 stub)
-- **Triggers:** P9.0 启动 (PRD-10 起)
-- **Responsibilities:** 待实施 · ADMIN-ARCHITECTURE.md §8.2
+| Worker | 启动方式 | 入口 |
+|---|---|---|
+| llm-gateway | 应用层调 `llmGateway.complete/stream` | `apps/api/src/workers/llm-gateway/index.ts` (export const) |
+| methodology-query | 应用层调 `methodologyQueryWorker.get/getAll` | `apps/api/src/workers/methodology-query/index.ts` |
+| image-gen | BullMQ Queue 'image-gen' · prod 独立容器 `pnpm worker:image-gen` · dev in-process | `apps/api/src/workers/image-gen/worker.ts` |
+| daily-task | BullMQ Queue 'daily-task' · cron 触发 enqueue · dev in-process | `apps/api/src/workers/daily-task/worker.ts` |
+| evolution | BullMQ Queue 'evolution' · trigger.ts enqueue · 跑在 API 进程 | `apps/api/src/workers/evolution/worker.ts` |
+| stt | 应用层 new `WhisperSttWorker()` · 调 transcribe(payload) | `apps/api/src/workers/stt/whisper.ts` |
+| tts | 应用层 new `OpenAITtsWorker()` · 调 synthesize(payload) | `apps/api/src/workers/tts/openai-tts.ts` |
+| trending-scraper | 空目录 (LD-017 留 PRD-9 第三方授权方案) | — |
+| file-parser | 空目录 (PRD-9+) | — |
 
-### §7.4 Test Runners
+### §7.4 Cron (apps/api/src/cron)
 
-- `vitest run` (root vitest.config.ts) · 跑 tests/unit + tests/integration
-- `vitest run --config vitest.judge.config.ts` (LLM Judge · 22 cases)
-- `playwright test` (tests/e2e · 19 specs)
-- `tsx tests/llm-judge/runner.ts` (legacy · 待整合)
+| Cron | 表达式 | 入口 |
+|---|---|---|
+| daily-task-runner | `0 0 * * * Asia/Shanghai` | `apps/api/src/cron/daily-task-runner.ts:72` |
 
 ---
 
 ## §8 Architectural Constraints
 
-- **Threading:** 单 Node 进程 · event loop · 无 worker_threads · LLM 调用 await(non-blocking) · pgvector 查询 future 走 Promise.all
-- **Global state:**
-  - `globalThis.__prisma` (dev hot reload 防泄漏 · `apps/api/src/lib/prisma.ts:11-14`)
-  - `_anthropicClient` / `_openaiClient` lazy 单例 (`workers/llm-gateway/index.ts:87-88`)
-  - `_provider` lazy 单例 (`lib/auth/providers.ts:93`)
-  - `_limiters` Map<plan, Ratelimit> (`workers/llm-gateway/rate-limiter.ts:34`)
-  - `Specialist._mode` instance state — ★ TD-014 · 5 specialists 都有 · 单 user 串行安全 · 高并发 race
-- **Connection pool:** Prisma 默认 `physical_cpus * 2 + 1` · accountIsolationMiddleware 每请求 wrap $transaction · DB conn 持有 = LLM 时长 · ★ 高 QPS 风险(留 PRR)
-- **Circular imports:** 0 已知(verbatimModuleSyntax + tsc strict 防住)
-- **No console.log:** LD-013 + AGENTS §6.9 · 强制用 logger
-- **No direct LLM SDK:** R-1 · grep 仅命中 `workers/llm-gateway/index.ts:13-21`
-- **No prisma.$executeRaw 除一处:** AC-6 · 仅 `account-isolation.ts:38-41`
-- **strict + noUncheckedIndexedAccess:** `tsconfig.base.json:17-29` 强制
-- **eslint --max-warnings=0:** `apps/api/package.json:11`(0 warning 强制)
+- **Threading model** · Node 20 单线程事件循环 · `apps/api/src/index.ts` 单进程 · BullMQ Worker 用 `concurrency` 选项 (daily-task=5, evolution=5)· VoiceChat 用 module-level `_activeSessions: Map<number, boolean>` 防同 account 并发
+- **Global state (module-level)** ·
+  - `apps/api/src/lib/prisma.ts:14` `globalThis.__prisma` 单例 (dev hot reload 防多连接)
+  - `apps/api/src/lib/redis.ts:7` `redis` 单例 export (ioredis · BullMQ 共用)
+  - `apps/api/src/workers/llm-gateway/index.ts:90,95` lazy `_anthropicClient` + `_openaiClient`
+  - `apps/api/src/lib/voice-chat/tools-dispatcher.ts:14` `_lockMap: Map<number, Promise<void>>` (per-account lock)
+  - `apps/api/src/specialists/VoiceChatAgent.ts` `_activeSessions: Map<number, boolean>` (并发防护)
+- **Circular imports** · `protectedProcedure` 定义在 `middleware/account-isolation.ts` 不是 `trpc.ts` (避免 publicProcedure 与 mw 循环)· `publicProcedure` 从 trpc.ts re-import 进 mw 文件
+- **Transaction scope** · `accountIsolationMw` 把全 resolver 包在 `prisma.$transaction(async tx => ...)` · `SET LOCAL` 仅 tx-scoped · RLS 策略生效需 `SET LOCAL ROLE quanqn_app` (superuser bypass RLS by default)
+- **dev mode in-process** · `NODE_ENV=development` 时 `index.ts:212` 启动 imageGenWorker + dailyTaskWorker 在 API 进程内 · prod 走独立 container
+- **subscription long-lived** · tRPC v11 subscription 走 `httpBatchStreamLink` · 不是 websocket · `responseType=streaming`
+- **TS strict** · `tsconfig.base.json` `strict:true + noUncheckedIndexedAccess + noImplicitOverride + useUnknownInCatchVariables`
+- **`prisma.$executeRaw` 唯一允许处** · `apps/api/src/trpc/middleware/account-isolation.ts:38-41` (LD-009 · R-009 audit grep)
+- **`@anthropic-ai/sdk` / `openai` 仅 3 处** · llm-gateway/index.ts (chat completion) + workers/stt/whisper.ts (Whisper audio · D-038) + workers/tts/openai-tts.ts (TTS audio · D-038)
 
 ---
 
-## §9 Anti-Patterns(本项目历史/待修)
+## §9 Anti-Patterns
 
-### Anti-Pattern A · 双 BaseSpecialist 时序错位
+### §9.1 跨 Specialist 调用 (R-2 · LD-003)
 
-**What happens:** `apps/api/src/agents/base/BaseSpecialist.ts` 与 `apps/api/src/specialists/base/BaseSpecialist.ts` 共存 · 字段不同(老版 run() / 新版 execute()) · 老版唯一活引用是 `agents/specialists/CopywritingAgent.ts` (示例代码 · 0 业务引用)
-**Why it's wrong:** Ralph 找文件容易选错 · 类型仍依赖 `agents/base/types`(SpecialistId)却又用新版 BaseSpecialist · 半途
-**Do this instead:** 把 `agents/base/types.ts` (`SpecialistId`/`ModelTier`/`generateSpecialistTraceId`) 迁到 `specialists/base/types.ts` · 删 `agents/` 目录 · TD-NEW-3 已记录
+**What happens:** Specialist A 在 execute 中直接 `specialistB.execute(...)` 共享 stepData
+**Why it's wrong:** 破坏 ContextAssembler 单一入口 (D-007)· 失去 trace_id 父子链 · 单元测试隔离失败
+**Do this instead:** 通过 `ContextAssembler.assemble()` 读 L2 stepData · EvolutionAgent 写 EvolutionProfile · 下次调用注入 prompt(`apps/api/src/services/context-assembler/ContextAssembler.ts:43`)
 
-### Anti-Pattern B · cost_log 双写
+### §9.2 Specialist 内多轮 LLM 循环 (R-3 · LD-001)
 
-**What happens:** LLMGateway.complete() 写一条(callType='complete') · BaseSpecialist.execute() 后再写一条(callType='specialist_call') · 同 trace_id 2 行
-**Why it's wrong:** 未来仪表盘按 trace_id 聚合时需去重 · 字段重叠 80% · 容易解释为 bug
-**Do this instead:** PRD-11 admin 启动时治理 · 选项 A 仪表盘按 callType 分维度 / 选项 B 合并到 LLMGateway 单写 + 在元数据里 emit stepKey
-**Tracker:** TD-013
+**What happens:** Specialist.execute() 内 `for (i=0; i<5; i++) await gateway.complete()`
+**Why it's wrong:** 违反 95/5 编排 · LLM 决策应走 L5 自治 + 外部 orchestrator (ADR-018)· 否则成本失控 + 无法熔断
+**Do this instead:** 单次 `invokeLLM` + retry 1 次 · 多轮场景注册成 L5 · 用 BullMQ Worker 跑 (参 `apps/api/src/workers/evolution/worker.ts`)
 
-### Anti-Pattern C · Specialist._mode instance state
+### §9.3 直接 `import OpenAI` / `import Anthropic` 在应用代码 (R-1 · LD-012)
 
-**What happens:** PositioningAgent / BrandingAgent / AnalysisAgent / VideoAgent / CopywritingAgent 等 5 个 specialist 都有 `private _mode: Mode = 'industry'` instance state · invokeLLM 内 set · outputSchema getter 读
-**Why it's wrong:** 高并发(同 specialist 实例并发处理多个 user 请求)时 race window · 读到错误 mode → outputSchema 错配
-**Do this instead:** 选项 A · BaseSpecialist 接口改 `outputSchema(req)` method · 选项 B · AsyncLocalStorage 隔离 _mode
-**Tracker:** TD-014 · 留 PRD-7+ 高并发治理
+**What happens:** `apps/api/src/specialists/CopywritingAgent.ts` 直接 `new OpenAI()`
+**Why it's wrong:** 跳过 LLMGateway · 失去限流 + 熔断 + 降级 + 计费 + trace 贯穿
+**Do this instead:** `await this.llmGateway.complete({model_tier, systemPrompt, userPrompt, metadata})` (`apps/api/src/specialists/base/BaseSpecialist.ts:219`)· D-038 例外仅 STT/TTS/image-gen (audio/image 不用 chat completions)
 
-### Anti-Pattern D · ContextAssembler 直接拼 stepData/userInput 进 prompt(无 PII mask)
+### §9.4 router 不带 protectedProcedure (R-9 · LD-009)
 
-**What happens:** `services/context-assembler/ContextAssembler.ts:75 _composeSystemPrompt` + `:169 _formatUserPrompt` 直接 `JSON.stringify(input)` 进 prompt · 用户邮箱/手机号/身份证/银行卡原文进 LLM
-**Why it's wrong:** 违 LD-018 / R-14 · 上线即合规风险(数据保护法 + 行业准入)
-**Do this instead:** ContextAssembler `_formatUserPrompt(input)` 强制走 `lib/compliance/pii-mask.ts maskString()` · BaseSpecialist 末尾按 industry 走 `appendDisclaimerIfSensitive` · audit-ld.sh 加 grep 强制
-**Tracker:** TD-NEW-1 · 🔴 CRITICAL · §5.6
+**What happens:** `auth.publicProcedure.query(({ctx}) => prisma.stepData.findMany({where:{accountId:1}}))`
+**Why it's wrong:** 跳过 RLS · 用户 A 看到 B 数据 · 严重 P0 bug
+**Do this instead:** 全 router 用 `protectedProcedure` (`apps/api/src/trpc/middleware/account-isolation.ts:52`)· 全局表 (User/InviteCode/TrendingItem) 用 `globalProcedure` 显式跳 RLS
 
-### Anti-Pattern E · 12 shadcn 组件路径偏差
+### §9.5 ContextAssembler 在 Specialist 内自拼 systemPrompt (D-007)
 
-**What happens:** SCAFFOLD §A.1 + PRD-1 US-005 AC 要求 `packages/ui/src/base/` · 实际写在 `apps/web/src/components/ui/`
-**Why it's wrong:** admin 子应用 P9.0 启动时无法 `import from '@quanqn/ui/base'` 复用 · 必须 lift 一遍
-**Do this instead:** P9.0 admin 启动前 · `mv apps/web/src/components/ui/* packages/ui/src/base/` · web import 改 `@quanqn/ui/base`
-**Tracker:** TD-005 · scheduled
+**What happens:** Specialist invokeLLM 内 `const systemPrompt = ` template literal 自拼
+**Why it's wrong:** 5 路并行 + 5s timeout 降级丢失 · L4 EvolutionInsight 注入失效 · constants 失同步
+**Do this instead:** `BaseSpecialist.execute()` Step 2 自动调 `_contextAssembler.assemble(...)` · invokeLLM 仅消费 `ctx.systemPrompt + ctx.userPrompt` (`apps/api/src/specialists/base/BaseSpecialist.ts:82-88`)
 
-### Anti-Pattern F · 6 worker 子目录全空
+### §9.6 stepData.save 漏 step (PRD-4 US-017 教训 · §11.6.6)
 
-**What happens:** `apps/api/src/workers/{file-parser, image-gen, stt, tts, trending-scraper}/.gitkeep` 全 0 字节 · `bullmq` 依赖 install 但无任何 use
-**Why it's wrong:** 占位骨架 OK · 但下一个新人/Ralph 看到 `import bullmq` 期望存在 BullMQ 队列基础设施 · 实际无
-**Do this instead:** 留占位但更新 README/AGENTS 注明"PRD-X 启动时实施" · 或 P0 阶段从 package.json 移除 `bullmq` 依赖直到真用
+**What happens:** `stepData.save` handler 漏 `step5/step7` · save 返回 null · UI skeleton 永挂
+**Why it's wrong:** 静默失败 · e2e 跑时才发现 · 浪费 ralph 1 次 iteration
+**Do this instead:** `apps/api/src/trpc/routers/stepData.ts` 必覆 9 step + `default: throw new Error('Unsupported stepKey')` (不是 return null)
 
-### Anti-Pattern G · saveStream 长事务持锁
+### §9.7 双路径 L5 误用为标准 Specialist (§11.6.8 TD-024)
 
-**What happens:** `apps/api/src/trpc/routers/stepData.ts:305 saveStream subscription` 在 protectedProcedure transaction 内 · LLM 调用 5-30s 全程持有 1 个 DB connection
-**Why it's wrong:** 高 QPS 时 connection pool 耗尽风险
-**Do this instead:** 真实负载测试时(PRR)· 把 LLM 调用挪出事务 · 仅 result 写 stepData 时再开短事务
-**Tracker:** §2.5 风险点 · 待 PRR 测
+**What happens:** 把 EvolutionAgent / DailyTaskAgent 当 11 生成型 Specialist 走 ContextAssembler grep
+**Why it's wrong:** L5 自治需多次 LLM 调用 + 异步触发 · BaseSpecialist 4 步模板不完全适用
+**Do this instead:** EvolutionAgent + DailyTaskAgent 走双路径白名单 (specialists/ 是 re-export stub · agents/{evolution,specialists}/ 是真实施)· VoiceChat 单路径但走 tRPC subscription 不被 ContextAssembler grep
+
+### §9.8 列表组件不套 ScrollArea (§11.4 · PRD-3 US-006 教训)
+
+**What happens:** Radix DropdownMenuContent 套 `.map(items)` · items > 8 时 viewport 溢出
+**Why it's wrong:** playwright click 56× retry 30s timeout · 用户也无法点击底部
+**Do this instead:** 套 `<ScrollArea className="h-N">` · `ToolsDropdown` h-52 (14 工具) · `AccountDropdown` h-60
 
 ---
 
 ## §10 Error Handling
 
-**Strategy:** 分层 throw + 顶层 catch · LLM 错误 fallback · cost_log 错误吞掉 · DB 错误传到 tRPC
+### §10.1 LLM 失败
 
-**Patterns:**
-- **InputSchema 错误:** zod throws ZodError → tRPC 自动 BAD_REQUEST(详 `apps/api/src/specialists/base/BaseSpecialist.ts:77`)
-- **OutputSchema 错误:** retry 1 次 → 仍失败 → throw `SchemaValidationError` → BaseSpecialist 顶层 catch 触发 fallback path(若有 fallbackTemplate)否则 re-throw
-- **LLM Timeout:** AbortController · `Error.name === 'AbortError'` → throw `LLMTimeoutError(agentId, timeout_ms)` → 顶层 catch fallback
-- **5xx Error:** message includes '5xx' → 顶层 catch fallback
-- **RateLimitError:** `RateLimitError` extends Error · 由 LLMGateway throw · tRPC 不捕获 → 暴露给前端
-- **OAuth FailedCallback:** `validateCallback` throws → /auth/callback 写 audit_log security_alert + 401
-- **DB FORBIDDEN:** activeAccountId 缺失 → `accountIsolationMiddleware` throws TRPCError({code:'FORBIDDEN'})
-- **cost_log 写失败:** try-catch + log error · 不 throw(LLM 调用主线不阻塞 · `BaseSpecialist.ts:249-251` AC-8/AC-11)
-- **DB 错误(business):** propagate · tRPC `onError` log + INTERNAL_SERVER_ERROR
-- **logFeedback DB 错:** 吞掉 + return `{ ok: false }`(UX 不阻塞 · `costLog.ts:55-57` AC-12)
-- **Hono 顶层 unhandled:** `start().catch(err => { logger.error; process.exit(1) })`(`index.ts:226-229`)
+| 错误类型 | 处理路径 |
+|---|---|
+| AbortError (timeout) | BaseSpecialist Step 3 catch → throw `LLMTimeoutError(agentId, timeout_ms)` |
+| LLM 5xx | LLMGateway 内 primary → fallback 模型 · 反 `fallback: {from, to, reason}` |
+| schema 校验失败 | safeParse 失败 → retry 1 次 invokeLLM → 二次失败 throw `SchemaValidationError(zodError, raw)` |
+| Specialist 5xx / SchemaValidation / Timeout | BaseSpecialist catch → 若有 `fallbackTemplate[mode]` 用之 · 否则 re-throw · cost_log 写 `model='fallback' · tokens=0 · isFallback=true` |
+| EvolutionAgent 失败 | 用 `previousInsight` 降级 · 不写新 insight (`apps/api/src/agents/evolution/EvolutionAgent.ts:127-133, 154-159`) |
+| DailyTaskAgent 失败 | 用 5 条模板任务 · `modelUsed='cold-start-template'` · isFallback=false (`apps/api/src/agents/specialists/DailyTaskAgent.ts`) |
+
+### §10.2 数据库失败
+
+| 错误类型 | 处理路径 |
+|---|---|
+| 启动 DB 连接失败 | `checkDbConnection()` exit 1 (`apps/api/src/lib/prisma.ts:42`) |
+| 写 cost_log 失败 | log only · 不 crash 业务 (`apps/api/src/specialists/base/BaseSpecialist.ts:272-274`) |
+| EvolutionAgent $transaction 失败 | 整体回滚(profile + insight 同事务)· LD-014 ADR-014 |
+| stepData.save DB 失败 | LS 不滚回 · 显 toast `已保存到本地 · 网络恢复后同步` (`apps/web/src/hooks/useStepData.ts:48-52`) |
+
+### §10.3 Rate limit
+
+- Upstash LLM 限流 · `RateLimitError` (`apps/api/src/workers/llm-gateway/rate-limiter.ts`)
+- STT/TTS/image-gen 限流 · `TRPCError TOO_MANY_REQUESTS` (`apps/api/src/lib/rate-limit/{stt,tts,image-gen}.ts`)
+
+### §10.4 Validation
+
+- Input · `inputSchema.parse()` throws ZodError → tRPC 转 BAD_REQUEST
+- Output · `outputSchema.safeParse()` → retry → `SchemaValidationError`
+- OAuth state mismatch · `c.json({error:'state mismatch'}, 401)` + audit log `oauth_state_mismatch`
 
 ---
 
 ## §11 Cross-Cutting Concerns
 
-### §11.1 Logging
+### §11.1 Logging (pino + AsyncLocalStorage)
 
-- **Framework:** pino 9 + pino-pretty (dev only · `lib/logger.ts:18-20`)
-- **Approach:**
-  - 严禁 console.log (LD-013)
-  - traceId 自动 inject(AsyncLocalStorage `traceStore` mixin)
-  - 每个关键事件用结构化 key:`logger.info({ traceId, agentId, accountId }, 'specialist.start')`
-  - level via `process.env.LOG_LEVEL`(default 'info')
+`apps/api/src/lib/logger.ts`
 
-### §11.2 Validation
+- pino structured · `mixin()` 读 `traceStore.getStore()?.traceId` 自动注入
+- traceMw 用 `traceStore.run({traceId}, () => next())` 包裹 (`apps/api/src/trpc/trpc.ts:38`)
+- dev `pino-pretty` colorize · prod 纯 JSON 给 vector
+- LD-013 R-禁 `console.log` (audit grep `console\.(log|info|debug)` in `apps/api/src/` → reject)
 
-- **Framework:** zod 3.23
-- **Approach:**
-  - input schemas in `packages/schemas/src/specialist-io/*.schema.ts`(canonical)
-  - tRPC routers inline duplicate(comment 注:`Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use`)
-  - BaseSpecialist `inputSchema.parse` Step 1 + `outputSchema.safeParse` Step 4(retry 1)
-  - 前端 react-hook-form `@hookform/resolvers` + zodResolver
+### §11.2 Trace ID 贯穿
 
-### §11.3 Authentication
+- Web client · `genTraceId()` 每请求 8 字节 hex 注入 `x-trace-id` header (`apps/web/src/lib/trpc.ts:25-31`)
+- Hono trace mw · 读 header 或生成 8 字节 hex · 写响应 `x-trace-id` 头
+- tRPC trace mw · 同读 + `traceStore.run`
+- Specialist · `generateSpecialistTraceId(accountId, agentId)` 派生(REJ-017 · 不用 generateHttpTraceId)
+- BullMQ job · `evolutionWorker` 派生 `evo-worker-{acc}-{Date.now()}` (`apps/api/src/workers/evolution/worker.ts:30`)
 
-- **Framework:** Lucia v3 + arctic 3
-- **Approach:**
-  - cookie name `app_session`(主)vs `admin_session`(P9.0 启动 · LD-A-1)
-  - cookie httpOnly + sameSite:Lax + secure (prod) + AC-15 prod 禁 mock provider
-  - session 存 PG `sessions` 表(Prisma adapter)
-  - prod 必须 google · OAUTH_PROVIDER env 校验 startup
-  - X-CSRF · state cookie + storedState 校验 (mock 跳过)
-  - PKCE codeVerifier cookie
+### §11.3 Validation (zod)
 
-### §11.4 Authorization
+- packages/schemas SoT · `entities/*` 4 · `specialist-io/*` 19 · `admin/*` 0(P9.0)
+- 双 schema 策略(§11.6.5)· `.refine()` 不能序列化 → `BaseSchema`(无 refine)给 LLM responseFormat + `OutputSchema`(含 refine)post-validate
+- 多 mode getter(§11.6.3)· `_mode` instance state + `outputSchema` getter 按 `this._mode` 返(高并发 race window 留 TD-014)
 
-- **Strategy:** RLS-tx-scoped + middleware
-- **Approach:**
-  - protectedProcedure 默认 · activeAccountId 缺失 → FORBIDDEN
-  - globalProcedure for User/InviteCode/TrendingItem(无账号上下文)
-  - SET LOCAL ROLE quanqn_app 切非 superuser(superuser 默认 BYPASSRLS)
-  - PG RLS policy 12 张账号表 · `ip_accounts` 用 user_id 隔离(聚合根)· 其他用 account_id
+### §11.4 Authentication
 
-### §11.5 Trace Propagation
+- Lucia v3 + arctic OAuth (Google + Mock dev)
+- session cookie name=`app_session` (与 admin 区分 · LD-A-1)
+- `validateStartupConfig()` 启动校验 SESSION_SECRET 长度 ≥ 32 · prod 禁 mock provider
+- `protectedProcedure` 不直接校验 user · 校验 `activeAccountId !== null` · null 时 throw FORBIDDEN `no_active_account`
 
-- HTTP 入: `index.ts:46-55` Hono mw 读 X-Trace-Id 或 `randomBytes(8).toString('hex')`(8 byte=16 hex char)
-- ALS 写: `traceStore.run({ traceId }, () => next())`
-- pino 自动 inject (mixin)
-- tRPC 单独 mw 同样 read + run (`trpc.ts:34-39`)
-- BaseSpecialist 读 `req.traceId` 或调 `generateSpecialistTraceId(accountId, agentId)` (含语义 · `tr_${accountId}_${agentId}_${ts}_${rand}`)
-- LLMGateway request `metadata.trace_id` 写入 cost_log
+### §11.5 Disclaimer / PII (LD-018 · TD-016 修)
+
+- `piiMask(input)` 接 ContextAssembler `_formatUserPrompt` · 替换 email/phone/id_card/bank_card 占位符
+- `appendDisclaimerIfSensitive(markdown, industry)` 接 BaseSpecialist `_applyDisclaimer` · markdown 末尾追加免责
+- `attachDisclaimerMeta(obj, industry)` JSON 输出加 `_disclaimer` 元数据
+- 触发条件 · industry ∈ {医疗, 法律, 金融}(关键词 match)
 
 ### §11.6 Cost Tracking
 
-- 双层(TD-013):
-  - Layer 1 LLMGateway · `cost-logger.ts:39 writeCostLog` (callType='complete')
-  - Layer 2 BaseSpecialist · `BaseSpecialist.ts:208 _writeCostLog` (callType='specialist_call' · target jsonb={stepKey,agentId})
-- LLMGateway 失败时(BOTH_FAILED)仍写 1 行 errorCode='BOTH_FAILED'
-- prisma.costLog.create 失败 → log + 不 throw(AC-8)
-
-### §11.7 PII / 行业免责(LD-018)
-
-- 文件: `apps/api/src/lib/compliance/{pii-mask,disclaimer}.ts` 已存在
-- 接线: 🔴 **未接线** · `grep import.*compliance apps/api/src` → 0 命中
-- 影响: 上线即合规风险 · §5.6 / TD-NEW-1
-- 修复: §6 P0 critical action(详 CONCERNS.md §5)
+- 全 LLM 调用走 LLMGateway · `cost-logger.ts` 写 `costLog` (eventType / agentId / accountId / traceId / modelUsed / tokens / durationMs / isFallback / target jsonb)
+- Specialist 直接调 LLMGateway 时 · `metadata.eventType` 决定 cost_log 类别 (`specialist_call` / `l5_agent` / `judge_call` / `feedback`)
+- LD-A-3 admin 审计表 append-only (留 PRD-10+)
 
 ---
 
-## §12 Tech Stack 速查(详 STACK.md)
-
-- **Languages:** TypeScript 5.6+ (strict + noUncheckedIndexedAccess) · SQL · Bash
-- **Backend:** Node 20 · Hono 4 · tRPC v11 · Prisma 5.22 · Lucia 3 · arctic 3 · pino 9 · zod 3 · Anthropic SDK 0.30 · OpenAI SDK 4.70
-- **Frontend:** React 18.3 · Vite 5.4 · Tailwind 3.4 · shadcn (本地 12 组件) · @radix-ui (12 primitives) · @tanstack/react-query 5.59 · zustand 4.5 · react-hook-form 7.53 · sonner 1.7
-- **Test:** vitest 2.1 · Playwright 1.48 · @testcontainers/postgresql 10 · nock 14
-- **DB:** PostgreSQL 16 · pgvector 0.8 · Redis 8 (Upstash REST optional)
-- **Build:** turbo 2 · pnpm 9.15.9 · TS project references
-
----
-
-## §13 References
-
-- **AGENTS.md** §1.7 设计决策 + §3 18 LD + §4.7 17 R · 决策权威
-- **ARCHITECTURE.md** v0.4 · 199K · 9 章战略骨架(本文是事实层 · 与之对账)
-- **ADMIN-ARCHITECTURE.md** v0.2 · 114K · admin 子系统(P9.0 启动)
-- **DATA-MODEL.md** §9 RLS + §13 admin 13 表 + §13.8 admin RLS DISABLE
-- **PROMPTS.md** Specialist prompt 模板权威
-- **PRD-MASTER.md** 14 PRD 总纲 + 35 反例
-- **`.agents/tech-debt.json`** 15 TD(本文 §9 + CONCERNS.md §3 完整)
-- **`.agents/rca/`** RCA-001(audit delay)/ RCA-002(developer timeout)/ RCA-003(econnreset)
-- **`.planning/codebase/CONCERNS.md`** Security boundaries + 流程加固 + critical action items
-
----
-
-*Architecture analysis: 2026-05-09 · QuanQn PRD-1~PRD-5 完成期 · 8 / 14 Specialist 落地 · 文件总数 ~16K LOC · 39 prisma models · 19 tRPC routers · 0 critical bug · 1 critical compliance gap (PII 未接线)*
+*Architecture analysis: 2026-05-11 · PRD-8 完成期 · 14 Specialist 类全到位 · 3 orchestrator(BullMQ+cron+subscription)· 5 路 ContextAssembler · L1 Buffer Redis*

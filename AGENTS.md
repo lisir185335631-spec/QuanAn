@@ -2701,6 +2701,16 @@ grep -q "QUANQN_ADMIN_CLIENT_ID" apps/admin/.env.production || exit 1
 - **触发** · CI 跑(无需 RUN_LIVE_TESTS · lightweight model cost 可控)· `pnpm test:judge` 14/14 pass
 - **PRD-5 起新 Specialist** · 必加 1-2 golden case 到 `tests/judge/` · 走同 judge-runner · 复用 lightweight model
 
+### §11.6.8 L5 自治 Agent 双路径白名单(PRD-8 TD-024 沉淀 · 2026-05-11 接受)
+
+- **背景** · PRD-8 实施 3 L5 自治 Agent · 因 BaseSpecialist execute() 模板方法在 L5(允许多次 LLM 调用 + 异步触发)场景不完全适用 · ralph 在 US-004 retry 1 + US-007 时采用**双路径**:
+  - `apps/api/src/specialists/{Evolution,DailyTask}Agent.ts` · re-export stub(保持 D-007 ContextAssembler grep `apps/api/src/specialists/` 0 命中 evolutionInsight 自拼接 · 维持向后 import 兼容)
+  - `apps/api/src/agents/{evolution,specialists/daily-task}/{Evolution,DailyTask}Agent.ts` · 真实施(含 execute() 覆写 + 自己处理 cost_log + L1 Buffer / threshold trigger / per-account fan-out)
+- **白名单豁免** · D-046 schema SoT 三处一致原则 + D-007 ContextAssembler 单一入口 grep 检查时 · **EvolutionAgent + DailyTaskAgent 走双路径不算违规** · 仅 11 生成型 Specialist(Analysis/Branding/Copywriting/DeepLearn/Diagnosis/Livestream/Monetization/Positioning/PrivateDomain/Topic/Video)受严格 grep
+- **VoiceChatAgent 单路径** · 直接在 `apps/api/src/specialists/VoiceChatAgent.ts` 实施 · 因 VoiceChat 是 tRPC subscription 走 voiceChatRouter 调 · 不被 ContextAssembler 注入 · 不触发 D-007 grep
+- **未来 L5** · 新加 L5 Agent 时(如 PRD-9 DeepLearnAgent 触发器升级 / PRD-11 admin Specialist)· 沿用本模式 · 在 §11.6.8 加 entry
+- **资源** · TD-024 (status: accepted · 设计选择保留) · 详 `.agents/tech-debt.json#TD-024` + `.agents/retros/prd-8-vs-prd-7-retrospective.md §3.3` ralph 主动扩展案例
+
 ---
 
 ## 修订记录

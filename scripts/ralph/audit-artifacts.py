@@ -80,6 +80,32 @@ def _check_pytest_xml_file(xml_file: Path, label: str) -> tuple[bool | None, str
     if not xml_file.exists():
         return None, f"no {xml_file.name} ({label})", {}
 
+    # TD-029 (2026-05-11 · QuanQn PRD-8 US-012 触发): stale artifact 检测
+    # 防 verify-artifacts 残留上 PRD validator 产物误导 audit-artifacts.py 判断
+    # 规则: artifact mtime < manifest.validator_start_ts → 视为 stale (treat as no-file)
+    manifest_path = xml_file.parent / "manifest.json"
+    if manifest_path.exists():
+        try:
+            from datetime import timezone as _tz  # noqa: F401  · 模块顶部没 import UTC
+            _UTC = _tz.utc
+            manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+            start_ts_raw = manifest_data.get("validator_start_ts", "")
+            if start_ts_raw:
+                # 标准化 ISO timestamp · 处理 Z 后缀 + 缺时区
+                ts_str = start_ts_raw.rstrip("Z")
+                if not ts_str.endswith("+00:00") and "+" not in ts_str[-6:]:
+                    ts_str += "+00:00"
+                start_dt = datetime.fromisoformat(ts_str)
+                if start_dt.tzinfo is None:
+                    start_dt = start_dt.replace(tzinfo=_UTC)
+                file_mtime = datetime.fromtimestamp(xml_file.stat().st_mtime, tz=_UTC)
+                if file_mtime < start_dt:
+                    mtime_fmt = file_mtime.strftime("%Y-%m-%d %H:%M")
+                    start_fmt = start_dt.strftime("%Y-%m-%d %H:%M")
+                    return None, f"no {xml_file.name} ({label}) [STALE: mtime {mtime_fmt} < validator_start_ts {start_fmt} · 历史残留视为缺失]", {}
+        except Exception:
+            pass  # manifest 损坏不阻断 · 走原逻辑
+
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()

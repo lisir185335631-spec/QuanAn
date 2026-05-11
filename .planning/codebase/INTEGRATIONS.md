@@ -1,94 +1,172 @@
 # External Integrations
 
-**Analysis Date:** 2026-05-09
+**Analysis Date:** 2026-05-11
 
 ## APIs & External Services
 
-**AI / LLM (single chokepoint per LD-012 + R-1):**
+### AI / LLM (per LD-012 · R-001 · D-038)
 
-- **Anthropic Claude API** — primary reasoning + lightweight tier
-  - SDK: `@anthropic-ai/sdk` 0.30.1 — **only imported in `apps/api/src/workers/llm-gateway/index.ts:19`** (R-1 enforced; `AC-7` comment marks the file as the sole allowed import site)
-  - Models: `claude-sonnet-4-6` (reasoning primary) + `claude-haiku-4-5` (lightweight primary), hardcoded in `MODEL_BY_TIER` (`apps/api/src/workers/llm-gateway/index.ts:81-84`)
-  - Auth: env var `ANTHROPIC_API_KEY` (lazy client initialization in `getAnthropicClient()`, `apps/api/src/workers/llm-gateway/index.ts:90`)
-  - Timeouts: 60s (reasoning) / 30s (lightweight); `AbortController` wired to `client.messages.create` (`apps/api/src/workers/llm-gateway/index.ts:225-233`)
-  - Payload builder + response parser: `apps/api/src/workers/llm-gateway/anthropic-provider.ts` (`buildAnthropicPayload` / `parseAnthropicResponse` / `isAnthropicModel`)
+**Anthropic Claude API** — primary reasoning + lightweight tier (sole-import chokepoint R-001):
+- SDK: `@anthropic-ai/sdk` 0.30 — **only imported in `apps/api/src/workers/llm-gateway/index.ts:19`** (AC-7 comment marks this file as the sole allowed site)
+- Models (`apps/api/src/workers/llm-gateway/index.ts:81-84`):
+  - `claude-sonnet-4-6` — reasoning tier primary
+  - `claude-haiku-4-5` — lightweight tier primary
+- Auth: env `ANTHROPIC_API_KEY` (lazy client `getAnthropicClient()` at `:90`; fail-fast at `:121-123`)
+- Timeouts: 60s reasoning / 30s lightweight; `AbortController` wired to `client.messages.create` (`:225-233`)
+- Payload + parser: `apps/api/src/workers/llm-gateway/anthropic-provider.ts` (`buildAnthropicPayload` / `parseAnthropicResponse` / `isAnthropicModel`)
 
-- **OpenAI API** — fallback reasoning + lightweight (current); future image / STT / TTS / embedding
-  - SDK: `openai` 4.104.0 — **only imported in `apps/api/src/workers/llm-gateway/index.ts:21`** (R-1 enforced; `AC-8` comment)
-  - Models: `gpt-4o` (fallback for reasoning), `gpt-4o-mini` (fallback for lightweight) (`apps/api/src/workers/llm-gateway/index.ts:81-84`)
-  - Auth: env var `OPENAI_API_KEY` (`getOpenAIClient()`, `apps/api/src/workers/llm-gateway/index.ts:96`)
-  - Embedding: stub returns 1536-zero vector (`apps/api/src/workers/llm-gateway/index.ts:175`); production target `text-embedding-3-small` per AGENTS §2.4 — DEFERRED to PRD-6+
-
-- **OpenAI image / STT / TTS** — declared in `.env.example` and AGENTS §2.4 but not yet wired
-  - Worker dirs exist empty: `apps/api/src/workers/{image-gen,stt,tts}/` (no source files as of 2026-05-09)
-  - Models per AGENTS §2.4: `dall-e-3`, `whisper-large-v3`, `tts-1-hd`
+**OpenAI API** — multi-use; **4 worker import sites** (LLMGateway + 3 D-038 audio/image worker exemptions):
+- SDK: `openai` 4.70 — imported at:
+  1. `apps/api/src/workers/llm-gateway/index.ts:21` — fallback reasoning/lightweight (AC-8 chokepoint for chat completions)
+  2. `apps/api/src/workers/image-gen/dall-e-3.ts:11` — DALL-E 3 image gen (PRD-6 US-009 · D-038 exemption documented at file header)
+  3. `apps/api/src/workers/stt/whisper.ts:10` — Whisper-1 STT (PRD-8 US-009 · D-038 exemption)
+  4. `apps/api/src/workers/tts/openai-tts.ts:11` — TTS-1 (PRD-8 US-010 · D-038 exemption)
+- Each non-LLMGateway file carries `D-038: OpenAI {audio,image} API 仅限本文件 import · 不走 LLMGateway` comment to satisfy R-001 audit (e.g. `apps/api/src/workers/stt/whisper.ts:2-4`)
+- Models used:
+  - `gpt-4o` (fallback for reasoning), `gpt-4o-mini` (fallback for lightweight) — `apps/api/src/workers/llm-gateway/index.ts:81-84`
+  - `dall-e-3` 1024×1024 standard quality, n=1 — `apps/api/src/workers/image-gen/dall-e-3.ts:149-154`; cost `$0.04/image`
+  - `whisper-1`, `response_format='text'`, `language='zh'` — `apps/api/src/workers/stt/whisper.ts:86-91`; cost `$0.006/min` (`STT_COST_USD_PER_MIN`)
+  - `tts-1`, voice=`nova` default, `response_format='mp3'` — `apps/api/src/workers/tts/openai-tts.ts:60-65`; cost `$0.015/1K chars` (`TTS_COST_USD_PER_1K_CHARS`)
+  - `text-embedding-3-small` — **not yet wired** (LLMGateway `embed()` stub returns 1536-zero vector, `apps/api/src/workers/llm-gateway/index.ts:175`); PRD-9 RAG deliverable
+- Auth: env `OPENAI_API_KEY` (per-call lazy `new OpenAI({ apiKey, timeout, maxRetries })` in each worker; LLMGateway uses cached singleton `getOpenAIClient()` at `:96`)
+- Timeouts: `STT_TIMEOUT_MS` 30s · `TTS_TIMEOUT_MS` 30s · `IMAGE_GEN` 30s · LLM 30s/60s by tier
 
 **LLMGateway invocation flow** (`apps/api/src/workers/llm-gateway/index.ts:111`):
 ```
 Specialist → BaseSpecialist.execute() → contextAssembler.assemble()
-          → llmGateway.complete(req) [or .stream(req)]
-          → checkRateLimit(userId)            [Upstash]
+          → llmGateway.complete(req) | llmGateway.stream(req)
+          → checkRateLimit(userId)            [Upstash REST]
           → primary call (Anthropic, retry=1)
-          → fallback (OpenAI, retry=0) on primary failure
-          → both fail → templated apology + cost_log(success=false)
-          → writeCostLog (always)
+          → on primary failure → fallback (OpenAI, retry=0)
+          → both fail → templated apology + cost_log(success=false, errorCode='BOTH_FAILED')
+          → writeCostLog (always, success true/false)
           → return CompleteResponse (with optional .fallback metadata)
 ```
 
-**14 Specialists routing through LLMGateway** (per LD-002, LD-007):
+**14 Specialists** (per LD-002 · all 14 live as of PRD-8):
 
-Live (`apps/api/src/specialists/`, 8 files as of PRD-5):
-- `PositioningAgent.ts` (step 1-2)
-- `BrandingAgent.ts` (step 3 / 3b)
-- `MonetizationAgent.ts` (step 4b)
-- `TopicAgent.ts` (step 5, SSE streaming)
-- `CopywritingAgent.ts` (step 7 + free + boom modes, SSE streaming `apps/api/src/specialists/CopywritingAgent.ts:274`)
-- `VideoAgent.ts` (step 6 shooting + analysis modes)
-- `LivestreamAgent.ts` (step 8)
-- `AnalysisAgent.ts` (lightweight tier · structural + viral modes; replaces standalone /analysis + /video-analysis backends)
+In `apps/api/src/specialists/`:
+1. `PositioningAgent.ts` — step 1-2
+2. `BrandingAgent.ts` — step 3 / 3b
+3. `MonetizationAgent.ts` — step 4b
+4. `TopicAgent.ts` — step 5, SSE streaming
+5. `CopywritingAgent.ts` — step 7 + `free` + `boom` + `acquisition` modes, SSE streaming
+6. `VideoAgent.ts` — step 6 shooting + analysis + storyboard modes (PRD-6)
+7. `LivestreamAgent.ts` — step 8
+8. `AnalysisAgent.ts` — lightweight tier · structural + viral modes
+9. `PrivateDomainAgent.ts` — 6-stage private domain plan
+10. `DiagnosisAgent.ts` — 8-dim diagnosis report
+11. `DeepLearnAgent.ts` — sample ingestion + style vector (PRD-8 US-002 skeleton)
+12. **`VoiceChatAgent.ts`** — L5 autonomous · streaming + 5 tools function calling + L1 Buffer (PRD-8 US-011) — overrides `execute()`, sets `outputSchema = z.never()` (SHIELD pattern, `apps/api/src/specialists/VoiceChatAgent.ts:154`)
+13. **`EvolutionAgent.ts`** — L5 autonomous · `apps/api/src/agents/evolution/EvolutionAgent.ts` — atomic threshold trigger + `prisma.$transaction` for `evolution_insights` + `evolution_profile.update` (PRD-8 US-003)
+14. **`DailyTaskAgent.ts`** — L5 autonomous · driven by node-cron `0 0 * * * Asia/Shanghai` + BullMQ fan-out (PRD-8 US-007)
 
-Pending (per LD-002 14-agent target — PRD-6+):
-- `PrivateDomainAgent` · `DiagnosisAgent` · `DeepLearnAgent` · `VoiceChatAgent` · `EvolutionAgent` · `DailyTaskAgent`
+All 14 extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSpecialist.ts:41`); template-method `execute()` enforces input zod parse → context assembly → invokeLLM (1 retry on schema fail) → cost_log write. EvolutionAgent + VoiceChatAgent fully override `execute()` for transaction / streaming flows.
 
-All 8 live specialists extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSpecialist.ts:40`) and call `this.llmGateway.complete()` (or `.stream()` for SSE). The base class enforces:
-- input zod parse → context assembly → invokeLLM → output zod safeParse (1 retry on schema fail) → `cost_log` write
-- Fallback path on `SchemaValidationError` / `LLMTimeoutError` / `5xx` errors → static `fallbackTemplate[mode]` → `cost_log(model='fallback', tokens=0)` (US-015)
+**Fallback path on `SchemaValidationError` / `LLMTimeoutError` / `5xx`** — static `fallbackTemplate[mode]` → `cost_log(model='fallback', tokens=0, isFallback=true)` (US-015 contract).
 
-**ContextAssembler — prompt injection chokepoint (LD-007):**
-- `apps/api/src/services/context-assembler/ContextAssembler.ts:34`
-- 4 parallel data fetches via `Promise.allSettled` + per-fetch 5s timeout: L2 stepData, L4 EvolutionProfile (stub), L4 Samples (stub), L5 RAG (stub) + constants
-- L4 Profile / L4 Samples / L5 RAG return null/[] in current PRD-5 baseline (deferred to PRD-8)
-- Templates: `apps/api/src/services/context-assembler/templates/index.ts` — per-agentId persona / methodology
-- methodologyQueryWorker provides `scriptTypes / hotElements / industries` constants (`apps/api/src/workers/methodology-query/index.ts`)
+### ContextAssembler — prompt injection chokepoint (LD-007 · D-054)
+
+- File: `apps/api/src/services/context-assembler/ContextAssembler.ts:38`
+- **5 parallel data fetches** via `Promise.allSettled` + per-fetch 5s timeout (`:44-51`):
+  1. L2 `step_data` rows (`_fetchStepData`)
+  2. **L4 latest EvolutionInsight** (`getLatestInsight` from `apps/api/src/memory/l4-profile.ts:13`) — **PRD-8 US-001 AC-8 new path**, injected into 11 generative specialists per D-054
+  3. L4 DeepLearning samples (`_fetchSamples` — currently degrades to `[]`)
+  4. L5 RAG (`_fetchRag` — currently degrades to `[]`; pgvector embedded; PRD-9)
+  5. Methodology constants (`methodologyQueryWorker.getAll()`)
+- All 5 routes independently fail-safe; `metadata.layersUsed` reflects successful layers (AC-8)
+- `contextTokens = chars/4` rough estimate (AC-9)
+- `systemPrompt` MUST NOT contain LLM keys or API URLs (R-001 hard rule, AC-10)
+- Templates: `apps/api/src/services/context-assembler/templates/index.ts` — per-agentId persona/methodology
+- PII mask runs before assembly (`apps/api/src/lib/compliance/pii-mask.ts:piiMask`)
+- Sensitive-industry disclaimer appended post-generation (`apps/api/src/lib/compliance/disclaimer.ts:appendDisclaimerIfSensitive`)
+
+### VoiceChat tool function-calling (PRD-8 US-011)
+
+- Tool dispatcher: `apps/api/src/lib/voice-chat/tools-dispatcher.ts:dispatchTool` — 5 tools, each ≤ 2s, **per-accountId concurrency lock** to prevent same-session race (`:14-30`)
+- Tools (defined `apps/api/src/specialists/VoiceChatAgent.ts:43-76`):
+  1. `get_current_step` → reads `step_data`
+  2. `search_history` → reads `histories`
+  3. `query_diagnosis` → reads `diagnosis_reports`
+  4. `get_today_tasks` → reads `daily_tasks` (today's UTC date)
+  5. `get_evolution_insights` → reads `evolution_profile` + recent `evolution_insights`
+- All queries use `ctx.prisma` (RLS-scoped transaction client) — accountId injection mandatory (REJ-008 reject lesson encoded as comment)
 
 ## Data Storage
 
 **Databases:**
-- **PostgreSQL 16.13** (local dev: `postgresql://return@localhost:5432/quanqn`; test DB: `postgresql://return@localhost:5432/quanqn_test` per `CLAUDE.md §3`)
-  - Production target: Supabase or Neon (managed, includes pgvector + Auth) — AGENTS §2.5
-  - Connection: env vars `DATABASE_URL` (Prisma client) + `DIRECT_URL` (Prisma migrations) + `TEST_DATABASE_URL` (`.env.example:16-18`)
-  - Client: Prisma 5.22.0 + @prisma/client 5.22.0
-  - Singleton: `apps/api/src/lib/prisma.ts:16` (global var pattern; dev-only logging on `query` event)
-  - Startup health check: `checkDbConnection()` calls `$queryRaw` `SELECT 1`; exits 1 on failure (`apps/api/src/lib/prisma.ts:33`)
-  - Schema source: `prisma/schema.prisma` (declares `extensions = [vector]` and `previewFeatures = ["postgresqlExtensions"]`)
-  - Migrations: 4 in `prisma/migrations/` (init 2026-05-07, sessions, cost_log target jsonb, feedback_log fields)
-  - Manual SQL kept separately for RLS + vector indexes: `manual_rls.sql`, `manual_admin_rls.sql`, `manual_vector_indexes.sql`
-- **pgvector 0.8.0** — Postgres extension; `vector` declared in `prisma/schema.prisma:14`. Used for embeddings on `knowledge_cases / formulas / elements / trending / user_samples / history` per AGENTS §2.3 + LD-011 (no separate vector DB).
+
+**PostgreSQL 16.13** (local dev: `postgresql://return@localhost:5432/quanqn`; test: `..._test`):
+- Production target: Supabase or Neon (managed, includes pgvector + Auth) — AGENTS §2.5
+- Connection env vars: `DATABASE_URL` (Prisma client) + `DIRECT_URL` (Prisma migrations) + `TEST_DATABASE_URL` (`.env.example:16-18`)
+- Client: Prisma 5.22 + @prisma/client 5.22
+- Singleton: `apps/api/src/lib/prisma.ts:16` (global var pattern; dev `query` event logging)
+- Startup health check: `checkDbConnection()` calls `$queryRaw SELECT 1`; exits 1 on failure (`apps/api/src/lib/prisma.ts:33`)
+- Schema source: `prisma/schema.prisma` (1142 lines · 18 main app tables + 13 admin tables + 4 P2 future tables)
+- Migrations: 5 generated (`prisma/migrations/`)
+  - `20260507000000_init`
+  - `20260507154814_add_sessions`
+  - `20260509000000_add_cost_log_target`
+  - `20260509120000_add_feedback_log_fields`
+  - `20260510000000_add_scene_index_to_assets` (PRD-6 storyboard scenes)
+- Manual SQL applied separately:
+  - `prisma/migrations/manual_rls.sql` — RLS policies on 18 main app tables
+  - `prisma/migrations/manual_admin_rls.sql` — `DISABLE ROW LEVEL SECURITY` on 13 admin tables (per LD-A-3)
+  - `prisma/migrations/manual_vector_indexes.sql` — pgvector ivfflat indexes (`trending_items.content_embedding` lists=100; `deep_learning_archives.style_vector` lists=316; `histories.content_embedding` commented MVP-off)
+
+**pgvector 0.8.0** — Postgres extension; `vector` declared in `prisma/schema.prisma:14`:
+- `trending_items.content_embedding vector(1536)`
+- `histories.content_embedding vector(1536)`
+- `deep_learning_archives.style_vector vector(1536)`
+- ivfflat indexes only on `trending_items` + `deep_learning_archives` (`histories` commented out — MVP cost saving per AGENTS §2.3)
 
 **File Storage:**
-- Declared in `.env.example`: `S3_BUCKET / S3_REGION / S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY` (lines 24-27)
+- Declared in `.env.example`: `S3_BUCKET / S3_REGION / S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY` (lines 23-27)
 - AGENTS §2.3 target: S3 / 阿里 OSS / Supabase Storage (max 20MB user upload)
-- **Status: NOT WIRED** — no `@aws-sdk/*` or `oss` package in any `package.json`; no upload code in `apps/api/src/`. Deferred to PRD-7+.
+- **Status: NOT WIRED** — no `@aws-sdk/*` / `oss` / `aliyun` packages in any `package.json`; no upload code in `apps/api/src/`
+- Current placeholders:
+  - DALL-E 3 output stored as `Asset { storageProvider: 'openai', publicUrl: <OpenAI CDN URL> }` — direct URL from OpenAI, no re-upload (`apps/api/src/workers/image-gen/dall-e-3.ts:54-71`)
+  - TTS-1 output stored as `Asset { storageProvider: 'placeholder', publicUrl: '/static/placeholder-audio.mp3' }` — AC-9 PRR deferral (`apps/api/src/workers/tts/openai-tts.ts:24, 80-95`)
+- S3 signed URL upload deferred to PRR (post-launch readiness)
 
-**Caching / Queue:**
-- **Upstash Redis (REST)** — only Redis path live currently
-  - Client: `@upstash/redis` 1.38.0 instantiated at `apps/api/src/workers/llm-gateway/rate-limiter.ts:42`
-  - Auth: env vars `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
-  - Use: `@upstash/ratelimit` token bucket — keyed `quanqn:rl:{plan}:user:{userId}` (free=50/d, pro=500/d, enterprise=5000/d)
-  - Graceful degrade: if `UPSTASH_REDIS_REST_URL` absent, `checkRateLimit()` warns and returns immediately (`apps/api/src/workers/llm-gateway/rate-limiter.ts:77-81`)
-- **Local Redis 8.6.3** declared at `redis://localhost:6379` (CLAUDE.md §3, `.env.example REDIS_URL`)
-  - **DRIFT: declared but not wired** — no `import 'ioredis'` or `import { createClient } from 'redis'` anywhere in `apps/api/src/`. ioredis is in deps awaiting bullmq use (PRD-6+).
-- **bullmq 5.76.6** declared in deps but **no `new Queue` / `new Worker` calls yet** (`grep -rn "from 'bullmq'" apps/api/src` → empty). Reserved for L5 agents per LD-004.
+**Caching / Queue / Streaming State (Redis):**
+
+**Local Redis 8.6.3** (`redis://localhost:6379`) — **now actively used by 3 subsystems**:
+
+| Subsystem | Module | Key pattern | Use |
+|---|---|---|---|
+| BullMQ queues | `apps/api/src/lib/redis.ts:9` (shared singleton with `maxRetriesPerRequest: null`) | `bull:{queueName}:*` | 4 queues: `image-gen`, `evolution`, `daily-task`, file-parser planned |
+| L1 Buffer (VoiceChat) | `apps/api/src/memory/l1-buffer.ts` | `voice_chat:acc_{accountId}:turns` | List · LPUSH + LTRIM 20 + EXPIRE 1800s |
+| Daily rate limits | `apps/api/src/lib/rate-limit/{image-gen,stt,tts}.ts` | `rate:{feature}:user:{accountId}:{YYYY-MM-DD}` | INCR + EXPIRE 86400; throws `TRPCError TOO_MANY_REQUESTS` when count > limit |
+
+**Upstash Redis (REST)** — separate from local Redis; used **only** by LLMGateway rate limiter:
+- Client: `@upstash/redis` 1.34 instantiated at `apps/api/src/workers/llm-gateway/rate-limiter.ts:42`
+- Auth: env `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
+- `@upstash/ratelimit` 2.0 token bucket — keyed `quanqn:rl:{plan}:user:{userId}` (free=50/d, pro=500/d, enterprise=5000/d)
+- Graceful degrade: if URL absent, `checkRateLimit()` warns and returns immediately (`:77-81`)
+
+> ⚠️ **Two Redis stacks coexist**: local ioredis (BullMQ + L1 + 3 per-feature rate limits) vs Upstash REST (LLM gateway rate limit). For prod, either consolidate to managed Redis or keep dual (more cost but cleaner separation).
+
+**BullMQ Queues (4 active, all on shared ioredis):**
+
+| Queue | File | Concurrency | Job ID strategy | Trigger |
+|-------|------|:-:|---|---|
+| `image-gen` | `apps/api/src/workers/image-gen/queue.ts:15` | 2 | (no dedup) | tRPC `aiVideo` router enqueues per scene |
+| `evolution` | `apps/api/src/workers/evolution/queue.ts:18` | 5 (global) | `evo:{accountId}:{count}` — per-account dedup | `enqueueIfThresholdMet` from feedback router (atomic `INSERT ON CONFLICT UPDATE RETURNING`, `apps/api/src/lib/evolution/trigger.ts:25-32`) at thresholds `{5, 20, 50, 100}` |
+| `daily-task` | `apps/api/src/workers/daily-task/queue.ts:18` | 5 | `daily-task-{accountId}-{YYYY-MM-DD}` — idempotent | `dailyTaskCron` 0 0 * * * Asia/Shanghai (`apps/api/src/cron/daily-task-runner.ts:68`) fans out to all `IpAccount where isActive AND updatedAt > now-7d` |
+| `file-parser` | dir exists empty (`apps/api/src/workers/file-parser/.gitkeep`) | — | — | reserved for PRD-9 knowledge base ingestion |
+
+All queues share defaults: `attempts: 3`, `backoff: { type: 'exponential', delay: 5000 }`, `removeOnComplete: { count: 100 }`, `removeOnFail: { count: 50 }`.
+
+**Workers (BullMQ):**
+- `apps/api/src/workers/image-gen/worker.ts:28` — dev: spawned in `apps/api/src/index.ts:225-228` when `NODE_ENV=development`; prod: standalone via `pnpm worker:image-gen` (root `package.json:38`)
+- `apps/api/src/workers/daily-task/worker.ts:68` — dev: spawned at `apps/api/src/index.ts:231-233`; prod: standalone (not yet scripted in root package.json)
+- `apps/api/src/workers/evolution/worker.ts:36` — currently not auto-spawned in dev mode (one fix-up candidate; instantiation happens on import)
+
+**Cron Jobs (node-cron):**
+- 1 job active: `dailyTaskCron` (`apps/api/src/cron/daily-task-runner.ts:68`) — `0 0 * * *` Asia/Shanghai
+- Started by `apps/api/src/index.ts:237-239` (`dailyTaskCron.start()`)
+- `scheduled: false` default; index.ts must explicitly start
 
 **Browser storage** (per AGENTS §2.3 + LD-010):
 - localStorage: 18 keys, namespaced via `apps/web/src/lib/ls-namespace.ts` (account-scoped per LD-009 闸 3)
@@ -98,27 +176,26 @@ All 8 live specialists extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/special
 ## Authentication & Identity
 
 **Auth Provider Abstraction** (`apps/api/src/lib/auth/providers.ts`):
-
-- **Strategy pattern**: `OAuthProvider` interface with two implementations.
-- Provider selected at startup via `OAUTH_PROVIDER` env var (validated in `validateStartupConfig()`); unknown value → `process.exit(1)`.
+- Strategy pattern: `OAuthProvider` interface with two implementations
+- Provider selected at startup via `OAUTH_PROVIDER` env (validated in `validateStartupConfig()`; unknown → `process.exit(1)`)
 
 | Provider | Class | Selector | Use Case | CSRF state check |
 |---|---|---|---|:-:|
-| Mock | `MockProvider` (`apps/api/src/lib/auth/providers.ts:32`) | `OAUTH_PROVIDER=mock` (default) | Local dev — returns hardcoded `{openId: 'mock-dev-001', email: 'dev@local.test', name: 'Dev User'}` | ❌ skipped |
+| Mock | `MockProvider` (`apps/api/src/lib/auth/providers.ts:32`) | `OAUTH_PROVIDER=mock` (default dev) | Returns hardcoded `{openId: 'mock-dev-001', email: 'dev@local.test', name: 'Dev User'}` | ❌ skipped |
 | Google | `GoogleProvider` (`apps/api/src/lib/auth/providers.ts:54`) | `OAUTH_PROVIDER=google` | Production | ✅ enforced |
 
-- **Google OAuth client**: `arctic` 3.7.0 `Google` class (`apps/api/src/lib/auth/providers.ts:7,59`); requires `GOOGLE_CLIENT_ID` (hard-throw if missing for `google` provider) + `GOOGLE_CLIENT_SECRET` + `GOOGLE_REDIRECT_URL` (defaults `http://localhost:3000/auth/callback`)
+- Google OAuth client: `arctic` 3.7 `Google` class (`apps/api/src/lib/auth/providers.ts:7,59`); requires `GOOGLE_CLIENT_ID` (hard-throw if missing) + `GOOGLE_CLIENT_SECRET` + `GOOGLE_REDIRECT_URL` (defaults `http://localhost:3000/auth/callback`)
 - PKCE: `codeVerifier` generated via `arctic.generateCodeVerifier`, stored in 600s httpOnly cookie `oauth_code_verifier`
 - State CSRF cookie: `oauth_state` (600s httpOnly, secure in prod) — validated against query param in callback
 - ID token decode: `arctic.decodeIdToken` extracts `sub / email / name`
 - **Production guard**: `OAUTH_PROVIDER=mock` rejected when `NODE_ENV=production` → `process.exit(1)` (`apps/api/src/lib/auth/providers.ts:146`)
 
-**Session backend**: Lucia 3.2.2
+**Session backend**: Lucia 3.2
 - Singleton: `apps/api/src/lib/auth/lucia.ts:12`
-- Cookie name: `app_session` (admin uses `admin_session` per LD-A-1, AGENTS §10)
-- Adapter: custom Prisma adapter implementing Lucia v3 `Adapter` interface (`apps/api/src/lib/auth/adapter.ts`); 7 methods backed by `prisma.session` model
+- Cookie name: `app_session` (admin will use `admin_session` per LD-A-1, AGENTS §10)
+- Adapter: custom Prisma adapter (`apps/api/src/lib/auth/adapter.ts`); 7 methods backed by `prisma.session` model
 - Session attributes: `email / name / activeAccountId` (`apps/api/src/lib/auth/lucia.ts:20-26`)
-- TypeScript module augmentation: `declare module 'lucia'` registers `UserId: number` + `DatabaseUserAttributes` (`apps/api/src/lib/auth/lucia.ts:29-39`)
+- TypeScript module augmentation: `declare module 'lucia'` registers `UserId: number` + `DatabaseUserAttributes`
 
 **Session entry/exit endpoints** (`apps/api/src/index.ts`):
 - `GET /auth/login` (line 61) — provider.getAuthorizationUrl → set state/codeVerifier cookies → 302 redirect
@@ -127,34 +204,51 @@ All 8 live specialists extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/special
 
 **Audit logging on auth events** (`apps/api/src/index.ts:117, 169`): `prisma.auditLog.create` with `eventType in {auth.login, security_alert}` + `traceId` from `traceStore` (AsyncLocalStorage).
 
+**Account isolation (RLS-enforcing middleware)** — `apps/api/src/trpc/middleware/account-isolation.ts:21`:
+- Sets `app.current_account_id` + `app.current_user_id` via `set_config()` per-request (transaction-scoped, equivalent to `SET LOCAL`)
+- AC-5: procedures with `meta.isGlobal=true` skip (User / InviteCode / TrendingItem)
+- AC-6: **sole location of `prisma.$executeRaw`** in `apps/api/src/` (LD-009 R-009)
+
 ## Monitoring & Observability
 
 **Structured logs:**
-- Pino 9.14.0 (`apps/api/src/lib/logger.ts:10`)
+- Pino 9 (`apps/api/src/lib/logger.ts:10`)
 - Log level: env `LOG_LEVEL` (default `info`)
-- Pretty-print: `pino-pretty` 11.3.0 wired only when `NODE_ENV=development`
-- Trace propagation: `AsyncLocalStorage<{ traceId: string }>` exported as `traceStore` (used by Hono trace middleware in `apps/api/src/index.ts:46-55`)
-- Trace header: `x-trace-id` echoed back on every response (US-007)
+- Pretty-print: `pino-pretty` 11 only when `NODE_ENV=development`
+- Trace propagation: `AsyncLocalStorage<{ traceId: string }>` exported as `traceStore`
+- Hono trace middleware: `apps/api/src/index.ts:46-55` — accepts incoming `x-trace-id` header or generates 16-char hex; echoes on every response (US-007)
 
 **Error tracking:**
-- Sentry envelope `SENTRY_DSN` declared in `.env.example:60`
-- **NOT WIRED** — no `@sentry/*` package in any `package.json`. Deferred to pre-launch readiness (CLAUDE.md §7 PRR list).
+- `SENTRY_DSN` declared in `.env.example:79`
+- **NOT WIRED** — no `@sentry/*` package in any `package.json`. PRR deferral (CLAUDE.md §7).
 
 **Analytics:**
-- `PLAUSIBLE_DOMAIN` declared in `.env.example:59`
-- **NOT WIRED** — no Plausible script in `apps/web/src/main.tsx` or `apps/web/index.html` checked. Deferred to pre-launch.
+- `PLAUSIBLE_DOMAIN` declared in `.env.example:78`
+- **NOT WIRED** — no Plausible script in `apps/web/`. PRR deferral.
 
 **Database audit log:**
-- `prisma.auditLog` model (`prisma/schema.prisma`) — append-only, written from:
+- `prisma.auditLog` model — append-only, written from:
   - `apps/api/src/index.ts:117` (`security_alert` on OAuth state mismatch)
   - `apps/api/src/index.ts:169` (`auth.login` on successful sign-in)
-  - `apps/api/src/trpc/routers/ipAccounts.ts:128` (`account.switch` event)
+  - `apps/api/src/trpc/routers/ipAccounts.ts` (`account.switch` event)
 - All entries carry `traceId` for cross-stack correlation
+- `prisma.adminAuditLog` (admin subsystem) — separate table per LD-A-3 append-only
 
-**Cost tracking (per AGENTS §3 LD-014 / `cost_log` table):**
-- Writer: `apps/api/src/workers/llm-gateway/cost-logger.ts` (`writeCostLog` — called from gateway on every LLM call, success or fail)
-- Specialist-level writer: `apps/api/src/specialists/base/BaseSpecialist.ts:208` (`_writeCostLog` — `callType='specialist_call'`, includes `target jsonb {stepKey, agentId}`, `provider` derived from model name prefix)
-- Decimal: `@prisma/client/runtime/library` `Decimal` type for `costUsd` (currently always `0.000000` — pricing TBD)
+**Cost tracking** (per AGENTS §3 LD-014 / `cost_log` table):
+- Writer (LLM): `apps/api/src/workers/llm-gateway/cost-logger.ts` (`writeCostLog`) — called on every LLM call, success or fail
+- Writer (Specialist wrapper): `apps/api/src/specialists/base/BaseSpecialist.ts:_writeCostLog` — `callType='specialist_call'`, target jsonb `{stepKey, agentId}`, provider derived from model prefix
+- Writer (Image): `apps/api/src/workers/image-gen/dall-e-3.ts:27-50` — `eventType='image_gen'`, `imageCount=1`, `provider='openai'`, `costUsd=Decimal('0.04')`
+- Writer (STT): `apps/api/src/workers/stt/whisper.ts:107-128` — `eventType='stt_call'`, `audioSeconds`, `provider='openai'`, cost `audioDurationSec/60 * 0.006`
+- Writer (TTS): `apps/api/src/workers/tts/openai-tts.ts:100-122` — `eventType='tts_call'`, `charactersIn`, `provider='openai'`, cost `ceil(textLen/1000) * 0.015`
+- Writer (L5 VoiceChat): `apps/api/src/specialists/VoiceChatAgent.ts:350-387` — `eventType='l5_agent'`, `agentMode=null`
+- Decimal precision: `@prisma/client/runtime/library` `Decimal` type for `costUsd`
+
+**cost_log eventType taxonomy (D-040, extended through PRD-8):**
+- `specialist_call` — BaseSpecialist standard path
+- `l5_agent` — L5 autonomous (Evolution / DailyTask / VoiceChat)
+- `image_gen` — DALL-E 3
+- `stt_call` — Whisper-1
+- `tts_call` — TTS-1
 
 ## CI/CD & Deployment
 
@@ -162,98 +256,111 @@ All 8 live specialists extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/special
 - Frontend: Vercel or Cloudflare Pages
 - Backend: Railway or Fly.io
 - DB: Supabase or Neon
+- Background workers: standalone process (`pnpm worker:image-gen`) on Railway/Fly worker dyno
 
 **CI Pipeline:** GitHub Actions (per AGENTS §2.6) — config NOT YET present in repo (`.github/` not located in repo root scan)
 
 **Local dev workflow** (per `package.json` scripts):
 - `pnpm dev:web` → vite dev server on :5173 with proxy `/api/trpc → :3000`
-- `pnpm dev:api` → `tsx watch src/index.ts` on :3000
-- `pnpm dev:admin` → echo placeholder (apps/admin not implemented; AGENTS-Architecture P9.0+)
-- `pnpm test` (vitest) / `pnpm test:e2e` (playwright) / `pnpm test:judge` (LLM judge config) / `pnpm test:llm-judge` (custom runner `tests/llm-judge/runner.ts`)
-- `pnpm db:migrate:dev` (Prisma migrate dev) / `pnpm db:seed` (`tsx prisma/seed.ts`) / `pnpm db:studio` (Prisma Studio)
-- `pnpm audit:redlines / audit:ld / audit:all` — bash scripts under `scripts/` (Opus audit hooks per CLAUDE.md)
+- `pnpm dev:api` → `tsx watch src/index.ts` on :3000 (auto-spawns image-gen + daily-task workers + cron job)
+- `pnpm dev:admin` → echo placeholder (apps/admin not implemented; PRD-10 P9.0+)
+- `pnpm test` (vitest) / `pnpm test:e2e` (playwright, mobile + chromium) / `pnpm test:judge` (LLM judge config) / `pnpm test:llm-judge` (custom runner)
+- `pnpm db:migrate:dev` / `pnpm db:seed` / `pnpm db:studio`
+- `pnpm worker:image-gen` → standalone BullMQ worker (`tsx apps/api/src/workers/image-gen/worker.ts`)
+- `pnpm audit:redlines / audit:ld / audit:all` — Opus audit hooks (CLAUDE.md)
 
 ## Environment Configuration
 
-**Required env vars** (validated at startup or first call — not all are declared "required" but consequences vary):
+**Required env vars** (validated at startup or first call):
 
 | Var | Required | Validation site | Behavior on miss |
 |---|:-:|---|---|
 | `DATABASE_URL` | ✅ | `apps/api/src/lib/prisma.ts:33` | `process.exit(1)` after `$connect` failure |
 | `SESSION_SECRET` (≥32 chars) | ✅ | `apps/api/src/lib/auth/providers.ts:134` | `process.exit(1)` |
 | `OAUTH_PROVIDER` | ✅ default `mock` | `apps/api/src/lib/auth/providers.ts:140` | `process.exit(1)` if not in `{mock,google}` |
-| `ANTHROPIC_API_KEY` | ✅ for any LLM call | `apps/api/src/workers/llm-gateway/index.ts:91` | throws on first call (caught by retry/fallback) |
-| `OPENAI_API_KEY` | ✅ for fallback path | `apps/api/src/workers/llm-gateway/index.ts:97` | throws on fallback (template apology returned) |
-| `GOOGLE_CLIENT_ID` | conditional (when `OAUTH_PROVIDER=google`) | `apps/api/src/lib/auth/providers.ts:110` | runtime `Error` returns 500, not exit |
-| `GOOGLE_CLIENT_SECRET` | conditional | reads but no validation | empty string fallback `''` |
+| `ANTHROPIC_API_KEY` | ✅ for any LLM call | `apps/api/src/workers/llm-gateway/index.ts:91, 121` | throws on first call (caught by retry/fallback) |
+| `OPENAI_API_KEY` | ✅ for fallback + image/stt/tts | each worker's lazy client init | throws on first OpenAI call |
+| `REDIS_URL` | ✅ for BullMQ + L1 + rate limits | `apps/api/src/lib/redis.ts:9` | defaults `redis://localhost:6379`; no startup validation (lazy `IORedis()`) |
+| `GOOGLE_CLIENT_ID` | conditional (`OAUTH_PROVIDER=google`) | `apps/api/src/lib/auth/providers.ts:110` | runtime `Error` returns 500 |
+| `GOOGLE_CLIENT_SECRET` | conditional | reads, no validation | empty string fallback |
 | `GOOGLE_REDIRECT_URL` | conditional | defaults `http://localhost:3000/auth/callback` | uses default |
-| `UPSTASH_REDIS_REST_URL` | optional | `apps/api/src/workers/llm-gateway/rate-limiter.ts:77` | warn + skip rate limit (dev-friendly) |
-| `UPSTASH_REDIS_REST_TOKEN` | conditional w/URL | `apps/api/src/workers/llm-gateway/rate-limiter.ts:38` | throws `Upstash not configured` |
+| `UPSTASH_REDIS_REST_URL` | optional | `apps/api/src/workers/llm-gateway/rate-limiter.ts:77` | warn + skip LLM gateway rate limit |
+| `UPSTASH_REDIS_REST_TOKEN` | conditional w/URL | `:38` | throws `Upstash not configured` |
+| `IMAGE_GEN_ENABLED` | optional | `apps/api/src/workers/image-gen/dall-e-3.ts:125` | default `false` → returns placeholder URL · no OpenAI call |
+| `IMAGE_GEN_DAILY_LIMIT_PER_USER` | optional | `apps/api/src/lib/rate-limit/image-gen.ts:20` | default 10 |
+| `IMAGE_GEN_MAX_SCENES_PER_REQUEST` | optional | tRPC aiVideo input | default 8 |
+| `STT_DAILY_LIMIT_PER_USER` | optional | `apps/api/src/lib/rate-limit/stt.ts:19` | default 50 |
+| `TTS_DAILY_LIMIT_PER_USER` | optional | `apps/api/src/lib/rate-limit/tts.ts` | default 100 |
 | `APP_BASE_URL` | optional | `apps/api/src/index.ts:31` | defaults `http://localhost:5173` |
 | `API_BASE_URL` | optional | `apps/api/src/lib/auth/providers.ts:36` | defaults `http://localhost:3000` |
 | `PORT` | optional | `apps/api/src/index.ts:218` | defaults 3000 |
 | `LOG_LEVEL` | optional | `apps/api/src/lib/logger.ts:16` | defaults `info` |
-| `NODE_ENV` | optional | multiple | development-style behavior |
+| `NODE_ENV` | optional | multiple sites | `development` enables in-process workers + pino-pretty |
+| `TRENDING_VENDOR` | optional | `.env.example:71` | `xinbang | cmm | feigua | official`; **no scraper code reads this yet** |
+| `TRENDING_API_KEY` | optional | declared only | no use |
+| `TRENDING_FETCH_INTERVAL_HOURS` | optional | declared only | default 4 |
 
 **Frontend env vars** (Vite, prefixed `VITE_`):
 - `VITE_API_BASE_URL` (`apps/web/src/lib/trpc.ts:44`) — defaults `http://localhost:3000`
 
 **Secrets location:**
 - Local dev: `.env` file (gitignored per `.gitignore:14-19`); `.env.example` is the template
-- Production: AGENTS §2.5 spec — Vercel / Railway / Supabase Secret Manager (no in-repo secret files)
+- Production: AGENTS §2.5 — Vercel / Railway / Supabase Secret Manager (no in-repo secrets)
 
 ## Webhooks & Callbacks
 
 **Incoming:**
 - `GET /auth/callback` (`apps/api/src/index.ts:95`) — Google OAuth callback
 - `GET /health` (`apps/api/src/index.ts:57`) — liveness probe
-- `POST/GET /trpc/*` (`apps/api/src/index.ts:206`) — single tRPC mount; handles 18 routers (analysis, auth, boomGenerate, copywriting, costLog, deepLearning, diagnosis, evolution, history, invite, ipAccounts, knowledge, monetization, privateDomain, stepData, trending, videoAnalysis, videoProduction)
+- `POST/GET /trpc/*` (`apps/api/src/index.ts:206`) — single tRPC mount; handles 25 routers (auth, acquisitionVideo, aiVideo, dailyTasks, evolution, ipAccounts, stepData, stt, tts, copywriting, videoAnalysis, videoProduction, boomGenerate, monetization, privateDomain, diagnosis, deepLearning, knowledge, trending, invite, costLog, analysis, history, voiceChat — `apps/api/src/trpc/routers/_app.ts:33-57`)
 
-**Outgoing:**
-- Anthropic Claude API (HTTPS, via @anthropic-ai/sdk)
-- OpenAI API (HTTPS, via openai SDK)
-- Upstash Redis REST API (HTTPS, via @upstash/redis)
-- Google OAuth 2 token endpoint (via arctic)
-- **No Trending vendor calls yet** — `trending.ts` router returns mock data (`apps/api/src/trpc/routers/trending.ts:31`); `TRENDING_VENDOR / TRENDING_API_KEY` declared in `.env.example` (`xinbang | cmm | feigua | official`) but no scraper code (worker dir empty: `apps/api/src/workers/trending-scraper/`). PRD-6 deliverable.
+**Outgoing (HTTPS, all SDK-mediated):**
+- Anthropic Claude API (via `@anthropic-ai/sdk`)
+- OpenAI API — chat (LLMGateway), DALL-E 3 (image-gen worker), Whisper-1 (stt worker), TTS-1 (tts worker)
+- Upstash Redis REST API (LLM gateway rate limit only)
+- Google OAuth 2 token endpoint (via `arctic`)
+- **No Trending vendor calls yet** — `trending` router returns mock data; `apps/api/src/workers/trending-scraper/` is empty `.gitkeep`. PRD-9 deliverable.
 
-## Streaming / SSE
+## Streaming / SSE / Subscriptions
 
-- tRPC v11 `httpBatchStreamLink` (`apps/web/src/lib/trpc.ts:43`) — supports SSE for streaming procedures
-- Server-side SSE: only `CopywritingAgent` (free / boom / step7 modes) currently consumes streams; uses `gateway.stream()` async iterable (`apps/api/src/specialists/CopywritingAgent.ts:274-280`)
-- TopicAgent.ts also marked as SSE per commit history but check current code for consumption pattern (US-007 — `feat: TopicAgent step5 22KB 5 category SSE 流式`)
-- Fetch headers: client always injects `x-trace-id` per request (`apps/web/src/lib/trpc.ts:51`); `credentials: 'include'` for cookie auth
+- tRPC v11 `httpBatchStreamLink` (`apps/web/src/lib/trpc.ts:43`) — supports SSE for streaming procedures and `subscription` AsyncGenerator type
+- **Server-side SSE / streaming subscriptions:**
+  - `CopywritingAgent` step7 / free / boom modes (`apps/api/src/specialists/CopywritingAgent.ts` — `gateway.stream()` consumption)
+  - `TopicAgent` step5 (22KB 5-category SSE)
+  - **`voiceChat.start` tRPC subscription** (`apps/api/src/trpc/routers/voiceChat.ts:23-52`) — yields `delta` / `tool_call` / `tool_result` / `done` / `error` chunks via `voiceChatAgent.executeStream()` AsyncGenerator (PRD-8 US-011)
+- Fetch headers: client injects `x-trace-id` per request (`apps/web/src/lib/trpc.ts:51`); `credentials: 'include'` for cookie auth
 
-## Cron / Scheduled Jobs
+## Compliance / Safety
 
-- Currently NONE wired — `apps/api/src/cron/` directory is empty
-- Per AGENTS §2.2 + LD-004: future jobs use `node-cron` 3.0.3 (declared); planned:
-  - `DailyTaskAgent` — daily 0:00
-  - `TrendingScraper` — every 4h (`TRENDING_FETCH_INTERVAL_HOURS=4` in `.env.example:54`)
-  - `EvolutionAgent` — manual / scheduled
+**PII masking** (`apps/api/src/lib/compliance/pii-mask.ts`):
+- Regex sequence (order-sensitive): EMAIL → ID_CARD → BANK_CARD → PHONE_CN → PHONE_INTL
+- Hit types: `email / id_card / bank_card / phone_cn / phone_intl`
+- Recursive object mask with whitelist for Date/RegExp/Map/Set/Error/Buffer
+- Invoked by ContextAssembler before prompt assembly
 
-## Background Workers / Queues
-
-- Currently NONE wired — `apps/api/src/workers/{file-parser,image-gen,stt,tts,trending-scraper}/` are all empty directories
-- Per LD-004: future L5 autonomous agents use bullmq 5.76.6 + ioredis 5.10.1 (both declared, both unused)
-- Active worker stubs:
-  - `apps/api/src/workers/llm-gateway/` (the only actually-used worker; not a queue worker but the LLM dispatch layer)
-  - `apps/api/src/workers/methodology-query/index.ts` (in-memory constants provider used by ContextAssembler)
+**Sensitive-industry disclaimers** (`apps/api/src/lib/compliance/disclaimer.ts`):
+- 3 categories: medical / legal / finance
+- Auto-appended to markdown content via `appendDisclaimerIfSensitive(content, industry)`
+- Or attached as `_disclaimer` field via `attachDisclaimerMeta(result, industry)` for JSON results
 
 ## DRIFT vs AGENTS.md §2 / §3 (Integrations)
 
 | Spec | Reality | Status |
 |---|---|:-:|
-| `LD-007 ContextAssembler 唯一入口` | enforced — all 8 specialists call `_contextAssembler.assemble()` via `BaseSpecialist.execute()` | ✅ |
-| `R-1 LLMGateway 唯一 SDK 入口` | enforced — `@anthropic-ai/sdk` and `openai` only imported in `apps/api/src/workers/llm-gateway/index.ts` (verified by grep) | ✅ |
-| `LD-009 3 道闸 (RLS + Redis ns + ORM where)` | RLS in `prisma/migrations/manual_rls.sql` + admin variant; ORM `where: { accountId }` enforced in tRPC middleware (`apps/api/src/trpc/middleware/account-isolation.ts`); Redis ns N/A (Redis effectively unused except per-user rate-limit key) | 🟡 partial — Redis namespace pending real Redis use |
-| AGENTS §2.4 OAuth: `lucia-auth` or `next-auth` | uses `lucia` (renamed package) | 🟡 update doc, not code |
-| `node-cron` 3.x for cron | declared, no jobs wired | 🟡 deferred PRD-6+ |
-| `bullmq` + `ioredis` for queue | declared, no queues wired | 🟡 deferred PRD-6+ |
-| Trending vendor (xinbang/cmm/feigua) | mock router only | 🟡 deferred PRD-6 |
+| `LD-007 ContextAssembler 唯一入口` | enforced — all 11 generative specialists hit `_contextAssembler.assemble()` via `BaseSpecialist.execute()`; PRD-8 US-001 AC-8 adds 5th L4 fetch | ✅ |
+| `R-001 LLMGateway 唯一 SDK 入口` | enforced for **chat completions** — Anthropic only in `apps/api/src/workers/llm-gateway/index.ts`; OpenAI in 4 files with D-038 audio/image worker exemptions (each carrying redline comment) | ✅ |
+| `D-038 Worker 独立 (STT/TTS/ImageGen 不走 LLMGateway)` | enforced — each non-gateway OpenAI import file headers `D-038` + writes its own `cost_log` independently | ✅ |
+| `D-054 ContextAssembler 集中注入 EvolutionInsight (11 生成型 specialist)` | enforced — L4 fetched as `Promise.allSettled` route #2; AssembledContext exposes `evolutionInsight` field for downstream specialists | ✅ |
+| `LD-009 3 道闸 (RLS + Redis ns + ORM where)` | RLS in `prisma/migrations/manual_rls.sql` + admin `DISABLE`; ORM `where: { accountId }` enforced in tRPC `account-isolation` middleware (sole `$executeRaw` site); Redis namespace partially in place (L1 keys `voice_chat:acc_{accountId}:`, rate-limit `rate:{feature}:user:{accountId}:`) | 🟡 partial — formal Redis namespace policy not in `~/.claude` but de-facto consistent |
+| AGENTS §2.4 OAuth: `lucia-auth` | code uses `lucia` (renamed package v3) | 🟡 update doc string only |
+| `node-cron` 3.x for cron | **WIRED** — `dailyTaskCron` 0 0 * * * Asia/Shanghai | ✅ |
+| `bullmq` + `ioredis` for queue | **WIRED** — 4 queues + shared ioredis singleton + 3 worker spawn points | ✅ |
+| Trending vendor (xinbang/cmm/feigua) | `trending` router returns mock data; `apps/api/src/workers/trending-scraper/` empty | 🟡 deferred PRD-9 |
 | Sentry / Plausible | declared in `.env.example` only | 🟡 PRR (deferred per CLAUDE.md §7) |
-| S3 / OSS upload | env declared, no SDK installed | 🟡 deferred PRD-7+ |
-| OpenAI image / STT / TTS | env declared, worker dirs empty | 🟡 deferred PRD-6+ |
+| S3 / OSS upload | env declared, no SDK installed; DALL-E uses OpenAI CDN URL; TTS uses placeholder URL | 🟡 PRR deferral (AC-9 on TTS worker explicitly notes this) |
+| OpenAI image / STT / TTS | **WIRED** in PRD-6 + PRD-8 (DALL-E 3 / Whisper-1 / TTS-1) | ✅ |
+| `text-embedding-3-small` | `LLMGateway.embed()` returns 1536-zero stub | 🟡 deferred PRD-9 RAG |
 
 ---
 
-*Integration audit: 2026-05-09*
+*Integration audit: 2026-05-11*

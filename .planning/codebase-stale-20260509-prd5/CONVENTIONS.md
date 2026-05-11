@@ -1,8 +1,8 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-05-11
+**Analysis Date:** 2026-05-09
 **Project:** QuanQn · IP 起号 / 内容创作 SaaS · TypeScript monorepo (pnpm 9.15.9 + turbo)
-**Status (post PRD-8):** typecheck 6 workspaces · 0 errors · lint `--max-warnings=0` 全过 · 861 vitest + 51 LLM judge + 158 e2e
+**Status (post PRD-5):** typecheck 6 workspaces · 0 errors · lint --max-warnings=0 通过 · 542 unit + 22 judge + 126 e2e 全绿
 
 ---
 
@@ -14,37 +14,37 @@
 
 | 对象 | 风格 | 实例 (file:line) |
 |---|---|---|
-| **类 / Specialist** | PascalCase + 语义后缀 | `class CopywritingAgent extends BaseSpecialist` (`apps/api/src/specialists/CopywritingAgent.ts:1`) · `class BaseSpecialist` (`apps/api/src/specialists/base/BaseSpecialist.ts:40`) · `class VoiceChatAgent` (`apps/api/src/specialists/VoiceChatAgent.ts`) · `class WhisperSttWorker` (`apps/api/src/workers/stt/whisper.ts`) · `class OpenAITtsWorker` (`apps/api/src/workers/tts/openai-tts.ts`) |
+| **类 / Specialist** | PascalCase + 语义后缀 | `class CopywritingAgent extends BaseSpecialist` (`apps/api/src/specialists/CopywritingAgent.ts:1`) · `class BaseSpecialist` (`apps/api/src/specialists/base/BaseSpecialist.ts:40`) |
 | **React 组件文件** | PascalCase.tsx | `StepProgress.tsx` · `FeedbackButton.tsx` · `ToolForm.tsx` (`apps/web/src/components/`) |
-| **Page 组件** | PascalCase.tsx | `Generate.tsx` · `BoomGenerate.tsx` · `VideoAnalysis.tsx` · `VoiceChat.tsx` (`apps/web/src/pages/tools/`) · `Step1.tsx` ~ `Step9.tsx` (`apps/web/src/pages/step/`) · `DailyTasks.tsx` (`apps/web/src/pages/`) |
-| **业务模块文件 (api)** | camelCase.ts | `ipAccounts.ts` · `boomGenerate.ts` · `videoAnalysis.ts` · `videoProduction.ts` · `deepLearning.ts` · `voiceChat.ts` · `dailyTasks.ts` · `stt.ts` · `tts.ts` (`apps/api/src/trpc/routers/`) |
-| **基础设施文件** | kebab-case.ts | `account-isolation.ts` · `step-inputs.schema.ts` · `pii-mask.ts` · `l1-buffer.ts` (`apps/api/src/memory/`) · `whisper.ts` (`apps/api/src/workers/stt/`) · `openai-tts.ts` (`apps/api/src/workers/tts/`) |
-| **目录名** | kebab-case | `apps/` · `packages/` · `tests/` · `workers/llm-gateway/` · `workers/stt/` · `workers/tts/` · `workers/daily-task/` · `tests/judge/` · `memory/` |
-| **变量 / 函数** | camelCase | `accountId` · `assemblePrompt()` · `generateSpecialistTraceId()` · `pushTurn()` · `getTurns()` · `clearBuffer()` |
-| **常量 (模块级)** | SCREAMING_SNAKE_CASE | `STEP_INDUSTRY_KEYS` (`packages/schemas/src/specialist-io/step-inputs.schema.ts:7`) · `HOT_ELEMENT_KEYS_22` · `PASS_SCORE_THRESHOLD` (`tests/judge/judge-runner.ts:37`) · `HISTORY_SELECT` (`apps/api/src/trpc/routers/history.ts:27`) · `VOICE_CHAT_TOOLS` (`apps/api/src/specialists/VoiceChatAgent.ts`) · `OPENAI_API` (`tests/unit/api/workers/stt.test.ts:45`) |
-| **类型 / 接口** | PascalCase (无 I 前缀) | `SpecialistConfig` · `AssembledContext` · `JudgeCase` · `CopywritingMode` · `ToolDispatchFn` · `VoiceChatStreamChunk` (✅ **不用** `ISpecialistConfig`) |
-| **zod schema 变量** | camelCase + Schema 后缀 *或* camelCase + 直接命名 | `CopywritingOutputSchema` · `Step1InputSchema` (`packages/schemas/src/specialist-io/step-inputs.schema.ts:58`) · `analysisStructuralInput` / `analysisStructuralOutput` (`packages/schemas/src/specialist-io/analysis.schema.ts:13,26`) · `JudgeResultSchema` (`tests/judge/judge-runner.ts:15`) — 两种并存 · 新代码优先 PascalCase + Schema |
+| **Page 组件** | PascalCase.tsx | `Generate.tsx` · `BoomGenerate.tsx` · `VideoAnalysis.tsx` (`apps/web/src/pages/tools/`) · `Step1.tsx` ~ `Step9.tsx` (`apps/web/src/pages/step/`) |
+| **业务模块文件 (api)** | camelCase.ts | `ipAccounts.ts` · `boomGenerate.ts` · `videoAnalysis.ts` · `videoProduction.ts` · `deepLearning.ts` (`apps/api/src/trpc/routers/`) |
+| **基础设施文件** | kebab-case.ts | `account-isolation.ts` · `step-inputs.schema.ts` · `pii-mask.ts` |
+| **目录名** | kebab-case | `apps/`、`packages/`、`tests/`、`workers/llm-gateway/`、`tests/llm-judge/` |
+| **变量 / 函数** | camelCase | `accountId` · `assemblePrompt()` · `generateSpecialistTraceId()` |
+| **常量 (模块级)** | SCREAMING_SNAKE_CASE | `STEP_INDUSTRY_KEYS` (`packages/schemas/src/specialist-io/step-inputs.schema.ts:7`) · `HOT_ELEMENT_KEYS_22` · `PASS_SCORE_THRESHOLD` (`tests/judge/judge-runner.ts:37`) · `HISTORY_SELECT` (`apps/api/src/trpc/routers/history.ts:27`) |
+| **类型 / 接口** | PascalCase (无 I 前缀) | `SpecialistConfig` · `AssembledContext` · `JudgeCase` · `CopywritingMode` (✅ **不用** `ISpecialistConfig`) |
+| **zod schema 变量** | camelCase + Schema 后缀 *或* camelCase + 直接命名 | `CopywritingOutputSchema` · `Step1InputSchema` (`packages/schemas/src/specialist-io/step-inputs.schema.ts:58`) · `analysisStructuralInput` / `analysisStructuralOutput` (`packages/schemas/src/specialist-io/analysis.schema.ts:13,26`) — 两种并存 · 新代码优先 PascalCase + Schema |
 | **React Hook** | camelCase + use 前缀 | `useStepData` · `useActiveAccount` · `useAuth` (`apps/web/src/hooks/`) |
-| **tRPC procedure** | camelCase 动词式 | `stepData.save` · `ipAccounts.create` · `copywriting.freeGenerate` · `history.list` · `dailyTasks.list` · `dailyTasks.complete` · `stt.transcribe` · `tts.synthesize` · `voiceChat.start` (subscription) · `voiceChat.clearSession` |
-| **tRPC sub-router 名** | camelCase (跟 procedure 字段一致) | `appRouter` 内键 `ipAccounts:` `copywriting:` `videoAnalysis:` `voiceChat:` `stt:` `tts:` `dailyTasks:` (`apps/api/src/trpc/routers/_app.ts`) |
-| **DB 表名 (prisma)** | snake_case 复数 | `step_data` · `evolution_insights` · `daily_tasks` (model 名 `DailyTask` 单数) |
-| **DB 列名** | snake_case | `account_id` · `created_at` · `trace_id` · `task_date` |
+| **tRPC procedure** | camelCase 动词式 | `stepData.save` · `ipAccounts.create` · `copywriting.freeGenerate` · `history.list` |
+| **tRPC sub-router 名** | camelCase (跟 procedure 字段一致) | `appRouter` 内键 `ipAccounts:` `copywriting:` `videoAnalysis:` (`apps/api/src/trpc/routers/_app.ts:26`) |
+| **DB 表名 (prisma)** | snake_case 复数 | `step_data` · `evolution_insights` (model 名 `StepData` 单数) |
+| **DB 列名** | snake_case | `account_id` · `created_at` · `trace_id` |
 | **CSS 自定义类** | kebab-case + `aip-` 前缀 | `aip-card-glow` · `aip-step-header` |
-| **测试文件** | `<原文件>.test.ts` 同名 | `copywriting-router.test.ts` · `BaseSpecialist.test.ts` · `tools-integration.spec.ts` (e2e) · `copywriting.judge.ts` (judge) · `VoiceChat.test.tsx` (web pages source-inspection) |
-| **e2e 测试 ID** | kebab-case (data-testid) | `tool-form-boom-generate` · `tool-result-generate` · `script-type-select` · `feedback-good` · `history-row-1002` · `analysis-dim-bar-钩子强度` · `record-button` · `turn-list` (`apps/web/src/pages/tools/VoiceChat.tsx`) |
+| **测试文件** | `<原文件>.test.ts` 同名 | `copywriting-router.test.ts` · `BaseSpecialist.test.ts` · `tools-integration.spec.ts` (e2e) · `copywriting.judge.ts` (judge) |
+| **e2e 测试 ID** | kebab-case (data-testid) | `tool-form-boom-generate` · `tool-result-generate` · `script-type-select` · `feedback-good` · `history-row-1002` · `analysis-dim-bar-钩子强度` |
 
 ### 1.2 路由 / URL 命名 (TS-001 case 协议)
 
 | 层 | 风格 | 实例 |
 |---|---|---|
-| **URL path** | kebab-case (lowercase) | `/boom-generate` · `/video-analysis` · `/ip-plan` · `/voice-chat` · `/daily-tasks` (`apps/web/src/router.tsx`) |
-| **tRPC procedure name** | camelCase | `boomGenerate.generate` · `videoAnalysis.analyze` · `copywriting.freeGenerate` · `voiceChat.start` · `dailyTasks.complete` |
-| **schema export** | camelCase or PascalCase+Schema | `copywritingFreeGenerateInput` (`packages/schemas/src/specialist-io/copywriting.schema.ts:50`) · `JudgeResultSchema` |
-| **environment var** | UPPER_SNAKE | `DATABASE_URL` · `REDIS_URL` · `ANTHROPIC_API_KEY` · `OPENAI_API_KEY` · `VITE_API_BASE_URL` · `STT_DAILY_LIMIT_PER_USER` · `TTS_DAILY_LIMIT_PER_USER` |
+| **URL path** | kebab-case (lowercase) | `/boom-generate` · `/video-analysis` · `/ip-plan` (`apps/web/src/router.tsx`) |
+| **tRPC procedure name** | camelCase | `boomGenerate.generate` · `videoAnalysis.analyze` · `copywriting.freeGenerate` |
+| **schema export** | camelCase or PascalCase+Schema | `copywritingFreeGenerateInput` (`packages/schemas/src/specialist-io/copywriting.schema.ts:50`) |
+| **environment var** | UPPER_SNAKE | `DATABASE_URL` · `REDIS_URL` · `ANTHROPIC_API_KEY` · `VITE_API_BASE_URL` |
 
 ### 1.3 ★ agentId 命名硬约束 (TD-016 教训 · LD-002)
 
-**铁律** · `agentId` 字段必须**精确匹配**类名 (PascalCase + `Agent` 或 `Worker` 后缀)，不允许小写 / kebab-case。
+**铁律** · `agentId` 字段必须**精确匹配**类名 (PascalCase + `Agent` 后缀)，不允许小写 / kebab-case。
 
 ```typescript
 // ✅ 正确 (apps/api/src/specialists/CopywritingAgent.ts:106)
@@ -53,9 +53,6 @@ const COPYWRITING_CONFIG: SpecialistConfig = {
   // ...
 };
 
-// ✅ 正确 — Worker 类 (apps/api/src/workers/stt/whisper.ts)
-// cost_log.agentId = 'SttWorker'
-
 // ❌ 禁止
 agentId: 'copywriting'           // 小写
 agentId: 'copywriting-agent'     // kebab-case
@@ -63,17 +60,13 @@ agentId: 'copywritingAgent'      // camelCase
 agentId: 'Copywriting'           // 缺 Agent 后缀
 ```
 
-**14 Specialist** (`apps/api/src/specialists/`)：
+**14 Specialist** (`apps/api/src/agents/base/types.ts:9`)：
 - `PositioningAgent` `BrandingAgent` `MonetizationAgent` `TopicAgent`
 - `CopywritingAgent` `VideoAgent` `LivestreamAgent` `PrivateDomainAgent`
 - `AnalysisAgent` `DiagnosisAgent` `DeepLearnAgent` `VoiceChatAgent`
 - `EvolutionAgent` `DailyTaskAgent`
 
-**额外的非 Specialist Worker (PRD-8)** ·
-- `SttWorker` (`apps/api/src/workers/stt/whisper.ts` · WhisperSttWorker 类 · agentId='SttWorker')
-- `TtsWorker` (`apps/api/src/workers/tts/openai-tts.ts` · OpenAITtsWorker 类 · agentId='TtsWorker')
-
-**校验位置** ·
+**校验位置**：
 - `cost_log.agent_id` 列 + `history.agent_id` 列 — 直接 string 存储 · join 报表用
 - `Judge` 测试构造 `agentId: 'Judge-${case_.specialistId}'` (`tests/judge/judge-runner.ts:71`)
 - `useFeedback` hook props 类型 `agentId: string` — UI 侧也透传，必须严格匹配
@@ -84,10 +77,9 @@ agentId: 'Copywriting'           // 缺 Agent 后缀
 
 | 对象 | 上限 | 软建议 | 实测中位 |
 |---|:-:|:-:|:-:|
-| 单文件行数 | 500 | 300 | 大多数 router < 300 (`history.ts` 120 · `analysis.ts` ~250) |
-| 单 Specialist 文件 | 600 (放宽) | — | `CopywritingAgent.ts` ≈ 410 · `VoiceChatAgent.ts` ≈ 500 |
-| 单 Worker 文件 | 500 | — | `whisper.ts` < 300 · `openai-tts.ts` < 300 |
-| 单函数行数 | 80 | 40 | `execute()` 模板方法 ~120 (`BaseSpecialist` · 不可压) · `executeStream()` (`VoiceChatAgent`) ≈ 150 (流式控制 · 不可压) |
+| 单文件行数 | 500 | 300 | 大多数 router < 300 (history.ts 120 / analysis.ts ~250) |
+| 单 Specialist 文件 | 600 (放宽) | — | CopywritingAgent.ts ≈ 410 |
+| 单函数行数 | 80 | 40 | execute() 模板方法 ~120 (BaseSpecialist · 不可压) |
 | 单 import 数 | 25 | 15 | router 平均 6-12 |
 
 ---
@@ -216,8 +208,8 @@ eqeqeq: ['error', 'always'],     // 必须 ===
 
 **7 组 · 必空行分隔 · 组内字母升序：**
 
-1. **builtin** — node 内置 (`node:crypto`, `node:async_hooks`, `node:url`, `node:path`, `node:fs`)
-2. **external** — npm 包 (`zod`, `@trpc/server`, `react`, `nock`, `openai`)
+1. **builtin** — node 内置 (`node:crypto`, `node:async_hooks`)
+2. **external** — npm 包 (`zod`, `@trpc/server`, `react`)
 3. **internal** — `@/...` (workspace alias) 和 `@quanqn/...`
 4. **parent** — `../foo`
 5. **sibling** — `./foo`
@@ -259,7 +251,7 @@ import { router } from '@/trpc/trpc';
 import type { Prisma } from '@prisma/client';
 ```
 
-### 3.4 实例 (web 页面 — `apps/web/src/pages/tools/Generate.tsx:9-20`)
+### 3.4 实例 (`apps/web/src/pages/tools/Generate.tsx:9-20`)
 
 ```typescript
 // external (workspace 包归 external — eslint-import-resolver-typescript 视 @quanqn/* 为 external)
@@ -279,25 +271,7 @@ import { trpc } from '@/lib/trpc';
 import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
 ```
 
-### 3.5 实例 (e2e ESM polyfill — `tests/e2e/voice-chat-flow.spec.ts:10-17`)
-
-```typescript
-// builtin (node: prefix)
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-// external
-import { expect, test } from '@playwright/test';
-
-// ★ ESM __dirname polyfill (必跟在 import 后 · before usage)
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const ARTIFACTS_DIR = path.resolve(__dirname, '../../scripts/ralph/verify-artifacts/US-013');
-```
-
-**为什么需要** · 项目 `"type": "module"` (`package.json:5`) → ESM 运行 · CJS `__dirname` 不可用 · 必显式 `fileURLToPath(new URL('.', import.meta.url))`。已落地于 `tests/e2e/voice-chat-flow.spec.ts:16` · `daily-task-flow.spec.ts:16` · `daily-tasks.spec.ts:15` · `evolution-loop.spec.ts:16` · `feedback-evolution-loop.spec.ts:15`。
-
-### 3.6 路径别名 (path aliases)
+### 3.5 路径别名 (path aliases)
 
 **根级 `tsconfig.base.json:33-39`** · workspace 共享：
 
@@ -323,14 +297,7 @@ const ARTIFACTS_DIR = path.resolve(__dirname, '../../scripts/ralph/verify-artifa
 }
 ```
 
-**runtime 解析** · vitest config (`vitest.config.ts:5-21`) + vite config 必须**镜像** tsconfig 别名 — TypeScript paths 不会自动传递到 runtime。
-
-**额外 vitest alias** (PRD-6/8 加 · `vitest.config.ts:10-20`)：
-- `openai` → `apps/api/node_modules/openai` (PRD-6 US-009 STT/TTS / PRD-8 重用)
-- `ioredis` + `bullmq` → `apps/api/node_modules/...` (PRD-6 US-010 BullMQ)
-- `@trpc/server` → `apps/api/node_modules/@trpc/server` (PRD-6 US-007 vi.hoisted TRPCError import)
-- `@quanqn/schemas/specialist-io` → `packages/schemas/src/specialist-io/index.ts` (PRD-6 US-001 schema 测试)
-- `@quanqn/schemas` → `packages/schemas/src/index.ts`
+**runtime 解析** · vitest config (`vitest.config.ts:5-11`) + vite config 必须**镜像** tsconfig 别名 — TypeScript paths 不会自动传递到 runtime。
 
 ---
 
@@ -403,7 +370,7 @@ const ARTIFACTS_DIR = path.resolve(__dirname, '../../scripts/ralph/verify-artifa
 
 **调用** · `pnpm typecheck` (根) → `pnpm -r typecheck` (turbo) → 各 workspace `tsc --noEmit`
 
-**当前状态 (post PRD-8)** · 6 workspaces · 0 errors · 完全通过
+**当前状态** · 6 workspaces · 0 errors · 完全通过
 
 ---
 
@@ -435,13 +402,13 @@ list: protectedProcedure
   })
 ```
 
-实测 · `apps/api/src/trpc/routers/` 24 个 router · 业务 procedure **100%** 用 `protectedProcedure` (`history.ts:54,89,109` · `copywriting.ts:94,125` · `knowledge.ts:80,87,94,108` · `dailyTasks.ts` · `voiceChat.ts` · `stt.ts` · `tts.ts` 等)。
+实测 · `apps/api/src/trpc/routers/` 18 个 router · 业务 procedure **100%** 用 `protectedProcedure` (history.ts:54,89,109 · copywriting.ts:94,125 · knowledge.ts:80,87,94,108 等)。
 
 ### 5.3 procedure 命名
 
-- camelCase 动词式 · `list / create / update / delete / generate / analyze / save / freeGenerate / transcribe / synthesize / start / complete`
-- sub-router 名 = key in `appRouter` · `apps/api/src/trpc/routers/_app.ts`
-- procedure 文件名 = sub-router 名 · `copywriting.ts` `videoAnalysis.ts` `boomGenerate.ts` `voiceChat.ts` `dailyTasks.ts`
+- camelCase 动词式 · `list / create / update / delete / generate / analyze / save / freeGenerate`
+- sub-router 名 = key in `appRouter` · `apps/api/src/trpc/routers/_app.ts:26-47`
+- procedure 文件名 = sub-router 名 · `copywriting.ts` `videoAnalysis.ts` `boomGenerate.ts`
 
 ### 5.4 input / output schema 命名
 
@@ -452,7 +419,7 @@ list: protectedProcedure
 **packages/schemas 中央 schema** ·
 - 文件名 · `<entity>.schema.ts` (`copywriting.schema.ts` `analysis.schema.ts` `step-inputs.schema.ts`)
 - export 命名 · 两种并存 ·
-  - **camelCase + 直接命名** · `copywritingFreeGenerateInput` `analysisStructuralInput` `analysisViralOutput` (PRD-5+ 新代码偏好)
+  - **camelCase + 直接命名** · `copywritingFreeGenerateInput` `analysisStructuralInput` `analysisViralOutput` (PRD-5 新代码偏好)
   - **PascalCase + Schema 后缀** · `Step1InputSchema` `CopywritingOutputSchema` (`packages/schemas/src/specialist-io/step-inputs.schema.ts:58` · 老代码 PRD-2 时期偏好)
 - 同一 schema 同时 `export const` + `export type` (zod infer) ·
 
@@ -460,29 +427,6 @@ list: protectedProcedure
 export const copywritingFreeGenerateInput = z.object({ ... });
 export type CopywritingFreeGenerateInput = z.infer<typeof copywritingFreeGenerateInput>;
 ```
-
-### 5.5 Subscription procedure (PRD-8 US-011 新增)
-
-VoiceChat 用 tRPC v11 subscription · 跟 query/mutation 同 sub-router · 但 builder 链不同：
-
-```typescript
-// apps/api/src/trpc/routers/voiceChat.ts
-start: protectedProcedure
-  .input(VoiceChatStartInput)
-  .subscription(({ ctx, input }) => {
-    return observable<VoiceChatStreamChunk>((emit) => {
-      // executeStream 异步迭代 · 每 chunk emit.next()
-      void (async () => {
-        for await (const chunk of agent.executeStream(...)) {
-          emit.next(chunk);
-        }
-        emit.complete();
-      })();
-    });
-  }),
-```
-
-前端用 `trpcClient.voiceChat.start.subscribe({ ... }, { onData, onComplete, onError })` 订阅 (`apps/web/src/pages/tools/VoiceChat.tsx`)。
 
 ---
 
@@ -542,8 +486,6 @@ it('Step3InputSchema shows error when personalInfo is too short', () => {
 > **TRPCError message 例外** · `throw new TRPCError({ code: 'NOT_FOUND', message: 'history_not_found' })` 用 snake_case 英文 — 这是**机器消费**的错误码 · 前端 catch 后映射成中文用户消息。区分 ·
 > - **zod schema message** = 给用户看 (中文)
 > - **TRPCError message** = 给前端 i18n 用 (英文/snake_case 编码)
->
-> PRD-8 新 router (`voiceChat.ts` · `stt.ts`) 沿用此约定 · 内部 message 英文 (`'activeAccountId required'`) · 前端展示时换中文。
 
 ---
 
@@ -575,14 +517,6 @@ throw new TRPCError({
 // ④ Specialist 失败降级 (不抛 · 标 isFallback=true)
 return { ...fallback, isFallback: true, traceId };
 // 实例: BaseSpecialist.ts:120-160 fallback path
-
-// ⑤ Worker 速率限流 (PRD-8 新增 4xx)
-throw new TRPCError({
-  code: 'TOO_MANY_REQUESTS',
-  message: '已达每日 50 次/天限制 · 请明天再试',
-  cause: { trace_id }
-});
-// 实例: checkSttRateLimit / checkTtsRateLimit (apps/api/src/lib/rate-limit/)
 ```
 
 ### 7.2 错误处理铁律
@@ -594,29 +528,12 @@ throw new TRPCError({
 | 系统错误用 `logger.error` 不用 `console.log` | 生产代码出现 `console.log` (eslint error 级) |
 | Specialist 失败有 `fallbackTemplate` 路径 | LLM 失败直接抛 500 |
 | EvolutionAgent 失败异步重试 | EvolutionAgent 失败影响用户主流程 |
-| Worker 失败必先释放资源 (`stream.getTracks().forEach(t => t.stop())`) | media stream leak |
 
 ### 7.3 自定义 Error 类 (`apps/api/src/specialists/base/errors.ts`)
 
 - `SchemaValidationError` (zod 二次失败)
 - `LLMTimeoutError` (AbortError → throw)
 - `FallbackTriggeredError` (降级标记)
-
-### 7.4 Worker 超时 + 取消 (PRD-8 US-009/010)
-
-OpenAI SDK 客户端实例化时支持 `timeout` + `maxRetries` 选项 · 测试用 `maxRetries: 0` 防止 5xx/429 重试循环超时：
-
-```typescript
-// apps/api/src/workers/stt/whisper.ts
-const client = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-  timeout: opts.timeoutMs ?? 30_000,
-  maxRetries: opts.maxRetries ?? 2,
-});
-
-// tests/unit/api/workers/stt.test.ts:243
-const worker = new WhisperSttWorker({ maxRetries: 0 });  // ★ 防 SDK 内部 retry loop · 否则 test 超时
-```
 
 ---
 
@@ -650,7 +567,6 @@ export const logger = pino({
 logger.info({ accountId, agentId, durationMs }, 'specialist.execute.success');
 logger.warn({ agentId, traceId, issues: parsed.error.message }, 'specialist.schema_validation.retry');
 logger.error({ err, agentId, traceId }, 'llm.gateway.timeout');
-logger.info({ accountId, durationSec, costUsd, traceId }, 'stt.transcribe.success');  // PRD-8
 
 // ❌ 错 — 不允许 console (eslint error)
 console.log('user logged in');           // 业务代码禁
@@ -658,7 +574,7 @@ console.warn('rate limit hit');          // 业务代码也禁 (allow=['warn','e
 console.error('LLM failed:', err);       // 业务代码禁
 ```
 
-**msg 命名** · `<domain>.<action>.<outcome>` · 例 `specialist.execute.success` · `auth.login.failed` · `llm.gateway.timeout` · `stt.transcribe.success` · `tts.synthesize.failed` · `voice-chat.tool-call.dispatched`
+**msg 命名** · `<domain>.<action>.<outcome>` · 例 `specialist.execute.success` `auth.login.failed` `llm.gateway.timeout`
 
 ---
 
@@ -668,7 +584,7 @@ console.error('LLM failed:', err);       // 业务代码禁
 
 每个文件顶部 JSDoc 块 · 含 ·
 - 文件用途 (1-2 行 · 中文)
-- 关联 PRD / US / AC (e.g. `PRD-8 US-009`)
+- 关联 PRD / US / AC (e.g. `PRD-5 US-003`)
 - 关键 SHIELD / REJ 反例锁 (e.g. `SHIELD REJ-013: protectedProcedure (non-publicProcedure)`)
 
 实例 (`apps/api/src/trpc/routers/history.ts:1-11`) ·
@@ -683,30 +599,16 @@ console.error('LLM failed:', err);       // 业务代码禁
  */
 ```
 
-实例 (PRD-8 风格 · `tests/unit/api/workers/stt.test.ts:1-5`) ·
-
-```typescript
-/**
- * Unit tests — PRD-8 US-009
- * AC-6/AC-7: 5 unit tests · nock OpenAI mock
- * Tests: happy / oversize / timeout / rate-limit / API error
- */
-```
-
 ### 9.2 区段分隔 (推荐 · 高频)
 
 ```typescript
 // ── Mocks ────────────────────────────────────────────────────────────────────
-// ── vi.hoisted — shared mocks ─────────────────────────────────────────────────
 // ── Test fixtures ─────────────────────────────────────────────────────────────
 // ── Tests ─────────────────────────────────────────────────────────────────────
 // ── Helpers ───────────────────────────────────────────────────────────────────
-// ── Setup/Teardown ────────────────────────────────────────────────────────────
-// ── Imports after mocks ───────────────────────────────────────────────────────
-// ── Test 1: happy path ────────────────────────────────────────────────────────
 ```
 
-(见 `tests/unit/specialists/__tests__/CopywritingAgent.test.ts:32,46,95` · `tests/judge/judge-runner.ts:13,23,35` · `tests/unit/api/workers/stt.test.ts` · `tests/unit/api/workers/tts.test.ts` · `tests/unit/web/pages/VoiceChat.test.tsx`)
+(见 `tests/unit/specialists/__tests__/CopywritingAgent.test.ts:32,46,95` · `tests/judge/judge-runner.ts:13,23,35`)
 
 ### 9.3 行内注释 (中文 · 解释 why 不解释 what)
 
@@ -714,8 +616,6 @@ console.error('LLM failed:', err);       // 业务代码禁
 - `// LD-016 严格门禁`
 - `// REJ-035 LS先写 + DB后写 · DB fail 时 LS 保留 + toast.error`
 - `// ★ 必须设 SET LOCAL ROLE quanqn_app 否则 superuser 跳过 RLS`
-- `// maxRetries=0 prevents SDK retry loop on 5xx (otherwise times out)` (`tests/unit/api/workers/stt.test.ts:242`)
-- `// ★ ESM __dirname polyfill (必跟在 import 后 · before usage)` (e2e specs)
 
 ---
 
@@ -724,29 +624,27 @@ console.error('LLM failed:', err);       // 业务代码禁
 ### 10.1 函数
 
 - 上限 80 行 · 软建议 40 行
-- **小函数原则** · `buildDateFilter` (`history.ts:42`) · `buildJudgePrompt` (`judge-runner.ts:93`) · `buildWavBuffer` (`stt.test.ts:51` test helper)
+- **小函数原则** · `buildDateFilter` (`history.ts:42`) · `buildJudgePrompt` (`judge-runner.ts:93`) · `makeStreamGateway` (test helper)
 - **参数对象优先** (>2 个参数) · 避免位置参数歧义
-- **return type 显式** · 所有 export function 必标 return type · `Promise<JudgeResult>` `Promise<unknown>` `Promise<SttResult>`
+- **return type 显式** · 所有 export function 必标 return type · `Promise<JudgeResult>` `Promise<unknown>`
 
 ### 10.2 模块导出
 
 - **named export 优先** · `export const copywritingRouter = router({ ... })`
-- **default export 仅 React 页面** · `export default function Generate()` · `export default function VoiceChat()`
+- **default export 仅 React 页面** · `export default function Generate()`
 - **type + value 同时导出** · `export const X = z.object({...}); export type X = z.infer<typeof X>;`
 
 ### 10.3 barrel files (索引文件)
 
 `packages/schemas/src/index.ts` + `packages/schemas/src/specialist-io/index.ts` 等 · 重新导出 sub-module。
 
-**铁律** (`vitest.config.ts:42`) · coverage 排除 `**/index.ts` (barrel 不算覆盖)
+**铁律** (`vitest.config.ts:31`) · coverage 排除 `**/index.ts` (barrel 不算覆盖)
 
 ### 10.4 类设计
 
 - **抽象基类 + 模板方法** · `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSpecialist.ts:40`) — 子类只实现 `invokeLLM` + 3 abstract 属性 (`config` `inputSchema` `outputSchema`)
-- **DI 注入** · constructor 接受可选 mock gateway · `constructor(gateway?: ILLMGateway)` (`BaseSpecialist.ts:58`)
+- **DI 注入** · constructor 接受可选 mock gateway · `constructor(gateway?: ILLMGateway)` (BaseSpecialist.ts:58)
 - **静态可选模板** · `static readonly fallbackTemplate?: Record<string, unknown>` (用于 fallback 路径)
-- **Worker 类同 DI 模式** · `class WhisperSttWorker { constructor(opts?: { timeoutMs?: number; maxRetries?: number }) }` (`apps/api/src/workers/stt/whisper.ts`) — 测试可注入超时/重试参数避免真 SDK 行为
-- **流式方法** · `async function* executeStream()` (`VoiceChatAgent.ts`) — 必标 return type `AsyncIterable<VoiceChatStreamChunk>` · async generator 不可省略 `*`
 
 ---
 
@@ -754,7 +652,7 @@ console.error('LLM failed:', err);       // 业务代码禁
 
 ### 11.1 组件文件
 
-- PascalCase.tsx (`Header.tsx` `FeedbackButton.tsx` `VoiceChat.tsx`)
+- PascalCase.tsx (`Header.tsx` `FeedbackButton.tsx`)
 - 同名目录 + index 复合组件 (`components/StepForm/StepForm.tsx` + `components/StepForm/IndustrySelect.tsx` + `TextareaField.tsx`)
 
 ### 11.2 Hook
@@ -764,9 +662,8 @@ console.error('LLM failed:', err);       // 业务代码禁
 ### 11.3 数据获取
 
 - ★ 必用 tRPC client (`@/lib/trpc`) · **不允许直接 fetch / axios**
-- mutation · `trpc.copywriting.freeGenerate.useMutation()` · `trpc.stt.transcribe.useMutation()`
-- query · `trpc.history.detail.useQuery({ id }, { enabled: !!id })` · `trpc.dailyTasks.list.useQuery()`
-- subscription · `trpcClient.voiceChat.start.subscribe({ ... }, { onData, onComplete })` (`apps/web/src/pages/tools/VoiceChat.tsx` · ★ 用 `trpcClient` 不是 `trpc.*.useSubscription` · v11 RC subscription hook 不稳定)
+- mutation · `trpc.copywriting.freeGenerate.useMutation()`
+- query · `trpc.history.detail.useQuery({ id }, { enabled: !!id })`
 
 ### 11.4 表单
 
@@ -781,27 +678,12 @@ console.error('LLM failed:', err);       // 业务代码禁
 ### 11.6 a11y
 
 - `jsx-a11y/recommended` · `click-events-have-key-events: warn`
-- 所有交互按钮带 `aria-label` (中文 · `aria-label="有帮助"` · `aria-label="录音"`)
-- 状态栏用 `aria-live="polite"` 通知屏幕阅读器 (`apps/web/src/pages/tools/VoiceChat.tsx`)
+- 所有交互按钮带 `aria-label` (中文 · `aria-label="有帮助"`)
 
 ### 11.7 data-testid (e2e 必加)
 
 - kebab-case · `tool-form-boom-generate` · `analysis-dim-bar-钩子强度` (允许中文)
 - 命名规则 · `<role>-<sub-role>-<id>` · 见 `tools-integration.spec.ts` 实测
-- VoiceChat (`record-button` · `turn-list`) · DailyTasks (`task-list` · `task-row-${id}`)
-
-### 11.8 媒体资源释放 (PRD-8 US-013 AC-9 铁律)
-
-任何调用 `getUserMedia()` 拿到的 `MediaStream` · 用完必释放 tracks · 否则浏览器持续显示录音指示：
-
-```typescript
-// ✅ 对 (apps/web/src/pages/tools/VoiceChat.tsx)
-recorder.stream.getTracks().forEach(t => t.stop());
-
-// ❌ 漏 — 切页面 / unmount 后麦克风指示仍亮
-```
-
-测试位置 · `tests/unit/web/pages/VoiceChat.test.tsx:151-162` (AC-9 源码 grep 断言)。
 
 ---
 
@@ -809,14 +691,13 @@ recorder.stream.getTracks().forEach(t => t.stop());
 
 ### 12.1 .gitattributes (强制 LF)
 
-`.gitattributes` 强制所有文本 `eol=lf` — 防 Windows CRLF 混入。所有源码后缀 (`*.ts`, `*.tsx`, `*.js`, `*.json`, `*.md`, `*.sql`, `*.sh`, `*.py`, `*.yaml`, `*.yml`, `*.prisma`) 显式锁定 LF。二进制资源 (`*.png`, `*.jpg`, `*.zip`, `*.woff2`) 标 `binary`。
+`.gitattributes` 强制所有文本 `eol=lf` — 防 Windows CRLF 混入。
 
-### 12.2 commit message (实测格式)
+### 12.2 commit message (PRD-5 实测格式)
 
 ```
-feat: [US-009] - STTWorker · OpenAI Whisper-1 接入
+feat: [US-011] - /history 接入 · 新建 history.ts router + History.tsx 真表格 + 跳转预填
 fix: [US-008] - AC-7 中文 zod error · analysisStructuralInput copy min/max 加中文 message
-chore: [US-008] - progress.txt update with implementation notes
 ```
 
 格式 · `<type>: [<US-XXX>] - <短描述>`
@@ -829,24 +710,17 @@ chore: [US-008] - progress.txt update with implementation notes
 - `.husky/_/pre-commit` → `lint-staged` → eslint --fix + prettier --write
 - `.husky/_/commit-msg` 暂未启 (可选 · 未配 commitlint)
 
-### 12.4 .nvmrc
-
-`.nvmrc` 锁定 Node 20 (`engines: ">=20"` 在 `package.json:7`)。
-
 ---
 
 ## 13. 已知约定例外 (technical decisions)
 
 | 例外 | 位置 | 理由 |
 |---|---|---|
-| `agents/specialists/CopywritingAgent.ts` 与 `specialists/CopywritingAgent.ts` 共存 | `apps/api/src/agents/specialists/` 仅 1 文件 (旧路径) · `apps/api/src/specialists/` 14 Specialist (新路径) | TD-005 历史目录残留 · 待 PRR 收敛到 `specialists/` |
-| `Schema` 后缀 vs 直接命名 zod schema | 老 `Step*InputSchema` PascalCase · 新 `analysisStructuralInput` camelCase | PRD-2 vs PRD-5+ 风格漂移 · 新代码靠 camelCase · 老代码不强制改 |
+| `agents/specialists/CopywritingAgent.ts` 与 `specialists/CopywritingAgent.ts` 共存 | `apps/api/src/agents/specialists/` 仅 1 文件 (旧路径) · `apps/api/src/specialists/` 8 Specialist (新路径) | TD-005 历史目录残留 · 待 PRD-6 收敛到 `specialists/` |
+| `Schema` 后缀 vs 直接命名 zod schema | 老 `Step*InputSchema` PascalCase · 新 `analysisStructuralInput` camelCase | PRD-2 vs PRD-5 风格漂移 · 新代码靠 camelCase · 老代码不强制改 |
 | eslint allow `console.warn / .error` | `.eslintrc.cjs:49` `no-console: ['error', { allow: ['warn', 'error'] }]` | logger 兜底 · 但业务代码仍优先 logger |
 | `import/no-named-as-default` 禁用对 pino | `apps/api/src/lib/logger.ts:9` `// eslint-disable-next-line import/no-named-as-default` | pino 是 CJS default export · 必须 import 默认 |
-| TRPCError message 英文 / snake_case | 所有 router · 如 `'activeAccountId required'` (`voiceChat.ts:35`) | 给前端 i18n 用的错误码 · 跟用户可见的中文 zod message 分层 |
-| 源码 grep 测试 (VoiceChat.test.tsx) | `tests/unit/web/pages/VoiceChat.test.tsx` 用 `readFileSync(PAGE, 'utf-8')` 断言字符串 | TD-027 historical · 18/18 LLM Judge mock llmGateway · web 单元 jsdom 测试覆盖率被绕过 · 待 PRR 引入真渲染测试 |
-| voiceChat subscription 用 `trpcClient.*.subscribe` 不是 `useSubscription` hook | `apps/web/src/pages/tools/VoiceChat.tsx` | tRPC v11 RC `useSubscription` API 不稳 · 直用 client.subscribe 拿稳定 unsubscribe 句柄 |
 
 ---
 
-*Convention analysis: 2026-05-11 · derived from `.eslintrc.cjs` · `.prettierrc` · 6 tsconfig.json · `AGENTS.md §6` · 实读 `vitest.config.ts` · 6 router (含 PRD-8 voiceChat / stt / tts / dailyTasks) · 3 Specialist (含 VoiceChatAgent) · 2 Worker (Whisper / OpenAITts) · 6 测试文件抽样验证*
+*Convention analysis: 2026-05-09 · derived from .eslintrc.cjs · .prettierrc · 6 tsconfig.json · AGENTS.md §6 · 实读 6 个 router + 3 个 Specialist + 4 个测试文件抽样验证*
