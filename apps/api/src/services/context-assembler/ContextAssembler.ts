@@ -14,14 +14,14 @@
 import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
 import { getLatestInsight } from '@/memory/l4-profile';
-import { ragRetrieveWorker } from '@/workers/rag';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
+import { ragRetrieveWorker } from '@/workers/rag';
 
 import { SPECIALIST_TEMPLATES } from './templates';
 
 import type { AssembleRequest, AssembledContext } from './types';
-import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
 import type { KnowledgeChunkContent } from '@quanqn/schemas';
+import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
 
 const FETCH_TIMEOUT_MS = 5_000;
 
@@ -204,7 +204,7 @@ export class ContextAssembler {
       `[Section 6] RAG 知识库参考(top-${ragChunks.length} 相似案例 · 仅供生成参考 · 不抄)`,
     ];
     ragChunks.forEach((chunk, i) => {
-      const simStr = chunk.similarity != null ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
+      const simStr = chunk.similarity !== null ? ` (相似度 ${chunk.similarity.toFixed(3)})` : '';
       const preview = chunk.content.slice(0, 200);
       lines.push(`─ 案例 ${i + 1}: ${chunk.title}${simStr}· ${preview}`);
     });
