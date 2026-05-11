@@ -36,6 +36,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "worker:image-gen": "tsx apps/api/src/workers/image-gen/worker.ts",
+    "seed:knowledge": "tsx --tsconfig apps/api/tsconfig.json apps/api/scripts/seed-knowledge-chunk.ts",
     "prepare": "husky install"
   },
   "devDependencies": {

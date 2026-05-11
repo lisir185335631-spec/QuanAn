@@ -1161,6 +1161,7 @@ model KnowledgeChunk {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([type, title])
   @@index([type])
   @@map("knowledge_chunk")
 }
