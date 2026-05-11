@@ -1,6 +1,8 @@
+/* eslint-disable no-console -- one-shot CLI seed script · intentional stdout */
 /**
  * seed-knowledge-chunk.ts — PRD-9 US-002
- * 把 67 案例 + 23 公式 + 22 元素 批量 ingest 到 KnowledgeChunk 表
+ * 把 67 案例 + 23 公式 + 23 元素 批量 ingest 到 KnowledgeChunk 表
+ * (HOT_ELEMENTS 实测 23 项 · PRD-9 doc 写 22 是 PRD doc-only drift · TD 已登记)
  * upsert by (type, title) 幂等 · cost_log embedding_call 每条 1 行
  *
  * Usage:
@@ -10,13 +12,12 @@
 // AC-4: 在任何模块加载前设置高限额，允许 seed 用 accountId=0 超过默认 100/day
 process.env['EMBEDDING_DAILY_LIMIT_PER_USER'] = '200';
 
-import { Decimal } from '@prisma/client/runtime/library';
-import { prisma } from '../src/lib/prisma';
-import { OpenAIEmbeddingWorker } from '../src/workers/embedding';
 import { KNOWLEDGE_CASES } from '../src/lib/constants/cases';
+import { EMBEDDING_COST_USD_PER_1K_TOKENS } from '../src/lib/constants/embeddingLimits';
 import { COPY_FORMULAS } from '../src/lib/constants/formulas';
 import { HOT_ELEMENTS } from '../src/lib/constants/hotElements';
-import { EMBEDDING_COST_USD_PER_1K_TOKENS } from '../src/lib/constants/embeddingLimits';
+import { prisma } from '../src/lib/prisma';
+import { OpenAIEmbeddingWorker } from '../src/workers/embedding';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
