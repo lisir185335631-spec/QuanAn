@@ -29,6 +29,11 @@ vi.mock('@/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
+// PRD-9 US-003: mock ragRetrieveWorker · 防真实 embedding 网络调用
+vi.mock('@/workers/rag', () => ({
+  ragRetrieveWorker: { retrieve: vi.fn().mockResolvedValue([]) },
+}));
+
 // ── Imports ──────────────────────────────────────────────────────────────────
 
 import { ContextAssembler } from '@/services/context-assembler/ContextAssembler';
