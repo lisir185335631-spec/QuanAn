@@ -11,8 +11,9 @@
  * SHIELD: outputSchema=z.never() · tools 通过 tools array+dispatch · 不是 mode 切换
  */
 
-import { Decimal } from '@prisma/client/runtime/library';
 import { randomUUID } from 'node:crypto';
+
+import { Decimal } from '@prisma/client/runtime/library';
 import { z } from 'zod';
 
 import { generateSpecialistTraceId } from '@/agents/base/types';
@@ -20,6 +21,7 @@ import type { SpecialistId } from '@/agents/base/types';
 import { logger } from '@/lib/logger';
 import { prisma as _prisma } from '@/lib/prisma';
 import { clearBuffer, getTurns, pushTurn } from '@/memory/l1-buffer';
+
 import { BaseSpecialist } from './base/BaseSpecialist';
 
 import type {
@@ -172,17 +174,15 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
 
     let modelUsed = '';
     let tokensUsed = { prompt: 0, completion: 0, total: 0 };
-    let assistantText = '';
 
     // No-op tool dispatcher (execute() without prisma context)
-    const noopDispatch: ToolDispatchFn = async (_name, _args) => '{}';
+    const noopDispatch: ToolDispatchFn = (_name, _args) => Promise.resolve('{}');
 
     for await (const chunk of this.executeStream({ ...req, traceId }, noopDispatch)) {
       if (chunk.type === 'done') {
         modelUsed = chunk.modelUsed;
         tokensUsed = chunk.tokensUsed;
       }
-      if (chunk.type === 'delta') assistantText += chunk.delta;
     }
 
     const turns = await getTurns(req.accountId, 20);
@@ -265,7 +265,7 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
       const toolCallsMeta: Array<{ name: string; args: Record<string, unknown>; result: string }> = [];
 
       // AC-1: call LLMGateway.stream() with tools
-      for await (const chunk of this.llmGateway.stream!(streamReq as Parameters<NonNullable<ILLMGateway['stream']>>[0])) {
+      for await (const chunk of this.llmGateway.stream(streamReq as Parameters<NonNullable<ILLMGateway['stream']>>[0])) {
         const c = chunk as LLMStreamChunk & {
           result?: { name?: string; args?: Record<string, unknown> };
         };
@@ -276,8 +276,8 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
           assistantText += c.delta;
           yield { type: 'delta', delta: c.delta };
         } else if (c.type === 'tool_call' && c.result) {
-          const toolName = (c.result.name ?? '') as string;
-          const toolArgs = (c.result.args ?? {}) as Record<string, unknown>;
+          const toolName = (c.result.name ?? '');
+          const toolArgs = (c.result.args ?? {});
           yield { type: 'tool_call', toolName, args: toolArgs };
           const result = await dispatchTool(toolName, toolArgs);
           yield { type: 'tool_result', toolName, result };

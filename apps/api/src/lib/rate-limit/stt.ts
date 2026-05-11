@@ -7,8 +7,8 @@
 
 import { TRPCError } from '@trpc/server';
 
-import { redis } from '@/lib/redis';
 import { STT_DAILY_LIMIT_DEFAULT } from '@/lib/constants/sttLimits';
+import { redis } from '@/lib/redis';
 
 /** Exported for unit-test key inspection */
 export function _todayKey(accountId: number): string {

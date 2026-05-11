@@ -6,17 +6,17 @@
  */
 
 import { Decimal } from '@prisma/client/runtime/library';
+import { TRPCError } from '@trpc/server';
 // eslint-disable-next-line import/no-named-as-default
 import OpenAI from 'openai';
-import { TRPCError } from '@trpc/server';
 
-import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
 import {
   TTS_MAX_CHARS,
   TTS_TIMEOUT_MS,
   TTS_COST_USD_PER_1K_CHARS,
 } from '@/lib/constants/ttsLimits';
+import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 
 import type { ITtsWorker, TtsSynthesizePayload, TtsSynthesizeResult } from './index';
 

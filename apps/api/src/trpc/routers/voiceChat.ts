@@ -8,11 +8,11 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { dispatchTool } from '@/lib/voice-chat/tools-dispatcher';
+import { voiceChatAgent, type VoiceChatToolName } from '@/specialists/VoiceChatAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
-import { voiceChatAgent } from '@/specialists/VoiceChatAgent';
 
-import type { VoiceChatToolName } from '@/specialists/VoiceChatAgent';
+import type { PrismaClient } from '@prisma/client';
 
 export const voiceChatRouter = router({
   /**
@@ -38,9 +38,8 @@ export const voiceChatRouter = router({
       const traceId = input.traceId ?? ctxTraceId ?? `vc-${Date.now()}`;
 
       // AC-2: tool dispatcher uses ctx.prisma (RLS-scoped transaction client)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const dispatch = (name: string, args: Record<string, unknown>) =>
-        dispatchTool(name as VoiceChatToolName, args, activeAccountId, prisma as any);
+        dispatchTool(name as VoiceChatToolName, args, activeAccountId, prisma as unknown as PrismaClient);
 
       yield* voiceChatAgent.executeStream(
         {
