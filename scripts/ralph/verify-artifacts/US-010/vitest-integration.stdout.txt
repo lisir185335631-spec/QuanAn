@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/integration/api/tts-openai.test.ts > US-010 AC-9: R-001 — OPENAI_API_KEY not in frontend code > grep OPENAI_API_KEY apps/web should return 0 matches
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 1 skipped (2)
+   Start at  15:36:22
+   Duration  207ms (transform 24ms, setup 6ms, collect 54ms, tests 10ms, environment 0ms, prepare 30ms)
+

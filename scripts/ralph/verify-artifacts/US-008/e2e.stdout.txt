@@ -1,14 +1,10 @@
-
-> quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
-> playwright test tests/e2e/tool-ai-video.spec.ts --reporter\=junit --output\=scripts/ralph/verify-artifacts/US-008/e2e.xml
-
-<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="6.47254">
-<testsuite name="tool-ai-video.spec.ts" timestamp="2026-05-10T09:06:41.981Z" hostname="chromium" tests="1" failures="0" skipped="0" time="2.871" errors="0">
-<testcase name="/ai-video 工具页 E2E (US-008) › 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误" classname="tool-ai-video.spec.ts" time="2.871">
+<testsuites id="" name="" tests="2" failures="0" skipped="0" errors="0" time="7.949107">
+<testsuite name="daily-tasks.spec.ts" timestamp="2026-05-11T05:27:02.439Z" hostname="chromium" tests="1" failures="0" skipped="0" time="3.479" errors="0">
+<testcase name="/daily-tasks 3 状态截图 (AC-6) › N=0 empty · N=3 normal · N=5 max 三张截图" classname="daily-tasks.spec.ts" time="3.479">
 </testcase>
 </testsuite>
-<testsuite name="tool-ai-video.spec.ts" timestamp="2026-05-10T09:06:41.981Z" hostname="mobile" tests="1" failures="0" skipped="0" time="2.984" errors="0">
-<testcase name="/ai-video 工具页 E2E (US-008) › 创建账号 → 表单 → 提交 → 5 skeleton → mock 完成 → 5 真图 + 完成 banner + 无控制台错误" classname="tool-ai-video.spec.ts" time="2.984">
+<testsuite name="daily-tasks.spec.ts" timestamp="2026-05-11T05:27:02.439Z" hostname="mobile" tests="1" failures="0" skipped="0" time="3.923" errors="0">
+<testcase name="/daily-tasks 3 状态截图 (AC-6) › N=0 empty · N=3 normal · N=5 max 三张截图" classname="daily-tasks.spec.ts" time="3.923">
 </testcase>
 </testsuite>
 </testsuites>

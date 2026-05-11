@@ -20,10 +20,8 @@ import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { getDeepLearningSamples } from '@/memory/l4-profile';
 import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
-
 import { BaseSpecialist } from '@/specialists/base/BaseSpecialist';
 import { SchemaValidationError, LLMTimeoutError } from '@/specialists/base/errors';
-
 import type {
   AssembledContext,
   ILLMGateway,

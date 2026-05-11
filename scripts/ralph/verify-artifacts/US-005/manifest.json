@@ -1,16 +1,19 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-11T01:20:00",
-  "validator_end_ts": "2026-05-11T01:23:00",
-  "test_command": "pnpm test (vitest run) + python3 -m py_compile ~/.claude/scripts/ralph/ralph.py",
+  "validator_start_ts": "2026-05-11T11:28:00",
+  "validator_end_ts": "2026-05-11T11:32:00",
+  "test_command": "pnpm typecheck (web+api) + vitest run (root 82 files) + pnpm --filter @quanqn/web exec vitest run (web-only) + browser AC-7/AC-8",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "US-005 是 PRR 元数据 story，仅改全局 ralph.py timeout + sync-to-project.sh + RCA doc，不涉及 TypeScript 代码。零回归用 vitest run 代替 pytest（本项目无 Python 后端）。75 test files / 727 tests 全部通过。",
   "artifacts": [
-    "pytest-full.stdout.txt",
-    "sync-run.stdout.txt",
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "vitest-full.stdout.txt",
+    "typecheck.stdout.txt",
+    "screenshot.png",
     "manifest.json"
-  ]
+  ],
+  "notes": "All ACs pass. Root vitest: 82 test files, 774 tests, 0 failures. Typecheck: 0 errors (web+api). Browser: /evolution loads with h1 '进化中心', cold-start UI shows exact AC-8 text '暂无 insight · 等累计 5 条反馈后自动生成'. Web-only vitest 2 pre-existing failures (Generate h1 + History h1 Router context) NOT introduced by US-005 — confirmed present at US-003 commit state before US-005. Evolution-specific tests (h1 + empty state) both pass. AC-4 approved deviation: $queryRaw used instead of prisma.groupBy because DATE_TRUNC not natively supported by groupBy; output shape {date,total,good,satisfactionRate}[] matches AC spec."
 }

@@ -1,15 +1,18 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-11T01:40:00",
-  "validator_end_ts": "2026-05-11T01:43:00",
-  "test_command": "python3.11 scripts/ralph/test_path_b.py (AC-6/7/8/3 mock) + python3.11 -m py_compile ralph.py + pnpm vitest run (727 zero-regression)",
+  "validator_start_ts": "2026-05-11T12:27:00",
+  "validator_end_ts": "2026-05-11T12:27:45",
+  "test_command": "pnpm vitest run (789 tests) + pnpm vitest run daily-task*.test.ts (15 tests) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
     "pytest-full.xml",
-    "pytest-full.stdout.txt"
+    "pytest-full.stdout.txt",
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "typecheck.stdout.txt"
   ],
-  "notes": "AC-1 PASS: _check_existing_commit(story_id, since='30 minutes ago') at ralph.py:817, subprocess.run git log + re.compile exact [story_id] + hash extraction. AC-2 PASS: used at ralph.py:1669 in retryCount>=5 block before BLOCKED. AC-3 PASS: _write_path_b_audit_gate writes {status:pending, story_id, commit_hash, reason:'路径 B 自动触发: ralph 实际已 commit · daemon validate 误报'} — AC-3 mock test confirmed. AC-4 PASS: no commit hit → s_check['blocked']=True at ralph.py:1684 (AC-7 mock confirmed). AC-5 PASS: [PATH-B] story={story_id} retry={retryCount} git_log_hit={hash} log at ralph.py:1671; _write_path_b_audit_gate emits PENDING_DETECTED to stdout (captured by daemon → ralph-output.log). AC-6 PASS: test_ac6_commit_found — hash '3c6b28a' returned. AC-7 PASS: test_ac7_no_commit + test_ac7_git_nonzero_exit — None returned. AC-8 PASS: since='30 minutes ago' passed to git --since; test_ac8_cross_prd_window confirms empty output → None. Typecheck PASS: python3.11 -m py_compile 0 errors (both global ~/.claude/scripts/ralph/ralph.py and project scripts/ralph/ralph.py). Zero-regression: 727/727 vitest tests pass (exit_code=0)."
+  "notes": "AC-1 PASS: DailyTaskAgent.ts invokeLLM() calls this.llmGateway.complete({model_tier:'lightweight', timeout_ms:30_000, ...}). AC-2 PASS: execute() checks stepCount===0||evolutionProfile===null → buildColdStartTasks() → isFallback:false modelUsed:'cold-start-template'. AC-3 PASS: cron/daily-task-runner.ts schedule('0 0 * * *', ..., {scheduled:false}); index.ts calls dailyTaskCron.start() at boot. AC-4 PASS: runForAllActiveAccounts() does prisma.ipAccount.findMany({where:{isActive:true,updatedAt:{gt:sevenDaysAgo}}}) then forEach enqueue with jobId=daily-task-{id}-{date}. AC-5 PASS: prisma schema has @@unique([accountId, taskDate]); worker uses prisma.dailyTask.upsert({where:{accountId_taskDate:{...}}}). AC-6 PASS: Worker({concurrency:5}); failed event handler + error dead-letter stub registered. AC-7 PASS: dailyTasksRouter.regenerateToday mutation enqueues job; no hard active limit enforced (design intent). AC-8 PASS: 10 unit tests all pass (T1 cold-start/T2 evolutionProfile-null/T3 LLM-lightweight/T4 schema-retry/T5 template-format/T6 cron-regex/T7 fan-out-5/T8 concurrency-5/T9 idempotent-jobId/T10 failed-handler). AC-9 PASS: 3 integration tests pass (3 accounts fan-out/worker upsert chain/idempotent jobId). AC-10 PASS: metadata.eventType='l5_agent' in invokeLLM() call to gateway. AC-11 PASS: pnpm typecheck 0 errors; pnpm vitest 789/789 pass; lint confirmed 0 per developer logs. AC-12 PASS: LJ1+LJ2 both score 5.0/5.0 (15/15 dim checks). Zero-regression: 789/789 vitest pass (exit_code=0). Typecheck: exit_code=0 across all 6 workspace packages."
 }

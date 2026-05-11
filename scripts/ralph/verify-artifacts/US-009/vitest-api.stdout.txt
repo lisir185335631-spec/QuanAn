@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/integration/api/stt-whisper.test.ts (2 tests | 1 skipped) 9ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 1 skipped (2)
+   Start at  13:46:24
+   Duration  194ms (transform 22ms, setup 5ms, collect 53ms, tests 9ms, environment 0ms, prepare 24ms)
+

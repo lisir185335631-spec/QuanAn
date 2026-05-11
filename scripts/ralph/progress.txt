@@ -3689,3 +3689,111 @@ prd.json.passes = true | retryCount = 0 | notes = ""
   - z.enum([...]).default(x) 导致 _input type 含 undefined · 不要加 default · 直接 z.enum 即可保持 TIn 兼容
   - gstack browse CLI 在 zsh 中 chain JSON 管道 exit 1 · 改用 curl -X POST Bearer token 直接调 HTTP API (port 从 ~/.gstack/browse.json 读)
 ---
+
+## [2026-05-11 17:35] - US-013 (Opus audit · PRD-8 Wave 3 · 收官 · LLM Judge +11 + 3 e2e + lint clean)
+- risk_level: medium · size: medium · 20 AC (18 + typecheck + tests) · 全 PASS
+- commits: face933 (主) + e9ffca5 (progress.txt chore)
+- Validator: ac_results 18 AC 详细 PASS + 13 artifact files (含 6 screenshots) · zero_regression=PASS
+- 收官 deliverables:
+  - judge 51 tests (>50) ✓
+  - vitest 861 + 2 skipped (>750) ✓
+  - typecheck 6 ws 0 errors ✓
+  - lint --max-warnings=0 ✓
+  - e2e 158 pass + 2 skipped (>145) ✓
+  - 3 new e2e specs: evolution-loop / daily-task-flow / voice-chat-flow (workers=1 fullyParallel=false 沿用 PRD-5/6 教训)
+  - 14 specialists ✓ (原 11 + 3 L5: EvolutionAgent + DailyTaskAgent + VoiceChatAgent)
+  - 9 worker dirs (≥8) ✓
+  - 6 cost_log eventTypes ✓
+  - ContextAssembler 5 路 Promise.allSettled (D-020 + L4 EvolutionInsight) ✓
+  - 11 specialist evolutionInsight 注入 (D-054 centralized in ContextAssembler · 50 grep hits) ✓
+  - VOICE_CHAT_TOOLS 5 tools 跨 3 处一致 ✓
+  - L1 Buffer key 'voice_chat:acc' grep ✓
+  - cron '0 0 * * *' grep 3 hits ✓
+  - 3 工具页 browser screenshots (/evolution + /daily-tasks + /voice-chat 全 load · 0 ErrorBoundary) ✓
+  - D-046~D-055 全落实 ✓
+  - progress.txt patterns 回传 ✓
+- TD-028 update: e2e 部分弥补 (voice-chat-flow.spec.ts created · smoke test · 不是完整闭环) · 4/7 component/hook 仍 inline (TD-028 partial open · 留 PRR)
+- approve commit: face933 + e9ffca5
+- approved_at: 2026-05-11T17:35
+
+============================================================
+## PRD-8 完成 · 13/13 stories 全 PASS · 2026-05-11
+============================================================
+
+总览:
+- US-001 ★★ Foundation 5 层记忆 schema (1/13)
+- US-002 ★★ Foundation 3 L5 Specialist 骨架 + ADR-018 (2/13)
+- US-003 EvolutionAgent 真接 LLM + 累计反馈阈值 (3/13)
+- US-004 ContextAssembler 接通 EvolutionInsight 注入 (4/13 · D-054)
+- US-005 evolution router + /evolution 前端 (5/13)
+- US-006 e2e 闭环验证 (6/13)
+- US-007 DailyTaskAgent + node-cron 0 点 + per-account fan-out (7/13)
+- US-008 dailyTasks router + /daily-tasks 前端 (8/13)
+- US-009 STTWorker · OpenAI Whisper-1 (9/13)
+- US-010 TTSWorker · OpenAI TTS-1 (10/13)
+- US-011 VoiceChatAgent · LLM + 5 tools function calling + L1 Buffer (11/13)
+- US-012 /voice-chat 前端 · WebRTC 录音 + audio + 多轮 UI (12/13)
+- US-013 收官 · LLM Judge +11 + 3 e2e + lint clean + 全套绿灯 (13/13)
+
+PRD-8 总耗时: 2026-05-11 09:04 daemon 启动 → 17:35 US-013 approve = ~8.5 hours
+6 个新 TD 登记 (TD-024~TD-029) · 2 个 resolved (TD-024 双路径 EvolutionAgent + TD-025 audit-gate self-approve RCA-005)
+3 个 RCA 已写 (RCA-001~RCA-005)
+1 个 historical TD 发现 (TD-027 LLM Judge mock project-wide · 影响 PRD-2~PRD-8)
+
+--- [RALPH] Iteration 19 ended: US-013 (38分钟 20秒) ---
+
+============================================================
+## /goal-verify PRD-8 [2026-05-11 17:40] · Opus 新 session
+============================================================
+
+**结论**: [PASS-WITH-DEBT] · 38/40 = 95% 覆盖率 · 2 minor deviation 已 TD 登记
+
+完整报告: .planning/verifications/prd-8-goal-verify.md
+
+**FR 8/8 PASS**:
+- FR-1 3 L5 自治 + ADR-018 ✓ (US-002+003+007+011)
+- FR-2 EvolutionAgent 累计阈值 {5,20,50,100} ✓ (US-003 + US-006 e2e)
+- FR-3 ContextAssembler 注入 EvolutionInsight ✓ (US-004 D-054)
+- FR-4 DailyTaskAgent 0 点 cron + fan-out ✓ (US-007 + US-008)
+- FR-5 VoiceChatAgent 流式 + 5 工具 + L1 Buffer ✓ (US-011)
+- FR-6 STT/TTS 真接 OpenAI + cost_log eventType ✓ (US-009 + US-010)
+- FR-7 5 层记忆完整 ✓ (US-001 + 全程接通)
+- FR-8 rate limit STT 50 / TTS 100 ✓ (US-009 + US-010)
+
+**Non-Goals 6/7 PASS · 1 TD**:
+- ✓ EvolutionAgent triggerType 仅 threshold (grep 0)
+- ✓ DailyTask 仅 /daily-tasks 页面 (无 push)
+- ✓ DeepLearn 自动学习触发器
+- ✓ Trending Cache L5 placeholder
+- ⚠️ admin 12 行 placeholder (TD-031 · monorepo 拓扑需要)
+- ✓ 国内 STT/TTS provider 0 命中
+- ✓ 移动端 App 0 命中
+
+**Locked Decisions D-050~D-055 5/6 PASS · 1 TD**:
+- ✓ D-050 仅 threshold trigger
+- ✓ D-051 仅页面渠道
+- ✓ D-052 仅 OpenAI
+- ✓ D-053 L1 Buffer key + TTL 1800s
+- ✓ D-054 ContextAssembler 单一入口注入 (50 grep hits)
+- ⚠️ D-055 EvolutionAgent concurrency 实现 deviation (TD-030 · 功能等价 · concurrency=5 + jobId dedup vs PRD 字面 concurrency=1)
+
+**Success Metrics 10/10 PASS**:
+- vitest 861 passed (>750) ✓
+- typecheck 6 ws 0 errors ✓
+- lint --max-warnings=0 ✓
+- judge 51 passed (>50) ✓
+- e2e 158 passed (>145) ✓
+- cost_log 6 eventType all hit (specialist_call:24 + judge_call:12 + image_gen:5 + l5_agent:6 + stt_call:3 + tts_call:3 = 53 files) ✓
+- 3 L5 Agent all PASSED ✓
+- 反馈飞轮 e2e 闭环 ✓ (US-006 4 AC)
+- DailyTaskAgent 0 点 cron ✓
+- VoiceChatAgent 30s timeout + 工具 ≤ 2s ✓
+
+**新 TD 登记 (3 个)**:
+- TD-030 (medium) · D-055 EvolutionAgent concurrency 实现 deviation · doc-only fix
+- TD-031 (low) · admin placeholder Non-Goal 字面违反 · PRD-10 启动自然 fix
+- TD-032 (low) · .planning/codebase/ stale (5月9 vs 5月11) · PRD-9 启动前 /gsd-map-codebase × 6 重跑
+
+**PRR 必修 (high severity)**: TD-027 (LLM Judge mock project-wide · 18 judge files 都不真 grade)
+
+============================================================

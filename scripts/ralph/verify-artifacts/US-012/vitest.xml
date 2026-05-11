@@ -1,13 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="4" failures="0" errors="0" time="0.166">
-    <testsuite name="tests/unit/api/copywriting-acquisition.test.ts" timestamp="2026-05-10T10:25:24.481Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.003942334">
-        <testcase classname="tests/unit/api/copywriting-acquisition.test.ts" name="copywriting.acquisitionGenerate — happy path &gt; calls CopywritingAgent(mode=acquisition), writes history agentMode=acquisition, markdown contains CTA" time="0.002623125">
+<testsuites name="vitest tests" tests="26" failures="0" errors="0" time="0.17">
+    <testsuite name="tests/unit/web/pages/VoiceChat.test.tsx" timestamp="2026-05-11T08:51:21.000Z" hostname="returndeMacBook-Pro.local" tests="26" failures="0" errors="0" skipped="0" time="0.002783916">
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; 页面包含 record-button data-testid" time="0.000650333">
         </testcase>
-        <testcase classname="tests/unit/api/copywriting-acquisition.test.ts" name="copywriting.acquisitionGenerate — zod validation &gt; conversionGoal 留空 → BAD_REQUEST (转化目标必填)" time="0.000536625">
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; 页面包含 turn-list data-testid" time="0.00009175">
         </testcase>
-        <testcase classname="tests/unit/api/copywriting-acquisition.test.ts" name="copywriting.acquisitionGenerate — CTA post-validate retry &gt; markdown 缺 CTA → execute called twice, second result used" time="0.000207583">
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; 页面包含 status bar aria-live polite" time="0.000076375">
         </testcase>
-        <testcase classname="tests/unit/api/copywriting-acquisition.test.ts" name="copywriting.acquisitionGenerate — cross-account RLS isolation &gt; history.create always uses activeAccountId from context, not a user-supplied value" time="0.000244333">
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; STATUS_LABEL 包含所有 6 个状态" time="0.000102958">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; 使用 navigator.mediaDevices.getUserMedia({ audio: true })" time="0.000069333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; 30s max timer 存在" time="0.00006875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; onMouseDown + onMouseUp 绑定录音操作" time="0.000078833">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; MediaRecorder webm/opus mimeType 选择逻辑" time="0.000062">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; 调用 trpc.stt.transcribe.useMutation" time="0.000062166">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; 调用 trpcClient.voiceChat.start.subscribe" time="0.000063333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; UserBubble 组件存在" time="0.000053209">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; AssistantBubble 组件存在" time="0.000055917">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-4: done event → tts.synthesize → audio play &gt; 调用 trpcClient.tts.synthesize.mutate" time="0.000051834">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-4: done event → tts.synthesize → audio play &gt; &lt;audio&gt; 元素带 autoPlay" time="0.000057792">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-4: done event → tts.synthesize → audio play &gt; audioUrl 字段用于播放" time="0.000069458">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-5: 5 工具 call card 渲染 · 折叠展开 &gt; ToolCallCard 组件存在" time="0.000064542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-5: 5 工具 call card 渲染 · 折叠展开 &gt; expanded 字段控制折叠" time="0.000072834">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-5: 5 工具 call card 渲染 · 折叠展开 &gt; args + result 渲染" time="0.000068417">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-6: 30s silence detection &gt; silence timer 存在" time="0.000057042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-6: 30s silence detection &gt; 还想聊什么吗 silence prompt" time="0.000057292">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; handleHangUp 函数存在" time="0.0000605">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; SummaryPanel 显示总结" time="0.00005325">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; clearSessionMutation 调用" time="0.000057375">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; 本次对话 N 轮总结文案" time="0.000048959">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-9: 无 media stream leak &gt; getTracks().forEach(t =&gt; t.stop()) 释放 stream" time="0.000081125">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-9: 无 media stream leak &gt; recorder.stream 字段访问" time="0.000048625">
         </testcase>
     </testsuite>
 </testsuites>

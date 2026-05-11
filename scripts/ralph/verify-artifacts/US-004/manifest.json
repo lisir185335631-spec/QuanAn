@@ -1,13 +1,18 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-11T01:12:00",
-  "validator_end_ts": "2026-05-11T01:13:30",
-  "test_command": "pnpm typecheck && pnpm test",
+  "validator_start_ts": "2026-05-11T02:49:50",
+  "validator_end_ts": "2026-05-11T02:51:40",
+  "test_command": "pnpm test (vitest run) + pnpm typecheck + pnpm lint",
   "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "notes": "lint_fix: removed 2 empty lines within @/ import group in agents/evolution/EvolutionAgent.ts (import/order rule). Fix is cosmetic (whitespace only) — no logic changed.",
   "artifacts": [
-    "typecheck.stdout.txt",
+    "vitest.xml",
     "vitest.stdout.txt",
-    "manifest.json"
-  ],
-  "notes": "零回归门禁: vitest 727 passed (0 failed, 0 errors). Typecheck 6 ws 0 error. AC-5 grep 命中 0. AC-6 全 workers 用法 OK via re-export. No pytest (Node.js project)."
+    "vitest-full.xml",
+    "vitest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ]
 }

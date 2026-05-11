@@ -1,14 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="vitest" tests="7" failures="0" errors="0" time="0.334">
-  <testsuite name="tests/unit/api/video-production-router.test.ts" tests="6" failures="0" errors="0" time="0.005">
-    <testcase name="videoProduction.generate — happy path > calls VideoAgent(mode=production), writes history" classname="tests/unit/api/video-production-router.test.ts" time="0.001"/>
-    <testcase name="videoProduction.generate — zod validation > sourceCopy less than 10 chars → TRPCError BAD_REQUEST" classname="tests/unit/api/video-production-router.test.ts" time="0.001"/>
-    <testcase name="videoProduction.generate — zod validation > sourceCopy = 10 (min boundary) → pass" classname="tests/unit/api/video-production-router.test.ts" time="0.001"/>
-    <testcase name="videoProduction.generate — zod validation > sourceCopy = 3001 → TRPCError BAD_REQUEST" classname="tests/unit/api/video-production-router.test.ts" time="0.001"/>
-    <testcase name="videoProduction.generate — fallback path (LLMTimeoutError) > agent returns isFallback=true → history written with isFallback=true" classname="tests/unit/api/video-production-router.test.ts" time="0.001"/>
-    <testcase name="videoProduction.generate — cross-account RLS isolation > findFirst returns null → INTERNAL_SERVER_ERROR" classname="tests/unit/api/video-production-router.test.ts" time="0.001"/>
-  </testsuite>
-  <testsuite name="tests/integration/api/video-production-llm.test.ts" tests="1" failures="0" errors="0" time="0.063">
-    <testcase name="US-003 AC-8: videoProduction.generate integration — nock Anthropic SDK + real DB > generate: nock intercepts Anthropic call, writes history + cost_log to real DB, less than 5s" classname="tests/integration/api/video-production-llm.test.ts" time="0.063"/>
-  </testsuite>
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="13" failures="0" errors="0" time="0.28">
+    <testsuite name="tests/unit/specialists/EvolutionAgent.test.ts" timestamp="2026-05-11T02:16:42.426Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.004673125">
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="EvolutionAgent (US-003) &gt; happy path: LLM 成功 → insight 写入原子事务 · isFallback=false" time="0.001387042">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="EvolutionAgent (US-003) &gt; fallback path: schema 无效 · previousInsight 可用 → isFallback=true · 不写 insight" time="0.000666083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="EvolutionAgent (US-003) &gt; cumulative merge: (fresh ∪ prev) 去重 · avoidList 同理 · 不超 top 10" time="0.000585208">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=5 → 触发 enqueue (threshold:5)" time="0.001068958">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=19 → 不触发 enqueue" time="0.00008075">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=20 → 触发 enqueue (threshold:20)" time="0.000152625">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=49 → 不触发 enqueue" time="0.000053459">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=50 → 触发 enqueue (threshold:50)" time="0.000106541">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=99 → 不触发 enqueue" time="0.000057083">
+        </testcase>
+        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=100 → 触发 enqueue (threshold:100)" time="0.00010875">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/evolution-threshold.test.ts" timestamp="2026-05-11T02:16:42.427Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.044459792">
+        <testcase classname="tests/integration/api/evolution-threshold.test.ts" name="AC-10: 5 concurrent same-account feedback → exactly 1 enqueue &gt; 5 parallel enqueueIfThresholdMet calls → queue.add called exactly once (threshold:5)" time="0.00993825">
+        </testcase>
+        <testcase classname="tests/integration/api/evolution-threshold.test.ts" name="AC-10: 5 concurrent same-account feedback → exactly 1 enqueue &gt; counts 1-4 and 6-10 do NOT trigger enqueue" time="0.005034084">
+        </testcase>
+        <testcase classname="tests/integration/api/evolution-threshold.test.ts" name="AC-10: 5 concurrent same-account feedback → exactly 1 enqueue &gt; jobId deduplication: concurrent rush at threshold uses same jobId" time="0.002071917">
+        </testcase>
+    </testsuite>
 </testsuites>

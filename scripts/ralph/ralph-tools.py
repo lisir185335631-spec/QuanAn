@@ -350,6 +350,28 @@ def cmd_approve():
 
     gate["status"] = "approved"
     gate["approved_at"] = datetime.now().isoformat()
+
+    # 2026-05-11 RCA-005 配套: 记 caller PID + parent process + cwd · 防 self-approve 异常
+    # 实施 trigger: QuanQn PRD-8 US-009/US-010 跨 session Monitor 残留导致 self-approve · 无法追溯调用者
+    import os as _os
+    gate["approve_caller"] = {
+        "pid": _os.getpid(),
+        "ppid": _os.getppid(),
+        "cwd": str(Path.cwd()),
+        "user": _os.getenv("USER", "?"),
+    }
+    # 持久化 audit log 到 ~/.claude/audit-log-{project}.jsonl(跨项目)
+    try:
+        prd = read_prd()
+        project_name = prd.get("project", "unknown") if prd else "unknown"
+        audit_log = Path.home() / ".claude" / f"audit-log-{project_name}.jsonl"
+        audit_log.parent.mkdir(parents=True, exist_ok=True)
+        with open(audit_log, "a", encoding="utf-8") as f:
+            f.write(json.dumps({"action": "approve", **gate}, ensure_ascii=False) + "\n")
+    except Exception as e:
+        # audit log 写失败不阻断 approve 主流程 · 仅 stderr 警告
+        print(f"[WARN] audit log 写入失败: {e}", file=sys.stderr)
+
     # 原子写入 audit-gate.json（ralph.py 正在轮询此文件）
     tmp_gate = AUDIT_GATE_FILE.with_suffix(".json.tmp")
     tmp_gate.write_text(json.dumps(gate, ensure_ascii=False, indent=2), encoding="utf-8")

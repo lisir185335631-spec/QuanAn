@@ -1,14 +1,15 @@
 
-> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
-> vitest run tests/unit/web/pages/AiVideo.test.tsx
-
-
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ tests/unit/web/pages/AiVideo.test.tsx (21 tests) 3ms
+{"level":"info","time":"2026-05-11T05:25:08.998Z","pid":55991,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-11","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"info","time":"2026-05-11T05:25:08.998Z","pid":55991,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-11","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"error","time":"2026-05-11T05:25:08.998Z","pid":55991,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","err":{"type":"Error","message":"Redis connection failed","stack":"Error: Redis connection failed\n    at /Users/return/Desktop/QuanQn/tests/unit/api/daily-tasks-router.test.ts:261:40\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"accountId":1,"msg":"daily_tasks.regenerate_today.enqueue_failed"}
+{"level":"info","time":"2026-05-11T05:25:09.000Z","pid":55991,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":42,"scheduledDate":"2026-05-11","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"warn","time":"2026-05-11T05:25:09.000Z","pid":55991,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","msg":"no_active_account"}
+ ✓ tests/unit/api/daily-tasks-router.test.ts (14 tests) 7ms
 
  Test Files  1 passed (1)
-      Tests  21 passed (21)
-   Start at  17:05:27
-   Duration  148ms (transform 19ms, setup 5ms, collect 18ms, tests 3ms, environment 0ms, prepare 29ms)
+      Tests  14 passed (14)
+   Start at  13:25:08
+   Duration  169ms (transform 28ms, setup 5ms, collect 36ms, tests 7ms, environment 0ms, prepare 28ms)
 

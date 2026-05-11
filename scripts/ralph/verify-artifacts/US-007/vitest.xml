@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="12" failures="0" errors="0" time="0.245">
-    <testsuite name="tests/unit/api/ai-video-router.test.ts" timestamp="2026-05-10T08:41:24.678Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.006256167">
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — happy path (5 scenes) &gt; returns historyId, jobIds(length=5), scenesPlaceholder(length=5) · history scenes 5 all sceneImageUrl=null" time="0.00334525">
+<testsuites name="vitest tests" tests="15" failures="0" errors="0" time="0.295">
+    <testsuite name="tests/unit/api/daily-task-agent.test.ts" timestamp="2026-05-11T04:27:38.698Z" hostname="returndeMacBook-Pro.local" tests="12" failures="0" errors="0" skipped="0" time="0.004409666">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T1: 冷启动 stepData=0 → 返回 5 模板 tasks · isFallback=false · modelUsed=cold-start-template" time="0.001697">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — rate limit &gt; 11th call throws TOO_MANY_REQUESTS (AC-4)" time="0.000553417">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T2: 冷启动 evolutionProfile=null (有 stepData) → 仍走模板" time="0.000220708">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=9 → BAD_REQUEST (镜头数应在 5-8 之间)" time="0.000317333">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T3: 非冷启动 → 调 LLMGateway.complete(lightweight) · 返回 LLM tasks" time="0.000530041">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=4 → BAD_REQUEST (镜头数应在 5-8 之间)" time="0.000202333">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T4: LLM 输出 schema 不合规 → retry 1 次 · 二次成功返回" time="0.000361458">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=5 → pass (AC-11 boundary)" time="0.000253875">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T5: buildColdStartTasks() 返回 5 条合规 TaskItem (uuid · ctaUrl 以 / 开头)" time="0.000378625">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — zod validation &gt; scenesCount=8 → pass (AC-11 boundary)" time="0.00021925">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T6: cron schedule string &quot;0 0 * * *&quot; 符合 5-field cron 格式" time="0.00009825">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — isFallback=true (agent post-validate retry) &gt; agent isFallback=true (Chinese in imagePromptEn triggered fallback) → router still creates history + queues jobs" time="0.000246333">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T7: runForAllActiveAccounts — 5 活跃账号 → enqueue 5 jobs" time="0.000204917">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.generateStoryboard — cross-account RLS isolation &gt; findFirst null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR" time="0.000189083">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T8: DailyTask BullMQ Worker 创建时 concurrency=5" time="0.000032417">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.jobStatus — returns correct status counts &gt; returns total=5 completed=3 pending=1 failed=1 from stored scenes" time="0.000292584">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T9: 同日同账号 jobId 相同 → BullMQ 保证幂等" time="0.000370875">
         </testcase>
-        <testcase classname="tests/unit/api/ai-video-router.test.ts" name="aiVideo.jobStatus — returns correct status counts &gt; NOT_FOUND when historyId does not belong to account" time="0.000203625">
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-8 T10: Worker 注册了 failed 事件监听器 (dead-letter 告警)" time="0.000051209">
+        </testcase>
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-12 LJ1: LLM 真接输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5" time="0.000053625">
+        </testcase>
+        <testcase classname="tests/unit/api/daily-task-agent.test.ts" name="DailyTaskAgent &gt; AC-12 LJ2: cold-start 模板输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5" time="0.000050542">
         </testcase>
     </testsuite>
-    <testsuite name="tests/integration/api/ai-video-flow.test.ts" timestamp="2026-05-10T08:41:24.679Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.03458425">
-        <testcase classname="tests/integration/api/ai-video-flow.test.ts" name="US-007 AC-10: aiVideo flow integration — queue mock + real DB &gt; generateStoryboard: 5 scenes → 5 jobs queued · history written to real DB · jobStatus returns completed=5 after worker mock" time="0.010687834">
+    <testsuite name="tests/unit/api/daily-task-integration.test.ts" timestamp="2026-05-11T04:27:38.699Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.002725333">
+        <testcase classname="tests/unit/api/daily-task-integration.test.ts" name="DailyTask Integration — fan-out → enqueue → upsert chain &gt; AC-9: 3 active accounts → runForAllActiveAccounts → 3 jobs enqueued" time="0.001204875">
         </testcase>
-        <testcase classname="tests/integration/api/ai-video-flow.test.ts" name="US-007 AC-10: aiVideo flow integration — queue mock + real DB &gt; cross-account jobStatus: different accountId → NOT_FOUND" time="0.004077916">
+        <testcase classname="tests/unit/api/daily-task-integration.test.ts" name="DailyTask Integration — fan-out → enqueue → upsert chain &gt; AC-9: Worker 处理所有 3 jobs → DailyTask 表 upsert 3 行" time="0.000933959">
+        </testcase>
+        <testcase classname="tests/unit/api/daily-task-integration.test.ts" name="DailyTask Integration — fan-out → enqueue → upsert chain &gt; AC-5: 同日同账号 jobId 相同 → BullMQ 幂等保证" time="0.000282958">
         </testcase>
     </testsuite>
 </testsuites>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="11" failures="0" errors="0" time="1.666">
+    <testsuite name="tests/unit/api/workers/tts.test.ts" timestamp="2026-05-11T07:37:10.067Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="1.44882725">
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.1: happy path — synthesizes text, writes asset + cost_log &gt; 1000-char text → TTS mock → publicUrl returned + asset written + cost_log written" time="0.013667375">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.2: oversize — &gt; 4000 chars rejects before OpenAI call &gt; text.length &gt; 4000 → BAD_REQUEST thrown · no OpenAI HTTP call" time="0.000457834">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.2: oversize — &gt; 4000 chars rejects before OpenAI call &gt; exactly 4000 chars passes" time="0.004532583">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.3: timeout — TTS API timeout → INTERNAL_SERVER_ERROR &gt; nock delays 500ms · worker timeout=100ms → INTERNAL_SERVER_ERROR" time="1.414882375">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS &gt; Redis incr &gt; 100 → TOO_MANY_REQUESTS with correct message" time="0.001176667">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS &gt; 100th call (boundary) passes" time="0.000519209">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS &gt; _todayKey format is correct" time="0.00019625">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR &gt; OpenAI 500 error → INTERNAL_SERVER_ERROR thrown · no cost_log · no asset" time="0.006219">
+        </testcase>
+        <testcase classname="tests/unit/api/workers/tts.test.ts" name="US-010 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR &gt; OpenAI 429 rate limit error → INTERNAL_SERVER_ERROR thrown" time="0.006489416">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/tts-openai.test.ts" timestamp="2026-05-11T07:37:10.069Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="1" time="0.009882625">
+        <testcase classname="tests/integration/api/tts-openai.test.ts" name="US-010 AC-8: TTS OpenAI integration — real TTS-1 call &gt; short Chinese text → real TTS-1 → mp3 buffer + asset + cost_log written to DB" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/integration/api/tts-openai.test.ts" name="US-010 AC-9: R-001 — OPENAI_API_KEY not in frontend code &gt; grep OPENAI_API_KEY apps/web should return 0 matches" time="0.009539583">
+        </testcase>
+    </testsuite>
+</testsuites>

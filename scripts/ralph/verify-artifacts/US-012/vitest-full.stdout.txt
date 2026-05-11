@@ -1,46 +1,41 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — happy path (5 scenes) > returns historyId, jobIds(length=5), scenesPlaceholder(length=5) · history scenes 5 all sceneImageUrl=null
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — rate limit > 11th call throws TOO_MANY_REQUESTS (AC-4)
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=9 → BAD_REQUEST (镜头数应在 5-8 之间)
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=4 → BAD_REQUEST (镜头数应在 5-8 之间)
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=5 → pass (AC-11 boundary)
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=8 → pass (AC-11 boundary)
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — isFallback=true (agent post-validate retry) > agent isFallback=true (Chinese in imagePromptEn triggered fallback) → router still creates history + queues jobs
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — cross-account RLS isolation > findFirst null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.jobStatus — returns correct status counts > returns total=5 completed=3 pending=1 failed=1 from stored scenes
- ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.jobStatus — returns correct status counts > NOT_FOUND when historyId does not belong to account
- ✓ tests/unit/api/specialists-flow.test.ts > privateDomain.generate > AC-7: creates History row with agentId=PrivateDomainAgent and traceId
- ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.generate > AC-7: creates DiagnosisReport row with agentId=DiagnosisAgent and traceId
- ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.generate > zod: rejects answers array with wrong length
- ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.history > calls diagnosisReport.findMany with default limit=10
- ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.latest > calls diagnosisReport.findFirst ordered by createdAt desc
- ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.latest > returns null when no reports found
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.evolve > AC-7: creates FeedbackLog row with rating and agentId
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.getConfig > returns profile config when profile exists
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.getConfig > returns default config when profile does not exist
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.updateConfig > upserts EvolutionProfile and returns ok + updated config
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.history > calls evolutionInsight.findMany with default limit=20
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.recentFeedback > calls feedbackLog.findMany and returns array
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.recentFeedback > passes agentId filter to where clause when provided
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.feedbackTrend > returns mock trend data with requested days
- ✓ tests/unit/api/specialists-flow.test.ts > evolution.moduleRanking > returns mock ranking array
- ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.list > calls deepLearningArchive.findMany with isActive filter by default
- ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.create > creates DeepLearningArchive with sourceType=text
- ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.createFromFile > creates archive with sourceType=file and placeholder sample
- ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.learn > updates archive learningStatus to pending and returns {ok:true, status:"queued"}
- ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.delete > soft-deletes archive by setting isActive=false
- ✓ tests/unit/api/specialists-creation.test.ts > copywriting.generate > US-009 AC-5/AC-7: calls CopywritingAgent, writes real markdown to History row
- ✓ tests/unit/api/specialists-creation.test.ts > copywriting.optimize > AC-7: creates History row for optimization with traceId
- ✓ tests/unit/api/specialists-creation.test.ts > copywriting.list > returns array of history entries without hitting history.create
- ✓ tests/unit/api/specialists-creation.test.ts > copywriting.delete > calls history.delete with the given historyId and returns {ok: true}
- ✓ tests/unit/api/specialists-creation.test.ts > videoAnalysis.analyze > AC-7: calls AnalysisAgent(viral), creates History row with agentId=AnalysisAgent and traceId
- ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generate > AC-7: calls VideoAgent(production), creates History row with agentId=VideoAgent and traceId
- ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generateStoryboard > AC-7: creates History row for storyboard with traceId
- ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generateSceneImage > AC-9: enqueues BullMQ job · returns jobId + historyId + sceneIndex
- ✓ tests/unit/api/specialists-creation.test.ts > boomGenerate.generate > AC-7: creates History row with agentId=CopywritingAgent and traceId
- ✓ tests/unit/api/specialists-creation.test.ts > monetization.generate > AC-7: creates History row with agentId=monetization and traceId
+{"level":"info","time":"2026-05-11T08:43:40.238Z","pid":72300,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-11","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"info","time":"2026-05-11T08:43:40.238Z","pid":72300,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-11","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"error","time":"2026-05-11T08:43:40.238Z","pid":72300,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","err":{"type":"Error","message":"Redis connection failed","stack":"Error: Redis connection failed\n    at /Users/return/Desktop/QuanQn/tests/unit/api/daily-tasks-router.test.ts:261:40\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"accountId":1,"msg":"daily_tasks.regenerate_today.enqueue_failed"}
+{"level":"info","time":"2026-05-11T08:43:40.240Z","pid":72300,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":42,"scheduledDate":"2026-05-11","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"warn","time":"2026-05-11T08:43:40.240Z","pid":72300,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","msg":"no_active_account"}
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.getToday > AC-2: returns today DailyTask row when record exists
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.getToday > AC-2: returns null when no record for today
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.getToday > AC-1: queries with accountId (explicit double-layer guard)
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.getHistory > AC-2: returns list ordered by taskDate desc
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.getHistory > AC-2: respects limit=30
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.getHistory > AC-1: queries with accountId isolation
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.markCompleted > AC-2: marks task completed and recalculates completedCount
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.markCompleted > AC-1: NOT_FOUND when record belongs to different account
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.markCompleted > AC-2: findFirst uses accountId guard (LD-009)
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.markCompleted > AC-4: already-completed task stays completed (idempotent)
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.regenerateToday > AC-2: enqueues daily-task job and returns ok + scheduledDate + jobId
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.regenerateToday > AC-2: INTERNAL_SERVER_ERROR when queue add fails
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks.regenerateToday > AC-1: jobId includes accountId for per-account isolation
+ ✓ tests/unit/api/daily-tasks-router.test.ts > dailyTasks protectedProcedure guard > AC-1: getToday FORBIDDEN when activeAccountId=null
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: list all — findMany called with accountId + orderBy createdAt desc
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: filter by agentMode — where includes agentMode
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: filter by agentId
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: filter by sourceType
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: dateRange=last_7d → createdAt gte filter added
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: pagination — take=limit skip=offset passed through
+ ✓ tests/unit/api/history-router.test.ts > history.list > AC-12: limit > 100 → zod BAD_REQUEST
+ ✓ tests/unit/api/history-router.test.ts > history.detail > AC-3: detail — findFirst with id + accountId
+ ✓ tests/unit/api/history-router.test.ts > history.detail > AC-13: detail not found → NOT_FOUND
+ ✓ tests/unit/api/history-router.test.ts > history.list US-013 > US-013 AC-8 (1): list filter agentMode=production → findMany includes production filter
+ ✓ tests/unit/api/history-router.test.ts > history.list US-013 > US-013 AC-8 (2): list filter agentMode=acquisition(video) → VideoAgent rows returned
+ ✓ tests/unit/api/history-router.test.ts > history.detail US-013 > US-013 AC-8 (3): storyboard detail → scenes array returned
+ ✓ tests/unit/api/history-router.test.ts > history.detail US-013 > US-013 AC-8 (4): detail join Asset → sceneImageUrl from Asset.publicUrl
+ ✓ tests/unit/api/history-router.test.ts > history.detail US-013 > US-013 AC-8 (5): cross-account detail → NOT_FOUND (accountId double-layer guard)
+ ✓ tests/unit/api/history-router.test.ts > history.delete > AC-4: delete — deleteMany with id + accountId → { ok: true }
+ ✓ tests/unit/api/history-router.test.ts > history.delete > AC-13: delete cross-account blocked by explicit accountId where
  ✓ tests/unit/specialists/__tests__/CopywritingAgent.test.ts > CopywritingAgent > happy path: step7 returns valid CopywritingOutput with # heading
  ✓ tests/unit/specialists/__tests__/CopywritingAgent.test.ts > CopywritingAgent > AC-10: markdown without # heading → refine fails → fallback (US-015)
  ✓ tests/unit/specialists/__tests__/CopywritingAgent.test.ts > CopywritingAgent > AC-11: hooks empty array → zod min(1) fails → fallback (US-015)
@@ -72,6 +67,55 @@
  ✓ tests/unit/specialists/__tests__/VideoAgent.test.ts > VideoAgent > storyboard non-ASCII imagePromptEn: schema regex rejects Chinese → BaseSpecialist retry → fallback (AC-4)
  ✓ tests/unit/specialists/__tests__/VideoAgent.test.ts > VideoAgent > storyboard outputSchema getter: result validates against StoryboardOutputSchema
  ✓ tests/unit/specialists/__tests__/VideoAgent.test.ts > VideoAgent > storyboard schema-level: Chinese imagePromptEn fails StoryboardSceneSchema regex (not post-validate)
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — happy path (5 scenes) > returns historyId, jobIds(length=5), scenesPlaceholder(length=5) · history scenes 5 all sceneImageUrl=null
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — rate limit > 11th call throws TOO_MANY_REQUESTS (AC-4)
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=9 → BAD_REQUEST (镜头数应在 5-8 之间)
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=4 → BAD_REQUEST (镜头数应在 5-8 之间)
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=5 → pass (AC-11 boundary)
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — zod validation > scenesCount=8 → pass (AC-11 boundary)
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — isFallback=true (agent post-validate retry) > agent isFallback=true (Chinese in imagePromptEn triggered fallback) → router still creates history + queues jobs
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.generateStoryboard — cross-account RLS isolation > findFirst null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.jobStatus — returns correct status counts > returns total=5 completed=3 pending=1 failed=1 from stored scenes
+ ✓ tests/unit/api/ai-video-router.test.ts > aiVideo.jobStatus — returns correct status counts > NOT_FOUND when historyId does not belong to account
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > PositioningAgent industry: invalid LLM output → fallback · output satisfies Step1OutputSchema (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > BrandingAgent packaging: invalid output → fallback · output satisfies Step3OutputSchema (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > MonetizationAgent: invalid output → fallback · output satisfies Step4bOutputSchema (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > VideoAgent shooting: invalid output → fallback · output satisfies ShootingOutputSchema (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > CopywritingAgent step7: stream invalid JSON → fallback · output satisfies CopywritingOutputSchema (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > LivestreamAgent: invalid output (short strings) → fallback · output satisfies LivestreamOutputSchema (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > TopicAgent traffic: stream invalid JSON → fallback · 20 topics in output (AC-16)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > AC-9: specialist without fallbackTemplate re-throws the error on schema failure
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > AC-10: all fallbackTemplates pass their respective outputSchema (type guard)
+ ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > AC-13: LLMTimeoutError on a non-mode specialist triggers fallback cost_log with model=fallback
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.generate > US-009 AC-5/AC-7: calls CopywritingAgent, writes real markdown to History row
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.optimize > AC-7: creates History row for optimization with traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.list > returns array of history entries without hitting history.create
+ ✓ tests/unit/api/specialists-creation.test.ts > copywriting.delete > calls history.delete with the given historyId and returns {ok: true}
+ ✓ tests/unit/api/specialists-creation.test.ts > videoAnalysis.analyze > AC-7: calls AnalysisAgent(viral), creates History row with agentId=AnalysisAgent and traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generate > AC-7: calls VideoAgent(production), creates History row with agentId=VideoAgent and traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generateStoryboard > AC-7: creates History row for storyboard with traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > videoProduction.generateSceneImage > AC-9: enqueues BullMQ job · returns jobId + historyId + sceneIndex
+ ✓ tests/unit/api/specialists-creation.test.ts > boomGenerate.generate > AC-7: creates History row with agentId=CopywritingAgent and traceId
+ ✓ tests/unit/api/specialists-creation.test.ts > monetization.generate > AC-7: creates History row with agentId=monetization and traceId
+{"level":"info","time":"2026-05-11T08:43:40.452Z","pid":72297,"hostname":"returndeMacBook-Pro.local","accountId":1,"traceId":"tr_1_DailyTaskAgent_1778489020451_sc9a","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-11T08:43:40.456Z","pid":72297,"hostname":"returndeMacBook-Pro.local","accountId":2,"traceId":"tr_2_DailyTaskAgent_1778489020455_q5qi","msg":"daily_task.cold_start"}
+{"level":"warn","time":"2026-05-11T08:43:40.457Z","pid":72297,"hostname":"returndeMacBook-Pro.local","agentId":"DailyTaskAgent","traceId":"tr_4_DailyTaskAgent_1778489020457_4dbg","issues":"[\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 3,\n    \"type\": \"array\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Array must contain at least 3 element(s)\",\n    \"path\": [\n      \"tasks\"\n    ]\n  }\n]","msg":"daily_task.schema_validation.retry"}
+{"level":"info","time":"2026-05-11T08:43:40.458Z","pid":72297,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-11T08:43:40.458Z","pid":72297,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-11T08:43:40.458Z","pid":72297,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-11T08:43:40.458Z","pid":72297,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T1: 冷启动 stepData=0 → 返回 5 模板 tasks · isFallback=false · modelUsed=cold-start-template
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T2: 冷启动 evolutionProfile=null (有 stepData) → 仍走模板
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T3: 非冷启动 → 调 LLMGateway.complete(lightweight) · 返回 LLM tasks
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T4: LLM 输出 schema 不合规 → retry 1 次 · 二次成功返回
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T5: buildColdStartTasks() 返回 5 条合规 TaskItem (uuid · ctaUrl 以 / 开头)
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T6: cron schedule string "0 0 * * *" 符合 5-field cron 格式
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T7: runForAllActiveAccounts — 5 活跃账号 → enqueue 5 jobs
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T8: DailyTask BullMQ Worker 创建时 concurrency=5
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T9: 同日同账号 jobId 相同 → BullMQ 保证幂等
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T10: Worker 注册了 failed 事件监听器 (dead-letter 告警)
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-12 LJ1: LLM 真接输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5
+ ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-12 LJ2: cold-start 模板输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5
  ✓ tests/unit/specialists/base.test.ts > BaseSpecialist — input schema validation > AC-8: valid input passes inputSchema.parse and proceeds
  ✓ tests/unit/specialists/base.test.ts > BaseSpecialist — input schema validation > AC-8: invalid input (empty topic) throws ZodError before LLM call
  ✓ tests/unit/specialists/base.test.ts > BaseSpecialist — output schema validation > AC-8: SchemaValidationError thrown when output fails outputSchema.safeParse
@@ -88,73 +132,6 @@
  ✓ tests/unit/specialists/base.test.ts > Error classes > SchemaValidationError has correct name and issues
  ✓ tests/unit/specialists/base.test.ts > Error classes > LLMTimeoutError has correct name, agentId, timeoutMs
  ✓ tests/unit/specialists/base.test.ts > Error classes > FallbackTriggeredError has correct name and reason
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > PositioningAgent industry: invalid LLM output → fallback · output satisfies Step1OutputSchema (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > BrandingAgent packaging: invalid output → fallback · output satisfies Step3OutputSchema (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > MonetizationAgent: invalid output → fallback · output satisfies Step4bOutputSchema (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > VideoAgent shooting: invalid output → fallback · output satisfies ShootingOutputSchema (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > CopywritingAgent step7: stream invalid JSON → fallback · output satisfies CopywritingOutputSchema (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > LivestreamAgent: invalid output (short strings) → fallback · output satisfies LivestreamOutputSchema (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > TopicAgent traffic: stream invalid JSON → fallback · 20 topics in output (AC-16)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > AC-9: specialist without fallbackTemplate re-throws the error on schema failure
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > AC-10: all fallbackTemplates pass their respective outputSchema (type guard)
- ✓ tests/unit/specialists/fallback.test.ts > US-015 · isFallback 降级路径 > AC-13: LLMTimeoutError on a non-mode specialist triggers fallback cost_log with model=fallback
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.list > AC-5: calls findMany without explicit where:{userId} (RLS handles it)
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns the active account by activeAccountId
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns null when account not found
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.create > creates account with user.id from context
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.update > updates the active account (where:{id: activeAccountId})
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.delete > soft-deletes by setting isActive=false + archivedAt
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: updates user.activeAccountId and writes audit_log
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws UNAUTHORIZED when user is null
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws NOT_FOUND when account does not belong to user
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > AC-8: queries by stepKey only (no accountId — RLS handles it)
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > returns null when stepKey not found
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.getAll > calls findMany without where:{accountId} (RLS handles it)
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.save > AC-7: upserts with accountId_stepKey composite key
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns completed/total counts for the current account
- ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns zero completed when no step data exists
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — happy path > calls VideoAgent(mode=acquisition), writes history agentMode=acquisition, ctaScript contains CTA keyword
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > conversionGoal 留空 → BAD_REQUEST (转化目标必填)
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > sourceCopy 长度 10 (min boundary) → pass
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > sourceCopy 长度 3000 (max boundary) → pass
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > sourceCopy 长度 3001 → BAD_REQUEST
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — fallback path (Specialist internal error) > agent returns isFallback=true → history written with isFallback=true
- ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — cross-account RLS isolation > findFirst returns null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR
- ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > email 脱敏 → <EMAIL>
- ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > CN phone 11 位 → <PHONE>
- ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > id_card 18 位 → <ID_CARD>
- ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > bank card 16-19 位 → <BANK_CARD>
- ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > 无 PII → 原样
- ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > 递归脱敏 nested object string
- ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > Date / Map / Set / Buffer 不破坏
- ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > null / undefined / number / boolean 原样
- ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 医疗 industry → markdown 末尾加医疗免责
- ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 金融 industry → 投资风险免责
- ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 法律 industry → 法律意见免责
- ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 非敏感 industry (健身) → 原样不加
- ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 空 industry → 原样
- ✓ tests/unit/lib/compliance.test.ts > attachDisclaimerMeta > 医疗 → 加 _disclaimer 字段
- ✓ tests/unit/lib/compliance.test.ts > attachDisclaimerMeta > 非敏感 → 不加 _disclaimer
- ✓ tests/unit/lib/compliance.test.ts > ContextAssembler._formatUserPrompt 接 piiMask (TD-016) > input string 含 PII → userPrompt 含 <EMAIL>/<PHONE> 而非原文
- ✓ tests/unit/lib/compliance.test.ts > ContextAssembler._formatUserPrompt 接 piiMask (TD-016) > input object 嵌套 PII → 递归脱敏
- ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 医疗 industry + markdown output → 末尾追加医疗免责
- ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 医疗 industry + JSON output → 加 _disclaimer 元数据
- ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 非敏感 industry (健身) → markdown 不加 disclaimer
- ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > input 没 industry → 原样无 disclaimer
- ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-1: IMAGE_GEN_ENABLED=true happy path > calls DALL-E 3, returns sceneImageUrl + costUsd=0.04, writes cost_log + Asset + history
- ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-2: IMAGE_GEN_ENABLED=false > returns placeholder URL without calling OpenAI or writing cost_log
- ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — happy path > calls CopywritingAgent(mode=acquisition), writes history agentMode=acquisition, markdown contains CTA
- ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — zod validation > conversionGoal 留空 → BAD_REQUEST (转化目标必填)
- ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — CTA post-validate retry > markdown 缺 CTA → execute called twice, second result used
- ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — cross-account RLS isolation > history.create always uses activeAccountId from context, not a user-supplied value
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > happy path: returns valid Step3Output with 5 nicknames, 6 bios, writes cost_log
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > schema retry: nickname wrong length → schema fails twice → fallback (US-015 AC-1)
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > cold start: succeeds with empty userInput (新用户 · 无历史 stepData)
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > happy path: returns valid Step3bOutput with correct array lengths
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > schema retry: coreBeliefs wrong length → schema fails twice → fallback (US-015 AC-1)
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > cold start: succeeds with empty userInput
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > throws on invalid mode (AC-8 runtime check)
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > config: has correct five-layer structure (AC-1)
  ✓ tests/unit/schemas/specialist-io.test.ts > constants > HOT_ELEMENT_KEYS_22 has exactly 22 items
  ✓ tests/unit/schemas/specialist-io.test.ts > constants > SCRIPT_TYPE_KEYS_20 has exactly 20 items
  ✓ tests/unit/schemas/specialist-io.test.ts > constants > HOT_ELEMENT_KEYS_22 contains expected keys
@@ -181,8 +158,130 @@
  ✓ tests/unit/schemas/specialist-io.test.ts > analyzeVideoInput (PRD-5 rewrite) > passes with lastCopy only
  ✓ tests/unit/schemas/specialist-io.test.ts > analyzeVideoInput (PRD-5 rewrite) > no longer accepts videoUrl field (PRD-2 removed)
  ✓ tests/unit/schemas/specialist-io.test.ts > copywritingFreeOutput > fails when markdown is too short (<400 chars)
- ✓ tests/integration/api/boom-generate-llm.test.ts > US-005 AC-3: boomGenerate.generate integration — nock SDK + real DB > generate: calls mock stream, writes 1 history row with --- separator + cost_log to real DB
- ✓ tests/integration/api/copywriting-free-llm.test.ts > US-003 AC-4: copywriting.freeGenerate integration — nock SDK + real DB > freeGenerate: calls mock stream, writes history + cost_log to real DB with correct fields
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — happy path > calls VideoAgent(mode=acquisition), writes history agentMode=acquisition, ctaScript contains CTA keyword
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > conversionGoal 留空 → BAD_REQUEST (转化目标必填)
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > sourceCopy 长度 10 (min boundary) → pass
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > sourceCopy 长度 3000 (max boundary) → pass
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — zod validation > sourceCopy 长度 3001 → BAD_REQUEST
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — fallback path (Specialist internal error) > agent returns isFallback=true → history written with isFallback=true
+ ✓ tests/unit/api/acquisition-video-router.test.ts > acquisitionVideo.generate — cross-account RLS isolation > findFirst returns null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > VOICE_CHAT_TOOLS exports 5 tools with correct names
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > dispatch: get_current_step called with correct name
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > dispatch: search_history called with keyword arg
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > dispatch: query_diagnosis emits tool_result chunk
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > dispatch: get_today_tasks emits tool_call + tool_result
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > dispatch: get_evolution_insights dispatched
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > L1 Buffer: pushTurn called twice (user+assistant) per turn
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > L1 Buffer: getTurns called with accountId=1, limit=10
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > L1 Buffer: clearSession calls clearBuffer
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > subscription: yields delta + tool_call + tool_result + done chunks
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > tool_call: dispatch result injected into tool_result chunk
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > fallback: no stream() → yields error chunk
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts > VoiceChatAgent (US-011) > timeout: stream error chunk → yields error and stops
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > happy path: LLM 成功 → insight 写入原子事务 · isFallback=false
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > fallback path: schema 无效 · previousInsight 可用 → isFallback=true · 不写 insight
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > cumulative merge: (fresh ∪ prev) 去重 · avoidList 同理 · 不超 top 10
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=5 → 触发 enqueue (threshold:5)
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=19 → 不触发 enqueue
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=20 → 触发 enqueue (threshold:20)
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=49 → 不触发 enqueue
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=50 → 触发 enqueue (threshold:50)
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=99 → 不触发 enqueue
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=100 → 触发 enqueue (threshold:100)
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-1: IMAGE_GEN_ENABLED=true happy path > calls DALL-E 3, returns sceneImageUrl + costUsd=0.04, writes cost_log + Asset + history
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-2: IMAGE_GEN_ENABLED=false > returns placeholder URL without calling OpenAI or writing cost_log
+ ✓ tests/unit/api/specialists-flow.test.ts > privateDomain.generate > AC-7: creates History row with agentId=PrivateDomainAgent and traceId
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.generate > AC-7: creates DiagnosisReport row with agentId=DiagnosisAgent and traceId
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.generate > zod: rejects answers array with wrong length
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.history > calls diagnosisReport.findMany with default limit=10
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.latest > calls diagnosisReport.findFirst ordered by createdAt desc
+ ✓ tests/unit/api/specialists-flow.test.ts > diagnosis.latest > returns null when no reports found
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.evolve > AC-7: creates FeedbackLog row with rating and agentId
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.getConfig > returns profile config when profile exists
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.getConfig > returns default config when profile does not exist
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.updateConfig > upserts EvolutionProfile and returns ok + updated config
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.history > calls evolutionInsight.findMany with default limit=20
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.recentFeedback > calls feedbackLog.findMany and returns array
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.recentFeedback > passes agentId filter to where clause when provided
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.feedbackTrend > returns mock trend data with requested days
+ ✓ tests/unit/api/specialists-flow.test.ts > evolution.moduleRanking > returns mock ranking array
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.list > calls deepLearningArchive.findMany with isActive filter by default
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.create > creates DeepLearningArchive with sourceType=text
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.createFromFile > creates archive with sourceType=file and placeholder sample
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.learn > updates archive learningStatus to pending and returns {ok:true, status:"queued"}
+ ✓ tests/unit/api/specialists-flow.test.ts > deepLearning.delete > soft-deletes archive by setting isActive=false
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.list > AC-5: calls findMany without explicit where:{userId} (RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns the active account by activeAccountId
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.active > returns null when account not found
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.create > creates account with user.id from context
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.update > updates the active account (where:{id: activeAccountId})
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.delete > soft-deletes by setting isActive=false + archivedAt
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: updates user.activeAccountId and writes audit_log
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws UNAUTHORIZED when user is null
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > ipAccounts.switchActive > AC-6: throws NOT_FOUND when account does not belong to user
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > AC-8: queries by stepKey only (no accountId — RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.get > returns null when stepKey not found
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.getAll > calls findMany without where:{accountId} (RLS handles it)
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.save > AC-7: upserts with accountId_stepKey composite key
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns completed/total counts for the current account
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts > stepData.progress > returns zero completed when no step data exists
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > email 脱敏 → <EMAIL>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > CN phone 11 位 → <PHONE>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > id_card 18 位 → <ID_CARD>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > bank card 16-19 位 → <BANK_CARD>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > 无 PII → 原样
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > 递归脱敏 nested object string
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > Date / Map / Set / Buffer 不破坏
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > null / undefined / number / boolean 原样
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 医疗 industry → markdown 末尾加医疗免责
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 金融 industry → 投资风险免责
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 法律 industry → 法律意见免责
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 非敏感 industry (健身) → 原样不加
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 空 industry → 原样
+ ✓ tests/unit/lib/compliance.test.ts > attachDisclaimerMeta > 医疗 → 加 _disclaimer 字段
+ ✓ tests/unit/lib/compliance.test.ts > attachDisclaimerMeta > 非敏感 → 不加 _disclaimer
+ ✓ tests/unit/lib/compliance.test.ts > ContextAssembler._formatUserPrompt 接 piiMask (TD-016) > input string 含 PII → userPrompt 含 <EMAIL>/<PHONE> 而非原文
+ ✓ tests/unit/lib/compliance.test.ts > ContextAssembler._formatUserPrompt 接 piiMask (TD-016) > input object 嵌套 PII → 递归脱敏
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 医疗 industry + markdown output → 末尾追加医疗免责
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 医疗 industry + JSON output → 加 _disclaimer 元数据
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 非敏感 industry (健身) → markdown 不加 disclaimer
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > input 没 industry → 原样无 disclaimer
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > happy path: valid sourceCopy parses successfully
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > boundary: sourceCopy exactly 3000 chars passes
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > reject: sourceCopy < 10 chars fails
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > reject: sourceCopy > 3000 chars fails with 原始文案不能超过3000字符
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionVideoInput > happy path: valid acquisition video input parses successfully
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionVideoInput > reject: empty conversionGoal fails with 转化目标必填
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionVideoInput > happy path: platform and duration optional fields pass
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > happy path: scenesCount=6 + imageStyle=vivid parses
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > boundary: scenesCount=5 min passes
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > boundary: scenesCount=8 max passes
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > reject: scenesCount=9 fails with 镜头数应在 5-8 之间
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > reject: scenesCount=4 below min fails
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > happy path: imageStyle defaults to vivid when omitted
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoOutput · imagePromptEn > pass: imagePromptEn=English ASCII passes
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoOutput · imagePromptEn > pass: output includes title field
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoOutput · imagePromptEn > reject: missing title fails
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoOutput · imagePromptEn > reject: imagePromptEn contains Chinese fails with 必须是英文 ASCII
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionCopywritingInputSchema > happy path: valid acquisition copywriting input parses
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionCopywritingInputSchema > reject: empty conversionGoal fails with 转化目标必填
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionCopywritingInputSchema > reject: empty elements array fails
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobPayload > happy path: valid job payload parses
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobPayload > reject: invalid imageStyle fails
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobResult > success variant: valid success result parses
+ ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobResult > error variant: error result with placeholder parses
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > happy path: returns valid Step3Output with 5 nicknames, 6 bios, writes cost_log
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > schema retry: nickname wrong length → schema fails twice → fallback (US-015 AC-1)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > packaging mode (step3) > cold start: succeeds with empty userInput (新用户 · 无历史 stepData)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > happy path: returns valid Step3bOutput with correct array lengths
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > schema retry: coreBeliefs wrong length → schema fails twice → fallback (US-015 AC-1)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > persona mode (step3b) > cold start: succeeds with empty userInput
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > throws on invalid mode (AC-8 runtime check)
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts > BrandingAgent > config: has correct five-layer structure (AC-1)
+ ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — happy path > calls CopywritingAgent(mode=acquisition), writes history agentMode=acquisition, markdown contains CTA
+ ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — zod validation > conversionGoal 留空 → BAD_REQUEST (转化目标必填)
+ ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — CTA post-validate retry > markdown 缺 CTA → execute called twice, second result used
+ ✓ tests/unit/api/copywriting-acquisition.test.ts > copywriting.acquisitionGenerate — cross-account RLS isolation > history.create always uses activeAccountId from context, not a user-supplied value
  ✓ tests/unit/api/image-gen-queue.test.ts > US-010 AC-12: image-gen queue + worker + rate limit unit tests > 1. queue.add returns job with id
  ✓ tests/unit/api/image-gen-queue.test.ts > US-010 AC-12: image-gen queue + worker + rate limit unit tests > 2. processor calls imageGen with job data on completion
  ✓ tests/unit/api/image-gen-queue.test.ts > US-010 AC-12: image-gen queue + worker + rate limit unit tests > 3. Queue defaultJobOptions.attempts === 3 (2 retries)
@@ -191,6 +290,11 @@
  ✓ tests/unit/api/image-gen-queue.test.ts > US-010 AC-12: image-gen queue + worker + rate limit unit tests > 6. queryImageGenStatus counts scenes by status correctly
  ✓ tests/unit/api/image-gen-queue.test.ts > US-010 AC-12: image-gen queue + worker + rate limit unit tests > 7. rate limit: 11th call throws TOO_MANY_REQUESTS
  ✓ tests/unit/api/image-gen-queue.test.ts > US-010 AC-12: image-gen queue + worker + rate limit unit tests > 8. rate limit cross-account isolation: accountId=1 saturated, accountId=2 still free
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.1: happy path — transcribes audio, writes cost_log > 5s WAV → Whisper mock → transcript returned + cost_log written
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.2: oversize — > 25MB rejects before OpenAI call > Buffer > 25MB → BAD_REQUEST thrown · no OpenAI HTTP call
+ ✓ tests/integration/api/boom-generate-llm.test.ts > US-005 AC-3: boomGenerate.generate integration — nock SDK + real DB > generate: calls mock stream, writes 1 history row with --- separator + cost_log to real DB
+ ✓ tests/integration/api/copywriting-free-llm.test.ts > US-003 AC-4: copywriting.freeGenerate integration — nock SDK + real DB > freeGenerate: calls mock stream, writes history + cost_log to real DB with correct fields
+ ✓ tests/integration/api/video-analysis-viral-llm.test.ts > US-009 AC-5: videoAnalysis.analyze integration — nock SDK + real DB + elements > analyze: calls mock LLM, writes 1 history row (agentMode=viral, contentType=json) + cost_log + elements mapped from analysis.elements
  ✓ tests/unit/web/pages/AiVideo.test.tsx > (1) 表单渲染: AiVideo.tsx + ToolForm.tsx > AiVideo page imports and uses ToolForm with toolKey ai-video
  ✓ tests/unit/web/pages/AiVideo.test.tsx > (1) 表单渲染: AiVideo.tsx + ToolForm.tsx > ToolForm has ai-video case with sourceCopy textarea
  ✓ tests/unit/web/pages/AiVideo.test.tsx > (1) 表单渲染: AiVideo.tsx + ToolForm.tsx > ToolForm ai-video case has scenesCount select (5-8) and imageStyle select
@@ -212,11 +316,6 @@
  ✓ tests/unit/web/pages/AiVideo.test.tsx > (7) 失败 scene 重试 button > AiVideoResult renders retry button for failed scenes
  ✓ tests/unit/web/pages/AiVideo.test.tsx > (7) 失败 scene 重试 button > retry button onClick shows toast PRD-7+ placeholder
  ✓ tests/unit/web/pages/AiVideo.test.tsx > LS namespace key format > getToolLsKey generates correct ai-video polling key
- ✓ tests/integration/api/video-analysis-viral-llm.test.ts > US-009 AC-5: videoAnalysis.analyze integration — nock SDK + real DB + elements > analyze: calls mock LLM, writes 1 history row (agentMode=viral, contentType=json) + cost_log + elements mapped from analysis.elements
- ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — happy path > calls CopywritingAgent(mode=boom), writes history with D-032 --- separator + full fields
- ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — zod validation > empty elements array → TRPCError BAD_REQUEST
- ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — fallback path > agent returns isFallback=true → history written with isFallback=true
- ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — agentMode field > agentMode="boom" is always written to history
  ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts > AnalysisAgent > viral happy path: returns valid AnalysisViralOutput
  ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts > AnalysisAgent > viral fallback: schema validation failure triggers isFallback=true
  ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts > AnalysisAgent > viral cold-start: no userInput context still calls LLM (passthrough inputSchema)
@@ -225,19 +324,17 @@
  ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts > AnalysisAgent > structural fallback: bad schema (missing optimizations) → isFallback=true
  ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts > AnalysisAgent > structural cold-start: LLM called with structural responseFormat schema
  ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts > AnalysisAgent > structural config: agentId=AnalysisAgent, singleton export works
+ ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — happy path > calls CopywritingAgent(mode=boom), writes history with D-032 --- separator + full fields
+ ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — zod validation > empty elements array → TRPCError BAD_REQUEST
+ ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — fallback path > agent returns isFallback=true → history written with isFallback=true
+ ✓ tests/unit/api/boom-generate-router.test.ts > boomGenerate.generate — agentMode field > agentMode="boom" is always written to history
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.1: happy path — synthesizes text, writes asset + cost_log > 1000-char text → TTS mock → publicUrl returned + asset written + cost_log written
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.2: oversize — > 4000 chars rejects before OpenAI call > text.length > 4000 → BAD_REQUEST thrown · no OpenAI HTTP call
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.2: oversize — > 4000 chars rejects before OpenAI call > exactly 4000 chars passes
  ✓ tests/unit/api/video-analysis-router.test.ts > videoAnalysis.analyze — happy path > calls AnalysisAgent(mode=viral), writes history with agentMode=viral + contentType=json + elements + full fields
  ✓ tests/unit/api/video-analysis-router.test.ts > videoAnalysis.analyze — zod validation > lastCopy empty (< 10 字) → TRPCError BAD_REQUEST
  ✓ tests/unit/api/video-analysis-router.test.ts > videoAnalysis.analyze — fallback path (Specialist schema fail → isFallback) > agent returns isFallback=true (viral mode insights < 3 caught internally) → history written isFallback=true
  ✓ tests/unit/api/video-analysis-router.test.ts > videoAnalysis.analyze — elements 数组传递 > elements 空数组 → history.elements=[] 不阻断(AC-9 · LLM 无识别元素场景)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 1st call > count=1 → no throw (AC-7.1)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 10th call (boundary OK) > count=10 → no throw (AC-7.2 boundary)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 11th call > count=11 → TOO_MANY_REQUESTS with correct message (AC-7.3 · AC-2)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 11th call > boundary: count=10 passes, count=11 rejects (AC-8)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — cross-account isolation > accountId=1 count=10 不影响 accountId=2 count=0 (AC-7.4 · SHIELD REJ-008)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — cross-account isolation > 1000 accounts each have independent keys (AC-10 performance)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — day rollover > UTC date change resets count to 0 for new day (AC-7.5)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > getImageGenDailyUsage — read-only count > returns count=0 when key not set (AC-4)
- ✓ tests/unit/api/rate-limit-image-gen.test.ts > getImageGenDailyUsage — read-only count > returns current count from Redis (AC-4)
  ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.active > returns null when no account found
  ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.active > returns account data when found
  ✓ tests/unit/api/account-step-auth.test.ts > ipAccounts.active > queries with activeAccountId from ctx
@@ -253,6 +350,20 @@
  ✓ tests/unit/api/account-step-auth.test.ts > auth.me > returns unauthenticated stub when no user in ctx
  ✓ tests/unit/api/account-step-auth.test.ts > auth.me > returns user info when authenticated
  ✓ tests/unit/api/account-step-auth.test.ts > auth.me > exposes only id, email, name (not password or session data)
+ ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > all routes succeed → AssembledContext 结构完整
+ ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > stepData 非空 → layersUsed 包含 L2_step_data
+ ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > stepData 为空 → 注入占位 [新用户 · 暂无 step 数据]
+ ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > evolutionInsight=null(新用户) → systemPrompt 不含 [Section 4] 用户偏好画像
+ ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > L5 RAG 降级 → ragHits 为空数组
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 1st call > count=1 → no throw (AC-7.1)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 10th call (boundary OK) > count=10 → no throw (AC-7.2 boundary)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 11th call > count=11 → TOO_MANY_REQUESTS with correct message (AC-7.3 · AC-2)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — 11th call > boundary: count=10 passes, count=11 rejects (AC-8)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — cross-account isolation > accountId=1 count=10 不影响 accountId=2 count=0 (AC-7.4 · SHIELD REJ-008)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — cross-account isolation > 1000 accounts each have independent keys (AC-10 performance)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > checkImageGenRateLimit — day rollover > UTC date change resets count to 0 for new day (AC-7.5)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > getImageGenDailyUsage — read-only count > returns count=0 when key not set (AC-4)
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts > getImageGenDailyUsage — read-only count > returns current count from Redis (AC-4)
  ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > imports and uses ToolForm with toolKey video-production
  ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > ToolForm has video-production case with sourceCopy textarea
  ✓ tests/unit/web/pages/VideoProduction.test.tsx > 表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx > ToolForm video-production case has videoType select and duration select
@@ -276,40 +387,43 @@
  ✓ tests/unit/web/pages/VideoProduction.test.tsx > ?historyId 预填 > VideoProductionResult renders equipment and schedule sections
  ✓ tests/unit/web/pages/VideoProduction.test.tsx > VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2) > 景别列 key=angle · BGM列 key=bgm · 画面描述列 key=description
  ✓ tests/unit/web/pages/VideoProduction.test.tsx > VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2) > ShotItem interface contains 7 production-mode fields
- ✓ tests/integration/api/copywriting-acquisition-llm.test.ts > US-012 AC-11: copywriting.acquisitionGenerate integration — nock SDK + real DB > acquisitionGenerate: calls mock stream, writes history + cost_log to real DB with correct fields
- ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > all routes succeed → AssembledContext 结构完整
- ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > stepData 非空 → layersUsed 包含 L2_step_data
- ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > stepData 为空 → 注入占位 [新用户 · 暂无 step 数据]
- ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > L4 EvolutionProfile 降级 → 注入 [L1 阶段 · 暂无进化档案]
- ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > L5 RAG 降级 → ragHits 为空数组
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > happy path: returns valid Step4bOutput with ladder[3], successCases[2], writes cost_log
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > fallback: ladder has 4 stages → schema fails twice → returns fallback result (US-015 AC-1)
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > edge: currentRevenue missing → prompt contains zero-base note, output is valid (AC-5)
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > cold start: succeeds with empty userInput; prompt contains cold-start note (AC-6)
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > config: five-layer structure and model_tier correct (AC-1)
  ✓ tests/unit/api/video-production-router.test.ts > videoProduction.generate — happy path > calls VideoAgent(mode=production), writes history with agentId=VideoAgent + agentMode=production + contentType=json + explicit accountId
  ✓ tests/unit/api/video-production-router.test.ts > videoProduction.generate — zod validation > sourceCopy < 10 字符 → TRPCError BAD_REQUEST
  ✓ tests/unit/api/video-production-router.test.ts > videoProduction.generate — zod validation > sourceCopy = 10 (min boundary) → pass
  ✓ tests/unit/api/video-production-router.test.ts > videoProduction.generate — zod validation > sourceCopy = 3001 字符 → TRPCError BAD_REQUEST
  ✓ tests/unit/api/video-production-router.test.ts > videoProduction.generate — fallback path (LLMTimeoutError) > agent returns isFallback=true → history written with isFallback=true
  ✓ tests/unit/api/video-production-router.test.ts > videoProduction.generate — cross-account RLS isolation > findFirst returns null (accountId mismatch blocked by RLS) → INTERNAL_SERVER_ERROR
+ ✓ tests/integration/api/copywriting-acquisition-llm.test.ts > US-012 AC-11: copywriting.acquisitionGenerate integration — nock SDK + real DB > acquisitionGenerate: calls mock stream, writes history + cost_log to real DB with correct fields
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > happy path: returns valid Step4bOutput with ladder[3], successCases[2], writes cost_log
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > fallback: ladder has 4 stages → schema fails twice → returns fallback result (US-015 AC-1)
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > edge: currentRevenue missing → prompt contains zero-base note, output is valid (AC-5)
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > cold start: succeeds with empty userInput; prompt contains cold-start note (AC-6)
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts > MonetizationAgent > config: five-layer structure and model_tier correct (AC-1)
+{"level":"error","time":"2026-05-11T08:43:41.398Z","pid":72367,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1778489021370","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/videoProduction.ts:77:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/video-production-llm.test.ts > US-003 AC-8: videoProduction.generate integration — nock Anthropic SDK + real DB > generate: nock intercepts Anthropic call, writes history + cost_log to real DB, < 5s
+ ✓ tests/integration/api/analysis-structural-llm.test.ts > US-007 AC-5: analysis.analyze integration — nock SDK + real DB > analyze: calls mock LLM, writes 1 history row (contentType=json) + cost_log to real DB
  ✓ tests/integration/api/ai-video-flow.test.ts > US-007 AC-10: aiVideo flow integration — queue mock + real DB > generateStoryboard: 5 scenes → 5 jobs queued · history written to real DB · jobStatus returns completed=5 after worker mock
  ✓ tests/integration/api/ai-video-flow.test.ts > US-007 AC-10: aiVideo flow integration — queue mock + real DB > cross-account jobStatus: different accountId → NOT_FOUND
- ✓ tests/integration/api/analysis-structural-llm.test.ts > US-007 AC-5: analysis.analyze integration — nock SDK + real DB > analyze: calls mock LLM, writes 1 history row (contentType=json) + cost_log to real DB
-{"level":"error","time":"2026-05-10T10:25:36.363Z","pid":80164,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1778408736330","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/videoProduction.ts:85:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
- ✓ tests/integration/api/video-production-llm.test.ts > US-003 AC-8: videoProduction.generate integration — nock Anthropic SDK + real DB > generate: nock intercepts Anthropic call, writes history + cost_log to real DB, < 5s
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: list all — findMany called with accountId + orderBy createdAt desc
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: filter by agentMode — where includes agentMode
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: filter by agentId
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: filter by sourceType
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: dateRange=last_7d → createdAt gte filter added
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-2: pagination — take=limit skip=offset passed through
- ✓ tests/unit/api/history-router.test.ts > history.list > AC-12: limit > 100 → zod BAD_REQUEST
- ✓ tests/unit/api/history-router.test.ts > history.detail > AC-3: detail — findFirst with id + accountId
- ✓ tests/unit/api/history-router.test.ts > history.detail > AC-13: detail not found → NOT_FOUND
- ✓ tests/unit/api/history-router.test.ts > history.delete > AC-4: delete — deleteMany with id + accountId → { ok: true }
- ✓ tests/unit/api/history-router.test.ts > history.delete > AC-13: delete cross-account blocked by explicit accountId where
-{"level":"error","time":"2026-05-10T10:25:36.411Z","pid":80177,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/video-agent-llm.test.ts:186:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_video_agent_int_1778408736388","msg":"cost_log.write_failed"}
+{"level":"error","time":"2026-05-11T08:43:41.554Z","pid":72381,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/video-agent-llm.test.ts:186:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_video_agent_int_1778489021533","msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/insight-injection.test.ts > AC-4: PositioningAgent EvolutionInsight 注入 > 有 evolutionInsight → systemPrompt 含 [Section 4] 用户偏好画像
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > PositioningAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > BrandingAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > MonetizationAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > TopicAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > CopywritingAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > VideoAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > LivestreamAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > PrivateDomainAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > AnalysisAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > DiagnosisAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 > DeepLearnAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]
+ ✓ tests/integration/api/insight-injection.test.ts > AC-6: evolutionInsight=null negative case > 新用户 evolutionInsight=null → systemPrompt 不含 [Section 4] · 仍含 L2 + 方法论
+ ✓ tests/integration/api/insight-injection.test.ts > AC-2: 注入字段完整性 · 空数组跳过 > 全字段非空 → direction/styleTone/catchphrases/avoidList/strongPoints/weakPoints 全注入
+ ✓ tests/integration/api/insight-injection.test.ts > AC-2: 注入字段完整性 · 空数组跳过 > 空数组字段(strongPoints=[] weakPoints=[]) → 对应行跳过
+ ✓ tests/integration/api/insight-injection.test.ts > AC-8: LLM Judge · PositioningAgent / CopywritingAgent 注入质量评分 > PositioningAgent 有 insight 注入 → LLM Judge 评分 ≥ 4.0/5
+ ✓ tests/integration/api/insight-injection.test.ts > AC-8: LLM Judge · PositioningAgent / CopywritingAgent 注入质量评分 > CopywritingAgent 有 insight 注入 → LLM Judge 评分 ≥ 4.0/5
+ ✓ tests/integration/api/video-agent-llm.test.ts > US-002 AC-10: VideoAgent invokeLLM integration — nock Anthropic SDK + real DB cost_log > execute(mode=production): nock intercepts Anthropic call, returns valid ProductionOutput, writes cost_log to DB within 3s
+ ✓ tests/integration/api/image-gen-bullmq.test.ts > US-010 AC-13: BullMQ image-gen integration — real Queue + Worker + DB > job added → worker processes → completed event → history.scenes 反写
  ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > industry mode (step1) > happy path: returns valid Step1Output and writes cost_log
  ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > industry mode (step1) > schema retry: two invalid responses → fallback (US-015 AC-1)
  ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > industry mode (step1) > cold start: succeeds with empty userInput (新用户 · 无历史 stepData)
@@ -318,7 +432,6 @@
  ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > execution mode (step4) > cold start: succeeds with minimal input (无 step3 数据)
  ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > throws on invalid mode (AC-8 runtime check)
  ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts > PositioningAgent > config: has correct five-layer structure (AC-1)
- ✓ tests/integration/api/video-agent-llm.test.ts > US-002 AC-10: VideoAgent invokeLLM integration — nock Anthropic SDK + real DB cost_log > execute(mode=production): nock intercepts Anthropic call, returns valid ProductionOutput, writes cost_log to DB within 3s
  ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx > 表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx > imports and uses ToolForm with toolKey acquisition-video
  ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx > 表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx > ToolForm has acquisition-video case with sourceCopy textarea and conversionGoal input
  ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx > 表单渲染所有字段: AcquisitionVideo.tsx + ToolForm.tsx > ToolForm acquisition-video case has platform select and duration select
@@ -341,26 +454,6 @@
  ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx > ?historyId 预填 > historyDefaults uses inputSummary for sourceCopy pre-fill
  ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx > ?historyId 预填 > AcquisitionVideoResult handles JSON.parse failure → 解析失败
  ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx > ?historyId 预填 > AcquisitionVideoResult renders conversion-path section
- ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > happy path: valid sourceCopy parses successfully
- ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > boundary: sourceCopy exactly 3000 chars passes
- ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > reject: sourceCopy < 10 chars fails
- ✓ tests/unit/api/schemas/video-schemas.test.ts > videoProductionInput > reject: sourceCopy > 3000 chars fails with 原始文案不能超过3000字符
- ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionVideoInput > happy path: valid acquisition video input parses successfully
- ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionVideoInput > reject: invalid conversionGoal fails
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > happy path: scenesCount=6 + imageStyle=vivid parses
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > boundary: scenesCount=5 min passes
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > boundary: scenesCount=8 max passes
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > reject: scenesCount=9 fails with 镜头数应在 5-8 之间
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoInput > reject: scenesCount=4 below min fails
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoOutput · imagePromptEn > pass: imagePromptEn=English ASCII passes
- ✓ tests/unit/api/schemas/video-schemas.test.ts > aiVideoOutput · imagePromptEn > reject: imagePromptEn contains Chinese fails with 必须是英文 ASCII
- ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionCopywritingInput > happy path: valid acquisition copywriting input parses
- ✓ tests/unit/api/schemas/video-schemas.test.ts > acquisitionCopywritingInput > reject: productInfo < 10 chars fails
- ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobPayload > happy path: valid job payload parses
- ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobPayload > reject: invalid imageStyle fails
- ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobResult > success variant: valid success result parses
- ✓ tests/unit/api/schemas/video-schemas.test.ts > imageGenJobResult > error variant: error result with placeholder parses
- ✓ tests/integration/api/image-gen-bullmq.test.ts > US-010 AC-13: BullMQ image-gen integration — real Queue + Worker + DB > job added → worker processes → completed event → history.scenes 反写
  ✓ tests/unit/web/pages/Analysis.test.tsx > 表单 render: Analysis.tsx structure > imports and uses ToolForm with toolKey analysis
  ✓ tests/unit/web/pages/Analysis.test.tsx > 表单 render: Analysis.tsx structure > uses analysisStructuralInput schema
  ✓ tests/unit/web/pages/Analysis.test.tsx > 表单 render: Analysis.tsx structure > uses submitLabel 开始分析
@@ -387,6 +480,25 @@
  ✓ tests/unit/web/pages/Analysis.test.tsx > Progress UI component > progress.tsx exists with ProgressPrimitive
  ✓ tests/unit/web/pages/Analysis.test.tsx > Progress UI component > progress.tsx exports Progress component
  ✓ tests/unit/web/pages/Analysis.test.tsx > Progress UI component > progress.tsx supports indicatorClassName prop
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation pass (no retry) > valid LLM output passes on first invokeLLM call — gateway called once
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation fail → retry → pass > invalid first output retries, second valid output succeeds — gateway called twice
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError > two consecutive invalid outputs throw SchemaValidationError
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError > SchemaValidationError carries llmRawOutput
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-4: cost_log callType + target > cost_log written with callType=specialist_call and target.agentId
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-5: traceId uses generateSpecialistTraceId pattern > auto-generated traceId follows tr_accountId_agentId_... format
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-6: LLMTimeoutError from AbortError > AbortError from invokeLLM is converted to LLMTimeoutError
+ ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-1: responseFormat json_schema passed to gateway > invokeLLM passes responseFormat:{type:json_schema} to llmGateway.complete
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=traffic returns 20 topics
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=monetize returns 20 topics
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=persona returns 20 topics
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=cognition returns 20 topics
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=case returns 20 topics
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > edge: 断流(incomplete JSON) → retry → fallback (US-015)
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > edge: topics length=19 → zod length(20) 失败 → retry → fallback (US-015)
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > modelUsed reflects stream meta chunk model (D-019 / REJ-003)
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > config has required 5-layer structure
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > AC-9: invalid category rejects with ZodError
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > viralPotential not in enum → outputSchema fails
  ✓ tests/unit/web/StepForm.test.tsx > render: StepForm schema structure > Step1InputSchema has lastIndustry field
  ✓ tests/unit/web/StepForm.test.tsx > render: StepForm schema structure > STEP_INDUSTRY_KEYS has 56 industries
  ✓ tests/unit/web/StepForm.test.tsx > render: StepForm schema structure > STEP_PLATFORM_KEYS has 5 platforms
@@ -406,6 +518,7 @@
  ✓ tests/unit/web/StepForm.test.tsx > mutation success: full valid payloads pass all schemas > Step7InputSchema rejects more than 5 elements
  ✓ tests/unit/web/StepForm.test.tsx > mutation error toast: error structures are consistent > Step5InputSchema fails with Chinese error when product too short
  ✓ tests/unit/web/StepForm.test.tsx > mutation error toast: error structures are consistent > Step8InputSchema fails with readable error when experience invalid
+{"level":"error","time":"2026-05-11T08:43:41.819Z","pid":72399,"hostname":"returndeMacBook-Pro.local","traceId":"tr_acq_video_int_1778489021787","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/acquisitionVideo.ts:49:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
  ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > imports and uses ToolForm with toolKey boom-generate
  ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > uses generateBoomInput schema
  ✓ tests/unit/web/pages/BoomGenerate.test.tsx > 表单 render: BoomGenerate.tsx structure > uses submitLabel 一键生成爆款文案
@@ -434,17 +547,7 @@
  ✓ tests/unit/web/pages/BoomGenerate.test.tsx > zod 校验: generateBoomInput > fails with invalid element key
  ✓ tests/unit/web/pages/BoomGenerate.test.tsx > mutation: boomGenerate.generate > BoomGenerate.tsx calls trpc.boomGenerate.generate.useMutation
  ✓ tests/unit/web/pages/BoomGenerate.test.tsx > mutation: boomGenerate.generate > BoomGenerate.tsx calls setResult on handleSuccess
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=traffic returns 20 topics
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=monetize returns 20 topics
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=persona returns 20 topics
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=cognition returns 20 topics
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > happy path: category=case returns 20 topics
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > edge: 断流(incomplete JSON) → retry → fallback (US-015)
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > edge: topics length=19 → zod length(20) 失败 → retry → fallback (US-015)
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > modelUsed reflects stream meta chunk model (D-019 / REJ-003)
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > config has required 5-layer structure
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > AC-9: invalid category rejects with ZodError
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts > TopicAgent > viralPotential not in enum → outputSchema fails
+ ✓ tests/integration/api/acquisition-video-llm.test.ts > US-005 AC-8: acquisitionVideo.generate integration — nock Anthropic SDK + real DB > generate: nock intercepts Anthropic call, writes history + cost_log to real DB, ctaScript contains CTA keyword, < 5s
  ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > save writes inputs under account-namespaced key (AC-1)
  ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > load reads the LS value back for the same account (AC-1)
  ✓ tests/unit/web/hooks.test.ts > useStepData LS logic > load returns null when key is absent (AC-1)
@@ -461,16 +564,6 @@
  ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > LS cache key is account-specific — no bleed between accounts (AC-7)
  ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > LS cache for switched-from account is cleared; new account cache intact (AC-3)
  ✓ tests/unit/web/hooks.test.ts > useEvolution LS logic > handles malformed LS JSON gracefully (parse safety)
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation pass (no retry) > valid LLM output passes on first invokeLLM call — gateway called once
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation fail → retry → pass > invalid first output retries, second valid output succeeds — gateway called twice
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError > two consecutive invalid outputs throw SchemaValidationError
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-3: schema validation fail → retry → fail → SchemaValidationError > SchemaValidationError carries llmRawOutput
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-4: cost_log callType + target > cost_log written with callType=specialist_call and target.agentId
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-5: traceId uses generateSpecialistTraceId pattern > auto-generated traceId follows tr_accountId_agentId_... format
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-6: LLMTimeoutError from AbortError > AbortError from invokeLLM is converted to LLMTimeoutError
- ✓ tests/unit/specialists/base.llm.test.ts > US-003 AC-1: responseFormat json_schema passed to gateway > invokeLLM passes responseFormat:{type:json_schema} to llmGateway.complete
-{"level":"error","time":"2026-05-10T10:25:36.668Z","pid":80196,"hostname":"returndeMacBook-Pro.local","traceId":"tr_acq_video_int_1778408736624","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/acquisitionVideo.ts:58:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
- ✓ tests/integration/api/acquisition-video-llm.test.ts > US-005 AC-8: acquisitionVideo.generate integration — nock Anthropic SDK + real DB > generate: nock intercepts Anthropic call, writes history + cost_log to real DB, ctaScript contains CTA keyword, < 5s
  ✓ tests/unit/api/analysis-router.test.ts > analysis.analyze — happy path > calls AnalysisAgent(mode=structural), writes history with contentType=json + full fields
  ✓ tests/unit/api/analysis-router.test.ts > analysis.analyze — zod validation > copy < 10 字 (empty string) → TRPCError BAD_REQUEST
  ✓ tests/unit/api/analysis-router.test.ts > analysis.analyze — fallback path > agent returns isFallback=true (SchemaValidationError caught internally) → history written isFallback=true
@@ -480,6 +573,39 @@
  ✓ tests/unit/specialists/__tests__/LivestreamAgent.test.ts > LivestreamAgent > edge: invalid experience value → ZodError before LLM call (AC-5)
  ✓ tests/unit/specialists/__tests__/LivestreamAgent.test.ts > LivestreamAgent > cold start: no step data in context → still produces valid output
  ✓ tests/unit/specialists/__tests__/LivestreamAgent.test.ts > LivestreamAgent > config: five-layer structure, model_tier=reasoning, timeout_ms=30000, industries constant (AC-1/AC-6/AC-7)
+{"level":"warn","time":"2026-05-11T08:43:41.993Z","pid":72422,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-11T08:43:41.993Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-11T08:43:41.996Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-11T08:43:41.998Z","pid":72422,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-11T08:43:41.998Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-11T08:43:41.998Z","pid":72422,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-11T08:43:41.998Z","pid":72422,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: happy path — primary succeeds, no fallback field
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: primary fails both attempts → falls back to gpt-4o
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: retry once — fails first, succeeds second (same primary)
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-4: both providers fail → returns fallback template string
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-4: both fail → cost_log written with success=false
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-5: ANTHROPIC_API_KEY missing → throws specific error
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-6: cost_log written on success with correct fields
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-6: cost_log res.fallback present when fallback used
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > lightweight tier: primary is haiku, fallback is gpt-4o-mini
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getRecommendations > returns mock recommendation array without DB calls
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getScriptCases > returns mock script case array and echoes industry filter
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getFavorites > calls knowledgeFavorite.findMany and returns favorites array
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.addFavorite > AC-6: creates favorite with activeAccountId (per-account isolation)
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.removeFavorite > calls knowledgeFavorite.deleteMany with accountId+itemType+itemKey and returns {ok:true}
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.getNotes > calls knowledgeNote.findMany and returns notes array
+ ✓ tests/unit/api/knowledge.test.ts > knowledge.addNote > creates note with activeAccountId and content
+ ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — happy path > calls CopywritingAgent(mode=free), writes history with full fields, returns row
+ ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — zod validation > empty topic → TRPCError BAD_REQUEST
+ ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — fallback path > agent returns isFallback=true → history written with isFallback=true
+ ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — agentMode field > agentMode="free" is always written to history regardless of result
  ✓ tests/unit/web/StepResult.test.tsx > Step1Result > render: handles valid step1 output shape (industry + marketAnalysis + competitionLevel + recommendation)
  ✓ tests/unit/web/StepResult.test.tsx > Step3Result > render: handles valid step3 output shape (nickname[5] + avatar + background + bio[6] + strategy)
  ✓ tests/unit/web/StepResult.test.tsx > Step3bResult > render: handles valid step3b output shape (coreIdentity + thoughtSystem + contentPersona + trustBuilding + personaRoadmap)
@@ -490,39 +616,6 @@
  ✓ tests/unit/web/StepResult.test.tsx > Step7Result > render: markdown + structure/hooks/cta sidebar layout
  ✓ tests/unit/web/StepResult.test.tsx > Step8Result > render: 2-segment livestream script comparison (lastResult + lastOptimizedResult)
  ✓ tests/unit/web/StepResult.test.tsx > StepResult generic wrapper > routes all 9 stepKeys to correct components
-{"level":"warn","time":"2026-05-10T10:25:36.763Z","pid":80217,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
- ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — happy path > calls CopywritingAgent(mode=free), writes history with full fields, returns row
- ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — zod validation > empty topic → TRPCError BAD_REQUEST
- ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — fallback path > agent returns isFallback=true → history written with isFallback=true
- ✓ tests/unit/api/copywriting-router.test.ts > copywriting.freeGenerate — agentMode field > agentMode="free" is always written to history regardless of result
- ✓ tests/unit/api/knowledge.test.ts > knowledge.getRecommendations > returns mock recommendation array without DB calls
- ✓ tests/unit/api/knowledge.test.ts > knowledge.getScriptCases > returns mock script case array and echoes industry filter
- ✓ tests/unit/api/knowledge.test.ts > knowledge.getFavorites > calls knowledgeFavorite.findMany and returns favorites array
- ✓ tests/unit/api/knowledge.test.ts > knowledge.addFavorite > AC-6: creates favorite with activeAccountId (per-account isolation)
- ✓ tests/unit/api/knowledge.test.ts > knowledge.removeFavorite > calls knowledgeFavorite.deleteMany with accountId+itemType+itemKey and returns {ok:true}
- ✓ tests/unit/api/knowledge.test.ts > knowledge.getNotes > calls knowledgeNote.findMany and returns notes array
- ✓ tests/unit/api/knowledge.test.ts > knowledge.addNote > creates note with activeAccountId and content
-{"level":"warn","time":"2026-05-10T10:25:36.764Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-10T10:25:36.765Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-10T10:25:36.766Z","pid":80217,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T10:25:36.766Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-10T10:25:36.767Z","pid":80217,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T10:25:36.767Z","pid":80217,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: happy path — primary succeeds, no fallback field
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: primary fails both attempts → falls back to gpt-4o
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-3: retry once — fails first, succeeds second (same primary)
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-4: both providers fail → returns fallback template string
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-4: both fail → cost_log written with success=false
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-5: ANTHROPIC_API_KEY missing → throws specific error
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-6: cost_log written on success with correct fields
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > AC-6: cost_log res.fallback present when fallback used
- ✓ tests/unit/api/llm-gateway-fallback.test.ts > LLMGateway · fallback > lightweight tier: primary is haiku, fallback is gpt-4o-mini
  ✓ tests/unit/web/pages/Generate.test.tsx > 表单 render: Generate.tsx structure > imports and uses ToolForm with toolKey freeGenerate
  ✓ tests/unit/web/pages/Generate.test.tsx > 表单 render: Generate.tsx structure > uses copywritingFreeGenerateInput schema
  ✓ tests/unit/web/pages/Generate.test.tsx > 表单 render: Generate.tsx structure > ToolForm freeGenerate case renders ScriptTypeSelect + ElementsMultiSelect + TextareaField
@@ -545,6 +638,27 @@
  ✓ tests/unit/web/pages/Generate.test.tsx > LS 预填: freeGenerate namespace (D-031 AC-3) > AbortController on unmount prevents state update after navigate away (AC-8)
  ✓ tests/unit/web/pages/Generate.test.tsx > US-011 stub: history.detail pre-fill > Generate.tsx uses trpc.history.detail.useQuery with historyId
  ✓ tests/unit/web/pages/Generate.test.tsx > US-011 stub: history.detail pre-fill > query is disabled when historyId is absent (enabled: !!historyId)
+ ✓ tests/integration/api/image-gen-flow.test.ts > US-009 AC-13: ImageGen full flow integration — mock OpenAI + real DB > generate: mock DALL-E 3 → writes Asset to real DB → updates history.scenes[1].sceneImageUrl
+{"level":"error","time":"2026-05-11T08:43:42.177Z","pid":72427,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1778489022156","msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-3: user A (correct account) sees their own step_data rows
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-3: user B (different account) sees 0 rows from step_data
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)
+ ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-7: set_config round-trip overhead < 50ms on localhost
+ ✓ tests/integration/api/specialist-llm.test.ts > US-003 AC-10: specialist integration — nock LLM + real DB cost_log > execute() calls Anthropic tool_use, returns valid result, writes cost_log to DB
+{"level":"info","time":"2026-05-11T08:43:42.206Z","pid":72432,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-11T08:43:42.209Z","pid":72432,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-11T08:43:42.210Z","pid":72432,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-11T08:43:42.211Z","pid":72432,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-11T08:43:42.211Z","pid":72432,"hostname":"returndeMacBook-Pro.local","accountId":10,"traceId":"tr_10_DailyTaskAgent_1778489022211_4oi3","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-11T08:43:42.211Z","pid":72432,"hostname":"returndeMacBook-Pro.local","accountId":11,"traceId":"tr_11_DailyTaskAgent_1778489022211_dhzu","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-11T08:43:42.211Z","pid":72432,"hostname":"returndeMacBook-Pro.local","accountId":12,"traceId":"tr_12_DailyTaskAgent_1778489022211_f3ov","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-11T08:43:42.212Z","pid":72432,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-11T08:43:42.212Z","pid":72432,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-11T08:43:42.212Z","pid":72432,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-11T08:43:42.212Z","pid":72432,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+ ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-9: 3 active accounts → runForAllActiveAccounts → 3 jobs enqueued
+ ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-9: Worker 处理所有 3 jobs → DailyTask 表 upsert 3 行
+ ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-5: 同日同账号 jobId 相同 → BullMQ 幂等保证
  ✓ tests/unit/web/pages/VideoAnalysis.test.tsx > 表单 render: VideoAnalysis.tsx structure > imports and uses ToolForm with toolKey video-analysis
  ✓ tests/unit/web/pages/VideoAnalysis.test.tsx > 表单 render: VideoAnalysis.tsx structure > uses analyzeVideoInput schema
  ✓ tests/unit/web/pages/VideoAnalysis.test.tsx > 表单 render: VideoAnalysis.tsx structure > calls trpc.videoAnalysis.analyze.useMutation
@@ -565,6 +679,41 @@
  ✓ tests/unit/web/pages/VideoAnalysis.test.tsx > LS namespace: ToolForm handles video-analysis storage > ToolForm video-analysis default values include lastTitle and lastCopy
  ✓ tests/unit/web/pages/VideoAnalysis.test.tsx > LS namespace: ToolForm handles video-analysis storage > getToolLsKey produces correct namespace key for video-analysis
  ✓ tests/unit/web/pages/VideoAnalysis.test.tsx > LS namespace: ToolForm handles video-analysis storage > analyzeVideoInput schema validates min 10 chars for lastCopy
+{"level":"error","time":"2026-05-11T08:43:42.316Z","pid":72442,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanQn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-1: logFeedback writes cost_log with eventType=good and correct fields
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-2: event_type enum — 'bad' maps correctly
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-3: RLS isolation — accountId comes from ctx.activeAccountId, not input
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-4: target JSON complete — stepKey + agentId + traceId all present
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-10: type not in [good,bad] → zod input rejection
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-12: DB error → returns { ok: false } without throwing
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-11: traceId propagated from x-trace-id header into cost_log
+ ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-20: logFeedback < 50ms (single INSERT with mock DB)
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-1: 页面结构 — 录音按钮 + turn list + status bar > 页面包含 record-button data-testid
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-1: 页面结构 — 录音按钮 + turn list + status bar > 页面包含 turn-list data-testid
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-1: 页面结构 — 录音按钮 + turn list + status bar > 页面包含 status bar aria-live polite
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-1: 页面结构 — 录音按钮 + turn list + status bar > STATUS_LABEL 包含所有 6 个状态
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-2: MediaRecorder · max 30s · 按住录 + 松开发 > 使用 navigator.mediaDevices.getUserMedia({ audio: true })
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-2: MediaRecorder · max 30s · 按住录 + 松开发 > 30s max timer 存在
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-2: MediaRecorder · max 30s · 按住录 + 松开发 > onMouseDown + onMouseUp 绑定录音操作
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-2: MediaRecorder · max 30s · 按住录 + 松开发 > MediaRecorder webm/opus mimeType 选择逻辑
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-3: STT → user bubble → voiceChat.start subscription > 调用 trpc.stt.transcribe.useMutation
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-3: STT → user bubble → voiceChat.start subscription > 调用 trpcClient.voiceChat.start.subscribe
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-3: STT → user bubble → voiceChat.start subscription > UserBubble 组件存在
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-3: STT → user bubble → voiceChat.start subscription > AssistantBubble 组件存在
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-4: done event → tts.synthesize → audio play > 调用 trpcClient.tts.synthesize.mutate
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-4: done event → tts.synthesize → audio play > <audio> 元素带 autoPlay
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-4: done event → tts.synthesize → audio play > audioUrl 字段用于播放
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-5: 5 工具 call card 渲染 · 折叠展开 > ToolCallCard 组件存在
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-5: 5 工具 call card 渲染 · 折叠展开 > expanded 字段控制折叠
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-5: 5 工具 call card 渲染 · 折叠展开 > args + result 渲染
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-6: 30s silence detection > silence timer 存在
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-6: 30s silence detection > 还想聊什么吗 silence prompt
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-7: 挂掉按钮 → clearBuffer + 总结 > handleHangUp 函数存在
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-7: 挂掉按钮 → clearBuffer + 总结 > SummaryPanel 显示总结
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-7: 挂掉按钮 → clearBuffer + 总结 > clearSessionMutation 调用
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-7: 挂掉按钮 → clearBuffer + 总结 > 本次对话 N 轮总结文案
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-9: 无 media stream leak > getTracks().forEach(t => t.stop()) 释放 stream
+ ✓ tests/unit/web/pages/VoiceChat.test.tsx > AC-9: 无 media stream leak > recorder.stream 字段访问
  ✓ tests/unit/web/ToolForm.test.tsx > getToolLsKey (D-031) > generates correct LS key format
  ✓ tests/unit/web/ToolForm.test.tsx > getToolLsKey (D-031) > includes toolKey in the namespace (not stepKey pattern)
  ✓ tests/unit/web/ToolForm.test.tsx > getToolLsKey (D-031) > includes accountId in the namespace for isolation
@@ -585,24 +734,17 @@
  ✓ tests/unit/web/ToolForm.test.tsx > ToolForm component (source inspection) > uses zodResolver
  ✓ tests/unit/web/ToolForm.test.tsx > ToolForm component (source inspection) > has data-testid for each toolKey
  ✓ tests/unit/web/ToolForm.test.tsx > ToolForm component (source inspection) > handles all 4 toolKeys in switch statement
-{"level":"error","time":"2026-05-10T10:25:36.930Z","pid":80232,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanQn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-1: logFeedback writes cost_log with eventType=good and correct fields
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-2: event_type enum — 'bad' maps correctly
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-3: RLS isolation — accountId comes from ctx.activeAccountId, not input
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-18-4: target JSON complete — stepKey + agentId + traceId all present
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-10: type not in [good,bad] → zod input rejection
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-12: DB error → returns { ok: false } without throwing
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-11: traceId propagated from x-trace-id header into cost_log
- ✓ tests/unit/api/feedback-log.test.ts > costLog.logFeedback > AC-20: logFeedback < 50ms (single INSERT with mock DB)
- ✓ tests/integration/api/image-gen-flow.test.ts > US-009 AC-13: ImageGen full flow integration — mock OpenAI + real DB > generate: mock DALL-E 3 → writes Asset to real DB → updates history.scenes[1].sceneImageUrl
- ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-3: user A (correct account) sees their own step_data rows
- ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-3: user B (different account) sees 0 rows from step_data
- ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)
- ✓ tests/integration/api/rls-isolation.test.ts > [Integration] RLS account isolation via set_config > AC-7: set_config round-trip overhead < 50ms on localhost
-{"level":"error","time":"2026-05-10T10:25:36.955Z","pid":80226,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1778408736930","msg":"cost_log.write_failed"}
- ✓ tests/integration/api/specialist-llm.test.ts > US-003 AC-10: specialist integration — nock LLM + real DB cost_log > execute() calls Anthropic tool_use, returns valid result, writes cost_log to DB
-{"level":"warn","time":"2026-05-10T10:25:37.037Z","pid":80243,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
-{"level":"warn","time":"2026-05-10T10:25:37.040Z","pid":80243,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
+ ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > 5 parallel enqueueIfThresholdMet calls → queue.add called exactly once (threshold:5)
+ ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > counts 1-4 and 6-10 do NOT trigger enqueue
+ ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > jobId deduplication: concurrent rush at threshold uses same jobId
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.3: timeout — TTS API timeout → INTERNAL_SERVER_ERROR > nock delays 500ms · worker timeout=100ms → INTERNAL_SERVER_ERROR 1283ms
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS > Redis incr > 100 → TOO_MANY_REQUESTS with correct message
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS > 100th call (boundary) passes
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS > _todayKey format is correct
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR > OpenAI 500 error → INTERNAL_SERVER_ERROR thrown · no cost_log · no asset
+ ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR > OpenAI 429 rate limit error → INTERNAL_SERVER_ERROR thrown
+{"level":"warn","time":"2026-05-11T08:43:42.451Z","pid":72454,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
+{"level":"warn","time":"2026-05-11T08:43:42.453Z","pid":72454,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
  ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-4: throws FORBIDDEN when activeAccountId is null
  ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-4: calls next=false (does not proceed) when activeAccountId missing
  ✓ tests/unit/api/account-isolation.test.ts > accountIsolationMiddleware > AC-5: skips RLS and calls next when meta.isGlobal=true
@@ -632,6 +774,35 @@
  ✓ tests/unit/web/ls-namespace.test.ts > lsUsedBytes and pruneLsNamespaces > key-18: pruneLsNamespaces removes non-active keys when limit exceeded
  ✓ tests/integration/api/auth.test.ts > [Integration] mock login flow > AC-2/3/5: mock login creates session cookie + DB row
  ✓ tests/integration/api/auth.test.ts > [Integration] mock login flow > AC-4: auth.me with valid session returns authenticated user
+ ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-8: mock provider bypasses CSRF — mismatched state still completes login
+ ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-11: expired session → auth.me returns unauthenticated
+ ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: full mock login flow (callback → session) < 500ms
+ ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: auth.me with valid session < 100ms
+ ✓ tests/integration/api/stt-whisper.test.ts > US-009 AC-9: R-001 — OPENAI_API_KEY not in frontend code > grep OPENAI_API_KEY apps/web should return 0 matches
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — success > AC-3: calls findUnique then update with usedById=user.id and returns updated invite
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — duplicate > AC-4: already-used invite code → throws CONFLICT 409
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — not found > unknown code → throws NOT_FOUND
+ ✓ tests/unit/api/invite.test.ts > invite.redeem — unauthenticated > no user session → throws UNAUTHORIZED
+ ✓ tests/unit/api/memory/l1-buffer.test.ts > L1 Buffer > push: stores turn and can retrieve it
+ ✓ tests/unit/api/memory/l1-buffer.test.ts > L1 Buffer > get: returns turns in chronological order (oldest first)
+ ✓ tests/unit/api/memory/l1-buffer.test.ts > L1 Buffer > clear: removes all turns for account
+ ✓ tests/unit/api/memory/l1-buffer.test.ts > L1 Buffer > maxLimit: trims to 20 turns max on push
+ ✓ tests/unit/api/memory/l1-buffer.test.ts > L1 Buffer > TTL: expire(key, 1800) is called on every push
+ ✓ tests/integration/api/tts-openai.test.ts > US-010 AC-9: R-001 — OPENAI_API_KEY not in frontend code > grep OPENAI_API_KEY apps/web should return 0 matches
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > EvolutionInsightContentSchema > happy path: valid insight content parses
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > EvolutionInsightContentSchema > reject: unknown direction fails
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > EvolutionInsightContentSchema > TriggerTypeSchema: valid threshold literal parses
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > DailyTaskOutputSchema > happy path: valid DailyTaskOutput with 3 tasks parses
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > DailyTaskOutputSchema > reject: ctaUrl not starting with / fails
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > VoiceChatTurnSchema > happy path: valid user turn parses
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > VoiceChatTurnSchema > reject: invalid role fails
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts > VOICE_CHAT_TOOLS > has exactly 5 tools with correct names
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.3: timeout — Whisper API timeout → INTERNAL_SERVER_ERROR > nock delays 500ms · worker timeout=100ms → INTERNAL_SERVER_ERROR 1753ms
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.4: rate-limit — 51st call per day → TOO_MANY_REQUESTS > Redis incr > 50 → TOO_MANY_REQUESTS with correct message
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.4: rate-limit — 51st call per day → TOO_MANY_REQUESTS > 50th call (boundary) passes
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.4: rate-limit — 51st call per day → TOO_MANY_REQUESTS > _todayKey format is correct
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR > OpenAI 500 error → INTERNAL_SERVER_ERROR thrown · no cost_log
+ ✓ tests/unit/api/workers/stt.test.ts > US-009 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR > OpenAI 429 rate limit error → INTERNAL_SERVER_ERROR thrown
  ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has exactly 9 step routes
  ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has exactly 14 tool routes
  ✓ tests/unit/web/router.test.ts > router route count (AC-001) > has exactly 6 new module routes
@@ -644,20 +815,6 @@
  ✓ tests/unit/web/router.test.ts > router route count (AC-001) > no duplicate routes
  ✓ tests/unit/web/router.test.ts > router route count (AC-001) > all tool hrefs from Header.tsx TOOLS_14 are covered
  ✓ tests/unit/web/router.test.ts > router route count (AC-001) > all new module hrefs from Header.tsx NEW_MODULES_6 are covered
- ✓ tests/unit/api/invite.test.ts > invite.redeem — success > AC-3: calls findUnique then update with usedById=user.id and returns updated invite
- ✓ tests/unit/api/invite.test.ts > invite.redeem — duplicate > AC-4: already-used invite code → throws CONFLICT 409
- ✓ tests/unit/api/invite.test.ts > invite.redeem — not found > unknown code → throws NOT_FOUND
- ✓ tests/unit/api/invite.test.ts > invite.redeem — unauthenticated > no user session → throws UNAUTHORIZED
- ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: throws RateLimitError when quota exceeded, no LLM call
- ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: RateLimitError has correct userId and code
- ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: checkRateLimit is called with userId from metadata
- ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > checkRateLimit called once per complete() call
- ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > RateLimitError constructor sets message and code
- ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > complete() succeeds when rate limit passes
- ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-8: mock provider bypasses CSRF — mismatched state still completes login
- ✓ tests/integration/api/auth.test.ts > [E2E] CSRF + session lifecycle > AC-11: expired session → auth.me returns unauthenticated
- ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: full mock login flow (callback → session) < 500ms
- ✓ tests/integration/api/auth.test.ts > [Perf] login flow timing > AC-13: auth.me with valid session < 100ms
  ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts color tokens from YAML frontmatter
  ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts typography tokens including all three font families
  ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > extracts rounded tokens
@@ -668,6 +825,12 @@
  ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on missing closing ---
  ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > throws on corrupt YAML with line number in message
  ✓ tests/unit/parseDesignTokens.test.ts > parseTokensFromContent > returns empty objects for missing optional sections
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: throws RateLimitError when quota exceeded, no LLM call
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: RateLimitError has correct userId and code
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > AC-11: checkRateLimit is called with userId from metadata
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > checkRateLimit called once per complete() call
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > RateLimitError constructor sets message and code
+ ✓ tests/unit/api/llm-gateway-rate.test.ts > LLMGateway · rate limiting > complete() succeeds when rate limit passes
  ✓ tests/unit/web/ToolResult.test.tsx > ToolResult: switch by toolKey > handles generate case → FreeGenerateResult
  ✓ tests/unit/web/ToolResult.test.tsx > ToolResult: switch by toolKey > handles boom-generate case → BoomGenerateResult
  ✓ tests/unit/web/ToolResult.test.tsx > ToolResult: switch by toolKey > handles analysis case → AnalysisResult
@@ -681,9 +844,9 @@
  ✓ tests/unit/web/ToolResult.test.tsx > ToolResult: data-testid in each sub-component > BoomGenerateResult has data-testid
  ✓ tests/unit/web/ToolResult.test.tsx > ToolResult: data-testid in each sub-component > AnalysisResult has data-testid
  ✓ tests/unit/web/ToolResult.test.tsx > ToolResult: data-testid in each sub-component > VideoAnalysisResult has data-testid
-{"level":"error","time":"2026-05-10T10:25:37.196Z","pid":80258,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
-{"level":"error","time":"2026-05-10T10:25:37.200Z","pid":80258,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
-{"level":"error","time":"2026-05-10T10:25:37.201Z","pid":80258,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
+{"level":"error","time":"2026-05-11T08:43:42.778Z","pid":72481,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
+{"level":"error","time":"2026-05-11T08:43:42.778Z","pid":72481,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-11T08:43:42.779Z","pid":72481,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
  ✓ tests/unit/auth/providers.test.ts > MockProvider > validateCallback always returns mock dev user
  ✓ tests/unit/auth/providers.test.ts > MockProvider > getAuthorizationUrl returns URL with /auth/callback?mock=true
  ✓ tests/unit/auth/providers.test.ts > validateStartupConfig > calls process.exit(1) when SESSION_SECRET < 32 chars
@@ -715,8 +878,9 @@
  ✓ tests/unit/web/step-config.test.ts > stepConfig > step9 has correct title
  ✓ tests/unit/web/step-config.test.ts > stepConfig > step5 phase is 运营
  ✓ tests/unit/web/step-config.test.ts > stepConfig > returns undefined for unknown key
-{"level":"info","time":"2026-05-10T10:25:37.335Z","pid":80263,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778408737335_zacl","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
-{"level":"error","time":"2026-05-10T10:25:37.335Z","pid":80263,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778408737335_zacl","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:68:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:37:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":0,"msg":"specialist.failed"}
+{"level":"info","time":"2026-05-11T08:43:42.951Z","pid":72487,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778489022951_f9dp","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
+{"level":"error","time":"2026-05-11T08:43:42.953Z","pid":72482,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:323:7)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1778489022934_lglt","msg":"voice_chat.cost_log.write_failed"}
+{"level":"error","time":"2026-05-11T08:43:42.952Z","pid":72487,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778489022951_f9dp","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:68:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:37:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":1,"msg":"specialist.failed"}
  ✓ tests/unit/agents/base.test.ts > BaseSpecialist abstract contract > concrete subclass implements execute and can be instantiated
  ✓ tests/unit/agents/base.test.ts > LLMGateway.selectTier > returns reasoning for reasoning hint
  ✓ tests/unit/agents/base.test.ts > LLMGateway.selectTier > returns lightweight for lightweight hint
@@ -724,11 +888,17 @@
  ✓ tests/unit/agents/base.test.ts > trace_id propagation > extractTraceId returns empty string when header absent
  ✓ tests/unit/agents/base.test.ts > trace_id propagation > generateHttpTraceId returns a 16-char hex string
  ✓ tests/unit/agents/base.test.ts > trace_id propagation > generateHttpTraceId is unique per call
+{"level":"error","time":"2026-05-11T08:43:42.964Z","pid":72482,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:323:7)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1778489022955_prem","msg":"voice_chat.cost_log.write_failed"}
+{"level":"error","time":"2026-05-11T08:43:42.973Z","pid":72482,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:323:7)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1778489022965_9bcp","msg":"voice_chat.cost_log.write_failed"}
  ✓ tests/integration/api/llm-gateway-real.test.ts > LLMGateway · integration (nock) > complete() calls Anthropic API and returns parsed response
+ ✓ tests/integration/api/voice-chat-flow.test.ts > [Integration] VoiceChatAgent 3-turn L1 Buffer (AC-10) > 3 turns: 3 user + 3 assistant turns in L1 Buffer
+ ✓ tests/integration/api/voice-chat-flow.test.ts > [Integration] VoiceChatAgent 3-turn L1 Buffer (AC-10) > clearBuffer removes all turns
  ✓ tests/integration/api/trace.test.ts > [Integration] trace_id propagation > echoes provided X-Trace-Id in response header
  ✓ tests/integration/api/trace.test.ts > [Integration] trace_id propagation > generates 16-char hex trace ID when header is absent
  ✓ tests/integration/api/auth.me.test.ts > auth.me HTTP endpoint > GET /trpc/auth.me returns unauthenticated shape
- ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-3: network failure retry 3 times → failed result > retries 3 times on network error, returns { error: image_gen_failed, sceneImageUrl: placeholder } 3005ms
+ ✓ tests/unit/specialists/DailyTaskAgent.test.ts > DailyTaskAgent (US-002 骨架) > execute() throws PRD-8 US-007 stub error
+ ✓ tests/unit/specialists/DailyTaskAgent.test.ts > DailyTaskAgent (US-002 骨架) > outputSchema is DailyTaskOutputSchema
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-3: network failure retry 3 times → failed result > retries 3 times on network error, returns { error: image_gen_failed, sceneImageUrl: placeholder } 3004ms
  ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-4: cost_log eventType=image_gen accurate > writes cost_log with eventType=image_gen provider=openai modelUsed=dall-e-3 costUsd=0.04
  ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-5: Asset write all fields > writes Asset with accountId, assetType=scene_image, sceneIndex, publicUrl, generationModel, relatedHistoryId
  ✓ tests/unit/api/image-gen-dall-e-3.test.ts > US-009 AC-12-6: history.scenes 反写 correct > updates history content with sceneImageUrl merged into correct scene by index, untouched scene unchanged
@@ -744,8 +914,9 @@
  ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > prisma.stepData.findMany 调用时传入正确 accountId(反模式 REJ-008)
  ✓ tests/unit/services/context-assembler.test.ts > ContextAssembler > 无模板的 agentId(DiagnosisAgent) → fallback persona · 不抛出
 
- Test Files  75 passed (75)
-      Tests  717 passed (717)
-   Start at  18:25:35
-   Duration  5.95s (transform 1.14s, setup 136ms, collect 4.96s, tests 9.39s, environment 6ms, prepare 2.30s)
+ Test Files  91 passed (91)
+      Tests  861 passed | 2 skipped (863)
+   Start at  16:43:39
+   Duration  6.24s (transform 1.37s, setup 148ms, collect 7.23s, tests 12.68s, environment 7ms, prepare 2.78s)
 
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-012/vitest-full.xml

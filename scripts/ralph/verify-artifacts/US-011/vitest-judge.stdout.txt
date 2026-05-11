@@ -1,0 +1,56 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/judge/insight-injection.judge.ts > EvolutionInsight 注入 LLM Judge — AC-8 > AC-8: PositioningAgent 有 insight 注入 → LLM Judge 评分 ≥ 8/10 (≥ 4.0/5)
+ ✓ tests/judge/insight-injection.judge.ts > EvolutionInsight 注入 LLM Judge — AC-8 > AC-8: CopywritingAgent 有 insight 注入 → LLM Judge 评分 ≥ 8/10 (≥ 4.0/5)
+ ✓ tests/judge/insight-injection.judge.ts > EvolutionInsight 注入 LLM Judge — AC-8 > runJudge 调用 llmGateway lightweight tier + judge_call eventType
+ ✓ tests/judge/video-storyboard.judge.ts > VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases > 美食探店 golden case passes judge with score >= threshold
+ ✓ tests/judge/video-storyboard.judge.ts > VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases > 旅游 vlog golden case passes judge with score >= threshold
+ ✓ tests/judge/video-storyboard.judge.ts > VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases > imagePromptEn is ASCII-only in 美食 golden case scenes
+ ✓ tests/judge/video-storyboard.judge.ts > VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases > imagePromptEn is ASCII-only in 旅游 golden case scenes
+ ✓ tests/judge/video-storyboard.judge.ts > VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases > scenes count is between 5 and 8 inclusive in both golden cases
+ ✓ tests/judge/video-production.judge.ts > VideoAgent production mode LLM Judge — 美妆 + 健身 2 golden cases > 美妆教程 golden case passes judge with score >= threshold
+ ✓ tests/judge/video-production.judge.ts > VideoAgent production mode LLM Judge — 美妆 + 健身 2 golden cases > 健身减脂 golden case passes judge with score >= threshold
+ ✓ tests/judge/video-production.judge.ts > VideoAgent production mode LLM Judge — 美妆 + 健身 2 golden cases > runJudge calls llmGateway with model_tier=lightweight and eventType=judge_call
+ ✓ tests/judge/video-production.judge.ts > VideoAgent production mode LLM Judge — 美妆 + 健身 2 golden cases > all 13 shot columns present in golden case shotList
+ ✓ tests/judge/analysis-structural.judge.ts > AnalysisAgent structural mode LLM Judge — 2 golden cases > 减肥文案 golden case passes judge with score >= threshold
+ ✓ tests/judge/analysis-structural.judge.ts > AnalysisAgent structural mode LLM Judge — 2 golden cases > 育儿文案 golden case passes judge with score >= threshold
+ ✓ tests/judge/video-acquisition.judge.ts > VideoAgent acquisition mode LLM Judge — 理财 + 教育 2 golden cases > 理财引流 golden case passes judge with score >= threshold
+ ✓ tests/judge/video-acquisition.judge.ts > VideoAgent acquisition mode LLM Judge — 理财 + 教育 2 golden cases > 教育口语课 golden case passes judge with score >= threshold
+ ✓ tests/judge/video-acquisition.judge.ts > VideoAgent acquisition mode LLM Judge — 理财 + 教育 2 golden cases > ctaScript contains CTA keyword in both golden cases
+ ✓ tests/judge/video-acquisition.judge.ts > VideoAgent acquisition mode LLM Judge — 理财 + 教育 2 golden cases > conversionPath length ≥ 1 in both golden cases
+ ✓ tests/judge/copywriting-acquisition.judge.ts > CopywritingAgent acquisition mode LLM Judge — 育儿 + 医美 2 golden cases > 育儿睡眠训练 golden case passes judge with score >= threshold
+ ✓ tests/judge/copywriting-acquisition.judge.ts > CopywritingAgent acquisition mode LLM Judge — 育儿 + 医美 2 golden cases > 医美水光针 golden case passes judge with score >= threshold
+ ✓ tests/judge/copywriting-acquisition.judge.ts > CopywritingAgent acquisition mode LLM Judge — 育儿 + 医美 2 golden cases > markdown length is 200-500 chars in both golden cases
+ ✓ tests/judge/copywriting-acquisition.judge.ts > CopywritingAgent acquisition mode LLM Judge — 育儿 + 医美 2 golden cases > markdown ends with CTA in both golden cases
+ ✓ tests/judge/evolution-agent.judge.ts > EvolutionAgent LLM Judge — threshold:50 golden case > AC-13: golden case passes judge with score ≥ 8/10 (≥ 4.0/5)
+ ✓ tests/judge/evolution-agent.judge.ts > EvolutionAgent LLM Judge — threshold:50 golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/analysis-viral.judge.ts > AnalysisAgent viral mode LLM Judge — 2 golden cases > 美妆 golden case(平价粉底液平替) passes judge with score >= threshold
+ ✓ tests/judge/analysis-viral.judge.ts > AnalysisAgent viral mode LLM Judge — 2 golden cases > 美食 golden case(红烧肉家传方) passes judge with score >= threshold
+ ✓ tests/judge/copywriting-free.judge.ts > CopywritingAgent free mode LLM Judge — 2 golden cases > 医美自媒体 golden case(熬夜皮肤好) passes judge with score >= threshold
+ ✓ tests/judge/copywriting-free.judge.ts > CopywritingAgent free mode LLM Judge — 2 golden cases > 健身教练 golden case(30天减脂) passes judge with score >= threshold
+ ✓ tests/judge/copywriting-boom.judge.ts > CopywritingAgent boom mode LLM Judge — 2 golden cases > 育儿 golden case(专注力培养) passes judge with score >= threshold
+ ✓ tests/judge/copywriting-boom.judge.ts > CopywritingAgent boom mode LLM Judge — 2 golden cases > 理财 golden case(月薪5000理财) passes judge with score >= threshold
+ ✓ tests/judge/copywriting.judge.ts > CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/copywriting.judge.ts > CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/video.judge.ts > VideoAgent LLM Judge — shooting/food/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/video.judge.ts > VideoAgent LLM Judge — shooting/food/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/monetization.judge.ts > MonetizationAgent LLM Judge — education/zero-revenue golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/monetization.judge.ts > MonetizationAgent LLM Judge — education/zero-revenue golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/branding.judge.ts > BrandingAgent LLM Judge — packaging/beauty/xiaohongshu golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/branding.judge.ts > BrandingAgent LLM Judge — packaging/beauty/xiaohongshu golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/voice-chat.judge.ts > VoiceChatAgent LLM Judge (AC-12) > 0-tool case: score ≥ 4.0/5
+ ✓ tests/judge/voice-chat.judge.ts > VoiceChatAgent LLM Judge (AC-12) > 1-tool case: score ≥ 4.0/5
+ ✓ tests/judge/voice-chat.judge.ts > VoiceChatAgent LLM Judge (AC-12) > 2-tool case: score ≥ 4.0/5
+ ✓ tests/judge/livestream.judge.ts > LivestreamAgent LLM Judge — 新手/beauty/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/livestream.judge.ts > LivestreamAgent LLM Judge — 新手/beauty/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/topic.judge.ts > TopicAgent LLM Judge — traffic/health/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/topic.judge.ts > TopicAgent LLM Judge — traffic/health/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ tests/judge/positioning.judge.ts > PositioningAgent LLM Judge — industry/douyin golden case > golden case passes judge with score >= threshold
+ ✓ tests/judge/positioning.judge.ts > PositioningAgent LLM Judge — industry/douyin golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+
+ Test Files  18 passed (18)
+      Tests  47 passed (47)
+   Start at  16:09:34
+   Duration  491ms (transform 271ms, setup 0ms, collect 735ms, tests 60ms, environment 1ms, prepare 785ms)
+

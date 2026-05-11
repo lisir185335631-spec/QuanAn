@@ -1,0 +1,927 @@
+{
+  "project": "QuanQn",
+  "branchName": "ralph/prd-6-p5-video-modules",
+  "description": "PRD-6 · P5 视频模块 · VideoAgent 解锁 3 mode (production/acquisition/storyboard) + CopywritingAgent acquisition mode + ImageGen Worker (DALL-E 3 · BullMQ 异步队列 · rate limit) + 3 视频工具页 + 收官 e2e/judge/lint。14 stories · 2 batch (US-001~007 + US-008~014) · risk=high · 计划 2 周。继承 D-001~D-035 + 17+ REJ · 新增 D-036~D-045 · TD-016 PII 已 PRD-5 接线。",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Foundation · 5 schema + ImageGen Worker 骨架 + Asset.sceneIndex 字段",
+      "description": "PRD-6 数据契约前置层 · 4 项: (1) 5 个新 zod schema (videoProduction/acquisitionVideo/aiVideo/acquisitionCopywriting/imageGen) (2) ImageGen Worker 骨架 (interface IImageGenWorker · DALL-E 3 wrapper 占位 · BullMQ Queue 定义) (3) Asset 表加 sceneIndex Int? + 复合索引 [accountId, relatedStepKey, sceneIndex] (4) 3 constants 文件 (videoTypes/videoDurations/imageStyles)。downstream 11 stories 全等本 story 数据契约 · risk_level 升档为 foundation (downstream≥3 + schema/protocol 关键词)。",
+      "acceptanceCriteria": [
+        "新建 packages/schemas/src/specialist-io/{videoProduction,acquisitionVideo,aiVideo,acquisitionCopywriting,imageGen}.schema.ts 共 5 文件 · 全部 export zod schema (Input + Output 各)",
+        "videoProduction Input zod: { sourceCopy: z.string().min(10).max(3000, '原始文案不能超过3000字符'), videoType: z.enum(['short_form','long_form']).optional(), duration: z.enum(['15s','30s','60s','180s']).optional(), additionalContext: z.string().optional() }",
+        "aiVideo Input zod: { sourceCopy, scenesCount: z.union([z.literal(5),z.literal(6),z.literal(7),z.literal(8)], { errorMap: () => ({ message: '镜头数应在 5-8 之间' }) }), imageStyle: z.enum(['vivid','natural']) }",
+        "aiVideo Output zod scenes 元素: z.object({ index: z.number().int().positive(), description: z.string().min(20).max(500), imagePromptEn: z.string().min(20).regex(/^[\\x00-\\x7F]+$/, 'imagePromptEn 必须是英文 ASCII'), duration: z.string() }) · scenes.min(5).max(8)",
+        "imageGen schema: ImageGenJobPayload = { sceneIndex, imagePromptEn, accountId, traceId, historyId, imageStyle } · ImageGenJobResult = { sceneImageUrl, costUsd, durationMs } | { error, sceneImageUrl: placeholder }",
+        "新建 apps/api/src/workers/image-gen/{index.ts,dall-e-3.ts,queue.ts} 3 文件 · index.ts 含 interface IImageGenWorker { generate(payload): Promise<ImageGenJobResult> } · dall-e-3.ts + queue.ts 占位实现 throw new Error('PRD-6 US-009 真接') / throw new Error('PRD-6 US-010 真接')",
+        "Asset 表 prisma migration: 加 sceneIndex Int? + 复合索引 @@index([accountId, relatedStepKey, sceneIndex]) · pnpm prisma migrate deploy 退出码 0",
+        "新建 apps/api/src/lib/constants/{videoTypes,videoDurations,imageStyles}.ts · as const satisfies ReadonlyArray pattern (LD-013)",
+        "packages/schemas/src/index.ts barrel 加 5 新 schema export (video-prefixed avoid name collision)",
+        "tests/unit/api/schemas/video-schemas.test.ts 新建 · 5 schema 各 2 unit (happy + boundary): (1) 5 schema parse happy (2) sourceCopy < 10 fail (3) sourceCopy = 3000 边界 pass (4) scenesCount = 9 fail (5) imagePromptEn 含中文 fail · 总 ≥10 unit",
+        "boundary tests 跑通: scenesCount=5 min 边界 + 8 max 边界 + 9 fail · imagePromptEn='美女吃饭' fail · imagePromptEn='Young woman eating' pass",
+        "5 schema parse 总耗时 < 50ms (vitest 跑 100 次平均)",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/schemas/video-schemas.test.ts 退出码 0 · ≥10 unit pass"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "packages/schemas/src/specialist-io/videoProduction.schema.ts",
+        "packages/schemas/src/specialist-io/acquisitionVideo.schema.ts",
+        "packages/schemas/src/specialist-io/aiVideo.schema.ts",
+        "packages/schemas/src/specialist-io/acquisitionCopywriting.schema.ts",
+        "packages/schemas/src/specialist-io/imageGen.schema.ts",
+        "apps/api/src/workers/image-gen/index.ts",
+        "apps/api/src/workers/image-gen/dall-e-3.ts",
+        "apps/api/src/workers/image-gen/queue.ts",
+        "apps/api/src/lib/constants/videoTypes.ts",
+        "apps/api/src/lib/constants/videoDurations.ts",
+        "apps/api/src/lib/constants/imageStyles.ts",
+        "prisma/migrations/2026_05_10_add_scene_index_to_assets/migration.sql",
+        "tests/unit/api/schemas/video-schemas.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "packages/schemas/src/index.ts",
+        "apps/api/src/lib/constants/index.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/schemas/video-schemas.test.ts && pnpm typecheck && pnpm prisma migrate deploy",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-007 (多 mode outputSchema getter)",
+          "lesson": "as const satisfies ReadonlyArray<...> 跨包 map() 时需显式类型标注回调参数",
+          "antipattern": "❌ const TYPES = ['a','b'] as const → packages/schemas 跨包 import 后 .map(t => t) 推断为 string[] · 失去 union 信息",
+          "correct": "✅ as const satisfies ReadonlyArray<'a'|'b'> · 或在 map 回调显式标注: .map((t: typeof TYPES[number]) => t)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008 (RLS · 重写 schema 必带 accountId)",
+          "lesson": "Asset 表加新字段不影响 RLS · 但 worker 写 Asset 行时仍必带 accountId",
+          "antipattern": "❌ ImageGen Worker 用 prisma.asset.create({ data: { sceneIndex, ... } }) 不带 accountId",
+          "correct": "✅ 必带 accountId: prisma.asset.create({ data: { accountId: payload.accountId, sceneIndex, ... } }) · RLS 自动二次防护"
+        },
+        {
+          "source_prd": "QuanQn-PRD-1",
+          "source_story": "TD-001 (tailwind hardcode color)",
+          "lesson": "新建 schema/常量文件不要 inline 重复 enum · 应从 packages/schemas/src/specialist-io/constants.ts 引",
+          "antipattern": "❌ acquisitionVideo.schema.ts 内 inline z.enum(['douyin','xiaohongshu','wechat']) · 若 SCRIPT_TYPE_KEYS_20 等已存在",
+          "correct": "✅ 复用既有 constants.ts: import { SCRIPT_TYPE_KEYS_20, HOT_ELEMENT_KEYS_22 } from '../constants' · 新 platform enum 若不存在则 inline 在新 platforms.ts"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Foundation · VideoAgent 解锁 3 mode + CopywritingAgent acquisition + 3 ContextAssembler 模板",
+      "description": "Specialist 实施层 · 4 项: (1) VideoAgent 解锁 production/acquisition/storyboard 3 mode (移除 throw 'PRD-6' · 加 outputSchema getter 按 _mode 返回 4 schema · invokeLLM 内 _buildUserPrompt(mode) 分支 · D-028 模式继承自 PRD-4) (2) CopywritingAgent acquisition 解锁 (D-035 落地 · 移除 throw · 加 acquisition outputSchema · 加 invokeLLM acquisition prompt 分支) (3) 3 新 ContextAssembler 模板 (video-production/acquisition-video/ai-video persona · index.ts barrel 加 3 入口) (4) unit tests 扩展 (VideoAgent +9 / CopywritingAgent +3)。downstream 10 stories · risk_level=foundation (跨 story 命名一致性逐字对照 §1.5 表 A/B/C)。",
+      "acceptanceCriteria": [
+        "apps/api/src/specialists/VideoAgent.ts 移除 production/acquisition/storyboard mode throw 'PRD-6' · 改为按 mode 走 invokeLLM 分支",
+        "VideoAgent outputSchema getter (D-028 模式 · 沿用 PRD-4 PositioningAgent 模式): get outputSchema() { switch(this._mode) { case 'shooting': return ShootingOutput; case 'production': return ProductionOutput; case 'acquisition': return AcquisitionOutput; case 'storyboard': return StoryboardOutput; default: throw new Error('unknown mode') } }",
+        "VideoAgent invokeLLM 内 _buildUserPrompt(mode) 4 分支 · production 模板加 13 列分镜 + 设备 + 排期 prompt · acquisition 模板加 CTA + 转化路径 prompt · storyboard 模板加 5-8 scenes + imagePromptEn 必英文 prompt",
+        "VideoAgent storyboard mode 输出验证 imagePromptEn 必含 ASCII 英文 (post-validate · regex /^[\\x00-\\x7F]+$/) · 不通过则 retry 1 次 · 仍失败 throw SchemaValidationError",
+        "apps/api/src/specialists/CopywritingAgent.ts 移除 acquisition mode throw 'PRD-6' (D-035 落地) · 加 acquisition outputSchema (markdown z.string().min(200).max(500) + metadata { ctaPosition, conversionGoal }) · invokeLLM 加 acquisition prompt 分支 (CTA 必含 + 200-500字 + 转化导向)",
+        "新建 apps/api/src/services/context-assembler/templates/{video-production,acquisition-video,ai-video}.ts 3 文件 · 每文件 export persona + 提示词模板 · 沿用 PRD-5 templates/copywriting.ts 模式",
+        "apps/api/src/services/context-assembler/templates/index.ts SPECIALIST_TEMPLATES barrel 加 3 入口 · key 用 'VideoAgent:production' / 'VideoAgent:acquisition' / 'VideoAgent:storyboard' (沿用既有 key 命名 if exists)",
+        "tests/unit/specialists/__tests__/VideoAgent.test.ts +9 unit (production 3 + acquisition 3 + storyboard 3 · 含 happy + outputSchema getter switch + invokeLLM mock LLM 返回 schema 验证)",
+        "tests/unit/specialists/__tests__/CopywritingAgent.test.ts +3 unit (acquisition mode happy + CTA missing fail post-validate + markdown 200/500 边界)",
+        "VideoAgent invokeLLM 真调 LLM (integration test nock SDK) < 3s",
+        "VideoAgent unit 9 + CopywritingAgent unit 3 总跑 < 200ms (mock LLM)",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/specialists/__tests__/VideoAgent.test.ts tests/unit/specialists/__tests__/CopywritingAgent.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/context-assembler/templates/video-production.ts",
+        "apps/api/src/services/context-assembler/templates/acquisition-video.ts",
+        "apps/api/src/services/context-assembler/templates/ai-video.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/specialists/VideoAgent.ts",
+        "apps/api/src/specialists/CopywritingAgent.ts",
+        "apps/api/src/services/context-assembler/templates/index.ts",
+        "tests/unit/specialists/__tests__/VideoAgent.test.ts",
+        "tests/unit/specialists/__tests__/CopywritingAgent.test.ts"
+      ],
+      "test_command": "pnpm test tests/unit/specialists/__tests__/VideoAgent.test.ts tests/unit/specialists/__tests__/CopywritingAgent.test.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-001 (LLM SDK 直调)",
+          "lesson": "Specialist 不直接 import @anthropic-ai/sdk / openai · 只能调 LLMGateway",
+          "antipattern": "❌ VideoAgent.ts: import Anthropic from '@anthropic-ai/sdk'; const client = new Anthropic({ apiKey: ... })",
+          "correct": "✅ import { llmGateway } from '@/workers/llm-gateway' · 调 llmGateway.complete({ tier: 'reasoning', messages, ... }) · LLMGateway 是唯一入口 (LD-012)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-007 (多 mode outputSchema getter)",
+          "lesson": "多 mode Specialist 用 _mode + outputSchema getter (D-028) · 不用 z.discriminatedUnion",
+          "antipattern": "❌ outputSchema = z.discriminatedUnion('mode', [...]) · BaseSpecialist safeParse 时无法按 _mode 切换 · 4 mode 输出耦合",
+          "correct": "✅ private _mode: VideoMode = 'shooting' · invokeLLM 内 this._mode = req.mode · get outputSchema() { switch(this._mode) { ... } } · BaseSpecialist 调 outputSchema 自动取最新 mode (PRD-4 PositioningAgent 模式继承 · TD-014 race window 文档化)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-005 (Specialist 不自己拼 prompt)",
+          "lesson": "Specialist 不在 invokeLLM 内 string template 拼 user prompt · system prompt 必走 ContextAssembler · user prompt 段在 _buildUserPrompt(mode) 内但调 ContextAssembler.assembleUser",
+          "antipattern": "❌ invokeLLM(req) { const prompt = `分析这段文案 ${req.userInput.sourceCopy}...`; llmGateway.complete({ messages: [{ role: 'user', content: prompt }] }) }",
+          "correct": "✅ const assembled = await this.contextAssembler.assemble({ ...req, mode: this._mode }) · llmGateway.complete({ messages: [{ role: 'system', content: assembled.systemPrompt }, { role: 'user', content: assembled.userPrompt }] })"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Wave 1 · /video-production 后端 · videoProduction.generate procedure",
+      "description": "新建 apps/api/src/trpc/routers/videoProduction.ts · 真接 VideoAgent production mode · protectedProcedure + explicit accountId (LD-009 双层防护 · TD-019 教训) · 写 history row + cost_log 自动写。",
+      "acceptanceCriteria": [
+        "新建 apps/api/src/trpc/routers/videoProduction.ts · export videoProductionRouter · 含 generate procedure",
+        "generate procedure: protectedProcedure.input(videoProductionInputSchema).mutation(async ({ ctx, input }) => { const result = await videoAgent.execute({ accountId: ctx.activeAccountId!, mode: 'production', userInput: input, traceId: ctx.traceId }); ... 写 history row · agentId='VideoAgent' · agentMode='production' · contentType='json' · 显式 where: { accountId: ctx.activeAccountId! } 双层防护 })",
+        "history.create 必带 accountId (explicit + RLS 双层) · grep -E 'where:.*accountId.*activeAccountId' apps/api/src/trpc/routers/videoProduction.ts ≥1 命中",
+        "cost_log 自动写 (BaseSpecialist 内调 prisma.costLog.create · callType='specialist_call' · modelUsed 含 'claude' · accountId 隔离)",
+        "apps/api/src/trpc/routers/_app.ts 注册 videoProduction: videoProductionRouter",
+        "packages/clients/src/router-types.ts shadow router 加 videoProduction.generate (input/output 类型)",
+        "tests/unit/api/video-production-router.test.ts 4 unit: (1) happy generate · 返回 history row + agentMode='production' (2) sourceCopy < 10 fail · BAD_REQUEST 中文 message (3) Specialist throw LLMTimeoutError · BaseSpecialist fallback 触发 isFallback=true (4) cross-account RLS 隔离 · accountId=2 不能查 accountId=1 history",
+        "tests/integration/api/video-production-llm.test.ts integration: nock @anthropic-ai/sdk · 真 DB cost_log 写入 + history 写入 · 端到端 mock SDK 跑通 · 总耗时 < 5s",
+        "sourceCopy 边界: 长度=10 (min) pass · 长度=3000 (max) pass · 长度=3001 fail",
+        "history.list filter agentId='VideoAgent' agentMode='production' 返回时间 < 200ms (单 account 100 行)",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/video-production-router.test.ts tests/integration/api/video-production-llm.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/videoProduction.ts",
+        "tests/unit/api/video-production-router.test.ts",
+        "tests/integration/api/video-production-llm.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/_app.ts",
+        "packages/clients/src/router-types.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/video-production-router.test.ts tests/integration/api/video-production-llm.test.ts && pnpm typecheck",
+      "size_hint": "small",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013 (protectedProcedure)",
+          "lesson": "tRPC procedure 不经 accountIsolation middleware",
+          "antipattern": "❌ videoProduction router 用 publicProcedure 或 globalProcedure · 不验证用户实际所属",
+          "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS · LD-009 三道闸"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "TD-019 (knowledge.ts 修)",
+          "lesson": "RLS-only 单层防护 不算双层 · LD-009 必须 explicit + RLS 双层",
+          "antipattern": "❌ where: { id: historyId } 不带 accountId · 只靠 RLS auto filter",
+          "correct": "✅ where: { accountId: ctx.activeAccountId!, id: historyId } · explicit + RLS 双层 · TD-019 PRD-5 教训"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-017 (cost_log 必带 traceId)",
+          "lesson": "cost_log 写入必带 traceId 关联 LLM 调用 · 否则 admin cost dashboard 无法 trace",
+          "antipattern": "❌ prisma.costLog.create({ data: { tokens, costUsd } }) 缺 traceId/accountId",
+          "correct": "✅ prisma.costLog.create({ data: { traceId: ctx.traceId, accountId: ctx.activeAccountId!, ... } }) · BaseSpecialist 自动注入"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "Wave 1 · /video-production 前端 · VideoProduction.tsx 真表单 + 13 列分镜渲染",
+      "description": "apps/web/src/pages/tools/VideoProduction.tsx 替换 PRD-2 占位 · 真表单 (textarea sourceCopy + select videoType + select duration + textarea additional) + submit → trpc.videoProduction.generate · 渲染 13 列分镜表 + 设备清单 + 排期 (沿用 PRD-5 ToolForm/ToolResult 抽象 · D-030/D-031)。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/VideoProduction.tsx 重写 · ToolForm 包装 + 字段 (sourceCopy textarea / videoType select / duration select / additionalContext textarea) + submit button '生成方案'",
+        "新建 apps/web/src/components/ToolResult/VideoProductionResult.tsx · 渲染 13 列分镜表 (固定列名: 镜头号/景别/角度/运镜/时长/画面描述/台词/字幕/音效/BGM/道具/参考/备注) + 设备清单卡片 + 排期表",
+        "apps/web/src/components/ToolResult/ToolResult.tsx switch case 加 'video-production'",
+        "LS 持久化: getToolLsKey(activeAccountId, 'video-production', 'input') · 表单 input change 写 LS · refresh 后 useEffect 读 LS 回填 (D-031)",
+        "使用 agent-browser 打开 http://localhost:5173/video-production · 看到表单 (sourceCopy textarea, videoType select, duration select, generate 按钮)",
+        "使用 agent-browser 在 sourceCopy 填 '今天分享一段健身减脂经历，三个月减了 15kg...' (≥10字) · 选 videoType='short_form' · 选 duration='60s' · 点 '生成方案' 按钮",
+        "提交后立即 toast '生成中...' · 1-3s 后 (mock LLM 时立即) ToolResult 区显示完整方案: 13 列分镜表 + 设备清单 + 排期",
+        "LS 持久化验证: 在 sourceCopy 填值后刷新页面 · 表单字段保留 (localStorage 含 acc_${accountId}_tool_video-production_input key)",
+        "history 跳转预填: agent-browser 打开 /video-production?historyId=N (mock history) · useEffect 读 trpc.history.detail({ id: N }) · 表单字段 + 13 分镜结果区都显示历史值",
+        "失败路径: sourceCopy 留空提交 · zod 中文 message 显示 '原始文案至少 10 字符' · submit button 禁用或弹错误 toast · 不允许提交",
+        "失败路径: mock backend throw LLMTimeoutError · UI toast '生成失败 · 请稍后再试' · 不崩溃白屏 · ErrorBoundary 不命中",
+        "tests/unit/web/pages/VideoProduction.test.tsx 5 unit: (1) 表单渲染所有字段 (2) zod 校验失败显示中文 message (3) submit 调 mutation (4) LS 写入 + 读取 (5) ?historyId 预填",
+        "tests/e2e/tool-video-production.spec.ts 1 e2e: CI mock LLM (page.addInitScript window.fetch 替换 · 3 行 JSONL · workers=1 fullyParallel=false 序列化沿用 PRD-5)",
+        "13 列分镜表 100+ 行 render < 100ms (lighthouse perf marker)",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/web/pages/VideoProduction.test.tsx 退出码 0",
+        "pnpm test:e2e tests/e2e/tool-video-production.spec.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-003"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/ToolResult/VideoProductionResult.tsx",
+        "tests/unit/web/pages/VideoProduction.test.tsx",
+        "tests/e2e/tool-video-production.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/VideoProduction.tsx",
+        "apps/web/src/components/ToolResult/ToolResult.tsx"
+      ],
+      "test_command": "pnpm test tests/unit/web/pages/VideoProduction.test.tsx && pnpm test:e2e tests/e2e/tool-video-production.spec.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-010 (LS namespace)",
+          "lesson": "LS key 必含 account namespace · 切账号时不能复用旧 key",
+          "antipattern": "❌ localStorage.setItem('video_production_input', JSON.stringify(form))",
+          "correct": "✅ const key = getToolLsKey(activeAccountId, 'video-production', 'input') · key = `acc_${activeAccountId}_tool_video-production_input` · D-031"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-035 (LS-first dual-write · ToolForm 模式)",
+          "lesson": "LS 先写 + DB 后写 · DB fail 时 LS 不回滚 + toast.error · 用户可重试",
+          "antipattern": "❌ LS 写后 DB 失败 try { ls.setItem(...) } catch { ls.removeItem(...) } · 用户输入丢失",
+          "correct": "✅ ls.setItem(key, val) → trpc.mutate(...) · onError: toast.error('保存失败 · LS 已保留 · 可重试') · LS 不动"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "PRD-5 e2e CI mock 教训",
+          "lesson": "tRPC v11 httpBatchStreamLink CI mock 必须用 page.addInitScript 替换 fetch · 返回 3 行 JSONL · 不能用 route.fulfill",
+          "antipattern": "❌ page.route('/api/trpc/**', route => route.fulfill({ json: ... })) · tRPC v11 是 JSONL 格式 不是 JSON",
+          "correct": "✅ page.addInitScript(() => { window.fetch = async () => new Response('JSONL\\nLINE1\\nLINE2\\n', { headers: {'content-type':'application/jsonl'} }) }) · 沿用 PRD-5 mock pattern"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Wave 1 · /acquisition-video 后端 · acquisitionVideo.generate procedure",
+      "description": "新建 apps/api/src/trpc/routers/acquisitionVideo.ts · 真接 VideoAgent acquisition mode · 输出含 ctaScript + conversionPath。",
+      "acceptanceCriteria": [
+        "新建 apps/api/src/trpc/routers/acquisitionVideo.ts · export acquisitionVideoRouter · 含 generate procedure",
+        "generate procedure 调 videoAgent.execute({ mode: 'acquisition', userInput: { sourceCopy, conversionGoal, platform?, duration? } }) · 写 history row · agentId='VideoAgent' · agentMode='acquisition'",
+        "explicit accountId 双层防护: where: { accountId: ctx.activeAccountId!, ... } (LD-009 · TD-019 教训)",
+        "输出 ctaScript 字段含明确转化指令 · grep -E '关注|私信|点击|获取|领取' Output.ctaScript ≥1 命中 (post-validate · 不通过则 retry 1)",
+        "apps/api/src/trpc/routers/_app.ts 注册 acquisitionVideo: acquisitionVideoRouter",
+        "packages/clients/src/router-types.ts shadow router 加 acquisitionVideo.generate",
+        "tests/unit/api/acquisition-video-router.test.ts 4 unit: (1) happy · 返回 history + agentMode='acquisition' + ctaScript 含 CTA 关键词 (2) conversionGoal 留空 zod fail '转化目标必填' (3) Specialist throw fallback (4) cross-account RLS 隔离",
+        "tests/integration/api/acquisition-video-llm.test.ts integration: nock SDK + 真 DB · 端到端 mock LLM 返回含 CTA · 总 < 5s",
+        "boundary tests: sourceCopy 长度 10/3000/3001 边界",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/acquisition-video-router.test.ts tests/integration/api/acquisition-video-llm.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/acquisitionVideo.ts",
+        "tests/unit/api/acquisition-video-router.test.ts",
+        "tests/integration/api/acquisition-video-llm.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/_app.ts",
+        "packages/clients/src/router-types.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/acquisition-video-router.test.ts tests/integration/api/acquisition-video-llm.test.ts && pnpm typecheck",
+      "size_hint": "small",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013 (protectedProcedure)",
+          "lesson": "tRPC procedure 不经 accountIsolation middleware",
+          "antipattern": "❌ acquisitionVideo router 用 publicProcedure",
+          "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "TD-019 (knowledge.ts 修)",
+          "lesson": "RLS-only 单层防护 不算双层 · LD-009 必须 explicit + RLS 双层",
+          "antipattern": "❌ where: { id } 不带 accountId · 只靠 RLS auto filter",
+          "correct": "✅ where: { accountId: ctx.activeAccountId!, id } · explicit + RLS 双层"
+        }
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "Wave 1 · /acquisition-video 前端 · AcquisitionVideo.tsx",
+      "description": "apps/web/src/pages/tools/AcquisitionVideo.tsx · 真表单 (sourceCopy + 转化目标 + 平台 + duration) + 渲染 13 分镜 + ★ CTA 区高亮 ★ + 转化路径列表 (沿用 ToolForm/ToolResult)。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/AcquisitionVideo.tsx 重写 · ToolForm + 字段 (sourceCopy textarea / conversionGoal input '转化目标' required / platform select / duration select)",
+        "新建 apps/web/src/components/ToolResult/AcquisitionVideoResult.tsx · 13 分镜表 + ★ ctaScript 高亮卡片 (背景色突出 + '转化指令' 标题) + 转化路径有序列表",
+        "apps/web/src/components/ToolResult/ToolResult.tsx switch case 加 'acquisition-video'",
+        "LS namespace: getToolLsKey(accountId, 'acquisition-video', 'input')",
+        "使用 agent-browser 打开 /acquisition-video · 表单 + 提交 · 渲染 13 分镜 + CTA 高亮 + 转化路径列表",
+        "使用 agent-browser 在 conversionGoal 留空提交 · 显示中文 zod message '转化目标必填' · 不允许提交",
+        "history 跳转预填: agent-browser 打开 /acquisition-video?historyId=N · 表单 + 13 分镜 + CTA 区预填",
+        "刷新后状态保持: 在 sourceCopy 填值后 page.reload() · 表单字段保留",
+        "失败路径: backend throw · toast 中文错误 · UI 不崩",
+        "tests/unit/web/pages/AcquisitionVideo.test.tsx 5 unit",
+        "tests/e2e/tool-acquisition-video.spec.ts 1 e2e CI mock",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/web/pages/AcquisitionVideo.test.tsx 退出码 0",
+        "pnpm test:e2e tests/e2e/tool-acquisition-video.spec.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-005"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "[Opus 路径 B 救援 · 2026-05-10] daemon claude CLI 系统级 hang (RCA-003 类问题再现 · 距 RCA-004 timeout fix 后 ~6h) · daemon 误报 validate exit_code 1 但 manifest 实际 exit_code 0 (654 vitest pass + e2e 1/1 + typecheck 6ws 0 + 22 unit pass) · 5 retry 后 BLOCKED. Opus 主对话直接审 commit b0ac5cb (AcquisitionVideo.tsx + AcquisitionVideoResult.tsx 3 卡片渲染 · 22 unit + e2e + typecheck 全过). AC-2 锁 '13 分镜' 不满足 (TD-022 第 4 次显现 · acquisition mode schema 缺 shotList 字段 · PRD 内部不一致 · 升级 Critical · 留 PRD-7 修). 其他 13 ACs PASS. 路径 B approve commit b0ac5cb.",
+      "retryCount": 0,
+      "files_to_create": [
+        "apps/web/src/components/ToolResult/AcquisitionVideoResult.tsx",
+        "tests/unit/web/pages/AcquisitionVideo.test.tsx",
+        "tests/e2e/tool-acquisition-video.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/AcquisitionVideo.tsx",
+        "apps/web/src/components/ToolResult/ToolResult.tsx"
+      ],
+      "test_command": "pnpm test tests/unit/web/pages/AcquisitionVideo.test.tsx && pnpm test:e2e tests/e2e/tool-acquisition-video.spec.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-010 (LS namespace)",
+          "lesson": "LS key 必含 account namespace",
+          "antipattern": "❌ localStorage.setItem('acquisition_input', ...)",
+          "correct": "✅ getToolLsKey(activeAccountId, 'acquisition-video', 'input')"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-035 (LS-first dual-write)",
+          "lesson": "DB fail 时 LS 不回滚 + toast 提示",
+          "antipattern": "❌ DB 失败时 ls.removeItem(key) · 用户输入丢失",
+          "correct": "✅ DB 失败 onError toast.error · LS 保留可重试"
+        }
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "Wave 2 · ImageGen Worker · DALL-E 3 SDK + cost_log image_gen + Asset 写入",
+      "description": "★ 新模块 · 真 OpenAI image API · 6 项: (1) DALL-E 3 SDK wrapper (input imagePromptEn英文 + size=1024x1024 + quality=standard · D-042) (2) env 开关 IMAGE_GEN_ENABLED + OPENAI_API_KEY (3) 错误处理 max 3 retries exponential + placeholder 兜底 (4) cost_log 写入 eventType='image_gen' + provider='openai' + modelUsed='dall-e-3' + costUsd≈0.04 (D-040) (5) Asset 表写入 sceneImage (assetType='scene_image' · sceneIndex 填) (6) history.scenes[i].sceneImageUrl 反写。★ D-038 ImageGen 不走 LLMGateway · 单独 Worker · OpenAI SDK 仅本文件 import。",
+      "acceptanceCriteria": [
+        "apps/api/src/workers/image-gen/dall-e-3.ts 真实施 · 移除 throw 'PRD-6 US-009 真接' · 实现 generateImage(payload) 函数",
+        "OpenAI SDK 直接 import 在本文件 (★ D-038 例外 · 不走 LLMGateway 因为 image diffusion ≠ text completion · grep 验证: import .*openai apps/api/src/workers/image-gen/dall-e-3.ts ≥1 命中 · 但 apps/api/src 其他位置 0 命中 OpenAI image API 调用)",
+        "DALL-E 3 调用参数: model='dall-e-3' · size='1024x1024' · style 取 payload.imageStyle (vivid|natural) · quality='standard' (D-042 · 不用 HD)",
+        "env 开关: IMAGE_GEN_ENABLED=true 真调 OpenAI · false 返回 placeholder url '/static/placeholder-1024x1024.png' (无 cost · dev mode)",
+        "OPENAI_API_KEY 缺失时 throw new Error('OPENAI_API_KEY required for IMAGE_GEN_ENABLED=true') · 不暴露 key 值 (R-001)",
+        "错误处理: 网络失败 max 3 retries exponential backoff (1s/2s/4s) · 仍失败返回 { error: 'image_gen_failed', sceneImageUrl: '/static/placeholder-1024x1024.png' } + history.scenes[i].status='failed'",
+        "cost_log 写入: prisma.costLog.create({ data: { eventType: 'image_gen', provider: 'openai', modelUsed: 'dall-e-3', costUsd: 0.04, accountId: payload.accountId, traceId: payload.traceId, durationMs, callType: 'image_gen', tokens: { prompt: 0, completion: 0 } } }) · D-040 第 3 类 eventType",
+        "Asset 写入: prisma.asset.create({ data: { accountId: payload.accountId, assetType: 'scene_image', sceneIndex: payload.sceneIndex, publicUrl: dalleUrl, generationPrompt: payload.imagePromptEn, generationModel: 'dall-e-3', relatedHistoryId: payload.historyId } }) · explicit accountId (LD-009)",
+        "history.scenes 反写: 用 prisma.history.update 不用 $executeRaw (REJ-009)·  jsonb path update: prisma.history.update({ where: { accountId: payload.accountId, id: payload.historyId }, data: { scenes: { ... merge sceneImageUrl into scenes[sceneIndex] } } }) · 实施细节 worker 用 transaction + read-modify-write 因为 Prisma jsonb path update 受限",
+        "apps/api/src/workers/llm-gateway/cost-logger.ts eventType allow list 加 'image_gen' (D-040 第 3 类)",
+        ".env.example 加 IMAGE_GEN_ENABLED=false + OPENAI_API_KEY=sk-... (注释)",
+        "tests/unit/api/image-gen-dall-e-3.test.ts 6 unit: (1) IMAGE_GEN_ENABLED=true happy 真 mock OpenAI SDK 返回 sceneImageUrl + cost_log 写入 + Asset 写入 + history 反写 (2) IMAGE_GEN_ENABLED=false 返回 placeholder · 不调 OpenAI · 不写 cost_log (3) 网络失败 retry 3 次 + 仍失败 returns failed result (4) cost_log eventType='image_gen' 准确 (5) Asset 写入字段全 (6) history.scenes 反写正确",
+        "tests/integration/api/image-gen-flow.test.ts integration: mock OpenAI SDK · 全流程 input → DALL-E mock → Asset 写 → history 反写 · 端到端跑通",
+        "boundary: imagePromptEn 长度 < 1000 字 (OpenAI 限制) · style vivid|natural · size=1024x1024 fixed",
+        "1 镜头 DALL-E 3 调用 (mock) < 100ms · 真 OpenAI 调用 8-15s · timeout 30s 硬上限",
+        "cost_log 写入 < 50ms",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/image-gen-dall-e-3.test.ts tests/integration/api/image-gen-flow.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "tests/unit/api/image-gen-dall-e-3.test.ts",
+        "tests/integration/api/image-gen-flow.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/workers/image-gen/dall-e-3.ts",
+        "apps/api/src/workers/image-gen/index.ts",
+        "apps/api/src/workers/llm-gateway/cost-logger.ts",
+        ".env.example"
+      ],
+      "test_command": "pnpm test tests/unit/api/image-gen-dall-e-3.test.ts tests/integration/api/image-gen-flow.test.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-001 (LLM SDK 直调) · ★ ImageGen 例外!",
+          "lesson": "★ 重要例外 · D-038 ImageGen 不走 LLMGateway · 直接 import openai SDK 是合规的 · 但 仅限 apps/api/src/workers/image-gen/dall-e-3.ts 本文件 · 其他位置 0 命中 image API 调用",
+          "antipattern": "❌ 把 ImageGen 加到 LLMGateway: llmGateway.complete({ tier: 'image', ... }) · LLMGateway 膨胀违反 SRP · 或在 BrandingAgent 直调 OpenAI image API · 违反 R-001",
+          "correct": "✅ apps/api/src/workers/image-gen/dall-e-3.ts: import OpenAI from 'openai' · const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) · client.images.generate({ model: 'dall-e-3', ... }) · 单独 Worker · OpenAI image API 仅本文件 · grep 'images.generate' apps/api 应仅命中本文件"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008 (Worker 写 prisma 必带 accountId)",
+          "lesson": "Worker 写 Asset 表 + history 反写必带 accountId · 不能跳 RLS",
+          "antipattern": "❌ prisma.asset.create({ data: { sceneIndex, ... } }) 缺 accountId · prisma.history.update({ where: { id }, data: { scenes } }) 缺 accountId where",
+          "correct": "✅ Asset.create({ data: { accountId: payload.accountId, ... } }) · history.update({ where: { accountId: payload.accountId, id: payload.historyId }, data: { scenes } })"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-017 (cost_log 必带 traceId)",
+          "lesson": "image_gen cost_log 必带 traceId 关联整个 storyboard 调用链",
+          "antipattern": "❌ prisma.costLog.create({ data: { eventType: 'image_gen', costUsd } }) 缺 traceId · admin dashboard 无法 trace",
+          "correct": "✅ prisma.costLog.create({ data: { traceId: payload.traceId, accountId: payload.accountId, eventType: 'image_gen', provider: 'openai', modelUsed: 'dall-e-3', costUsd: 0.04, durationMs, ... } })"
+        }
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "Wave 2 · BullMQ 异步队列 · Worker 进程 + Redis 配置 + 状态机",
+      "description": "★ 新基础设施 · 6 项: (1) BullMQ Queue 'image-gen' (concurrency=2 控并发 cost) (2) Worker 进程 (pnpm worker:image-gen 单独跑 / dev mode 跟 api 同进程) (3) Redis 配置 (ioredis 单例) (4) rate limit 实施 (sliding window · D-044 UTC date) (5) status query 实现 (查 history.scenes count by status) (6) 失败 retry (BullMQ retries=2 + exponential backoff)。",
+      "acceptanceCriteria": [
+        "apps/api/src/workers/image-gen/queue.ts 真实施 · 移除 throw · 实现 imageGenQueue = new Queue('image-gen', { connection: redisConnection, defaultJobOptions: { attempts: 3, backoff: { type: 'exponential', delay: 5000 } } })",
+        "concurrency=2 · 同时 2 个 job 跑 · 第 3+ 个 job 排队等空位",
+        "新建 apps/api/src/workers/image-gen/worker.ts · new Worker('image-gen', async (job) => imageGen(job.data), { connection, concurrency: 2 })",
+        "新建 apps/api/src/lib/redis.ts · ioredis 单例 · const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379') · BullMQ + rate limit 复用",
+        "新建 apps/api/src/lib/rate-limit/image-gen.ts · checkImageGenRateLimit(accountId): Promise<void> · throws TRPCError if exceeded · sliding window: redis.incr(key='rate:image_gen:user:{accountId}:{utc-date}') + redis.expire(key, 86400) · count >= IMAGE_GEN_DAILY_LIMIT_PER_USER (env default 10) → throw",
+        "D-044 UTC date: const today = new Date().toISOString().slice(0,10) · 不用本地时区",
+        "Job 完成 push 'completed' event · history.scenes[i].sceneImageUrl 反写 + status='completed'",
+        "Job 失败 retry 2 次 (BullMQ defaultJobOptions.attempts=3 含初次) · 仍失败 status='failed' + history.scenes[i].status='failed'",
+        "Redis 不可达: Queue.add() throws · 上游 trpc procedure catch · 返回 5xx · 用户看 '生成失败 · 请稍后再试'",
+        "package.json scripts 加 'worker:image-gen': 'tsx apps/api/src/workers/image-gen/worker.ts'",
+        "apps/api/src/index.ts boot 加 worker 启动 · 仅 dev mode (process.env.NODE_ENV === 'development') · 跟 api server 同进程 · prod 留 PRR 拆独立 docker container",
+        "tests/unit/api/image-gen-queue.test.ts 8 unit: (1) queue.add 入栈 · 返回 jobId (2) job complete event 触发 history 反写 (3) job retry · attempts=2 (4) job 最终 fail · status='failed' (5) concurrency=2 限制 · 第 3 job 等空位 (6) status query · count by sceneImageUrl null vs not null vs failed (7) rate limit 命中: 11 calls / accountId / day → throw on 11th (8) rate limit cross-account 隔离: accountId=1 跑 10 + accountId=2 仍可 10",
+        "tests/integration/api/image-gen-bullmq.test.ts integration: ★ 真 BullMQ + Redis (test DB · 跑前 redis-cli FLUSHDB) · 入栈 → 真 worker tick (mock dall-e-3 fast) → completed event → history 反写 · 端到端跑通",
+        "rate limit Redis sliding window query < 10ms",
+        "queue.add() < 50ms",
+        "Worker spawn → start processing < 200ms",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/image-gen-queue.test.ts tests/integration/api/image-gen-bullmq.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-009"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "apps/api/src/workers/image-gen/worker.ts",
+        "apps/api/src/lib/redis.ts",
+        "apps/api/src/lib/rate-limit/image-gen.ts",
+        "tests/unit/api/image-gen-queue.test.ts",
+        "tests/integration/api/image-gen-bullmq.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/workers/image-gen/queue.ts",
+        "apps/api/src/index.ts",
+        "package.json"
+      ],
+      "test_command": "pnpm test tests/unit/api/image-gen-queue.test.ts tests/integration/api/image-gen-bullmq.test.ts && pnpm typecheck",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008 (Worker 写 prisma 必带 accountId)",
+          "lesson": "BullMQ Worker 在独立 context 跑 · 必须从 job.data.accountId 显式带过 · 不能依赖 RLS auto-filter",
+          "antipattern": "❌ Worker job 内 prisma.history.update({ where: { id } }) 不带 accountId · Worker 没有 ctx.activeAccountId",
+          "correct": "✅ Worker job: prisma.history.update({ where: { accountId: job.data.accountId, id: job.data.historyId } }) · job.data.accountId 来自 generateStoryboard 入栈时显式带"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-009 (executeRaw 仅 middleware)",
+          "lesson": "Worker 不能用 prisma.$executeRaw 跳过 RLS · 必须走 prisma 客户端方法",
+          "antipattern": "❌ Worker 调 prisma.$executeRaw('UPDATE history SET scenes = ... WHERE id = ?', ...) · 跳 RLS",
+          "correct": "✅ Worker 调 prisma.history.update · 或 prisma.$transaction 内 set_config(local) + prisma client 方法"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "PRD-5 e2e BullMQ test 教训",
+          "lesson": "BullMQ + Redis integration test 必须 redis-cli FLUSHDB 清旧数据 · 否则 stale jobs 污染",
+          "antipattern": "❌ vitest 跑 image-gen-bullmq.test.ts 不清 Redis · 上次跑剩的 jobs 影响这次 count",
+          "correct": "✅ beforeEach: await redis.flushdb() · afterAll: await imageGenQueue.close() + await worker.close() · 防 dangling connections"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Wave 2 · /ai-video 后端 · aiVideo.generateStoryboard + ImageGen 入队列",
+      "description": "★ 跨 Specialist + Worker · 异步队列 · 4 项: (1) aiVideo router · generateStoryboard procedure 真接 VideoAgent storyboard mode · 拿到 5-8 scenes 后立即为每个 scene 入 BullMQ 队列 (2) 立即返回 { historyId, jobIds, scenesPlaceholder } 不等图片 (3) rate limit check (US-011 接线 · 但 US-007 需先实现 checkImageGenRateLimit 接口) (4) jobStatus query 查 history.scenes 状态 · accountId RLS 自动隔离。",
+      "acceptanceCriteria": [
+        "新建 apps/api/src/trpc/routers/aiVideo.ts · export aiVideoRouter · 含 generateStoryboard mutation + jobStatus query",
+        "generateStoryboard 流程: protectedProcedure → checkImageGenRateLimit(ctx.activeAccountId!) → videoAgent.execute({ mode: 'storyboard', userInput: { sourceCopy, scenesCount, imageStyle } }) → 拿 5-8 scenes 后 prisma.history.create({ data: { accountId, agentId: 'VideoAgent', agentMode: 'storyboard', scenes: scenes.map(s => ({ ...s, sceneImageUrl: null, status: 'pending' })) } }) → for each scene imageGenQueue.add('image-gen-job', { sceneIndex, imagePromptEn, accountId, traceId, historyId, imageStyle }) → 立即返回 { historyId, jobIds, scenesPlaceholder }",
+        "返回结构: z.object({ historyId: z.number(), jobIds: z.array(z.string()).min(5).max(8), scenesPlaceholder: z.array(z.object({ index, description, imagePromptEn, sceneImageUrl: z.null(), status: z.literal('pending') })) })",
+        "rate limit check: checkImageGenRateLimit(accountId) → throws TRPCError({ code: 'TOO_MANY_REQUESTS', message: '今日生成已达上限 · 明日再来' }) when count ≥ IMAGE_GEN_DAILY_LIMIT_PER_USER (env · default 10)",
+        "history.scenes 写入 jsonb · 每 scene 含 { index, description, imagePromptEn, duration, sceneImageUrl: null, jobId, status: 'pending' }",
+        "jobStatus query: protectedProcedure.input(z.object({ historyId: z.number() })).query 查 prisma.history.findUnique · explicit where: { accountId: ctx.activeAccountId!, id: historyId } 双层防护 → 返回 { total, completed, pending, failed, scenes: [{ index, status, sceneImageUrl?, error? }] }",
+        "apps/api/src/trpc/routers/_app.ts 注册 aiVideo",
+        "packages/clients/src/router-types.ts shadow router 加 aiVideo.generateStoryboard + aiVideo.jobStatus",
+        "tests/unit/api/ai-video-router.test.ts 6 unit: (1) happy generateStoryboard 5 scene · jobIds 长度 5 · history scenes 5 全 sceneImageUrl=null (2) rate limit 拦截 · 11th call throws TOO_MANY_REQUESTS (3) scenesCount=9 zod fail '镜头数应在 5-8 之间' (4) imagePromptEn 含中文 · post-validate retry (5) cross-account RLS 隔离 (6) jobStatus 查 history.scenes 返回正确 status counts",
+        "tests/integration/api/ai-video-flow.test.ts: queue mock (BullMQ Queue.add stub) · 入栈 5 jobs · mock worker 完成 push sceneImageUrl 反写 history → jobStatus 返回 completed=5",
+        "boundary: scenesCount=5 入 5 jobs · scenesCount=8 入 8 jobs · scenesCount=9/4 fail",
+        "generateStoryboard 总响应时间 < 5s (mock LLM + mock queue add)",
+        "jobStatus query < 100ms (单 history join scenes)",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/ai-video-router.test.ts tests/integration/api/ai-video-flow.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-002",
+        "US-010"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/aiVideo.ts",
+        "tests/unit/api/ai-video-router.test.ts",
+        "tests/integration/api/ai-video-flow.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/_app.ts",
+        "packages/clients/src/router-types.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/ai-video-router.test.ts tests/integration/api/ai-video-flow.test.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013 (protectedProcedure)",
+          "lesson": "tRPC procedure 不经 accountIsolation middleware",
+          "antipattern": "❌ aiVideo router 用 publicProcedure",
+          "correct": "✅ 必用 protectedProcedure · LD-009 双层防护 explicit accountId (TD-019 PRD-5 教训)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-009 (executeRaw 仅 middleware)",
+          "lesson": "history.scenes JSON 反写时不能用 prisma.$executeRaw('UPDATE history SET scenes = ...') 跳过 RLS · Worker 也不行",
+          "antipattern": "❌ ImageGen Worker 调 prisma.$queryRaw('UPDATE history SET scenes ...') · 跳过 RLS",
+          "correct": "✅ Worker context 走 prisma.history.update + 加 set_config(via accountId-aware connection) · 或在 Worker 启动时配 RLS bypass role 但显式 where: { accountId } 验证"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008 (RLS · prisma 必带 accountId)",
+          "lesson": "history.create + jobStatus 查 history 必带 accountId 双层",
+          "antipattern": "❌ prisma.history.findUnique({ where: { id: historyId } }) 不带 accountId",
+          "correct": "✅ where: { accountId: ctx.activeAccountId!, id: historyId } · 双层"
+        }
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Wave 2 · /ai-video 前端 · AiVideo.tsx + 镜头网格 + sceneImage polling",
+      "description": "★ 异步 polling UX · 4 项: (1) AiVideo.tsx 真表单 (sourceCopy + scenesCount select 5-8 + imageStyle select) (2) 提交后拿 historyId+jobIds 立即跳结果区 · 5-8 镜头 skeleton 网格 (3) 每 3s 轮询 jobStatus · scene 完成 push sceneImageUrl 渲染真图 · 失败显示 placeholder + 重试按钮 (4) 全完成顶部 banner '生成完成' + 关闭 polling。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/AiVideo.tsx 重写 · ToolForm + 字段 (sourceCopy textarea / scenesCount select 5-8 default 5 / imageStyle select vivid|natural default natural) + submit '生成 AI 视频'",
+        "新建 apps/web/src/components/ToolResult/AiVideoResult.tsx · 5-8 镜头卡片网格 (responsive grid-cols-2/3) · 每镜头卡片含: 头部(镜头编号 + duration) + 中部(sceneImageUrl 已完成 → <img>，否则 skeleton + spinner) + 底部(scene description + imagePromptEn 折叠)",
+        "apps/web/src/components/ToolResult/ToolResult.tsx switch case 加 'ai-video'",
+        "polling 实现: 提交后 useState({ historyId, jobIds }) → useQuery(trpc.aiVideo.jobStatus, { historyId }, { refetchInterval: 3000, enabled: hasActiveHistory && !allCompleted })",
+        "全完成判断: jobStatus.completed === jobStatus.total → setAllCompleted(true) · refetchInterval=false · 顶部 Banner '所有镜头已完成 · 查看历史'",
+        "失败 scene UI: scene.status === 'failed' → 显示 placeholder + '重试' 按钮 (button 调 trpc.aiVideo.retryScene mutation · 留 PRD-7+ 实施 · 本期 button 占位 + onClick toast '重试功能 PRD-7+')",
+        "使用 agent-browser 打开 http://localhost:5173/ai-video · 看到表单 (sourceCopy textarea + scenesCount=5 select + imageStyle=natural select + 提交按钮)",
+        "使用 agent-browser 在 sourceCopy 填 '今天分享一段美食探店 vlog 制作过程...' · 选 scenesCount=5 · 点 '生成 AI 视频'",
+        "提交后立即跳结果区 · 5 镜头卡片网格显示 · 每镜头 skeleton + spinner + 编号 1/2/3/4/5",
+        "polling 启动: 每 3s 调 jobStatus query (devtools network 看到 polling 请求) · mock backend 完成 push sceneImageUrl · 镜头卡片 skeleton → 真 <img src> 渲染",
+        "5 镜头全完成后 · 顶部 banner '所有镜头已完成' 显示 · polling 关闭 (network 请求停止)",
+        "失败路径: sourceCopy 留空 · zod 中文 message '原始文案至少 10 字符' · 不允许提交",
+        "失败路径: rate limit 触 (mock backend throw TOO_MANY_REQUESTS) · 显示 '今日已达上限 · 明日再来' + 灰色 disabled 按钮",
+        "失败路径: polling 5 次仍 0 scene 完成 · 显示 '图片生成中 · 您可关闭页面' 提示",
+        "刷新后状态保持: 提交后刷新页面 → useEffect 读 LS (lastHistoryId) → 自动恢复 polling 当前 historyId · 镜头网格继续显示",
+        "history 跳转预填: agent-browser 打开 /ai-video?historyId=N (mock history 含 5 已完成 scenes) · 表单 + 5 镜头网格全显示真图 + 完成状态",
+        "tests/unit/web/pages/AiVideo.test.tsx 7 unit: (1) 表单渲染 (2) zod fail (3) submit mock + 跳结果区 (4) polling tick mock (vi.useFakeTimers + tick 3s) (5) scene 完成 push 渲染 (6) 全完成 banner (7) 失败 scene 重试 button",
+        "tests/e2e/tool-ai-video.spec.ts 1 e2e CI mock: 表单 → 提交 → 立即 5 skeleton → mock jobStatus 完成 push → 5 真图渲染 (workers=1 fullyParallel=false)",
+        "5 镜头 lazy load · 总 ~5MB · 首屏 < 3s 全显示",
+        "polling 每 3s · 1 query < 100ms",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/web/pages/AiVideo.test.tsx 退出码 0",
+        "pnpm test:e2e tests/e2e/tool-ai-video.spec.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-007"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "apps/web/src/components/ToolResult/AiVideoResult.tsx",
+        "tests/unit/web/pages/AiVideo.test.tsx",
+        "tests/e2e/tool-ai-video.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/AiVideo.tsx",
+        "apps/web/src/components/ToolResult/ToolResult.tsx"
+      ],
+      "test_command": "pnpm test tests/unit/web/pages/AiVideo.test.tsx && pnpm test:e2e tests/e2e/tool-ai-video.spec.ts && pnpm typecheck",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-010 (LS namespace)",
+          "lesson": "polling state 写 LS 必含 account namespace · 避免切账号污染",
+          "antipattern": "❌ localStorage.setItem('ai_video_active_polling', JSON.stringify({historyId,jobIds}))",
+          "correct": "✅ getToolLsKey(activeAccountId, 'ai-video', 'active_polling')"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-035 (LS-first dual-write)",
+          "lesson": "polling 失败时 LS lastHistoryId 不回滚 · 让用户能 reload 后恢复",
+          "antipattern": "❌ polling 错误后 ls.removeItem('lastHistoryId') · 用户 reload 后丢上下文",
+          "correct": "✅ 失败时 toast.error · LS 保留 · 用户 reload 后 useEffect 自动恢复 polling"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "PRD-5 e2e mock 教训",
+          "lesson": "polling e2e 必须 mock window.fetch + 控制 vi.useFakeTimers · 不能 sleep 真 3s",
+          "antipattern": "❌ await page.waitForTimeout(15000) // 等 5 次 polling · 慢且不稳定",
+          "correct": "✅ vi.useFakeTimers + vi.advanceTimersByTime(3000) · 每 tick mock 一个 jobStatus 完成 → 5 tick 后 5 全完成"
+        }
+      ]
+    },
+    {
+      "id": "US-011",
+      "title": "Wave 2 · Rate limit 集成 + cost 控制 + IMAGE_GEN_DAILY_LIMIT_PER_USER",
+      "description": "rate limit middleware 接入 aiVideo.generateStoryboard · env 配置 (IMAGE_GEN_DAILY_LIMIT_PER_USER=10 + IMAGE_GEN_MAX_SCENES_PER_REQUEST=8) · 前端 UX 显示剩余次数 + 超额灰色按钮 · cost log dashboard 留给 admin PRD-11。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/aiVideo.ts generateStoryboard 内调 await checkImageGenRateLimit(ctx.activeAccountId!) · 在 LLM 调用之前 (失败 fast)",
+        "rate limit 触发 throw TRPCError({ code: 'TOO_MANY_REQUESTS', message: '今日生成已达上限 (10 次/天)' })",
+        ".env.example 加 IMAGE_GEN_DAILY_LIMIT_PER_USER=10 + IMAGE_GEN_MAX_SCENES_PER_REQUEST=8 (注释 + 默认值)",
+        "前端 AiVideo.tsx 显示 '今日剩余 N 次' (调 trpc.aiVideo.dailyUsage query · 新建 query 返回当日已用 count + limit)",
+        "超额时 (count >= limit) submit 按钮 disabled + 灰色 + 提示 '今日已达上限 (10/10) · 明日再来'",
+        "cost_log eventType='image_gen' 自动按 callType='image_gen' aggregation by accountId · 留给 admin PRD-11 直接用 (不做 dashboard UI · 仅确保数据源完整)",
+        "tests/unit/api/rate-limit-image-gen.test.ts 5 unit: (1) 1st call OK count=1 (2) 10th call OK count=10 (3) 11th call throw TOO_MANY_REQUESTS (4) cross-account: accountId=1 count=10 不影响 accountId=2 count=0 (5) day rollover (mock new Date 跨 UTC date) reset count=0",
+        "boundary: 第 10 次成功 · 第 11 次拦截 · 边界精准",
+        "rate limit Redis sliding window query < 10ms",
+        "1000 并发 user (vitest mock) 各自独立 · Redis 吞吐扛得住 (本地测 1000 keys 写入 < 100ms)",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/rate-limit-image-gen.test.ts 退出码 0",
+        "使用 agent-browser 打开 /ai-video · 看到 '今日剩余 N 次' 文字 · mock backend 已用 10 次 → 按钮 disabled + 灰色"
+      ],
+      "depends_on": [
+        "US-010"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "tests/unit/api/rate-limit-image-gen.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/aiVideo.ts",
+        "apps/web/src/pages/tools/AiVideo.tsx",
+        ".env.example"
+      ],
+      "test_command": "pnpm test tests/unit/api/rate-limit-image-gen.test.ts && pnpm typecheck",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013 (protectedProcedure)",
+          "lesson": "rate limit middleware 仍需走 protectedProcedure",
+          "antipattern": "❌ aiVideo.dailyUsage 用 publicProcedure",
+          "correct": "✅ protectedProcedure · accountId 自动从 ctx 拿"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008 (RLS · accountId 隔离)",
+          "lesson": "rate limit Redis key 必含 accountId · 跨 user 不能共享",
+          "antipattern": "❌ rate-limit Redis key='rate:image_gen:date:{date}' · 全局共享",
+          "correct": "✅ key='rate:image_gen:user:{accountId}:{date}' · per-user 隔离"
+        }
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "Wave 2 · /generate 后端扩展 · CopywritingAgent acquisition mode 接入",
+      "description": "apps/api/src/trpc/routers/copywriting.ts 加 acquisitionGenerate procedure · 真接 CopywritingAgent acquisition mode (D-035 落地 · 沿用 D-026 命名规则 · 不破坏 generate / freeGenerate)。前端 /generate mode select 加 acquisition 选项。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/copywriting.ts 加 acquisitionGenerate procedure · protectedProcedure.input(acquisitionCopywritingInputSchema).mutation(...) · 调 copywritingAgent.execute({ mode: 'acquisition', userInput: { scriptType, elements, conversionGoal, topic } })",
+        "写 history row · agentId='CopywritingAgent' · agentMode='acquisition' · contentType='markdown'",
+        "explicit accountId 双层防护 (LD-009)",
+        "输出 markdown 200-500 字 · 末尾含 CTA (post-validate grep '关注 / 私信 / 点击 / 获取 / 领取' 任一)",
+        "cost_log 自动写 (BaseSpecialist 内 · callType='specialist_call')",
+        "apps/web/src/pages/tools/Generate.tsx mode select 加 'acquisition' option (沿用 free/boom 模式 · 复用 ToolForm)",
+        "acquisition mode 表单字段: scriptType select (SCRIPT_TYPE_KEYS_20) + elements multi-select (HOT_ELEMENT_KEYS_22) + conversionGoal input '转化目标' required + topic input",
+        "packages/clients/src/router-types.ts shadow router 加 copywriting.acquisitionGenerate",
+        "tests/unit/api/copywriting-acquisition.test.ts 4 unit: (1) happy generate · 返回 history + agentMode='acquisition' + markdown 含 CTA (2) conversionGoal 留空 zod fail '转化目标必填' (3) markdown 缺 CTA · post-validate retry 1 (4) cross-account RLS 隔离",
+        "boundary: markdown 200(min) / 500(max) 边界 · elements 1-8 个边界",
+        "integration test < 5s",
+        "使用 agent-browser 打开 /generate · 切 mode='acquisition' · 填 scriptType + elements + conversionGoal '关注公众号' + topic '理财' · 提交 · ToolResult 区显示 markdown 含 CTA",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/copywriting-acquisition.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "tests/unit/api/copywriting-acquisition.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/copywriting.ts",
+        "apps/web/src/pages/tools/Generate.tsx",
+        "packages/clients/src/router-types.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/copywriting-acquisition.test.ts && pnpm typecheck",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-007 (多 mode outputSchema getter)",
+          "lesson": "CopywritingAgent acquisition 走 _mode + outputSchema getter 模式 · 不破坏 free/boom",
+          "antipattern": "❌ acquisition mode 单独写一个 CopywritingAcquisitionAgent class",
+          "correct": "✅ 复用 CopywritingAgent · _mode='acquisition' · outputSchema getter case 加 acquisition (D-028 + D-035)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013 (protectedProcedure)",
+          "lesson": "acquisitionGenerate procedure 必经 protectedProcedure",
+          "antipattern": "❌ acquisitionGenerate 用 publicProcedure",
+          "correct": "✅ protectedProcedure + explicit accountId 双层"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-005 (Specialist prompt 装配)",
+          "lesson": "acquisition prompt 走 ContextAssembler · 不在 Specialist 内 string template 拼",
+          "antipattern": "❌ invokeLLM 内 const prompt = `生成 acquisition 文案 ${userInput.topic}...`",
+          "correct": "✅ 走 contextAssembler.assemble({ ...req, mode: 'acquisition' }) · ContextAssembler 唯一 prompt 入口"
+        }
+      ]
+    },
+    {
+      "id": "US-013",
+      "title": "Wave 2 · /history 接入扩展 · sceneImage 渲染 + 5 工具新条目类型",
+      "description": "history.list filter 扩展 (5 新 agentMode) + history.detail 返回 sceneImageUrls + History.tsx 5 工具新 badge + 4 工具页 useEffect ?historyId 预填。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/history.ts list procedure agentMode filter 加 5 新值 ('production' | 'acquisition'(video) | 'storyboard' | 'acquisition'(copywriting · 同名但 agentId='CopywritingAgent'))",
+        "history.detail 增强: 当 agentMode='storyboard' 时 join Asset 表查 scene images · 返回 scenes 数组每元素含 sceneImageUrl (从 Asset 表 publicUrl)",
+        "explicit accountId 双层防护: where: { accountId: ctx.activeAccountId!, id } (LD-009 · TD-019 教训)",
+        "apps/web/src/pages/modules/History.tsx 5 工具新 badge 颜色: 'production' = 蓝 · 'acquisition'(video) = 红 · 'storyboard' = 紫 · 'acquisition'(copywriting · agentId='CopywritingAgent') = 绿",
+        "History.tsx 跳转路由表加 5 新映射: 'production' → '/video-production?historyId=N' · 'acquisition'(video) → '/acquisition-video?historyId=N' · 'storyboard' → '/ai-video?historyId=N' · 'acquisition'(copy) → '/generate?historyId=N&mode=acquisition'",
+        "4 工具页 useEffect ?historyId 预填: VideoProduction / AcquisitionVideo / AiVideo (通过 ?historyId) / Generate (?historyId+mode=acquisition)",
+        "AiVideo 跳转预填: 5-8 镜头网格根据 history.scenes 渲染 · 已完成 sceneImageUrl 显示真图 · 未完成 skeleton",
+        "tests/unit/api/history-router.test.ts 扩展 +5 unit: (1) list filter agentMode='production' (2) 'acquisition'(video) (3) 'storyboard' 含 scenes (4) detail join Asset 返回 sceneImageUrl (5) cross-account RLS 隔离",
+        "使用 agent-browser 打开 /history · 看到 5 工具新 badge 颜色 · 点 storyboard row → 跳 /ai-video?historyId=N · 5 镜头网格预填",
+        "失败路径: 跨 account 调 detail → accountId RLS auto NOT_FOUND",
+        "刷新后状态保持: agent-browser /history 刷新 · table 100 行重新 render · 0 控制台错误",
+        "history.detail 含 8 镜头 + Asset join < 200ms",
+        "History.tsx Table 100 行 render < 100ms",
+        "pnpm typecheck 6 ws 0 error",
+        "pnpm test tests/unit/api/history-router.test.ts 退出码 0"
+      ],
+      "depends_on": [
+        "US-003",
+        "US-005",
+        "US-007",
+        "US-009",
+        "US-012"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/history.ts",
+        "apps/web/src/pages/modules/History.tsx",
+        "apps/web/src/pages/tools/VideoProduction.tsx",
+        "apps/web/src/pages/tools/AcquisitionVideo.tsx",
+        "apps/web/src/pages/tools/AiVideo.tsx",
+        "apps/web/src/pages/tools/Generate.tsx",
+        "tests/unit/api/history-router.test.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/history-router.test.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "TD-019 (knowledge.ts RLS-only 单层)",
+          "lesson": "history.detail 必双层防护 · 不能 RLS-only",
+          "antipattern": "❌ where: { id: input.id } 不带 accountId · TD-019 PRD-5 已修类似",
+          "correct": "✅ where: { accountId: ctx.activeAccountId!, id: input.id }"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-010 (LS namespace)",
+          "lesson": "4 工具页 useEffect ?historyId 预填后必须把 input 写入 LS namespace",
+          "antipattern": "❌ useEffect(() => trpc.history.detail({id}).then(d => setForm(d.input))) 不写 LS",
+          "correct": "✅ 写 getToolLsKey(activeAccountId, toolName, 'input') · 用户切走再回来不丢"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013 (protectedProcedure)",
+          "lesson": "history.list/detail 必经 protectedProcedure",
+          "antipattern": "❌ history router 用 publicProcedure",
+          "correct": "✅ protectedProcedure"
+        }
+      ]
+    },
+    {
+      "id": "US-014",
+      "title": "收官 · LLM Judge +8 (4 mode × 2 case) + 4 工具 e2e + lint clean + typecheck + 全套绿灯",
+      "description": "PRD-6 收官 · 4 项: (1) LLM Judge 套件扩展 +8 (累计 30) (2) 4 工具页 e2e 集成 spec (serial · CI mock LLM + ImageGen) (3) lint --max-warnings=0 全过 (4) 全套绿灯门禁 (vitest ≥620 / typecheck 6ws 0 / e2e ≥138 / judge 30/30) + verify-artifacts 完整 (沿用 PRD-5 US-012 模式)。",
+      "acceptanceCriteria": [
+        "新建 tests/judge/video-production.judge.ts · 2 golden case (美妆 + 健身 · 13 列分镜检查 · 每列字段必填 · runJudge model_tier='lightweight' · cost_log eventType='judge_call')",
+        "新建 tests/judge/video-acquisition.judge.ts · 2 golden case (理财 + 教育 · ctaScript 必含 CTA 关键词 · conversionPath 长度 ≥1)",
+        "新建 tests/judge/video-storyboard.judge.ts · 2 golden case (美食 + 旅游 · 5-8 scenes · 每 scene imagePromptEn 全 ASCII 英文 · regex /^[\\x00-\\x7F]+$/)",
+        "新建 tests/judge/copywriting-acquisition.judge.ts · 2 golden case (育儿 + 医美 · markdown 200-500 字 + 末尾 CTA)",
+        "pnpm test:judge 退出码 0 · 30/30 pass (22 PRD-5 + 8 新)",
+        "新建 tests/e2e/video-tools-integration.spec.ts · test.describe.serial · 创建 dev@local.test 测试账号 → 跑 4 视频工具 (video-production + acquisition-video + ai-video + generate?mode=acquisition) 各 1 次 → 看 /history 4-5 条 → 点任一 row 跳预填 · CI mock LLM (page.addInitScript fetch override · 3 行 JSONL) + mock ImageGen (queue.add 立即 push 完成 event · sceneImageUrl=mock url)",
+        "e2e workers=1 + fullyParallel=false (沿用 PRD-5 US-012 教训)",
+        "pnpm --filter @quanqn/web lint --max-warnings=0 退出码 0",
+        "pnpm --filter @quanqn/api lint --max-warnings=0 退出码 0",
+        "pnpm typecheck 6 workspaces 0 error",
+        "pnpm test 全套 ≥ 620 / ≥ 620 (PRD-5 累计 563 + ≥60 新 PRD-6)",
+        "pnpm test:e2e 全套 ≥ 138 / ≥ 138 (PRD-5 累计 126 + 5 工具 e2e + 1 收官 spec + 6 各 spec ≈ +12)",
+        "cost_log eventType 3 类区分验证: grep 'eventType.*specialist_call' apps/api ≥1 + grep 'eventType.*judge_call' tests/judge ≥1 + grep 'eventType.*image_gen' apps/api/src/workers/image-gen ≥1 (D-040 落地)",
+        "judge 30 tests 总耗时 < 5 min (lightweight tier · 串行)",
+        "e2e 6 新 spec 总耗时 < 90s (CI mock LLM + ImageGen)",
+        "scripts/ralph/verify-artifacts/US-014/manifest.json 写入完整产物 (沿用 PRD-5 US-012 模式) · 含 5 stdout 文件: vitest-full.stdout.txt + judge.stdout.txt + e2e.stdout.txt + typecheck.stdout.txt + lint.stdout.txt + manifest.json (PRD-5 L-4 教训)",
+        "verify-artifacts 5 stdout 全存在 (audit-artifacts.py manifest 验证通过)",
+        "使用 agent-browser 收官验证: 创建测试账号 · 依次跑 /video-production /acquisition-video /ai-video /generate?mode=acquisition 4 工具各 1 次 · 看 /history 4-5 条 · 点任一 row 跳对应工具页预填 · 0 控制台错误 · 0 ErrorBoundary 命中"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011",
+        "US-012",
+        "US-013"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "files_to_create": [
+        "tests/judge/video-production.judge.ts",
+        "tests/judge/video-acquisition.judge.ts",
+        "tests/judge/video-storyboard.judge.ts",
+        "tests/judge/copywriting-acquisition.judge.ts",
+        "tests/e2e/video-tools-integration.spec.ts",
+        "scripts/ralph/verify-artifacts/US-014/manifest.json"
+      ],
+      "files_to_modify": [],
+      "test_command": "pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanqn/web lint --max-warnings=0 && pnpm --filter @quanqn/api lint --max-warnings=0",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "PRD-5 US-012 e2e 教训",
+          "lesson": "e2e mock 必须 page.addInitScript window.fetch · 不能 page.route · workers=1 + fullyParallel=false 序列化",
+          "antipattern": "❌ page.route('/api/trpc/**', route => route.fulfill({ json: ... })) · 跑挂",
+          "correct": "✅ page.addInitScript window.fetch return JSONL · workers=1"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "PRD-5 L-4 教训 (Validator 只写 manifest.json 不留 5 stdout)",
+          "lesson": "verify-artifacts 必落 5 stdout · 不只 manifest.json (audit-artifacts.py 会验)",
+          "antipattern": "❌ 只写 manifest.json · 缺 vitest-full.stdout.txt / judge.stdout.txt / e2e.stdout.txt / typecheck.stdout.txt / lint.stdout.txt",
+          "correct": "✅ tee 保存 5 stdout 到 verify-artifacts/US-014/ · 在 manifest.artifacts 列出"
+        },
+        {
+          "source_prd": "QuanQn-PRD-5",
+          "source_story": "PRD-5 US-006 lint 教训",
+          "lesson": "lint --max-warnings=0 严格 · 收官时统一 fix 所有边缘 warning",
+          "antipattern": "❌ Header.tsx onClick={asyncFn} · no-misused-promises warning · TD-007",
+          "correct": "✅ onClick={() => void asyncFn()} · 或 useCallback 包装 · 0 warnings"
+        }
+      ]
+    }
+  ]
+}

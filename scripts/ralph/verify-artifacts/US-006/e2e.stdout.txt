@@ -1,10 +1,13 @@
 
 > quanqn@0.1.0 test:e2e /Users/return/Desktop/QuanQn
-> playwright test tests/e2e/tool-acquisition-video.spec.ts --project\=chromium
+> playwright test tests/e2e/feedback-evolution-loop.spec.ts --project\=chromium
 
 
-Running 1 test using 1 worker
+Running 4 tests using 1 worker
 
-[1A[2K[1/1] [chromium] › tests/e2e/tool-acquisition-video.spec.ts:61:3 › /acquisition-video 工具页 E2E (US-006) › 创建账号 → /acquisition-video → 填文案 + 填转化目标 + 选平台 + 选时长 → submit → 视频脚本 + CTA 高亮 + 转化路径 + 无控制台错误
-[1A[2K  1 passed (1.2s)
-::notice title=🎭 Playwright Run Summary::  1 passed (1.2s)
+[1A[2K[1/4] [chromium] › tests/e2e/feedback-evolution-loop.spec.ts:88:3 › feedback → evolution loop e2e › AC-1: 4 feedbacks + 5th → BullMQ evolution queue 收到 1 job
+[1A[2K[2/4] [chromium] › tests/e2e/feedback-evolution-loop.spec.ts:139:3 › feedback → evolution loop e2e › AC-2: seed EvolutionInsight → history +1 row + profile level = L2
+[1A[2K[3/4] [chromium] › tests/e2e/feedback-evolution-loop.spec.ts:171:3 › feedback → evolution loop e2e › AC-3: after insight, PositioningAgent systemPrompt 含 [Section 4] 用户偏好画像
+[1A[2K[4/4] [chromium] › tests/e2e/feedback-evolution-loop.spec.ts:189:3 › feedback → evolution loop e2e › AC-4: EvolutionAgent 源码 eventType=l5_agent (grep 命中)
+[1A[2K  4 passed (2.3s)
+::notice title=🎭 Playwright Run Summary::  4 passed (2.3s)

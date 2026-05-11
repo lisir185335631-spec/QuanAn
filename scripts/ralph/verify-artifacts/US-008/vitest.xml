@@ -1,47 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="21" failures="0" errors="0" time="0.155">
-    <testsuite name="tests/unit/web/pages/AiVideo.test.tsx" timestamp="2026-05-10T09:06:27.609Z" hostname="returndeMacBook-Pro.local" tests="21" failures="0" errors="0" skipped="0" time="0.002689416">
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(1) 表单渲染: AiVideo.tsx + ToolForm.tsx &gt; AiVideo page imports and uses ToolForm with toolKey ai-video" time="0.000401709">
+<testsuites name="vitest tests" tests="14" failures="0" errors="0" time="0.177">
+    <testsuite name="tests/unit/api/daily-tasks-router.test.ts" timestamp="2026-05-11T05:25:17.380Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.007278">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getToday &gt; AC-2: returns today DailyTask row when record exists" time="0.0020265">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(1) 表单渲染: AiVideo.tsx + ToolForm.tsx &gt; ToolForm has ai-video case with sourceCopy textarea" time="0.000123375">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getToday &gt; AC-2: returns null when no record for today" time="0.000285458">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(1) 表单渲染: AiVideo.tsx + ToolForm.tsx &gt; ToolForm ai-video case has scenesCount select (5-8) and imageStyle select" time="0.000176708">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getToday &gt; AC-1: queries with accountId (explicit double-layer guard)" time="0.000210291">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(1) 表单渲染: AiVideo.tsx + ToolForm.tsx &gt; AiVideo page uses aiVideoFrontendInput schema and submitLabel 生成 AI 视频" time="0.0000535">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getHistory &gt; AC-2: returns list ordered by taskDate desc" time="0.000547042">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(1) 表单渲染: AiVideo.tsx + ToolForm.tsx &gt; ToolResult has ai-video case importing AiVideoResult" time="0.000051791">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getHistory &gt; AC-2: respects limit=30" time="0.000227084">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(2) zod 校验失败显示中文 message &gt; sourceCopy 留空 → sourceCopy 至少 10 个字符" time="0.000529542">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getHistory &gt; AC-1: queries with accountId isolation" time="0.00020375">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(2) zod 校验失败显示中文 message &gt; scenesCount 字符串 &quot;5&quot; 被 preprocess coerce 为 number 5" time="0.000079292">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-2: marks task completed and recalculates completedCount" time="0.00037825">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(2) zod 校验失败显示中文 message &gt; valid input passes" time="0.000069083">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-1: NOT_FOUND when record belongs to different account" time="0.0003825">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(2) zod 校验失败显示中文 message &gt; imageStyle default is natural when omitted" time="0.000074167">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-2: findFirst uses accountId guard (LD-009)" time="0.000193167">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(3) submit → AiVideoResult 渲染 &gt; AiVideo page calls trpc.aiVideo.generateStoryboard.useMutation" time="0.000053834">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-4: already-completed task stays completed (idempotent)" time="0.000221459">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(3) submit → AiVideoResult 渲染 &gt; AiVideo page renders AiVideoResult when activeHistory is set" time="0.00005225">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.regenerateToday &gt; AC-2: enqueues daily-task job and returns ok + scheduledDate + jobId" time="0.000519333">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(3) submit → AiVideoResult 渲染 &gt; handleSuccess writes historyId to LS with account namespace (SHIELD REJ-010)" time="0.000060125">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.regenerateToday &gt; AC-2: INTERNAL_SERVER_ERROR when queue add fails" time="0.001355208">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(4) polling tick mock — refetchInterval:3000 &gt; AiVideoResult uses trpc.aiVideo.jobStatus.useQuery with refetchInterval:3000" time="0.000059292">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.regenerateToday &gt; AC-1: jobId includes accountId for per-account isolation" time="0.000167584">
         </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(4) polling tick mock — refetchInterval:3000 &gt; polling is disabled when allCompleted (refetchInterval:false)" time="0.000086291">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(5) scene 完成 → sceneImageUrl → &lt;img&gt; 渲染 &gt; AiVideoResult renders &lt;img&gt; when scene is completed with sceneImageUrl" time="0.000075416">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(5) scene 完成 → sceneImageUrl → &lt;img&gt; 渲染 &gt; AiVideoResult shows skeleton+spinner for pending scenes" time="0.000070417">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(6) 全完成 banner &gt; AiVideoResult shows completion banner when allCompleted" time="0.000047417">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(6) 全完成 banner &gt; completion triggered when completed === total &amp;&amp; total &gt; 0" time="0.000041792">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(7) 失败 scene 重试 button &gt; AiVideoResult renders retry button for failed scenes" time="0.000056625">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="(7) 失败 scene 重试 button &gt; retry button onClick shows toast PRD-7+ placeholder" time="0.000041875">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/AiVideo.test.tsx" name="LS namespace key format &gt; getToolLsKey generates correct ai-video polling key" time="0.000041208">
+        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks protectedProcedure guard &gt; AC-1: getToday FORBIDDEN when activeAccountId=null" time="0.000118916">
         </testcase>
     </testsuite>
 </testsuites>

@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="9" failures="0" errors="0" time="0.164">
-    <testsuite name="tests/unit/api/rate-limit-image-gen.test.ts" timestamp="2026-05-10T09:40:04.512Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.007728417">
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — 1st call &gt; count=1 → no throw (AC-7.1)" time="0.000876833">
+<testsuites name="vitest tests" tests="15" failures="0" errors="0" time="0.359">
+    <testsuite name="tests/unit/specialists/VoiceChatAgent.test.ts" timestamp="2026-05-11T08:10:43.068Z" hostname="returndeMacBook-Pro.local" tests="13" failures="0" errors="0" skipped="0" time="0.003340417">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; VOICE_CHAT_TOOLS exports 5 tools with correct names" time="0.000833041">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — 10th call (boundary OK) &gt; count=10 → no throw (AC-7.2 boundary)" time="0.000090166">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; dispatch: get_current_step called with correct name" time="0.000569542">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — 11th call &gt; count=11 → TOO_MANY_REQUESTS with correct message (AC-7.3 · AC-2)" time="0.000451916">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; dispatch: search_history called with keyword arg" time="0.000438334">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — 11th call &gt; boundary: count=10 passes, count=11 rejects (AC-8)" time="0.000103167">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; dispatch: query_diagnosis emits tool_result chunk" time="0.000126833">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — cross-account isolation &gt; accountId=1 count=10 不影响 accountId=2 count=0 (AC-7.4 · SHIELD REJ-008)" time="0.000203917">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; dispatch: get_today_tasks emits tool_call + tool_result" time="0.000113917">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — cross-account isolation &gt; 1000 accounts each have independent keys (AC-10 performance)" time="0.005149209">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; dispatch: get_evolution_insights dispatched" time="0.000124">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="checkImageGenRateLimit — day rollover &gt; UTC date change resets count to 0 for new day (AC-7.5)" time="0.000235458">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; L1 Buffer: pushTurn called twice (user+assistant) per turn" time="0.000116666">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="getImageGenDailyUsage — read-only count &gt; returns count=0 when key not set (AC-4)" time="0.000151209">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; L1 Buffer: getTurns called with accountId=1, limit=10" time="0.000247375">
         </testcase>
-        <testcase classname="tests/unit/api/rate-limit-image-gen.test.ts" name="getImageGenDailyUsage — read-only count &gt; returns current count from Redis (AC-4)" time="0.000064083">
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; L1 Buffer: clearSession calls clearBuffer" time="0.000081458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; subscription: yields delta + tool_call + tool_result + done chunks" time="0.000167792">
+        </testcase>
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; tool_call: dispatch result injected into tool_result chunk" time="0.000077834">
+        </testcase>
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; fallback: no stream() → yields error chunk" time="0.000046458">
+        </testcase>
+        <testcase classname="tests/unit/specialists/VoiceChatAgent.test.ts" name="VoiceChatAgent (US-011) &gt; timeout: stream error chunk → yields error and stops" time="0.000062583">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/integration/api/voice-chat-flow.test.ts" timestamp="2026-05-11T08:10:43.069Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="0" time="0.037551041">
+        <testcase classname="tests/integration/api/voice-chat-flow.test.ts" name="[Integration] VoiceChatAgent 3-turn L1 Buffer (AC-10) &gt; 3 turns: 3 user + 3 assistant turns in L1 Buffer" time="0.014691875">
+        </testcase>
+        <testcase classname="tests/integration/api/voice-chat-flow.test.ts" name="[Integration] VoiceChatAgent 3-turn L1 Buffer (AC-10) &gt; clearBuffer removes all turns" time="0.000260709">
         </testcase>
     </testsuite>
 </testsuites>

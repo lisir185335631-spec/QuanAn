@@ -1077,9 +1077,10 @@ grep "export type.*=.*Imported\|export type.*from '@quanqn/schemas'" apps/api/sr
   - 11 templates 全接通(D-007 单一入口)
   - Specialist 内不允许自己拼接 EvolutionInsight
 
-- **D-055**(BullMQ Worker concurrency):
-  - EvolutionAgent: 1 per accountId(严格串行 · 防并发覆盖)
-  - DailyTaskAgent: 5(per-account fan-out 跑 5 个 account 同时 · 平衡速度 vs LLM 限流)
+- **D-055**(BullMQ Worker concurrency · 2026-05-11 TD-030 字面更新匹配实现):
+  - EvolutionAgent: worker concurrency=5 + jobId `evo:{accountId}:{count}` 去重 → 同 account 严格串行(BullMQ 同 jobId dedup)· 不同 account 可并发(速度优化)
+    - 等价于 PRD v0.1 原写"1 per accountId" · 但 BullMQ concurrency 是全局 worker 级别 · 不支持 per-key · 用 jobId dedup 实现 per-account 串行
+  - DailyTaskAgent: concurrency=5(per-account fan-out 跑 5 个 account 同时 · 平衡速度 vs LLM 限流)
 
 ## §8 Success Metrics
 

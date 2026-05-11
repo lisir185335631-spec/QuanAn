@@ -1,51 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="23" failures="0" errors="0" time="0.149">
-    <testsuite name="tests/unit/web/pages/VideoProduction.test.tsx" timestamp="2026-05-10T05:09:15.140Z" hostname="returndeMacBook-Pro.local" tests="23" failures="0" errors="0" skipped="0" time="0.002619583">
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; imports and uses ToolForm with toolKey video-production" time="0.00039775">
+<testsuites name="vitest tests" tests="17" failures="0" errors="0" time="0.219">
+    <testsuite name="tests/integration/api/insight-injection.test.ts" timestamp="2026-05-11T02:51:28.499Z" hostname="returndeMacBook-Pro.local" tests="17" failures="0" errors="0" skipped="0" time="0.002886208">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-4: PositioningAgent EvolutionInsight 注入 &gt; 有 evolutionInsight → systemPrompt 含 [Section 4] 用户偏好画像" time="0.001305417">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; ToolForm has video-production case with sourceCopy textarea" time="0.000103209">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; PositioningAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000123042">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; ToolForm video-production case has videoType select and duration select" time="0.000124834">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; BrandingAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000096334">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; VideoProduction page uses videoProductionInput schema" time="0.000048333">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; MonetizationAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000063708">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="表单渲染所有字段: VideoProduction.tsx + ToolForm.tsx &gt; submitLabel 生成方案" time="0.000042458">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; TopicAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.00007275">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; sourceCopy min 10 中文 error message" time="0.000433042">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; CopywritingAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000066625">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; sourceCopy max 3000 中文 error message" time="0.000081916">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; VideoAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000070375">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; videoType invalid enum value fails" time="0.000143459">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; LivestreamAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000052583">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="zod 校验失败显示中文 message &gt; valid input passes" time="0.000058084">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; PrivateDomainAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000064167">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; VideoProduction page calls trpc.videoProduction.generate.useMutation" time="0.000054834">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; AnalysisAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000085292">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; mutation result is passed to VideoProductionResult" time="0.000045709">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; DiagnosisAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000052416">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; VideoProduction page renders FeedbackButton with VideoAgent" time="0.000047291">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-5: 11 生成型 Specialist evolutionInsight 注入覆盖 &gt; DeepLearnAgent: evolutionInsight 非 null → systemPrompt 含 [Section 4]" time="0.000062958">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="submit 调 trpc.videoProduction.generate.useMutation &gt; ToolResult switch includes video-production case" time="0.000065959">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-6: evolutionInsight=null negative case &gt; 新用户 evolutionInsight=null → systemPrompt 不含 [Section 4] · 仍含 L2 + 方法论" time="0.000091417">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="LS 写入 + 读取 (D-031) &gt; getToolLsKey generates correct namespaced key for video-production" time="0.000032625">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-2: 注入字段完整性 · 空数组跳过 &gt; 全字段非空 → direction/styleTone/catchphrases/avoidList/strongPoints/weakPoints 全注入" time="0.00005725">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="LS 写入 + 读取 (D-031) &gt; ToolForm handles LS restore for video-production toolKey" time="0.000074792">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-2: 注入字段完整性 · 空数组跳过 &gt; 空数组字段(strongPoints=[] weakPoints=[]) → 对应行跳过" time="0.000075083">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="LS 写入 + 读取 (D-031) &gt; VideoProductionResult renders storyboard table with data-testid" time="0.000052042">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-8: LLM Judge · PositioningAgent / CopywritingAgent 注入质量评分 &gt; PositioningAgent 有 insight 注入 → LLM Judge 评分 ≥ 4.0/5" time="0.000069916">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProduction page reads historyId from searchParams" time="0.000045959">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProduction page calls trpc.history.detail.useQuery with historyId" time="0.000045667">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; historyDefaults uses inputSummary for sourceCopy" time="0.000035667">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProductionResult handles JSON.parse failure → 解析失败" time="0.000044333">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="?historyId 预填 &gt; VideoProductionResult renders equipment and schedule sections" time="0.000051625">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2) &gt; 景别列 key=angle · BGM列 key=bgm · 画面描述列 key=description" time="0.000083292">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/VideoProduction.test.tsx" name="VideoProductionResult COLUMNS header→key 1:1 映射 (PRD-6 AC-2) &gt; ShotItem interface contains 7 production-mode fields" time="0.000081541">
+        <testcase classname="tests/integration/api/insight-injection.test.ts" name="AC-8: LLM Judge · PositioningAgent / CopywritingAgent 注入质量评分 &gt; CopywritingAgent 有 insight 注入 → LLM Judge 评分 ≥ 4.0/5" time="0.000043209">
         </testcase>
     </testsuite>
 </testsuites>

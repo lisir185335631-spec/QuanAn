@@ -1,39 +1,35 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-11T02:00:00",
-  "validator_end_ts": "2026-05-11T02:15:00",
-  "test_command": "pnpm test (vitest) + pnpm typecheck + pnpm lint --max-warnings=0 + playwright header.spec.ts + playwright account-switch/isolation.spec.ts",
+  "validator_start_ts": "2026-05-11T05:25:00",
+  "validator_end_ts": "2026-05-11T05:27:53",
+  "test_command": "pnpm vitest run tests/unit/api/daily-tasks-router.test.ts + pnpm vitest run (full 803 tests) + pnpm typecheck + pnpm lint + playwright test daily-tasks.spec.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
     "manifest.json",
+    "vitest.xml",
+    "vitest.stdout.txt",
     "vitest-full.xml",
     "vitest-full.stdout.txt",
-    "typecheck.txt",
-    "lint.txt",
-    "screenshot-1.png",
-    "screenshot-2.png",
-    "screenshot-3.png",
-    "screenshot-4.png"
+    "typecheck.stdout.txt",
+    "e2e.stdout.txt",
+    "screenshot-n0-empty.png",
+    "screenshot-n3-normal.png",
+    "screenshot-n5-max.png"
   ],
   "ac_results": {
-    "AC-1": "PASS - Header.tsx:140-148 N-tiered: n>=4→ScrollArea h-60; n>=2→div maxHeight=n*44px overflowY:auto; n=1→plain div",
-    "AC-2": "PASS - mock OAuth login as dev@local.test successful; AccountDropdown trigger clicked",
-    "AC-3": "PASS - N=1: totalH=133px no ScrollArea (account list ~44px ≤ 80px); N=2: totalH=166px no ScrollArea compact; N=3: totalH=199px no ScrollArea (account list ≈132px ≈120-160px range); N=4: ScrollArea=true scrollAreaH=240px ≤ 240px",
-    "AC-4": "PASS - 4 screenshots saved: screenshot-1/2/3/4.png",
-    "AC-5": "PASS - No console errors detected; no Radix portal break",
-    "AC-6": "PASS - pnpm typecheck 6 ws 0 errors; pnpm lint --max-warnings=0 全过",
-    "AC-7": "PASS - pnpm test 75 files 727 tests 0 failures (includes header unit tests)",
-    "AC-8": "PASS - account-step-auth.test.ts (15 tests) ✓; account-isolation.test.ts (9 tests) ✓; account-isolation.spec.ts (e2e) ✓; account-switch.spec.ts (e2e) ✓; header.spec.ts (6/6) ✓"
+    "AC-1": "PASS - protectedProcedure双层防护: accountIsolationMiddleware (FORBIDDEN if activeAccountId null) + set_config RLS + explicit accountId WHERE clause in all 4 procedures. debugSeedTasks uses globalProcedure (dev-only, productionCheck).",
+    "AC-2": "PASS - getToday: findFirst(accountId, today midnight) returns DailyTask|null. markCompleted: updatedTasks.map(t.id===taskId→{...t,completed:true}) + completedCount=filter(completed).length → update. getHistory: findMany(accountId, orderBy taskDate desc, take limit, skip offset, max=30). regenerateToday: dailyTaskQueue.add(daily-task, {accountId,scheduledDate}, {jobId, priority=1}). All 14 unit tests pass.",
+    "AC-3": "PASS - DailyTasks.tsx renders TodaySection (CompletionBar N/M + TaskCard list) + HistorySection (7/30天 toggle + DailyTaskHistoryRow cards). screenshot-n0-empty/n3-normal/n5-max confirm correct rendering.",
+    "AC-4": "PASS - handleComplete(): utils.dailyTasks.getToday.setData optimistic update first (completedCount+1, task.completed=true) → await markCompleted.mutateAsync → refetchToday. onError rollback via utils.setData(previousToday) + toast.error('标记失败').",
+    "AC-5": "PASS - isRegenerating state triggers refetchInterval=3000ms on getToday query. 30s timeout via setTimeout(→setIsRegenerating(false), 30000). useEffect stops polling when today.tasks.length>0. Loading UI shown during regeneration.",
+    "AC-6": "PASS - playwright test daily-tasks.spec.ts 2/2 (chromium+mobile) pass. 3 screenshots saved: screenshot-n0-empty.png (今日任务尚未生成+立即生成), screenshot-n3-normal.png (1/3 bar+3 tasks), screenshot-n5-max.png (1/5 bar+5 tasks).",
+    "AC-7": "PASS - No console errors in e2e test. markCompleted optimistic update immediate via setData before mutation.",
+    "AC-8": "PASS - pnpm typecheck 6 workspaces 0 errors. pnpm lint --max-warnings=0 all clean. pnpm vitest run 803 tests 0 failures.",
+    "Typecheck passes": "PASS - tsc --noEmit exits 0 on all packages.",
+    "Tests pass": "PASS - 14 unit tests (daily-tasks-router.test.ts) + 803 full suite 0 failures. playwright daily-tasks.spec.ts 2/2."
   },
-  "zero_regression_detail": "75 test files, 727 tests, 0 failures. Pre-existing cost_log FK errors in integration tests are known pre-existing TD (not caused by US-008).",
-  "browser_test": {
-    "login": "dev@local.test via mock OAuth (/auth/login → /auth/callback)",
-    "N1": "totalH=133px, ScrollArea=false, items=1 - compact not spacious",
-    "N2": "totalH=166px, ScrollArea=false, items=2 - compact",
-    "N3": "totalH=199px, ScrollArea=false, items=3 - compact",
-    "N4": "totalH=340px, scrollAreaH=240px, ScrollArea=true, items=4 - scrollable"
-  }
+  "zero_regression_detail": "Full vitest suite: 85 test files, 803 tests, 0 failures, 0 errors. Exit code 0."
 }

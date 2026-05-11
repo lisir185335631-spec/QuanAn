@@ -1,20 +1,20 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-10T07:37:00",
-  "validator_end_ts": "2026-05-10T07:38:15",
-  "test_command": "pnpm vitest run tests/unit/api/image-gen-dall-e-3.test.ts tests/integration/api/image-gen-flow.test.ts",
+  "validator_start_ts": "2026-05-11T13:46:00",
+  "validator_end_ts": "2026-05-11T13:47:30",
+  "test_command": "pnpm vitest run (unit+integration+full) + pnpm typecheck",
   "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
-    "typecheck.txt",
+    "typecheck.stdout.txt",
     "vitest.stdout.txt",
-    "vitest.xml"
+    "vitest.xml",
+    "vitest-api.stdout.txt",
+    "vitest-full.stdout.txt",
+    "vitest-full.xml",
+    "manifest.json"
   ],
-  "zero_regression": {
-    "command": "pnpm vitest run (full suite)",
-    "tests": 661,
-    "failures": 0,
-    "errors": 0,
-    "exit_code": 0
-  },
-  "notes": ""
+  "notes": "87 test files, 812 passed, 1 skipped (stt-whisper integration skipped: OPENAI_API_KEY not set, expected per AC-8). typecheck 0 errors. AC-9 grep exit=1 (0 matches). All 5 AC-7 unit test groups passed (8 sub-tests). AC-8 skipped correctly. Zero-regression PASS."
 }

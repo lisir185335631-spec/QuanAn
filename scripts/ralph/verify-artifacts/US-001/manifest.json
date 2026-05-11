@@ -1,16 +1,18 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-11T00:38:00",
-  "validator_end_ts": "2026-05-11T00:40:56",
-  "test_command": "pnpm vitest run + pnpm typecheck + pnpm lint --max-warnings=0",
+  "validator_start_ts": "2026-05-11T01:12:00",
+  "validator_end_ts": "2026-05-11T01:15:30",
+  "test_command": "pnpm vitest run (unit + integration, 740 tests) + pnpm typecheck + pnpm lint --max-warnings=0",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.txt",
-    "lint.txt"
+    "typecheck.stdout.txt"
   ],
-  "notes": "727/727 tests pass, typecheck 6 ws 0 error, lint clean. AC-7 FIXED: CopywritingAgent.ts now imports AcquisitionCopywritingOutput from @quanqn/schemas/specialist-io and re-exports as CopywritingAcquisitionOutput. All 16 AC verified PASS."
+  "notes": "AC-12 specific tests: 5 L1 Buffer + 8 schema validation = 13 passed. Zero-regression full suite: 740 passed (0 failures, 0 errors). Typecheck: 6 workspaces, 0 errors. Lint: 0 warnings."
 }

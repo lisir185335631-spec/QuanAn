@@ -1,15 +1,18 @@
 {
   "story_id": "US-006",
-  "validator_start_ts": "2026-05-11T01:40:00",
-  "validator_end_ts": "2026-05-11T01:50:00",
-  "test_command": "python3 -m py_compile audit-artifacts.py + mock manifest tests + pnpm test (vitest 727)",
+  "validator_start_ts": "2026-05-11T12:00:00",
+  "validator_end_ts": "2026-05-11T12:02:10",
+  "test_command": "pnpm vitest run + pnpm typecheck + pnpm test:e2e feedback-evolution-loop.spec.ts --project=chromium",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest-full.xml",
-    "pytest-full.stdout.txt"
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "typecheck.stdout.txt",
+    "playwright-final.xml",
+    "e2e.stdout.txt"
   ],
-  "notes": "AC-1 PASS: _check_exit_code(manifest: dict) -> tuple[bool, str] defined at line 63. AC-2 PASS: called in main() at line 252 as first step after manifest load. AC-3 PASS: missing exit_code → [FAIL] message + exit 1 (confirmed). AC-4 PASS: exit_code='0' (str) → type error reject (confirmed). AC-5 PASS: exit_code=1 → exit_code≠0 reject (confirmed). AC-6 PASS: zero_regression=PASS with exit_code=1 still rejects (confirmed). AC-7 PASS: all 4 mock scenarios pass. AC-8 PASS: audit-artifacts.py US-001 exits 0 ARTIFACTS VALID. Typecheck PASS: python3 -m py_compile 0 errors (both project + global). Zero-regression: 727/727 vitest tests pass."
+  "notes": "All 4 AC e2e tests PASS. Zero regression vitest 774/774. Typecheck 6 ws 0 errors. Fixes applied by ralph: (1) evolution.ts debugSeedInsight replaced db.$transaction([...]) with sequential await upsert + create; (2) feedback-evolution-loop.spec.ts line 15 added ESM __dirname polyfill via dirname(fileURLToPath(import.meta.url))."
 }

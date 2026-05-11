@@ -1,0 +1,33 @@
+
+> quanqn@0.1.0 test:judge /Users/return/Desktop/QuanQn
+> vitest run --config vitest.judge.config.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/judge/copywriting-acquisition.judge.ts (4 tests) 2ms
+ ✓ tests/judge/copywriting-free.judge.ts (2 tests) 1ms
+ ✓ tests/judge/video-storyboard.judge.ts (5 tests) 3ms
+ ✓ tests/judge/analysis-structural.judge.ts (2 tests) 1ms
+ ✓ tests/judge/video-acquisition.judge.ts (4 tests) 3ms
+ ✓ tests/judge/insight-injection.judge.ts (3 tests) 3ms
+ ✓ tests/judge/daily-task-agent.judge.ts (3 tests) 3ms
+ ✓ tests/judge/video-production.judge.ts (4 tests) 3ms
+ ✓ tests/judge/analysis-viral.judge.ts (2 tests) 3ms
+ ✓ tests/judge/evolution-agent.judge.ts (2 tests) 2ms
+ ✓ tests/judge/copywriting.judge.ts (2 tests) 2ms
+ ✓ tests/judge/copywriting-boom.judge.ts (2 tests) 2ms
+ ✓ tests/judge/feedback-evolution-loop.judge.ts (1 test) 1ms
+ ✓ tests/judge/branding.judge.ts (2 tests) 2ms
+ ✓ tests/judge/livestream.judge.ts (2 tests) 2ms
+ ✓ tests/judge/monetization.judge.ts (2 tests) 3ms
+ ✓ tests/judge/video.judge.ts (2 tests) 5ms
+ ✓ tests/judge/voice-chat.judge.ts (3 tests) 6ms
+ ✓ tests/judge/topic.judge.ts (2 tests) 2ms
+ ✓ tests/judge/positioning.judge.ts (2 tests) 2ms
+
+ Test Files  20 passed (20)
+      Tests  51 passed (51)
+   Start at  17:22:26
+   Duration  508ms (transform 236ms, setup 0ms, collect 638ms, tests 53ms, environment 1ms, prepare 774ms)
+
