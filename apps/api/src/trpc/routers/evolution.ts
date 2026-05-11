@@ -5,10 +5,13 @@
  * US-003 AC-8: evolve mutation hook → enqueueIfThresholdMet (async · 不阻塞 mutation)
  */
 
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { enqueueIfThresholdMet } from '@/lib/evolution/trigger';
+import { inferLevel } from '@/lib/constants/evolution';
+import { enqueueIfThresholdMet, getEvolutionQueueCount } from '@/lib/evolution/trigger';
 import { logger } from '@/lib/logger';
+import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -290,4 +293,93 @@ export const evolutionRouter = router({
 
       return { ranking };
     }),
+
+  // ─── US-006 DEBUG procedures (non-production only) ────────────────────────
+
+  /** AC-1 debug: returns evolution BullMQ queue waiting count */
+  debugQueueCount: protectedProcedure.query(async () => {
+    if (process.env['NODE_ENV'] === 'production') {
+      throw new TRPCError({ code: 'FORBIDDEN', message: 'debug endpoint disabled in production' });
+    }
+    const waiting = await getEvolutionQueueCount();
+    return { waiting };
+  }),
+
+  /** AC-2 debug: seed a test EvolutionInsight + update profile level */
+  debugSeedInsight: protectedProcedure.mutation(async ({ ctx }) => {
+    if (process.env['NODE_ENV'] === 'production') {
+      throw new TRPCError({ code: 'FORBIDDEN', message: 'debug endpoint disabled in production' });
+    }
+    const { prisma: db, activeAccountId } = ctx;
+    const accountId = activeAccountId!;
+
+    const testContent = {
+      direction: '综合',
+      insights: {
+        styleTone: '亲切友好 · 轻松幽默',
+        preferredCatchphrases: ['宝子们', '真的绝了', '不踩雷'],
+        avoidList: ['老实说', '其实'],
+        strongPoints: ['选品精准', '视觉美观'],
+        weakPoints: ['转化率待提升'],
+        sourceFeedbackIds: [1, 2, 3, 4, 5],
+        summary: '用户偏爱轻松幽默风格，多用宝子们等亲切称呼',
+      },
+    };
+
+    const profile = await db.evolutionProfile.findUnique({
+      where: { accountId },
+      select: { level: true, feedbackCountTotal: true },
+    });
+    const total = profile?.feedbackCountTotal ?? 5;
+    const levelAfter = inferLevel(total);
+
+    await db.$transaction([
+      db.evolutionProfile.upsert({
+        where: { accountId },
+        create: {
+          accountId,
+          level: levelAfter,
+          latestInsight: testContent as unknown as Parameters<typeof db.evolutionProfile.create>[0]['data']['latestInsight'],
+          lastEvolvedAt: new Date(),
+        },
+        update: {
+          level: levelAfter,
+          latestInsight: testContent as unknown as Parameters<typeof db.evolutionProfile.update>[0]['data']['latestInsight'],
+          lastEvolvedAt: new Date(),
+        },
+      }),
+      db.evolutionInsight.create({
+        data: {
+          accountId,
+          triggerType: 'threshold:5',
+          direction: testContent.direction,
+          content: testContent as unknown as Parameters<typeof db.evolutionInsight.create>[0]['data']['content'],
+          agentId: 'EvolutionAgent',
+          modelUsed: 'test-seed',
+          tokensUsed: 0,
+          durationMs: 0,
+          isFallback: false,
+          levelBefore: 'L1',
+          levelAfter,
+          traceId: `debug-seed-${Date.now()}`,
+        },
+      }),
+    ]);
+
+    return { ok: true, levelAfter };
+  }),
+
+  /** AC-3 debug: assemble PositioningAgent context and return systemPrompt */
+  debugAssembleSystemPrompt: protectedProcedure.query(async ({ ctx }) => {
+    if (process.env['NODE_ENV'] === 'production') {
+      throw new TRPCError({ code: 'FORBIDDEN', message: 'debug endpoint disabled in production' });
+    }
+    const { activeAccountId } = ctx;
+    const result = await contextAssembler.assemble({
+      agentId: 'PositioningAgent',
+      accountId: activeAccountId!,
+      userInput: {},
+    });
+    return { systemPrompt: result.systemPrompt };
+  }),
 });

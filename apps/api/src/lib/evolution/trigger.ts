@@ -53,3 +53,8 @@ export async function enqueueIfThresholdMet(
     'evolution.trigger.enqueued',
   );
 }
+
+/** AC-1 debug helper · returns number of jobs waiting in the evolution queue */
+export async function getEvolutionQueueCount(): Promise<number> {
+  return evolutionQueue.getWaitingCount();
+}
