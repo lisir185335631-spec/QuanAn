@@ -604,6 +604,32 @@
       "root_cause": "本地 dev 环境约定不配密钥(CLAUDE.md '本地 dev 不需要 ...') · 但 AC-6 要求 psql 验证真 seed count · 这两条本质冲突",
       "scheduled_fix_in": "PRD-9 收官前在 staging/CI 跑 pnpm seed:knowledge 真 seed + psql 验 case=67/formula=23/element=23 总 113 行 · 或更激进 · CI workflow 加 OPENAI_API_KEY secret + integration test 真跑",
       "audit_exemption": "US-002 approve 时豁免 · 因 dry-run + Test 1 (buildChunks count) 已验证 build 逻辑正确 · 真 seed 仅缺密钥这一步 · 不阻塞 RAG retrieve (US-003) 推进 — US-003 retrieve 测试可用 mock chunks"
+    },
+    {
+      "id": "TD-035",
+      "category": "design-drift",
+      "title": "ragRetrieveWorker 加 ILIKE text-search fallback · 仅 dev no-key 路径(违反 D-057 pgvector-only)",
+      "discovered_at": "2026-05-11",
+      "discovered_by": "Opus audit US-004",
+      "severity": "low",
+      "status": "open",
+      "evidence": "apps/api/src/workers/rag/retrieve.ts:42-49 + L104-161 textSearchFallback() · 当 embeddingWorker.embed() throws 'OPENAI_API_KEY not configured' 时走 ILIKE 全表扫 · production 路径(有 API key)100% 不触发 · 用参数化 SQL($1/$2) 防注入 + topK<=20 + keywords<=5 限制",
+      "root_cause": "本地 dev 无 OPENAI_API_KEY(per TD-034 + CLAUDE.md '本地 dev 不需要密钥')· 但 AC-10 require agent-browser 真实测试 page 检索 · 走真 pgvector 会立刻 fail · ralph 自加 fallback 让 dev path 也能跑 + AC-10 截图可拿",
+      "scheduled_fix_in": "PRD-9 收官 / PRR 阶段决策 · 选项 A: prod 加 OPENAI_API_KEY 后删 fallback(纯净 D-057)· 选项 B: 保留 fallback 当 dev 友好降级(类似 LLM judge mock pattern)",
+      "audit_exemption": "US-004 approve 时豁免 · 因 fallback 设计安全(exact error msg gated + 参数化 SQL + topK/keywords 限制)· production pgvector path 完全不受影响 · 类比 TD-027 LLM Judge mock 项目共识"
+    },
+    {
+      "id": "TD-036",
+      "category": "dev-workflow",
+      "title": "US-004 AC-10 验证用的 4 条 dev seed 数据手动 psql 入库 · 未提交代码",
+      "discovered_at": "2026-05-11",
+      "discovered_by": "Opus audit US-004",
+      "severity": "low",
+      "status": "open",
+      "evidence": "psql quanqn -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
+      "root_cause": "ralph 实施 AC-10 时 · pgvector seed 需要 OPENAI_API_KEY · 走不通 · 改用 psql INSERT 直插 4 条 dummy chunks(只为截图能拿)· 没把 SQL 命令存到 migration 或 seed 文件",
+      "scheduled_fix_in": "PRD-9 收官前 · 或在 apps/api/scripts/seed-dev-knowledge.ts 加一个 dev-only seed script · 写到 package.json scripts 'seed:dev-knowledge' · CI/staging 真 OPENAI_API_KEY 跑 pnpm seed:knowledge 真 seed · dev 跑 pnpm seed:dev-knowledge 拿 fallback 数据",
+      "audit_exemption": "US-004 approve 时豁免 · 因 4 条 dev seed 仅服务于本地 AC-10 截图验证 · 不污染 prod · 真 prod 走 TD-034 staging seed path · 不阻塞 PRD-9 收尾"
     }
   ],
   "last_updated": "2026-05-09T23:06:52"
