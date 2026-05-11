@@ -1,7 +1,7 @@
 /**
- * Evolution router — PRD-2 US-002 + US-005
- * US-002 AC-3: getProfile returns EvolutionProfile for the active account (cached client-side in LS)
- * US-005 AC-3: 7 procedures (evolve/getConfig/updateConfig/history/recentFeedback/feedbackTrend/moduleRanking) · mock
+ * Evolution router — PRD-2 US-002 + PRD-8 US-005
+ * US-002 AC-3: getProfile returns EvolutionProfile for the active account
+ * PRD-8 US-005: 4 procedures (getProfile/getInsightHistory/getFeedbackTrend/getModuleRanking) · real implementation
  * US-003 AC-8: evolve mutation hook → enqueueIfThresholdMet (async · 不阻塞 mutation)
  */
 
@@ -86,6 +86,7 @@ export const evolutionRouter = router({
         currentDirection: true,
         autoEvolutionEnabled: true,
         deepLearningCount: true,
+        latestInsight: true,
         lastEvolvedAt: true,
         lastUpgradedAt: true,
         updatedAt: true,
@@ -199,5 +200,93 @@ export const evolutionRouter = router({
           satisfactionRate: number;
         }>,
       };
+    }),
+
+  // ─── PRD-8 US-005: 4 real procedures (AC-1~AC-5) ──────────────────────────
+
+  /** AC-3: Insight history · max 10 · desc · LD-009 dual-layer: protectedProcedure + accountId filter */
+  getInsightHistory: protectedProcedure.query(async ({ ctx }) => {
+    const { prisma, activeAccountId } = ctx;
+    return prisma.evolutionInsight.findMany({
+      where: { accountId: activeAccountId! },
+      select: EVOLUTION_INSIGHT_SELECT,
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+  }),
+
+  /** AC-4: Feedback trend by day · $queryRaw for DATE_TRUNC · LD-009 dual-layer */
+  getFeedbackTrend: protectedProcedure
+    .input(feedbackTrendInput)
+    .query(async ({ ctx, input }) => {
+      const { prisma, activeAccountId } = ctx;
+      const since = new Date(Date.now() - input.days * 24 * 60 * 60 * 1000);
+
+      const rows = await prisma.$queryRaw<
+        Array<{ date: string; total: bigint; good: bigint }>
+      >`
+        SELECT
+          DATE_TRUNC('day', created_at)::date::text AS date,
+          COUNT(*)::bigint                          AS total,
+          COUNT(*) FILTER (WHERE rating = 'good')::bigint AS good
+        FROM feedback_logs
+        WHERE account_id = ${activeAccountId!}
+          AND created_at >= ${since}
+        GROUP BY 1
+        ORDER BY 1
+      `;
+
+      return rows.map((r) => ({
+        date: r.date,
+        total: Number(r.total),
+        good: Number(r.good),
+        satisfactionRate: Number(r.total) > 0 ? Number(r.good) / Number(r.total) : 0,
+      }));
+    }),
+
+  /** AC-5: Module ranking · cost_log + feedback_log · grouped by agentId · LD-009 dual-layer */
+  getModuleRanking: protectedProcedure
+    .input(moduleRankingInput)
+    .query(async ({ ctx, input }) => {
+      const { prisma, activeAccountId } = ctx;
+
+      const [feedbackGroups, goodGroups, costGroups] = await Promise.all([
+        prisma.feedbackLog.groupBy({
+          by: ['agentId'],
+          where: { accountId: activeAccountId! },
+          _count: { id: true },
+        }),
+        prisma.feedbackLog.groupBy({
+          by: ['agentId'],
+          where: { accountId: activeAccountId!, rating: 'good' },
+          _count: { id: true },
+        }),
+        prisma.costLog.groupBy({
+          by: ['agentId'],
+          where: { accountId: activeAccountId! },
+          _count: { id: true },
+        }),
+      ]);
+
+      const goodMap = new Map(goodGroups.map((g) => [g.agentId, g._count.id]));
+      const costMap = new Map(costGroups.map((g) => [g.agentId, g._count.id]));
+
+      const ranking = feedbackGroups
+        .map((g) => {
+          const totalFeedback = g._count.id;
+          const goodCount = goodMap.get(g.agentId) ?? 0;
+          const badCount = totalFeedback - goodCount;
+          return {
+            agentId: g.agentId,
+            goodCount,
+            badCount,
+            totalCalls: costMap.get(g.agentId) ?? 0,
+            satisfactionRate: totalFeedback > 0 ? goodCount / totalFeedback : 0,
+          };
+        })
+        .sort((a, b) => b.satisfactionRate - a.satisfactionRate)
+        .slice(0, input.limit);
+
+      return { ranking };
     }),
 });

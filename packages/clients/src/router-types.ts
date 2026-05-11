@@ -31,10 +31,26 @@ export type EvolutionProfileOutput = {
   currentDirection: string;
   autoEvolutionEnabled: boolean;
   deepLearningCount: number;
+  latestInsight?: unknown | null;
   lastEvolvedAt: string | null;
   lastUpgradedAt: string | null;
   updatedAt: string;
 } | null;
+
+export type FeedbackTrendItem = {
+  date: string;
+  total: number;
+  good: number;
+  satisfactionRate: number;
+};
+
+export type ModuleRankingItem = {
+  agentId: string;
+  goodCount: number;
+  badCount: number;
+  totalCalls: number;
+  satisfactionRate: number;
+};
 
 export type SaveStepDataInput = { stepKey: string; inputs: Record<string, unknown> };
 export type SwitchActiveInput = { accountId: number };
@@ -208,6 +224,13 @@ const _shadowRouter = _t.router({
     history: _t.procedure
       .input((x: unknown) => x as { limit?: number; offset?: number } | undefined)
       .query((): EvolutionInsightItem[] => []),
+    getInsightHistory: _t.procedure.query((): EvolutionInsightItem[] => []),
+    getFeedbackTrend: _t.procedure
+      .input((x: unknown) => x as { days?: number } | undefined)
+      .query((): FeedbackTrendItem[] => []),
+    getModuleRanking: _t.procedure
+      .input((x: unknown) => x as { limit?: number } | undefined)
+      .query((): { ranking: ModuleRankingItem[] } => ({ ranking: [] })),
   }),
   knowledge: _t.router({
     getRecommendations: _t.procedure
