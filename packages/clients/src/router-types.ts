@@ -517,6 +517,9 @@ const _shadowRouter = _t.router({
       .mutation((): { ok: boolean; completedCount: number; totalCount: number } => ({ ok: true, completedCount: 0, totalCount: 0 })),
     regenerateToday: _t.procedure
       .mutation((): { ok: boolean; scheduledDate: string; jobId: string } => ({ ok: true, scheduledDate: '', jobId: '' })),
+    debugSeedTasks: _t.procedure
+      .input((x: unknown) => x as { count: number; accountId: number })
+      .mutation((): { ok: boolean; id: number; totalCount: number } => ({ ok: true, id: 0, totalCount: 0 })),
   }),
   aiVideo: _t.router({
     generateStoryboard: _t.procedure

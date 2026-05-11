@@ -169,7 +169,7 @@ function TodaySection() {
 
     try {
       await markCompleted.mutateAsync({ dailyTaskId: today.id, taskId });
-      refetchToday();
+      void refetchToday();
     } catch {
       // onError handles rollback
       utils.dailyTasks.getToday.setData(undefined, previousToday ?? null);
@@ -232,11 +232,11 @@ function TodaySection() {
             正在重新生成…
           </div>
         )}
-        {(today.tasks as DailyTaskItem[]).map((task) => (
+        {today.tasks.map((task) => (
           <TaskCard
             key={task.id}
             task={task}
-            onComplete={handleComplete}
+            onComplete={(taskId) => void handleComplete(taskId)}
             disabled={markCompleted.isPending || isRegenerating}
           />
         ))}

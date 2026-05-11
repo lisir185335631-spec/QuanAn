@@ -8,7 +8,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { logger } from '@/lib/logger';
-import { protectedProcedure } from '@/trpc/middleware/account-isolation';
+import { protectedProcedure, globalProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 import { dailyTaskQueue } from '@/workers/daily-task/queue';
 
@@ -140,6 +140,53 @@ export const dailyTasksRouter = router({
       });
 
       return { ok: true, completedCount, totalCount: record.totalCount };
+    }),
+
+  /** 种子今日任务(调试用 · e2e 截图) — globalProcedure 直接传 accountId 无需 activeAccountId */
+  debugSeedTasks: globalProcedure
+    .input(z.object({ count: z.number().int().min(1).max(10), accountId: z.number().int().positive() }))
+    .mutation(async ({ ctx, input }) => {
+      if (process.env['NODE_ENV'] === 'production') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'debug endpoint disabled in production' });
+      }
+      const { prisma: db } = ctx;
+      const seedAccountId = input.accountId;
+      const types = ['copywriting', 'analysis', 'trending', 'knowledge', 'diagnosis'];
+      const urls = ['/copywriting', '/analysis', '/trending', '/knowledge', '/diagnosis'];
+      const tasks = Array.from({ length: input.count }, (_, i) => ({
+        id: `aaaaaaaa-${String(i).padStart(4, '0')}-4aaa-8aaa-aaaaaaaaaaaa`,
+        type: types[i % types.length] ?? 'copywriting',
+        title: `测试任务 ${i + 1}`,
+        description: `今日第 ${i + 1} 项任务描述`,
+        difficulty: i % 3 === 0 ? 'easy' : i % 3 === 1 ? 'medium' : 'hard',
+        estimatedMinutes: 20 + i * 5,
+        ctaText: '去完成',
+        ctaUrl: urls[i % urls.length] ?? '/copywriting',
+        completed: i === 0,
+        expectedOutcome: `完成任务 ${i + 1} 的预期成果`,
+      }));
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const result = await db.dailyTask.upsert({
+        where: { accountId_taskDate: { accountId: seedAccountId, taskDate: today } },
+        create: {
+          accountId: seedAccountId,
+          taskDate: today,
+          tasks: tasks as unknown as Prisma.InputJsonValue,
+          completedCount: 1,
+          totalCount: input.count,
+          agentId: 'DailyTaskAgent',
+          modelUsed: 'claude-sonnet-4-6',
+          isFallback: false,
+        },
+        update: {
+          tasks: tasks as unknown as Prisma.InputJsonValue,
+          completedCount: 1,
+          totalCount: input.count,
+        },
+        select: DAILY_TASK_SELECT,
+      });
+      return { ok: true, id: result.id, totalCount: result.totalCount };
     }),
 
   /** 查询今日任务队列状态(调试用) */
