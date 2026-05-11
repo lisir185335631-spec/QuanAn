@@ -26,6 +26,7 @@ import { ttsRouter } from '@/trpc/routers/tts';
 import { trendingRouter } from '@/trpc/routers/trending';
 import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
 import { videoProductionRouter } from '@/trpc/routers/videoProduction';
+import { voiceChatRouter } from '@/trpc/routers/voiceChat';
 import { router } from '@/trpc/trpc';
 
 export const appRouter = router({
@@ -52,6 +53,7 @@ export const appRouter = router({
   costLog: costLogRouter,
   analysis: analysisRouter,
   history: historyRouter,
+  voiceChat: voiceChatRouter,
 });
 
 export type AppRouter = typeof appRouter;

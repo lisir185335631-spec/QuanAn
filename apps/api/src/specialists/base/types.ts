@@ -68,10 +68,12 @@ export interface InvokeLLMResult {
 
 /** SSE 流式 chunk(与 workers/llm-gateway StreamChunk 对齐) */
 export interface LLMStreamChunk {
-  type: 'meta' | 'delta' | 'done' | 'error';
+  type: 'meta' | 'delta' | 'tool_call' | 'tool_result' | 'done' | 'error';
   /** stream 启动时 LLMGateway 通过 meta chunk 告知实际使用的 model · D-019 / REJ-003 */
   meta?: { model: string };
   delta?: string;
+  /** tool_call: { name, args } / tool_result: serialized result */
+  result?: unknown;
   tokens?: { prompt: number; completion: number; total: number };
   error?: { code: string; message: string };
 }
@@ -88,6 +90,8 @@ export interface LLMCompleteRequest {
   model_tier: ModelTier;
   systemPrompt: string;
   userPrompt: string;
+  /** US-011 VoiceChatAgent: 5 工具 function calling · 其余 Specialist 不传 */
+  tools?: readonly { name: string; description: string; parameters: Record<string, unknown> }[];
   responseFormat?: { type: 'json_schema'; schema: ZodTypeAny };
   metadata: {
     trace_id: string;
