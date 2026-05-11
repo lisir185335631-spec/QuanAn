@@ -80,7 +80,7 @@ export class ContextAssembler {
       layersUsed.push('constants');
     }
 
-    const systemPrompt = this._composeSystemPrompt(req, stepData, constants);
+    const systemPrompt = this._composeSystemPrompt(req, stepData, constants, evolutionInsight);
     const userPrompt = this._formatUserPrompt(req.userInput);
     const contextTokens = Math.ceil((systemPrompt.length + userPrompt.length) / 4);
 
@@ -122,10 +122,31 @@ export class ContextAssembler {
 
   // ── prompt 拼接 ───────────────────────────────────────────────────────────
 
+  private _buildSection4(insight: EvolutionInsightContent): string {
+    const { direction, insights } = insight;
+    const lines: string[] = ['[Section 4] 用户偏好画像'];
+    lines.push(`- 内容方向: ${direction}`);
+    lines.push(`- 风格/调性: ${insights.styleTone}`);
+    if (insights.preferredCatchphrases.length > 0) {
+      lines.push(`- 偏爱金句: ${insights.preferredCatchphrases.join(' / ')}`);
+    }
+    if (insights.avoidList.length > 0) {
+      lines.push(`- 规避词/风格: ${insights.avoidList.join(' / ')}`);
+    }
+    if (insights.strongPoints.length > 0) {
+      lines.push(`- 强项: ${insights.strongPoints.join(' / ')}`);
+    }
+    if (insights.weakPoints.length > 0) {
+      lines.push(`- 待提升: ${insights.weakPoints.join(' / ')}`);
+    }
+    return lines.join('\n');
+  }
+
   private _composeSystemPrompt(
     req: AssembleRequest,
     stepData: StepRow[] | null,
     constants: Constants | null,
+    evolutionInsight: EvolutionInsightContent | null,
   ): string {
     const tmpl = SPECIALIST_TEMPLATES[req.agentId];
     const persona = tmpl?.persona ?? `你是 ${req.agentId} · IP 起号专家助手`;
@@ -138,18 +159,20 @@ export class ContextAssembler {
             .join('\n')
         : '[新用户 · 暂无 step 数据]';
 
-    // AC-6: L4 EvolutionProfile null → 冷启动占位(CS-2 · §4.4 D)
-    const l4Section = '[L1 阶段 · 暂无进化档案]';
-
     const lines: string[] = [
       persona,
       '────────────────────────────────────────',
       '# 历史 step 摘要(L2 Core)',
       stepSection,
-      '────────────────────────────────────────',
-      '# 用户偏好(L4 Profile · 进化档案)',
-      l4Section,
     ];
+
+    // PRD-8 US-004 AC-1: evolutionInsight 非 null 时注入 [Section 4] 用户偏好画像
+    if (evolutionInsight !== null) {
+      lines.push(
+        '────────────────────────────────────────',
+        this._buildSection4(evolutionInsight),
+      );
+    }
 
     if (constants !== null) {
       const constParts: string[] = [];
