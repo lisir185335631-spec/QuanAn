@@ -23,10 +23,10 @@ export async function enqueueIfThresholdMet(
 ): Promise<void> {
   // AC-7: prisma update RETURNING count — 原子操作防竞态
   const rows = await prisma.$queryRaw<[{ count: bigint }]>`
-    INSERT INTO evolution_profile (account_id, feedback_count_total, created_at, updated_at)
+    INSERT INTO evolution_profiles (account_id, feedback_count_total, created_at, updated_at)
     VALUES (${accountId}, 1, NOW(), NOW())
     ON CONFLICT (account_id) DO UPDATE
-      SET feedback_count_total = evolution_profile.feedback_count_total + 1,
+      SET feedback_count_total = evolution_profiles.feedback_count_total + 1,
           updated_at = NOW()
     RETURNING feedback_count_total AS count
   `;
