@@ -1,0 +1,251 @@
+{
+  "project": "QuanQn",
+  "branchName": "ralph/prd-9-p8-knowledge-base-rag",
+  "description": "PRD-9 · P8 知识库 + RAG 接通(67 案例 + 23 公式 + 22 元素 · pgvector)· 主应用 P0-P8 收官 · 5 stories · 1w · risk=low",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "★ Foundation · pgvector schema + EmbeddingWorker + RagRetrieveWorker + cost_log 第 7 类",
+      "description": "作为 RAG 系统的 foundation · 建立 pgvector 表 schema(KnowledgeChunk 单表 + type discriminator · D-057)+ EmbeddingWorker 独立 worker(D-038 模式 · 调 OpenAI text-embedding-3-small)+ RagRetrieveWorker(同步 fetch · pgvector cosine 距离)+ cost_log eventType='embedding_call' 第 7 类 · 支持 US-002 seed + US-003 ContextAssembler 接通 + US-004 前端检索",
+      "acceptanceCriteria": [
+        "AC-1: prisma schema 加 KnowledgeChunk 表 + pgvector embedding 字段(id Int @id · type String @db.VarChar(16) · title VarChar(255) · content Text · metadata JsonB · embedding Unsupported('vector(1536)') · tokens Int · createdAt/updatedAt)· prisma migrate dev 成功",
+        "AC-2: 手写 SQL migration 创建 HNSW index: `CREATE INDEX knowledge_chunk_embedding_hnsw ON \"KnowledgeChunk\" USING hnsw (embedding vector_cosine_ops);` 在 prisma/migrations/<TIMESTAMP>_add_knowledge_chunk_hnsw/migration.sql",
+        "AC-3: packages/schemas/src/rag/index.ts 新建 · export KnowledgeChunkContent + KnowledgeChunkType enum('case'/'formula'/'element')+ RagRetrieveParams(query/topK/type/metadataFilter)· caseMetadataSchema(scriptType+industry)/ formulaMetadataSchema(category)/ elementMetadataSchema(psychologyTag+group)· D-047 canonical 优先级 schemas > specialists > routers",
+        "AC-4: apps/api/src/workers/embedding/openai-embedding.ts 新 worker · D-038 模式(不走 LLMGateway)· OpenAI({apiKey}).embeddings.create({model: 'text-embedding-3-small', input: text})· 返 1536 dim vector · 错误路径 timeout/oversize 8192 tokens/API error 各 TRPCError",
+        "AC-5: cost_log eventType='embedding_call' · provider='openai' · modelUsed='text-embedding-3-small' · costUsd = ceil(tokens / 1000) * 0.00002 · promptTokens 真实 tokens · audioSeconds=null · charactersIn=text.length",
+        "AC-6: apps/api/src/workers/rag/retrieve.ts 新 worker · ragRetrieveWorker.retrieve({query, topK, type?, metadataFilter?}) → 调 EmbeddingWorker 算 query embedding → prisma.$queryRaw 用 pgvector `<=>` cosine 距离 top-K → 返 KnowledgeChunkContent[] (含 similarity 0-1)",
+        "AC-7: rate limit EMBEDDING_DAILY_LIMIT_PER_USER=100 · sliding window 同 PRD-6/8 pattern · rate:embedding:user:{accountId}:{UTC-date} key · INCR+expire(86400) atomic · 第 101 次 TRPCError TOO_MANY_REQUESTS · 50 次/100 次边界 unit test",
+        "AC-8: R-001 grep · 跑 `grep -r 'OPENAI_API_KEY' apps/web --include='*.ts' --include='*.tsx' -l` 应 0 命中(embedding worker 独占 backend)",
+        "AC-9: unit test tests/unit/api/workers/embedding.test.ts 5 tests(happy 100 tokens / oversize 8200 tokens reject / timeout / API error / cost_log 字段完整写入)· nock OpenAI mock · maxRetries=0 防 retry 拖死",
+        "AC-10: unit test tests/unit/api/workers/rag-retrieve.test.ts 5 tests(top-K=5 happy / type='case' filter / metadata filter / empty result / EmbeddingWorker 失败时 propagate error)· prisma $queryRaw mock vector cosine",
+        "AC-11: pnpm typecheck 6ws 0 errors + pnpm lint --max-warnings=0 + 全套测试通过",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/workers/embedding/openai-embedding.ts",
+        "apps/api/src/workers/embedding/index.ts",
+        "apps/api/src/workers/rag/retrieve.ts",
+        "apps/api/src/workers/rag/index.ts",
+        "apps/api/src/lib/constants/ragLimits.ts",
+        "apps/api/src/lib/rate-limit/embedding.ts",
+        "packages/schemas/src/rag/index.ts",
+        "tests/unit/api/workers/embedding.test.ts",
+        "tests/unit/api/workers/rag-retrieve.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        ".env.example",
+        "packages/schemas/src/index.ts"
+      ],
+      "test_command": "pnpm test tests/unit/api/workers/embedding.test.ts tests/unit/api/workers/rag-retrieve.test.ts && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-6-p5-video-modules",
+          "source_story": "US-002",
+          "lesson": "Schema 三处一致(packages/schemas canonical + specialists inline + routers inline)· D-046 SoT 原则",
+          "antipattern": "❌ KnowledgeChunkContent 在 packages/schemas/src/rag/ 定义 6 字段 · 但 ragRetrieveWorker inline schema 仅 4 字段或缺 metadata · 三处漂移",
+          "correct": "✅ 三处 schema(packages/schemas + workers/rag/retrieve.ts 复用 + trpc/routers/knowledge.ts 复用)字段 100% 1:1 一致 · packages/schemas/src/rag/index.ts 是唯一 SoT"
+        },
+        {
+          "source_prd": "prd-7-cleanup-td-fix",
+          "source_story": "US-001",
+          "lesson": "改 schema/types 时 import type + export type 双写 · 否则下游 import 失败",
+          "antipattern": "❌ packages/schemas/src/rag/index.ts 定义 KnowledgeChunkContent 但 packages/schemas/src/index.ts 漏 re-export · apps/api / apps/web 直接 import @quanqn/schemas KnowledgeChunkContent 编译失败",
+          "correct": "✅ packages/schemas/src/index.ts 加 `export type { KnowledgeChunkContent, KnowledgeChunkType, RagRetrieveParams } from './rag'` · 显式 barrel export 维持下游兼容"
+        },
+        {
+          "source_prd": "prd-6-p5-video-modules",
+          "source_story": "US-009",
+          "lesson": "ImageGen Worker D-038 模式 · 独立 wrapper 不走 LLMGateway · OpenAI SDK 直接调",
+          "antipattern": "❌ EmbeddingWorker 走 LLMGateway.complete(因 OpenAI embeddings 不是 chat completion API)· 类型错误 + cost_log eventType 错(走 specialist_call 而非 embedding_call)",
+          "correct": "✅ EmbeddingWorker 独立 worker · OpenAI({apiKey}).embeddings.create() 直接调 · cost_log eventType='embedding_call' 自管(同 D-038 STT/TTS 模式)"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "67 案例 + 23 公式 + 22 元素 seed ingest",
+      "description": "作为 RAG 系统的数据源 · 把 PRD-5 引入的 67 案例 + 23 公式 + 22 元素心理学(in-memory constants 或 references/05-vertical/02-爆款文案 源数据)批量 ingest 到 KnowledgeChunk 表 · 每条调 EmbeddingWorker 算 1536 dim embedding 入库 · upsert by (type, title) 幂等",
+      "acceptanceCriteria": [
+        "AC-1: 新 seed script apps/api/scripts/seed-knowledge-chunk.ts · 从 apps/api/src/lib/constants/{cases,formulas,elements}.ts 读 67/23/22 项(若 PRD-5 没引入 · 从 references/05-vertical/02-爆款文案 重写为 TS const)",
+        "AC-2: 每条调 embeddingWorker.embed(content) 算 1536 dim embedding · prisma.knowledgeChunk.upsert by 复合 key (type + title) 幂等 · 累计 67+23+22 = 112 行",
+        "AC-3: cost_log eventType='embedding_call' 每条 1 行 · 总 112 行 cost · 单次 seed 总 cost ≤ \\$0.005(112 chunks × ~100 tokens × \\$0.00002/1K)· seed 完输出累计 cost 摘要",
+        "AC-4: seed script --dry-run 选项 · 输出 chunk count + embedding tokens 估算 + 不真调 OpenAI API · for CI 友好",
+        "AC-5: package.json 加 'seed:knowledge': 'tsx apps/api/scripts/seed-knowledge-chunk.ts' script(同 monorepo workspace root scripts pattern)",
+        "AC-6: 跑 `pnpm seed:knowledge --dry-run` 后跑 `pnpm seed:knowledge` · 然后 `psql quanqn -c \"SELECT type, count(*) FROM knowledge_chunk GROUP BY type\"` 返:case=67 / formula=23 / element=22",
+        "AC-7: integration test tests/integration/api/seed-knowledge-chunk.test.ts 3 tests:(1)dry-run 输出 chunk count 估算 ·(2)真 seed 后 prisma.knowledgeChunk.count() = 112 ·(3)幂等 · 第 2 次跑不重复插 · count 仍 112",
+        "AC-8: pnpm typecheck 0 + 全套测试通过",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/scripts/seed-knowledge-chunk.ts",
+        "tests/integration/api/seed-knowledge-chunk.test.ts"
+      ],
+      "files_to_modify": [
+        "package.json",
+        "apps/api/src/lib/constants/cases.ts",
+        "apps/api/src/lib/constants/formulas.ts",
+        "apps/api/src/lib/constants/elements.ts"
+      ],
+      "test_command": "pnpm test tests/integration/api/seed-knowledge-chunk.test.ts",
+      "size_hint": "small",
+      "risk_level": "low",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-003",
+      "title": "ContextAssembler RAG 接通(D-058 · D-025 from placeholder → 真 RAG · 11 生成型 Specialist 受益)",
+      "description": "ContextAssembler.assemble() 现 _fetchRag 返 [](D-025 placeholder)· 升级真 RAG · 按 specialist 类型推断 retrieve 策略 · 注入 systemPrompt 第 6 段 [Section 6] RAG 知识库参考 · 11 生成型 Specialist 受益(CopywritingAgent/TopicAgent/BoomGenerator/PositioningAgent 等)· 非生成型(DiagnosisAgent/DeepLearnAgent/EvolutionAgent)跳过 RAG",
+      "acceptanceCriteria": [
+        "AC-1: ContextAssembler._fetchRag(req) 升级真 RAG · 调 ragRetrieveWorker.retrieve({query: req.userInput.userMessage 或 lastDescription, topK: 5, type: 按 agentId 推断})· 推断规则:CopywritingAgent → 3 case + 1 formula + 1 element = 5 chunks · TopicAgent/BoomGenerator → 3 element + 2 case · 其他 8 生成型 → 3 case + 2 element · 非生成型(Diagnosis/DeepLearn/Evolution)→ 跳过返 []",
+        "AC-2: _composeSystemPrompt 加第 6 段注入 ragChunks · format:`[Section 6] RAG 知识库参考(top-N 相似案例 · 仅供生成参考 · 不抄)\\n─ 案例 1: {title} (相似度 {similarity})· {content first 200 chars}\\n─ 案例 2: ...`(每段独立行)· ragChunks 为空时跳过 [Section 6] 段(D-020 降级)",
+        "AC-3: ContextAssembler 5 路 Promise.allSettled 沿用 PRD-8 D-058 5 路结构(stepData + L4 EvolutionInsight + samples + _fetchRag 升级真 RAG + methodology)· 各路独立 5s timeout · RAG 失败降级注入空段不阻断",
+        "AC-4: AssembledContext.metadata.layersUsed 真实反映 · 有 RAG hit → 含 'L5_rag' · 无 RAG hit → 不含(D-006 五层记忆完整 · L5 第一次实施)",
+        "AC-5: D-007 单一入口 grep · `grep -rn 'ragChunks\\|ragRetrieve\\|knowledge_chunk' apps/api/src/specialists/` 应 0 命中(specialist 不允许自拼接 · 沿用 PRD-8 D-054 检查 · §11.6.8 双路径白名单仍仅 EvolutionAgent/DailyTaskAgent)",
+        "AC-6: unit test tests/unit/services/context-assembler-rag.test.ts 5 tests:(1)CopywritingAgent RAG hit 返 5 chunks 含 case+formula+element 类型 ·(2)TopicAgent RAG hit 返 5 chunks 含 element+case ·(3)DiagnosisAgent 跳过 RAG 返 [] ·(4)RAG retrieve 失败时 metadata.layersUsed 不含 L5_rag · systemPrompt 不含 [Section 6] ·(5)contextTokens 算入 RAG chunks 字符(影响 D-020 token budget)",
+        "AC-7: integration test tests/integration/api/rag-injection.test.ts 3 tests:(1)seed knowledge 后 ContextAssembler.assemble({agentId: 'PositioningAgent'}) → systemPrompt 含 [Section 6] + 至少 1 个案例 title 出现 ·(2)切 CopywritingAgent 看 case+formula 双类型 至少各 1 ·(3)切 DiagnosisAgent 不含 [Section 6](skip)",
+        "AC-8: LLM Judge 1 case tests/judge/rag-injection.judge.ts · 5 维度评分:(a)case 引用准确 ·(b)formula 引用准确 ·(c)element 引用准确 ·(d)无 RAG 时 fallback OK ·(e)5 chunks 总长不超 systemPrompt budget · 评分 ≥ 4.0/5 · 沿用 18/18 judge mock pattern(TD-027 PRR 修)",
+        "AC-9: pnpm typecheck 0 + lint 0 + 全套测试通过",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/unit/services/context-assembler-rag.test.ts",
+        "tests/integration/api/rag-injection.test.ts",
+        "tests/judge/rag-injection.judge.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/services/context-assembler/ContextAssembler.ts"
+      ],
+      "test_command": "pnpm test tests/unit/services/context-assembler-rag.test.ts tests/integration/api/rag-injection.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-8-p7-intelligent-modules",
+          "source_story": "US-004",
+          "lesson": "ContextAssembler 是 prompt 注入唯一入口(D-007 + D-054)· specialist 内不允许自拼接外部数据",
+          "antipattern": "❌ ralph 在 PositioningAgent.ts / CopywritingAgent.ts 等 specialist 文件里手工拼接 ragChunks 字符串到 systemPrompt · 绕过 ContextAssembler · 触发 grep `apps/api/src/specialists/` 命中 ragChunks/ragRetrieve",
+          "correct": "✅ 所有 RAG 注入逻辑在 ContextAssembler._fetchRag + _composeSystemPrompt 集中处理 · specialist 文件 0 自拼接 · grep 检查通过(同 PRD-8 D-054 evolutionInsight 模式)"
+        },
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-002",
+          "lesson": "ContextAssembler 协议锁路径严守 · 不允许双 stub 并存导致下游 import 错位",
+          "antipattern": "❌ apps/api/src/services/context-assembler/ContextAssembler.ts 改 _fetchRag · 但 apps/api/src/agents/base/ContextAssembler.ts 旧 stub 还在 · 下游 import 路径混乱 · TD-012 design-drift 重现",
+          "correct": "✅ 改 ContextAssembler 唯一在 apps/api/src/services/context-assembler/ContextAssembler.ts · grep `grep -rn 'class ContextAssembler' apps/api/src/` 应仅 1 个文件 · 确保协议锁路径单一"
+        },
+        {
+          "source_prd": "prd-8-p7-intelligent-modules",
+          "source_story": "US-004",
+          "lesson": "11 生成型 Specialist 受益 RAG 注入 · 但 grep 检查 specialist 内 ragChunks 应 0 命中 · 通过 ContextAssembler 集中注入实现",
+          "antipattern": "❌ AC 要求 11 templates 各自加 RAG 注入逻辑 · ralph 误读为 11 文件各改 · 触发 D-007 单一入口红线",
+          "correct": "✅ AC-1 推断规则在 ContextAssembler._fetchRag 内部 switch by agentId · 11 specialist 文件 0 改动 · 注入完全集中(DRY · D-046/D-054 设计哲学)"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "/knowledge 前端页面 · 案例 / 公式 / 元素 list + 语义检索",
+      "description": "前端 /knowledge 页面 · status bar + 3 tab(案例 67 / 公式 23 / 元素 22)+ list view + search input(debounce 300ms · ≥2 字符触发 knowledge.search semantic retrieval)+ card 渲染 + empty state · 公开访问(无 auth)· 沿用 Aurelian Dark + shadcn Tabs",
+      "acceptanceCriteria": [
+        "AC-1: 新 tRPC router knowledgeRouter · 3 procedures:(1)knowledge.list({type?, limit?, offset?}) query 返 KnowledgeChunkContent[](无 embedding 字段 · public 不需 protectedProcedure)·(2)knowledge.search({query, topK?, type?}) mutation 调 ragRetrieveWorker 返 with similarity ·(3)knowledge.getById({id}) query 单条详情",
+        "AC-2: apps/web/src/pages/tools/Knowledge.tsx 新页面 · h1 '知识库' + 3 tab(案例/公式/元素 · shadcn Tabs)+ list view ScrollArea + search input + status bar(就绪/检索中/无结果 等状态 aria-live)",
+        "AC-3: search input debounce 300ms · 输入 ≥ 2 字符触发 knowledge.search mutation · loading 时 status bar 显 '语义检索中…' · 结果 highlight 关键词(可选 · 留 PRR)",
+        "AC-4: 案例 card 显示 · title + scriptType badge + industry badge + content 前 100 字预览 + 点击展开全文 · 沿用 PRD-8 daily-tasks page Card pattern",
+        "AC-5: 公式 card 显示 · title + category badge + content 全文(公式短)",
+        "AC-6: 元素 card 显示 · title + psychologyTag badge + content 全文",
+        "AC-7: search empty state '暂无匹配结果 · 试试矛盾冲突 / AIDA / 稀缺性等关键词' · 渲染于 list view 区域 · 不阻塞 tab 切换",
+        "AC-8: router 注册 apps/web/src/router.tsx · /knowledge lazy import (tools chunk · 同 /voice-chat /daily-tasks pattern)· packages/clients/src/router-types.ts 加 knowledge shadow types",
+        "AC-9: 使用 agent-browser 打开 http://localhost:5173/knowledge · 验证 page load + 3 tabs visible(data-testid='knowledge-tabs')+ search input visible + 0 console error · 截图保存 verify-artifacts/US-004/knowledge-page.png",
+        "AC-10: 使用 agent-browser 输入 '矛盾冲突' 触发 search · 验证 results 非空 + 至少 1 个 case card 显示 + content 含 '矛盾' 字 + 截图保存 verify-artifacts/US-004/knowledge-search.png",
+        "AC-11: unit test tests/unit/web/pages/Knowledge.test.tsx 15 tests(3 tab 切换 / search debounce / case card render / formula card render / element card render / empty state / list pagination / search loading state / search error fallback / tab + search 组合)",
+        "AC-12: pnpm typecheck 0 + lint 0 + 全套测试通过",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 4,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/knowledge.ts",
+        "apps/web/src/pages/tools/Knowledge.tsx",
+        "tests/unit/web/pages/Knowledge.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/_app.ts",
+        "apps/web/src/router.tsx",
+        "packages/clients/src/router-types.ts"
+      ],
+      "test_command": "pnpm test tests/unit/web/pages/Knowledge.test.tsx",
+      "size_hint": "medium",
+      "risk_level": "low",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-005",
+      "title": "收官 · LLM Judge 54+ + 1 e2e + lint clean + 全套绿灯 + cost_log 7 eventType + KnowledgeChunk row count + RAG 注入闭环",
+      "description": "PRD-9 收官 + 主应用 P0-P8 收官标志 · 全套绿灯门禁 + LLM Judge 扩展到 54+ case + 1 new e2e 集成 spec(knowledge-rag-loop)+ lint clean + cost_log 第 7 类 'embedding_call' grep 全命中 + KnowledgeChunk 表 row count 校验 + 11 生成型 Specialist 0 自拼接 RAG · 跨 Story D-007 + D-054 + D-058 单一入口完整验证",
+      "acceptanceCriteria": [
+        "AC-1: pnpm test:judge 跑 judge tests 全过 · count ≥ 54(原 51 PRD-8 + 3 new from US-003 · 含 rag-injection.judge.ts 已实现)· `vitest run --config vitest.judge.config.ts` 退出码 0",
+        "AC-2: pnpm test 跑 vitest 全过 · count ≥ 870 passed(估 PRD-8 base 861 + US-001 10 unit + US-002 3 integration + US-003 5+3 unit/integration + US-004 15 unit = 897+)· 0 failed · 2 skipped 允许",
+        "AC-3: pnpm typecheck 6 workspaces · 全 0 errors(packages/schemas + packages/ui + packages/clients + apps/api + apps/web + apps/admin · admin 仍 placeholder)",
+        "AC-4: pnpm lint --max-warnings=0 · 全 6 workspaces 0 warnings + 0 errors",
+        "AC-5: pnpm test:e2e 跑 e2e 全过 · count ≥ 159(原 158 PRD-8 + 1 new knowledge-rag-loop.spec.ts)· 0 failed",
+        "AC-6: 1 new e2e spec tests/e2e/knowledge-rag-loop.spec.ts · workers=1 fullyParallel=false 沿用 PRD-5/6/7/8 教训 · 验证用户在 /knowledge 搜索 + AI 生成调用时 RAG hit 注入 prompt(用 debugAssembleSystemPrompt 同 PRD-8 US-006 模式)· 至少 3 AC 测试(seed knowledge → search '矛盾冲突' 返结果 → debugAssembleSystemPrompt PositioningAgent 含 [Section 6] + 至少 1 案例)",
+        "AC-7: cost_log eventType 7 类 grep 全命中:`for et in specialist_call judge_call image_gen l5_agent stt_call tts_call embedding_call; do n=$(grep -rln \"'$et'\" apps/api/src/ tests/ | wc -l); echo \"  $et: $n files\"; done` · 每类 ≥ 1 file",
+        "AC-8: BullMQ queues 4 个 grep + 新 EmbeddingWorker / RagRetrieveWorker 都是同步调用(不走 BullMQ · 同 D-038 STT/TTS pattern)· grep `queueName.*embedding|queueName.*rag` 应 0 命中(同步 worker 无 queue)",
+        "AC-9: pgvector 启用确认 · `psql quanqn -c \"SELECT extname FROM pg_extension WHERE extname = 'vector'\"` 返 1 行 vector + version",
+        "AC-10: KnowledgeChunk 表 row count `psql quanqn -c \"SELECT type, count(*) FROM knowledge_chunk GROUP BY type ORDER BY type\"` 返 3 行 case=67 / formula=23 / element=22",
+        "AC-11: ContextAssembler RAG 注入 grep · `grep -rn 'ragChunks\\|\\[Section 6\\]' apps/api/src/services/context-assembler/` 应命中 1+(D-054 + D-058 单一入口)· `grep -rn 'class ContextAssembler' apps/api/src/` 应仅 1 个文件命中(协议锁路径单一)",
+        "AC-12: 11 生成型 Specialist 0 自拼接 RAG · `grep -rn 'ragRetrieveWorker\\|knowledge_chunk' apps/api/src/specialists/` 应 0 命中(D-007 单一入口 · §11.6.8 双路径白名单仅 EvolutionAgent/DailyTaskAgent 例外)",
+        "AC-13: 使用 agent-browser 打开 http://localhost:5173/knowledge · 3 tab 切换 OK + search 工作 + 0 ErrorBoundary + 0 console error · 截图 verify-artifacts/US-005/knowledge-page.png",
+        "AC-14: D-001~D-055 (PRD-1~8) + D-056~D-058 (本 PRD)Locked Decisions 全落实 · grep 命中各 D-NN 关键字:`grep -rn 'D-038\\|D-046\\|D-054\\|D-056\\|D-057\\|D-058' apps/api/src/ tasks/ AGENTS.md` 多处命中",
+        "AC-15: 本期新增 patterns 已通过 progress.txt 回传准备(retro stage)· grep `## Codebase Patterns - PRD-9` scripts/ralph/progress.txt 应命中 1+",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004"],
+      "priority": 5,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/e2e/knowledge-rag-loop.spec.ts"
+      ],
+      "files_to_modify": [
+        "scripts/ralph/progress.txt"
+      ],
+      "test_command": "pnpm test && pnpm typecheck && pnpm lint --max-warnings=0 && pnpm test:judge && pnpm test:e2e",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": []
+    }
+  ]
+}
