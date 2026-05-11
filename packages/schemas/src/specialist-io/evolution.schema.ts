@@ -1,7 +1,8 @@
 /**
- * Evolution Specialist I/O schemas — PRD-2 US-005
+ * Evolution Specialist I/O schemas — PRD-2 US-005 + PRD-8 US-001
  * AC-5: input/output schemas in packages/schemas/src/specialist-io/
  * Note: covers the 7 Specialist procedures (evolve/getConfig/updateConfig/history/recentFeedback/feedbackTrend/moduleRanking)
+ * PRD-8: EvolutionInsightContentSchema + TriggerTypeSchema (SoT §1.0.1 · canonical: EvolutionAgent.ts)
  */
 
 import { z } from 'zod';
@@ -61,3 +62,29 @@ export type EvolveInput = z.infer<typeof evolveInput>;
 export type UpdateEvolutionConfigInput = z.infer<typeof updateEvolutionConfigInput>;
 export type FeedbackLog = z.infer<typeof feedbackLogSchema>;
 export type EvolutionInsight = z.infer<typeof evolutionInsightSchema>;
+
+// ── PRD-8 US-001 · EvolutionInsight content schema (SoT §1.0.1) ──────────────
+
+export const InsightsSchema = z.object({
+  preferredCatchphrases: z.array(z.string()).min(0).max(10),
+  styleTone: z.string().min(1),
+  avoidList: z.array(z.string()).min(0).max(10),
+  strongPoints: z.array(z.string()).min(0).max(5),
+  weakPoints: z.array(z.string()).min(0).max(5),
+});
+
+export const EvolutionInsightContentSchema = z.object({
+  direction: z.enum(['综合', '创意', '转化', '真实']),
+  insights: InsightsSchema,
+});
+
+export const TriggerTypeSchema = z.union([
+  z.literal('threshold:5'),
+  z.literal('threshold:20'),
+  z.literal('threshold:50'),
+  z.literal('threshold:100'),
+]);
+
+export type Insights = z.infer<typeof InsightsSchema>;
+export type EvolutionInsightContent = z.infer<typeof EvolutionInsightContentSchema>;
+export type TriggerType = z.infer<typeof TriggerTypeSchema>;

@@ -1,7 +1,8 @@
 /**
  * ContextAssembler — 7 Specialist 的 prompt 装配中枢
  *
- * 4 路并行 fetch · Promise.allSettled · 各路独立 5s timeout · 缺数据降级(D-020)
+ * 5 路并行 fetch · Promise.allSettled · 各路独立 5s timeout · 缺数据降级(D-020)
+ * PRD-8 US-001 AC-8: 加第 5 路 L4 EvolutionInsight latest · evolutionInsight 字段输出
  * AC-1: assemble(req) → Promise<AssembledContext> · 对齐 ARCHITECTURE §6.4
  * AC-2: Promise.allSettled + 5s timeout + 降级注入空段
  * AC-8: metadata.layersUsed 真实反映成功层
@@ -11,11 +12,13 @@
 
 import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
+import { getLatestInsight } from '@/memory/l4-profile';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
 
 import { SPECIALIST_TEMPLATES } from './templates';
 
 import type { AssembleRequest, AssembledContext } from './types';
+import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
 
 const FETCH_TIMEOUT_MS = 5_000;
 
@@ -38,10 +41,10 @@ export class ContextAssembler {
    * 总耗时应 ≤ 800ms(4 路并行 · cap 5s · 平均数据库 < 200ms)
    */
   async assemble(req: AssembleRequest): Promise<AssembledContext> {
-    const [l2Result, l4ProfileResult, l4SamplesResult, l5RagResult, constantsResult] =
+    const [l2Result, l4InsightResult, l4SamplesResult, l5RagResult, constantsResult] =
       await Promise.allSettled([
         withTimeout(this._fetchStepData(req.accountId), FETCH_TIMEOUT_MS),
-        withTimeout(this._fetchEvolutionProfile(req.accountId), FETCH_TIMEOUT_MS),
+        withTimeout(getLatestInsight(req.accountId), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchSamples(req.accountId), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchRag(req), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchConstants(), FETCH_TIMEOUT_MS),
@@ -56,8 +59,12 @@ export class ContextAssembler {
       layersUsed.push('L2_step_data');
     }
 
-    // L4 EvolutionProfile — 本期 PRD-8 才填,始终 null → 冷启动占位
-    void l4ProfileResult;
+    // L4 EvolutionInsight — PRD-8 US-001 AC-8: 第 5 路 · 失败 fallback null
+    const evolutionInsight: EvolutionInsightContent | null =
+      l4InsightResult.status === 'fulfilled' ? l4InsightResult.value : null;
+    if (evolutionInsight !== null) {
+      layersUsed.push('L4_evolution_insight');
+    }
 
     // L4 Samples — 本期降级跑空
     void l4SamplesResult;
@@ -81,6 +88,7 @@ export class ContextAssembler {
       systemPrompt,
       userPrompt,
       tools: [],
+      evolutionInsight,
       metadata: { contextTokens, layersUsed, ragHits },
     };
   }
@@ -93,12 +101,6 @@ export class ContextAssembler {
       select: { stepKey: true, result: true },
       orderBy: { createdAt: 'asc' },
     });
-  }
-
-  /** L4 EvolutionProfile — PRD-8 才填 · 本期降级跑空(CS-2 冷启动) */
-  // eslint-disable-next-line @typescript-eslint/require-await
-  private async _fetchEvolutionProfile(_accountId: number): Promise<null> {
-    return null;
   }
 
   /** L4 Samples — PRD-8 才填 · 本期降级跑空 */

@@ -1,9 +1,12 @@
 /**
  * ContextAssembler 类型定义 — 完全对齐 ARCHITECTURE §6.4 接口契约
  * AssembleRequest · AssembledContext
+ * PRD-8 US-001 AC-7: AssembledContext 加 evolutionInsight 字段
  */
 
 import type { SpecialistId } from '@/agents/base/types';
+
+import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
 
 export type { SpecialistId };
 
@@ -25,6 +28,8 @@ export interface AssembledContext {
   userPrompt: string;
   /** Specialist 可用工具子集 */
   tools: unknown[];
+  /** L4 最新进化洞察 · PRD-8 US-001 · null = 新用户或 fetch 失败 */
+  evolutionInsight?: EvolutionInsightContent | null;
   metadata: {
     /** 上下文 token 量(本期 chars/4 粗算) */
     contextTokens: number;
