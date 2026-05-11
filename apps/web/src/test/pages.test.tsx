@@ -20,6 +20,7 @@ import Copywriting from '@/pages/tools/Copywriting';
 import Generate from '@/pages/tools/Generate';
 import Knowledge from '@/pages/tools/Knowledge';
 import Trending from '@/pages/tools/Trending';
+import VoiceChat from '@/pages/tools/VoiceChat';
 
 // Mock tRPC — pages that call useQuery hooks need this to render without a real provider
 vi.mock('@/lib/trpc', () => ({
@@ -63,9 +64,24 @@ vi.mock('@/lib/trpc', () => ({
     stepData: {
       save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
     },
+    stt: {
+      transcribe: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ transcript: '测试语音', durationSec: 2, costUsd: 0.001 }), isPending: false }) },
+    },
+    tts: {
+      synthesize: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ publicUrl: 'http://example.com/audio.mp3', sizeBytes: 1024, costUsd: 0.015 }), isPending: false }) },
+    },
+    voiceChat: {
+      clearSession: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true }), isPending: false }) },
+    },
   },
   queryClient: {},
-  trpcClient: {},
+  trpcClient: {
+    voiceChat: {
+      start: {
+        subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
+      },
+    },
+  },
 }));
 
 // Component that throws on render for ErrorBoundary testing
@@ -182,6 +198,40 @@ describe('Module pages render', () => {
   it('History renders h1 heading', () => {
     render(<MemoryRouter><History /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('历史记录');
+  });
+});
+
+describe('VoiceChat page (US-012)', () => {
+  it('renders record button and turn list area', () => {
+    render(
+      <MemoryRouter>
+        <VoiceChat />
+      </MemoryRouter>,
+    );
+    // AC-1: heading visible
+    expect(screen.getByText('语音对话')).toBeInTheDocument();
+    // AC-1: record button visible (data-testid)
+    expect(screen.getByTestId('record-button')).toBeInTheDocument();
+    // AC-1: turn list area visible (empty state)
+    expect(screen.getByTestId('turn-list')).toBeInTheDocument();
+  });
+
+  it('shows idle status bar', () => {
+    render(
+      <MemoryRouter>
+        <VoiceChat />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('就绪 · 按住录音')).toBeInTheDocument();
+  });
+
+  it('shows hang up button', () => {
+    render(
+      <MemoryRouter>
+        <VoiceChat />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('button', { name: '挂掉' })).toBeInTheDocument();
   });
 });
 

@@ -3,6 +3,7 @@
  * Lives here so apps/web can import it via 'import type' and keep @trpc/server
  * out of the browser bundle. Mirrors apps/api/src/trpc/routers/_app.ts.
  * PRD-3 US-001: removed step/account alias shadow routes (TD-012).
+ * PRD-8 US-012: added stt / tts / voiceChat shadow types.
  * TD: replace with TypeScript project references in P1.
  */
 
@@ -212,6 +213,27 @@ export type DailyTaskRow = {
 
 export type DailyTaskHistoryRow = NonNullable<DailyTaskRow>;
 export type DailyTaskListOutput = DailyTaskHistoryRow[];
+
+// ── Voice Chat types (PRD-8 US-012) ───────────────────────────────────────────
+
+export type VoiceChatStreamChunk =
+  | { type: 'delta'; delta: string }
+  | { type: 'tool_call'; toolName: string; args: Record<string, unknown> }
+  | { type: 'tool_result'; toolName: string; result: string }
+  | { type: 'done'; sessionId: string; modelUsed: string; turns: number; tokensUsed: { prompt: number; completion: number; total: number } }
+  | { type: 'error'; error: string };
+
+export type SttTranscribeOutput = {
+  transcript: string;
+  durationSec: number | null;
+  costUsd: number;
+};
+
+export type TtsSynthesizeOutput = {
+  publicUrl: string;
+  sizeBytes: number;
+  costUsd: number;
+};
 
 export type GenerateStoryboardOutput = {
   historyId: number;
@@ -547,6 +569,25 @@ const _shadowRouter = _t.router({
       })),
     dailyUsage: _t.procedure
       .query((): DailyUsageOutput => ({ count: 0, limit: 10 })),
+  }),
+  stt: _t.router({
+    transcribe: _t.procedure
+      .input((x: unknown) => x as { audioBase64: string; mimeType?: string; traceId?: string })
+      .mutation((): SttTranscribeOutput => ({ transcript: '', durationSec: null, costUsd: 0 })),
+  }),
+  tts: _t.router({
+    synthesize: _t.procedure
+      .input((x: unknown) => x as { text: string; voice?: string; traceId?: string })
+      .mutation((): TtsSynthesizeOutput => ({ publicUrl: '', sizeBytes: 0, costUsd: 0 })),
+  }),
+  voiceChat: _t.router({
+    start: _t.procedure
+      .input((x: unknown) => x as { userMessage: string; sessionId?: string; traceId?: string })
+      // eslint-disable-next-line require-yield
+      .subscription(async function* () {
+        yield {} as VoiceChatStreamChunk;
+      }),
+    clearSession: _t.procedure.mutation((): { ok: boolean } => ({ ok: true })),
   }),
 });
 
