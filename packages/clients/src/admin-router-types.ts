@@ -241,7 +241,119 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
-  inviteCodes: _t.router({}),
+  inviteCodes: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            search?: string;
+            statusFilter?: 'active' | 'inactive' | 'used' | 'expired';
+            campaignFilter?: string;
+          },
+      )
+      .query(
+        (): {
+          codes: Array<{
+            id: number;
+            code: string;
+            isActive: boolean;
+            maxUses: number;
+            usedCount: number;
+            expiresAt: Date | null;
+            campaign: string | null;
+            notes: string | null;
+            createdAt: Date;
+            usedAt: Date | null;
+            usedById: number | null;
+          }>;
+          count: number;
+          page: number;
+          pageSize: number;
+        } => ({ codes: [], count: 0, page: 1, pageSize: 20 }),
+      ),
+    create: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            code?: string;
+            campaign?: string;
+            expiresAt?: Date;
+            quotaLimit?: number;
+          },
+      )
+      .mutation(
+        (): {
+          id: number;
+          code: string;
+          isActive: boolean;
+          maxUses: number;
+          usedCount: number;
+          expiresAt: Date | null;
+          campaign: string | null;
+          createdAt: Date;
+        } => ({
+          id: 0,
+          code: '',
+          isActive: true,
+          maxUses: 1,
+          usedCount: 0,
+          expiresAt: null,
+          campaign: null,
+          createdAt: new Date(),
+        }),
+      ),
+    batchImport: _t.procedure
+      .input((x: unknown) => x as { csvData: string })
+      .mutation(
+        (): { imported: number; errors: Array<{ row: number; code: string; reason: string }> } => ({
+          imported: 0,
+          errors: [],
+        }),
+      ),
+    invalidate: _t.procedure
+      .input((x: unknown) => x as { code: string; reason: string })
+      .mutation(
+        (): { status: 'auto_executed' | 'pending'; approvalRequestId: number } => ({
+          status: 'auto_executed',
+          approvalRequestId: 0,
+        }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { code: string })
+      .query(
+        (): {
+          invite: {
+            id: number;
+            code: string;
+            isActive: boolean;
+            maxUses: number;
+            usedCount: number;
+            expiresAt: Date | null;
+            campaign: string | null;
+            notes: string | null;
+            createdAt: Date;
+            usedAt: Date | null;
+            usedById: number | null;
+            createdBy: { id: number; email: string } | null;
+            usedBy: { id: number; email: string; isActivated: boolean; createdAt: Date } | null;
+          };
+          activationHistory: Array<{
+            id: number;
+            userId: number | null;
+            eventType: string;
+            createdAt: Date;
+            ipAddress: string | null;
+            userAgent: string | null;
+          }>;
+          step9Progress: Array<{ stepKey: string; status: string; updatedAt: Date }>;
+        } | null => null,
+      ),
+    campaignFunnel: _t.procedure
+      .input((x: unknown) => x as { campaignKey: string })
+      .query((): Array<{ stage: string; count: number }> => []),
+  }),
   trending: _t.router({}),
   deepLearn: _t.router({}),
   prompts: _t.router({}),

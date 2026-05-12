@@ -1,5 +1,6 @@
-// PRD-10 US-005 · 16 域 metadata array · sidebar + placeholder 共用
+// PRD-10 US-005 · 16 域 metadata array · sidebar + page routing 共用
 // 4 组: P0 业务核心(6) · P0 内容审核(2) · P1 健康度(5) · P2 高级(3)
+// PRD-11: invites prd=11 (实装 US-021)
 
 export type AdminRole = 'super_admin' | 'admin' | 'readonly_admin';
 

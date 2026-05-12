@@ -12,7 +12,7 @@ import CompliancePlaceholder from './pages/admin/placeholder/compliance';
 import ConfigPlaceholder from './pages/admin/placeholder/config';
 import CostPage from './pages/cost/index';
 import EvolutionPlaceholder from './pages/admin/placeholder/evolution';
-import InvitesPlaceholder from './pages/admin/placeholder/invites';
+import InvitesPage from './pages/invites/index';
 import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
 import NsmDashboard from './pages/nsm/index';
 import PromptsPlaceholder from './pages/admin/placeholder/prompts';
@@ -37,7 +37,7 @@ export function AdminRoutes() {
         <Route path="accounts" element={<AccountsPage />} />
         <Route path="cost" element={<CostPage />} />
         <Route path="audit" element={<AuditPage />} />
-        <Route path="invites" element={<InvitesPlaceholder />} />
+        <Route path="invites" element={<InvitesPage />} />
 
         {/* P0 内容审核 */}
         <Route path="reviewTrending" element={<ReviewTrendingPlaceholder />} />
