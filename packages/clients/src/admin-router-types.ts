@@ -379,6 +379,104 @@ const _shadowAdminRouter = _t.router({
         payload: Record<string, unknown> | null;
       }> => [],
     ),
+    byTraceId: _t.procedure
+      .input((x: unknown) => x as { traceId: string })
+      .query(
+        (): {
+          timeline: Array<{
+            source: string;
+            id: number;
+            traceId: string;
+            eventType: string;
+            eventCategory: string;
+            createdAt: Date;
+            payload: Record<string, unknown> | null;
+          }>;
+          summary: { eventCount: number; spanMs: number };
+        } => ({ timeline: [], summary: { eventCount: 0, spanMs: 0 } }),
+      ),
+    byUserId: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            userId: number;
+            page?: number;
+            pageSize?: number;
+            eventCategory?: string;
+            startDate?: Date;
+            endDate?: Date;
+          },
+      )
+      .query(
+        (): {
+          timeline: Array<{
+            id: number;
+            eventType: string;
+            eventCategory: string;
+            createdAt: Date;
+            payload: Record<string, unknown> | null;
+            traceId: string | null;
+            success: boolean;
+          }>;
+          grouped: Record<string, unknown[]>;
+          total: number;
+          page: number;
+          pageSize: number;
+        } => ({ timeline: [], grouped: {}, total: 0, page: 1, pageSize: 50 }),
+      ),
+    byAdminId: _t.procedure
+      .input((x: unknown) => x as { adminUserId: number })
+      .query(
+        (): Array<{
+          id: number;
+          eventType: string;
+          eventCategory: string;
+          createdAt: Date;
+          payload: Record<string, unknown> | null;
+          traceId: string | null;
+          success: boolean;
+          actorRole: string;
+          actorMode: string | null;
+          isHighRisk: boolean;
+        }> => [],
+      ),
+    search: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            keyword: string;
+            eventCategory?: string;
+            startDate?: Date;
+            endDate?: Date;
+            target?: string;
+          },
+      )
+      .query(
+        (): Array<{
+          id: number;
+          eventType: string;
+          eventCategory: string;
+          createdAt: Date;
+          traceId: string | null;
+          actorAdminId: number | null;
+          actorRole: string | null;
+          targetUserId: number | null;
+          targetEntity: string | null;
+          success: boolean;
+        }> => [],
+      ),
+    exportPdf: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { traceId: string; caseNumber: string; reason: string },
+      )
+      .mutation(
+        (): { base64: string; traceId: string; caseNumber: string } => ({
+          base64: '',
+          traceId: '',
+          caseNumber: '',
+        }),
+      ),
   }),
   config: _t.router({}),
   ab: _t.router({}),

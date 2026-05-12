@@ -7,7 +7,7 @@ import { AdminLayout } from './layouts/AdminLayout';
 import AbPlaceholder from './pages/admin/placeholder/ab';
 import AccountsPage from './pages/accounts/index';
 import ApprovalPlaceholder from './pages/admin/placeholder/approval';
-import AuditPlaceholder from './pages/admin/placeholder/audit';
+import AuditPage from './pages/audit/index';
 import CompliancePlaceholder from './pages/admin/placeholder/compliance';
 import ConfigPlaceholder from './pages/admin/placeholder/config';
 import CostPage from './pages/cost/index';
@@ -36,7 +36,7 @@ export function AdminRoutes() {
         <Route path="users" element={<UsersPage />} />
         <Route path="accounts" element={<AccountsPage />} />
         <Route path="cost" element={<CostPage />} />
-        <Route path="audit" element={<AuditPlaceholder />} />
+        <Route path="audit" element={<AuditPage />} />
         <Route path="invites" element={<InvitesPlaceholder />} />
 
         {/* P0 内容审核 */}
