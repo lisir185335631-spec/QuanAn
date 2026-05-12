@@ -4922,3 +4922,124 @@ Step 1.5 亲跑全套补门禁 100% 过。
   - admin_rls 13 original tables = DATA-MODEL §13.1 定义(4 核心 + 9 辅助) · 不含 US-001 额外添加的 admin_users/admin_sessions/admin_config 等
   - AST procedure 检测: 例外列表需含 unprefixed 和 prefixed 两种形式(login 和 auth.login)
 ---
+
+============================================================
+## [2026-05-12 14:59] - US-007 (Opus audit · PRD-10 P9.0 admin foundation 收官 · 全套绿灯 + 5 LD-A + 6 R-A + 1 e2e + verify-artifacts manifest)
+============================================================
+
+**risk_level**: medium · size_hint: small · ~6 min 标审 + 收官硬门禁
+
+**Audit context** · PENDING_DETECTED:US-007 14:59:39 → 全局 §5.0.3 sanity check ✅ · retryCount=0(一次过 · 2 commits 48bf660 feat + 2393642 progress)
+
+**§0 4 项实测 + 收官硬门禁 5 项**:
+- ✅ vitest **1038 tests / 0 failures / 0 errors** · 13.491s · 116 files(pytest-full.xml 元数据终极证据)
+- ✅ test:judge **55/55 PASS** · 21 files(PRD-9 累计 0 退化)
+- ✅ test:admin-integration **10/10 PASS**(auth-flow 1 + audit-log-write 1 + rls-bypass-cross-account 8)
+- ✅ playwright **169 total**(原 164 PRD-9 + admin 1 new + 4 chrome 累加 = 169)· admin-foundation-loop.spec.ts 1/1 PASS · knowledge-rag-loop regression 6/6 PASS(3 chromium + 3 mobile)
+- ✅ typecheck 6 ws 0 errors · lint 0 warnings · Validator verdict=PASS · failing_ac=null
+
+**收官硬门禁 4 audit script 全跑**:
+- ✅ **bash scripts/audit-redlines-admin.sh exit 0** · 输出 "ALL PASS · 5 LD-A + 6 R-A"
+  - LD-A1 admin OAuth 独立(无 QUANQN_WEB_CLIENT 引用)
+  - LD-A2 双向分离(adminRouter / appRouter 不互相 import)
+  - LD-A3 AST 检测 5 procedure 0 violations(listMine adminProcedure + 4 exception auth.login/logout/me/health)
+  - LD-A4 Approval Gates 机制就位(approvalGateCheckMiddleware + AdminMeta.requiresApproval + adminProcedure 链 · PRD-13 补全真闭环)
+  - LD-A5 TrendingScraper/FileParser 不直接写主表
+  - R-A1/A2/A3/A4/A5/A6 全 PASS(web/admin 不互相 import + 无 admin 入口 + DEV guard + 无 raw SQL + 无 LLMGateway + 无 mock approval bypass)
+- ✅ **scripts/audit-admin-rls.ts (AST) exit 0** · 5 procedures 0 violations
+- ✅ **bash scripts/audit-admin-rls-tables.sh** · 13/13 admin tables RLS DISABLED + 15/15 main app RLS ENABLED · 0 mismatches
+- ✅ **bash scripts/audit-approval-gates.ts (AST)** · Approval Gates 机制验证(3/3 checks passed)
+
+**反例 clauses 真落地**:
+- **R3-D061 mock OAuth multi-layer**: audit-redlines R-A3 通过 · DEV guard 正常 · prod .env.production 不存在 dev skip
+- **REJ-019 adminRouter/appRouter 严格分离**: LD-A2 双向 grep 0 命中 ✅
+- **PRD-4 US-018 workers=1 fullyParallel=false**: playwright.config.ts admin project 注释"Follows anti-pattern REJ-D061: admin shared user must run serially" ✅
+
+**通用 4 维度**:
+- AC: 23/23 PASS(Validator verdict=PASS · failing_ac=null + 完整 metrics: vitest 1034 passed/4 skipped + judge 55 + admin-integration 10 + e2e 1+6 regression + typecheck 0 + lint 0)
+- AGENTS §10: 5 LD-A + 6 R-A 全 PASS(audit-redlines-admin.sh ALL PASS)
+- 安全: dev 环境 OAuth/MFA/IPWhitelist stub 模式 + admin/ 子目录隔离 + R-A 6 红线全过 · 0 Blocker
+- PRD 一致性: D-059~D-068 10 LD 全落实 · ADMIN §8.2 退出条件 super_admin login + 空 Layout + admin_audit_log admin_login row · 全部满足
+
+**TD 豁免 approve(必须留痕 3 联动)**:
+- **TD-041 (low · doc-drift)** 豁免: PRD-10 §1 US-007 写 e2e flat 路径 tests/e2e/admin-foundation-loop.spec.ts · 实际放 tests/e2e/admin/ 子目录(更合理 · 后续 PRD-11+ admin 类 e2e 集中)· playwright.config.ts admin project testMatch=tests/e2e/admin/**/*.spec.ts 跟实际路径对齐 · 测试 1/1 PASS · fix_by 下次 PRD review
+- **TD-042 (low · audit-coverage)** 豁免: scripts/audit-admin-rls-tables.sh 在 US-007 改列表后 audit coverage 漏验 8 admin model(admin_users / admin_sessions / admin_invite_campaign / admin_constants / admin_config / admin_ab_experiment / prompt_canary_config / quota_adjustment_log)· psql 实测 8 model 全 relrowsecurity=f(RLS DISABLED · manual_admin_rls.sql 已 DISABLE 26 表)· 功能 OK · 仅 audit coverage 漏 · TD-039 (前 coverage 不全)是 superset · US-007 partial fix 方向错 · fix_by PRD-11 启动前升级 audit script 加 8 漏 model 或扩展到 26 表全 audit
+
+**TD 登记** · .agents/tech-debt.json items **42 total**(原 40 + TD-041 doc-drift + TD-042 audit-coverage)· status=open · severity=low
+
+**剩余 open TDs**(PRD-10 收官): TD-027/028 + TD-031 + TD-033/034/035 + TD-037/038/039/040/041/042(本 PRD 新登 6 个 · 全 low severity · 全 doc-drift / audit-coverage / design-drift)
+
+============================================================
+**🎉 PRD-10 P9.0 admin 基础设施收官 — 7/7 PASSED**
+============================================================
+- US-001 ★ Foundation · monorepo workspace + 14 admin model + RLS DISABLE + 6 闸 middleware 模板预埋 (approve 2026-05-12 11:18 · foundation 档 ~7 min 深审 · 3 TD 留痕)
+- US-002 lucia-auth admin session + mock OAuth provider + admin.auth router (approve 2026-05-12 12:33 · high 档 · multi-layer R3 PRD-1 US-006 真防护)
+- US-003 6 闸 middleware 真实现 · adminAuth→roleCheck→ipWhitelist→mfaCheck→adminRLS→approvalGateCheck (approve 2026-05-12 12:53 · high 档 · 32 unit)
+- US-004 admin_audit_log 自动 middleware 写入 · 4 类 eventType (approve 2026-05-12 13:15 · medium 档 · TD-040 doc-drift)
+- US-005 admin Layout 骨架 · TopBar+Sidebar 16 域+AuditDrawer+StatusBar (approve 2026-05-12 13:45 · medium 档 · 18 unit + browser E2E 真测)
+- US-006 adminRLS bypass 跨账号查集成测试 · 真 DB LD-A3 核心硬验证 (approve 2026-05-12 14:24 · high 档 · 8 integration test)
+- US-007 收官 · 全套绿灯 + 5 LD-A + 6 R-A + admin e2e (approve 2026-05-12 15:08 · medium 档 · 7/7 PASSED 收官)
+
+**主应用 P0-P9.0 收官** · admin foundation 就位 · 距 PRD-11(P9.1 6 P0 业务核心域 NSM/用户/IP/成本/审计/邀请)启动一步之遥(参 ADMIN-ARCHITECTURE.md §8.3)
+**0 RCA** · 全 7 US retryCount=0 一次过 · 7 commits feat + 6 commits progress · 无 reject · 无 daemon stuck
+**6 new TDs**(TD-037~TD-042 · 全 low severity · 全 doc-drift / audit-coverage / design-drift · 无 PRR 必修)
+
+**approved_at**: 2026-05-12T15:08(收官 medium 档标审 ~6 min · 23/23 AC + 1038/1042 zero-regression + 5 LD-A + 6 R-A ALL PASS + admin e2e 1/1 + 4 audit scripts 全跑通)
+
+============================================================
+
+
+--- [RALPH] Iteration 9 ended: US-007 (39分钟 27秒) ---
+
+============================================================
+## Codebase Patterns - PRD-10 贡献(/goal-verify 于 2026-05-12 提炼)
+============================================================
+
+跨 PRD 可迁移的 admin 子系统模式 · 供 PRD-11/12/13/14 + 后续 admin 类项目继承:
+
+1. **admin 子系统独立隔离 4 维度 pattern**(R-A1~A6 落地)
+   - 独立 OAuth client_id(LD-A1)· 独立 Redis namespace `admin:session:*`(12h ttl + 30min idle)· 独立 SPA bundle(apps/admin · port 5174 · admin.{domain})· 独立 cookie `admin_session_id`
+   - 6 类边界破坏 grep 0 命中(apps/web ↔ apps/admin 不互相 import · 主应用前端不暴露 /admin · admin 不调 LLM · admin 不用 raw SQL 绕过)
+   - 类比模式:任何"内部团队 vs 外部用户"双产品架构都应套用(参 ADR-021 独立 first-class 子系统设计)
+
+2. **6 闸 middleware 链 + auditLog 后置统一 pattern**(LD-A2 + LD-A3 + LD-A4 + R-A4 落地)
+   - `adminProcedure = t.procedure.use(adminAuth).use(roleCheck).use(ipWhitelist).use(mfaCheck).use(adminRLS).use(approvalGateCheck).use(auditLog)` 顺序硬约束
+   - auditLog 在末位 · 上游任一闸失败也 catch + 写 audit(failure path 完整)
+   - stub/真实模式 env switch · ADMIN_IP_WHITELIST_ENABLED + ADMIN_MFA_REQUIRED + OAUTH_PROVIDER='mock'/'google' factory + startup gate(prod 防 mock 误进)
+   - 类比模式:任何高安全后台 middleware 链都应:链组合统一 + auditLog 后置 + env switch dev/prod 分层
+
+3. **adminRLS bypass + LOCAL=true pattern**(LD-A3 落地 · 类比 main-app accountIsolation D-009)
+   - `ctx.prisma.$transaction(tx => { tx.$executeRawUnsafe("set_config('app.role','admin',true)"); return next({ ctx: { ...ctx, adminPrisma: tx, crossAccountAccessed: true }})})`
+   - LOCAL=true(SET LOCAL · 仅事务内生效)· 防连接池污染 · 测试硬验证 outside transaction current_setting=''
+   - 主应用 RLS 不破(test 7 验证 quanqn_app role + app.current_account_id 独立工作)
+   - 类比模式:任何"管理员 bypass 多租户 RLS"场景都应:$transaction wrap + LOCAL=true + 注入 admin client + crossAccountAccessed flag → audit middleware 自动写
+
+4. **OAuth multi-layer prod 防护 pattern**(R3 缓解 · PRD-1 US-006 反例 + REJ-026 + REJ-024)
+   - Layer 1 · factory startup gate · prod + OAUTH_PROVIDER=mock → process.exit(1)
+   - Layer 2 · UI mock button `import.meta.env.DEV` 包(prod build 不显示)
+   - Layer 3 · provider 内部 user_not_mock check(即使 mock factory 选中 · 也只对 isMock=true 用户通过)
+   - Layer 4 · audit-redlines-admin.sh CI grep .env.production 不含 mock(defense-in-depth)
+   - 类比模式:任何"dev 优惠路径"功能(mock OAuth / mock payment / dev-only API)都应 multi-layer 防进 prod
+
+5. **admin_audit_log append-only + 4 类 eventType pattern**(LD-A3 + R-A4 + 项目 §5.1 落地)
+   - eventType union · `admin_login / cross_account_query / approval_request_create / approval_request_resolve`(stub PRD-13 真闭环)
+   - eventCategory 4 类 · `auth / data_access / approval / admin_action`(扩展 security_alert future)
+   - middleware 后置自动写 cross_account_query(由 ctx.crossAccountAccessed flag 触发)· auth 写 admin_login(login 不经 middleware · service 直接调)· approvalGate 写 approval_request_create stub
+   - **append-only 硬约束** · `grep prisma.adminAuditLog.(update|delete|upsert)` = 0 命中 · 任何状态变更新 row(approval pending → approved 写新 row 不动旧)
+   - **redact sensitive** · payload 含 password/token/apiKey/secret 字段自动 `'[REDACTED]'` · 防 audit 成攻击面
+   - **idempotent** · 同 traceId+eventType 已存在 skip(防 retry 重复)
+   - **payloadHash SHA-256** · 防 audit 篡改取证
+   - 类比模式:任何"合规级 audit log"系统都应:eventType union + append-only + redact + idempotent + payloadHash
+
+6. **16 sidebar 域 metadata array pattern**(D-066 落地)
+   - admin-routes.ts 集中 metadata · `{path, label, emoji, prd, requiredRole, summary}` × 16
+   - sidebar.tsx + placeholder.tsx × 16 共用 source of truth · PRD-11+ 加业务页:只替换 placeholder + metadata.prd 字段 · sidebar 不动
+   - 类比模式:任何"中后台 N 域 navigation"系统都应:metadata array 集中 + sidebar/page 共用 · 后续业务页面落地 0 sidebar 改动
+
+7. **monorepo workspace 10 步迁移协议**(SCAFFOLD §A.3 落地 · TD-037 待统一)
+   - src/ 单包 → apps/{web,admin,api} + packages/{schemas,ui,clients} · scripts/migrate-monorepo.sh 一次性脚本
+   - pnpm-workspace.yaml + tsconfig.base.json + vitest workspace + playwright baseURL 双 project 全 update
+   - **0 业务影响要求** · PRD-9 e2e 必复跑 6/6 PASS(US-001 强制 AC)· 防主应用功能退化
+   - 类比模式:任何"单包 → monorepo"重构都应:scripts/ 自动化 + e2e 回归门禁 + workspace 配置全 update
+
+============================================================

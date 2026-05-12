@@ -1,115 +1,158 @@
 
-> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
-> vitest run
-
-
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ tests/unit/api/history-router.test.ts (16 tests) 8ms
- ✓ tests/unit/api/specialists-flow.test.ts (20 tests) 9ms
- ✓ tests/unit/specialists/__tests__/VideoAgent.test.ts (14 tests) 5ms
- ✓ tests/unit/specialists/__tests__/CopywritingAgent.test.ts (17 tests) 9ms
- ✓ tests/unit/api/ai-video-router.test.ts (10 tests) 12ms
- ✓ tests/unit/specialists/fallback.test.ts (10 tests) 7ms
- ✓ tests/unit/api/specialists-creation.test.ts (10 tests) 7ms
- ✓ tests/unit/lib/compliance.test.ts (21 tests) 4ms
- ✓ tests/unit/api/acquisition-video-router.test.ts (7 tests) 5ms
- ✓ tests/unit/specialists/base.test.ts (16 tests) 11ms
- ✓ tests/unit/api/ipAccounts-stepData.test.ts (15 tests) 7ms
- ✓ tests/unit/schemas/specialist-io.test.ts (26 tests) 4ms
- ✓ tests/unit/api/schemas/video-schemas.test.ts (24 tests) 6ms
- ✓ tests/integration/api/boom-generate-llm.test.ts (1 test) 82ms
- ✓ tests/integration/api/copywriting-free-llm.test.ts (1 test) 53ms
- ✓ tests/unit/api/image-gen-queue.test.ts (8 tests) 3ms
- ✓ tests/unit/api/copywriting-acquisition.test.ts (4 tests) 5ms
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts (8 tests) 7ms
- ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts (8 tests) 4ms
- ✓ tests/integration/api/video-analysis-viral-llm.test.ts (1 test) 71ms
- ✓ tests/unit/web/pages/AiVideo.test.tsx (21 tests) 8ms
- ✓ tests/unit/api/account-step-auth.test.ts (15 tests) 25ms
- ✓ tests/unit/api/video-analysis-router.test.ts (4 tests) 4ms
- ✓ tests/unit/api/boom-generate-router.test.ts (4 tests) 12ms
- ✓ tests/unit/api/rate-limit-image-gen.test.ts (9 tests) 18ms
- ✓ tests/unit/web/pages/VideoProduction.test.tsx (23 tests) 3ms
- ✓ tests/integration/api/copywriting-acquisition-llm.test.ts (1 test) 63ms
- ✓ tests/unit/api/video-production-router.test.ts (6 tests) 5ms
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts (5 tests) 5ms
- ✓ tests/integration/api/analysis-structural-llm.test.ts (1 test) 43ms
- ✓ tests/integration/api/ai-video-flow.test.ts (2 tests) 43ms
-{"level":"error","time":"2026-05-10T17:29:47.582Z","pid":8404,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/video-agent-llm.test.ts:186:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_video_agent_int_1778434187554","msg":"cost_log.write_failed"}
- ✓ tests/integration/api/video-agent-llm.test.ts (1 test) 71ms
-{"level":"error","time":"2026-05-10T17:29:47.638Z","pid":8396,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1778434187606","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/videoProduction.ts:77:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
- ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx (22 tests) 4ms
- ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts (8 tests) 6ms
- ✓ tests/integration/api/video-production-llm.test.ts (1 test) 91ms
- ✓ tests/integration/api/image-gen-bullmq.test.ts (1 test) 68ms
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts (11 tests) 8ms
- ✓ tests/unit/web/pages/Analysis.test.tsx (26 tests) 7ms
- ✓ tests/unit/web/StepForm.test.tsx (19 tests) 4ms
-{"level":"error","time":"2026-05-10T17:29:47.803Z","pid":8418,"hostname":"returndeMacBook-Pro.local","traceId":"tr_acq_video_int_1778434187764","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/acquisitionVideo.ts:49:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
- ✓ tests/unit/specialists/base.llm.test.ts (8 tests) 4ms
- ✓ tests/integration/api/acquisition-video-llm.test.ts (1 test) 85ms
- ✓ tests/unit/web/pages/BoomGenerate.test.tsx (28 tests) 4ms
- ✓ tests/unit/web/hooks.test.ts (16 tests) 2ms
- ✓ tests/unit/specialists/__tests__/LivestreamAgent.test.ts (5 tests) 5ms
- ✓ tests/unit/api/analysis-router.test.ts (4 tests) 4ms
- ✓ tests/unit/api/knowledge.test.ts (7 tests) 5ms
- ✓ tests/unit/api/copywriting-router.test.ts (4 tests) 5ms
- ✓ tests/unit/web/StepResult.test.tsx (10 tests) 2ms
-{"level":"warn","time":"2026-05-10T17:29:47.995Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.996Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-10T17:29:47.998Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.998Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-10T17:29:47.999Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.999Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
- ✓ tests/unit/api/llm-gateway-fallback.test.ts (9 tests) 6ms
- ✓ tests/unit/web/pages/Generate.test.tsx (22 tests) 6ms
- ✓ tests/unit/web/pages/VideoAnalysis.test.tsx (20 tests) 3ms
-{"level":"error","time":"2026-05-10T17:29:48.141Z","pid":8456,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanQn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
- ✓ tests/unit/web/ToolForm.test.tsx (20 tests) 4ms
-{"level":"error","time":"2026-05-10T17:29:48.142Z","pid":8449,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1778434188120","msg":"cost_log.write_failed"}
- ✓ tests/unit/api/feedback-log.test.ts (8 tests) 7ms
- ✓ tests/integration/api/image-gen-flow.test.ts (1 test) 34ms
- ✓ tests/integration/api/specialist-llm.test.ts (1 test) 53ms
- ✓ tests/integration/api/rls-isolation.test.ts (4 tests) 47ms
- ✓ tests/unit/web/ls-namespace.test.ts (18 tests) 2ms
-{"level":"warn","time":"2026-05-10T17:29:48.276Z","pid":8469,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
-{"level":"warn","time":"2026-05-10T17:29:48.278Z","pid":8469,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
- ✓ tests/unit/api/account-isolation.test.ts (9 tests) 5ms
- ✓ tests/unit/web/router.test.ts (12 tests) 2ms
- ✓ tests/unit/api/invite.test.ts (4 tests) 5ms
- ✓ tests/unit/parseDesignTokens.test.ts (10 tests) 4ms
- ✓ tests/unit/api/llm-gateway-rate.test.ts (6 tests) 2ms
- ✓ tests/integration/api/auth.test.ts (6 tests) 89ms
- ✓ tests/unit/web/ToolResult.test.tsx (13 tests) 3ms
-{"level":"error","time":"2026-05-10T17:29:48.435Z","pid":8483,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
-{"level":"error","time":"2026-05-10T17:29:48.437Z","pid":8483,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
-{"level":"error","time":"2026-05-10T17:29:48.438Z","pid":8483,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
- ✓ tests/unit/auth/providers.test.ts (9 tests) 7ms
- ✓ tests/unit/api/ip-progress.test.ts (7 tests) 3ms
- ✓ tests/unit/api/trending.test.ts (3 tests) 4ms
- ✓ tests/integration/api/ip-progress-integration.test.ts (3 tests) 51ms
-{"level":"info","time":"2026-05-10T17:29:48.529Z","pid":8486,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778434188529_mhzv","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
- ✓ tests/unit/web/step-config.test.ts (9 tests) 2ms
-{"level":"error","time":"2026-05-10T17:29:48.529Z","pid":8486,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778434188529_mhzv","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:68:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:37:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":0,"msg":"specialist.failed"}
- ✓ tests/unit/agents/base.test.ts (7 tests) 8ms
- ✓ tests/integration/api/llm-gateway-real.test.ts (1 test) 18ms
- ✓ tests/integration/api/trace.test.ts (2 tests) 20ms
- ✓ tests/integration/api/auth.me.test.ts (1 test) 21ms
- ✓ tests/unit/api/image-gen-dall-e-3.test.ts (6 tests) 3011ms
-   ✓ US-009 AC-12-3: network failure retry 3 times → failed result > retries 3 times on network error, returns { error: image_gen_failed, sceneImageUrl: placeholder } 3004ms
- ✓ tests/unit/services/context-assembler.test.ts (16 tests) 5015ms
-   ✓ ContextAssembler > L2 stepData fetch timeout → 占位注入 · constants 层不受影响 5001ms
+ ❯ tests/integration/admin/rls-bypass-cross-account.test.ts (8 tests | 4 failed) 117ms
+   × adminRLS bypass cross-account integration (real PG) > test 1: ctx.prisma.history.findMany returns 0 rows (main-app RLS blocks without activeAccountId) 12ms
+     → 
+Invalid `tx.history.findMany()` invocation in
+/Users/return/Desktop/QuanQn/tests/integration/admin/rls-bypass-cross-account.test.ts:75:25
 
- Test Files  75 passed (75)
-      Tests  727 passed (727)
-   Start at  01:29:46
-   Duration  6.02s (transform 1.01s, setup 150ms, collect 5.17s, tests 9.36s, environment 6ms, prepare 2.31s)
+  72 await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
+  73   'SET LOCAL ROLE quanqn_app',
+  74 );
+→ 75 return tx.history.findMany(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "permission denied for table histories", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+   × adminRLS bypass cross-account integration (real PG) > test 2: ctx.adminPrisma.history.findMany returns 10 rows (bypass RLS success) 2ms
+     → 
+Invalid `tx.history.findMany()` invocation in
+/Users/return/Desktop/QuanQn/tests/integration/admin/rls-bypass-cross-account.test.ts:92:25
 
+  89 await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
+  90   "SELECT set_config('app.role', 'admin', true)",
+  91 );
+→ 92 return tx.history.findMany(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "permission denied for table histories", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+   × adminRLS bypass cross-account integration (real PG) > test 4: cross_account_query audit log written after adminRLS + auditLog chain 20ms
+     → expected 0 to be greater than or equal to 1
+   × adminRLS bypass cross-account integration (real PG) > test 7: main-app accountIsolation activeAccountId=account_a → 5 rows (adminRLS does not pollute main-app RLS) 2ms
+     → 
+Invalid `tx.history.findMany()` invocation in
+/Users/return/Desktop/QuanQn/tests/integration/admin/rls-bypass-cross-account.test.ts:235:25
+
+  232 await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
+  233   `SELECT set_config('app.current_account_id', '${String(accountA.id)}', true)`,
+  234 );
+→ 235 return tx.history.findMany(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "permission denied for table histories", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/admin/rls-bypass-cross-account.test.ts > adminRLS bypass cross-account integration (real PG) > test 1: ctx.prisma.history.findMany returns 0 rows (main-app RLS blocks without activeAccountId)
+PrismaClientUnknownRequestError: 
+Invalid `tx.history.findMany()` invocation in
+/Users/return/Desktop/QuanQn/tests/integration/admin/rls-bypass-cross-account.test.ts:75:25
+
+  72 await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
+  73   'SET LOCAL ROLE quanqn_app',
+  74 );
+→ 75 return tx.history.findMany(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "permission denied for table histories", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7505
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ Proxy._transactionWithCallback node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:8000
+ ❯ tests/integration/admin/rls-bypass-cross-account.test.ts:71:18
+     69|     // SET LOCAL ROLE quanqn_app → non-superuser, RLS enforced
+     70|     // No app.current_account_id set → histories_account_isolation pol…
+     71|     const rows = await prismaTest.$transaction(async (tx) => {
+       |                  ^
+     72|       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Pr…
+     73|         'SET LOCAL ROLE quanqn_app',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/integration/admin/rls-bypass-cross-account.test.ts > adminRLS bypass cross-account integration (real PG) > test 2: ctx.adminPrisma.history.findMany returns 10 rows (bypass RLS success)
+PrismaClientUnknownRequestError: 
+Invalid `tx.history.findMany()` invocation in
+/Users/return/Desktop/QuanQn/tests/integration/admin/rls-bypass-cross-account.test.ts:92:25
+
+  89 await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
+  90   "SELECT set_config('app.role', 'admin', true)",
+  91 );
+→ 92 return tx.history.findMany(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "permission denied for table histories", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7505
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ Proxy._transactionWithCallback node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:8000
+ ❯ tests/integration/admin/rls-bypass-cross-account.test.ts:85:18
+     83|     // SET LOCAL ROLE quanqn_app (RLS enforced) + set_config('app.role…
+     84|     // AC-14: grep 'set_config.*app.role.*admin' must match this file …
+     85|     const rows = await prismaTest.$transaction(async (tx) => {
+       |                  ^
+     86|       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Pr…
+     87|         'SET LOCAL ROLE quanqn_app',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/integration/admin/rls-bypass-cross-account.test.ts > adminRLS bypass cross-account integration (real PG) > test 4: cross_account_query audit log written after adminRLS + auditLog chain
+AssertionError: expected 0 to be greater than or equal to 1
+ ❯ tests/integration/admin/rls-bypass-cross-account.test.ts:153:25
+    151|       where: { eventType: 'cross_account_query', traceId },
+    152|     });
+    153|     expect(logs.length).toBeGreaterThanOrEqual(1);
+       |                         ^
+    154|     expect(logs[0]?.actorAdminId).toBe(adminUser.id);
+    155|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/integration/admin/rls-bypass-cross-account.test.ts > adminRLS bypass cross-account integration (real PG) > test 7: main-app accountIsolation activeAccountId=account_a → 5 rows (adminRLS does not pollute main-app RLS)
+PrismaClientUnknownRequestError: 
+Invalid `tx.history.findMany()` invocation in
+/Users/return/Desktop/QuanQn/tests/integration/admin/rls-bypass-cross-account.test.ts:235:25
+
+  232 await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
+  233   `SELECT set_config('app.current_account_id', '${String(accountA.id)}', true)`,
+  234 );
+→ 235 return tx.history.findMany(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "permission denied for table histories", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7505
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ Proxy._transactionWithCallback node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:8000
+ ❯ tests/integration/admin/rls-bypass-cross-account.test.ts:228:18
+    226|     // Verifies that running adminRLS earlier did NOT permanently set …
+    227|     // AC-15: grep 'current_setting.*app.role' matches (via getCurrent…
+    228|     const rows = await prismaTest.$transaction(async (tx) => {
+       |                  ^
+    229|       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Pr…
+    230|         'SET LOCAL ROLE quanqn_app',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 4 passed (8)
+   Start at  14:06:38
+   Duration  247ms (transform 32ms, setup 4ms, collect 46ms, tests 117ms, environment 0ms, prepare 19ms)
+
+✓ AC-7: RAG 注入集成测试 > (3) DiagnosisAgent 非生成型 → 不含 [Section 6] · retrieve not called
+✓ [Integration] RLS account isolation via set_config > AC-3: user A (correct account) sees their own step_data rows
+✓ [Integration] RLS account isolation via set_config > AC-3: user B (different account) sees 0 rows from step_data
+✓ [Integration] RLS account isolation via set_config > AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)
+✓ [Integration] RLS account isolation via set_config > AC-7: set_config round-trip overhead < 50ms on localhost
+✓ US-002 AC-7: seed-knowledge-chunk integration tests > (1) buildChunks returns 112 items with correct type distribution
+✓ US-002 AC-7: seed-knowledge-chunk integration tests > (2) real seed → prisma.knowledgeChunk.count() === 113
+✓ US-002 AC-7: seed-knowledge-chunk integration tests > (3) second seed run — count still 113 (upsert idempotent)
+✓ US-003 AC-10: specialist integration — nock LLM + real DB cost_log > execute() calls Anthropic tool_use, returns valid result, writes cost_log to DB
+✓ US-009 AC-8: STT Whisper integration — real OpenAI call > 5s WAV audio → real Whisper-1 → transcript is string + cost_log written to DB
+✓ US-009 AC-9: R-001 — OPENAI_API_KEY not in frontend code > grep OPENAI_API_KEY apps/web should return 0 matches
+✓ [Integration] trace_id propagation > echoes provided X-Trace-Id in response header
+✓ [Integration] trace_id propagation > generates 16-char hex trace ID when header is absent
+✓ US-010 AC-8: TTS OpenAI integration — real TTS-1 call > short Chinese text → real TTS-1 → mp3 buffer + asset + cost_log written to DB
+✓ US-010 AC-9: R-001 — OPENAI_API_KEY not in frontend code > grep OPENAI_API_KEY apps/web should return 0 matches
+✓ US-002 AC-10: VideoAgent invokeLLM integration — nock Anthropic SDK + real DB cost_log > execute(mode=production): nock intercepts Anthropic call, returns valid ProductionOutput, writes cost_log to DB within 3s
+✓ US-009 AC-5: videoAnalysis.analyze integration — nock SDK + real DB + elements > analyze: calls mock LLM, writes 1 history row (agentMode=viral, contentType=json) + cost_log + elements mapped from analysis.elements
+✓ US-003 AC-8: videoProduction.generate integration — nock Anthropic SDK + real DB > generate: nock intercepts Anthropic call, writes history + cost_log to real DB, < 5s
+✓ [Integration] VoiceChatAgent 3-turn L1 Buffer (AC-10) > 3 turns: 3 user + 3 assistant turns in L1 Buffer
+✓ [Integration] VoiceChatAgent 3-turn L1 Buffer (AC-10) > clearBuffer removes all turns
+Total: 1038 tests, 0 failures

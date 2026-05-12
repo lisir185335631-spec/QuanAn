@@ -1,8 +1,8 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-11T01:36:00",
-  "validator_end_ts": "2026-05-11T01:37:45",
-  "test_command": "pnpm test (vitest run) + pnpm typecheck + pnpm lint",
+  "validator_start_ts": "2026-05-12T04:15:00",
+  "validator_end_ts": "2026-05-12T04:25:00",
+  "test_command": "pnpm vitest run tests/unit/admin/auth-lucia.test.ts tests/unit/admin/auth-router.test.ts tests/integration/admin/auth-flow.test.ts && pnpm vitest run (full) && pnpm typecheck && agent-browser ACs 17-21",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,7 +10,8 @@
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
+    "typecheck.stdout.txt",
+    "unit-tests.stdout.txt"
   ],
-  "notes": "746 tests passed (80 files). 3 new specialist test files: EvolutionAgent.test.ts (2), DailyTaskAgent.test.ts (2), VoiceChatAgent.test.ts (2) = 6 new tests. typecheck: 0 errors across 6 workspace projects. lint: 0 warnings. AC-9 SoT: 5 tool names in 7+ files; 7 task types in 3+ files."
+  "notes": "All 21 ACs verified. Unit tests: 17 auth-lucia + 8 auth-router + 1 auth-flow = 26 pass. Zero regression: 103 files, 961 tests pass (4 skipped), 0 failed. Typecheck: all 6 workspaces clean. CORS fix (commit 4d236db) moved /trpc/admin/* CORS before /trpc/* — browser ACs 17-21 now pass. Browser: login page email input + mock OAuth button (DEV) + Google stub disabled verified; super@quanqn.com login → admin_session_id cookie (HttpOnly, SameSite=Lax) + redirect to /admin + session restores on reload + invalid email shows [alert] toast."
 }

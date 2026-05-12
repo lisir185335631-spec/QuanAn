@@ -1,18 +1,17 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-11T23:08:00",
-  "validator_end_ts": "2026-05-11T23:50:00",
-  "test_command": "pnpm vitest run (full 911 tests, reporter=junit) + pnpm typecheck",
+  "validator_start_ts": "2026-05-12T05:04:40",
+  "validator_end_ts": "2026-05-12T05:06:30",
+  "test_command": "pnpm vitest run (full) + unit + integration + typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "AC-10 required: (1) text-search fallback in retrieve.ts when OPENAI_API_KEY not set (ILIKE fallback; production pgvector path unaffected); (2) dev seed data inserted via SQL. All 23 Knowledge.test.tsx unit tests pass. Browser AC-9: page load, 3 tabs, search input, 0 console errors confirmed. Browser AC-10: search '矛盾冲突' returned 1 case card '矛盾冲突制造吸引力' with content containing '矛盾'. typecheck 0 errors across all 6 workspaces.",
+  "notes": "AC-13 naming note: AC says @@index([adminUserId, createdAt(sort: Desc)]) but schema field is actorAdminId. Functional equivalent @@index([actorAdminId, createdAt(sort: Desc)]) exists — AC uses legacy field name. All 14 ACs functionally satisfied.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "knowledge-page.png",
-    "knowledge-search.png"
+    "manifest.json"
   ]
 }

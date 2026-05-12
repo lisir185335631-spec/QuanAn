@@ -1,19 +1,17 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-11T11:28:00",
-  "validator_end_ts": "2026-05-11T11:32:00",
-  "test_command": "pnpm typecheck (web+api) + vitest run (root 82 files) + pnpm --filter @quanqn/web exec vitest run (web-only) + browser AC-7/AC-8",
+  "validator_start_ts": "2026-05-12T05:32:00",
+  "validator_end_ts": "2026-05-12T05:41:00",
+  "test_command": "pnpm vitest run (full suite 115 files) + apps/admin typecheck + browser E2E",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "vitest-full.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "screenshot.png",
-    "manifest.json"
+    "knowledge-page.png"
   ],
-  "notes": "All ACs pass. Root vitest: 82 test files, 774 tests, 0 failures. Typecheck: 0 errors (web+api). Browser: /evolution loads with h1 '进化中心', cold-start UI shows exact AC-8 text '暂无 insight · 等累计 5 条反馈后自动生成'. Web-only vitest 2 pre-existing failures (Generate h1 + History h1 Router context) NOT introduced by US-005 — confirmed present at US-003 commit state before US-005. Evolution-specific tests (h1 + empty state) both pass. AC-4 approved deviation: $queryRaw used instead of prisma.groupBy because DATE_TRUNC not natively supported by groupBy; output shape {date,total,good,satisfactionRate}[] matches AC spec."
+  "notes": "1030 tests (1026 passed, 4 skipped, 0 failures). Admin unit: layout.test.tsx 6 + sidebar.test.tsx 6 + audit-drawer.test.tsx 6 = 18 pass. apps/admin typecheck exit_code=0. Browser: mock OAuth login → /admin/nsm; TopBar shows QuanQn Admin brand + super_admin role badge + super@quanqn.com email; Sidebar 16 domains 4 groups visible with NSM active highlight; AuditDrawer slides in with admin_login row; ESC closes drawer; StatusBar shows ENV=dev/RLS=ON/WAF=stub/MFA=stub/Role=super_admin. AC-16/17 grep returns no matches. All 23 AC confirmed PASS."
 }

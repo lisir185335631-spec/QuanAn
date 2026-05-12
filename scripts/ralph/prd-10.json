@@ -29,8 +29,8 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-upgrade] high → foundation · downstream count=6(全 6 后续 US depends_on)+ 跨下游 PRD count=4(PRD-11/12/13/14 全依赖 monorepo + 13 admin model)· 触发 §10 升档规则 'medium ≥5 → foundation'. [size-hint-warn] 实际工作量 medium-large · 严格按 SCAFFOLD §A.3 10 步迁移内部 commit · ralph 监控 dev/validator 超时 5min 无新输出 kill + 拆(全局 §9.6.5 SOP)· prompt 字节预估 8-10K(危险区边缘 · 监控). [audit-extra] foundation 档审 §F4 协议锁 vs 既有代码 + §F5 monorepo 改造前后回归 + §G LD-A 5 grep + R-A 6 grep + audit-admin-rls-tables.sh 双向验证 · ~15 min 深审.",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -124,12 +124,10 @@
         "Refresh /admin · session 恢复 · 不被自动 logout",
         "Invalid email 显示 toast 错误 · 不破页面"
       ],
-      "depends_on": [
-        "US-001"
-      ],
+      "depends_on": ["US-001"],
       "priority": 2,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-keywords] auth + credential + oauth + session · 命中 high 关键词(security-critical). [audit-extra] 必带 startup gate test(OAUTH_PROVIDER=mock + NODE_ENV=production → process.exit(1) · 防 PRD-1 US-006 OAuth CSRF mock-bypass 类型 bug 复现 · reject-examples.jsonl 2026-05-08 PRD-1 US-006 反例真案例: ?mock=true query param 不能短路 CSRF state check). [audit-grep] grep 'OAUTH_PROVIDER.*mock' .env.production = 0 / grep 'app:session:' lucia-admin = 0 / grep 'QUANQN_WEB_CLIENT' apps/admin = 0.",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -202,12 +200,10 @@
         "apps/api/.env.example 加 ADMIN_IP_WHITELIST_ENABLED + ADMIN_IP_WHITELIST_CIDRS + ADMIN_MFA_REQUIRED",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-002"
-      ],
+      "depends_on": ["US-002"],
       "priority": 3,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-keywords] middleware + auth + adminRLS · high 关键词命中. [audit-extra] AST 检测 adminProcedure 链 6 闸全经过(node scripts/audit-admin-rls.ts 例外列表 ['auth.login','auth.logout','health']). [risk-warn] $transaction wrap 嵌套使用风险 · 业务 procedure 不能再开 transaction · 测试 spy 验证 transaction depth=1.",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -276,12 +272,10 @@
         "admin_audit_log 索引验证 · @@index([createdAt(sort: Desc)]) + @@index([adminUserId, createdAt(sort: Desc)]) 存在",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-003"
-      ],
+      "depends_on": ["US-003"],
       "priority": 4,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-keywords] audit_log + admin_audit_log + security · medium 关键词命中(business logic + audit). [audit-extra] grep audit 仅 append(R-A4 + 项目 CLAUDE.md §5.1)· redact sensitive(password/token/secret).",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -355,13 +349,10 @@
         "Click 🔔 → AuditDrawer slide-in · 显示 admin_login row 1 条 · ESC 关闭",
         "StatusBar 底部显示 ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002"
-      ],
+      "depends_on": ["US-001", "US-002"],
       "priority": 5,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-keywords] layout + sidebar + admin · medium 关键词命中(business logic + UI complexity). [size-hint-warn] 16 placeholder + 4 layout 组件 + 3 tests · 实际工作量 medium-large · ralph 监控 dev/validator 超时.",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -453,13 +444,10 @@
         "grep 'crossAccountAccessed.*true' tests/integration/admin/rls-bypass-cross-account.test.ts ≥ 1",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-003",
-        "US-004"
-      ],
+      "depends_on": ["US-003", "US-004"],
       "priority": 6,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[risk-keywords] rls + set_config + executeRaw + 隔离 · high 关键词命中(data-isolation 核心). [audit-extra] SQL 实测必跑 · current_setting('app.role')='admin' 真生效硬验证 · 类比 PRD-2 accountIsolation 测试 pattern.",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -531,17 +519,10 @@
         "Click logout → redirect to /login · admin_session_id cookie 清除",
         "Screenshot saved to screenshots/admin-foundation-loop.png"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002",
-        "US-003",
-        "US-004",
-        "US-005",
-        "US-006"
-      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006"],
       "priority": 7,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[收官 medium] 走全套门禁 + manifest 写入 + agent-browser 实测 · audit-extra 包含 §10.3 PRD-10 完成后 Audit Pattern 总和.",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [

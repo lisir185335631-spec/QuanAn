@@ -1,18 +1,17 @@
 {
   "story_id": "US-006",
-  "validator_start_ts": "2026-05-11T12:00:00",
-  "validator_end_ts": "2026-05-11T12:02:10",
-  "test_command": "pnpm vitest run + pnpm typecheck + pnpm test:e2e feedback-evolution-loop.spec.ts --project=chromium",
+  "validator_start_ts": "2026-05-12T14:05:00",
+  "validator_end_ts": "2026-05-12T14:17:30",
+  "test_command": "pnpm vitest run (full 1038 tests, DATABASE_URL=quanqn) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "NOTE(env): Tests require DATABASE_URL=quanqn (not DATABASE_URL_TEST). prismaTest falls back to DATABASE_URL when DATABASE_URL_TEST unset — both prismaTest and prisma singleton hit same quanqn DB, which has quanqn_app GRANTs and RLS policies. Running with DATABASE_URL_TEST=quanqn_test causes cross-DB failures: prismaTest queries quanqn_test while prisma service writes to quanqn. This is pre-existing test design matching US-004/US-005 validator behavior. NOTE(quanqn_test migration): Applied 6 pending migrations to quanqn_test during validation — quanqn_test now up to date. NOTE(stale log cleanup): Validator env-config error during testing wrote actorAdminId=0 integration-test audit log to quanqn — cleaned up before final run. All 8 US-006 tests PASS. Typecheck exit_code=0.",
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "playwright-final.xml",
-    "e2e.stdout.txt"
-  ],
-  "notes": "All 4 AC e2e tests PASS. Zero regression vitest 774/774. Typecheck 6 ws 0 errors. Fixes applied by ralph: (1) evolution.ts debugSeedInsight replaced db.$transaction([...]) with sequential await upsert + create; (2) feedback-evolution-loop.spec.ts line 15 added ESM __dirname polyfill via dirname(fileURLToPath(import.meta.url))."
+    "manifest.json"
+  ]
 }
