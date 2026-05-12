@@ -14,7 +14,10 @@ vi.mock('@/lib/prisma', () => ({
       update: vi.fn(),
       updateMany: vi.fn(),
     },
-    adminAuditLog: { create: vi.fn().mockResolvedValue({}) },
+    adminAuditLog: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({}),
+    },
   },
 }));
 
@@ -38,7 +41,10 @@ const prismaMock = prisma as unknown as {
     update: ReturnType<typeof vi.fn>;
     updateMany: ReturnType<typeof vi.fn>;
   };
-  adminAuditLog: { create: ReturnType<typeof vi.fn> };
+  adminAuditLog: {
+    findFirst: ReturnType<typeof vi.fn>;
+    create: ReturnType<typeof vi.fn>;
+  };
 };
 
 function makeCtx(overrides?: Partial<AdminTRPCContext>): AdminTRPCContext {

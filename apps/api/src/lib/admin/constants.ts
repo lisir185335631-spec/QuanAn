@@ -40,6 +40,8 @@ export const AUDIT_EVENT_TYPES = {
   CHANGE_QUOTA: 'change_quota',
   PUBLISH_PROMPT: 'publish_prompt',
   ROLLBACK_PROMPT: 'rollback_prompt',
+  APPROVAL_REQUEST_CREATE: 'approval_request_create',
+  APPROVAL_REQUEST_RESOLVE: 'approval_request_resolve',
 } as const;
 
 export type AuditEventType = (typeof AUDIT_EVENT_TYPES)[keyof typeof AUDIT_EVENT_TYPES];

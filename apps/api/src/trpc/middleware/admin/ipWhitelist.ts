@@ -1,6 +1,6 @@
 // PRD-10 US-003 · ipWhitelist — ADMIN_IP_WHITELIST_ENABLED + ipaddr.js CIDR check
-import ipaddr from 'ipaddr.js';
 import { TRPCError } from '@trpc/server';
+import ipaddr from 'ipaddr.js';
 
 import { middleware } from '@/trpc/trpc-admin';
 
