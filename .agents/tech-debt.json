@@ -735,11 +735,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "/goal-verify §1 D-068 LD 验证(US-005 audit 时漏查 · goal-verify 补 catch)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "(1) PRD-10 §1 US-005 files_to_create 含 packages/ui/admin/{tokens.ts,DenseTable.tsx,index.ts}(3 文件期望)(2) §7 D-068 锁定 \"admin tokens override(row-height 32 / font-size 13)\" 在 packages/ui/admin (3) 实际 ls packages/ui/admin/ = No such file or directory (4) admin tokens 实际落 apps/admin/src/styles/admin.css L4-5 `--topbar-height: 60px / --sidebar-width: 240px` CSS custom property + grid templates · 功能等价 · TopBar/Sidebar/StatusBar 真用此 CSS vars · sidebar.test.tsx + layout.test.tsx 18 unit 全过",
       "root_cause": "US-005 ralph 实施 admin Layout 时选简化路径 · admin tokens 直接放 apps/admin/src/styles/admin.css(单包 CSS)· 没抽到 packages/ui/admin/(共享 UI 包)· 当前 admin 是唯一消费者 · 不抽也 OK · 但后续 PRD-11+ 加 admin 业务组件(DenseTable 真接 + 数据可视化组件)时缺 packages 容器(D-068 设计目标:复用 packages/ui/base 同样 admin 密集模式可复用)· US-005 audit 时(13:45)漏 verify packages/ui/admin/ 存在 · OPUS-AUDIT-CHEATSHEET 常见陷阱 1 \"只读主文件就 approve\" 案例",
       "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域需要 admin DenseTable 等组件)· 单独 maintenance PR · 建 packages/ui/admin/{index.ts,tokens.ts,DenseTable.tsx}(从 admin.css CSS vars 提 JS/TS constants + DenseTable stub)· admin.css 改 import packages/ui/admin tokens · 不影响功能",
-      "audit_exemption": "US-005 approve 时漏查 + /goal-verify 补 catch · 因 (1) 功能等价(TopBar 60/Sidebar 240/StatusBar 24 真生效)(2) 18 unit + browser E2E 全过 (3) 当前 admin 是唯一消费者 · 不抽 packages/ui/admin 不影响 (4) PRD-11+ 启动前修补 · 不阻塞 PRD-10 收官"
+      "audit_exemption": "US-005 approve 时漏查 + /goal-verify 补 catch · 因 (1) 功能等价(TopBar 60/Sidebar 240/StatusBar 24 真生效)(2) 18 unit + browser E2E 全过 (3) 当前 admin 是唯一消费者 · 不抽 packages/ui/admin 不影响 (4) PRD-11+ 启动前修补 · 不阻塞 PRD-10 收官",
+      "resolved_at": "2026-05-12",
+      "resolved_by": "PRD-11 maintenance · TD-044 verify · 误报修正",
+      "close_evidence": "packages/ui/src/admin/{index.ts, tokens.ts, DenseTable.tsx} 实际在 US-005 commit ed600df 已完整建 · adminTokens 含 layout(topbarHeight 60px / sidebarWidth 240px / statusBarHeight 24px / drawerWidth 480px)+ Dense mode(rowHeight 32px / fontSize 13px)+ Aurelian Dark palette + status colors · DenseTable.tsx 75 行 stub 标 \"PRD-11 填充真实实现\" · Opus audit US-005 + /goal-verify §0.4 D-068 验证时仅查 packages/ui/admin/ 顶层(不存在)· 没查 src/admin/ 子路径(实际就位)· 系 Opus 漏审 · 跟 TD-037/041 同 doc-vs-impl 路径 drift family · 但 functional 100% OK"
     }
   ],
   "last_updated": "2026-05-09T23:06:52",
