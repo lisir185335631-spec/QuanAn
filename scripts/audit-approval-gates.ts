@@ -20,6 +20,7 @@ const EXCEPTION_PROCEDURES = [
   'admin.users.changePlan',
   'admin.users.banUser',
   'admin.accounts.forceFreeze',
+  'admin.invites.invalidate',
 ];
 
 // Procedures that must use meta.requiresApproval=true (PRD-12~14)
@@ -134,8 +135,8 @@ function main() {
   console.log(`\n  Checked ${checkedCount} with approval gate · ${missingCount} missing`);
   console.log(`  总计: ${total} checks · 高风险 procedure 总数: ${ALL_HIGH_RISK.length}`);
 
-  if (checkedCount < 8) {
-    console.error(`  FAIL: Checked ${checkedCount} < 8 (minimum gate)`);
+  if (checkedCount < 9) {
+    console.error(`  FAIL: Checked ${checkedCount} < 9 (minimum gate · PRD-10 5 + PRD-11 4)`);
     process.exit(1);
   }
 
