@@ -151,6 +151,11 @@ model IpAccount {
   isActive   Boolean   @default(true) @map("is_active")
   archivedAt DateTime? @map("archived_at")
 
+  /// PRD-11 US-010: forceFreeze fields
+  frozenAt        DateTime? @map("frozen_at")
+  frozenByAdminId Int?      @map("frozen_by_admin_id")
+  freezeReason    String?   @map("freeze_reason") @db.VarChar(500)
+
   user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   stepDataList         StepData[]
   histories            History[]
@@ -165,6 +170,8 @@ model IpAccount {
   knowledgeNotes       KnowledgeNote[]
   dailyTasks           DailyTask[]
   costLogs             CostLog[]
+  adminNotes           IpAccountAdminNote[]
+  anomalyFlags         IpAccountAnomalyFlag[]
 
   traceId   String?  @map("trace_id") @db.VarChar(64)
   createdAt DateTime @default(now()) @map("created_at")
@@ -922,6 +929,8 @@ model IpAccountAdminNote {
   visibleToOtherAdmin Boolean  @default(true)
   createdAt           DateTime @default(now())
 
+  account IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
   @@index([accountId, createdAt(sort: Desc)])
   @@index([adminId])
   @@map("ip_account_admin_notes")
@@ -938,6 +947,8 @@ model IpAccountAnomalyFlag {
   resolvedAt        DateTime?
   resolvedByAdminId Int?
   resolution        String?
+
+  account IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@index([accountId])
   @@index([anomalyType, detectedAt(sort: Desc)])

@@ -1,17 +1,16 @@
 // PRD-10 · admin tRPC router root
 // US-001: health stub · US-002: auth sub-router · US-003~007 fill remaining sub-trees
 // US-005: real audit router (audit.listMine)
-// PRD-11 US-003: real nsm router
-// PRD-11 US-006: real users router
+// PRD-11 US-003: real nsm router · US-006: real users router · US-010: real accounts router
 import { adminTrpcRouter, publicAdminProcedure } from '@/trpc/trpc-admin';
 
+import { accountsRouter } from './accounts';
 import { adminAuditRouter } from './audit';
 import { adminAuthRouter } from './auth';
 import { nsmRouter } from './nsm';
 import { usersRouter } from './users';
 
 // Placeholder sub-routers (filled by PRD-11~14)
-const ipAccountsPlaceholder = adminTrpcRouter({});
 const inviteCodesPlaceholder = adminTrpcRouter({});
 const trendingPlaceholder = adminTrpcRouter({});
 const deepLearnPlaceholder = adminTrpcRouter({});
@@ -34,8 +33,8 @@ export const adminRouter = adminTrpcRouter({
   // PRD-11 US-006: real users router
   users: usersRouter,
 
-  // PRD-11~14 sub-trees (placeholder)
-  ipAccounts: ipAccountsPlaceholder,
+  // PRD-11 US-010: real accounts router
+  ipAccounts: accountsRouter,
   inviteCodes: inviteCodesPlaceholder,
   trending: trendingPlaceholder,
   deepLearn: deepLearnPlaceholder,
