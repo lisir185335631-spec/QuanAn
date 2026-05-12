@@ -1,9 +1,0 @@
-
-## [2026-05-11 20:50] - US-002 (re-verify · retryCount=1)
-- 前回実装(commit 792e5d2)は完了済み · Developer 超時 notes は誤診断
-- 再確認結果: typecheck 0 errors · 876 tests pass (4 skipped) · dry-run 113 chunks OK
-- seed-knowledge-chunk.ts · constants/{cases,formulas,elements}.ts · integration test · package.json — 全て commit 済
-- HOT_ELEMENTS 実際 23 項 確認済 (PRD AC 記載の"22"は参考値 · 実データ優先)
-- OPENAI_API_KEY 未設定環境 · tests 2+3 skipIf 期待動作(CI 友好設計通り)
-- **未来迭代の学習:** 前回 commit が正常に完了していても Validator タイムアウト時に passes=false にリセットされる場合がある · re-run 前に git log で commit 存在確認必須(TD-006 パターン再現)
----
