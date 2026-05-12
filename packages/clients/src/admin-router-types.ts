@@ -309,6 +309,55 @@ const _shadowAdminRouter = _t.router({
       }),
     ),
   }),
+  cost: _t.router({
+    aggregate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            startDate: Date;
+            endDate: Date;
+            dimension: 'user' | 'specialist' | 'model' | 'provider';
+            groupBy: 'day' | 'week' | 'month';
+          },
+      )
+      .query(
+        (): {
+          aggregations: Array<{
+            timeBucket: Date;
+            dimensionValue: string | null;
+            totalCost: string;
+            callCount: number;
+          }>;
+          totalCost: string;
+        } => ({ aggregations: [], totalCost: '0' }),
+      ),
+    top10: _t.procedure.query(
+      (): {
+        userTop10: Array<{ userId: number; totalCost: string; callCount: number }>;
+        accountTop10: Array<{ accountId: number; totalCost: string; callCount: number }>;
+      } => ({ userTop10: [], accountTop10: [] }),
+    ),
+    specialistBreakdown: _t.procedure.query(
+      (): Array<{
+        specialistId: string | null;
+        totalCost: string;
+        callCount: number;
+        avgCostPerCall: string;
+      }> => [],
+    ),
+    alerts: _t.procedure.query(
+      (): Array<{
+        userId: number;
+        email: string;
+        dailySpent: string;
+        threshold: string;
+        severity: 'high' | 'medium' | 'low';
+      }> => [],
+    ),
+    exportCsv: _t.procedure
+      .input((x: unknown) => x as { startDate: Date; endDate: Date })
+      .query((): { csv: string; rowCount: number } => ({ csv: '', rowCount: 0 })),
+  }),
   evolution: _t.router({}),
   audit: _t.router({
     listMine: _t.procedure.query(

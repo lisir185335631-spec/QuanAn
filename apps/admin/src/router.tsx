@@ -10,7 +10,7 @@ import ApprovalPlaceholder from './pages/admin/placeholder/approval';
 import AuditPlaceholder from './pages/admin/placeholder/audit';
 import CompliancePlaceholder from './pages/admin/placeholder/compliance';
 import ConfigPlaceholder from './pages/admin/placeholder/config';
-import CostPlaceholder from './pages/admin/placeholder/cost';
+import CostPage from './pages/cost/index';
 import EvolutionPlaceholder from './pages/admin/placeholder/evolution';
 import InvitesPlaceholder from './pages/admin/placeholder/invites';
 import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
@@ -35,7 +35,7 @@ export function AdminRoutes() {
         <Route path="nsm" element={<NsmDashboard />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="accounts" element={<AccountsPage />} />
-        <Route path="cost" element={<CostPlaceholder />} />
+        <Route path="cost" element={<CostPage />} />
         <Route path="audit" element={<AuditPlaceholder />} />
         <Route path="invites" element={<InvitesPlaceholder />} />
 
