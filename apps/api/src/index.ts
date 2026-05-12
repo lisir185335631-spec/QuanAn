@@ -317,6 +317,11 @@ async function start(): Promise<void> {
   await scheduleMonthlySnapshot();
   logger.info('kpi_snapshot_crons.registered');
 
+  // AC-H-5 US-009: register anomaly-detection cron (0 5 * * * Asia/Shanghai)
+  const { scheduleAnomalyDetection } = await import('./jobs/admin/anomaly-detection.job');
+  await scheduleAnomalyDetection();
+  logger.info('anomaly_detection_cron.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }
