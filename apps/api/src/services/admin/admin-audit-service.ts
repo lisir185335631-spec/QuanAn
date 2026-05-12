@@ -24,6 +24,7 @@ export interface LogAdminActionInput {
   errorMessage?: string | null;
   targetUserId?: number | null;
   targetAccountId?: number | null;
+  approvalRequestId?: number | null;
   latencyMs?: number | null;
 }
 
@@ -62,6 +63,7 @@ export async function logAdminAction(input: LogAdminActionInput): Promise<void> 
         errorMessage: input.errorMessage ?? null,
         targetUserId: input.targetUserId ?? null,
         targetAccountId: input.targetAccountId ?? null,
+        approvalRequestId: input.approvalRequestId ?? null,
       },
     });
   } catch (err) {

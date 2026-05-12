@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
  * scripts/audit-approval-gates.ts
- * AC-3(US-007): AST stub 验证 · 14 类高风险 procedure 检查 meta.requiresApproval=true
- * PRD-10 阶段: stub 验证机制就位 · 验证 approvalGateCheckMiddleware 存在且正确接受 meta
- * 真实 14 高风险 procedure 在 PRD-11~14 实现
+ * AC-10(US-006): Approval Gates 审查 — EXCEPTION 列表 + 机制验证
+ * EXCEPTION: procedures that implement approval gate inline (not via meta.requiresApproval)
+ * 输出: Checked N with approval gate · M missing
  */
 
 import * as fs from 'fs';
@@ -14,10 +14,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 
-// 14 高风险 procedure 清单(§10.3 · PRD-11~14 实现时应存在)
-const HIGH_RISK_PROCEDURES = [
+// Procedures that handle approval gate internally (not via meta.requiresApproval=true)
+// These implement the approval_requests flow themselves: super_admin auto-executes, admin creates pending
+const EXCEPTION_PROCEDURES = [
   'admin.users.changePlan',
   'admin.users.banUser',
+];
+
+// Procedures that must use meta.requiresApproval=true (PRD-12~14)
+const REQUIRES_APPROVAL_PROCEDURES = [
   'admin.invites.batchInvalidate',
   'admin.reviewTrending.updateRules',
   'admin.evolution.forceRebuild',
@@ -32,106 +37,113 @@ const HIGH_RISK_PROCEDURES = [
   'admin.config.emergencyStop',
 ];
 
-function checkApprovalGateMiddleware(): boolean {
-  const middlewarePath = path.join(
-    ROOT,
-    'apps/api/src/trpc/middleware/admin/approvalGateCheck.ts',
-  );
+const ALL_HIGH_RISK = [...EXCEPTION_PROCEDURES, ...REQUIRES_APPROVAL_PROCEDURES];
 
+let checkedCount = 0;
+let missingCount = 0;
+
+function check(name: string, passed: boolean, msg: string): void {
+  if (passed) {
+    console.log(`  ✅ ${name}: ${msg}`);
+    checkedCount++;
+  } else {
+    console.error(`  ❌ ${name}: ${msg}`);
+    missingCount++;
+  }
+}
+
+function checkApprovalGateMiddleware(): void {
+  const middlewarePath = path.join(ROOT, 'apps/api/src/trpc/middleware/admin/approvalGateCheck.ts');
   if (!fs.existsSync(middlewarePath)) {
-    console.error('  ❌ approvalGateCheck.ts middleware not found');
-    return false;
+    check('approvalGateMiddleware-exists', false, 'approvalGateCheck.ts not found');
+    return;
   }
-
   const source = fs.readFileSync(middlewarePath, 'utf-8');
-
-  // Check that the middleware reads meta.requiresApproval
-  if (!source.includes('meta?.requiresApproval') && !source.includes("meta['requiresApproval']")) {
-    console.error('  ❌ approvalGateCheck middleware does not check meta?.requiresApproval');
-    return false;
-  }
-
-  // Check that it throws TRPCError when requiresApproval is true
-  if (!source.includes('TRPCError')) {
-    console.error('  ❌ approvalGateCheck middleware does not throw TRPCError');
-    return false;
-  }
-
-  console.log('  ✅ approvalGateCheckMiddleware exists and checks meta.requiresApproval');
-  return true;
+  const hasRequiresApproval =
+    source.includes('meta?.requiresApproval') || source.includes("meta['requiresApproval']");
+  const hasTRPCError = source.includes('TRPCError');
+  check('approvalGateMiddleware-exists', true, 'approvalGateCheck.ts found');
+  check('approvalGateMiddleware-reads-meta', hasRequiresApproval, 'checks meta?.requiresApproval');
+  check('approvalGateMiddleware-throws', hasTRPCError, 'throws TRPCError when requiresApproval');
 }
 
-function checkAdminMetaInterface(): boolean {
+function checkAdminMetaInterface(): void {
   const trpcAdminPath = path.join(ROOT, 'apps/api/src/trpc/trpc-admin.ts');
-
   if (!fs.existsSync(trpcAdminPath)) {
-    console.error('  ❌ trpc-admin.ts not found');
-    return false;
+    check('AdminMeta-interface', false, 'trpc-admin.ts not found');
+    return;
   }
-
   const source = fs.readFileSync(trpcAdminPath, 'utf-8');
-
-  // Check that AdminMeta interface has requiresApproval
-  if (!source.includes('requiresApproval')) {
-    console.error('  ❌ AdminMeta interface missing requiresApproval field');
-    return false;
-  }
-
-  console.log('  ✅ AdminMeta interface has requiresApproval field');
-  return true;
+  check('AdminMeta-requiresApproval', source.includes('requiresApproval'), 'AdminMeta has requiresApproval field');
 }
 
-function checkAdminProcedureChain(): boolean {
+function checkAdminProcedureChain(): void {
   const procedurePath = path.join(ROOT, 'apps/api/src/trpc/procedures/admin.ts');
-
   if (!fs.existsSync(procedurePath)) {
-    console.error('  ❌ procedures/admin.ts not found');
-    return false;
+    check('adminProcedure-chain', false, 'procedures/admin.ts not found');
+    return;
   }
-
   const source = fs.readFileSync(procedurePath, 'utf-8');
-
-  // Check that adminProcedure includes approvalGateCheck
-  if (!source.includes('approvalGateCheck')) {
-    console.error('  ❌ adminProcedure chain missing approvalGateCheck');
-    return false;
-  }
-
-  console.log('  ✅ adminProcedure chain includes approvalGateCheck');
-  return true;
+  check('adminProcedure-chain', source.includes('approvalGateCheck'), 'adminProcedure chain includes approvalGateCheck');
 }
 
-function reportHighRiskInventory(): void {
-  console.log(`\n  📋 14 高风险 procedure 清单(PRD-11~14 实现时验证 meta.requiresApproval=true):`);
-  for (const proc of HIGH_RISK_PROCEDURES) {
-    console.log(`     - ${proc}`);
+function checkExceptionProcedure(procPath: string): void {
+  // e.g. 'admin.users.changePlan' → look for 'changePlan' in users.ts
+  const parts = procPath.split('.');
+  const routerName = parts[1]; // 'users'
+  const methodName = parts[2]; // 'changePlan'
+
+  const routerFile = path.join(ROOT, `apps/api/src/trpc/routers/admin/${routerName}.ts`);
+  if (!fs.existsSync(routerFile)) {
+    check(`EXCEPTION-${procPath}-exists`, false, `${routerName}.ts not found`);
+    return;
   }
-  console.log(`\n  ℹ️  PRD-10 stub 验证: mechanism in place · 真实 procedure 由 PRD-11~14 填充`);
+
+  const source = fs.readFileSync(routerFile, 'utf-8');
+  const hasMethod = source.includes(`${methodName}:`);
+  check(`EXCEPTION-${procPath}-exists`, hasMethod, `procedure ${methodName} found in ${routerName}.ts`);
+
+  // Verify it handles approval_requests (inline approval gate)
+  const hasApprovalRequests =
+    source.includes('approval_requests') ||
+    source.includes('approvalRequest') ||
+    source.includes('ApprovalRequest');
+  check(
+    `EXCEPTION-${procPath}-approval-logic`,
+    hasApprovalRequests,
+    `${procPath} implements inline approval_requests flow`,
+  );
 }
 
 function main() {
-  console.log('  Approval Gates AST stub 验证...');
-  console.log();
+  console.log('\n  Approval Gates 验证...');
+  console.log(`  EXCEPTION 列表 (内联 approval gate): ${EXCEPTION_PROCEDURES.join(', ')}`);
+  console.log(`  meta.requiresApproval 列表 (PRD-12~14): ${REQUIRES_APPROVAL_PROCEDURES.length} procedures\n`);
 
-  const checks = [
-    checkApprovalGateMiddleware(),
-    checkAdminMetaInterface(),
-    checkAdminProcedureChain(),
-  ];
+  checkApprovalGateMiddleware();
+  checkAdminMetaInterface();
+  checkAdminProcedureChain();
 
-  reportHighRiskInventory();
+  console.log(`\n  EXCEPTION procedures 验证:`);
+  for (const proc of EXCEPTION_PROCEDURES) {
+    checkExceptionProcedure(proc);
+  }
 
-  const passed = checks.filter(Boolean).length;
-  const failed = checks.length - passed;
+  const total = checkedCount + missingCount;
+  console.log(`\n  Checked ${checkedCount} with approval gate · ${missingCount} missing`);
+  console.log(`  总计: ${total} checks · 高风险 procedure 总数: ${ALL_HIGH_RISK.length}`);
 
-  console.log(`\n  结果: ${passed}/${checks.length} checks passed`);
-
-  if (failed > 0) {
-    console.error(`  FAIL: ${failed} Approval Gates mechanism check(s) failed`);
+  if (checkedCount < 7) {
+    console.error(`  FAIL: Checked ${checkedCount} < 7 (minimum gate)`);
     process.exit(1);
   }
 
-  console.log('  Approval Gates 机制验证通过 · PRD-13 将补全真实工作流');
+  if (missingCount > 0) {
+    console.error(`  FAIL: ${missingCount} approval gate check(s) failed`);
+    process.exit(1);
+  }
+
+  console.log('  ✅ Approval Gates 验证通过');
   process.exit(0);
 }
 

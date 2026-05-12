@@ -1,6 +1,11 @@
 // PRD-10 US-004 · audit helpers — redact, extractActionType, extractCrossAccountFlag
 
-const SENSITIVE_KEYS = new Set(['password', 'token', 'apikey', 'secret', 'credential', 'authorization']);
+const SENSITIVE_SUBSTRINGS = ['password', 'token', 'apikey', 'secret', 'credential', 'authorization'];
+
+function isSensitiveKey(key: string): boolean {
+  const lower = key.toLowerCase();
+  return SENSITIVE_SUBSTRINGS.some((s) => lower.includes(s));
+}
 
 export function redactSensitiveFields(payload: unknown): unknown {
   if (payload === null || payload === undefined) return payload;
@@ -9,7 +14,7 @@ export function redactSensitiveFields(payload: unknown): unknown {
 
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(payload as Record<string, unknown>)) {
-    if (SENSITIVE_KEYS.has(key.toLowerCase())) {
+    if (isSensitiveKey(key)) {
       result[key] = '[REDACTED]';
     } else if (value !== null && typeof value === 'object') {
       result[key] = redactSensitiveFields(value);

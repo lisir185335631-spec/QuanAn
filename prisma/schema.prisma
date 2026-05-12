@@ -31,6 +31,9 @@ model User {
   activeAccountId Int?    @map("active_account_id")
 
   plan         String    @default("free") @db.VarChar(32)
+  isBanned     Boolean   @default(false) @map("is_banned")
+  bannedAt     DateTime? @map("banned_at")
+  passwordHash String?   @map("password_hash") @db.VarChar(255)
   lastLoginAt  DateTime? @map("last_login_at")
   lastLoginIp  String?   @db.VarChar(45) @map("last_login_ip")
 

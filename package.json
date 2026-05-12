@@ -32,6 +32,7 @@
     "audit:redlines-admin": "bash scripts/audit-redlines-admin.sh",
     "audit:ld": "bash scripts/audit-ld.sh",
     "audit:all": "bash scripts/audit-all.sh",
+    "audit:approval-gates": "tsx scripts/audit-approval-gates.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
