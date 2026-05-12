@@ -19,7 +19,7 @@ import PromptsPlaceholder from './pages/admin/placeholder/prompts';
 import QuotaPlaceholder from './pages/admin/placeholder/quota';
 import ReviewDeepLearnPlaceholder from './pages/admin/placeholder/reviewDeepLearn';
 import ReviewTrendingPlaceholder from './pages/admin/placeholder/reviewTrending';
-import UsersPlaceholder from './pages/admin/placeholder/users';
+import UsersPage from './pages/users/index';
 import Login from './pages/Login';
 
 export function AdminRoutes() {
@@ -33,7 +33,7 @@ export function AdminRoutes() {
 
         {/* P0 核心 */}
         <Route path="nsm" element={<NsmDashboard />} />
-        <Route path="users" element={<UsersPlaceholder />} />
+        <Route path="users" element={<UsersPage />} />
         <Route path="accounts" element={<AccountsPlaceholder />} />
         <Route path="cost" element={<CostPlaceholder />} />
         <Route path="audit" element={<AuditPlaceholder />} />
