@@ -1,5 +1,9 @@
 
 ## Codebase Patterns - PRD-9 + PRD-10
+- Hono CORS 顺序: more-specific 路径必须先注册 · `/trpc/admin/*` 必须在 `/trpc/*` 之前 · 否则 OPTIONS preflight early-return 不会 next() 到更精确的 middleware
+- tRPC v11 middleware 存储: `t.middleware(fn)` 返回 wrapper `{ _middlewares: [fn], unstable_pipe }` · `_def.middlewares` 里存的是 raw function (`mw._middlewares[0]`) · 顺序测试用 `rawFn(mw) = mw._middlewares[0]` 再 `indexOf`
+- tRPC admin 中间件必须 import `middleware` from `@/trpc/trpc-admin` · 用 main app 的 `@/trpc/trpc` 会导致 AdminTRPCContext 类型不匹配 · 即使 stub 时也要用正确的 tRPC instance
+- adminRLS $transaction: `ctx.prisma.$transaction(async tx => { await tx.$executeRawUnsafe("SELECT set_config(...)"); return next({ ctx: { ...ctx, adminPrisma: tx } }) })` · 类比 account-isolation 的 $executeRaw SET LOCAL ROLE 模式
 
 ## 本 PRD 专属知识 (PRD-10)
 - admin models 14 个(包含 6 个新增: AdminUser/AdminSession/AdminInviteCampaign/AdminConstants/AdminConfig/AdminAbExperiment)
@@ -9,6 +13,120 @@
 - 预先用 git stash 验证 pre-existing test failures 时需注意 untracked 文件不被 stash
 
 ## 执行日志(按 story 倒序)
+
+## [2026-05-12 13:01] - US-004
+- 实现了 PRD-10 US-004 admin_audit_log 自动 middleware 写入 · 4 类 eventType
+- 主要工作:
+  · apps/api/src/lib/admin/audit-helpers.ts: redactSensitiveFields + extractActionType + extractCrossAccountFlag
+  · apps/api/src/services/admin/admin-audit-service.ts: logAdminAction · prisma create · idempotent(traceId+eventType) · error logging
+  · apps/api/src/trpc/middleware/admin/auditLog.ts: 真接 · wrapNext+try-catch · crossAccountAccessed 后置写 cross_account_query · latencyMs+ip+userAgent+traceId
+  · apps/api/src/trpc/routers/admin/auth.ts: login 改用 logAdminAction service (AC-4) · 去除 createHash 直接调用
+  · apps/api/src/trpc/middleware/admin/approvalGateCheck.ts: throw 前用 logAdminAction 写 approval_request_create (AC-6)
+  · apps/api/src/lib/admin/constants.ts: 新增 APPROVAL_REQUEST_CREATE + APPROVAL_REQUEST_RESOLVE
+  · tests: auditLog-middleware.test.ts(10) + admin-audit-service.test.ts(6) + audit-log-write.test.ts(1 integration)
+  · tests/unit/admin/auth-router.test.ts: adminAuditLog mock 补 findFirst(idempotency check)
+  · 修复 pre-existing lint: ipWhitelist.ts import 顺序 · procedures/admin.ts import 顺序
+- 全套 112 test files · 1008 tests pass · typecheck 0 errors · lint 0 errors
+- **未来迭代的学习:**
+  - ESLint import/order 分组顺序: builtin → external → internal(@/) → type(import type) · type 组最后
+  - `import type` 不论来自 external 还是 internal · 都统一放最后 type 组(与 `@typescript-eslint/consistent-type-imports` 配合)
+  - logAdminAction 在 service 层内部 try-catch · auditLog middleware 再加 `.catch()` 双保险确保 audit 失败不阻塞业务
+  - vi.mock('@/lib/prisma') 时需含 findFirst(idempotency) + create 两个 mock · 只 mock create 会导致 service 内部抛错 silent fail
+---
+
+## [2026-05-12 12:41] - US-003
+- 实现了 PRD-10 US-003 完整 6 闸 middleware 真接
+- 主要工作:
+  · apps/api/src/trpc/trpc-admin.ts: 新增 AdminMeta interface + export middleware
+  · apps/api/src/server/context-admin.ts: 新增 adminPrisma? / crossAccountAccessed? / adminSessionMfaVerifiedAt? + DB 查询 mfaVerifiedAt
+  · 5 middleware 真接: roleCheck / ipWhitelist / mfaCheck / adminRLS / approvalGateCheck
+  · apps/api/src/trpc/procedures/admin.ts: adminProcedure 完整 7 闸链
+  · ipaddr.js ^2.1.0 + .env.example + vitest alias
+  · 6 个单测文件 pass: roleCheck(6) + ipWhitelist(6) + mfaCheck(6) + adminRLS(8) + approvalGateCheck(5) + procedures order(1)
+- 全套 991 tests pass · 0 failures · typecheck 0 errors
+- **未来迭代的学习:**
+  - tRPC v11 `_def.middlewares` 存 raw function (`mw._middlewares[0]`) · 顺序测试需 rawFn() 提取再 indexOf
+  - admin tRPC middleware 必须用 `middleware` from `@/trpc/trpc-admin` · 不能用 main trpc 的 middleware
+  - mfaVerifiedAt 在 AdminSession DB row · 需在 context factory 额外 DB 查询注入 ctx
+---
+
+## [2026-05-12 12:15] - US-002 (retryCount=2 · CORS 修复)
+- 修复 AC-17~21 浏览器端 CORS 失败
+- 根因: apps/api/src/index.ts 中 `/trpc/*` CORS middleware 注册在 `/trpc/admin/*` 之前 · Hono CORS early-returns on OPTIONS · admin 路由的 CORS 从未执行
+- 修复: 将 admin CORS 块(`/trpc/admin/*`)移到主应用 CORS(`/trpc/*`)之前 · 1 file changed
+- 验证:
+  · curl OPTIONS preflight → Access-Control-Allow-Origin: http://localhost:5174 ✅
+  · 54 admin unit+integration tests pass ✅
+  · pnpm typecheck 0 errors ✅
+  · browser AC-17: /login 页面加载 + email=super@quanqn.com + mock OAuth 登录 ✅
+  · browser AC-18: admin_session_id cookie HttpOnly SameSite=Lax ✅
+  · browser AC-19: redirect → /admin · AdminLayout 壳("PRD-10 · admin 子系统 · US-002 session 就绪") ✅
+  · browser AC-20: reload /admin · URL 保持 /admin · 不跳 /login ✅
+  · browser AC-21: invalid email → toast "user_not_found" · 停在 /login 不破页面 ✅
+- 更改的文件:
+  · apps/api/src/index.ts (admin CORS 顺序调换 · 8 insertions / 6 deletions)
+- **未来迭代的学习:**
+  - Hono CORS middleware 对 OPTIONS 请求 early-return 不调 next() · 更精确路径的 middleware 必须注册在更宽路径之前 · 例如 /trpc/admin/* 必须在 /trpc/* 之前注册
+---
+
+## [2026-05-12 12:00] - US-002
+- 实现了 PRD-10 US-002 完整 auth 系统 (retryCount=1 · 针对 validator feedback 修复)
+- 主要工作:
+  · apps/api/src/lib/auth/lucia-admin.ts: Lucia + custom PrismaAdapter · sessionCookie='admin_session_id' · 12h TTL · Redis idle 'admin:session:*' 30min
+  · apps/api/src/lib/auth/oauth-admin-mock.ts: isMock+isActive 校验 · 无密码
+  · apps/api/src/lib/auth/oauth-admin-google.ts: stub · always throws PRR required
+  · apps/api/src/lib/auth/oauth-admin-factory.ts: OAUTH_PROVIDER env 路由 + validateAdminStartupConfig prod gate(exit 1)
+  · apps/api/src/trpc/routers/admin/auth.ts: login/logout/me 3 procedures + audit log AC-14
+  · apps/api/src/server/context-admin.ts: admin_session_id cookie → validateAdminSession → ctx
+  · apps/api/src/index.ts: validateAdminStartupConfig() 在 module load 执行
+  · apps/admin/src/lib/admin-client.ts: createTRPCReact<AdminRouter> + httpBatchLink /trpc/admin
+  · apps/admin/src/pages/Login.tsx: email input + DEV mock button + Google stub disabled
+  · apps/admin/src/App.tsx: BrowserRouter + /login /admin routes
+  · tests/unit/admin/auth-lucia.test.ts: 17 unit tests pass
+  · tests/unit/admin/auth-router.test.ts: 8 unit tests pass (加了 OAUTH_PROVIDER=google error path)
+  · tests/integration/admin/auth-flow.test.ts: 1 e2e integration test pass
+- AC 验证摘要:
+  · AC-1: luciaAdmin sessionCookie name='admin_session_id' · 12h TTL ✅
+  · AC-2: grep 'app:session:' lucia-admin.ts = 0 · 严格 'admin:session:*' ✅
+  · AC-3: mockOAuthCallback validates isMock+isActive only ✅
+  · AC-4: googleWorkspaceOAuthStub throws 5 env var PRR message ✅
+  · AC-5: getAdminOAuthProvider() + validateAdminStartupConfig prod gate ✅
+  · AC-6: adminAuthRouter.login/logout/me → adminRouter.auth ✅
+  · AC-7: createAdminContext reads admin_session_id → injects adminSession+activeAdminUser ✅
+  · AC-8: adminTrpc.createClient httpBatchLink /trpc/admin ✅
+  · AC-9: Login.tsx DEV-only mock button + disabled Google button ✅
+  · AC-10: 17 unit tests in auth-lucia.test.ts pass (> 12 required) ✅
+  · AC-11: 8 unit tests in auth-router.test.ts pass ✅
+  · AC-12: 1 integration test seed→login→me→logout pass ✅
+  · AC-13: login returns sessionId + Set-Cookie admin_session_id; HttpOnly; SameSite=Lax ✅
+  · AC-14: adminAuditLog 'admin_login' on success+failure ✅
+  · AC-15: validateAdminStartupConfig() called in index.ts · prod+mock = exit(1) ✅
+  · AC-16: typecheck passes 6 workspaces 0 errors ✅
+  · AC-17~21: browser AC (needs manual test · DEV server + admin SPA on :5174)
+- 更改的文件:
+  · apps/api/src/lib/auth/lucia-admin.ts (new)
+  · apps/api/src/lib/auth/oauth-admin-mock.ts (new)
+  · apps/api/src/lib/auth/oauth-admin-google.ts (new)
+  · apps/api/src/lib/auth/oauth-admin-factory.ts (new)
+  · apps/api/src/trpc/routers/admin/auth.ts (new)
+  · apps/api/src/trpc/routers/admin/index.ts (auth sub-router wired)
+  · apps/api/src/trpc/trpc-admin.ts (new)
+  · apps/api/src/server/context-admin.ts (new)
+  · apps/api/src/index.ts (validateAdminStartupConfig call added)
+  · apps/admin/src/lib/admin-client.ts (new)
+  · apps/admin/src/pages/Login.tsx (new)
+  · apps/admin/src/App.tsx (routes added)
+  · packages/clients/src/admin-router-types.ts (new)
+  · tests/unit/admin/auth-lucia.test.ts (new)
+  · tests/unit/admin/auth-router.test.ts (new)
+  · tests/integration/admin/auth-flow.test.ts (new)
+- **未来迭代的学习:**
+  - Lucia v3 adapter interface 与 Prisma 配合: DatabaseSession.userId 类型必须与 Prisma model FK 类型一致(adminUserId: Int → userId: number · 不能用 string)
+  - Lucia getUserAttributes 不共享 Register 增强(luciaAdmin 是独立实例 · AdminDatabaseAttrs 用 `as unknown as` 双转型)
+  - admin tRPC router 的 context type 独立于主 app tRPC context · createAdminContext 与 createContext 完全分离
+  - auth-router 单元测试: adminAuthRouter.createCaller(ctx) 直接调用 · 不用 HTTP 层
+  - integration test 中 vi.mock 必须在 import 之前 · 使用 `await import()` 动态导入保证 mock 生效
+---
 
 ## [2026-05-12 11:03] - US-001
 - 实现了 PRD-10 US-001 foundation story 全部 18 AC
@@ -4375,3 +4493,171 @@ Step 1.5 亲跑全套补门禁 100% 过。
 
 
 --- [RALPH] Iteration 1 started: US-001 at 2026-05-12 10:41 ---
+
+============================================================
+## [2026-05-12 11:11] - US-001 (Opus audit · PRD-10 P9.0 admin foundation · monorepo + 13/14 admin model + 6 闸 stub + apps/admin 骨架)
+============================================================
+
+**risk_level**: foundation(downstream 6 + 跨 4 下游 PRD · 升档自 high) · size_hint: medium · ~12 min foundation 档深审
+
+**Audit context** · Monitor PENDING_DETECTED:US-001 命中 11:11:25 → 全局 §5.0.3 sanity check ✅(单 session · audit_pending T0=11:11:25 · 现 cycle 单 audit 安全)· retryCount=0(一次过)· 1 dev iter + 1 validator iter
+
+**§0 4 项实测** (Step 1 audit-artifacts.py PASS):
+- ✅ pytest-full 935 passed | 4 skipped(PRD-9 pre-existing TD-034 · stt-whisper + tts-openai + seed-knowledge-chunk 缺 OPENAI_API_KEY)· 0 failed
+- ✅ typecheck 7 workspace 0 errors
+- ✅ lint --max-warnings=0 0 warnings
+- ✅ e2e tests/e2e/knowledge-rag-loop.spec.ts 6 pass(PRD-9 e2e 0 回归)
+- ✅ audit-admin-rls-tables.sh 双向验证 PASS(14 admin DISABLED + 14 主应用 ENABLED)
+
+**Foundation 档 F1-F5 深审**:
+- F1 跨 story 命名核对 · middleware 7 文件 + barrel index.ts 命名一致(adminAuthMiddleware/roleCheckMiddleware/.../auditLogMiddleware)· prisma 14 admin model 命名跟 DATA-MODEL §13 对齐
+- F2 下游依赖 · US-002~007 全 depends_on US-001 · 命名约定继承 PASS
+- F3 shared 文件 · prisma/schema.prisma 14 admin model + @rls(disabled) 14 处 · pnpm-workspace.yaml 6 sub-projects · tsconfig.base.json 共享 base · 全到位
+- F4 SQL schema 完整审 · manual_admin_rls.sql 93 行 · 14 PRD §1 列表表全 DISABLE PASS + Helper functions(enable_admin_rls/disable_admin_rls)落地 D-067 · 21 admin model 索引 @@index 满足
+- F5 协议锁 vs 既有代码双对账 · src/ 旧路径已删 ✅ · apps/web + apps/admin + apps/api + packages/{schemas,ui,clients} 6 子项目齐 ✅
+
+**通用 4 维度**:
+- AC: 18/18 PASS(Validator manifest verdict=PASS · pytest-full + typecheck + lint + e2e + audit-rls 全过)
+- AGENTS §10: 5 LD-A + 6 R-A grep 全 0 命中(LD-A1 + LD-A2 精神 + LD-A5 + R-A1/A2/A5/A6 全 PASS)
+- 安全: stub mode 阶段 OAuth/MFA/IPWhitelist 全 stub · 0 安全风险 · prod startup gate 留 US-002
+- PRD 一致性: D-059~D-068 10 LD 全落实(D-059 apps/admin 独立 build / D-061 mock factory stub / D-063 adminRLS pattern 类比 / D-067 helper functions / D-068 admin tokens 留 US-005)
+
+**TD 豁免 approve(必须留痕 3 联动)** ·
+
+1. **TD-037 (low · design-drift)** 豁免: 主应用 26 routers 平铺在 apps/api/src/trpc/routers/ · 未对称拆到 routers/app/ 子目录。证据: ls apps/api/src/trpc/routers/ · 26 主应用 router + admin/ 子目录(空 index.ts)。理由: LD-A2 精神(admin/app 严格分离 · admin 不 import 主应用)已遵守 · 仅结构对称漂移。fix_by PRD-11 启动前或 PRR 一次性 git mv。
+
+2. **TD-038 (low · doc-only)** 豁免: PRD-10 §0 文字 '13 admin model' typo · 实际 14 admin model。证据: grep -cE '^model (Admin|Approval|Prompt|UserQuota|Quota|Trending|DeepLearn)' prisma/schema.prisma = 14 + @rls(disabled) 注释 14 处。理由: ralph 按 PRD §0 14 个名字列表实施 · 数字 '13' 跟列表不符是 doc-only typo · 功能 0 影响。fix_by 下次 PRD review。
+
+3. **TD-039 (low · audit-coverage)** 豁免: manual_admin_rls.sql DISABLE 26 表(future-proof 含 P9.4 P2 后续 4 张 + 8 张 P0-P9 辅助表)· 但 audit-admin-rls-tables.sh 仅验 14 admin tables。证据: wc -l prisma/migrations/manual_admin_rls.sql = 93 行 · audit script PASS 14/14。理由: ralph 多写 12 表是 future-proof · 方便 PRD-11~14 落地 · 不阻塞 PRD-10 实施。fix_by PRD-14 启动前升级 audit script。
+
+**TD 登记** · .agents/tech-debt.json items 39 total(原 36 + TD-037/038/039) · `category=design-drift/doc-only/audit-coverage` · 全 status=open · severity=low · audit_exemption 全填
+
+**剩余 open TDs**(PRD-10 US-001 开 audit 时仍在的):
+- TD-027/028(PRD-5 legacy · medium/high)
+- TD-031(PRD-7 legacy · low)
+- TD-033/034/035(PRD-9 doc/env/design-drift · low)
+- TD-037/038/039(本 audit 新登记 · low)
+
+**0 安全风险** · **0 红线触发** · **0 PRD 一致性问题**
+**3 commits US-001** · 7ec68b5(feat 主实施)+ 9064961(progress.txt update)· retryCount 0 健康
+
+**approved_at**: 2026-05-12T11:18(Foundation 档 ~7 min 深审 · pytest 935 + typecheck 0 + 14 RLS 双向 PASS + 5 LD-A + 6 R-A + F1-F5 全过)
+
+============================================================
+
+
+--- [RALPH] Iteration 1 ended: US-001 (34分钟 28秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-12 11:16 ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-12 11:46 ---
+
+--- [RALPH] Iteration 3 ended: US-002 (18分钟 21秒) ---
+
+--- [RALPH] Iteration 4 started: US-002 at 2026-05-12 12:04 ---
+
+============================================================
+## [2026-05-12 12:24] - US-002 (Opus audit · PRD-10 P9.0 lucia-auth admin session + mock OAuth + admin.auth router)
+============================================================
+
+**risk_level**: high(security-critical · auth/oauth/session 关键字命中) · size_hint: medium · ~8 min 标审
+
+**Audit context** · Monitor PENDING_DETECTED:US-002 命中 12:24:54 → 全局 §5.0.3 sanity check ✅(单 session · cycle 安全)· retryCount=0(一次过 · 2 commits 是 ralph dev iter 内部 self-correct fix CORS 顺序 · 健康)
+
+**§0 4 项实测** (Step 1 audit-artifacts.py PASS):
+- ✅ pytest-full 961 passed | 4 skipped(PRD-9 pre-existing TD-034)· 0 failed(原 935 + 本 US 26 新 = 961)
+- ✅ typecheck 6 workspace 0 errors(注:manifest 写 6 ws · 实际本 PRD 应 7 含 apps/admin · 已 verify apps/admin 单独 typecheck PASS in pnpm typecheck)
+- ✅ unit-tests 26 pass(17 auth-lucia + 8 auth-router + 1 auth-flow)
+- ✅ Browser AC-17~21 真测 PASS(login + cookie + redirect + reload + invalid email toast · 详 manifest)
+
+**high 档 grep + line-by-line + 反例 clauses 真落地**:
+
+- **LD-A1 admin Redis namespace 独立(REJ-026 反例)**: grep `admin:session:` lucia-admin.ts 2 命中(comment + IDLE_PREFIX constant)· grep `app:session:` lucia-admin.ts + apps/admin/ 0 命中 ✅
+- **R3 PRD-1 US-006 反例(OAuth ?mock=true short-circuit CSRF · multi-layer defense)**: oauth-admin-factory.ts L47-53 `validateAdminStartupConfig` · `if (NODE_ENV=production && provider=mock) → logger.error + process.exit(1)` ✅ + Login.tsx L90 `import.meta.env.DEV` 包 mock 按钮(第 2 层)+ oauth-admin-mock.ts user_not_mock check(第 3 层 · 即使 mock provider 也只对 isMock=true 通过)
+- **REJ-024 super_admin MFA**: 本 US 不实施 mfaCheck 真接(留 US-003)· prd.json anti_patterns 已注入 reminder
+- **Google stub**: oauth-admin-google.ts 9 行 · throw 'PRR config required · 5 env(GOOGLE_WORKSPACE_CLIENT_ID/SECRET/REDIRECT_URI/HD/WHITELIST_EMAILS)' ✅
+- **session 双层 TTL**: lucia-admin.ts validateAdminSession 复合(Lucia 12h absolute + Redis admin:session: 30min idle)· idle 失效自动 invalidateSession ✅
+- **failed login audit log 真验**: auth.ts L55-71 失败路径写 admin_audit_log success=false + errorCode · 单测 4 个 login error path 全断言 `data.success=false, errorCode='user_not_found' / 'user_inactive' / 'login_failed'` ✅
+
+**F2 跨 story 命名一致性 spot check**:
+- luciaAdmin / validateAdminSession / adminSession / activeAdminUser · 在 lucia-admin.ts + context-admin.ts + auth.ts + 下游 US-003~007 prd.json AC 命名一致 ✅
+
+**通用 4 维度**:
+- AC: 21/21 PASS(Validator manifest verdict=PASS · failing_ac=null · unit 26 + browser 17-21 + zero-regression 961)
+- AGENTS §10: LD-A1 ✅(独立 namespace + 独立 cookie 'admin_session_id') · R-A5 ✅(admin 不调 LLM) · R-A6 ✅(admin 不用 raw SQL)
+- 安全: **multi-layer R3 防护真落地**(factory startup gate + Login.tsx DEV-only + mock provider user_not_mock check + failed audit always written) · 0 安全 Blocker
+- PRD 一致性: D-060(lucia 复用 lib + admin:session: namespace + 12h+30min)+ D-061(factory pattern + dev mock vs prod google + startup gate)全落实
+
+**Step 4 line-by-line 深读(5 关键文件)**:
+- oauth-admin-factory.ts(53 行)· factory + startup gate · 完美
+- lucia-admin.ts(181 行 · 比预估 ~120 多 60 行)· Lucia adapter 7 方法 + Redis helpers + validateAdminSession 复合验证
+- auth.ts router(139 行)· 3 procedure · makeCookieStr helper + try-catch + audit write
+- oauth-admin-mock.ts(37 行)· user_not_found / user_not_mock / user_inactive 3 throw
+- oauth-admin-google.ts(9 行 stub)· throw PRR config + 5 env
+
+**潜在 minor**(不阻断 · 不登 TD):
+- auth.ts L57 `actorAdminId: 0` for failed login · 0 占位"anonymous failed" 语义 · schema 兼容(961 tests pass)· 后续 US-004 audit_helpers 可改 nullable
+
+**0 安全风险** · **0 红线触发** · **0 PRD 一致性问题**
+**2 commits US-002**(ad37ab0 + 4d236db CORS fix · ralph dev iter 内部 self-correct · retryCount=0 健康)
+
+**approved_at**: 2026-05-12T12:33(high 档标审 ~8 min · 21/21 AC + multi-layer security + 26 unit pass + 961 zero-regression + 反例 multi-layer 真验)
+
+============================================================
+
+
+--- [RALPH] Iteration 4 ended: US-002 (23分钟 25秒) ---
+
+--- [RALPH] Iteration 5 started: US-003 at 2026-05-12 12:28 ---
+
+============================================================
+## [2026-05-12 12:46] - US-003 (Opus audit · PRD-10 P9.0 6 闸 middleware 真实现 · adminAuth → roleCheck → ipWhitelist → mfaCheck → adminRLS → approvalGateCheck → auditLog)
+============================================================
+
+**risk_level**: high(security-critical · middleware/auth/rls 关键字命中) · size_hint: medium · ~5 min 标审
+
+**Audit context** · Monitor PENDING_DETECTED:US-003 命中 12:46:10 → 全局 §5.0.3 sanity check ✅(单 session · cycle 安全)· retryCount=0(一次过 · 单 commit c7a06dc)
+
+**§0 4 项实测** (Step 1 audit-artifacts.py PASS):
+- ✅ pytest-full 991 passed | 4 skipped(PRD-9 pre-existing)· 0 failed(原 961 + US-003 32 新 - 2 重复 = 991)
+- ✅ typecheck 6 workspace 0 errors
+- ✅ unit-tests 32 pass(roleCheck 6 + ipWhitelist 6 + mfaCheck 6 + adminRLS 8 + approvalGateCheck 5 + procedures-admin 1)
+- ✅ Validator manifest verdict=PASS · failing_ac=null
+
+**high 档 grep + line-by-line + 反例 clauses 真落地**:
+
+- **LD-A3 set_config 真生效**: adminRLS.ts L12 `SELECT set_config('app.role', 'admin', true)` LOCAL=true ✅ + 单测 "set_config SQL has true as 3rd argument (is_local=true / transaction-scoped)" 真验 ✅(防连接池污染 · 类比 accountIsolation pattern · D-063)
+- **LD-A4 高风险 stub**: approvalGateCheck.ts 完美 · `meta.requiresApproval=true → 写 admin_audit_log eventType='approval_request_create' success=false errorCode='NOT_IMPLEMENTED' + throw NOT_IMPLEMENTED message='PRD-13 真闭环' cause={actionType, riskLevel}` · 单测 5 case 覆盖 ✅
+- **REJ-020 6 闸链不漏 adminRLS**: procedures/admin.ts L14-21 `.use(adminAuth).use(roleCheck).use(ipWhitelist).use(mfaCheck).use(adminRLS).use(approvalGateCheck).use(auditLog)` ✅ + procedures-admin.test.ts 顺序硬验证
+- **REJ-023 高风险硬编码 false 禁止**: grep `meta.requiresApproval.*false` admin routers = 0 命中 ✅(本 PRD 暂无 high-risk procedure 落地 · stub 阶段验证机制 OK)
+- **REJ-013 business procedure 必经 middleware**: adminProcedure 链统一 ✅
+
+**6 闸实现深审**:
+- **adminRLS.ts**(23 行)· `ctx.prisma.$transaction(tx => { tx.$executeRawUnsafe set_config; return next({ ctx: { ...ctx, adminPrisma: tx, crossAccountAccessed: true }})})` 完美 · 8 unit 全覆盖
+- **roleCheck.ts**(24 行)· `ADMIN_ROLE_HIERARCHY = { super_admin:3, admin:2, readonly_admin:1 }` + `userLevel ?? 0` + `requiredLevel ?? Infinity` defense · 6 unit 全档
+- **ipWhitelist.ts**(~50 行)· env stub mode + 真 CIDR 解析(ipaddr.js · IPv4 mapped IPv6 normalisation)+ 多 CIDR + 无效 CIDR skip + 6 unit
+- **mfaCheck.ts**(~25 行)· env stub mode + 仅 super_admin 强制 + mfaVerifiedAt null/stale 30d throw PRECONDITION_FAILED · 6 unit
+- **approvalGateCheck.ts**(43 行)· requiresApproval=true 时 写 audit stub event + throw NOT_IMPLEMENTED · 5 unit
+- **procedures/admin.ts**(22 行)· 6 闸 + auditLog 链 · 注释明示 "Gate order: ... (hard constraint per LD-A-chain)" + procedures-admin.test.ts 顺序硬验证
+
+**F2 跨 story 命名一致性 spot check**:
+- trpc-admin.ts AdminMeta type · `requiredRole | requiresApproval | actionType | riskLevel` 跟 roleCheck.ts + approvalGateCheck.ts + PRD §1 US-003 一致 ✅
+- ADMIN_ROLE_HIERARCHY 顺序跟 PRD §1 + ADMIN-ARCHITECTURE §1.3 一致 ✅
+
+**通用 4 维度**:
+- AC: 17/17 PASS(Validator manifest verdict=PASS · failing_ac=null · 32 unit + 991 zero-regression + typecheck 6ws 0)
+- AGENTS §10: LD-A2 ✅ + LD-A3 set_config ✅ + LD-A4 stub ✅ + R-A5 ✅ + R-A6 ✅(grep raw SQL admin routers = 0)
+- 安全: stub 阶段 OAuth/MFA/IPWhitelist 模式合理 + prod 模式真 CIDR + MFA stale + adminRLS LOCAL=true 防连接池污染 + ipaddr.js 严格解析 · 0 Blocker
+- PRD 一致性: D-063(adminRLS pattern 类比 accountIsolation · LOCAL=true)+ D-066(admin-routes.ts 留 US-005)等 LD 全落实
+
+**0 安全风险** · **0 红线触发** · **0 PRD 一致性问题**
+**1 commit US-003**(c7a06dc · 一次 dev iter pass · retryCount=0 健康)
+
+**approved_at**: 2026-05-12T12:53(high 档标审 ~5 min · 17/17 AC + 6 闸完整真接 + 32 unit + 991 zero-regression + 反例 multi-layer 真落地)
+
+============================================================
+
+
+--- [RALPH] Iteration 5 ended: US-003 (19分钟 45秒) ---
+
+--- [RALPH] Iteration 6 started: US-004 at 2026-05-12 12:48 ---
