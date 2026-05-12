@@ -1,28 +1,31 @@
 // PRD-10 · admin tRPC router root
-// US-001: health stub only · US-002+ 逐步填充各子树
-import { router, publicProcedure } from '@/trpc/trpc';
+// US-001: health stub · US-002: auth sub-router · US-003~007 fill remaining sub-trees
+import { adminTrpcRouter, publicAdminProcedure } from '@/trpc/trpc-admin';
 
-// Placeholder sub-routers (filled by US-002~US-007)
-const authPlaceholder = router({});
-const usersPlaceholder = router({});
-const ipAccountsPlaceholder = router({});
-const inviteCodesPlaceholder = router({});
-const trendingPlaceholder = router({});
-const deepLearnPlaceholder = router({});
-const promptsPlaceholder = router({});
-const quotaPlaceholder = router({});
-const nsmPlaceholder = router({});
-const evolutionPlaceholder = router({});
-const auditPlaceholder = router({});
-const configPlaceholder = router({});
-const abPlaceholder = router({});
+import { adminAuthRouter } from './auth';
 
-export const adminRouter = router({
-  /** Health check — no auth required (US-001 stub) */
-  health: publicProcedure.query(() => ({ ok: true, service: 'admin', version: '0.1.0' })),
+// Placeholder sub-routers (filled by US-003~007 + PRD-11~14)
+const usersPlaceholder = adminTrpcRouter({});
+const ipAccountsPlaceholder = adminTrpcRouter({});
+const inviteCodesPlaceholder = adminTrpcRouter({});
+const trendingPlaceholder = adminTrpcRouter({});
+const deepLearnPlaceholder = adminTrpcRouter({});
+const promptsPlaceholder = adminTrpcRouter({});
+const quotaPlaceholder = adminTrpcRouter({});
+const nsmPlaceholder = adminTrpcRouter({});
+const evolutionPlaceholder = adminTrpcRouter({});
+const auditPlaceholder = adminTrpcRouter({});
+const configPlaceholder = adminTrpcRouter({});
+const abPlaceholder = adminTrpcRouter({});
 
-  // 13 domain sub-trees (placeholder · filled by US-002~007 + PRD-11~14)
-  auth: authPlaceholder,
+export const adminRouter = adminTrpcRouter({
+  /** Health check — no auth required */
+  health: publicAdminProcedure.query(() => ({ ok: true, service: 'admin', version: '0.1.0' })),
+
+  // US-002: real auth router
+  auth: adminAuthRouter,
+
+  // US-003~007 + PRD-11~14 sub-trees (placeholder)
   users: usersPlaceholder,
   ipAccounts: ipAccountsPlaceholder,
   inviteCodes: inviteCodesPlaceholder,

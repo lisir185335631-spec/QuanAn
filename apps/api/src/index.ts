@@ -17,25 +17,56 @@ import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { cors } from 'hono/cors';
 
 import { lucia } from '@/lib/auth/lucia';
+import { validateAdminStartupConfig } from '@/lib/auth/oauth-admin-factory';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
 import { logger, traceStore } from '@/lib/logger';
 import { checkDbConnection , prisma } from '@/lib/prisma';
+import { createAdminContext } from '@/server/context-admin';
 import { createContext } from '@/trpc/context';
 import { appRouter } from '@/trpc/routers/_app';
+import { adminRouter } from '@/trpc/routers/admin';
 
 // Validate env at module load — exits early on misconfiguration (AC-10, AC-14)
 validateStartupConfig();
+validateAdminStartupConfig();
 
 const app = new Hono();
 
 const allowedOrigin = process.env.APP_BASE_URL ?? 'http://localhost:5173';
+const adminAllowedOrigin = process.env.ADMIN_BASE_URL ?? 'http://localhost:5174';
+const corsHeaders = ['Content-Type', 'Authorization', 'trpc-accept', 'x-trace-id', 'X-Trace-Id'];
 
+// Main app CORS
 app.use(
-  '*',
+  '/trpc/*',
   cors({
     origin: allowedOrigin,
     credentials: true,
-    allowHeaders: ['Content-Type', 'Authorization', 'trpc-accept', 'x-trace-id', 'X-Trace-Id'],
+    allowHeaders: corsHeaders,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    exposeHeaders: ['x-trace-id'],
+  }),
+);
+
+// Admin SPA CORS (admin.quanqn.com / localhost:5174 in dev)
+app.use(
+  '/trpc/admin/*',
+  cors({
+    origin: adminAllowedOrigin,
+    credentials: true,
+    allowHeaders: corsHeaders,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    exposeHeaders: ['x-trace-id'],
+  }),
+);
+
+// Health + OAuth routes CORS (main app)
+app.use(
+  '*',
+  cors({
+    origin: [allowedOrigin, adminAllowedOrigin],
+    credentials: true,
+    allowHeaders: corsHeaders,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     exposeHeaders: ['x-trace-id'],
   }),
@@ -200,6 +231,20 @@ app.get('/auth/logout', async (c) => {
   });
   return c.redirect(allowedOrigin + '/');
 });
+
+// ── Admin tRPC (mounted before main tRPC so /trpc/admin/* routes here first) ──
+
+app.all('/trpc/admin/*', (c) =>
+  fetchRequestHandler({
+    endpoint: '/trpc/admin',
+    req: c.req.raw,
+    router: adminRouter,
+    createContext: (opts) => createAdminContext(opts),
+    onError: ({ error, path }) => {
+      logger.error({ path, code: error.code }, error.message);
+    },
+  }),
+);
 
 // ── tRPC ───────────────────────────────────────────────────────────────────────
 

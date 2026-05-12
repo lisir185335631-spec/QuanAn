@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@quanqn/schemas": ["../../packages/schemas/src"],
@@ -13,6 +13,6 @@
       "@quanqn/clients/*": ["../../packages/clients/src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "vite-env.d.ts"],
   "exclude": ["node_modules", "dist"]
 }
