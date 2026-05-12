@@ -468,13 +468,15 @@ const _shadowAdminRouter = _t.router({
     exportPdf: _t.procedure
       .input(
         (x: unknown) =>
-          x as { traceId: string; caseNumber: string; reason: string },
+          x as { traceId: string; caseNumber?: string; reason: string },
       )
       .mutation(
-        (): { base64: string; traceId: string; caseNumber: string } => ({
+        (): { base64: string; traceId: string; caseNumber?: string; pdfHash: string; eventCount: number } => ({
           base64: '',
           traceId: '',
-          caseNumber: '',
+          caseNumber: undefined,
+          pdfHash: '',
+          eventCount: 0,
         }),
       ),
   }),

@@ -3,6 +3,8 @@
 // SHIELD: prisma.contains mode:insensitive · 不允许 raw SQL string interpolation
 // SHIELD: Promise.all 并行多表查询 · 不允许串行 await A; await B
 
+import { createHash } from 'node:crypto';
+
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -44,8 +46,8 @@ const searchInput = z.object({
 
 const exportPdfInput = z.object({
   traceId: z.string().min(8),
-  caseNumber: z.string().min(1),
-  reason: z.string().min(1),
+  caseNumber: z.string().min(1).optional(),
+  reason: z.string().min(10), // AC-11: prevent casual export without documented reason
 });
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -389,8 +391,10 @@ export const adminAuditRouter = adminTrpcRouter({
 
   /**
    * Generate a forensic PDF for a trace ID.
-   * Calls byTraceId logic + pdf-forensic.service (US-018).
-   * Returns { base64, traceId, caseNumber }.
+   * AC-13: only super_admin or readonly_admin with actorMode='legal' (法务模式).
+   * AC-11: reason must be >= 10 chars (enforced by Zod input schema).
+   * AC-7: writes audit 'export'/'export_audit_forensic_pdf' with pdfHash + eventCount.
+   * Returns { base64, traceId, caseNumber, pdfHash, eventCount }.
    */
   exportPdf: adminProcedure
     .input(exportPdfInput)
@@ -398,9 +402,25 @@ export const adminAuditRouter = adminTrpcRouter({
       const { traceId, caseNumber, reason } = input;
       const adminId = ctx.activeAdminUser?.id ?? 0;
       const adminRole = ctx.activeAdminUser?.role ?? '';
+      const actorMode = getActorMode(ctx);
       const ip = getIp(ctx);
       const ua = ctx.req.headers.get('user-agent') ?? '';
       const sessionId = ctx.adminSession?.id ?? '';
+
+      // AC-13: 6-gate role check — only super_admin or readonly_admin(legal) may export
+      if (
+        !['super_admin', 'readonly_admin'].includes(adminRole) ||
+        (adminRole === 'readonly_admin' && actorMode !== 'legal')
+      ) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'insufficient_role' });
+      }
+
+      // Lookup requester email (SHIELD: from ctx, never hardcoded)
+      const actor = await ctx.prisma.adminUser.findUnique({
+        where: { id: adminId },
+        select: { email: true },
+      });
+      const requesterEmail = actor?.email ?? `admin-${adminId}`;
 
       // SHIELD: Promise.all 并行 · 不串行
       const [auditLogs, adminAuditLogs, costLogs, feedbackLogs] = await Promise.all([
@@ -426,27 +446,37 @@ export const adminAuditRouter = adminTrpcRouter({
         }),
       ]);
 
-      const timeline = [...auditLogs, ...adminAuditLogs, ...costLogs, ...feedbackLogs].sort(
-        (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
-      );
+      // Tag each record with source before merging (preserves source info in service)
+      const timeline = [
+        ...auditLogs.map((r) => ({ ...r, _source: 'audit_log' })),
+        ...adminAuditLogs.map((r) => ({ ...r, _source: 'admin_audit_log' })),
+        ...costLogs.map((r) => ({ ...r, _source: 'cost_log' })),
+        ...feedbackLogs.map((r) => ({ ...r, _source: 'feedback_log' })),
+      ].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
-      // Generate PDF via pdf-forensic.service (US-018 will provide real impl)
-      const base64 = await generateForensicPdf({
+      const eventCount = timeline.length;
+
+      // Generate forensic PDF (real implementation per US-018)
+      const buffer = await generateForensicPdf({
         traceId,
         caseNumber,
         reason,
         timeline,
-        generatedByAdminId: adminId,
-        generatedByRole: adminRole,
+        requesterAdminId: adminId,
+        requesterEmail,
+        requesterRole: adminRole,
       });
 
-      // Write audit (LD-A3 append-only)
+      const base64 = buffer.toString('base64');
+      const pdfHash = createHash('sha256').update(buffer).digest('hex');
+
+      // AC-7: write audit 'export'/'export_audit_forensic_pdf' + pdfHash + eventCount (LD-A3 append-only)
       await logAdminAction({
         actorAdminId: adminId,
         actorRole: adminRole,
         eventCategory: 'export',
-        eventType: 'export_forensic_pdf',
-        payload: { traceId, caseNumber, reason },
+        eventType: 'export_audit_forensic_pdf',
+        payload: { traceId, caseNumber, reason, eventCount, pdfHash },
         traceId: ctx.traceId,
         ip,
         userAgent: ua,
@@ -454,6 +484,6 @@ export const adminAuditRouter = adminTrpcRouter({
         success: true,
       });
 
-      return { base64, traceId, caseNumber };
+      return { base64, traceId, caseNumber, pdfHash, eventCount };
     }),
 });

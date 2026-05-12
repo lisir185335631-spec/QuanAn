@@ -44,6 +44,8 @@ export default defineConfig({
       '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
       // @quanqn/ui/admin/pdf — PDF bill template (server-side only, apps/api)
       '@quanqn/ui/admin/pdf': path.resolve(__dirname, 'packages/ui/src/admin/PdfBillTemplate.tsx'),
+      // @quanqn/ui/admin/forensic-pdf — forensic PDF template (server-side only, apps/api)
+      '@quanqn/ui/admin/forensic-pdf': path.resolve(__dirname, 'packages/ui/src/admin/PdfForensicTemplate.tsx'),
       // @react-pdf/renderer lives in packages/ui/node_modules (installed there first)
       '@react-pdf/renderer': path.resolve(__dirname, 'packages/ui/node_modules/@react-pdf/renderer'),
     },

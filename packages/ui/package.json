@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./base": "./src/base/index.ts",
     "./admin": "./src/admin/index.ts",
-    "./admin/pdf": "./src/admin/PdfBillTemplate.tsx"
+    "./admin/pdf": "./src/admin/PdfBillTemplate.tsx",
+    "./admin/forensic-pdf": "./src/admin/PdfForensicTemplate.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

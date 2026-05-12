@@ -111,9 +111,9 @@ function PdfExportDialog({
   const exportPdf = adminTrpc.audit.exportPdf.useMutation();
 
   async function handleExport() {
-    if (reason.length < 10 || !caseNumber) return;
+    if (reason.length < 10) return;
     try {
-      const result = await exportPdf.mutateAsync({ traceId, reason, caseNumber });
+      const result = await exportPdf.mutateAsync({ traceId, reason, caseNumber: caseNumber || undefined });
       if (result.base64) {
         const bytes = atob(result.base64);
         const arr = new Uint8Array(bytes.length);
@@ -122,7 +122,8 @@ function PdfExportDialog({
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `forensic-${result.caseNumber}-${result.traceId.slice(0, 8)}.pdf`;
+        const ts = Date.now();
+        a.download = `audit-forensic-${result.traceId.slice(0, 12)}-${ts}.pdf`;
         a.click();
         URL.revokeObjectURL(url);
       }

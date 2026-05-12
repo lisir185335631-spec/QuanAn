@@ -6,8 +6,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 
 const mockLogAdminAction = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+// US-018: generateForensicPdf now returns Buffer; toString('base64') on Buffer = base64 string
 const mockGenerateForensicPdf = vi.hoisted(() =>
-  vi.fn().mockResolvedValue(Buffer.from('pdf-placeholder').toString('base64')),
+  vi.fn().mockResolvedValue(Buffer.from('pdf-placeholder')),
 );
 
 const mockAuditLogFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
@@ -17,6 +18,7 @@ const mockAdminAuditLogFindFirst = vi.hoisted(() => vi.fn().mockResolvedValue(nu
 const mockAdminAuditLogCreate = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const mockCostLogFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
 const mockFeedbackLogFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
+const mockAdminUserFindUnique = vi.hoisted(() => vi.fn().mockResolvedValue({ email: 'super@quanqn.com' }));
 
 const mockPrismaTransaction = vi.hoisted(() =>
   vi.fn().mockImplementation((cb: (tx: unknown) => unknown) =>
@@ -53,6 +55,7 @@ vi.mock('@/lib/prisma', () => ({
     },
     costLog: { findMany: mockCostLogFindMany },
     feedbackLog: { findMany: mockFeedbackLogFindMany },
+    adminUser: { findUnique: mockAdminUserFindUnique },
   },
 }));
 
@@ -116,7 +119,7 @@ function makeCaller(user: AdminLuciaUser | null, overrides: Partial<AdminTRPCCon
 beforeEach(() => {
   vi.resetAllMocks();
   mockLogAdminAction.mockResolvedValue(undefined);
-  mockGenerateForensicPdf.mockResolvedValue(Buffer.from('pdf-placeholder').toString('base64'));
+  mockGenerateForensicPdf.mockResolvedValue(Buffer.from('pdf-placeholder'));
   mockAuditLogFindMany.mockResolvedValue([]);
   mockAuditLogCount.mockResolvedValue(0);
   mockAdminAuditLogFindMany.mockResolvedValue([]);
@@ -124,6 +127,7 @@ beforeEach(() => {
   mockAdminAuditLogCreate.mockResolvedValue({});
   mockCostLogFindMany.mockResolvedValue([]);
   mockFeedbackLogFindMany.mockResolvedValue([]);
+  mockAdminUserFindUnique.mockResolvedValue({ email: 'super@quanqn.com' });
   mockPrismaTransaction.mockImplementation((cb: (tx: unknown) => unknown) =>
     cb({
       $executeRaw: vi.fn().mockResolvedValue(undefined),
@@ -465,40 +469,43 @@ describe('exportPdf', () => {
     expect(result.caseNumber).toBe('CASE-002');
   });
 
-  it('calls generateForensicPdf with correct args', async () => {
+  it('calls generateForensicPdf with correct args (US-018 interface)', async () => {
     const caller = makeCaller(SUPER_ADMIN);
     await caller.exportPdf({
       traceId: TRACE_ID,
       caseNumber: 'CASE-003',
-      reason: 'Test reason',
+      reason: 'Test reason for forensic export',
     });
     expect(mockGenerateForensicPdf).toHaveBeenCalledOnce();
     const args = mockGenerateForensicPdf.mock.calls[0]![0] as {
       traceId: string;
       caseNumber: string;
+      requesterEmail: string;
+      requesterRole: string;
     };
     expect(args.traceId).toBe(TRACE_ID);
     expect(args.caseNumber).toBe('CASE-003');
+    expect(args.requesterEmail).toBe('super@quanqn.com');
+    expect(args.requesterRole).toBe('super_admin');
   });
 
-  it('writes export_forensic_pdf audit log', async () => {
+  it('writes export_audit_forensic_pdf audit log (AC-7)', async () => {
     const caller = makeCaller(SUPER_ADMIN);
     await caller.exportPdf({
       traceId: TRACE_ID,
       caseNumber: 'CASE-004',
-      reason: 'Evidence collection',
+      reason: 'Evidence collection for legal proceedings',
     });
     expect(mockLogAdminAction).toHaveBeenCalledWith(
-      expect.objectContaining({ eventType: 'export_forensic_pdf', eventCategory: 'export' }),
+      expect.objectContaining({ eventType: 'export_audit_forensic_pdf', eventCategory: 'export' }),
     );
   });
 
   it('still succeeds when traceId has no matching records (empty timeline)', async () => {
     const caller = makeCaller(SUPER_ADMIN);
     await expect(
-      caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'C', reason: 'r' }),
+      caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'CASE-X', reason: 'Legal empty trace test' }),
     ).resolves.toBeDefined();
-    // generateForensicPdf receives empty timeline
     const args = mockGenerateForensicPdf.mock.calls[0]![0] as { timeline: unknown[] };
     expect(args.timeline).toHaveLength(0);
   });
@@ -509,8 +516,38 @@ describe('exportPdf', () => {
     mockCostLogFindMany.mockResolvedValueOnce([{ id: BigInt(3), createdAt: T3 }]);
 
     const caller = makeCaller(SUPER_ADMIN);
-    await caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'C', reason: 'r' });
+    await caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'CASE-Y', reason: 'Forensic multi-table test' });
     const args = mockGenerateForensicPdf.mock.calls[0]![0] as { timeline: unknown[] };
     expect(args.timeline).toHaveLength(3);
+  });
+
+  it('regular admin (not super_admin/legal) is forbidden — AC-13', async () => {
+    const caller = makeCaller(REGULAR_ADMIN);
+    await expect(
+      caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'CASE-Z', reason: 'Should be rejected by role check' }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('readonly_admin without actorMode=legal is forbidden', async () => {
+    const caller = makeCaller(READONLY_ADMIN);
+    await expect(
+      caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'CASE-W', reason: 'Should be forbidden' }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('readonly_admin with actorMode=legal is allowed (法务模式)', async () => {
+    const caller = makeCaller(READONLY_ADMIN, {
+      req: makeRequest({ 'x-actor-mode': 'legal' }),
+    });
+    await expect(
+      caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'CASE-V', reason: 'Legal forensic export test' }),
+    ).resolves.toBeDefined();
+  });
+
+  it('reason shorter than 10 chars throws ZodError (AC-11)', async () => {
+    const caller = makeCaller(SUPER_ADMIN);
+    await expect(
+      caller.exportPdf({ traceId: TRACE_ID, caseNumber: 'CASE-U', reason: 'short' }),
+    ).rejects.toThrow();
   });
 });
