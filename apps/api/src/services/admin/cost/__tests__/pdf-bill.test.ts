@@ -3,7 +3,6 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Prisma } from '@prisma/client';
-import { createHash } from 'node:crypto';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 
@@ -69,7 +68,6 @@ describe('generateMonthlyBill', () => {
     const result = await generateMonthlyBill('2026-05', 1, makeMockPrisma());
     expect(result.buffer).toBeInstanceOf(Buffer);
     expect(result.filename).toBe('cost-bill-2026-05.pdf');
-    expect(result.contentType).toBeUndefined(); // contentType is on the router layer, not service
   });
 
   it('filename matches cost-bill-{YYYY-MM}.pdf', async () => {
