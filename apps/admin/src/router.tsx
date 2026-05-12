@@ -1,0 +1,63 @@
+// PRD-10 US-005 · React Router · 16 域 route + /login + /admin 默认 + 404
+// AC-9: BrowserRouter already in App.tsx · this exports the route tree
+
+import { Navigate, Route, Routes } from 'react-router-dom';
+
+import { AdminLayout } from './layouts/AdminLayout';
+import Login from './pages/Login';
+import AbPlaceholder from './pages/admin/placeholder/ab';
+import AccountsPlaceholder from './pages/admin/placeholder/accounts';
+import ApprovalPlaceholder from './pages/admin/placeholder/approval';
+import AuditPlaceholder from './pages/admin/placeholder/audit';
+import CompliancePlaceholder from './pages/admin/placeholder/compliance';
+import ConfigPlaceholder from './pages/admin/placeholder/config';
+import CostPlaceholder from './pages/admin/placeholder/cost';
+import EvolutionPlaceholder from './pages/admin/placeholder/evolution';
+import InvitesPlaceholder from './pages/admin/placeholder/invites';
+import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
+import NsmPlaceholder from './pages/admin/placeholder/nsm';
+import PromptsPlaceholder from './pages/admin/placeholder/prompts';
+import QuotaPlaceholder from './pages/admin/placeholder/quota';
+import ReviewDeepLearnPlaceholder from './pages/admin/placeholder/reviewDeepLearn';
+import ReviewTrendingPlaceholder from './pages/admin/placeholder/reviewTrending';
+import UsersPlaceholder from './pages/admin/placeholder/users';
+
+export function AdminRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/admin" element={<AdminLayout />}>
+        {/* default → nsm */}
+        <Route index element={<Navigate to="/admin/nsm" replace />} />
+
+        {/* P0 核心 */}
+        <Route path="nsm" element={<NsmPlaceholder />} />
+        <Route path="users" element={<UsersPlaceholder />} />
+        <Route path="accounts" element={<AccountsPlaceholder />} />
+        <Route path="cost" element={<CostPlaceholder />} />
+        <Route path="audit" element={<AuditPlaceholder />} />
+        <Route path="invites" element={<InvitesPlaceholder />} />
+
+        {/* P0 内容审核 */}
+        <Route path="reviewTrending" element={<ReviewTrendingPlaceholder />} />
+        <Route path="reviewDeepLearn" element={<ReviewDeepLearnPlaceholder />} />
+
+        {/* P1 健康度 */}
+        <Route path="evolution" element={<EvolutionPlaceholder />} />
+        <Route path="prompts" element={<PromptsPlaceholder />} />
+        <Route path="quota" element={<QuotaPlaceholder />} />
+        <Route path="compliance" element={<CompliancePlaceholder />} />
+        <Route path="approval" element={<ApprovalPlaceholder />} />
+
+        {/* P2 高级 */}
+        <Route path="ab" element={<AbPlaceholder />} />
+        <Route path="knowledge" element={<KnowledgePlaceholder />} />
+        <Route path="config" element={<ConfigPlaceholder />} />
+      </Route>
+
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+}

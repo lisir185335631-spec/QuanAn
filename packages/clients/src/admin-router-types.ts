@@ -41,7 +41,17 @@ const _shadowAdminRouter = _t.router({
   quota: _t.router({}),
   nsm: _t.router({}),
   evolution: _t.router({}),
-  audit: _t.router({}),
+  audit: _t.router({
+    listMine: _t.procedure.query(
+      (): Array<{
+        id: number;
+        eventType: string;
+        eventCategory: string;
+        createdAt: Date;
+        payload: Record<string, unknown> | null;
+      }> => [],
+    ),
+  }),
   config: _t.router({}),
   ab: _t.router({}),
 });

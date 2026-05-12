@@ -1,11 +1,33 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type Plugin } from 'vitest/config';
 import path from 'node:path';
+import react from '@vitejs/plugin-react';
+
+const adminSrc = path.resolve(__dirname, 'apps/admin/src');
+
+/** Re-route `@/` to apps/admin/src when the importer lives there. */
+const adminAliasPlugin: Plugin = {
+  name: 'admin-at-alias',
+  enforce: 'pre',
+  resolveId(id, importer) {
+    if (id.startsWith('@/') && importer?.includes('apps/admin/src')) {
+      return path.resolve(adminSrc, id.slice(2));
+    }
+  },
+};
 
 export default defineConfig({
+  plugins: [react(), adminAliasPlugin],
   resolve: {
     alias: {
       // API path alias — used when unit tests import from apps/api/src/**
       '@': path.resolve(__dirname, 'apps/api/src'),
+      // admin app alias — used by tests/unit/admin/*.tsx
+      '@admin': adminSrc,
+      // React lives in apps/admin/node_modules — expose for admin tests
+      'react': path.resolve(__dirname, 'apps/admin/node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'apps/admin/node_modules/react-dom'),
+      'react-dom/client': path.resolve(__dirname, 'apps/admin/node_modules/react-dom/client.js'),
+      'react-router-dom': path.resolve(__dirname, 'apps/admin/node_modules/react-router-dom'),
       // zod lives in apps/api/node_modules (not root) — expose to root vitest
       'zod': path.resolve(__dirname, 'apps/api/node_modules/zod'),
       // openai lives in apps/api/node_modules — expose so vi.mock('openai') intercepts worker imports (PRD-6 US-009)
@@ -25,6 +47,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    environmentMatchGlobs: [
+      // admin component tests need jsdom
+      ['tests/unit/admin/*.tsx', 'jsdom'],
+    ],
     setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'v8',

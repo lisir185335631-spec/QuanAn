@@ -1,10 +1,12 @@
 // PRD-10 · admin tRPC router root
 // US-001: health stub · US-002: auth sub-router · US-003~007 fill remaining sub-trees
+// US-005: real audit router (audit.listMine)
 import { adminTrpcRouter, publicAdminProcedure } from '@/trpc/trpc-admin';
 
+import { adminAuditRouter } from './audit';
 import { adminAuthRouter } from './auth';
 
-// Placeholder sub-routers (filled by US-003~007 + PRD-11~14)
+// Placeholder sub-routers (filled by PRD-11~14)
 const usersPlaceholder = adminTrpcRouter({});
 const ipAccountsPlaceholder = adminTrpcRouter({});
 const inviteCodesPlaceholder = adminTrpcRouter({});
@@ -14,7 +16,6 @@ const promptsPlaceholder = adminTrpcRouter({});
 const quotaPlaceholder = adminTrpcRouter({});
 const nsmPlaceholder = adminTrpcRouter({});
 const evolutionPlaceholder = adminTrpcRouter({});
-const auditPlaceholder = adminTrpcRouter({});
 const configPlaceholder = adminTrpcRouter({});
 const abPlaceholder = adminTrpcRouter({});
 
@@ -25,7 +26,10 @@ export const adminRouter = adminTrpcRouter({
   // US-002: real auth router
   auth: adminAuthRouter,
 
-  // US-003~007 + PRD-11~14 sub-trees (placeholder)
+  // US-005: real audit router
+  audit: adminAuditRouter,
+
+  // PRD-11~14 sub-trees (placeholder)
   users: usersPlaceholder,
   ipAccounts: ipAccountsPlaceholder,
   inviteCodes: inviteCodesPlaceholder,
@@ -35,7 +39,6 @@ export const adminRouter = adminTrpcRouter({
   quota: quotaPlaceholder,
   nsm: nsmPlaceholder,
   evolution: evolutionPlaceholder,
-  audit: auditPlaceholder,
   config: configPlaceholder,
   ab: abPlaceholder,
 });
