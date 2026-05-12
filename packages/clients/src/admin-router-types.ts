@@ -138,7 +138,109 @@ const _shadowAdminRouter = _t.router({
       .input((x: unknown) => x as { userId: number })
       .mutation((): { status: 'ok'; tempPassword: string } => ({ status: 'ok', tempPassword: '' })),
   }),
-  ipAccounts: _t.router({}),
+  ipAccounts: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            search?: string;
+            industryFilter?: string;
+            platformFilter?: string;
+            levelFilter?: string;
+            stageFilter?: string;
+            anomalyOnly?: boolean;
+            sortBy?: 'createdAt' | 'updatedAt' | 'name';
+            sortDir?: 'asc' | 'desc';
+          },
+      )
+      .query(
+        (): {
+          accounts: Array<{
+            id: number;
+            name: string;
+            industry: string;
+            platform: string;
+            stage: string;
+            frozenAt: Date | null;
+            createdAt: Date;
+            updatedAt: Date;
+            user: { id: number; email: string; name: string | null } | null;
+            evolutionProfile: { level: string; feedbackCountTotal: number; satisfactionRate: number | null } | null;
+            _count: { anomalyFlags: number };
+          }>;
+          count: number;
+          page: number;
+          pageSize: number;
+        } => ({ accounts: [], count: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { accountId: number })
+      .query(
+        (): {
+          account: {
+            id: number;
+            name: string;
+            industry: string;
+            platform: string;
+            stage: string;
+            frozenAt: Date | null;
+            user: { id: number; email: string; name: string | null } | null;
+          } | null;
+          stepData: Array<{ id: number; stepKey: string; createdAt: Date; feedback: string | null }>;
+          evolutionProfile: {
+            level: string;
+            currentDirection: string;
+            feedbackCountGood: number;
+            feedbackCountBad: number;
+            feedbackCountTotal: number;
+            satisfactionRate: number | null;
+            deepLearningCount: number;
+            lastEvolvedAt: Date | null;
+          } | null;
+          insights: Array<{ id: number; triggerType: string; direction: string; createdAt: Date }>;
+          histories: Array<{ id: number; createdAt: Date }>;
+          adminNotes: Array<{ id: number; adminId: number; note: string; visibleToOtherAdmin: boolean; createdAt: Date }>;
+          anomalyFlags: Array<{
+            id: number;
+            accountId: number;
+            anomalyType: string;
+            severity: string;
+            evidence: Record<string, unknown>;
+            detectedAt: Date;
+            resolvedAt: Date | null;
+            resolution: string | null;
+          }>;
+        } | null => null,
+      ),
+    flag: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { accountId: number; anomalyType: string; severity: 'low' | 'medium' | 'high'; evidence: Record<string, unknown> },
+      )
+      .mutation((): { flagId: number } => ({ flagId: 0 })),
+    unflag: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { flagId: number; resolution: 'false_positive' | 'admin_action' | 'auto_resolved' },
+      )
+      .mutation((): { status: 'ok' } => ({ status: 'ok' })),
+    addNote: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { accountId: number; note: string; visibleToOtherAdmin?: boolean },
+      )
+      .mutation((): { noteId: number } => ({ noteId: 0 })),
+    forceFreeze: _t.procedure
+      .input((x: unknown) => x as { accountId: number; freezeReason: string })
+      .mutation(
+        (): { status: 'auto_executed' | 'pending'; approvalRequestId: number } => ({
+          status: 'auto_executed',
+          approvalRequestId: 0,
+        }),
+      ),
+  }),
   inviteCodes: _t.router({}),
   trending: _t.router({}),
   deepLearn: _t.router({}),

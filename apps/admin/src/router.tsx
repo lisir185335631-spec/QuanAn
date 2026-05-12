@@ -5,7 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AdminLayout } from './layouts/AdminLayout';
 import AbPlaceholder from './pages/admin/placeholder/ab';
-import AccountsPlaceholder from './pages/admin/placeholder/accounts';
+import AccountsPage from './pages/accounts/index';
 import ApprovalPlaceholder from './pages/admin/placeholder/approval';
 import AuditPlaceholder from './pages/admin/placeholder/audit';
 import CompliancePlaceholder from './pages/admin/placeholder/compliance';
@@ -34,7 +34,7 @@ export function AdminRoutes() {
         {/* P0 核心 */}
         <Route path="nsm" element={<NsmDashboard />} />
         <Route path="users" element={<UsersPage />} />
-        <Route path="accounts" element={<AccountsPlaceholder />} />
+        <Route path="accounts" element={<AccountsPage />} />
         <Route path="cost" element={<CostPlaceholder />} />
         <Route path="audit" element={<AuditPlaceholder />} />
         <Route path="invites" element={<InvitesPlaceholder />} />
