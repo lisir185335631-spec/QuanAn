@@ -12,6 +12,7 @@ interface BanUserDialogProps {
 
 export function BanUserDialog({ userId, userEmail, onClose, onSuccess }: BanUserDialogProps) {
   const [reason, setReason] = useState('');
+  const [durationDays, setDurationDays] = useState('');
 
   const mutation = adminTrpc.users.banUser.useMutation({
     onSuccess: (data) => {
@@ -27,13 +28,16 @@ export function BanUserDialog({ userId, userEmail, onClose, onSuccess }: BanUser
 
   if (!userId) return null;
 
+  const parsedDays = durationDays.trim() ? parseInt(durationDays.trim(), 10) : undefined;
+  const daysValid = parsedDays === undefined || (Number.isInteger(parsedDays) && parsedDays > 0);
+
   return (
     <Dialog title="封禁用户" onClose={onClose}>
       <div style={{ marginBottom: 14 }}>
         <Label>用户</Label>
         <div style={{ color: 'var(--text)', fontSize: 13 }}>{userEmail ?? `#${userId}`}</div>
       </div>
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 14 }}>
         <Label>封禁原因 * (≥10字)</Label>
         <textarea
           style={{ ...inputStyle, height: 80, resize: 'vertical' }}
@@ -41,6 +45,20 @@ export function BanUserDialog({ userId, userEmail, onClose, onSuccess }: BanUser
           onChange={(e) => setReason(e.target.value)}
           placeholder="请填写封禁原因（至少10字）…"
         />
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <Label>封禁时长（天）— 可选，留空为永久</Label>
+        <input
+          type="number"
+          min={1}
+          style={{ ...inputStyle }}
+          value={durationDays}
+          onChange={(e) => setDurationDays(e.target.value)}
+          placeholder="例如 30（留空 = 永久封禁）"
+        />
+        {durationDays.trim() && !daysValid && (
+          <div style={{ color: 'var(--status-err)', fontSize: 11, marginTop: 4 }}>请输入正整数</div>
+        )}
       </div>
       <div
         style={{
@@ -53,13 +71,13 @@ export function BanUserDialog({ userId, userEmail, onClose, onSuccess }: BanUser
           color: 'var(--status-err)',
         }}
       >
-        ⚠️ 此操作将封禁用户账户，该用户将无法登录
+        ⚠️ {parsedDays ? `此操作将封禁用户账户 ${parsedDays} 天` : '此操作将永久封禁用户账户'}，该用户将无法登录
       </div>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
         <GhostButton onClick={onClose}>取消</GhostButton>
         <DangerButton
-          onClick={() => mutation.mutate({ userId, reason })}
-          disabled={reason.length < 10 || mutation.isPending}
+          onClick={() => mutation.mutate({ userId, reason, durationDays: parsedDays })}
+          disabled={reason.length < 10 || !daysValid || mutation.isPending}
           loading={mutation.isPending}
         >
           确认封禁

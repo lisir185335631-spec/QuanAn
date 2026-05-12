@@ -118,6 +118,81 @@ function BasicTab({ user, detail }: { user: UserRow; detail: DetailData | null |
 
 // ── ActivityTab ──────────────────────────────────────────────────────────────
 
+function FeedbackPie({ yes, no }: { yes: number; no: number }) {
+  const total = yes + no;
+  if (total === 0) return <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>暂无反馈数据</div>;
+  // r=15.9155 → circumference ≈ 100, dasharray values are percentages directly
+  const yesPct = (yes / total) * 100;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <svg width={52} height={52} viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
+        {/* negative background ring */}
+        <circle cx={20} cy={20} r={15.9155} fill="none" stroke="rgba(239,68,68,0.35)" strokeWidth={5} />
+        {/* positive arc overlay */}
+        <circle
+          cx={20} cy={20} r={15.9155} fill="none"
+          stroke="#22c55e"
+          strokeWidth={5}
+          strokeDasharray={`${yesPct} ${100 - yesPct}`}
+          strokeDashoffset={25}
+          transform="rotate(-90 20 20)"
+          strokeLinecap="butt"
+        />
+        <text x={20} y={20} textAnchor="middle" dominantBaseline="central" fontSize={8} fill="var(--text)" fontWeight={700}>
+          {Math.round(yesPct)}%
+        </text>
+      </svg>
+      <div style={{ fontSize: 12 }}>
+        <div style={{ color: '#22c55e', marginBottom: 3 }}>● {yes} 好评</div>
+        <div style={{ color: '#ef4444', marginBottom: 3 }}>● {no} 差评</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: 11 }}>共 {total} 条</div>
+      </div>
+    </div>
+  );
+}
+
+function ActivityCalendar({ stepData }: { stepData: Array<{ createdAt: string }> }) {
+  const last30 = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    return d.toISOString().slice(0, 10);
+  });
+  const byDay: Record<string, number> = {};
+  for (const s of stepData) {
+    const day = new Date(s.createdAt).toISOString().slice(0, 10);
+    byDay[day] = (byDay[day] ?? 0) + 1;
+  }
+  const maxDay = Math.max(1, ...last30.map((d) => byDay[d] ?? 0));
+  return (
+    <div>
+      <div style={{ color: 'var(--text-muted)', fontSize: 11, marginBottom: 6 }}>近 30 天活跃日历</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
+        {last30.map((day) => {
+          const count = byDay[day] ?? 0;
+          const intensity = count / maxDay;
+          return (
+            <div
+              key={day}
+              title={`${day}: ${count} 步`}
+              style={{
+                height: 13,
+                borderRadius: 2,
+                background: count === 0
+                  ? 'var(--border)'
+                  : `rgba(212,175,55,${0.2 + intensity * 0.8})`,
+              }}
+            />
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, color: 'var(--text-dim)', fontSize: 10 }}>
+        <span>30天前</span>
+        <span>今天</span>
+      </div>
+    </div>
+  );
+}
+
 function ActivityTab({ detail }: { detail: DetailData | null | undefined }) {
   const stepData = detail?.stepData ?? [];
 
@@ -134,7 +209,7 @@ function ActivityTab({ detail }: { detail: DetailData | null | undefined }) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: 20 }}>
         <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 10 }}>9步完成进度</div>
         {STEPS.map((step, i) => {
           const count = stepCounts[step] ?? 0;
@@ -160,35 +235,76 @@ function ActivityTab({ detail }: { detail: DetailData | null | undefined }) {
           );
         })}
       </div>
-      <div>
-        <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 8 }}>反馈统计</div>
-        <div style={{ display: 'flex', gap: 20 }}>
-          <div>
-            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--status-ok)' }}>{feedbackYes}</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: 12, marginLeft: 4 }}>好评</span>
-          </div>
-          <div>
-            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--status-err)' }}>{feedbackNo}</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: 12, marginLeft: 4 }}>差评</span>
-          </div>
-          <div>
-            <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-muted)' }}>
-              {stepData.length}
-            </span>
-            <span style={{ color: 'var(--text-muted)', fontSize: 12, marginLeft: 4 }}>总步骤</span>
-          </div>
-        </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 10 }}>反馈饼图</div>
+        <FeedbackPie yes={feedbackYes} no={feedbackNo} />
       </div>
+
+      <ActivityCalendar stepData={stepData} />
     </div>
   );
 }
 
 // ── CostTab ───────────────────────────────────────────────────────────────────
 
+function monthlyActivity(stepData: Array<{ createdAt: string }>): Array<{ label: string; count: number }> {
+  const buckets: Record<string, number> = {};
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    buckets[key] = 0;
+  }
+  for (const s of stepData) {
+    const d = new Date(s.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (key in buckets) buckets[key] = (buckets[key] ?? 0) + 1;
+  }
+  return Object.entries(buckets).map(([k, v]) => ({ label: k.slice(5), count: v }));
+}
+
+function MonthlyTrendLine({ stepData }: { stepData: Array<{ createdAt: string }> }) {
+  const data = monthlyActivity(stepData);
+  const maxVal = Math.max(1, ...data.map((d) => d.count));
+  const W = 220, H = 64, PX = 10, PY = 8;
+
+  const pts = data.map((d, i) => {
+    const x = PX + (i / (data.length - 1)) * (W - PX * 2);
+    const y = PY + (1 - d.count / maxVal) * (H - PY * 2);
+    return { x, y, ...d };
+  });
+  const polyline = pts.map((p) => `${p.x},${p.y}`).join(' ');
+
+  return (
+    <div>
+      <div style={{ color: 'var(--text-muted)', fontSize: 11, marginBottom: 6 }}>月度使用趋势（近6月步骤量）</div>
+      <svg width={W} height={H} style={{ overflow: 'visible', display: 'block' }}>
+        <polyline points={polyline} fill="none" stroke="var(--gold)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+        {pts.map((p) => (
+          <circle key={p.label} cx={p.x} cy={p.y} r={3} fill="var(--gold)" />
+        ))}
+        {pts.map((p) => (
+          <text key={`l-${p.label}`} x={p.x} y={H} textAnchor="middle" fontSize={9} fill="var(--text-dim)">{p.label}</text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
 function CostTab({ detail }: { detail: DetailData | null | undefined }) {
   const agg = detail?.costAggregate;
   const totalTokens = agg?._sum?.totalTokens ?? 0;
   const totalCalls = agg?._count?.id ?? 0;
+  const stepData = detail?.stepData ?? [];
+
+  // Top-5 steps by frequency as proxy for specialist cost breakdown
+  const stepGroups: Record<string, number> = {};
+  for (const s of stepData) {
+    stepGroups[s.stepKey] = (stepGroups[s.stepKey] ?? 0) + 1;
+  }
+  const top5 = Object.entries(stepGroups).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const maxTop = Math.max(1, ...top5.map(([, v]) => v));
 
   return (
     <div>
@@ -202,8 +318,24 @@ function CostTab({ detail }: { detail: DetailData | null | undefined }) {
           <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--accent-blue)' }}>{totalCalls.toLocaleString()}</div>
         </div>
       </div>
-      <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-        Top 5 Specialist 成本数据待接入 · 需 cost_log 聚合索引
+
+      <div style={{ marginBottom: 20 }}>
+        <MonthlyTrendLine stepData={stepData} />
+      </div>
+
+      <div>
+        <div style={{ color: 'var(--text-muted)', fontSize: 11, marginBottom: 8 }}>Top 5 步骤使用量</div>
+        {top5.length === 0 ? (
+          <div style={{ color: 'var(--text-dim)', fontSize: 12 }}>暂无步骤数据</div>
+        ) : top5.map(([stepKey, count]) => (
+          <div key={stepKey} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ width: 48, flexShrink: 0, fontSize: 11, color: 'var(--text-muted)' }}>{stepKey}</div>
+            <div style={{ flex: 1, height: 6, background: 'var(--border)', borderRadius: 3 }}>
+              <div style={{ width: `${(count / maxTop) * 100}%`, height: '100%', background: 'var(--gold)', borderRadius: 3 }} />
+            </div>
+            <div style={{ width: 30, textAlign: 'right', fontSize: 11, color: 'var(--text-muted)' }}>{count}</div>
+          </div>
+        ))}
       </div>
     </div>
   );

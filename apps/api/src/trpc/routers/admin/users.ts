@@ -78,6 +78,7 @@ const changePlanInput = z.object({
 const banUserInput = z.object({
   userId: z.number().int(),
   reason: z.string().min(10),
+  durationDays: z.number().int().positive().optional(),
 });
 
 // ── resetPassword ───────────────────────────────────────────────────────────
@@ -258,7 +259,7 @@ export const usersRouter = adminTrpcRouter({
     await guardMutation(ctx);
 
     const db = ctx.adminPrisma ?? ctx.prisma;
-    const { userId, reason } = input;
+    const { userId, reason, durationDays } = input;
 
     const user = await db.user.findUnique({ where: { id: userId }, select: { id: true, isBanned: true } });
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'user not found' });
@@ -268,7 +269,9 @@ export const usersRouter = adminTrpcRouter({
 
     const actorRole = ctx.activeAdminUser!.role;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    const actionPayload = { userId, reason };
+    const actionPayload = durationDays !== undefined
+      ? { userId, reason, durationDays }
+      : { userId, reason };
 
     if (actorRole === 'super_admin') {
       const approvalRequest = await db.approvalRequest.create({

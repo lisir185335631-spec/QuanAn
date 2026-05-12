@@ -127,7 +127,7 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
     banUser: _t.procedure
-      .input((x: unknown) => x as { userId: number; reason: string })
+      .input((x: unknown) => x as { userId: number; reason: string; durationDays?: number })
       .mutation(
         (): { status: 'auto_executed' | 'pending'; approvalRequestId: number } => ({
           status: 'auto_executed',
