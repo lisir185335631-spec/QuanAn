@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 
 import { logAdminAction } from '@/services/admin/admin-audit-service';
+import { generateMonthlyBill } from '@/services/admin/cost/pdf-bill.service';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
 
@@ -247,6 +248,57 @@ export const costRouter = adminTrpcRouter({
       };
     });
   }),
+
+  // # $ money-critical: true
+  /** exportMonthlyPdf · generate monthly PDF bill · @react-pdf/renderer · payloadHash footer (US-014) */
+  exportMonthlyPdf: adminProcedure
+    .input(z.object({ month: z.string().regex(/^\d{4}-\d{2}$/) }))
+    .mutation(async ({ input, ctx }) => {
+      const db = ctx.adminPrisma ?? ctx.prisma;
+      const actorId = ctx.activeAdminUser!.id;
+      const traceId = ctx.traceId;
+
+      try {
+        const result = await generateMonthlyBill(input.month, actorId, db as Parameters<typeof generateMonthlyBill>[2]);
+        const data = result.buffer.toString('base64');
+
+        void logAdminAction({
+          actorAdminId: actorId,
+          actorRole: ctx.activeAdminUser!.role,
+          eventCategory: 'export',
+          eventType: 'export_cost_monthly_pdf',
+          payload: { month: input.month, rowCount: result.rowCount, pdfHash: '[REDACTED]' },
+          traceId,
+          ip: getIp(ctx),
+          userAgent: ctx.req.headers.get('user-agent') ?? '',
+          sessionId: ctx.adminSession?.id ?? '',
+          success: true,
+        });
+
+        return {
+          filename: result.filename,
+          contentType: 'application/pdf',
+          size: result.buffer.length,
+          data,
+        };
+      } catch (err) {
+        void logAdminAction({
+          actorAdminId: actorId,
+          actorRole: ctx.activeAdminUser!.role,
+          eventCategory: 'export',
+          eventType: 'export_failed',
+          payload: { month: input.month, error: err instanceof Error ? err.message : String(err) },
+          traceId,
+          ip: getIp(ctx),
+          userAgent: ctx.req.headers.get('user-agent') ?? '',
+          sessionId: ctx.adminSession?.id ?? '',
+          success: false,
+          errorCode: 'PDF_GENERATION_FAILED',
+          errorMessage: err instanceof Error ? err.message : String(err),
+        });
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'PDF generation failed' });
+      }
+    }),
 
   // # $ money-critical: true
   /** exportCsv · chunked cost log CSV export ≤500k rows · 防 OOM (AC-6) */

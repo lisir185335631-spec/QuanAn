@@ -8,12 +8,14 @@
   "exports": {
     ".": "./src/index.ts",
     "./base": "./src/base/index.ts",
-    "./admin": "./src/admin/index.ts"
+    "./admin": "./src/admin/index.ts",
+    "./admin/pdf": "./src/admin/PdfBillTemplate.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.5.1",
     "@tanstack/react-virtual": "^3.13.24",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

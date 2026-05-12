@@ -142,6 +142,7 @@ export default function CostPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('thisMonth');
   const [dimension, setDimension] = useState<Dimension>('user');
   const [isExporting, setIsExporting] = useState(false);
+  const [isPdfExporting, setIsPdfExporting] = useState(false);
 
   const { startDate, endDate, groupBy } = useMemo(() => getDateRange(timeRange), [timeRange]);
 
@@ -154,6 +155,37 @@ export default function CostPage() {
     { startDate, endDate },
     { enabled: false },
   );
+
+  const exportPdfMutation = adminTrpc.cost.exportMonthlyPdf.useMutation();
+
+  function getCurrentMonth(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  async function handleExportPdf() {
+    setIsPdfExporting(true);
+    try {
+      const month = getCurrentMonth();
+      const result = await exportPdfMutation.mutateAsync({ month });
+      const bytes = Uint8Array.from(atob(result.data), c => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: result.contentType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = result.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`PDF 导出完成 · ${(result.size / 1024).toFixed(1)} KB`, 'ok');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showToast(`PDF 导出失败: ${msg}`, 'err');
+    } finally {
+      setIsPdfExporting(false);
+    }
+  }
 
   async function handleExportCsv() {
     setIsExporting(true);
@@ -229,6 +261,26 @@ export default function CostPage() {
               <option key={d} value={d}>{DIMENSION_LABELS[d]}</option>
             ))}
           </select>
+
+          {/* PDF Export */}
+          <button
+            type="button"
+            onClick={() => void handleExportPdf()}
+            disabled={isPdfExporting}
+            style={{
+              background: 'none',
+              border: '1px solid var(--accent-3)',
+              color: 'var(--accent-3)',
+              padding: '5px 14px',
+              borderRadius: 4,
+              fontSize: 13,
+              cursor: isPdfExporting ? 'not-allowed' : 'pointer',
+              opacity: isPdfExporting ? 0.6 : 1,
+              fontWeight: 500,
+            }}
+          >
+            {isPdfExporting ? '生成中…' : '月度账单 PDF'}
+          </button>
 
           {/* CSV Export */}
           <button

@@ -42,6 +42,10 @@ export default defineConfig({
       // @quanqn/schemas subpath exports — PRD-6 US-001 schema tests
       '@quanqn/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
       '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
+      // @quanqn/ui/admin/pdf — PDF bill template (server-side only, apps/api)
+      '@quanqn/ui/admin/pdf': path.resolve(__dirname, 'packages/ui/src/admin/PdfBillTemplate.tsx'),
+      // @react-pdf/renderer lives in packages/ui/node_modules (installed there first)
+      '@react-pdf/renderer': path.resolve(__dirname, 'packages/ui/node_modules/@react-pdf/renderer'),
     },
   },
   test: {

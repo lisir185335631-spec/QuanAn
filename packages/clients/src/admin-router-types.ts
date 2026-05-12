@@ -357,6 +357,16 @@ const _shadowAdminRouter = _t.router({
     exportCsv: _t.procedure
       .input((x: unknown) => x as { startDate: Date; endDate: Date })
       .query((): { csv: string; rowCount: number } => ({ csv: '', rowCount: 0 })),
+    exportMonthlyPdf: _t.procedure
+      .input((x: unknown) => x as { month: string })
+      .mutation(
+        (): { filename: string; contentType: string; size: number; data: string } => ({
+          filename: '',
+          contentType: 'application/pdf',
+          size: 0,
+          data: '',
+        }),
+      ),
   }),
   evolution: _t.router({}),
   audit: _t.router({
