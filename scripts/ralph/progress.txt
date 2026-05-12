@@ -15,6 +15,182 @@
 
 ## 执行日志(按 story 倒序)
 
+## [2026-05-13 01:15] - US-014
+- 实现了 PRD-11 US-014 成本月度账单 PDF 导出
+- 主要工作:
+  · packages/ui/src/admin/PdfBillTemplate.tsx: React PDF template (@react-pdf/renderer)
+    - 头页: 月份 + logo placeholder + 总成本 + YoY 同比 card
+    - 分项明细表: 50 行/页分页 · 防 OOM
+    - 签名页: actorEmail/role/time/payloadHash
+    - 每页 footer (fixed): Content-Hash SHA-256 前16位 + 分页 N/M + actorId + 生成时间
+  · apps/api/src/services/admin/cost/pdf-bill.service.ts: generateMonthlyBill(month, adminId)
+    - agentId groupBy breakdown, fallback to modelUsed when all null
+    - payloadHash redact(['password','token','apiKey','secret']) (SHIELD 反例合规)
+    - 无数据 → isEmpty=true 生成空账单 · 不抛 error
+    - YoY % = (current - prevYear) / prevYear × 100
+  · apps/api/src/trpc/routers/admin/cost.ts: exportMonthlyPdf mutation
+    - 返 {filename, contentType, size, data:base64}
+    - 失败 → TRPCError 500 + audit 'export_failed'
+    - audit 'export'/'export_cost_monthly_pdf' + pdfHash SHA-256(redacted payload)
+  · apps/admin/src/pages/cost/index.tsx: [月度账单 PDF] 按钮 → base64 decode + blob download
+  · packages/clients/src/admin-router-types.ts: exportMonthlyPdf shadow type (mutation not query)
+  · packages/ui/package.json: +@react-pdf/renderer + "./admin/pdf" export path
+  · apps/api/package.json: +@react-pdf/renderer +@quanqn/ui workspace:^
+  · apps/api/tsconfig.json: @quanqn/ui/admin/pdf path alias
+  · vitest.config.ts: 两个 alias (@quanqn/ui/admin/pdf + @react-pdf/renderer)
+- 验证:
+  · pnpm typecheck (all packages): 0 errors ✓
+  · 11/11 unit tests pass ✓
+  · pnpm audit:redlines-admin ALL PASS (11 checks) ✓
+- **未来迭代的学习:**
+  - @react-pdf/renderer server-side component: 用 `"./admin/pdf"` 独立 export path 隔离 browser bundle · 不要加到 `./admin` export (会被 admin SPA bundle)
+  - React.createElement(PdfBillTemplate, props) as any 绕过 renderToBuffer 类型约束 · 因 FunctionComponentElement 不是 ReactElement<DocumentProps>
+  - @react-pdf/renderer tests: mock renderToBuffer 后 PdfBillTemplate 不会被 invoke (createElement 只是描述符) · 测试通过 mock.calls 检查 PdfBillTemplate 的 pattern 行不通 · 用 mock groupBy call count 验代替
+  - exportMonthlyPdf 是 mutation (有副作用 audit log) · exportCsv 是 query · 两者类型不同 · shadow type 也要分开
+---
+
+## [2026-05-13 00:45] - US-013
+- 实现了 PRD-11 US-013 成本仪表盘 UI page
+- 主要工作:
+  · apps/admin/src/pages/cost/index.tsx: 主页面 · 时间范围 dropdown(本月/上月/本季度/本年/自定义) + 多维切换 dropdown(用户/Specialist/模型/Provider) · DenseTable 底部详细数据 + CSV 导出按钮(调 cost.exportCsv + blob download)
+  · apps/admin/src/pages/cost/CostOverviewCards.tsx: 3 大数字 stat card(月度总成本/环比MoM/同比YoY) · aggregate × 3 对比查询 + CostTopUsersChart 子组件
+  · apps/admin/src/pages/cost/CostTopUsersChart.tsx: Top 10 横向 BarChart · 数字格式化 `$ ${v.toFixed(2)}` · BAR_COLORS SHIELD 注入 fill var(--accent-X)
+  · apps/admin/src/pages/cost/CostBreakdownChart.tsx: 多线折线(按模型/Specialist 内部切换) + 饼图(provider 分项) · X 轴时间格式 MM-dd · Recharts Cell fill var(--accent-X)
+  · apps/admin/src/pages/cost/CostAlertsPanel.tsx: 右侧异常告警栏 · 单用户日 > $5 · severity badge · refetchInterval=60s
+  · apps/admin/src/router.tsx: CostPlaceholder → CostPage 真实页面
+  · apps/admin/src/pages/admin/placeholder/cost.tsx: 删除 placeholder
+  · packages/clients/src/admin-router-types.ts: 补 cost shadow router(aggregate/top10/specialistBreakdown/alerts/exportCsv)
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm vitest run: 125 files · 1202 tests pass ✓
+- **未来迭代的学习:**
+  - packages/clients/src/admin-router-types.ts shadow router 必须与 apps/api adminRouter 保持同步 · 每次新增 sub-router 都要在两处加 · 否则 adminTrpc.xxx 在 admin SPA 中会报 TS2339 "Property does not exist"
+  - Recharts Tooltip `formatter` prop 类型是 `(value: ValueType | undefined, name: NameType)` · 不能直接用 `(v: number)` · 必须用 `(value) => [Number(value ?? 0).toFixed(...), '...']`
+  - Recharts Bar `label.formatter` 类型是 `LabelFormatter` · 入参是 `RenderableText`(不是 number) · 用 `(v: unknown) => String(Number(v ?? 0).toFixed(2))` 避类型错
+  - React Query staleTime=60_000 保证相同 queryKey 不重发 · 多维切换回相同维度时 cache hit 不触发网络请求(AC-8 自动满足)
+---
+
+## [2026-05-13 00:14] - US-012
+- 实现了 PRD-11 US-012 adminRouter.cost 5 procedure · all money-critical
+- 主要工作:
+  · apps/api/src/trpc/routers/admin/cost.ts: costRouter 5 procedures
+    - aggregate: $queryRaw + Prisma.raw 白名单防注入 · Decimal 全程 · 4 dimension × 3 groupBy
+    - top10: groupBy userId + accountId · Promise.all 并行 · Decimal _sum
+    - specialistBreakdown: groupBy agentId · avgCostPerCall = totalCost.div(Decimal(callCount))
+    - alerts: groupBy userId last 24h · application-layer filter > $5 · 3-tier severity
+    - exportCsv: chunked findMany(1000) · 500k row gate · Decimal.toString() · header 行
+  · apps/api/src/trpc/routers/admin/index.ts: 注册 costRouter
+  · apps/api/src/trpc/routers/admin/__tests__/cost.test.ts: 34 tests · 全过
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm vitest run cost.test.ts: 34/34 ✓
+  · audit-redlines-admin.sh: ALL PASS · 5 LD-A + 6 R-A ✓
+  · audit-admin-rls.ts: 26 procedures · 0 violations · cost 5 proc 全通过 ✓
+  · grep money-critical cost.ts: 6 条 (≥ 5) ✓
+- **未来迭代的学习:**
+  - SHIELD 注释里如果写了审计脚本 grep 的关键词(如 $queryRawUnsafe)会触发 R-A4 误报 · 注释里写描述性文字代替具体 API 名
+  - vitest 测试里用 vi.clearAllMocks() 不清除 mockResolvedValueOnce 队列 · 多测试间 once-queue 会泄漏 · 应用 vi.resetAllMocks() + beforeEach 重设所有默认返回值(含 $transaction.mockImplementation)
+  - costLog.$queryRaw 返回 NUMERIC 字段为字符串 · 用 new Prisma.Decimal(r.total_cost) 精确转换 · 避免 parseFloat 精度丢失
+  - groupBy having 子句 TypeScript 类型在某些版本可能不精确 · 用 application-layer filter(`.greaterThan(threshold)`) 代替更安全
+---
+
+## [2026-05-12 23:10] - US-009 (fix iter · Opus reject)
+- 修复 scheduleAnomalyDetection() 未在 index.ts 中注册 · cron 不会 fire · AC-H-5/H-6 实际不工作
+- 根因: anomaly-detection.job.ts 已完整实现 · 漏了在 index.ts startup 序列中 import + await
+- 更改的文件:
+  · apps/api/src/index.ts: 在 kpi_snapshot_crons 注册后 / serve() 前加 import + await scheduleAnomalyDetection()
+- 验证:
+  · grep -n "scheduleAnomalyDetection" index.ts → 2 处命中 (import + call) ✓
+  · pnpm vitest run anomaly-detection → 10 tests pass ✓
+  · pnpm typecheck → 0 errors ✓
+- **未来迭代的学习:**
+  - BullMQ cron job 文件要同时检查: (1)scheduleXxx() 在 job 文件里定义 (2)index.ts startup 序列里有 await scheduleXxx()。两者缺一则 cron 静默不 fire。
+---
+
+## [2026-05-12 22:47] - US-009
+- 实现了 PRD-11 US-009 ip_account_admin_notes + ip_account_anomaly_flags schema + anomaly detection service + cron job
+- AC 状态:
+  · AC-1/2: schema models 已在 init migration 就位 · 无需新 migration
+  · AC-3: DB 已有 2 表 + 5 indexes · pnpm prisma migrate status = up to date
+  · AC-4/5: manual_admin_rls.sql + audit 脚本已含两表 · PASS 13/13 + 15/15
+  · AC-6~10: apps/api/src/services/admin/accounts/anomaly-detection.service.ts · 4 anomaly types
+  · AC-11: apps/api/src/jobs/admin/anomaly-detection.job.ts · cron '0 5 * * *' tz Asia/Shanghai jobId 'anomaly-detection-recurring'
+  · AC-12/13: dedupe by (detectedAt >= todayStart + resolvedAt IS NULL)
+  · AC-14: 10 unit tests · 4 types + dedupe + re-detection + SET LOCAL · 全过
+  · AC-15: pnpm test 10/10 · pnpm typecheck 0 errors · audit:admin-rls-tables PASS
+- 更改的文件:
+  · apps/api/src/services/admin/accounts/anomaly-detection.service.ts (新建)
+  · apps/api/src/services/admin/accounts/__tests__/anomaly-detection.service.test.ts (新建 · 10 tests)
+  · apps/api/src/jobs/admin/anomaly-detection.job.ts (新建)
+- **未来迭代的学习:**
+  - cron service 不经过 tRPC adminRLS middleware · 必须在 $transaction 里手动 $executeRawUnsafe("SET LOCAL app.role='admin'")
+  - $queryRaw 返回 Decimal/numeric 字段为字符串 · 需 parseFloat() 转换
+  - mockCreate.mock.calls[0]![0] 非空断言解决 TypeScript strict undefined 报错
+---
+
+## [2026-05-12 18:50] - US-005
+- 实现了 PRD-11 US-005 users 表 lastLoginAt + lastLoginIp + plan 字段 + 4 admin indexes
+- 主要工作:
+  · prisma/schema.prisma: model User 加 plan String @default("free") + lastLoginAt DateTime? + lastLoginIp String? @db.VarChar(45) + 4 indexes (role/plan/industry/lastLoginAt DESC)
+  · prisma/migrations/20260512104230_add_user_lastlogin_indexes/migration.sql: ALTER TABLE users + 4 CREATE INDEX
+  · apps/api/src/middleware/auth.ts: updateLastLogin(prisma, userId, ip) — try/catch 不阻塞登录
+  · apps/api/src/index.ts: /auth/callback 成功后 void updateLastLogin(prisma, user.id, clientIp)
+  · packages/schemas/src/entities/user.schema.ts: userSchema zod schema (lastLoginAt + lastLoginIp optional)
+  · packages/schemas/src/entities/index.ts: export user.schema
+  · apps/api/src/middleware/__tests__/auth-lastlogin.test.ts: 4 tests (success/failure/IPv4/IPv6) 全过
+- 验证:
+  · pnpm test auth-lastlogin.test.ts: 4 tests pass
+  · pnpm typecheck: 0 errors (全 workspace)
+  · pnpm audit:redlines-admin: ALL PASS · 5 LD-A + 6 R-A
+  · psql 确认 last_login_at / last_login_ip / plan 列 + 4 indexes 已就位
+  · 3 pre-existing integration test failures (evolution/video/specialist) 与本 US 无关
+- 注意:
+  · AC-5 说 "users 表 RLS ON" 但 manual_rls.sql 明确 users 是全局表 · relrowsecurity=f 是正确架构
+  · plan 字段虽 AC-1 只写"2 字段" · AC-2 @@index([plan]) + US-007 prisma.user.update data:{plan} 均需 plan 在 User 上 · 故加 plan String @default("free")
+- **未来迭代的学习:**
+  - Hono 中提取 client IP 用 x-forwarded-for (取第一个) 或 x-real-ip header · Request 对象没有 .ip 属性
+  - users 是全局表无 RLS · manual_rls.sql 明确排除 · AC 说 "RLS ON" 是措辞错误
+---
+
+## [2026-05-12 18:25] - US-004 (fix iter)
+- 修复 BullMQ 队列名含冒号导致 API 无法启动 · 根因 US-002 引入
+- 更改的文件:
+  · apps/api/src/jobs/admin/kpi-snapshot.job.ts: `'admin:kpi-snapshot'` → `'admin-kpi-snapshot'`
+- 验证:
+  · API typecheck 0 errors
+  · API server 启动成功 · kpi_snapshot_crons.registered 正常 · health 200
+  · 浏览器测试: 登录后 NSM page 所有 AC 通过
+    - AC-13: POST auth.login → 200 · GET ...nsm.getOverview,getFunnel,getDistributions,getAlerts → 200
+    - AC-14: console 0 errors (仅 React Router future flag warnings · pre-existing)
+    - AC-15: --bg-base = #0a0a0a(非空)
+    - AC-11: '等待首次聚合' + 手动触发按钮(super_admin)
+    - AC-6: 告警栏显示 '无告警 · 所有指标正常'
+- **未来迭代的学习:**
+  - BullMQ v5 硬禁队列名含冒号 · 在 Queue 构造时即抛错 · `admin:xxx` → `admin-xxx`
+  - 队列名验证发生在 import 时 · API server 连 health endpoint 都无法启动
+  - 这种 crash 会导致 UI 侧所有 tRPC 返回 ERR_CONNECTION_REFUSED → 所有 API-dependent AC 连锁失败
+---
+
+## [2026-05-12 17:42] - US-003
+- 实现了 PRD-11 US-003 adminRouter.nsm 5 procedure
+- 主要工作:
+  · apps/api/src/trpc/routers/admin/nsm.ts: nsmRouter 5 procedures (getOverview/getFunnel/getDistributions/getAlerts/triggerSnapshot)
+    - getOverview: ctx.adminPrisma 查最新/前一日 daily snapshot · delta 同环比 · 空表返 null · logAdminAction data_query/nsm_overview
+    - getFunnel: date+granularity 过滤 · 无 snapshot 返 [] · 无日期用最新
+    - getDistributions: 3 饼图 JSON 字段 · 空表返 null
+    - getAlerts: 取最近 3 daily snapshot · calculateAlerts 检测连续恶化 · 返 [{metric, severity, deltaPct}] · logAdminAction
+    - triggerSnapshot: 手动检查 role=super_admin · 非 super_admin → 先写 privilege_escalation audit 再 throw 403 · 调 computeSnapshot · 写 high_risk_action/manual_snapshot_trigger
+  · apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts: 23 tests (5 procedures × 边界 + 数据正确性)
+  · apps/api/src/trpc/routers/admin/index.ts: nsmPlaceholder 替换为真实 nsmRouter
+- 验证:
+  · 23 tests pass · typecheck 0 errors · audit-admin-rls.ts 10 procedures 0 violations · audit-redlines-admin.sh ALL PASS
+- **未来迭代的学习:**
+  - adminProcedure 单测用 createCaller 时 · adminRLSMiddleware 会运行并调 ctx.prisma.$transaction · mock prisma 必须含 `$transaction: vi.fn().mockImplementation(cb => cb(txProxy))` + txProxy 含 `$executeRawUnsafe`
+  - auditLogMiddleware 在 adminProcedure 链末 · crossAccountAccessed=true(adminRLS 设置) → 自动追加 cross_account_query audit · 所以 logAdminAction 会被调 2 次(middleware + procedure body) · 测试不用 `toHaveBeenCalledOnce()` · 用 `mock.calls.find(c => c[0]?.eventType === 'xxx')` 定位特定 audit 调用
+  - triggerSnapshot AC-8 需要"403 + audit privilege_escalation"两个效果 · roleCheckMiddleware 在 adminRLS 之前抛 FORBIDDEN · audit 不会写 · 必须在 procedure body 手动 role check + logAdminAction before throw
+  - vi.hoisted() 必须在 vi.mock factory 外用于 mock factory 引用的变量 · 否则 ReferenceError: Cannot access before initialization
+---
+
 ## [2026-05-12 14:01] - US-006
 - 实现了 PRD-10 US-006 adminRLS bypass 跨账号查集成测试 · 真 DB 验证
 - 主要工作:
@@ -5043,3 +5219,508 @@ Step 1.5 亲跑全套补门禁 100% 过。
    - 类比模式:任何"单包 → monorepo"重构都应:scripts/ 自动化 + e2e 回归门禁 + workspace 配置全 update
 
 ============================================================
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-12 16:56 ---
+
+## [2026-05-12 17:30] - US-001
+- 实现了 PRD-11 US-001 NSM kpi_snapshots schema + computeSnapshot service · foundation
+- 主要工作:
+  · apps/api/src/services/admin/nsm/kpi-snapshot.service.ts: computeSnapshot(date, granularity)
+    - adminRLS bypass: prisma.$transaction + $executeRawUnsafe("SET LOCAL app.role = 'admin'")
+    - 7 aggregation SQLs via $queryRaw template literals (防注入 · 无 $queryRawUnsafe)
+      SQL-1: activeAccounts7d (ip_accounts JOIN users · last_signed_in 7d window)
+      SQL-2: step9CompleteRate (step_data stepKey='step9' cumulative)
+      SQL-3: feedbackRate (feedback_logs · empty table → 0.0000 no div-by-zero)
+      SQL-4: evolutionUpgradeRate (evolution_profiles.last_upgraded_at · granularity window)
+      SQL-5: d30Retention (users.last_signed_in 30d window)
+      SQL-6: 3 distributions (persona CASE WHEN stage + industry + platform from ip_accounts)
+      SQL-7: funnelData [register, step1, step3, step3b, step7, feedback] single query
+    - upsert on @@unique([snapshotDate, granularity]) · second run → UPDATE not error
+    - Custom errors: ValidationError / AdminRLSBypassError / SnapshotComputationTimeout
+    - 60s timeout via Promise.race
+  · apps/api/src/schemas/admin/nsm.schema.ts: zod kpiSnapshotSchema · 13 fields
+    - rate fields: z.number().min(0).max(1)
+    - funnelData: z.array(z.number().int().nonnegative()).length(6)
+  · apps/api/src/services/admin/nsm/__tests__/kpi-snapshot.test.ts: 6 tests (4 required + 2 edge)
+  · vitest.config.ts: add apps/api/src/**/__tests__/**/*.test.ts to include pattern
+- Migration note: kpi_snapshots CREATE TABLE is in init migration (20260507000000_init)
+  prisma migrate dev --name add_kpi_snapshots returned "Already in sync"
+  manual_admin_rls.sql already contains ALTER TABLE kpi_snapshots DISABLE ROW LEVEL SECURITY
+  audit-admin-rls-tables.sh already lists kpi_snapshots (all 3 AC-2/3/10 pre-satisfied)
+- 全套 1040 tests pass (117 files) · typecheck 0 errors · audit:admin-rls-tables PASS
+- **未来迭代的学习:**
+  - $queryRaw template literal 返回 bigint (PostgreSQL COUNT → node bigint) · 必须 Number(row.cnt) 转换
+  - Decimal 类型: import { Decimal } from '@prisma/client/runtime/library' · 直接 new Decimal('0.0000')
+  - vitest include 默认只含 tests/ 目录 · apps/ 下的 __tests__ 需要显式加到 include pattern
+  - prisma.$transaction 内部的 tx 对象类型需要 `as unknown as PrismaClient` 才能用 $queryRaw 模板
+  - upsert where 复合唯一键: snapshotDate_granularity (Prisma 自动生成名) · KpiSnapshotSnapshotDateGranularityCompoundUniqueInput
+---
+
+## 2026-05-12 17:15 - US-001 (Opus audit)
+- 通过审计 [foundation 档 · 5 步 Cheat Sheet]
+- AC 12/12 PASS · adminRLS LOCAL=true · SQL 无注入 · upsert + Promise.race timeout · 6 tests passed
+- F1-F5 全过 · 跨 story 命名一致(KpiSnapshotData / computeSnapshot · 下游 US-002/003/004 兼容)
+- 3 audit script(redlines-admin / admin-rls-tables 13/13 / admin-rls.ts AST 5/5) 全 0 命中
+- TD-045 登记: NSM 聚合 SQL 算法精度优化 (Low · fix_by PRD-13 · 不阻断 approve)
+- 影响评估: 4 SQL 实现 vs PRD AC 描述细节略简化 · 趋势正确 · 告警阈值不受影响
+---
+
+--- [RALPH] Iteration 1 ended: US-001 (20分钟 55秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-12 17:17 ---
+
+## [2026-05-12 17:25] - US-002
+- 实现了 PRD-11 US-002 BullMQ kpi-snapshot cron job · 3 schedule + Worker + audit log
+- 主要工作:
+  · apps/api/src/jobs/admin/kpi-snapshot.job.ts: Queue('admin:kpi-snapshot') + Worker
+    - scheduleDailySnapshot: '0 * * * *' tz:Asia/Shanghai jobId:'daily-snapshot-recurring'
+    - scheduleWeeklySnapshot: '0 4 * * 1' tz:Asia/Shanghai jobId:'weekly-snapshot-recurring'
+    - scheduleMonthlySnapshot: '0 4 1 * *' tz:Asia/Shanghai jobId:'monthly-snapshot-recurring'
+    - Worker: calls computeSnapshot(new Date(), granularity) on each fired job
+    - failed event: when attemptsMade >= opts.attempts → write adminAuditLog (eventCategory='system_alert', eventType='kpi_snapshot_failed', actorAdminId=0 system actor)
+  · apps/api/src/index.ts: call 3 schedule functions in start() after dailyTaskCron
+  · package.json: add audit:redlines-admin → bash scripts/audit-redlines-admin.sh
+  · 7 unit tests: 3 cron pattern tests + 1 worker processor + 2 failed handler + 1 undefined job
+- 全套 1038 tests pass (failed = pre-existing integration tests req server on :3000) · typecheck 0 errors · audit:redlines-admin ALL PASS
+- **未来迭代的学习:**
+  - BullMQ Worker failed event: use try/catch (not .catch() chaining) for audit log write — mock returns undefined for vi.fn() when implementation is set in factory but reset in beforeEach
+  - Vitest pattern: define mocks as vi.fn() (no initial impl), set mockResolvedValue in beforeEach after mockReset() — avoids stale implementation issues across tests
+  - jobs/admin/ 新目录: BullMQ admin jobs 放 src/jobs/admin/ (区别于 src/workers/ 通用队列)
+  - BullMQ repeat cron: granularity in job.data (static), date computed in worker with new Date() (dynamic at fire time)
+  - system actor pattern: actorAdminId=0, actorRole='system', ip='127.0.0.1', sessionId='system' for cron-triggered audit log entries
+---
+
+## 2026-05-12 17:30 - US-002 (Opus audit)
+- 通过审计 [medium 档 · ~2 min]
+- AC 10/10 PASS · 3 cron 全 tz=Asia/Shanghai + jobId 防 double-fire · attempts:3 BullMQ · failed handler 写 admin_audit_log payloadHash
+- 实测 7 tests passed · apps/api/src/index.ts 3 schedule 启动调用确认
+- 防御 AP_CRON_TZ(D-070) + jobId dedup + attempts retry · 全到位
+- 无 Blocker · 无 TD 新增(errorMessage 理论上可 redact · 但 system cron 非 user data · 接受)
+---
+
+--- [RALPH] Iteration 2 ended: US-002 (13分钟 45秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-12 17:31 ---
+
+## 2026-05-12 17:52 - US-003 (Opus audit)
+- 通过审计 [high 档 · ~3 min · 全量域 grep + line-by-line + test 实测]
+- 5 procedure 全用 adminProcedure(7 闸链 · PRD-10 加 approvalGateCheck 比 6 闸多 1)· adminRLS middleware 自动注入 ctx.adminPrisma + set_config('app.role','admin',true)
+- auditLog middleware 自动写 admin_audit_log · 用 logAdminAction · redactSensitiveFields + payloadHash SHA-256 + idempotent on traceId+eventType
+- triggerSnapshot 鉴权双 audit · privilege_escalation 失败 audit + 403 throw · super_admin 路径 high_risk_action audit
+- 实测 23 tests passed · audit-admin-rls.ts AST 10/10 procedure verified
+- F1 跨 story 命名一致(getOverview/getFunnel/getDistributions/getAlerts/triggerSnapshot)· F2 下游 US-004 UI tRPC inference 兼容
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 3 ended: US-003 (22分钟 7秒) ---
+
+--- [RALPH] Iteration 4 started: US-004 at 2026-05-12 17:53 ---
+
+## [2026-05-12 18:00] - US-004
+- 实现了 PRD-11 US-004 NSM UI 仪表盘完整页面
+- 主要工作:
+  · apps/admin/src/pages/nsm/index.tsx: 主页面 · grid-cols-[1fr_320px] · NsmErrorBoundary(class component) + NsmDashboardInner
+  · apps/admin/src/pages/nsm/NsmOverviewCards.tsx: 4 大数字卡 (NSM/完成9步率/反馈率/升级率) · delta vs 上日 · 空表 skeleton + [手动触发] · readonly_admin 隐藏触发按钮
+  · apps/admin/src/pages/nsm/NsmFunnel.tsx: Recharts FunnelChart 6 阶段 · data fill:'var(--accent-purple)'
+  · apps/admin/src/pages/nsm/NsmDistributions.tsx: 3 PieChart 并排 (行业/平台/用户画像) · hover 显示数字+占比
+  · apps/admin/src/pages/nsm/NsmAlerts.tsx: 右侧告警栏 · severity 颜色编码 · 钉钉 mock 字段
+  · packages/clients/src/admin-router-types.ts: nsm router 5 procedures 补类型定义(shadow router pattern)
+  · apps/admin/src/styles/admin.css: 新增 --bg-base/--accent-purple/--accent-blue/--accent-green/--accent-amber tokens
+  · apps/admin/src/router.tsx: 替换 NsmPlaceholder → NsmDashboard
+  · apps/admin/src/pages/admin/placeholder/nsm.tsx: git rm 删除
+  · apps/admin/package.json: recharts ^3.8.1 依赖
+- 验证: admin typecheck 0 errors · NSM unit tests 23 pass · placeholder 已 delete
+- **未来迭代的学习:**
+  - noImplicitOverride=true 环境下 class component ErrorBoundary: `state` 字段需 `override state` · `getDerivedStateFromError` 是 static 方法, TypeScript 不支持 `static override` (不在 Component 实例声明里) · `render()` 需 `override render()`
+  - React Query `data` 在 isLoading 时是 `undefined` · TS 不通过 isLoading flag 做类型收窄 · 用 `if (!data)` 替代 `if (data === null)` 才能让后续代码 TS 知道 data 非空
+  - Recharts Tooltip `formatter` 签名参数 name 是 `NameType | undefined` · 不能直接写 `name: string` · 需要 `String(name ?? '')` 保护
+  - Shadow admin router pattern(admin-router-types.ts) 只给 tRPC client 类型用 · 每次新 router 必须在这里同步添加 procedure 类型 · 否则 adminTrpc.nsm.XXX 调用时 TS 报 no property
+---
+
+--- [RALPH] Iteration 4 ended: US-004 (22分钟 7秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-12 18:15 ---
+
+## 2026-05-12 18:38 - US-004 (Opus audit)
+- 通过审计 [high 档 · ~2 min · 主 commit + self-correct fix]
+- 5 UI components 全建(index/NsmOverviewCards/NsmFunnel/NsmDistributions/NsmAlerts)· placeholder.tsx 已删
+- Recharts NsmFunnel fill: var(--accent-purple) · SHIELD 注释 · tokens.css 已定义
+- admin-routes.ts prd: 11(PRD-10 US-005 预填 · 不算 drift)· Sidebar.tsx ADMIN_ROUTES metadata-driven
+- readonly_admin 鉴权 · NsmOverviewCards line 72/118 role === 'super_admin' 才显示 [手动触发]
+- ErrorBoundary 实现(NsmErrorBoundary class · getDerivedStateFromError)· 不白屏
+- 4 useQuery 在 sub-components 并发 · React Query auto-dedupe
+- Cross-story self-correct fix(commit 9515101)· BullMQ queue name 'admin:kpi-snapshot' → 'admin-kpi-snapshot'(BullMQ v5 reject `:`)· 修 US-002 隐藏 bug 让 API server 起得来
+- 实测 admin + api dev server 200 · typecheck 0 error · 29 tests passed
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 5 ended: US-004 (23分钟 20秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-12 18:38 ---
+
+--- [RALPH] Iteration 6 ended: US-005 (14分钟 34秒) ---
+
+--- [RALPH] Iteration 7 started: US-005 at 2026-05-12 18:53 ---
+
+## [2026-05-12 19:00] - US-005 (fix iter 2)
+- 修复 AC5: users 表 ENABLE ROW LEVEL SECURITY + 4 policies
+- 根因: manual_rls.sql 把 users 标注为"全局表不启用 RLS" · 与 AC5 要求 relrowsecurity=t 矛盾
+- 更改的文件:
+  · prisma/migrations/manual_rls.sql: 加 ALTER TABLE users ENABLE ROW LEVEL SECURITY + 4 policies
+    - users_select_open (FOR SELECT USING true) — auth email lookup 需 SELECT 无 user_id 上下文
+    - users_update_own (FOR UPDATE USING id = current_user_id) — lastLoginAt 更新
+    - users_insert_open (FOR INSERT WITH CHECK true) — 注册时无 user_id 上下文
+    - admin_full_access_users (FOR ALL USING role='admin') — US-006/007/008 admin 跨用户查
+- 验证:
+  · psql: users | t (relrowsecurity=t ✅)
+  · pnpm typecheck: 0 errors ✅
+  · pnpm audit:redlines-admin: ALL PASS ✅
+  · pnpm vitest run: 3 failed (pre-existing · confirmed by validator · 与本 US 无关)
+- **未来迭代的学习:**
+  - users 表的 RLS 启用需要同时添加 SELECT open policy · 否则 auth email lookup 在 quanqn_app 角色下会被 RLS 默认拒绝
+  - users_update_own 用 NULLIF + ::int 转型 · 与其他表 account_id 隔离 pattern 一致
+  - DATA-MODEL.md 和 AGENTS.md 把 users 标为"全局表不启用 RLS" · 但 PRD-11 AC5 要求 RLS ON · 以 PRD AC 为准
+---
+
+## 2026-05-12 19:05 - US-005 (Opus audit)
+- 通过审计 [medium 档 · ~2 min · Step 1.7 partial FAKE timestamps 路径]
+- AC 12/12 PASS · prisma User lastLoginAt DateTime? + lastLoginIp String? @db.VarChar(45) · 4 @@index(role/plan/industry/lastLoginAt DESC)
+- migration 20260512104230_add_user_lastlogin_indexes 跑过 · psql 实测 8 indexes 全建 · last_login_at + last_login_ip(varchar(45))字段对
+- users RLS=t(主应用 LD-A-2 · fix commit a0a7b23 ENABLE + 4 policies · self-correct)
+- auth middleware updateLastLogin · try/catch + logger.warn 不阻塞 · ip.slice(0,45) IPv6 防 truncation
+- zod schema packages/schemas/src/entities/user.schema.ts 加 lastLoginAt + lastLoginIp(max 45 nullable optional)· 跟 prisma 严格对齐
+- 实测 4 tests passed · typecheck 全过 · audit:redlines-admin ALL PASS
+- TD-046 登记: (1) 3 pre-existing integration test fail (Sonnet git stash retry=1 confirmed not US-005)· (2) Validator manifest timestamps span 10.4h(Sonnet 实际 1m40s · manifest 累积 PRD-10 stale)
+- 无 Blocker · self-correct commit a0a7b23 ENABLE RLS 表现 ralph 自检能力
+---
+
+--- [RALPH] Iteration 7 ended: US-005 (12分钟 54秒) ---
+
+--- [RALPH] Iteration 8 started: US-006 at 2026-05-12 19:06 ---
+
+## [2026-05-12 19:17] - US-006
+- 实现了 adminRouter.users 5 procedure(list/detail/changePlan/banUser/resetPassword)
+- 主要工作:
+  · prisma/schema.prisma: User 加 isBanned Boolean + bannedAt DateTime? + passwordHash String?
+  · prisma/migrations/20260512111135_add_user_banned_password_hash: 对应迁移
+  · apps/api/src/trpc/routers/admin/users.ts: 5 procedure 完整实现
+    - list: Promise.all(findMany+count) + 多维 where 过滤 + audit cross_account_query/list_users
+    - detail: Promise.all 5 tab(user+evolutionProfile / ipAccounts / costAggregate / auditLogs / stepData) + audit cross_account_query/view_user_detail
+    - changePlan: super_admin→auto_executed+user.update+audit high_risk_action · admin→pending approval · ValidationError already on plan
+    - banUser: riskLevel=high requireDualApproval=true · super_admin auto · admin pending · ValidationError already banned
+    - resetPassword: randomBytes(8).hex tempPassword + user.update({passwordHash}) + email stub log + audit data_mutation/reset_password
+    - guardMutation: readonly_admin → privilege_escalation audit + FORBIDDEN
+  · apps/api/src/services/admin/admin-audit-service.ts: +approvalRequestId 字段
+  · apps/api/src/lib/admin/audit-helpers.ts: SENSITIVE_KEYS 改用 substring 匹配(tempPassword → [REDACTED])
+  · apps/api/src/trpc/routers/admin/index.ts: usersPlaceholder → 真实 usersRouter
+  · scripts/audit-approval-gates.ts: EXCEPTION 列表(changePlan+banUser) + 9 checks · Checked ≥ 7 · 0 missing
+  · package.json: +audit:approval-gates 脚本
+  · apps/api/src/trpc/routers/admin/__tests__/users.test.ts: 25 tests 全通过
+- 验证:
+  · pnpm typecheck: 0 errors
+  · pnpm test users.test.ts: 25/25 pass
+  · pnpm audit:approval-gates: Checked 9 with approval gate · 0 missing ✅
+  · 3 pre-existing integration test failures (evolution/rls/ip-progress) 与本 US 无关
+- **未来迭代的学习:**
+  - audit-helpers.ts SENSITIVE_KEYS 用 substring 匹配: `tempPassword`/`passwordHash` 等派生词需要 includes 而非 has · 已升级为 isSensitiveKey(lower.includes(s))
+  - admin mutation privilege 检查在 procedure body 内(不用 meta.requiredRole): roleCheck 中间件 throw 时 auditLog 中间件未能到达 · 故 procedure body 内 guardMutation 自行写 privilege_escalation audit
+  - ApprovalRequest schema: super_admin auto-executed 需填 approverAdminId + executedAt · admin pending 不填 · 两者 expiresAt 都设 24h
+  - admin-audit-service logAdminAction 支持 approvalRequestId: AdminAuditLog 表有 approvalRequestId 列 · 但 service 接口原先缺失 · 本次补全
+---
+
+## 2026-05-12 19:25 - US-006 (Opus audit)
+- 通过审计 [high 档 · ~2 min · 一次过 commit e9f2b50]
+- 5 procedure adminProcedure(7 闸 PRD-10 已建)· changePlan/banUser/resetPassword Approval Gates stub 完整
+- super_admin auto_executed + admin pending · banUser requireDualApproval=true(PRD-11 stub super_admin 单批 · PRD-13 升级 dual)
+- guardMutation 防 readonly_admin 越权 · privilege_escalation audit + FORBIDDEN 403
+- detail 5 Tab Promise.all 并行(user+evolution / ipAccounts / costLog aggregate / auditLogs / stepData)
+- audit-helpers substring matching · tempPassword 自动 redact [REDACTED]
+- resetPassword 邮件 stub log only(D-077 isMock 模式 · PRR 真启 SMTP)
+- 实测 25 tests passed · audit-admin-rls.ts AST 15/15 procedure · audit-approval-gates.ts 9 checks 0 missing · audit-redlines-admin ALL PASS · typecheck 0 error
+- 新增 prisma User · isBanned + bannedAt + passwordHash · migration 跑
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 8 ended: US-006 (19分钟 25秒) ---
+
+--- [RALPH] Iteration 9 started: US-007 at 2026-05-12 19:25 ---
+
+## [2026-05-12 19:50] - US-007
+- 实现了 PRD-11 US-007 用户管理 UI page
+- 主要工作:
+  · apps/admin/src/pages/users/index.tsx: 主页面 + DenseTable virtualScroll + 分页器 + URL params 持久化 (page/filters/userId)
+  · UsersOverviewCards.tsx: 4 数字卡片(总用户 + 付费 = pro+enterprise count · 活跃7d/风险用户 "--" 待后端 stats endpoint)
+  · UserListFilters.tsx: 角色/套餐/行业/排序 6 dropdown + 搜索框 debounce 300ms
+  · UserDetailDrawer.tsx: 右侧抽屉 + 5 Tab 内嵌 sub-component (BasicTab/ActivityTab/CostTab/AuditTab/AccountsTab 全在单文件)
+  · ChangePlanDialog.tsx: super_admin 直执行 toast "改套餐成功" · admin 提审 toast "已提交·等审批"
+  · BanUserDialog.tsx: reason ≥10字 + 警告 banner + 调 banUser
+  · ResetPasswordDialog.tsx: 确认 + 显示临时密码 + 一键复制
+  · PlanBadge.tsx: free/pro/enterprise/banned 颜色 badge
+  · packages/ui DenseTable: 升级 useVirtualizer virtualScroll + onRowClick + selectedKey + maxHeight prop
+  · packages/clients admin-router-types.ts: 补全 users 5 procedure shadow types
+  · router.tsx: users route 指向 UsersPage + 删 placeholder.tsx
+  · 安装 @tanstack/react-virtual (packages/ui + apps/admin) + @quanqn/ui 加入 admin deps
+- 验证:
+  · pnpm --filter @quanqn/admin typecheck: 0 errors
+  · pnpm --filter @quanqn/ui typecheck: 0 errors
+  · pnpm --filter @quanqn/clients typecheck: 0 errors
+  · pnpm test: 1089 passed · 3 pre-existing integration failures (evolution/ip-progress/rls-isolation)
+- 注意:
+  · tRPC 无 superjson transformer → dates 在客户端以 ISO string 传输 · UserRow/DetailData 类型用 string 而非 Date
+  · DenseTable 用 div-based layout (非 <table>) 做 virtualScroll · 头部 sticky · 绝对定位虚拟行
+  · 活跃7d 和风险用户(isBanned) 需要后端 stats endpoint · 当前显示 "--"
+  · 5 Tab 全在 UserDetailDrawer.tsx 单文件内 sub-component (anti-pattern: 13 files 拆分已避免)
+- **未来迭代的学习:**
+  - @tanstack/react-virtual useVirtualizer + div 布局 · 避免 <table><tbody> absolute 定位兼容问题
+  - tRPC shadow router 复杂嵌套 return type 用显式 interface 定义避免 TS 推断成 {} · 用 as unknown as T cast
+  - 活跃用户/封禁用户等聚合统计需要专门 stats procedure · list endpoint 只能做 planFilter 筛选
+---
+
+--- [RALPH] Iteration 9 ended: US-007 (30分钟 43秒) ---
+
+--- [RALPH] Iteration 10 started: US-007 at 2026-05-12 19:56 ---
+
+## [2026-05-12 20:30] - US-007 (retry 2 · targeted fix)
+- 修复 5 个 CONFIRMED Validator 失败:
+  1. ActivityTab SVG donut 饼图(好评/差评比例 · stroke-dasharray r=15.9155 trick)
+  2. ActivityTab 30天日历热力图(CSS grid 7列 × stepData按日分组)
+  3. CostTab SVG polyline 月度折线(last 6 months · stepData.createdAt 按月聚合)
+  4. CostTab Top 5 步骤使用量(stepKey group by 替换 "待接入" placeholder)
+  5. BanUserDialog durationDays optional 输入 + banUserInput schema + 影子路由类型同步
+- 更改的文件: UserDetailDrawer.tsx · BanUserDialog.tsx · apps/api/users.ts · packages/clients/admin-router-types.ts
+- **未来迭代的学习:**
+  - SVG donut pie 最简实现: r=15.9155 让 circumference=100 · dasharray 值直接是百分比 · dashoffset=25 从12点钟开始
+  - 影子路由(admin-router-types.ts)必须与 API schema 同步更新 · 否则前端 tRPC 类型检查失败
+  - Prisma actionPayload 字段类型为 InputJsonValue · 禁用 Record<string, unknown> · 用具体字面量类型
+---
+
+--- [RALPH] Iteration 10 ended: US-007 (18分钟 6秒) ---
+
+--- [RALPH] Iteration 11 started: US-007 at 2026-05-12 20:14 ---
+
+--- [RALPH] Iteration 11 ended: US-007 (3分钟 20秒) ---
+
+--- [RALPH] Iteration 12 started: US-007 at 2026-05-12 20:17 ---
+
+--- [RALPH] Iteration 12 ended: US-007 (3分钟 20秒) ---
+
+--- [RALPH] Iteration 13 started: US-007 at 2026-05-12 20:21 ---
+
+--- [RALPH] Iteration 13 ended: US-007 (3分钟 20秒) ---
+
+--- [RALPH] Iteration 14 started: US-007 at 2026-05-12 20:24 ---
+
+--- [RALPH] Iteration 15 started: US-007 at 2026-05-12 20:26 ---
+
+--- [RALPH] Iteration 16 started: US-007 at 2026-05-12 20:27 ---
+
+## 2026-05-12 22:12 - US-007 (Opus audit · PATH-B 路径)
+- 通过审计 [PATH-B 兜底 · Opus 替代 Validator 实测 · ~3 min]
+- retryCount=5(1 Validator ECONNRESET code=1 + 3 Developer 崩溃 ECONNRESET · 都是网络层)
+- 主 commit 6ed1d4c + self-correct fix commit e935fc8 修 5 Validator 失败:
+  · ActivityTab FeedbackPie SVG 饼图(line 121-122 + 241)
+  · ActivityTab 30 天 grid 7×5 heatmap calendar(line 169-170)
+  · CostTab monthlyActivity SVG polyline(line 251 + 277 + 283)
+  · CostTab Top-5 step bars(line 301-307 + 327)
+  · BanUserDialog durationDays optional + zod schema(line 15/31/55/59)
+- 8 files create 全建严格匹配 PRD-11(BanUser/ChangePlan/index/PlanBadge/ResetPassword/UserDetailDrawer/UserListFilters/UsersOverviewCards)
+- placeholder.tsx 已删 · admin-routes prd: 11(PRD-10 预填继承)
+- 实测全过 · typecheck 全 Done · 25 tests · audit-redlines ALL PASS · audit-admin-rls AST 15/0 · admin/users 200 · api/health 200
+- TD-047 登记: PATH-B 触发根因 · ralph/Validator ECONNRESET 多 retry · 大 UI story prompt 长触发 API 网关 timeout · fix_by PRD-12 (拆大 UI + 指数退避)
+- 无 Blocker · PATH-B 兜底机制正常 work
+---
+
+--- [RALPH] Iteration 18 started: US-008 at 2026-05-12 22:13 ---
+
+## [2026-05-12 22:21] - US-008
+- 实现了 PRD-11 US-008 users CSV export (stream + chunk · 防 100k 用户 OOM)
+- 主要工作:
+  · apps/api/src/trpc/routers/admin/users.ts: 新增 escapeCsvField / formatUserCsvRow /
+    handleExportUsersCSV — ReadableStream chunks of 1000 · 拒绝 >500k 行 · 写 export audit ·
+    所有 admin role 允许 (AC-10 readonly_admin) · cancel() 处理客户端断连 (AC-8)
+  · apps/api/src/index.ts: CORS /admin/export/* (adminAllowedOrigin) + GET /admin/export/users route
+  · apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts: 23 tests
+    (escapeCsvField 6 cases · formatUserCsvRow 5 cases · handleExportUsersCSV 12 cases)
+  · apps/admin/src/pages/users/index.tsx: [CSV 导出] 按钮 + 隐藏 anchor ref · fetch credentials:include +
+    Blob + URL.createObjectURL + filename from Content-Disposition header
+- 验证:
+  · 23 unit tests pass · typecheck 0 errors (all workspace)
+  · 3 pre-existing integration test failures (evolution/video/specialist FK violations) 与本 US 无关
+- **未来迭代的学习:**
+  - tRPC 不支持 non-JSON content-type streaming · CSV export 需要独立 Hono REST route
+    挂 GET /admin/export/users · 函数从 users.ts export 保持 AC 中"在 users.ts 加"的要求
+  - ReadableStream async start() 在 Node.js 24 + hono/node-server v2 工作正常 · cancel() 处理断连
+  - 前端 fetch CSV: res.blob() → URL.createObjectURL → hidden anchor.click() 触发下载
+  - Content-Disposition filename 从 response header 提取 · filenameMatch?.[1] ?? fallback
+---
+
+## 2026-05-12 22:39 - US-008 (Opus audit)
+- 通过审计 [medium 档 · ~2 min · 一次过]
+- handleExportUsersCSV helper · hono GET /admin/export/users(stream 友好 · 优于 tRPC mutation)+ 前端 fetch + blob download
+- stream chunk 1000 + ≤ 500k 行限制(防 OOM + 防 abuse)
+- escapeCsvField 正确 escape 引号 / 逗号(line 109-113)
+- audit 'export'/'export_users_csv' + readonly_admin 财务模式允许(D-074)
+- Client disconnect cleanly close stream(line 236/241)· 不锁连接
+- 实测 23 tests passed · typecheck 全过 · CORS /admin/export/* + GET route 加 index.ts
+- FAKE 来源 pytest-full 3 fail = TD-046 已登记 pre-existing
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 18 ended: US-008 (26分钟 1秒) ---
+
+--- [RALPH] Iteration 19 started: US-009 at 2026-05-12 22:39 ---
+
+--- [RALPH] Iteration 19 ended: US-009 (19分钟 45秒) ---
+
+--- [RALPH] Iteration 20 started: US-009 at 2026-05-12 22:59 ---
+
+## 2026-05-12 22:59 - US-009 (Opus audit) REJECTED
+- Blocker: scheduleAnomalyDetection() 0 调用方 · cron 实际不 fire · AC-H-5/H-6 失败
+- 实现完整(prisma 2 model + service 4 anomaly type + worker/queue 注册 + 10 tests)· 仅缺 index.ts 启动调用
+- reject feedback 含具体 +3 lines diff + 5 反例 + 4 验证方式
+- ralph 应 retry=1 一次过修(< 10 lines mechanical fix · 模式严格对齐 KPI snapshot schedule)
+---
+
+## 2026-05-12 23:09 - US-009 (Opus audit · retry 1) APPROVED
+- ralph 按 reject feedback 严格修复(commit 6326536 · +5 lines · 一次过)
+- index.ts:321-323 加 scheduleAnomalyDetection() · import + call + logger.info
+- 4 验证全过 · grep 3 命中 · 不在 dev 分支 · 10 tests · typecheck 0 error
+- 模式对齐 KPI snapshot cron(US-002)· cron always-on 不限 dev
+- 无新 TD · reject feedback 模板 work · ralph 一次过修复(< 10 lines mechanical fix)
+---
+
+--- [RALPH] Iteration 20 ended: US-009 (9分钟 46秒) ---
+
+--- [RALPH] Iteration 21 started: US-010 at 2026-05-12 23:09 ---
+
+## [2026-05-12 23:18] - US-010
+- 实现了 PRD-11 US-010 adminRouter.accounts 6 procedure(list/detail/flag/unflag/addNote/forceFreeze)
+- AC 状态:
+  · AC-1: accounts.ts 全走 adminProcedure (= publicAdminProcedure + 6 gates)
+  · AC-2: list · multi-filter(industry/platform/level/stage/anomalyOnly) + Promise.all([findMany,count]) + include {evolutionProfile,user,_count.anomalyFlags} + audit cross_account_query/list_ip_accounts
+  · AC-3: detail · Promise.all 6 表并行(account+user / stepData / evolutionProfile+insights / history / adminNotes / anomalyFlags resolvedAt IS NULL) + audit
+  · AC-4/12: flag mutation · 写 ip_account_anomaly_flags · same-day duplicate check(detectedAt >= todayStart) → ValidationError('already flagged today')
+  · AC-5/13: unflag mutation · update resolvedAt+resolvedByAdminId+resolution · already resolved → ValidationError('already resolved')
+  · AC-6: addNote · 写 ip_account_admin_notes · visibleToOtherAdmin + audit
+  · AC-7~10: forceFreeze · super_admin→approval_requests(auto_executed)+ipAccount.update · admin→{status:pending} · already frozen→ValidationError('account already frozen')
+  · AC-8: prisma schema IpAccount + frozenAt/frozenByAdminId/freezeReason + migration 20260512151405
+  · AC-11: readonly_admin guardMutation → 403 privilege_escalation
+  · AC-14: audit:approval-gates PASS · Checked 11 with approval gate · 0 missing
+  · AC-15/16: 36 unit tests pass · pnpm typecheck 0 errors
+- 更改的文件:
+  · apps/api/src/trpc/routers/admin/accounts.ts (新建)
+  · apps/api/src/trpc/routers/admin/__tests__/accounts.test.ts (新建 · 36 tests)
+  · apps/api/src/trpc/routers/admin/index.ts (ipAccountsPlaceholder → accountsRouter)
+  · prisma/schema.prisma (IpAccount frozen fields + adminNotes/anomalyFlags relations + IpAccountAdminNote/IpAccountAnomalyFlag back-relations)
+  · prisma/migrations/20260512151405_add_ipaccount_frozen_relations/migration.sql (新建)
+  · scripts/audit-approval-gates.ts (加 admin.accounts.forceFreeze EXCEPTION · gate 升至 8)
+- **未来迭代的学习:**
+  - Prisma `evidence` 字段是 Json 类型 · z.record(z.unknown()) 需要 `as Prisma.InputJsonValue` cast · 否则 TS2322 type error
+  - `_count { select: { relation: true } }` 语法需要 Prisma relation 存在 · 如果只有 int 字段(无 @relation)无法使用 _count · 必须先在 schema 里加 relation
+  - audit-approval-gates.ts 的 checkExceptionProcedure 用 parts[1] 作 routerName · 'admin.accounts.forceFreeze' → routerName='accounts' → 找 accounts.ts · 路由文件名必须与 EXCEPTION_PROCEDURES 路径中段一致
+  - 同日重复 flag 检测: `todayStart.setHours(0,0,0,0)` · 注意 setHours 是 in-place mutation · 不要用同一个 Date 对象做后续计算
+---
+
+## 2026-05-12 23:25 - US-010 (Opus audit)
+- 通过审计 [high 档 · ~2 min · 一次过]
+- 6 procedure 全 adminProcedure(7 闸链)· list 多 filter + Promise.all + _count anomalyFlags
+- detail 6 表 Promise.all 并行(account+user / stepData / evolutionProfile+insights / history / adminNotes / anomalyFlags)
+- flag/unflag CRUD · same-day dedupe + already-resolved guard
+- addNote · ip_account_admin_notes · visibleToOtherAdmin 字段
+- forceFreeze · Approval Gates stub · ValidationError if frozen + super_admin auto_executed + admin pending + IpAccount 3 字段(frozenAt/frozenByAdminId/freezeReason VarChar(500))
+- audit-approval-gates 加 accounts.forceFreeze EXCEPTION · 11 checks 0 missing
+- 实测 36 tests passed · typecheck 0 error · audit-redlines ALL PASS · audit-admin-rls AST 21/0
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 21 ended: US-010 (17分钟 15秒) ---
+
+--- [RALPH] Iteration 22 started: US-011 at 2026-05-12 23:26 ---
+
+## [2026-05-12 00:00] - US-011
+- 实现了 PRD-11 US-011 IP 账号管理 UI page · 大表格 + 详情抽屉 + 异常 Tab
+- 更改的文件:
+  · apps/admin/src/pages/accounts/index.tsx (新建 · 主页面)
+  · apps/admin/src/pages/accounts/StepProgressChart.tsx (新建 · Recharts BarChart)
+  · apps/admin/src/pages/accounts/AccountDetailDrawer.tsx (新建 · 6 tab 右侧抽屉)
+  · apps/admin/src/pages/accounts/AccountListFilters.tsx (新建 · 4 dropdown + debounce)
+  · apps/admin/src/pages/accounts/AnomalyTab.tsx (新建 · per-account detail + flag 行)
+  · apps/admin/src/pages/accounts/ForceFreezeDialog.tsx (新建 · forceFreeze mutation)
+  · packages/clients/src/admin-router-types.ts (更新 · ipAccounts 6 procedures shadow router)
+  · apps/admin/src/router.tsx (更新 · AccountsPlaceholder → AccountsPage)
+  · apps/admin/src/pages/admin/placeholder/accounts.tsx (删除)
+- **未来迭代的学习:**
+  - ipAccounts shadow router 在 admin-router-types.ts 里注册为 `ipAccounts: _t.router({...6 procedures...})` · 对应后端 `apps/api/src/trpc/routers/admin/index.ts` 里的 `ipAccounts: accountsRouter`
+  - AnomalyTab 需要 per-account detail 查询才能得到 flagId(unflag 需要) · 方案: AnomalyAccountRows 子组件各自 useQuery detail · React Query batching 处理
+  - Recharts Tooltip formatter 类型: 参数是 `ValueType | undefined` 不是 `number` · 不要手动标注 `(value: number)` 否则 TS 报错
+  - IpAccount model 没有 `lastActiveAt` 字段 · 用 `updatedAt` 作为最近活跃时间代理
+  - EvolutionProfile model 没有 `currentStep` 字段 · 9步进度从 `stepData` 数组计算(stepKey='step1'~'step9')
+---
+
+## 2026-05-12 23:57 - US-011 (Opus audit)
+- 通过审计 [high 档 · ~2 min · 一次过 retry=0]
+- 6 UI files create(index/AccountDetailDrawer/AccountListFilters/AnomalyTab/ForceFreezeDialog/StepProgressChart)· 1955 lines · 删 placeholder
+- DenseTable from @quanqn/ui/admin(virtualScroll · D-075)
+- Recharts BarChart StepProgressChart · data [{step,progress,fill:'var(--accent-purple)'}] · done → accent-purple · 未 done → border · SHIELD 注释
+- readonly_admin 4 处 isReadonly check · ForceFreezeDialog super_admin '确认冻结' / admin '提交审批' 跟 US-010 procedure 对齐
+- shadow router types packages/clients ipAccounts 6 procedure
+- admin/accounts dev server 200 · typecheck 全过
+- 无 Blocker · 无新 TD · 6 files medium 边界(< US-007 8 files · 无 ECONNRESET)
+---
+
+--- [RALPH] Iteration 22 ended: US-011 (31分钟 19秒) ---
+
+--- [RALPH] Iteration 23 started: US-012 at 2026-05-12 23:57 ---
+
+--- [RALPH] Iteration 23 ended: US-012 (30分钟 12秒) ---
+
+--- [RALPH] Iteration 24 started: US-012 at 2026-05-13 00:27 ---
+
+## [2026-05-13 00:30] - US-012 (retry 1 · migration drift 修复)
+- 修复: quanqn_test DB 缺 3 个 migrations · 导致零回归测试失败(P2022 column not exist)
+- US-012 代码本身全 AC 通过(commit c383f06 已在) · 本次仅修复测试环境
+- 根因: quanqn_test 落后 3 个 migration:
+  · 20260512104230_add_user_lastlogin_indexes (users.plan / last_login_*)
+  · 20260512111135_add_user_banned_password_hash (users.is_banned / banned_at)
+  · 20260512151405_add_ipaccount_frozen_relations (ip_accounts.frozen_at)
+- 修复方式: 直接 psql -f migration.sql + INSERT _prisma_migrations 补注册
+  (原因: pnpm prisma migrate deploy 无 --env-file · .env 优先级高于 shell env var · 直接 psql 绕过)
+- 验证:
+  · pnpm test: 125 test files · 1202/1206 tests passed (4 skipped) · 0 failures ✓
+  · quanqn_test 现有 15 migrations · 与 quanqn 主库同步 ✓
+- **未来迭代的学习:**
+  - Prisma 5.x: `pnpm prisma migrate deploy` 读 .env 优先 · shell env var `DATABASE_URL=quanqn_test pnpm prisma ...` 被 .env 覆盖
+  - quanqn_test 补 migration 正确姿势: psql -f migration.sql + INSERT _prisma_migrations 手动注册
+  - 每次加 migration 到 quanqn 后 · 记得同步到 quanqn_test · 否则下一个 story 的零回归会失败
+---
+
+## 2026-05-13 00:38 - US-012 (Opus audit)
+- 通过审计 [high 档 · ~2 min · 一次过 retry=0]
+- 5 procedure(aggregate/top10/specialistBreakdown/alerts/exportCsv)全 adminProcedure
+- money-critical: true 注释 5 个(精确 PRD ≥ 5)· SHIELD Prisma.Decimal 全程 line 3
+- Decimal 防御链:COST_ALERT_THRESHOLD new Decimal('5')/.gte 比较/.toString 返前端/无 toNumber().reduce
+- Prisma.raw 白名单(dimension z.enum + dimCol whitelist · line 107)· SHIELD line 4
+- alertSeverity 分级 $15+/$10+/$5+
+- exportCsv chunk + 500k 限制(BAD_REQUEST)· stream
+- 34 tests · typecheck 0 · audit-redlines ALL PASS · audit-admin-rls AST 26/0(5+5+5+6+5)
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 24 ended: US-012 (10分钟 5秒) ---
+
+--- [RALPH] Iteration 25 started: US-013 at 2026-05-13 00:37 ---
+
+## 2026-05-13 01:02 - US-013 (Opus audit)
+- 通过审计 [high 档 · ~2 min · 2 commits 主 + self-correct delete placeholder]
+- 5 UI files create(index/CostOverviewCards/CostBreakdownChart/CostTopUsersChart/CostAlertsPanel)
+- Recharts fill var(--text-muted) · CostBreakdownChart/TopUsersChart 多处
+- 美元格式 $ {parseFloat(...).toFixed(2)} · 不 raw float
+- DenseTable virtualScroll · CSV 导出 trigger cost-export-{ts}.csv(复用 US-012 exportCsv)
+- 5 时间范围 dropdown(本月/上月/本季度/本年/自定义)· 4 维度切换 + React Query cache
+- admin/cost dev server 200 · typecheck 全过
+- 无 Blocker · 无新 TD
+---
+
+--- [RALPH] Iteration 25 ended: US-013 (24分钟 38秒) ---
+
+--- [RALPH] Iteration 26 started: US-014 at 2026-05-13 01:02 ---
