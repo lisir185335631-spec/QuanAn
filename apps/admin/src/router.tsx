@@ -14,7 +14,7 @@ import CostPlaceholder from './pages/admin/placeholder/cost';
 import EvolutionPlaceholder from './pages/admin/placeholder/evolution';
 import InvitesPlaceholder from './pages/admin/placeholder/invites';
 import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
-import NsmPlaceholder from './pages/admin/placeholder/nsm';
+import NsmDashboard from './pages/nsm/index';
 import PromptsPlaceholder from './pages/admin/placeholder/prompts';
 import QuotaPlaceholder from './pages/admin/placeholder/quota';
 import ReviewDeepLearnPlaceholder from './pages/admin/placeholder/reviewDeepLearn';
@@ -32,7 +32,7 @@ export function AdminRoutes() {
         <Route index element={<Navigate to="/admin/nsm" replace />} />
 
         {/* P0 核心 */}
-        <Route path="nsm" element={<NsmPlaceholder />} />
+        <Route path="nsm" element={<NsmDashboard />} />
         <Route path="users" element={<UsersPlaceholder />} />
         <Route path="accounts" element={<AccountsPlaceholder />} />
         <Route path="cost" element={<CostPlaceholder />} />

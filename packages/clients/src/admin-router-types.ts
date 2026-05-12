@@ -39,7 +39,69 @@ const _shadowAdminRouter = _t.router({
   deepLearn: _t.router({}),
   prompts: _t.router({}),
   quota: _t.router({}),
-  nsm: _t.router({}),
+  nsm: _t.router({
+    getOverview: _t.procedure.query(
+      (): {
+        latest: {
+          id: number;
+          snapshotDate: Date;
+          granularity: string;
+          activeAccounts7d: number;
+          step9CompleteRate: number;
+          feedbackRate: number;
+          evolutionUpgradeRate: number;
+          d30Retention: number;
+          funnelData: number[];
+          industryDistribution: Record<string, number>;
+          platformDistribution: Record<string, number>;
+          userPersonaDistribution: Record<string, number>;
+          createdAt: Date;
+        };
+        previous: {
+          id: number;
+          snapshotDate: Date;
+          granularity: string;
+          activeAccounts7d: number;
+          step9CompleteRate: number;
+          feedbackRate: number;
+          evolutionUpgradeRate: number;
+          d30Retention: number;
+          funnelData: number[];
+          industryDistribution: Record<string, number>;
+          platformDistribution: Record<string, number>;
+          userPersonaDistribution: Record<string, number>;
+          createdAt: Date;
+        } | null;
+        deltas: {
+          activeAccounts7d: number;
+          step9CompleteRate: number;
+          feedbackRate: number;
+          evolutionUpgradeRate: number;
+          d30Retention: number;
+        } | null;
+      } | null => null,
+    ),
+    getFunnel: _t.procedure
+      .input((x: unknown) => x as { date?: string; granularity?: 'day' | 'week' | 'month' })
+      .query((): number[] => []),
+    getDistributions: _t.procedure.query(
+      (): {
+        industryDistribution: Record<string, number>;
+        platformDistribution: Record<string, number>;
+        userPersonaDistribution: Record<string, number>;
+      } | null => null,
+    ),
+    getAlerts: _t.procedure.query(
+      (): Array<{ metric: string; severity: 'high' | 'medium' | 'low'; deltaPct: number }> => [],
+    ),
+    triggerSnapshot: _t.procedure.mutation(
+      (): { success: boolean; snapshotDate: Date; granularity: string } => ({
+        success: true,
+        snapshotDate: new Date(),
+        granularity: 'day',
+      }),
+    ),
+  }),
   evolution: _t.router({}),
   audit: _t.router({
     listMine: _t.procedure.query(
