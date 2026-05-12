@@ -1,4 +1,67 @@
 
+## Codebase Patterns - PRD-9 + PRD-10
+
+## 本 PRD 专属知识 (PRD-10)
+- admin models 14 个(包含 6 个新增: AdminUser/AdminSession/AdminInviteCampaign/AdminConstants/AdminConfig/AdminAbExperiment)
+- @rls(disabled) 注释必须放在 model 关键字的直接前一行(不能跨 /// docstring)· grep -B 1 才能匹配
+- manual_admin_rls.sql 已更新包含 6 新表 + enable/disable_admin_rls helper functions
+- apps/admin Vite SPA: 使用 createRoot from 'react-dom/client'(不用默认 ReactDOM import · 避免 lint warning)
+- 预先用 git stash 验证 pre-existing test failures 时需注意 untracked 文件不被 stash
+
+## 执行日志(按 story 倒序)
+
+## [2026-05-12 11:03] - US-001
+- 实现了 PRD-10 US-001 foundation story 全部 18 AC
+- 主要工作:
+  · 创建 branch ralph/prd-10-admin-foundation
+  · prisma/schema.prisma: 6 new admin models + 14x @rls(disabled) comments
+  · prisma migrate dev → 20260512024850_add_admin_auth_config_tables
+  · manual_admin_rls.sql: +6 DISABLE + enable/disable_admin_rls helpers
+  · apps/admin: Vite SPA skeleton (6 files: vite.config.ts/index.html/package.json/tsconfig.json/src/main.tsx/src/App.tsx)
+  · 7 middleware stubs + index.ts barrel export
+  · adminRouter (health stub + 13 placeholder sub-trees)
+  · apps/api/src/lib/admin/{constants,types}.ts
+  · scripts/audit-admin-rls-tables.sh (exit 0 · 14 admin DISABLED + 14 main ENABLED)
+  · scripts/migrate-monorepo.sh (10 steps SCAFFOLD §A.3)
+  · tests/unit/admin/: middleware-stubs.test.ts(7) + admin-schema.test.ts(12) + admin-constants.test.ts(9) = 28 tests
+- AC 验证摘要:
+  · AC-1: pnpm-workspace.yaml apps/* + packages/* + 5 sub-packages ✅
+  · AC-2: src/* 已在 apps/web/src/ + apps/api/src/ · 无 root src/ ✅
+  · AC-3: apps/admin 6 Vite files ✅
+  · AC-4: 14 admin models in schema (including 6 new) ✅
+  · AC-5: grep -B 1 '^model.*Admin...' = 14 @rls(disabled) ✅
+  · AC-6: manual_admin_rls.sql 28 DISABLE + 2 helper functions ✅
+  · AC-7: audit-admin-rls-tables.sh exit 0 ✅
+  · AC-8: 7 middleware stubs + index.ts ✅
+  · AC-9: adminRouter health stub + 13 placeholders ✅
+  · AC-10: constants.ts + types.ts ✅
+  · AC-11: middleware-stubs.test.ts 7 tests pass ✅
+  · AC-12: admin-schema.test.ts 12 tests pass ✅
+  · AC-13: PRD-9 e2e 6/6 pass (with server running) ✅
+  · AC-14: pnpm typecheck 6 workspaces 0 errors ✅
+  · AC-15: pnpm lint --max-warnings=0 ✅
+  · AC-16: pnpm test 926 passing (server-off) / 935 (server-on) ≥ 920 ✅
+  · AC-17: scripts/migrate-monorepo.sh 10 steps all pass ✅
+  · AC-18: typecheck passes ✅
+- 更改的文件:
+  · prisma/schema.prisma (+6 models, +14 @rls comments)
+  · prisma/migrations/manual_admin_rls.sql (+6 DISABLE + helpers)
+  · prisma/migrations/20260512024850_add_admin_auth_config_tables/ (new)
+  · apps/admin/{index.html, vite.config.ts, src/main.tsx, src/App.tsx, package.json}
+  · apps/api/src/trpc/middleware/admin/* (7 files + index)
+  · apps/api/src/trpc/routers/admin/index.ts (new)
+  · apps/api/src/lib/admin/{constants,types}.ts (new)
+  · scripts/audit-admin-rls-tables.sh (new)
+  · scripts/migrate-monorepo.sh (new)
+  · tests/unit/admin/* (3 test files = 28 tests)
+- **未来迭代的学习:**
+  - @rls(disabled) 注释必须紧贴 model 关键字前一行 · 不能在 /// docstring 之前
+  - prisma 新表创建后必须跑 psql -f manual_admin_rls.sql 才能 DISABLE RLS · prisma 本身不处理 RLS
+  - apps/admin Vite SPA 的 tsc strict 要求: 用 createRoot(不用 ReactDOM 默认 import) · 无 unused imports
+  - pre-existing integration test failures (9 tests · need server on :3000) 与 US-001 无关 · 不算回归
+  - git stash 只 stash 被 tracked 的文件 · untracked 的 tests/unit/admin/ 不会被 stash
+---
+
 ## Codebase Patterns - PRD-9
 - seed-knowledge-chunk.ts 无 OPENAI_API_KEY 时 → null embedding 模式(token 粗算 content.length/1.5) · 幂等 upsert by (type, title) · pnpm seed:knowledge 任意环境可重跑
 - debugAssembleSystemPrompt endpoint userInput.userMessage 传中文关键词供 text-search fallback · dev 环境(无 embedding)需确保关键词命中真实 knowledge_chunk content
@@ -4306,3 +4369,9 @@ Step 1.5 亲跑全套补门禁 100% 过。
 **主应用 P0-P8 收官** · 距 PRD-10 admin 子系统启动一步之遥(参 ADMIN-ARCHITECTURE.md)
 **1 RCA** (RCA-006 daemon Validator skip + ECONNRESET) · 4 改进建议待 PRD-10 评估
 **4 new TDs**(TD-033/034/035 open · TD-036 已 resolved)· 全 low severity · 无 PRR 必修
+
+
+--- PRD-10 START · 2026-05-12 · ralph daemon 启动 · branchName ralph/prd-10-admin-foundation · 7 stories ---
+
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-12 10:41 ---
