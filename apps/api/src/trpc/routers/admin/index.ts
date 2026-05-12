@@ -7,6 +7,7 @@ import { adminTrpcRouter, publicAdminProcedure } from '@/trpc/trpc-admin';
 import { accountsRouter } from './accounts';
 import { adminAuditRouter } from './audit';
 import { adminAuthRouter } from './auth';
+import { costRouter } from './cost';
 import { nsmRouter } from './nsm';
 import { usersRouter } from './users';
 
@@ -42,6 +43,8 @@ export const adminRouter = adminTrpcRouter({
   quota: quotaPlaceholder,
   // PRD-11 US-003: real nsm router
   nsm: nsmRouter,
+  // PRD-11 US-012: real cost router
+  cost: costRouter,
   evolution: evolutionPlaceholder,
   config: configPlaceholder,
   ab: abPlaceholder,
