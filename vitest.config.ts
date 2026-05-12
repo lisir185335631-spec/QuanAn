@@ -77,7 +77,11 @@ export default defineConfig({
         '**/index.ts',
       ],
     },
-    include: ['tests/unit/**/*.{test.ts,test.tsx}', 'tests/integration/**/*.test.ts'],
+    include: [
+      'tests/unit/**/*.{test.ts,test.tsx}',
+      'tests/integration/**/*.test.ts',
+      'apps/api/src/**/__tests__/**/*.test.ts',
+    ],
     passWithNoTests: true,
     testTimeout: 30000,
     hookTimeout: 60000,
