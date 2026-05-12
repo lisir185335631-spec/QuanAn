@@ -277,13 +277,13 @@ function buildColumns(
   return [
     {
       key: 'id',
-      header: 'ID',
+      label: 'ID',
       width: '56px',
       render: (row) => <span style={{ color: 'var(--text-dim)', fontSize: 11 }}>#{row.id}</span>,
     },
     {
       key: 'name',
-      header: '账号名',
+      label: '账号名',
       width: '140px',
       render: (row) => (
         <span style={{ color: 'var(--text)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', maxWidth: 130 }}>
@@ -293,19 +293,19 @@ function buildColumns(
     },
     {
       key: 'industry',
-      header: '行业',
+      label: '行业',
       width: '80px',
       render: (row) => <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{row.industry}</span>,
     },
     {
       key: 'platform',
-      header: '平台',
+      label: '平台',
       width: '80px',
       render: (row) => <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{row.platform}</span>,
     },
     {
       key: 'level',
-      header: '等级',
+      label: '等级',
       width: '56px',
       render: (row) => (
         <span style={{ fontSize: 11, color: 'var(--accent-purple)' }}>
@@ -315,13 +315,13 @@ function buildColumns(
     },
     {
       key: 'stage',
-      header: '阶段',
+      label: '阶段',
       width: '72px',
       render: (row) => <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{row.stage}</span>,
     },
     {
       key: 'updatedAt',
-      header: '最近活跃',
+      label: '最近活跃',
       width: '120px',
       render: (row) => (
         <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
@@ -336,7 +336,7 @@ function buildColumns(
     },
     {
       key: 'actions',
-      header: '操作',
+      label: '操作',
       width: '100px',
       render: (row) =>
         isReadonly ? null : (
@@ -506,10 +506,7 @@ export default function AccountsPage() {
             ) : (
               <DenseTable
                 columns={columns}
-                rows={accounts}
-                keyField="id"
-                emptyText="未找到匹配账号"
-                virtualScroll
+                data={accounts}
                 maxHeight="calc(100vh - 440px)"
                 onRowClick={(row) => openDrawer(row.id)}
                 selectedKey={openAccountId ?? undefined}

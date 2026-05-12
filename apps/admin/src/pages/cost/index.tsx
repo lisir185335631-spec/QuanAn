@@ -108,18 +108,18 @@ function buildTableColumns(dimension: Dimension): DenseTableColumn<AggRow>[] {
   return [
     {
       key: 'timeBucket',
-      header: '时间',
+      label: '时间',
       width: '120px',
       render: (row) => formatDate(row.timeBucket),
     },
     {
       key: 'dimensionValue',
-      header: DIMENSION_LABELS[dimension],
+      label: DIMENSION_LABELS[dimension],
       render: (row) => row.dimensionValue ?? '—',
     },
     {
       key: 'totalCost',
-      header: '总成本 (USD)',
+      label: '总成本 (USD)',
       width: '140px',
       render: (row) => (
         <span style={{ color: 'var(--gold)', fontWeight: 600 }}>
@@ -129,7 +129,7 @@ function buildTableColumns(dimension: Dimension): DenseTableColumn<AggRow>[] {
     },
     {
       key: 'callCount',
-      header: '调用次数',
+      label: '调用次数',
       width: '100px',
       render: (row) => row.callCount.toLocaleString(),
     },
@@ -346,10 +346,7 @@ export default function CostPage() {
             ) : (
               <DenseTable
                 columns={buildTableColumns(dimension)}
-                rows={tableRows as AggRow[]}
-                keyField="timeBucket"
-                emptyText="暂无数据"
-                virtualScroll={tableRows.length > 200}
+                data={tableRows as AggRow[]}
                 maxHeight="500px"
               />
             )}

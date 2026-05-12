@@ -123,13 +123,13 @@ function buildColumns(
   return [
     {
       key: 'id',
-      header: 'ID',
+      label: 'ID',
       width: '56px',
       render: (row) => <span style={{ color: 'var(--text-dim)', fontSize: 11 }}>#{row.id}</span>,
     },
     {
       key: 'email',
-      header: 'Email',
+      label: 'Email',
       width: '220px',
       render: (row) => (
         <span style={{ color: 'var(--text)', fontSize: 12 }}>
@@ -142,13 +142,13 @@ function buildColumns(
     },
     {
       key: 'plan',
-      header: '套餐',
+      label: '套餐',
       width: '90px',
       render: (row) => <PlanBadge plan={row.plan} isBanned={row.isBanned} />,
     },
     {
       key: 'industry',
-      header: '行业',
+      label: '行业',
       width: '80px',
       render: (row) => (
         <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>{row.industry ?? '—'}</span>
@@ -156,7 +156,7 @@ function buildColumns(
     },
     {
       key: 'lastLoginAt',
-      header: '最近登录',
+      label: '最近登录',
       width: '130px',
       render: (row) => (
         <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
@@ -173,7 +173,7 @@ function buildColumns(
     },
     {
       key: 'actions',
-      header: '操作',
+      label: '操作',
       width: '160px',
       render: (row) =>
         isReadonly ? null : (
@@ -405,10 +405,7 @@ export default function UsersPage() {
         ) : (
           <DenseTable
             columns={columns}
-            rows={users}
-            keyField="id"
-            emptyText="暂无用户数据"
-            virtualScroll
+            data={users}
             maxHeight="calc(100vh - 380px)"
             onRowClick={(row) => openDrawer(row.id)}
             selectedKey={openUserId ?? undefined}

@@ -60,12 +60,12 @@ interface Props {
   maxHeight?: string;
 }
 
-export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeight }: Props) {
+export function AuditTimeline({ items, onSelect, selectedId, maxHeight }: Props) {
   const columns = useMemo<DenseTableColumn<TimelineItem>[]>(
     () => [
       {
         key: 'time',
-        header: '时间',
+        label: '时间',
         width: '160px',
         render: (row) => (
           <span style={{ color: 'var(--text-muted, #888)', fontSize: 12, fontFamily: 'monospace' }}>
@@ -75,7 +75,7 @@ export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeigh
       },
       {
         key: 'category',
-        header: '分类',
+        label: '分类',
         width: '140px',
         render: (row) => (
           <span
@@ -92,7 +92,7 @@ export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeigh
       },
       {
         key: 'eventType',
-        header: '事件',
+        label: '事件',
         width: '200px',
         render: (row) => (
           <span style={{ color: 'var(--text-primary, #e0e0e0)', fontSize: 12 }}>
@@ -102,7 +102,7 @@ export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeigh
       },
       {
         key: 'source',
-        header: '来源',
+        label: '来源',
         width: '110px',
         render: (row) => (
           <span style={{ color: 'var(--text-muted, #888)', fontSize: 11 }}>
@@ -112,7 +112,7 @@ export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeigh
       },
       {
         key: 'traceId',
-        header: 'traceId',
+        label: 'traceId',
         width: '130px',
         render: (row) => (
           <span style={{ color: 'var(--text-muted, #888)', fontSize: 11, fontFamily: 'monospace' }}>
@@ -123,7 +123,7 @@ export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeigh
       {
         // SHIELD: payloadHash 必须显示 · 法务取证用
         key: 'payloadHash',
-        header: 'payloadHash',
+        label: 'payloadHash',
         width: '130px',
         render: (row) => (
           <span style={{ color: 'var(--text-muted, #888)', fontSize: 11, fontFamily: 'monospace' }}>
@@ -138,12 +138,9 @@ export function AuditTimeline({ items, emptyText, onSelect, selectedId, maxHeigh
   return (
     <DenseTable<TimelineItem>
       columns={columns}
-      rows={items}
-      keyField="id"
-      emptyText={emptyText ?? '暂无数据'}
+      data={items}
       onRowClick={onSelect}
       selectedKey={selectedId}
-      virtualScroll={items.length > 100}
       maxHeight={maxHeight ?? '520px'}
     />
   );

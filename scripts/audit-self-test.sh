@@ -39,7 +39,11 @@ elif [[ ! -f scripts/audit-admin-rls-tables.sh ]]; then
   warn "audit-admin-rls-tables.sh 不存在 · skip test 1"
 else
   SQL_TABLES=$(grep -oE 'ALTER TABLE +[a-zA-Z_]+' prisma/migrations/manual_admin_rls.sql 2>/dev/null | awk '{print $3}' | sort -u)
-  AUDIT_TABLES=$(grep -oE '"[a-z_]+"' scripts/audit-admin-rls-tables.sh 2>/dev/null | tr -d '"' | grep -E "^admin_|^approval_|^prompt_|^user_quota|^quota_|^trending_|^deep_learn|^kpi_|^ip_account_|^invite_|^auto_review|^user_violation|^evolution_|^feature_|^system_|^ab_" | sort -u)
+  # Extract bare (unquoted) table names from ADMIN_TABLES bash array declaration
+  AUDIT_TABLES=$(awk '/^ADMIN_TABLES=\(/,/^\)/' scripts/audit-admin-rls-tables.sh 2>/dev/null \
+    | grep -oE '^  [a-z_]+' | tr -d ' ' \
+    | grep -E "^admin_|^approval_|^prompt_|^user_quota|^quota_|^trending_|^deep_learn|^kpi_|^ip_account_|^invite_|^auto_review|^user_violation|^evolution_|^feature_|^system_|^ab_" \
+    | sort -u)
 
   missing=$(comm -23 <(echo "$SQL_TABLES") <(echo "$AUDIT_TABLES") 2>/dev/null)
   if [[ -n "$missing" ]]; then
@@ -60,6 +64,8 @@ if [[ -f scripts/audit-redlines-admin.sh ]]; then
   PATHS=$(grep -oE 'apps/(admin|api|web)/[a-zA-Z_./-]*' scripts/audit-redlines-admin.sh 2>/dev/null | sort -u | grep -v '\\$' | grep -v '\*')
   bad_paths=()
   for p in $PATHS; do
+    # skip intentionally-optional config files (.env.production, etc.)
+    [[ "$p" =~ \.env ]] && continue
     # 去除末尾 / · 检查 dir
     p_clean=${p%/}
     if [[ ! -d "$p_clean" && ! -f "$p_clean" ]]; then

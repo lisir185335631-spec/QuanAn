@@ -311,7 +311,7 @@ export default function InvitesPage() {
   const columns: DenseTableColumn<InviteRow>[] = [
     {
       key: 'code',
-      header: '邀请码',
+      label: '邀请码',
       width: '180px',
       render: (row) => (
         <span style={{ fontFamily: 'monospace', fontSize: 12, color: 'var(--gold, #d4af37)' }}>
@@ -321,13 +321,13 @@ export default function InvitesPage() {
     },
     {
       key: 'status',
-      header: '状态',
+      label: '状态',
       width: '80px',
       render: (row) => <StatusBadge row={row} />,
     },
     {
       key: 'campaign',
-      header: 'Campaign',
+      label: 'Campaign',
       width: '120px',
       render: (row) => (
         <span style={{ color: row.campaign ? 'var(--text, #e0e0e0)' : 'var(--text-muted, #888)', fontSize: 12 }}>
@@ -337,7 +337,7 @@ export default function InvitesPage() {
     },
     {
       key: 'quota',
-      header: '配额',
+      label: '配额',
       width: '80px',
       render: (row) => (
         <span style={{ fontSize: 12, color: 'var(--text-muted, #888)' }}>
@@ -347,7 +347,7 @@ export default function InvitesPage() {
     },
     {
       key: 'expiresAt',
-      header: '过期时间',
+      label: '过期时间',
       width: '140px',
       render: (row) => (
         <span style={{ fontSize: 11, color: 'var(--text-muted, #888)' }}>
@@ -357,7 +357,7 @@ export default function InvitesPage() {
     },
     {
       key: 'createdAt',
-      header: '创建时间',
+      label: '创建时间',
       width: '140px',
       render: (row) => (
         <span style={{ fontSize: 11, color: 'var(--text-muted, #888)' }}>
@@ -538,9 +538,8 @@ export default function InvitesPage() {
             ) : (
               <DenseTable
                 columns={columns}
-                rows={rows}
-                keyField="id"
-                emptyText="暂无邀请码 · 点击创建"
+                data={rows}
+                loading={listQuery.isLoading}
                 onRowClick={(row) => setSelectedCode(row.code)}
                 selectedKey={selectedCode ?? undefined}
               />

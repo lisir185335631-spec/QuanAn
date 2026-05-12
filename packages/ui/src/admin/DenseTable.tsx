@@ -1,33 +1,38 @@
-// @quanqn/ui/admin · DenseTable — dense 32px rows + optional virtualScroll
-// virtualScroll: true → useVirtualizer; false (default) → plain DOM render
+// @quanqn/ui/admin · DenseTable — virtualised 32px dense rows (PRD-11 US-022)
+// Always uses @tanstack/react-virtual for smooth 100k+ row scrolling.
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { ReactNode, CSSProperties } from 'react';
 
 export interface DenseTableColumn<T> {
   key: string;
-  header: string;
-  render: (row: T) => ReactNode;
+  label: string;
   width?: string;
+  sortable?: boolean;
+  render?: (row: T, idx: number) => ReactNode;
 }
 
-interface DenseTableProps<T> {
+export interface DenseTableProps<T> {
   columns: DenseTableColumn<T>[];
-  rows: T[];
-  keyField: keyof T;
-  emptyText?: string;
+  data: T[];
+  loading?: boolean;
   onRowClick?: (row: T) => void;
-  selectedKey?: string | number;
-  /** Enable virtual scrolling for large datasets (1000+ rows). Requires maxHeight. */
-  virtualScroll?: boolean;
-  /** Container max-height for virtual scroll (default '600px') */
+  onSort?: (key: string, dir: 'asc' | 'desc' | null) => void;
+  // optional extras kept for backward-compat with existing pages
   maxHeight?: string;
+  selectedKey?: string | number;
+  getRowKey?: (row: T, idx: number) => string | number;
 }
+
+type SortDir = 'asc' | 'desc' | null;
 
 const ROW_HEIGHT = 32;
+const SKELETON_ROWS = 5;
 
-const headThStyle: CSSProperties = {
+// ── styles ───────────────────────────────────────────────────────────────────
+
+const headCellStyle: CSSProperties = {
   padding: '6px 8px',
   textAlign: 'left',
   color: '#888',
@@ -36,6 +41,9 @@ const headThStyle: CSSProperties = {
   letterSpacing: '0.03em',
   whiteSpace: 'nowrap',
   userSelect: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
 };
 
 const cellStyle: CSSProperties = {
@@ -43,30 +51,90 @@ const cellStyle: CSSProperties = {
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  fontSize: '13px',
+  color: '#e0e0e0',
+  display: 'flex',
+  alignItems: 'center',
+  height: ROW_HEIGHT,
 };
 
-function VirtualTable<T>({
-  columns,
-  rows,
-  keyField,
-  onRowClick,
-  selectedKey,
-  maxHeight = '600px',
-  emptyText = '暂无数据',
-}: Omit<DenseTableProps<T>, 'virtualScroll'>) {
+// ── sort indicator ────────────────────────────────────────────────────────────
+
+function SortIcon({ dir }: { dir: SortDir }) {
+  if (dir === 'asc') return <span style={{ fontSize: 10, color: '#c8a84b' }}>▲</span>;
+  if (dir === 'desc') return <span style={{ fontSize: 10, color: '#c8a84b' }}>▼</span>;
+  return <span style={{ fontSize: 10, color: '#444' }}>⇅</span>;
+}
+
+// ── skeleton row ─────────────────────────────────────────────────────────────
+
+function SkeletonCell({ width }: { width?: string }) {
+  return (
+    <div
+      style={{
+        height: 12,
+        borderRadius: 4,
+        background: 'linear-gradient(90deg, #1e1e1e 25%, #2a2a2a 50%, #1e1e1e 75%)',
+        backgroundSize: '200% 100%',
+        animation: 'denseSkeleton 1.4s ease infinite',
+        width: width ?? '60%',
+      }}
+    />
+  );
+}
+
+// ── main component ────────────────────────────────────────────────────────────
+
+export function DenseTable<T>(props: DenseTableProps<T>) {
+  const {
+    columns,
+    data,
+    loading = false,
+    onRowClick,
+    onSort,
+    maxHeight = '600px',
+    selectedKey,
+    getRowKey,
+  } = props;
+
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+
   const parentRef = useRef<HTMLDivElement>(null);
 
+  const colWidths = columns.map((c) => c.width ?? '1fr').join(' ');
+
+  const count = loading ? SKELETON_ROWS : data.length;
+
   const virtualizer = useVirtualizer({
-    count: rows.length,
+    count,
     getScrollElement: () => parentRef.current,
     estimateSize: () => ROW_HEIGHT,
     overscan: 8,
   });
 
-  const colWidths = columns.map((c) => c.width ?? '1fr').join(' ');
+  function handleSort(col: DenseTableColumn<T>) {
+    if (!col.sortable) return;
+    let nextDir: SortDir;
+    if (sortKey !== col.key) {
+      nextDir = 'asc';
+    } else if (sortDir === 'asc') {
+      nextDir = 'desc';
+    } else if (sortDir === 'desc') {
+      nextDir = null;
+    } else {
+      nextDir = 'asc';
+    }
+    setSortKey(nextDir === null ? null : col.key);
+    setSortDir(nextDir);
+    onSort?.(col.key, nextDir);
+  }
 
   return (
     <div style={{ fontSize: '13px', color: '#e0e0e0' }}>
+      {/* skeleton animation keyframes */}
+      <style>{`@keyframes denseSkeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>
+
       {/* sticky header */}
       <div
         style={{
@@ -80,27 +148,65 @@ function VirtualTable<T>({
         }}
       >
         {columns.map((col) => (
-          <div key={col.key} style={headThStyle}>
-            {col.header}
+          <div
+            key={col.key}
+            style={{
+              ...headCellStyle,
+              cursor: col.sortable ? 'pointer' : 'default',
+            }}
+            onClick={() => handleSort(col)}
+          >
+            {col.label}
+            {col.sortable && (
+              <SortIcon dir={sortKey === col.key ? sortDir : null} />
+            )}
           </div>
         ))}
       </div>
-      {/* scrollable body */}
-      <div
-        ref={parentRef}
-        style={{ maxHeight, overflow: 'auto' }}
-      >
-        {rows.length === 0 ? (
-          <div style={{ padding: '16px 8px', textAlign: 'center', color: '#555' }}>
-            {emptyText}
+
+      {/* scrollable virtualised body */}
+      <div ref={parentRef} style={{ maxHeight, overflow: 'auto' }}>
+        {!loading && data.length === 0 ? (
+          <div
+            style={{ padding: '16px 8px', textAlign: 'center', color: '#555', fontSize: 13 }}
+          >
+            无数据
           </div>
         ) : (
           <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
             {virtualizer.getVirtualItems().map((vRow) => {
-              const row = rows[vRow.index];
+              if (loading) {
+                // skeleton placeholder row
+                return (
+                  <div
+                    key={`sk-${vRow.index}`}
+                    style={{
+                      position: 'absolute',
+                      top: vRow.start,
+                      left: 0,
+                      right: 0,
+                      height: ROW_HEIGHT,
+                      display: 'grid',
+                      gridTemplateColumns: colWidths,
+                      alignItems: 'center',
+                      borderBottom: '1px solid #1a1a1a',
+                    }}
+                  >
+                    {columns.map((col) => (
+                      <div key={col.key} style={cellStyle}>
+                        <SkeletonCell width={col.width ? '70%' : undefined} />
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+
+              const row = data[vRow.index];
               if (!row) return null;
-              const key = String(row[keyField]);
-              const isSelected = selectedKey !== undefined && String(selectedKey) === key;
+              const rowKeyVal = getRowKey ? getRowKey(row, vRow.index) : vRow.index;
+              const isSelected =
+                selectedKey !== undefined && String(selectedKey) === String(rowKeyVal);
+
               return (
                 <div
                   key={vRow.key}
@@ -122,15 +228,19 @@ function VirtualTable<T>({
                   }}
                   onClick={onRowClick ? () => onRowClick(row as T) : undefined}
                   onMouseEnter={(e) => {
-                    if (!isSelected) (e.currentTarget as HTMLElement).style.background = '#1a1a1a';
+                    if (!isSelected)
+                      (e.currentTarget as HTMLElement).style.background = '#1a1a1a';
                   }}
                   onMouseLeave={(e) => {
-                    if (!isSelected) (e.currentTarget as HTMLElement).style.background = '';
+                    if (!isSelected)
+                      (e.currentTarget as HTMLElement).style.background = '';
                   }}
                 >
                   {columns.map((col) => (
                     <div key={col.key} style={cellStyle}>
-                      {col.render(row as T)}
+                      {col.render
+                        ? col.render(row as T, vRow.index)
+                        : String((row as Record<string, unknown>)[col.key] ?? '')}
                     </div>
                   ))}
                 </div>
@@ -141,86 +251,4 @@ function VirtualTable<T>({
       </div>
     </div>
   );
-}
-
-function PlainTable<T>({
-  columns,
-  rows,
-  keyField,
-  onRowClick,
-  selectedKey,
-  emptyText = '暂无数据',
-}: Omit<DenseTableProps<T>, 'virtualScroll' | 'maxHeight'>) {
-  return (
-    <table
-      style={{
-        width: '100%',
-        borderCollapse: 'collapse',
-        fontSize: '13px',
-        color: '#e0e0e0',
-      }}
-    >
-      <thead>
-        <tr style={{ borderBottom: '1px solid #2a2a2a' }}>
-          {columns.map((col) => (
-            <th
-              key={col.key}
-              style={{
-                padding: '6px 8px',
-                textAlign: 'left',
-                color: '#888',
-                fontWeight: 500,
-                width: col.width,
-              }}
-            >
-              {col.header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.length === 0 ? (
-          <tr>
-            <td
-              colSpan={columns.length}
-              style={{ padding: '16px 8px', textAlign: 'center', color: '#555' }}
-            >
-              {emptyText}
-            </td>
-          </tr>
-        ) : (
-          rows.map((row) => {
-            const key = String(row[keyField]);
-            const isSelected = selectedKey !== undefined && String(selectedKey) === key;
-            return (
-              <tr
-                key={key}
-                style={{
-                  borderBottom: '1px solid #1a1a1a',
-                  height: `${ROW_HEIGHT}px`,
-                  background: isSelected ? '#1e1e1e' : undefined,
-                  cursor: onRowClick ? 'pointer' : undefined,
-                }}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
-              >
-                {columns.map((col) => (
-                  <td key={col.key} style={{ padding: '4px 8px' }}>
-                    {col.render(row)}
-                  </td>
-                ))}
-              </tr>
-            );
-          })
-        )}
-      </tbody>
-    </table>
-  );
-}
-
-export function DenseTable<T>(props: DenseTableProps<T>) {
-  const { virtualScroll, ...rest } = props;
-  if (virtualScroll) {
-    return <VirtualTable {...rest} />;
-  }
-  return <PlainTable {...rest} />;
 }

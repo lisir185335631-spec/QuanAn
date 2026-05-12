@@ -2,4 +2,4 @@
 export { adminTokens } from './tokens';
 export type { AdminTokens } from './tokens';
 export { DenseTable } from './DenseTable';
-export type { DenseTableColumn } from './DenseTable';
+export type { DenseTableColumn, DenseTableProps } from './DenseTable';
