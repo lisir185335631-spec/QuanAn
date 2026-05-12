@@ -650,6 +650,7 @@ model DailyTask {
 // ============================================================
 
 /// admin 操作审计 · 全量记录 · 跟用户 audit_log 分开
+// @rls(disabled)
 model AdminAuditLog {
   id Int @id @default(autoincrement())
 
@@ -708,6 +709,7 @@ model AdminAuditLog {
 }
 
 /// Approval Gates 高风险操作两步审批
+// @rls(disabled)
 model ApprovalRequest {
   id Int @id @default(autoincrement())
 
@@ -750,6 +752,7 @@ model ApprovalRequest {
 }
 
 /// Specialist Prompt 版本(每次 admin 改动一条记录)
+// @rls(disabled)
 model PromptVersion {
   id Int @id @default(autoincrement())
 
@@ -786,6 +789,7 @@ model PromptVersion {
 }
 
 /// 灰度发布配置
+// @rls(disabled)
 model PromptCanaryConfig {
   id           Int     @id @default(autoincrement())
   specialistId String
@@ -811,6 +815,7 @@ model PromptCanaryConfig {
 }
 
 /// 用户配额状态(每用户 1 行 · 跟 LLMGateway Redis token bucket 对照)
+// @rls(disabled)
 model UserQuota {
   id     Int @id @default(autoincrement())
   userId Int @unique
@@ -841,6 +846,7 @@ model UserQuota {
 }
 
 /// 配额调整记录(admin 临时调整 · 24h 自动失效)
+// @rls(disabled)
 model QuotaAdjustmentLog {
   id          Int     @id @default(autoincrement())
   userQuotaId Int
@@ -952,6 +958,7 @@ model InviteCampaign {
 }
 
 /// TrendingScraper 抓回的内容 → 入审核队列
+// @rls(disabled)
 model TrendingReviewQueue {
   id             Int    @id @default(autoincrement())
   sourcePlatform String // 'douyin' / 'xiaohongshu' / 'bilibili' / ...
@@ -1012,6 +1019,7 @@ model AutoReviewRule {
 }
 
 /// 用户上传 → 入审核队列
+// @rls(disabled)
 model DeepLearnReviewQueue {
   id        Int @id @default(autoincrement())
   userId    Int
@@ -1139,6 +1147,115 @@ model SystemConfig {
 
   @@index([isEmergency])
   @@map("system_config")
+}
+
+// ============================================================
+// §13.8 PRD-10 US-001 新增 admin 鉴权 + 配置 6 张表
+// · admin_users / admin_sessions — lucia-admin auth(LD-A1)
+// · admin_invite_campaign / admin_constants / admin_config / admin_ab_experiment — admin 配置域
+// · 全部 DISABLE RLS · 参 prisma/migrations/manual_admin_rls.sql
+// ============================================================
+
+/// admin 用户表(与主应用 users 隔离 · lucia-admin adapter · LD-A1)
+// @rls(disabled)
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  role      String   @db.VarChar(32) // 'super_admin' | 'admin' | 'readonly_admin'
+  isMock    Boolean  @default(false) // dev mock OAuth 标志
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  sessions AdminSession[]
+
+  @@index([email])
+  @@map("admin_users")
+}
+
+/// admin session 表(lucia-admin PrismaAdapter · ttl 12h · idle 30min · LD-A1)
+// @rls(disabled)
+model AdminSession {
+  id            String    @id @default(cuid())
+  adminUserId   Int
+  expiresAt     DateTime
+  isActive      Boolean   @default(true)
+  mfaVerifiedAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId, expiresAt])
+  @@map("admin_sessions")
+}
+
+/// admin 侧营销 campaign 管理(与主应用 invite_campaigns 隔离)
+// @rls(disabled)
+model AdminInviteCampaign {
+  id               Int      @id @default(autoincrement())
+  campaignKey      String   @unique @db.VarChar(64)
+  name             String   @db.VarChar(255)
+  description      String?  @db.Text
+  createdByAdminId Int
+  totalQuota       Int      @default(0)
+  usedCount        Int      @default(0)
+  startsAt         DateTime
+  endsAt           DateTime
+  status           String   @db.VarChar(32) // 'draft' | 'active' | 'paused' | 'ended'
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status, startsAt])
+  @@index([createdByAdminId])
+  @@map("admin_invite_campaign")
+}
+
+/// admin 系统常量(hard-coded 业务参数 · super_admin 可改)
+// @rls(disabled)
+model AdminConstants {
+  id               Int      @id @default(autoincrement())
+  key              String   @unique @db.VarChar(128)
+  value            Json
+  description      String?  @db.Text
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@index([key])
+  @@map("admin_constants")
+}
+
+/// admin 动态配置(feature toggle · 上线参数 · 独立于 system_config)
+// @rls(disabled)
+model AdminConfig {
+  id               Int      @id @default(autoincrement())
+  configKey        String   @unique @db.VarChar(128)
+  configValue      Json
+  description      String?  @db.Text
+  isEmergency      Boolean  @default(false)
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@index([isEmergency])
+  @@map("admin_config")
+}
+
+/// admin 管理的 A/B 实验(独立于 P2 占位 ab_experiments · admin 侧操作台)
+// @rls(disabled)
+model AdminAbExperiment {
+  id                Int       @id @default(autoincrement())
+  experimentKey     String    @unique @db.VarChar(128)
+  name              String    @db.VarChar(255)
+  description       String?   @db.Text
+  variantConfig     Json
+  trafficAllocation Json
+  status            String    @db.VarChar(32) // 'draft' | 'running' | 'stopped' | 'completed'
+  startedAt         DateTime?
+  stoppedAt         DateTime?
+  resultSummary     Json?
+  createdByAdminId  Int
+  createdAt         DateTime  @default(now())
+
+  @@index([status])
+  @@map("admin_ab_experiment")
 }
 
 // ============================================================
