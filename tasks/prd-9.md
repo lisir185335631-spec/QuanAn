@@ -1,8 +1,8 @@
-# PRD-9 · P8 知识库 + RAG 接通(67 案例 + 23 公式 + 22 元素 · pgvector)
+# PRD-9 · P8 知识库 + RAG 接通(67 案例 + 23 公式 + 23 元素 · pgvector)
 
 > **版本** · v0.1(2026-05-11 · prd skill Assumptions 模式 · Opus 主对话)
-> **PRD** · PRD-9 · 5 stories · 计划 1w(5-7 days daemon active)· risk=low(已有 pgvector 0.8.0 + 67/23/22 数据源已 PRD-5 in-memory · RAG 第一次完整启用)
-> **依赖** · PRD-4(7 Specialist 真接 LLMGateway · ✓)+ PRD-5(67 案例 / 23 公式 / 22 元素 in-memory 常量 · ✓)+ PRD-7(D-046 Schema SoT 三处一致 · ✓)+ PRD-8(D-058 ContextAssembler 5 路并行 + EvolutionInsight 注入 · ✓)
+> **PRD** · PRD-9 · 5 stories · 计划 1w(5-7 days daemon active)· risk=low(已有 pgvector 0.8.0 + 67/23/23 数据源已 PRD-5 in-memory · RAG 第一次完整启用)
+> **依赖** · PRD-4(7 Specialist 真接 LLMGateway · ✓)+ PRD-5(67 案例 / 23 公式 / 23 元素 in-memory 常量 · ✓)+ PRD-7(D-046 Schema SoT 三处一致 · ✓)+ PRD-8(D-058 ContextAssembler 5 路并行 + EvolutionInsight 注入 · ✓)
 > **战略地位** · ARCHITECTURE §9.10 P8 知识库 · `PRD-1 → PRD-2 → PRD-4 → PRD-5/6/7/8 → PRD-9` 关键路径 · **主应用 P0-P8 收官**(/guide 静态页 拆到 PRD-9.1 · 见 §3 Non-Goals)
 > **预估** · 一轮通过率 80-90%(基于 PRD-8 retro Playbook P-1.1~P-2.3 + Skill diff Apply 后 · 反例库累计 + anti_patterns 注入 + audit-artifacts stale mtime fix)· reject 0-2 · 总耗时 5-7 days
 
@@ -32,14 +32,14 @@
 
 ### §0.2 ARCHITECTURE.md 引用
 
-- **§3.6** RAG / 常量边界(A · 30KB 常量 · B · 6 类向量数据 · C · 选型 pgvector)· 本期完整落地 B 部分前 3 类(67 案例 / 23 公式 / 22 元素)
+- **§3.6** RAG / 常量边界(A · 30KB 常量 · B · 6 类向量数据 · C · 选型 pgvector)· 本期完整落地 B 部分前 3 类(67 案例 / 23 公式 / 23 元素)
 - **§9.10** P8 知识库 + 静态页(交付物 · RAG 第一次完整启用)
 - **§6.4** ContextAssembler 接口(沿用 5 路并行 + L4 + L5 RAG)
 
 ### §0.3 PROMPTS.md 引用
 
 - **§2** CopywritingAgent prompt(本期 RAG hit 后注入 few-shot 案例 · 不改 prompt 结构)
-- **§4** TopicAgent prompt(本期 RAG 注入 22 元素心理学)
+- **§4** TopicAgent prompt(本期 RAG 注入 23 元素心理学)
 - **§9** PositioningAgent / BoomGenerator(本期看 5 个 Specialist 哪些 RAG 受益最大)
 
 ### §0.4 DATA-MODEL.md 引用
@@ -49,7 +49,7 @@
 
 ### §0.5 AGENTS.md 引用
 
-- **§1.4** 1.0 不做(本期严守:仅 67/23/22 全局向量库 · 不做 per-user namespace · 不做 Trending 全局 RAG)
+- **§1.4** 1.0 不做(本期严守:仅 67/23/23 全局向量库 · 不做 per-user namespace · 不做 Trending 全局 RAG)
 - **§3** LD-001(95/5 · 本期 RAG retrieve 不允许循环)
 - **§3** LD-007(ContextAssembler 唯一入口)
 - **§3** LD-011(不引独立向量库 · 走 pgvector)
@@ -136,7 +136,7 @@ export const formulaMetadataSchema = z.object({
 });
 
 export const elementMetadataSchema = z.object({
-  psychologyTag: z.string(),    // '稀缺性' / '从众' / 等 22 元素心理学
+  psychologyTag: z.string(),    // '稀缺性' / '从众' / 等 23 元素心理学
   group: z.number().int().min(1).max(4),  // 4 组
 });
 
@@ -216,7 +216,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 
 ---
 
-### **US-002 · 67 案例 + 23 公式 + 22 元素 seed ingest**
+### **US-002 · 67 案例 + 23 公式 + 23 元素 seed ingest**
 
 > **risk_level**: low
 > **size_hint**: small
@@ -224,17 +224,17 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 > **depends_on**: US-001
 > **anti_patterns**: 沿用 PRD-5 67 案例 in-memory 模式(已 PRD-5 引入 lib/constants · 本期搬到 KnowledgeChunk pgvector)
 
-**描述** · 作为 RAG 系统的数据源 · 我需要把 PRD-5 引入的 67 案例 + 23 公式 + 22 元素心理学(in-memory constants)批量 ingest 到 KnowledgeChunk 表 · 每条调 EmbeddingWorker 算 1536 dim embedding 入库 · 以便 US-003 真 RAG retrieve。
+**描述** · 作为 RAG 系统的数据源 · 我需要把 PRD-5 引入的 67 案例 + 23 公式 + 23 元素心理学(in-memory constants)批量 ingest 到 KnowledgeChunk 表 · 每条调 EmbeddingWorker 算 1536 dim embedding 入库 · 以便 US-003 真 RAG retrieve。
 
 **触发场景** · 新部署 / migration 后 · admin 跑一次性 seed 命令(npx prisma db seed 或 dedicated script)
 
 **Acceptance Criteria**:
-- [ ] AC-1: 新 seed script `apps/api/scripts/seed-knowledge-chunk.ts` · 从 PRD-5 既有 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`(若不存在则从 `references/05-vertical/02-爆款文案` 数据源)读 67/23/22 项
-- [ ] AC-2: 每条调 EmbeddingWorker 算 embedding · prisma.knowledgeChunk.upsert by (type, title) 幂等(re-run safe)· 累计 67+23+22 = **112 行**
-- [ ] AC-3: cost_log eventType='embedding_call' 每条 1 行 · 总 112 行 cost · 单次 seed 总 cost ≤ $0.005(112 chunks × ~100 tokens × $0.00002/1K)
+- [ ] AC-1: 新 seed script `apps/api/scripts/seed-knowledge-chunk.ts` · 从 PRD-5 既有 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`(若不存在则从 `references/05-vertical/02-爆款文案` 数据源)读 67/23/23 项
+- [ ] AC-2: 每条调 EmbeddingWorker 算 embedding · prisma.knowledgeChunk.upsert by (type, title) 幂等(re-run safe)· 累计 67+23+23 = **113 行**
+- [ ] AC-3: cost_log eventType='embedding_call' 每条 1 行 · 总 113 行 cost · 单次 seed 总 cost ≤ $0.005(113 chunks × ~100 tokens × $0.00002/1K)
 - [ ] AC-4: seed script 加 `--dry-run` 选项 · 输出 chunk count + embedding tokens 估算 · 不真调 OpenAI API
 - [ ] AC-5: package.json 加 `"seed:knowledge": "tsx apps/api/scripts/seed-knowledge-chunk.ts"` script
-- [ ] AC-6: 完整 e2e: 跑 `pnpm seed:knowledge --dry-run` 后跑 `pnpm seed:knowledge` · psql `SELECT type, count(*) FROM knowledge_chunk GROUP BY type` 返:case=67 / formula=23 / element=22
+- [ ] AC-6: 完整 e2e: 跑 `pnpm seed:knowledge --dry-run` 后跑 `pnpm seed:knowledge` · psql `SELECT type, count(*) FROM knowledge_chunk GROUP BY type` 返:case=67 / formula=23 / element=23
 - [ ] AC-7: integration test · `tests/integration/api/seed-knowledge-chunk.test.ts` 跑 dry-run + 验证 chunk count + 第 2 次跑(idempotent · upsert 不重复插)
 - [ ] AC-8: pnpm typecheck 0 + 全套测试通过
 - [ ] Typecheck passes
@@ -301,7 +301,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 > **priority**: 4
 > **depends_on**: US-001, US-002
 
-**描述** · 作为用户 · 我想在 /knowledge 页面看到 67 案例 / 23 公式 / 22 元素心理学的完整列表 + 输入关键词做语义检索 · 帮我学习内容创作方法论。
+**描述** · 作为用户 · 我想在 /knowledge 页面看到 67 案例 / 23 公式 / 23 元素心理学的完整列表 + 输入关键词做语义检索 · 帮我学习内容创作方法论。
 
 **触发场景** · 用户在 /knowledge 路径打开页面 · 浏览案例 / 公式 / 元素 · 或输入 query 检索相似内容
 
@@ -355,7 +355,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 - [ ] AC-7: cost_log eventType 7 类 grep 全命中:`for et in specialist_call judge_call image_gen l5_agent stt_call tts_call embedding_call; do grep -rln "'$et'" apps/api/src/ tests/ | wc -l; done` · 每类 ≥ 1 file
 - [ ] AC-8: BullMQ queues 4 个 grep + 新 EmbeddingWorker / RagRetrieveWorker 都是同步调用(不走 BullMQ · 同 D-038 STT/TTS pattern)· grep `queueName.*embedding\|queueName.*rag` 应 0 命中
 - [ ] AC-9: pgvector 启用确认 · psql `SELECT extname FROM pg_extension WHERE extname = 'vector'` 返 1 行
-- [ ] AC-10: KnowledgeChunk 表 row count `SELECT type, count(*) FROM knowledge_chunk GROUP BY type` 返 case=67 / formula=23 / element=22
+- [ ] AC-10: KnowledgeChunk 表 row count `SELECT type, count(*) FROM knowledge_chunk GROUP BY type` 返 case=67 / formula=23 / element=23
 - [ ] AC-11: ContextAssembler RAG 注入 grep · `grep -rn 'ragChunks\|\\[Section 6\\]' apps/api/src/services/context-assembler/` 应命中 1+(D-054 + D-058 单一入口)
 - [ ] AC-12: 11 生成型 Specialist 0 自拼接 RAG · `grep -rn 'ragRetrieveWorker\|knowledge_chunk' apps/api/src/specialists/` 应 0 命中(D-007 单一入口)
 - [ ] AC-13: browser 验证 · /knowledge 工具页 load + 3 tab + search 工作 + 0 ErrorBoundary · 截图 verify-artifacts/US-005/knowledge-page.png
@@ -374,11 +374,11 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 
 ## §2 Functional Requirements
 
-- **FR-1**: pgvector 扩展启用 + KnowledgeChunk 单表(D-057)+ HNSW cosine index · 支持 1536 dim embedding · 67/23/22 数据完整 ingest
+- **FR-1**: pgvector 扩展启用 + KnowledgeChunk 单表(D-057)+ HNSW cosine index · 支持 1536 dim embedding · 67/23/23 数据完整 ingest
 - **FR-2**: EmbeddingWorker 独立 worker(D-056 · D-038 模式)· 调 OpenAI text-embedding-3-small · cost_log eventType='embedding_call'
 - **FR-3**: RagRetrieveWorker 同步 fetch · 接 RagRetrieveParams → returns KnowledgeChunkContent[] with similarity · pgvector `<=>` cosine 距离
 - **FR-4**: ContextAssembler._fetchRag 升级真 RAG(D-058 · D-025 from placeholder → 真 RAG)· 11 生成型 Specialist 按类型推断 retrieve 策略
-- **FR-5**: /knowledge 前端页面 · 67 案例 / 23 公式 / 22 元素 list + 语义搜索 + 公开访问(无 auth)
+- **FR-5**: /knowledge 前端页面 · 67 案例 / 23 公式 / 23 元素 list + 语义搜索 + 公开访问(无 auth)
 - **FR-6**: rate limit `EMBEDDING_DAILY_LIMIT_PER_USER=100` · sliding window · UTC date key(D-044 沿用)
 - **FR-7**: 测试覆盖 · vitest 870+ / judge 54+ / e2e 159+ / typecheck 0 / lint 0(收官 5 项全套绿灯)
 
@@ -391,9 +391,9 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 - ❌ **History RAG**(per-user namespace)· 留 PRD-9.1+
 - ❌ **TrendingItem 全局 RAG**(全网爆款)· 留 PRD-12 admin 内容审核域 ⑦
 - ❌ **国内 embedding provider**(阿里云 / 火山引擎)· 本期仅 OpenAI(同 D-052 STT/TTS only OpenAI · PRR 国内合规评估)
-- ❌ **chunking 复杂策略**(67 案例 / 23 公式 / 22 元素 都是单条 1-2KB · 不需切分 · 留 PRD-12+ 大文档时)
+- ❌ **chunking 复杂策略**(67 案例 / 23 公式 / 23 元素 都是单条 1-2KB · 不需切分 · 留 PRD-12+ 大文档时)
 - ❌ **Re-ranking / Hybrid search**(BM25 + dense)· 本期纯 cosine · 留 PRR 优化
-- ❌ **Vector compression / Quantization**(IVFFlat / PQ)· 本期 HNSW · 量级 ~112 行 · 不需
+- ❌ **Vector compression / Quantization**(IVFFlat / PQ)· 本期 HNSW · 量级 ~113 行 · 不需
 
 ---
 
@@ -415,7 +415,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 - **严守 LD-001**(95/5 RAG retrieve 不允许循环)· **LD-007**(ContextAssembler 唯一入口)· **LD-011**(不引独立向量库)· **R-12**(原子事务)
 - 测试 RAG 时 · 必须 mock OpenAI embedding API(nock pattern 沿用 PRD-8 US-009/010)
 - pgvector 测试 dev `quanqn` + test `quanqn_test` 都需启用 extension
-- 67 案例 / 23 公式 / 22 元素 数据源:**优先**从 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`(PRD-5 引入)· 若不存在 · 从 `references/05-vertical/02-爆款文案` 重写为 TS const(PRD-5 应该做了但需验证)
+- 67 案例 / 23 公式 / 23 元素 数据源:**优先**从 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`(PRD-5 引入)· 若不存在 · 从 `references/05-vertical/02-爆款文案` 重写为 TS const(PRD-5 应该做了但需验证)
 - AC-12 grep 例外白名单 · EvolutionAgent + DailyTaskAgent 双路径(per AGENTS §11.6.8)· 但本 PRD 不动 L5 自治 Agent
 
 ---
@@ -444,7 +444,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 - **D-056**(RAG = pgvector · per ARCHITECTURE §3.6 C 推荐 · LD-011 不引独立向量库):
   - 本期实施 pgvector 0.8.0 + HNSW index + vector(1536)
   - 不引入 Qdrant / ChromaDB / Pinecone(违 LD-011)
-  - 100k+ 量级再评估迁移(per §3.6 C)· 当前 ~112 行 cosine 适用
+  - 100k+ 量级再评估迁移(per §3.6 C)· 当前 ~113 行 cosine 适用
 
 - **D-057**(KnowledgeChunk 单表 + type discriminator):
   - 不拆 KnowledgeCase + KnowledgeFormula + KnowledgeElement 3 表
@@ -461,7 +461,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 ## §8 Success Metrics
 
 - 5 stories 全 PASS(US-001~005)
-- pgvector 0.8.0 + HNSW index + 112 chunks ingest 完整(case=67 / formula=23 / element=22)
+- pgvector 0.8.0 + HNSW index + 113 chunks ingest 完整(case=67 / formula=23 / element=23)
 - ContextAssembler RAG 真接通 · CopywritingAgent 调用时 systemPrompt 含 [Section 6] + 至少 1 个案例(e2e knowledge-rag-loop.spec.ts 验)
 - vitest 870+ / typecheck 0 / lint 0 / judge 54+ / e2e 159+
 - cost_log 7 eventType 全命中(PRD-8 6 类 + 新 embedding_call)
@@ -471,7 +471,7 @@ export type RagRetrieveParams = z.infer<typeof ragRetrieveParamsSchema>;
 
 ## §9 Open Questions
 
-- **Q-1** · 67 案例 / 23 公式 / 22 元素 数据源是否在 PRD-5 真的入了 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`?(实施前 ralph 必须 grep 确认 · 若没有需从 references/ 重新提取 TS const)
+- **Q-1** · 67 案例 / 23 公式 / 23 元素 数据源是否在 PRD-5 真的入了 `apps/api/src/lib/constants/{cases,formulas,elements}.ts`?(实施前 ralph 必须 grep 确认 · 若没有需从 references/ 重新提取 TS const)
 - **Q-2** · /knowledge 是否需要登录?(本 PRD 假设公开 · 但若 admin 后续 deepLearning 审核闭环要权限 · 留 PRD-11)
 - **Q-3** · seed-knowledge 是 prisma db seed 一次性 · 还是 PRD-10/11 admin 后续 trigger 更新?(本 PRD 一次性 · 留 PRD-11 admin 设审核 + re-ingest UI)
 - **Q-4** · RAG 命中后是否需要 cost_log 记录 retrieve cost?(retrieve 本身 + embedding query)· 本期是 · 用 eventType='embedding_call' 同步记录

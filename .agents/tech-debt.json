@@ -586,11 +586,14 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus audit US-002",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "tasks/prd-9.md L219 + L227 + AC-1 + AC-2 + AC-6 写 '22 元素' / '67+23+22=112 行' · scripts/ralph/prd.json US-002 title + acceptanceCriteria 同 · apps/api/src/lib/constants/hotElements.ts HOT_ELEMENTS 数组实测 23 项 · pnpm seed:knowledge --dry-run 输出 'case=67/formula=23/element=23' 113 chunks",
       "root_cause": "PRD-9 撰写时数 HOT_ELEMENTS 实际项数错 · 抄成 22 · 数据源 SoT 在 PRD-5 引入的 hotElements.ts(23 项)",
       "scheduled_fix_in": "PRD-9 收官前 doc-only fix · 改 tasks/prd-9.md + scripts/ralph/prd.json US-002 title/AC-2/AC-6 · 22 → 23 · 112 → 113",
-      "audit_exemption": "US-002 approve 时豁免 · 因实现遵循 canonical 数据源(23 项)是正确做法 · 不能为了 PRD 字面错误删 1 个 element · 数据 SoT > PRD doc"
+      "audit_exemption": "US-002 approve 时豁免 · 因实现遵循 canonical 数据源(23 项)是正确做法 · 不能为了 PRD 字面错误删 1 个 element · 数据 SoT > PRD doc",
+      "resolved_at": "2026-05-12",
+      "resolved_by": "PRD-9 收官后 doc-only fix (TD-033 关闭 commit)",
+      "close_evidence": "tasks/prd-9.md + scripts/ralph/prd.json + scripts/ralph/prd-9.json 全部 22→23 元素 + 112→113 行/chunks 替换 · grep '22 元素|112 行|element=22|67+23+22' 在 3 文件 0 命中 · PRD 字面与 canonical 数据源(HOT_ELEMENTS 23 项)对齐 · 历史 PRD-4/5/6.md 中的 '22 元素' 字面引用保留作为冻结记录 · 不动"
     },
     {
       "id": "TD-034",

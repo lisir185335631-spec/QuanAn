@@ -1,7 +1,7 @@
 {
   "project": "QuanQn",
   "branchName": "ralph/prd-9-p8-knowledge-base-rag",
-  "description": "PRD-9 · P8 知识库 + RAG 接通(67 案例 + 23 公式 + 22 元素 · pgvector)· 主应用 P0-P8 收官 · 5 stories · 1w · risk=low",
+  "description": "PRD-9 · P8 知识库 + RAG 接通(67 案例 + 23 公式 + 23 元素 · pgvector)· 主应用 P0-P8 收官 · 5 stories · 1w · risk=low",
   "userStories": [
     {
       "id": "US-001",
@@ -73,15 +73,15 @@
     },
     {
       "id": "US-002",
-      "title": "67 案例 + 23 公式 + 22 元素 seed ingest",
-      "description": "作为 RAG 系统的数据源 · 把 PRD-5 引入的 67 案例 + 23 公式 + 22 元素心理学(in-memory constants 或 references/05-vertical/02-爆款文案 源数据)批量 ingest 到 KnowledgeChunk 表 · 每条调 EmbeddingWorker 算 1536 dim embedding 入库 · upsert by (type, title) 幂等",
+      "title": "67 案例 + 23 公式 + 23 元素 seed ingest",
+      "description": "作为 RAG 系统的数据源 · 把 PRD-5 引入的 67 案例 + 23 公式 + 23 元素心理学(in-memory constants 或 references/05-vertical/02-爆款文案 源数据)批量 ingest 到 KnowledgeChunk 表 · 每条调 EmbeddingWorker 算 1536 dim embedding 入库 · upsert by (type, title) 幂等",
       "acceptanceCriteria": [
-        "AC-1: 新 seed script apps/api/scripts/seed-knowledge-chunk.ts · 从 apps/api/src/lib/constants/{cases,formulas,elements}.ts 读 67/23/22 项(若 PRD-5 没引入 · 从 references/05-vertical/02-爆款文案 重写为 TS const)",
-        "AC-2: 每条调 embeddingWorker.embed(content) 算 1536 dim embedding · prisma.knowledgeChunk.upsert by 复合 key (type + title) 幂等 · 累计 67+23+22 = 112 行",
-        "AC-3: cost_log eventType='embedding_call' 每条 1 行 · 总 112 行 cost · 单次 seed 总 cost ≤ \\$0.005(112 chunks × ~100 tokens × \\$0.00002/1K)· seed 完输出累计 cost 摘要",
+        "AC-1: 新 seed script apps/api/scripts/seed-knowledge-chunk.ts · 从 apps/api/src/lib/constants/{cases,formulas,elements}.ts 读 67/23/23 项(若 PRD-5 没引入 · 从 references/05-vertical/02-爆款文案 重写为 TS const)",
+        "AC-2: 每条调 embeddingWorker.embed(content) 算 1536 dim embedding · prisma.knowledgeChunk.upsert by 复合 key (type + title) 幂等 · 累计 67+23+23 = 113 行",
+        "AC-3: cost_log eventType='embedding_call' 每条 1 行 · 总 113 行 cost · 单次 seed 总 cost ≤ \\$0.005(113 chunks × ~100 tokens × \\$0.00002/1K)· seed 完输出累计 cost 摘要",
         "AC-4: seed script --dry-run 选项 · 输出 chunk count + embedding tokens 估算 + 不真调 OpenAI API · for CI 友好",
         "AC-5: package.json 加 'seed:knowledge': 'tsx apps/api/scripts/seed-knowledge-chunk.ts' script(同 monorepo workspace root scripts pattern)",
-        "AC-6: 跑 `pnpm seed:knowledge --dry-run` 后跑 `pnpm seed:knowledge` · 然后 `psql quanqn -c \"SELECT type, count(*) FROM knowledge_chunk GROUP BY type\"` 返:case=67 / formula=23 / element=22",
+        "AC-6: 跑 `pnpm seed:knowledge --dry-run` 后跑 `pnpm seed:knowledge` · 然后 `psql quanqn -c \"SELECT type, count(*) FROM knowledge_chunk GROUP BY type\"` 返:case=67 / formula=23 / element=23",
         "AC-7: integration test tests/integration/api/seed-knowledge-chunk.test.ts 3 tests:(1)dry-run 输出 chunk count 估算 ·(2)真 seed 后 prisma.knowledgeChunk.count() = 112 ·(3)幂等 · 第 2 次跑不重复插 · count 仍 112",
         "AC-8: pnpm typecheck 0 + 全套测试通过",
         "Typecheck passes",
@@ -221,7 +221,7 @@
         "AC-7: cost_log eventType 7 类 grep 全命中:`for et in specialist_call judge_call image_gen l5_agent stt_call tts_call embedding_call; do n=$(grep -rln \"'$et'\" apps/api/src/ tests/ | wc -l); echo \"  $et: $n files\"; done` · 每类 ≥ 1 file",
         "AC-8: BullMQ queues 4 个 grep + 新 EmbeddingWorker / RagRetrieveWorker 都是同步调用(不走 BullMQ · 同 D-038 STT/TTS pattern)· grep `queueName.*embedding|queueName.*rag` 应 0 命中(同步 worker 无 queue)",
         "AC-9: pgvector 启用确认 · `psql quanqn -c \"SELECT extname FROM pg_extension WHERE extname = 'vector'\"` 返 1 行 vector + version",
-        "AC-10: KnowledgeChunk 表 row count `psql quanqn -c \"SELECT type, count(*) FROM knowledge_chunk GROUP BY type ORDER BY type\"` 返 3 行 case=67 / formula=23 / element=22",
+        "AC-10: KnowledgeChunk 表 row count `psql quanqn -c \"SELECT type, count(*) FROM knowledge_chunk GROUP BY type ORDER BY type\"` 返 3 行 case=67 / formula=23 / element=23",
         "AC-11: ContextAssembler RAG 注入 grep · `grep -rn 'ragChunks\\|\\[Section 6\\]' apps/api/src/services/context-assembler/` 应命中 1+(D-054 + D-058 单一入口)· `grep -rn 'class ContextAssembler' apps/api/src/` 应仅 1 个文件命中(协议锁路径单一)",
         "AC-12: 11 生成型 Specialist 0 自拼接 RAG · `grep -rn 'ragRetrieveWorker\\|knowledge_chunk' apps/api/src/specialists/` 应 0 命中(D-007 单一入口 · §11.6.8 双路径白名单仅 EvolutionAgent/DailyTaskAgent 例外)",
         "AC-13: 使用 agent-browser 打开 http://localhost:5173/knowledge · 3 tab 切换 OK + search 工作 + 0 ErrorBoundary + 0 console error · 截图 verify-artifacts/US-005/knowledge-page.png",
