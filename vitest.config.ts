@@ -47,6 +47,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // pool=forks + singleFork=true: prevent DB concurrency conflicts in integration tests
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     environmentMatchGlobs: [
       // admin component tests need jsdom
       ['tests/unit/admin/*.tsx', 'jsdom'],
