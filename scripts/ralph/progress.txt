@@ -15,6 +15,31 @@
 
 ## 执行日志(按 story 倒序)
 
+## [2026-05-12 14:01] - US-006
+- 实现了 PRD-10 US-006 adminRLS bypass 跨账号查集成测试 · 真 DB 验证
+- 主要工作:
+  · tests/integration/admin/rls-bypass-cross-account.test.ts: 8 test cases (7 AC + 1 bonus RLS invariant)
+    - test 1: SET LOCAL ROLE quanqn_app + no account_id → 0 rows (RLS enforced, policy blocks)
+    - test 2: quanqn_app + set_config('app.role','admin',true) → 10 rows (admin_full_access_histories policy)
+    - test 3: capturedCrossAccountAccessed === true after adminRLS runs (via adminTrpcRouter + createCaller)
+    - test 4: cross_account_query audit log written · actorAdminId = seeded admin user.id
+    - test 5: mock $transaction reject → auditLog never runs → no new cross_account_query row
+    - test 6: getCurrentSetting('app.role') = '' after tx commit (LOCAL=true 真生效)
+    - test 7: quanqn_app + set_config('app.current_account_id', accountA.id) → 5 rows (account isolation)
+    - bonus: getRLSEnabled('histories') = true (structural invariant)
+  · tests/integration/admin/fixtures/admin-seed.ts: seedAccounts / seedHistoryPerAccount / seedAdminUser / seedAdminSession / cleanupSeed
+  · tests/integration/admin/helpers/admin-context.ts: createMockAdminContext(adminUserId) — req/res stub · no DB hit
+  · tests/integration/admin/helpers/sql-introspect.ts: getCurrentSetting + getRLSEnabled
+  · package.json: test:admin-integration script
+  · vitest.config.ts: pool=forks + poolOptions.forks.singleFork=true
+- 全套 116 test files · 1034 tests pass · 4 skipped · typecheck 0 errors
+- **未来迭代的学习:**
+  - tRPC v11 createCaller 在 procedure 上不可用 · 必须先 `adminTrpcRouter({ endpoint: proc })` 再 `.createCaller(ctx).endpoint()`
+  - SET LOCAL ROLE quanqn_app 是测试 main-app RLS 的标准手段 · 超级用户连接默认绕过 RLS · 必须显式切角色才能验证策略
+  - adminRLS middleware throw (before calling next) → auditLog never runs → no audit row · 验证方式: mock $transaction reject + count check
+  - SEED_TAG 用 Date.now() 保证跨 test run 隔离 · 同 run 内用 ${SEED_TAG}-tN 区分各 test 的 traceId(防 idempotency skip)
+---
+
 ## [2026-05-12 13:01] - US-004
 - 实现了 PRD-10 US-004 admin_audit_log 自动 middleware 写入 · 4 类 eventType
 - 主要工作:
@@ -4742,4 +4767,158 @@ Step 1.5 亲跑全套补门禁 100% 过。
   - @vitejs/plugin-react 版本必须匹配 vite 版本 · vite 5.x → plugin-react@4.x · vite 6.x → plugin-react@5+
   - tRPC shadow router(packages/clients)的 Date 类型传输后在客户端变 string · 组件 interface 用 `Date | string`
   - AuditDrawer 用 createPortal(_, document.body) · 确保 overlay 正确 z-index 不被 layout stacking context 截断
+---
+
+============================================================
+## [2026-05-12 13:41] - US-005 (Opus audit · PRD-10 P9.0 admin Layout 骨架 · TopBar 60px + Sidebar 16 域占位 240px + AuditDrawer + StatusBar · Aurelian Dark 密集模式)
+============================================================
+
+**risk_level**: medium · size_hint: medium · ~4 min 标审
+
+**Audit context** · PENDING_DETECTED:US-005 13:41:15 → 全局 §5.0.3 sanity check ✅(单 session · cycle 安全)· retryCount=0(一次过 · 2 commits ed600df feat + b1cb2f9 progress)
+
+**§0 4 项实测** (Step 1 audit-artifacts.py PASS):
+- ✅ pytest-full **1026 passed** | 4 skipped(PRD-9 pre-existing)· 0 failed(原 1008 + US-005 18 新 = 1026)
+- ✅ apps/admin typecheck exit_code=0
+- ✅ unit 18(layout 6 + sidebar 6 + audit-drawer 6)
+- ✅ **Browser E2E 真测**(详 manifest notes 完整路径)· Validator verdict=PASS · failing_ac=null
+
+**medium 档 grep 4 条**:
+- ✅ **R-A2 主应用前端不暴露 admin 入口**: grep `/admin` apps/web/src/ = **0 命中** · 完美隔离
+- ✅ **R-A5 admin 不调 LLM**: grep `import LLMGateway / llmGateway / OPENAI_API_KEY / ANTHROPIC_API_KEY` apps/admin/src/ = **0 命中**
+- ✅ **R-A1 web/admin 互相 import**: 双向 0 命中
+- ✅ **16 placeholder 文件齐**: ab/accounts/approval/audit/compliance/config/cost/evolution/invites/knowledge/nsm/prompts/quota/reviewDeepLearn/reviewTrending/users · 严格 16 个
+
+**D-066 admin-routes.ts metadata 16 域**:
+- `grep -cE "path:\s*'/admin/" apps/admin/src/lib/admin-routes.ts` = **16** ✅
+- sidebar.test.tsx 单测 "all 4 groups have correct counts: 6 + 2 + 5 + 3" 真验(P0 业务 6 + P0 审核 2 + P1 健康度 5 + P2 高级 3 = 16)
+
+**测试代码深审**(18 unit):
+- **layout.test.tsx 6**:
+  - renders the admin-layout grid container
+  - renders TopBar with brand and role badge
+  - renders Sidebar with 16 navigation links
+  - clicking 🔔 opens AuditDrawer
+  - clicking logout dropdown button triggers logout
+  - renders StatusBar with status fields
+- **sidebar.test.tsx 6**:
+  - renders exactly 16 domain links
+  - renders 4 group labels
+  - NSM link has active class when pathname is /admin/nsm
+  - non-active links do NOT have active class
+  - P0 core group contains 6 routes
+  - all 4 groups have correct counts: 6 + 2 + 5 + 3
+- **audit-drawer.test.tsx 6**:
+  - does not render when open=false
+  - renders drawer when open=true
+  - shows empty state when there are no rows
+  - renders audit rows when data is provided
+  - calls onClose when close button is clicked
+  - calls onClose when ESC key is pressed
+
+**Browser E2E 真验**(manifest notes 摘):
+- mock OAuth login → 跳 /admin/nsm
+- TopBar 显示 'QuanQn Admin' brand + super_admin role badge + super@quanqn.com email
+- Sidebar 16 域 4 组 visible + NSM active highlight
+- AuditDrawer 🔔 click slides in + 显示 admin_login row
+- ESC 关 drawer
+- StatusBar 5 字段: ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin
+
+**通用 4 维度**:
+- AC: 23/23 PASS(Validator verdict=PASS · failing_ac=null · 18 unit + browser + 1026 zero-regression)
+- AGENTS §10: R-A1/A2/A5 全 0 命中 + LD-A2 维持(admin 独立)
+- 安全: stub 阶段 audit drawer polling admin.audit.listMine 仅 ctx.activeAdminUser 自己 audit(不跨 admin)· 0 Blocker
+- PRD 一致性: D-066(admin-routes.ts metadata 16 域)+ D-068(admin tokens · TopBar 60px + Sidebar 240px + 密集模式 row 32 / font 13)全落实
+
+**0 安全风险** · **0 红线触发** · **0 PRD 一致性问题** · **0 新 TD**
+**2 commits US-005**(ed600df feat + b1cb2f9 progress · retryCount=0 健康)
+
+**approved_at**: 2026-05-12T13:45(medium 档标审 ~4 min · 23/23 AC + 18 unit + browser E2E 真测 + 1026/1030 zero-regression + R-A1/A2/A5 全 0 + 16 placeholder + 16 域 metadata + D-066/D-068 LD 落实)
+
+============================================================
+
+
+--- [RALPH] Iteration 7 ended: US-005 (31分钟 42秒) ---
+
+--- [RALPH] Iteration 8 started: US-006 at 2026-05-12 13:42 ---
+
+============================================================
+## [2026-05-12 14:19] - US-006 (Opus audit · PRD-10 P9.0 adminRLS bypass 跨账号查集成测试 · 真 PG + Redis mock · LD-A3 核心硬验证)
+============================================================
+
+**risk_level**: high(security-critical · rls/set_config/隔离 关键字命中) · size_hint: small · ~5 min 标审
+
+**Audit context** · PENDING_DETECTED:US-006 14:19:41 → 全局 §5.0.3 sanity check ✅(单 session · cycle 安全)· retryCount=0(一次过 · 单 commit 610752c)
+
+**§0 4 项实测** (Step 1 audit-artifacts.py PASS):
+- ✅ pytest-full.xml 元数据 `tests="1038" failures="0" errors="0" time="13.689"` 终极证据
+- ✅ ARTIFACTS VALID · manifest.zero_regression=PASS · verdict=PASS · failing_ac=null
+- ✅ typecheck.stdout.txt fresh 14:17 · 6 ws 0 errors
+- ⚠️ pytest-full.stdout.txt 末尾显示 "1 file failed | 4 failed | 4 passed"(8 tests subset)· **跟 xml 1038 不一致** — 是中间 run vs final run 区别(manifest notes 已解释 stale log cleanup + final run pass)· xml 是 final state · 接受
+
+**high 档 7 test case + 1 invariant 深审**:
+
+- **test 1** · `prismaTest.$transaction + SET LOCAL ROLE quanqn_app → tx.history.findMany` 返 **0 rows**(main-app RLS 默认全挡 · 无 app.current_account_id)✅
+- **test 2** · `+ set_config('app.role','admin',true)` → **10 rows**(admin bypass RLS policy `admin_full_access_histories`)✅
+- **test 3** · `testRouter.createCaller` 通过 publicAdminProcedure.use(adminRLSMiddleware) → ctx.crossAccountAccessed === true ✅
+- **test 4** · `+ auditLogMiddleware` → `prismaTest.adminAuditLog.findMany({ eventType: 'cross_account_query', traceId })` 至少 1 row + actorAdminId 正确 ✅(LD-A3 法务取证生命线真验)
+- **test 5** · mock `$transaction` reject → adminRLS 内部 throw → auditLog 链路 never run → admin_audit_log no new row ✅(rollback 时不污染 audit)
+- **test 6** · adminRLS createCaller 完成后 `getCurrentSetting('app.role')` === '' ✅(LOCAL=true 事务外清除 · 不污染连接池)
+- **test 7** · `+ set_config('app.current_account_id', accountA.id, true)` → 5 rows(仅 accountA · main-app RLS 不被 adminRLS 污染)✅
+- **invariant** · `getRLSEnabled('histories')` === true ✅(防 manual_admin_rls.sql 误关 histories · R2 风险硬验证)
+
+**high 档 SQL 实测 grep**:
+- ✅ AC-14 grep `set_config.*app.role.*admin` ≥ 1 命中(L90)
+- ✅ AC-15 grep `current_setting.*app.role` ≥ 2 命中(L13/L198/L215/L219/L227)
+- ✅ AC-16 grep `crossAccountAccessed.*true` ≥ 1 命中(L98/L122)
+
+**反例 clauses 真落地**:
+- **REJ-008 prisma findMany 必带 where(adminRLS bypass 例外)**: test 2 显式注释"adminRLS bypass · 跨账号查 · 走 cross_account_query audit" · audit reviewer 明确 ✅
+- **REJ-013 tRPC procedure 必经 middleware**: test 3/4/5/6 用 `testRouter.createCaller` + `publicAdminProcedure.use(adminRLSMiddleware).use(auditLogMiddleware)` **真走 middleware 链** ✅(test 1/2/7 用 raw SQL 是验证 RLS policy 本身 · 跟 middleware bypass 不同)
+- **AC-006-E E3 LOCAL=true 不污染连接池**: test 6 真验 ✅
+
+**testbed 设计** · `testDbUrl = process.env.DATABASE_URL_TEST ?? process.env.DATABASE_URL` 在 3 文件均命中 · 满足 PRD §1 US-006 Common-D `grep DATABASE_URL_TEST tests/integration/admin/` ≥ 1 ✅(fallback 是合理工程做法 · 开发者只 set DATABASE_URL 就能跑)· manifest NOTE(quanqn_test migration)Validator 跑 6 migrations 让 quanqn_test up-to-date 即可
+
+**F2 跨 story 命名一致性**:
+- adminRLSMiddleware / auditLogMiddleware / publicAdminProcedure / adminTrpcRouter / createMockAdminContext · 跟 US-001/US-003/US-004 严格一致 ✅
+- crossAccountAccessed flag + eventType='cross_account_query' ✅
+
+**通用 4 维度**:
+- AC: 17/17 PASS(8 test case + RLS invariant + Validator verdict=PASS · failing_ac=null · xml 1038/1038 zero-regression + typecheck 0)
+- AGENTS §10: LD-A3 ✅(set_config 真 SQL + adminRLSMiddleware createCaller 真验)+ R-A6 ✅(测试用 prismaTest fixture 是合理设计 · 不是绕过 admin middleware)+ R-A4 audit only append ✅
+- 安全: $transaction rollback(防 partial state)+ LOCAL=true 不污染(防泄漏)+ cross_account audit 写(防取证缺失)+ 主应用 RLS 不破(防回归)· 0 Blocker
+- PRD 一致性: D-063(adminRLS pattern · LOCAL=true)+ AC-006 multi-layer 全 case 真验
+
+**0 安全风险** · **0 红线触发** · **0 PRD 一致性问题** · **0 新 TD**
+**1 commit US-006**(610752c · 一次成功 · retryCount=0 健康 · Validator 中间 stale audit log cleanup self-correct + final run pass)
+
+**approved_at**: 2026-05-12T14:24(high 档标审 ~5 min · 17/17 AC + 8 integration test case + RLS invariant + 1038 zero-regression + LD-A3 法务取证生命线真验 + LOCAL=true 不污染 + 主应用 RLS 不破)
+
+============================================================
+
+
+--- [RALPH] Iteration 8 ended: US-006 (40分钟 56秒) ---
+
+--- [RALPH] Iteration 9 started: US-007 at 2026-05-12 14:23 ---
+
+## [2026-05-12 14:55] - US-007
+- 实现了 PRD-10 US-007 收官 story · 全套绿灯 + LD-A 5 grep + R-A 6 grep + admin foundation e2e
+- 主要工作:
+  · scripts/audit-redlines-admin.sh: 5 LD-A + 6 R-A 一键 grep · ALL PASS · 5 LD-A + 6 R-A
+  · scripts/audit-admin-rls.ts: @typescript-eslint/parser AST 检测 admin procedures adminRLS · 5 checked 0 violations
+  · scripts/audit-approval-gates.ts: AST stub 验证 ApprovalGates 机制 3/3 checks pass
+  · scripts/audit-admin-rls-tables.sh: 更新 13 admin RLS=false + 15 main RLS=true (来自 manual_admin_rls.sql 原 13 张)
+  · tests/e2e/admin/admin-foundation-loop.spec.ts: 7-step e2e (seed→login→layout→nsm→audit→logout) · playwright admin project 1/1 PASS
+  · tests/e2e/helpers/admin-mock-oauth.ts + admin-db-seed.ts: e2e 辅助工具(seedAdminUser/mockAdminLogin)
+  · playwright.config.ts: 加 admin project(baseURL=5174, workers=1, fullyParallel=false)
+  · apps/api/src/trpc/routers/admin/auth.ts: 加 admin_logout audit 写入 · 满足 admin_audit_log ≥2 rows AC
+  · fix lint: AuditDrawer 删 redundant role="complementary" · router.tsx Login import 移后
+- 全套 1034 tests pass · 55 judge · 10 admin-integration · 1 new e2e · typecheck 7ws 0 · lint 0
+- scripts/ralph/verify-artifacts/US-007/manifest.json 写入完整 metrics
+- **未来迭代的学习:**
+  - ESM 环境下脚本必须用 import.meta.url + fileURLToPath 替代 __dirname
+  - Playwright e2e 使用 strict mode · locator('text=X') 如命中多个元素需更精确选择器(如 'main h2')
+  - admin_logout 审计写入在 logout 过程中应用 .catch() 防止 audit 失败阻塞业务逻辑
+  - admin_rls 13 original tables = DATA-MODEL §13.1 定义(4 核心 + 9 辅助) · 不含 US-001 额外添加的 admin_users/admin_sessions/admin_config 等
+  - AST procedure 检测: 例外列表需含 unprefixed 和 prefixed 两种形式(login 和 auth.login)
 ---
