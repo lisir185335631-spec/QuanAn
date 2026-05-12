@@ -20,6 +20,16 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile', use: { ...devices['iPhone 14 Pro'] } },
+    // AC-8(US-007): admin SPA project · baseURL=5174 · workers=1 + fullyParallel=false
+    // Follows anti-pattern REJ-D061: admin shared user must run serially
+    {
+      name: 'admin',
+      testMatch: '**/tests/e2e/admin/**/*.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://localhost:5174',
+      },
+    },
   ],
 
   webServer: {

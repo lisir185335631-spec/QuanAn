@@ -53,7 +53,6 @@ export function AuditDrawer({ open, onClose }: AuditDrawerProps) {
       />
       <aside
         className="audit-drawer audit-drawer--open"
-        role="complementary"
         aria-label="我的审计记录"
         data-testid="audit-drawer"
       >

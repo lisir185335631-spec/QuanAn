@@ -103,13 +103,35 @@ export const adminAuthRouter = adminTrpcRouter({
 
   /** Invalidate admin session and clear cookie. */
   logout: publicAdminProcedure.mutation(async ({ ctx }) => {
+    const sessionId = ctx.adminSession?.id ?? '';
+    const actorId = ctx.activeAdminUser?.id ?? 0;
+    const actorRole = ctx.activeAdminUser?.role ?? 'unknown';
+
     if (ctx.adminSession) {
       await Promise.all([
         luciaAdmin.invalidateSession(ctx.adminSession.id),
         deleteAdminIdleKey(ctx.adminSession.id),
       ]);
     }
+
     ctx.resHeaders.append('Set-Cookie', makeCookieStr('admin_session_id', '', 0));
+
+    // Write admin_logout audit log (AC-5 US-007: audit_log ≥ 2 rows login+logout)
+    if (actorId > 0) {
+      await logAdminAction({
+        actorAdminId: actorId,
+        actorRole,
+        eventCategory: 'auth',
+        eventType: 'admin_logout',
+        payload: { sessionId },
+        traceId: ctx.traceId,
+        ip: ctx.req.headers.get('x-forwarded-for') ?? '0.0.0.0',
+        userAgent: ctx.req.headers.get('user-agent') ?? '',
+        sessionId,
+        success: true,
+      }).catch(() => undefined);
+    }
+
     return { ok: true };
   }),
 

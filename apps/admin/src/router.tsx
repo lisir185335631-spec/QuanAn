@@ -4,7 +4,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AdminLayout } from './layouts/AdminLayout';
-import Login from './pages/Login';
 import AbPlaceholder from './pages/admin/placeholder/ab';
 import AccountsPlaceholder from './pages/admin/placeholder/accounts';
 import ApprovalPlaceholder from './pages/admin/placeholder/approval';
@@ -21,6 +20,7 @@ import QuotaPlaceholder from './pages/admin/placeholder/quota';
 import ReviewDeepLearnPlaceholder from './pages/admin/placeholder/reviewDeepLearn';
 import ReviewTrendingPlaceholder from './pages/admin/placeholder/reviewTrending';
 import UsersPlaceholder from './pages/admin/placeholder/users';
+import Login from './pages/Login';
 
 export function AdminRoutes() {
   return (

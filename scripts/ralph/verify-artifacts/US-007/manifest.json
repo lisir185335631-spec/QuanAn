@@ -1,18 +1,135 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-11T12:27:00",
-  "validator_end_ts": "2026-05-11T12:27:45",
-  "test_command": "pnpm vitest run (789 tests) + pnpm vitest run daily-task*.test.ts (15 tests) + pnpm typecheck",
+  "story_title": "收官 · 全套绿灯 + LD-A 5 grep + R-A 6 grep + 1 new e2e",
+  "validator_start_ts": "2026-05-12T14:25:00",
+  "validator_end_ts": "2026-05-12T14:55:00",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "metrics": {
+    "vitest": {
+      "total": 1038,
+      "passed": 1034,
+      "failed": 0,
+      "skipped": 4,
+      "files": 116
+    },
+    "test_judge": {
+      "total": 55,
+      "passed": 55,
+      "failed": 0,
+      "files": 21
+    },
+    "admin_integration": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "files": 3,
+      "breakdown": {
+        "auth-flow.test.ts": 1,
+        "audit-log-write.test.ts": 1,
+        "rls-bypass-cross-account.test.ts": 8
+      }
+    },
+    "e2e": {
+      "total_new": 1,
+      "spec_file": "tests/e2e/admin/admin-foundation-loop.spec.ts",
+      "passed": 1,
+      "failed": 0,
+      "project": "admin",
+      "baseURL": "http://localhost:5174"
+    },
+    "typecheck": {
+      "workspaces": 7,
+      "errors": 0,
+      "exit_code": 0
+    },
+    "lint": {
+      "exit_code": 0,
+      "max_warnings": 0,
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "ld_a_grep": {
+    "passed": 5,
+    "failed": 0,
+    "details": {
+      "LD-A1": "PASS · admin OAuth 独立 · 无 QUANQN_WEB_CLIENT 引用",
+      "LD-A2": "PASS · adminRouter/appRouter 严格分离(双向)",
+      "LD-A3": "PASS · AST 检测 5 procedures · 0 violations (exceptions: login/logout/me/health)",
+      "LD-A4": "PASS · ApprovalGates 机制就位 (stub · PRD-13 补全)",
+      "LD-A5": "PASS · TrendingScraper/FileParser 不直接写主表"
+    }
+  },
+  "r_a_grep": {
+    "passed": 6,
+    "failed": 0,
+    "details": {
+      "R-A1": "PASS · web ↔ admin 无跨 app import",
+      "R-A2": "PASS · 主应用无 admin 入口",
+      "R-A3": "PASS · admin SPA 无硬编码 mock OAuth",
+      "R-A4": "PASS · admin router 无 $executeRawUnsafe/bypass",
+      "R-A5": "PASS · admin 无 LLMGateway/Specialist 直调",
+      "R-A6": "PASS · admin 无 mock approval bypass"
+    }
+  },
+  "rls_verification": {
+    "admin_tables": {
+      "count": 13,
+      "expected_rls": false,
+      "verified": 13,
+      "mismatches": 0,
+      "tables": [
+        "admin_audit_log", "approval_requests", "prompt_versions", "user_quota",
+        "kpi_snapshots", "ip_account_admin_notes", "ip_account_anomaly_flags",
+        "invite_campaigns", "trending_review_queue", "trending_takedown",
+        "auto_review_rules", "deep_learn_review_queue", "user_violation_log"
+      ]
+    },
+    "main_app_tables": {
+      "count": 15,
+      "expected_rls": true,
+      "verified": 15,
+      "mismatches": 0,
+      "tables": [
+        "ip_accounts", "step_data", "histories", "topics", "assets",
+        "diagnosis_reports", "feedback_logs", "evolution_profiles", "evolution_insights",
+        "deep_learning_archives", "knowledge_favorites", "knowledge_notes",
+        "daily_tasks", "cost_log", "trending_items"
+      ]
+    }
+  },
+  "code_quality": {
+    "todo_fixme_count": 0,
+    "todo_fixme_limit": 5,
+    "console_log_count": 0,
+    "console_log_limit": 2
+  },
+  "browser_verification": {
+    "tool": "playwright-e2e",
+    "steps_verified": [
+      "seed admin_user via prisma direct",
+      "goto /login · QuanQn Admin title visible · email input · mock OAuth button",
+      "fill email + click mock OAuth → redirect /admin (networkidle)",
+      "TopBar: super_admin badge visible",
+      "Sidebar: 16 nav items (≥16 count verified)",
+      "StatusBar: visible",
+      "click NSM 仪表盘 → /admin/nsm URL + placeholder h2 visible",
+      "click 🔔 → AuditDrawer visible + admin_login row",
+      "close drawer",
+      "click logout → /login redirect",
+      "admin_audit_log ≥2 rows (admin_login + admin_logout verified via prisma)"
+    ],
+    "screenshot": "screenshots/admin-foundation-loop.png",
+    "prd9_regression": "PASS · knowledge-rag-loop.spec.ts 6/6 tests pass"
+  },
   "artifacts": [
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "vitest.xml",
+    "manifest.json",
+    "typecheck.stdout.txt",
     "vitest.stdout.txt",
-    "typecheck.stdout.txt"
+    "vitest.xml"
   ],
-  "notes": "AC-1 PASS: DailyTaskAgent.ts invokeLLM() calls this.llmGateway.complete({model_tier:'lightweight', timeout_ms:30_000, ...}). AC-2 PASS: execute() checks stepCount===0||evolutionProfile===null → buildColdStartTasks() → isFallback:false modelUsed:'cold-start-template'. AC-3 PASS: cron/daily-task-runner.ts schedule('0 0 * * *', ..., {scheduled:false}); index.ts calls dailyTaskCron.start() at boot. AC-4 PASS: runForAllActiveAccounts() does prisma.ipAccount.findMany({where:{isActive:true,updatedAt:{gt:sevenDaysAgo}}}) then forEach enqueue with jobId=daily-task-{id}-{date}. AC-5 PASS: prisma schema has @@unique([accountId, taskDate]); worker uses prisma.dailyTask.upsert({where:{accountId_taskDate:{...}}}). AC-6 PASS: Worker({concurrency:5}); failed event handler + error dead-letter stub registered. AC-7 PASS: dailyTasksRouter.regenerateToday mutation enqueues job; no hard active limit enforced (design intent). AC-8 PASS: 10 unit tests all pass (T1 cold-start/T2 evolutionProfile-null/T3 LLM-lightweight/T4 schema-retry/T5 template-format/T6 cron-regex/T7 fan-out-5/T8 concurrency-5/T9 idempotent-jobId/T10 failed-handler). AC-9 PASS: 3 integration tests pass (3 accounts fan-out/worker upsert chain/idempotent jobId). AC-10 PASS: metadata.eventType='l5_agent' in invokeLLM() call to gateway. AC-11 PASS: pnpm typecheck 0 errors; pnpm vitest 789/789 pass; lint confirmed 0 per developer logs. AC-12 PASS: LJ1+LJ2 both score 5.0/5.0 (15/15 dim checks). Zero-regression: 789/789 vitest pass (exit_code=0). Typecheck: exit_code=0 across all 6 workspace packages."
+  "notes": "All 25 AC verified. vitest 1034/1038 pass (4 skipped pre-existing). test:judge 55/55. test:admin-integration 10/10. e2e admin-foundation-loop 1/1 PASS (playwright admin project, baseURL=5174, workers=1, fullyParallel=false). Lint 0 errors. Typecheck 7ws 0 errors. TODO/FIXME/XXX=0 (<=5). console.log=0 (<=2). audit-redlines-admin.sh: ALL PASS · 5 LD-A + 6 R-A. audit-admin-rls-tables.sh: 13/13 admin RLS=false + 15/15 main RLS=true. audit-admin-rls.ts: 5 procedures checked 0 violations. audit-approval-gates.ts: 3/3 mechanism checks pass. Added admin_logout audit logging to satisfy admin_audit_log >=2 rows AC. Fixed lint: AuditDrawer role=complementary redundant (removed), router.tsx Login import order (moved after admin/placeholder/*). Screenshots: screenshots/admin-foundation-loop.png confirmed QuanQn Admin title + email input + mock OAuth button visible."
 }
