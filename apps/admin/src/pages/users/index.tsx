@@ -131,6 +131,7 @@ function buildColumns(
       key: 'email',
       label: 'Email',
       width: '220px',
+      sortable: true,
       render: (row) => (
         <span style={{ color: 'var(--text)', fontSize: 12 }}>
           {row.email}
@@ -158,6 +159,7 @@ function buildColumns(
       key: 'lastLoginAt',
       label: '最近登录',
       width: '130px',
+      sortable: true,
       render: (row) => (
         <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
           {row.lastLoginAt
@@ -304,6 +306,15 @@ export default function UsersPage() {
     [setSearchParams],
   );
 
+  const handleSort = useCallback(
+    (key: string, dir: 'asc' | 'desc' | null) => {
+      const validKeys: FilterState['sortBy'][] = ['createdAt', 'lastLoginAt', 'email', 'name'];
+      const sortBy = validKeys.includes(key as FilterState['sortBy']) ? (key as FilterState['sortBy']) : 'createdAt';
+      handleFiltersChange({ ...filters, sortBy, sortDir: dir ?? 'desc' });
+    },
+    [filters, handleFiltersChange],
+  );
+
   const openDrawer = useCallback(
     (userId: number) => {
       setSearchParams({ ...Object.fromEntries(searchParams), userId: String(userId) });
@@ -408,6 +419,7 @@ export default function UsersPage() {
             data={users}
             maxHeight="calc(100vh - 380px)"
             onRowClick={(row) => openDrawer(row.id)}
+            onSort={handleSort}
             selectedKey={openUserId ?? undefined}
           />
         )}

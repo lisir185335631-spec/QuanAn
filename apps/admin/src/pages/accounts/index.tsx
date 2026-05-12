@@ -285,6 +285,7 @@ function buildColumns(
       key: 'name',
       label: '账号名',
       width: '140px',
+      sortable: true,
       render: (row) => (
         <span style={{ color: 'var(--text)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block', maxWidth: 130 }}>
           {row.name}
@@ -323,6 +324,7 @@ function buildColumns(
       key: 'updatedAt',
       label: '最近活跃',
       width: '120px',
+      sortable: true,
       render: (row) => (
         <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
           {new Date(String(row.updatedAt)).toLocaleString('zh-CN', {
@@ -405,6 +407,15 @@ export default function AccountsPage() {
   const handleFiltersChange = useCallback(
     (f: AccountFilterState) => setSearchParams(filtersToParams(f, 1)),
     [setSearchParams],
+  );
+
+  const handleSort = useCallback(
+    (key: string, dir: 'asc' | 'desc' | null) => {
+      const validKeys: AccountFilterState['sortBy'][] = ['createdAt', 'updatedAt', 'name'];
+      const sortBy = validKeys.includes(key as AccountFilterState['sortBy']) ? (key as AccountFilterState['sortBy']) : 'createdAt';
+      handleFiltersChange({ ...filters, sortBy, sortDir: dir ?? 'desc' });
+    },
+    [filters, handleFiltersChange],
   );
 
   const openDrawer = useCallback(
@@ -509,6 +520,7 @@ export default function AccountsPage() {
                 data={accounts}
                 maxHeight="calc(100vh - 440px)"
                 onRowClick={(row) => openDrawer(row.id)}
+                onSort={handleSort}
                 selectedKey={openAccountId ?? undefined}
               />
             )}
