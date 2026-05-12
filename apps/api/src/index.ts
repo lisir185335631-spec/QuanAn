@@ -36,11 +36,13 @@ const allowedOrigin = process.env.APP_BASE_URL ?? 'http://localhost:5173';
 const adminAllowedOrigin = process.env.ADMIN_BASE_URL ?? 'http://localhost:5174';
 const corsHeaders = ['Content-Type', 'Authorization', 'trpc-accept', 'x-trace-id', 'X-Trace-Id'];
 
-// Main app CORS
+// Admin SPA CORS must be registered BEFORE main app CORS.
+// Hono CORS middleware early-returns on OPTIONS without calling next(),
+// so the more-specific /trpc/admin/* pattern must come first.
 app.use(
-  '/trpc/*',
+  '/trpc/admin/*',
   cors({
-    origin: allowedOrigin,
+    origin: adminAllowedOrigin,
     credentials: true,
     allowHeaders: corsHeaders,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -48,11 +50,11 @@ app.use(
   }),
 );
 
-// Admin SPA CORS (admin.quanqn.com / localhost:5174 in dev)
+// Main app CORS
 app.use(
-  '/trpc/admin/*',
+  '/trpc/*',
   cors({
-    origin: adminAllowedOrigin,
+    origin: allowedOrigin,
     credentials: true,
     allowHeaders: corsHeaders,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
