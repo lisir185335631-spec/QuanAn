@@ -2,17 +2,20 @@
 // list/detail/changePlan/banUser/resetPassword
 // AC-1: all procedures use publicAdminProcedure (6 gates from adminProcedure)
 // AC-9: readonly_admin → procedure-level 403 + audit privilege_escalation
+// PRD-11 US-008: exportCsv streaming endpoint helpers
 
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHash } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { luciaAdmin, validateAdminSession } from '@/lib/auth/lucia-admin';
+import { prisma as defaultPrisma } from '@/lib/prisma';
 import { redactSensitiveFields } from '@/lib/admin/audit-helpers';
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
 
-import { createHash } from 'node:crypto';
+import type { PrismaClient } from '@prisma/client';
 
 function getIp(ctx: { req: Request }): string {
   return (
@@ -84,6 +87,170 @@ const banUserInput = z.object({
 // ── resetPassword ───────────────────────────────────────────────────────────
 
 const resetPasswordInput = z.object({ userId: z.number().int() });
+
+// ── CSV Export (US-008) ─────────────────────────────────────────────────────
+
+export const CSV_MAX_EXPORT_ROWS = 500_000;
+const CSV_CHUNK_SIZE = 1_000;
+const CSV_HEADER = 'id,email,plan,industry,role,createdAt,lastLoginAt,banned\n';
+
+type UserExportRow = {
+  id: number;
+  email: string;
+  plan: string;
+  industry: string | null;
+  role: string;
+  createdAt: Date;
+  lastLoginAt: Date | null;
+  isBanned: boolean;
+};
+
+/** Escapes a CSV field value: wraps in quotes if it contains comma, quote, or newline. */
+export function escapeCsvField(value: string | number | boolean | Date | null | undefined): string {
+  if (value == null) return '';
+  const str = value instanceof Date ? value.toISOString() : String(value);
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+/** Formats a single user row as a CSV line (no trailing newline). */
+export function formatUserCsvRow(user: UserExportRow): string {
+  return [
+    user.id,
+    escapeCsvField(user.email),
+    escapeCsvField(user.plan),
+    escapeCsvField(user.industry),
+    escapeCsvField(user.role),
+    user.createdAt.toISOString(),
+    user.lastLoginAt?.toISOString() ?? '',
+    user.isBanned ? '1' : '0',
+  ].join(',');
+}
+
+function buildExportWhere(params: {
+  search?: string;
+  roleFilter?: string;
+  planFilter?: string;
+  industryFilter?: string;
+}): Record<string, unknown> {
+  const where: Record<string, unknown> = {};
+  if (params.search) {
+    where['OR'] = [
+      { email: { contains: params.search, mode: 'insensitive' } },
+      { name: { contains: params.search, mode: 'insensitive' } },
+    ];
+  }
+  if (params.roleFilter) where['role'] = params.roleFilter;
+  if (params.planFilter) where['plan'] = params.planFilter;
+  if (params.industryFilter) where['industry'] = params.industryFilter;
+  return where;
+}
+
+/**
+ * Streaming CSV export handler for GET /admin/export/users
+ * Auth: validates admin session cookie directly (all roles allowed per AC-10).
+ * Chunks DB reads in batches of 1000 to keep memory < 200 MB (AC-4).
+ */
+export async function handleExportUsersCSV(
+  req: Request,
+  db: PrismaClient = defaultPrisma,
+): Promise<Response> {
+  // Auth: validate admin session cookie
+  const cookieHeader = req.headers.get('cookie') ?? '';
+  const sessionId = luciaAdmin.readSessionCookie(cookieHeader);
+  if (!sessionId) return new Response('Unauthorized', { status: 401 });
+
+  const { session, user } = await validateAdminSession(sessionId);
+  if (!session || !user) return new Response('Unauthorized', { status: 401 });
+
+  const url = new URL(req.url);
+  const params = {
+    search: url.searchParams.get('search') ?? undefined,
+    roleFilter: url.searchParams.get('role') ?? undefined,
+    planFilter: url.searchParams.get('plan') ?? undefined,
+    industryFilter: url.searchParams.get('industry') ?? undefined,
+  };
+  const where = buildExportWhere(params);
+
+  // Row-count gate: reject > 500k (AC-6)
+  const rowCount = await db.user.count({ where });
+  if (rowCount > CSV_MAX_EXPORT_ROWS) {
+    return new Response(
+      `export rows > ${CSV_MAX_EXPORT_ROWS.toLocaleString()}, please narrow filters`,
+      { status: 400, headers: { 'Content-Type': 'text/plain' } },
+    );
+  }
+
+  // Audit (AC-5)
+  const traceId = req.headers.get('x-trace-id') ?? randomBytes(8).toString('hex');
+  void logAdminAction({
+    actorAdminId: user.id,
+    actorRole: user.role,
+    eventCategory: 'export',
+    eventType: 'export_users_csv',
+    payload: { filterSummary: params, rowCount },
+    traceId,
+    ip: req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? '0.0.0.0',
+    userAgent: req.headers.get('user-agent') ?? '',
+    sessionId: session.id,
+    success: true,
+  });
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const filename = `users-export-${timestamp}.csv`;
+  const enc = new TextEncoder();
+
+  // Stream rows in chunks of 1000 (AC-4: memory < 200 MB)
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        controller.enqueue(enc.encode(CSV_HEADER));
+        let skip = 0;
+        while (true) {
+          const chunk = await db.user.findMany({
+            where,
+            orderBy: { id: 'asc' },
+            skip,
+            take: CSV_CHUNK_SIZE,
+            select: {
+              id: true,
+              email: true,
+              plan: true,
+              industry: true,
+              role: true,
+              createdAt: true,
+              lastLoginAt: true,
+              isBanned: true,
+            },
+          });
+          if (chunk.length === 0) break;
+          const lines = chunk.map(formatUserCsvRow).join('\n') + '\n';
+          controller.enqueue(enc.encode(lines));
+          if (chunk.length < CSV_CHUNK_SIZE) break;
+          skip += CSV_CHUNK_SIZE;
+        }
+        controller.close();
+      } catch {
+        // Client disconnect or DB error — close stream cleanly (AC-8)
+        controller.close();
+      }
+    },
+    cancel() {
+      // Client disconnected mid-stream; no locks held (AC-8)
+    },
+  });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'no-cache, no-store',
+    },
+  });
+}
 
 // ── Router ──────────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@
 // AC-1: replaces placeholder · DenseTable list + drawer state
 // AC-22: URL params persist page/filters · state restore on refresh
 
-import { useCallback, useMemo, useState, type MouseEvent } from 'react';
+import { useCallback, useMemo, useState, useRef, type MouseEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { DenseTable } from '@quanqn/ui/admin';
 import type { DenseTableColumn } from '@quanqn/ui/admin';
@@ -250,6 +250,43 @@ export default function UsersPage() {
   const [changePlanUserId, setChangePlanUserId] = useState<number | null>(null);
   const [banUserId, setBanUserId] = useState<number | null>(null);
   const [resetPwdUserId, setResetPwdUserId] = useState<number | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const downloadAnchorRef = useRef<HTMLAnchorElement>(null);
+
+  const handleCsvExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      const apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+      const params = new URLSearchParams();
+      if (filters.search) params.set('search', filters.search);
+      if (filters.roleFilter) params.set('role', filters.roleFilter);
+      if (filters.planFilter) params.set('plan', filters.planFilter);
+      if (filters.industryFilter) params.set('industry', filters.industryFilter);
+      const url = `${apiBase}/admin/export/users${params.size > 0 ? `?${params.toString()}` : ''}`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) {
+        const msg = await res.text().catch(() => String(res.status));
+        alert(`导出失败: ${msg}`);
+        return;
+      }
+      const blob = await res.blob();
+      const cd = res.headers.get('content-disposition') ?? '';
+      const filenameMatch = cd.match(/filename="?([^"]+)"?/);
+      const filename = filenameMatch?.[1] ?? 'users-export.csv';
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = downloadAnchorRef.current;
+      if (anchor) {
+        anchor.href = objectUrl;
+        anchor.download = filename;
+        anchor.click();
+      }
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000);
+    } catch (err) {
+      alert(`导出失败: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [filters]);
 
   const openUser = users.find((u) => u.id === openUserId) ?? null;
   const dialogTargetId = changePlanUserId ?? banUserId ?? resetPwdUserId;
@@ -293,14 +330,40 @@ export default function UsersPage() {
 
   return (
     <div>
+      {/* Hidden anchor for programmatic file download */}
+      {/* eslint-disable-next-line jsx-a11y/anchor-has-content */}
+      <a ref={downloadAnchorRef} style={{ display: 'none' }} aria-hidden="true" />
+
       {/* Page header */}
-      <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
-        <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.02em' }}>
-          👤 用户管理
-        </h1>
-        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-          用户列表 · 搜索 / 状态变更 / 跨账号查询 + 审计 · 共 {totalCount.toLocaleString()} 条
+      <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.02em' }}>
+            👤 用户管理
+          </h1>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
+            用户列表 · 搜索 / 状态变更 / 跨账号查询 + 审计 · 共 {totalCount.toLocaleString()} 条
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={() => void handleCsvExport()}
+          disabled={isExporting}
+          style={{
+            background: isExporting ? 'var(--bg-panel)' : 'var(--accent-blue)22',
+            border: '1px solid var(--accent-blue)55',
+            color: isExporting ? 'var(--text-dim)' : 'var(--accent-blue)',
+            padding: '6px 14px',
+            borderRadius: 5,
+            cursor: isExporting ? 'not-allowed' : 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            letterSpacing: '0.02em',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          {isExporting ? '导出中…' : 'CSV 导出'}
+        </button>
       </div>
 
       {/* Overview cards */}

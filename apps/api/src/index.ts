@@ -26,6 +26,7 @@ import { createAdminContext } from '@/server/context-admin';
 import { createContext } from '@/trpc/context';
 import { appRouter } from '@/trpc/routers/_app';
 import { adminRouter } from '@/trpc/routers/admin';
+import { handleExportUsersCSV } from '@/trpc/routers/admin/users';
 
 // Validate env at module load — exits early on misconfiguration (AC-10, AC-14)
 validateStartupConfig();
@@ -40,6 +41,17 @@ const corsHeaders = ['Content-Type', 'Authorization', 'trpc-accept', 'x-trace-id
 // Admin SPA CORS must be registered BEFORE main app CORS.
 // Hono CORS middleware early-returns on OPTIONS without calling next(),
 // so the more-specific /trpc/admin/* pattern must come first.
+app.use(
+  '/admin/export/*',
+  cors({
+    origin: adminAllowedOrigin,
+    credentials: true,
+    allowHeaders: [...corsHeaders, 'Range'],
+    allowMethods: ['GET', 'OPTIONS'],
+    exposeHeaders: ['x-trace-id', 'Content-Disposition'],
+  }),
+);
+
 app.use(
   '/trpc/admin/*',
   cors({
@@ -241,6 +253,10 @@ app.get('/auth/logout', async (c) => {
   });
   return c.redirect(allowedOrigin + '/');
 });
+
+// ── Admin REST: CSV export (US-008) ───────────────────────────────────────────
+// GET /admin/export/users — streams CSV; auth via admin session cookie
+app.get('/admin/export/users', (c) => handleExportUsersCSV(c.req.raw));
 
 // ── Admin tRPC (mounted before main tRPC so /trpc/admin/* routes here first) ──
 
