@@ -1,6 +1,24 @@
-// PRD-10 US-001 stub · US-003 真接 ADMIN_ROLE_HIERARCHY + meta.requiredRole check
-import { middleware } from '@/trpc/trpc';
+// PRD-10 US-003 · roleCheck — ADMIN_ROLE_HIERARCHY + meta.requiredRole level check
+import { TRPCError } from '@trpc/server';
 
-export const roleCheckMiddleware = middleware(async ({ next }) => {
+import { middleware } from '@/trpc/trpc-admin';
+
+export const ADMIN_ROLE_HIERARCHY: Record<string, number> = {
+  super_admin: 3,
+  admin: 2,
+  readonly_admin: 1,
+};
+
+export const roleCheckMiddleware = middleware(async ({ ctx, meta, next }) => {
+  const requiredRole = meta?.requiredRole;
+  if (!requiredRole) return next();
+
+  const userLevel = ADMIN_ROLE_HIERARCHY[ctx.activeAdminUser?.role ?? ''] ?? 0;
+  const requiredLevel = ADMIN_ROLE_HIERARCHY[requiredRole] ?? Infinity;
+
+  if (userLevel < requiredLevel) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'insufficient_role' });
+  }
+
   return next();
 });

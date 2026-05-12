@@ -1,61 +1,68 @@
+// PRD-10 US-001 stubs → US-003 real implementations
+// Tests in this file verify default-pass-through behaviour when no special conditions trigger.
+// Real implementation tests live in roleCheck/ipWhitelist/mfaCheck/adminRLS/approvalGateCheck.test.ts
+
 import { describe, it, expect, vi } from 'vitest';
 
 import {
-  adminAuthMiddleware,
   roleCheckMiddleware,
   ipWhitelistMiddleware,
   mfaCheckMiddleware,
-  adminRLSMiddleware,
   approvalGateCheckMiddleware,
   auditLogMiddleware,
 } from '@/trpc/middleware/admin';
 
-type MiddlewareFn = (opts: { next: () => Promise<unknown> }) => Promise<unknown>;
+type RawFn = (opts: { ctx: unknown; meta?: unknown; next: () => Promise<unknown> }) => Promise<unknown>;
 
-function extractFn(mw: unknown): MiddlewareFn {
-  return (mw as { _middlewares: MiddlewareFn[] })._middlewares[0]!;
+function extractFn(mw: unknown): RawFn {
+  return (mw as { _middlewares: RawFn[] })._middlewares[0]!;
 }
 
-describe('admin middleware stubs — US-001 all pass-through', () => {
-  it('adminAuth stub calls next()', async () => {
+const minimalCtx = {
+  activeAdminUser: null,
+  adminSession: null,
+  adminSessionMfaVerifiedAt: null,
+  prisma: {},
+  traceId: 'test',
+  req: new Request('http://localhost'),
+  resHeaders: new Headers(),
+};
+
+describe('admin middleware default pass-through (no triggering conditions)', () => {
+  // roleCheck: no meta.requiredRole → pass
+  it('roleCheck passes through when meta.requiredRole is absent', async () => {
     const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(adminAuthMiddleware)({ next });
+    await extractFn(roleCheckMiddleware)({ ctx: minimalCtx, meta: {}, next });
     expect(next).toHaveBeenCalledOnce();
   });
 
-  it('roleCheck stub calls next()', async () => {
+  // ipWhitelist: ADMIN_IP_WHITELIST_ENABLED not 'true' → pass
+  it('ipWhitelist passes through when ADMIN_IP_WHITELIST_ENABLED is not set', async () => {
     const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(roleCheckMiddleware)({ next });
+    delete process.env.ADMIN_IP_WHITELIST_ENABLED;
+    await extractFn(ipWhitelistMiddleware)({ ctx: minimalCtx, next });
     expect(next).toHaveBeenCalledOnce();
   });
 
-  it('ipWhitelist stub calls next()', async () => {
+  // mfaCheck: ADMIN_MFA_REQUIRED not 'true' → pass
+  it('mfaCheck passes through when ADMIN_MFA_REQUIRED is not set', async () => {
     const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(ipWhitelistMiddleware)({ next });
+    delete process.env.ADMIN_MFA_REQUIRED;
+    await extractFn(mfaCheckMiddleware)({ ctx: minimalCtx, next });
     expect(next).toHaveBeenCalledOnce();
   });
 
-  it('mfaCheck stub calls next()', async () => {
+  // approvalGateCheck: no meta.requiresApproval → pass
+  it('approvalGateCheck passes through when meta.requiresApproval is absent', async () => {
     const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(mfaCheckMiddleware)({ next });
+    await extractFn(approvalGateCheckMiddleware)({ ctx: minimalCtx, meta: {}, next });
     expect(next).toHaveBeenCalledOnce();
   });
 
-  it('adminRLS stub calls next()', async () => {
-    const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(adminRLSMiddleware)({ next });
-    expect(next).toHaveBeenCalledOnce();
-  });
-
-  it('approvalGateCheck stub calls next()', async () => {
-    const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(approvalGateCheckMiddleware)({ next });
-    expect(next).toHaveBeenCalledOnce();
-  });
-
+  // auditLog: still a stub → always passes through
   it('auditLog stub calls next()', async () => {
     const next = vi.fn().mockResolvedValue({ ok: true });
-    await extractFn(auditLogMiddleware)({ next });
+    await extractFn(auditLogMiddleware)({ ctx: minimalCtx, next });
     expect(next).toHaveBeenCalledOnce();
   });
 });

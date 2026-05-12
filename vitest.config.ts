@@ -15,6 +15,8 @@ export default defineConfig({
       'bullmq': path.resolve(__dirname, 'apps/api/node_modules/bullmq'),
       // @trpc/server lives in apps/api/node_modules — expose so vi.hoisted test files can import TRPCError (PRD-6 US-007)
       '@trpc/server': path.resolve(__dirname, 'apps/api/node_modules/@trpc/server'),
+      // ipaddr.js lives in apps/api/node_modules — needed for ipWhitelist middleware tests
+      'ipaddr.js': path.resolve(__dirname, 'apps/api/node_modules/ipaddr.js'),
       // @quanqn/schemas subpath exports — PRD-6 US-001 schema tests
       '@quanqn/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
       '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
