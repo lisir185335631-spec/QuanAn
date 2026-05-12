@@ -1,5 +1,6 @@
 
 ## Codebase Patterns - PRD-9 + PRD-10
+- vitest 多环境: 根 vitest.config.ts 默认 environment=node · tsx 测试文件需要 jsdom · 用 environmentMatchGlobs + @vitejs/plugin-react(v4.x 兼容 vite 5) · admin 组件 `@/` alias 与 API `@/` 冲突 → admin 源文件改用相对路径 · 测试直接用 `../../../apps/admin/src/` 绝对相对路径
 - Hono CORS 顺序: more-specific 路径必须先注册 · `/trpc/admin/*` 必须在 `/trpc/*` 之前 · 否则 OPTIONS preflight early-return 不会 next() 到更精确的 middleware
 - tRPC v11 middleware 存储: `t.middleware(fn)` 返回 wrapper `{ _middlewares: [fn], unstable_pipe }` · `_def.middlewares` 里存的是 raw function (`mw._middlewares[0]`) · 顺序测试用 `rawFn(mw) = mw._middlewares[0]` 再 `indexOf`
 - tRPC admin 中间件必须 import `middleware` from `@/trpc/trpc-admin` · 用 main app 的 `@/trpc/trpc` 会导致 AdminTRPCContext 类型不匹配 · 即使 stub 时也要用正确的 tRPC instance
@@ -4661,3 +4662,84 @@ Step 1.5 亲跑全套补门禁 100% 过。
 --- [RALPH] Iteration 5 ended: US-003 (19分钟 45秒) ---
 
 --- [RALPH] Iteration 6 started: US-004 at 2026-05-12 12:48 ---
+
+============================================================
+## [2026-05-12 13:09] - US-004 (Opus audit · PRD-10 P9.0 admin_audit_log 自动 middleware 写入 · 4 类 eventType)
+============================================================
+
+**risk_level**: medium · size_hint: small · ~5 min 标审
+
+**Audit context** · PENDING_DETECTED:US-004 13:09:02 → 全局 §5.0.3 sanity check ✅(单 session · cycle 安全)· retryCount=0(一次过 · 2 commits c31e3f7 feat + 1087269 progress update)
+
+**§0 4 项实测** (Step 1 audit-artifacts.py PASS):
+- ✅ pytest-full **1008 passed** | 4 skipped(PRD-9 pre-existing)· 0 failed(原 991 + US-004 17 新 = 1008)
+- ✅ typecheck 6 ws 0 errors
+- ✅ unit 16(auditLog-middleware 10 + admin-audit-service 6)+ 集成 1(audit-log-write 真 DB)= 17 新
+- ✅ Validator manifest verdict=PASS · failing_ac=null(14/14 functionally satisfied)
+
+**medium 档 grep 4 条**:
+- ✅ **项目 CLAUDE §5.1 + R-A4 audit append-only**: `grep -rEn 'prisma\.adminAuditLog\.(update|delete|upsert|deleteMany|updateMany)' apps/api/src/` = **0 命中** · audit 严格 append-only
+- ✅ **REJ-008 redact sensitive**: audit-helpers.ts L5 `redactSensitiveFields(payload)` + L13 `'[REDACTED]'` + L15 recursive call + 单测 `redacts sensitive fields in payload before writing`
+- ✅ **4 类 eventType 分支**: auditLog.ts L4-7 注释明示 + L32 cross_account_query branch + L55-57 注释明示 admin_login(auth.ts 写)+ approval_request_create(approvalGateCheck 写)+ approval_request_resolve(PRD-13 placeholder)
+- ✅ **REJ-021 LD-A3 cross_account_query 触发链路**: adminRLS.ts L18 `crossAccountAccessed: true` → auditLog.ts L32 `if (ctx.crossAccountAccessed === true)` → write event · 单测 `writes cross_account_query when crossAccountAccessed=true` 真验
+
+**测试代码深审**(17 case):
+- auditLog-middleware.test.ts 10 unit · 全覆盖 4 分支 + 通过/失败路径 + redact + latency + ip(x-forwarded-for)+ userAgent + traceId
+- admin-audit-service.test.ts 6 unit · `logAdminAction` 创建 + **idempotent**(同 traceId+eventType 跳过)+ redact + DB failure handle + eventCategory/Type + payloadHash SHA-256 非空
+- audit-log-write.test.ts 1 集成 · 真 DB · `writes admin_login + cross_account_query + approval_request_create rows (≥ 3)`
+
+**关键亮点**:
+- **idempotent**(防 retry 重复写)· 同 traceId+eventType 已存在 → 跳过 create · 防 daemon retry 重复 audit
+- **`audit write failure does not block business operation`** 单测真验 · console.error 记录但不 throw
+- **payloadHash SHA-256**(US-002 makePayloadHash 已用 + service 也用)· 防 payload 篡改取证
+
+**通用 4 维度**:
+- AC: 14/14 PASS(Validator verdict=PASS · failing_ac=null)
+- AGENTS §10: R-A4 audit only-append ✅ + R-A6 no raw SQL ✅ + LD-A3 cross_account_query 链路完整 ✅
+- 安全: redact sensitive(防 password/token/apiKey/secret 进 audit)+ idempotent(防 retry 重复)+ DB failure handle(不阻塞 business)+ payloadHash SHA-256(防篡改)· 0 Blocker
+- PRD 一致性: D-064(4 类 eventType + eventCategory)落实
+
+**TD 豁免 approve(必须留痕 3 联动)**:
+- **TD-040 (low · doc-drift)** 豁免: PRD-10 §1 US-001 AC-13 写 `@@index([adminUserId, createdAt(sort: Desc)])` · 实际 schema 字段 `actorAdminId`(US-001 实施时统一 actor* 前缀防跟 main-app userId 混淆)· Validator note: functional equivalent 存在 + 14 AC functionally satisfied · doc-only · fix_by 下次 PRD review
+
+**TD 登记** · .agents/tech-debt.json items 40 total(原 39 + TD-040 doc-drift)· status=open · severity=low · audit_exemption 填
+
+**剩余 open TDs**: TD-027/028 + TD-031 + TD-033/034/035 + TD-037/038/039 + TD-040(本 audit 新登记 · low)
+
+**0 安全风险** · **0 红线触发** · **0 PRD 功能性问题**
+**2 commits US-004**(c31e3f7 feat + 1087269 progress · retryCount=0 健康)
+
+**approved_at**: 2026-05-12T13:15(medium 档标审 ~5 min · 14/14 AC functionally satisfied · 17 unit/integration + 1008/1012 zero-regression · redact + idempotent + 4 eventType + LD-A3 链路真验 + TD-040 doc-drift 豁免)
+
+============================================================
+
+
+--- [RALPH] Iteration 6 ended: US-004 (22分钟 52秒) ---
+
+--- [RALPH] Iteration 7 started: US-005 at 2026-05-12 13:11 ---
+
+## [2026-05-12 13:31] - US-005
+- 实现了 PRD-10 US-005 admin Layout 骨架 · 完整 Aurelian Dark admin UX 框架
+- 主要工作:
+  · apps/admin/src/lib/admin-routes.ts: 16 域 metadata array · 4 组(P0核心6/P0审核2/P1健康5/P2高级3)
+  · apps/admin/src/layouts/AdminLayout.tsx: grid topbar(60px)+sidebar(240px)+main+statusbar(24px)+drawer
+  · apps/admin/src/components/admin/TopBar.tsx: 品牌+email+role badge+🔔 toggle+logout dropdown
+  · apps/admin/src/components/admin/Sidebar.tsx: 16域NavLink · 4组group label · isActive highlight
+  · apps/admin/src/components/admin/AuditDrawer.tsx: React Portal slide-from-right · audit.listMine 30s polling · ESC关
+  · apps/admin/src/components/admin/StatusBar.tsx: ENV/RLS/WAF/MFA/Role 5字段 · stub全黄
+  · apps/admin/src/router.tsx: 16域route + /login + /admin → nsm默认 + 404
+  · apps/admin/src/styles/admin.css: Aurelian Dark密集模式 CSS · row hover+sidebar active+drawer slide
+  · apps/admin/src/pages/admin/placeholder/{nsm,users,accounts,cost,audit,invites,reviewTrending,reviewDeepLearn,evolution,prompts,quota,compliance,approval,ab,knowledge,config}.tsx · 16文件
+  · apps/api/src/trpc/routers/admin/audit.ts: audit.listMine procedure stub · 最近50条
+  · packages/ui/src/admin/{tokens.ts,DenseTable.tsx,index.ts}: 密集模式tokens + stub表格
+  · packages/clients/src/admin-router-types.ts: 补 audit.listMine 类型
+  · tests/unit/admin/{layout,sidebar,audit-drawer}.test.tsx: 18 tests(jsdom) 全绿
+  · vitest.config.ts: environmentMatchGlobs + @vitejs/plugin-react@4 + React/router aliases
+- 全套 115 test files · 1026 tests pass · typecheck 0 errors (api + admin)
+- 浏览器验证: login→/admin/nsm · TopBar品牌+super_admin角色 · Sidebar16域 · AuditDrawer admin_login行 · StatusBar ENV=dev/RLS=ON
+- **未来迭代的学习:**
+  - vitest 根配置 `@` alias 只能指向一个目录 · admin SPA 和 API 都用 `@/` 但映射不同目录 → admin 源文件改用相对路径可彻底解决冲突
+  - @vitejs/plugin-react 版本必须匹配 vite 版本 · vite 5.x → plugin-react@4.x · vite 6.x → plugin-react@5+
+  - tRPC shadow router(packages/clients)的 Date 类型传输后在客户端变 string · 组件 interface 用 `Date | string`
+  - AuditDrawer 用 createPortal(_, document.body) · 确保 overlay 正确 z-index 不被 layout stacking context 截断
+---
