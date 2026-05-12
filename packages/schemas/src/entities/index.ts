@@ -5,3 +5,4 @@ export * from './stepData.schema';
 export * from './knowledge.schema';
 export * from './trending.schema';
 export * from './invite.schema';
+export * from './user.schema';

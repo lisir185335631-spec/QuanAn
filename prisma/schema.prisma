@@ -30,6 +30,10 @@ model User {
   industry        String? @db.VarChar(64)
   activeAccountId Int?    @map("active_account_id")
 
+  plan         String    @default("free") @db.VarChar(32)
+  lastLoginAt  DateTime? @map("last_login_at")
+  lastLoginIp  String?   @db.VarChar(45) @map("last_login_ip")
+
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   lastSignedIn DateTime? @map("last_signed_in")
@@ -45,6 +49,10 @@ model User {
   @@index([email])
   @@index([openId])
   @@index([activeAccountId])
+  @@index([role])
+  @@index([plan])
+  @@index([industry])
+  @@index([lastLoginAt(sort: Desc)])
   @@map("users")
 }
 

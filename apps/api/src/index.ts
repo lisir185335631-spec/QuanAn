@@ -19,6 +19,7 @@ import { cors } from 'hono/cors';
 import { lucia } from '@/lib/auth/lucia';
 import { validateAdminStartupConfig } from '@/lib/auth/oauth-admin-factory';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
+import { updateLastLogin } from '@/middleware/auth';
 import { logger, traceStore } from '@/lib/logger';
 import { checkDbConnection , prisma } from '@/lib/prisma';
 import { createAdminContext } from '@/server/context-admin';
@@ -183,6 +184,13 @@ app.get('/auth/callback', async (c) => {
       lastSignedIn: new Date(),
     },
   });
+
+  // Update last login timestamp + IP (AC-6 US-005 · non-blocking)
+  const clientIp =
+    c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ??
+    c.req.header('x-real-ip') ??
+    undefined;
+  void updateLastLogin(prisma, user.id, clientIp);
 
   // Create lucia session
   const session = await lucia.createSession(user.id, {});
