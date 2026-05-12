@@ -285,6 +285,14 @@ async function start(): Promise<void> {
   dailyTaskCron.start();
   logger.info('daily_task_cron.started');
 
+  // AC-5 US-002: register KPI snapshot BullMQ cron jobs (daily/weekly/monthly)
+  const { scheduleDailySnapshot, scheduleWeeklySnapshot, scheduleMonthlySnapshot } =
+    await import('./jobs/admin/kpi-snapshot.job');
+  await scheduleDailySnapshot();
+  await scheduleWeeklySnapshot();
+  await scheduleMonthlySnapshot();
+  logger.info('kpi_snapshot_crons.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }

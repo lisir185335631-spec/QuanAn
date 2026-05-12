@@ -29,6 +29,7 @@
     "test:judge": "vitest run --config vitest.judge.config.ts",
     "schema:diff": "tsx scripts/schema-diff.ts",
     "audit:redlines": "bash scripts/audit-redlines.sh",
+    "audit:redlines-admin": "bash scripts/audit-redlines-admin.sh",
     "audit:ld": "bash scripts/audit-ld.sh",
     "audit:all": "bash scripts/audit-all.sh",
     "db:generate": "prisma generate",
