@@ -1,5 +1,5 @@
 // PRD-11 US-002 · kpi-snapshot.job — BullMQ cron 1h 聚合
-// AC-1: Queue('admin:kpi-snapshot') + Worker · 调 computeSnapshot
+// AC-1: Queue('admin-kpi-snapshot') + Worker · 调 computeSnapshot
 // AC-6: attempts:3 · 第 3 次失败 → admin_audit_log eventCategory='system_alert'
 // AC-7: jobId 唯一约束防 double-fire
 
@@ -12,7 +12,7 @@ import { prisma } from '@/lib/prisma';
 import { redis } from '@/lib/redis';
 import { computeSnapshot } from '@/services/admin/nsm/kpi-snapshot.service';
 
-export const KPI_SNAPSHOT_QUEUE_NAME = 'admin:kpi-snapshot';
+export const KPI_SNAPSHOT_QUEUE_NAME = 'admin-kpi-snapshot';
 
 export interface KpiSnapshotJobPayload {
   granularity: 'day' | 'week' | 'month';
