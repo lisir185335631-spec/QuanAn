@@ -205,10 +205,13 @@ await Promise.allSettled([
 - `EvolutionInsight (accountId, isLatest)` 仅一行 isLatest=true(PRD-8 US-003)
 - `Asset` audio/image 类型按 fingerprint dedup(PRD-7/8)
 
-**pgvector 字段(3 处 · 1536 维 OpenAI embedding):**
-- `prisma/schema.prisma:109` `History.contentEmbedding` (PRD-2)
-- `prisma/schema.prisma:232` 重复定义(待 PRD-9 RAG 启动时核对)
-- `prisma/schema.prisma:464` `Trending.styleVector` (PRD-5)
+**pgvector 字段(4 处 · 1536 维 OpenAI text-embedding-3-small):**
+- `History.contentEmbedding` (PRD-2 · ivfflat 注释掉 · MVP cost saving)
+- `TrendingItem.contentEmbedding` (PRD-5 · ivfflat lists=100)
+- `DeepLearningArchive.styleVector` (PRD-5 · ivfflat lists=316)
+- **`KnowledgeChunk.embedding` (PRD-9 US-001 新加)** · **HNSW index** (`USING hnsw (embedding vector_cosine_ops)`) · 比 ivfflat 检索质量更好 · 适用 RAG 实时检索 · 113 总行(67 案例 + 23 公式 + 23 元素)
+
+**HNSW vs ivfflat 选型** · HNSW recall@10 通常 > ivfflat · 但建索引耗时 + 内存占用更高 · 113 行小数据集 HNSW 完美 · 大数据集(>100K rows)再评估 ivfflat 切换。
 
 ### §2.4 BullMQ Worker Concurrency(PRD-8)
 
@@ -272,11 +275,29 @@ await redis.expire(key, 1800);               // 30 min TTL · AC-5
 - prisma `connection_limit` 加大到 50+
 - connection pool monitoring(Datadog / Sentry / OTel)
 
+### §2.9 Cost Tracking · cost_log eventType 7 类完整列表(PRD-9 收官时已 7 类全证)
+
+`cost_log` 表跟踪所有 LLM / 外部 API 调用的成本 · 7 种 `eventType` 全部已落地(PRD-9 US-005 AC-7 验证):
+
+| eventType | 引入 PRD | 文件命中数 | 用途 |
+|---|:-:|:-:|---|
+| `specialist_call` | PRD-2/3 | 24 files | 14 Specialist 各自调用 LLMGateway 时写入 |
+| `judge_call` | PRD-5 | 13 files | LLM Judge 评估调用(TD-027 mock 中 · PRR 修)|
+| `image_gen` | PRD-6 | 5 files | DALL-E 3 图像生成调用 |
+| `l5_agent` | PRD-8 | 6 files | L5 真 Agent 调用(EvolutionAgent / DailyTaskAgent / VoiceChatAgent)|
+| `stt_call` | PRD-8 | 3 files | Whisper-1 语音转文本 |
+| `tts_call` | PRD-8 | 3 files | OpenAI TTS-1 文本转语音 |
+| **`embedding_call`** | **PRD-9** | **2 files** | OpenAI text-embedding-3-small (1536 dim · RAG)|
+
+**grep 全证命令** · `for et in specialist_call judge_call image_gen l5_agent stt_call tts_call embedding_call; do n=$(grep -rln "'$et'" apps/api/src/ tests/ | wc -l); echo "  $et: $n files"; done`
+
+**未来新增** · PRD-10+ admin 子系统可能加 `admin_call`(audit log)· 不污染主应用 cost_log(LD-A-1 隔离)。
+
 ---
 
-## §3 Known Tech Debt(8 open · `.agents/tech-debt.json` 32 条)
+## §3 Known Tech Debt(5 open · `.agents/tech-debt.json` 36 条 · post PRD-9)
 
-完整列表来自 `/Users/return/Desktop/QuanQn/.agents/tech-debt.json` · 24 resolved · 8 open。本节聚焦 8 open(按 severity 排序)。
+完整列表来自 `/Users/return/Desktop/QuanQn/.agents/tech-debt.json` · 20 resolved + 3 accepted + 3 closed + 5 open = 36 条 (post PRD-9 · 2026-05-12)。本节聚焦 5 open(按 severity 排序)· 详细 PRD-9 新加 TD-034/035 见 retro `.agents/retros/prd-9-vs-prd-8-retrospective.md`。
 
 ### §3.1 🔴 High Severity Open(2 条)
 

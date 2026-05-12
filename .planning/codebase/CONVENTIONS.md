@@ -392,18 +392,47 @@ const ARTIFACTS_DIR = path.resolve(__dirname, '../../scripts/ralph/verify-artifa
 
 ### 4.3 各 workspace tsconfig.json 差异
 
-| Workspace | `jsx` | `lib` | `rootDir` | 备注 |
-|---|---|---|:-:|---|
-| `apps/web` | `react-jsx` (继承) | `ES2022, DOM, DOM.Iterable` (继承) | (无 — include `vite.config.ts vitest.config.ts`) | jsdom 测试环境 |
-| `apps/api` | `preserve` (覆盖) | `ES2022` only (覆盖 — 去 DOM) | `./src` | Node 服务端 · 不需 DOM 类型 |
-| `apps/admin` | (继承) | (继承) | `./src` | 占位 (P9.0 起实施) |
-| `packages/schemas` | (继承) | `ES2022` only (覆盖) | `./src` | 纯 zod schema · 跨 web/api 共享 |
-| `packages/ui` | (继承 — react-jsx) | (继承) | `./src` | React 组件库 |
-| `packages/clients` | (继承 — react-jsx) | (继承) | `./src` | tRPC client 类型导出 |
+| Workspace | `jsx` | `lib` | `include` | 备注 |
+|---|---|---|---|---|
+| `apps/web` | `react-jsx` (继承) | `ES2022, DOM, DOM.Iterable` (继承) | `vite.config.ts vitest.config.ts` (无 src · 走 vite 自己) | jsdom 测试环境 |
+| `apps/api` | `preserve` (覆盖) | `ES2022` only (覆盖 — 去 DOM) | `["src", "scripts"]` (PRD-9 加 scripts) | Node 服务端 · 不需 DOM 类型 |
+| `apps/admin` | (继承) | (继承) | `["src"]` | 占位 (P9.0 起实施) |
+| `packages/schemas` | (继承) | `ES2022` only (覆盖) | `["src"]` | 纯 zod schema · 跨 web/api 共享 |
+| `packages/ui` | (继承 — react-jsx) | (继承) | `["src"]` | React 组件库 |
+| `packages/clients` | (继承 — react-jsx) | (继承) | `["src"]` | tRPC client 类型导出 |
 
 **调用** · `pnpm typecheck` (根) → `pnpm -r typecheck` (turbo) → 各 workspace `tsc --noEmit`
 
-**当前状态 (post PRD-8)** · 6 workspaces · 0 errors · 完全通过
+**当前状态 (post PRD-9)** · 6 workspaces · 0 errors · 完全通过
+
+### 4.4 ★ tsconfig `include` 红线 — 新建 scripts/ 目录必须加 (TD-033 教训 · PRD-9)
+
+**规则** · 任何子 workspace `apps/<x>/` 下新建 `scripts/` 目录(放 seed / one-shot CLI / dev utility)· **必须**同时改 `apps/<x>/tsconfig.json` 的 `include` 加 `"scripts"`。
+
+**理由** · 不加的话:
+- `tsc --noEmit` 不扫 scripts/ · 类型错静默漏审
+- `eslint . --ext ts` 走 workspace-level 时 · parserOptions.project 找不到 scripts 路径 · ESLint **整体 fail** (`Parsing error: TSConfig does not include this file`)
+- 但 Validator 跑 workspace-level `pnpm lint` 可能 timing 错过 · 19 错静默漏
+
+**实证** · PRD-9 US-002 (commit 3d26b92) · `apps/api/scripts/seed-knowledge-chunk.ts` 创建时 tsconfig.include 仅 `["src"]` · Opus audit 时 pnpm lint 才抓到 19 错(1 unused import + 6 import/order + 12 no-console)· 走 Step 4.5 Opus 直 fix 路径补救。
+
+**强制检查** · 任何 PRD 的 ralph dev 新建 `apps/<x>/scripts/<file>.ts` 时 · ralph 自检 + Opus audit 时 grep 同时改 tsconfig include 是否落地。
+
+**Fix 模板**:
+```diff
+  {
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": { ... },
+-   "include": ["src"],
++   "include": ["src", "scripts"],
+    "exclude": ["node_modules", "dist"]
+  }
+```
+
+**Script 文件顶部建议** · 若文件设计上必须 console.log(一次性 CLI / seed / dev utility)· 顶部加:
+```typescript
+/* eslint-disable no-console -- one-shot CLI script · intentional stdout */
+```
 
 ---
 

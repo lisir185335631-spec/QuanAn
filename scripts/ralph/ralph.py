@@ -1699,6 +1699,16 @@ def main():
             dashboard.set_state(iteration=i, phase="developing", current_story=current_story)
             timed_out, crashed = run_developer(i, current_story)
 
+            # RCA-006 (2026-05-12 · QuanQn PRD-9 US-002) · 跨 PRD-4/8/9 3 次同模式: dev 异常退出但 commit 已落地 · daemon 误 SKIP validator 累计 retryCount→BLOCKED
+            # 修法 · 若 crashed/timed_out 且 git log 内 (since iter_start) 已有 [<story>] commit · 强制跑 validator 让产物说话 · 不允许 SKIP
+            if (crashed or timed_out) and current_story:
+                _commit_hash_force = _check_existing_commit(current_story, since="20 minutes ago")
+                if _commit_hash_force:
+                    _reason = "crashed" if crashed else "timed_out"
+                    print(f"  [RCA-006] dev {_reason} but commit {_commit_hash_force} 落地 · 强制跑 Validator 不 SKIP")
+                    crashed = False
+                    timed_out = False
+
             if crashed:
                 # 开发 Agent 崩溃（非零退出码），重置 passes + 递增 retryCount 防止无限循环
                 if current_story:

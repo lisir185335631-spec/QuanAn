@@ -10,11 +10,12 @@
 ## ⚡ TL;DR (3 秒版)
 
 ```
-Step 1: 跑 audit-artifacts.py <US-XXX>              (~ 5s)
-Step 2: 查 risk_level                                (~ 1s)
-Step 3: 按档跑 grep 清单 (low 2条/medium 5条/high 全量) (~ 1-8 min)
-Step 4: 读实现文件 + 跨 story 协议核对                 (~ 1-10 min)
-Step 5: approve 或 reject (TD 豁免必须留痕)           (~ 30s)
+Step 1:    跑 audit-artifacts.py <US-XXX>              (~ 5s)
+Step 2:    查 risk_level                                (~ 1s)
+Step 3:    按档跑 grep 清单 (low 2条/medium 5条/high 全量) (~ 1-8 min)
+Step 4:    读实现文件 + 跨 story 协议核对                 (~ 1-10 min)
+Step 4.5:  Opus 直 fix mechanical 错路径 (5 条件全满足 · 详 §Step 4.5 · 2026-05-12 加)
+Step 5:    approve 或 reject (TD 豁免必须留痕)           (~ 30s)
 ```
 
 ---
@@ -258,6 +259,71 @@ done
 - **跨 story 协议锁逐字**: 定义 story + 消费 story 的命名一致 (看 PRD §7.5 表)
 - **流式/并发的时序细节**: 读 `asyncio.Lock` / `await` / `atomic SQL` 位置, 想 race condition
 - **Opus 盲点防御**: Ralph 可能"语义等价但非预期"(如双 unique 冗余, seed 无 audit log, SQLite NULL 陷阱)
+
+---
+
+## Step 4.5 — Opus 直 fix mechanical 错路径(2026-05-12 · QuanQn PRD-9 US-002 新增)
+
+> **来源** · QuanQn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错全 mechanical · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min vs reject 让 ralph 又一轮 30 min retry hell
+> **哲学** · 当错误是 mechanical 且 ralph 已陷入 infrastructure 死锁 · Opus 直 fix 比 reject 更经济 · 但**必须严守边界**防越界
+
+### 触发条件(必须全部满足)
+
+| # | 条件 | 验证方式 |
+|:-:|---|---|
+| 1 | 错误是 mechanical | import 排序 / 未用 import / 静默 lint 错 / tsconfig include 缺路径 / 拼写错 |
+| 2 | 错误总数 < 20 lines | `git diff --shortstat` 看 +/- 行数 |
+| 3 | 无逻辑改 | 不涉及 if / for / 算法 / 业务规则 / SQL where / API contract |
+| 4 | ralph 已多 retry 或死锁 | retryCount ≥ 3 或 daemon 已写 audit-gate.json blocked_needs_attention 或 dev 连续 ECONNRESET ≥ 2 |
+| 5 | reject 再让 ralph 跑 · 预计 ≥ 50% 撞 infra 失败 | 近期 ralph-output.log grep `ECONNRESET\|timeout\|health check fail` 高频命中 |
+
+**任一条件不满足** → **必须 reject** · 走 Step 5 normal path
+
+### 流程
+
+```bash
+# 1. Opus 直 Edit 修复 (用 Edit/Write 工具)
+
+# 2. 验证 (跑全套硬门禁)
+cd <project-root>
+pnpm typecheck   # 或 .venv/Scripts/mypy app
+pnpm lint        # 或 .venv/Scripts/ruff check app tests
+pnpm test        # 或 .venv/Scripts/pytest -q
+# 全 0 错 / 0 fail · 进 3
+
+# 3. 提 chore commit (明确标"Opus audit fix")
+git add <fixed files>
+git commit -m "chore: [US-XXX] Opus audit fix · <一句话描述> + lint clean
+
+<具体 fix 列表>
+
+零行为变化 · pnpm typecheck/lint/test 全过 · 详 audit log
+"
+
+# 4. 走 Step 5 approve 路径 (ralph-tools.py approve)
+python3 scripts/ralph/ralph-tools.py approve
+
+# 5. Approve 报告显式标 (必做)
+# "Opus 直 fix mechanical 错 commit XXXXXXX 避免 ralph 又一轮 retry · 详 Step 4.5 路径"
+```
+
+### 禁止滥用(严守边界)
+
+- ❌ 错误 ≥ 20 lines · 必须 reject 让 ralph 修(避免越界)
+- ❌ 涉及逻辑改(if / for / 算法 / SQL where / API contract)· 必须 reject(产品决策)
+- ❌ ralph retryCount < 3 · 应让 ralph 自己学(防过度保护)
+- ❌ 跨 story 协议改 · 必须 reject(可能影响下游 story)
+- ❌ 涉及 anti_patterns / 红线 / 安全 · 必须 reject(防 Opus 漏审)
+
+### 实证案例
+
+**QuanQn PRD-9 US-002 (2026-05-11 commit 3d26b92)**:
+- 触发 · scripts/ 目录不在 apps/api/tsconfig.json include · seed-knowledge-chunk.ts 静默漏审
+- Fix · 改 include 加 "scripts" + 删未用 Decimal import + import order 重排 + 顶部加 `/* eslint-disable no-console */`
+- 体量 · 2 files · +7/-6 lines · 0 逻辑改
+- ralph 状态 · 5 retry + 3 ECONNRESET 死锁 · audit-gate blocked_needs_attention
+- ROI · 5 min Opus 直 fix vs 预估 30+ min reject + 又一轮 retry(撞 ECONNRESET 概率高)
+- 结果 · approve · 详 audit-log-QuanQn.jsonl US-002
 
 ---
 

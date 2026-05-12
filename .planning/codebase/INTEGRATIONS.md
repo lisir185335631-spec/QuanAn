@@ -68,18 +68,25 @@ All 14 extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSp
 ### ContextAssembler — prompt injection chokepoint (LD-007 · D-054)
 
 - File: `apps/api/src/services/context-assembler/ContextAssembler.ts:38`
-- **5 parallel data fetches** via `Promise.allSettled` + per-fetch 5s timeout (`:44-51`):
+- **5 parallel data fetches** via `Promise.allSettled` + per-fetch 5s timeout (`:47-54`):
   1. L2 `step_data` rows (`_fetchStepData`)
-  2. **L4 latest EvolutionInsight** (`getLatestInsight` from `apps/api/src/memory/l4-profile.ts:13`) — **PRD-8 US-001 AC-8 new path**, injected into 11 generative specialists per D-054
+  2. **L4 latest EvolutionInsight** (`getLatestInsight` from `apps/api/src/memory/l4-profile.ts:13`) — **PRD-8 US-001 AC-8 path**, injected into 11 generative specialists per D-054
   3. L4 DeepLearning samples (`_fetchSamples` — currently degrades to `[]`)
-  4. L5 RAG (`_fetchRag` — currently degrades to `[]`; pgvector embedded; PRD-9)
+  4. **L5 RAG** (`_fetchRag` — **PRD-9 US-003 真接 ragRetrieveWorker** · D-025 placeholder → 真 RAG · D-058)
   5. Methodology constants (`methodologyQueryWorker.getAll()`)
-- All 5 routes independently fail-safe; `metadata.layersUsed` reflects successful layers (AC-8)
-- `contextTokens = chars/4` rough estimate (AC-9)
+- All 5 routes independently fail-safe; `metadata.layersUsed` reflects successful layers (AC-8) · 新加 `'L5_rag'` when ragChunks.length > 0
+- **L5 RAG retrieve 策略** · 按 agentId 推断:
+  - `CopywritingAgent` (non-boom) → 3 case + 1 formula + 1 element = 5 chunks
+  - `TopicAgent` / `CopywritingAgent` mode=boom → 3 element + 2 case
+  - 其他 8 生成型 → 3 case + 2 element
+  - 非生成型 (`DiagnosisAgent` / `DeepLearnAgent` / `EvolutionAgent`) → 跳过返 `[]`
+- **`[Section 6] RAG 知识库参考` 注入** · `_buildSection6` (`ContextAssembler.ts:201-212`) · ragChunks 空时跳过(D-020 降级)
+- `contextTokens = chars/4` rough estimate (AC-9) · 算入 RAG chunks 字符
 - `systemPrompt` MUST NOT contain LLM keys or API URLs (R-001 hard rule, AC-10)
 - Templates: `apps/api/src/services/context-assembler/templates/index.ts` — per-agentId persona/methodology
 - PII mask runs before assembly (`apps/api/src/lib/compliance/pii-mask.ts:piiMask`)
 - Sensitive-industry disclaimer appended post-generation (`apps/api/src/lib/compliance/disclaimer.ts:appendDisclaimerIfSensitive`)
+- **D-007 单一入口 grep** · `grep -rn 'ragChunks|ragRetrieve|knowledge_chunk' apps/api/src/specialists/` 应 **0 命中** · 11 generative agents 受益但 0 自拼接 · §11.6.8 双路径白名单仅 EvolutionAgent/DailyTaskAgent 例外
 
 ### VoiceChat tool function-calling (PRD-8 US-011)
 
@@ -118,7 +125,24 @@ All 14 extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSp
 - `trending_items.content_embedding vector(1536)`
 - `histories.content_embedding vector(1536)`
 - `deep_learning_archives.style_vector vector(1536)`
-- ivfflat indexes only on `trending_items` + `deep_learning_archives` (`histories` commented out — MVP cost saving per AGENTS §2.3)
+- **`knowledge_chunk.embedding vector(1536)` (PRD-9 US-001 新加)** · 67 案例 + 23 公式 + 23 元素 · 113 总行 · OpenAI text-embedding-3-small
+- ivfflat indexes on `trending_items` + `deep_learning_archives` (`histories` commented out — MVP cost saving per AGENTS §2.3)
+- **HNSW index on `knowledge_chunk_embedding_hnsw` (PRD-9 新)** · `USING hnsw (embedding vector_cosine_ops)` · 比 ivfflat 检索质量更好 · 适用于 RAG 实时检索
+
+**RAG Knowledge Base (PRD-9 US-001~005)**:
+- Worker: `apps/api/src/workers/embedding/openai-embedding.ts` (OpenAI text-embedding-3-small · 1536 dim · 同步调用不走 BullMQ · cost_log eventType='embedding_call')
+- Retrieve: `apps/api/src/workers/rag/retrieve.ts:32` (`ragRetrieveWorker.retrieve(params)`) · pgvector cosine `<=>` 操作符 · `similarity = 1 - cosine_distance`
+- **Dev no-key fallback** (US-004 fb0c206 · TD-035 PRR 决策) · `OPENAI_API_KEY not configured` 时降级到 PostgreSQL ILIKE 文本搜索(`textSearchFallback`)· 参数化 SQL($1/$2)防注入 · topK ≤ 20 + keywords ≤ 5 限 DOS · production pgvector path 不污染
+- tRPC endpoint: `apps/api/src/trpc/routers/knowledge.ts:99-150` · 3 publicProcedure (`list` / `search` / `getById`) · accountId=0 系统账户 · select 0 embedding 字段防泄露
+- Frontend page: `apps/web/src/pages/tools/Knowledge.tsx` · 3 tabs(案例/公式/元素)+ debounce 300ms 语义检索 · shadcn Tabs + Card · Aurelian Dark
+
+**Data Seeding (PRD-9 US-002 + US-005)**:
+- `pnpm seed:knowledge [--dry-run]` · `package.json:scripts` (`tsx --tsconfig apps/api/tsconfig.json apps/api/scripts/seed-knowledge-chunk.ts`)
+- 数据源: `apps/api/src/lib/constants/{cases.ts (67) · formulas.ts (23) · hotElements.ts (23)}` · 113 chunks
+- 幂等: `INSERT ON CONFLICT (type, title) DO UPDATE` · 任意环境可重跑
+- **no-key fallback mode (US-005 16e5a78)** · `OPENAI_API_KEY` 未设 → null embedding 插入 + token 粗算 `content.length / 1.5` · 让 dev / CI 也能 seed · text-search fallback (TD-035) 配合此模式工作
+- 真 seed (有 API key): 总 cost ≈ $0.0003 · 13K tokens · 耗时 ~60s
+- 推到 staging 真验 AC-6 (TD-034 PRR 决策)
 
 **File Storage:**
 - Declared in `.env.example`: `S3_BUCKET / S3_REGION / S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY` (lines 23-27)

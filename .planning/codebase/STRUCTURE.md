@@ -374,7 +374,7 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
   - `routers/_app.ts` (25 router 合并)
   - `routers/{auth,ipAccounts,stepData,...}.ts` (24 sub-router)
 
-### §2.5 `apps/api/src/workers/` — 9 Worker
+### §2.5 `apps/api/src/workers/` — 11 Worker
 
 - **Purpose:** 后台异步任务 · LLM SDK 唯一入口(R-1) · BullMQ Queue/Worker · 独立 worker
 - **Contains:** 每个子目录一个 worker
@@ -382,9 +382,12 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
   - `llm-gateway/index.ts` (256 LOC · R-1 LLMGateway 唯一处)
   - `stt/whisper.ts` · `tts/openai-tts.ts` (D-038 audio SDK 例外 2 处)
   - `image-gen/dall-e-3.ts` (D-038 image SDK 例外 1 处)
+  - `embedding/openai-embedding.ts` (PRD-9 新 · OpenAI text-embedding-3-small · 1536 dim · 同步调用不走 BullMQ · cost_log eventType='embedding_call')
+  - `rag/retrieve.ts` (PRD-9 新 · 163 LOC · pgvector cosine `<=>` 操作符 + topK · 加 dev 无 OPENAI_API_KEY 时 ILIKE text-search fallback · 参数化 SQL 防注入 + topK/keywords 限制 · production pgvector path 不污染 · TD-035 PRR 决策)
   - `evolution/{queue,worker}.ts` · `daily-task/{queue,worker}.ts` (BullMQ)
   - `methodology-query/index.ts` (in-memory 常量 · ContextAssembler 用)
-  - `trending-scraper/` · `file-parser/` (空目录 · LD-017 留 PRD-9 第三方授权)
+  - `trending-scraper/` · `file-parser/` (空目录 · LD-017 留 PRD-10+ 第三方授权)
+- **D-038 同步调用模式** · embedding + rag + stt + tts + image-gen 都同步(不走 BullMQ)· 因 latency 敏感 + 单次调用 · 仅 evolution + daily-task + (P10+) file-parser 走 BullMQ
 
 ### §2.6 `apps/api/src/memory/` — 5 层记忆
 
@@ -399,9 +402,14 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
 
 - **Purpose:** Specialist 之间共享逻辑 · 不属 Specialist 也不属 Worker
 - **Contains:**
-  - `context-assembler/ContextAssembler.ts` (205 LOC · 5 路并行 + Promise.allSettled + 5s timeout)
+  - `context-assembler/ContextAssembler.ts` (283 LOC · 5 路并行 + Promise.allSettled + 5s timeout · **PRD-9 加 L5 RAG path D-058**)
   - `context-assembler/templates/` (14 Specialist persona / methodology 模板)
   - `ip-progress/IPProgressService.ts` (9 步主线进度)
+- **D-007 单一入口 · D-054 + D-058 统一注入** · ContextAssembler 是 prompt 装配的唯一 chokepoint:
+  - L2 stepData (prisma) + L4 EvolutionInsight (PRD-8) + L4 Samples (留 PRD-10+) + **L5 RAG (PRD-9)** + Constants
+  - L5 RAG 按 agentId 推断 retrieve 策略:CopywritingAgent → 3 case+1 formula+1 element · TopicAgent/BoomGen → 3 element+2 case · 其他 8 生成型 → 3 case+2 element · 非生成型(DiagnosisAgent/DeepLearnAgent/EvolutionAgent)跳过
+  - 注入 `[Section 6] RAG 知识库参考` 段 · 空时跳过(D-020 降级)
+  - **specialists/ 0 自拼接** · `grep -rn 'ragChunks|ragRetrieve|knowledge_chunk' apps/api/src/specialists/` 应 0 命中(11 generative agents 受益但不直调 · §11.6.8 双路径白名单仅 EvolutionAgent/DailyTaskAgent 例外)
 
 ### §2.8 `apps/api/src/cron/` — node-cron 定时任务
 
