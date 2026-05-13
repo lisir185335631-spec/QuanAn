@@ -17,11 +17,12 @@ ADMIN_TABLES=(
   approval_requests
   prompt_versions
   user_quota
-  # 9 辅助表(按业务域)
+  # 辅助表(按业务域)
   kpi_snapshots
   ip_account_admin_notes
   ip_account_anomaly_flags
   invite_campaigns
+  # 域⑦ TrendingItem 审核
   trending_review_queue
   trending_takedown
   auto_review_rules
