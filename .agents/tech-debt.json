@@ -888,9 +888,11 @@
       "detected_in_prd": "prd-12",
       "detected_in_story": "US-001 audit (PRD-12)",
       "fix_by": "PRD-12 close 前 (US-001~013 任何一 retry 时顺手改) 或 PRD-13",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A: 改 console.log 为 logger.warn 同时 redact tempPassword (只 hash 前 4 chars) · 选 B: 完全删 console.log 留 logAdminAction (已存) · 选 C: 加 eslint-disable + 在 audit-redlines.sh 加 ignore admin reset password 的特例 (不推荐)",
-      "created_at": "2026-05-13T09:06:53"
+      "created_at": "2026-05-13T09:06:53",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
     },
     {
       "id": "TD-051",
@@ -910,9 +912,11 @@
       "detected_in_prd": "prd-12",
       "detected_in_story": "US-001 audit (PRD-12)",
       "fix_by": "PRD-13 或 audit-redlines.sh 改成识别 eslint-disable comment",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A: 改 audit-redlines.sh grep 为 `grep -v \"eslint-disable.*no-explicit-any\"` 让 eslint-disable 注释豁免 · 选 B: 等 @react-pdf/renderer 升级修类型 · 选 C: 写一个 PdfBillTemplateProps 显式 type assertion 替代 as any",
-      "created_at": "2026-05-13T09:06:53"
+      "created_at": "2026-05-13T09:06:53",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
     },
     {
       "id": "TD-052",
@@ -937,9 +941,11 @@
       "detected_in_prd": "prd-12",
       "detected_in_story": "US-002 audit",
       "fix_by": "PRD-12 close 前 (US-013 收官 story 顺手修 audit grep) 或 PRD-13",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A: audit-redlines.sh R-1 grep 加 --exclude-dir image-gen,embedding,rag,tts,stt · R-4/R-5 grep 加 --exclude-dir admin · LD-005 改 grep 模式精确 · 选 B: 加 .auditignore 文件机制 · grep 读 ignore list 跳过 · 选 C: 写一个 audit script 加 // audit-ignore: R-1 comment 识别",
-      "created_at": "2026-05-13T09:47:54"
+      "created_at": "2026-05-13T09:47:54",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
     },
     {
       "id": "TD-053",
@@ -959,9 +965,11 @@
       "detected_in_prd": "prd-12",
       "detected_in_story": "US-005 audit",
       "fix_by": "US-006 part 2 (顺手改 Drawer 字段名 bannedWords → bannedWordHits) 或 PRD-13",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "选 A (推荐): Drawer 162-165 改 result[\\\"bannedWordHits\\\"] · piiMatches 暂去掉(trending 域 worker 不扫 PII · 是 deep_learn 域才扫) · 选 B: US-002 service 新加 bannedWords alias 字段(老字段保留向后兼容)· 选 C: 抽 packages/schemas/admin/scan-result.schema.ts 单一源 zod schema (跨 worker+Drawer 用)",
-      "created_at": "2026-05-13T10:55:56"
+      "created_at": "2026-05-13T10:55:56",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
     },
     {
       "id": "TD-054",
