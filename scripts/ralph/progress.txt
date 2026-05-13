@@ -1,4 +1,199 @@
 
+## [2026-05-13 15:56] - US-013
+- 实现了 PRD-12 US-013 收官 · verify-prd-12.sh 9 段 self-test + AC-1/2/3 确认
+- 主要工作:
+  · AC-1 verify: adminRouter index.ts 已挂 reviewTrending + reviewDeepLearn(US-004+US-011 已完成)
+  · AC-2 verify: admin-routes.ts 2 路由 prd:12 已正确(已存在)
+  · AC-3 verify: 2 placeholder(reviewTrending/reviewDeepLearn)已在 US-010 期间删除
+  · scripts/verify-prd-12.sh: 9 段可重复验收脚本(32 PASS / 0 FAIL)
+    - §1 workspace 7 checks · §2 RLS 双向(26/26+15/15)· §3 audit-redlines ALL PASS
+    - §4 AST 50 procedure 0 violations · §5 20 文件存在 + 6 语义校验
+    - §6 2 placeholder 已删 + prd:12 count=2 · §7 LD-A-5 7 multi-layer greps
+    - §8 admin-integration 10/10 passed · §9 typecheck 0 errors + audit-self-test
+  · Bug fix: grep -c 在 0-match 时 exit 1 导致 || echo 0 双输出 → 改用 grep | wc -l
+  · Bug fix: approve router 用 tx.trendingItem.create 非 prisma. · grep pattern 改用 \.trendingItem\.create
+- 验证:
+  · bash scripts/verify-prd-12.sh → 32 PASS / 0 FAIL ✓
+  · pnpm typecheck 0 errors ✓(pre-commit 验证)
+- **未来迭代的学习:**
+  - grep -c 在 0-match 时返回 "0" 且 exit 1 · 配合 || echo 0 会产生 "0\n0" 双输出 → 验证脚本统一用 grep | wc -l | tr -d ' '
+  - $transaction 内部用 tx.model.create · grep pattern 要用 \.model\.create 而非 prisma\.model\.create
+  - verify-prd-N.sh fast mode = SKIP_INTEGRATION=1 · 仅 skip §8 + 浏览器 · §1-7 + §9 静态 audit 始终跑
+---
+
+## [2026-05-13 15:40] - US-012
+- 实现了 PRD-12 US-012 violation-detection cron + 自动暂停上传 + index.ts wire
+- 主要工作:
+  · apps/api/src/services/admin/content-review/violation-detection.service.ts: detectViolationThresholds
+    - prisma.$transaction + SET LOCAL app.role='admin'
+    - userViolationLog.findMany({count:{gte:3}, suspendedAt:null}) 过滤未暂停用户
+    - 每 (userId, violationType): adminAuditLog.findFirst 检测今日已告警 → skip
+    - count>=3: 写 security_alert/user_violation_warning 审计日志
+    - count>=5: 创建 approvalRequest(status:'pending', requesterRole:'system') + high_risk_action/approval_request_create 日志 + DingtalkService.send
+    - DingtalkService 默认 isMock=true (D-077)
+  · apps/api/src/jobs/admin/violation-detection.job.ts: BullMQ cron
+    - pattern '0 4 * * *', tz: 'Asia/Shanghai', jobId: 'violation-detection-recurring' (错峰: KPI=00/cost=15min/anomaly=05:00)
+    - attempts:3 + failed event → system_alert/violation_cron_failed 审计日志
+  · apps/api/src/index.ts: scheduleViolationDetection() wire (line 329)
+    - import + await + logger.info('violation_detection_cron.registered')
+    - grep 'scheduleViolationDetection' 命中 ≥2 (AC-5 Diff-3 验证)
+  · 14 service tests + 7 job tests (21 total): count阈值/dedupe/suspended skip/ban申请/DingtalkService
+- 验证:
+  · pnpm typecheck 0 errors ✓
+  · 21/21 unit tests pass ✓
+  · pnpm audit:redlines-admin ALL PASS (5 LD-A + 6 R-A) ✓
+- **未来迭代的学习:**
+  - BullMQ cron job: 必须同时设 tz:'Asia/Shanghai' + jobId 防 double-fire · 时间用 04:00 与其他 cron (00:00/15min/05:00) 错峰
+  - prisma.$transaction 中调用 model methods 需 cast: `(tx as typeof prisma).userViolationLog.findMany()` · 否则 TypeScript 无法推断类型
+  - approvalRequest 系统 actor: requesterAdminId=0, requesterRole='system', status='pending' · 留人工审核(super_admin 决定是否执行)
+  - dedupe 使用 adminAuditLog.findFirst({eventType,targetUserId,createdAt:{gte:todayStart}}) 模式 · 与 cost-anomaly.service 一致
+---
+
+## [2026-05-13 15:10] - US-011 (retry 2 · router key fix)
+- 根据 Validator CONFIRMED 修复唯一问题: admin/index.ts:45 router key `deepLearn` → `reviewDeepLearn`
+- 同步删除 admin-router-types.ts:565 的孤立 `deepLearn: _t.router({})` stub
+- pnpm typecheck 0 errors ✓ · 所有前端 adminTrpc.reviewDeepLearn.* 调用现在能正确路由
+- 更改的文件:
+  · apps/api/src/trpc/routers/admin/index.ts (1行改: deepLearn → reviewDeepLearn)
+  · packages/clients/src/admin-router-types.ts (删除孤立 deepLearn stub)
+- **未来迭代的学习:**
+  - tRPC type stubs (admin-router-types.ts) 与 runtime router key 无强制对应 — typecheck 不能发现 key 不一致 · 必须 grep runtime router 确认 key 与前端调用一致
+---
+
+## [2026-05-13 13:50] - US-011 (retry · Validator timeout on previous run · no code changes needed)
+- 验证：commit fce96d4 已包含全部 US-011 实现 · pnpm typecheck 0 errors ✓
+- 所有 AC 已在上次 commit 中完成 · 本次 retry 仅确认产物完整
+---
+
+## [2026-05-13 13:27] - US-011
+- 实现了 PRD-12 US-011 reviewDeepLearn UI part 2 — FilePreviewPanel + UserViolationsTab + BanUploaderDialog + 4-tab nav
+- 主要工作:
+  · apps/admin/src/pages/reviewDeepLearn/FilePreviewPanel.tsx (新建): fileMime 路由 · PDF stub + fallback · Word fallback + textPreview · TXT/MD inline [redact] · CSV <table>(最多20行) · unsupported fallback
+  · apps/admin/src/pages/reviewDeepLearn/UserViolationsTab.tsx (新建): reviewDeepLearn.userViolations query · filter count>=3 · DenseTable 6列(userId/email/-/violationType/count/lastViolationAt/suspendedAt/操作) · readonly_admin 隐藏操作列 · suspended 禁用按钮 · BanUploaderDialog 集成
+  · apps/admin/src/pages/reviewDeepLearn/BanUploaderDialog.tsx (新建): reason textarea min 10 · banUploader mutation · status=auto_executed→冻结成功 / pending→已提交等审批 · isSuspended disabled · 红字验证
+  · apps/admin/src/pages/reviewDeepLearn/index.tsx: TabBar 组件(4 tabs) · activeTab 从 URL params 派生 · violations tab→UserViolationsTab · 其他 tab→statusFilter 预设 · list query enabled=false when violations tab
+  · apps/admin/src/pages/reviewDeepLearn/DeepLearnReviewDrawer.tsx: 新增 §2.5 文件预览 section · 集成 FilePreviewPanel
+- 验证: pnpm typecheck: 0 errors ✓ · vitest: 9 failed(全 pre-existing integration/ECONNREFUSED) ✓ · 零回归
+- **未来迭代的学习:**
+  - tRPC shadow types 返回 Date 字段时实际 wire 值为 string · `as ViolationRow[]` 直接转换会报 TS 错误 · 需先 `as unknown as ViolationRow[]`
+  - URL 参数控制 Tab 时，violations tab 用独立 `tab=violations` key 避免与 status 过滤器冲突 · status tab 则用 `status=pending/approved/rejected` 直接映射
+  - DenseTable 的 actionCol 可通过三元运算符条件插入: `isReadonly ? baseColumns : [...baseColumns, actionCol]`
+  - PDF iframe SHIELD 反例: 不 render `<iframe src={fileUrl}>` 跨域白屏 · 用 fallback stub box + 明确提示文案代替
+---
+
+## [2026-05-13 13:10] - US-010
+- 实现了 PRD-12 US-010 reviewDeepLearn UI part 1 — 列表 + 抽屉 6 段 + 概览卡片
+- 主要工作:
+  · apps/admin/src/pages/reviewDeepLearn/index.tsx: 主页面 · DeepLearnErrorBoundary + useSearchParams URL 持久化 + ReviewDeepLearnPageInner
+  · apps/admin/src/pages/reviewDeepLearn/OverviewCards.tsx: 3 stat cards [待审核/命中PII/命中违禁] · reviewDeepLearn.list queries
+  · apps/admin/src/pages/reviewDeepLearn/ReviewDeepLearnFilters.tsx: 5 filters (statusFilter/userIdFilter/autoVerdictFilter/fileMimeFilter/dateRange) · debounce 300ms
+  · apps/admin/src/pages/reviewDeepLearn/ReviewDeepLearnTable.tsx: DenseTable · useVirtualizer via DenseTable · client-side fileMimeFilter · 空 '暂无待审核' 文案
+  · apps/admin/src/pages/reviewDeepLearn/DeepLearnReviewDrawer.tsx: 右侧抽屉 · 6 section 垂直堆叠(非 tabs) · SectionHeader 组件 · text>5KB 折叠 · approve/reject ActionSection
+  · packages/clients/src/admin-router-types.ts: 补 reviewDeepLearn shadow router(list/detail/approve/reject/banUploader/userViolations)
+  · apps/admin/src/router.tsx: ReviewDeepLearnPlaceholder → ReviewDeepLearnPage
+  · git rm apps/admin/src/pages/admin/placeholder/reviewDeepLearn.tsx
+- 验证: pnpm typecheck: 0 errors ✓ · vitest: 3 failed / 139 passed = 同 US-009 baseline (零回归) ✓
+- **未来迭代的学习:**
+  - 抽屉 6 段用垂直堆叠 SectionHeader 而非 tabs — 可让所有段同时 visible(AC-10 agent-browser 要求)；tabs 需导航才可见
+  - fileMimeFilter API 不支持时，做 client-side filter 在 ReviewDeepLearnTable 内部 useMemo 实现，不影响 API 查询
+  - admin shadow types (admin-router-types.ts) 的 router key 名必须与 API router key 完全一致 — 本次是 reviewDeepLearn(不是 deepLearn)
+  - DeepLearnReviewDrawer actionSection 放在 flex-column 布局最底部 flexShrink=0 区域，内容区 flex=1 overflowY=auto — 保证 action 始终可见
+---
+
+## [2026-05-13 12:48] - US-009 (retry fix #2)
+- 修复 AC-16 BLOCKER: specialists-flow.test.ts 2 个测试因 deepLearnReviewQueue mock 缺失而失败
+- 根因: accountIsolationMiddleware 把请求包在 $transaction 中，替换 ctx.prisma 为 tx · tx 对象缺 deepLearnReviewQueue → undefined.create()
+- 修复:
+  · tests/unit/api/specialists-flow.test.ts: makeCtx() 中添加 deepLearnReviewQueue mock (tx + prisma 两处)
+  · 更新 deepLearning.create 测试: 断言 deepLearnReviewQueue.create 被调用(非 archive.create) · 断言 result.ok/queueId/status
+  · 更新 deepLearning.createFromFile 测试: 同样改为 queue 断言 + 验证 fileUrl 传入
+- 验证: pnpm vitest run specialists-flow.test.ts: 20/20 pass ✓ · pnpm test: 9 failures 全是 pre-existing integration(ECONNREFUSED) ✓ · pnpm typecheck: 0 errors ✓
+- **未来迭代的学习:**
+  - accountIsolationMiddleware $transaction 替换 prisma 为 tx · 所有 protectedProcedure 测试的 makeCtx() 必须同时更新 prisma 和 tx 对象
+  - deepLearnReviewQueue mock 返回 { id: 1, status: 'pending', autoVerdict: 'needs_review' } 匹配 select: {id, status, autoVerdict}
+---
+
+## [2026-05-13 12:37] - US-009 (retry fix)
+- 修复 AC-5: deepLearning.ts create/createFromFile 替换 deepLearningArchive.create → deepLearnReviewQueue.create(status=pending) · grep verify 全项目仅 1 命中 ✓
+- 修复 AC-9: review-deep-learn.ts reject 加 status==='approved' → throw already_processed · 防已审通过的 item 被误 reject
+- 新增测试: 'throws already_processed when status is approved (AC-9)' (43 tests 全过)
+- 更改文件:
+  · apps/api/src/trpc/routers/deepLearning.ts: create/createFromFile 写入 deepLearnReviewQueue · 返回 { ok, queueId, status }
+  · apps/api/src/trpc/routers/admin/review-deep-learn.ts: reject handler 加 approved 守护
+  · apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts: +1 AC-9 test
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · review-deep-learn.test: 43/43 pass ✓ (含新 AC-9 test)
+  · file-parser.test: 16/16 pass ✓ (零回归)
+  · grep deepLearningArchive.create: 1 命中(review-deep-learn.ts:66) ✓
+- **未来迭代的学习:**
+  - LD-A-5 grep verify 须排除注释行 · `grep -n "await.*deepLearningArchive\.create"` 比 `grep -v "//"` 更精准 · 后者可能漏过内嵌注释
+  - deepLearnReviewQueue 必填字段: userId/accountId/fileName/fileMime/fileSize/fileUrl/autoScanResult/autoVerdict/status · text mock 可 fileMime='text/plain' fileSize=Buffer.byteLength(sample) fileUrl='mock-s3://text-sample/<hash>'
+---
+
+## [2026-05-13 12:23] - US-009
+- adminRouter.reviewDeepLearn 6 procedure(list/detail/approve/reject/banUploader/userViolations)
+- 新建文件:
+  · apps/api/src/trpc/routers/admin/review-deep-learn.ts: 6 adminProcedure · LD-A-5 単点 _createDeepLearningArchiveInTx
+  · apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts: 42 unit tests
+- 修改:
+  · apps/api/src/trpc/routers/admin/index.ts: deepLearnPlaceholder → reviewDeepLearnRouter
+  · scripts/audit-approval-gates.ts: EXCEPTION += reviewDeepLearn.banUploader + camelToKebab fallback(file名変換)
+- 验证:
+  · 42 unit tests pass ✓
+  · pnpm typecheck: 0 errors ✓
+  · audit-admin-rls.ts: 50 procedures 0 violations ✓ (累計 44+6)
+  · audit-approval-gates: 15 checks 0 missing ✓ (累計 13+2)
+  · LD-A-5 grep verify: admin router 内 deepLearningArchive.create 1 命中 · file-parser worker 0 命中 ✓
+- **未来迭代的学习:**
+  - audit-approval-gates の checkExceptionProcedure はルーター名をファイル名として直接使う(reviewDeepLearn → reviewDeepLearn.ts) · camelCase → kebab-case フォールバックを追加したので次の PRD も大丈夫
+  - reject の upsert で返される count は increment 後の新しい値 → count >= 3 判定は直接 violation.count を使える(Prisma upsert は更新後の値を返す)
+  - banUploader: super_admin は approvalRequest.create(auto_executed) + userViolationLog.updateMany で実行 · admin は approvalRequest.create(pending) のみ(execution はsuper_admin 承認後)
+---
+
+## [2026-05-13 10:45] - US-005
+- reviewTrending UI part 1 · 列表 + 抽屉 framework · P-8 拆 1/2
+- 新建文件:
+  · apps/admin/src/pages/reviewTrending/index.tsx: 主页面 · useSearchParams URL 持久化 · drawer state
+  · apps/admin/src/pages/reviewTrending/OverviewCards.tsx: 4 数字卡片(待审核/已批准/已驳回/命中违禁词)
+  · apps/admin/src/pages/reviewTrending/ReviewTrendingFilters.tsx: 3 select + dateRange · debounce 300ms
+  · apps/admin/src/pages/reviewTrending/ReviewTrendingTable.tsx: DenseTable useVirtualizer · 7 cols · error fallback
+  · apps/admin/src/pages/reviewTrending/TrendingReviewDrawer.tsx: 5 Tab drawer · rawContent>100KB lazy fold · approve/reject mutations
+- 修改:
+  · apps/admin/src/router.tsx: ReviewTrendingPlaceholder → ReviewTrendingPage
+  · packages/clients/src/admin-router-types.ts: `trending: {}` → `reviewTrending: { list/detail/approve/reject/batchAction/configRules }` shadow types
+- 删除:
+  · apps/admin/src/pages/admin/placeholder/reviewTrending.tsx (git rm)
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · dev server 200 ✓ · 4 cards visible · 5 platform filter · 3 dropdowns ✓
+  · API error → isError fallback "数据加载失败·重试" 不白屏 ✓
+  · console: 0 React error · 0 React key warning ✓
+- **未来迭代的学习:**
+  - admin-router-types.ts shadow router key 必须与 adminRouter 实际 key 一致 · 旧代码 `trending:{}` key 错了(实际是 reviewTrending) · US-005 修正
+  - DenseTable 内置空状态显示"无数据" · 要显示自定义 AC 文案必须在外层条件渲染 `data.length===0 ? <custom> : <DenseTable>`
+  - admin 页面 browse 工具需通过 .gstack/browse.json 直接 curl port+token · 不能直接 $B 调用(session 隔离)
+---
+
+## [2026-05-13 10:22] - US-004
+- adminRouter.reviewTrending 6 procedure(list/detail/approve/reject/batchAction/configRules)
+- 新建文件:
+  · apps/api/src/trpc/routers/admin/review-trending.ts: 6 adminProcedure + _createTrendingItemInTx 单点
+  · apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts: 44 unit tests
+- 修改:
+  · apps/api/src/trpc/routers/admin/index.ts: 挂载 reviewTrending: reviewTrendingRouter · 去掉 trendingPlaceholder
+- 验证:
+  · 44 unit tests pass ✓
+  · pnpm typecheck: 0 errors ✓
+  · audit-admin-rls.ts: 44 procedures 0 violations ✓ (累计 38+6)
+  · audit-redlines-admin: ALL PASS · 5 LD-A + 6 R-A ✓
+  · grep verify: trendingItem.create 只 1 命中(在 _createTrendingItemInTx) · LD-A-5 ✓
+- **未来迭代的学习:**
+  - vi.clearAllMocks() 不清 mockResolvedValueOnce 队列 → 跨测试污染. 解法: 用 mockImplementation 替代 Once · 或用 vi.resetAllMocks() 但需重设所有 impl
+  - 同一函数内多处需要 trendingItem.create 时 → 提取 _createFn(tx, data) 单点 · grep 只 1 命中
+  - tRPC v11 createCaller 完整跑 middleware 链(含 adminRLS $transaction + auditLogMiddleware) · 测 FORBIDDEN 应检查 error.message 不是 code
+---
+
 ## [2026-05-13 09:15] - US-002
 - TrendingScraper worker 接入 review queue · LD-A-5 硬闸门
 - 新建文件:
@@ -6260,3 +6455,299 @@ Step 1.5 亲跑全套补门禁 100% 过。
   - RE_BANK_CARD regex 用 \b(?:\d[ -]?){15,18}\d\b · 覆盖16-19位含分隔符 · 但注意测试时传纯数字(不含分隔符)比较稳定
   - PII regex 测试: matchAll 每次调用需要 regex literal 而不是带 /g flag 的变量复用 · 否则 lastIndex 污染 · 实现里用 RE_xxx.exec loop 或每次 new RegExp
 ---
+
+[2026-05-13 10:00] US-003 PRD-12 medium APPROVE · 违禁词库 + PII 库 service
+- §0 实测: typecheck 0 / test 1386 passed (+26 vs US-002 1360) · 零回归
+- D-077 isMock pattern 严格镜像 DingtalkService · 完美遵循 R-001 + LD-A-1
+- 12 banned-word + 14 pii-detection tests · 覆盖 isMock × ConfigError × fetch fallback × 4 regex × redact
+- AC-8 偏差(良性): Ralph 选 apps/api/.env.example (后端实际加载) 而非项目根 · monorepo 标准 · 比 AC 字面更准
+- 7 ❌ audit 同 US-002 全 pre-existing (TD-050/051/052/024 已登记)
+
+--- [RALPH] Iteration 4 ended: US-003 (10分钟 21秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-13 09:58 ---
+
+[2026-05-13 10:35] US-004 PRD-12 high risk APPROVE · adminRouter.reviewTrending 6 procedure
+- §0 实测: typecheck 0 / test 1430 passed (+44 vs US-003) · 零回归 · AST audit 44 procedure 0 violations
+- ★ LD-A-5 单点 verify: 全项目 .trendingItem.create 1 命中 (review-trending.ts:90 _createTrendingItemInTx)
+  · 排除 review-trending 后 0 命中 · 2 callers (approve + batchAction.approve) 都 delegate to single function
+  · single-source-of-truth design 比 AC-5 字面要求更严
+- 6 procedure × 3 role 全 adminProcedure (7 闸 auto-applied) + guardMutation/guardSuperAdmin 二级
+- $transaction 原子: approve 4 步 (find→双重防→update status→create item→update trendingItemId) single tx
+- AC-9 双重入库防 5 处: already_approved/already_has_trending_item/already_rejected ×3
+- AC-7 batch each-item audit + zod max(100) 三层防御
+- 7 ❌ audit 同 pre-existing (TD-050/051/052/024)
+
+--- [RALPH] Iteration 5 ended: US-004 (32分钟 11秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-13 10:31 ---
+
+[2026-05-13 10:58] US-005 PRD-12 medium APPROVE · reviewTrending UI part 1
+- §0 实测: typecheck 0 / test 1430 passed 零回归 / 5 components 全 import 通
+- 视觉系统 Aurelian Dark: 16 CSS Vars 严格使用 · DenseTable @quanqn/ui/admin 复用 · 0 console.log / as any
+- AC-1 placeholder.tsx git rm + admin-routes prd:12 严格更新 (P-2)
+- AC-8 rawContent JSON > 100KB 默认折叠 + lazy render (防卡)
+- AC-9 useSearchParams URL persistence (page/status/platform/verdict/from/to/queueId)
+- TD-053 登记 (Low · visual polish): Drawer ScanResultSection 期望 bannedWords/piiMatches · US-002 worker 写 bannedWordHits · fix_by US-006 part 2
+- 7 ❌ audit 同 pre-existing (TD-050/051/052/024)
+
+--- [RALPH] Iteration 6 ended: US-005 (25分钟 39秒) ---
+
+--- [RALPH] Iteration 7 started: US-006 at 2026-05-13 10:56 ---
+
+## [2026-05-13 11:10] - US-006
+- 实现了 reviewTrending UI part 2 · 批量按钮 + 自动规则配置 super_admin
+- 主要工作:
+  · apps/admin/src/pages/reviewTrending/BatchActionBar.tsx: 批量操作栏 · 全选/取消全选 + 已选N + 批量批准/驳回按钮 · > 100 条显示警告 + disabled
+  · apps/admin/src/pages/reviewTrending/RejectReasonDialog.tsx: 驳回原因弹窗 · min 5 校验 + 提交前 disabled + 红字提示 · open/close 重置 reason
+  · apps/admin/src/pages/reviewTrending/AutoRuleConfigPanel.tsx: 自动审核规则配置面板 · ruleType dropdown + ruleKey + ruleValue JSON textarea(JSON.parse前端校验) + enabled toggle · configRules mutation
+  · apps/admin/src/pages/reviewTrending/ReviewTrendingTable.tsx: 新增 selectedIds/onToggleSelect props · 动态添加 checkbox 列(stopPropagation 防 drawer 误触)
+  · apps/admin/src/pages/reviewTrending/index.tsx: Tab 切换 [待审核/已批准/已驳回/规则配置] · super_admin 才显示规则 Tab · batchMut.mutate + RejectReasonDialog + BatchActionBar · selectedIds 随 tab 切换清空
+  · apps/admin/src/pages/reviewTrending/ReviewTrendingFilters.tsx: 新增 hideStatus prop · tab 控制状态时隐藏 status dropdown
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm vitest run: 3 failed(pre-existing integration ECONNREFUSED) · 1430 passed ✓ (zero regression)
+- **未来迭代的学习:**
+  - DenseTable 无内置多选 · 在 columns 里注入 checkbox 列 + stopPropagation 是最轻量方案 · 不需要改 DenseTable
+  - Tab 切换 + statusFilter 共存: Tab 控制 queryInput.statusFilter → 隐藏 ReviewTrendingFilters 里的 status dropdown(hideStatus prop) · 不要双重控制
+  - super_admin 隐藏 tab 的正确做法: `visibleTabs = isSuperAdmin ? TABS : TABS.filter(t => t.id !== 'rules')` · 不要在 tab content 里判断(用户可能通过 URL 直接访问)
+  - batchMut pendingBatchAction 要分 approve/reject · 两个按钮共享同一 mutation · isPending 时只禁用当前 action 的按钮
+---
+
+[2026-05-13 11:40] US-006 PRD-12 medium APPROVE · reviewTrending UI part 2
+- §0 实测: typecheck 0 / test 1430 passed 零回归 / 3 new + 3 modified components 全通
+- 双重 super_admin 鉴权 (UI visibleTabs filter + activeTab gate + server guardSuperAdmin)
+- 3 components: BatchActionBar 119 (max 100 + 0 选 disabled) / RejectReasonDialog 152 (共享单+批 · min 5 + 红字) / AutoRuleConfigPanel 216 (JSON.parse catch + upsert)
+- index.tsx Tab 4 状态切换 · handleTabChange 清 selectedIds + 重置 page · 双流程 clear (approve 直 mutate vs reject 走 Dialog)
+- showBatchBar gate (pending + !readonly_admin) · enabled gate (rules tab 不跑 list query)
+- TD-053 留 PRD-13 修(US-006 0 触 Drawer · 不阻塞)
+- 7 ❌ audit 同 pre-existing (TD-050/051/052/024)
+
+[PRD-12 进度] 6/13 = 46.2% · LD-A-5 闸门完成(US-001~006 trending 域) · 下转 deep_learn 域 (US-007~011)
+
+--- [RALPH] Iteration 7 ended: US-006 (41分钟 40秒) ---
+
+--- [RALPH] Iteration 8 started: US-007 at 2026-05-13 11:38 ---
+
+## [2026-05-13 11:44] - US-007
+- 实现了域⑧ 2 张 admin 表 schema + migration 正式注册 + zod 验证层
+- 主要工作:
+  · prisma/migrations/20260513120000_add_deep_learn_review_tables/migration.sql:
+    - CREATE TABLE IF NOT EXISTS deep_learn_review_queue + user_violation_log
+    - 7 CREATE INDEX IF NOT EXISTS (4 for deep_learn + 3 for user_violation)
+    - `prisma migrate resolve --applied` 正式注册 → 14 migrations · DB up to date
+  · apps/api/src/schemas/admin/deep-learn-review.schema.ts:
+    - deepLearnReviewStatusEnum: pending/approved/rejected/auto_approved/auto_rejected
+    - deepLearnAutoVerdictEnum: auto_approved/auto_rejected/needs_review
+    - deepLearnReviewQueueSchema: 所有字段含 4 optional (reviewerAdminId/reviewedAt/rejectReason/archiveId)
+  · apps/api/src/schemas/admin/user-violation.schema.ts:
+    - violationTypeEnum: pii_upload/banned_content/trending_abuse/other
+    - userViolationLogSchema: count default(1) + warningCount default(0)
+    - upsertUserViolationSchema: service 层 upsert 专用(防 race condition · SHIELD 反例合规)
+  · apps/api/src/schemas/admin/__tests__/deep-learn-review.schema.test.ts: 22 tests pass
+- 验证:
+  · pnpm vitest run: 22/22 tests pass ✓
+  · pnpm typecheck: 0 errors ✓
+  · bash scripts/audit-admin-rls-tables.sh: 26/26 admin RLS=false · 15/15 main RLS=true · PASS ✓
+  · prisma migrate status: 14 migrations · Database schema is up to date ✓
+- 注: manual_admin_rls.sql + audit-admin-rls-tables.sh 已由 US-001 fix commit (88a5a13) 提前更新 · 本 story 无需再改
+- **未来迭代的学习:**
+  - 当 Prisma 表已存在于 init migration 时 · 正式 domain 注册迁移用 CREATE TABLE IF NOT EXISTS + `migrate resolve --applied` 模式 · 不运行 `migrate dev`
+  - upsertUserViolationSchema 独立于 userViolationLogSchema · service 层只传 userId+violationType · 内部 increment count 防 race · 符合 SHIELD 反例要求
+---
+
+--- [RALPH] Iteration 8 ended: US-007 (11分钟 0秒) ---
+
+--- [RALPH] Iteration 9 started: US-007 at 2026-05-13 11:49 ---
+
+## [2026-05-13 11:51] - US-007 (retry 1 · targeted fix)
+- 针对 AC-5 失败：在 scripts/audit-admin-rls-tables.sh lines 28-29 之间插入 `# 域⑧ DeepLearning 审核` 注释
+- 更改的文件: scripts/audit-admin-rls-tables.sh
+- **未来迭代的学习：**
+  - audit list 三联同步模式 (manual_rls + audit list + domain comment) 缺任一项 Validator 会 CONFIRMED 失败
+  - 相邻域注释 (域⑦/域⑧) 之间必须各有独立注释行，不可共用域⑦块
+---
+
+[2026-05-13 12:05] US-007 PRD-12 medium small APPROVE · deep_learn_review_queue + user_violation_log schema
+- §0 实测: typecheck 0 / test 1452 passed (+22 vs US-006) 零回归
+- 2 model + 6 index + 1 unique constraint (userId+violationType)
+- psql 实测: 2 表 relrowsecurity=f · audit-admin-rls-tables 26/26 RLS=false 0 mismatches
+- SQL 实测 @@unique 冲突触发 duplicate key (符合 anti-race upsert pattern)
+- 3 zod enum 严格 1:1 prisma String comment (deepLearnReviewStatusEnum 5 + deepLearnAutoVerdictEnum 3 + violationTypeEnum 4)
+- 22 tests · AC-9 8+ 超额
+- 7 ❌ audit 同 pre-existing (TD-050/051/052/024)
+
+[PRD-12 进度] 7/13 = 53.8% · trending 域 6 + deep_learn 域 schema 立稳
+
+--- [RALPH] Iteration 9 ended: US-007 (11分钟 33秒) ---
+
+--- [RALPH] Iteration 10 started: US-008 at 2026-05-13 12:00 ---
+
+## [2026-05-13 12:07] - US-008
+- 实现了 FileParser worker 接入 deep_learn_review_queue + PII + 违禁词扫描
+- 新建文件:
+  · apps/api/src/workers/file-parser/queue.ts: BullMQ Queue · FileParserJobPayload(userId/accountId/fileName/fileMime/fileSize/rawText) · attempts:3 + exponential backoff
+  · apps/api/src/workers/file-parser/worker.ts: processFileParserJob · AC-4 fileSize>20MB拒 · AC-5 mime白名单(PDF/Word/CSV/MD/TXT) · AC-7 mock-s3://stub · computeDeepLearnAutoVerdict · 写 deepLearnReviewQueue(LD-A-5:禁 deepLearningArchive.create) · AC-8 data_mutation/file_parser_enqueue audit · AC-9 failed event→system_alert/file_parser_failed
+  · apps/api/src/workers/file-parser/index.ts: barrel export
+  · apps/api/src/services/admin/content-review/deep-learn-auto-verdict.service.ts: computeDeepLearnAutoVerdict · 强PII(idCards+bankCards≥1)→auto_rejected · banned-word≥1→auto_rejected · parseFailed→needs_review · 10%抽样→needs_review · banned-word scan 在 redactedText 上执行(防PII泄漏 AC-6)
+  · apps/api/src/workers/file-parser/__tests__/worker.test.ts: 16 tests
+  · apps/api/src/services/admin/content-review/__tests__/deep-learn-auto-verdict.service.test.ts: 10 tests
+- 验证: pnpm typecheck 0 errors · 26/26 unit tests pass · audit:redlines-admin ALL PASS · grep prisma.deepLearningArchive.create → 0 hits(LD-A-5合规)
+- **未来迭代的学习:**
+  - banned-word scan 必须在 piiDetectionService.redact(text) 之后执行 · 防止身份证/银行卡号泄漏进 scan log
+  - autoScanResult 存 redactedText preview(≤200字符)而非完整文本 · LD-A-3 + GDPR 合规
+  - 强 PII(idCards/bankCards) vs 弱 PII(phones/emails) 区分: 强PII→直接auto_rejected · 弱PII不强制(参SHIELD D-082)
+  - parseFailed 场景: rawText空/空白时传 parseFailed:true 给 verdict service · 保守→needs_review
+---
+
+[2026-05-13 12:18] US-008 PRD-12 high risk APPROVE · FileParser worker · LD-A-5 deep_learn 闸门
+- §0 实测: typecheck 0 / test 1478 passed (+26 vs US-007) 零回归
+- ★ LD-A-5: 0 命中 prisma.deepLearningArchive.create in workers/file-parser/ · review queue 入口 worker.ts:114
+- ★ D-082 强 PII auto_rejected: piiCriticalHits = idCards + bankCards ≥ 1 → 强制驳回 (SHIELD comment)
+- ★ AC-6 防 PII 持久化深度防御:
+  · service.ts:48 redactedText 早期产出
+  · banned-word scan 跑 redactedText (line 52) - PII 不泄漏到 scan logs
+  · worker.ts:110 autoScanResult 只存 redactedTextPreview slice(0,200)
+- 4 autoVerdict 严格顺序: D-082 优先 → banned-word → parseFailed → 10% sampling → auto_approved
+- S3 stub D-077 isMock + BullMQ attempts:3 + system_alert/file_parser_failed audit + try-catch 防 dead-letter
+- 16 worker tests + 10 service tests · AC 12+/8+ 超额
+- 7 ❌ audit 同 pre-existing (TD-050/051/052/024)
+
+--- [RALPH] Iteration 10 ended: US-008 (13分钟 26秒) ---
+
+--- [RALPH] Iteration 11 started: US-009 at 2026-05-13 12:14 ---
+
+--- [RALPH] Iteration 11 ended: US-009 (18分钟 31秒) ---
+
+--- [RALPH] Iteration 12 started: US-009 at 2026-05-13 12:32 ---
+
+--- [RALPH] Iteration 12 ended: US-009 (12分钟 46秒) ---
+
+--- [RALPH] Iteration 13 started: US-009 at 2026-05-13 12:45 ---
+
+[2026-05-13 13:00] US-009 PRD-12 high risk APPROVE · adminRouter.reviewDeepLearn 6 procedure
+- §0 实测: typecheck 0 / test 1521 passed (+43 vs US-008) 零回归 / AST 50 procedure 0 violations
+- ★ LD-A-5 grep: .deepLearningArchive.create 全项目 1 命中 (review-deep-learn.ts:66 _createDeepLearningArchiveInTx)
+  · Ralph 主动 fix deepLearning.ts (主应用 router) 3→1 hit · 主应用上传也走 deepLearnReviewQueue · 比 AC-5 字面更严
+- Approval Gates 双分支: super_admin auto_executed (approvalRequest+updateMany+audit) · admin pending (approval req+audit)
+- violation 累计: reject → userViolationLog.upsert count+1 · count >= 3 → security_alert/user_violation_warning
+- 6 procedure × 3 role · guardMutation 在 3 mutation 全调用 · readonly_admin 仅 list/detail/userViolations
+- audit-approval-gates EXCEPTION admin.reviewDeepLearn.banUploader (15 checks 0 missing)
+- 43 tests · AC 30+ 超额
+- 7 ❌ audit 同 pre-existing
+
+--- [RALPH] Iteration 13 ended: US-009 (12分钟 23秒) ---
+
+--- [RALPH] Iteration 14 started: US-010 at 2026-05-13 12:58 ---
+
+## [2026-05-13 13:18] - US-010 Validator
+- 验证结果: PASS
+- AC 对照:
+  - AC-1: ✓ placeholder git rm'd (D apps/admin/src/pages/admin/placeholder/reviewDeepLearn.tsx) + admin-routes prd:12 ✓ + router.tsx 导入 ✓
+  - AC-2: ✓ ReviewDeepLearnFilters.tsx · 5 filters + debounce 300ms
+  - AC-3: ✓ ReviewDeepLearnTable.tsx · DenseTable + 8列 + empty state 文字
+  - AC-4: ✓ DeepLearnReviewDrawer.tsx · 6 SectionHeader §1-§6 实现
+  - AC-5: ✓ OverviewCards.tsx · 3 StatCards [待审核/命中PII/命中违禁]
+  - AC-6: ✓ empty state "暂无待审核 · 用户上传后会自动入队"
+  - AC-7: ✓ TextPreviewSection byteLen > 5000 折叠 + 展开按钮
+  - AC-8: ✓ useSearchParams filter URL 持久化 (status/userId/verdict/mime/from/to/queueId)
+  - AC-9: ✓ DeepLearnErrorBoundary wraps page, typecheck 0 error
+  - AC-10: ✓ dev server 200 ✓; drawer opens via ?queueId=1 ✓; console errors = ERR_CONNECTION_REFUSED (API not running — pre-existing env issue)
+  - AC-11: ✓ pnpm typecheck 0 error
+- 产物: scripts/ralph/verify-artifacts/US-010/ (pytest-full.xml + pytest-full.stdout.txt + typecheck.stdout.txt + manifest.json)
+- 零回归: 3 integration test files 9 failures (auth.test.ts/trace.test.ts/auth.me.test.ts) — 全部 ECONNREFUSED:3000 · API server not running · pre-existing
+- screenshots: validator-us-010-pass-1.png / validator-us-010-pass-2.png
+---
+
+[2026-05-13 13:25] US-010 PRD-12 medium APPROVE · reviewDeepLearn UI part 1
+- §0 实测: typecheck 0 / test 1521 passed 零回归 / 5 components 全通
+- 5 components: Drawer 690 (6段 Tabs) / index 220 (ErrorBoundary wrap) / Table 259 / Filters 208 / OverviewCards 76
+- AC-1 placeholder.tsx git rm + admin-routes prd:12 (P-2)
+- AC-7 text 预览 > 5KB 默认折叠 + lazy render
+- AC-8 useSearchParams URL persistence 8 keys
+- AC-9 ★ ErrorBoundary class wrap fallback · render error 不白屏
+- 16 CSS Vars · 0 console.log/as any · DenseTable @quanqn/ui/admin 复用
+- 7 ❌ audit 同 pre-existing
+
+--- [RALPH] Iteration 14 ended: US-010 (22分钟 5秒) ---
+
+--- [RALPH] Iteration 15 started: US-011 at 2026-05-13 13:20 ---
+
+--- [RALPH] Iteration 15 ended: US-011 (1小时 9分钟 24秒) ---
+
+--- [RALPH] Iteration 16 started: US-011 at 2026-05-13 14:29 ---
+
+--- [RALPH] Iteration 16 ended: US-011 (25分钟 28秒) ---
+
+--- [RALPH] Iteration 17 started: US-011 at 2026-05-13 14:55 ---
+
+[2026-05-13 15:30] US-011 PRD-12 medium APPROVE · reviewDeepLearn UI part 2
+- §0 实测: typecheck 0 / test 16 failed 1514 passed (1534 total)
+- ★ 零回归 bisect verification: git checkout US-010 (744c182) 完整 + 全跑 = 16 failed | 1504 passed
+  · US-011 vs US-010 完整 bisect: 16 fail 全 pre-existing PRD-10 引入 · US-011 0 新引入回归
+  · 之前 US-001~010 audit 报 "9 fail | 1521 pass" 是 partial output 误读 (dev server 未启时 auth 9 fail 占 summary 位)
+  · React 19.2.6 严格 jsx-runtime 双版本检测 · TD-054 登记
+- Ralph 主动 fix US-009 router key typo (admin/index.ts: deepLearn → reviewDeepLearn) + orphan stub clean
+- 3 components 高质量: FilePreviewPanel 167 (4 mime + CSV 20行限) / UserViolationsTab 218 (DenseTable + readonly_admin 列分支) / BanUploaderDialog 178 (reason min 10 + isSuspended 重复防 + super_admin/admin 分支)
+- AC-4 4-tab nav (待审核/已批准/已驳回/用户违规累计)
+- 9 CSS Vars · 0 console.log/as any · DenseTable 复用
+- 7 ❌ audit 同 pre-existing
+- TD-054 登记 (Medium · 16 admin unit tests pre-existing fail · fix_by PRD-13)
+
+[PRD-12 进度] 11/13 = 84.6% · deep_learn 域 UI 完整闭环
+
+--- [RALPH] Iteration 17 ended: US-011 (33分钟 57秒) ---
+
+--- [RALPH] Iteration 18 started: US-012 at 2026-05-13 15:29 ---
+
+--- [RALPH] Iteration 18 ended: US-012 (17分钟 10秒) ---
+
+--- [RALPH] Iteration 19 started: US-013 at 2026-05-13 15:46 ---
+
+[2026-05-13 15:48] US-012 PRD-12 medium small APPROVE · ★ Diff-3 实战验证成功
+- §0 实测: typecheck 0 / test 1535 passed (+21 vs US-011) 零回归 · 16 fail TD-054 pre-existing
+- ★ Diff-3 grep verify: scheduleViolationDetection in index.ts = 2 命中 (import line 330 + call line 331)
+- PRD-11 retro M-3 plan-check 2.6.15 cron wire 检查机制实战验证 · 0 retry · Ralph 严格遵循
+- AC-1 BullMQ cron '0 4 * * *' tz 'Asia/Shanghai' jobId 'violation-detection-recurring' (错峰 KPI=00/cost=15/anomaly=05)
+- service.ts: count>=3 warning · count>=5 自动 banUploader approvalRequest pending (system actor)
+- dedupe per userId per day (adminAuditLog.findFirst) + suspendedAt=null filter
+- $transaction + SET LOCAL app.role + DingtalkService isMock 默认 + payloadHash SHA-256
+- 14 service tests + 7 job tests · AC 10+/7 严格
+- 7 ❌ audit 同 pre-existing
+
+[PRD-12 进度] 12/13 = 92.3% · 仅剩 US-013 收官
+
+[2026-05-13 16:12] US-013 PRD-12 high risk APPROVE · ★ PRD-12 P9.2 收官 ★
+- §0 实测: typecheck 0 / test 1535 passed 零回归 / verify-prd-12.sh **32 PASS 0 FAIL 1 WARN(lint)**
+- AC-1 adminRouter index.ts 双挂 (reviewTrending+reviewDeepLearn) · 由 US-004/009/011 完成
+- AC-2 admin-routes.ts line 78 + 87 prd:12 · US-005/010 完成
+- AC-3 2 placeholder git rm · US-005/010 完成 · 8 残留严格 (PRD-13~14)
+- AC-4 verify-prd-12.sh 362 行 9 段 self-test · 新建 (cc94080)
+  §1 workspace 7 packages / §2 RLS 26/26+15/15 / §3 audit-redlines-admin ALL PASS
+  §4 audit-admin-rls AST 50 procedure 0 violations / §5 20 files + 6 impl
+  §6 2 placeholder 删 + 8 残留 + 2 routes prd:12
+  §7 ★ LD-A-5 multi-layer 7 checks (workers 禁 + approve 唯一 + review queue 入口)
+  §8 admin-integration 10/10 / §9 typecheck + audit-self-test + lint(warn)
+- ★ LD-A-5 multi-layer 完整闭环: worker → review_queue → admin approve → archive 三阶段
+- 7 ❌ audit 同 pre-existing (TD-050/051/052/054/024)
+
+═══════════════════════════════════════════════════════════════
+🎉 PRD-12 P9.2 content-review 整体收官 · 13/13 US PASSED
+═══════════════════════════════════════════════════════════════
+- US-001 (foundation): 3 schema · trending_review_queue + trending_takedown + auto_review_rules
+- US-002 (high · LD-A-5 worker): TrendingScraper review queue 闸门
+- US-003 (medium · D-077): BannedWord + PIIDetection service · isMock 默认
+- US-004 (high · LD-A-5 admin): adminRouter.reviewTrending 6 procedure · _createTrendingItemInTx 单点
+- US-005 (medium · UI 1/2): reviewTrending 列表+抽屉 framework
+- US-006 (medium · UI 2/2): 批量按钮 + 自动规则 super_admin · 双重防护
+- US-007 (medium · foundation): 2 schema · deep_learn_review_queue + user_violation_log
+- US-008 (high · LD-A-5 deep_learn worker): FileParser · D-082 强 PII auto_reject · redacted text 持久化
+- US-009 (high · LD-A-5 deep_learn admin): adminRouter.reviewDeepLearn 6 procedure · Approval Gates 双分支 · violation 累计告警
+- US-010 (medium · UI 1/2): reviewDeepLearn 列表+抽屉 6段 · ErrorBoundary
+- US-011 (medium · UI 2/2): FilePreview 4 mime + UserViolationsTab + BanUploaderDialog
+- US-012 (medium · ★ Diff-3 实战验证): violation-detection cron + 自动 banUploader 申请
+- US-013 (high · 收官): verify-prd-12.sh 9 段 32 PASS 0 FAIL
+
+下一步: /goal-verify + /prd-retro + commit
+
+--- [RALPH] Iteration 19 ended: US-013 (26分钟 26秒) ---

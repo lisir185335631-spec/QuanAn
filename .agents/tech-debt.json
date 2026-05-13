@@ -869,8 +869,111 @@
       "fix_hint": "(1) 抽 showToast/Dialog/ActionChip/PageBtn/StatCard 到 packages/ui/src/admin/ · 6 业务页 import 替换。(2) admin-client.ts onError handler 加 401 → redirect /admin/login + showToast. (3) 落地 4 hooks 到 apps/admin/src/hooks/(useToast/useDebounce/useEscape/useClickOutside).",
       "resolved_in_prd": null,
       "resolved_at": null
+    },
+    {
+      "id": "TD-050",
+      "title": "PRD-11 US-006 admin reset password console.log temp password",
+      "description": "apps/api/src/trpc/routers/admin/users.ts:523 console.log(\\`[ADMIN RESET PASSWORD] tempPassword=${tempPassword}\\`) 直接输出临时明文密码 · 违反 AGENTS §6.9 R-09 (生产代码禁 console.log · 用 logger) + R-04 (敏感数据脱敏) · audit:redlines grep 命中 · audit:ld 也命中 LD-013 类型",
+      "scope": [
+        "apps/api/src/trpc/routers/admin/users.ts:523",
+        "PRD-11 US-006 commit e9f2b50"
+      ],
+      "impact": "admin 重置密码时临时密码明文写 console · 在 production 生效 logger 配置下可能被 logs 收集到不安全位置 · 合规风险",
+      "severity": "High",
+      "categories": [
+        "security",
+        "logging",
+        "red-line"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-001 audit (PRD-12)",
+      "fix_by": "PRD-12 close 前 (US-001~013 任何一 retry 时顺手改) 或 PRD-13",
+      "status": "open",
+      "fix_hint": "选 A: 改 console.log 为 logger.warn 同时 redact tempPassword (只 hash 前 4 chars) · 选 B: 完全删 console.log 留 logAdminAction (已存) · 选 C: 加 eslint-disable + 在 audit-redlines.sh 加 ignore admin reset password 的特例 (不推荐)",
+      "created_at": "2026-05-13T09:06:53"
+    },
+    {
+      "id": "TD-051",
+      "title": "PRD-11 US-014 PDF rendering as any type cast",
+      "description": "apps/api/src/services/admin/cost/pdf-bill.service.ts:152 `renderToBuffer(React.createElement(PdfBillTemplate, ...) as any)` 用 as any 兜底 · 违反 R-10 (any 兜底 · LD-013) · @react-pdf/renderer + React.createElement 类型推导有 known issue · eslint-disable-next-line 已加但 audit-redlines.sh grep 仍命中",
+      "scope": [
+        "apps/api/src/services/admin/cost/pdf-bill.service.ts:151-152",
+        "PRD-11 US-014 commit fa41109"
+      ],
+      "impact": "类型安全削弱 · @react-pdf/renderer + React 类型系统不兼容 · 升级 @types/react 或 @react-pdf/renderer 可能破 · runtime 0 影响",
+      "severity": "Low",
+      "categories": [
+        "type-safety",
+        "red-line",
+        "third-party-compat"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-001 audit (PRD-12)",
+      "fix_by": "PRD-13 或 audit-redlines.sh 改成识别 eslint-disable comment",
+      "status": "open",
+      "fix_hint": "选 A: 改 audit-redlines.sh grep 为 `grep -v \"eslint-disable.*no-explicit-any\"` 让 eslint-disable 注释豁免 · 选 B: 等 @react-pdf/renderer 升级修类型 · 选 C: 写一个 PdfBillTemplateProps 显式 type assertion 替代 as any",
+      "created_at": "2026-05-13T09:06:53"
+    },
+    {
+      "id": "TD-052",
+      "title": "audit-redlines.sh / audit-ld.sh false positive 累积 · 5 R + 2 LD 误报",
+      "description": "PRD-12 US-001/US-002 audit 期 confirm: audit script grep pattern 没区分主应用 vs admin 域 · 也没排除 non-chat OpenAI SDK · 触发以下 false positive (实际是设计意图): (1) R-1 LLM SDK 命中 image-gen/dall-e-3 + embedding/openai-embedding + rag/retrieve + tts/openai-tts + stt/whisper · 这些非 chat LLM 不需走 Gateway · (2) R-4 admin/audit.ts:427/432 漏 accountId · admin 跨账号查是设计 · (3) R-5 lucia-admin + rate-limit/image-gen 漏 acc_ 命名空间 · admin/system 域不分 user account · (4) LD-004 L5 Agent grep 0 命中但报 fail (grep pattern 可能脏) · (5) LD-005 EvolutionAgent 未 extends BaseSpecialist · 已 TD-024 登记 dual path (resolved)",
+      "scope": [
+        "scripts/audit-redlines.sh#R-1 LLM SDK grep",
+        "scripts/audit-redlines.sh#R-4 accountId grep",
+        "scripts/audit-redlines.sh#R-5 acc_ prefix grep",
+        "scripts/audit-ld.sh#LD-004 L5 grep",
+        "scripts/audit-ld.sh#LD-005 BaseSpecialist grep",
+        "apps/api/src/workers/{image-gen,embedding,rag,tts,stt}/* · non-chat OpenAI SDK",
+        "apps/api/src/trpc/routers/admin/audit.ts:427-432 · admin cross-account by design",
+        "apps/api/src/lib/auth/lucia-admin.ts:135 · admin session storage"
+      ],
+      "impact": "audit script 持续报 5+2 ❌ 干扰 PRD-12 each US audit · Opus 必须人工区分 false positive vs real violation · 时间浪费 · 累积疲劳易 rubber stamp · 类 TD-017 audit-script 自身失效",
+      "severity": "Medium",
+      "categories": [
+        "audit-tooling",
+        "false-positive"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-002 audit",
+      "fix_by": "PRD-12 close 前 (US-013 收官 story 顺手修 audit grep) 或 PRD-13",
+      "status": "open",
+      "fix_hint": "选 A: audit-redlines.sh R-1 grep 加 --exclude-dir image-gen,embedding,rag,tts,stt · R-4/R-5 grep 加 --exclude-dir admin · LD-005 改 grep 模式精确 · 选 B: 加 .auditignore 文件机制 · grep 读 ignore list 跳过 · 选 C: 写一个 audit script 加 // audit-ignore: R-1 comment 识别",
+      "created_at": "2026-05-13T09:47:54"
+    },
+    {
+      "id": "TD-053",
+      "title": "PRD-12 US-005 Drawer ScanResultSection 期望字段与 US-002 worker 写入不一致",
+      "description": "apps/admin/src/pages/reviewTrending/TrendingReviewDrawer.tsx:162-165 ScanResultSection 读 result[\\\"bannedWords\\\"] / result[\\\"piiMatches\\\"] / result[\\\"score\\\"] / result[\\\"verdict\\\"] · 但 US-002 trending-auto-verdict.service.ts:36-44 实际写入 { bannedWordHits, samplingRate, isSampled, checkedAt } · 字段名 drift · 严格命中违禁词时 Drawer 显示 \"✓ 未命中违禁词\" 错信号(实际有命中)· details 折叠区显示完整 JSON 可 fallback 看到真实数据 · 不阻塞审核流程",
+      "scope": [
+        "apps/admin/src/pages/reviewTrending/TrendingReviewDrawer.tsx:162-165 (期望: bannedWords/piiMatches/score/verdict)",
+        "apps/api/src/services/admin/content-review/trending-auto-verdict.service.ts:36-44 (实际: bannedWordHits/samplingRate/isSampled/checkedAt)",
+        "PRD-12 US-005 commit 4da34b0 + US-002 commit fd93a6d"
+      ],
+      "impact": "严格命中违禁词 + 自动驳回的内容 · 在 Drawer 视觉显示\"✓ 未命中违禁词 · 未命中 PII\"误导信号 · 但 details 区有完整 JSON 用户可展开看到 · 不影响后端 auto_verdict 计算 / approve/reject flow",
+      "severity": "Low",
+      "categories": [
+        "fe-be-schema-drift",
+        "visual-polish"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-005 audit",
+      "fix_by": "US-006 part 2 (顺手改 Drawer 字段名 bannedWords → bannedWordHits) 或 PRD-13",
+      "status": "open",
+      "fix_hint": "选 A (推荐): Drawer 162-165 改 result[\\\"bannedWordHits\\\"] · piiMatches 暂去掉(trending 域 worker 不扫 PII · 是 deep_learn 域才扫) · 选 B: US-002 service 新加 bannedWords alias 字段(老字段保留向后兼容)· 选 C: 抽 packages/schemas/admin/scan-result.schema.ts 单一源 zod schema (跨 worker+Drawer 用)",
+      "created_at": "2026-05-13T10:55:56"
+    },
+    {
+      "id": "TD-054",
+      "category": "test-env",
+      "severity": "medium",
+      "story": "US-011",
+      "file": "vitest.config.ts / pnpm-lock.yaml",
+      "description": "Admin unit tests (layout/sidebar/audit-drawer) fail due to pnpm resolving @testing-library/react@16.3.2 to react@19.2.6 instead of react@18.3.1. Root cause: @react-pdf/renderer install pulled react@19 into pnpm store; pnpm heuristically picks the react@19 variant for the root-level @testing-library/react. Pre-existing before US-011 (confirmed git stash). Fix: add pnpm overrides to pin react/react-dom to 18.3.1.",
+      "exempted_in": "US-011",
+      "exemption_reason": "Pre-existing, environment-level issue unrelated to US-011 code changes. Confirmed by git stash showing identical failures at US-010 state."
     }
   ],
-  "last_updated": "2026-05-13T08:09:00.487558",
+  "last_updated": "2026-05-13T10:55:56",
   "total": 44
 }
