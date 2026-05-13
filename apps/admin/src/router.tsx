@@ -17,7 +17,7 @@ import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
 import NsmDashboard from './pages/nsm/index';
 import PromptsPlaceholder from './pages/admin/placeholder/prompts';
 import QuotaPlaceholder from './pages/admin/placeholder/quota';
-import ReviewDeepLearnPlaceholder from './pages/admin/placeholder/reviewDeepLearn';
+import ReviewDeepLearnPage from './pages/reviewDeepLearn/index';
 import ReviewTrendingPage from './pages/reviewTrending/index';
 import UsersPage from './pages/users/index';
 import Login from './pages/Login';
@@ -41,7 +41,7 @@ export function AdminRoutes() {
 
         {/* P0 内容审核 */}
         <Route path="reviewTrending" element={<ReviewTrendingPage />} />
-        <Route path="reviewDeepLearn" element={<ReviewDeepLearnPlaceholder />} />
+        <Route path="reviewDeepLearn" element={<ReviewDeepLearnPage />} />
 
         {/* P1 健康度 */}
         <Route path="evolution" element={<EvolutionPlaceholder />} />

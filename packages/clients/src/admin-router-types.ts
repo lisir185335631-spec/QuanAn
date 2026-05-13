@@ -452,6 +452,116 @@ const _shadowAdminRouter = _t.router({
         enabled: true,
       })),
   }),
+  reviewDeepLearn: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            statusFilter?: 'pending' | 'approved' | 'rejected' | 'auto_approved' | 'auto_rejected';
+            userIdFilter?: number;
+            autoVerdictFilter?: 'auto_approved' | 'auto_rejected' | 'needs_review';
+            dateRange?: { from?: Date; to?: Date };
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            userId: number;
+            accountId: number;
+            fileName: string;
+            fileMime: string;
+            fileSize: number;
+            autoVerdict: string;
+            status: string;
+            reviewerAdminId: number | null;
+            reviewedAt: Date | null;
+            rejectReason: string | null;
+            archiveId: number | null;
+            uploadedAt: Date;
+          }>;
+          count: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], count: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { queueId: number })
+      .query(
+        (): {
+          id: number;
+          userId: number;
+          accountId: number;
+          fileName: string;
+          fileMime: string;
+          fileSize: number;
+          fileUrl: string;
+          uploadedAt: Date;
+          autoScanResult: unknown;
+          autoVerdict: string;
+          status: string;
+          reviewerAdminId: number | null;
+          reviewedAt: Date | null;
+          rejectReason: string | null;
+          archiveId: number | null;
+          textPreview: string;
+          userViolationCount: number;
+          userViolations: Array<{
+            violationType: string;
+            count: number;
+            lastViolationAt: Date;
+            suspendedAt: Date | null;
+          }>;
+        } => ({
+          id: 0, userId: 0, accountId: 0, fileName: '', fileMime: '',
+          fileSize: 0, fileUrl: '', uploadedAt: new Date(), autoScanResult: {},
+          autoVerdict: '', status: '', reviewerAdminId: null, reviewedAt: null,
+          rejectReason: null, archiveId: null, textPreview: '', userViolationCount: 0,
+          userViolations: [],
+        }),
+      ),
+    approve: _t.procedure
+      .input((x: unknown) => x as { queueId: number })
+      .mutation((): { queueId: number; archiveId: number } => ({ queueId: 0, archiveId: 0 })),
+    reject: _t.procedure
+      .input((x: unknown) => x as { queueId: number; rejectReason: string })
+      .mutation(
+        (): { queueId: number; status: 'rejected'; violationCount: number } => ({
+          queueId: 0,
+          status: 'rejected',
+          violationCount: 0,
+        }),
+      ),
+    banUploader: _t.procedure
+      .input((x: unknown) => x as { userId: number; reason: string })
+      .mutation(
+        (): { status: 'auto_executed' | 'pending'; approvalRequestId: number } => ({
+          status: 'pending',
+          approvalRequestId: 0,
+        }),
+      ),
+    userViolations: _t.procedure
+      .input((x: unknown) => x as { userId?: number })
+      .query(
+        (): {
+          violations: Array<{
+            id: number;
+            userId: number;
+            violationType: string;
+            count: number;
+            lastViolationAt: Date;
+            lastReviewItemId: number | null;
+            warningCount: number;
+            suspendedAt: Date | null;
+            suspendedByAdminId: number | null;
+            suspendedReason: string | null;
+          }>;
+          total: number;
+        } => ({ violations: [], total: 0 }),
+      ),
+  }),
   deepLearn: _t.router({}),
   prompts: _t.router({}),
   quota: _t.router({}),
