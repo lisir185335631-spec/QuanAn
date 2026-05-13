@@ -743,8 +743,134 @@
       "resolved_at": "2026-05-12",
       "resolved_by": "PRD-11 maintenance · TD-044 verify · 误报修正",
       "close_evidence": "packages/ui/src/admin/{index.ts, tokens.ts, DenseTable.tsx} 实际在 US-005 commit ed600df 已完整建 · adminTokens 含 layout(topbarHeight 60px / sidebarWidth 240px / statusBarHeight 24px / drawerWidth 480px)+ Dense mode(rowHeight 32px / fontSize 13px)+ Aurelian Dark palette + status colors · DenseTable.tsx 75 行 stub 标 \"PRD-11 填充真实实现\" · Opus audit US-005 + /goal-verify §0.4 D-068 验证时仅查 packages/ui/admin/ 顶层(不存在)· 没查 src/admin/ 子路径(实际就位)· 系 Opus 漏审 · 跟 TD-037/041 同 doc-vs-impl 路径 drift family · 但 functional 100% OK"
+    },
+    {
+      "id": "TD-045",
+      "title": "NSM 聚合 SQL 算法精度优化",
+      "description": "PRD-11 US-001 kpi-snapshot.service 4 SQL 实现 vs PRD AC 描述细节略简化:(1) SQL-1 activeAccounts7d 用 users.last_signed_in 不用 ip_accounts.lastActiveAt;(2) SQL-3 feedbackRate 算 accounts with feedback / total accounts(不分 up/down);(3) SQL-4 evolutionUpgradeRate 没限新用户 30 天内升 L2(简化为 last_upgraded_at within window)。NSM 趋势准 · 绝对值略偏 · 不影响告警阈值逻辑。",
+      "scope": [
+        "apps/api/src/services/admin/nsm/kpi-snapshot.service.ts:79-152",
+        "tasks/prd-11.md#us-001"
+      ],
+      "impact": "Low: NSM 4 大数字绝对值略偏 PRD 描述 · 但趋势正确 · 告警逻辑不受影响。下游 US-002/003/004 按 service 实现读 · 一致性 OK。",
+      "severity": "Low",
+      "categories": [
+        "algorithm-precision",
+        "doc-drift"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "US-001 (Opus audit)",
+      "fix_by": "PRD-13",
+      "status": "open",
+      "fix_hint": "PRD-13 NSM 精度优化时 · 改 SQL-1/3/4 严格按 PRD 原描述 · 加 ip_accounts.lastActiveAt 字段 / feedbackRate 改 reaction up/down 占比 / evolutionUpgradeRate 限新用户 + L2 升级。需同步改 tasks/prd-11.md us-001 AC 或写 PRD-13 patch",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "audit_exemption": "Opus US-001 approve · 算法语义对齐 NSM 核心指标 · 简化版不影响告警阈值 + 趋势 · 不阻断 foundation 通过"
+    },
+    {
+      "id": "TD-046",
+      "title": "Pre-existing integration test failures + Validator manifest timestamps drift",
+      "description": "(1) 3 integration test files fail (rls-isolation / evolution-threshold / ip-progress-integration) - CONFIRMED pre-existing via Sonnet git stash in retryCount=1 during US-005. NOT caused by PRD-11 US-001~005. (2) audit-artifacts.py 报 timestamps span 10.4h FAKE - 实际 Sonnet 跑 1m40s (19:00:30→19:02:10) · manifest 累积 PRD-10 收官期 stale 数据导致 span 看似宽 · 不是偷懒。",
+      "scope": [
+        "tests/integration/rls-isolation*.test.ts",
+        "tests/integration/evolution-threshold*.test.ts",
+        "tests/integration/ip-progress-integration*.test.ts",
+        "scripts/ralph/verify-artifacts/US-*/manifest.json"
+      ],
+      "impact": "Low: 3 integration test 失败不影响 PRD-11 业务 story 功能 · Sonnet self-verify via git stash 已 confirmed pre-existing。Validator manifest timestamps 是流程残缺 · 实际 typecheck + audit-redlines-admin 都跑过。",
+      "severity": "Low",
+      "categories": [
+        "pre-existing",
+        "integration-test",
+        "audit-tooling"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "US-005 (Opus audit · Sonnet Validator self-flagged)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "(1) 跑 git log --all -p tests/integration/{rls-isolation,evolution-threshold,ip-progress-integration} 找最后一个 green commit · 对比当前 db state diff · 修 setup/teardown 失同步。(2) audit-artifacts.py 升级 · manifest.zero_regression=FAIL 时不检 timestamps span · 或 manifest 每 PRD 切换时 reset stale files。",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "audit_exemption": "Opus US-005 approve · pre-existing 已 Sonnet confirmed via git stash retry=1 · 不阻断 PRD-11 业务 story 通过。Validator manifest timestamps 是流程残缺非偷懒。"
+    },
+    {
+      "id": "TD-047",
+      "title": "PATH-B 自动触发 · ralph/Validator agent ECONNRESET 多 retry 链路",
+      "description": "PRD-11 US-007 触发 ralph.py PATH-B 自动审计路径 · retryCount=5(1 Validator code=1 ECONNRESET + 3 Developer 崩溃 ECONNRESET · 都是 anthropic API socket close)。Root cause · 大 UI story(8 files · 5 Tab Drawer · 4 Dialog · DenseTable)Validator + Developer agent 累积 prompt size 接近 API 网关 timeout 阈值 · 触发 socket close 链路。Self-correct commit e935fc8 fix 全 5 个 Validator 报的失败(饼图 / 日历 / 折线 / Top-5 / durationDays)· 实测全过 · 实质是网络层故障 · 非代码 fail。",
+      "scope": [
+        "scripts/ralph/ralph.py (Validator/Developer agent invocation)",
+        "tasks/prd-11.md#us-007 (8 files create medium 上限)"
+      ],
+      "impact": "Medium: PRD-11 US-007 retryCount=5 (max) · 浪费 ~50 min daemon time · PATH-B 兜底机制 work(daemon 主动写 audit-gate 让 Opus 判定)· 没失败但低效。同类风险 US-011/US-013/US-017/US-021 等大 UI story(5+ components 嵌套 + Tab)概率重现。",
+      "severity": "Medium",
+      "categories": [
+        "network",
+        "agent-infra",
+        "large-story"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "US-007 (Opus audit via PATH-B)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "(1) 大 UI story(>5 嵌套 component 或 >8 files)拆为 2 子 story · 列表+抽屉 framework(5 files)+ Dialog/Tab 内容(3-5 files) · 单 Validator agent prompt < 20K token。(2) ralph.py Developer/Validator agent 加 retry-with-backoff(目前是直接 retry · 撞同 ECONNRESET 死循环 · 应指数退避 5/15/30s)。(3) ralph.py PATH-B 触发条件成熟 · 保留作为 ECONNRESET 兜底正式机制。",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "audit_exemption": "Opus US-007 approve · 5 Validator 失败 fix commit e935fc8 全实现 · 实测 typecheck 全过 · 25 tests passed · audit script 三件套 ALL PASS · admin dev server 200 · placeholder.tsx 已删。PATH-B 实质是网络层故障 · 不是代码 fail · 兜底机制正常 work。"
+    },
+    {
+      "id": "TD-048",
+      "title": "design-drift · apps/api/apps/api/src/ 嵌套同名目录残留",
+      "description": "GSD codebase mapper (PRD-11 /goal-verify §0) 发现 apps/api 内有嵌套同名目录 apps/api/apps/api/src/ 双份代码 + 空目录 src/audit/.gitkeep / src/notification/.gitkeep · 业务已迁到 services/admin/ · 嵌套残留是历史 sync 痕迹。",
+      "scope": [
+        "apps/api/apps/api/src/",
+        "apps/api/src/audit/.gitkeep",
+        "apps/api/src/notification/.gitkeep"
+      ],
+      "impact": "Low: 不影响业务功能 · 但增 grep 噪音 + 误读历史 · monorepo 项目结构整洁性",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "project-structure"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "goal-verify §0 (GSD codebase mapper)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "git rm -r apps/api/apps/api/src/ + git rm apps/api/src/audit/.gitkeep apps/api/src/notification/.gitkeep · 一次 chore commit",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-049",
+      "title": "design-drift · admin UI primitive 跨 6 页重复 · 应抽到 packages/ui/src/admin/",
+      "description": "GSD codebase mapper (PRD-11 /goal-verify §0) 发现 apps/admin 6 业务页(nsm/users/accounts/cost/audit/invites)有 5 个 primitive 跨多文件重复:showToast(6 处)/ Dialog primitive(4)/ ActionChip(3)/ PageBtn(3)/ StatCard(5)· 应抽到 packages/ui/src/admin/ 复用。401 前端拦截缺失 · admin SPA session 过期陷入\"重试无效\"循环。",
+      "scope": [
+        "apps/admin/src/pages/{nsm,users,accounts,cost,audit,invites}/",
+        "packages/ui/src/admin/",
+        "apps/admin/src/lib/admin-client.ts (401 处理)",
+        "apps/admin/src/hooks/ (空目录预留 useToast/useDebounce/useEscape/useClickOutside)"
+      ],
+      "impact": "Medium: 6 业务页 primitive 复用度低 · 后续 PRD-12/13/14 新增页面时翻 5x · 401 session 过期 UX 差",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "ui-primitive",
+        "session-handling"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "goal-verify §0 (GSD codebase mapper)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "(1) 抽 showToast/Dialog/ActionChip/PageBtn/StatCard 到 packages/ui/src/admin/ · 6 业务页 import 替换。(2) admin-client.ts onError handler 加 401 → redirect /admin/login + showToast. (3) 落地 4 hooks 到 apps/admin/src/hooks/(useToast/useDebounce/useEscape/useClickOutside).",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ],
-  "last_updated": "2026-05-09T23:06:52",
+  "last_updated": "2026-05-13T08:09:00.487558",
   "total": 44
 }
