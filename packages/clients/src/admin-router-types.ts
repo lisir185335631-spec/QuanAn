@@ -354,7 +354,104 @@ const _shadowAdminRouter = _t.router({
       .input((x: unknown) => x as { campaignKey: string })
       .query((): Array<{ stage: string; count: number }> => []),
   }),
-  trending: _t.router({}),
+  reviewTrending: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            statusFilter?: 'pending' | 'approved' | 'rejected' | 'auto_approved' | 'auto_rejected';
+            platformFilter?: string;
+            dateRange?: { from?: Date; to?: Date };
+            autoVerdictFilter?: 'auto_approved' | 'auto_rejected' | 'needs_review';
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            sourcePlatform: string;
+            sourceItemId: string;
+            sourceUrl: string;
+            autoVerdict: string;
+            status: string;
+            reviewerAdminId: number | null;
+            reviewedAt: Date | null;
+            rejectReason: string | null;
+            trendingItemId: number | null;
+            fetchedAt: Date;
+          }>;
+          count: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], count: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { queueId: number })
+      .query(
+        (): {
+          id: number;
+          sourcePlatform: string;
+          sourceItemId: string;
+          sourceUrl: string;
+          rawContent: unknown;
+          fetchedAt: Date;
+          autoScanResult: unknown;
+          autoVerdict: string;
+          status: string;
+          reviewerAdminId: number | null;
+          reviewedAt: Date | null;
+          rejectReason: string | null;
+          trendingItemId: number | null;
+        } => ({
+          id: 0,
+          sourcePlatform: '',
+          sourceItemId: '',
+          sourceUrl: '',
+          rawContent: {},
+          fetchedAt: new Date(),
+          autoScanResult: {},
+          autoVerdict: '',
+          status: '',
+          reviewerAdminId: null,
+          reviewedAt: null,
+          rejectReason: null,
+          trendingItemId: null,
+        }),
+      ),
+    approve: _t.procedure
+      .input((x: unknown) => x as { queueId: number; vendor?: string })
+      .mutation((): { queueId: number; trendingItemId: number } => ({ queueId: 0, trendingItemId: 0 })),
+    reject: _t.procedure
+      .input((x: unknown) => x as { queueId: number; rejectReason: string })
+      .mutation((): { queueId: number; status: 'rejected' } => ({ queueId: 0, status: 'rejected' })),
+    batchAction: _t.procedure
+      .input((x: unknown) => x as { queueIds: number[]; action: 'approve' | 'reject'; reason?: string })
+      .mutation(
+        (): {
+          results: Array<{ queueId: number; success: boolean; error?: string }>;
+          total: number;
+          succeeded: number;
+        } => ({ results: [], total: 0, succeeded: 0 }),
+      ),
+    configRules: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            ruleType: 'banned_word' | 'sampling_rate' | 'industry_quota';
+            ruleKey: string;
+            ruleValue: Record<string, unknown>;
+            enabled?: boolean;
+          },
+      )
+      .mutation((): { id: number; ruleType: string; ruleKey: string; enabled: boolean } => ({
+        id: 0,
+        ruleType: '',
+        ruleKey: '',
+        enabled: true,
+      })),
+  }),
   deepLearn: _t.router({}),
   prompts: _t.router({}),
   quota: _t.router({}),

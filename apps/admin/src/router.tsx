@@ -18,7 +18,7 @@ import NsmDashboard from './pages/nsm/index';
 import PromptsPlaceholder from './pages/admin/placeholder/prompts';
 import QuotaPlaceholder from './pages/admin/placeholder/quota';
 import ReviewDeepLearnPlaceholder from './pages/admin/placeholder/reviewDeepLearn';
-import ReviewTrendingPlaceholder from './pages/admin/placeholder/reviewTrending';
+import ReviewTrendingPage from './pages/reviewTrending/index';
 import UsersPage from './pages/users/index';
 import Login from './pages/Login';
 
@@ -40,7 +40,7 @@ export function AdminRoutes() {
         <Route path="invites" element={<InvitesPage />} />
 
         {/* P0 内容审核 */}
-        <Route path="reviewTrending" element={<ReviewTrendingPlaceholder />} />
+        <Route path="reviewTrending" element={<ReviewTrendingPage />} />
         <Route path="reviewDeepLearn" element={<ReviewDeepLearnPlaceholder />} />
 
         {/* P1 健康度 */}
