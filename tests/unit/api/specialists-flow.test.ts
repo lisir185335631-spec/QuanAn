@@ -92,6 +92,10 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     update: vi.fn(async () => ({})),
   };
 
+  const deepLearnReviewQueue = {
+    create: vi.fn(async () => ({ id: 1, status: 'pending', autoVerdict: 'needs_review' })),
+  };
+
   const tx = {
     history,
     diagnosisReport,
@@ -99,6 +103,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     evolutionProfile,
     evolutionInsight,
     deepLearningArchive,
+    deepLearnReviewQueue,
     $executeRaw: vi.fn(async () => 0),
   };
 
@@ -109,6 +114,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     evolutionProfile,
     evolutionInsight,
     deepLearningArchive,
+    deepLearnReviewQueue,
     $transaction: vi.fn(async (fn: (tx: typeof tx) => Promise<unknown>) => fn(tx)),
     _tx: tx,
   };
@@ -345,32 +351,33 @@ describe('deepLearning.list', () => {
 // ─── deepLearning.create ─────────────────────────────────────────────────────
 
 describe('deepLearning.create', () => {
-  it('creates DeepLearningArchive with sourceType=text', async () => {
+  it('enqueues to deepLearnReviewQueue (LD-A-5: no direct archive.create)', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
     const result = await caller.create({ sample: 'this is my sample text' });
-    expect(prisma.deepLearningArchive.create).toHaveBeenCalledOnce();
-    const createArgs = prisma.deepLearningArchive.create.mock.calls[0]?.[0] as {
-      data: { sourceType: string; learningStatus: string };
-    };
-    expect(createArgs.data.sourceType).toBe('text');
-    expect(createArgs.data.learningStatus).toBe('pending');
-    expect(result.agentId).toBe('DeepLearnAgent');
+    expect(prisma.deepLearnReviewQueue.create).toHaveBeenCalledOnce();
+    expect(prisma.deepLearningArchive.create).not.toHaveBeenCalled();
+    expect(result.ok).toBe(true);
+    expect(result.queueId).toBe(1);
+    expect(result.status).toBe('pending');
   });
 });
 
 // ─── deepLearning.createFromFile ─────────────────────────────────────────────
 
 describe('deepLearning.createFromFile', () => {
-  it('creates archive with sourceType=file and placeholder sample', async () => {
+  it('enqueues to deepLearnReviewQueue with fileUrl (LD-A-5: no direct archive.create)', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
-    await caller.createFromFile({ fileUrl: 'https://example.com/doc.pdf' });
-    const createArgs = prisma.deepLearningArchive.create.mock.calls[0]?.[0] as {
-      data: { sourceType: string; sample: string };
+    const result = await caller.createFromFile({ fileUrl: 'https://example.com/doc.pdf' });
+    expect(prisma.deepLearnReviewQueue.create).toHaveBeenCalledOnce();
+    expect(prisma.deepLearningArchive.create).not.toHaveBeenCalled();
+    const createArgs = prisma.deepLearnReviewQueue.create.mock.calls[0]?.[0] as {
+      data: { fileUrl: string };
     };
-    expect(createArgs.data.sourceType).toBe('file');
-    expect(createArgs.data.sample).toBe('[file-content-pending]');
+    expect(createArgs.data.fileUrl).toBe('https://example.com/doc.pdf');
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe('pending');
   });
 });
 
