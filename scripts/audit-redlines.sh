@@ -29,13 +29,17 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 # R-1 · 直接调 LLM SDK 跳过 LLMGateway (LD-012)
 # 排除 LLMGateway 自身 (basename: llm-gateway) + tests
+# TD-052 fix: 排除 non-chat OpenAI SDK workers (image-gen/embedding/rag/tts/stt) · 这些非 LLM chat 不走 Gateway 是设计意图
 if grep -rn "new OpenAI\|new Anthropic\|@anthropic-ai/sdk\|from openai" \
     apps/api/src/ packages/*/src/ \
     --exclude-dir=llm-gateway --exclude-dir=node_modules \
+    --exclude-dir=image-gen --exclude-dir=embedding --exclude-dir=rag \
+    --exclude-dir=tts --exclude-dir=stt \
     --include="*.ts" --include="*.tsx" 2>/dev/null \
-    | grep -v "\.test\." | grep -v "\.judge\." ; then
+    | grep -v "\.test\." | grep -v "\.judge\." \
+    | grep -vE "trpc/routers/tts\.ts|workers/(image-gen|embedding|rag|tts|stt)/" ; then
   fail "R-1 · 直接调 LLM SDK · 触犯 LD-012"
-else pass "R-1 · LLM SDK 唯一入口 (LLMGateway)"; fi
+else pass "R-1 · LLM SDK 唯一入口 (LLMGateway · non-chat workers 豁免: image-gen/embedding/rag/tts/stt)"; fi
 
 # R-2 · Specialist 互调 (LD-003 · 不允许 Specialist 内调别的 Specialist)
 # 排除 JSDoc / line 注释 (` * ` / `//` 开头)
@@ -54,8 +58,10 @@ else pass "R-3 · Specialist 单次 LLM"; fi
 # R-4 · Prisma 查询漏 accountId (LD-009 · 多账号隔离)
 # 注: grep 单行局限 · 排除合法模式 (跨多行 where 块 + by-id 在 protectedProcedure 内 RLS 自动)
 # -B 2 看前面 2 行注释 · -A 3 看后面 3 行 where 块
+# TD-052 fix: 排除 apps/api/src/trpc/routers/admin/ (admin 跨账号查是 LD-A-3 设计意图 · RLS DISABLE)
 LEAK_RAW=$(grep -rn -B 10 -A 5 "prisma\.\(stepData\|history\|topic\|asset\|diagnosisReport\|feedbackLog\|evolutionProfile\|evolutionInsight\|deepLearningArchive\|knowledgeFavorite\|knowledgeNote\|costLog\)\.\(findMany\|findFirst\|update\|delete\|deleteMany\|updateMany\)" \
-    apps/api/src/ --include="*.ts" 2>/dev/null | grep -v "\.test\.")
+    apps/api/src/ --include="*.ts" 2>/dev/null \
+    | grep -v "\.test\." | grep -v "/admin/")
 # 把 -B 2 -A 3 输出按 -- 分组, 每组检查 (1) accountId · (2) by-id 单查 RLS 安全 · (3) "RLS auto-filters" 注释 design choice
 LEAK=$(echo "$LEAK_RAW" | awk '
 BEGIN { RS="--\n"; ORS=""; FS="\n" }
@@ -73,9 +79,11 @@ if [ -n "$LEAK" ]; then fail "R-4 · DB 查询漏 accountId · LD-009"; echo "$L
 # R-5 · Redis/LS 漏 acc_ 命名空间 (LD-009 · LD-010)
 # 白名单 helper 函数 (函数内已生成 acc_{id} 前缀 · 通过 ls-namespace.ts 集中管理)
 # 跨多行 setItem/getItem 用 -A 1 看下一行
+# TD-052 fix: 排除 admin 域 + system 级 rate-limit (lucia-admin session / image-gen rate-limit 不分 user account 是设计意图)
 LEAK_RAW=$(grep -rn -A 1 "redis\.\(set\|get\)\|localStorage\.setItem\|localStorage\.getItem" \
     apps/api/src/ apps/web/src/ --include="*.ts" --include="*.tsx" 2>/dev/null \
-    | grep -v "\.test\." | grep -v "compliance" | grep -v "ls-namespace")
+    | grep -v "\.test\." | grep -v "compliance" | grep -v "ls-namespace" \
+    | grep -vE "auth/lucia-admin|rate-limit/(image-gen|auth|system)")
 LEAK=$(echo "$LEAK_RAW" | awk '
 BEGIN { RS="--\n"; ORS=""; FS="\n" }
 {

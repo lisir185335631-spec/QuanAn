@@ -38,27 +38,48 @@ COUNT=$(ls apps/api/src/specialists/*.ts 2>/dev/null \
 if [ "$COUNT" -gt 14 ]; then fail "LD-002 · Specialist 数 ${COUNT} > 14"
 else pass "LD-002 · 14 能力域 (实际 ${COUNT}/14 · PRD-1~5 完成)"; fi
 
-# LD-004 · 3 L5 自治 Agent 走外部 orchestrator (本期 PRD-6+ 才实施 · 验证不在主代码中违规启动循环)
-# 关键: 不允许 VoiceChatAgent / EvolutionAgent / DailyTaskAgent 在 specialists/ 中 · 必须独立 orchestrator
-L5_VIOLATION=$(ls apps/api/src/specialists/ 2>/dev/null \
-    | grep -E "VoiceChatAgent|EvolutionAgent|DailyTaskAgent" || true)
-if [ -n "$L5_VIOLATION" ]; then fail "LD-004 · L5 Agent 在 specialists/ 中 · 必须用 ADR-018 外部 orchestrator"
-else pass "LD-004 · 3 L5 Agent 留 PRD-6+ (orchestrator 模式)"; fi
+# LD-004 · 3 L5 自治 Agent 走外部 orchestrator (ADR-005 + ADR-018)
+# 关键设计意图: VoiceChatAgent / EvolutionAgent / DailyTaskAgent 不允许 LLM 自循环
+# 文件存在于 specialists/ 是合法的 (BaseSpecialist 单次 execute) · 由 bullmq queue / cron / user event 触发
+# TD-052 fix: 旧 grep 用文件名匹配是错的 · 改为检测**文件内是否有自循环** (while/for 调 LLM)
+# 已被 R-3 部分覆盖 · 这里专门 deep-check 3 个 L5 文件
+L5_NAMES=(VoiceChatAgent EvolutionAgent DailyTaskAgent)
+L5_VIOLATION=""
+for name in "${L5_NAMES[@]}"; do
+  f="apps/api/src/specialists/${name}.ts"
+  [ -f "$f" ] || continue
+  # 检测自循环: while/for + 行内或附近含 llm/invoke/complete/stream
+  if grep -A 10 -E "^\s*(for|while)\s*\(" "$f" 2>/dev/null \
+      | grep -iE "llm|invoke|complete|stream\.read" \
+      | grep -vE "^\s*(\*|//|/\*)" \
+      | head -1 | grep -q .; then
+    L5_VIOLATION="${L5_VIOLATION}${name}.ts "
+  fi
+done
+if [ -n "$L5_VIOLATION" ]; then fail "LD-004 · L5 Agent 自循环 · 必须用 ADR-018 外部 orchestrator: ${L5_VIOLATION}"
+else pass "LD-004 · 3 L5 Agent 无自循环 (BaseSpecialist 单次 execute + 外部 orchestrator)"; fi
 
 # LD-005 · BaseSpecialist 抽象 + 五层配置
+# TD-052 fix: 排除 EvolutionAgent.ts re-export stub (D-007 · 真实实现在 @/agents/evolution/EvolutionAgent) · TD-024 dual path resolved
+# stub 文件含 `export { EvolutionAgent } from '@/agents/...'` · 不是直接 class definition
 SPECIALIST_FILES=$(ls apps/api/src/specialists/*.ts 2>/dev/null \
     | grep -v "/base/" | grep -v "\.test\." | grep -v "/__tests__/")
 if [ -z "$SPECIALIST_FILES" ]; then warn "LD-005 · 0 Specialist 实现 · 跳过"
 else
   MISSING=0
   for f in $SPECIALIST_FILES; do
+    # 跳过 re-export stub (含 from '@/agents/' · 真实实现在 agents/ 目录 · D-007 + TD-024)
+    # 用 grep 单独检测一行 `from '@/agents/`(multi-line export 块会在 `from` 行命中)
+    if grep -qE "from\s*['\"]@/agents/" "$f" 2>/dev/null; then
+      continue
+    fi
     if ! grep -q "extends BaseSpecialist" "$f"; then
       echo "  ⚠️  $(basename $f) 未 extends BaseSpecialist"
       MISSING=$((MISSING + 1))
     fi
   done
   if [ "$MISSING" -gt 0 ]; then fail "LD-005 · ${MISSING} 个 Specialist 未 extends BaseSpecialist"
-  else pass "LD-005 · 全 Specialist extends BaseSpecialist (五层配置)"; fi
+  else pass "LD-005 · 全 Specialist extends BaseSpecialist (re-export stub 豁免 · D-007 TD-024 resolved)"; fi
 fi
 
 # LD-007 · ContextAssembler 是 prompt 注入唯一入口 (R-11 自拼 prompt)
