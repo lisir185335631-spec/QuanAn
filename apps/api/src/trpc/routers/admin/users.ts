@@ -9,6 +9,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { luciaAdmin, validateAdminSession } from '@/lib/auth/lucia-admin';
+import { logger } from '@/lib/logger';
 import { prisma as defaultPrisma } from '@/lib/prisma';
 import { redactSensitiveFields } from '@/lib/admin/audit-helpers';
 import { logAdminAction } from '@/services/admin/admin-audit-service';
@@ -520,7 +521,15 @@ export const usersRouter = adminTrpcRouter({
     await db.user.update({ where: { id: userId }, data: { passwordHash } });
 
     // Email stub: log only (real email in future PRD)
-    console.log(`[ADMIN RESET PASSWORD] user=${userId} email=${user.email} tempPassword=${tempPassword}`);
+    // TD-050 fix: 不 log 明文密码 · 只 log hash 前 8 chars(便于追溯但不能复原)
+    logger.warn(
+      {
+        userId,
+        email: user.email,
+        tempPasswordHashPrefix: createHash('sha256').update(tempPassword).digest('hex').slice(0, 8),
+      },
+      '[ADMIN RESET PASSWORD] temp password issued',
+    );
 
     void logAdminAction({
       actorAdminId: ctx.activeAdminUser!.id,
