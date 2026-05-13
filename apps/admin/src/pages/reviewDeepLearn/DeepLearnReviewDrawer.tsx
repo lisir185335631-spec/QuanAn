@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { adminTrpc } from '../../lib/admin-client';
+import { FilePreviewPanel } from './FilePreviewPanel';
 
 type ViolationEntry = {
   violationType: string;
@@ -636,6 +637,14 @@ export function DeepLearnReviewDrawer({ queueId, onClose, onActionDone, role }: 
               {/* §2 文件 Metadata */}
               <SectionHeader label="§2 文件 Metadata" />
               <FileMetaSection detail={detail} />
+
+              {/* §2.5 文件预览 */}
+              <SectionHeader label="§2.5 文件预览" />
+              <FilePreviewPanel
+                fileMime={detail.fileMime}
+                fileUrl={detail.fileUrl}
+                textPreview={detail.textPreview}
+              />
 
               {/* §3 autoScanResult */}
               <SectionHeader label="§3 自动扫描结果 (PII / 违禁词)" />

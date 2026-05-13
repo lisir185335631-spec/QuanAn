@@ -1,5 +1,5 @@
 // PRD-12 US-010 · ReviewDeepLearnPage — 列表 + 抽屉 part 1
-// AC-1: admin-routes metadata.prd: 12 (already set in admin-routes.ts)
+// PRD-12 US-011 · Part 2 — Tab 切换 [待审核/已批准/已驳回/用户违规累计]
 // AC-8: useSearchParams filter URL 持久化
 // AC-9: ErrorBoundary fallback · pnpm typecheck 0 error
 
@@ -13,6 +13,7 @@ import type { DeepLearnFilterState } from './ReviewDeepLearnFilters';
 import { ReviewDeepLearnTable } from './ReviewDeepLearnTable';
 import type { DeepLearnRow } from './ReviewDeepLearnTable';
 import { DeepLearnReviewDrawer } from './DeepLearnReviewDrawer';
+import { UserViolationsTab } from './UserViolationsTab';
 
 const PAGE_SIZE = 20;
 
@@ -45,6 +46,15 @@ class DeepLearnErrorBoundary extends Component<{ children: ReactNode }, ErrState
 }
 
 // ── URL ↔ filter helpers ───────────────────────────────────────────────────────
+
+type TabKey = 'pending' | 'approved' | 'rejected' | 'violations' | '';
+
+function getActiveTab(params: URLSearchParams): TabKey {
+  if (params.get('tab') === 'violations') return 'violations';
+  const s = params.get('status');
+  if (s === 'pending' || s === 'approved' || s === 'rejected') return s;
+  return '';
+}
 
 function parseFilters(params: URLSearchParams): DeepLearnFilterState {
   return {
@@ -89,17 +99,84 @@ function PageBtn({ label, disabled, onClick }: { label: string; disabled: boolea
   );
 }
 
+// ── Tab Bar ────────────────────────────────────────────────────────────────────
+
+const TAB_DEFS: { key: TabKey; label: string }[] = [
+  { key: 'pending', label: '待审核' },
+  { key: 'approved', label: '已批准' },
+  { key: 'rejected', label: '已驳回' },
+  { key: 'violations', label: '用户违规累计' },
+];
+
+function TabBar({
+  active,
+  onSelect,
+}: {
+  active: TabKey;
+  onSelect: (tab: TabKey) => void;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: 0,
+        borderBottom: '1px solid var(--border)',
+        marginBottom: 16,
+      }}
+    >
+      {TAB_DEFS.map(({ key, label }) => {
+        const isActive = active === key;
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => onSelect(key)}
+            style={{
+              background: 'none',
+              border: 'none',
+              borderBottom: isActive ? '2px solid var(--gold)' : '2px solid transparent',
+              color: isActive ? 'var(--gold)' : 'var(--text-muted)',
+              padding: '8px 18px',
+              cursor: 'pointer',
+              fontSize: 13,
+              fontWeight: isActive ? 700 : 400,
+              marginBottom: -1,
+              transition: 'color 0.15s, border-color 0.15s',
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 function ReviewDeepLearnPageInner() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const activeTab = getActiveTab(searchParams);
   const page = parseInt(searchParams.get('page') ?? '1', 10) || 1;
   const openQueueId = searchParams.get('queueId') ? parseInt(searchParams.get('queueId')!, 10) : null;
   const filters = parseFilters(searchParams);
 
   const { data: me } = adminTrpc.auth.me.useQuery();
   const role = me?.role;
+
+  const handleTabSelect = useCallback(
+    (tab: TabKey) => {
+      if (tab === 'violations') {
+        setSearchParams({ tab: 'violations' });
+      } else {
+        const p: Record<string, string> = { page: '1' };
+        if (tab) p['status'] = tab;
+        setSearchParams(p);
+      }
+    },
+    [setSearchParams],
+  );
 
   const queryInput = useMemo(() => ({
     page,
@@ -122,6 +199,7 @@ function ReviewDeepLearnPageInner() {
 
   const { data, isLoading, isError, refetch } = adminTrpc.reviewDeepLearn.list.useQuery(queryInput, {
     staleTime: 15_000,
+    enabled: activeTab !== 'violations',
   });
 
   const rows = useMemo(() => (data?.items ?? []) as unknown as DeepLearnRow[], [data]);
@@ -167,36 +245,46 @@ function ReviewDeepLearnPageInner() {
           📚 DeepLearn 内容审核
         </h1>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-          PII 扫描 / 违禁词扫描 / 用户违规累计 · 共 {totalCount.toLocaleString()} 条
+          PII 扫描 / 违禁词扫描 / 用户违规累计{activeTab !== 'violations' && ` · 共 ${totalCount.toLocaleString()} 条`}
         </div>
       </div>
 
       {/* Overview cards */}
       <OverviewCards />
 
-      {/* Filters */}
-      <ReviewDeepLearnFilters value={filters} onChange={handleFiltersChange} />
+      {/* Tab bar */}
+      <TabBar active={activeTab} onSelect={handleTabSelect} />
 
-      {/* Table */}
-      <ReviewDeepLearnTable
-        data={rows}
-        loading={isLoading}
-        isError={isError}
-        onRefetch={() => void refetch()}
-        onRowClick={openDrawer}
-        selectedId={openQueueId}
-        fileMimeFilter={filters.fileMimeFilter || undefined}
-      />
+      {/* Content */}
+      {activeTab === 'violations' ? (
+        <UserViolationsTab role={role} />
+      ) : (
+        <>
+          {/* Filters */}
+          <ReviewDeepLearnFilters value={filters} onChange={handleFiltersChange} />
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end' }}>
-          <PageBtn label="← 上页" disabled={page <= 1} onClick={() => setPage(page - 1)} />
-          <span style={{ fontSize: 12, color: 'var(--text-muted)', padding: '0 8px' }}>
-            {page} / {totalPages}
-          </span>
-          <PageBtn label="下页 →" disabled={page >= totalPages} onClick={() => setPage(page + 1)} />
-        </div>
+          {/* Table */}
+          <ReviewDeepLearnTable
+            data={rows}
+            loading={isLoading}
+            isError={isError}
+            onRefetch={() => void refetch()}
+            onRowClick={openDrawer}
+            selectedId={openQueueId}
+            fileMimeFilter={filters.fileMimeFilter || undefined}
+          />
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end' }}>
+              <PageBtn label="← 上页" disabled={page <= 1} onClick={() => setPage(page - 1)} />
+              <span style={{ fontSize: 12, color: 'var(--text-muted)', padding: '0 8px' }}>
+                {page} / {totalPages}
+              </span>
+              <PageBtn label="下页 →" disabled={page >= totalPages} onClick={() => setPage(page + 1)} />
+            </div>
+          )}
+        </>
       )}
 
       {/* Detail drawer */}
