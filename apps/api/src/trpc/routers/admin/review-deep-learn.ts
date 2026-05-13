@@ -294,6 +294,9 @@ export const reviewDeepLearnRouter = adminTrpcRouter({
     if (queue.status === 'rejected') {
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'already_rejected' });
     }
+    if (queue.status === 'approved') {
+      throw new TRPCError({ code: 'BAD_REQUEST', message: 'already_processed' });
+    }
 
     await db.deepLearnReviewQueue.update({
       where: { id: queueId },

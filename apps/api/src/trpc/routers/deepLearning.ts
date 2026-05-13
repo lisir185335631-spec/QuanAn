@@ -67,48 +67,49 @@ export const deepLearningRouter = router({
       });
     }),
 
-  /** Create a deep learning archive entry from text (P1 mock) */
+  /** Submit a text sample to the deep learn review queue (P1 mock — LD-A-5: no direct archive.create) */
   create: protectedProcedure
     .input(createInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
+      const { prisma, activeAccountId, user } = ctx;
       const hash = Buffer.from(input.sample.slice(0, 64)).toString('base64url');
-      return prisma.deepLearningArchive.create({
+      const queue = await prisma.deepLearnReviewQueue.create({
         data: {
+          userId: user!.id,
           accountId: activeAccountId!,
-          sourceType: 'text',
-          sample: input.sample,
-          sampleHash: hash,
-          userTitle: input.userTitle ?? null,
-          userTags: input.userTags,
-          learningStatus: 'pending',
-          agentId: 'DeepLearnAgent',
-          traceId: traceId ?? null,
+          fileName: input.userTitle ?? 'text-sample',
+          fileMime: 'text/plain',
+          fileSize: Buffer.byteLength(input.sample, 'utf8'),
+          fileUrl: `mock-s3://text-sample/${hash}`,
+          autoScanResult: { note: 'p1-mock-text-upload', redactedTextPreview: input.sample.slice(0, 200) },
+          autoVerdict: 'needs_review',
+          status: 'pending',
         },
-        select: ARCHIVE_SELECT,
+        select: { id: true, status: true, autoVerdict: true },
       });
+      return { ok: true as const, queueId: queue.id, status: queue.status };
     }),
 
-  /** Create a deep learning archive entry from file URL (P1 mock — FileParser 留 PRD-7+) */
+  /** Submit a file URL to the deep learn review queue (P1 mock — FileParser 留 PRD-7+, LD-A-5) */
   createFromFile: protectedProcedure
     .input(createFromFileInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId, traceId } = ctx;
-      const hash = Buffer.from(input.fileUrl.slice(0, 64)).toString('base64url');
-      return prisma.deepLearningArchive.create({
+      const { prisma, activeAccountId, user } = ctx;
+      const queue = await prisma.deepLearnReviewQueue.create({
         data: {
+          userId: user!.id,
           accountId: activeAccountId!,
-          sourceType: 'file',
-          sample: '[file-content-pending]',
-          sampleHash: hash,
-          userTitle: input.userTitle ?? null,
-          userTags: input.userTags,
-          learningStatus: 'pending',
-          agentId: 'DeepLearnAgent',
-          traceId: traceId ?? null,
+          fileName: input.userTitle ?? 'file-upload',
+          fileMime: 'application/octet-stream',
+          fileSize: 0,
+          fileUrl: input.fileUrl,
+          autoScanResult: { note: 'p1-mock-file-upload' },
+          autoVerdict: 'needs_review',
+          status: 'pending',
         },
-        select: ARCHIVE_SELECT,
+        select: { id: true, status: true, autoVerdict: true },
       });
+      return { ok: true as const, queueId: queue.id, status: queue.status };
     }),
 
   /** Trigger learning for an archive entry (P1 mock — DeepLearnAgent 留 PRD-7+) */

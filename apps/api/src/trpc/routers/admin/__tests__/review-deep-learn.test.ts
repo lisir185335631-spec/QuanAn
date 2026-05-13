@@ -429,6 +429,13 @@ describe('reviewDeepLearnRouter', () => {
       ).rejects.toThrow('already_rejected');
     });
 
+    it('throws already_processed when status is approved (AC-9)', async () => {
+      mockQueueFindUnique.mockResolvedValue({ ...QUEUE_ITEM, status: 'approved' });
+      await expect(
+        makeCaller(SUPER_ADMIN).reject({ queueId: 1, rejectReason: 'trying to reject approved item' }),
+      ).rejects.toThrow('already_processed');
+    });
+
     it('throws NOT_FOUND when queue missing', async () => {
       mockQueueFindUnique.mockResolvedValue(null);
       await expect(
