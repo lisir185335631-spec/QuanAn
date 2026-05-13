@@ -326,6 +326,11 @@ async function start(): Promise<void> {
   const { scheduleCostAnomalyDetection } = await import('./jobs/admin/cost-anomaly.job');
   await scheduleCostAnomalyDetection();
 
+  // AC-1 US-012: register violation-detection cron (0 4 * * * Asia/Shanghai)
+  const { scheduleViolationDetection } = await import('./jobs/admin/violation-detection.job');
+  await scheduleViolationDetection();
+  logger.info('violation_detection_cron.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }
