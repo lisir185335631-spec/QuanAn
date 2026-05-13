@@ -6751,3 +6751,45 @@ Step 1.5 亲跑全套补门禁 100% 过。
 下一步: /goal-verify + /prd-retro + commit
 
 --- [RALPH] Iteration 19 ended: US-013 (26分钟 26秒) ---
+
+[2026-05-14 ~] PRD-12 retro 后置 maintenance · 全部完成
+===
+Phase 1 立即 (5 min)
+- watch-audit-gate 12178 + 69656 + Monitor bsyynl5ov 全停 · daemon 进程树清
+
+Phase 2 short-term maintenance (4 TD resolved · 5 commits)
+- TD-050 resolved (a63e46c): admin reset password 不 log 明文 (console.log → logger.warn + sha256 hash 前 8 chars)
+- TD-051 resolved (d4d9cf2): audit-redlines.sh R-10 识别 eslint-disable 注释豁免
+- TD-052 resolved (19e747c): 修 audit script 5 R + 2 LD false positive 累积
+  · R-1 LLM SDK 排除 image-gen/embedding/rag/tts/stt non-chat workers
+  · R-4 accountId 排除 admin/ (跨账号 by design)
+  · R-5 acc_ prefix 排除 lucia-admin (admin session 不分 user)
+  · LD-004 grep 改自循环检测 (旧 grep 逻辑根本错误 · agent 重写更准)
+  · LD-005 BaseSpecialist 排除 EvolutionAgent re-export stub (TD-024 resolved 后该豁免)
+- TD-053 resolved (24df877): Drawer ScanResultSection 字段对齐 (bannedWordHits + 双 key 兼容 backward compat)
+- TD-050~053 status update commit (8c66e36)
+
+Phase 2 audit 最终状态(零回归保):
+- audit-redlines: ALL PASS (0 ❌) ★
+- audit-ld: ALL PASS (0 ❌) ★
+- audit-redlines-admin: ALL PASS
+- audit-admin-rls-tables: 26/26 + 15/15 PASS
+- pnpm test: 1535 passed | 16 failed (TD-054 pre-existing) | 4 skipped (1555 total)
+- pnpm typecheck: 0 error (6 ws)
+
+Phase 3 long-term (Diff-4 apply to global)
+- ~/.claude/commands/plan-check.md §2.6.16 单点函数抽象检查 加入 (605→744 行 · +39 lines)
+- M-1 固化 · PRD-12 原创 _createXxxInTx pattern 机制化
+- 预估 ROI · 5 PRD 累计 ~3-5 reject 节省
+
+Skipped (留 PRD-13 PR / PRR):
+- TD-054 (Medium · pnpm overrides react@18 pin · 高风险影响 dep tree · PRD-13 启动前 PR 单独评估)
+- TD-055 (Low · D-085 偏门类目 100% 抽样 · 等真接入 trending 数据 · 上线前 PRR)
+
+意外发现(retro 落地后扩展):
+- LD-004 grep 逻辑根本错误 · agent 重写更准实施 ADR-005/ADR-018 设计意图 · 建议 backport AGENTS.md
+- EvolutionAgent.ts re-export stub 模式 · 未来 audit 应识别 from '@/agents/' re-export
+- trending Drawer piiMatches 永远空 · UI 渲染空 (length=0 自动隐藏) · 可在 PRD-13 删该区块
+
+下一步 user trigger:
+- PRD-13 P9.3 P1 健康度域启动 (prompts/quota/config/approval/evolution · 估 8-12 US)
