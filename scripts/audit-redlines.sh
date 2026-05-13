@@ -98,13 +98,23 @@ if grep -rn "console\.log\|debugger" \
 else pass "AGENTS §6.9 · 无 console.log / debugger"; fi
 
 # R-10 · any 类型兜底 (LD-013)
-if grep -rn ": any[^a-zA-Z]\|as any" \
-    apps/api/src/ apps/web/src/ apps/admin/src/ packages/*/src/ \
-    --include="*.ts" --include="*.tsx" 2>/dev/null \
-    | grep -v "\.test\." | grep -v "\.judge\." \
-    | grep -v "// eslint-disable" ; then
+# TD-051 fix: awk 识别 eslint-disable-next-line @typescript-eslint/no-explicit-any 注释 · 豁免接下来的 1 行
+# 也豁免行尾 // eslint-disable-line @typescript-eslint/no-explicit-any 行内注释
+ANY_HITS=$(find apps/api/src apps/web/src apps/admin/src packages -type f \( -name "*.ts" -o -name "*.tsx" \) 2>/dev/null \
+    | grep -v "\.test\." | grep -v "\.judge\." | grep -v "node_modules" \
+    | xargs awk '
+      /eslint-disable-next-line.*no-explicit-any/ { skip = NR + 1; next }
+      /\bas any\b|: any[^a-zA-Z_]/ {
+        if (NR == skip) next
+        if ($0 ~ /eslint-disable-line.*no-explicit-any/) next
+        if ($0 ~ /^[[:space:]]*(\/\/|\*|\/\*)/) next
+        print FILENAME ":" NR ":" $0
+      }
+    ' 2>/dev/null)
+if [ -n "$ANY_HITS" ]; then
   fail "R-10 · any type 兜底 · 触犯 LD-013"
-else pass "R-10 · 无 any 兜底"; fi
+  echo "$ANY_HITS" | head -10
+else pass "R-10 · 无 any 兜底 (eslint-disable 注释豁免)"; fi
 
 # R-11 · Specialist 自拼 system prompt (LD-007 · ContextAssembler 唯一注入入口)
 if grep -rn "systemPrompt\s*=\|system:\s*\`" apps/api/src/specialists/*.ts 2>/dev/null \
