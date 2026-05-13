@@ -21,6 +21,8 @@ const EXCEPTION_PROCEDURES = [
   'admin.users.banUser',
   'admin.accounts.forceFreeze',
   'admin.invites.invalidate',
+  // PRD-12 US-009: reviewDeepLearn.banUploader implements inline approval gate
+  'admin.reviewDeepLearn.banUploader',
 ];
 
 // Procedures that must use meta.requiresApproval=true (PRD-12~14)
@@ -89,13 +91,23 @@ function checkAdminProcedureChain(): void {
   check('adminProcedure-chain', source.includes('approvalGateCheck'), 'adminProcedure chain includes approvalGateCheck');
 }
 
+function camelToKebab(s: string): string {
+  return s.replace(/([A-Z])/g, (c) => `-${c.toLowerCase()}`);
+}
+
 function checkExceptionProcedure(procPath: string): void {
   // e.g. 'admin.users.changePlan' → look for 'changePlan' in users.ts
+  // e.g. 'admin.reviewDeepLearn.banUploader' → try reviewDeepLearn.ts, then review-deep-learn.ts
   const parts = procPath.split('.');
-  const routerName = parts[1]; // 'users'
-  const methodName = parts[2]; // 'changePlan'
+  const routerName = parts[1]; // 'users' or 'reviewDeepLearn'
+  const methodName = parts[2]; // 'changePlan' or 'banUploader'
 
-  const routerFile = path.join(ROOT, `apps/api/src/trpc/routers/admin/${routerName}.ts`);
+  let routerFile = path.join(ROOT, `apps/api/src/trpc/routers/admin/${routerName}.ts`);
+  if (!fs.existsSync(routerFile)) {
+    // Try kebab-case fallback (e.g. reviewDeepLearn → review-deep-learn)
+    const kebabName = camelToKebab(routerName);
+    routerFile = path.join(ROOT, `apps/api/src/trpc/routers/admin/${kebabName}.ts`);
+  }
   if (!fs.existsSync(routerFile)) {
     check(`EXCEPTION-${procPath}-exists`, false, `${routerName}.ts not found`);
     return;

@@ -11,11 +11,11 @@ import { adminAuthRouter } from './auth';
 import { costRouter } from './cost';
 import { invitesRouter } from './invites';
 import { nsmRouter } from './nsm';
+import { reviewDeepLearnRouter } from './review-deep-learn';
 import { reviewTrendingRouter } from './review-trending';
 import { usersRouter } from './users';
 
 // Placeholder sub-routers (filled by PRD-12~14)
-const deepLearnPlaceholder = adminTrpcRouter({});
 const promptsPlaceholder = adminTrpcRouter({});
 const quotaPlaceholder = adminTrpcRouter({});
 const evolutionPlaceholder = adminTrpcRouter({});
@@ -41,7 +41,8 @@ export const adminRouter = adminTrpcRouter({
   inviteCodes: invitesRouter,
   // PRD-12 US-004: real reviewTrending router
   reviewTrending: reviewTrendingRouter,
-  deepLearn: deepLearnPlaceholder,
+  // PRD-12 US-009: real reviewDeepLearn router
+  deepLearn: reviewDeepLearnRouter,
   prompts: promptsPlaceholder,
   quota: quotaPlaceholder,
   // PRD-11 US-003: real nsm router
