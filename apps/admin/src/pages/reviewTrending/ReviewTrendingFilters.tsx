@@ -14,6 +14,7 @@ export interface TrendingFilterState {
 interface Props {
   value: TrendingFilterState;
   onChange: (f: TrendingFilterState) => void;
+  hideStatus?: boolean;
 }
 
 const selectStyle: React.CSSProperties = {
@@ -62,7 +63,7 @@ const AUTO_VERDICT_OPTIONS = [
   { value: 'needs_review', label: '需人工审核' },
 ];
 
-export function ReviewTrendingFilters({ value, onChange }: Props) {
+export function ReviewTrendingFilters({ value, onChange, hideStatus }: Props) {
   const [localDateFrom, setLocalDateFrom] = useState(value.dateFrom);
   const [localDateTo, setLocalDateTo] = useState(value.dateTo);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,17 +99,19 @@ export function ReviewTrendingFilters({ value, onChange }: Props) {
         borderRadius: 6,
       }}
     >
-      <select
-        value={value.statusFilter}
-        onChange={(e) => onChange({ ...value, statusFilter: e.target.value })}
-        style={selectStyle}
-      >
-        {STATUS_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      {!hideStatus && (
+        <select
+          value={value.statusFilter}
+          onChange={(e) => onChange({ ...value, statusFilter: e.target.value })}
+          style={selectStyle}
+        >
+          {STATUS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      )}
 
       <select
         value={value.platformFilter}

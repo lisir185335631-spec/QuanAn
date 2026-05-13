@@ -95,10 +95,43 @@ interface Props {
   onRefetch: () => void;
   onRowClick: (row: QueueRow) => void;
   selectedId: number | null;
+  selectedIds?: Set<number>;
+  onToggleSelect?: (id: number) => void;
 }
 
-export function ReviewTrendingTable({ data, loading, isError, onRefetch, onRowClick, selectedId }: Props) {
-  const columns = useMemo((): DenseTableColumn<QueueRow>[] => [
+export function ReviewTrendingTable({
+  data,
+  loading,
+  isError,
+  onRefetch,
+  onRowClick,
+  selectedId,
+  selectedIds,
+  onToggleSelect,
+}: Props) {
+  const showCheckboxes = selectedIds !== undefined && onToggleSelect !== undefined;
+
+  const columns = useMemo((): DenseTableColumn<QueueRow>[] => {
+    const checkboxCol: DenseTableColumn<QueueRow> = {
+      key: 'select',
+      label: '',
+      width: '36px',
+      render: (row) => (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
+        >
+          <input
+            type="checkbox"
+            checked={selectedIds?.has(row.id) ?? false}
+            onChange={() => onToggleSelect?.(row.id)}
+            style={{ cursor: 'pointer', accentColor: 'var(--gold)', width: 14, height: 14 }}
+          />
+        </div>
+      ),
+    };
+
+    const baseCols: DenseTableColumn<QueueRow>[] = [
     {
       key: 'id',
       label: 'ID',
@@ -167,7 +200,10 @@ export function ReviewTrendingTable({ data, loading, isError, onRefetch, onRowCl
         <span style={{ fontSize: 11, color: 'var(--gold)', cursor: 'pointer' }}>详情 →</span>
       ),
     },
-  ], []);
+  ];
+
+    return showCheckboxes ? [checkboxCol, ...baseCols] : baseCols;
+  }, [showCheckboxes, selectedIds, onToggleSelect]);
 
   if (isError) {
     return (
