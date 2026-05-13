@@ -26,6 +26,7 @@ ADMIN_TABLES=(
   trending_review_queue
   trending_takedown
   auto_review_rules
+  # 域⑧ DeepLearning 审核
   deep_learn_review_queue
   user_violation_log
   evolution_anomaly_flags
