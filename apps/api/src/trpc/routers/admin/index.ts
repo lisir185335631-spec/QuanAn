@@ -42,7 +42,7 @@ export const adminRouter = adminTrpcRouter({
   // PRD-12 US-004: real reviewTrending router
   reviewTrending: reviewTrendingRouter,
   // PRD-12 US-009: real reviewDeepLearn router
-  deepLearn: reviewDeepLearnRouter,
+  reviewDeepLearn: reviewDeepLearnRouter,
   prompts: promptsPlaceholder,
   quota: quotaPlaceholder,
   // PRD-11 US-003: real nsm router

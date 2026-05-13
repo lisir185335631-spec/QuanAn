@@ -562,7 +562,6 @@ const _shadowAdminRouter = _t.router({
         } => ({ violations: [], total: 0 }),
       ),
   }),
-  deepLearn: _t.router({}),
   prompts: _t.router({}),
   quota: _t.router({}),
   nsm: _t.router({
