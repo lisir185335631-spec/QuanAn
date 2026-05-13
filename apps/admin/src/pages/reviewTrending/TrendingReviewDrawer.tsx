@@ -159,7 +159,14 @@ function ScanResultSection({ autoScanResult }: { autoScanResult: unknown }) {
     return <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>暂无扫描结果</div>;
   }
 
-  const bannedWords = (result['bannedWords'] as string[] | undefined) ?? [];
+  // TD-053 fix: backward-compatible alias · US-002 worker 写 bannedWordHits (新字段)
+  // 旧 'bannedWords' 保留兼容历史数据(若有)· 命中任一即显示
+  const bannedWords =
+    (result['bannedWordHits'] as string[] | undefined) ??
+    (result['bannedWords'] as string[] | undefined) ??
+    [];
+  // TD-053 note: trending 域 worker 不扫 PII (US-002 trending-auto-verdict 仅 banned-word 扫描)
+  // 仅 deep_learn 域 (US-008 deep-learn-auto-verdict) 才扫 PII · trending Drawer piiMatches 应永远为空
   const piiMatches = (result['piiMatches'] as string[] | undefined) ?? [];
   const score = result['score'];
   const verdict = result['verdict'];
