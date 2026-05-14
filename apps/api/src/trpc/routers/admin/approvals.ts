@@ -320,6 +320,9 @@ export const approvalsRouter = adminTrpcRouter({
             : { decisionReason: input.decisionReason },
       }).catch(() => {});
 
+      // Stub notification: console.log (AC-11 · 真启留 PRR)
+      console.log(`[STUB] Notify requester ${result.requesterAdminId}: request ${input.requestId} approved`);
+
       return { ok: true, displayStatus: deriveDisplayStatus(result) };
     }),
 
