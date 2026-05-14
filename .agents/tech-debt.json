@@ -1002,8 +1002,10 @@
       "detected_in_prd": "prd-13-prep-maintenance",
       "detected_in_story": "DailyTaskAgent half cleanup evaluation",
       "fix_by": "PRD-13 evolution 子域第一个 US (或独立 maintenance US)",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "新建 tests/unit/agents/specialists/DailyTaskAgent.test.ts · 覆盖 4 个核心场景: (1) 冷启动 (stepCount=0 OR profile=null → 5 模板) (2) 非冷启动 LLM 调用 + lightweight tier + 30s timeout (3) schema 校验失败 retry 1 次 (4) AbortError → LLMTimeoutError. 用 fake LLMGateway + prisma mock.",
+      "resolved_in_prd": "prd-13",
+      "resolved_at": "2026-05-14",
       "created_at": "2026-05-14T09:16:27"
     }
   ],
