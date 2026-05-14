@@ -1105,12 +1105,13 @@ model UserViolationLog {
 model EvolutionAnomalyFlag {
   id          Int       @id @default(autoincrement())
   accountId   Int
-  anomalyType String // 'conflicting_insights' | 'frequent_style_flip' | ...
+  anomalyType String // 'conflicting_insights' | 'frequent_style_flip' | 'avoidlist_overflow' | 'flywheel_stalled' | 'negative_feedback_dominant'
   severity    String // 'low' | 'medium' | 'high'
   evidence    Json
   detectedAt  DateTime  @default(now())
   resolvedAt  DateTime?
   resolution  String? // 'auto_resolved' | 'admin_force_rebuild' | 'false_positive'
+  resolvedByAdminId Int? @map("resolved_by_admin_id")
 
   @@index([accountId])
   @@index([anomalyType, detectedAt(sort: Desc)])

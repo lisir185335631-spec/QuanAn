@@ -14,11 +14,11 @@ import { nsmRouter } from './nsm';
 import { reviewDeepLearnRouter } from './review-deep-learn';
 import { reviewTrendingRouter } from './review-trending';
 import { usersRouter } from './users';
+import { evolutionHealthRouter } from './evolutionHealth';
 
 // Placeholder sub-routers (filled by PRD-12~14)
 const promptsPlaceholder = adminTrpcRouter({});
 const quotaPlaceholder = adminTrpcRouter({});
-const evolutionPlaceholder = adminTrpcRouter({});
 const configPlaceholder = adminTrpcRouter({});
 const abPlaceholder = adminTrpcRouter({});
 
@@ -49,7 +49,8 @@ export const adminRouter = adminTrpcRouter({
   nsm: nsmRouter,
   // PRD-11 US-012: real cost router
   cost: costRouter,
-  evolution: evolutionPlaceholder,
+  // PRD-13 US-004: real evolutionHealth router
+  evolution: evolutionHealthRouter,
   config: configPlaceholder,
   ab: abPlaceholder,
 });

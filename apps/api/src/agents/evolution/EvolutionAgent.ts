@@ -20,6 +20,8 @@ import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { getDeepLearningSamples } from '@/memory/l4-profile';
 import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
+import { detectEvolutionAnomalies } from '@/services/admin/evolution-health/anomaly-detection.service';
+import { DingtalkService } from '@/services/admin/notifications/dingtalk.service';
 import { BaseSpecialist } from '@/specialists/base/BaseSpecialist';
 import { SchemaValidationError, LLMTimeoutError } from '@/specialists/base/errors';
 import type {
@@ -173,6 +175,26 @@ export class EvolutionAgent extends BaseSpecialist<EvolutionAgentInput, Evolutio
       durationMs: Date.now() - startedAt,
       previousLevel: null, // fetched inside transaction
     });
+
+    // AC-4: 成功写 evolution_insight 后跑异常检测 · try/catch 防冒泡(不影响主流程)
+    try {
+      const anomalyFlags = await detectEvolutionAnomalies(req.accountId);
+      if (anomalyFlags.length > 0) {
+        const dingtalk = new DingtalkService();
+        await dingtalk.send(
+          `[EvolutionAgent] 飞轮异常 · accountId=${req.accountId} · ${anomalyFlags.length} 条 · types=${anomalyFlags.map((f) => f.anomalyType).join(',')}`,
+        );
+        logger.info(
+          { accountId: req.accountId, traceId, flagCount: anomalyFlags.length },
+          'evolution.anomaly_detection.flags_created',
+        );
+      }
+    } catch (anomalyErr) {
+      logger.error(
+        { accountId: req.accountId, traceId, err: anomalyErr },
+        'evolution.anomaly_detection.error',
+      );
+    }
 
     const durationMs = Date.now() - startedAt;
     return {

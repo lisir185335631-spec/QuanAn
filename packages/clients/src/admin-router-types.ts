@@ -686,7 +686,35 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
-  evolution: _t.router({}),
+  evolution: _t.router({
+    getLDistribution: _t.procedure.query(
+      (): { L1: number; L2: number; L3: number; L4: number; L5: number } => ({
+        L1: 0, L2: 0, L3: 0, L4: 0, L5: 0,
+      }),
+    ),
+    getFlywheelHealth: _t.procedure.query(
+      (): { stalledCount: number; conflictCount: number; healthyCount: number; status: 'green' | 'yellow' | 'red' } => ({
+        stalledCount: 0, conflictCount: 0, healthyCount: 0, status: 'green',
+      }),
+    ),
+    listAnomalies: _t.procedure.query(
+      (): { items: Array<{ id: number; accountId: number; anomalyType: string; severity: string; evidence: unknown; detectedAt: Date; resolvedAt: Date | null; resolution: string | null; resolvedByAdminId: number | null }>; nextCursor: number | undefined } => ({
+        items: [], nextCursor: undefined,
+      }),
+    ),
+    getAccountTimeline: _t.procedure.query(
+      (): { profile: unknown; insights: unknown[]; anomalyFlags: unknown[] } => ({
+        profile: null, insights: [], anomalyFlags: [],
+      }),
+    ),
+    forceRebuildEvolution: _t.procedure.mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    markAnomalyResolved: _t.procedure.mutation((): { id: number; resolvedAt: Date | null; resolution: string | null } => ({ id: 0, resolvedAt: null, resolution: null })),
+    getAnomalyStats: _t.procedure.query(
+      (): { byType: Record<string, number>; bySeverity: Record<string, number>; last24h: number; last7d: number } => ({
+        byType: {}, bySeverity: {}, last24h: 0, last7d: 0,
+      }),
+    ),
+  }),
   audit: _t.router({
     listMine: _t.procedure.query(
       (): Array<{

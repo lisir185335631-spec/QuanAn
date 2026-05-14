@@ -1,6 +1,6 @@
 # QuanQn · 代码层设计约束(AGENTS.md)
 
-> **版本** · v0.2(2026-05-06 创建 · 2026-05-07 v0.2 修订:§10 admin 5 LD-A + 6 R-A + 14 高风险 + 5 audit_commands)
+> **版本** · v0.3(2026-05-06 创建 · 2026-05-07 v0.2 修订:§10 admin 5 LD-A + 6 R-A + 14 高风险 + 5 audit_commands · 2026-05-14 v0.3:§10.1 +LD-A7 evolution_profile clear 单点保护)
 > **派生自** · [ARCHITECTURE.md](ARCHITECTURE.md) v0.4 + [ADMIN-ARCHITECTURE.md](ADMIN-ARCHITECTURE.md) v0.2 · §4 Agent 编排 + §6 接口契约 + §3 数据架构
 > **服务对象** · Ralph Agent / Opus Audit / 任何 AI / 工程师在本仓库写代码时遵循
 > **硬约束** · 本文件的 Locked Decisions / 红线 / audit_commands 是**不可绕过**的 — 即使 Ralph 觉得"这样更好"也不能违反 · 必须先改本文件再改代码
@@ -2417,6 +2417,23 @@ grep -rn "prompt_versions.*status.*active\|promptVersion.*update.*active\|status
   apps/api/src --include='*.ts' \
   | grep -v '_publishPromptVersionInTx' \
   | grep -v 'prompt-version.service.ts' \
+  | grep -v '.test.'
+```
+
+#### LD-A7 · evolution_profile clear / evolution_insight resolved 仅由 _forceRebuildEvolutionInTx 修改(PRD-13 US-004)
+
+**铁律**:
+- ✅ 清空 evolution_profile.latestInsight/latestInsightId 或批量标记 evolution_insight.isFallback=true/levelAfter='rebuild' 的操作, 必须经由 `_forceRebuildEvolutionInTx(tx, ...)` 单点函数
+- ❌ 任何其他代码直接 `prisma.evolutionProfile.update({ data: { latestInsight: null } })`
+- ❌ 任何代码绕过 `_forceRebuildEvolutionInTx` 直接写 `evolution_insight.updateMany({...resolved...})`
+
+**执行检查**:
+```bash
+# 期望 0 命中(evolution-rebuild.service.ts 自身除外)
+grep -rn "prisma\.evolutionProfile\.update.*null\|prisma\.evolutionInsight\.updateMany.*resolved\|evolutionProfile\.update.*latestInsight.*null\|evolutionInsight\.updateMany.*isFallback" \
+  apps/api/src --include='*.ts' \
+  | grep -v '_forceRebuildEvolutionInTx' \
+  | grep -v 'evolution-rebuild.service.ts' \
   | grep -v '.test.'
 ```
 
