@@ -165,9 +165,10 @@ interface VersionCardProps {
   canaryPct: number | null;
   onEdit: () => void;
   isEditing: boolean;
+  specialistId: string;
 }
 
-function VersionCard({ version, canaryPct, onEdit, isEditing }: VersionCardProps) {
+function VersionCard({ version, canaryPct, onEdit, isEditing, specialistId }: VersionCardProps) {
   if (!version) {
     return (
       <div
@@ -236,6 +237,12 @@ function VersionCard({ version, canaryPct, onEdit, isEditing }: VersionCardProps
           {createdAt.toLocaleDateString('zh-CN')}
         </span>
       </div>
+      <div>
+        <span style={{ color: 'var(--text-muted)', fontSize: 11, display: 'block', marginBottom: 2 }}>
+          创建人
+        </span>
+        <span style={{ color: '#e5e7eb', fontSize: 13 }}>管理员 #{version.createdByAdminId}</span>
+      </div>
       {score !== null && (
         <div>
           <span style={{ color: 'var(--text-muted)', fontSize: 11, display: 'block', marginBottom: 2 }}>
@@ -292,6 +299,21 @@ function VersionCard({ version, canaryPct, onEdit, isEditing }: VersionCardProps
             编辑
           </button>
         )}
+        <button
+          onClick={() => window.location.href = '/admin/canary?specialist=' + encodeURIComponent(specialistId)}
+          style={{
+            background: 'transparent',
+            color: '#60a5fa',
+            border: '1px solid rgba(96,165,250,0.3)',
+            borderRadius: 4,
+            padding: '5px 14px',
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          灰度配置
+        </button>
       </div>
     </div>
   );
@@ -523,6 +545,7 @@ export default function PromptsPage() {
             canaryPct={canaryPct}
             onEdit={() => setIsEditing(true)}
             isEditing={isEditing}
+            specialistId={specialistId}
           />
         )}
 
