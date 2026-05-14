@@ -976,12 +976,16 @@
       "category": "test-env",
       "severity": "medium",
       "story": "US-011",
-      "file": "vitest.config.ts / pnpm-lock.yaml",
+      "file": "package.json (pnpm.overrides)",
+      "status": "resolved",
       "description": "Admin unit tests (layout/sidebar/audit-drawer) fail due to pnpm resolving @testing-library/react@16.3.2 to react@19.2.6 instead of react@18.3.1. Root cause: @react-pdf/renderer install pulled react@19 into pnpm store; pnpm heuristically picks the react@19 variant for the root-level @testing-library/react. Pre-existing before US-011 (confirmed git stash). Fix: add pnpm overrides to pin react/react-dom to 18.3.1.",
       "exempted_in": "US-011",
-      "exemption_reason": "Pre-existing, environment-level issue unrelated to US-011 code changes. Confirmed by git stash showing identical failures at US-010 state."
+      "exemption_reason": "Pre-existing, environment-level issue unrelated to US-011 code changes. Confirmed by git stash showing identical failures at US-010 state.",
+      "resolution_note": "Added pnpm.overrides { react: 18.3.1, react-dom: 18.3.1 } to root package.json. Post-fix: react/react-dom single copy at 18.3.1 (verified via pnpm list). All 16 admin tests pass (layout 6/6 + audit-drawer 6/6 + sidebar 4/4). @react-pdf/renderer PDF tests 11/11 PASS (no break). Total: 1551/1555 PASS (16 fail → 0 fail).",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-14T00:59:00Z"
     }
   ],
-  "last_updated": "2026-05-13T10:55:56",
+  "last_updated": "2026-05-14T00:59:00Z",
   "total": 44
 }
