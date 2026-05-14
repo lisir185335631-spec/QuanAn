@@ -24,6 +24,7 @@ export type ApprovalActionType =
   | 'ban_uploader'
   | 'template_modify'
   | 'cross_account_batch'
+  | 'start_ab_experiment'
   // single-approval
   | 'evolution_anomaly_resolve'
   | 'quota_adjust_small'
@@ -38,6 +39,7 @@ const DUAL_APPROVAL_ACTION_TYPES = new Set<ApprovalActionType>([
   'ban_uploader',
   'template_modify',
   'cross_account_batch',
+  'start_ab_experiment',
 ]);
 
 export function requiresDualApproval(actionType: ApprovalActionType): boolean {

@@ -1136,6 +1136,7 @@ model AbExperiment {
   stoppedAt         DateTime?
   resultSummary     Json?
   createdByAdminId  Int
+  createdAt         DateTime  @default(now())
 
   @@index([status])
   @@map("ab_experiments")

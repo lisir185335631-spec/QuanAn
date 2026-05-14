@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/audit-redlines-admin.sh
-# QuanQn admin 子系统 · 8 LD-A + 6 R-A 一键 grep 检测
-# AC-1(US-007): exit 0 · AC-9(US-009): 8 LD-A + 6 R-A
+# QuanQn admin 子系统 · 9 LD-A + 6 R-A 一键 grep 检测
+# AC-1(US-007): exit 0 · AC-9(US-009): 8 LD-A + 6 R-A · PRD-14 US-001: +LD-A9
 # 派生自 AGENTS.md §10.4.1 + §10.4.2
 
 set -euo pipefail
@@ -14,10 +14,10 @@ fail() { echo "❌ $1"; FAIL=1; }
 pass() { echo "✅ $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn Admin · 8 LD-A + 6 R-A 红线检测"
+echo "  QuanQn Admin · 9 LD-A + 6 R-A 红线检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
-echo "【LD-A Locked Decision 检测 · 8 条】"
+echo "【LD-A Locked Decision 检测 · 9 条】"
 echo
 
 # ── LD-A1 · admin OAuth 独立(不复用主应用 OAuth client) ──────────────────────
@@ -158,6 +158,26 @@ if [ "$LDA8_FAIL" -eq 0 ]; then
   pass "LD-A8 · user_quota 写操作仅由 _adjustQuotaInTx / quota-expiry.job 单点修改"
 fi
 
+# ── LD-A9 · ab_experiments status/startedAt/stoppedAt 仅由 _startAbExperimentInTx / _stopAbExperimentInTx 修改 ──
+echo
+echo "  LD-A9: ab_experiments 状态写操作单点函数守护检测"
+LDA9_FAIL=0
+LDA9_HITS=$(grep -rnE \
+  "(prisma|db|tx)\.abExperiment\.update.*(status|stoppedAt|startedAt)" \
+  apps/api/src --include="*.ts" 2>/dev/null \
+  | grep -v "ab-experiment\.service\.ts" \
+  | grep -v "ab-stop-loss\.job\.ts" \
+  | grep -v "\.test\." \
+  | grep -v "spec\." || true)
+if [ -n "$LDA9_HITS" ]; then
+  echo "$LDA9_HITS"
+  fail "LD-A9 违反 _startAbExperimentInTx/_stopAbExperimentInTx 单点 · 发现直接写 ab_experiments 状态字段的代码"
+  LDA9_FAIL=1
+fi
+if [ "$LDA9_FAIL" -eq 0 ]; then
+  pass "LD-A9 · ab_experiments 状态仅由 _startAbExperimentInTx / _stopAbExperimentInTx 单点修改"
+fi
+
 echo
 echo "【R-A 红线检测 · 6 条】"
 echo
@@ -241,7 +261,7 @@ fi
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [[ $FAIL -eq 0 ]]; then
-  echo "ALL PASS · 8 LD-A + 6 R-A"
+  echo "ALL PASS · 9 LD-A + 6 R-A"
   exit 0
 else
   echo "FAIL · 上方红线检测未通过 · 请修复后重跑"

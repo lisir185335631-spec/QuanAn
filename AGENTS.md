@@ -2328,7 +2328,7 @@ spec.md(原版规格)+ DESIGN.md(设计 token)
 >
 > **执行边界** · 当 Ralph / Opus 在 `apps/admin/` 或 `apps/api/src/trpc/routers/admin/` 下写代码时,本章红线**优先于** §3-§5 通用红线适用。
 
-### §10.1 admin 子系统的 5 条 LD(LD-A1 ~ LD-A5)
+### §10.1 admin 子系统的 9 条 LD(LD-A1 ~ LD-A9)
 
 > 跟主应用 18 LD 平级 · 但范围限定在 admin 子系统。
 
@@ -2457,6 +2457,24 @@ grep -rnE "(prisma|db|tx)\.userQuota\.(update|updateMany|upsert|create)" \
   apps/api/src --include='*.ts' \
   | grep -v 'quota-adjustment.service.ts' \
   | grep -v 'quota-expiry.job.ts' \
+  | grep -v '.test.'
+```
+
+#### LD-A9 · ab_experiments status/startedAt/stoppedAt/resultSummary 仅由 _startAbExperimentInTx / _stopAbExperimentInTx 修改(PRD-14 US-001)
+
+**铁律**:
+- ✅ ab_experiments 状态迁移 · 必须经由 `_startAbExperimentInTx(tx, ...)` 或 `_stopAbExperimentInTx(tx, ...)` 单点函数
+- ✅ 自动停损 job (`apps/api/src/jobs/admin/ab-stop-loss.job.ts`) 调用 `_stopAbExperimentInTx` 是合法源 · 排除该文件
+- ❌ 任何其他代码直接 `prisma.abExperiment.update({ data: { status: 'running' } })`
+- ❌ 绕过单点函数直接修改 startedAt / stoppedAt / resultSummary
+
+**执行检查**:
+```bash
+# 期望 0 命中(ab-experiment.service.ts + ab-stop-loss.job.ts 合法源外)
+grep -rnE "(prisma|db|tx)\.abExperiment\.update.*(status|stoppedAt|startedAt)" \
+  apps/api/src --include='*.ts' \
+  | grep -v 'ab-experiment.service.ts' \
+  | grep -v 'ab-stop-loss.job.ts' \
   | grep -v '.test.'
 ```
 
