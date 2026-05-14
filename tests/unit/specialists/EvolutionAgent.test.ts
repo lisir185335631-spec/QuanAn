@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { EvolutionAgent, EvolutionInsightContentSchema } from '@/specialists/EvolutionAgent';
+import { EvolutionAgent, EvolutionInsightContentSchema } from '@/agents/evolution/EvolutionAgent';
 
 import type { ILLMGateway, InvokeLLMResult } from '@/specialists/base/types';
 

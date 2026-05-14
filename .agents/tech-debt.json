@@ -568,16 +568,16 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus audit US-004 PRD-8",
       "severity": "low",
-      "status": "accepted",
-      "resolution_decision": "B: 保留双路径 + AGENTS.md §11.6.8 白名单(2026-05-11)",
-      "resolved_at": null,
-      "resolution_note": "EvolutionAgent + DailyTaskAgent 双路径模式接受为 L5 自治 Agent 设计 pattern · 不视为 design-drift · AGENTS.md §11.6.8 加白名单豁免 · 11 生成型 Specialist 仍严格 grep · 未来 L5 沿用本模式",
+      "status": "partially_resolved",
+      "resolution_decision": "B: 保留双路径 + AGENTS.md §11.6.8 白名单(2026-05-11) · prd-12-retro-maintenance: EvolutionAgent half 解决 · DailyTaskAgent 半待后",
+      "resolved_at": "2026-05-14T01:01:30Z",
+      "resolution_note": "EvolutionAgent + DailyTaskAgent 双路径模式接受为 L5 自治 Agent 设计 pattern · 不视为 design-drift · AGENTS.md §11.6.8 加白名单豁免 · 11 生成型 Specialist 仍严格 grep · 未来 L5 沿用本模式。 2026-05-14 prd-12-retro-maintenance: EvolutionAgent stub 删除 · worker.ts + test import 直指 @/agents/evolution/EvolutionAgent canonical · audit-ld.sh LD-005 仍清白(re-export stub 豁免逻辑不再触发,因 stub 不存在)。 DailyTaskAgent 双路径仍保留(specialists/DailyTaskAgent.ts US-002 throw stub + agents/specialists/DailyTaskAgent.ts US-007 真实施) — 单独再评。",
       "evidence": "apps/api/src/specialists/EvolutionAgent.ts (10 行 re-export stub) + apps/api/src/agents/evolution/EvolutionAgent.ts (431 行 impl) · ralph US-004 为通过 AC-3 grep (evolutionInsight in specialists/ 应 0 命中) 把 EvolutionAgent 整体搬到 agents/evolution/ · 类似 PRD-4 TD-012 双 ContextAssembler 教训 · US-007 同模式: apps/api/src/specialists/DailyTaskAgent.ts (US-002 throw stub · 未删) + apps/api/src/agents/specialists/DailyTaskAgent.ts (US-007 真实施 · 296 行) · worker.ts 直 import agents/specialists/",
       "root_cause": "ralph 误读 AC-3 含义 · AC-3 本意是防 11 生成型 Specialist (Positioning/Branding/etc) 内拼接 EvolutionInsight · 不是禁 EvolutionAgent 自身 mention evolutionInsight · ralph 选 file move 而非例外白名单",
-      "scheduled_fix_in": "PRD-9 启动前评估 · 若双路径无 runtime 问题可文档化保留 · 或合并回 specialists/ 加 AC-3 grep 例外白名单",
+      "scheduled_fix_in": "EvolutionAgent half 已在 prd-12-retro-maintenance 修 · DailyTaskAgent half 留 PRD-13 启动前评估",
       "audit_exemption": "US-004 approve 时豁免 · functional 等价 · 通过 re-export stub 维持 backward compat (PRD-7 R1 type alias chain 教训内化) · BaseSpecialist 抽象未破 · 测试 624/624 (zero regression PASS)",
       "fix_hint": "选 A · 合并 EvolutionAgent 回 specialists/ + AC-3 grep 加 \"-v EvolutionAgent\" 白名单 · 选 B · 保留 agents/evolution/ + 文档化 (LD-002 14 Specialist 切分原则 example · 3 L5 自治型可独立目录)",
-      "resolved_in_prd": null
+      "resolved_in_prd": "prd-12-retro-maintenance (EvolutionAgent half only · DailyTaskAgent 待续)"
     },
     {
       "id": "TD-033",
@@ -986,6 +986,6 @@
       "resolved_at": "2026-05-14T00:59:00Z"
     }
   ],
-  "last_updated": "2026-05-14T00:59:00Z",
+  "last_updated": "2026-05-14T01:01:30Z",
   "total": 44
 }
