@@ -7,6 +7,13 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom';
 
+// ── Mock react-router-dom (useNavigate) ───────────────────────────────────
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate,
+}));
+
 // ── Mock tRPC ─────────────────────────────────────────────────────────────
 
 const mockGetDetail = vi.fn();

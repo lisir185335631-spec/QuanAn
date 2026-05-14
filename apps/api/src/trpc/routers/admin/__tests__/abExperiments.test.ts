@@ -1,6 +1,8 @@
-// PRD-14 US-004 · adminRouter.abExperiments unit tests
+// PRD-14 US-004 + US-005 · adminRouter.abExperiments unit tests
 // AC-14: ≥ 8 tests · covers getKpiStats, list, getDetail, create (sum=100),
 //        create (sum≠100 BAD_REQUEST), start, stop (super_admin), stop (forbidden)
+// US-005: +5 tests · getDetailByKey, getVariantMetrics, getCumulativeTimeline,
+//         promoteWinner (running), promoteWinner (non-running BAD_REQUEST)
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
@@ -15,6 +17,9 @@ const mockStartAbExperiment = vi.hoisted(() =>
 );
 const mockStopAbExperimentManual = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const mockComputeExperimentSignificance = vi.hoisted(() => vi.fn().mockResolvedValue([]));
+const mockRequestApproval = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({ id: 99 }),
+);
 
 const mockExecuteRawUnsafe = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const mockQueryRaw = vi.hoisted(() => vi.fn().mockResolvedValue([]));
@@ -58,6 +63,10 @@ vi.mock('@/jobs/admin/ab-stop-loss.job', () => ({
 
 vi.mock('@/services/admin/ab-experiment/significance.service', () => ({
   computeExperimentSignificance: mockComputeExperimentSignificance,
+}));
+
+vi.mock('@/services/admin/approval/approvalGateService', () => ({
+  requestApproval: mockRequestApproval,
 }));
 
 vi.mock('@/lib/prisma', () => ({
@@ -369,5 +378,116 @@ describe('abExperimentsRouter', () => {
     expect(result.results).toHaveLength(1);
     expect(result.results[0]?.metric).toBe('conversion');
     expect(mockComputeExperimentSignificance).toHaveBeenCalledWith(1);
+  });
+
+  // ── US-005 new endpoints ─────────────────────────────────────────────────
+
+  it('getDetailByKey: returns experiment by experimentKey', async () => {
+    mockAbAssignmentCount.mockResolvedValueOnce(120);
+
+    const result = await callQuery<{ id: number; experimentKey: string; sampleSize: number }>(
+      abExperimentsRouter,
+      'getDetailByKey',
+      { experimentKey: 'test-key' },
+      makeCtx(),
+    );
+
+    expect(result.id).toBe(1);
+    expect(result.experimentKey).toBe('test-key');
+    expect(result.sampleSize).toBe(120);
+    expect(mockAbExperimentFindUniqueOrThrow).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { experimentKey: 'test-key' } }),
+    );
+  });
+
+  it('getVariantMetrics: returns per-variant metrics with correct structure', async () => {
+    // queryRaw called 3 times: convRows, retRows, costRows
+    mockQueryRaw
+      .mockResolvedValueOnce([
+        { variant: 'control', total: BigInt(100), conversions: BigInt(20) },
+        { variant: 'variant_a', total: BigInt(80), conversions: BigInt(20) },
+      ])
+      .mockResolvedValueOnce([
+        { variant: 'control', total: BigInt(100), d1: BigInt(60), d2: BigInt(50), d3: BigInt(45), d4: BigInt(40), d5: BigInt(35), d6: BigInt(30), d7: BigInt(25) },
+      ])
+      .mockResolvedValueOnce([
+        { variant: 'control', total: BigInt(100), avgCost: 0.0012 },
+        { variant: 'variant_a', total: BigInt(80), avgCost: 0.0015 },
+      ]);
+
+    const result = await callQuery<{ variants: Record<string, { sampleSize: number; conversion: { rate: number; ciLow: number; ciHigh: number }; retention: Array<{ day: number; rate: number }>; avgCost: number }> }>(
+      abExperimentsRouter,
+      'getVariantMetrics',
+      { experimentId: 1 },
+      makeCtx(),
+    );
+
+    expect(result.variants).toHaveProperty('control');
+    expect(result.variants).toHaveProperty('variant_a');
+    expect(result.variants).toHaveProperty('variant_b');
+    expect(result.variants['control']?.sampleSize).toBe(100);
+    expect(result.variants['control']?.conversion.rate).toBeCloseTo(0.2);
+    expect(result.variants['control']?.retention).toHaveLength(7);
+    expect(result.variants['control']?.retention[0]?.day).toBe(1);
+  });
+
+  it('getCumulativeTimeline: returns cumulative timeline per variant', async () => {
+    mockQueryRaw.mockResolvedValueOnce([
+      { day: new Date('2026-05-10'), variant: 'control', count: BigInt(30) },
+      { day: new Date('2026-05-10'), variant: 'variant_a', count: BigInt(20) },
+      { day: new Date('2026-05-11'), variant: 'control', count: BigInt(10) },
+      { day: new Date('2026-05-11'), variant: 'variant_a', count: BigInt(15) },
+    ]);
+
+    const result = await callQuery<{ timeline: Array<{ day: string; control: number; variant_a: number; variant_b: number }> }>(
+      abExperimentsRouter,
+      'getCumulativeTimeline',
+      { experimentId: 1 },
+      makeCtx(),
+    );
+
+    expect(result.timeline).toHaveLength(2);
+    // Day 1: control=30, variant_a=20
+    expect(result.timeline[0]?.control).toBe(30);
+    expect(result.timeline[0]?.variant_a).toBe(20);
+    // Day 2: cumulative control=40, variant_a=35
+    expect(result.timeline[1]?.control).toBe(40);
+    expect(result.timeline[1]?.variant_a).toBe(35);
+  });
+
+  it('promoteWinner: creates approval request for running experiment', async () => {
+    const result = await callQuery<{ approvalRequestId: number; needsApproval: boolean }>(
+      abExperimentsRouter,
+      'promoteWinner',
+      { experimentId: 1, winnerVariant: 'variant_a', reason: 'Variant A wins on conversion' },
+      makeCtx('admin'),
+    );
+
+    expect(result.approvalRequestId).toBe(99);
+    expect(result.needsApproval).toBe(true);
+    expect(mockRequestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actionType: 'promote_ab_experiment_winner',
+        requireDualApproval: true,
+      }),
+    );
+  });
+
+  it('promoteWinner: throws BAD_REQUEST when experiment is not running', async () => {
+    mockAbExperimentFindUniqueOrThrow.mockResolvedValueOnce({
+      id: 2, experimentKey: 'stopped-exp', name: 'Stopped', status: 'stopped',
+      variantConfig: {}, trafficAllocation: {}, startedAt: null, stoppedAt: new Date(),
+      resultSummary: null, createdAt: new Date(),
+    });
+
+    await expect(
+      callQuery(
+        abExperimentsRouter,
+        'promoteWinner',
+        { experimentId: 2, winnerVariant: 'variant_a' },
+        makeCtx('admin'),
+      ),
+    ).rejects.toThrow(TRPCError);
+    expect(mockRequestApproval).not.toHaveBeenCalled();
   });
 });

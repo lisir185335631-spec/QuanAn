@@ -25,6 +25,7 @@ export type ApprovalActionType =
   | 'template_modify'
   | 'cross_account_batch'
   | 'start_ab_experiment'
+  | 'promote_ab_experiment_winner'
   // single-approval
   | 'evolution_anomaly_resolve'
   | 'quota_adjust_small'
@@ -40,6 +41,7 @@ const DUAL_APPROVAL_ACTION_TYPES = new Set<ApprovalActionType>([
   'template_modify',
   'cross_account_batch',
   'start_ab_experiment',
+  'promote_ab_experiment_winner',
 ]);
 
 export function requiresDualApproval(actionType: ApprovalActionType): boolean {

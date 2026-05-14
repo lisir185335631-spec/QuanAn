@@ -5,6 +5,7 @@
 // SHIELD: super_admin only stop — {role === 'super_admin' && <Button>}
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import type { PieLabelRenderProps } from 'recharts';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -202,6 +203,7 @@ function StopConfirmModal({
 
 export function AbExperimentDrawer({ selected, currentRole, onClose, onRefresh }: Props) {
   const [showStopConfirm, setShowStopConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const { data: detail } = adminTrpc.abExperiments.getDetail.useQuery(
     { experimentId: selected?.id ?? 0 },
@@ -392,7 +394,7 @@ export function AbExperimentDrawer({ selected, currentRole, onClose, onRefresh }
           </button>
 
           <button
-            onClick={() => window.open(`/admin/ab-experiments/${selected.id}/analysis`, '_blank')}
+            onClick={() => navigate(`/admin/ab-experiments/${selected.experimentKey}`)}
             style={{
               background: 'var(--bg-panel)',
               color: 'var(--text-muted)',

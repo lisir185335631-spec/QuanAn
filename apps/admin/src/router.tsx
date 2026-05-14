@@ -4,7 +4,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AdminLayout } from './layouts/AdminLayout';
-import AbPlaceholder from './pages/admin/placeholder/ab';
+import AbExperimentsPage from './pages/abExperiments/AbExperimentsPage';
+import ExperimentDetailPage from './pages/abExperiments/ExperimentDetailPage';
 import AccountsPage from './pages/accounts/index';
 import ApprovalGatesPage from './pages/approvals/index';
 import AuditPage from './pages/audit/index';
@@ -51,7 +52,8 @@ export function AdminRoutes() {
         <Route path="approvals" element={<ApprovalGatesPage />} />
 
         {/* P2 高级 */}
-        <Route path="ab" element={<AbPlaceholder />} />
+        <Route path="ab-experiments" element={<AbExperimentsPage />} />
+        <Route path="ab-experiments/:experimentKey" element={<ExperimentDetailPage />} />
         <Route path="knowledge" element={<KnowledgePlaceholder />} />
         <Route path="config" element={<ConfigPlaceholder />} />
       </Route>

@@ -1348,8 +1348,172 @@ const _shadowAdminRouter = _t.router({
       )
       .mutation((): { ok: boolean } => ({ ok: true })),
   }),
+  abExperiments: _t.router({
+    getKpiStats: _t.procedure.query(
+      (): { runningCount: number; recentStarted: number; avgSampleSize: number; autoStopRate: number } => ({
+        runningCount: 0,
+        recentStarted: 0,
+        avgSampleSize: 0,
+        autoStopRate: 0,
+      }),
+    ),
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            cursor?: number;
+            status?: 'draft' | 'running' | 'stopped' | 'completed';
+            createdByAdminId?: number;
+            startDateFrom?: Date;
+            startDateTo?: Date;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            experimentKey: string;
+            name: string;
+            status: string;
+            variantCount: number;
+            sampleSize: number;
+            startedAt: Date | null;
+            stoppedAt: Date | null;
+            createdAt: Date;
+            trafficAllocation: Record<string, number> | null;
+          }>;
+          nextCursor: number | undefined;
+        } => ({ items: [], nextCursor: undefined }),
+      ),
+    getDetail: _t.procedure
+      .input((x: unknown) => x as { experimentId: number })
+      .query(
+        (): {
+          id: number;
+          experimentKey: string;
+          name: string;
+          description: string | null;
+          status: string;
+          variantConfig: unknown;
+          trafficAllocation: unknown;
+          startedAt: Date | null;
+          stoppedAt: Date | null;
+          resultSummary: unknown;
+          createdAt: Date;
+          sampleSize: number;
+          timeline: Array<{ day: Date; count: number }>;
+        } => ({
+          id: 0,
+          experimentKey: '',
+          name: '',
+          description: null,
+          status: 'draft',
+          variantConfig: {},
+          trafficAllocation: {},
+          startedAt: null,
+          stoppedAt: null,
+          resultSummary: null,
+          createdAt: new Date(),
+          sampleSize: 0,
+          timeline: [],
+        }),
+      ),
+    create: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            experimentKey: string;
+            name: string;
+            description?: string;
+            variantConfig: Record<string, unknown>;
+            trafficAllocation: { control: number; variant_a: number; variant_b: number };
+          },
+      )
+      .mutation(
+        (): { id: number; experimentKey: string } => ({ id: 0, experimentKey: '' }),
+      ),
+    start: _t.procedure
+      .input((x: unknown) => x as { experimentId: number; reason?: string })
+      .mutation(
+        (): { approvalRequestId: number; needsApproval: boolean } => ({
+          approvalRequestId: 0,
+          needsApproval: true,
+        }),
+      ),
+    stop: _t.procedure
+      .input((x: unknown) => x as { experimentId: number; stopReason: string })
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    getMultiMetric: _t.procedure
+      .input((x: unknown) => x as { experimentId: number })
+      .query(
+        (): {
+          results: Array<{
+            metric: string;
+            testType: 'chi_square' | 'welch_t';
+            pValue: number | null;
+            isSignificant: boolean;
+            effect: number | null;
+            sampleSize: number;
+            confidence: number;
+            recommendation: 'continue' | 'stop_winner' | 'stop_loser' | 'inconclusive';
+          }>;
+        } => ({ results: [] }),
+      ),
+    getDetailByKey: _t.procedure
+      .input((x: unknown) => x as { experimentKey: string })
+      .query(
+        (): {
+          id: number;
+          experimentKey: string;
+          name: string;
+          description: string | null;
+          status: string;
+          variantConfig: unknown;
+          trafficAllocation: unknown;
+          startedAt: Date | null;
+          stoppedAt: Date | null;
+          resultSummary: unknown;
+          createdAt: Date;
+          sampleSize: number;
+        } => ({
+          id: 0, experimentKey: '', name: '', description: null, status: 'draft',
+          variantConfig: {}, trafficAllocation: {}, startedAt: null, stoppedAt: null,
+          resultSummary: null, createdAt: new Date(), sampleSize: 0,
+        }),
+      ),
+    getVariantMetrics: _t.procedure
+      .input((x: unknown) => x as { experimentId: number })
+      .query(
+        (): {
+          variants: Record<string, {
+            sampleSize: number;
+            conversion: { rate: number; ciLow: number; ciHigh: number };
+            retention: Array<{ day: number; rate: number }>;
+            avgCost: number;
+          }>;
+        } => ({ variants: {} }),
+      ),
+    getCumulativeTimeline: _t.procedure
+      .input((x: unknown) => x as { experimentId: number })
+      .query(
+        (): {
+          timeline: Array<{ day: string; control: number; variant_a: number; variant_b: number }>;
+        } => ({ timeline: [] }),
+      ),
+    promoteWinner: _t.procedure
+      .input((x: unknown) => x as {
+        experimentId: number;
+        winnerVariant: 'control' | 'variant_a' | 'variant_b';
+        reason?: string;
+      })
+      .mutation(
+        (): { approvalRequestId: number; needsApproval: boolean } => ({
+          approvalRequestId: 0,
+          needsApproval: true,
+        }),
+      ),
+  }),
   config: _t.router({}),
-  ab: _t.router({}),
 });
 
 export type AdminRouter = typeof _shadowAdminRouter;
