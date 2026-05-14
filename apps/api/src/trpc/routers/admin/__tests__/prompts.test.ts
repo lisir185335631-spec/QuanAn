@@ -36,6 +36,7 @@ const mockPromptVersionCreate = vi.hoisted(() =>
 const mockPromptVersionUpdate = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const mockCanaryConfigFindUnique = vi.hoisted(() => vi.fn().mockResolvedValue(null));
 const mockCanaryConfigUpdateMany = vi.hoisted(() => vi.fn().mockResolvedValue({ count: 1 }));
+const mockCanaryConfigUpsert = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 
 // tx proxy must be a function so we can re-init after resetAllMocks
 const mockPrismaTransaction = vi.hoisted(() =>
@@ -75,6 +76,7 @@ vi.mock('@/lib/prisma', () => ({
     promptCanaryConfig: {
       findUnique: mockCanaryConfigFindUnique,
       updateMany: mockCanaryConfigUpdateMany,
+      upsert: mockCanaryConfigUpsert,
     },
     adminAuditLog: {
       findFirst: mockAuditFindFirst,
@@ -143,6 +145,11 @@ beforeEach(() => {
   mockRequestApproval.mockResolvedValue({ id: 42 });
   mockEvaluatePromptVersion.mockResolvedValue({ versionId: 1, score: 4.5, isMock: true });
   mockCanaryConfigUpdateMany.mockResolvedValue({ count: 1 });
+  mockCanaryConfigUpsert.mockResolvedValue({});
+  // Default active version for updateCanary tests
+  mockPromptVersionFindFirst.mockResolvedValue({
+    id: 1, specialistId: 'PositioningAgent', mode: 'default', version: 17, status: 'active',
+  });
   mockPromptVersionFindUniqueOrThrow.mockResolvedValue({
     id: 1,
     specialistId: 'PositioningAgent',
@@ -169,7 +176,7 @@ describe('prompts.updateCanary', () => {
     ).rejects.toThrow();
   });
 
-  it('canaryPct=10 → direct DB update, no approval', async () => {
+  it('canaryPct=10 → direct DB upsert, no approval', async () => {
     const caller = makeCaller(SUPER_ADMIN);
     const result = await caller.updateCanary({
       specialistId: 'PositioningAgent',
@@ -178,14 +185,16 @@ describe('prompts.updateCanary', () => {
     });
     expect(result.canaryPct).toBe(10);
     expect(result.approvalRequestId).toBeNull();
-    expect(mockCanaryConfigUpdateMany).toHaveBeenCalledWith({
-      where: { specialistId: 'PositioningAgent', mode: 'default' },
-      data: { canaryPct: 10, updatedByAdminId: 1 },
-    });
+    expect(mockCanaryConfigUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { specialistId_mode: { specialistId: 'PositioningAgent', mode: 'default' } },
+        update: { canaryPct: 10, updatedByAdminId: 1 },
+      }),
+    );
     expect(mockRequestApproval).not.toHaveBeenCalled();
   });
 
-  it('canaryPct=0 → direct DB update (暂停灰度)', async () => {
+  it('canaryPct=0 → direct DB upsert (暂停灰度)', async () => {
     const caller = makeCaller(SUPER_ADMIN);
     const result = await caller.updateCanary({
       specialistId: 'PositioningAgent',
@@ -193,7 +202,7 @@ describe('prompts.updateCanary', () => {
       canaryPct: 0,
     });
     expect(result.canaryPct).toBe(0);
-    expect(mockCanaryConfigUpdateMany).toHaveBeenCalled();
+    expect(mockCanaryConfigUpsert).toHaveBeenCalled();
     expect(mockRequestApproval).not.toHaveBeenCalled();
   });
 
@@ -213,7 +222,7 @@ describe('prompts.updateCanary', () => {
         riskLevel: 'high',
       }),
     );
-    expect(mockCanaryConfigUpdateMany).not.toHaveBeenCalled();
+    expect(mockCanaryConfigUpsert).not.toHaveBeenCalled();
   });
 });
 

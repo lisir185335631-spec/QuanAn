@@ -207,10 +207,18 @@ export const promptsRouter = adminTrpcRouter({
         return { canaryPct: null, approvalRequestId: approval.id };
       }
 
-      // 0-50% direct update (AC-3/4)
-      await prisma.promptCanaryConfig.updateMany({
-        where: { specialistId: input.specialistId, mode: input.mode },
-        data: { canaryPct: input.canaryPct, updatedByAdminId: adminId },
+      // 0-50% direct upsert (AC-3/4) — updateMany silently no-ops when no row exists
+      const activeVersion = await prisma.promptVersion.findFirst({
+        where: { specialistId: input.specialistId, mode: input.mode, status: 'active' },
+        orderBy: { version: 'desc' },
+      });
+      if (!activeVersion) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'No active version found for this specialist — publish a version first' });
+      }
+      await prisma.promptCanaryConfig.upsert({
+        where: { specialistId_mode: { specialistId: input.specialistId, mode: input.mode } },
+        update: { canaryPct: input.canaryPct, updatedByAdminId: adminId },
+        create: { specialistId: input.specialistId, mode: input.mode, canaryPct: input.canaryPct, currentVersionId: activeVersion.id, updatedByAdminId: adminId },
       });
 
       return { canaryPct: input.canaryPct, approvalRequestId: null };
