@@ -135,6 +135,7 @@ export default function QuotaPage() {
           isOnWhitelist: item.isOnWhitelist,
           whitelistExpiresAt: item.whitelistExpiresAt,
           lastCallAt: item.lastCallAt,
+          createdAt: item.createdAt,
         }));
         if (cursor) {
           setDisplayItems((prev) => [...prev, ...rows]);

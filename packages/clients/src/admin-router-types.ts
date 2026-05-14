@@ -717,6 +717,7 @@ const _shadowAdminRouter = _t.router({
             isOnWhitelist: boolean;
             whitelistExpiresAt: Date | null;
             lastCallAt: Date | null;
+            createdAt: Date | null;
           }>;
           nextCursor: number | undefined;
         } => ({ items: [], nextCursor: undefined }),

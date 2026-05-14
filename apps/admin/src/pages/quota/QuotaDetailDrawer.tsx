@@ -29,6 +29,7 @@ export interface QuotaUserRow {
   isOnWhitelist: boolean;
   whitelistExpiresAt: Date | string | null;
   lastCallAt: Date | string | null;
+  createdAt?: Date | string | null;
 }
 
 interface Props {
@@ -305,6 +306,7 @@ export function QuotaDetailDrawer({ selected, role, onClose, onAdjusted }: Props
           </div>
           <StatRow label="Email" value={selected.email} />
           <StatRow label="套餐" value={selected.plan.toUpperCase()} />
+          <StatRow label="加入时间" value={fmtDate(selected.createdAt ?? null)} />
           <StatRow label="日配额使用" value={`${selected.dailyUsed} / ${selected.dailyQuota} (${selected.usagePct}%)`} />
           <StatRow label="白名单" value={selected.isOnWhitelist ? `是 · 至 ${fmtDate(selected.whitelistExpiresAt)}` : '否'} />
         </div>
