@@ -1,5 +1,6 @@
-// PRD-13 US-007 · adminRouter.prompts — 5 procedures
-// AC-8/9/12/13: saveDraft · submitForReview · listVersions · getActiveVersion · rollbackVersion
+// PRD-13 US-007/008 · adminRouter.prompts — 8 procedures
+// US-007: saveDraft · submitForReview · listVersions · getActiveVersion · rollbackVersion
+// US-008: updateCanary · rollback · runLlmJudge
 // SHIELD: _publishPromptVersionInTx single-point (LD-A-6) · no direct status='active' write here
 import { createHash } from 'node:crypto';
 
@@ -168,5 +169,100 @@ export const promptsRouter = adminTrpcRouter({
       });
 
       return { approvalRequestId: approval.id };
+    }),
+
+  // ── updateCanary ─────────────────────────────────────────────────────────
+  // US-008 AC-2/3/4: 5-step canary pct update
+  // 0/1/10/50% → direct DB update; 100% → dual-approval publish_prompt
+
+  updateCanary: adminProcedure
+    .input(
+      z.object({
+        specialistId: z.string(),
+        mode: z.string().default('default'),
+        canaryPct: z.number().int().refine((v) => [0, 1, 10, 50, 100].includes(v), {
+          message: 'canaryPct must be one of 0, 1, 10, 50, 100',
+        }),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      guardSuperAdmin(ctx);
+      const adminId = ctx.activeAdminUser!.id;
+
+      if (input.canaryPct === 100) {
+        // 100% full rollout → dual approval required (AC-2)
+        const approval = await requestApproval({
+          actionType: 'publish_prompt',
+          requesterAdminId: adminId,
+          requesterRole: 'super_admin',
+          actionPayload: {
+            specialistId: input.specialistId,
+            mode: input.mode,
+            canaryPct: 100,
+            action: 'full_rollout',
+          },
+          riskLevel: 'high',
+          requireDualApproval: true,
+        });
+        return { canaryPct: null, approvalRequestId: approval.id };
+      }
+
+      // 0-50% direct update (AC-3/4)
+      await prisma.promptCanaryConfig.updateMany({
+        where: { specialistId: input.specialistId, mode: input.mode },
+        data: { canaryPct: input.canaryPct, updatedByAdminId: adminId },
+      });
+
+      return { canaryPct: input.canaryPct, approvalRequestId: null };
+    }),
+
+  // ── rollback ─────────────────────────────────────────────────────────────
+  // US-008 AC-7: super_admin canary rollback with reason ≥ 20 chars · dual approval
+
+  rollback: adminProcedure
+    .input(
+      z.object({
+        specialistId: z.string(),
+        mode: z.string().default('default'),
+        reason: z.string().min(20, '回滚原因至少 20 字'),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      guardSuperAdmin(ctx);
+      const adminId = ctx.activeAdminUser!.id;
+
+      const approval = await requestApproval({
+        actionType: 'rollback_prompt',
+        requesterAdminId: adminId,
+        requesterRole: 'super_admin',
+        actionPayload: {
+          specialistId: input.specialistId,
+          mode: input.mode,
+          reason: input.reason,
+          source: 'canary_ui',
+        },
+        riskLevel: 'high',
+        requireDualApproval: true,
+      });
+
+      return { approvalRequestId: approval.id };
+    }),
+
+  // ── runLlmJudge ──────────────────────────────────────────────────────────
+  // US-008 AC-8: super_admin rerun LLM Judge · isMock=true default (D-077)
+
+  runLlmJudge: adminProcedure
+    .input(
+      z.object({
+        versionId: z.number().int(),
+        isMock: z.boolean().default(true),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      guardSuperAdmin(ctx);
+
+      const result = await evaluatePromptVersion(input.versionId, input.isMock);
+
+      return { score: result.score, isMock: result.isMock, runAt: new Date() };
     }),
 });

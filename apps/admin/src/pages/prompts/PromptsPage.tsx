@@ -1,10 +1,11 @@
-// PRD-13 US-007 · PromptsPage · /admin/prompts
+// PRD-13 US-007/008 · PromptsPage · /admin/prompts
 // AC-4: 14 Tab 横向 TabBar
-// AC-5: URL params · ?specialist=PositioningAgent&mode=default
+// AC-5: URL params · ?specialist=PositioningAgent&mode=default&tab=editor|canary
 // AC-6: 顶部当前版本卡片 · 版本号 / 评分 / 灰度比例
 // AC-7: Monaco 编辑器 80% + Diff 视图 toggle
 // AC-8: debounce 1s localStorage + 保存(saveDraft) + 提交审核(submitForReview)
 // AC-9: 右侧历史时间线 HistoryTimeline
+// US-008: canary tab → CanarySlider + LlmJudgeCard
 // SHIELD: URL state via useSearchParams · not useState (AC-5 / anti_pattern)
 // SHIELD: Monaco lazy import (anti_pattern)
 // SHIELD: draft debounce 1s + localStorage · not onChange→backend (anti_pattern)
@@ -13,6 +14,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { adminTrpc } from '../../lib/admin-client';
+import { CanarySlider } from './components/CanarySlider';
+import { LlmJudgeCard } from './components/LlmJudgeCard';
 import { DiffMonacoEditor, MonacoEditor } from './components/MonacoEditor';
 import { HistoryTimeline } from './components/HistoryTimeline';
 
@@ -332,9 +335,13 @@ export default function PromptsPage() {
   const rawMode = searchParams.get('mode') ?? 'default';
   const mode: string = specialistDef.modes.includes(rawMode) ? rawMode : (specialistDef.modes[0] ?? 'default');
 
+  // US-008: tab param (editor | canary)
+  const rawTab = searchParams.get('tab') ?? 'editor';
+  const activeTab: 'editor' | 'canary' = rawTab === 'canary' ? 'canary' : 'editor';
+
   function setSpecialist(id: string) {
     const def = SPECIALISTS.find((s) => s.id === id)!;
-    setSearchParams({ specialist: id, mode: def.modes[0] ?? 'default' });
+    setSearchParams({ specialist: id, mode: def.modes[0] ?? 'default', tab: activeTab });
     setIsEditing(false);
     setDraftContent(null);
     setShowDiff(false);
@@ -343,12 +350,16 @@ export default function PromptsPage() {
   }
 
   function setMode(m: string) {
-    setSearchParams({ specialist: specialistId, mode: m });
+    setSearchParams({ specialist: specialistId, mode: m, tab: activeTab });
     setIsEditing(false);
     setDraftContent(null);
     setShowDiff(false);
     setSavedVersionId(null);
     setToast(null);
+  }
+
+  function setActiveTab(tab: 'editor' | 'canary') {
+    setSearchParams({ specialist: specialistId, mode, tab });
   }
 
   // ── Editing state ────────────────────────────────────────────────────────
@@ -513,8 +524,62 @@ export default function PromptsPage() {
 
       {/* Content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '12px 16px 0' }}>
-        {/* Mode sub-tabs */}
-        <ModeTabBar modes={specialistDef.modes} activeMode={mode} onSelect={setMode} />
+        {/* Editor / Canary tab switcher (US-008) */}
+        <div style={{ display: 'flex', gap: 2, marginBottom: 10, borderBottom: '1px solid var(--border)', paddingBottom: 0 }}>
+          {(['editor', 'canary'] as const).map((tab) => {
+            const isActive = tab === activeTab;
+            const labels = { editor: '编辑器', canary: '灰度配置' };
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  background: isActive ? 'rgba(212,175,55,0.15)' : 'transparent',
+                  color: isActive ? 'var(--gold)' : 'var(--text-muted)',
+                  border: 'none',
+                  borderBottom: isActive ? '2px solid var(--gold)' : '2px solid transparent',
+                  padding: '5px 14px',
+                  fontSize: 13,
+                  fontWeight: isActive ? 600 : 400,
+                  cursor: 'pointer',
+                  borderRadius: '4px 4px 0 0',
+                }}
+              >
+                {labels[tab]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mode sub-tabs (editor only) */}
+        {activeTab === 'editor' && <ModeTabBar modes={specialistDef.modes} activeMode={mode} onSelect={setMode} />}
+
+        {/* ── Canary Tab (US-008) ──────────────────────────────────────────── */}
+        {activeTab === 'canary' && (
+          <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 16 }}>
+            <CanarySlider
+              specialistId={specialistId}
+              mode={mode}
+              currentVersion={activeVersion}
+              nextVersion={null}
+              currentCanaryPct={canaryPct ?? 0}
+              isSuperAdmin={isSuperAdmin}
+              onRefetch={() => { void refetchActive(); void refetchHistory(); }}
+              onToast={showToast}
+            />
+            <div style={{ height: 16 }} />
+            <LlmJudgeCard
+              versionId={activeVersion?.id ?? null}
+              judgeScore={activeVersion?.judgeScore ?? null}
+              isSuperAdmin={isSuperAdmin}
+              onScoreUpdated={() => { void refetchActive(); }}
+              onToast={showToast}
+            />
+          </div>
+        )}
+
+        {/* ── Editor Tab ───────────────────────────────────────────────────── */}
+        {activeTab === 'editor' && <>
 
         {/* Version card */}
         {isLoadingActive ? (
@@ -724,6 +789,7 @@ export default function PromptsPage() {
 
         {/* Bottom padding */}
         <div style={{ height: 12, flexShrink: 0 }} />
+        </> /* end editor tab */}
       </div>
 
       {/* Toast */}

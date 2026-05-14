@@ -1,10 +1,16 @@
-// PRD-13 US-007 · HistoryTimeline — version history list
+// PRD-13 US-007/008 · HistoryTimeline — version history list
 // AC-9: 版本号 + 评分 + 状态(active/draft/archived/pending_review) + 创建人/时间
 //       点条目可预览 · super_admin 可回滚(走 dual approval)
+// US-008 AC-9: 每版本下显示灰度历史(canaryPct 变化)
 
 import { useState } from 'react';
 
 import { MonacoEditor } from './MonacoEditor';
+
+export interface CanaryHistoryEntry {
+  canaryPct: number;
+  updatedAt: Date | string;
+}
 
 export interface PromptVersionItem {
   id: number;
@@ -14,6 +20,7 @@ export interface PromptVersionItem {
   judgeScore: string | null;
   createdByAdminId: number;
   createdAt: Date | string;
+  canaryHistory?: CanaryHistoryEntry[];
 }
 
 interface Props {
@@ -169,6 +176,31 @@ export function HistoryTimeline({ versions, isLoading, isSuperAdmin, onRollback 
               <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 2 }}>
                 管理员 #{v.createdByAdminId} · {relativeTime(v.createdAt)}
               </div>
+
+              {/* US-008 AC-9: canary history */}
+              {v.canaryHistory && v.canaryHistory.length > 0 && (
+                <div style={{ marginTop: 6 }}>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 10, marginBottom: 3 }}>灰度历史</div>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    {v.canaryHistory.map((h, i) => (
+                      <span
+                        key={i}
+                        title={new Date(String(h.updatedAt)).toLocaleString('zh-CN')}
+                        style={{
+                          fontSize: 10,
+                          color: 'var(--text-muted)',
+                          background: 'rgba(255,255,255,0.05)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 3,
+                          padding: '1px 5px',
+                        }}
+                      >
+                        {h.canaryPct}%
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );

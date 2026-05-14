@@ -655,6 +655,26 @@ const _shadowAdminRouter = _t.router({
     rollbackVersion: _t.procedure
       .input((x: unknown) => x as { specialistId: string; mode?: string })
       .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    updateCanary: _t.procedure
+      .input((x: unknown) => x as { specialistId: string; mode?: string; canaryPct: number })
+      .mutation(
+        (): { canaryPct: number | null; approvalRequestId: number | null } => ({
+          canaryPct: null,
+          approvalRequestId: null,
+        }),
+      ),
+    rollback: _t.procedure
+      .input((x: unknown) => x as { specialistId: string; mode?: string; reason: string })
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    runLlmJudge: _t.procedure
+      .input((x: unknown) => x as { versionId: number; isMock?: boolean })
+      .mutation(
+        (): { score: number; isMock: boolean; runAt: Date } => ({
+          score: 0,
+          isMock: true,
+          runAt: new Date(),
+        }),
+      ),
   }),
   quota: _t.router({}),
   nsm: _t.router({
