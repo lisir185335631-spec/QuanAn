@@ -122,7 +122,7 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     label: '行业合规仪表盘',
     emoji: '⚖️',
     prd: 13,
-    requiredRole: 'admin',
+    requiredRole: 'readonly_admin',
     summary: '行业合规仪表盘 · 内容违规率 / 人工审核率 / 法务取证导出',
     group: 'p1-health',
   },

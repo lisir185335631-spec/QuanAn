@@ -1116,6 +1116,82 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
+  compliance: _t.router({
+    getKpiStats: _t.procedure.query(
+      (): {
+        todayDisclaimerCount: number;
+        disclaimerByIndustry: Array<{ industry: string; count: number }>;
+        bannedWordCount: number;
+        bannedWordTrend: Array<{ date: string; count: number }>;
+        piiHitRate: number;
+        piiCount: number;
+        totalParsed: number;
+        piiTrend: Array<{ date: string; piiCount: number; totalCount: number; rate: number }>;
+        industryTop5: Array<{ industry: string; count: number }>;
+      } => ({
+        todayDisclaimerCount: 0,
+        disclaimerByIndustry: [],
+        bannedWordCount: 0,
+        bannedWordTrend: [],
+        piiHitRate: 0,
+        piiCount: 0,
+        totalParsed: 0,
+        piiTrend: [],
+        industryTop5: [],
+      }),
+    ),
+    getIndustryBreakdown: _t.procedure
+      .input((x: unknown) => x as { startDate?: Date; endDate?: Date } | undefined)
+      .query(
+        (): {
+          all: Array<{ industry: string; count: number }>;
+          pieData: Array<{ industry: string; count: number }>;
+        } => ({ all: [], pieData: [] }),
+      ),
+    getTrend: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            groupBy?: 'day' | 'week' | 'month';
+            industries?: string[];
+            startDate?: Date;
+            endDate?: Date;
+          },
+      )
+      .query(
+        (): Array<{ date: string; industry: string | null; count: number }> => [],
+      ),
+    listEvents: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            cursor?: number;
+            limit?: number;
+            grouping?: 'none' | 'eventType' | 'industry';
+            industryFilter?: string;
+            eventTypeFilter?: 'pii_redacted' | 'banned_word_hit' | 'industry_disclaimer_triggered';
+            startDate?: Date;
+            endDate?: Date;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            eventCategory: string;
+            eventType: string;
+            userId: string | null;
+            targetUserId: number | null;
+            industry: string | null;
+            createdAt: Date;
+            payloadSummary: string;
+            success: boolean;
+          }>;
+          nextCursor: number | undefined;
+          grouped: Record<string, unknown[]> | undefined;
+        } => ({ items: [], nextCursor: undefined, grouped: undefined }),
+      ),
+  }),
   config: _t.router({}),
   ab: _t.router({}),
 });

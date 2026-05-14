@@ -8,7 +8,7 @@ import AbPlaceholder from './pages/admin/placeholder/ab';
 import AccountsPage from './pages/accounts/index';
 import ApprovalPlaceholder from './pages/admin/placeholder/approval';
 import AuditPage from './pages/audit/index';
-import CompliancePlaceholder from './pages/admin/placeholder/compliance';
+import CompliancePage from './pages/compliance/index';
 import ConfigPlaceholder from './pages/admin/placeholder/config';
 import CostPage from './pages/cost/index';
 import EvolutionHealthPage from './pages/evolutionHealth/EvolutionHealthPage';
@@ -47,7 +47,7 @@ export function AdminRoutes() {
         <Route path="evolution-health" element={<EvolutionHealthPage />} />
         <Route path="prompts" element={<PromptsPage />} />
         <Route path="quota" element={<QuotaPage />} />
-        <Route path="compliance" element={<CompliancePlaceholder />} />
+        <Route path="compliance" element={<CompliancePage />} />
         <Route path="approval" element={<ApprovalPlaceholder />} />
 
         {/* P2 高级 */}
