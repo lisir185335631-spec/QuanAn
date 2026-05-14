@@ -13,6 +13,7 @@
 
 import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
+import { getActivePromptVersion } from '@/services/admin/prompt-version/prompt-version.service';
 import { getLatestInsight } from '@/memory/l4-profile';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
 import { ragRetrieveWorker } from '@/workers/rag';
@@ -42,15 +43,17 @@ export class ContextAssembler {
   /**
    * 组装 AssembledContext · 4 路并行 fetch + 降级 + prompt 拼接
    * 总耗时应 ≤ 800ms(4 路并行 · cap 5s · 平均数据库 < 200ms)
+   * PRD-13 US-003 AC-9: 加第 6 路 prompt_versions 查询(带 fallback)
    */
   async assemble(req: AssembleRequest): Promise<AssembledContext> {
-    const [l2Result, l4InsightResult, l4SamplesResult, l5RagResult, constantsResult] =
+    const [l2Result, l4InsightResult, l4SamplesResult, l5RagResult, constantsResult, promptResult] =
       await Promise.allSettled([
         withTimeout(this._fetchStepData(req.accountId), FETCH_TIMEOUT_MS),
         withTimeout(getLatestInsight(req.accountId), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchSamples(req.accountId), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchRag(req), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchConstants(), FETCH_TIMEOUT_MS),
+        withTimeout(this._fetchActivePrompt(req.agentId, req.accountId), FETCH_TIMEOUT_MS),
       ]);
 
     const layersUsed: string[] = [];
@@ -95,7 +98,11 @@ export class ContextAssembler {
       layersUsed.push('constants');
     }
 
-    const systemPrompt = this._composeSystemPrompt(req, stepData, constants, evolutionInsight, ragChunks);
+    // PRD-13 US-003 AC-9: active prompt from DB (fallback to templates/*.ts if null)
+    const activePromptContent: string | null =
+      promptResult.status === 'fulfilled' ? promptResult.value : null;
+
+    const systemPrompt = this._composeSystemPrompt(req, stepData, constants, evolutionInsight, ragChunks, activePromptContent);
     const userPrompt = this._formatUserPrompt(req.userInput);
     const contextTokens = Math.ceil((systemPrompt.length + userPrompt.length) / 4);
 
@@ -108,7 +115,19 @@ export class ContextAssembler {
     };
   }
 
-  // ── 4 路 fetch ────────────────────────────────────────────────────────────
+  // ── 5 路 fetch ────────────────────────────────────────────────────────────
+
+  /**
+   * PRD-13 US-003 AC-9: fetch active prompt from prompt_versions via canary config
+   * Returns content string or null (→ fallback to templates/*.ts per AC-13)
+   */
+  private async _fetchActivePrompt(agentId: string, accountId: number): Promise<string | null> {
+    const version = await getActivePromptVersion(agentId, accountId, 'default');
+    if (!version) {
+      return null;
+    }
+    return version.content;
+  }
 
   private async _fetchStepData(accountId: number): Promise<StepRow[]> {
     return prisma.stepData.findMany({
@@ -217,9 +236,16 @@ export class ContextAssembler {
     constants: Constants | null,
     evolutionInsight: EvolutionInsightContent | null,
     ragChunks: KnowledgeChunkContent[],
+    activePromptContent: string | null = null,
   ): string {
     const tmpl = SPECIALIST_TEMPLATES[req.agentId];
-    const persona = tmpl?.persona ?? `你是 ${req.agentId} · IP 起号专家助手`;
+
+    // PRD-13 US-003 AC-9/13: use DB prompt if available · fallback to templates/*.ts
+    // AC-13: brownfield — if prompt_versions has no record for this agent, fall back to templates/*.ts
+    const persona =
+      activePromptContent !== null
+        ? activePromptContent
+        : (tmpl?.persona ?? `你是 ${req.agentId} · IP 起号专家助手`);
 
     // AC-5: L2 stepData 失败 → 占位 · 不报错
     const stepSection =

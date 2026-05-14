@@ -788,15 +788,15 @@ model PromptVersion {
 
   /// 哪个 Specialist · 哪个 mode
   specialistId String
-  mode         String?
+  mode         String @default("default")
 
   /// 版本
   version     Int
   content     String @db.Text
   contentHash String @db.VarChar(64)
 
-  /// 状态
-  status String // 'draft' | 'staged' | 'active' | 'archived' | 'rolled_back'
+  /// 状态: 'draft' | 'pending_review' | 'active' | 'archived'
+  status String
 
   /// LLM Judge 评分(对 100 金标准 · 阈值 4.0)
   judgeScore     Decimal? @db.Decimal(3, 2)
@@ -821,14 +821,14 @@ model PromptVersion {
 /// 灰度发布配置
 // @rls(disabled)
 model PromptCanaryConfig {
-  id           Int     @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
   specialistId String
-  mode         String?
+  mode         String @default("default")
 
   currentVersionId Int
   nextVersionId    Int?
   canaryPct        Int    @default(0)
-  strategy         String // 'user_id_hash' | 'account_id_hash' | 'random'
+  strategy         String @default("user_id_hash") // 'user_id_hash' | 'random' | 'whitelist'
 
   canaryStartedAt DateTime?
   canaryEndsAt    DateTime?

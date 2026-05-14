@@ -2403,6 +2403,23 @@ spec.md(原版规格)+ DESIGN.md(设计 token)
 - grep `prisma.deepLearningArchive.create` in apps/api/src/workers/file-parser/ → 0(应该写 review queue)
 - 集成测试 · "TrendingScraper 抓 1 条 → 主 trending_items 0 条 / review_queue 1 条"
 
+#### LD-A6 · prompt_versions.status='active' 仅由 _publishPromptVersionInTx 修改(PRD-13 US-003)
+
+**铁律**:
+- ✅ 所有 publish / rollback / canary-100% 操作必须经由 `_publishPromptVersionInTx(tx, ...)` 单点函数
+- ❌ 任何其他代码直接 `prisma.promptVersion.update({ data: { status: 'active' } })`
+- ❌ 任何代码绕过 `_publishPromptVersionInTx` 直接写 `prompt_versions` 的 `status='active'`
+
+**执行检查**:
+```bash
+# 期望 0 命中(prompt-version.service.ts 自身除外)
+grep -rn "prompt_versions.*status.*active\|promptVersion.*update.*active\|status.*active.*prompt" \
+  apps/api/src --include='*.ts' \
+  | grep -v '_publishPromptVersionInTx' \
+  | grep -v 'prompt-version.service.ts' \
+  | grep -v '.test.'
+```
+
 ### §10.2 admin 子系统的 6 条红线(R-A1 ~ R-A6)
 
 #### R-A1 · 不允许 apps/web 跟 apps/admin 互相 import 业务代码

@@ -94,6 +94,26 @@ if [ "$TS_FAIL" -eq 0 ]; then
   pass "LD-A5 · TrendingScraper/FileParser 不直接写主表(workers 目录已验证)"
 fi
 
+# ── LD-A6 · prompt_versions.status='active' 仅由 _publishPromptVersionInTx 改 ──
+echo
+echo "  LD-A6: prompt status='active' 单点函数守护检测"
+LDA6_FAIL=0
+# Look for any code outside prompt-version.service.ts that sets prompt status to active
+LDA6_HITS=$(grep -rn "promptVersion.*update.*status.*active\|status.*['\"]active['\"].*prompt\|prompt_versions.*status.*active" \
+  apps/api/src --include="*.ts" 2>/dev/null \
+  | grep -v "_publishPromptVersionInTx" \
+  | grep -v "prompt-version.service.ts" \
+  | grep -v "\.test\." \
+  | grep -v "spec\." || true)
+if [ -n "$LDA6_HITS" ]; then
+  echo "$LDA6_HITS"
+  fail "LD-A6 · 发现绕过 _publishPromptVersionInTx 直接设 status='active' 的代码"
+  LDA6_FAIL=1
+fi
+if [ "$LDA6_FAIL" -eq 0 ]; then
+  pass "LD-A6 · prompt_versions.status='active' 仅由 _publishPromptVersionInTx 修改"
+fi
+
 echo
 echo "【R-A 红线检测 · 6 条】"
 echo
@@ -177,7 +197,7 @@ fi
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [[ $FAIL -eq 0 ]]; then
-  echo "ALL PASS · 5 LD-A + 6 R-A"
+  echo "ALL PASS · 6 LD-A + 6 R-A"
   exit 0
 else
   echo "FAIL · 上方红线检测未通过 · 请修复后重跑"
