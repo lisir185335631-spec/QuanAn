@@ -289,10 +289,10 @@ export async function getUsageStatsByPlan(threshold = 80): Promise<UsageStatsRes
       plan,
       COUNT(*)::bigint AS cnt,
       COALESCE(
-        AVG(CASE WHEN daily_quota > 0 THEN daily_used::float / daily_quota * 100 ELSE 0 END),
+        AVG(CASE WHEN "dailyQuota" > 0 THEN "dailyUsed"::float / "dailyQuota" * 100 ELSE 0 END),
         0
       ) AS avg_pct,
-      COUNT(CASE WHEN daily_quota > 0 AND daily_used::float / daily_quota * 100 >= ${threshold} THEN 1 END)::bigint AS anomalous_cnt
+      COUNT(CASE WHEN "dailyQuota" > 0 AND "dailyUsed"::float / "dailyQuota" * 100 >= ${threshold} THEN 1 END)::bigint AS anomalous_cnt
     FROM user_quota
     GROUP BY plan
   `;
@@ -330,7 +330,7 @@ export async function getHourlyTrendByPlan(): Promise<HourlyTrendRow[]> {
       uq.plan,
       COUNT(*)::bigint AS call_count
     FROM cost_log cl
-    JOIN user_quota uq ON cl.user_id = uq.user_id
+    JOIN user_quota uq ON cl.user_id = uq."userId"
     WHERE cl.created_at >= ${since}
     GROUP BY 1, 2
     ORDER BY 1 ASC, 2
@@ -376,44 +376,44 @@ export async function listAnomalousUsers(
   const cursorFilter = cursor ? Prisma.sql`AND uq.id > ${cursor}` : Prisma.empty;
   const statusFilter =
     status === 'whitelisted'
-      ? Prisma.sql`AND uq.is_on_whitelist = true AND uq.whitelist_expires_at > NOW()`
+      ? Prisma.sql`AND uq."isOnWhitelist" = true AND uq."whitelistExpiresAt" > NOW()`
       : status === 'normal'
-        ? Prisma.sql`AND (uq.is_on_whitelist = false OR uq.whitelist_expires_at IS NULL OR uq.whitelist_expires_at <= NOW())`
+        ? Prisma.sql`AND (uq."isOnWhitelist" = false OR uq."whitelistExpiresAt" IS NULL OR uq."whitelistExpiresAt" <= NOW())`
         : Prisma.empty;
 
   const fetchLimit = limit + 1;
 
   const rows = await prisma.$queryRaw<Array<{
     id: number;
-    user_id: number;
+    userId: number;
     email: string;
     plan: string;
-    daily_used: number;
-    daily_quota: number;
+    dailyUsed: number;
+    dailyQuota: number;
     usage_pct: number;
-    is_on_whitelist: boolean;
-    whitelist_expires_at: Date | null;
+    isOnWhitelist: boolean;
+    whitelistExpiresAt: Date | null;
     last_call_at: Date | null;
   }>>`
     SELECT
       uq.id,
-      uq.user_id,
+      uq."userId",
       u.email,
       uq.plan,
-      uq.daily_used,
-      uq.daily_quota,
-      CASE WHEN uq.daily_quota > 0 THEN ROUND(uq.daily_used::float / uq.daily_quota * 100) ELSE 0 END AS usage_pct,
-      uq.is_on_whitelist,
-      uq.whitelist_expires_at,
-      (SELECT MAX(cl.created_at) FROM cost_log cl WHERE cl.user_id = uq.user_id) AS last_call_at
+      uq."dailyUsed",
+      uq."dailyQuota",
+      CASE WHEN uq."dailyQuota" > 0 THEN ROUND(uq."dailyUsed"::float / uq."dailyQuota" * 100) ELSE 0 END AS usage_pct,
+      uq."isOnWhitelist",
+      uq."whitelistExpiresAt",
+      (SELECT MAX(cl.created_at) FROM cost_log cl WHERE cl.user_id = uq."userId") AS last_call_at
     FROM user_quota uq
-    JOIN "user" u ON u.id = uq.user_id
-    WHERE uq.daily_quota > 0
-      AND uq.daily_used::float / uq.daily_quota * 100 >= ${usageThreshold}
+    JOIN users u ON u.id = uq."userId"
+    WHERE uq."dailyQuota" > 0
+      AND uq."dailyUsed"::float / uq."dailyQuota" * 100 >= ${usageThreshold}
       ${planFilter}
       ${statusFilter}
       ${cursorFilter}
-    ORDER BY uq.daily_used::float / uq.daily_quota DESC
+    ORDER BY uq."dailyUsed"::float / uq."dailyQuota" DESC
     LIMIT ${fetchLimit}
   `;
 
@@ -423,14 +423,14 @@ export async function listAnomalousUsers(
   return {
     items: data.map((r) => ({
       id: r.id,
-      userId: r.user_id,
+      userId: r.userId,
       email: r.email,
       plan: r.plan,
-      dailyUsed: r.daily_used,
-      dailyQuota: r.daily_quota,
+      dailyUsed: r.dailyUsed,
+      dailyQuota: r.dailyQuota,
       usagePct: Number(r.usage_pct),
-      isOnWhitelist: r.is_on_whitelist,
-      whitelistExpiresAt: r.whitelist_expires_at,
+      isOnWhitelist: r.isOnWhitelist,
+      whitelistExpiresAt: r.whitelistExpiresAt,
       lastCallAt: r.last_call_at,
     })),
     nextCursor: hasMore ? data[data.length - 1]?.id : undefined,
