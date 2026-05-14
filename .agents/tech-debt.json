@@ -568,16 +568,16 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus audit US-004 PRD-8",
       "severity": "low",
-      "status": "partially_resolved",
+      "status": "resolved",
       "resolution_decision": "B: 保留双路径 + AGENTS.md §11.6.8 白名单(2026-05-11) · prd-12-retro-maintenance: EvolutionAgent half 解决 · DailyTaskAgent 半待后",
-      "resolved_at": "2026-05-14T01:01:30Z",
-      "resolution_note": "EvolutionAgent + DailyTaskAgent 双路径模式接受为 L5 自治 Agent 设计 pattern · 不视为 design-drift · AGENTS.md §11.6.8 加白名单豁免 · 11 生成型 Specialist 仍严格 grep · 未来 L5 沿用本模式。 2026-05-14 prd-12-retro-maintenance: EvolutionAgent stub 删除 · worker.ts + test import 直指 @/agents/evolution/EvolutionAgent canonical · audit-ld.sh LD-005 仍清白(re-export stub 豁免逻辑不再触发,因 stub 不存在)。 DailyTaskAgent 双路径仍保留(specialists/DailyTaskAgent.ts US-002 throw stub + agents/specialists/DailyTaskAgent.ts US-007 真实施) — 单独再评。",
+      "resolved_at": "2026-05-14T09:16:27",
+      "resolution_note": "2 dead-orphan stub files deleted (apps/api/src/specialists/DailyTaskAgent.ts + apps/api/src/agents/specialists/CopywritingAgent.ts) + stub test file (tests/unit/specialists/DailyTaskAgent.test.ts). dual-path eliminated. tests 1549 pass 0 fail.",
       "evidence": "apps/api/src/specialists/EvolutionAgent.ts (10 行 re-export stub) + apps/api/src/agents/evolution/EvolutionAgent.ts (431 行 impl) · ralph US-004 为通过 AC-3 grep (evolutionInsight in specialists/ 应 0 命中) 把 EvolutionAgent 整体搬到 agents/evolution/ · 类似 PRD-4 TD-012 双 ContextAssembler 教训 · US-007 同模式: apps/api/src/specialists/DailyTaskAgent.ts (US-002 throw stub · 未删) + apps/api/src/agents/specialists/DailyTaskAgent.ts (US-007 真实施 · 296 行) · worker.ts 直 import agents/specialists/",
       "root_cause": "ralph 误读 AC-3 含义 · AC-3 本意是防 11 生成型 Specialist (Positioning/Branding/etc) 内拼接 EvolutionInsight · 不是禁 EvolutionAgent 自身 mention evolutionInsight · ralph 选 file move 而非例外白名单",
       "scheduled_fix_in": "EvolutionAgent half 已在 prd-12-retro-maintenance 修 · DailyTaskAgent half 留 PRD-13 启动前评估",
       "audit_exemption": "US-004 approve 时豁免 · functional 等价 · 通过 re-export stub 维持 backward compat (PRD-7 R1 type alias chain 教训内化) · BaseSpecialist 抽象未破 · 测试 624/624 (zero regression PASS)",
       "fix_hint": "选 A · 合并 EvolutionAgent 回 specialists/ + AC-3 grep 加 \"-v EvolutionAgent\" 白名单 · 选 B · 保留 agents/evolution/ + 文档化 (LD-002 14 Specialist 切分原则 example · 3 L5 自治型可独立目录)",
-      "resolved_in_prd": "prd-12-retro-maintenance (EvolutionAgent half only · DailyTaskAgent 待续)"
+      "resolved_in_prd": "maintenance-prd-13-prep"
     },
     {
       "id": "TD-033",
@@ -984,8 +984,29 @@
       "resolution_note": "Added pnpm.overrides { react: 18.3.1, react-dom: 18.3.1 } to root package.json. Post-fix: react/react-dom single copy at 18.3.1 (verified via pnpm list). All 16 admin tests pass (layout 6/6 + audit-drawer 6/6 + sidebar 4/4). @react-pdf/renderer PDF tests 11/11 PASS (no break). Total: 1551/1555 PASS (16 fail → 0 fail).",
       "resolved_in_prd": "prd-12-retro-maintenance",
       "resolved_at": "2026-05-14T00:59:00Z"
+    },
+    {
+      "id": "TD-056",
+      "title": "DailyTaskAgent US-007 真实版本无 unit test 覆盖",
+      "description": "apps/api/src/agents/specialists/DailyTaskAgent.ts (296 行 · PRD-8 US-007 真实施 LLM 接入 + 冷启动 + retry) 当前 0 unit test 覆盖. stub-test 文件 (tests/unit/specialists/DailyTaskAgent.test.ts) 已随 stub 删除. 真版本测试覆盖率 0%.",
+      "scope": [
+        "apps/api/src/agents/specialists/DailyTaskAgent.ts (296 lines)"
+      ],
+      "impact": "evolution domain L5 agent 修改 / refactor 无 safety net. AC-1 冷启动 / AC-10 cost_log eventType=l5_agent / schema retry 全无回归测试. PRD-13 P9.3 evolution 子域必修.",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "agent-coverage",
+        "evolution-domain"
+      ],
+      "detected_in_prd": "prd-13-prep-maintenance",
+      "detected_in_story": "DailyTaskAgent half cleanup evaluation",
+      "fix_by": "PRD-13 evolution 子域第一个 US (或独立 maintenance US)",
+      "status": "open",
+      "fix_hint": "新建 tests/unit/agents/specialists/DailyTaskAgent.test.ts · 覆盖 4 个核心场景: (1) 冷启动 (stepCount=0 OR profile=null → 5 模板) (2) 非冷启动 LLM 调用 + lightweight tier + 30s timeout (3) schema 校验失败 retry 1 次 (4) AbortError → LLMTimeoutError. 用 fake LLMGateway + prisma mock.",
+      "created_at": "2026-05-14T09:16:27"
     }
   ],
-  "last_updated": "2026-05-14T01:01:30Z",
+  "last_updated": "2026-05-14T09:16:27",
   "total": 44
 }

@@ -6793,3 +6793,44 @@ Skipped (留 PRD-13 PR / PRR):
 
 下一步 user trigger:
 - PRD-13 P9.3 P1 健康度域启动 (prompts/quota/config/approval/evolution · 估 8-12 US)
+
+────────────────────────────────────────────────────────────────────────────────
+[2026-05-14] PRD-13 启动前评估 · DailyTaskAgent half cleanup
+────────────────────────────────────────────────────────────────────────────────
+
+## 评估结果
+
+意外发现:不止 DailyTaskAgent · 还有 CopywritingAgent 同样是死孤儿(超 TD-024 原范围)
+
+| # | 死孤儿文件 | 行数 | 引用 | 范围 |
+|:-:|---|:-:|:-:|---|
+| 1 | apps/api/src/specialists/DailyTaskAgent.ts (stub US-002) | 108 | 0 | TD-024 内 |
+| 2 | apps/api/src/agents/specialists/CopywritingAgent.ts (reference example) | 168 | 0 | TD-024 外 |
+| 3 | tests/unit/specialists/DailyTaskAgent.test.ts (stub-test 2 it) | 30 | self | 配套 |
+
+真实生产版本(production):
+- DailyTaskAgent → apps/api/src/agents/specialists/DailyTaskAgent.ts (296 行 US-007) · 被 workers/daily-task/worker.ts:10 引用
+- CopywritingAgent → apps/api/src/specialists/CopywritingAgent.ts (643 行) · 被 trpc/routers/ 6 处引用
+
+## 清理动作 · 3 files deleted
+
+- ✅ git rm apps/api/src/specialists/DailyTaskAgent.ts (108 lines)
+- ✅ git rm apps/api/src/agents/specialists/CopywritingAgent.ts (168 lines)
+- ✅ git rm tests/unit/specialists/DailyTaskAgent.test.ts (stub test 2 it)
+
+## 验证
+
+- pnpm typecheck · 6 workspaces 全过 0 errors
+- pnpm test · 1549 pass | 0 fail | 4 skip (1553) · 0 regression (vs 1551 pass | 4 skip baseline · -2 是删了 stub test 2 个 it)
+- pnpm audit:redlines · 0 命中
+- pnpm audit:ld · 0 fail
+
+## TD 状态变更
+
+- TD-024 partially_resolved → **resolved** (dual-path 全消除 · 2 死孤儿删除 · stub test 删除)
+- TD-056 NEW (Medium) · DailyTaskAgent US-007 真实版本 296 行 0 unit test 覆盖 · PRD-13 P9.3 evolution 子域第一 US 必修
+
+## 命名空间分裂(残留 · 不影响 prod)
+
+apps/api/src/specialists/ (13 specialists production) + apps/api/src/agents/specialists/ (1 specialist · DailyTaskAgent 真版本) 两条路径并存 · 真版本反向引用 @/specialists/base/BaseSpecialist · 未来统一可考虑全迁到 agents/specialists/ 但不在本 maintenance 范围
+
