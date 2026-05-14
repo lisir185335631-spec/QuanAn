@@ -337,11 +337,20 @@ export default function PromptsPage() {
   const [savedVersionId, setSavedVersionId] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // AC-10: LLM Judge timeout tracking
+  const lastSavedVersionIdRef = useRef<number | null>(null);
+  const judgeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const judgePollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   function showToast(msg: string) {
     setToast(msg);
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => setToast(null), 4000);
+  }
+
+  function clearJudgeTimers() {
+    if (judgeTimeoutRef.current) { clearTimeout(judgeTimeoutRef.current); judgeTimeoutRef.current = null; }
+    if (judgePollingRef.current) { clearInterval(judgePollingRef.current); judgePollingRef.current = null; }
   }
 
   // ── tRPC queries ──────────────────────────────────────────────────────────
@@ -360,6 +369,7 @@ export default function PromptsPage() {
 
   const saveDraftMut = adminTrpc.prompts.saveDraft.useMutation({
     onSuccess: (data) => {
+      lastSavedVersionIdRef.current = data.version.id;
       setSavedVersionId(data.version.id);
       void refetchHistory();
       showToast('草稿已保存');
@@ -369,12 +379,29 @@ export default function PromptsPage() {
 
   const submitMut = adminTrpc.prompts.submitForReview.useMutation({
     onSuccess: () => {
+      const submittedId = lastSavedVersionIdRef.current;
       void refetchActive();
       void refetchHistory();
       setIsEditing(false);
       setSavedVersionId(null);
       setDraftContent(null);
       showToast('已提交审核 + LLM Judge 跑分中 · 评分完成会通知');
+      // AC-10: Start 30s judge timeout + 5s polling to detect score arrival
+      clearJudgeTimers();
+      if (submittedId !== null) {
+        judgePollingRef.current = setInterval(() => {
+          void refetchHistory().then((result) => {
+            const found = result.data?.versions?.find(
+              (v) => v.id === submittedId && v.judgeScore !== null,
+            );
+            if (found) clearJudgeTimers();
+          });
+        }, 5000);
+        judgeTimeoutRef.current = setTimeout(() => {
+          clearJudgeTimers();
+          showToast('评分超时 · 30s 后自动重试 · 也可手动重跑评分');
+        }, 30000);
+      }
     },
     onError: (err) => showToast(`提交失败: ${err.message}`),
   });
@@ -401,6 +428,9 @@ export default function PromptsPage() {
       setDraftContent(initial);
     }
   }, [isEditing, specialistId, mode]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // AC-10: Clean up judge timers on unmount
+  useEffect(() => () => clearJudgeTimers(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleContentChange = useCallback(
     (v: string) => {
