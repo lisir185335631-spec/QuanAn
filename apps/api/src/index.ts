@@ -341,6 +341,11 @@ async function start(): Promise<void> {
   await scheduleQuotaCleanup();
   logger.info('quota_cleanup_cron.registered');
 
+  // AC-1 US-003 PRD-14: register ab-stop-loss cron (0 0 * * * * hourly Asia/Shanghai)
+  const { scheduleAbStopLoss } = await import('./jobs/admin/ab-stop-loss.job');
+  await scheduleAbStopLoss();
+  logger.info('ab_stop_loss_cron.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }
