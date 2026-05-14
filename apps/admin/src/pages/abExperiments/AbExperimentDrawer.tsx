@@ -25,6 +25,7 @@ export interface ExperimentRow {
   stoppedAt: Date | string | null;
   createdAt: Date | string;
   trafficAllocation: Record<string, number> | null;
+  currentPValue?: number | null;
 }
 
 interface Props {
@@ -388,6 +389,21 @@ export function AbExperimentDrawer({ selected, currentRole, onClose, onRefresh }
             }}
           >
             📋 复制 Key
+          </button>
+
+          <button
+            onClick={() => window.open(`/admin/ab-experiments/${selected.id}/analysis`, '_blank')}
+            style={{
+              background: 'var(--bg-panel)',
+              color: 'var(--text-muted)',
+              border: '1px solid var(--border)',
+              borderRadius: 5,
+              padding: '7px 14px',
+              fontSize: 12,
+              cursor: 'pointer',
+            }}
+          >
+            📊 详细分析
           </button>
 
           {/* SHIELD: super_admin only stop button (client-side hide + server-side guard) */}

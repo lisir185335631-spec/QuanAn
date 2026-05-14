@@ -123,6 +123,7 @@ export const abExperimentsRouter = adminTrpcRouter({
         items: slice.map((e, idx) => {
           const alloc = e.trafficAllocation as Record<string, number> | null;
           const variantCount = alloc ? Object.keys(alloc).length : 0;
+          const rs = e.resultSummary as { pValue?: number } | null;
           return {
             id: e.id,
             experimentKey: e.experimentKey,
@@ -134,6 +135,7 @@ export const abExperimentsRouter = adminTrpcRouter({
             stoppedAt: e.stoppedAt,
             createdAt: e.createdAt,
             trafficAllocation: alloc,
+            currentPValue: rs?.pValue ?? null,
           };
         }),
         nextCursor,

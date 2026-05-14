@@ -82,6 +82,9 @@ export default function AbExperimentsPage() {
 
   // Filters
   const [statusFilter, setStatusFilter] = useState<'draft' | 'running' | 'stopped' | 'completed' | ''>('');
+  const [adminIdInput, setAdminIdInput] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [cursor, setCursor] = useState<number | undefined>(undefined);
   const [cursorStack, setCursorStack] = useState<(number | undefined)[]>([]);
 
@@ -93,6 +96,8 @@ export default function AbExperimentsPage() {
   const { data: kpiData, refetch: refetchKpi } = adminTrpc.abExperiments.getKpiStats.useQuery();
 
   // Experiments list
+  const parsedAdminId = adminIdInput ? parseInt(adminIdInput, 10) : undefined;
+
   const {
     data: listData,
     refetch: refetchList,
@@ -100,6 +105,9 @@ export default function AbExperimentsPage() {
   } = adminTrpc.abExperiments.list.useQuery({
     cursor,
     status: statusFilter || undefined,
+    createdByAdminId: parsedAdminId && !isNaN(parsedAdminId) ? parsedAdminId : undefined,
+    startDateFrom: dateFrom ? new Date(dateFrom) : undefined,
+    startDateTo: dateTo ? new Date(dateTo) : undefined,
   });
 
   const refetchAll = useCallback(() => {
@@ -144,6 +152,19 @@ export default function AbExperimentsPage() {
       key: 'sampleSize',
       label: 'Sample',
       render: (row) => <span>{row.sampleSize.toLocaleString()}</span>,
+    },
+    {
+      key: 'currentPValue',
+      label: 'p-value',
+      render: (row) => {
+        if (row.currentPValue == null) return <span style={{ color: 'var(--text-muted)' }}>—</span>;
+        const sig = row.currentPValue < 0.05;
+        return (
+          <span style={{ fontSize: 12, color: sig ? '#22c55e' : 'var(--text-muted)', fontWeight: sig ? 700 : 400 }}>
+            {row.currentPValue.toFixed(3)}
+          </span>
+        );
+      },
     },
     {
       key: 'startedAt',
@@ -257,6 +278,64 @@ export default function AbExperimentsPage() {
           <option value="stopped">已停损</option>
           <option value="completed">已完成</option>
         </select>
+
+        <input
+          type="number"
+          value={adminIdInput}
+          onChange={(e) => {
+            setAdminIdInput(e.target.value);
+            setCursor(undefined);
+            setCursorStack([]);
+          }}
+          placeholder="管理员 ID"
+          style={{
+            background: 'var(--bg-panel)',
+            border: '1px solid var(--border)',
+            borderRadius: 5,
+            padding: '5px 10px',
+            color: 'var(--text-primary)',
+            fontSize: 13,
+            width: 110,
+          }}
+        />
+
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => {
+            setDateFrom(e.target.value);
+            setCursor(undefined);
+            setCursorStack([]);
+          }}
+          placeholder="开始日期"
+          style={{
+            background: 'var(--bg-panel)',
+            border: '1px solid var(--border)',
+            borderRadius: 5,
+            padding: '5px 10px',
+            color: 'var(--text-primary)',
+            fontSize: 13,
+          }}
+        />
+
+        <input
+          type="date"
+          value={dateTo}
+          onChange={(e) => {
+            setDateTo(e.target.value);
+            setCursor(undefined);
+            setCursorStack([]);
+          }}
+          placeholder="结束日期"
+          style={{
+            background: 'var(--bg-panel)',
+            border: '1px solid var(--border)',
+            borderRadius: 5,
+            padding: '5px 10px',
+            color: 'var(--text-primary)',
+            fontSize: 13,
+          }}
+        />
 
         <button
           onClick={refetchAll}
