@@ -6,7 +6,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AdminLayout } from './layouts/AdminLayout';
 import AbPlaceholder from './pages/admin/placeholder/ab';
 import AccountsPage from './pages/accounts/index';
-import ApprovalPlaceholder from './pages/admin/placeholder/approval';
+import ApprovalGatesPage from './pages/approvals/index';
 import AuditPage from './pages/audit/index';
 import CompliancePage from './pages/compliance/index';
 import ConfigPlaceholder from './pages/admin/placeholder/config';
@@ -48,7 +48,7 @@ export function AdminRoutes() {
         <Route path="prompts" element={<PromptsPage />} />
         <Route path="quota" element={<QuotaPage />} />
         <Route path="compliance" element={<CompliancePage />} />
-        <Route path="approval" element={<ApprovalPlaceholder />} />
+        <Route path="approvals" element={<ApprovalGatesPage />} />
 
         {/* P2 高级 */}
         <Route path="ab" element={<AbPlaceholder />} />

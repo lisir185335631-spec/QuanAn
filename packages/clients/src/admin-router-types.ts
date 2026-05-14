@@ -1192,6 +1192,162 @@ const _shadowAdminRouter = _t.router({
         } => ({ items: [], nextCursor: undefined, grouped: undefined }),
       ),
   }),
+  approvals: _t.router({
+    getKpiStats: _t.procedure.query(
+      (): {
+        pendingCount: number;
+        avgDecisionTimeHours: number | null;
+        rejectionRate: number;
+        emergencySlaRate: number;
+      } => ({ pendingCount: 0, avgDecisionTimeHours: null, rejectionRate: 0, emergencySlaRate: 100 }),
+    ),
+    listPending: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { cursor?: number; limit?: number },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            requesterAdminId: number;
+            requesterEmail: string | null;
+            actionType: string;
+            actionPayload: unknown;
+            riskLevel: string;
+            requireDualApproval: boolean;
+            emergencyMode: boolean;
+            emergencyIncidentId: string | null;
+            postReviewRequired: boolean;
+            postReviewedAt: Date | null;
+            postReviewResult: string | null;
+            postReviewerAdminId: number | null;
+            status: string;
+            displayStatus: string;
+            approverAdminId: number | null;
+            firstApproverEmail: string | null;
+            secondApproverEmail: string | null;
+            decisionReason: string | null;
+            secondApproverAdminId: number | null;
+            secondApprovedAt: Date | null;
+            secondDecisionReason: string | null;
+            requesterReason: string;
+            createdAt: Date;
+            expiresAt: Date;
+            decidedAt: Date | null;
+          }>;
+          nextCursor: number | undefined;
+        } => ({ items: [], nextCursor: undefined }),
+      ),
+    listDecided: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { cursor?: number; limit?: number },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            requesterAdminId: number;
+            requesterEmail: string | null;
+            actionType: string;
+            actionPayload: unknown;
+            riskLevel: string;
+            requireDualApproval: boolean;
+            emergencyMode: boolean;
+            emergencyIncidentId: string | null;
+            postReviewRequired: boolean;
+            postReviewedAt: Date | null;
+            postReviewResult: string | null;
+            postReviewerAdminId: number | null;
+            status: string;
+            displayStatus: string;
+            approverAdminId: number | null;
+            firstApproverEmail: string | null;
+            secondApproverEmail: string | null;
+            decisionReason: string | null;
+            secondApproverAdminId: number | null;
+            secondApprovedAt: Date | null;
+            secondDecisionReason: string | null;
+            requesterReason: string;
+            createdAt: Date;
+            expiresAt: Date;
+            decidedAt: Date | null;
+          }>;
+          nextCursor: number | undefined;
+        } => ({ items: [], nextCursor: undefined }),
+      ),
+    listPostReview: _t.procedure.query(
+      (): Array<{
+        id: number;
+        requesterAdminId: number;
+        requesterEmail: string | null;
+        actionType: string;
+        actionPayload: unknown;
+        riskLevel: string;
+        requireDualApproval: boolean;
+        emergencyMode: boolean;
+        emergencyIncidentId: string | null;
+        postReviewRequired: boolean;
+        postReviewedAt: Date | null;
+        postReviewResult: string | null;
+        postReviewerAdminId: number | null;
+        status: string;
+        displayStatus: string;
+        approverAdminId: number | null;
+        firstApproverEmail: string | null;
+        secondApproverEmail: string | null;
+        decisionReason: string | null;
+        secondApproverAdminId: number | null;
+        secondApprovedAt: Date | null;
+        secondDecisionReason: string | null;
+        requesterReason: string;
+        createdAt: Date;
+        expiresAt: Date;
+        decidedAt: Date | null;
+      }> => [],
+    ),
+    getHistoricalDecisions: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { actionType: string; excludeId?: number },
+      )
+      .query(
+        (): Array<{
+          id: number;
+          status: string;
+          decisionReason: string | null;
+          decidedAt: Date | null;
+          approverAdminId: number | null;
+          riskLevel: string;
+          approverEmail: string | null;
+        }> => [],
+      ),
+    approveRequest: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { requestId: number; decisionReason: string },
+      )
+      .mutation((): { ok: boolean; displayStatus: string } => ({ ok: true, displayStatus: 'approved' })),
+    rejectRequest: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { requestId: number; decisionReason: string },
+      )
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    emergencyApprove: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { requestId: number; incidentId: string; decisionReason: string },
+      )
+      .mutation((): { ok: boolean; id: number } => ({ ok: true, id: 0 })),
+    postReviewApprove: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { requestId: number; result: 'confirmed' | 'overturned' | 'partial'; reviewNote?: string },
+      )
+      .mutation((): { ok: boolean } => ({ ok: true })),
+  }),
   config: _t.router({}),
   ab: _t.router({}),
 });

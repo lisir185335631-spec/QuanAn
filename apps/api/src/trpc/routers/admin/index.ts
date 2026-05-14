@@ -14,6 +14,7 @@ import { nsmRouter } from './nsm';
 import { reviewDeepLearnRouter } from './review-deep-learn';
 import { reviewTrendingRouter } from './review-trending';
 import { usersRouter } from './users';
+import { approvalsRouter } from './approvals';
 import { complianceRouter } from './compliance';
 import { evolutionHealthRouter } from './evolutionHealth';
 import { quotaRouter } from './quota';
@@ -56,6 +57,8 @@ export const adminRouter = adminTrpcRouter({
   cost: costRouter,
   // PRD-13 US-004: real evolutionHealth router
   evolution: evolutionHealthRouter,
+  // PRD-13 US-011: real approvals router
+  approvals: approvalsRouter,
   config: configPlaceholder,
   ab: abPlaceholder,
 });

@@ -127,12 +127,12 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     group: 'p1-health',
   },
   {
-    path: '/admin/approval',
+    path: '/admin/approvals',
     label: 'Approval Gates',
-    emoji: '✅',
+    emoji: '🛡️',
     prd: 13,
-    requiredRole: 'super_admin',
-    summary: 'Approval Gates 管理 · 待审批请求 / 历史决策 / 紧急通道',
+    requiredRole: 'admin',
+    summary: 'Approval Gates 管理 · 待审批请求 / 历史决策 / 紧急通道 · super_admin 含紧急通道',
     group: 'p1-health',
   },
   // P2 高级 3
