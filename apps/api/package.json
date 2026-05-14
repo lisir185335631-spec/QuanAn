@@ -17,6 +17,8 @@
     "@quanqn/schemas": "workspace:*",
     "@quanqn/ui": "workspace:^",
     "@react-pdf/renderer": "^4.5.1",
+    "@stdlib/stats-base-dists-chisquare-cdf": "^0.3.1",
+    "@stdlib/stats-base-dists-t-cdf": "^0.2.3",
     "@trpc/server": "^11.0.0-rc.0",
     "@types/papaparse": "^5.5.2",
     "@upstash/ratelimit": "^2.0.0",
