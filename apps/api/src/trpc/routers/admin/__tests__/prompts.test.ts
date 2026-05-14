@@ -159,6 +159,68 @@ beforeEach(() => {
   });
 });
 
+// ── listVersions ──────────────────────────────────────────────────────────
+
+describe('prompts.listVersions', () => {
+  it('versions without canary config → canaryHistory empty arrays', async () => {
+    mockPromptVersionFindMany.mockResolvedValue([
+      { id: 1, version: 1, status: 'active', specialistId: 'PositioningAgent', mode: 'default' },
+    ]);
+    mockCanaryConfigFindUnique.mockResolvedValue(null);
+
+    const caller = makeCaller(SUPER_ADMIN);
+    const result = await caller.listVersions({ specialistId: 'PositioningAgent', mode: 'default' });
+    expect(result.versions).toHaveLength(1);
+    expect(result.versions[0]!.canaryHistory).toEqual([]);
+  });
+
+  it('currentVersionId match → canaryHistory has one entry with canaryPct', async () => {
+    const updatedAt = new Date('2026-05-14T10:00:00Z');
+    mockPromptVersionFindMany.mockResolvedValue([
+      { id: 5, version: 5, status: 'active', specialistId: 'PositioningAgent', mode: 'default' },
+      { id: 3, version: 3, status: 'archived', specialistId: 'PositioningAgent', mode: 'default' },
+    ]);
+    mockCanaryConfigFindUnique.mockResolvedValue({
+      id: 1,
+      specialistId: 'PositioningAgent',
+      mode: 'default',
+      currentVersionId: 5,
+      nextVersionId: null,
+      canaryPct: 50,
+      updatedAt,
+    });
+
+    const caller = makeCaller(SUPER_ADMIN);
+    const result = await caller.listVersions({ specialistId: 'PositioningAgent', mode: 'default' });
+    expect(result.versions[0]!.canaryHistory).toEqual([{ canaryPct: 50, updatedAt }]);
+    expect(result.versions[1]!.canaryHistory).toEqual([]);
+  });
+
+  it('nextVersionId match → canaryHistory has entry for next version', async () => {
+    const updatedAt = new Date('2026-05-14T10:00:00Z');
+    mockPromptVersionFindMany.mockResolvedValue([
+      { id: 6, version: 6, status: 'draft', specialistId: 'PositioningAgent', mode: 'default' },
+      { id: 5, version: 5, status: 'active', specialistId: 'PositioningAgent', mode: 'default' },
+    ]);
+    mockCanaryConfigFindUnique.mockResolvedValue({
+      id: 1,
+      specialistId: 'PositioningAgent',
+      mode: 'default',
+      currentVersionId: 5,
+      nextVersionId: 6,
+      canaryPct: 10,
+      updatedAt,
+    });
+
+    const caller = makeCaller(SUPER_ADMIN);
+    const result = await caller.listVersions({ specialistId: 'PositioningAgent', mode: 'default' });
+    // v6 is nextVersionId → gets canaryHistory
+    expect(result.versions[0]!.canaryHistory).toEqual([{ canaryPct: 10, updatedAt }]);
+    // v5 is currentVersionId → also gets canaryHistory
+    expect(result.versions[1]!.canaryHistory).toEqual([{ canaryPct: 10, updatedAt }]);
+  });
+});
+
 // ── updateCanary ──────────────────────────────────────────────────────────
 
 describe('prompts.updateCanary', () => {

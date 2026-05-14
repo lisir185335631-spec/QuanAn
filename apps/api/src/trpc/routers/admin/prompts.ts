@@ -56,13 +56,29 @@ export const promptsRouter = adminTrpcRouter({
       }),
     )
     .query(async ({ input }) => {
-      const versions = await prisma.promptVersion.findMany({
-        where: { specialistId: input.specialistId, mode: input.mode },
-        orderBy: { version: 'desc' },
-        take: input.limit,
+      const [versions, canaryConfig] = await Promise.all([
+        prisma.promptVersion.findMany({
+          where: { specialistId: input.specialistId, mode: input.mode },
+          orderBy: { version: 'desc' },
+          take: input.limit,
+        }),
+        prisma.promptCanaryConfig.findUnique({
+          where: { specialistId_mode: { specialistId: input.specialistId, mode: input.mode } },
+        }),
+      ]);
+
+      const versionsWithCanary = versions.map((v) => {
+        const canaryHistory: { canaryPct: number; updatedAt: Date }[] = [];
+        if (
+          canaryConfig &&
+          (v.id === canaryConfig.currentVersionId || v.id === canaryConfig.nextVersionId)
+        ) {
+          canaryHistory.push({ canaryPct: canaryConfig.canaryPct, updatedAt: canaryConfig.updatedAt });
+        }
+        return { ...v, canaryHistory };
       });
 
-      return { versions };
+      return { versions: versionsWithCanary };
     }),
 
   // ── saveDraft ────────────────────────────────────────────────────────────
