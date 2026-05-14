@@ -1,0 +1,1421 @@
+{
+  "project": "QuanQn",
+  "branchName": "ralph/prd-11-business-core-domains",
+  "description": "PRD-11 · P9.1 6 P0 业务核心域 · 22 stories(域① NSM × 4 + 域② 用户 × 4 + 域③ IP 账号 × 3 + 域④ 成本 × 4 + 域⑤ 审计 × 3 + 域⑥ 邀请码 × 3 + 收官 × 1)· 派生 ADMIN §3.2/3.3/4/5/6/7.6/8.3 + DATA-MODEL §13 + AGENTS §10 · D-069~078 10 LD · 21+ anti_patterns 6 类 · seed 详细度 2752 行 tasks/prd-11.md",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "NSM kpi_snapshots schema + 跨表聚合 SQL service · foundation",
+      "description": "作为开发者 · 需要 kpi_snapshots 表 + computeSnapshot service 跨 6 表聚合 NSM 数据(active7d / step9CompleteRate / feedbackRate / evolutionUpgradeRate / d30Retention + 3 distributions + funnelData)· cron 1h 预聚合解决实时 40s 慢查询。foundation 风险 · downstream 6 stories + 跨 PRD-12/13/14 复用。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma 新增 model KpiSnapshot · 13 字段严格按 DATA-MODEL §13.6.A 行 3155-3185(snapshotDate Date · granularity day|week|month · activeAccounts7d Int · step9CompleteRate Decimal(5,4) · feedbackRate · evolutionUpgradeRate · d30Retention · 3 distributions Json · funnelData Json · @@unique([snapshotDate, granularity])",
+        "pnpm prisma migrate dev --name add_kpi_snapshots · migration 含 CREATE TABLE kpi_snapshots + 1 unique + 1 index",
+        "manual_admin_rls.sql 加 ALTER TABLE kpi_snapshots DISABLE ROW LEVEL SECURITY(LD-A-2)· psql 确认 relrowsecurity=f",
+        "apps/api/src/services/admin/nsm/kpi-snapshot.service.ts 新建 computeSnapshot(date, granularity): Promise<KpiSnapshotData> · 内部 prisma.$transaction + SET LOCAL app.role='admin' · 跨 6 表聚合(users + ip_accounts + step_data + feedback_log + evolution_profile + cost_log)",
+        "computeSnapshot 实现 7 个聚合 SQL · 全部 prisma.$queryRaw template literal(防注入)· 不允许 $queryRawUnsafe",
+        "computeSnapshot 返回值 upsert 到 kpi_snapshots @@unique([snapshotDate, granularity]) · 二次跑同 (date, granularity) 走 UPDATE 不抛 duplicate",
+        "date > NOW() 抛 ValidationError · granularity 不在 enum 抛 ValidationError · feedback_log 空表 feedbackRate 返 0.0000 不抛 division by zero",
+        "adminRLS bypass 失败抛 AdminRLSBypassError · 跨表 SQL 超 60s 抛 SnapshotComputationTimeout",
+        "apps/api/src/schemas/admin/nsm.schema.ts zod kpiSnapshotSchema · 13 字段全严格类型(rate 字段 z.number().min(0).max(1)· funnelData z.array(z.number().int()).length(6))",
+        "scripts/audit-admin-rls-tables.sh 列表加 kpi_snapshots · pnpm audit:admin-rls-tables 实跑 kpi_snapshots | RLS OFF | ✓",
+        "单元测试 apps/api/src/services/admin/nsm/__tests__/kpi-snapshot.test.ts · 4 test (full snapshot / upsert duplicate / empty feedback / adminRLS bypass effective)",
+        "pnpm test 全过 · pnpm typecheck 0 error · KpiSnapshotData type strict (no any)"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/nsm/kpi-snapshot.service.ts",
+        "apps/api/src/services/admin/nsm/__tests__/kpi-snapshot.test.ts",
+        "apps/api/src/schemas/admin/nsm.schema.ts",
+        "prisma/migrations/20260512_add_kpi_snapshots/migration.sql"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "prisma/migrations/manual_admin_rls.sql",
+        "scripts/audit-admin-rls-tables.sh"
+      ],
+      "test_command": "cd apps/api && pnpm test src/services/admin/nsm/__tests__/kpi-snapshot.test.ts",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-1 + PRD-10",
+          "source_story": "PRD-1 US-006 + PRD-10 US-003",
+          "lesson": "adminRLS bypass 必用 SET LOCAL app.role · 不能用 SET (global 泄漏到下次连接)",
+          "antipattern": "tx.$executeRawUnsafe(\"SET app.role = 'admin'\")",
+          "correct": "tx.$executeRawUnsafe(\"SET LOCAL app.role = 'admin'\")"
+        },
+        {
+          "source_prd": "PRD-1",
+          "source_story": "PRD-1 US-006",
+          "lesson": "search/filter 关键词必用 prisma contains · 不允许 $queryRawUnsafe 拼字符串",
+          "antipattern": "$queryRawUnsafe(`SELECT * WHERE event_type LIKE '%${kw}%'`)  // 攻击者 '; DROP TABLE'",
+          "correct": "prisma.auditLog.findMany({where: {eventType: {contains: kw, mode: 'insensitive'}}})  // 自动 escape"
+        },
+        {
+          "source_prd": "PRD-10 retro M-3",
+          "source_story": "PRD-10 TD-039/042",
+          "lesson": "新加 admin 表必同步加到 audit-admin-rls-tables.sh 列表 · 防 audit drift 累积漏 catch",
+          "antipattern": "只 ALTER TABLE DISABLE RLS · 漏改 audit script 列表",
+          "correct": "同时改 manual_admin_rls.sql + audit-admin-rls-tables.sh + audit-self-test.sh 跑过"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "kpi-snapshot.job cron 1h 聚合(BullMQ + tz)",
+      "description": "作为运维 · 需要 BullMQ cron 每 1h 跑 computeSnapshot · 写入 kpi_snapshots 表 · 前端读 snapshot 不实时跑跨表 join。",
+      "acceptanceCriteria": [
+        "apps/api/src/jobs/admin/kpi-snapshot.job.ts 新建 · 注册 Queue('admin:kpi-snapshot') + Worker · 调 computeSnapshot",
+        "scheduleDailySnapshot · pattern '0 * * * *' tz 'Asia/Shanghai' jobId 'daily-snapshot-recurring'",
+        "scheduleWeeklySnapshot · pattern '0 4 * * 1' tz 'Asia/Shanghai' jobId 'weekly-snapshot-recurring'",
+        "scheduleMonthlySnapshot · pattern '0 4 1 * *' tz 'Asia/Shanghai' jobId 'monthly-snapshot-recurring'",
+        "apps/api/src/server.ts 启动调 3 schedule 函数 · BullMQ 自动持久化",
+        "BullMQ attempts: 3 自动重试 · 第 3 次失败进 failed queue + 写 admin_audit_log eventCategory='system_alert' eventType='kpi_snapshot_failed'",
+        "jobId 唯一约束防 double-fire · server 重启不重复注册",
+        "单元测试 cron 注册 · worker 处理 job 调 computeSnapshot · job failed 3 次进 failed queue",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:redlines-admin 跑过 0 命中"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/jobs/admin/kpi-snapshot.job.ts",
+        "apps/api/src/jobs/admin/__tests__/kpi-snapshot.job.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/server.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/jobs/admin/__tests__/kpi-snapshot.job.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-9 + D-070",
+          "source_story": "PRD-9 US-018",
+          "lesson": "BullMQ cron pattern 必加 tz: Asia/Shanghai · 默认 UTC 跟中国时间混乱",
+          "antipattern": "repeat: { pattern: '0 * * * *' }  // 默认 UTC",
+          "correct": "repeat: { pattern: '0 * * * *', tz: 'Asia/Shanghai' }"
+        },
+        {
+          "source_prd": "PRD-9 + D-070",
+          "source_story": "BullMQ 复发约束",
+          "lesson": "BullMQ repeat 注册必加 jobId · server 重启每次重注册 → 1h 跑 2 次 SQL · 浪费",
+          "antipattern": "kpiSnapshotQueue.add(name, data, {repeat: {pattern}})  // 漏 jobId",
+          "correct": "kpiSnapshotQueue.add(name, data, {repeat: {pattern, tz}, jobId: \"daily-snapshot-recurring\"})"
+        },
+        {
+          "source_prd": "PRD-10",
+          "source_story": "cron 错峰",
+          "lesson": "多个 cron 错峰触发 · 防 thundering herd 同 SQL 挤兑",
+          "antipattern": "4 个 cron 全 0 * * * * · 整点全跑",
+          "correct": "kpi 整点 + cost 15 分 + anomaly 30 分 + cleanup 45 分 错峰"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "adminRouter.nsm 5 procedure(getOverview/getFunnel/getDistributions/getAlerts/triggerSnapshot)",
+      "description": "作为前端开发者 · 需要 5 个 NSM procedure 从 kpi_snapshots 读 NSM 数据(顶部 4 数字 + 漏斗 + 折线 + 3 饼图 + 告警栏)· 全部走 6 闸 middleware + adminRLS bypass + audit。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/nsm.ts 新建 nsmRouter · 5 procedure 全部走 publicAdminProcedure(已含 6 闸 + adminRLS bypass)",
+        "getOverview · 查最新 daily snapshot + previous(对比同环比)· prisma.$transaction + SET LOCAL · 写 audit 'data_query'/'nsm_overview'",
+        "getFunnel · 按 date + granularity 返 funnelData 数组 [register, step1, step3, step3b, step7, feedback]",
+        "getDistributions · 3 饼图数据(industryDistribution + platformDistribution + userPersonaDistribution)从 snapshot JSON 字段",
+        "getAlerts · 查最近 3 daily snapshot · 算指标连续恶化 · 返 [{metric, severity, deltaPct}] · 写 audit",
+        "triggerSnapshot mutation · 仅 super_admin · 调 computeSnapshot 立即重算 · 写 audit 'high_risk_action'/'manual_snapshot_trigger'",
+        "apps/api/src/trpc/routers/admin/index.ts 加 nsm: nsmRouter 到 adminRouter 子树",
+        "非 super_admin 调 triggerSnapshot 返 403 + audit privilege_escalation",
+        "kpi_snapshots 表空 · getOverview 返 null · 不抛 error",
+        "audit 写入含 payloadHash SHA-256 + redact 敏感字段(LD-A-3)",
+        "audit-admin-rls.ts AST 跑过 · 识别 5 nsm procedure 全走 publicAdminProcedure · Checked procedures ≥ 10",
+        "audit-redlines-admin.sh 跑过 0 命中 · 含 R-001 BASE_LLM_URL grep + 6 闸 顺序 grep",
+        "单元测试 apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts · 5 procedure × 各鉴权边界 + 数据正确性 ≥ 15 test",
+        "pnpm test + pnpm typecheck 0 error"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-002"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/nsm.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/nsm.test.ts",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10",
+          "source_story": "PRD-10 US-003",
+          "lesson": "6 闸 middleware 顺序硬约束 · adminAuth → roleCheck → ipWhitelist → mfaCheck → adminRLS → auditLog",
+          "antipattern": "ipWhitelist → adminAuth(顺序倒)· IP 攻击者能绕鉴权",
+          "correct": "严格按 6 闸顺序 · 每 procedure 走 publicAdminProcedure 自动应用"
+        },
+        {
+          "source_prd": "PRD-1 + PRD-10",
+          "source_story": "PRD-1 US-006 + PRD-10 US-003",
+          "lesson": "adminRLS bypass 必用 SET LOCAL app.role · 不能用 SET (global 泄漏到下次连接)",
+          "antipattern": "tx.$executeRawUnsafe(\"SET app.role = 'admin'\")",
+          "correct": "tx.$executeRawUnsafe(\"SET LOCAL app.role = 'admin'\")"
+        },
+        {
+          "source_prd": "PRD-9 + LD-A-3",
+          "source_story": "PRD-9 US-014",
+          "lesson": "audit 写入 payloadHash 必须 redact 敏感字段 (password/token/apiKey/secret) 后再 hash · 防 GDPR 泄漏",
+          "antipattern": "payloadHash = SHA-256(JSON.stringify(payload))  // 含原 password",
+          "correct": "payloadHash = SHA-256(JSON.stringify(redact(payload, ['password','token','apiKey','secret'])))"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "NSM UI page · 4 数字 + 漏斗 + 折线 + 3 饼图 + 告警栏 · Recharts",
+      "description": "作为运营/财务 · 打开 admin.quanqn.com/nsm 看 4 大数字(NSM/完成率/反馈率/升级率)+ 漏斗 + 折线 + 3 饼图 + 右侧告警栏 · 数据从 adminRouter.nsm 5 procedure。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/nsm/index.tsx 替换 PRD-10 US-007 建的 placeholder.tsx · 实现完整 NSM 仪表盘",
+        "页面布局 grid-cols-[1fr_320px] · 左侧 [NsmOverviewCards + NsmFunnel + NsmDistributions] 主区 · 右侧 NsmAlerts",
+        "NsmOverviewCards.tsx · 顶部 4 大数字卡片(NSM/完成9步率/反馈率/进化升级率)· 每张含 [数字+单位+上日比对+/- N%]",
+        "NsmFunnel.tsx · 漏斗图横向 6 阶段 · Recharts <FunnelChart> · data [{name,value,fill:'var(--accent-purple)'}] 必含 fill",
+        "NsmDistributions.tsx · 3 饼图并排(行业 56→Top10+Other / 平台 5类 / 用户画像 4类)· hover 显示数字 + 占比",
+        "NsmAlerts.tsx · 右侧告警栏 · 连续 3 天恶化指标 · [metric, severity, deltaPct, 钉钉推送状态]",
+        "admin-routes.ts nsm 路由 metadata.prd 从 'PRD-10 placeholder' 改 'PRD-11' · sidebar 不动",
+        "删 apps/admin/src/pages/nsm/placeholder.tsx(若存在)· git diff 应见 1 delete",
+        "useQuery 并发 4 procedure · React Query auto-dedupe",
+        "API 拉取失败 · ErrorBoundary fallback '数据加载失败 · 点击重试'· 不白屏",
+        "kpi_snapshots 表空(cron 未跑)· NsmOverviewCards 显示 skeleton + '等待首次聚合' 提示 + super_admin 看到 [手动触发] 按钮",
+        "readonly_admin 财务模式 · 隐藏 [手动触发] 按钮 · 只显示 overview + distributions",
+        "agent-browser 打开 http://localhost:5174/admin/nsm · 看到顶部 4 卡片 + 漏斗 + 3 饼图 + 告警栏 + Network 4 tRPC 请求 200",
+        "console 0 error / 0 React key warning",
+        "getComputedStyle(document.documentElement).getPropertyValue('--bg-base') 非空 · tokens.css 已 import",
+        "刷新页面 · 登录态保持 · NSM 数据正确加载",
+        "Typecheck 通过"
+      ],
+      "depends_on": [
+        "US-003"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/nsm/index.tsx",
+        "apps/admin/src/pages/nsm/NsmOverviewCards.tsx",
+        "apps/admin/src/pages/nsm/NsmFunnel.tsx",
+        "apps/admin/src/pages/nsm/NsmDistributions.tsx",
+        "apps/admin/src/pages/nsm/NsmAlerts.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "cd apps/admin && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-6",
+          "source_story": "PRD-6 US-025",
+          "lesson": "Recharts 数据点必含 fill: var(--accent-X) · tokens.css 已定义",
+          "antipattern": "{name,value} 漏 fill",
+          "correct": "{name,value,fill:'var(--accent-purple)'}"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "PRD-10 E-1",
+          "lesson": "业务页落地协议 · admin-routes.ts metadata.prd 必更新到 PRD-11 · placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder' 漏改",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        },
+        {
+          "source_prd": "PRD-10",
+          "source_story": "P-2 协议",
+          "lesson": "placeholder.tsx 必删 · 不允许跟 index.tsx 并存",
+          "antipattern": "保留 placeholder.tsx + 新建 index.tsx 共存",
+          "correct": "git rm placeholder.tsx + git diff 应见 1 delete"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "users 表 lastLoginAt + lastLoginIp 字段 + 4 admin indexes",
+      "description": "作为开发者 · users 表加 lastLoginAt + lastLoginIp(VarChar 45)+ 4 indexes(role/plan/industry/lastLoginAt)· auth middleware 每次成功登录更新 · 这样 US-007 用户管理列表能高效筛选 + 排序。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma model User 加 2 字段 lastLoginAt DateTime? + lastLoginIp String? @db.VarChar(45)",
+        "model User 加 @@index([role]) + @@index([plan]) + @@index([industry]) + @@index([lastLoginAt(sort: Desc)])",
+        "pnpm prisma migrate dev --name add_user_lastlogin_indexes · migration 含 ALTER TABLE users + 4 CREATE INDEX",
+        "psql 实跑 \\d users 看到新字段 + 4 indexes · 既有用户 last_login_at IS NULL 允许",
+        "users 表仍 RLS ON (主应用 18 表 LD-A-2)· relrowsecurity=t",
+        "apps/api/src/middleware/auth.ts 登录成功后 prisma.user.update({lastLoginAt: new Date(), lastLoginIp: ctx.req.ip})",
+        "auth update 失败(用户删/DB 断)· try/catch · log warning · 不阻塞登录流程",
+        "lastLoginIp 输入 IPv6 长度 ≤ 45 · 不抛 SQL truncation",
+        "packages/schemas/user.schema.ts zod schema 加 lastLoginAt + lastLoginIp(optional)",
+        "单元测试 apps/api/src/middleware/__tests__/auth-lastlogin.test.ts · login 成功 update / 失败不 update / IPv4 写入 / IPv6 写入 4 test",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:redlines-admin 跑过 0 命中"
+      ],
+      "depends_on": [],
+      "priority": 5,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/middleware/__tests__/auth-lastlogin.test.ts",
+        "prisma/migrations/20260512_add_user_lastlogin_indexes/migration.sql"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "apps/api/src/middleware/auth.ts",
+        "packages/schemas/user.schema.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/middleware/__tests__/auth-lastlogin.test.ts",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-1",
+          "source_story": "PRD-1 US-002",
+          "lesson": "IP 字段必限长 @db.VarChar(45) · IPv6 最长 45 chars · 默认 TEXT 浪费索引",
+          "antipattern": "lastLoginIp String? (无 db type)",
+          "correct": "lastLoginIp String? @db.VarChar(45)"
+        },
+        {
+          "source_prd": "PRD-1",
+          "source_story": "auth 安全",
+          "lesson": "auth update 失败不阻塞登录 · log warning + continue",
+          "antipattern": "await prisma.user.update(...) 不 try/catch",
+          "correct": "try { await update } catch(e) { logger.warn(e) }"
+        }
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "adminRouter.users 5 procedure(list/detail/changePlan/banUser/resetPassword)",
+      "description": "作为前端开发者 · 5 个 users procedure · list (分页+搜索+多维筛选)+ detail (5 Tab 并行)+ changePlan (走 Approval stub)+ banUser (走 Approval stub)+ resetPassword (临时密码 + 邮件 stub)。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/users.ts 新建 usersRouter · 5 procedure 全走 publicAdminProcedure",
+        "list · zod input(page/pageSize/search/roleFilter/planFilter/industryFilter/sortBy/sortDir)· $transaction + SET LOCAL · Promise.all 查 users + count · 写 audit 'cross_account_query'/'list_users'",
+        "detail · 5 Tab 并行查 (user+evolutionProfile / ipAccount[] / costLog aggregate / auditLog[] / stepData[]) · Promise.all 不串行 · 写 audit 'cross_account_query'/'view_user_detail'",
+        "changePlan mutation · zod input(userId/newPlan/reason min 10)· super_admin 直批 stub(approval_requests.create status='auto_executed' + prisma.user.update + audit 'high_risk_action'/'change_user_plan' approvalRequestId)· admin 提申请(status='pending' expiresAt 24h)",
+        "banUser mutation · 同 changePlan 模式 · riskLevel='high' requireDualApproval=true(PRD-11 stub super_admin 单批 · PRD-13 升级 dual)",
+        "resetPassword mutation · 生成临时密码(crypto.randomBytes(8).hex)· prisma.user.update({passwordHash})· 邮件 stub(log only)· audit 'data_mutation'/'reset_password'",
+        "改套餐到当前已有套餐 · 抛 ValidationError('already on plan ${plan}')",
+        "banUser 给已 banned 用户 · 抛 ValidationError('already banned')",
+        "readonly_admin 调 changePlan/banUser/resetPassword · 6 闸 roleCheck 拦截返 403 + audit privilege_escalation",
+        "audit-approval-gates.ts EXCEPTION 列表加 users.changePlan + users.banUser · pnpm audit:approval-gates · Checked ≥ 7 with approval gate · 0 missing",
+        "audit 写入 payloadHash SHA-256 用 redact(payload) 后再 hash · password/token redact",
+        "单元测试 apps/api/src/trpc/routers/admin/__tests__/users.test.ts · 25+ test 覆盖 list 各 filter/detail 5 Tab/changePlan super_admin vs admin/banUser/resetPassword/各鉴权边界",
+        "pnpm test + pnpm typecheck 0 error"
+      ],
+      "depends_on": [
+        "US-005"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/users.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/users.test.ts",
+        "apps/api/src/services/admin/audit.service.ts",
+        "apps/api/src/services/admin/approval.service.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "scripts/audit-approval-gates.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/users.test.ts",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+ADR-016",
+          "source_story": "ADMIN §7.6",
+          "lesson": "高风险动作必走 Approval Gates stub · 写 approval_requests + audit",
+          "antipattern": "prisma.user.update({plan}) 直接 mutate",
+          "correct": "super_admin→approval_requests.create({status:auto_executed})+audit · admin→{status:pending}"
+        },
+        {
+          "source_prd": "PRD-9+LD-A-3",
+          "source_story": "PRD-9 US-014",
+          "lesson": "audit payloadHash 必 redact 敏感字段",
+          "antipattern": "SHA-256(JSON.stringify(payload))",
+          "correct": "SHA-256(JSON.stringify(redact(payload,['password','token','apiKey','secret'])))"
+        },
+        {
+          "source_prd": "PRD-3+PRD-8",
+          "source_story": "PRD-3 US-018",
+          "lesson": "多表关联查 Promise.all 并行",
+          "antipattern": "await A; await B; await C; (串行)",
+          "correct": "await Promise.all([A,B,C])"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "用户管理 UI page · 列表 + 5 Tab 详情抽屉 + Approval trigger UI",
+      "description": "作为运营/客服 · 打开 admin.quanqn.com/users 看用户列表(分页+搜索+多维筛选)+ 点用户行打开右侧抽屉看 5 Tab 详情 + 改套餐/封禁/重置密码按钮(走 Approval stub UI)· 用 DenseTable from packages/ui/admin。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/users/index.tsx 替换 placeholder · 主页面 + DenseTable 列表 + 抽屉 state · 删 placeholder.tsx",
+        "UsersOverviewCards.tsx · 顶部 4 数字 [总用户/活跃 7d/付费/风险用户]",
+        "UserListFilters.tsx · 多维筛选(角色/套餐/行业/注册时间/活跃度)+ 搜索框 debounce 300ms",
+        "UserDetailDrawer.tsx · 右侧抽屉 + 5 Tab 内嵌(BasicTab/ActivityTab/CostTab/AuditTab/AccountsTab 全在该文件内 sub-component · 避免 13 files 拆分)",
+        "5 Tab 内容 · 基本(email/role/plan/lastLogin)+ 活跃度(9 步进度+反馈饼图+30 天日历)+ 成本(月度折线+Top5 Specialist)+ 审计(audit_log 100 条时间线)+ 关联账号(ip_accounts 列表)",
+        "ChangePlanDialog.tsx · plan dropdown + reason 文本框 + 提交调 trpc.admin.users.changePlan",
+        "BanUserDialog.tsx · reason + durationDays(可选)+ 提交调 banUser",
+        "ResetPasswordDialog.tsx · reason + 提交后显示新临时密码(可复制)",
+        "PlanBadge.tsx · plan 颜色 badge(free/pro/enterprise/banned)",
+        "DenseTable · 用 @quanqn/ui-admin · virtualScroll · 列(id/email/plan/industry/lastLoginAt/actions)· onRowClick 触发抽屉",
+        "admin-routes.ts users metadata.prd 'PRD-10 placeholder' → 'PRD-11'",
+        "5 Tab 数据 React Query parallel useQuery · auto-dedupe · 抽屉打开就发 5 请求",
+        "admin (非 super_admin) 改套餐 · toast 显示 '已提交 · 等审批' + 跳转 Approval 申请列表",
+        "readonly_admin 财务/法务模式 · 隐藏改套餐/封禁/重置密码按钮 · 只看列表 + 详情",
+        "agent-browser http://localhost:5174/admin/users · 顶部 4 卡片 + 列表 20+ 行 + 6 列 + 分页器 + 筛选栏 6 dropdown 全 visible",
+        "搜索框输入 'test@' 实时筛选 · API debounce 300ms · Network 看到 trpc admin.users.list 请求",
+        "点用户行 → 抽屉打开 · 切 Tab 1~5 全部数据加载",
+        "点 [改套餐] · 弹窗 + 选 'pro' + reason + 提交 → toast '改套餐成功'(super_admin)或 '已提交等审批'(admin)· 列表 plan 字段更新",
+        "点 [封禁] · 弹窗 + 提交 → toast + 列表 plan badge 变红 [banned]",
+        "点 [重置密码] · 弹窗确认 + 提交 → 显示新临时密码(可复制)",
+        "DenseTable virtualScroll 1000+ 行流畅 60fps · row height 32px dense mode",
+        "刷新页面 · URL params 保存 page/filters · 列表 + 抽屉状态恢复",
+        "console 0 error · Typecheck 通过"
+      ],
+      "depends_on": [
+        "US-006"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/users/index.tsx",
+        "apps/admin/src/pages/users/UsersOverviewCards.tsx",
+        "apps/admin/src/pages/users/UserListFilters.tsx",
+        "apps/admin/src/pages/users/UserDetailDrawer.tsx",
+        "apps/admin/src/pages/users/ChangePlanDialog.tsx",
+        "apps/admin/src/pages/users/BanUserDialog.tsx",
+        "apps/admin/src/pages/users/ResetPasswordDialog.tsx",
+        "apps/admin/src/pages/users/PlanBadge.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "cd apps/admin && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+D-075",
+          "source_story": "PRD-10 tokens",
+          "lesson": "DenseTable 用 @tanstack/react-virtual · 不全 DOM render",
+          "antipattern": "data.map(row =><tr>)",
+          "correct": "useVirtualizer({count, estimateSize:32})"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "PRD-10 E-1",
+          "lesson": "业务页落地协议 · admin-routes.ts metadata.prd 必更新到 PRD-11 · placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder' 漏改",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-2 协议",
+          "lesson": "5 Tab 嵌入 UserDetailDrawer.tsx 内 sub-component · 不拆 5 独立文件 · 避免 13 files 超 medium 边界",
+          "antipattern": "tabs/BasicTab.tsx + tabs/ActivityTab.tsx ... 5 独立 file · 总 13 files create",
+          "correct": "UserDetailDrawer.tsx 单文件 + 内嵌 5 个 const BasicTab = () => {...} · 总 8 files create medium 安全区"
+        }
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "users CSV export(stream + chunk · 防 100k 用户 OOM)",
+      "description": "作为运营 · [CSV 导出] 按钮把当前筛选后用户列表(可能 100k+ 行)stream 导出 · 后端 chunk 1000 防 OOM。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/users.ts 加 exportCsv mutation · stream Node Pipe to res · content-type text/csv",
+        "CSV header · id,email,plan,industry,role,createdAt,lastLoginAt,banned",
+        "文件名 users-export-{ISO timestamp}.csv",
+        "chunk size 1000 · prisma.user.findMany({skip,take:1000}) 循环 · 内存峰值 < 200MB",
+        "写 audit 'export'/'export_users_csv' · payload={filterSummary, rowCount}",
+        "导出 500k+ 行 · 拒绝 + ValidationError('export rows > 500000, please narrow filters')",
+        "导出 100 行(空 filter)· 正常 CSV · 不抛 error",
+        "网络断开中途 · 浏览器 fail · 后端 stream 不锁连接",
+        "CSV 含特殊字符(逗号/引号/换行)· 自动 escape '\"value, with comma\"'",
+        "readonly_admin 财务模式允许导出",
+        "前端 apps/admin/src/pages/users/index.tsx 加 [CSV 导出] 按钮 · 点击 fetch + trigger download",
+        "agent-browser 点 [CSV 导出] · 浏览器 download users-export-*.csv · 文件可打开 + 内容正确",
+        "单元测试 stream chunk + memory + CSV escape",
+        "pnpm test + pnpm typecheck 0 error"
+      ],
+      "depends_on": [
+        "US-006"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/users.ts",
+        "apps/admin/src/pages/users/index.tsx"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/users-export.test.ts",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-8",
+          "source_story": "PRD-8 US-009",
+          "lesson": "大数据 export 用 stream + chunk · 防 OOM",
+          "antipattern": "findMany({}) 100k 行一次 load",
+          "correct": "for offset; chunk 1000; pipe to res"
+        },
+        {
+          "source_prd": "PRD-3",
+          "source_story": "CSV escape",
+          "lesson": "CSV 字段含逗号/引号必 escape · papaparse 或手撸",
+          "antipattern": "rows.map(r => `${r.id},${r.email}`).join(\"\\n\")  // 含 \",\" 列错位",
+          "correct": "papaparse.unparse(rows) 或 row.replace(/\"/g,'\"\"').wrapInQuotes"
+        }
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "ip_account_admin_notes + ip_account_anomaly_flags schema + 异常跑批 service · cron 05:00",
+      "description": "作为开发者 · 2 张 IP 账号管理辅助表(admin 备注 + 异常 flag)+ detectAccountAnomalies 跑批 service(每天 05:00)· 4 种 anomaly type · US-010/011 复用。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma 加 model IpAccountAdminNote(accountId/adminId/note Text/visibleToOtherAdmin Bool default true/createdAt + 2 indexes)严格按 DATA-MODEL §13.6.B 行 3187-3222",
+        "prisma/schema.prisma 加 model IpAccountAnomalyFlag(accountId/anomalyType/detectedAt/severity/evidence Json/resolvedAt?/resolvedByAdminId?/resolution? + 3 indexes)",
+        "pnpm prisma migrate dev --name add_ip_account_admin_tables · 2 表 + 5 indexes 建成",
+        "manual_admin_rls.sql 加 ALTER TABLE ip_account_admin_notes/ip_account_anomaly_flags DISABLE ROW LEVEL SECURITY · psql 实跑确认",
+        "scripts/audit-admin-rls-tables.sh 列表加 ip_account_admin_notes + ip_account_anomaly_flags",
+        "apps/api/src/services/admin/accounts/anomaly-detection.service.ts · detectAccountAnomalies(): Promise<{detected: number}> · $transaction + SET LOCAL · 4 种 anomaly type detect",
+        "anomaly type 1 inactive_no_feedback · 7 天活跃但 0 反馈",
+        "anomaly type 2 evolution_stalled · 7 天无新 insight",
+        "anomaly type 3 frequent_account_switch · 多账号同 user 频繁切换",
+        "anomaly type 4 cost_spike · 单账号 cost 突增",
+        "apps/api/src/jobs/admin/anomaly-detection.job.ts · BullMQ cron pattern '0 5 * * *' tz 'Asia/Shanghai' jobId 'anomaly-detection-recurring'",
+        "重复跑批同日 dedupe · unique (accountId + anomalyType + DATE(detectedAt))",
+        "已 resolved 的 anomaly 不再 detect (WHERE resolvedAt IS NULL)",
+        "单元测试 4 种 anomaly type detect 正确 + dedupe · ≥ 8 test",
+        "pnpm test + pnpm typecheck 0 error · pnpm audit:admin-rls-tables 跑过 0 命中(2 新表 RLS OFF)"
+      ],
+      "depends_on": [],
+      "priority": 9,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/accounts/anomaly-detection.service.ts",
+        "apps/api/src/services/admin/accounts/__tests__/anomaly-detection.test.ts",
+        "apps/api/src/jobs/admin/anomaly-detection.job.ts",
+        "prisma/migrations/20260512_add_ip_account_admin_tables/migration.sql"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "prisma/migrations/manual_admin_rls.sql",
+        "apps/api/src/server.ts",
+        "scripts/audit-admin-rls-tables.sh"
+      ],
+      "test_command": "cd apps/api && pnpm test src/services/admin/accounts/__tests__/anomaly-detection.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-1+PRD-10",
+          "source_story": "PRD-1 US-006",
+          "lesson": "adminRLS bypass 用 SET LOCAL · 防 global 泄漏",
+          "antipattern": "SET app.role='admin'",
+          "correct": "SET LOCAL app.role='admin'"
+        },
+        {
+          "source_prd": "PRD-9",
+          "source_story": "cron 跑批 dedupe",
+          "lesson": "detect anomaly 同 (account,type,date) 必去重 · 防每日跑批每日插一遍",
+          "antipattern": "ipAccountAnomalyFlag.create() 直插不查",
+          "correct": "先 findFirst({account,type,detectedAt:{gte:todayStart}}) · 不在再 create"
+        },
+        {
+          "source_prd": "PRD-10",
+          "source_story": "cron 时区",
+          "lesson": "cron pattern 必加 tz: 'Asia/Shanghai'",
+          "antipattern": "repeat: {pattern: '0 5 * * *'}  // 默认 UTC",
+          "correct": "repeat: {pattern: '0 5 * * *', tz: 'Asia/Shanghai'}"
+        }
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "adminRouter.accounts 6 procedure(list/detail/flag/unflag/addNote/forceFreeze)",
+      "description": "作为前端开发者 · 6 个 accounts procedure · 跨账号列表 + 详情(6 表 Promise.all)+ flag/unflag(medium)+ addNote(low)+ forceFreeze(high · 走 Approval Gates stub)。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/accounts.ts 新建 accountsRouter · 6 procedure 全走 publicAdminProcedure",
+        "list · zod input(page/pageSize/search/industryFilter/platformFilter/levelFilter/stageFilter/anomalyOnly/sortBy/sortDir)· $transaction + SET LOCAL · Promise.all 查 ip_accounts + count · include evolutionProfile + user + _count anomalyFlags · 写 audit 'cross_account_query'/'list_ip_accounts'",
+        "detail · Promise.all 6 表并行(account+user / stepData / evolutionProfile + insights / history take 50 / adminNotes / anomalyFlags WHERE resolvedAt IS NULL)· 写 audit",
+        "flag mutation · 写 ip_account_anomaly_flags · medium 风险 · 不走 Approval · zod input(accountId/anomalyType/severity/evidence)",
+        "unflag mutation · 更新 resolvedAt + resolvedByAdminId + resolution in ['false_positive','admin_action','auto_resolved'] · medium audit",
+        "addNote mutation · 写 ip_account_admin_notes · visibleToOtherAdmin 字段 · low audit",
+        "forceFreeze mutation · 高风险 · 走 Approval Gates stub(super_admin 直批 same pattern as US-006 changePlan)· 写 approval_requests + audit 'high_risk_action'/'force_freeze_account' + prisma.ipAccount.update({frozenAt, frozenByAdminId, freezeReason})",
+        "prisma/schema.prisma model IpAccount 加 frozenAt + frozenByAdminId + freezeReason 3 字段(若 PRD-10 没建)",
+        "已冻结账号再 forceFreeze · 抛 ValidationError('account already frozen')",
+        "admin (非 super_admin) forceFreeze · 走申请 + pending 状态返回 {status:'pending'}",
+        "readonly_admin 调 flag/unflag/addNote/forceFreeze · 6 闸 roleCheck 拦截 403",
+        "flag 同 (accountId, anomalyType) 当日重复 · 检测 unique · 抛 ValidationError('already flagged today')",
+        "unflag 给已 resolved 的 anomaly · 抛 ValidationError('already resolved')",
+        "audit-approval-gates.ts 加 accounts.forceFreeze EXCEPTION · pnpm audit:approval-gates · Checked ≥ 8 with approval gate · 0 missing",
+        "单元测试 ≥ 30 test 覆盖 list 各 filter / detail 6 表并行 / flag/unflag/addNote/forceFreeze 各路径 / 鉴权各边界",
+        "pnpm test + pnpm typecheck 0 error"
+      ],
+      "depends_on": [
+        "US-009"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/accounts.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/accounts.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "prisma/schema.prisma",
+        "scripts/audit-approval-gates.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/accounts.test.ts",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+ADR-016",
+          "source_story": "ADMIN §7.6",
+          "lesson": "高风险必走 Approval Gates stub",
+          "antipattern": "prisma.update() 直接 mutate",
+          "correct": "super_admin→approval_requests({status:auto_executed})+audit · admin→{status:pending}"
+        },
+        {
+          "source_prd": "PRD-3+PRD-8",
+          "source_story": "PRD-3 US-018",
+          "lesson": "多表关联用 Promise.all",
+          "antipattern": "await A; await B; (串行)",
+          "correct": "await Promise.all([A,B,C])"
+        },
+        {
+          "source_prd": "PRD-1+PRD-10",
+          "source_story": "PRD-1 US-006",
+          "lesson": "adminRLS bypass 用 SET LOCAL · 防 global 泄漏",
+          "antipattern": "SET app.role='admin'",
+          "correct": "SET LOCAL app.role='admin'"
+        }
+      ]
+    },
+    {
+      "id": "US-011",
+      "title": "IP 账号管理 UI page · 大表格 + 详情抽屉 + 异常 Tab",
+      "description": "作为运营/客服 · 打开 admin.quanqn.com/accounts 看跨账号列表 + 行业/平台/阶段分布 + 异常账号专属 Tab + 详情抽屉(9 步进度+进化档案+历史时间线+备注+异常 flag 列表)+ 强制冻结按钮。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/accounts/index.tsx 替换 placeholder · 主页面 + DenseTable + Tab 切换(全部 / 异常)+ 抽屉 state",
+        "顶部 [总账号 / 活跃 7d / 异常 / Top 3 行业] 数字卡片 + 行业/平台 2 饼图(Recharts · fill var(--accent-X))",
+        "中部 DenseTable 跨账号列表 · 列(accountId/industry/platform/level/stage/lastActiveAt/操作)· virtualScroll",
+        "异常账号专属 Tab · DenseTable · 列(accountId/anomalyType/severity/detectedAt/操作:resolve/falsePositive)",
+        "AccountDetailDrawer.tsx · 右侧抽屉 · 9 步进度图(StepProgressChart 用 Recharts BarChart)+ 进化档案 + 历史时间线 + admin 备注 + 异常 flag 列表",
+        "AccountListFilters.tsx · industry/platform/level/stage 多 dropdown + 搜索框 debounce 300ms",
+        "AnomalyTab.tsx · 异常账号专属 Tab · 操作 [resolve / falsePositive] 调 accounts.unflag",
+        "ForceFreezeDialog.tsx · reason 文本框 + 提交调 trpc.admin.accounts.forceFreeze · 同 ChangePlanDialog 模式",
+        "admin-routes.ts accounts metadata.prd 'PRD-10 placeholder' → 'PRD-11' · 删 placeholder.tsx",
+        "readonly_admin 隐藏 [强制冻结 / 标记异常] 按钮 · 只看列表 + 详情",
+        "列表空 显示 '未找到匹配账号'",
+        "agent-browser http://localhost:5174/admin/accounts · 顶部 + 列表 + 异常 Tab + 抽屉全 visible",
+        "点账号行 → 抽屉打开 · 9 步进度 + 进化档案 visible",
+        "点 [强制冻结] · 弹窗 + 提交 → toast(super_admin)或 '已提交等审批'(admin)· 列表状态更新",
+        "切异常 Tab · 异常列表加载 · 点 [resolve] → 异常消失",
+        "Recharts 9 步进度图 BarChart 数据 [{step:1,progress:0|1,fill:'var(--accent-purple)'}] · 必含 fill",
+        "console 0 error · Typecheck 通过"
+      ],
+      "depends_on": [
+        "US-010"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/accounts/index.tsx",
+        "apps/admin/src/pages/accounts/AccountListFilters.tsx",
+        "apps/admin/src/pages/accounts/AccountDetailDrawer.tsx",
+        "apps/admin/src/pages/accounts/AnomalyTab.tsx",
+        "apps/admin/src/pages/accounts/ForceFreezeDialog.tsx",
+        "apps/admin/src/pages/accounts/StepProgressChart.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "cd apps/admin && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+D-075",
+          "source_story": "PRD-10 tokens",
+          "lesson": "DenseTable 用 @tanstack/react-virtual",
+          "antipattern": "data.map(row=><tr>) 全 DOM",
+          "correct": "useVirtualizer({count,estimateSize:32})"
+        },
+        {
+          "source_prd": "PRD-6",
+          "source_story": "PRD-6 US-025",
+          "lesson": "Recharts 数据点必含 fill var(--accent-X)",
+          "antipattern": "{name,value} 漏 fill",
+          "correct": "{name,value,fill:'var(--accent-purple)'}"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-2 协议",
+          "lesson": "admin-routes.ts metadata.prd 必更 PRD-11 + placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder' 漏改",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        }
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "adminRouter.cost 5 procedure(aggregate/top10/specialistBreakdown/alerts/exportCsv)· money-critical",
+      "description": "作为前端开发者 · 5 个 cost procedure · 聚合查 cost_log(已有 6 admin index)· 全部 money-critical · 用 Prisma.Decimal 全程 · 防 Float 精度丢失。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/cost.ts 新建 costRouter · 5 procedure 全走 publicAdminProcedure · 全部标 // # $ money-critical: true 注释",
+        "aggregate · zod input(startDate/endDate/dimension in [user/specialist/model/provider]/groupBy in [day/week/month])· $transaction + SET LOCAL · Prisma.raw 限白名单 + template literal 防注入 · 返 {aggregations, summary:{totalCost}}",
+        "top10 · prisma.costLog.groupBy({by, _sum:{costUsd:Decimal}, orderBy:{_sum:{costUsd:'desc'}}, take:10}) · 用户 + 账号两组",
+        "specialistBreakdown · 14 Specialist + 3 自治型分项 · 返 [{specialistId,totalCost:Decimal,callCount,avgCostPerCall}]",
+        "alerts · 查最近 24h · 单用户 sum > $5 · 返 [{userId,email,dailySpent,threshold,severity}] · 阈值 $5(对 ARCHITECTURE §9.12b 估算 $0.45/D 的 10x buffer)",
+        "exportCsv · stream + chunk 1000 · CSV header 'timestamp,userId,email,specialistId,model,provider,costUsd,traceId' · 防 OOM(同 US-008 pattern)",
+        "startDate > endDate · zod custom 抛 ValidationError",
+        "时间范围超 365 天 · 抛 ValidationError('date range too large')",
+        "exportCsv > 500k 行 · 抛 ValidationError('export rows > 500000')",
+        "数据空 · aggregate 返 {aggregations:[], summary:{totalCost:'0.00'}}· 不抛 division by zero",
+        "Decimal 全程 · 不允许 .toNumber().reduce 精度丢失 · service 层全用 Prisma.Decimal · 最后返前端 toString()",
+        "audit-redlines-admin.sh 跑过 · grep money-critical 注释 ≥ 5",
+        "audit-admin-rls.ts AST 识别 5 cost procedure · Checked ≥ 21 procedures(累计)",
+        "单元测试 ≥ 25 test 覆盖 aggregate 4 dimension × 3 groupBy / top10 / specialistBreakdown / alerts 阈值边界 / exportCsv stream",
+        "pnpm test + pnpm typecheck 0 error · Prisma.Decimal 类型保留"
+      ],
+      "depends_on": [],
+      "priority": 12,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/cost.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/cost.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/cost.test.ts",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-2+LD-008",
+          "source_story": "PRD-2 US-035",
+          "lesson": "金额用 Prisma.Decimal · 不用 Float",
+          "antipattern": ".toNumber().reduce 精度丢失",
+          "correct": ".plus(r.cost) Decimal 全程"
+        },
+        {
+          "source_prd": "PRD-1+PRD-10",
+          "source_story": "PRD-1 US-006",
+          "lesson": "adminRLS bypass 用 SET LOCAL · 防 global 泄漏",
+          "antipattern": "SET app.role='admin'",
+          "correct": "SET LOCAL app.role='admin'"
+        },
+        {
+          "source_prd": "PRD-1",
+          "source_story": "PRD-1 US-006",
+          "lesson": "聚合 SQL Prisma.raw 限白名单 + template literal · 不允许 $queryRawUnsafe 字符串拼接",
+          "antipattern": "$queryRawUnsafe(`SELECT SUM(...) FROM ${tableName}`)",
+          "correct": "$queryRaw`SELECT SUM(cost_usd) FROM cost_log WHERE created_at BETWEEN ${startDate}::date AND ${endDate}::date GROUP BY ${Prisma.raw(safeColumn)}`"
+        }
+      ]
+    },
+    {
+      "id": "US-013",
+      "title": "成本仪表盘 UI page · 月度 + Top 10 + 多维切换 + Recharts",
+      "description": "作为运营/财务 · 打开 admin.quanqn.com/cost 看月度总成本(同比/环比)+ Top 10 用户横向 bar + 多线折线(模型/Specialist 切换)+ 饼图分项 + 异常告警栏 + CSV 导出按钮。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/cost/index.tsx 替换 placeholder · 主页面 + 5 sub-component",
+        "CostOverviewCards.tsx · 顶部 月度总成本 + 同比 + 环比 + Top 10 用户横向 bar(Recharts BarChart)",
+        "CostBreakdownChart.tsx · 中部 多线折线(分模型 / Specialist 可切换)+ 饼图(provider 分项)· data 必含 fill var(--accent-X)",
+        "CostTopUsersChart.tsx · Top 10 横向 bar · 数字格式化 '$ {cost.toFixed(2)}'",
+        "CostAlertsPanel.tsx · 右侧异常告警栏 · 单用户日 > $5 列表",
+        "底部详细表格 DenseTable · 可分组 + 排序 + CSV 导出按钮(调 cost.exportCsv)",
+        "时间范围 dropdown · 本月 / 上月 / 本季度 / 本年 / 自定义 · 切换数据自动刷新",
+        "多维切换 dropdown · 用户 / Specialist / 模型 / Provider · React Query cache 不重发请求",
+        "admin-routes.ts cost metadata.prd 'PRD-10 placeholder' → 'PRD-11' · 删 placeholder.tsx",
+        "readonly_admin 财务模式 · 可看全部 + 导出 · 法务模式只看 NSM(不进 cost 页)",
+        "Recharts 多线折线 X 轴时间格式 'MM-dd' 不 raw timestamp",
+        "agent-browser http://localhost:5174/admin/cost · 顶部数字 + Top 10 + 折线 + 饼图 visible",
+        "切维度 dropdown · 数据自动刷新 + Network 看到 cost.aggregate 请求",
+        "切时间范围 · 数据自动刷新",
+        "点 [CSV 导出] · 浏览器 download cost-export-*.csv",
+        "console 0 error · Typecheck 通过"
+      ],
+      "depends_on": [
+        "US-012"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/cost/index.tsx",
+        "apps/admin/src/pages/cost/CostOverviewCards.tsx",
+        "apps/admin/src/pages/cost/CostTopUsersChart.tsx",
+        "apps/admin/src/pages/cost/CostBreakdownChart.tsx",
+        "apps/admin/src/pages/cost/CostAlertsPanel.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "cd apps/admin && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-6",
+          "source_story": "PRD-6 US-025",
+          "lesson": "Recharts 数据点必含 fill var(--accent-X)",
+          "antipattern": "{name,value} 漏 fill",
+          "correct": "{name,value,fill:'var(--accent-purple)'}"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-2 协议",
+          "lesson": "admin-routes.ts metadata.prd 必更 PRD-11 + placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder' 漏改",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        },
+        {
+          "source_prd": "PRD-6",
+          "source_story": "数字格式化",
+          "lesson": "成本数字格式 $ {cost.toFixed(2)} 美元 2 位 · 不 raw float",
+          "antipattern": "<span>{r.cost}</span>  // 显示 0.12345",
+          "correct": "<span>${'$'+r.cost.toFixed(2)}</span>  // $ 0.12"
+        }
+      ]
+    },
+    {
+      "id": "US-014",
+      "title": "成本月度账单 PDF 导出 · @react-pdf/renderer · payloadHash footer",
+      "description": "作为财务 · 点击 [月度账单 PDF] 导出当月成本汇总报告 · 含分项明细 + 签名页 + payloadHash 防篡改 footer。",
+      "acceptanceCriteria": [
+        "packages/ui/admin/package.json + @react-pdf/renderer 依赖 · bump version",
+        "apps/api/src/services/admin/cost/pdf-bill.service.ts · generateMonthlyBill(month, adminId): Promise<Buffer> · React PDF template(头 + 总成本表 + 分项表 + 签名页 + payloadHash footer)",
+        "apps/api/src/trpc/routers/admin/cost.ts 加 exportMonthlyPdf mutation · 返 {filename, contentType, size, data:base64}",
+        "apps/admin/src/pages/cost/index.tsx 加 [月度账单 PDF] 按钮 · 触发 mutation + 浏览器 download",
+        "PDF footer 每页 · 'Content-Hash: SHA-256 = {hash}' + 分页 N/M + admin actorId + 生成时间",
+        "PDF 头页 · 月份(2026-05)+ 公司 logo placeholder + 总成本 + 同比",
+        "PDF 月份无数据 · 生成空账单(标 '本月无成本记录')· 不抛 error",
+        "PDF 生成失败 · 返 500 + audit 'export_failed'",
+        "100k+ 行月度数据 · 分页 PDF(每页 50 行)· 不一次 render OOM",
+        "audit 写入 'export'/'export_cost_monthly_pdf' · payload 含 pdfHash SHA-256(redacted)",
+        "agent-browser 点 [月度账单 PDF] · download cost-bill-{YYYY-MM}.pdf · 打开看到完整表 + 签名页 + footer hash",
+        "单元测试 PDF 生成 + 内容验证 + hash 重算",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:redlines-admin 跑过 0 命中"
+      ],
+      "depends_on": [
+        "US-012"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/cost/pdf-bill.service.ts",
+        "apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts",
+        "packages/ui/admin/PdfBillTemplate.tsx"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/cost.ts",
+        "apps/admin/src/pages/cost/index.tsx",
+        "packages/ui/admin/package.json"
+      ],
+      "test_command": "cd apps/api && pnpm test src/services/admin/cost/__tests__/pdf-bill.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-9+LD-A-3",
+          "source_story": "PRD-9 US-014",
+          "lesson": "audit payloadHash 必 redact 敏感字段",
+          "antipattern": "SHA-256(JSON.stringify(payload))",
+          "correct": "SHA-256(redact(payload,['password','token','apiKey']))"
+        },
+        {
+          "source_prd": "PRD-7",
+          "source_story": "PRD-7 US-013",
+          "lesson": "PDF 签名页 admin info 从 ctx.session 取 · 不 hardcode 个人名",
+          "antipattern": "<Text>张三 admin</Text>",
+          "correct": "<Text>{ctx.session.email} ({ctx.session.role})</Text>"
+        },
+        {
+          "source_prd": "LD-A-3",
+          "source_story": "PDF 防篡改",
+          "lesson": "PDF footer 必含 SHA-256 hash · 法务对方可重算验证",
+          "antipattern": "<Footer>Page N/M</Footer>  // 漏 hash",
+          "correct": "<Footer>Page N/M · Content-Hash: {sha256}</Footer>"
+        }
+      ]
+    },
+    {
+      "id": "US-015",
+      "title": "cost 异常告警 cron + 钉钉 webhook stub(isMock 默认 true)",
+      "description": "作为运维 · 每小时跑 cron 检测 [单用户日 > $5] 异常 · 钉钉 webhook 推送(stub · 真启留 PRR)。dedupe per user per day。",
+      "acceptanceCriteria": [
+        "apps/api/src/jobs/admin/cost-anomaly.job.ts · BullMQ cron pattern '15 * * * *' tz 'Asia/Shanghai' jobId 'cost-anomaly-recurring'(15 分错峰 kpi 整点)",
+        "apps/api/src/services/admin/cost/detect-anomalies.service.ts · detectCostAnomalies(): Promise<{detected, skipped}> · $transaction + SET LOCAL · 查 cost_log 24h sum > $5",
+        "apps/api/src/services/admin/notifications/dingtalk.service.ts · class DingtalkService · isMock = process.env.DINGTALK_ENABLE !== 'true'(默认 mock · D-077)",
+        "isMock=true · log warning '[dingtalk-mock] webhook would send:' + return {ok:true,mock:true} · 不真发",
+        "isMock=false + webhookUrl 空 · 抛 ConfigurationError · 服务启动 fail-fast",
+        "isMock=false + webhookUrl 有 · fetch POST + 钉钉 API spec body{msgtype:'text',text:{content}}",
+        "dedupe · 同 user 同日 N 次 detect · 通过 adminAuditLog.findFirst({eventType:'cost_anomaly_detected',targetUserId,createdAt:{gte:todayStart}}) · 第 2+ 次 skip + skipped++",
+        "BullMQ attempts:3 自动重试 · 第 3 次失败进 failed queue + admin_audit_log 'system_alert'/'cron_failed'",
+        "audit 写入 'security_alert'/'cost_anomaly_detected' · payload{userId,dailySpent,threshold,email}· payloadHash SHA-256(D-073)",
+        "apps/api/src/server.ts 启动调 scheduleCostAnomalyDetection() · log '[bullmq] admin:cost-anomaly worker started'",
+        ".env.example 加 DINGTALK_WEBHOOK_URL + DINGTALK_ENABLE 注释",
+        "单元测试 dingtalk(isMock=true/false × webhookUrl 有无)+ detect-anomaly(0 anomaly / 1 anomaly $5.01 / dedupe / cron failure)· ≥ 8 test",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:redlines-admin 跑过 0 命中 · money-critical 注释 grep"
+      ],
+      "depends_on": [
+        "US-012"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/jobs/admin/cost-anomaly.job.ts",
+        "apps/api/src/jobs/admin/__tests__/cost-anomaly.test.ts",
+        "apps/api/src/services/admin/notifications/dingtalk.service.ts",
+        "apps/api/src/services/admin/notifications/__tests__/dingtalk.test.ts",
+        "apps/api/src/services/admin/cost/detect-anomalies.service.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/server.ts",
+        ".env.example"
+      ],
+      "test_command": "cd apps/api && pnpm test src/services/admin/notifications/__tests__/dingtalk.test.ts",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+D-077",
+          "source_story": "PRD-10 OAuth multi-layer",
+          "lesson": "webhook/SMTP 默认 isMock=true · 真启走 .env.production",
+          "antipattern": "fetch(webhookUrl) 直接发",
+          "correct": "isMock = process.env.X_ENABLE !== 'true' · isMock 时 log warning"
+        },
+        {
+          "source_prd": "PRD-9+D-070",
+          "source_story": "PRD-9 US-018",
+          "lesson": "cron pattern 必加 tz: Asia/Shanghai",
+          "antipattern": "{pattern:'0 * * * *'}  // 默认 UTC",
+          "correct": "{pattern,tz:'Asia/Shanghai',jobId}"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "cron 错峰",
+          "lesson": "多 cron 错峰触发 · 防 thundering herd",
+          "antipattern": "4 cron 全整点 0 * * * *",
+          "correct": "kpi 00 · cost 15 · anomaly 30 错峰"
+        }
+      ]
+    },
+    {
+      "id": "US-016",
+      "title": "adminRouter.audit 5 procedure(byTraceId/byUserId/byAdminId/search/exportPdf)",
+      "description": "作为前端开发者 · 5 个 audit procedure · trace_id 全栈反查(4 表 Promise.all)+ 用户时间线 + admin 操作审计 + search(prisma contains 防注入)+ PDF 取证导出。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/audit.ts 新建 auditRouter · 5 procedure 全走 publicAdminProcedure",
+        "byTraceId · zod input(traceId min 8)· $transaction + SET LOCAL · Promise.all 跨 4 表查(audit_log+admin_audit_log+cost_log+feedback_log)· 合并按 createdAt 升序 · 写 audit 'cross_account_query'/'view_trace_timeline'",
+        "byUserId · 输入 userId + 分页 + eventCategory filter + 时间范围 · 时间线 audit_log · 按 eventCategory 分类",
+        "byAdminId · 输入 adminUserId · 时间线 admin_audit_log · 高风险事件高亮(eventCategory in ['high_risk_action','security_alert','cross_account_query'])· 仅 super_admin / readonly_admin 法务模式",
+        "search · zod input(keyword min 2 max 100/eventCategory/时间/target)· 用 prisma contains mode:'insensitive' 防 SQL 注入 · take:200 限",
+        "exportPdf mutation · 输入 traceId + caseNumber + reason · 调 byTraceId + pdf-forensic.service(US-018)生成 PDF · 返 base64",
+        "trace_id 不存在 · byTraceId 返 {timeline:[], summary:{eventCount:0,spanMs:0}} · 不抛 error",
+        "admin (非 super_admin / readonly_admin 法务) 调 byAdminId · 6 闸 roleCheck 拦截 403",
+        "search 关键词含 SQL 特殊字符 (' \" ; -- ;DROP) · prisma contains 自动 escape · 不抛 error",
+        "查 audit 本身也写 audit (LD-A-3 append-only)· 跨账号查 trigger 'cross_account_query'",
+        "readonly_admin 法务模式(actorMode='legal')全权 5 procedure · 其他 admin 受限",
+        "audit-redlines-admin.sh + audit-admin-rls.ts AST + audit-approval-gates.ts 三件全过 · Checked ≥ 26 procedures",
+        "单元测试 ≥ 25 test 覆盖 byTraceId 4 表全有/部分/全无 · byUserId 分页 + filter · byAdminId 鉴权 · search SQL 注入测试(special chars) · exportPdf 链路",
+        "pnpm test + pnpm typecheck 0 error"
+      ],
+      "depends_on": [],
+      "priority": 16,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/audit.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/audit.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/audit.test.ts",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-1",
+          "source_story": "PRD-1 US-006",
+          "lesson": "search 用 prisma contains · 不 $queryRawUnsafe",
+          "antipattern": "$queryRawUnsafe(`LIKE '%${kw}%'`)",
+          "correct": "prisma.findMany({where:{eventType:{contains:kw,mode:'insensitive'}}})"
+        },
+        {
+          "source_prd": "PRD-3+PRD-8",
+          "source_story": "PRD-3 US-018",
+          "lesson": "多表关联 Promise.all",
+          "antipattern": "await A; await B 串行",
+          "correct": "await Promise.all([A,B,C])"
+        },
+        {
+          "source_prd": "D-074",
+          "source_story": "readonly_admin 子模式",
+          "lesson": "byAdminId 鉴权需判 actorMode=legal · 不只 super_admin",
+          "antipattern": "if (ctx.session.role !== \"super_admin\") return 403",
+          "correct": "if (!['super_admin', 'readonly_admin'].includes(role) || (role==='readonly_admin' && actorMode !== 'legal')) return 403"
+        }
+      ]
+    },
+    {
+      "id": "US-017",
+      "title": "审计日志 UI page · trace 反查 + 时间线 + 详情抽屉",
+      "description": "作为法务 / super_admin · 打开 admin.quanqn.com/audit · 输入 trace_id 反查 + 用户/admin 时间线切换 + 详情抽屉(prompt + response + payloadHash)+ PDF 取证导出按钮。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/audit/index.tsx 替换 placeholder · 主页面",
+        "顶部 [日操作量 / cross_account_query / 异常事件] 3 数字卡片",
+        "TraceLookupInput.tsx · trace_id 反查输入框 + submit 调 byTraceId",
+        "AuditTimeline.tsx · 时间线视图 · 按 eventCategory 分类高亮 · 颜色 auth(blue) / data_query(gray) / cross_account(orange) / high_risk_action(red) / security_alert(red)",
+        "用户 / admin Tab 切换 · 用户 Tab → byUserId · admin Tab → byAdminId",
+        "AuditDetailDrawer.tsx · 点时间线条目 → 右侧抽屉(prompt + response + context 可折叠 + payloadHash 显示)",
+        "底部 [PDF 取证导出] 按钮 · 触发 exportPdf mutation",
+        "admin-routes.ts audit metadata.prd 'PRD-10 placeholder' → 'PRD-11' · 删 placeholder.tsx",
+        "readonly_admin 法务模式 · 全权",
+        "trace_id 不存在 · 显示 '未找到匹配 · 检查 trace_id 是否完整'",
+        "时间线 30k+ 条 · virtualScroll 防卡顿(DenseTable 内嵌)",
+        "agent-browser http://localhost:5174/admin/audit · 顶部数字 + 输入框 visible",
+        "输入 trace_id 提交 → 看到时间线",
+        "切 [用户 / admin] Tab · 时间线刷新",
+        "点时间线条目 → 抽屉详情(prompt + response 可折叠 + payloadHash)",
+        "点 [PDF 取证导出] · 输入 reason(min 10)+ caseNumber · 触发 download",
+        "console 0 error · Typecheck 通过"
+      ],
+      "depends_on": [
+        "US-016"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/audit/index.tsx",
+        "apps/admin/src/pages/audit/TraceLookupInput.tsx",
+        "apps/admin/src/pages/audit/AuditTimeline.tsx",
+        "apps/admin/src/pages/audit/AuditDetailDrawer.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "cd apps/admin && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+D-075",
+          "source_story": "PRD-10 tokens",
+          "lesson": "DenseTable 用 @tanstack/react-virtual",
+          "antipattern": "data.map(row=><tr>)",
+          "correct": "useVirtualizer({count,estimateSize:32})"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-2 协议",
+          "lesson": "admin-routes.ts metadata.prd 必更 PRD-11 · placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder'",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        },
+        {
+          "source_prd": "LD-A-3",
+          "source_story": "payloadHash 显示",
+          "lesson": "时间线条目必显示 payloadHash · 法务取证用 · 不只 prompt/response",
+          "antipattern": "<TimelineItem>{prompt}{response}</TimelineItem>",
+          "correct": "<TimelineItem>{prompt}{response}<Hash>{payloadHash}</Hash></TimelineItem>"
+        }
+      ]
+    },
+    {
+      "id": "US-018",
+      "title": "审计 PDF 取证导出 · payloadHash 防篡改 footer · 法务签名页",
+      "description": "作为法务 · 点击 [PDF 取证导出] 生成法务级 PDF · 含完整 trace 链路 + payloadHash + admin 签名页(待手签 + 司法盖章占位)。",
+      "acceptanceCriteria": [
+        "apps/api/src/services/admin/audit/pdf-forensic.service.ts · generateForensicPdf({traceId, timeline, requesterAdminId, requesterEmail, requesterRole, caseNumber?}): Promise<Buffer> · React PDF template",
+        "PDF 头页 · 案件号(可选)+ 取证时间 + admin 信息(email/role/取证理由)+ traceId",
+        "PDF 时间线页 · 跨表 timeline 按 createdAt 排序 · 每条 [时间 + source + eventCategory + eventType + payload 摘要 + payloadHash]",
+        "PDF 详情页(每条 1 页 · 可选)· prompt + response + context 折叠",
+        "PDF 签名页 · admin 签名占位(手签后续)+ 司法盖章占位 + 时间戳",
+        "PDF footer 每页 · 'Content-Hash: SHA-256 = {contentHash}' + 分页 N/M + 取证时间 · 用 redact 后 timeline 算 hash",
+        "audit.ts exportPdf mutation 调 generateForensicPdf · 写 audit 'export'/'export_audit_forensic_pdf' payload{traceId,caseNumber,reason,eventCount,pdfHash}",
+        "前端 apps/admin/src/pages/audit/index.tsx [PDF 取证导出] 按钮 · reason 弹窗输入(min 10)+ caseNumber + 提交 → download audit-forensic-{traceId.slice(0,12)}-{ts}.pdf",
+        "单 trace 数据量 > 1000 条 · PDF 分页(每页 50 条 · 共 20 页)· 防 OOM",
+        "traceId 不存在 (timeline 空) · PDF 仍生成 + 头页标 '无匹配记录' + 时间线页空(法务取证需要'证据空'记录)",
+        "reason < 10 chars · zod 拒绝(防 admin 随意取证不记理由)",
+        "PDF 单文件 > 50MB · 拒绝 + '数据量过大 · 缩小时间范围或分批导出'",
+        "admin(非 super_admin / readonly_admin 法务) exportPdf · 6 闸 roleCheck 403",
+        "PDF 含敏感字段(prompt/response 内 password 等)必先 redact 再写 + hash 用 redact 后数据(LD-A-3 + GDPR)",
+        "agent-browser 点 [PDF 取证导出] · reason + caseNumber 输入 + 提交 → download · 打开 PDF 验证(头页 + 时间线 + 签名页 + footer hash)",
+        "单元测试 ≥ 7 test · 普通 timeline(10 条)/ 空 / 1000 条分页 / footer hash 计算 / admin info 填入 / exportPdf 鉴权",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:redlines-admin 跑过 0 命中(payload redact 后写 PDF)"
+      ],
+      "depends_on": [
+        "US-016"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/audit/pdf-forensic.service.ts",
+        "apps/api/src/services/admin/audit/__tests__/pdf-forensic.test.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/audit-export.test.ts",
+        "packages/ui/admin/ForensicPdfTemplate.tsx"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/audit.ts",
+        "apps/admin/src/pages/audit/index.tsx"
+      ],
+      "test_command": "cd apps/api && pnpm test src/services/admin/audit/__tests__/pdf-forensic.test.ts",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-9+LD-A-3",
+          "source_story": "PRD-9 US-014",
+          "lesson": "audit payloadHash 必 redact",
+          "antipattern": "SHA-256(payload)",
+          "correct": "SHA-256(redact(payload,['password','token']))"
+        },
+        {
+          "source_prd": "PRD-7",
+          "source_story": "PDF 签名",
+          "lesson": "签名页 admin info 从 ctx.session 取 · 不 hardcode",
+          "antipattern": "<Text>张三 admin</Text>",
+          "correct": "<Text>{requesterEmail} ({requesterRole})</Text>"
+        },
+        {
+          "source_prd": "LD-A-3",
+          "source_story": "PDF 防篡改",
+          "lesson": "PDF footer SHA-256 hash · 法务可重算 · 缺则不可信",
+          "antipattern": "<Footer>Page N/M</Footer> 漏 hash",
+          "correct": "<Footer>Page N/M · Content-Hash: {sha256}</Footer>"
+        }
+      ]
+    },
+    {
+      "id": "US-019",
+      "title": "invite_campaigns schema + campaign service",
+      "description": "作为开发者 · invite_campaigns 表 + service · 关联 invite_codes.campaign tag · 转化漏斗计算(注册→激活→9 步完成→D30 留存)。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma 加 model InviteCampaign 严格按 DATA-MODEL §13.6.C 行 3224-3251(campaignKey @unique / name / description / createdByAdminId / totalQuota / usedCount / startsAt / endsAt / status 'draft'|'active'|'paused'|'ended' / + 2 indexes)",
+        "pnpm prisma migrate dev --name add_invite_campaigns · 表 + indexes 建成",
+        "manual_admin_rls.sql 加 ALTER TABLE invite_campaigns DISABLE ROW LEVEL SECURITY · psql 实跑确认",
+        "scripts/audit-admin-rls-tables.sh 列表加 invite_campaigns",
+        "apps/api/src/services/admin/invites/campaign.service.ts · CRUD + getCampaignFunnel(campaignKey) · 漏斗 4 阶段(创建→激活→9 步完成→D30 留存)· 走 SET LOCAL",
+        "campaignKey 重复 · @unique 约束抛 + service 层 try/catch 友好错误",
+        "totalQuota = 0 · 抛 ValidationError",
+        "endsAt < startsAt · 抛 ValidationError('endsAt must be > startsAt')",
+        "status 转换不合法(draft→active OK · ended→active 不允许)· 抛 ValidationError",
+        "单元测试 ≥ 8 test · CRUD + funnel + 各 ValidationError",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:admin-rls-tables 跑过 invite_campaigns | RLS OFF | ✓"
+      ],
+      "depends_on": [],
+      "priority": 19,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/invites/campaign.service.ts",
+        "apps/api/src/services/admin/invites/__tests__/campaign.test.ts",
+        "prisma/migrations/20260512_add_invite_campaigns/migration.sql"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "prisma/migrations/manual_admin_rls.sql",
+        "scripts/audit-admin-rls-tables.sh"
+      ],
+      "test_command": "cd apps/api && pnpm test src/services/admin/invites/__tests__/campaign.test.ts",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-1+PRD-10",
+          "source_story": "PRD-1 US-006",
+          "lesson": "adminRLS bypass 用 SET LOCAL",
+          "antipattern": "SET app.role='admin'",
+          "correct": "SET LOCAL app.role='admin'"
+        },
+        {
+          "source_prd": "PRD-10 retro M-3",
+          "source_story": "TD-039/042",
+          "lesson": "新加 admin 表必同步加到 audit-admin-rls-tables.sh",
+          "antipattern": "只改 schema 漏改 audit list",
+          "correct": "同时 ALTER TABLE + 列表 + audit-self-test 跑过"
+        }
+      ]
+    },
+    {
+      "id": "US-020",
+      "title": "adminRouter.invites 6 procedure(list/create/batchImport/invalidate/detail/campaignFunnel)",
+      "description": "作为前端开发者 · 6 个 invites procedure · 含 invalidate 走 Approval Gates(super_admin 直批 stub)+ batchImport CSV chunk 100 + campaignFunnel 4 阶段漏斗。",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/routers/admin/invites.ts 新建 invitesRouter · 6 procedure 全走 publicAdminProcedure",
+        "list · zod input(page/pageSize/search/statusFilter/campaignFilter)· $transaction + SET LOCAL · 写 audit",
+        "create mutation · zod input(code optional · 自动生成 / campaign / expiresAt / quotaLimit)· low 风险 audit · 不走 Approval",
+        "batchImport mutation · zod input(csvData)· papaparse 解析 + 批量插入 · chunk 100 行 · ≤ 10000 行限制",
+        "invalidate mutation · 高风险 · 走 Approval Gates stub(super_admin 直批 same pattern · admin 提申请)· 写 approval_requests + audit 'high_risk_action'/'invalidate_invite_code'",
+        "detail · 邀请码 + 激活历史(谁用 / 何时 / IP) + 后续 9 步进度",
+        "campaignFunnel · 输入 campaignKey · 调 campaign.service.getCampaignFunnel · 返 [{stage:'created',count:N},{stage:'activated',count:N},...]",
+        "invalidate 已失效邀请码 · 抛 ValidationError('already invalidated')",
+        "batchImport CSV 含重复 code · 跳过 + 返回第 N 行错列表",
+        "batchImport > 10000 行 · 抛 ValidationError",
+        "audit-approval-gates.ts 加 invites.invalidate EXCEPTION",
+        "单元测试 ≥ 20 test 覆盖 list/create/batchImport(各错路径)/invalidate(super vs admin)/detail/campaignFunnel",
+        "pnpm test + pnpm typecheck 0 error",
+        "pnpm audit:approval-gates 跑过 · Checked ≥ 9 with approval gate(累计 PRD-10 5 + PRD-11 4)"
+      ],
+      "depends_on": [
+        "US-019"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/routers/admin/invites.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/invites.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "scripts/audit-approval-gates.ts"
+      ],
+      "test_command": "cd apps/api && pnpm test src/trpc/routers/admin/__tests__/invites.test.ts",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+ADR-016",
+          "source_story": "ADMIN §7.6",
+          "lesson": "高风险必走 Approval Gates stub",
+          "antipattern": "prisma.update() 直接",
+          "correct": "approval_requests.create({status:auto_executed/pending}) + audit"
+        },
+        {
+          "source_prd": "PRD-8",
+          "source_story": "batchImport chunk",
+          "lesson": "CSV 批量插入必 chunk 100 · 不一次 insert 10k 行 OOM",
+          "antipattern": "prisma.createMany({data: allRows})  // 10k 行 OOM",
+          "correct": "for (let i=0; i<rows.length; i+=100) await prisma.createMany({data: rows.slice(i, i+100)})"
+        },
+        {
+          "source_prd": "PRD-3",
+          "source_story": "CSV 解析",
+          "lesson": "CSV 解析用 papaparse · 不手撸 split(\",\")",
+          "antipattern": "csv.split('\\n').map(l => l.split(','))  // 引号字段错",
+          "correct": "papaparse.parse(csv, {header: true}).data"
+        }
+      ]
+    },
+    {
+      "id": "US-021",
+      "title": "邀请码管理 UI page · 列表 + 创建模态 + campaign Tab + 漏斗图",
+      "description": "作为运营 · 打开 admin.quanqn.com/invites 看邀请码列表 + 创建/批量导入按钮 + campaign 分组 Tab + 转化漏斗图 + 详情抽屉。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/invites/index.tsx 替换 placeholder · 主页面",
+        "顶部 [待激活 / 转化率 / 各 campaign] 数字卡片",
+        "操作栏 · [创建] + [批量导入 CSV] + [导出]",
+        "中部 DenseTable 邀请码列表(分页 + 筛选 status/campaign · 排序)",
+        "CreateInviteDialog.tsx · 单条创建模态 · 字段(code 可选 / campaign dropdown / expiresAt date picker / quotaLimit)",
+        "BatchImportDialog.tsx · CSV 文件选 + 进度条 + 错列表显示",
+        "campaign 分组 Tab · 每 campaign 漏斗图(CampaignFunnelChart 用 Recharts FunnelChart · data 必含 fill)",
+        "InviteDetailDrawer.tsx · 点邀请码 → 抽屉 · 激活历史 + 用户 9 步进度",
+        "admin-routes.ts invites metadata.prd 'PRD-10 placeholder' → 'PRD-11' · 删 placeholder.tsx",
+        "列表空 显示 '暂无邀请码 · 点击创建'",
+        "批量导入显示进度条 + 第 N 行错跳过",
+        "agent-browser http://localhost:5174/admin/invites · 顶部 + 列表 + 创建按钮 visible",
+        "点 [创建] · 模态 + 提交 → 列表新增",
+        "点 [批量导入] · 文件选 + 提交 → 列表多行新增",
+        "切 campaign Tab · 分组列表 + 漏斗图",
+        "点邀请码 → 抽屉详情(激活历史 + 9 步进度)",
+        "console 0 error · Typecheck 通过"
+      ],
+      "depends_on": [
+        "US-020"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/invites/index.tsx",
+        "apps/admin/src/pages/invites/CreateInviteDialog.tsx",
+        "apps/admin/src/pages/invites/BatchImportDialog.tsx",
+        "apps/admin/src/pages/invites/CampaignFunnelChart.tsx",
+        "apps/admin/src/pages/invites/InviteDetailDrawer.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "cd apps/admin && pnpm typecheck",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+D-075",
+          "source_story": "PRD-10 tokens",
+          "lesson": "DenseTable 用 @tanstack/react-virtual",
+          "antipattern": "data.map(row=><tr>)",
+          "correct": "useVirtualizer({count,estimateSize:32})"
+        },
+        {
+          "source_prd": "PRD-6",
+          "source_story": "PRD-6 US-025",
+          "lesson": "Recharts 数据点必含 fill var(--accent-X)",
+          "antipattern": "{name,value} 漏 fill",
+          "correct": "{name,value,fill:'var(--accent-X)'}"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-2 协议",
+          "lesson": "admin-routes.ts metadata.prd 必更 PRD-11 · placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder'",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        }
+      ]
+    },
+    {
+      "id": "US-022",
+      "title": "★ 收官 · packages/ui/admin DenseTable 真实现 + admin-routes 更新 + verify-prd-11.sh",
+      "description": "作为开发者 · 1) DenseTable.tsx 真实现(@tanstack/react-virtual 虚拟滚动+列宽自定义+排序回调+行点击)· 2) 删 6 placeholder.tsx · 3) admin-routes.ts 6 路由 metadata.prd 全 PRD-11 · 4) verify-prd-11.sh 9 段 self-test 包装 audit + e2e。",
+      "acceptanceCriteria": [
+        "packages/ui/admin/DenseTable.tsx 真实现(替换 PRD-10 stub)· 接口 interface DenseTableColumn<T> {key, label, width?, sortable?, render?} + interface DenseTableProps<T> {columns, data, loading?, onRowClick?, onSort?}",
+        "DenseTable 用 @tanstack/react-virtual useVirtualizer · estimateSize 32px dense mode · 100k+ 行流畅 60fps",
+        "DenseTable 表头 sortable 列点击 → 调 onSort 回调 + 视觉切换 asc/desc/none",
+        "DenseTable onRowClick 触发 props callback · 抽屉打开",
+        "DenseTable loading=true 显示 5 行 skeleton placeholder",
+        "DenseTable data 空 显示 '无数据'",
+        "packages/ui/admin/package.json + @tanstack/react-virtual dep + bump version",
+        "packages/ui/admin/index.ts export DenseTable + DenseTableColumn type + DenseTableProps type",
+        "git rm 6 placeholder.tsx · apps/admin/src/pages/{nsm,users,accounts,cost,audit,invites}/placeholder.tsx · git diff 应见 6 deletes",
+        "apps/admin/src/lib/admin-routes.ts · 6 路由 metadata.prd 全部 'PRD-10 placeholder' → 'PRD-11' · sidebar 16 占位不动",
+        "scripts/verify-prd-11.sh 新建 + chmod +x · 9 段 self-test(参 verify-prd-10.sh):1.workspace check 2.RLS 双向 check 3.audit-redlines-admin 4.audit-admin-rls AST 5.6 业务页文件存在 check 6.16 placeholder check(6 已替换 / 10 保留)7.反例 grep check 8.admin-integration(/nsm/users/accounts/cost/audit/invites 6 URL 200)9.typecheck+lint",
+        "bash scripts/verify-prd-11.sh 跑过 · ≥ 25 PASS / 0 FAIL / WARN 可接受",
+        "agent-browser 6 业务页 · 全部用 DenseTable · 1000+ 行虚拟滚动流畅",
+        "DenseTable 排序回调 · 点列头 → onSort → procedure 重发请求",
+        "DenseTable 行点击 → onRowClick → 抽屉打开",
+        "6 业务页 console 0 error · 跑 agent-browser 截图各 page 保存到 apps/admin/screenshots/",
+        "pnpm test 全过 · pnpm typecheck 0 error",
+        "scripts/audit-self-test.sh 跑过 0 FAIL · scripts/verify-prd-11.sh 引用 4 audit 全存在"
+      ],
+      "depends_on": [
+        "US-004",
+        "US-007",
+        "US-011",
+        "US-013",
+        "US-017",
+        "US-021"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-11.sh"
+      ],
+      "files_to_modify": [
+        "packages/ui/admin/DenseTable.tsx",
+        "packages/ui/admin/index.ts",
+        "packages/ui/admin/package.json",
+        "apps/admin/src/lib/admin-routes.ts"
+      ],
+      "test_command": "bash scripts/verify-prd-11.sh",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-10+D-075",
+          "source_story": "PRD-10 tokens",
+          "lesson": "DenseTable 用 @tanstack/react-virtual",
+          "antipattern": "data.map(row=><tr>)",
+          "correct": "useVirtualizer({count,estimateSize:32})"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-2 协议",
+          "lesson": "admin-routes.ts metadata.prd 必更 PRD-11 · placeholder.tsx 必删",
+          "antipattern": "prd:'PRD-10 placeholder'",
+          "correct": "prd:'PRD-11' + git rm placeholder.tsx"
+        },
+        {
+          "source_prd": "PRD-10 retro",
+          "source_story": "P-3 audit 4 件套",
+          "lesson": "verify-prd-11.sh 9 段 + fast mode skip 仅慢 e2e · keep 全部静态 audit",
+          "antipattern": "fast mode skip 全部 audit · 假绿灯",
+          "correct": "fast 仅 skip e2e + browser smoke · keep audit-redlines + AST + RLS check + file 存在 check"
+        }
+      ]
+    }
+  ]
+}
