@@ -2425,15 +2425,38 @@ grep -rn "prompt_versions.*status.*active\|promptVersion.*update.*active\|status
 **铁律**:
 - ✅ 清空 evolution_profile.latestInsight/latestInsightId 或批量标记 evolution_insight.isFallback=true/levelAfter='rebuild' 的操作, 必须经由 `_forceRebuildEvolutionInTx(tx, ...)` 单点函数
 - ❌ 任何其他代码直接 `prisma.evolutionProfile.update({ data: { latestInsight: null } })`
-- ❌ 任何代码绕过 `_forceRebuildEvolutionInTx` 直接写 `evolution_insight.updateMany({...resolved...})`
+- ❌ 任何代码绕过 `_forceRebuildEvolutionInTx` 直接写 `evolution_insight.updateMany({...isFallback/levelAfter/resolved...})`
 
-**执行检查**:
+**执行检查**(PRD-13 retro M-2 修正 · 2026-05-14):
 ```bash
 # 期望 0 命中(evolution-rebuild.service.ts 自身除外)
-grep -rn "prisma\.evolutionProfile\.update.*null\|prisma\.evolutionInsight\.updateMany.*resolved\|evolutionProfile\.update.*latestInsight.*null\|evolutionInsight\.updateMany.*isFallback" \
+# 加 isFallback/levelAfter 字段 + (prisma|db|tx) prefix · 跟实际 service 写法对齐
+# tx.evolutionInsight.updateMany({data:{isFallback:true, levelAfter:'rebuild'}})
+# 排除 Parameters<typeof X.update> TypeScript type extraction 误命中
+grep -rnE "(prisma|db|tx)\.evolutionProfile\.update.*(latestInsight|null)|(prisma|db|tx)\.evolutionInsight\.updateMany.*(isFallback|levelAfter|resolved)" \
   apps/api/src --include='*.ts' \
   | grep -v '_forceRebuildEvolutionInTx' \
   | grep -v 'evolution-rebuild.service.ts' \
+  | grep -v '.test.' \
+  | grep -v 'Parameters<typeof'
+```
+
+#### LD-A8 · user_quota dailyQuota / monthlyQuota / whitelistExpiresAt 仅由 _adjustQuotaInTx 修改(PRD-13 US-005)
+
+**铁律**:
+- ✅ 所有 admin 调整 user_quota 的 dailyQuota / monthlyQuota / imageDailyQuota / isOnWhitelist / whitelistExpiresAt 操作 · 必须经由 `_adjustQuotaInTx(tx, ...)` 单点函数
+- ✅ 24h delayed job (`apps/api/src/jobs/admin/quota-expiry.job.ts`) 回滚 user_quota 是合法 expiry 源 · 排除该文件
+- ❌ 任何其他代码直接 `prisma.userQuota.update({ data: { dailyQuota: N } })`
+- ❌ 任何代码绕过 `_adjustQuotaInTx` 直接写 `userQuota.update.*whitelistExpiresAt`
+- ❌ 不允许动态 key set 配额字段(防 grep 假绿灯)
+
+**执行检查**:
+```bash
+# 期望 0 命中(quota-adjustment.service.ts + quota-expiry.job.ts 合法源外)
+grep -rnE "(prisma|db|tx)\.userQuota\.(update|updateMany|upsert|create)" \
+  apps/api/src --include='*.ts' \
+  | grep -v 'quota-adjustment.service.ts' \
+  | grep -v 'quota-expiry.job.ts' \
   | grep -v '.test.'
 ```
 

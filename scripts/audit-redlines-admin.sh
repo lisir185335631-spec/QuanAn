@@ -115,16 +115,20 @@ if [ "$LDA6_FAIL" -eq 0 ]; then
 fi
 
 # ── LD-A7 · evolution_profile clear / evolution_insight resolved 仅由 _forceRebuildEvolutionInTx 修改 ──
+# 2026-05-14 PRD-13 retro M-2 修正(TD-058) · 加 isFallback/levelAfter 字段 + (prisma|db|tx) prefix
+# 跟 evolution-rebuild.service.ts:53-58 实际写法对齐:
+#   tx.evolutionInsight.updateMany({data:{isFallback:true, levelAfter:'rebuild'}})
 echo
 echo "  LD-A7: evolution_profile/insight 清空单点函数守护检测"
 LDA7_FAIL=0
-LDA7_HITS=$(grep -rn \
-  "prisma\.evolutionProfile\.update.*null\|prisma\.evolutionInsight\.updateMany.*resolved" \
+LDA7_HITS=$(grep -rnE \
+  "(prisma|db|tx)\.evolutionProfile\.update.*(latestInsight|null)|(prisma|db|tx)\.evolutionInsight\.updateMany.*(isFallback|levelAfter|resolved)" \
   apps/api/src --include="*.ts" 2>/dev/null \
   | grep -v "_forceRebuildEvolutionInTx" \
   | grep -v "evolution-rebuild\.service\.ts" \
   | grep -v "\.test\." \
-  | grep -v "spec\." || true)
+  | grep -v "spec\." \
+  | grep -v "Parameters<typeof" || true)
 if [ -n "$LDA7_HITS" ]; then
   echo "$LDA7_HITS"
   fail "LD-A7 违反 _forceRebuildEvolutionInTx 单点 · 发现绕过函数直接改 evolution_profile/insight 的代码"

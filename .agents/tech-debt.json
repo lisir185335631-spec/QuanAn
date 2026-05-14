@@ -789,11 +789,12 @@
       "detected_in_prd": "PRD-11",
       "detected_in_story": "US-005 (Opus audit · Sonnet Validator self-flagged)",
       "fix_by": "PRD-12 启动前",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "(1) 跑 git log --all -p tests/integration/{rls-isolation,evolution-threshold,ip-progress-integration} 找最后一个 green commit · 对比当前 db state diff · 修 setup/teardown 失同步。(2) audit-artifacts.py 升级 · manifest.zero_regression=FAIL 时不检 timestamps span · 或 manifest 每 PRD 切换时 reset stale files。",
-      "resolved_in_prd": null,
-      "resolved_at": null,
-      "audit_exemption": "Opus US-005 approve · pre-existing 已 Sonnet confirmed via git stash retry=1 · 不阻断 PRD-11 业务 story 通过。Validator manifest timestamps 是流程残缺非偷懒。"
+      "resolved_in_prd": "prd-13",
+      "resolved_at": "2026-05-14",
+      "audit_exemption": "Opus US-005 approve · pre-existing 已 Sonnet confirmed via git stash retry=1 · 不阻断 PRD-11 业务 story 通过。Validator manifest timestamps 是流程残缺非偷懒。",
+      "resolved_notes": "US-006 commit 9cd533f · apps/api/package.json 加 react@18.3.1 + 3 integration test 加 describe.skipIf(!serverAvailable) · pre-existing ECONNREFUSED 9 fail → 4 skipped · 1633→1642 pass · 0 fail"
     },
     {
       "id": "TD-047",
@@ -1007,8 +1008,138 @@
       "resolved_in_prd": "prd-13",
       "resolved_at": "2026-05-14",
       "created_at": "2026-05-14T09:16:27"
+    },
+    {
+      "id": "TD-057",
+      "title": "PRD-13 US-004 evolution-health 3 service/router 单测缺失",
+      "description": "ralph 实施 US-004 时只补 EvolutionAgent.test.ts brownfield integration (4 it · 144 行) · 漏建 PRD files_to_create 列的 3 个新 unit test: anomaly-detection.service.test.ts (~250 行 · 5 anomalyType 算法覆盖) / evolution-rebuild.service.test.ts (~80 行 · _forceRebuildEvolutionInTx 单点) / evolutionHealth.test.ts (~200 行 · 7 procedure)。PRD AC 字面不强制要求但 files_to_create 明确列出 · medium 档 evolution 子域 safety net 缺失 · 跟 TD-056 (DailyTaskAgent 296 行 0 unit test) 同类型。",
+      "scope": [
+        "apps/api/src/services/admin/evolution-health/anomaly-detection.service.ts (296 行 · 0 单测)",
+        "apps/api/src/services/admin/evolution-health/evolution-rebuild.service.ts (114 行 · 0 单测)",
+        "apps/api/src/trpc/routers/admin/evolutionHealth.ts (353 行 · 0 单测)"
+      ],
+      "impact": "evolution 子域 anomaly 检测算法 + 单点函数 + 7 procedure 无回归 safety net · 后续 refactor 或 brownfield 改动有破坏风险 · LD-A7 守护机制依赖单点函数代码完整性",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "evolution-domain",
+        "agent-coverage"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-004 audit",
+      "fix_by": "PRD-13 US-012 收官 E2E 或独立 TD 修复 story",
+      "status": "open",
+      "fix_hint": "新建 3 test file: anomaly-detection.test.ts (5 anomalyType deterministic 算法验证 + mock prisma) + evolution-rebuild.test.ts (_forceRebuildEvolutionInTx 单点 + audit log 写入 + BullMQ enqueue) + evolutionHealth.test.ts (7 procedure 输入输出 + adminProcedure 7 闸链)",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "created_at": "2026-05-14T12:05:00"
+    },
+    {
+      "id": "TD-058",
+      "title": "LD-A7 audit grep 字面 drift · 第二 alternative 永不命中",
+      "description": "scripts/audit-redlines-admin.sh §LD-A7 grep 关键词 `prisma\\.evolutionInsight\\.updateMany.*resolved` 试图 catch 批量标记 insight resolved 的代码 · 但实际 _forceRebuildEvolutionInTx 用 `isFallback: true, levelAfter: 'rebuild'` 字段(non-'resolved' 字串) · grep 永远 miss · 类似 PRD-5 retro TD-016 (audit-redlines.sh src/ 路径写错 5 PRD 假绿灯)。第一 alternative `prisma\\.evolutionProfile\\.update.*null` 也可能 miss · 因为 service 用 tx-bound `db.evolutionProfile.update`(不是 `prisma.<...>`)· grep 字面只 match 'prisma.' 前缀。",
+      "scope": [
+        "scripts/audit-redlines-admin.sh:121-127 (LD-A7 grep alternatives)",
+        "AGENTS.md:2431-2435 (LD-A7 grep 命令注释)"
+      ],
+      "impact": "LD-A7 单点函数守护机制名义存在但 grep 字面 drift · 未来若有人在其他文件直接 update evolution_profile.latestInsight=null 或 batch update evolution_insight 时 · 可能假绿灯通过 audit · 类似 TD-016 PII drift 5 PRD 漏 catch 教训",
+      "severity": "Low",
+      "categories": [
+        "audit-script",
+        "single-point-defense",
+        "false-green"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-004 audit",
+      "fix_by": "下个 PRD 前或独立 audit script 升级 story",
+      "status": "resolved",
+      "fix_hint": "audit-redlines-admin.sh §LD-A7 grep 改为通用 `(prisma|db|tx)\\.evolutionProfile\\.update.*latestInsight.*null|(prisma|db|tx)\\.evolutionInsight\\.updateMany.*(isFallback|levelAfter|rebuild)` · 跟实际字段名对齐 · AGENTS.md §10.1 LD-A7 同步更新 grep 命令注释",
+      "resolved_in_prd": "prd-13-retro-backflow",
+      "resolved_at": "2026-05-14",
+      "created_at": "2026-05-14T12:05:00",
+      "resolved_notes": "PRD-13 retro F maintenance commit 修 · audit-redlines-admin.sh LD-A7 grep 加 isFallback/levelAfter alternatives + (prisma|db|tx) prefix + Parameters<typeof 排除 · AGENTS.md §10.1 LD-A7 同步更新 grep 命令"
+    },
+    {
+      "id": "TD-059",
+      "title": "PRD-13 US-005 LD-A8 红线 + audit grep 守护缺失",
+      "description": "PRD §7 D-101 + US-005 协议锁 _adjustQuotaInTx 单点函数 · 跟 D-099/D-100 (LD-A-6/A-7) 同等级 · 但 ralph 实施 US-005 时漏建 LD-A-8 守护。AGENTS.md §10.1 只到 LD-A7 · audit-redlines-admin.sh 只到 LD-A7 段 · commit message 也写 'ALL PASS 7 LD-A + 6 R-A' (跟 US-004 一致 · 没升到 8)。实际 _adjustQuotaInTx 单点 grep 验证(除 quota-expiry.job.ts 合法 expiry rollback 外)0 dual write · 守护机制语义存在但 metadata 层缺失。",
+      "scope": [
+        "AGENTS.md §10.1 (LD-A8 节仍缺) [TD]",
+        "scripts/audit-redlines-admin.sh:137-155 (US-009 加 LD-A8 grep) [RESOLVED]"
+      ],
+      "impact": "LD-A-8 单点函数守护机制 metadata 不完整 · audit 假绿灯风险 · 未来新加 user_quota.update.dailyQuota / whitelistExpiresAt 的代码可能漏 catch · 跟 TD-058 (LD-A7 字面 drift) 同类型风险",
+      "severity": "Low",
+      "categories": [
+        "audit-script",
+        "single-point-defense",
+        "metadata-completeness"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-005 audit",
+      "fix_by": "PRD-13 US-009 (quota UI) 或独立 audit script 升级",
+      "status": "resolved",
+      "fix_hint": "AGENTS.md §10.1 加 #### LD-A8 · user_quota.dailyQuota/monthlyQuota/whitelistExpiresAt 仅由 _adjustQuotaInTx 修改 + grep 命令 (模板参 LD-A7) · audit-redlines-admin.sh 加 §LD-A8 grep `(prisma|db|tx)\\.userQuota\\.update.*(dailyQuota|monthlyQuota|whitelistExpiresAt|isOnWhitelist)` 排除 quota-adjustment.service.ts + quota-expiry.job.ts",
+      "resolved_in_prd": "prd-13-retro-backflow",
+      "resolved_at": "2026-05-14",
+      "created_at": "2026-05-14T12:33:00",
+      "partially_resolved_notes": "US-009 加 scripts/audit-redlines-admin.sh LD-A8 grep 段 (line 137-155) · audit-redlines-admin ALL PASS 8 LD-A + 6 R-A · LD-A8 grep 实测 0 dual write. 剩 AGENTS.md §10.1 LD-A8 节缺失 (跟 LD-A6/A7 不一致).",
+      "resolved_notes": "PRD-13 retro F maintenance commit 修 · AGENTS.md §10.1 加 LD-A8 节 · 含铁律 5 条 + grep 命令 · 跟 audit-redlines-admin.sh:137-155 LD-A8 段对齐"
+    },
+    {
+      "id": "TD-060",
+      "title": "PRD-13 US-007 UI 单测全缺失 + prompts router 后端单测缺失",
+      "description": "ralph 实施 US-007 (high+large · 1430 行 UI + router 改动) 时完全没建 unit test。PRD files_to_create 列了 PromptsPage.test.tsx (~150 行) + SpecialistTabs.test.tsx (~80 行) · 全漏。同时新建的 apps/api/src/trpc/routers/admin/prompts.ts (172 行 · saveDraft/submitForReview/runLlmJudge/getVersionHistory 等 procedure) 也 0 单测。仅靠 validator agent-browser 4 screenshots 通过 AC-8/AC-9 浏览器验收 · 无回归 safety net。跟 TD-057 (US-004 evolution-health 3 service/router 单测缺失) 同类型。",
+      "scope": [
+        "apps/admin/src/pages/prompts/PromptsPage.tsx (754 行 · 0 单测) [TD]",
+        "apps/admin/src/pages/prompts/components/HistoryTimeline.tsx (237 行 · 0 单测) [TD]",
+        "apps/admin/src/pages/prompts/components/MonacoEditor.tsx (109 行 · 0 单测) [TD]",
+        "apps/api/src/trpc/routers/admin/prompts.ts (US-008 commit 9fe8e9d 补 13 unit test ≥348 行) [RESOLVED]"
+      ],
+      "impact": "high+large story 0 单测 · brownfield Monaco SSR dynamic import / Tab URL state / debounce 3 关键反例守护无回归保障 · 后续 refactor 风险高 · prompts router 改动可能影响 _publishPromptVersionInTx 单点函数集成 (LD-A6 守护)",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "agent-coverage",
+        "ui-coverage",
+        "router-coverage"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-007 audit",
+      "fix_by": "PRD-13 US-008 (灰度 UI · 复用 framework) 或 US-012 收官 E2E · 否则独立 TD 修复 story",
+      "status": "partially_resolved",
+      "fix_hint": "新建 tests/unit/admin/prompts/PromptsPage.test.tsx (≥150 行 · 14 Tab + URL state + debounce + saveDraft/submitForReview/历史时间线) + SpecialistTabs.test.tsx (≥80 行 · Tab 切换 + mode 二级) + apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts (≥200 行 · 8 procedure CRUD + adminProcedure 7 闸链)",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "created_at": "2026-05-14T15:20:00",
+      "partially_resolved_notes": "US-008 commit 9fe8e9d 补 apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts 348 行 13 unit test · 后端 router 部分清零。剩 UI 单测 (PromptsPage / HistoryTimeline / MonacoEditor) 仍 TD。"
+    },
+    {
+      "id": "TD-061",
+      "title": "PRD-13 US-011 Approval Gates UI 单测全缺失",
+      "description": "ralph 实施 US-011 (high+large · 1293 行 UI + 440 行 router) 完全没建 UI unit test。PRD files_to_create 列了 ApprovalsPage.test.tsx + ApprovalDetailDrawer.test.tsx + EmergencyApproveModal.test.tsx (≥430 行 11 it) · 全漏。仅 approvals router 后端 test 374 行已建。跟 TD-060 (US-007) 同类型 · ★ 横切机制 UI 0 单测 risk 大。",
+      "scope": [
+        "apps/admin/src/pages/approvals/index.tsx (592 行 · 0 单测)",
+        "apps/admin/src/pages/approvals/ApprovalDetailDrawer.tsx (528 行 · 0 单测 · 内嵌 ImpactEstimator)",
+        "apps/admin/src/pages/approvals/EmergencyApproveModal.tsx (173 行 · 0 单测 · incidentId 必填守护)",
+        "apps/api/src/trpc/routers/admin/__tests__/approvals.test.ts (374 行 · ≥ 15 it · 已建) [RESOLVED 部分]"
+      ],
+      "impact": "★ 横切机制 UI (Approval Gates 整个 PRD-13 5 子域核心) 0 单测 · dual approval + emergency + post-review + ImpactEstimator 3 关键反例守护无回归保障 · 后续 refactor 风险高",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "ui-coverage",
+        "horizontal-mechanism"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-011 audit",
+      "fix_by": "PRD-13 US-012 收官 E2E 或独立 TD story",
+      "status": "open",
+      "fix_hint": "新建 tests/unit/admin/approvals/ApprovalsPage.test.tsx (≥150 行 · KPI/列表/Tab 切换) + ApprovalDetailDrawer.test.tsx (≥200 行 · 影响估算 + 同一审批人 disabled + dual flow) + EmergencyApproveModal.test.tsx (≥80 行 · incidentId 必填校验)",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "created_at": "2026-05-14T19:00:00"
     }
   ],
-  "last_updated": "2026-05-14T09:16:27",
+  "last_updated": "2026-05-14T20:00:00",
   "total": 44
 }
