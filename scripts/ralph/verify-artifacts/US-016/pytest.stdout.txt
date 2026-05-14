@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run apps/api/src/trpc/routers/admin/__tests__/audit.test.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit.test.ts (35 tests) 9ms
+
+ Test Files  1 passed (1)
+      Tests  35 passed (35)
+   Start at  02:07:10
+   Duration  144ms (transform 41ms, setup 5ms, collect 50ms, tests 9ms, environment 0ms, prepare 19ms)
+

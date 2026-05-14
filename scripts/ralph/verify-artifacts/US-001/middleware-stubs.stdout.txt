@@ -1,0 +1,16 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > adminAuth stub calls next()
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > roleCheck stub calls next()
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > ipWhitelist stub calls next()
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > mfaCheck stub calls next()
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > adminRLS stub calls next()
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > approvalGateCheck stub calls next()
+ ✓ tests/unit/admin/middleware-stubs.test.ts > admin middleware stubs — US-001 all pass-through > auditLog stub calls next()
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  11:07:17
+   Duration  155ms (transform 22ms, setup 5ms, collect 27ms, tests 1ms, environment 0ms, prepare 24ms)
+

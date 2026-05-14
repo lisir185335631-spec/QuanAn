@@ -1,0 +1,18 @@
+{
+  "story_id": "US-020",
+  "validator_start_ts": "2026-05-13T04:07:00",
+  "validator_end_ts": "2026-05-13T04:12:00",
+  "test_command": "pnpm vitest run apps/api/src/trpc/routers/admin/__tests__/invites.test.ts (27 tests) + pnpm test full (1331 tests) + pnpm typecheck + pnpm audit:approval-gates",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "notes": "27 story-specific tests pass (list×4, create×5, batchImport×5, invalidate×6, detail×3, campaignFunnel×4). Full suite: 9 pre-existing failures in tests/integration/api/{auth,auth.me,trace}.test.ts — all ECONNREFUSED :3000, require live HTTP server; identical to US-018 baseline. pnpm typecheck: 0 errors across 6 packages. pnpm audit:approval-gates: Checked 13 >= 9 threshold (admin.invites.invalidate in EXCEPTION_PROCEDURES, implements inline approval_requests). All 14 AC verified.",
+  "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ]
+}

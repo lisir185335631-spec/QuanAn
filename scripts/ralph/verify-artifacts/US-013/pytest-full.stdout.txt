@@ -1,0 +1,9 @@
+=== Admin frontend (US-013) zero-regression ===
+Backend pytest: SKIPPED (frontend-only story)
+Admin typecheck: PASS (exit 0)
+verify-prd-12.sh: 32 PASS / 0 FAIL / 1 WARN(pre-existing lint) / 0 SKIP
+
+Skipped reason: Admin frontend — no pytest test suite.
+Zero-regression verified via:
+  1. pnpm typecheck → exit 0 (0 TypeScript errors)
+  2. verify-prd-12.sh full run → 32 PASS 0 FAIL (includes §9 typecheck + §3 audit-redlines + §4 AST 50 procedure)

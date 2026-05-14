@@ -1,13 +1,17 @@
+
+> quanqn@0.1.0 typecheck /Users/return/Desktop/QuanQn
+> pnpm -r typecheck
+
 Scope: 6 of 7 workspace projects
-apps/admin typecheck$ tsc --noEmit
 packages/schemas typecheck$ tsc --noEmit
 packages/ui typecheck$ tsc --noEmit
-apps/admin typecheck: Done
 packages/ui typecheck: Done
 packages/schemas typecheck: Done
 apps/api typecheck$ tsc --noEmit
 packages/clients typecheck$ tsc --noEmit
 packages/clients typecheck: Done
 apps/api typecheck: Done
+apps/admin typecheck$ tsc --noEmit
 apps/web typecheck$ tsc --noEmit
+apps/admin typecheck: Done
 apps/web typecheck: Done

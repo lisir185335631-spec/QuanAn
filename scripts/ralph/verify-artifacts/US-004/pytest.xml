@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="44" failures="0" errors="0" time="0.155">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" timestamp="2026-05-13T02:25:38.302Z" hostname="returndeMacBook-Pro.local" tests="44" failures="0" errors="0" skipped="0" time="0.010636084">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; returns paginated items and count" time="0.001904833">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; filters by statusFilter" time="0.000322166">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; filters by platformFilter" time="0.000333542">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; filters by autoVerdictFilter" time="0.000195583">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; applies dateRange filter with from and to" time="0.000538625">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; writes audit log: list_trending_review_queue" time="0.000655958">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; readonly_admin can call list" time="0.000288542">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; list &gt; handles empty results correctly" time="0.000197875">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; detail &gt; returns full item with rawContent and autoScanResult" time="0.000214125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; detail &gt; returns trendingItemId when approved" time="0.000145625">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; detail &gt; throws when item not found" time="0.000434417">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; detail &gt; readonly_admin can call detail" time="0.000127834">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; approves a pending item and creates trendingItem" time="0.000198125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; calls update twice: status + trendingItemId (atomic)" time="0.00010175">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; trendingItem.create is called exactly once (LD-A-5)" time="0.000105333">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; writes audit log: trending_review_approve" time="0.000177625">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; throws already_approved when already approved (防双重入库)" time="0.000134209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; throws already_has_trending_item when trendingItemId set (防双重入库)" time="0.000130708">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; throws when item not found" time="0.000105541">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; readonly_admin cannot approve → privilege_escalation" time="0.000135125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; regular admin can approve" time="0.000100208">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; uses vendor from rawContent when not provided" time="0.000098625">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; approve &gt; uses input vendor when provided" time="0.00010075">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; rejects a pending item and updates status" time="0.000129292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; writes audit log: trending_review_reject" time="0.000132333">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; throws already_rejected when already rejected" time="0.000119166">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; throws when item not found" time="0.000120042">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; rejectReason min 5 chars — zod validation" time="0.000259709">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; readonly_admin cannot reject → privilege_escalation" time="0.000150833">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; reject &gt; regular admin can reject" time="0.0001135">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; batch rejects multiple items successfully" time="0.000283542">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; batch approves items atomically (per item transaction)" time="0.00015">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; each item gets its own audit log entry" time="0.000129209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; zod rejects queueIds array with &gt; 100 items (AC-10)" time="0.000176375">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; readonly_admin cannot batchAction → privilege_escalation" time="0.000148125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; returns error for already-approved items in batch" time="0.000106292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; returns error for not_found items in batch" time="0.0003555">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; batchAction &gt; returns error for already-rejected items in batch reject" time="0.000134416">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; configRules &gt; super_admin can update auto review rules" time="0.000219375">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; configRules &gt; writes audit log: auto_review_rule_update in config_change category" time="0.000133292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; configRules &gt; regular admin cannot configRules → privilege_escalation" time="0.000114125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; configRules &gt; readonly_admin cannot configRules → privilege_escalation" time="0.000094">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; configRules &gt; privilege_escalation audit written for non-super_admin attempt" time="0.000139292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts" name="reviewTrendingRouter &gt; configRules &gt; upserts rule (create-or-update) using ruleType+ruleKey composite key" time="0.000110625">
+        </testcase>
+    </testsuite>
+</testsuites>

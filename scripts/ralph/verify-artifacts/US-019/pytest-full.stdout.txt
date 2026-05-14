@@ -1,0 +1,27 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > createCampaign > creates campaign with valid inputs and uses SET LOCAL (AC-4 SHIELD)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > createCampaign > throws ValidationError when totalQuota = 0 (AC-7)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > createCampaign > throws ValidationError when totalQuota < 0 (AC-7)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > createCampaign > throws ValidationError with correct message when endsAt <= startsAt (AC-8)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > createCampaign > throws CampaignKeyConflictError on P2002 unique violation (AC-6)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > getCampaign > returns campaign when found
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > getCampaign > throws CampaignNotFoundError when not found
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > updateCampaign > updates name successfully
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > updateCampaign > throws ValidationError for forbidden status transition ended→active (AC-9)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > updateCampaign > allows draft→active status transition (AC-9)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > updateCampaign > throws ValidationError when totalQuota = 0 on update (AC-7)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > deleteCampaign > deletes campaign when found
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > deleteCampaign > throws CampaignNotFoundError when deleting non-existent
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > getCampaignFunnel > returns 4-stage funnel counts (AC-5)
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > getCampaignFunnel > returns zero counts when campaign has no invite code usage
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > getCampaignFunnel > throws CampaignNotFoundError for unknown campaignKey
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > listCampaigns > returns all campaigns without filters
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts > listCampaigns > filters by status
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  03:41:24
+   Duration  106ms (transform 22ms, setup 5ms, collect 18ms, tests 3ms, environment 0ms, prepare 20ms)
+

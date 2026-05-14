@@ -1,0 +1,88 @@
+QuanQn Monorepo Migration — SCAFFOLD §A.3
+Root: /Users/return/Desktop/QuanQn
+
+[1/10] Verify pnpm-workspace.yaml has apps/* + packages/*
+  ✓ pnpm-workspace.yaml OK
+[2/10] Verify 5 workspace packages exist
+  ✓ apps/web
+  ✓ apps/admin
+  ✓ apps/api
+  ✓ packages/schemas
+  ✓ packages/ui
+  ✓ packages/clients
+[3/10] Verify apps/web/src exists (main app frontend)
+  ✓ apps/web/src OK (      11 entries)
+[4/10] Verify apps/api/src exists (backend)
+  ✓ apps/api/src OK
+[5/10] Verify apps/admin Vite SPA skeleton (6 files)
+  ✓ apps/admin/vite.config.ts
+  ✓ apps/admin/package.json
+  ✓ apps/admin/tsconfig.json
+  ✓ apps/admin/index.html
+  ✓ apps/admin/src/main.tsx
+  ✓ apps/admin/src/App.tsx
+[6/10] Verify 13+ admin models in prisma/schema.prisma
+  ✓ model AdminAuditLog
+  ✓ model ApprovalRequest
+  ✓ model AdminUser
+  ✓ model AdminSession
+  ✓ model PromptVersion
+  ✓ model PromptCanaryConfig
+  ✓ model UserQuota
+  ✓ model QuotaAdjustmentLog
+  ✓ model TrendingReviewQueue
+  ✓ model DeepLearnReviewQueue
+  ✓ model AdminInviteCampaign
+  ✓ model AdminConstants
+  ✓ model AdminConfig
+  ✓ model AdminAbExperiment
+[7/10] Verify manual_admin_rls.sql has 14 DISABLE statements
+  ✓ 28 DISABLE RLS statements found
+[8/10] Verify 7 admin middleware stubs
+  ✓ adminAuth.ts
+  ✓ roleCheck.ts
+  ✓ ipWhitelist.ts
+  ✓ mfaCheck.ts
+  ✓ adminRLS.ts
+  ✓ approvalGateCheck.ts
+  ✓ auditLog.ts
+[9/10] Verify admin router + lib files
+  ✓ apps/api/src/trpc/routers/admin/index.ts
+  ✓ apps/api/src/lib/admin/constants.ts
+  ✓ apps/api/src/lib/admin/types.ts
+[10/10] Verify RLS states (runs audit-admin-rls-tables.sh)
+=== admin tables: expect RLS DISABLED ===
+  ✓ admin_audit_log RLS DISABLED
+  ✓ approval_requests RLS DISABLED
+  ✓ admin_users RLS DISABLED
+  ✓ admin_sessions RLS DISABLED
+  ✓ prompt_versions RLS DISABLED
+  ✓ prompt_canary_config RLS DISABLED
+  ✓ user_quota RLS DISABLED
+  ✓ quota_adjustment_log RLS DISABLED
+  ✓ trending_review_queue RLS DISABLED
+  ✓ deep_learn_review_queue RLS DISABLED
+  ✓ admin_invite_campaign RLS DISABLED
+  ✓ admin_constants RLS DISABLED
+  ✓ admin_config RLS DISABLED
+  ✓ admin_ab_experiment RLS DISABLED
+
+=== main-app account tables: expect RLS ENABLED ===
+  ✓ ip_accounts RLS ENABLED
+  ✓ step_data RLS ENABLED
+  ✓ histories RLS ENABLED
+  ✓ topics RLS ENABLED
+  ✓ assets RLS ENABLED
+  ✓ diagnosis_reports RLS ENABLED
+  ✓ feedback_logs RLS ENABLED
+  ✓ evolution_profiles RLS ENABLED
+  ✓ evolution_insights RLS ENABLED
+  ✓ deep_learning_archives RLS ENABLED
+  ✓ knowledge_favorites RLS ENABLED
+  ✓ knowledge_notes RLS ENABLED
+  ✓ daily_tasks RLS ENABLED
+  ✓ cost_log RLS ENABLED
+
+PASS: all RLS states verified
+
+✅ All 10 migration steps passed — monorepo ready

@@ -1,33 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="13" failures="0" errors="0" time="0.207">
-    <testsuite name="tests/unit/api/memory/l1-buffer.test.ts" timestamp="2026-05-11T01:12:22.542Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.001466416">
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; push: stores turn and can retrieve it" time="0.000749459">
+<testsuites name="vitest tests" tests="26" failures="0" errors="0" time="0.104">
+    <testsuite name="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" timestamp="2026-05-13T00:47:47.321Z" hostname="returndeMacBook-Pro.local" tests="26" failures="0" errors="0" skipped="0" time="0.002913833">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts valid pending item" time="0.000708041">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; get: returns turns in chronological order (oldest first)" time="0.000103792">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; rejects unknown status value" time="0.000215">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; clear: removes all turns for account" time="0.000098042">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; rejects unknown autoVerdict value" time="0.0000835">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; maxLimit: trims to 20 turns max on push" time="0.000134584">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts all valid status values" time="0.0001585">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; TTL: expire(key, 1800) is called on every push" time="0.000049542">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts all valid autoVerdict values" time="0.000089291">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/unit/api/schemas/memory-schemas.test.ts" timestamp="2026-05-11T01:12:22.542Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.00241975">
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="EvolutionInsightContentSchema &gt; happy path: valid insight content parses" time="0.000776625">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts JSON object for rawContent and autoScanResult" time="0.000060958">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="EvolutionInsightContentSchema &gt; reject: unknown direction fails" time="0.000234917">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; rejects missing required fields" time="0.00005575">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="EvolutionInsightContentSchema &gt; TriggerTypeSchema: valid threshold literal parses" time="0.00013675">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts optional fields as undefined" time="0.00004225">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="DailyTaskOutputSchema &gt; happy path: valid DailyTaskOutput with 3 tasks parses" time="0.000266792">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; accepts valid takedown with required fields only" time="0.000115208">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="DailyTaskOutputSchema &gt; reject: ctaUrl not starting with / fails" time="0.000081875">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; rejects unknown reason value" time="0.00005">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="VoiceChatTurnSchema &gt; happy path: valid user turn parses" time="0.000064583">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; accepts all valid reason values" time="0.000064792">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="VoiceChatTurnSchema &gt; reject: invalid role fails" time="0.000050333">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; accepts valid appealResolution values" time="0.000046708">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="VOICE_CHAT_TOOLS &gt; has exactly 5 tools with correct names" time="0.000435">
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; rejects unknown appealResolution" time="0.000041334">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; rejects non-integer trendingItemId" time="0.000048625">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; accepts valid rule" time="0.0000425">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; rejects unknown ruleType" time="0.00004675">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; accepts all valid ruleType values" time="0.0000525">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; accepts JSON object for ruleValue" time="0.000039292">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; rejects empty ruleKey" time="0.000037083">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; rejects missing updatedByAdminId" time="0.000038458">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; defaults enabled to true when not provided" time="0.000030958">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; trendingReviewStatusEnum has 5 values" time="0.000261666">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; autoVerdictEnum has 3 values" time="0.000043917">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; takedownReasonEnum has 3 values" time="0.000043084">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; appealResolutionEnum has 2 values" time="0.000043167">
+        </testcase>
+        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; ruleTypeEnum has 3 values" time="0.000045875">
         </testcase>
     </testsuite>
 </testsuites>

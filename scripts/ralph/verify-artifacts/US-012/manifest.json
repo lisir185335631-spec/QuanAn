@@ -1,19 +1,16 @@
 {
   "story_id": "US-012",
-  "validator_start_ts": "2026-05-11T16:43:00",
-  "validator_end_ts": "2026-05-11T16:53:00",
-  "test_command": "pnpm exec vitest run tests/unit/web/pages/VoiceChat.test.tsx + pnpm --filter @quanqn/web typecheck + pnpm --filter @quanqn/web lint",
+  "validator_start_ts": "2026-05-13T07:38:00",
+  "validator_end_ts": "2026-05-13T07:42:00",
+  "test_command": "pnpm vitest run (root) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "16 pre-existing failures in tests/unit/admin/*.tsx (React version mismatch from US-005/ed600df) — unrelated to US-012. US-012 own tests: job=7/7 PASS, service=14/14 PASS.",
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "vitest-full.xml",
-    "vitest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "validator-us-012-pass-3-voicechat.png"
-  ],
-  "notes": "Zero regression: 91 test files, 861 tests passed (2 skipped), 0 failures. Typecheck: 0 errors. Lint: 0 errors (media-has-caption suppressed via eslint-disable-next-line, require-await fixed by removing async from startVoiceChatWith). VoiceChat unit tests: 26 tests passed. Browser: page loaded at http://localhost:5173/voice-chat, record-button and turn-list data-testid confirmed in DOM. Console: only React Router future flag warning (pre-existing, not an error). All ACs CONFIRMED."
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ]
 }

@@ -1,0 +1,18 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > returns Buffer for a regular timeline (AC-1)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > generates PDF for empty timeline — isEmpty=true cover page (AC-10)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > handles 1000 timeline entries without OOM (AC-9 pagination)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > contentHash is SHA-256 of redacted timeline entries — deterministic (AC-6)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > requesterEmail and requesterRole appear in template data (AC-2/SHIELD)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > redacts sensitive fields in payload before computing payloadHash (AC-14)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > rejects PDF > 50 MB with descriptive error (AC-12)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > payloadHash for each entry is stable SHA-256 of redacted payload
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts > generateForensicPdf > infers source correctly from record shape
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  02:47:44
+   Duration  113ms (transform 21ms, setup 5ms, collect 20ms, tests 8ms, environment 0ms, prepare 20ms)
+

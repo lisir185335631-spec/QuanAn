@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="43" failures="0" errors="0" time="0.151">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" timestamp="2026-05-13T04:52:55.826Z" hostname="returndeMacBook-Pro.local" tests="43" failures="0" errors="0" skipped="0" time="0.010457667">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; returns paginated items and count" time="0.001964375">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; filters by statusFilter" time="0.000322">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; filters by userIdFilter" time="0.000219916">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; filters by autoVerdictFilter" time="0.00016225">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; applies dateRange filter" time="0.000521625">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; writes cross_account_query audit log" time="0.000664125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; readonly_admin can call list" time="0.000280292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; handles empty results" time="0.000215375">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns full item with autoScanResult and metadata" time="0.000193458">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns userViolationCount from userViolationLog" time="0.000170416">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns archiveId when approved" time="0.00011225">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns textPreview from fileName" time="0.000097334">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; truncates textPreview for very long filenames" time="0.000136708">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; throws NOT_FOUND when item missing" time="0.000386625">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; readonly_admin can call detail" time="0.000125208">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; approves a pending item and creates deepLearningArchive" time="0.000287166">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; calls queue update twice: status + archiveId (atomic)" time="0.000125041">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; deepLearningArchive.create called exactly once (LD-A-5)" time="0.000106958">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; writes data_mutation/deep_learn_review_approve audit" time="0.000158291">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; throws already_processed when status is approved" time="0.000159958">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; throws already_processed when archiveId is set" time="0.000103583">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; throws NOT_FOUND when queue missing" time="0.00010875">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; readonly_admin approve → FORBIDDEN" time="0.000114917">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; rejects item and upserts userViolationLog count+1" time="0.00025325">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; writes data_mutation/deep_learn_review_reject audit" time="0.000143167">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; triggers security_alert when violation count &gt;= 3" time="0.000166083">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; does NOT trigger alert when violation count &lt; 3" time="0.000112958">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; throws already_rejected when status is rejected" time="0.000113459">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; throws already_processed when status is approved (AC-9)" time="0.000131834">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; throws NOT_FOUND when queue missing" time="0.000120417">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; readonly_admin reject → FORBIDDEN" time="0.000113792">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; super_admin: auto_executed + creates approvalRequest + suspends via updateMany" time="0.0002805">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; admin: pending + creates approvalRequest + no suspension" time="0.000121958">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; super_admin writes high_risk_action/ban_uploader audit" time="0.000125041">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; admin writes high_risk_action/approval_request_create audit" time="0.000146208">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; throws uploader_already_suspended when suspendedAt is set" time="0.000122709">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; readonly_admin banUploader → FORBIDDEN" time="0.000080167">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; approvalRequest created with correct riskLevel=high" time="0.00036975">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; returns violations for a specific userId" time="0.00015575">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; returns all high-count violations when userId is undefined" time="0.000196166">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; writes cross_account_query audit log" time="0.000163542">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; readonly_admin can call userViolations" time="0.000121458">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; returns empty when no violations found" time="0.000111708">
+        </testcase>
+    </testsuite>
+</testsuites>

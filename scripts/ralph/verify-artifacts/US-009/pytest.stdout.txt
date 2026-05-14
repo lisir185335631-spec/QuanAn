@@ -1,0 +1,52 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > returns paginated items and count
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > filters by statusFilter
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > filters by userIdFilter
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > filters by autoVerdictFilter
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > applies dateRange filter
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > writes cross_account_query audit log
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > readonly_admin can call list
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > list > handles empty results
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > returns full item with autoScanResult and metadata
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > returns userViolationCount from userViolationLog
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > returns archiveId when approved
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > returns textPreview from fileName
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > truncates textPreview for very long filenames
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > throws NOT_FOUND when item missing
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > detail > readonly_admin can call detail
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > approves a pending item and creates deepLearningArchive
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > calls queue update twice: status + archiveId (atomic)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > deepLearningArchive.create called exactly once (LD-A-5)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > writes data_mutation/deep_learn_review_approve audit
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > throws already_processed when status is approved
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > throws already_processed when archiveId is set
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > throws NOT_FOUND when queue missing
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > approve > readonly_admin approve → FORBIDDEN
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > rejects item and upserts userViolationLog count+1
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > writes data_mutation/deep_learn_review_reject audit
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > triggers security_alert when violation count >= 3
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > does NOT trigger alert when violation count < 3
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > throws already_rejected when status is rejected
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > throws already_processed when status is approved (AC-9)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > throws NOT_FOUND when queue missing
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > reject > readonly_admin reject → FORBIDDEN
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > super_admin: auto_executed + creates approvalRequest + suspends via updateMany
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > admin: pending + creates approvalRequest + no suspension
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > super_admin writes high_risk_action/ban_uploader audit
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > admin writes high_risk_action/approval_request_create audit
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > throws uploader_already_suspended when suspendedAt is set
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > readonly_admin banUploader → FORBIDDEN
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > banUploader > approvalRequest created with correct riskLevel=high
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > userViolations > returns violations for a specific userId
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > userViolations > returns all high-count violations when userId is undefined
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > userViolations > writes cross_account_query audit log
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > userViolations > readonly_admin can call userViolations
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts > reviewDeepLearnRouter > userViolations > returns empty when no violations found
+
+ Test Files  1 passed (1)
+      Tests  43 passed (43)
+   Start at  12:51:02
+   Duration  150ms (transform 43ms, setup 5ms, collect 53ms, tests 10ms, environment 0ms, prepare 20ms)
+

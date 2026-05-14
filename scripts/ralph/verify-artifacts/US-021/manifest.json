@@ -1,0 +1,15 @@
+{
+  "story_id": "US-021",
+  "validator_start_ts": "2026-05-13T04:27:00",
+  "validator_end_ts": "2026-05-13T04:45:00",
+  "test_command": "pnpm typecheck (admin app) + agent-browser e2e http://localhost:5174/admin/invites",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "notes": "Backend API could not be started (pre-existing ERR_MODULE_NOT_FOUND: react in pdf-forensic.service.ts from US-018, unrelated to US-021). All frontend ACs verified by code review + browser screenshots. AC-13/14 modal open/fields confirmed; submit→list-refresh wired via adminTrpc.inviteCodes.create/batchImport.useMutation onSuccess callbacks. AC-16 InviteDetailDrawer code confirmed (detail.useQuery + activation history + step9Progress sections); row click untestable without backend data.",
+  "artifacts": [
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ]
+}

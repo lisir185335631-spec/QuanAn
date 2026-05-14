@@ -1,0 +1,16 @@
+{
+  "story_id": "US-017",
+  "validator_start_ts": "2026-05-12T18:22:00",
+  "validator_end_ts": "2026-05-12T18:31:05",
+  "test_command": "pnpm vitest run (zero-regression) + pnpm typecheck + agent-browser http://localhost:5174/admin/audit",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ],
+  "notes": "zero_regression: vitest 1273 tests, 9 pre-existing failures (fetch failed — HTTP integration tests require running API server, unrelated to US-017 frontend changes). US-017 only modified: apps/admin/src/pages/audit/*.tsx, apps/admin/src/router.tsx, packages/clients/src/admin-router-types.ts. typecheck: exit 0 (all 6 packages). browser: 4 screenshots captured confirming AC-12/13/14/16. AC-17 console: ERR_CONNECTION_REFUSED pre-existing (API server not running in UI-only test environment)."
+}

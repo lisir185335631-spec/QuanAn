@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="18" failures="0" errors="0" time="0.106">
+    <testsuite name="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" timestamp="2026-05-12T19:43:23.812Z" hostname="Mac" tests="18" failures="0" errors="0" skipped="0" time="0.003239541">
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="createCampaign &gt; creates campaign with valid inputs and uses SET LOCAL (AC-4 SHIELD)" time="0.000850917">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="createCampaign &gt; throws ValidationError when totalQuota = 0 (AC-7)" time="0.000281584">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="createCampaign &gt; throws ValidationError when totalQuota &lt; 0 (AC-7)" time="0.000063709">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="createCampaign &gt; throws ValidationError with correct message when endsAt &lt;= startsAt (AC-8)" time="0.000196792">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="createCampaign &gt; throws CampaignKeyConflictError on P2002 unique violation (AC-6)" time="0.000098917">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="getCampaign &gt; returns campaign when found" time="0.000068834">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="getCampaign &gt; throws CampaignNotFoundError when not found" time="0.00007175">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="updateCampaign &gt; updates name successfully" time="0.000105416">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="updateCampaign &gt; throws ValidationError for forbidden status transition ended→active (AC-9)" time="0.000076167">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="updateCampaign &gt; allows draft→active status transition (AC-9)" time="0.000046041">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="updateCampaign &gt; throws ValidationError when totalQuota = 0 on update (AC-7)" time="0.000061417">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="deleteCampaign &gt; deletes campaign when found" time="0.000064458">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="deleteCampaign &gt; throws CampaignNotFoundError when deleting non-existent" time="0.000056833">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="getCampaignFunnel &gt; returns 4-stage funnel counts (AC-5)" time="0.000109375">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="getCampaignFunnel &gt; returns zero counts when campaign has no invite code usage" time="0.000051333">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="getCampaignFunnel &gt; throws CampaignNotFoundError for unknown campaignKey" time="0.000069958">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="listCampaigns &gt; returns all campaigns without filters" time="0.000130917">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/invites/__tests__/campaign.test.ts" name="listCampaigns &gt; filters by status" time="0.000400042">
+        </testcase>
+    </testsuite>
+</testsuites>

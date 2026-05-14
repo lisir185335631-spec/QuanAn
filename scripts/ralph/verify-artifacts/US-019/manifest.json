@@ -1,0 +1,17 @@
+{
+  "story_id": "US-019",
+  "validator_start_ts": "2026-05-13T03:41:00",
+  "validator_end_ts": "2026-05-13T03:45:00",
+  "test_command": "pnpm vitest run apps/api/src/services/admin/invites/__tests__/campaign.test.ts",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "notes": "Zero regression: 3 integration test files (auth.test.ts/auth.me.test.ts/trace.test.ts) fail with ECONNREFUSED port 3000 — pre-existing, identical to US-018 baseline (3 failed files, 9 tests). US-019 unit tests: 18/18 passed. Typecheck: 0 errors. RLS audit: invite_campaigns RLS DISABLED confirmed via psql + audit script. DB table structure matches DATA-MODEL §13.6.C exactly (campaignKey @unique + 2 indexes).",
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt",
+    "audit-rls.stdout.txt"
+  ]
+}

@@ -1,0 +1,14 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+{"level":"error","time":"2026-05-12T04:15:39.876Z","pid":19553,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAUTH_PROVIDER for admin: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-12T04:15:39.876Z","pid":19553,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production (admin)"}
+ ✓ tests/unit/admin/auth-lucia.test.ts (17 tests) 4ms
+ ✓ tests/unit/admin/auth-router.test.ts (8 tests) 5ms
+ ✓ tests/integration/admin/auth-flow.test.ts (1 test) 49ms
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  12:15:39
+   Duration  233ms (transform 78ms, setup 12ms, collect 134ms, tests 58ms, environment 0ms, prepare 98ms)
+

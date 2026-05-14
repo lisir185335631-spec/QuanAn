@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="11" failures="0" errors="0" time="0.119">
+    <testsuite name="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" timestamp="2026-05-12T17:28:32.865Z" hostname="returndeMacBook-Pro.local" tests="11" failures="0" errors="0" skipped="0" time="0.015693792">
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; returns a Buffer with PDF mime header" time="0.006828708">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; filename matches cost-bill-{YYYY-MM}.pdf" time="0.000806208">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; isEmpty=true when rowCount=0 (empty month)" time="0.000712875">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; generates empty bill without throwing when no cost records" time="0.001292417">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; pdfHash is non-empty SHA-256 hex string" time="0.001642625">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; pdfHash is reproducible given same inputs" time="0.00076325">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; pdfHash excludes sensitive fields (SHIELD: anti_pattern PRD-9+LD-A-3)" time="0.000609209">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; rowCount matches aggregate count" time="0.00099075">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; YoY percent is +10.0% when cost rose from 100 to 110 year-over-year" time="0.000675">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; calls renderToBuffer once per invocation" time="0.000535041">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; falls back to model breakdown when agentId groupBy returns empty" time="0.000495625">
+        </testcase>
+    </testsuite>
+</testsuites>

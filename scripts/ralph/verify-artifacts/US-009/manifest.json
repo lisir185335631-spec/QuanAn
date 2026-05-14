@@ -1,20 +1,22 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-11T13:46:00",
-  "validator_end_ts": "2026-05-11T13:47:30",
-  "test_command": "pnpm vitest run (unit+integration+full) + pnpm typecheck",
+  "validator_start_ts": "2026-05-13T12:51:00",
+  "validator_end_ts": "2026-05-13T12:54:30",
+  "test_command": "pnpm vitest run review-deep-learn.test.ts (43/43 PASS) + pnpm vitest run full (1521 passed, 9 pre-existing FAIL) + pnpm typecheck (0 error)",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "zero_regression_note": "全量 vitest run: 1521 passed, 9 failed (all pre-existing ECONNREFUSED in tests/integration/api/ — confirmed identical failures via git stash before US-009 commits)",
+  "ld_a5_grep": "deepLearningArchive.create({ → 1 hit production only (review-deep-learn.ts:66)",
+  "audit_approval_gates": "15 checks, 0 missing — admin.reviewDeepLearn.banUploader in EXCEPTION list",
+  "audit_admin_rls": "50 procedures, 0 violations (44 prior + 6 US-009)",
+  "typecheck": "pnpm typecheck: 0 errors across all 6 workspace packages",
   "artifacts": [
-    "typecheck.stdout.txt",
-    "vitest.stdout.txt",
-    "vitest.xml",
-    "vitest-api.stdout.txt",
-    "vitest-full.stdout.txt",
-    "vitest-full.xml",
-    "manifest.json"
-  ],
-  "notes": "87 test files, 812 passed, 1 skipped (stt-whisper integration skipped: OPENAI_API_KEY not set, expected per AC-8). typecheck 0 errors. AC-9 grep exit=1 (0 matches). All 5 AC-7 unit test groups passed (8 sub-tests). AC-8 skipped correctly. Zero-regression PASS."
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ]
 }

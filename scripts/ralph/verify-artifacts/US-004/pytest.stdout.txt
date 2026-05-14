@@ -1,0 +1,14 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts (44 tests) 10ms
+
+ Test Files  1 passed (1)
+      Tests  44 passed (44)
+   Start at  10:23:27
+   Duration  151ms (transform 43ms, setup 4ms, collect 53ms, tests 10ms, environment 0ms, prepare 20ms)
+

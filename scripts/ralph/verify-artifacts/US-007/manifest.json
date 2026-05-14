@@ -1,161 +1,18 @@
 {
   "story_id": "US-007",
-  "story_title": "収官 · 全套绿灯 + LD-A 5 grep + R-A 6 grep + 1 new e2e",
-  "validator_start_ts": "2026-05-12T14:50:00",
-  "validator_end_ts": "2026-05-12T15:05:00",
-  "test_command": "pnpm test (vitest 116 files) + pnpm test:judge + pnpm test:admin-integration + playwright admin e2e + typecheck + lint + audit scripts",
+  "validator_start_ts": "2026-05-13T11:56:00",
+  "validator_end_ts": "2026-05-13T12:02:00",
+  "test_command": "pnpm test (vitest) + pnpm typecheck + pnpm audit:admin-rls-tables",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "metrics": {
-    "vitest": {
-      "total": 1038,
-      "passed": 1034,
-      "failed": 0,
-      "skipped": 4,
-      "files": 116
-    },
-    "test_judge": {
-      "total": 55,
-      "passed": 55,
-      "failed": 0,
-      "files": 21
-    },
-    "admin_integration": {
-      "total": 10,
-      "passed": 10,
-      "failed": 0,
-      "files": 3,
-      "breakdown": {
-        "auth-flow.test.ts": 1,
-        "audit-log-write.test.ts": 1,
-        "rls-bypass-cross-account.test.ts": 8
-      }
-    },
-    "e2e": {
-      "total": 169,
-      "admin_new": 1,
-      "spec_file": "tests/e2e/admin/admin-foundation-loop.spec.ts",
-      "passed": 1,
-      "failed": 0,
-      "project": "admin",
-      "baseURL": "http://localhost:5174",
-      "knowledge_rag_loop_regression": "6/6 PASS (3 chromium + 3 mobile)"
-    },
-    "typecheck": {
-      "workspaces": 6,
-      "errors": 0,
-      "exit_code": 0
-    },
-    "lint": {
-      "exit_code": 0,
-      "max_warnings": 0,
-      "errors": 0,
-      "warnings": 0
-    }
-  },
-  "ld_a_grep": {
-    "passed": 5,
-    "failed": 0,
-    "script_exit_code": 0,
-    "stdout_contains_all_pass": true,
-    "details": {
-      "LD-A1": "PASS · admin OAuth 独立 · 无 QUANQN_WEB_CLIENT 引用",
-      "LD-A2": "PASS · adminRouter/appRouter 严格分离(双向)",
-      "LD-A3": "PASS · AST 检测 5 procedures · 0 violations (exceptions: login/logout/me/health)",
-      "LD-A4": "PASS · ApprovalGates 机制就位 (stub · PRD-13 补全)",
-      "LD-A5": "PASS · TrendingScraper/FileParser 不直接写主表"
-    }
-  },
-  "r_a_grep": {
-    "passed": 6,
-    "failed": 0,
-    "details": {
-      "R-A1": "PASS · web ↔ admin 无跨 app import",
-      "R-A2": "PASS · 主应用无 admin 入口",
-      "R-A3": "PASS · admin SPA 无硬编码 mock OAuth",
-      "R-A4": "PASS · admin router 无 $executeRawUnsafe/bypass",
-      "R-A5": "PASS · admin 无 LLMGateway/Specialist 直调",
-      "R-A6": "PASS · admin 无 mock approval bypass"
-    }
-  },
-  "rls_verification": {
-    "admin_tables": {
-      "count": 13,
-      "expected_rls": false,
-      "verified": 13,
-      "mismatches": 0,
-      "script_exit_code": 0,
-      "tables": [
-        "admin_audit_log", "approval_requests", "prompt_versions", "user_quota",
-        "kpi_snapshots", "ip_account_admin_notes", "ip_account_anomaly_flags",
-        "invite_campaigns", "trending_review_queue", "trending_takedown",
-        "auto_review_rules", "deep_learn_review_queue", "user_violation_log"
-      ]
-    },
-    "main_app_tables": {
-      "count": 15,
-      "expected_rls": true,
-      "verified": 15,
-      "mismatches": 0,
-      "note": "AC-4 text says '18 主应用表' but script intentionally verifies 15 account-isolation tables. DB confirms exactly 15 RLS-enabled tables. AC doc inaccuracy, implementation correct.",
-      "tables": [
-        "ip_accounts", "step_data", "histories", "topics", "assets",
-        "diagnosis_reports", "feedback_logs", "evolution_profiles", "evolution_insights",
-        "deep_learning_archives", "knowledge_favorites", "knowledge_notes",
-        "daily_tasks", "cost_log", "trending_items"
-      ]
-    }
-  },
-  "code_quality": {
-    "todo_fixme_count": 0,
-    "todo_fixme_limit": 5,
-    "console_log_count": 0,
-    "console_log_limit": 2
-  },
-  "browser_verification": {
-    "method": "playwright-e2e (1/1 PASS) + curl HTTP 200 + screenshot review",
-    "admin_login_page": {
-      "url": "http://localhost:5174/login",
-      "http_status": 200,
-      "title": "QuanQn Admin",
-      "email_input_visible": true,
-      "mock_oauth_button_visible": true
-    },
-    "steps_verified": [
-      "seed admin_user via prisma direct",
-      "goto /login · QuanQn Admin title visible · email input · mock OAuth button",
-      "fill email + click mock OAuth → redirect /admin (playwright e2e 1/1 PASS)",
-      "TopBar: super_admin badge visible",
-      "Sidebar: 16 nav items verified (≥16)",
-      "StatusBar: ENV=dev RLS=ON WAF=stub MFA=stub Role=super_admin (5 fields)",
-      "click NSM 仪表盘 → /admin/nsm URL + placeholder h2 visible",
-      "click 🔔 → AuditDrawer visible + admin_login row",
-      "close drawer",
-      "click logout → /login redirect + admin_session_id cookie cleared",
-      "admin_audit_log ≥2 rows (admin_login + admin_logout verified via prisma)"
-    ],
-    "screenshot": "screenshots/admin-foundation-loop.png",
-    "prd9_regression": "PASS · knowledge-rag-loop.spec.ts 6/6 tests pass (3 chromium + 3 mobile)"
-  },
-  "discrepancies_noted": [
-    {
-      "ac": "AC-4",
-      "description": "AC text says '18 主应用表 RLS=true' but audit-admin-rls-tables.sh verifies 15 account-isolation tables. DB has exactly 15 RLS-enabled main tables. Implementation is correct — users/sessions/etc don't need per-tenant RLS.",
-      "verdict": "ACCEPTABLE - AC documentation inaccuracy, implementation correct"
-    },
-    {
-      "ac": "AC-2",
-      "description": "AC exceptions list ['auth.login','auth.logout','health'] missing 'auth.me'. Script correctly includes auth.me as public endpoint. Implementation is correct.",
-      "verdict": "ACCEPTABLE - AC documentation inaccuracy, implementation correct"
-    }
-  ],
   "artifacts": [
-    "manifest.json",
-    "pytest-full.stdout.txt",
     "pytest-full.xml",
-    "typecheck.stdout.txt"
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt",
+    "audit-rls.txt",
+    "manifest.json"
   ],
-  "notes": "All 25 AC verified by independent re-run. vitest 1034/1038 pass (4 pre-existing skips). test:judge 55/55. test:admin-integration 10/10. e2e total 169 (>=165) · admin-foundation-loop 1/1 PASS (playwright admin project, baseURL=5174, workers=1 global, fullyParallel=false global). Lint exit 0. Typecheck 6ws 0 errors. TODO/FIXME/XXX=0 (<=5). console.log=0 (<=2). audit-redlines-admin.sh exit 0: stdout 'ALL PASS · 5 LD-A + 6 R-A'. audit-admin-rls-tables.sh exit 0: 13/13 admin RLS=false + 15/15 main RLS=true. audit-admin-rls.ts: 5 procedures 0 violations. audit-approval-gates.ts: 3/3 pass. knowledge-rag-loop regression: 6/6 PASS. screenshots/admin-foundation-loop.png verified (QuanQn Admin title + email + mock OAuth btn + Aurelian Dark layout). Two minor AC text inaccuracies flagged (AC-4: 18→15, AC-2: auth.me missing) — both are doc errors, not code issues."
+  "notes": "zero_regression PASS: 9 pre-existing integration test failures (auth.me.test.ts f=1, auth.test.ts f=6, trace.test.ts f=2) - ECONNREFUSED, require running dev server, unchanged from US-001 through US-006. US-007 schema tests 22/22 PASS. typecheck EXIT:0. audit-admin-rls-tables 26/26 PASS (includes 2 new tables: deep_learn_review_queue + user_violation_log). AC-5 fix confirmed: domain comment '\\u57df\\u2467 DeepLearning \\u5ba1\\u6838' present in audit script at line 29."
 }

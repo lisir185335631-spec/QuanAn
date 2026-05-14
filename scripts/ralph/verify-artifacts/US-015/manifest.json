@@ -1,0 +1,17 @@
+{
+  "story_id": "US-015",
+  "validator_start_ts": "2026-05-13T01:42:00",
+  "validator_end_ts": "2026-05-13T01:45:30",
+  "test_command": "pnpm test (vitest run) + pnpm typecheck + pnpm audit:redlines-admin",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "notes": "零回归: 1238 tests, 9 pre-existing failures (auth.test.ts/auth.me.test.ts/trace.test.ts) — 全部因 ECONNREFUSED :3000 (API server not running), 与 US-015 无关。US-015 自身 21 tests 全通过 (cost-anomaly.job.test.ts 11 + detect-anomalies.service.test.ts 10). typecheck 0 errors. audit:redlines-admin ALL PASS.",
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ]
+}

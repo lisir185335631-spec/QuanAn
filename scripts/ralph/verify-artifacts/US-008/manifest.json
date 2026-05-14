@@ -1,35 +1,17 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-11T05:25:00",
-  "validator_end_ts": "2026-05-11T05:27:53",
-  "test_command": "pnpm vitest run tests/unit/api/daily-tasks-router.test.ts + pnpm vitest run (full 803 tests) + pnpm typecheck + pnpm lint + playwright test daily-tasks.spec.ts",
+  "validator_start_ts": "2026-05-13T04:08:00",
+  "validator_end_ts": "2026-05-13T04:18:00",
+  "test_command": "pnpm vitest run apps/api/src/workers/file-parser/__tests__/worker.test.ts apps/api/src/services/admin/content-review/__tests__/deep-learn-auto-verdict.service.test.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "全量测试 1491 tests: 9 pre-existing failures (auth.test.ts + trace.test.ts 需 dev server) 与 US-005/006 一致 US-008 无新引入失败。US-008 specific: 26 tests (16 worker + 9 verdict + 1 infra) 全绿。Typecheck 0 error。LD-A-5 grep verify 0 命中。audit-redlines 5 红线全 pre-existing (非 US-008 文件)。",
   "artifacts": [
-    "manifest.json",
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "vitest-full.xml",
-    "vitest-full.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "e2e.stdout.txt",
-    "screenshot-n0-empty.png",
-    "screenshot-n3-normal.png",
-    "screenshot-n5-max.png"
-  ],
-  "ac_results": {
-    "AC-1": "PASS - protectedProcedure双层防护: accountIsolationMiddleware (FORBIDDEN if activeAccountId null) + set_config RLS + explicit accountId WHERE clause in all 4 procedures. debugSeedTasks uses globalProcedure (dev-only, productionCheck).",
-    "AC-2": "PASS - getToday: findFirst(accountId, today midnight) returns DailyTask|null. markCompleted: updatedTasks.map(t.id===taskId→{...t,completed:true}) + completedCount=filter(completed).length → update. getHistory: findMany(accountId, orderBy taskDate desc, take limit, skip offset, max=30). regenerateToday: dailyTaskQueue.add(daily-task, {accountId,scheduledDate}, {jobId, priority=1}). All 14 unit tests pass.",
-    "AC-3": "PASS - DailyTasks.tsx renders TodaySection (CompletionBar N/M + TaskCard list) + HistorySection (7/30天 toggle + DailyTaskHistoryRow cards). screenshot-n0-empty/n3-normal/n5-max confirm correct rendering.",
-    "AC-4": "PASS - handleComplete(): utils.dailyTasks.getToday.setData optimistic update first (completedCount+1, task.completed=true) → await markCompleted.mutateAsync → refetchToday. onError rollback via utils.setData(previousToday) + toast.error('标记失败').",
-    "AC-5": "PASS - isRegenerating state triggers refetchInterval=3000ms on getToday query. 30s timeout via setTimeout(→setIsRegenerating(false), 30000). useEffect stops polling when today.tasks.length>0. Loading UI shown during regeneration.",
-    "AC-6": "PASS - playwright test daily-tasks.spec.ts 2/2 (chromium+mobile) pass. 3 screenshots saved: screenshot-n0-empty.png (今日任务尚未生成+立即生成), screenshot-n3-normal.png (1/3 bar+3 tasks), screenshot-n5-max.png (1/5 bar+5 tasks).",
-    "AC-7": "PASS - No console errors in e2e test. markCompleted optimistic update immediate via setData before mutation.",
-    "AC-8": "PASS - pnpm typecheck 6 workspaces 0 errors. pnpm lint --max-warnings=0 all clean. pnpm vitest run 803 tests 0 failures.",
-    "Typecheck passes": "PASS - tsc --noEmit exits 0 on all packages.",
-    "Tests pass": "PASS - 14 unit tests (daily-tasks-router.test.ts) + 803 full suite 0 failures. playwright daily-tasks.spec.ts 2/2."
-  },
-  "zero_regression_detail": "Full vitest suite: 85 test files, 803 tests, 0 failures, 0 errors. Exit code 0."
+    "manifest.json"
+  ]
 }

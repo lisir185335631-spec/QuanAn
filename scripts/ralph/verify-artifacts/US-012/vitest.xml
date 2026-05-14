@@ -1,57 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="26" failures="0" errors="0" time="0.17">
-    <testsuite name="tests/unit/web/pages/VoiceChat.test.tsx" timestamp="2026-05-11T08:51:21.000Z" hostname="returndeMacBook-Pro.local" tests="26" failures="0" errors="0" skipped="0" time="0.002783916">
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; 页面包含 record-button data-testid" time="0.000650333">
+<testsuites name="vitest tests" tests="34" failures="0" errors="0" time="0.149">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" timestamp="2026-05-12T16:25:43.524Z" hostname="returndeMacBook-Pro.local" tests="34" failures="0" errors="0" skipped="0" time="0.010137625">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=user groupBy=day returns correct shape" time="0.002280916">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; 页面包含 turn-list data-testid" time="0.00009175">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=specialist groupBy=week returns correct shape" time="0.000307333">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; 页面包含 status bar aria-live polite" time="0.000076375">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=model groupBy=month returns correct shape" time="0.000244292">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-1: 页面结构 — 录音按钮 + turn list + status bar &gt; STATUS_LABEL 包含所有 6 个状态" time="0.000102958">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=provider groupBy=day returns correct shape" time="0.000222167">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; 使用 navigator.mediaDevices.getUserMedia({ audio: true })" time="0.000069333">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; multiple rows: totalCost sums with Decimal precision" time="0.000243708">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; 30s max timer 存在" time="0.00006875">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; empty data returns {aggregations:[], summary:{totalCost:&quot;0.00&quot;}}" time="0.000227792">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; onMouseDown + onMouseUp 绑定录音操作" time="0.000078833">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; startDate &gt; endDate throws BAD_REQUEST" time="0.000351916">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-2: MediaRecorder · max 30s · 按住录 + 松开发 &gt; MediaRecorder webm/opus mimeType 选择逻辑" time="0.000062">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; date range &gt; 365 days throws BAD_REQUEST with &quot;date range too large&quot;" time="0.000168166">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; 调用 trpc.stt.transcribe.useMutation" time="0.000062166">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; callCount converts bigint to number" time="0.000171667">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; 调用 trpcClient.voiceChat.start.subscribe" time="0.000063333">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; returns userTop10 with correct shape" time="0.000284792">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; UserBubble 组件存在" time="0.000053209">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; returns accountTop10 with correct shape" time="0.000178584">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-3: STT → user bubble → voiceChat.start subscription &gt; AssistantBubble 组件存在" time="0.000055917">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; handles null _sum.costUsd as &quot;0&quot;" time="0.000120666">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-4: done event → tts.synthesize → audio play &gt; 调用 trpcClient.tts.synthesize.mutate" time="0.000051834">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; both lists empty when no data" time="0.00010425">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-4: done event → tts.synthesize → audio play &gt; &lt;audio&gt; 元素带 autoPlay" time="0.000057792">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; groups by agentId and returns expected shape" time="0.000229">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-4: done event → tts.synthesize → audio play &gt; audioUrl 字段用于播放" time="0.000069458">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; avgCostPerCall = totalCost / callCount (Decimal precision)" time="0.000154834">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-5: 5 工具 call card 渲染 · 折叠展开 &gt; ToolCallCard 组件存在" time="0.000064542">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; avgCostPerCall is &quot;0&quot; when callCount is 0" time="0.000127708">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-5: 5 工具 call card 渲染 · 折叠展开 &gt; expanded 字段控制折叠" time="0.000072834">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; returns [] when no data" time="0.000093708">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-5: 5 工具 call card 渲染 · 折叠展开 &gt; args + result 渲染" time="0.000068417">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; users above $5 threshold are included in alerts" time="0.00021425">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-6: 30s silence detection &gt; silence timer 存在" time="0.000057042">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; users at or below $5 threshold are filtered out" time="0.000113834">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-6: 30s silence detection &gt; 还想聊什么吗 silence prompt" time="0.000057292">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; exactly $5.000001 is included" time="0.000117958">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; handleHangUp 函数存在" time="0.0000605">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; severity=low for $5-$10 range" time="0.000099625">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; SummaryPanel 显示总结" time="0.00005325">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; severity=medium for $10-$15 range" time="0.000100958">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; clearSessionMutation 调用" time="0.000057375">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; severity=high for &gt;= $15" time="0.000090959">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-7: 挂掉按钮 → clearBuffer + 总结 &gt; 本次对话 N 轮总结文案" time="0.000048959">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; returns [] when no users above threshold" time="0.000168042">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-9: 无 media stream leak &gt; getTracks().forEach(t =&gt; t.stop()) 释放 stream" time="0.000081125">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; returns email from user lookup" time="0.00009575">
         </testcase>
-        <testcase classname="tests/unit/web/pages/VoiceChat.test.tsx" name="AC-9: 无 media stream leak &gt; recorder.stream 字段访问" time="0.000048625">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; startDate &gt; endDate throws BAD_REQUEST" time="0.000204166">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; date range &gt; 365 days throws BAD_REQUEST &quot;date range too large&quot;" time="0.000126666">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; &gt; 500k rows throws BAD_REQUEST &quot;export rows &gt; 500000&quot;" time="0.000377333">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; returns CSV with correct header line" time="0.000284917">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; returns CSV rows with correct field values" time="0.000188209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; returns rowCount in result" time="0.000130917">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; empty data returns only header line" time="0.000104542">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; chunks DB reads: calls findMany multiple times for large datasets" time="0.00146775">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; exactly 500k rows succeeds (boundary)" time="0.00026075">
         </testcase>
     </testsuite>
 </testsuites>

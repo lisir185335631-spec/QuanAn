@@ -1,1 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="8" time="0.017" timestamp="2026-05-11T00:54:44.290011+08:00" hostname="returndeMacBook-Pro.local"><testcase classname="scripts.ralph.test_cleanup_stale" name="test_removes_files_older_than_threshold" time="0.001" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_keeps_files_within_threshold" time="0.000" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_removes_only_stale_keeps_fresh" time="0.001" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_multiple_story_dirs" time="0.001" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_no_verify_artifacts_dir" time="0.000" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_empty_story_dir" time="0.000" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_custom_threshold" time="0.000" /><testcase classname="scripts.ralph.test_cleanup_stale" name="test_logs_cleanup_message" time="0.000" /></testsuite></testsuites>
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="16" failures="0" errors="0" time="0.121">
+    <testsuite name="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" timestamp="2026-05-13T01:18:45.328Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.003122666">
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-1: 写 trendingReviewQueue.create · 不写 trendingItem" time="0.000927875">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; autoVerdict=auto_approved 时 status=auto_approved" time="0.0001035">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; autoVerdict=auto_rejected 时 status=auto_rejected · 违禁词命中" time="0.000086875">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; autoVerdict=needs_review 时 status=pending · 抽样率=1" time="0.000067459">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-4: P2002 重复 → log warn 不 throw" time="0.000935542">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; 非 P2002 错误正常 rethrow" time="0.000317792">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-7: 成功写入后写 data_mutation/scraper_enqueue 审计日志" time="0.000094291">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-1 反向验证: autoScanResult 是 Json 对象写入" time="0.0001665">
+        </testcase>
+        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; P2002 时不写 data_mutation 审计" time="0.000086834">
+        </testcase>
+    </testsuite>
+    <testsuite name="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" timestamp="2026-05-13T01:18:45.329Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.0005685">
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 命中违禁词 → auto_rejected" time="0.00011775">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 0 hit + 抽样率=0 → auto_approved" time="0.000141875">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 0 hit + 抽样率=1 → needs_review (必然被抽中)" time="0.000039875">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; scanResult 含 checkedAt ISO 时间戳" time="0.000066708">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; bannedWords 大小写不敏感匹配" time="0.000027916">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 多条违禁词全部记录在 bannedWordHits" time="0.000074708">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 空内容 + 空规则 → auto_approved" time="0.000035">
+        </testcase>
+    </testsuite>
+</testsuites>

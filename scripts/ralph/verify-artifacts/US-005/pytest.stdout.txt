@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/middleware/__tests__/auth-lastlogin.test.ts > updateLastLogin > login success — calls prisma.user.update with lastLoginAt and lastLoginIp
+ ✓ apps/api/src/middleware/__tests__/auth-lastlogin.test.ts > updateLastLogin > login failure (DB error) — does not throw, logs warning
+ ✓ apps/api/src/middleware/__tests__/auth-lastlogin.test.ts > updateLastLogin > IPv4 address — stored correctly
+ ✓ apps/api/src/middleware/__tests__/auth-lastlogin.test.ts > updateLastLogin > IPv6 address (39 chars) — stored correctly, length ≤ 45
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  19:01:33
+   Duration  96ms (transform 16ms, setup 5ms, collect 11ms, tests 1ms, environment 0ms, prepare 20ms)
+

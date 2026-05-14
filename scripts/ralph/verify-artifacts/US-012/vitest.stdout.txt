@@ -1,10 +1,43 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ tests/unit/web/pages/VoiceChat.test.tsx (26 tests) 3ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > dimension=user groupBy=day returns correct shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > dimension=specialist groupBy=week returns correct shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > dimension=model groupBy=month returns correct shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > dimension=provider groupBy=day returns correct shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > multiple rows: totalCost sums with Decimal precision
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > empty data returns {aggregations:[], summary:{totalCost:"0.00"}}
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > startDate > endDate throws BAD_REQUEST
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > date range > 365 days throws BAD_REQUEST with "date range too large"
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > aggregate > callCount converts bigint to number
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > top10 > returns userTop10 with correct shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > top10 > returns accountTop10 with correct shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > top10 > handles null _sum.costUsd as "0"
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > top10 > both lists empty when no data
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > specialistBreakdown > groups by agentId and returns expected shape
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > specialistBreakdown > avgCostPerCall = totalCost / callCount (Decimal precision)
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > specialistBreakdown > avgCostPerCall is "0" when callCount is 0
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > specialistBreakdown > returns [] when no data
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > users above $5 threshold are included in alerts
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > users at or below $5 threshold are filtered out
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > exactly $5.000001 is included
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > severity=low for $5-$10 range
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > severity=medium for $10-$15 range
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > severity=high for >= $15
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > returns [] when no users above threshold
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > alerts > returns email from user lookup
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > startDate > endDate throws BAD_REQUEST
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > date range > 365 days throws BAD_REQUEST "date range too large"
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > > 500k rows throws BAD_REQUEST "export rows > 500000"
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > returns CSV with correct header line
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > returns CSV rows with correct field values
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > returns rowCount in result
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > empty data returns only header line
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > chunks DB reads: calls findMany multiple times for large datasets
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts > exportCsv > exactly 500k rows succeeds (boundary)
 
  Test Files  1 passed (1)
-      Tests  26 passed (26)
-   Start at  16:43:27
-   Duration  163ms (transform 15ms, setup 6ms, collect 9ms, tests 3ms, environment 0ms, prepare 30ms)
+      Tests  34 passed (34)
+   Start at  00:18:40
+   Duration  153ms (transform 40ms, setup 5ms, collect 57ms, tests 10ms, environment 0ms, prepare 20ms)
 

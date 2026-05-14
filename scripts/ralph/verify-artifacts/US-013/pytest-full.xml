@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="pytest-full-skipped" tests="0" errors="0" failures="0" skipped="1">
+    <testcase name="skipped" classname="frontend-only">
+      <skipped message="Admin frontend — no pytest/vitest test suite. Zero-regression via pnpm typecheck (exit 0) + verify-prd-12.sh (32 PASS 0 FAIL)." />
+    </testcase>
+  </testsuite>
+</testsuites>

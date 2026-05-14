@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="23" failures="0" errors="0" time="0.163">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" timestamp="2026-05-12T14:27:03.786Z" hostname="returndeMacBook-Pro.local" tests="23" failures="0" errors="0" skipped="0" time="0.024117084">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; returns empty string for null/undefined" time="0.000378583">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; returns plain string unchanged when no special chars" time="0.000069458">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; wraps in quotes when field contains comma" time="0.000055292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; escapes double quotes and wraps" time="0.000036458">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; wraps in quotes when field contains newline" time="0.000028833">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; wraps in quotes when field contains carriage return" time="0.00003975">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="escapeCsvField &gt; formats Date as ISO string" time="0.00021525">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="formatUserCsvRow &gt; formats a basic row with no special chars" time="0.000054">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="formatUserCsvRow &gt; outputs 1 for banned user" time="0.000065125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="formatUserCsvRow &gt; escapes email with special chars" time="0.000050209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="formatUserCsvRow &gt; includes lastLoginAt ISO string when set" time="0.000045">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="formatUserCsvRow &gt; includes industry field" time="0.000030042">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; returns 401 when no session cookie" time="0.00112275">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; returns 401 when session invalid" time="0.000193042">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; returns 400 with error message when row count &gt; 500k" time="0.006829209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; returns 200 with CSV content-type for empty result" time="0.000521709">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; streams all rows in a single chunk when count &lt;= 1000" time="0.000264167">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; iterates multiple chunks when findMany returns exactly 1000 rows" time="0.001010458">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; writes audit log on successful export" time="0.012097666">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; Content-Disposition header contains correct filename pattern" time="0.000149917">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; allows readonly_admin role to export (AC-10)" time="0.000127291">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; accepts exactly 500k rows without error (AC-7 edge)" time="0.000125958">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts" name="handleExportUsersCSV &gt; passes filter params to DB query" time="0.000198542">
+        </testcase>
+    </testsuite>
+</testsuites>

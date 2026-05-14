@@ -7,8 +7,8 @@ packages/schemas typecheck$ tsc --noEmit
 packages/ui typecheck$ tsc --noEmit
 packages/ui typecheck: Done
 packages/schemas typecheck: Done
-packages/clients typecheck$ tsc --noEmit
 apps/api typecheck$ tsc --noEmit
+packages/clients typecheck$ tsc --noEmit
 packages/clients typecheck: Done
 apps/api typecheck: Done
 apps/admin typecheck$ tsc --noEmit

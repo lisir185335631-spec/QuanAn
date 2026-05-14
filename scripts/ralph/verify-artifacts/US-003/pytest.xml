@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="26" failures="0" errors="0" time="0.119">
+    <testsuite name="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" timestamp="2026-05-13T01:55:09.315Z" hostname="returndeMacBook-Pro.local" tests="12" failures="0" errors="0" skipped="0" time="0.00366175">
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=true (default) &gt; 默认 constructor 使用 isMock=true (env 未设)" time="0.00034925">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=true (default) &gt; 扫描命中违禁词 → verdict=auto_rejected + hits 含匹配词" time="0.00062925">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=true (default) &gt; 无违禁词 → verdict=auto_approved + hits 为空" time="0.000171875">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=true (default) &gt; 大小写不敏感匹配" time="0.000049">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=true (default) &gt; 返回 checkedAt ISO 时间戳" time="0.000062667">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=true (default) &gt; 多词命中全部记录在 hits" time="0.000072833">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=false · ConfigurationError &gt; isMock=false + empty webhookUrl → 抛 ConfigurationError" time="0.000227417">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=false · ConfigurationError &gt; isMock=false + 有 URL → 不抛异常 (成功构造)" time="0.0000555">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=false · fetch fallback &gt; fetch 失败 → fallback needs_review (保守策略)" time="0.001453083">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=false · fetch fallback &gt; fetch 返回 verdict=auto_approved → 透传" time="0.000103834">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=false · fetch fallback &gt; fetch 返回 verdict=auto_rejected → 透传 hits" time="0.00008025">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts" name="BannedWordService · isMock=false · fetch fallback &gt; fetch 返回无 verdict 字段 → fallback needs_review" time="0.000049916">
+        </testcase>
+    </testsuite>
+    <testsuite name="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" timestamp="2026-05-13T01:55:09.316Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.000985875">
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 空文本 → total=0 全部空数组" time="0.000259917">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 检出单个身份证号" time="0.000132875">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 身份证末位 X 也能识别" time="0.000104708">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 检出单个中国手机号" time="0.000035625">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 手机号段 1[3-9] 覆盖: 138/159/180/199" time="0.00003175">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 检出 email 地址" time="0.000031916">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 检出银行卡号(16位)" time="0.000026084">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 混合 PII 文本 → total = 各类之和" time="0.000039334">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · detect &gt; 无 PII 文本 → total=0" time="0.000028292">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · redact &gt; 身份证 → [ID-REDACTED]" time="0.000035917">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · redact &gt; 手机 → [PHONE-REDACTED]" time="0.000042083">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · redact &gt; email → [EMAIL-REDACTED]" time="0.000044917">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · redact &gt; 混合 PII 全部被替换" time="0.00005375">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts" name="PIIDetectionService · redact &gt; 无 PII 文本 redact → 原样返回" time="0.000027041">
+        </testcase>
+    </testsuite>
+</testsuites>

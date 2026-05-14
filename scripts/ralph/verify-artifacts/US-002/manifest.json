@@ -1,17 +1,19 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-12T04:15:00",
-  "validator_end_ts": "2026-05-12T04:25:00",
-  "test_command": "pnpm vitest run tests/unit/admin/auth-lucia.test.ts tests/unit/admin/auth-router.test.ts tests/integration/admin/auth-flow.test.ts && pnpm vitest run (full) && pnpm typecheck && agent-browser ACs 17-21",
+  "validator_start_ts": "2026-05-13T09:17:00",
+  "validator_end_ts": "2026-05-13T09:19:30",
+  "test_command": "pnpm vitest run (US-002 unit: 16 tests) + pnpm test (full: 1360 passed/9 failed) + pnpm typecheck + pnpm audit:redlines-admin",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "9 pre-existing integration test failures (auth.test.ts x6, auth.me.test.ts x1, trace.test.ts x2) — all ECONNREFUSED port 3000, require live server. Confirmed identical before/after git stash. NOT introduced by US-002.",
   "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "unit-tests.stdout.txt"
-  ],
-  "notes": "All 21 ACs verified. Unit tests: 17 auth-lucia + 8 auth-router + 1 auth-flow = 26 pass. Zero regression: 103 files, 961 tests pass (4 skipped), 0 failed. Typecheck: all 6 workspaces clean. CORS fix (commit 4d236db) moved /trpc/admin/* CORS before /trpc/* — browser ACs 17-21 now pass. Browser: login page email input + mock OAuth button (DEV) + Google stub disabled verified; super@quanqn.com login → admin_session_id cookie (HttpOnly, SameSite=Lax) + redirect to /admin + session restores on reload + invalid email shows [alert] toast."
+    "audit-redlines-admin.stdout.txt"
+  ]
 }

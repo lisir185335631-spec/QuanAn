@@ -1,0 +1,18 @@
+{
+  "story_id": "US-016",
+  "validator_start_ts": "2026-05-13T02:07:00",
+  "validator_end_ts": "2026-05-13T02:12:00",
+  "test_command": "pnpm test apps/api/src/trpc/routers/admin/__tests__/audit.test.ts + pnpm typecheck",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "notes": "35/35 story unit tests pass. Full suite: 1264 passed, 9 failed — all 9 are pre-existing integration tests requiring live server (ECONNREFUSED :3000), confirmed pre-existing by stash test. AC-1 uses adminProcedure (= publicAdminProcedure + 6 middleware gates) which is correct per audit-admin-rls.ts 32 procedures / 0 violations. audit-redlines-admin.sh ALL PASS. audit-approval-gates.ts ALL PASS. typecheck 0 errors.",
+  "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ]
+}
