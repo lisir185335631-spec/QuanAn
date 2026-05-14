@@ -15,6 +15,7 @@ import {
 } from '@/services/admin/approval/approvalGateService';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
+import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -320,8 +321,8 @@ export const approvalsRouter = adminTrpcRouter({
             : { decisionReason: input.decisionReason },
       }).catch(() => {});
 
-      // Stub notification: console.log (AC-11 · 真启留 PRR)
-      console.log(`[STUB] Notify requester ${result.requesterAdminId}: request ${input.requestId} approved`);
+      // Stub notification: logger.info (AC-11 · 真启留 PRR)
+      logger.info(`[STUB] Notify requester ${result.requesterAdminId}: request ${input.requestId} approved`);
 
       return { ok: true, displayStatus: deriveDisplayStatus(result) };
     }),
@@ -361,8 +362,8 @@ export const approvalsRouter = adminTrpcRouter({
         },
       });
 
-      // Stub notification: console.log (AC-11 · 真启留 PRR)
-      console.log(`[STUB] Notify requester ${req.requesterAdminId}: request ${req.id} rejected`);
+      // Stub notification: logger.info (AC-11 · 真启留 PRR)
+      logger.info(`[STUB] Notify requester ${req.requesterAdminId}: request ${req.id} rejected`);
 
       await logAdminAction({
         actorAdminId: adminId,
@@ -413,7 +414,7 @@ export const approvalsRouter = adminTrpcRouter({
       }).catch(() => {});
 
       // Stub notification
-      console.log(`[STUB] Emergency approval ${result.id} notified (isMock=true · D-077)`);
+      logger.info(`[STUB] Emergency approval ${result.id} notified (isMock=true · D-077)`);
 
       return { ok: true, id: result.id };
     }),
