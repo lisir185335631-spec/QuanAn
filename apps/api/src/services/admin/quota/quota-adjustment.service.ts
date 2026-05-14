@@ -355,6 +355,7 @@ export interface AnomalousUserRow {
   usagePct: number;
   isOnWhitelist: boolean;
   whitelistExpiresAt: Date | null;
+  lastCallAt: Date | null;
   id: number;
 }
 
@@ -392,6 +393,7 @@ export async function listAnomalousUsers(
     usage_pct: number;
     is_on_whitelist: boolean;
     whitelist_expires_at: Date | null;
+    last_call_at: Date | null;
   }>>`
     SELECT
       uq.id,
@@ -402,7 +404,8 @@ export async function listAnomalousUsers(
       uq.daily_quota,
       CASE WHEN uq.daily_quota > 0 THEN ROUND(uq.daily_used::float / uq.daily_quota * 100) ELSE 0 END AS usage_pct,
       uq.is_on_whitelist,
-      uq.whitelist_expires_at
+      uq.whitelist_expires_at,
+      (SELECT MAX(cl.created_at) FROM cost_log cl WHERE cl.user_id = uq.user_id) AS last_call_at
     FROM user_quota uq
     JOIN "user" u ON u.id = uq.user_id
     WHERE uq.daily_quota > 0
@@ -428,6 +431,7 @@ export async function listAnomalousUsers(
       usagePct: Number(r.usage_pct),
       isOnWhitelist: r.is_on_whitelist,
       whitelistExpiresAt: r.whitelist_expires_at,
+      lastCallAt: r.last_call_at,
     })),
     nextCursor: hasMore ? data[data.length - 1]?.id : undefined,
   };

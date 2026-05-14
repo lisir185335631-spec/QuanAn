@@ -134,6 +134,7 @@ export default function QuotaPage() {
           usagePct: item.usagePct,
           isOnWhitelist: item.isOnWhitelist,
           whitelistExpiresAt: item.whitelistExpiresAt,
+          lastCallAt: item.lastCallAt,
         }));
         if (cursor) {
           setDisplayItems((prev) => [...prev, ...rows]);
@@ -225,6 +226,14 @@ export default function QuotaPage() {
         <span style={{ color: r.isOnWhitelist ? '#22c55e' : 'var(--text-muted)', fontSize: 11 }}>
           {r.isOnWhitelist ? `是 · ${fmtDate(r.whitelistExpiresAt)}` : '否'}
         </span>
+      ),
+    },
+    {
+      key: 'lastCallAt',
+      label: '最后调用',
+      width: '110px',
+      render: (r) => (
+        <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{fmtDate(r.lastCallAt)}</span>
       ),
     },
     {

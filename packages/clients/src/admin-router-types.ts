@@ -716,6 +716,7 @@ const _shadowAdminRouter = _t.router({
             usagePct: number;
             isOnWhitelist: boolean;
             whitelistExpiresAt: Date | null;
+            lastCallAt: Date | null;
           }>;
           nextCursor: number | undefined;
         } => ({ items: [], nextCursor: undefined }),
@@ -777,6 +778,15 @@ const _shadowAdminRouter = _t.router({
         nextCursor: undefined,
       })),
     getActiveAdjustments: _t.procedure
+      .input((x: unknown) => x as { userId?: number })
+      .query(
+        (): Array<{
+          id: number; userId: number; adminId: number; field: string;
+          delta: number | null; reason: string; expiresAt: Date; isExpired: boolean;
+          expiredAt: Date | null; createdAt: Date;
+        }> => [],
+      ),
+    getExpiredAdjustments: _t.procedure
       .input((x: unknown) => x as { userId?: number })
       .query(
         (): Array<{

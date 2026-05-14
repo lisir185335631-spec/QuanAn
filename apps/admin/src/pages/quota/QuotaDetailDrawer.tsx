@@ -28,6 +28,7 @@ export interface QuotaUserRow {
   usagePct: number;
   isOnWhitelist: boolean;
   whitelistExpiresAt: Date | string | null;
+  lastCallAt: Date | string | null;
 }
 
 interface Props {
@@ -243,6 +244,11 @@ export function QuotaDetailDrawer({ selected, role, onClose, onAdjusted }: Props
     { enabled: !!selected, staleTime: 30_000 },
   );
 
+  const { data: expiredAdj } = adminTrpc.quota.getExpiredAdjustments.useQuery(
+    { userId: selected?.userId },
+    { enabled: !!selected, staleTime: 60_000 },
+  );
+
   if (!selected) return null;
 
   const hourlyChartData =
@@ -252,6 +258,7 @@ export function QuotaDetailDrawer({ selected, role, onClose, onAdjusted }: Props
     })) ?? [];
 
   const activeAdjList = activeAdj ?? [];
+  const expiredAdjList = expiredAdj ?? [];
 
   return (
     <>
@@ -348,6 +355,30 @@ export function QuotaDetailDrawer({ selected, role, onClose, onAdjusted }: Props
                 <span style={{ color: 'var(--text-muted)', marginLeft: 8 }}>
                   至 {fmtDate(adj.expiresAt)}
                 </span>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Historical (expired) adjustments */}
+        <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, padding: 14 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+            历史调整记录（已失效，共 {expiredAdjList.length} 条）
+          </div>
+          {expiredAdjList.length === 0 ? (
+            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>暂无历史调整记录</div>
+          ) : (
+            expiredAdjList.map((adj: { id: number; field: string; delta: number | null; expiresAt: Date | string; reason: string }) => (
+              <div
+                key={adj.id}
+                style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}
+              >
+                <span style={{ fontWeight: 600 }}>{adj.field}</span>
+                {adj.delta ? ` +${adj.delta}` : ' (whitelist)'}
+                <span style={{ marginLeft: 8 }}>· 至 {fmtDate(adj.expiresAt)}</span>
+                {adj.reason && (
+                  <div style={{ fontSize: 11, marginTop: 2, fontStyle: 'italic' }}>{adj.reason}</div>
+                )}
               </div>
             ))
           )}

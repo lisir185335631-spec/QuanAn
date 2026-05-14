@@ -183,6 +183,27 @@ export const quotaRouter = adminTrpcRouter({
       return result;
     }),
 
+  // ── getExpiredAdjustments (US-009 AC-5) ───────────────────────────────
+  // Historical (expired) adjustments for a user — AC-5 历史 adjustments 列表
+
+  getExpiredAdjustments: adminProcedure
+    .input(
+      z.object({
+        userId: z.number().int().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const now = new Date();
+      return prisma.quotaAdjustmentLog.findMany({
+        where: {
+          OR: [{ isExpired: true }, { expiresAt: { lte: now } }],
+          ...(input.userId ? { userId: input.userId } : {}),
+        },
+        orderBy: { expiresAt: 'desc' },
+        take: 20,
+      });
+    }),
+
   // ── listAdjustmentLog ──────────────────────────────────────────────────
 
   listAdjustmentLog: adminProcedure
