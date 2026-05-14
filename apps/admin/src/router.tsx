@@ -15,7 +15,7 @@ import EvolutionHealthPage from './pages/evolutionHealth/EvolutionHealthPage';
 import InvitesPage from './pages/invites/index';
 import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
 import NsmDashboard from './pages/nsm/index';
-import PromptsPlaceholder from './pages/admin/placeholder/prompts';
+import PromptsPage from './pages/prompts/PromptsPage';
 import QuotaPlaceholder from './pages/admin/placeholder/quota';
 import ReviewDeepLearnPage from './pages/reviewDeepLearn/index';
 import ReviewTrendingPage from './pages/reviewTrending/index';
@@ -45,7 +45,7 @@ export function AdminRoutes() {
 
         {/* P1 健康度 */}
         <Route path="evolution-health" element={<EvolutionHealthPage />} />
-        <Route path="prompts" element={<PromptsPlaceholder />} />
+        <Route path="prompts" element={<PromptsPage />} />
         <Route path="quota" element={<QuotaPlaceholder />} />
         <Route path="compliance" element={<CompliancePlaceholder />} />
         <Route path="approval" element={<ApprovalPlaceholder />} />

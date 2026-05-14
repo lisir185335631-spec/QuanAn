@@ -562,7 +562,100 @@ const _shadowAdminRouter = _t.router({
         } => ({ violations: [], total: 0 }),
       ),
   }),
-  prompts: _t.router({}),
+  prompts: _t.router({
+    getActiveVersion: _t.procedure
+      .input((x: unknown) => x as { specialistId: string; mode?: string })
+      .query(
+        (): {
+          version: {
+            id: number;
+            specialistId: string;
+            mode: string;
+            version: number;
+            content: string;
+            contentHash: string;
+            status: string;
+            judgeScore: string | null;
+            createdByAdminId: number;
+            createdAt: Date;
+            approvedByAdminId: number | null;
+            approvedAt: Date | null;
+          } | null;
+          canaryConfig: {
+            id: number;
+            specialistId: string;
+            mode: string;
+            currentVersionId: number;
+            nextVersionId: number | null;
+            canaryPct: number;
+            strategy: string;
+            updatedByAdminId: number;
+            updatedAt: Date;
+          } | null;
+        } => ({ version: null, canaryConfig: null }),
+      ),
+    listVersions: _t.procedure
+      .input((x: unknown) => x as { specialistId: string; mode?: string; limit?: number })
+      .query(
+        (): {
+          versions: Array<{
+            id: number;
+            specialistId: string;
+            mode: string;
+            version: number;
+            content: string;
+            contentHash: string;
+            status: string;
+            judgeScore: string | null;
+            createdByAdminId: number;
+            createdAt: Date;
+            approvedByAdminId: number | null;
+            approvedAt: Date | null;
+          }>;
+        } => ({ versions: [] }),
+      ),
+    saveDraft: _t.procedure
+      .input((x: unknown) => x as { specialistId: string; mode?: string; content: string })
+      .mutation(
+        (): {
+          version: {
+            id: number;
+            specialistId: string;
+            mode: string;
+            version: number;
+            content: string;
+            contentHash: string;
+            status: string;
+            judgeScore: string | null;
+            createdByAdminId: number;
+            createdAt: Date;
+            approvedByAdminId: number | null;
+            approvedAt: Date | null;
+          };
+        } => ({
+          version: {
+            id: 0,
+            specialistId: '',
+            mode: 'default',
+            version: 0,
+            content: '',
+            contentHash: '',
+            status: 'draft',
+            judgeScore: null,
+            createdByAdminId: 0,
+            createdAt: new Date(),
+            approvedByAdminId: null,
+            approvedAt: null,
+          },
+        }),
+      ),
+    submitForReview: _t.procedure
+      .input((x: unknown) => x as { versionId: number })
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    rollbackVersion: _t.procedure
+      .input((x: unknown) => x as { specialistId: string; mode?: string })
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+  }),
   quota: _t.router({}),
   nsm: _t.router({
     getOverview: _t.procedure.query(
