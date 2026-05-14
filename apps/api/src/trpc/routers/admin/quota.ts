@@ -1,7 +1,9 @@
-// PRD-13 US-005 · adminRouter.quota — 6 procedures
+// PRD-13 US-005 · adminRouter.quota — 10 procedures
 // AC-10: getQuotaOverview · listUserQuotas · getUserDetail · adjustQuota (Approval) · listAdjustmentLog · getActiveAdjustments
+// PRD-13 US-009: + getUsageStats · getHourlyTrend · listAnomalousUsers · getUserHourlyTimeline
 // SHIELD: readonly_admin → FORBIDDEN on mutations
 // SHIELD: whitelist bypass only when whitelistExpiresAt valid (AC-9/11)
+// LD-A-8: user_quota 写操作仅由 service._adjustQuotaInTx 调用 · 本 router 不直接修改
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
@@ -9,6 +11,10 @@ import {
   adjustUserQuota,
   listUserQuotas,
   getUserQuotaTimeline,
+  getUsageStatsByPlan,
+  getHourlyTrendByPlan,
+  listAnomalousUsers,
+  getUserHourlyTimeline,
 } from '@/services/admin/quota/quota-adjustment.service';
 import { scheduleQuotaExpiry } from '@/jobs/admin/quota-expiry.job';
 import { adminProcedure } from '@/trpc/procedures/admin';
@@ -44,6 +50,56 @@ export const quotaRouter = adminTrpcRouter({
 
     return { free, pro, enterprise, activeWhitelist: whitelist, total: free + pro + enterprise };
   }),
+
+  // ── getUsageStats (US-009) ─────────────────────────────────────────────
+  // Returns avg daily usage % per plan + anomalous user count (>= 80% quota used)
+
+  getUsageStats: adminProcedure
+    .input(
+      z.object({
+        anomalyThreshold: z.number().int().min(1).max(100).default(80),
+      }),
+    )
+    .query(async ({ input }) => {
+      return getUsageStatsByPlan(input.anomalyThreshold);
+    }),
+
+  // ── getHourlyTrend (US-009) ────────────────────────────────────────────
+  // 24h × plan grouped by hour for UsageLineChart
+
+  getHourlyTrend: adminProcedure.query(async () => {
+    return getHourlyTrendByPlan();
+  }),
+
+  // ── listAnomalousUsers (US-009) ────────────────────────────────────────
+  // Users with dailyUsed/dailyQuota >= threshold · filtered by plan + status
+
+  listAnomalousUsers: adminProcedure
+    .input(
+      z.object({
+        cursor: z.number().int().optional(),
+        limit: z.number().int().min(1).max(100).default(20),
+        plan: z.enum(['free', 'pro', 'enterprise']).optional(),
+        usageThreshold: z.number().int().min(1).max(100).default(80),
+        status: z.enum(['all', 'whitelisted', 'normal']).default('all'),
+      }),
+    )
+    .query(async ({ input }) => {
+      return listAnomalousUsers(input);
+    }),
+
+  // ── getUserHourlyTimeline (US-009) ────────────────────────────────────
+  // 24h hourly call breakdown for a specific user (drawer timeline)
+
+  getUserHourlyTimeline: adminProcedure
+    .input(
+      z.object({
+        userId: z.number().int(),
+      }),
+    )
+    .query(async ({ input }) => {
+      return getUserHourlyTimeline(input.userId);
+    }),
 
   // ── listUserQuotas ─────────────────────────────────────────────────────
 

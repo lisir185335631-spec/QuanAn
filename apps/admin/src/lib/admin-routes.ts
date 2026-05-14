@@ -113,7 +113,7 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     label: '配额管理',
     emoji: '⚖️',
     prd: 13,
-    requiredRole: 'admin',
+    requiredRole: 'readonly_admin',
     summary: '配额管理 · 账号 / 全局 / 调整记录 · 成本前置阀门',
     group: 'p1-health',
   },

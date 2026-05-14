@@ -676,7 +676,116 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
-  quota: _t.router({}),
+  quota: _t.router({
+    getQuotaOverview: _t.procedure.query(
+      (): { free: number; pro: number; enterprise: number; activeWhitelist: number; total: number } => ({
+        free: 0, pro: 0, enterprise: 0, activeWhitelist: 0, total: 0,
+      }),
+    ),
+    getUsageStats: _t.procedure
+      .input((x: unknown) => x as { anomalyThreshold?: number })
+      .query(
+        (): {
+          plans: Array<{ plan: string; count: number; avgUsagePct: number }>;
+          anomalousCount: number;
+        } => ({ plans: [], anomalousCount: 0 }),
+      ),
+    getHourlyTrend: _t.procedure.query(
+      (): Array<{ hour: string; plan: string; callCount: number }> => [],
+    ),
+    listAnomalousUsers: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            cursor?: number;
+            limit?: number;
+            plan?: 'free' | 'pro' | 'enterprise';
+            usageThreshold?: number;
+            status?: 'all' | 'whitelisted' | 'normal';
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            userId: number;
+            email: string;
+            plan: string;
+            dailyUsed: number;
+            dailyQuota: number;
+            usagePct: number;
+            isOnWhitelist: boolean;
+            whitelistExpiresAt: Date | null;
+          }>;
+          nextCursor: number | undefined;
+        } => ({ items: [], nextCursor: undefined }),
+      ),
+    getUserHourlyTimeline: _t.procedure
+      .input((x: unknown) => x as { userId: number })
+      .query((): Array<{ hour: number; callCount: number }> => []),
+    listUserQuotas: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { cursor?: number; limit?: number; plan?: string; search?: string },
+      )
+      .query((): { items: unknown[]; nextCursor: number | undefined } => ({
+        items: [],
+        nextCursor: undefined,
+      })),
+    getUserDetail: _t.procedure
+      .input((x: unknown) => x as { userId: number; timelineDays?: number })
+      .query(
+        (): {
+          quota: {
+            id: number; userId: number; plan: string;
+            dailyQuota: number; dailyUsed: number; monthlyQuota: number; monthlyUsed: number;
+            isOnWhitelist: boolean; whitelistExpiresAt: Date | null; updatedAt: Date;
+            adjustments: unknown[];
+          };
+          timeline: Array<{ date: string; callCount: number; costUsd: number }>;
+        } => ({
+          quota: {
+            id: 0, userId: 0, plan: 'free', dailyQuota: 0, dailyUsed: 0,
+            monthlyQuota: 0, monthlyUsed: 0, isOnWhitelist: false,
+            whitelistExpiresAt: null, updatedAt: new Date(), adjustments: [],
+          },
+          timeline: [],
+        }),
+      ),
+    adjustQuota: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            userId: number;
+            adjustmentType: 'increase_daily' | 'increase_monthly' | 'whitelist_add';
+            delta: number;
+            reason: string;
+          },
+      )
+      .mutation(
+        (): { adjustmentLogId?: number; approvalRequestId?: number; needsApproval: boolean } => ({
+          needsApproval: false,
+        }),
+      ),
+    listAdjustmentLog: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { userId?: number; adminId?: number; cursor?: number; limit?: number },
+      )
+      .query((): { items: unknown[]; nextCursor: number | undefined } => ({
+        items: [],
+        nextCursor: undefined,
+      })),
+    getActiveAdjustments: _t.procedure
+      .input((x: unknown) => x as { userId?: number })
+      .query(
+        (): Array<{
+          id: number; userId: number; adminId: number; field: string;
+          delta: number | null; reason: string; expiresAt: Date; isExpired: boolean;
+          expiredAt: Date | null; createdAt: Date;
+        }> => [],
+      ),
+  }),
   nsm: _t.router({
     getOverview: _t.procedure.query(
       (): {

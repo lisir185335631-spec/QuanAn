@@ -2,6 +2,7 @@
 // AC-4: _adjustQuotaInTx 原子写 user_quota + quota_adjustment_log + admin_audit_log
 // AC-5: adjustUserQuota · delta > 500 → requireDualApproval=true (D-093)
 // AC-6: listUserQuotas + getUserQuotaTimeline (cost_log 聚合 24h × N 天)
+// PRD-13 US-009: + getUsageStatsByPlan · getHourlyTrendByPlan · listAnomalousUsers · getUserHourlyTimeline
 // SHIELD: _adjustQuotaInTx 内部用 tx 确保原子性 (AC-4 教训)
 // SHIELD: whitelist_add 触发 whitelistExpiresAt = now() + 24h (AC-4)
 import { randomBytes } from 'node:crypto';
@@ -260,5 +261,202 @@ export async function getUserQuotaTimeline(
     date: r.date,
     callCount: Number(r.call_count),
     costUsd: Number(r.cost_usd ?? 0),
+  }));
+}
+
+// ── US-009 · getUsageStatsByPlan ───────────────────────────────────────────
+// Avg daily usage % per plan + anomalous count (dailyUsed/dailyQuota >= threshold)
+
+export interface PlanUsageStat {
+  plan: string;
+  count: number;
+  avgUsagePct: number;
+}
+
+export interface UsageStatsResult {
+  plans: PlanUsageStat[];
+  anomalousCount: number;
+}
+
+export async function getUsageStatsByPlan(threshold = 80): Promise<UsageStatsResult> {
+  const rows = await prisma.$queryRaw<Array<{
+    plan: string;
+    cnt: bigint;
+    avg_pct: number;
+    anomalous_cnt: bigint;
+  }>>`
+    SELECT
+      plan,
+      COUNT(*)::bigint AS cnt,
+      COALESCE(
+        AVG(CASE WHEN daily_quota > 0 THEN daily_used::float / daily_quota * 100 ELSE 0 END),
+        0
+      ) AS avg_pct,
+      COUNT(CASE WHEN daily_quota > 0 AND daily_used::float / daily_quota * 100 >= ${threshold} THEN 1 END)::bigint AS anomalous_cnt
+    FROM user_quota
+    GROUP BY plan
+  `;
+
+  const plans: PlanUsageStat[] = rows.map((r) => ({
+    plan: r.plan,
+    count: Number(r.cnt),
+    avgUsagePct: Math.round(Number(r.avg_pct) * 10) / 10,
+  }));
+
+  const anomalousCount = rows.reduce((sum, r) => sum + Number(r.anomalous_cnt), 0);
+
+  return { plans, anomalousCount };
+}
+
+// ── US-009 · getHourlyTrendByPlan ─────────────────────────────────────────
+// 24h × plan call count grouped by hour for UsageLineChart
+
+export interface HourlyTrendRow {
+  hour: string;
+  plan: string;
+  callCount: number;
+}
+
+export async function getHourlyTrendByPlan(): Promise<HourlyTrendRow[]> {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  const rows = await prisma.$queryRaw<Array<{
+    hour: string;
+    plan: string;
+    call_count: bigint;
+  }>>`
+    SELECT
+      TO_CHAR(DATE_TRUNC('hour', cl.created_at AT TIME ZONE 'Asia/Shanghai'), 'HH24:00') AS hour,
+      uq.plan,
+      COUNT(*)::bigint AS call_count
+    FROM cost_log cl
+    JOIN user_quota uq ON cl.user_id = uq.user_id
+    WHERE cl.created_at >= ${since}
+    GROUP BY 1, 2
+    ORDER BY 1 ASC, 2
+  `;
+
+  return rows.map((r) => ({
+    hour: r.hour,
+    plan: r.plan,
+    callCount: Number(r.call_count),
+  }));
+}
+
+// ── US-009 · listAnomalousUsers ────────────────────────────────────────────
+// Users with dailyUsed/dailyQuota >= threshold · with email + lastCallAt
+
+export interface AnomalousUserRow {
+  userId: number;
+  email: string;
+  plan: string;
+  dailyUsed: number;
+  dailyQuota: number;
+  usagePct: number;
+  isOnWhitelist: boolean;
+  whitelistExpiresAt: Date | null;
+  id: number;
+}
+
+export interface ListAnomalousUsersInput {
+  cursor?: number;
+  limit?: number;
+  plan?: 'free' | 'pro' | 'enterprise';
+  usageThreshold?: number;
+  status?: 'all' | 'whitelisted' | 'normal';
+}
+
+export async function listAnomalousUsers(
+  input: ListAnomalousUsersInput,
+): Promise<{ items: AnomalousUserRow[]; nextCursor: number | undefined }> {
+  const { cursor, limit = 20, plan, usageThreshold = 80, status = 'all' } = input;
+
+  const planFilter = plan ? Prisma.sql`AND uq.plan = ${plan}` : Prisma.empty;
+  const cursorFilter = cursor ? Prisma.sql`AND uq.id > ${cursor}` : Prisma.empty;
+  const statusFilter =
+    status === 'whitelisted'
+      ? Prisma.sql`AND uq.is_on_whitelist = true AND uq.whitelist_expires_at > NOW()`
+      : status === 'normal'
+        ? Prisma.sql`AND (uq.is_on_whitelist = false OR uq.whitelist_expires_at IS NULL OR uq.whitelist_expires_at <= NOW())`
+        : Prisma.empty;
+
+  const fetchLimit = limit + 1;
+
+  const rows = await prisma.$queryRaw<Array<{
+    id: number;
+    user_id: number;
+    email: string;
+    plan: string;
+    daily_used: number;
+    daily_quota: number;
+    usage_pct: number;
+    is_on_whitelist: boolean;
+    whitelist_expires_at: Date | null;
+  }>>`
+    SELECT
+      uq.id,
+      uq.user_id,
+      u.email,
+      uq.plan,
+      uq.daily_used,
+      uq.daily_quota,
+      CASE WHEN uq.daily_quota > 0 THEN ROUND(uq.daily_used::float / uq.daily_quota * 100) ELSE 0 END AS usage_pct,
+      uq.is_on_whitelist,
+      uq.whitelist_expires_at
+    FROM user_quota uq
+    JOIN "user" u ON u.id = uq.user_id
+    WHERE uq.daily_quota > 0
+      AND uq.daily_used::float / uq.daily_quota * 100 >= ${usageThreshold}
+      ${planFilter}
+      ${statusFilter}
+      ${cursorFilter}
+    ORDER BY uq.daily_used::float / uq.daily_quota DESC
+    LIMIT ${fetchLimit}
+  `;
+
+  const hasMore = rows.length > limit;
+  const data = hasMore ? rows.slice(0, limit) : rows;
+
+  return {
+    items: data.map((r) => ({
+      id: r.id,
+      userId: r.user_id,
+      email: r.email,
+      plan: r.plan,
+      dailyUsed: r.daily_used,
+      dailyQuota: r.daily_quota,
+      usagePct: Number(r.usage_pct),
+      isOnWhitelist: r.is_on_whitelist,
+      whitelistExpiresAt: r.whitelist_expires_at,
+    })),
+    nextCursor: hasMore ? data[data.length - 1]?.id : undefined,
+  };
+}
+
+// ── US-009 · getUserHourlyTimeline ─────────────────────────────────────────
+// 24h hourly call count for a specific user (drawer timeline)
+
+export interface HourlyTimelineEntry {
+  hour: number;
+  callCount: number;
+}
+
+export async function getUserHourlyTimeline(userId: number): Promise<HourlyTimelineEntry[]> {
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+  const rows = await prisma.$queryRaw<Array<{ hour: bigint; call_count: bigint }>>`
+    SELECT
+      EXTRACT(HOUR FROM created_at AT TIME ZONE 'Asia/Shanghai')::bigint AS hour,
+      COUNT(*)::bigint AS call_count
+    FROM cost_log
+    WHERE user_id = ${userId}
+      AND created_at >= ${since}
+    GROUP BY 1
+    ORDER BY 1 ASC
+  `;
+
+  return rows.map((r) => ({
+    hour: Number(r.hour),
+    callCount: Number(r.call_count),
   }));
 }

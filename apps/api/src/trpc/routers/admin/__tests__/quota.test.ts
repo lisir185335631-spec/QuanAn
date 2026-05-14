@@ -1,5 +1,5 @@
-// PRD-13 US-005 · adminRouter.quota unit tests — 6 procedures
-// AC-13: ≥ 6 tests
+// PRD-13 US-005 · adminRouter.quota unit tests — 10 procedures (US-005 + US-009)
+// AC-13: ≥ 6 tests (US-005) · US-009: + 4 new procedures
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
@@ -14,6 +14,14 @@ const mockListUserQuotas = vi.hoisted(() =>
   vi.fn().mockResolvedValue({ items: [], nextCursor: undefined }),
 );
 const mockGetUserQuotaTimeline = vi.hoisted(() => vi.fn().mockResolvedValue([]));
+const mockGetUsageStatsByPlan = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({ plans: [], anomalousCount: 0 }),
+);
+const mockGetHourlyTrendByPlan = vi.hoisted(() => vi.fn().mockResolvedValue([]));
+const mockListAnomalousUsers = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({ items: [], nextCursor: undefined }),
+);
+const mockGetUserHourlyTimeline = vi.hoisted(() => vi.fn().mockResolvedValue([]));
 const mockScheduleQuotaExpiry = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 
 const mockUserQuotaCount = vi.hoisted(() => vi.fn().mockResolvedValue(0));
@@ -32,6 +40,10 @@ vi.mock('@/services/admin/quota/quota-adjustment.service', () => ({
   adjustUserQuota: mockAdjustUserQuota,
   listUserQuotas: mockListUserQuotas,
   getUserQuotaTimeline: mockGetUserQuotaTimeline,
+  getUsageStatsByPlan: mockGetUsageStatsByPlan,
+  getHourlyTrendByPlan: mockGetHourlyTrendByPlan,
+  listAnomalousUsers: mockListAnomalousUsers,
+  getUserHourlyTimeline: mockGetUserHourlyTimeline,
 }));
 
 vi.mock('@/jobs/admin/quota-expiry.job', () => ({
@@ -157,6 +169,10 @@ beforeEach(() => {
   mockQuotaLogFindMany.mockResolvedValue([]);
   mockAuditFindFirst.mockResolvedValue(null);
   mockExecuteRawUnsafe.mockResolvedValue(undefined);
+  mockGetUsageStatsByPlan.mockResolvedValue({ plans: [], anomalousCount: 0 });
+  mockGetHourlyTrendByPlan.mockResolvedValue([]);
+  mockListAnomalousUsers.mockResolvedValue({ items: [], nextCursor: undefined });
+  mockGetUserHourlyTimeline.mockResolvedValue([]);
 });
 
 // ── getQuotaOverview ───────────────────────────────────────────────────────
@@ -293,5 +309,108 @@ describe('getActiveAdjustments', () => {
     expect(mockQuotaLogFindMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: expect.objectContaining({ isExpired: false }) }),
     );
+  });
+});
+
+// ── US-009 · getUsageStats ─────────────────────────────────────────────────
+
+describe('getUsageStats', () => {
+  it('returns usage stats by plan with anomalous count', async () => {
+    const mockStats = {
+      plans: [
+        { plan: 'free', count: 10, avgUsagePct: 45.5 },
+        { plan: 'pro', count: 3, avgUsagePct: 60.2 },
+      ],
+      anomalousCount: 2,
+    };
+    mockGetUsageStatsByPlan.mockResolvedValueOnce(mockStats);
+
+    const caller = makeCallerWith(SUPER_ADMIN);
+    const result = await caller.getUsageStats({ anomalyThreshold: 80 });
+
+    expect(result.plans).toHaveLength(2);
+    expect(result.anomalousCount).toBe(2);
+    expect(mockGetUsageStatsByPlan).toHaveBeenCalledWith(80);
+  });
+
+  it('uses default threshold of 80', async () => {
+    const caller = makeCallerWith(READONLY_ADMIN);
+    await caller.getUsageStats({ anomalyThreshold: 80 });
+    expect(mockGetUsageStatsByPlan).toHaveBeenCalledWith(80);
+  });
+});
+
+// ── US-009 · getHourlyTrend ────────────────────────────────────────────────
+
+describe('getHourlyTrend', () => {
+  it('returns hourly trend data grouped by plan', async () => {
+    const mockTrend = [
+      { hour: '10:00', plan: 'free', callCount: 12 },
+      { hour: '10:00', plan: 'pro', callCount: 5 },
+    ];
+    mockGetHourlyTrendByPlan.mockResolvedValueOnce(mockTrend);
+
+    const caller = makeCallerWith(SUPER_ADMIN);
+    const result = await caller.getHourlyTrend();
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toMatchObject({ hour: '10:00', plan: 'free', callCount: 12 });
+  });
+});
+
+// ── US-009 · listAnomalousUsers ────────────────────────────────────────────
+
+describe('listAnomalousUsers', () => {
+  it('returns anomalous users filtered by plan and threshold', async () => {
+    const mockUsers = {
+      items: [
+        {
+          id: 1, userId: 100, email: 'high@example.com', plan: 'free',
+          dailyUsed: 45, dailyQuota: 50, usagePct: 90,
+          isOnWhitelist: false, whitelistExpiresAt: null,
+        },
+      ],
+      nextCursor: undefined,
+    };
+    mockListAnomalousUsers.mockResolvedValueOnce(mockUsers);
+
+    const caller = makeCallerWith(SUPER_ADMIN);
+    const result = await caller.listAnomalousUsers({
+      plan: 'free',
+      usageThreshold: 80,
+      status: 'normal',
+      limit: 20,
+    });
+
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]).toMatchObject({ plan: 'free', usagePct: 90 });
+    expect(mockListAnomalousUsers).toHaveBeenCalledWith(
+      expect.objectContaining({ plan: 'free', usageThreshold: 80, status: 'normal' }),
+    );
+  });
+
+  it('allows readonly_admin to view anomalous users', async () => {
+    const caller = makeCallerWith(READONLY_ADMIN);
+    const result = await caller.listAnomalousUsers({ usageThreshold: 80, status: 'all', limit: 20 });
+    expect(result.items).toHaveLength(0);
+  });
+});
+
+// ── US-009 · getUserHourlyTimeline ─────────────────────────────────────────
+
+describe('getUserHourlyTimeline', () => {
+  it('returns 24h hourly call timeline for a user', async () => {
+    const mockTimeline = [
+      { hour: 10, callCount: 8 },
+      { hour: 14, callCount: 22 },
+    ];
+    mockGetUserHourlyTimeline.mockResolvedValueOnce(mockTimeline);
+
+    const caller = makeCallerWith(SUPER_ADMIN);
+    const result = await caller.getUserHourlyTimeline({ userId: 100 });
+
+    expect(result).toHaveLength(2);
+    expect(result[1]).toMatchObject({ hour: 14, callCount: 22 });
+    expect(mockGetUserHourlyTimeline).toHaveBeenCalledWith(100);
   });
 });
