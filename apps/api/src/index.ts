@@ -331,6 +331,11 @@ async function start(): Promise<void> {
   await scheduleViolationDetection();
   logger.info('violation_detection_cron.registered');
 
+  // AC-6 US-002 PRD-13: register emergency-post-review cron (0 30 3 * * * Asia/Shanghai)
+  const { scheduleEmergencyPostReview } = await import('./jobs/admin/emergency-post-review.job');
+  await scheduleEmergencyPostReview();
+  logger.info('emergency_post_review_cron.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }

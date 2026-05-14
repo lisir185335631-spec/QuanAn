@@ -744,12 +744,21 @@ model ApprovalRequest {
   isEmergency         Boolean @default(false)
   requesterReason     String  @db.Text
 
+  /// PRD-13 US-002 · dual approval 扩展字段
+  emergencyMode        Boolean @default(false)
+  emergencyIncidentId  String?
+  postReviewRequired   Boolean @default(false)
+  postReviewerAdminId  Int?
+  postReviewResult     String? // 'confirmed' | 'overturned' | 'partial'
+  postReviewedAt       DateTime?
+
   /// 决策
   status                String // 'pending' | 'approved' | 'rejected' |
   // 'expired' | 'auto_executed' | 'cancelled'
   approverAdminId       Int?
   decisionReason        String? @db.Text
   secondApproverAdminId Int?
+  secondApprovedAt      DateTime?
   secondDecisionReason  String? @db.Text
 
   /// 时间
@@ -766,6 +775,9 @@ model ApprovalRequest {
   @@index([approverAdminId])
   @@index([riskLevel, status])
   @@index([expiresAt])
+  @@index([requireDualApproval, status])
+  @@index([emergencyMode, postReviewRequired])
+  @@index([postReviewRequired, postReviewedAt])
   @@map("approval_requests")
 }
 
