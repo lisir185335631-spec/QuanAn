@@ -54,7 +54,7 @@ export async function _forceRebuildEvolutionInTx(
     where: { accountId },
     data: {
       isFallback: true,
-      levelAfter: 'rebuild',
+      levelAfter: 'rbld',
     },
   });
 

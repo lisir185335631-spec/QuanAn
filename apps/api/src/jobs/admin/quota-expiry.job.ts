@@ -28,7 +28,7 @@ export const quotaExpiryQueue = new Queue<QuotaExpiryJobPayload>(QUOTA_EXPIRY_QU
   },
 });
 
-async function processExpiry(adjustmentId: number): Promise<void> {
+export async function processExpiry(adjustmentId: number): Promise<void> {
   const adj = await prisma.quotaAdjustmentLog.findUnique({
     where: { id: adjustmentId },
     include: { userQuota: true },
