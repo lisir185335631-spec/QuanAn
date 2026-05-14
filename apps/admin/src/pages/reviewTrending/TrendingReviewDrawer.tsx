@@ -165,9 +165,8 @@ function ScanResultSection({ autoScanResult }: { autoScanResult: unknown }) {
     (result['bannedWordHits'] as string[] | undefined) ??
     (result['bannedWords'] as string[] | undefined) ??
     [];
-  // TD-053 note: trending 域 worker 不扫 PII (US-002 trending-auto-verdict 仅 banned-word 扫描)
-  // 仅 deep_learn 域 (US-008 deep-learn-auto-verdict) 才扫 PII · trending Drawer piiMatches 应永远为空
-  const piiMatches = (result['piiMatches'] as string[] | undefined) ?? [];
+  // trending 域 worker 不扫 PII (US-002 trending-auto-verdict 仅 banned-word 扫描) ·
+  // PII 渲染区块见 reviewDeepLearn/DeepLearnReviewDrawer.tsx (US-008 真扫 PII)。
   const score = result['score'];
   const verdict = result['verdict'];
 
@@ -235,43 +234,8 @@ function ScanResultSection({ autoScanResult }: { autoScanResult: unknown }) {
         </div>
       )}
 
-      {piiMatches.length > 0 && (
-        <div style={{ marginBottom: 12 }}>
-          <div
-            style={{
-              fontSize: 11,
-              color: 'var(--status-warn)',
-              fontWeight: 600,
-              marginBottom: 6,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-            }}
-          >
-            PII 命中 ({piiMatches.length})
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {piiMatches.map((p, i) => (
-              <span
-                key={i}
-                style={{
-                  fontSize: 11,
-                  color: '#f97316',
-                  background: 'rgba(249,115,22,0.1)',
-                  border: '1px solid rgba(249,115,22,0.3)',
-                  padding: '2px 7px',
-                  borderRadius: 3,
-                  fontWeight: 600,
-                }}
-              >
-                {p}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {bannedWords.length === 0 && piiMatches.length === 0 && (
-        <div style={{ fontSize: 12, color: 'var(--status-ok)' }}>✓ 未命中违禁词 · 未命中 PII</div>
+      {bannedWords.length === 0 && (
+        <div style={{ fontSize: 12, color: 'var(--status-ok)' }}>✓ 未命中违禁词</div>
       )}
 
       <details style={{ marginTop: 12 }}>
