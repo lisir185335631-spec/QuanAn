@@ -42,10 +42,15 @@ export default defineConfig({
       // @quanqn/schemas subpath exports — PRD-6 US-001 schema tests
       '@quanqn/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
       '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
+      // @quanqn/ui subpath exports — more-specific aliases MUST come before generic ones
       // @quanqn/ui/admin/pdf — PDF bill template (server-side only, apps/api)
       '@quanqn/ui/admin/pdf': path.resolve(__dirname, 'packages/ui/src/admin/PdfBillTemplate.tsx'),
       // @quanqn/ui/admin/forensic-pdf — forensic PDF template (server-side only, apps/api)
       '@quanqn/ui/admin/forensic-pdf': path.resolve(__dirname, 'packages/ui/src/admin/PdfForensicTemplate.tsx'),
+      // @quanqn/ui/admin — admin component library (DenseTable etc.) — AFTER more-specific paths
+      '@quanqn/ui/admin': path.resolve(__dirname, 'packages/ui/src/admin/index.ts'),
+      // recharts lives in apps/admin/node_modules — expose for admin tests
+      'recharts': path.resolve(__dirname, 'apps/admin/node_modules/recharts'),
       // @react-pdf/renderer lives in packages/ui/node_modules (installed there first)
       '@react-pdf/renderer': path.resolve(__dirname, 'packages/ui/node_modules/@react-pdf/renderer'),
     },
@@ -62,7 +67,7 @@ export default defineConfig({
     },
     environmentMatchGlobs: [
       // admin component tests need jsdom
-      ['tests/unit/admin/*.tsx', 'jsdom'],
+      ['tests/unit/admin/**/*.tsx', 'jsdom'],
     ],
     setupFiles: ['./tests/setup.ts'],
     coverage: {

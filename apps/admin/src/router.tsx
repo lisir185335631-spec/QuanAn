@@ -11,7 +11,7 @@ import AuditPage from './pages/audit/index';
 import CompliancePlaceholder from './pages/admin/placeholder/compliance';
 import ConfigPlaceholder from './pages/admin/placeholder/config';
 import CostPage from './pages/cost/index';
-import EvolutionPlaceholder from './pages/admin/placeholder/evolution';
+import EvolutionHealthPage from './pages/evolutionHealth/EvolutionHealthPage';
 import InvitesPage from './pages/invites/index';
 import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
 import NsmDashboard from './pages/nsm/index';
@@ -44,7 +44,7 @@ export function AdminRoutes() {
         <Route path="reviewDeepLearn" element={<ReviewDeepLearnPage />} />
 
         {/* P1 健康度 */}
-        <Route path="evolution" element={<EvolutionPlaceholder />} />
+        <Route path="evolution-health" element={<EvolutionHealthPage />} />
         <Route path="prompts" element={<PromptsPlaceholder />} />
         <Route path="quota" element={<QuotaPlaceholder />} />
         <Route path="compliance" element={<CompliancePlaceholder />} />

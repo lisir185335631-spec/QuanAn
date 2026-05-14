@@ -687,28 +687,85 @@ const _shadowAdminRouter = _t.router({
       ),
   }),
   evolution: _t.router({
-    getLDistribution: _t.procedure.query(
-      (): { L1: number; L2: number; L3: number; L4: number; L5: number } => ({
-        L1: 0, L2: 0, L3: 0, L4: 0, L5: 0,
-      }),
-    ),
+    getLDistribution: _t.procedure
+      .input((x: unknown) => x as { industryFilter?: string } | undefined)
+      .query(
+        (): { L1: number; L2: number; L3: number; L4: number; L5: number } => ({
+          L1: 0, L2: 0, L3: 0, L4: 0, L5: 0,
+        }),
+      ),
     getFlywheelHealth: _t.procedure.query(
       (): { stalledCount: number; conflictCount: number; healthyCount: number; status: 'green' | 'yellow' | 'red' } => ({
         stalledCount: 0, conflictCount: 0, healthyCount: 0, status: 'green',
       }),
     ),
-    listAnomalies: _t.procedure.query(
-      (): { items: Array<{ id: number; accountId: number; anomalyType: string; severity: string; evidence: unknown; detectedAt: Date; resolvedAt: Date | null; resolution: string | null; resolvedByAdminId: number | null }>; nextCursor: number | undefined } => ({
-        items: [], nextCursor: undefined,
-      }),
-    ),
-    getAccountTimeline: _t.procedure.query(
-      (): { profile: unknown; insights: unknown[]; anomalyFlags: unknown[] } => ({
-        profile: null, insights: [], anomalyFlags: [],
-      }),
-    ),
-    forceRebuildEvolution: _t.procedure.mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
-    markAnomalyResolved: _t.procedure.mutation((): { id: number; resolvedAt: Date | null; resolution: string | null } => ({ id: 0, resolvedAt: null, resolution: null })),
+    listAnomalies: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            cursor?: number;
+            limit?: number;
+            anomalyType?: 'conflicting_insights' | 'frequent_style_flip' | 'avoidlist_overflow' | 'flywheel_stalled' | 'negative_feedback_dominant';
+            resolved?: boolean;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            accountId: number;
+            anomalyType: string;
+            severity: string;
+            evidence: unknown;
+            detectedAt: Date;
+            resolvedAt: Date | null;
+            resolution: string | null;
+            resolvedByAdminId: number | null;
+          }>;
+          nextCursor: number | undefined;
+        } => ({ items: [], nextCursor: undefined }),
+      ),
+    getAccountTimeline: _t.procedure
+      .input((x: unknown) => x as { accountId: number })
+      .query(
+        (): {
+          profile: {
+            level: string;
+            satisfactionRate: number | null;
+            feedbackCountTotal: number;
+            lastEvolvedAt: Date | null;
+            autoEvolutionEnabled: boolean;
+          } | null;
+          insights: Array<{
+            id: number;
+            triggerType: string;
+            direction: string;
+            levelBefore: string | null;
+            levelAfter: string | null;
+            isFallback: boolean;
+            createdAt: Date;
+          }>;
+          anomalyFlags: Array<{
+            id: number;
+            anomalyType: string;
+            severity: string;
+            evidence: unknown;
+            detectedAt: Date;
+            resolvedAt: Date | null;
+            resolution: string | null;
+          }>;
+        } => ({ profile: null, insights: [], anomalyFlags: [] }),
+      ),
+    forceRebuildEvolution: _t.procedure
+      .input((x: unknown) => x as { accountId: number; reason: string })
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    markAnomalyResolved: _t.procedure
+      .input((x: unknown) => x as { flagId: number; resolution: 'admin_action' | 'false_positive' })
+      .mutation(
+        (): { id: number; resolvedAt: Date | null; resolution: string | null } => ({
+          id: 0, resolvedAt: null, resolution: null,
+        }),
+      ),
     getAnomalyStats: _t.procedure.query(
       (): { byType: Record<string, number>; bySeverity: Record<string, number>; last24h: number; last7d: number } => ({
         byType: {}, bySeverity: {}, last24h: 0, last7d: 0,

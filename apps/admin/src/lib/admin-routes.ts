@@ -91,11 +91,11 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
   },
   // P1 健康度 5
   {
-    path: '/admin/evolution',
+    path: '/admin/evolution-health',
     label: '进化档案监控',
     emoji: '🧬',
     prd: 13,
-    requiredRole: 'admin',
+    requiredRole: 'readonly_admin',
     summary: '进化档案监控 · EvolutionAgent 运行状态 / 异常账号 / 强制重跑',
     group: 'p1-health',
   },
