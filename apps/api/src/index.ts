@@ -336,6 +336,11 @@ async function start(): Promise<void> {
   await scheduleEmergencyPostReview();
   logger.info('emergency_post_review_cron.registered');
 
+  // AC-8 US-005 PRD-13: register quota-expiry cleanup cron (0 30 0 * * * Asia/Shanghai)
+  const { scheduleQuotaCleanup } = await import('./jobs/admin/quota-expiry.job');
+  await scheduleQuotaCleanup();
+  logger.info('quota_cleanup_cron.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }

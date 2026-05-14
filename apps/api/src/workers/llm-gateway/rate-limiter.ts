@@ -2,6 +2,7 @@
  * QuanQn · LLMGateway rate limiter
  * AC-2: @upstash/ratelimit token bucket (Free 50/日 · Pro 500/日 · Enterprise 5000/日)
  * When UPSTASH_REDIS_REST_URL is not set (local dev), passes through with a warning.
+ * PRD-13 US-005 AC-9: whitelist bypass — if whitelistExpiresAt valid, skip token bucket
  */
 
 import { Ratelimit } from '@upstash/ratelimit';
@@ -55,23 +56,26 @@ function getLimiter(plan: UserPlan): Ratelimit {
   return _limiters.get(plan)!;
 }
 
-/** Look up user plan from UserQuota table; defaults to 'free' */
-async function getUserPlan(userId: number): Promise<UserPlan> {
+/** Look up user quota row; returns null on error */
+async function getUserQuota(
+  userId: number,
+): Promise<{ plan: string; whitelistExpiresAt: Date | null; isOnWhitelist: boolean } | null> {
   try {
-    const quota = await (prisma as unknown as {
-      userQuota: { findUnique: (args: unknown) => Promise<{ plan: string } | null> };
-    }).userQuota.findUnique({ where: { userId } });
-    const plan = quota?.plan ?? 'free';
-    return (plan in PLAN_LIMITS ? plan : 'free') as UserPlan;
+    return await prisma.userQuota.findUnique({
+      where: { userId },
+      select: { plan: true, whitelistExpiresAt: true, isOnWhitelist: true },
+    });
   } catch {
-    return 'free';
+    return null;
   }
 }
 
 /**
  * Check rate limit for userId.
+ * PRD-13 US-005 AC-9: whitelist bypass checked FIRST — if whitelistExpiresAt valid, return immediately.
  * Throws RateLimitError if the daily quota is exhausted.
  * No-ops (with warning) when Upstash env vars are absent (local dev).
+ * SHIELD: whitelist check is pre-condition bypass, does NOT replace original Redis token bucket logic.
  */
 export async function checkRateLimit(userId: number): Promise<void> {
   const restUrl = process.env.UPSTASH_REDIS_REST_URL;
@@ -80,13 +84,21 @@ export async function checkRateLimit(userId: number): Promise<void> {
     return;
   }
 
-  const plan = await getUserPlan(userId);
-  const limiter = getLimiter(plan);
+  // AC-9: whitelist bypass — check before Redis token bucket
+  const quota = await getUserQuota(userId);
+  if (quota?.isOnWhitelist && quota.whitelistExpiresAt && quota.whitelistExpiresAt > new Date()) {
+    logger.info({ userId }, 'rate_limit.whitelisted_bypass');
+    return;
+  }
+
+  const plan = quota?.plan ?? 'free';
+  const safePlan = (plan in PLAN_LIMITS ? plan : 'free') as UserPlan;
+  const limiter = getLimiter(safePlan);
   const { success, reset } = await limiter.limit(`user:${userId}`);
 
   if (!success) {
     const resetAfterMs = reset ? Number(reset) - Date.now() : undefined;
-    logger.warn({ userId, plan, resetAfterMs }, 'rate_limit.exceeded');
+    logger.warn({ userId, plan: safePlan, resetAfterMs }, 'rate_limit.exceeded');
     throw new RateLimitError(userId, resetAfterMs);
   }
 }
