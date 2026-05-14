@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/audit-redlines-admin.sh
-# QuanQn admin 子系统 · 5 LD-A + 6 R-A 一键 grep 检测
-# AC-1(US-007): exit 0 必含 stdout 'ALL PASS · 5 LD-A + 6 R-A'
+# QuanQn admin 子系统 · 7 LD-A + 6 R-A 一键 grep 检测
+# AC-1(US-007): exit 0 必含 stdout 'ALL PASS · 7 LD-A + 6 R-A'
 # 派生自 AGENTS.md §10.4.1 + §10.4.2
 
 set -euo pipefail
@@ -14,10 +14,10 @@ fail() { echo "❌ $1"; FAIL=1; }
 pass() { echo "✅ $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn Admin · 5 LD-A + 6 R-A 红线检测"
+echo "  QuanQn Admin · 7 LD-A + 6 R-A 红线检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
-echo "【LD-A Locked Decision 检测 · 5 条】"
+echo "【LD-A Locked Decision 检测 · 7 条】"
 echo
 
 # ── LD-A1 · admin OAuth 独立(不复用主应用 OAuth client) ──────────────────────
@@ -114,6 +114,26 @@ if [ "$LDA6_FAIL" -eq 0 ]; then
   pass "LD-A6 · prompt_versions.status='active' 仅由 _publishPromptVersionInTx 修改"
 fi
 
+# ── LD-A7 · evolution_profile clear / evolution_insight resolved 仅由 _forceRebuildEvolutionInTx 修改 ──
+echo
+echo "  LD-A7: evolution_profile/insight 清空单点函数守护检测"
+LDA7_FAIL=0
+LDA7_HITS=$(grep -rn \
+  "prisma\.evolutionProfile\.update.*null\|prisma\.evolutionInsight\.updateMany.*resolved" \
+  apps/api/src --include="*.ts" 2>/dev/null \
+  | grep -v "_forceRebuildEvolutionInTx" \
+  | grep -v "evolution-rebuild\.service\.ts" \
+  | grep -v "\.test\." \
+  | grep -v "spec\." || true)
+if [ -n "$LDA7_HITS" ]; then
+  echo "$LDA7_HITS"
+  fail "LD-A7 违反 _forceRebuildEvolutionInTx 单点 · 发现绕过函数直接改 evolution_profile/insight 的代码"
+  LDA7_FAIL=1
+fi
+if [ "$LDA7_FAIL" -eq 0 ]; then
+  pass "LD-A7 · evolution_profile/insight 仅由 _forceRebuildEvolutionInTx 修改"
+fi
+
 echo
 echo "【R-A 红线检测 · 6 条】"
 echo
@@ -197,7 +217,7 @@ fi
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [[ $FAIL -eq 0 ]]; then
-  echo "ALL PASS · 6 LD-A + 6 R-A"
+  echo "ALL PASS · 7 LD-A + 6 R-A"
   exit 0
 else
   echo "FAIL · 上方红线检测未通过 · 请修复后重跑"
