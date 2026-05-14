@@ -46,14 +46,19 @@ ralph-output.log
 ralph-lock.json
 audit-gate.json
 cost-log.jsonl
-scripts/ralph/prd.json          # 运行时副本(switch-prd.sh 拷贝 · ralph 修改)· 不入库
+# scripts/ralph/prd.json · 运行时副本(switch-prd.sh 拷贝 · ralph 修改)· 不入库
+scripts/ralph/prd.json
 scripts/ralph/*.start.json
 scripts/ralph/*.done.json
 scripts/ralph/progress.txt
-scripts/ralph/agent-logs/       # ralph 跑时写的 prompt log · 不入库
-scripts/ralph/backups/          # ralph 自动 prd.json 备份 · 不入库
-scripts/ralph/__pycache__/      # python 缓存 · 不入库
-scripts/ralph/verify-artifacts/ # audit-artifacts.py 产物 · 不入库
+# scripts/ralph/agent-logs/ · ralph 跑时写的 prompt log · 历史一次入库 · 新生成不入
+scripts/ralph/agent-logs/
+# scripts/ralph/backups/ · ralph 自动 prd.json 备份 · 同上
+scripts/ralph/backups/
+# scripts/ralph/__pycache__/ · python 缓存 · 不入库
+scripts/ralph/__pycache__/
+# scripts/ralph/verify-artifacts/ · audit-artifacts.py 产物 · 历史一次入库 · 新生成不入
+scripts/ralph/verify-artifacts/
 .agents/tech-debt.json.bak
 .agents/plans/
 
