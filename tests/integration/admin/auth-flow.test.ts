@@ -31,7 +31,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await prismaTest.adminAuditLog.deleteMany({ where: { actorAdminId: { gt: 0 } } }).catch(() => undefined);
+  // Clean both seeded actor entries AND failed-login entries (actorAdminId=0) with our traceId
+  await prismaTest.adminAuditLog.deleteMany({
+    where: {
+      OR: [{ actorAdminId: { gt: 0 } }, { traceId: 'integration-test', actorAdminId: 0 }],
+    },
+  }).catch(() => undefined);
   await prismaTest.adminSession.deleteMany({ where: { adminUser: { email: TEST_EMAIL } } });
   await prismaTest.adminUser.delete({ where: { email: TEST_EMAIL } }).catch(() => undefined);
   await prismaTest.$disconnect();
