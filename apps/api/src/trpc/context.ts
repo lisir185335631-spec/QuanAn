@@ -34,10 +34,21 @@ export async function createContext(c: HonoCtx): Promise<TRPCContext> {
   let resolvedSessionId: string | null = null;
 
   if (isDevOAuthMock()) {
-    // DEV_OAUTH_MOCK=true: skip real OAuth, return seeded dev user (PRD-15 US-001 AC-3)
-    const devAttrs = await getDevMockUserAttrs(prisma);
-    if (devAttrs) {
-      user = devAttrs as unknown as User;
+    // When a session cookie is present, validate it first so integration tests that
+    // explicitly log in get the expected session user rather than the global mock.
+    // Fall back to the mock user only when no valid session exists (dev convenience).
+    if (sessionId) {
+      const { session, user: sessionUser } = await lucia.validateSession(sessionId);
+      if (session) {
+        user = sessionUser;
+        resolvedSessionId = session.id;
+      }
+    }
+    if (!user) {
+      const devAttrs = await getDevMockUserAttrs(prisma);
+      if (devAttrs) {
+        user = devAttrs as unknown as User;
+      }
     }
   } else if (sessionId) {
     const { session, user: sessionUser } = await lucia.validateSession(sessionId);

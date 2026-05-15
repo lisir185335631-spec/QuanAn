@@ -13,6 +13,10 @@ const serverAvailable = await fetch('http://localhost:3000/health', { signal: Ab
   .then((r) => r.ok)
   .catch(() => false);
 
+// DEV_OAUTH_MOCK=true: expired-session test is not applicable because
+// the server falls back to the mock user for any invalid/expired session.
+const devOAuthMock = process.env.DEV_OAUTH_MOCK === 'true';
+
 const API = 'http://localhost:3000';
 const prisma = new PrismaClient({
   datasources: { db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanqn' } },
@@ -85,7 +89,7 @@ describe.skipIf(!serverAvailable)('[E2E] CSRF + session lifecycle', () => {
     expect([301, 302, 303, 307, 308]).toContain(res.status);
   });
 
-  it('AC-11: expired session → auth.me returns unauthenticated', async () => {
+  it.skipIf(devOAuthMock)('AC-11: expired session → auth.me returns unauthenticated', async () => {
     // Create a real session then expire it in DB
     const cookie = await mockLogin();
     const sessionId = cookie.replace('app_session=', '');
