@@ -1,4 +1,4 @@
-[progress.txt 已截断: 原 566121 bytes → ~480583 bytes, Codebase Patterns 已保留]
+[progress.txt 已截断: 原 595401 bytes → ~505579 bytes, Codebase Patterns 已保留]
 
 ## Codebase Patterns - PRD-9 + PRD-10
 - vitest 多环境: 根 vitest.config.ts 默认 environment=node · tsx 测试文件需要 jsdom · 用 environmentMatchGlobs + @vitejs/plugin-react(v4.x 兼容 vite 5) · admin 组件 `@/` alias 与 API `@/` 冲突 → admin 源文件改用相对路径 · 测试直接用 `../../../apps/admin/src/` 绝对相对路径
@@ -13,6 +13,10 @@
 [progress.txt 已截断: 原 548464 bytes → ~465860 bytes, Codebase Patterns 已保留]
 
 [progress.txt 已截断: 原 557491 bytes → ~473310 bytes, Codebase Patterns 已保留]
+
+[progress.txt 已截断: 原 566121 bytes → ~480583 bytes, Codebase Patterns 已保留]
+
+
 
 
 
@@ -7575,3 +7579,293 @@ apps/api/src/specialists/ (13 specialists production) + apps/api/src/agents/spec
 
 PRD-12 → PRD-13: progress.txt + reject-examples.jsonl 跨 PRD 知识传递贡献 40% 的 0 reject 维持。Patterns 1-7 全部继承自 PRD-12 + 早期 PRD · 新加 patterns 8(TD 清理 hint)留 PRD-14 继承。
 
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-14 22:35 ---
+
+## [2026-05-14 22:50] - US-001
+- 实现了 PRD-14 US-001 · ab_experiments + ab_assignments schema + service + Approval 触发 · foundation
+- 主要工作:
+  · prisma/schema.prisma: AbExperiment 加 createdAt @default(now()) · 补齐标准字段(对齐 AdminAbExperiment)
+  · migration 20260514143912_prd_14_ab_experiments: ADD COLUMN created_at on ab_experiments · seed 0 row
+  · apps/api/src/services/admin/ab-experiment/ab-experiment.service.ts 新建:
+    - _startAbExperimentInTx(tx, {experimentId, adminId, approvalRequestId}): 接 tx 不自起 $transaction · status=running + startedAt=now() · audit eventType=ab_experiment_start eventCategory=high_risk_action
+    - _stopAbExperimentInTx(tx, {experimentId, adminId, stopReason, resultSummary?}): 接 tx · status=stopped + stoppedAt + resultSummary · audit eventType=ab_experiment_stop · stopReason 进 payload
+    - createAbExperiment(params): 创建 draft 实验 · trafficAllocation.control+variant_a+variant_b 必须=100
+    - startAbExperiment(params): 强制 requireDualApproval=true · actionType='start_ab_experiment' · riskLevel='high'
+    - assignUserToVariant(experimentId, userId): md5(userId:experimentKey).slice(0,8) % 100 按 trafficAllocation 累积阈值分组 · upsert update:{} 保证同一用户不重新分组
+  · apps/api/src/services/admin/approval/approvalGateService.ts: 加 'start_ab_experiment' 到 ApprovalActionType union + DUAL_APPROVAL_ACTION_TYPES set · 不影响现有 8 actionType
+  · AGENTS.md §10.1: 5 条→9 条 · 加 LD-A9 节 · ab_experiments status/startedAt/stoppedAt/resultSummary 仅由 _startAbExperimentInTx / _stopAbExperimentInTx 修改
+  · scripts/audit-redlines-admin.sh: 8→9 LD-A · 加 LD-A9 grep 检测段(ab-experiment.service.ts + ab-stop-loss.job.ts 合法源排除)
+  · tests: 12 新 unit tests · _startAbExperimentInTx×3 + _stopAbExperimentInTx×2 + createAbExperiment×2 + startAbExperiment×2 + assignUserToVariant×3
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm test: 1739 pass · 0 fail (基线 1727 + 12 新 tests) ✓
+  · bash scripts/audit-redlines-admin.sh: ALL PASS · 9 LD-A + 6 R-A ✓
+  · bash scripts/audit-redlines.sh + audit-ld.sh: 0 fail ✓
+- **未来迭代的学习:**
+  - ab_experiments 与 admin_ab_experiment 并存: §13.7 P2 占位表 (ab_experiments) 是主 app 读取侧 · admin_ab_experiment 是 PRD-12 admin 配置侧 · 两张表分工不同,不要混用
+  - assignUserToVariant: trafficAllocation 以累积阈值分配 (control: 0..control · variant_a: control..control+variant_a · variant_b: 其余) · 不是简单比较 trafficAllocation.control
+  - Prisma TrafficAllocation cast: TrafficAllocation interface → Prisma.InputJsonValue 需 `as unknown as Prisma.InputJsonValue` 两步转换 · 一步 as 会 TS2352
+  - 分支管理: prd.json.branchName 指定的分支不存在时 · git checkout -b <branchName> 从当前 HEAD 创建即可
+---
+
+--- [RALPH] Iteration 1 ended: US-001 (17分钟 32秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-14 22:53 ---
+
+## [2026-05-14 23:08] - US-002
+- 实现了 PRD-14 US-002 · 显著性检验 service · Chi-square + Welch t-test + 多维分析
+- 主要工作:
+  · apps/api/src/services/admin/ab-experiment/significance.service.ts (新建):
+    - chiSquareTest(control, variant): 2×2 contingency table · chi2 = Σ(O-E)²/E · df=1 · pValue=1-chisquareCdf(chi2,1)
+    - welchTTest(control, variant): bilateral · t-stat + Welch-Satterthwaite df · pValue=2*(1-tCdf(|t|,df))
+    - computeExperimentSignificance(experimentId, metrics): 3标准 metric + 自定义 metric · Promise.all 并行
+    - 3 标准 metric DB 查询: fetchConversionData (step_key count>=7) / fetchRetentionData (last_login_at >= assigned_at+7d) / fetchCostData (SUM cost_usd per user)
+    - buildResult + computeRecommendation: sampleSize<30→inconclusive · p>0.05→continue · 显著+好→stop_winner · 显著+恶化>10%→stop_loser
+  · apps/api/src/services/admin/ab-experiment/__tests__/significance.service.test.ts (新建):
+    - 5 chiSquareTest tests · 5 welchTTest tests · 6 computeExperimentSignificance tests = 16 total
+  · apps/api/package.json: @stdlib/stats-base-dists-chisquare-cdf ^0.3.1 + @stdlib/stats-base-dists-t-cdf ^0.2.3
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm test: 1755 pass (baseline 1739 + 16 new) · ≥1742 AC ✓
+- **未来迭代的学习:**
+  - @stdlib CJS 包 (export =) 在 esModuleInterop:true + moduleResolution:Bundler 环境下用 `import x from '@stdlib/...'` 默认导入即可 · TypeScript 和 Vitest 都能正确处理
+  - chi-square for 2×2 table: O(a,b,c,d) → E=(rowTotal×colTotal)/n → chi2=Σ(O-E)²/E · df=1 · p=1-chisquareCdf
+  - cost_usd 从 $queryRaw 返回需要加 ::float8 cast 才能直接用 Number() 转换 · 否则是 string 类型
+  - step_data.account_id → ip_accounts.user_id → ab_assignments.user_id · 三表 join 查 conversion
+---
+
+--- [RALPH] Iteration 2 ended: US-002 (20分钟 27秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-14 23:13 ---
+
+## [2026-05-14 23:25] - US-003
+- 实现了 PRD-14 US-003 · 自动停损 cron + alert(B 组指标恶化 > 30% 触发回滚)
+- 主要工作:
+  · apps/api/src/jobs/admin/ab-stop-loss.job.ts:
+    - abStopLossQueue/Worker: BullMQ cron '0 0 * * * *' hourly Asia/Shanghai · jobId='ab-stop-loss-recurring' · attempts=3
+    - scanAbExperimentsForStopLoss: 扫所有 status='running' 实验 → computeExperimentSignificance
+    - 双条件触发: recommendation='stop_loser' AND effect < -0.3
+    - dedupe: adminAuditLog.findFirst(eventType='ab_experiment_auto_stop_loss', payload.experimentId, 24h ago)
+    - 触发: prisma.$transaction → _stopAbExperimentInTx(stopReason='auto_stop_loss')
+    - 写 security_alert 审计日志含 reasoning(metric/pValue/effect)
+    - DingtalkService.send (isMock=true default, D-077)
+    - stopAbExperimentManual: AC-8 单点 _stopAbExperimentInTx(stopReason='manual')
+    - failed handler: 最终失败写 system_alert/ab_stop_loss_cron_failed
+  · apps/api/src/index.ts: scheduleAbStopLoss() wire(跟 quota-expiry 同 pattern)
+  · tests/unit/api/admin/ab-stop-loss.test.ts: 12 it · cron register + 触发/不触发条件 + dedupe + dingtalk + manual stop + failed 兜底
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm test: 1767 pass · 4 skipped(pre-existing) ✓ (≥1750 AC)
+  · 12 ab-stop-loss tests pass ✓
+- **未来迭代的学习:**
+  - 6-field hourly cron pattern: '0 0 * * * *' (不是 5-field '0 * * * *') — BullMQ 支持 6-field
+  - effect 阈值比较: effect < -0.3 表示"恶化超过 30%" · -0.45 < -0.3 = true · -0.2 < -0.3 = false
+  - dedupe 的 JSON path 查询: `payload: { path: ['experimentId'], equals: id }` — Prisma JSON filter 语法
+---
+
+--- [RALPH] Iteration 3 ended: US-003 (15分钟 56秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-14 23:29 ---
+
+--- [RALPH] Iteration 4 ended: US-003 (3小时 6分钟 32秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-15 02:36 ---
+
+--- [RALPH] Iteration 6 started: US-004 at 2026-05-15 03:06 ---
+
+## [2026-05-15 03:25] - US-004 (retry 2 · TypeScript + test fixes)
+- 修复 AbExperimentDrawer.tsx 3 处 TypeScript 错误:
+  · 删除未使用的 `sectionStyle` 常量(TS6133)
+  · 删除未使用的 `metricResults` 变量(TS6133)
+  · `detail?.variantConfig && (...)` → `detail?.variantConfig != null && (...)` 消除 unknown 类型在 JSX 中的 TS2322 错误(shadow router 将 variantConfig 类型为 unknown)
+- 修复 abExperiments.test.ts 后端测试:
+  · makeCtx 改用 mocked prisma(含 $transaction) 而非空对象 {} · adminRLS middleware 需要 ctx.prisma.$transaction
+  · getDetail 测试加 mockAbAssignmentCount.mockResolvedValueOnce(100) 匹配期望值
+  · stop 测试 stopReason 从 15字 延长到 ≥20字 通过 Zod min(20) 验证
+- 修复 AbExperimentsPage.test.tsx 前端测试:
+  · DenseTable mock 从 `rows` 改为 `data`(匹配真实 DenseTable props)
+  · 移除 vi.useFakeTimers() — 与 userEvent.click 冲突导致 30s 超时
+  · AbExperimentsPage 加 items.length===0 空状态"暂无实验"文本(测试 AC)
+- 最终结果: typecheck 0 errors · 1793 tests pass · redlines-admin ALL PASS(9 LD-A + 6 R-A)
+- **未来迭代的学习:**
+  - shadow router 中 variantConfig: unknown 在 JSX `{unknown && (...)}` 中产生 TS2322 · 用 `!= null` 做布尔转换
+  - adminRLS middleware 依赖 ctx.prisma.$transaction · 后端测试必须用 mocked prisma 而非 {} as PrismaClient
+  - Zod min(20) 是字符数 · 中文16字符不够 · 需计算长度再写测试输入
+  - vi.useFakeTimers() + userEvent.click 会挂住(30s 超时) · 除非测试计时器行为否则不要在 beforeEach 开 fake timers
+---
+
+--- [RALPH] Iteration 6 ended: US-004 (23分钟 25秒) ---
+
+--- [RALPH] Iteration 7 started: US-004 at 2026-05-15 03:29 ---
+
+## 2026-05-15 03:33 - US-004 (retry 3 · fix AC-3/AC-4/AC-5)
+- 针对 Validator 第2次验证失败的 3 个 CONFIRMED 问题做精准修复
+- AC-3: abExperiments.ts list 响应加 currentPValue 字段 (从 resultSummary.pValue 提取); AbExperimentDrawer.tsx ExperimentRow 接口加 currentPValue?; AbExperimentsPage.tsx columns 加 p-value 列 (< 0.05 绿色高亮)
+- AC-4: AbExperimentsPage.tsx 加 adminIdInput / dateFrom / dateTo state; list.useQuery 传递 createdByAdminId / startDateFrom / startDateTo; 过滤器区域加数字 input + 两个 date input
+- AC-5: AbExperimentDrawer.tsx actions 区加"📊 详细分析"按钮 (window.open /admin/ab-experiments/{id}/analysis)
+- 更改的文件: apps/api/src/trpc/routers/admin/abExperiments.ts · apps/admin/src/pages/abExperiments/AbExperimentsPage.tsx · apps/admin/src/pages/abExperiments/AbExperimentDrawer.tsx
+- 质量: typecheck 全 PASS · 1793/1793 tests PASS
+- **未来迭代的学习:**
+  - resultSummary JSON 结构: { triggeringMetric, pValue, effect, stopReason } — 停损时写入; 运行中为 null → currentPValue=null 显示 —
+  - list 响应扩展字段: 直接在 map() 里取 (e.resultSummary as { pValue?: number } | null)?.pValue ?? null · 不需要额外查询
+  - 日期过滤 UI: <input type="date"> value 是字符串 "YYYY-MM-DD" · 传到 tRPC 用 new Date(dateFrom) 触发 z.coerce.date() 自动解析
+---
+
+--- [RALPH] Iteration 7 ended: US-004 (3小时 11分钟 46秒) ---
+
+--- [RALPH] Iteration 8 started: US-005 at 2026-05-15 06:41 ---
+
+## [2026-05-15 07:00] - US-005
+- 实现了 PRD-14 US-005 · admin UI 多维结果分析 + 实验时间线 + PDF 导出
+- 主要工作:
+  · apps/admin/src/pages/abExperiments/ExperimentDetailPage.tsx (新建):
+    - /admin/ab-experiments/:experimentKey 独立详情页
+    - 4 KPI cards (当前sample/当前phase/推荐操作/距停损阈值)
+    - variant 标签 + 流量占比显示
+    - 转化率 BarChart + ErrorBar 95% CI (SHIELD: 内置 ErrorBar 不手画)
+    - 7日留存 LineChart · 3 variant × 7天
+    - 平均 LLM 成本 BarChart
+    - 每 chart 下方显著性结论文字
+    - 操作面板: 升 winner(dual approval via promoteWinner) + 一键停损(super_admin) + PDFDownloadLink
+    - 30s polling via setInterval
+  · apps/admin/src/pages/abExperiments/ExperimentTimeline.tsx (新建):
+    - Recharts AreaChart · 3 variant 颜色 · 累积 sample size
+    - 渐变 fill · 悬停 tooltip · 横轴日期格式化
+  · apps/admin/src/pages/abExperiments/ExperimentReportPdf.tsx (新建):
+    - @react-pdf/renderer 4.5.1 复用 PRD-13 US-010 framework (SHIELD: 不重写)
+    - 4 节: 封面 + §1实验信息 + §2多维结果 + §3时间线(stub) + §4签名
+    - 7日留存表格 · 转化率CI表 · 显著性汇总表
+  · apps/api/src/trpc/routers/admin/abExperiments.ts (+4 procedures):
+    - getDetailByKey({ experimentKey }) → 按 key 查询实验
+    - getVariantMetrics({ experimentId }) → 3 variant × (conversion CI + 7日留存 + avg cost)
+      · Wilson score 95% CI 实现
+    - getCumulativeTimeline({ experimentId }) → 累积 sample 时间线
+    - promoteWinner({ experimentId, winnerVariant }) → 创建 dual approval 请求
+  · apps/api/src/services/admin/approval/approvalGateService.ts:
+    - +promote_ab_experiment_winner action type + DUAL_APPROVAL_ACTION_TYPES Set
+  · apps/admin/src/router.tsx: +Route ab-experiments/:experimentKey
+  · apps/admin/src/pages/abExperiments/AbExperimentDrawer.tsx:
+    - 详细分析按钮改为 useNavigate(/admin/ab-experiments/${key})
+  · packages/clients/src/admin-router-types.ts: +4 shadow procedures
+  · apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts: +5 tests
+  · tests/unit/admin/abExperiments/AbExperimentDrawer.test.tsx: +react-router-dom mock
+- 验证:
+  · pnpm typecheck: 0 errors ✓
+  · pnpm test: 1798 pass · 4 skipped ✓ (≥1770 AC)
+  · pnpm audit:redlines-admin: ALL PASS 9 LD-A + 6 R-A ✓
+- **未来迭代的学习:**
+  - Wilson score CI 计算: n=0 guard 必须 · p=k/n 后用 Wilson score 公式(非对称置信区间)
+  - Recharts ErrorBar dataKey 接受数组 [below, above] 表示非对称 CI · 不需要手画
+  - React Router 的 useNavigate 在非 Router 上下文组件测试时必须 mock react-router-dom
+  - @react-pdf/renderer PDF 不支持 SVG 图表 · 用数据表格代替时间线图 (stub 模式)
+  - getVariantMetrics SQL: 3个并行 Promise.all queryRaw · d1-d7 字段用数组 dValues 而非 keyof typeof ret(TS 类型推断问题)
+---
+
+--- [RALPH] Iteration 8 ended: US-005 (2小时 27分钟 12秒) ---
+
+--- [RALPH] Iteration 9 started: US-006 at 2026-05-15 09:08 ---
+
+## [2026-05-15 09:14] - US-006
+- 实现了 constant_versions + constant_canary_config schema + service + Approval 接入(foundation)
+- 更改的文件:
+  · prisma/schema.prisma: 加 ConstantVersion(@@map constant_versions) + ConstantCanaryConfig(@@map constant_canary_config) 模型
+  · prisma/migrations/20260515011044_prd_14_constant_versions/migration.sql: 自动生成
+  · apps/api/src/services/admin/constant-version/constant-version.service.ts: 1:1 fork prompt-version.service.ts · 改 5 处
+  · apps/api/src/services/admin/constant-version/__tests__/constant-version.service.test.ts: 15 tests · 全 PASS
+  · apps/api/src/services/admin/approval/approvalGateService.ts: 加 publish_constant_version + rollback_constant 到 type union + DUAL_APPROVAL_ACTION_TYPES Set
+  · AGENTS.md: 加 LD-A10 节 · §10.1 更新为 10 条 LD · v0.4
+  · scripts/audit-redlines-admin.sh: 加 §LD-A10 段 · 更新为 10 LD-A 总检测
+- 测试结果: 1813 passed | 4 skipped(全套) · typecheck PASS(api + admin) · audit-redlines PASS(10 LD-A + 6 R-A)
+- **未来迭代的学习:**
+  - 1:1 fork 模式: `constantType_constantKey` 是 ConstantCanaryConfig 的 @@unique compound name(Prisma 自动生成) · 不需要手写
+  - _publishConstantVersionInTx 在 service 内做 status/judgeScore 校验(比 prompt 版更严) · 防止外部调用绕过校验
+  - hash key 格式: `${userId}:${constantType}:${constantKey}` — 比 prompt 版多一个 constantType 维度确保不同类型相同 key 不共享 bucket
+---
+
+## 2026-05-15 09:30 - US-003/US-004 retroactive Opus audit (PRD-14)
+- US-003 ab-stop-loss.job · risk=high · 5 步 Cheat Sheet 深审 通过 ✅
+  - 反例 #1 dedupe 24h: adminAuditLog.findFirst 通过 payload.experimentId JSON path 查询 (line 71-86) · test 第 7 it 验证(已 logged 则 skip)
+  - 反例 #2 stop_loser 双条件: r.recommendation === 'stop_loser' && r.effect !== null && r.effect < -0.3 (line 63) · test 第 4 it 验证 effect=-20% 不触发 · 第 5 it 验证 effect=-45% 触发
+  - 反例 #3 stopReason 区分: auto_stop_loss vs manual 两条路径都走 _stopAbExperimentInTx 单点 (line 96-103 vs 160-171) · test 第 8 it 验证 manual 路径
+  - 12 it 全 pass · 1767 tests / 0 regression
+- US-004 admin UI A/B + abExperiments router · risk=high+large · 5 步 Cheat Sheet 深审 通过 ✅
+  - 反例 #1 trafficAllocation sum=100 双校验: 客户端 (CreateExperimentModal.tsx:32/45/64/91/212-213 五点护栏) + 服务端 (abExperiments.ts:217-225 BAD_REQUEST) · test 'create sum=90 throws BAD_REQUEST' 验证
+  - 反例 #2 super_admin only stop: 客户端 hide (AbExperimentDrawer.tsx:412 {currentRole === 'super_admin' && ...}) + 服务端 guard (abExperiments.ts:31-35 guardSuperAdmin + line 271 调用) · 双 test 验证(super_admin OK + admin FORBIDDEN)
+  - 反例 #3 时间线 GROUP BY 分页: $queryRaw DATE_TRUNC('day') + 30 天滑窗 (line 169-180 + 422-432) · test getCumulativeTimeline cumulative 验证
+  - 16 it 全 pass · 1793 tests / 0 regression
+  - audit-redlines-admin live 跑通: 10 LD-A + 6 R-A ALL PASS
+- 发现 TD-062: ralph.py AUDIT_TIMEOUT_SECONDS docstring drift (3 倍 1h→3h · 跟 CLAUDE.md §9.3/§9.1 不一致)
+  - retroactive audit 不需 reject US-003/004 · 工具问题不影响 US 质量
+---
+
+--- [RALPH] Iteration 9 ended: US-006 (10分钟 17秒) ---
+
+--- [RALPH] Iteration 10 started: US-006 at 2026-05-15 09:19 ---
+
+## [2026-05-15 09:21] - US-006
+- 验证 PRD-14 US-006 constant_versions + constant_canary_config schema + service + Approval 接入 · foundation
+- 主要工作(已由前次 commit 79f4e13 完成):
+  · prisma/schema.prisma: ConstantVersion 模型(1:1 fork PromptVersion) + ConstantCanaryConfig 模型
+    - @@unique([constantType,constantKey,version]) + 2 index + @@map constant_versions
+    - @@unique([constantType,constantKey]) + @@map constant_canary_config
+  · migration: 20260515011044_prd_14_constant_versions ✓
+  · apps/api/src/services/admin/constant-version/constant-version.service.ts:
+    - _publishConstantVersionInTx(tx, params): 接 tx · 写 status='active' + archive prev + upsert canary · 校验 pending_review + judgeScore >= 4.0
+    - publishConstantVersion(versionId, adminId): dual approval actionType='publish_constant_version'
+    - rollbackConstant(constantType, constantKey, adminId): dual approval actionType='rollback_constant'
+    - updateConstantCanaryConfig(constantType, constantKey, nextVersionId, canaryPct, adminId): canaryPct=100→publish
+    - getActiveConstantVersion(constantType, constantKey, userId): md5(userId:constantType:constantKey) hash routing
+  · apps/api/src/services/admin/approval/approvalGateService.ts: publish_constant_version + rollback_constant 已在 DUAL_APPROVAL_ACTION_TYPES
+  · AGENTS.md §10.1: LD-A10 节已加
+  · scripts/audit-redlines-admin.sh: LD-A10 段已加 · 10 LD-A 总检测
+- 验证结果:
+  · pnpm test: 1813 pass · 4 skipped ✓ (≥1782 AC)
+  · pnpm typecheck: 0 errors ✓
+  · bash scripts/audit-redlines-admin.sh: ALL PASS · 10 LD-A + 6 R-A ✓
+  · 15 unit tests for constant-version.service ✓
+- **未来迭代的学习:**
+  - 1:1 fork pattern: service 级 fork 时只改 5 处(import/func name/actionType/hash key/migration name) · 整体结构不动
+  - constant canary config unique key: Prisma 生成 constantType_constantKey compound unique · findUnique 用 where: { constantType_constantKey: { constantType, constantKey } }
+  - LD-A10 grep pattern: (prisma|db|tx)\.constantVersion\.update 三 prefix · 和 LD-A6 (promptVersion) 对称
+---
+
+--- [RALPH] Iteration 10 ended: US-006 (8分钟 13秒) ---
+
+--- [RALPH] Iteration 11 started: US-007 at 2026-05-15 09:27 ---
+
+
+## 2026-05-15 09:30 - US-006 Opus audit approve (PRD-14)
+- US-006 constant_versions + constant_canary_config schema + service + Approval 接入 · risk=foundation · 5 步 Cheat Sheet 通过 ✅
+- Foundation 档 F1-F5 检查:
+  - F1 跨 story 命名: ⚠️ 1 处漂移 `updateConstantCanaryConfig` vs PRD AC + US-008 期望 `updateCanaryConfig` → 已登 TD-063 (Low · US-008 启动前修)
+  - F2 下游 5 (US-007/008/009/010 + US-015) AC 命名核对一致 (除 F1 漂移)
+  - F3 shared: approvalGateService.ts DUAL_APPROVAL_ACTION_TYPES 已加 publish_constant_version + rollback_constant
+  - F4 SQL: migration.sql 字段类型 + 2 index + @@unique + 2 FK ondelete (RESTRICT/SET NULL) 完整
+  - F5 协议锁与既有代码: 无冲突 (新文件 + 新 model)
+- 3 反例全落地:
+  - 反例 #1 1:1 fork prompt-version.service.ts: 281 行 fork 至 297 行 · 仅改 5 处 + 加 status/judgeScore 双校验 ✅
+  - 反例 #2 judgeScore 4.0 单一阈值 (MIN_JUDGE_SCORE=4.0): 不分 case/formula/element ✅
+  - 反例 #3 LD-A10 grep alternatives (prisma|db|tx) 三 prefix: AGENTS.md + audit-redlines-admin.sh 一致 ✅
+- 通用 4 维度:
+  - AC 13/13 PASS (manifest + Opus 手验 schema + service + AGENTS.md + audit script)
+  - AGENTS.md: 升级 §10.1 9→10 LD-A · 加 LD-A10 全文 + grep alternative
+  - 安全: 无 Blocker (RLS disabled per LD-A admin · super_admin 跨账号权限链已保护)
+  - PRD 一致性: D-091 (judgeScore 4.0) + D-090 (deterministic hash) 全落实
+- 实测:
+  - audit-artifacts.py: ARTIFACTS VALID (manifest zero_regression=PASS · 但报 pytest-full mtime drift 是时区 bug · 9:24 本地 = UTC 01:24)
+  - **Live pnpm vitest run**: 167 files / 1813 passed / 4 skipped / 0 failed · 15s 跑完
+  - **Live bash audit-redlines-admin.sh**: 10 LD-A + 6 R-A ALL PASS
+  - typecheck stdout 全 PASS (manifest 确认)
+- TD 豁免:
+  - TD-063 命名漂移 approve 豁免: 功能完整 · 仅 1 处命名 · 不影响 US-006 本身质量 · US-008 启动前修
+  - TD-064 Validator iter 9 偷懒未 Edit prd.json passes=true → Opus 手动 patch · 已登 (待 tooling 改进)
+---
+
+## 2026-05-15 - [RCA-006 补审 closed] US-003/US-004 已重审 (forensic trail)
+- 背景: PRD-14 daemon 旧版 ralph.py AUDIT_TIMEOUT 触发 silent skip · 标 passed 但 Opus 未真审 (RCA-006)
+- 补审执行: 新 session 走 OPUS-AUDIT-CHEATSHEET 5 步重审 US-003 (commit f9efdee) + US-004 (commits 6db0a2b + 29007df)
+- 结论: 2 个 silent-skip story 真审通过 · 无需追加 TD · 无需回滚 commit
+- 永久修复: ralph.py commit 0a467bb · timeout → raise AuditTimeoutError · daemon 退出零容忍 · audit-gate 保留 pending
+- 详见: .agents/rca/RCA-006-audit-timeout-bypass.md §4.5 (status: CLOSED)
+---
