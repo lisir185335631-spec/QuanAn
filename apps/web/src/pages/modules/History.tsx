@@ -66,7 +66,7 @@ import type { HistoryListRow } from '@quanqn/clients/router-types';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type ViewMode = 'timeline' | 'dashboard';
-type DateRange = 'today' | 'week' | 'month' | 'all';
+type DateRange = 'today' | 'week' | 'month' | 'custom';
 
 // ── Tool definitions (14 tools) ───────────────────────────────────────────────
 
@@ -108,9 +108,9 @@ function readToolsFromUrl(params: URLSearchParams): ToolSlug[] {
 
 function readDateRangeFromUrl(params: URLSearchParams): DateRange {
   const d = params.get('dateRange');
-  return (['today', 'week', 'month', 'all'] as DateRange[]).includes(d as DateRange)
+  return (['today', 'week', 'month', 'custom'] as DateRange[]).includes(d as DateRange)
     ? (d as DateRange)
-    : 'all';
+    : 'month';
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -193,7 +193,7 @@ const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
   { value: 'today', label: '今日' },
   { value: 'week', label: '本周' },
   { value: 'month', label: '本月' },
-  { value: 'all', label: '全部' },
+  { value: 'custom', label: '自定义日期' },
 ];
 
 // ── HistoryDetailDrawer ───────────────────────────────────────────────────────
@@ -415,12 +415,16 @@ function KpiCard({
 interface DashboardProps {
   dateRange: DateRange;
   tools: ToolSlug[];
+  dateFrom?: string;
+  dateTo?: string;
 }
 
-function HistoryDashboard({ dateRange, tools }: DashboardProps) {
+function HistoryDashboard({ dateRange, tools, dateFrom, dateTo }: DashboardProps) {
   const { data: stats, isLoading } = trpc.history.stats.useQuery({
     dateRange,
     tools: tools.length ? tools : undefined,
+    dateFrom: dateRange === 'custom' ? dateFrom : undefined,
+    dateTo: dateRange === 'custom' ? dateTo : undefined,
   });
 
   if (isLoading) {
@@ -610,6 +614,8 @@ export default function History() {
   const view = readViewFromUrl(searchParams);
   const selectedTools = readToolsFromUrl(searchParams);
   const dateRange = readDateRangeFromUrl(searchParams);
+  const dateFrom = searchParams.get('dateFrom') ?? '';
+  const dateTo = searchParams.get('dateTo') ?? '';
 
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [drawerRow, setDrawerRow] = useState<HistoryListRow | null>(null);
@@ -638,15 +644,19 @@ export default function History() {
   }
 
   function setDateRange(d: DateRange) {
-    updateParams({ dateRange: d === 'all' ? null : d });
+    const updates: Record<string, string | null> = { dateRange: d };
+    if (d !== 'custom') {
+      updates.dateFrom = null;
+      updates.dateTo = null;
+    }
+    updateParams(updates);
   }
-
-  const listDateRange = (dateRange === 'today' ? 'today' : dateRange === 'week' ? 'week' : dateRange === 'month' ? 'month' : 'all') as
-    'all' | 'today' | 'week' | 'month';
 
   const { data: rows, isLoading, error } = trpc.history.list.useQuery({
     tools: selectedTools.length ? selectedTools : undefined,
-    dateRange: listDateRange,
+    dateRange,
+    dateFrom: dateRange === 'custom' ? dateFrom || undefined : undefined,
+    dateTo: dateRange === 'custom' ? dateTo || undefined : undefined,
     limit: 100,
     offset: 0,
   });
@@ -727,6 +737,27 @@ export default function History() {
           ))}
         </div>
 
+        {/* Custom date inputs */}
+        {dateRange === 'custom' && (
+          <div className="flex items-center gap-2" data-testid="date-range-custom-inputs">
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => updateParams({ dateFrom: e.target.value || null })}
+              className="h-8 rounded-md border border-border bg-card px-2 text-body-sm text-on-surface"
+              data-testid="date-range-from"
+            />
+            <span className="text-muted-foreground text-body-sm">—</span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => updateParams({ dateTo: e.target.value || null })}
+              className="h-8 rounded-md border border-border bg-card px-2 text-body-sm text-on-surface"
+              data-testid="date-range-to"
+            />
+          </div>
+        )}
+
         {/* Tool filter toggle */}
         <Button
           variant="outline"
@@ -793,7 +824,12 @@ export default function History() {
           deletingId={deletingId}
         />
       ) : (
-        <HistoryDashboard dateRange={dateRange} tools={selectedTools} />
+        <HistoryDashboard
+          dateRange={dateRange}
+          tools={selectedTools}
+          dateFrom={dateFrom || undefined}
+          dateTo={dateTo || undefined}
+        />
       )}
 
       {/* Detail Drawer */}

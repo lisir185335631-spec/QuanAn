@@ -514,7 +514,9 @@ const _shadowRouter = _t.router({
             agentMode?: string;
             sourceType?: string;
             tools?: string[];
-            dateRange?: 'last_7d' | 'last_30d' | 'all' | 'today' | 'week' | 'month';
+            dateRange?: 'last_7d' | 'last_30d' | 'all' | 'today' | 'week' | 'month' | 'custom';
+            dateFrom?: string;
+            dateTo?: string;
             limit?: number;
             offset?: number;
           },
@@ -530,8 +532,10 @@ const _shadowRouter = _t.router({
       .input(
         (x: unknown) =>
           x as {
-            dateRange?: 'today' | 'week' | 'month' | 'all';
+            dateRange?: 'today' | 'week' | 'month' | 'all' | 'custom';
             tools?: string[];
+            dateFrom?: string;
+            dateTo?: string;
           },
       )
       .query(

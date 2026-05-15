@@ -24,7 +24,7 @@ import type { Prisma } from '@prisma/client';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const DATE_RANGE_VALUES = ['last_7d', 'last_30d', 'all', 'today', 'week', 'month'] as const;
+const DATE_RANGE_VALUES = ['last_7d', 'last_30d', 'all', 'today', 'week', 'month', 'custom'] as const;
 
 // ── Tool slug → agentId mapping (14 tools · US-008 AC-7) ─────────────────────
 
@@ -84,7 +84,16 @@ const HISTORY_SELECT = {
   createdAt: true,
 } satisfies Prisma.HistorySelect;
 
-function buildDateFilter(dateRange: (typeof DATE_RANGE_VALUES)[number]): Prisma.HistoryWhereInput {
+function buildDateFilter(
+  dateRange: (typeof DATE_RANGE_VALUES)[number],
+  opts?: { dateFrom?: string; dateTo?: string },
+): Prisma.HistoryWhereInput {
+  if (dateRange === 'custom') {
+    const from = opts?.dateFrom ? new Date(opts.dateFrom) : undefined;
+    const to = opts?.dateTo ? new Date(opts.dateTo + 'T23:59:59.999Z') : undefined;
+    if (!from && !to) return {};
+    return { createdAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) } };
+  }
   if (dateRange === 'all') return {};
   const since = new Date();
   if (dateRange === 'today') {
@@ -113,13 +122,15 @@ export const historyRouter = router({
         sourceType: z.string().optional(),
         tools: z.array(z.string()).optional(),
         dateRange: z.enum(DATE_RANGE_VALUES).default('all'),
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
         limit: z.number().int().min(1).max(100).default(20),
         offset: z.number().int().min(0).default(0),
       }),
     )
     .query(async ({ ctx, input }) => {
       const { prisma, activeAccountId } = ctx;
-      const { agentId, agentMode, sourceType, tools, dateRange, limit, offset } = input;
+      const { agentId, agentMode, sourceType, tools, dateRange, dateFrom, dateTo, limit, offset } = input;
 
       const agentIds = tools?.length ? toolsToAgentIds(tools) : undefined;
 
@@ -129,7 +140,7 @@ export const historyRouter = router({
         ...(agentMode !== undefined ? { agentMode } : {}),
         ...(sourceType !== undefined ? { sourceType } : {}),
         ...(agentIds?.length ? { agentId: { in: agentIds } } : {}),
-        ...buildDateFilter(dateRange),
+        ...buildDateFilter(dateRange, { dateFrom, dateTo }),
       };
 
       return prisma.history.findMany({
@@ -211,29 +222,37 @@ export const historyRouter = router({
   stats: protectedProcedure
     .input(
       z.object({
-        dateRange: z.enum(['today', 'week', 'month', 'all'] as const).default('all'),
+        dateRange: z.enum(['today', 'week', 'month', 'all', 'custom'] as const).default('all'),
         tools: z.array(z.string()).optional(),
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const { prisma, activeAccountId } = ctx;
-      const { dateRange, tools } = input;
+      const { dateRange, tools, dateFrom, dateTo } = input;
 
       const now = new Date();
       let since: Date | undefined;
+      let until: Date | undefined;
       if (dateRange === 'today') {
         since = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       } else if (dateRange === 'week') {
         since = new Date(now.getTime() - 7 * 86400_000);
       } else if (dateRange === 'month') {
         since = new Date(now.getTime() - 30 * 86400_000);
+      } else if (dateRange === 'custom') {
+        since = dateFrom ? new Date(dateFrom) : undefined;
+        until = dateTo ? new Date(dateTo + 'T23:59:59.999Z') : undefined;
       }
 
       const agentIds = tools?.length ? toolsToAgentIds(tools) : undefined;
 
       const where: Prisma.CostLogWhereInput = {
         accountId: activeAccountId!,
-        ...(since ? { createdAt: { gte: since } } : {}),
+        ...(since || until
+          ? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lte: until } : {}) } }
+          : {}),
         ...(agentIds?.length ? { agentId: { in: agentIds } } : {}),
       };
 
