@@ -346,6 +346,11 @@ async function start(): Promise<void> {
   await scheduleAbStopLoss();
   logger.info('ab_stop_loss_cron.registered');
 
+  // AC-7 US-007 PRD-14: wire constantEmbedWorker (delayed embed rebuild after constant publish)
+  const { constantEmbedWorker } = await import('./jobs/admin/constant-embed-rebuild.job');
+  constantEmbedWorker.on('error', (err) => logger.error({ err }, 'constant_embed_worker.error'));
+  logger.info('constant_embed_worker.registered');
+
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
 }

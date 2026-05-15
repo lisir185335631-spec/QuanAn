@@ -1,5 +1,7 @@
 // PRD-14 US-006 · constant-version.service.ts
 // AC-4/5/6/7/8: _publishConstantVersionInTx single-point + publishConstantVersion/rollbackConstant/updateCanaryConfig/getActiveConstantVersion
+// US-007 AC-4: _publishConstantVersionInTx triggers BullMQ +5s delayed embed job post-publish
+// US-007 AC-5: publishConstantVersion auto-evaluates judgeScore if null (isMock=true)
 // SHIELD: 1:1 fork prompt-version.service.ts · 5 changes only
 // SHIELD: _publishConstantVersionInTx must receive tx · never create its own $transaction
 // SHIELD: canary hash must be deterministic (userId:constantType:constantKey md5) · never random()
@@ -10,6 +12,8 @@ import { TRPCError } from '@trpc/server';
 
 import { prisma } from '@/lib/prisma';
 import { requestApproval } from '@/services/admin/approval/approvalGateService';
+import { evaluateConstantVersion } from '@/services/admin/constant-version/constant-embed.service';
+import { scheduleConstantEmbedRebuild } from '@/jobs/admin/constant-embed-rebuild.job';
 
 import type { Prisma, ConstantVersion } from '@prisma/client';
 
@@ -100,6 +104,15 @@ export async function _publishConstantVersionInTx(
       },
     });
   }
+
+  // AC-4: fire-and-forget BullMQ +5s delayed embed job after publish
+  // 5s delay ensures tx commits before worker runs
+  void scheduleConstantEmbedRebuild(
+    versionId,
+    version.constantType,
+    version.constantKey,
+    version.content,
+  ).catch(() => void 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -110,13 +123,19 @@ export async function publishConstantVersion(
   versionId: number,
   adminId: number,
 ): Promise<number> {
-  const version = await prisma.constantVersion.findUniqueOrThrow({ where: { id: versionId } });
+  let version = await prisma.constantVersion.findUniqueOrThrow({ where: { id: versionId } });
 
   if (version.status !== 'pending_review') {
     throw new TRPCError({
       code: 'BAD_REQUEST',
       message: `Version ${versionId} status is '${version.status}', expected 'pending_review'`,
     });
+  }
+
+  // AC-5: auto-evaluate judgeScore if null (isMock=true · D-077 stub)
+  if (version.judgeScore === null) {
+    await evaluateConstantVersion(versionId, true);
+    version = await prisma.constantVersion.findUniqueOrThrow({ where: { id: versionId } });
   }
 
   if (version.judgeScore === null || Number(version.judgeScore) < MIN_JUDGE_SCORE) {

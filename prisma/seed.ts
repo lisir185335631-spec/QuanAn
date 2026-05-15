@@ -9,10 +9,15 @@
  *   2. 测试 IP 账号(每用户 1-2 个)
  *   3. 67 实战案例 + 23 公式 + 22 元素心理学 入 pgvector(★ 给 RAG 用)
  *   4. 100 邀请码(开发期)
+ *   5. 67 案例 + 23 公式 + 22 元素 import 到 constant_versions (PRD-14 US-007)
  */
 
 import { PrismaClient } from '@prisma/client';
 import { createHash, randomBytes } from 'node:crypto';
+
+import { KNOWLEDGE_CASES } from '../apps/api/src/lib/constants/cases';
+import { COPY_FORMULAS } from '../apps/api/src/lib/constants/formulas';
+import { HOT_ELEMENTS } from '../apps/api/src/lib/constants/hotElements';
 
 const prisma = new PrismaClient();
 
@@ -322,6 +327,117 @@ async function seedPromptVersions() {
 }
 
 // ====================================================
+// 6. Constant Versions — 67 cases + 23 formulas + 22 elements (PRD-14 US-007 AC-1)
+// ====================================================
+
+interface ConstantSeedItem {
+  constantType: string;
+  constantKey: string;
+  content: string;
+}
+
+function buildConstantSeedItems(): ConstantSeedItem[] {
+  const items: ConstantSeedItem[] = [];
+
+  for (const c of KNOWLEDGE_CASES) {
+    items.push({
+      constantType: 'case',
+      constantKey: c.key,
+      content: `${c.title}\n${c.content}`,
+    });
+  }
+
+  for (const f of COPY_FORMULAS) {
+    items.push({
+      constantType: 'formula',
+      constantKey: f.key,
+      content: `${f.title}\n${f.content}`,
+    });
+  }
+
+  for (const e of HOT_ELEMENTS) {
+    items.push({
+      constantType: 'element',
+      constantKey: e.key,
+      content: `${e.label}（${e.group}）\n${e.psychology}`,
+    });
+  }
+
+  return items;
+}
+
+async function seedConstantsToVersions() {
+  console.log('▸ Seeding constant_versions (67 cases + 23 formulas + elements) ...');
+
+  const SYSTEM_ADMIN_ID = 0;
+  const items = buildConstantSeedItems();
+  let created = 0;
+  let skipped = 0;
+
+  for (const item of items) {
+    const contentHash = createHash('sha256').update(item.content).digest('hex').slice(0, 64);
+
+    // Check if already exists for version=1
+    const existing = await prisma.constantVersion.findUnique({
+      where: {
+        constantType_constantKey_version: {
+          constantType: item.constantType,
+          constantKey: item.constantKey,
+          version: 1,
+        },
+      },
+    });
+
+    if (existing) {
+      skipped++;
+      continue;
+    }
+
+    // INSERT constant_version with status='active' (seed bypass · not normal flow)
+    const version = await prisma.constantVersion.create({
+      data: {
+        constantType: item.constantType,
+        constantKey: item.constantKey,
+        version: 1,
+        content: item.content,
+        contentHash,
+        status: 'active',
+        judgeScore: null,
+        createdByAdminId: SYSTEM_ADMIN_ID,
+      },
+    });
+
+    // Upsert constant_canary_config with currentVersionId pointing to just-created version
+    const existingCanary = await prisma.constantCanaryConfig.findUnique({
+      where: {
+        constantType_constantKey: {
+          constantType: item.constantType,
+          constantKey: item.constantKey,
+        },
+      },
+    });
+
+    if (existingCanary) {
+      skipped++;
+    } else {
+      await prisma.constantCanaryConfig.create({
+        data: {
+          constantType: item.constantType,
+          constantKey: item.constantKey,
+          currentVersionId: version.id,
+          canaryPct: 0,
+          strategy: 'user_id_hash',
+          updatedByAdminId: SYSTEM_ADMIN_ID,
+        },
+      });
+      created++;
+    }
+  }
+
+  console.log(`  ✓ constant_versions seeded · created=${created} · skipped=${skipped} · total=${items.length}`);
+}
+
+// ====================================================
 // 主入口
 // ====================================================
 
@@ -335,6 +451,7 @@ async function main() {
   await seedInviteCodes(users.admin.id);
   await seedRagConstants();
   await seedPromptVersions();
+  await seedConstantsToVersions();
 
   console.log('\n✅ Seed 完成');
 }
