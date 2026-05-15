@@ -108,6 +108,10 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     findFirst: vi.fn(async () => null),
   };
 
+  const costLog = {
+    create: vi.fn(async () => ({})),
+  };
+
   const tx = {
     history,
     diagnosisReport,
@@ -116,6 +120,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     evolutionInsight,
     deepLearningArchive,
     deepLearnReviewQueue,
+    costLog,
     $executeRaw: vi.fn(async () => 0),
   };
 
@@ -127,6 +132,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     evolutionInsight,
     deepLearningArchive,
     deepLearnReviewQueue,
+    costLog,
     $transaction: vi.fn(async (fn: (tx: typeof tx) => Promise<unknown>) => fn(tx)),
     _tx: tx,
   };

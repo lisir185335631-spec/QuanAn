@@ -5,6 +5,7 @@
  * AC-8: PrivateDomainAgent SSE streaming留 PRD-16+ · 本版返回 mock 6 阶段结构化 SOP
  */
 
+import { Decimal } from '@prisma/client/runtime/library';
 import { z } from 'zod';
 
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
@@ -101,6 +102,7 @@ export const privateDomainRouter = router({
     .input(generatePrivateDomainInput)
     .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
+      const t0 = Date.now();
       const sopContent = buildMockSop(input);
       const inputSummary = `${input.productDescription.slice(0, 50)} · ¥${input.productPrice} · ${input.targetAudience.slice(0, 30)}`;
       const row = await prisma.history.create({
@@ -113,6 +115,23 @@ export const privateDomainRouter = router({
           traceId: traceId ?? null,
         },
         select: HISTORY_SELECT,
+      });
+      // AC-8: cost_log write — mock values (real SSE留 PRD-16+)
+      await prisma.costLog.create({
+        data: {
+          accountId: activeAccountId!,
+          agentId: 'PrivateDomainAgent',
+          callType: 'specialist_call',
+          modelTier: 'mock',
+          modelUsed: 'mock',
+          provider: 'mock',
+          promptTokens: 0,
+          completionTokens: 0,
+          totalTokens: 0,
+          costUsd: new Decimal('0.000000'),
+          durationMs: Date.now() - t0,
+          traceId: traceId ?? null,
+        },
       });
       return row;
     }),
