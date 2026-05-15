@@ -25,3 +25,4 @@ export * from './deepLearning.schema';
 export * from './step-inputs.schema';
 export * from './dailyTask.schema';
 export * from './voiceChat.schema';
+export * from './presentStyles.schema';

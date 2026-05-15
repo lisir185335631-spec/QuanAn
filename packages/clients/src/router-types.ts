@@ -631,6 +631,31 @@ const _shadowRouter = _t.router({
       }),
     clearSession: _t.procedure.mutation((): { ok: boolean } => ({ ok: true })),
   }),
+  monetization: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { stepKey?: string; industryContext?: Record<string, unknown>; audienceProfile?: Record<string, unknown> },
+      )
+      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+        id: 0,
+        content: '',
+        agentId: 'MonetizationAgent',
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
+  presentStyles: _t.router({
+    recommend: _t.procedure
+      .input((x: unknown) => x as { text: string; platform: string })
+      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+        id: 0,
+        content: '',
+        agentId: 'PresentationAgent',
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
   deepLearning: _t.router({
     list: _t.procedure
       .input(
