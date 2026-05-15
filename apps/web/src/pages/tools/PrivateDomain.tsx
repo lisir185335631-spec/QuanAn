@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { useAuth } from '@/hooks/useAuth';
-import { LS_PREFIX } from '@/lib/ls-namespace';
+import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc, trpcClient } from '@/lib/trpc';
 
 import type { Unsubscribable } from '@trpc/server/observable';
@@ -68,17 +68,13 @@ const VIEWS: ViewMode[] = ['flow', 'config', 'result', 'history'];
 
 // ── localStorage draft (AC-7) ─────────────────────────────────────────────────
 
-function getDraftKey(userId: number, accountId: number): string {
-  return `${LS_PREFIX}_${accountId}_private_domain_draft_${userId}`;
-}
-
 function readDraft(
   userId: number | null,
   accountId: number | null,
 ): Partial<PrivateDomainFormValues> {
   if (!userId || !accountId) return {};
   try {
-    const raw = localStorage.getItem(getDraftKey(userId, accountId));
+    const raw = localStorage.getItem(getToolLsKey(accountId, 'private_domain', `draft_${userId}`));
     if (raw) return JSON.parse(raw) as Partial<PrivateDomainFormValues>;
   } catch {
     // ignore corrupt JSON
@@ -92,7 +88,7 @@ function writeDraft(
   values: PrivateDomainFormValues,
 ): void {
   try {
-    localStorage.setItem(getDraftKey(userId, accountId), JSON.stringify(values));
+    localStorage.setItem(getToolLsKey(accountId, 'private_domain', `draft_${userId}`), JSON.stringify(values));
   } catch {
     // storage full — ignore
   }
