@@ -157,6 +157,19 @@ export type TrendingKpiStats = {
   lastUpdatedAt: Date | null;
 };
 
+export type MyTopicSource = 'step5' | 'trending' | 'manual';
+
+export type MyTopicItem = {
+  id: string;
+  title: string;
+  source: MyTopicSource;
+  industry: string | null;
+  platform: string | null;
+  createdAt: Date | string;
+  topicId?: number;
+  trendingItemId?: number;
+};
+
 export type FreeGenerateHistoryRow = {
   id: number;
   content: string;
@@ -728,6 +741,27 @@ const _shadowRouter = _t.router({
         traceId: null,
         createdAt: new Date(),
       })),
+  }),
+  myTopics: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { source?: 'all' | 'step5' | 'trending' | 'manual'; industry?: string; search?: string; page?: number; pageSize?: number } | undefined,
+      )
+      .query((): { items: MyTopicItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({
+        items: [], total: 0, page: 1, pageSize: 20, totalPages: 1,
+      })),
+    add: _t.procedure
+      .input((x: unknown) => x as { title: string; industry?: string; platform?: string })
+      .mutation((): MyTopicItem => ({ id: '', title: '', source: 'manual', industry: null, platform: null, createdAt: new Date() })),
+    update: _t.procedure
+      .input((x: unknown) => x as { topicId: number; title?: string; industry?: string; platform?: string })
+      .mutation((): MyTopicItem | null => null),
+    delete: _t.procedure
+      .input((x: unknown) => x as { id: string })
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    countBySource: _t.procedure
+      .query((): { step5: number; trending: number; manual: number } => ({ step5: 0, trending: 0, manual: 0 })),
   }),
   deepLearning: _t.router({
     list: _t.procedure
