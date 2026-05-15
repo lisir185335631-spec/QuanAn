@@ -5,8 +5,11 @@
 // SHIELD: getFeatureFlagValue 3 flagType 路由 · boolean / percentage / targeted
 // PRD-14 US-012: getFeatureFlagValue + getSystemConfigValue 5s TTL cache(Map+setInterval 防 hot path)
 // PRD-14 US-012: emergencyToggleSystemConfig 写 security_alert audit + 钉钉(isMock=true)
+// PRD-14 US-013: rolloutConfigSchema discriminatedUnion + upsert 支持任意 flagKey + hash 修正 userId:flagKey
 
 import { createHash } from 'node:crypto';
+
+import { z } from 'zod';
 
 import { TRPCError } from '@trpc/server';
 
@@ -21,6 +24,27 @@ import { DingtalkService } from '@/services/admin/notifications/dingtalk.service
 import type { Prisma } from '@prisma/client';
 
 // ---------------------------------------------------------------------------
+// PRD-14 US-013 · rolloutConfig zod discriminatedUnion schema
+// AC-3: 3 flagType 分支 · boolean / percentage(0-100) / targeted(users+plans)
+// SHIELD: 不允许 accept Record<string, unknown> · 必须 discriminatedUnion 严格分支
+// ---------------------------------------------------------------------------
+
+export const rolloutConfigSchema = z.discriminatedUnion('flagType', [
+  z.object({ flagType: z.literal('boolean') }),
+  z.object({
+    flagType: z.literal('percentage'),
+    percentage: z.number().min(0).max(100),
+  }),
+  z.object({
+    flagType: z.literal('targeted'),
+    target_users: z.number().int().array().optional(),
+    target_plans: z.enum(['free', 'pro', 'enterprise']).array().optional(),
+  }),
+]);
+
+export type RolloutConfig = z.infer<typeof rolloutConfigSchema>;
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
@@ -28,6 +52,8 @@ export interface ToggleFeatureFlagInTxParams {
   flagKey: string;
   enabled: boolean;
   rolloutConfig?: Prisma.InputJsonValue;
+  /** flagType for upsert create — defaults to 'boolean' when not provided (US-013 AC-4) */
+  flagType?: 'boolean' | 'percentage' | 'targeted';
   adminId: number;
   approvalRequestId?: number;
 }
@@ -92,12 +118,22 @@ export async function _toggleFeatureFlagInTx(
   tx: Prisma.TransactionClient,
   params: ToggleFeatureFlagInTxParams,
 ): Promise<void> {
-  const { flagKey, enabled, rolloutConfig, adminId, approvalRequestId } = params;
+  const { flagKey, enabled, rolloutConfig, flagType = 'boolean', adminId, approvalRequestId } = params;
 
-  await tx.featureFlag.update({
+  // AC-4: upsert — creates new flag if flagKey not in seed · updates existing
+  await tx.featureFlag.upsert({
     where: { flagKey },
-    data: {
+    update: {
       enabled,
+      flagType,
+      ...(rolloutConfig !== undefined ? { rolloutConfig } : {}),
+      updatedByAdminId: adminId,
+    },
+    create: {
+      flagKey,
+      enabled,
+      flagType,
+      defaultValue: enabled,
       ...(rolloutConfig !== undefined ? { rolloutConfig } : {}),
       updatedByAdminId: adminId,
     },
@@ -162,9 +198,10 @@ export async function toggleFeatureFlag(
   adminId: number,
   rolloutConfig?: Prisma.InputJsonValue,
 ): Promise<{ approvalRequestId: number }> {
-  const flag = await prisma.featureFlag.findUnique({ where: { flagKey } });
-  if (!flag) {
-    throw new TRPCError({ code: 'NOT_FOUND', message: `feature_flag '${flagKey}' not found` });
+  // AC-4: supports arbitrary flagKey (upsert) — no longer throws NOT_FOUND for unknown keys
+  // AC-3: validate rolloutConfig with discriminatedUnion schema when provided
+  if (rolloutConfig !== undefined) {
+    rolloutConfigSchema.parse(rolloutConfig);
   }
 
   const approvalReq = await requestApproval({
@@ -284,8 +321,8 @@ export async function getFeatureFlagValue(
     if (userId === undefined) {
       result = false;
     } else {
-      // md5 hash 分流: hash(flagKey + userId) → 0-99
-      const hash = createHash('md5').update(`${flagKey}:${userId}`).digest('hex');
+      // AC-1: md5 hash 分流: hash(userId:flagKey) → 0-99 · deterministic · SHIELD: userId 在前
+      const hash = createHash('md5').update(`${userId}:${flagKey}`).digest('hex');
       const bucket = parseInt(hash.slice(0, 8), 16) % 100;
       result = bucket < pct;
     }

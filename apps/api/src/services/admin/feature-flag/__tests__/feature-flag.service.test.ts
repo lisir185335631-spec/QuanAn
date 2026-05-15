@@ -14,12 +14,13 @@ const mockEmergencyApprove = vi.hoisted(() => vi.fn().mockResolvedValue({ id: 77
 
 const mockFeatureFlagFindUnique = vi.hoisted(() => vi.fn());
 const mockFeatureFlagUpdate = vi.hoisted(() => vi.fn().mockResolvedValue({}));
+const mockFeatureFlagUpsert = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const mockSystemConfigFindUnique = vi.hoisted(() => vi.fn());
 const mockSystemConfigUpdate = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const mockTransaction = vi.hoisted(() =>
   vi.fn().mockImplementation((cb: (tx: unknown) => unknown) =>
     cb({
-      featureFlag: { update: mockFeatureFlagUpdate },
+      featureFlag: { update: mockFeatureFlagUpdate, upsert: mockFeatureFlagUpsert },
       systemConfig: { update: mockSystemConfigUpdate },
     }),
   ),
@@ -40,6 +41,7 @@ vi.mock('@/lib/prisma', () => ({
     featureFlag: {
       findUnique: mockFeatureFlagFindUnique,
       update: mockFeatureFlagUpdate,
+      upsert: mockFeatureFlagUpsert,
     },
     systemConfig: {
       findUnique: mockSystemConfigFindUnique,
@@ -108,38 +110,43 @@ const systemConfigRecord = {
 describe('_toggleFeatureFlagInTx', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('should call tx.featureFlag.update with correct params', async () => {
+  it('should call tx.featureFlag.upsert with correct update params (US-013 AC-4)', async () => {
+    const mockUpsert = vi.fn().mockResolvedValue({});
     const tx = {
-      featureFlag: { update: vi.fn().mockResolvedValue({}) },
+      featureFlag: { upsert: mockUpsert },
       systemConfig: { update: vi.fn() },
     } as unknown as Parameters<typeof _toggleFeatureFlagInTx>[0];
 
     await _toggleFeatureFlagInTx(tx, { flagKey: 'beta_editor', enabled: true, adminId: 1 });
 
-    expect(tx.featureFlag.update).toHaveBeenCalledWith(
+    expect(mockUpsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { flagKey: 'beta_editor' },
-        data: expect.objectContaining({ enabled: true, updatedByAdminId: 1 }),
+        update: expect.objectContaining({ enabled: true, updatedByAdminId: 1 }),
+        create: expect.objectContaining({ flagKey: 'beta_editor', enabled: true }),
       }),
     );
   });
 
-  it('should include rolloutConfig when provided', async () => {
+  it('should include rolloutConfig in both update and create when provided', async () => {
+    const mockUpsert = vi.fn().mockResolvedValue({});
     const tx = {
-      featureFlag: { update: vi.fn().mockResolvedValue({}) },
+      featureFlag: { upsert: mockUpsert },
       systemConfig: { update: vi.fn() },
     } as unknown as Parameters<typeof _toggleFeatureFlagInTx>[0];
 
     await _toggleFeatureFlagInTx(tx, {
       flagKey: 'new_dashboard',
       enabled: true,
+      flagType: 'percentage',
       rolloutConfig: { percentage: 30 },
       adminId: 2,
     });
 
-    expect(tx.featureFlag.update).toHaveBeenCalledWith(
+    expect(mockUpsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ rolloutConfig: { percentage: 30 } }),
+        update: expect.objectContaining({ rolloutConfig: { percentage: 30 }, flagType: 'percentage' }),
+        create: expect.objectContaining({ rolloutConfig: { percentage: 30 }, flagType: 'percentage' }),
       }),
     );
   });
@@ -186,10 +193,13 @@ describe('toggleFeatureFlag', () => {
     expect(result.approvalRequestId).toBe(77);
   });
 
-  it('should throw NOT_FOUND when flag does not exist', async () => {
-    mockFeatureFlagFindUnique.mockResolvedValue(null);
-
-    await expect(toggleFeatureFlag('nonexistent', true, 1)).rejects.toThrow(TRPCError);
+  it('should support unknown flagKey (upsert) — AC-4: no longer throws NOT_FOUND', async () => {
+    // US-013 AC-4: toggleFeatureFlag supports arbitrary flagKey · upsert · dual approval
+    const result = await toggleFeatureFlag('brand_new_flag', true, 1);
+    expect(result.approvalRequestId).toBe(77);
+    expect(mockRequestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({ actionType: 'toggle_feature_flag', requireDualApproval: true }),
+    );
   });
 });
 
