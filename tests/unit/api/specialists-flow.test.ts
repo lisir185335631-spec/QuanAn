@@ -94,6 +94,18 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
 
   const deepLearnReviewQueue = {
     create: vi.fn(async () => ({ id: 1, status: 'pending', autoVerdict: 'needs_review' })),
+    findMany: vi.fn(async () => [
+      {
+        id: 1,
+        fileName: 'sample.txt',
+        fileMime: 'text/plain',
+        autoScanResult: { redactedTextPreview: 'sample text', sourcePlatform: '微博', analysis: { coreFormula: '3段式' } },
+        status: 'pending',
+        uploadedAt: new Date('2026-01-01'),
+      },
+    ]),
+    update: vi.fn(async () => ({})),
+    findFirst: vi.fn(async () => null),
   };
 
   const tx = {
@@ -335,15 +347,15 @@ describe('evolution.moduleRanking', () => {
 // ─── deepLearning.list ───────────────────────────────────────────────────────
 
 describe('deepLearning.list', () => {
-  it('calls deepLearningArchive.findMany with isActive filter by default', async () => {
+  it('calls deepLearnReviewQueue.findMany with accountId filter by default', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
     const result = await caller.list({});
-    expect(prisma.deepLearningArchive.findMany).toHaveBeenCalledOnce();
-    const args = prisma.deepLearningArchive.findMany.mock.calls[0]?.[0] as {
-      where?: { isActive: boolean };
+    expect(prisma.deepLearnReviewQueue.findMany).toHaveBeenCalledOnce();
+    const args = prisma.deepLearnReviewQueue.findMany.mock.calls[0]?.[0] as {
+      where?: { accountId: number };
     };
-    expect(args.where?.isActive).toBe(true);
+    expect(args.where?.accountId).toBe(1);
     expect(Array.isArray(result)).toBe(true);
   });
 });
@@ -398,13 +410,13 @@ describe('deepLearning.learn', () => {
 // ─── deepLearning.delete ─────────────────────────────────────────────────────
 
 describe('deepLearning.delete', () => {
-  it('soft-deletes archive by setting isActive=false', async () => {
+  it('soft-cancels queue entry by setting status=cancelled', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
     const result = await caller.delete({ archiveId: 30 });
     expect(result).toEqual({ ok: true });
-    expect(prisma.deepLearningArchive.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 30 }, data: { isActive: false } }),
+    expect(prisma.deepLearnReviewQueue.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: 30 }), data: { status: 'cancelled' } }),
     );
   });
 });
