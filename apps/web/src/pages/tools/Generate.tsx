@@ -32,7 +32,9 @@ export default function Generate() {
   const [mode, setMode] = useState<GenerateMode>('free');
   const [result, setResult] = useState<FreeGenerateHistoryRow | null>(null);
   const [searchParams] = useSearchParams();
-  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
+  const rawHistoryId = searchParams.get('historyId') ?? searchParams.get('restored');
+  const historyId = rawHistoryId ? parseInt(rawHistoryId, 10) : undefined;
+  const topicFromUrl = searchParams.get('topic') ?? '';
   const searchParamsMode = searchParams.get('mode') as GenerateMode | null;
 
   // AbortController on unmount (AC-8)
@@ -74,22 +76,22 @@ export default function Generate() {
     const toolNamespace = activeMode === 'acquisition' ? 'acquisition' : 'freeGenerate';
     const inputDefaults =
       activeMode === 'acquisition'
-        ? { scriptType: historyDetail.scriptType ?? '', elements: historyDetail.elements ?? [], conversionGoal: '', topic: '' }
-        : { scriptType: historyDetail.scriptType ?? '', elements: historyDetail.elements ?? [], topic: '' };
+        ? { scriptType: historyDetail.scriptType ?? '', elements: historyDetail.elements ?? [], conversionGoal: '', topic: topicFromUrl || historyDetail.inputSummary || '' }
+        : { scriptType: historyDetail.scriptType ?? '', elements: historyDetail.elements ?? [], topic: topicFromUrl || historyDetail.inputSummary || '' };
     try {
       localStorage.setItem(getToolLsKey(accountId, toolNamespace, 'input'), JSON.stringify(inputDefaults));
     } catch { /* storage full */ }
-  }, [historyDetail, accountId, searchParamsMode, mode]);
+  }, [historyDetail, accountId, searchParamsMode, mode, topicFromUrl]);
 
   const historyDefaults = historyDetail
     ? {
         scriptType: historyDetail.scriptType ?? '',
         elements: historyDetail.elements ?? [],
-        topic: '',
+        topic: topicFromUrl || historyDetail.inputSummary || '',
       }
     : undefined;
 
-  const resolvedDefaults = historyDefaults ?? lsDefaults;
+  const resolvedDefaults = historyDefaults ?? lsDefaults ?? (topicFromUrl ? { topic: topicFromUrl } : undefined);
 
   const freeMutation = trpc.copywriting.freeGenerate.useMutation();
   const acquisitionMutation = trpc.copywriting.acquisitionGenerate.useMutation();
