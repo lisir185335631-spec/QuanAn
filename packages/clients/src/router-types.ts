@@ -513,7 +513,8 @@ const _shadowRouter = _t.router({
             agentId?: string;
             agentMode?: string;
             sourceType?: string;
-            dateRange?: 'last_7d' | 'last_30d' | 'all';
+            tools?: string[];
+            dateRange?: 'last_7d' | 'last_30d' | 'all' | 'today' | 'week' | 'month';
             limit?: number;
             offset?: number;
           },
@@ -525,6 +526,33 @@ const _shadowRouter = _t.router({
     delete: _t.procedure
       .input((x: unknown) => x as { id: number })
       .mutation((): { ok: true } => ({ ok: true })),
+    stats: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            dateRange?: 'today' | 'week' | 'month' | 'all';
+            tools?: string[];
+          },
+      )
+      .query(
+        (): {
+          totalCalls: number;
+          failureRate: number;
+          avgDurationMs: number;
+          topTools: Array<{ agentId: string; count: number }>;
+          dailyTrend: Array<{ date: string; count: number }>;
+          durationHistogram: Array<{ label: string; count: number }>;
+          modelDistribution: Array<{ model: string; count: number }>;
+        } => ({
+          totalCalls: 0,
+          failureRate: 0,
+          avgDurationMs: 0,
+          topTools: [],
+          dailyTrend: [],
+          durationHistogram: [],
+          modelDistribution: [],
+        }),
+      ),
   }),
   analysis: _t.router({
     analyze: _t.procedure
