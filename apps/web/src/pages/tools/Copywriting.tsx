@@ -242,6 +242,7 @@ export default function Copywriting() {
                 error={error}
                 onSaveHistory={handleSaveHistory}
                 onSaveTemplate={handleSaveTemplate}
+                onAnimComplete={() => setIsStreaming(false)}
               />
             </div>
           </div>

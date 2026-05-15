@@ -6,7 +6,7 @@
  * - AC-8: SSE meta chunk {type:'meta', meta:{model:actualModel}} 显示
  */
 
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ interface CopywritingPreviewProps {
   error?: string | null;
   onSaveHistory?: () => void;
   onSaveTemplate?: () => void;
+  onAnimComplete?: () => void;
 }
 
 export function CopywritingPreview({
@@ -29,8 +30,14 @@ export function CopywritingPreview({
   error,
   onSaveHistory,
   onSaveTemplate,
+  onAnimComplete,
 }: CopywritingPreviewProps) {
   const [animComplete, setAnimComplete] = useState(false);
+
+  // Reset animation state when a new generation starts (content cleared to null)
+  useEffect(() => {
+    if (!content) setAnimComplete(false);
+  }, [content]);
 
   async function copyAll() {
     if (!content) return;
@@ -44,9 +51,9 @@ export function CopywritingPreview({
 
   function handleAnimComplete() {
     setAnimComplete(true);
+    onAnimComplete?.();
   }
 
-  // reset animComplete when new content arrives
   const showActions = !isStreaming && animComplete && content;
 
   if (error) {
