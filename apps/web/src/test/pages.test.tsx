@@ -202,7 +202,7 @@ describe('Module pages render', () => {
 
   it('History renders h1 heading', () => {
     render(<MemoryRouter><History /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('历史记录');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('操作历史');
   });
 });
 
