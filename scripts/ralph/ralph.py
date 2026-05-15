@@ -51,7 +51,15 @@ TIMEOUT_SECONDS = 30 * 60          # 开发 Agent 超时：30 分钟
 VALIDATOR_TIMEOUT_SECONDS = 60 * 60  # Validator 超时：60 分钟
 MAX_BACKUPS = 10                   # prd.json 备份保留数量
 AUDIT_POLL_INTERVAL = 30           # 审计门禁轮询间隔（秒）
-AUDIT_TIMEOUT_SECONDS = 10800      # 审计门禁超时：3 小时（2026-04-21 升级: 支持 high-risk 深审 + 中途修机制）
+AUDIT_TIMEOUT_SECONDS = 10800      # 审计门禁超时：3 小时
+# RCA-006 修复(2026-05-15) · timeout 不再 silent skip · daemon 退出 · audit-gate.json 保留 pending
+# 用户介入后可 ralph-tools.py approve / reject / force-reject · 或重启 daemon 自动崩溃恢复
+# 详见 .agents/rca/RCA-006-audit-timeout-bypass.md
+
+
+class AuditTimeoutError(Exception):
+    """RCA-006(2026-05-15) · audit timeout 触发 · daemon 必须退出 · 不绕过 audit · 严格 Audit Gate 零容忍"""
+    pass
 MAX_RETRIES = 5                    # 单个 story 最大重试次数（确定性兜底，不依赖 LLM）
 MAX_PROGRESS_BYTES = 512 * 1024    # progress.txt 最大保留 512KB（超出时截断旧内容）
 
@@ -873,8 +881,10 @@ def _write_path_b_audit_gate(story_id: str, commit_hash: str) -> bool:
 def wait_for_audit(story_id: str, timeout: int | None = None) -> str:
     """
     轮询 audit-gate.json，等待 Opus 写入 approved 或 rejected。
-    返回 "approved"、"rejected" 或 "timeout"。
-    timeout 默认使用 AUDIT_TIMEOUT_SECONDS（1 小时）。
+    返回 "approved" 或 "rejected"。
+    timeout 默认使用 AUDIT_TIMEOUT_SECONDS（3 小时）。
+    RCA-006 修复(2026-05-15) · timeout 触发 raise AuditTimeoutError · daemon 必须退出
+    audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复
     """
     max_wait = timeout if timeout is not None else AUDIT_TIMEOUT_SECONDS
     poll_count = 0
@@ -896,10 +906,20 @@ def wait_for_audit(story_id: str, timeout: int | None = None) -> str:
             remaining_min = max(0, int((max_wait - elapsed) // 60))
             print(f"  [WAIT] 已等待 {elapsed_min} 分钟，剩余 {remaining_min} 分钟超时 | 等待 Opus 审计 {story_id}...")
 
-        # 超时保护：防止无限等待
+        # 超时保护:RCA-006(2026-05-15)修复 · 不再 silent skip · daemon 退出
         if elapsed >= max_wait:
-            print(f"  [WARN]  审计门禁等待超时 ({int(elapsed // 60)} 分钟)，{story_id} 跳过审计继续执行")
-            return "timeout"
+            elapsed_min = int(elapsed // 60)
+            print(f"  [CRITICAL] 审计门禁等待超时 ({elapsed_min} 分钟) · {story_id} 必须 manual review")
+            print(f"             audit-gate.json 保留 pending · 用户介入选项:")
+            print(f"             1. python scripts/ralph/ralph-tools.py approve · 重启 daemon 继续")
+            print(f"             2. python scripts/ralph/ralph-tools.py reject \"反馈\" · 重启 daemon · retry")
+            print(f"             3. python scripts/ralph/ralph-tools.py force-reject \"原因\" · 重启 daemon · 跳过深审")
+            print(f"             4. python scripts/ralph/ralph-tools.py block {story_id} \"原因\" · 重启 daemon · 跳此 story")
+            print(f"             详见 .agents/rca/RCA-006-audit-timeout-bypass.md")
+            raise AuditTimeoutError(
+                f"Audit timeout for {story_id} after {elapsed_min}min · "
+                f"daemon must exit (RCA-006 zero-tolerance)"
+            )
 
         time.sleep(AUDIT_POLL_INTERVAL)
 
@@ -945,19 +965,9 @@ def handle_audit_result(story_id: str) -> None:
 
         clear_audit_gate()
 
-    elif status == "pending":
-        # wait_for_audit 返回 "timeout" 时，gate 仍为 pending
-        # 记录超时事件，清除门禁，让 Ralph 继续（story 保持 passes=true）
-        print(f"  [ALARM] {story_id} 审计超时，保留当前状态继续执行")
-        prd = read_prd()
-        if prd:
-            s = get_story_by_id(prd, story_id)
-            if s:
-                existing_notes = s.get("notes", "").strip()
-                new_note = f"[审计超时] 等待超过 {AUDIT_TIMEOUT_SECONDS // 60} 分钟，自动跳过审计"
-                s["notes"] = f"{existing_notes}\n{new_note}".strip() if existing_notes else new_note
-                write_prd_safe(prd)
-        clear_audit_gate()
+    # RCA-006(2026-05-15)修复 · status='pending' branch 删除 silent skip 逻辑
+    # wait_for_audit 现在 raise AuditTimeoutError · main 流程 catch 后 sys.exit(2)
+    # audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复
 
 
 # ─────────────────────────────────────────────
@@ -1611,8 +1621,22 @@ def main():
                         print(f"\n  [LOCK] 检测到未完成的审计门禁: {pending_story}，恢复等待...")
                         write_lock(i, "waiting_audit", pending_story)
                         dashboard.set_state(phase="waiting_audit")
-                        wait_for_audit(pending_story)
-                        handle_audit_result(pending_story)
+                        try:
+                            wait_for_audit(pending_story)
+                            handle_audit_result(pending_story)
+                        except AuditTimeoutError as e:
+                            # RCA-006(2026-05-15) · audit timeout · daemon 退出
+                            print(f"\n[DAEMON EXIT] {e}")
+                            print(f"  audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复")
+                            try:
+                                with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                                    from datetime import datetime as _dt
+                                    f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {pending_story} · [RCA-006 DAEMON EXIT]\n")
+                                    f.write(f"- audit timeout(崩溃恢复时触发) · daemon 已退出\n")
+                                    f.write(f"- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md\n---\n\n")
+                            except Exception:
+                                pass
+                            sys.exit(2)
                 elif gate and gate.get("status") in ("approved", "rejected"):
                     pending_story = gate.get("story_id", "?")
                     handle_audit_result(pending_story)
@@ -1677,8 +1701,22 @@ def main():
                         if not NO_AUDIT_GATE and _write_path_b_audit_gate(current_story, commit_hash):
                             write_lock(i, "waiting_audit", current_story)
                             dashboard.set_state(phase="waiting_audit")
-                            wait_for_audit(current_story)
-                            handle_audit_result(current_story)
+                            try:
+                                wait_for_audit(current_story)
+                                handle_audit_result(current_story)
+                            except AuditTimeoutError as e:
+                                # RCA-006(2026-05-15) · PATH-B audit timeout · daemon 退出
+                                print(f"\n[DAEMON EXIT] {e}")
+                                print(f"  audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复")
+                                try:
+                                    with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                                        from datetime import datetime as _dt
+                                        f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {current_story} · [RCA-006 DAEMON EXIT · PATH-B]\n")
+                                        f.write(f"- audit timeout(PATH-B 触发) · daemon 已退出\n")
+                                        f.write(f"- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md\n---\n\n")
+                                except Exception:
+                                    pass
+                                sys.exit(2)
                         continue
                     # PATH-B 未命中 (无 commit 或已尝试过 PATH-B) → 原有 BLOCKED 行为
                     s_check["blocked"] = True
@@ -1768,11 +1806,22 @@ def main():
                         if gate_written:
                             write_lock(i, "waiting_audit", current_story)
                             dashboard.set_state(phase="waiting_audit")
-                            result = wait_for_audit(current_story)
-                            if result == "timeout":
-                                # 审计超时，handle_audit_result 会处理 pending 状态
-                                pass
-                            handle_audit_result(current_story)
+                            try:
+                                wait_for_audit(current_story)
+                                handle_audit_result(current_story)
+                            except AuditTimeoutError as e:
+                                # RCA-006(2026-05-15) · 主审计 timeout · daemon 退出零容忍
+                                print(f"\n[DAEMON EXIT] {e}")
+                                print(f"  audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复")
+                                try:
+                                    with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                                        from datetime import datetime as _dt
+                                        f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {current_story} · [RCA-006 DAEMON EXIT]\n")
+                                        f.write(f"- audit timeout(主审计触发) · daemon 已退出\n")
+                                        f.write(f"- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md\n---\n\n")
+                                except Exception:
+                                    pass
+                                sys.exit(2)
 
             # H3: 结构化进度标记 — iteration 结束
             iter_elapsed = time.time() - iter_start
