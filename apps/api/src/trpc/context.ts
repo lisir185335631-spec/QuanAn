@@ -10,6 +10,7 @@ import { randomBytes } from 'node:crypto';
 
 import { lucia } from '@/lib/auth/lucia';
 import { prisma } from '@/lib/prisma';
+import { isDevOAuthMock, getDevMockUserAttrs } from '@/middleware/auth';
 
 import type { PrismaClient } from '@prisma/client';
 import type { Context as HonoCtx } from 'hono';
@@ -32,7 +33,13 @@ export async function createContext(c: HonoCtx): Promise<TRPCContext> {
   let user: User | null = null;
   let resolvedSessionId: string | null = null;
 
-  if (sessionId) {
+  if (isDevOAuthMock()) {
+    // DEV_OAUTH_MOCK=true: skip real OAuth, return seeded dev user (PRD-15 US-001 AC-3)
+    const devAttrs = await getDevMockUserAttrs(prisma);
+    if (devAttrs) {
+      user = devAttrs as unknown as User;
+    }
+  } else if (sessionId) {
     const { session, user: sessionUser } = await lucia.validateSession(sessionId);
     if (session) {
       user = sessionUser;

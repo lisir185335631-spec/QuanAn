@@ -18,6 +18,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { KNOWLEDGE_CASES } from '../apps/api/src/lib/constants/cases';
 import { COPY_FORMULAS } from '../apps/api/src/lib/constants/formulas';
 import { HOT_ELEMENTS } from '../apps/api/src/lib/constants/hotElements';
+import { INDUSTRIES } from '../apps/api/src/lib/constants/industries';
 
 const prisma = new PrismaClient();
 
@@ -27,6 +28,112 @@ const prisma = new PrismaClient();
 
 function generateInviteCode(): string {
   return randomBytes(8).toString('hex').toUpperCase().slice(0, 12);
+}
+
+// ====================================================
+// 0a. 行业表 (56 条) · PRD-15 US-001 AC-1
+// ====================================================
+
+export async function seedIndustries(prismaClient = prisma) {
+  console.log('▸ Seeding industries (56) ...');
+  let created = 0;
+  let skipped = 0;
+
+  for (let i = 0; i < INDUSTRIES.length; i++) {
+    const ind = INDUSTRIES[i];
+    const existing = await prismaClient.industry.findUnique({ where: { key: ind.key } });
+    if (existing) {
+      skipped++;
+      continue;
+    }
+    await prismaClient.industry.create({
+      data: {
+        key: ind.key,
+        label: ind.label,
+        category: ind.category,
+        emoji: ind.emoji,
+        order: i,
+      },
+    });
+    created++;
+  }
+
+  console.log(`  ✓ industries seeded · created=${created} · skipped=${skipped}`);
+  return { created, skipped };
+}
+
+// ====================================================
+// 0b. Mock IP 账号 (5 个) · PRD-15 US-001 AC-2
+// ====================================================
+
+const DEV_MOCK_USER_EMAIL = 'dev@quanqn.local';
+
+const MOCK_IP_ACCOUNTS = [
+  { name: 'AI 创业者小张', industry: 'enterprise', platform: 'douyin', stage: 'starter', personalInfo: 'AI 创业者 · ip-creator 路径', ipPositioning: 'ip-creator', followersRange: '0-1000' as const },
+  { name: 'OPC 经营者老王', industry: 'enterprise', platform: 'douyin', stage: 'growth', personalInfo: 'OPC 经营者 · opc-founder 路径', ipPositioning: 'opc-founder', followersRange: '1000-10000' as const },
+  { name: '实体店主陈姐', industry: 'food', platform: 'douyin', stage: 'starter', personalInfo: '实体餐饮店主 · traditional-transform 路径', ipPositioning: 'traditional-transform', followersRange: '0-1000' as const },
+  { name: 'MCN 矩阵号', industry: 'self_media', platform: 'douyin', stage: 'growth', personalInfo: 'MCN 矩阵账号管理 · mcn-manager 路径', ipPositioning: 'mcn-manager', followersRange: '1000-10000' as const },
+  { name: 'Demo 演示号', industry: 'beauty', platform: 'douyin', stage: 'starter', personalInfo: 'Demo 演示账号', ipPositioning: 'demo', followersRange: '0-1000' as const },
+] as const;
+
+export async function seedMockIpAccounts(prismaClient = prisma) {
+  console.log('▸ Seeding mock IP accounts (5) ...');
+
+  // Ensure dev mock user exists
+  const devUser = await prismaClient.user.upsert({
+    where: { email: DEV_MOCK_USER_EMAIL },
+    create: {
+      openId: 'dev_mock_user',
+      name: 'Dev User',
+      email: DEV_MOCK_USER_EMAIL,
+      role: 'user',
+      isActivated: true,
+    },
+    update: {},
+  });
+
+  let created = 0;
+  let skipped = 0;
+
+  for (const acc of MOCK_IP_ACCOUNTS) {
+    const existing = await prismaClient.ipAccount.findFirst({
+      where: { userId: devUser.id, name: acc.name },
+    });
+    if (existing) {
+      skipped++;
+      continue;
+    }
+    await prismaClient.ipAccount.create({
+      data: {
+        userId: devUser.id,
+        name: acc.name,
+        industry: acc.industry,
+        platform: acc.platform,
+        stage: acc.stage,
+        personalInfo: acc.personalInfo,
+        followersRange: acc.followersRange,
+        ipPositioning: acc.ipPositioning,
+      },
+    });
+    created++;
+  }
+
+  // Set activeAccountId to first mock account if not set
+  if (!devUser.activeAccountId) {
+    const firstAccount = await prismaClient.ipAccount.findFirst({
+      where: { userId: devUser.id },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (firstAccount) {
+      await prismaClient.user.update({
+        where: { id: devUser.id },
+        data: { activeAccountId: firstAccount.id },
+      });
+    }
+  }
+
+  console.log(`  ✓ mock_ip_accounts seeded · created=${created} · skipped=${skipped}`);
+  return { created, skipped, devUserId: devUser.id };
 }
 
 // ====================================================
@@ -499,9 +606,11 @@ async function seedSystemConfig() {
 
 async function main() {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(' QuanQn Seed v0.1');
+  console.log(' QuanQn Seed v0.2');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
+  await seedIndustries();
+  await seedMockIpAccounts();
   const users = await seedUsers();
   await seedIpAccounts(users);
   await seedInviteCodes(users.admin.id);
