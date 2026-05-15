@@ -16,8 +16,10 @@ import { useSearchParams } from 'react-router-dom';
 
 import { adminTrpc } from '../../lib/admin-client';
 import { DiffMonacoEditor, MonacoEditor } from '../prompts/components/MonacoEditor';
+import { CanarySlider } from './components/CanarySlider';
 import { ConstantKeyDropdown } from './components/ConstantKeyDropdown';
 import { HistoryTimeline } from './components/HistoryTimeline';
+import { LlmJudgeCard } from './components/LlmJudgeCard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -128,12 +130,13 @@ interface VersionCardProps {
   } | null;
   canaryPct: number | null;
   onEdit: () => void;
+  onCanaryConfig: () => void;
   isEditing: boolean;
   constantType: string;
   constantKey: string;
 }
 
-function VersionCard({ version, canaryPct, onEdit, isEditing, constantType, constantKey }: VersionCardProps) {
+function VersionCard({ version, canaryPct, onEdit, onCanaryConfig, isEditing, constantType: _constantType, constantKey: _constantKey }: VersionCardProps) {
   if (!version) {
     return (
       <div
@@ -252,9 +255,7 @@ function VersionCard({ version, canaryPct, onEdit, isEditing, constantType, cons
           </button>
         )}
         <button
-          onClick={() =>
-            window.location.href = `/admin/approvals?type=constant&key=${encodeURIComponent(constantType + ':' + constantKey)}`
-          }
+          onClick={onCanaryConfig}
           style={{
             background: 'transparent',
             color: '#60a5fa',
@@ -287,6 +288,10 @@ export default function ConstantsPage() {
   const rawKey = searchParams.get('key') ?? firstKey;
   const constantKey = rawKey || firstKey;
 
+  // US-010: secondary tab URL state (edit | canary)
+  const rawTab = searchParams.get('tab') ?? 'edit';
+  const activeTab: 'edit' | 'canary' = rawTab === 'canary' ? 'canary' : 'edit';
+
   function setType(type: ConstantType) {
     const defaultKey = type === 'case' ? 'opinion_beauty_01' : type === 'formula' ? 'pain_hook' : 'greed';
     setSearchParams({ type, key: defaultKey });
@@ -304,6 +309,12 @@ export default function ConstantsPage() {
     setShowDiff(false);
     setSavedVersionId(null);
     setToast(null);
+  }
+
+  function setTab(tab: 'edit' | 'canary') {
+    const params: Record<string, string> = { type: constantType, key: constantKey };
+    if (tab === 'canary') params.tab = 'canary';
+    setSearchParams(params);
   }
 
   // ── Editing state ─────────────────────────────────────────────────────────
@@ -426,6 +437,10 @@ export default function ConstantsPage() {
   const canaryPct = activeData?.canaryConfig?.canaryPct ?? null;
   const versions = historyData?.versions ?? [];
 
+  // US-010: canary tab data
+  const nextVersionId = activeData?.canaryConfig?.nextVersionId ?? null;
+  const nextVersion = nextVersionId ? (versions.find((v) => v.id === nextVersionId) ?? null) : null;
+
   const editorOriginal = activeVersion?.content ?? '{}';
   const editorModified = draftContent ?? editorOriginal;
 
@@ -452,40 +467,101 @@ export default function ConstantsPage() {
           onSelect={setKey}
         />
 
-        {/* Version card (AC-4) */}
-        {isLoadingActive ? (
-          <div
-            style={{
-              background: 'var(--bg-panel)',
-              border: '1px solid var(--border)',
-              borderRadius: 6,
-              padding: '12px 16px',
-              marginBottom: 12,
-              flexShrink: 0,
-            }}
-          >
-            <span
+        {/* US-010: secondary tab bar (编辑内容 | 灰度配置) */}
+        <div
+          style={{
+            display: 'flex',
+            gap: 4,
+            marginBottom: 10,
+            flexShrink: 0,
+          }}
+        >
+          {(['edit', 'canary'] as const).map((t) => {
+            const isActive = t === activeTab;
+            const label = t === 'edit' ? '编辑内容' : '灰度配置';
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                style={{
+                  background: isActive ? 'rgba(212,175,55,0.15)' : 'transparent',
+                  color: isActive ? 'var(--gold)' : 'var(--text-muted)',
+                  border: isActive ? '1px solid rgba(212,175,55,0.4)' : '1px solid var(--border)',
+                  borderRadius: 4,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: isActive ? 600 : 400,
+                  cursor: 'pointer',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Version card (AC-4) — edit tab only */}
+        {activeTab === 'edit' && (
+          isLoadingActive ? (
+            <div
               style={{
-                display: 'inline-block',
-                width: 120,
-                height: 12,
-                background: 'var(--border)',
-                borderRadius: 4,
+                background: 'var(--bg-panel)',
+                border: '1px solid var(--border)',
+                borderRadius: 6,
+                padding: '12px 16px',
+                marginBottom: 12,
+                flexShrink: 0,
               }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 120,
+                  height: 12,
+                  background: 'var(--border)',
+                  borderRadius: 4,
+                }}
+              />
+            </div>
+          ) : (
+            <VersionCard
+              version={activeVersion}
+              canaryPct={canaryPct}
+              onEdit={() => setIsEditing(true)}
+              onCanaryConfig={() => setTab('canary')}
+              isEditing={isEditing}
+              constantType={constantType}
+              constantKey={constantKey}
             />
-          </div>
-        ) : (
-          <VersionCard
-            version={activeVersion}
-            canaryPct={canaryPct}
-            onEdit={() => setIsEditing(true)}
-            isEditing={isEditing}
-            constantType={constantType}
-            constantKey={constantKey}
-          />
+          )
         )}
 
-        {/* Editor + History area */}
+        {/* US-010: Canary tab content */}
+        {activeTab === 'canary' && (
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <CanarySlider
+              constantType={constantType}
+              constantKey={constantKey}
+              currentVersion={activeVersion ? { id: activeVersion.id, version: activeVersion.version, judgeScore: activeVersion.judgeScore, status: activeVersion.status } : null}
+              nextVersion={nextVersion ? { id: nextVersion.id, version: nextVersion.version, judgeScore: nextVersion.judgeScore, status: nextVersion.status } : null}
+              currentCanaryPct={canaryPct ?? 0}
+              nextVersionId={nextVersionId}
+              isSuperAdmin={isSuperAdmin}
+              onRefetch={() => { void refetchActive(); void refetchHistory(); }}
+              onToast={showToast}
+            />
+            <LlmJudgeCard
+              versionId={activeVersion?.id ?? null}
+              judgeScore={activeVersion?.judgeScore ?? null}
+              isSuperAdmin={isSuperAdmin}
+              onToast={showToast}
+            />
+          </div>
+        )}
+
+        {/* Editor + History area (edit tab only) */}
+        {activeTab === 'edit' && (
         <div style={{ flex: 1, display: 'flex', gap: 12, overflow: 'hidden', minHeight: 0 }}>
           {/* Monaco editor panel (AC-5 / AC-6) */}
           <div
@@ -655,6 +731,7 @@ export default function ConstantsPage() {
             </div>
           </div>
         </div>
+        )}
 
         <div style={{ height: 12, flexShrink: 0 }} />
       </div>
