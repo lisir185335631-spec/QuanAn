@@ -1138,8 +1138,194 @@
       "resolved_in_prd": null,
       "resolved_at": null,
       "created_at": "2026-05-14T19:00:00"
+    },
+    {
+      "id": "TD-062",
+      "category": "tooling",
+      "categories": [
+        "tooling",
+        "doc-drift",
+        "audit-flow"
+      ],
+      "title": "ralph.py AUDIT_TIMEOUT_SECONDS docstring 与实际值 3x drift · 跟 CLAUDE.md §9.3 cycle 预算 + §9.1 Monitor timeout 三处不一致",
+      "created_at": "2026-05-15T09:30:00",
+      "discovered_at": "2026-05-15",
+      "discovered_by": "Opus retroactive audit US-003/US-004 (PRD-14)",
+      "severity": "Low",
+      "status": "open",
+      "scope": [
+        "scripts/ralph/ralph.py:54 (AUDIT_TIMEOUT_SECONDS = 10800 · 实际 3h)",
+        "scripts/ralph/ralph.py:877 (docstring · timeout 默认使用 AUDIT_TIMEOUT_SECONDS（1 小时）· 错)",
+        "CLAUDE.md §9.3 (项目级 · 总 cycle 预算 10-45 min)",
+        "CLAUDE.md §9.1 (项目级 · Monitor timeout_ms=3600000 · 1h)",
+        "~/.claude/scripts/ralph/ralph.py (全局 · 同步问题)"
+      ],
+      "evidence": "ralph.py:54 AUDIT_TIMEOUT_SECONDS = 10800  # 3 小时\nralph.py:877 注释 'timeout 默认使用 AUDIT_TIMEOUT_SECONDS（1 小时）' ← 误导\n实测 US-005 audit 等待打印 '剩余 175 分钟超时' (= 180 - 5) · 确认默认 3h · 跟 docstring 1h 矛盾",
+      "impact": "Medium-risk 误导维护者：(a) 读 docstring 以为 timeout 是 1h · 实际跑到 3h 才超时；(b) CLAUDE.md §9.3 总 cycle 目标 10-45 min · ralph.py 给 3h safety net · 留出隐性 3.7x ~ 18x 超时窗口让 Opus 拖延，弱化 §9.1 monitoring SOP 的紧迫感；(c) Monitor SOP 设 1h 但 daemon 等 3h · Monitor timeout 先到 · 后续 Opus 离屏期 1-3h 之间无人监控但 daemon 仍在等",
+      "root_cause": "2026-04-21 升级时把 AUDIT_TIMEOUT_SECONDS 从 3600 改到 10800 但 docstring line 877 没同步改；CLAUDE.md §9.3 后续增加但未跟 ralph.py 默认值对齐",
+      "detected_in_prd": "prd-14",
+      "detected_in_story": "US-003/US-004 retroactive audit (Opus)",
+      "fix_by": "PRD-14 收官前 或 下一 PRD 启动前",
+      "fix_hint": "三选一定基线：A) 改 ralph.py:877 docstring 为 '3 小时' · 保留 10800 默认值 · 在 CLAUDE.md §9.3 加注 'AUDIT_TIMEOUT_SECONDS=3h 是 safety net · 不是 normal cycle 预算' [推荐 · 改动最小]；B) 把 AUDIT_TIMEOUT_SECONDS 改回 3600 · 跟 CLAUDE.md §9.3 + §9.1 Monitor timeout 对齐；C) 拆 ralph.py constants 为 NORMAL_CYCLE_TARGET=2700 (45min) + SAFETY_NET=10800 (3h) · 双值各跑各的 alarm",
+      "audit_exemption": "US-003/US-004 retroactive audit 不需 reject · 这是 ralph.py 工具自身 docstring drift · 不影响 US 实现质量",
+      "resolved_at": null,
+      "resolved_in_prd": null
+    },
+    {
+      "id": "TD-063",
+      "category": "naming-drift",
+      "categories": [
+        "naming-drift",
+        "cross-story-consistency"
+      ],
+      "title": "PRD-14 US-006 updateConstantCanaryConfig 命名漂移 · 跟 PRD AC + US-008 AC 期望 updateCanaryConfig 不一致",
+      "created_at": "2026-05-15T09:35:00",
+      "discovered_at": "2026-05-15",
+      "discovered_by": "Opus audit US-006 (Foundation 档 F1 跨 story 命名核对)",
+      "severity": "Low",
+      "status": "open",
+      "scope": [
+        "apps/api/src/services/admin/constant-version/constant-version.service.ts:212 (export async function updateConstantCanaryConfig)",
+        "apps/api/src/services/admin/constant-version/__tests__/constant-version.service.test.ts:59/195/201/209/219 (引用 updateConstantCanaryConfig)",
+        "PRD-14 US-006 AC 4 (期望 updateCanaryConfig 不加 Constant 前缀 — 跟 prompt-version.service.ts 同名)",
+        "PRD-14 US-008 AC 1 (期望 updateCanaryConfig · US-008 实现 ralph 会撞既有 updateConstantCanaryConfig)"
+      ],
+      "evidence": "PRD US-006 AC: '5 export function 加 Constant 前缀(_publishConstantVersionInTx / publishConstantVersion / rollbackConstant / updateCanaryConfig / getActiveConstantVersion)' — 注意 updateCanaryConfig 这个没加前缀(prompt-version 同名)。但 ralph 实现统一加了 Constant 前缀 → updateConstantCanaryConfig。\nUS-008 AC: 'constant-version.service.ts 加 updateCanaryConfig(constantType, constantKey, nextVersionId, canaryPct)' — US-008 ralph 实施时会期望既有 service 已有 updateCanaryConfig · 实际是 updateConstantCanaryConfig。\nprompt-version.service.ts:196 export updateCanaryConfig (无前缀) — Ralph 1:1 fork 时应保持同名。",
+      "impact": "Low risk: 功能完全一致 · 仅命名差异。但 US-008 ralph 实施时可能撞墙: (a) 跟 PRD AC 字面不符 ralph 困惑; (b) 新建 updateCanaryConfig wrapper 调旧 updateConstantCanaryConfig · 双 function 并存。设计 taste 上 ralph 加前缀更 consistent (5 func 全有 Constant 前缀) · 但破坏 PRD AC 与 prompt-version 1:1 fork 原则。",
+      "root_cause": "PRD AC 写法本身不一致(4 处加前缀 · 1 处不加) · ralph 实施时统一化加前缀 · 善意 design improvement 但跟 PRD AC 字面不符",
+      "detected_in_prd": "prd-14",
+      "detected_in_story": "US-006 (Opus audit foundation F1)",
+      "fix_by": "PRD-14 US-008 启动前",
+      "fix_hint": "三选一: A) rename updateConstantCanaryConfig → updateCanaryConfig (跟 PRD AC + prompt-version 一致) + 同步改 test + import [推荐 · 跟 PRD-13 prompt-version pattern 一致]；B) 改 PRD US-008 AC 写 updateConstantCanaryConfig (跟既有实现对齐)；C) 在 service 内加 alias export `export const updateCanaryConfig = updateConstantCanaryConfig;` (双 name 都可用)",
+      "audit_exemption": "US-006 approve 时豁免 · 因为功能完整 + Foundation F1 跨 story 漂移仅 1 处 + ralph 加前缀有内在 consistency 理由 · 不影响 US-006 本身质量",
+      "resolved_at": null,
+      "resolved_in_prd": null
+    },
+    {
+      "id": "TD-064",
+      "category": "tooling",
+      "categories": [
+        "tooling",
+        "validator-integrity",
+        "audit-flow"
+      ],
+      "title": "Validator Sonnet iter 9 文字判 PASS 但未 Edit prd.json passes=true (偷懒 · 触发 wasted iter 10)",
+      "created_at": "2026-05-15T09:35:00",
+      "discovered_at": "2026-05-15",
+      "discovered_by": "Opus audit US-006 调试 daemon 状态时发现",
+      "severity": "Medium",
+      "status": "open",
+      "scope": [
+        "scripts/ralph/agent-logs/20260515-091538_验证.log (Validator iter 9 文字输出 '判决 prd.json.passes = true' 但未真 Edit)",
+        "scripts/ralph/verify-artifacts/US-006/manifest.json (Validator 写了 manifest verdict=PASS)",
+        "scripts/ralph/prd.json (passes 仍 false · 直到 Opus 手动 patch)",
+        "~/.claude/scripts/ralph/VALIDATOR.md:23 (instructions 写 '根据验证结果，更新 prd.json' 但缺强制 Edit tool 检查)",
+        "scripts/ralph/ralph.py:1310-1364 run_validator (只看 subprocess exit_code · 不读 manifest 判 verdict)"
+      ],
+      "evidence": "iter 9 Validator agent (subprocess exit 0 · duration 3:30) · 写产物 manifest.json verdict=PASS · 但 prd.json US-006 passes 仍 false → daemon 不写 audit-gate · 进 iter 10 dev 浪费 ~10 min · iter 10 dev Ralph 看 git 已 commit 直接 quick exit · 现在 iter 10 validator 在重判。\n根因: Sonnet 输出自然语言 '判决: passes = true' 但**没真调用 Edit/Write 工具改 prd.json 字段** · 跟 PRD-3 retro 提过的 'Validator 偷懒' 同类问题。",
+      "impact": "Medium: (a) 每次 Sonnet 偷懒浪费 1 iter (~8-15 min · iter 10 重跑 dev + validator); (b) Opus 主对话需手动 patch prd.json passes=true 干预 (违反 daemon 自治); (c) Validator 跟 ralph.py 之间缺 contract enforcement · 单向信任链漏洞 (类似 TD-046 audit-artifacts)。",
+      "root_cause": "VALIDATOR.md 指令文字告诉 Sonnet 改 prd.json 但缺 contract enforcement; ralph.py 不读 manifest verdict 自动写 passes · 完全依赖 Validator subprocess 内部行为",
+      "detected_in_prd": "prd-14",
+      "detected_in_story": "US-006 (Opus audit · 2026-05-15 09:30 实测 iter 9 偷懒)",
+      "fix_by": "下一 PRD 启动前(关键 tooling 改进)",
+      "fix_hint": "三选一: A) ralph.py 在 run_validator 后读 verify-artifacts/US-XXX/manifest.json verdict 自动写 passes (跟 VALIDATOR.md 形成 contract · 双保险) [推荐]; B) VALIDATOR.md 加强制 'Edit tool 必跑' + ralph.py grep agent-log 检查是否包含 'Edit ... prd.json' tool call 痕迹; C) 引入产物校验脚本 audit-artifacts.py 在 daemon 内 trigger · 看到 verdict=PASS 自动 write_audit_gate (跳过 Validator agent 写 passes)。",
+      "audit_exemption": null,
+      "resolved_at": null,
+      "resolved_in_prd": null
+    },
+    {
+      "id": "TD-65",
+      "title": "PRD-14 AC2 vec 表命名漂移: knowledge_cases_vec/formulas_vec/elements_vec 应为 knowledge_chunk + type 列",
+      "description": "PRD-14 §1 US-007 AC2 + §1.5 §8.5 多处提 knowledge_cases_vec / formulas_vec / elements_vec 三 vec 表 · 实际 prisma schema 仅 knowledge_chunk 单表 + type 列 ('case'/'formula'/'element') · ralph 实现走 knowledge_chunk + type 列区分 (constant-embed.service.ts:50-69) · 语义等价但 PRD 文档误导未来读者",
+      "scope": [
+        "tasks/prd-14.md:583,609,1168",
+        "apps/api/src/services/admin/constant-version/constant-embed.service.ts:50-69"
+      ],
+      "impact": "Low: 代码行为正确 · 仅影响 PRD 文档可读性 · 未来 PRD-N+1 retro 时可能混淆",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "doc-clarity"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-007 (Opus audit)",
+      "fix_by": "PRD-14 retro / 下一 PRD 启动前",
+      "status": "open",
+      "fix_hint": "PRD-14 retro 时把 §1 US-007 AC2 + §1.5 + §8.5 中 knowledge_cases_vec / formulas_vec / elements_vec 统改为 'knowledge_chunk 表 with type=case|formula|element'",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-66",
+      "title": "prisma/seed.ts SYSTEM_ADMIN_ID 同名常量两不同值 (line 297=1 vs line 372=0)",
+      "description": "prisma/seed.ts 内同名 const SYSTEM_ADMIN_ID · 早期 seed 函数(promptVersion 等)line 297 = 1 (admin user) · US-007 新加 seedConstantsToVersions line 372 = 0 (system bypass)· scope 不同(函数内 const)编译不冲突但可读性差 · 容易误读",
+      "scope": [
+        "prisma/seed.ts:297",
+        "prisma/seed.ts:372"
+      ],
+      "impact": "Low: 编译 / 运行时无 bug · 仅可读性差 · 未来加 seed 函数可能误用",
+      "severity": "Low",
+      "categories": [
+        "naming-conflict",
+        "code-quality"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-007 (Opus audit)",
+      "fix_by": "PRD-14 收官 / 下一次 seed 改动时",
+      "status": "open",
+      "fix_hint": "重命名 line 297 SYSTEM_ADMIN_ID → SEED_DEFAULT_ADMIN_ID = 1 · line 372 SYSTEM_ADMIN_ID → SYSTEM_BYPASS_ADMIN_ID = 0 · 或抽到模块顶层 const 区分语义",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-67",
+      "title": "constant-embed.service.ts:108-125 evaluateConstantVersion dead code (US-008 移到 llm-judge-constant.service 后未删旧版)",
+      "description": "US-007 commit 5db4e87 在 constant-embed.service.ts:108 加了 evaluateConstantVersion · US-008 commit 1ea2cf1 新建 llm-judge-constant.service.ts 重新实现 + constant-version.service.ts:15 改 import 路径 · 但 constant-embed.service.ts:108-125 旧版本 18 行未删 · 0 调用点 · dead code · 编译不冲突 (export 不被 import 视为 unused export)",
+      "scope": [
+        "apps/api/src/services/admin/constant-version/constant-embed.service.ts:108-125"
+      ],
+      "impact": "Low: 18 行 dead code · 编译/运行无影响 · 但读者困惑 + future PRD 可能误用",
+      "severity": "Low",
+      "categories": [
+        "dead-code",
+        "design-drift"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-008 (Opus audit)",
+      "fix_by": "PRD-14 收官 / 下个 PRD 启动前",
+      "status": "open",
+      "fix_hint": "删除 constant-embed.service.ts:100-125 (ConstantJudgeResult interface + evaluateConstantVersion function) · 因为已迁到 llm-judge-constant.service.ts",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-68",
+      "title": "US-009 AC10 agent-browser 浏览器实测残留 (Validator 撞 Anthropic rate limit 未跑)",
+      "description": "US-009 AC10 要求 'agent-browser 打开 /admin/constants?type=knowledge_case&key=case_xiaohongshu_001 · 看 3 Tab + constantKey 下拉 + 当前版本 + Monaco · 编辑+Cmd+S 保存草稿 · 提交审核 toast · 切 Tab URL 变' · 但 Validator 跑到 41 min 33s 撞 Anthropic rate limit (resets 3pm BJT) 异常退出 · 浏览器实测未完成. 单元测试 ConstantsPage 已覆盖 3 tab / dropdown / URL state / 编辑/Diff/HistoryTimeline 等核心交互. 浏览器层视觉/可用性验证 deferred to staging deploy.",
+      "scope": [
+        "apps/admin/src/pages/constants/ConstantsPage.tsx",
+        "tests/unit/admin/constants/ConstantsPage.test.tsx"
+      ],
+      "impact": "Low-Medium: 单元测试覆盖功能正确性 · 浏览器层可能漏视觉/SSR/真实交互 bug · staging 必须手测",
+      "severity": "Low",
+      "categories": [
+        "test-coverage",
+        "browser-validation",
+        "rate-limit-bypass"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-009 (Opus audit bypass · Validator rate-limit fail)",
+      "fix_by": "PRD-14 staging deploy 前 / verify-prd-14.sh E2E flow",
+      "status": "open",
+      "fix_hint": "staging 启动 admin dev server · 手访问 /admin/constants?type=knowledge_case&key=case_xiaohongshu_001 · 走 AC10 7 步 checklist · 或 verify-prd-14.sh 加 admin agent-browser flow",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ],
-  "last_updated": "2026-05-14T20:00:00",
+  "last_updated": "2026-05-15T03:54:46.498364Z",
   "total": 44
 }
