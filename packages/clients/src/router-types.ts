@@ -631,6 +631,27 @@ const _shadowRouter = _t.router({
       }),
     clearSession: _t.procedure.mutation((): { ok: boolean } => ({ ok: true })),
   }),
+  privateDomain: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            productDescription: string;
+            productPrice: number;
+            targetAudience: string;
+            ipPositioning: string;
+            currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
+            monthlyTraffic: number;
+          },
+      )
+      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+        id: 0,
+        content: '',
+        agentId: 'PrivateDomainAgent',
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
   monetization: _t.router({
     generate: _t.procedure
       .input(

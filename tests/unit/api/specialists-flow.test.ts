@@ -156,14 +156,23 @@ describe('privateDomain.generate', () => {
   it('AC-7: creates History row with agentId=PrivateDomainAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = privateDomainRouter.createCaller(ctx);
-    const result = await caller.generate({ stepKey: 'step_pd' });
+    const result = await caller.generate({
+      productDescription: '1对1职业规划咨询',
+      productPrice: 2980,
+      targetAudience: '25-35岁职场女性',
+      ipPositioning: '10年HR经验职场导师',
+      currentChannel: 'douyin',
+      monthlyTraffic: 50000,
+    });
     expect(prisma.history.create).toHaveBeenCalledOnce();
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string; content: string };
     };
     expect(createArgs.data.agentId).toBe('PrivateDomainAgent');
     expect(createArgs.data.traceId).toBe('test-trace-005');
-    expect(result.content).toBe('[mock]');
+    // content should be JSON SOP (not '[mock]' anymore)
+    expect(typeof result.content).toBe('string');
+    expect(result.content.length).toBeGreaterThan(0);
   });
 });
 
