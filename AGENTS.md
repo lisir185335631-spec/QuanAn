@@ -1,6 +1,6 @@
 # QuanQn · 代码层设计约束(AGENTS.md)
 
-> **版本** · v0.4(2026-05-06 创建 · 2026-05-07 v0.2 修订:§10 admin 5 LD-A + 6 R-A + 14 高风险 + 5 audit_commands · 2026-05-14 v0.3:§10.1 +LD-A7 evolution_profile clear 单点保护 · 2026-05-15 v0.4:§10.1 +LD-A10 constant_versions.status='active' 单点保护)
+> **版本** · v0.5(2026-05-06 创建 · 2026-05-07 v0.2 修订:§10 admin 5 LD-A + 6 R-A + 14 高风险 + 5 audit_commands · 2026-05-14 v0.3:§10.1 +LD-A7 evolution_profile clear 单点保护 · 2026-05-15 v0.4:§10.1 +LD-A10 constant_versions.status='active' 单点保护 · 2026-05-15 v0.5:§10.1 +LD-A11 feature_flags/system_config 写操作单点保护)
 > **派生自** · [ARCHITECTURE.md](ARCHITECTURE.md) v0.4 + [ADMIN-ARCHITECTURE.md](ADMIN-ARCHITECTURE.md) v0.2 · §4 Agent 编排 + §6 接口契约 + §3 数据架构
 > **服务对象** · Ralph Agent / Opus Audit / 任何 AI / 工程师在本仓库写代码时遵循
 > **硬约束** · 本文件的 Locked Decisions / 红线 / audit_commands 是**不可绕过**的 — 即使 Ralph 觉得"这样更好"也不能违反 · 必须先改本文件再改代码
@@ -2328,7 +2328,7 @@ spec.md(原版规格)+ DESIGN.md(设计 token)
 >
 > **执行边界** · 当 Ralph / Opus 在 `apps/admin/` 或 `apps/api/src/trpc/routers/admin/` 下写代码时,本章红线**优先于** §3-§5 通用红线适用。
 
-### §10.1 admin 子系统的 10 条 LD(LD-A1 ~ LD-A10)
+### §10.1 admin 子系统的 11 条 LD(LD-A1 ~ LD-A11)
 
 > 跟主应用 18 LD 平级 · 但范围限定在 admin 子系统。
 
@@ -2493,6 +2493,24 @@ grep -rnE "(prisma|db|tx)\.constantVersion\.update.*(status|active)" \
   | grep -v '_publishConstantVersionInTx' \
   | grep -v 'constant-version.service.ts' \
   | grep -v '.test.'
+```
+
+#### LD-A11 · feature_flags / system_config 写操作仅由 _toggleFeatureFlagInTx / _updateSystemConfigInTx 修改(PRD-14 US-011)
+
+**铁律**:
+- ✅ 所有 feature_flags 的 enabled / rolloutConfig 修改必须经由 `_toggleFeatureFlagInTx(tx, ...)` 单点函数
+- ✅ 所有 system_config 的 configValue 修改必须经由 `_updateSystemConfigInTx(tx, ...)` 单点函数
+- ❌ 任何其他代码直接 `(prisma|db|tx).featureFlag.(update|upsert|create)` 写 feature_flags
+- ❌ 任何其他代码直接 `(prisma|db|tx).systemConfig.(update|upsert|create)` 写 system_config
+
+**执行检查**:
+```bash
+# 期望 0 命中(feature-flag.service.ts 自身 + .test. 除外)
+grep -rnE "(prisma|db|tx)\.(featureFlag|systemConfig)\.(update|upsert|create)" \
+  apps/api/src --include='*.ts' \
+  | grep -v 'feature-flag\.service\.ts' \
+  | grep -v '\.test\.' \
+  | grep -v 'spec\.'
 ```
 
 ### §10.2 admin 子系统的 6 条红线(R-A1 ~ R-A6)

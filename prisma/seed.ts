@@ -438,6 +438,62 @@ async function seedConstantsToVersions() {
 }
 
 // ====================================================
+// 7. SystemConfig 紧急开关 (PRD-14 US-011 AC-3)
+// ====================================================
+
+async function seedSystemConfig() {
+  console.log('▸ Seeding system_config (3 emergency switches) ...');
+
+  const SYSTEM_ADMIN_ID = 1;
+
+  const configs = [
+    {
+      configKey: 'stop_trending_scraper',
+      configValue: false,
+      description: '紧急停止 Trending Scraper 任务',
+      isEmergency: true,
+    },
+    {
+      configKey: 'stop_evolution_agent',
+      configValue: false,
+      description: '紧急停止 Evolution Agent 任务',
+      isEmergency: true,
+    },
+    {
+      configKey: 'enable_fallback_prompt',
+      configValue: false,
+      description: '启用备用 Prompt 模式(LLM 供应商故障时)',
+      isEmergency: true,
+    },
+  ];
+
+  let created = 0;
+  let skipped = 0;
+
+  for (const cfg of configs) {
+    const existing = await prisma.systemConfig.findUnique({ where: { configKey: cfg.configKey } });
+    if (existing) {
+      console.log(`  ⏭  ${cfg.configKey} · already exists`);
+      skipped++;
+      continue;
+    }
+    await prisma.systemConfig.create({
+      data: {
+        configKey: cfg.configKey,
+        configValue: cfg.configValue,
+        description: cfg.description,
+        isEmergency: cfg.isEmergency,
+        updatedByAdminId: SYSTEM_ADMIN_ID,
+      },
+    });
+    console.log(`  ✅ ${cfg.configKey} · seeded`);
+    created++;
+  }
+
+  console.log(`  ✓ system_config seeded · created=${created} · skipped=${skipped}`);
+}
+
+// ====================================================
 // 主入口
 // ====================================================
 
@@ -452,6 +508,7 @@ async function main() {
   await seedRagConstants();
   await seedPromptVersions();
   await seedConstantsToVersions();
+  await seedSystemConfig();
 
   console.log('\n✅ Seed 完成');
 }

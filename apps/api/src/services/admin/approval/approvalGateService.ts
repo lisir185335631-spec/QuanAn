@@ -28,6 +28,8 @@ export type ApprovalActionType =
   | 'promote_ab_experiment_winner'
   | 'publish_constant_version'
   | 'rollback_constant'
+  | 'toggle_feature_flag'
+  | 'update_system_config'
   // single-approval
   | 'evolution_anomaly_resolve'
   | 'quota_adjust_small'
@@ -46,6 +48,8 @@ const DUAL_APPROVAL_ACTION_TYPES = new Set<ApprovalActionType>([
   'promote_ab_experiment_winner',
   'publish_constant_version',
   'rollback_constant',
+  'toggle_feature_flag',
+  'update_system_config',
 ]);
 
 export function requiresDualApproval(actionType: ApprovalActionType): boolean {
