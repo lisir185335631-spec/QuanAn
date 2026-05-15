@@ -1,15 +1,18 @@
 /**
  * ContextAssembler — 7 Specialist 的 prompt 装配中枢
  *
- * 5 路并行 fetch · Promise.allSettled · 各路独立 5s timeout · 缺数据降级(D-020)
+ * 7 路并行 fetch · Promise.allSettled · 各路独立 5s timeout · 缺数据降级(D-020)
  * PRD-8 US-001 AC-8: 加第 5 路 L4 EvolutionInsight latest · evolutionInsight 字段输出
  * PRD-9 US-003: _fetchRag 升级真 RAG · [Section 6] 注入 · L5_rag layersUsed
+ * PRD-14 US-008 AC-4/5/6: 加第 7 路 _fetchActiveConstants · brownfield fallback
  * AC-1: assemble(req) → Promise<AssembledContext> · 对齐 ARCHITECTURE §6.4
  * AC-2: Promise.allSettled + 5s timeout + 降级注入空段
  * AC-8: metadata.layersUsed 真实反映成功层
  * AC-9: contextTokens = chars/4 粗算
  * AC-10: systemPrompt 禁止包含 LLM 密钥或 API URL(R-001 安全红线)
  */
+
+import { createHash } from 'node:crypto';
 
 import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
@@ -41,12 +44,13 @@ type Constants = ReturnType<typeof methodologyQueryWorker.getAll>;
 
 export class ContextAssembler {
   /**
-   * 组装 AssembledContext · 4 路并行 fetch + 降级 + prompt 拼接
-   * 总耗时应 ≤ 800ms(4 路并行 · cap 5s · 平均数据库 < 200ms)
+   * 组装 AssembledContext · 7 路并行 fetch + 降级 + prompt 拼接
+   * 总耗时应 ≤ 800ms(7 路并行 · cap 5s · 平均数据库 < 200ms)
    * PRD-13 US-003 AC-9: 加第 6 路 prompt_versions 查询(带 fallback)
+   * PRD-14 US-008 AC-4: 加第 7 路 _fetchActiveConstants(带 brownfield fallback)
    */
   async assemble(req: AssembleRequest): Promise<AssembledContext> {
-    const [l2Result, l4InsightResult, l4SamplesResult, l5RagResult, constantsResult, promptResult] =
+    const [l2Result, l4InsightResult, l4SamplesResult, l5RagResult, constantsResult, promptResult, dbConstantsResult] =
       await Promise.allSettled([
         withTimeout(this._fetchStepData(req.accountId), FETCH_TIMEOUT_MS),
         withTimeout(getLatestInsight(req.accountId), FETCH_TIMEOUT_MS),
@@ -54,6 +58,7 @@ export class ContextAssembler {
         withTimeout(this._fetchRag(req), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchConstants(), FETCH_TIMEOUT_MS),
         withTimeout(this._fetchActivePrompt(req.agentId, req.accountId), FETCH_TIMEOUT_MS),
+        withTimeout(this._fetchActiveConstants(req), FETCH_TIMEOUT_MS),
       ]);
 
     const layersUsed: string[] = [];
@@ -91,7 +96,7 @@ export class ContextAssembler {
           ).map(([source, count]) => ({ source, count }))
         : [];
 
-    // 常量
+    // 常量(旧路径: in-memory lib/constants)
     const constants: Constants | null =
       constantsResult.status === 'fulfilled' ? constantsResult.value : null;
     if (constants !== null) {
@@ -102,7 +107,14 @@ export class ContextAssembler {
     const activePromptContent: string | null =
       promptResult.status === 'fulfilled' ? promptResult.value : null;
 
-    const systemPrompt = this._composeSystemPrompt(req, stepData, constants, evolutionInsight, ragChunks, activePromptContent);
+    // PRD-14 US-008 AC-5/6: DB constant versions (null = brownfield → fallback to lib/constants)
+    const dbConstants: Record<string, string> | null =
+      dbConstantsResult.status === 'fulfilled' ? dbConstantsResult.value : null;
+    if (dbConstants !== null && Object.keys(dbConstants).length > 0) {
+      layersUsed.push('L7_db_constants');
+    }
+
+    const systemPrompt = this._composeSystemPrompt(req, stepData, constants, evolutionInsight, ragChunks, activePromptContent, dbConstants);
     const userPrompt = this._formatUserPrompt(req.userInput);
     const contextTokens = Math.ceil((systemPrompt.length + userPrompt.length) / 4);
 
@@ -195,6 +207,45 @@ export class ContextAssembler {
     return methodologyQueryWorker.getAll();
   }
 
+  /**
+   * PRD-14 US-008 AC-4/5/6: 第 7 路 · DB constant_versions canary 路由
+   * brownfield fallback: constant_versions 表无 active 记录时返 null
+   * → ContextAssembler 继续用 SPECIALIST_TEMPLATES + lib/constants 旧路径
+   */
+  private async _fetchActiveConstants(req: AssembleRequest): Promise<Record<string, string> | null> {
+    // AC-6: brownfield check — if no active versions exist, return null → use old path
+    const activeCount = await prisma.constantVersion.count({ where: { status: 'active' } });
+    if (activeCount === 0) return null;
+
+    const configs = await prisma.constantCanaryConfig.findMany({
+      include: { currentVersion: true, nextVersion: true },
+    });
+
+    if (configs.length === 0) return null;
+
+    const contentMap: Record<string, string> = {};
+
+    for (const config of configs) {
+      let selectedVersion = config.currentVersion;
+
+      // AC-5: deterministic hash (accountId:constantType:constantKey) selects canary bucket
+      if (config.canaryPct > 0 && config.nextVersion !== null) {
+        const hashBucket = createHash('md5')
+          .update(`${req.accountId}:${config.constantType}:${config.constantKey}`)
+          .digest('hex')
+          .slice(0, 8);
+        const bucketPct = parseInt(hashBucket, 16) % 100;
+        if (bucketPct < config.canaryPct) {
+          selectedVersion = config.nextVersion;
+        }
+      }
+
+      contentMap[`${config.constantType}:${config.constantKey}`] = selectedVersion.content;
+    }
+
+    return contentMap;
+  }
+
   // ── prompt 拼接 ───────────────────────────────────────────────────────────
 
   private _buildSection4(insight: EvolutionInsightContent): string {
@@ -237,6 +288,7 @@ export class ContextAssembler {
     evolutionInsight: EvolutionInsightContent | null,
     ragChunks: KnowledgeChunkContent[],
     activePromptContent: string | null = null,
+    dbConstants: Record<string, string> | null = null,
   ): string {
     const tmpl = SPECIALIST_TEMPLATES[req.agentId];
 
@@ -290,6 +342,16 @@ export class ContextAssembler {
       lines.push(
         '────────────────────────────────────────',
         this._buildSection6(ragChunks),
+      );
+    }
+
+    // PRD-14 US-008 AC-5/6: L7 DB constant versions · null = brownfield(跳过 · 旧路径已在上方)
+    if (dbConstants !== null && Object.keys(dbConstants).length > 0) {
+      const dbLines = Object.entries(dbConstants).map(([key, content]) => `- [${key}]: ${content.slice(0, 200)}`);
+      lines.push(
+        '────────────────────────────────────────',
+        `[Section 7] 常量版本(DB · ${Object.keys(dbConstants).length} 条)`,
+        ...dbLines,
       );
     }
 
