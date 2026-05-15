@@ -185,6 +185,7 @@ model IpAccount {
   deepLearningArchives DeepLearningArchive[]
   knowledgeFavorites   KnowledgeFavorite[]
   knowledgeNotes       KnowledgeNote[]
+  trendingFavorites    TrendingFavorite[]
   dailyTasks           DailyTask[]
   costLogs             CostLog[]
   adminNotes           IpAccountAdminNote[]
@@ -566,6 +567,22 @@ model KnowledgeNote {
   @@index([accountId, itemType, itemKey])
   @@index([accountId, updatedAt(sort: Desc)])
   @@map("knowledge_notes")
+}
+
+/// US-006: 用户收藏的爆款 · per-account RLS 保护
+model TrendingFavorite {
+  id             Int @id @default(autoincrement())
+  accountId      Int @map("account_id")
+  trendingItemId Int @map("trending_item_id")
+
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([accountId, trendingItemId])
+  @@index([accountId])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@map("trending_favorites")
 }
 
 // ============================================================

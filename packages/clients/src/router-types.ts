@@ -137,6 +137,26 @@ export type TrendingItem = {
   crawledAt: Date;
 };
 
+export type TrendingListItem = TrendingItem & {
+  sourceUrl: string | null;
+  collectCount: number;
+  isFavorited: boolean;
+  rank: number;
+};
+
+export type TrendingDetailItem = TrendingItem & {
+  sourceUrl: string | null;
+  contentText: string | null;
+  authorName: string | null;
+};
+
+export type TrendingKpiStats = {
+  total: number;
+  weekNew: number;
+  myFavorites: number;
+  lastUpdatedAt: Date | null;
+};
+
 export type FreeGenerateHistoryRow = {
   id: number;
   content: string;
@@ -336,6 +356,20 @@ const _shadowRouter = _t.router({
     fetch: _t.procedure
       .input((x: unknown) => x as { platform?: string; limit?: number } | undefined)
       .query((): TrendingItem[] => []),
+    list: _t.procedure
+      .input((x: unknown) => x as { platforms?: string[]; industry?: string; timeRange?: string; sort?: string; search?: string; page?: number; pageSize?: number } | undefined)
+      .query((): { items: TrendingListItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({ items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 })),
+    listWithFavorites: _t.procedure
+      .input((x: unknown) => x as { platforms?: string[]; industry?: string; timeRange?: string; sort?: string; search?: string; page?: number; pageSize?: number } | undefined)
+      .query((): { items: TrendingListItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({ items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 })),
+    favorite: _t.procedure
+      .input((x: unknown) => x as { trendingItemId: number; action: 'add' | 'remove' })
+      .mutation((): { favorited: boolean } => ({ favorited: false })),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query((): TrendingDetailItem | null => null),
+    kpiStats: _t.procedure
+      .query((): TrendingKpiStats => ({ total: 0, weekNew: 0, myFavorites: 0, lastUpdatedAt: null })),
   }),
   ipAccounts: _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),
