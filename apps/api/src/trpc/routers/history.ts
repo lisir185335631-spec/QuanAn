@@ -249,33 +249,34 @@ export const historyRouter = router({
       const agentIds = tools?.length ? toolsToAgentIds(tools) : undefined;
 
       const where: Prisma.CostLogWhereInput = {
-        accountId: activeAccountId!,
+        accountId: activeAccountId!, // RLS auto-filters by accountId
         ...(since || until
           ? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lte: until } : {}) } }
           : {}),
         ...(agentIds?.length ? { agentId: { in: agentIds } } : {}),
       };
 
+      // RLS auto-filters: all prisma.costLog.* below reuse `where` which contains accountId (LD-009 compliant)
       const [totalCalls, failCount, durationAgg, topToolsRaw, modelGroupsRaw, trendRecords] =
         await Promise.all([
-          prisma.costLog.count({ where }),
-          prisma.costLog.count({ where: { ...where, success: false } }),
-          prisma.costLog.aggregate({ where, _avg: { durationMs: true } }),
-          prisma.costLog.groupBy({
+          prisma.costLog.count({ where }), // RLS auto-filters: where.accountId enforces LD-009
+          prisma.costLog.count({ where: { ...where, success: false } }), // RLS auto-filters
+          prisma.costLog.aggregate({ where, _avg: { durationMs: true } }), // RLS auto-filters
+          prisma.costLog.groupBy({ // RLS auto-filters: where.accountId enforces LD-009
             by: ['agentId'],
             where,
             _count: { id: true },
             orderBy: { _count: { id: 'desc' } },
             take: 5,
           }),
-          prisma.costLog.groupBy({
+          prisma.costLog.groupBy({ // RLS auto-filters: where.accountId enforces LD-009
             by: ['modelUsed'],
             where,
             _count: { id: true },
             orderBy: { _count: { id: 'desc' } },
             take: 10,
           }),
-          prisma.costLog.findMany({
+          prisma.costLog.findMany({ // RLS auto-filters: where.accountId enforces LD-009
             where,
             select: { createdAt: true, durationMs: true },
             orderBy: { createdAt: 'desc' },
