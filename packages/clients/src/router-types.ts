@@ -271,6 +271,28 @@ export type JobStatusOutput = {
   }>;
 };
 
+export type DeepLearningQueueItem = {
+  id: number;
+  sample: string;
+  sourcePlatform: string;
+  coreFormula: string;
+  status: string;
+  createdAt: Date;
+};
+
+export type DeepLearningParseAnalysis = {
+  coreFormula: string;
+  hookType: string;
+  structurePattern: string;
+  emotionalArc: string;
+  keywords: string[];
+};
+
+export type DeepLearningParseResult = {
+  queueId: number;
+  analysis: DeepLearningParseAnalysis;
+};
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -608,6 +630,39 @@ const _shadowRouter = _t.router({
         yield {} as VoiceChatStreamChunk;
       }),
     clearSession: _t.procedure.mutation((): { ok: boolean } => ({ ok: true })),
+  }),
+  deepLearning: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { limit?: number; offset?: number; onlyActive?: boolean },
+      )
+      .query((): DeepLearningQueueItem[] => []),
+    create: _t.procedure
+      .input((x: unknown) => x as { sample: string; userTitle?: string; userTags?: string[] })
+      .mutation((): { ok: true; queueId: number; status: string } => ({
+        ok: true,
+        queueId: 0,
+        status: 'pending',
+      })),
+    delete: _t.procedure
+      .input((x: unknown) => x as { archiveId: number })
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    parse: _t.procedure
+      .input((x: unknown) => x as { sample: string; sourcePlatform: string })
+      .mutation((): DeepLearningParseResult => ({
+        queueId: 0,
+        analysis: {
+          coreFormula: '',
+          hookType: '',
+          structurePattern: '',
+          emotionalArc: '',
+          keywords: [],
+        },
+      })),
+    applyFormula: _t.procedure
+      .input((x: unknown) => x as { queueId: number; newTopic: string })
+      .mutation((): { content: string } => ({ content: '' })),
   }),
 });
 
