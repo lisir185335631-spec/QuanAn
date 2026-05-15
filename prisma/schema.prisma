@@ -844,6 +844,73 @@ model PromptCanaryConfig {
   @@map("prompt_canary_config")
 }
 
+// ============================================================
+// §P14 · 常量版本化(PRD-14 US-006 · D-091)
+// ============================================================
+
+/// 常量版本记录(67 案例 / 23 公式 / 22 元素 · fork PromptVersion)
+// @rls(disabled)
+model ConstantVersion {
+  id          Int    @id @default(autoincrement())
+
+  /// 常量类型: 'case' | 'formula' | 'element'
+  constantType String @db.VarChar(32)
+  /// 常量 key(唯一标识每条常量)
+  constantKey  String @db.VarChar(255)
+
+  /// 版本号
+  version     Int
+  content     String @db.Text
+  contentHash String @db.VarChar(64)
+
+  /// 状态: 'draft' | 'pending_review' | 'active' | 'archived'
+  status String
+
+  /// LLM Judge 评分(阈值 4.0 · D-091)
+  judgeScore     Decimal? @db.Decimal(3, 2)
+  judgeRunId     String?
+  judgeReportUrl String?
+
+  /// 操作人
+  createdByAdminId  Int
+  createdAt         DateTime  @default(now())
+  approvedByAdminId Int?
+  approvedAt        DateTime?
+
+  canaryConfigs     ConstantCanaryConfig[] @relation("constantCurrentVersion")
+  canaryConfigsNext ConstantCanaryConfig[] @relation("constantNextVersion")
+
+  @@unique([constantType, constantKey, version])
+  @@index([constantType, constantKey, status])
+  @@index([status, createdAt(sort: Desc)])
+  @@map("constant_versions")
+}
+
+/// 常量灰度发布配置
+// @rls(disabled)
+model ConstantCanaryConfig {
+  id           Int    @id @default(autoincrement())
+  constantType String @db.VarChar(32)
+  constantKey  String @db.VarChar(255)
+
+  currentVersionId Int
+  nextVersionId    Int?
+  canaryPct        Int    @default(0)
+  strategy         String @default("user_id_hash")
+
+  canaryStartedAt DateTime?
+  canaryEndsAt    DateTime?
+
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  currentVersion ConstantVersion  @relation("constantCurrentVersion", fields: [currentVersionId], references: [id])
+  nextVersion    ConstantVersion? @relation("constantNextVersion", fields: [nextVersionId], references: [id])
+
+  @@unique([constantType, constantKey])
+  @@map("constant_canary_config")
+}
+
 /// 用户配额状态(每用户 1 行 · 跟 LLMGateway Redis token bucket 对照)
 // @rls(disabled)
 model UserQuota {

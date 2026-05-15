@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/audit-redlines-admin.sh
-# QuanQn admin 子系统 · 9 LD-A + 6 R-A 一键 grep 检测
-# AC-1(US-007): exit 0 · AC-9(US-009): 8 LD-A + 6 R-A · PRD-14 US-001: +LD-A9
+# QuanQn admin 子系统 · 10 LD-A + 6 R-A 一键 grep 检测
+# AC-1(US-007): exit 0 · AC-9(US-009): 8 LD-A + 6 R-A · PRD-14 US-001: +LD-A9 · PRD-14 US-006: +LD-A10
 # 派生自 AGENTS.md §10.4.1 + §10.4.2
 
 set -euo pipefail
@@ -14,10 +14,10 @@ fail() { echo "❌ $1"; FAIL=1; }
 pass() { echo "✅ $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn Admin · 9 LD-A + 6 R-A 红线检测"
+echo "  QuanQn Admin · 10 LD-A + 6 R-A 红线检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
-echo "【LD-A Locked Decision 检测 · 9 条】"
+echo "【LD-A Locked Decision 检测 · 10 条】"
 echo
 
 # ── LD-A1 · admin OAuth 独立(不复用主应用 OAuth client) ──────────────────────
@@ -178,6 +178,26 @@ if [ "$LDA9_FAIL" -eq 0 ]; then
   pass "LD-A9 · ab_experiments 状态仅由 _startAbExperimentInTx / _stopAbExperimentInTx 单点修改"
 fi
 
+# ── LD-A10 · constant_versions.status='active' 仅由 _publishConstantVersionInTx 修改 ──
+echo
+echo "  LD-A10: constant_versions status='active' 单点函数守护检测"
+LDA10_FAIL=0
+LDA10_HITS=$(grep -rnE \
+  "(prisma|db|tx)\.constantVersion\.update.*(status|active)" \
+  apps/api/src --include="*.ts" 2>/dev/null \
+  | grep -v "_publishConstantVersionInTx" \
+  | grep -v "constant-version\.service\.ts" \
+  | grep -v "\.test\." \
+  | grep -v "spec\." || true)
+if [ -n "$LDA10_HITS" ]; then
+  echo "$LDA10_HITS"
+  fail "LD-A10 · 发现绕过 _publishConstantVersionInTx 直接设 constant_versions.status='active' 的代码"
+  LDA10_FAIL=1
+fi
+if [ "$LDA10_FAIL" -eq 0 ]; then
+  pass "LD-A10 · constant_versions.status='active' 仅由 _publishConstantVersionInTx 修改"
+fi
+
 echo
 echo "【R-A 红线检测 · 6 条】"
 echo
@@ -261,7 +281,7 @@ fi
 echo
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [[ $FAIL -eq 0 ]]; then
-  echo "ALL PASS · 9 LD-A + 6 R-A"
+  echo "ALL PASS · 10 LD-A + 6 R-A"
   exit 0
 else
   echo "FAIL · 上方红线检测未通过 · 请修复后重跑"
