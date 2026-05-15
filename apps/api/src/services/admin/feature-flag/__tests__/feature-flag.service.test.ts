@@ -214,6 +214,7 @@ describe('emergencyToggleSystemConfig', () => {
       true,
       1,
       'INC-001',
+      '系统异常需要紧急停止',
     );
 
     expect(mockRequestApproval).toHaveBeenCalledWith(
@@ -231,7 +232,7 @@ describe('emergencyToggleSystemConfig', () => {
     mockSystemConfigFindUnique.mockResolvedValue(null);
 
     await expect(
-      emergencyToggleSystemConfig('missing_key', true, 1, 'INC-002'),
+      emergencyToggleSystemConfig('missing_key', true, 1, 'INC-002', '测试理由'),
     ).rejects.toThrow(TRPCError);
   });
 });

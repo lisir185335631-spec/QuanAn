@@ -563,6 +563,7 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
     const result = await makeCaller(SUPER_ADMIN).emergencyToggleSystemConfig({
       configKey: 'stop_trending_scraper',
       incidentId: 'INCIDENT-2026-05-15-001',
+      reason: '系统异常需要紧急停止',
     });
 
     expect(result.approvalRequestId).toBe(77);
@@ -571,6 +572,7 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
       true,
       1,
       'INCIDENT-2026-05-15-001',
+      '系统异常需要紧急停止',
     );
   });
 
@@ -579,6 +581,7 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
       makeCaller(ADMIN_USER).emergencyToggleSystemConfig({
         configKey: 'stop_trending_scraper',
         incidentId: 'INCIDENT-001',
+        reason: '测试理由',
       }),
     ).rejects.toThrow('super_admin only');
   });
@@ -588,6 +591,7 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
       makeCaller(READONLY_ADMIN).emergencyToggleSystemConfig({
         configKey: 'stop_evolution_agent',
         incidentId: 'INCIDENT-002',
+        reason: '测试理由',
       }),
     ).rejects.toThrow('super_admin only');
   });
@@ -597,6 +601,7 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
       makeCaller(SUPER_ADMIN).emergencyToggleSystemConfig({
         configKey: 'invalid_key' as 'stop_trending_scraper',
         incidentId: 'INCIDENT-003',
+        reason: '测试理由',
       }),
     ).rejects.toThrow();
   });
@@ -606,6 +611,17 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
       makeCaller(SUPER_ADMIN).emergencyToggleSystemConfig({
         configKey: 'stop_trending_scraper',
         incidentId: '',
+        reason: '测试理由',
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('rejects empty reason', async () => {
+    await expect(
+      makeCaller(SUPER_ADMIN).emergencyToggleSystemConfig({
+        configKey: 'stop_trending_scraper',
+        incidentId: 'INCIDENT-004',
+        reason: '',
       }),
     ).rejects.toThrow();
   });
@@ -618,6 +634,7 @@ describe('featureFlagsRouter.emergencyToggleSystemConfig', () => {
         makeCaller(SUPER_ADMIN).emergencyToggleSystemConfig({
           configKey: key,
           incidentId: `INCIDENT-${key}`,
+          reason: `紧急原因-${key}`,
         }),
       ).resolves.toBeDefined();
     }

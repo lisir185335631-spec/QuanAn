@@ -166,10 +166,15 @@ function EmergencyTriggerModal({
       setError('incidentId 不能为空');
       return;
     }
+    if (!reason.trim()) {
+      setError('决策理由不能为空');
+      return;
+    }
     setError('');
     emergencyToggle.mutate({
       configKey: configKey as 'stop_trending_scraper' | 'stop_evolution_agent' | 'enable_fallback_prompt',
       incidentId: incidentId.trim(),
+      reason: reason.trim(),
     });
   }
 

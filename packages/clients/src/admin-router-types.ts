@@ -1717,6 +1717,7 @@ const _shadowAdminRouter = _t.router({
           x as {
             configKey: 'stop_trending_scraper' | 'stop_evolution_agent' | 'enable_fallback_prompt';
             incidentId: string;
+            reason: string;
           },
       )
       .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),

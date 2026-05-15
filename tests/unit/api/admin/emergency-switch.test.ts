@@ -141,6 +141,7 @@ describe('emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprov
       true,
       1,
       'INC-001',
+      '系统异常需要紧急停止',
     );
 
     // AC-5: emergencyApprove called (postReviewRequired=true 由 emergencyApprove 写)
@@ -164,7 +165,7 @@ describe('emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprov
   it('stop_evolution_agent: 触发 emergencyToggleSystemConfig · _updateSystemConfigInTx 走单点', async () => {
     mockSystemConfigFindUnique.mockResolvedValue(stopEvolutionConfig);
 
-    await emergencyToggleSystemConfig('stop_evolution_agent', true, 1, 'INC-002');
+    await emergencyToggleSystemConfig('stop_evolution_agent', true, 1, 'INC-002', '进化代理需要停止');
 
     // LD-A11: _updateSystemConfigInTx 通过 $transaction 调用 · 不直接更新
     expect(mockTransaction).toHaveBeenCalledOnce();
@@ -176,7 +177,7 @@ describe('emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprov
   it('enable_fallback_prompt: 触发 requestApproval with emergencyMode + incidentId', async () => {
     mockSystemConfigFindUnique.mockResolvedValue(enableFallbackConfig);
 
-    await emergencyToggleSystemConfig('enable_fallback_prompt', true, 1, 'INC-003');
+    await emergencyToggleSystemConfig('enable_fallback_prompt', true, 1, 'INC-003', '启用降级提示词');
 
     expect(mockRequestApproval).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -190,7 +191,13 @@ describe('emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprov
 
   it('incidentId 为空 → throw BAD_REQUEST', async () => {
     await expect(
-      emergencyToggleSystemConfig('stop_trending_scraper', true, 1, ''),
+      emergencyToggleSystemConfig('stop_trending_scraper', true, 1, '', '测试理由'),
+    ).rejects.toThrow(TRPCError);
+  });
+
+  it('reason 为空 → throw BAD_REQUEST', async () => {
+    await expect(
+      emergencyToggleSystemConfig('stop_trending_scraper', true, 1, 'INC-005', ''),
     ).rejects.toThrow(TRPCError);
   });
 
@@ -198,7 +205,7 @@ describe('emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprov
     mockSystemConfigFindUnique.mockResolvedValue(null);
 
     await expect(
-      emergencyToggleSystemConfig('stop_trending_scraper', true, 1, 'INC-004'),
+      emergencyToggleSystemConfig('stop_trending_scraper', true, 1, 'INC-004', '测试理由'),
     ).rejects.toThrow(TRPCError);
   });
 });

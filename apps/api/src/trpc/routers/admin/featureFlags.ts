@@ -242,12 +242,13 @@ export const featureFlagsRouter = adminTrpcRouter({
       z.object({
         configKey: z.enum(EMERGENCY_SWITCH_KEYS),
         incidentId: z.string().min(1, 'incidentId is required'),
+        reason: z.string().min(1, '决策理由不能为空'),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       guardSuperAdmin(ctx);
-      const { configKey, incidentId } = input;
+      const { configKey, incidentId, reason } = input;
       const superAdminId = ctx.activeAdminUser!.id as unknown as number;
-      return emergencyToggleSystemConfig(configKey, true, superAdminId, incidentId);
+      return emergencyToggleSystemConfig(configKey, true, superAdminId, incidentId, reason);
     }),
 });

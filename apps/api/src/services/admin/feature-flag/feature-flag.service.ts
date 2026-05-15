@@ -226,9 +226,13 @@ export async function emergencyToggleSystemConfig(
   configValue: Prisma.InputJsonValue,
   superAdminId: number,
   incidentId: string,
+  reason: string,
 ): Promise<{ approvalRequestId: number }> {
   if (!incidentId.trim()) {
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'incidentId is required' });
+  }
+  if (!reason.trim()) {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: '决策理由不能为空' });
   }
 
   const config = await prisma.systemConfig.findUnique({ where: { configKey } });
@@ -241,7 +245,7 @@ export async function emergencyToggleSystemConfig(
     actionType: 'update_system_config',
     requesterAdminId: superAdminId,
     requesterRole: 'super_admin',
-    actionPayload: { configKey, configValue, incidentId },
+    actionPayload: { configKey, configValue, incidentId, reason },
     riskLevel: 'high',
     emergencyMode: true,
     emergencyIncidentId: incidentId,
@@ -266,7 +270,7 @@ export async function emergencyToggleSystemConfig(
     actorRole: 'super_admin',
     eventCategory: 'security_alert',
     eventType: 'emergency_switch_triggered',
-    payload: { configKey, configValue, incidentId, approvalRequestId: approvalReq.id },
+    payload: { configKey, configValue, incidentId, reason, approvalRequestId: approvalReq.id },
     traceId: createHash('md5')
       .update(`emergency:${configKey}:${incidentId}:${Date.now()}`)
       .digest('hex')
