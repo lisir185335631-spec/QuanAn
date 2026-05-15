@@ -91,7 +91,7 @@ export default function Generate() {
       }
     : undefined;
 
-  const resolvedDefaults = historyDefaults ?? lsDefaults ?? (topicFromUrl ? { topic: topicFromUrl } : undefined);
+  const resolvedDefaults = historyDefaults ?? (topicFromUrl ? { ...(lsDefaults ?? {}), topic: topicFromUrl } : lsDefaults);
 
   const freeMutation = trpc.copywriting.freeGenerate.useMutation();
   const acquisitionMutation = trpc.copywriting.acquisitionGenerate.useMutation();
