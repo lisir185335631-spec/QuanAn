@@ -11,7 +11,7 @@ import AccountsPage from './pages/accounts/index';
 import ApprovalGatesPage from './pages/approvals/index';
 import AuditPage from './pages/audit/index';
 import CompliancePage from './pages/compliance/index';
-import ConfigPlaceholder from './pages/admin/placeholder/config';
+import FeatureFlagsPage from './pages/featureFlags/FeatureFlagsPage';
 import CostPage from './pages/cost/index';
 import EvolutionHealthPage from './pages/evolutionHealth/EvolutionHealthPage';
 import InvitesPage from './pages/invites/index';
@@ -57,7 +57,7 @@ export function AdminRoutes() {
         <Route path="ab-experiments/:experimentKey" element={<ExperimentDetailPage />} />
         <Route path="constants" element={<ConstantsPage />} />
         <Route path="knowledge" element={<KnowledgePlaceholder />} />
-        <Route path="config" element={<ConfigPlaceholder />} />
+        <Route path="feature-flags" element={<FeatureFlagsPage />} />
       </Route>
 
       <Route path="/" element={<Navigate to="/login" replace />} />

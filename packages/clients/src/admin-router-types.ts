@@ -1639,7 +1639,88 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
-  config: _t.router({}),
+  featureFlags: _t.router({
+    getKpiStats: _t.procedure.query(
+      (): { totalFlags: number; enabledFlags: number; recentChanges: number; emergencyActivations: number } => ({
+        totalFlags: 0,
+        enabledFlags: 0,
+        recentChanges: 0,
+        emergencyActivations: 0,
+      }),
+    ),
+    listEmergencySwitches: _t.procedure.query(
+      (): Array<{
+        id: number;
+        configKey: string;
+        configValue: unknown;
+        description: string | null;
+        isEmergency: boolean;
+        updatedByAdminId: number;
+        updatedByEmail: string | null;
+        updatedAt: Date;
+      }> => [],
+    ),
+    listFeatureFlags: _t.procedure.query(
+      (): Array<{
+        id: number;
+        flagKey: string;
+        description: string | null;
+        flagType: string;
+        defaultValue: unknown;
+        rolloutConfig: unknown;
+        enabled: boolean;
+        updatedByAdminId: number;
+        updatedByEmail: string | null;
+        updatedAt: Date;
+      }> => [],
+    ),
+    listSystemConfig: _t.procedure.query(
+      (): Array<{
+        id: number;
+        configKey: string;
+        configValue: unknown;
+        description: string | null;
+        isEmergency: boolean;
+        updatedByAdminId: number;
+        updatedByEmail: string | null;
+        updatedAt: Date;
+      }> => [],
+    ),
+    toggle: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { flagKey: string; enabled: boolean; rolloutConfig?: unknown },
+      )
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    updateSystemConfig: _t.procedure
+      .input(
+        (x: unknown) => x as { configKey: string; configValue: unknown },
+      )
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    listPostReview: _t.procedure.query(
+      (): Array<{
+        id: number;
+        actionType: string;
+        actionPayload: unknown;
+        decidedAt: Date | null;
+        postReviewRequired: boolean;
+        postReviewedAt: Date | null;
+        approverAdminId: number | null;
+        firstApproverEmail: string | null;
+        requesterAdminId: number;
+        requesterEmail: string | null;
+      }> => [],
+    ),
+    emergencyToggleSystemConfig: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            configKey: 'stop_trending_scraper' | 'stop_evolution_agent' | 'enable_fallback_prompt';
+            incidentId: string;
+          },
+      )
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+  }),
 });
 
 export type AdminRouter = typeof _shadowAdminRouter;

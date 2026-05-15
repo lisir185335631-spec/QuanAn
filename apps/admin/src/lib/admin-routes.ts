@@ -164,12 +164,12 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     group: 'p2-advanced',
   },
   {
-    path: '/admin/config',
-    label: '系统配置',
+    path: '/admin/feature-flags',
+    label: '配置中心',
     emoji: '⚙️',
     prd: 14,
-    requiredRole: 'super_admin',
-    summary: '系统配置 · Feature flags / 紧急开关 / 全局参数',
+    requiredRole: 'admin',
+    summary: '配置中心 · Feature flags / 紧急开关(super_admin) / 全局参数 / 后置复核',
     group: 'p2-advanced',
   },
 ];
