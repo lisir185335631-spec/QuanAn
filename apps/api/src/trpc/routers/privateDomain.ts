@@ -2,7 +2,7 @@
  * privateDomain router — PRD-15 US-005
  * AC-3: generate accepts 6 config fields (productDescription/productPrice/targetAudience/ipPositioning/currentChannel/monthlyTraffic)
  * AC-4: mutation writes History row + returns 6-phase SOP mock content
- * AC-8: PrivateDomainAgent SSE streaming留 PRD-16+ · 本版返回 mock 6 阶段结构化 SOP
+ * AC-8: generateStream subscription yields each phase as individual SSE chunk (async function* · per-phase yield)
  */
 
 import { Decimal } from '@prisma/client/runtime/library';
@@ -30,20 +30,21 @@ const HISTORY_SELECT = {
   createdAt: true,
 } satisfies Prisma.HistorySelect;
 
-const PHASE_NAMES: Record<string, string> = {
-  attract: '引流获客',
-  add_wechat: '加微转化',
-  trust: '信任建立',
-  moments: '朋友圈打造',
-  convert: '成交转化',
-  repurchase: '复购裂变',
+
+export type PrivateDomainPhase = {
+  key: string;
+  name: string;
+  goal: string;
+  tactics: string[];
+  scripts: string[];
+  metrics: string[];
 };
 
-function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string {
-  const phases = [
+function buildPhases(input: z.infer<typeof generatePrivateDomainInput>): PrivateDomainPhase[] {
+  return [
     {
       key: 'attract',
-      name: PHASE_NAMES.attract,
+      name: '引流获客',
       goal: `通过${input.currentChannel}内容吸引${input.targetAudience}关注`,
       tactics: ['发布痛点解决内容', '使用热门话题标签', '合作博主互推'],
       scripts: [`"如果你是${input.targetAudience}，这个问题一定困扰过你…"`, `"${input.productDescription}，专为你设计"`],
@@ -51,7 +52,7 @@ function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string
     },
     {
       key: 'add_wechat',
-      name: PHASE_NAMES.add_wechat,
+      name: '加微转化',
       goal: '将平台粉丝引导至微信私域',
       tactics: ['私信发送福利钩子', '评论区引导加微', '直播间加微活动'],
       scripts: ['"加我微信，免费领取[产品资料包]"', '"仅限今天，加微好友享受专属优惠"'],
@@ -59,7 +60,7 @@ function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string
     },
     {
       key: 'trust',
-      name: PHASE_NAMES.trust,
+      name: '信任建立',
       goal: '建立专业信任感，培育购买意愿',
       tactics: ['每日分享行业干货', '客户成功案例展示', '专业认证展示'],
       scripts: ['"今天给大家分享一个我服务客户的真实案例…"', '"做了X年，踩过这些坑，现在教你避开"'],
@@ -67,7 +68,7 @@ function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string
     },
     {
       key: 'moments',
-      name: PHASE_NAMES.moments,
+      name: '朋友圈打造',
       goal: '打造专业+真实的朋友圈人设',
       tactics: ['3:4:3法则(干货:生活:产品)', '每日固定发圈时间', '视频号配合增强信任'],
       scripts: ['"今天帮客户解决了一个问题，复盘一下思路…"', '"客户反馈来了，这个结果让我特别开心"'],
@@ -75,7 +76,7 @@ function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string
     },
     {
       key: 'convert',
-      name: PHASE_NAMES.convert,
+      name: '成交转化',
       goal: `完成${input.productDescription}销售，目标客单价¥${input.productPrice}`,
       tactics: ['限时限量活动设计', '一对一需求诊断', '群内成交活动'],
       scripts: ['"针对你的情况，我建议从这个方向入手…"', `"现在购买只需¥${input.productPrice}，还额外赠送…"`],
@@ -83,14 +84,17 @@ function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string
     },
     {
       key: 'repurchase',
-      name: PHASE_NAMES.repurchase,
+      name: '复购裂变',
       goal: '实现复购与裂变，降低获客成本',
       tactics: ['老客户专属福利', '转介绍激励机制', '会员体系设计'],
       scripts: ['"感谢你的信任，作为老客户你将获得…"', '"推荐一位朋友，你和朋友都能享受…"'],
       metrics: ['复购率(目标>30%)', '转介绍率(>20%)', '客户LTV增长'],
     },
   ];
+}
 
+function buildMockSop(input: z.infer<typeof generatePrivateDomainInput>): string {
+  const phases = buildPhases(input);
   return JSON.stringify({
     phases,
     summary: `${input.targetAudience}私域成交SOP已生成，月流量${input.monthlyTraffic}，IP定位：${input.ipPositioning}`,
@@ -134,5 +138,25 @@ export const privateDomainRouter = router({
         },
       });
       return row;
+    }),
+
+  /**
+   * AC-8: SSE streaming subscription — yields each of the 6 phases as an independent chunk
+   * Uses async function* generator so httpBatchStreamLink sends each phase over SSE.
+   * Does not persist to History (generate mutation handles that); pure streaming UX.
+   */
+  generateStream: protectedProcedure
+    .input(generatePrivateDomainInput)
+    .subscription(async function* ({ input }) {
+      const phases = buildPhases(input);
+      const summary = `${input.targetAudience}私域成交SOP已生成，月流量${input.monthlyTraffic}，IP定位：${input.ipPositioning}`;
+
+      for (const phase of phases) {
+        // Simulate per-phase LLM streaming latency
+        await new Promise<void>((r) => setTimeout(r, 120));
+        yield { type: 'phase' as const, data: phase };
+      }
+
+      yield { type: 'done' as const, summary };
     }),
 });

@@ -651,6 +651,24 @@ const _shadowRouter = _t.router({
         traceId: null,
         createdAt: new Date(),
       })),
+    generateStream: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            productDescription: string;
+            productPrice: number;
+            targetAudience: string;
+            ipPositioning: string;
+            currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
+            monthlyTraffic: number;
+          },
+      )
+      // eslint-disable-next-line require-yield
+      .subscription(async function* () {
+        yield {} as
+          | { type: 'phase'; data: { key: string; name: string; goal: string; tactics: string[]; scripts: string[]; metrics: string[] } }
+          | { type: 'done'; summary: string };
+      }),
   }),
   monetization: _t.router({
     generate: _t.procedure

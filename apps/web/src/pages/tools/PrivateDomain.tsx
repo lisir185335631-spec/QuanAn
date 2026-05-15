@@ -19,7 +19,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { useAuth } from '@/hooks/useAuth';
 import { LS_PREFIX } from '@/lib/ls-namespace';
-import { trpc } from '@/lib/trpc';
+import { trpc, trpcClient } from '@/lib/trpc';
+
+import type { Unsubscribable } from '@trpc/server/observable';
 
 import type { PhaseData } from './components/PhaseCard';
 import type { PrivateDomainFormValues } from './components/PrivateDomainConfigView';
@@ -177,6 +179,10 @@ export default function PrivateDomain() {
   const [sopSummary, setSopSummary] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState(false);
 
+  // AC-8: SSE streaming subscription ref (imperative, like VoiceChat pattern)
+  const subRef = useRef<Unsubscribable | null>(null);
+  const streamAccumRef = useRef<PhaseData[]>([]);
+
   // Draft restoration indicator (AC-7)
   const [hasDraft, setHasDraft] = useState(false);
   useEffect(() => {
@@ -220,43 +226,71 @@ export default function PrivateDomain() {
     );
   }
 
-  // tRPC mutation (AC-3/4 · SSE mock · PrivateDomainAgent)
+  // AC-4: tRPC mutation — writes History row + costLog (AC-8 cost_log)
+  // onSuccess: history is saved; SSE subscription handles phase streaming
   const generateMutation = trpc.privateDomain.generate.useMutation({
     onSuccess(data) {
-      const content = (data as { content?: string }).content ?? '';
-      const parsed = parseSop(content);
-      if (parsed) {
-        setPhases(parsed.phases);
-        setSopSummary(parsed.summary);
-      } else {
-        // Test/mock env: content may be '[mock]' — show empty 6-phase result
-        setPhases([]);
-        setSopSummary('');
+      // History saved — if SSE stream hasn't populated phases yet (e.g. in test env),
+      // fall back to parsing the mutation response
+      if (streamAccumRef.current.length === 0) {
+        const content = (data as { content?: string }).content ?? '';
+        const parsed = parseSop(content);
+        if (parsed) {
+          setPhases(parsed.phases);
+          setSopSummary(parsed.summary);
+        } else {
+          setPhases([]);
+          setSopSummary('');
+        }
+        setIsStreaming(false);
       }
-      setIsStreaming(false);
-      navigateTo('result');
     },
     onError(err) {
       setIsStreaming(false);
+      subRef.current?.unsubscribe();
       toast.error(`生成失败：${err.message ?? '请重试'}`);
       navigateTo('config');
     },
   });
 
-  // Handle form submit (AC-3)
+  // Handle form submit (AC-3/4 + AC-8)
   function handleSubmit(values: PrivateDomainFormValues) {
-    setIsStreaming(true);
-    setPhases(null);
-    setSopSummary('');
-    navigateTo('result');
-
-    generateMutation.mutate({
+    const mutationInput = {
       productDescription: values.productDescription.trim(),
       productPrice: parseFloat(values.productPrice),
       targetAudience: values.targetAudience.trim(),
       ipPositioning: values.ipPositioning.trim(),
       currentChannel: values.currentChannel,
       monthlyTraffic: parseInt(values.monthlyTraffic, 10),
+    };
+
+    setIsStreaming(true);
+    setPhases([]);
+    setSopSummary('');
+    streamAccumRef.current = [];
+    navigateTo('result');
+
+    // AC-4: mutation to write History row + costLog
+    generateMutation.mutate(mutationInput);
+
+    // AC-8: SSE subscription — yields each of the 6 phases as independent chunks
+    subRef.current?.unsubscribe();
+    subRef.current = trpcClient.privateDomain.generateStream.subscribe(mutationInput, {
+      onData(chunk) {
+        if (chunk.type === 'phase') {
+          streamAccumRef.current = [...streamAccumRef.current, chunk.data as PhaseData];
+          setPhases([...streamAccumRef.current]);
+        } else if (chunk.type === 'done') {
+          setSopSummary(chunk.summary);
+          setIsStreaming(false);
+        }
+      },
+      onError() {
+        setIsStreaming(false);
+      },
+      onComplete() {
+        setIsStreaming(false);
+      },
     });
   }
 
@@ -272,10 +306,11 @@ export default function PrivateDomain() {
     navigateTo('result');
   }
 
-  // Cleanup debounce timer on unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+      subRef.current?.unsubscribe();
     };
   }, []);
 

@@ -299,4 +299,46 @@ describe('privateDomain API router', () => {
     expect(router).toContain('repurchase');
     expect(router).toContain('buildMockSop');
   });
+
+  it('router has generateStream SSE subscription (AC-8)', () => {
+    const router = src(API_ROUTER);
+    expect(router).toContain('generateStream');
+    expect(router).toContain('.subscription(');
+    expect(router).toContain('async function*');
+  });
+
+  it('generateStream yields phase chunks individually (AC-8 per-phase chunk)', () => {
+    const router = src(API_ROUTER);
+    // must yield each phase, not all at once
+    expect(router).toContain("type: 'phase'");
+    expect(router).toContain("type: 'done'");
+    expect(router).toContain('yield');
+  });
+});
+
+// ── 9 · Frontend SSE streaming (AC-8 frontend) ───────────────────────────────
+
+describe('PrivateDomain page SSE streaming (AC-8 frontend)', () => {
+  it('imports trpcClient for imperative subscription', () => {
+    const page = src(PAGE);
+    expect(page).toContain('trpcClient');
+    expect(page).toContain("from '@/lib/trpc'");
+  });
+
+  it('calls generateStream.subscribe for SSE streaming', () => {
+    const page = src(PAGE);
+    expect(page).toContain('generateStream');
+    expect(page).toContain('.subscribe(');
+  });
+
+  it('handles phase chunks from stream (onData)', () => {
+    const page = src(PAGE);
+    expect(page).toContain("chunk.type === 'phase'");
+    expect(page).toContain("chunk.type === 'done'");
+  });
+
+  it('unsubscribes on unmount (no memory leak)', () => {
+    const page = src(PAGE);
+    expect(page).toContain('subRef.current?.unsubscribe()');
+  });
 });
