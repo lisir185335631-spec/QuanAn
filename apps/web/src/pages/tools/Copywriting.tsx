@@ -5,7 +5,7 @@
  * AC-3: 调 trpc.copywriting.freeGenerate.useMutation() · 流式渲染走 Streamdown
  * AC-5: 历史 sidebar · trpc.history.list(agentId=CopywritingAgent · limit=10)
  * AC-6: URL state useSearchParams · ?topic= &platform= &scriptType=
- * AC-7: localStorage draft copywriting_draft_${userId}_${activeAccountId} · debounce 1s
+ * AC-7: localStorage draft getLsKey → LS_PREFIX_${accountId}_copywriting_draft_${userId} · debounce 1s · LD-009
  * AC-8: SSE meta chunk 首显 modelName
  * AC-9: lazy StreamdownPreview + Suspense
  */
@@ -16,15 +16,16 @@ import { toast } from 'sonner';
 
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { useAuth } from '@/hooks/useAuth';
+import { LS_PREFIX } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
 import { CopywritingForm, type CopywritingFormValues, type Platform } from './components/CopywritingForm';
 import { CopywritingHistory } from './components/CopywritingHistory';
 import { CopywritingPreview } from './components/CopywritingPreview';
 
-// localStorage draft key (AC-7)
-function draftKey(userId: number, accountId: number): string {
-  return `copywriting_draft_${userId}_${accountId}`;
+// localStorage draft key helper (AC-7) — uses LS_PREFIX for acc_ namespace per LD-009
+function getLsKey(userId: number, accountId: number): string {
+  return `${LS_PREFIX}_${accountId}_copywriting_draft_${userId}`;
 }
 
 const DEFAULT_FORM: CopywritingFormValues = {
@@ -38,7 +39,7 @@ const DEFAULT_FORM: CopywritingFormValues = {
 function readDraft(userId: number | null, accountId: number | null): Partial<CopywritingFormValues> {
   if (!userId || !accountId) return {};
   try {
-    const raw = localStorage.getItem(draftKey(userId, accountId));
+    const raw = localStorage.getItem(getLsKey(userId, accountId));
     if (raw) return JSON.parse(raw) as Partial<CopywritingFormValues>;
   } catch {
     // ignore
@@ -86,7 +87,7 @@ export default function Copywriting() {
       if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
       draftTimerRef.current = setTimeout(() => {
         try {
-          localStorage.setItem(draftKey(userId, accountId), JSON.stringify(values));
+          localStorage.setItem(getLsKey(userId, accountId), JSON.stringify(values));
         } catch {
           // storage full — ignore
         }
