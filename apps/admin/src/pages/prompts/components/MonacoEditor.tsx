@@ -41,6 +41,7 @@ interface MonacoEditorProps {
   onChange?: (v: string) => void;
   readOnly?: boolean;
   height?: string;
+  language?: string;
 }
 
 function Spinner() {
@@ -64,12 +65,12 @@ function beforeMount(monaco: Parameters<NonNullable<EditorProps['beforeMount']>>
   monaco.editor.defineTheme('aurelian-dark', AURELIAN_THEME);
 }
 
-export function MonacoEditor({ value, onChange, readOnly = false, height = '100%' }: MonacoEditorProps) {
+export function MonacoEditor({ value, onChange, readOnly = false, height = '100%', language = 'handlebars' }: MonacoEditorProps) {
   return (
     <Suspense fallback={<Spinner />}>
       <Editor
         height={height}
-        language="handlebars"
+        language={language}
         theme="aurelian-dark"
         value={value}
         options={{ readOnly, minimap: { enabled: false }, wordWrap: 'on', fontSize: 13 }}

@@ -135,14 +135,14 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     summary: 'Approval Gates 管理 · 待审批请求 / 历史决策 / 紧急通道 · super_admin 含紧急通道',
     group: 'p1-health',
   },
-  // P2 高级 3
+  // P2 高级 4
   {
-    path: '/admin/ab',
-    label: 'A/B 测试',
+    path: '/admin/ab-experiments',
+    label: 'A/B 实验',
     emoji: '🧪',
     prd: 14,
-    requiredRole: 'super_admin',
-    summary: 'A/B 测试管理 · Specialist 版本实验 / 流量分配 / 效果对比',
+    requiredRole: 'admin',
+    summary: 'A/B 实验管理 · 实验列表 / 流量分配 / 显著性检验 / 一键停损',
     group: 'p2-advanced',
   },
   {
@@ -152,6 +152,15 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     prd: 14,
     requiredRole: 'super_admin',
     summary: '常量管理 · AdminConstants / 违禁词库 / 系统级常量变更',
+    group: 'p2-advanced',
+  },
+  {
+    path: '/admin/constants',
+    label: '知识库管理',
+    emoji: '📚',
+    prd: 14,
+    requiredRole: 'admin',
+    summary: '知识库常量管理 · 67 案例 / 23 公式 / 22 元素 版本管理 + Monaco 编辑器 + 灰度配置',
     group: 'p2-advanced',
   },
   {

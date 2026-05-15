@@ -1,5 +1,5 @@
 // PRD-10 US-005 · Sidebar unit tests (AC-14: 6 tests)
-// Tests: 16 域 4 组 + isActive + folding + keyboard nav
+// Tests: 17 域 4 组 + isActive + folding + keyboard nav (PRD-14 US-009 adds /admin/constants → 17)
 // @vitest-environment jsdom
 
 import { cleanup, render, screen } from '@testing-library/react';
@@ -39,10 +39,10 @@ import { Sidebar } from '../../../apps/admin/src/components/admin/Sidebar';
 afterEach(cleanup);
 
 describe('Sidebar', () => {
-  it('renders exactly 16 domain links', () => {
+  it('renders exactly 17 domain links', () => {
     render(<Sidebar />);
     const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(16);
+    expect(links).toHaveLength(17);
   });
 
   it('renders 4 group labels', () => {
@@ -70,10 +70,10 @@ describe('Sidebar', () => {
     expect(p0Core).toHaveLength(6);
   });
 
-  it('all 4 groups have correct counts: 6 + 2 + 5 + 3', () => {
+  it('all 4 groups have correct counts: 6 + 2 + 5 + 4', () => {
     const counts = (['p0-core', 'p0-review', 'p1-health', 'p2-advanced'] as const).map(
       (g) => ADMIN_ROUTES.filter((r) => r.group === g).length,
     );
-    expect(counts).toEqual([6, 2, 5, 3]);
+    expect(counts).toEqual([6, 2, 5, 4]);
   });
 });

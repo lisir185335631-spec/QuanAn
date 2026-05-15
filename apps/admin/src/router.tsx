@@ -6,6 +6,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AdminLayout } from './layouts/AdminLayout';
 import AbExperimentsPage from './pages/abExperiments/AbExperimentsPage';
 import ExperimentDetailPage from './pages/abExperiments/ExperimentDetailPage';
+import ConstantsPage from './pages/constants/ConstantsPage';
 import AccountsPage from './pages/accounts/index';
 import ApprovalGatesPage from './pages/approvals/index';
 import AuditPage from './pages/audit/index';
@@ -54,6 +55,7 @@ export function AdminRoutes() {
         {/* P2 高级 */}
         <Route path="ab-experiments" element={<AbExperimentsPage />} />
         <Route path="ab-experiments/:experimentKey" element={<ExperimentDetailPage />} />
+        <Route path="constants" element={<ConstantsPage />} />
         <Route path="knowledge" element={<KnowledgePlaceholder />} />
         <Route path="config" element={<ConfigPlaceholder />} />
       </Route>

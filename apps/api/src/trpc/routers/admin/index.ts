@@ -19,10 +19,11 @@ import { complianceRouter } from './compliance';
 import { evolutionHealthRouter } from './evolutionHealth';
 import { quotaRouter } from './quota';
 import { promptsRouter } from './prompts';
+import { abExperimentsRouter } from './abExperiments';
+import { constantsRouter } from './constants';
 
 // Placeholder sub-routers (filled by PRD-12~14)
 const configPlaceholder = adminTrpcRouter({});
-const abPlaceholder = adminTrpcRouter({});
 
 export const adminRouter = adminTrpcRouter({
   /** Health check — no auth required */
@@ -59,8 +60,11 @@ export const adminRouter = adminTrpcRouter({
   evolution: evolutionHealthRouter,
   // PRD-13 US-011: real approvals router
   approvals: approvalsRouter,
+  // PRD-14 US-004: real abExperiments router
+  abExperiments: abExperimentsRouter,
+  // PRD-14 US-009: real constants router
+  constants: constantsRouter,
   config: configPlaceholder,
-  ab: abPlaceholder,
 });
 
 export type AdminRouter = typeof adminRouter;

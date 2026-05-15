@@ -1513,6 +1513,132 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
+  constants: _t.router({
+    listKeys: _t.procedure
+      .input((x: unknown) => x as { constantType: 'case' | 'formula' | 'element' })
+      .query((): { keys: Array<{ key: string; label: string }> } => ({ keys: [] })),
+    getActiveVersion: _t.procedure
+      .input((x: unknown) => x as { constantType: 'case' | 'formula' | 'element'; constantKey: string })
+      .query(
+        (): {
+          version: {
+            id: number;
+            version: number;
+            constantType: string;
+            constantKey: string;
+            content: string;
+            contentHash: string;
+            status: string;
+            judgeScore: string | null;
+            createdByAdminId: number;
+            createdAt: Date;
+            approvedByAdminId: number | null;
+            approvedAt: Date | null;
+          } | null;
+          canaryConfig: {
+            id: number;
+            constantType: string;
+            constantKey: string;
+            currentVersionId: number;
+            nextVersionId: number | null;
+            canaryPct: number;
+            strategy: string;
+            updatedByAdminId: number;
+            updatedAt: Date;
+          } | null;
+        } => ({ version: null, canaryConfig: null }),
+      ),
+    listVersions: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { constantType: 'case' | 'formula' | 'element'; constantKey: string; limit?: number },
+      )
+      .query(
+        (): {
+          versions: Array<{
+            id: number;
+            version: number;
+            constantType: string;
+            constantKey: string;
+            content: string;
+            contentHash: string;
+            status: string;
+            judgeScore: string | null;
+            createdByAdminId: number;
+            createdAt: Date;
+            approvedByAdminId: number | null;
+            approvedAt: Date | null;
+          }>;
+        } => ({ versions: [] }),
+      ),
+    saveDraft: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { constantType: 'case' | 'formula' | 'element'; constantKey: string; content: string },
+      )
+      .mutation(
+        (): {
+          version: {
+            id: number;
+            version: number;
+            constantType: string;
+            constantKey: string;
+            content: string;
+            contentHash: string;
+            status: string;
+            judgeScore: string | null;
+            createdByAdminId: number;
+            createdAt: Date;
+            approvedByAdminId: number | null;
+            approvedAt: Date | null;
+          };
+        } => ({
+          version: {
+            id: 0,
+            version: 1,
+            constantType: 'case',
+            constantKey: '',
+            content: '',
+            contentHash: '',
+            status: 'draft',
+            judgeScore: null,
+            createdByAdminId: 0,
+            createdAt: new Date(),
+            approvedByAdminId: null,
+            approvedAt: null,
+          },
+        }),
+      ),
+    submitForReview: _t.procedure
+      .input((x: unknown) => x as { versionId: number })
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    rollbackVersion: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { constantType: 'case' | 'formula' | 'element'; constantKey: string },
+      )
+      .mutation((): { approvalRequestId: number } => ({ approvalRequestId: 0 })),
+    updateCanary: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            constantType: 'case' | 'formula' | 'element';
+            constantKey: string;
+            nextVersionId: number;
+            canaryPct: number;
+          },
+      )
+      .mutation((): { canaryPct: number } => ({ canaryPct: 0 })),
+    runLlmJudge: _t.procedure
+      .input((x: unknown) => x as { versionId: number; isMock?: boolean })
+      .mutation(
+        (): { score: number; isMock: boolean; runAt: Date } => ({
+          score: 0,
+          isMock: true,
+          runAt: new Date(),
+        }),
+      ),
+  }),
   config: _t.router({}),
 });
 
