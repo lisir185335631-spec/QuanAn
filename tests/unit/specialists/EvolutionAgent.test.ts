@@ -65,6 +65,14 @@ vi.mock('@/memory/l4-profile', () => ({
   getDeepLearningSamples: vi.fn().mockResolvedValue([]),
 }));
 
+// PRD-14 US-012: mock feature-flag service so kill switch defaults to OFF in existing tests
+vi.mock('@/services/admin/feature-flag/feature-flag.service', () => ({
+  getFeatureFlagValue: vi.fn().mockResolvedValue(false),
+  getSystemConfigValue: vi.fn().mockResolvedValue(false),
+  invalidateFeatureFlagCache: vi.fn(),
+  invalidateSystemConfigCache: vi.fn(),
+}));
+
 vi.mock('@/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));

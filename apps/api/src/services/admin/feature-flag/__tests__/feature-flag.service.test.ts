@@ -56,6 +56,7 @@ import {
   toggleFeatureFlag,
   emergencyToggleSystemConfig,
   getFeatureFlagValue,
+  _clearAllCachesForTesting,
 } from '@/services/admin/feature-flag/feature-flag.service';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
@@ -226,7 +227,7 @@ describe('emergencyToggleSystemConfig', () => {
 });
 
 describe('getFeatureFlagValue', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => { vi.clearAllMocks(); _clearAllCachesForTesting(); });
 
   it('should return defaultValue for boolean flagType', async () => {
     mockFeatureFlagFindUnique.mockResolvedValue(booleanFlag);

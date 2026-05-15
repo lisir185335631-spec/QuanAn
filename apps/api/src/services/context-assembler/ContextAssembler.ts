@@ -17,6 +17,7 @@ import { createHash } from 'node:crypto';
 import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
 import { getActivePromptVersion } from '@/services/admin/prompt-version/prompt-version.service';
+import { getSystemConfigValue } from '@/services/admin/feature-flag/feature-flag.service';
 import { getLatestInsight } from '@/memory/l4-profile';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
 import { ragRetrieveWorker } from '@/workers/rag';
@@ -131,9 +132,15 @@ export class ContextAssembler {
 
   /**
    * PRD-13 US-003 AC-9: fetch active prompt from prompt_versions via canary config
+   * PRD-14 US-012 AC-4: emergency bypass — enable_fallback_prompt=true → skip DB → templates/*.ts
    * Returns content string or null (→ fallback to templates/*.ts per AC-13)
    */
   private async _fetchActivePrompt(agentId: string, accountId: number): Promise<string | null> {
+    // AC-4: emergency fallback bypass · not replacing main flow
+    if (await getSystemConfigValue('enable_fallback_prompt')) {
+      return null; // → _composeSystemPrompt falls back to templates/*.ts
+    }
+
     const version = await getActivePromptVersion(agentId, accountId, 'default');
     if (!version) {
       return null;
@@ -209,10 +216,16 @@ export class ContextAssembler {
 
   /**
    * PRD-14 US-008 AC-4/5/6: 第 7 路 · DB constant_versions canary 路由
+   * PRD-14 US-012 AC-4: emergency bypass — enable_fallback_prompt=true → skip DB → lib/constants/*.ts
    * brownfield fallback: constant_versions 表无 active 记录时返 null
    * → ContextAssembler 继续用 SPECIALIST_TEMPLATES + lib/constants 旧路径
    */
   private async _fetchActiveConstants(req: AssembleRequest): Promise<Record<string, string> | null> {
+    // AC-4: emergency fallback bypass · not replacing main flow
+    if (await getSystemConfigValue('enable_fallback_prompt')) {
+      return null; // → _composeSystemPrompt falls back to lib/constants/*.ts
+    }
+
     // AC-6: brownfield check — if no active versions exist, return null → use old path
     const activeCount = await prisma.constantVersion.count({ where: { status: 'active' } });
     if (activeCount === 0) return null;

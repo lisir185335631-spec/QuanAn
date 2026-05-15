@@ -21,9 +21,7 @@ import { quotaRouter } from './quota';
 import { promptsRouter } from './prompts';
 import { abExperimentsRouter } from './abExperiments';
 import { constantsRouter } from './constants';
-
-// Placeholder sub-routers (filled by PRD-12~14)
-const configPlaceholder = adminTrpcRouter({});
+import { featureFlagsRouter } from './featureFlags';
 
 export const adminRouter = adminTrpcRouter({
   /** Health check — no auth required */
@@ -64,7 +62,8 @@ export const adminRouter = adminTrpcRouter({
   abExperiments: abExperimentsRouter,
   // PRD-14 US-009: real constants router
   constants: constantsRouter,
-  config: configPlaceholder,
+  // PRD-14 US-012: real featureFlags router
+  featureFlags: featureFlagsRouter,
 });
 
 export type AdminRouter = typeof adminRouter;

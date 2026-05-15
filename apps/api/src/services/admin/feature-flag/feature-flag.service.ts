@@ -3,6 +3,8 @@
 // SHIELD: _toggleFeatureFlagInTx + _updateSystemConfigInTx 分开 · 不合并(字段不同)
 // SHIELD: emergencyToggleSystemConfig 复用 PRD-13 US-002 emergencyApprove · 不重写
 // SHIELD: getFeatureFlagValue 3 flagType 路由 · boolean / percentage / targeted
+// PRD-14 US-012: getFeatureFlagValue + getSystemConfigValue 5s TTL cache(Map+setInterval 防 hot path)
+// PRD-14 US-012: emergencyToggleSystemConfig 写 security_alert audit + 钉钉(isMock=true)
 
 import { createHash } from 'node:crypto';
 
@@ -14,6 +16,7 @@ import {
   requestApproval,
   emergencyApprove,
 } from '@/services/admin/approval/approvalGateService';
+import { DingtalkService } from '@/services/admin/notifications/dingtalk.service';
 
 import type { Prisma } from '@prisma/client';
 
@@ -34,6 +37,51 @@ export interface UpdateSystemConfigInTxParams {
   configValue: Prisma.InputJsonValue;
   adminId: number;
   approvalRequestId?: number;
+}
+
+// ---------------------------------------------------------------------------
+// PRD-14 US-012 · 5s TTL cache (Map + setInterval) · 防 hot path 频繁查 DB
+// SHIELD: 每次调用直查 DB 大并发崩溃 → 改用 short cache
+// ---------------------------------------------------------------------------
+
+const CACHE_TTL_MS = 5_000;
+
+interface CacheEntry<T> {
+  value: T;
+  expiresAt: number;
+}
+
+const featureFlagCache = new Map<string, CacheEntry<boolean>>();
+const systemConfigCache = new Map<string, CacheEntry<unknown>>();
+
+// Periodic cleanup — remove stale entries every 30s
+const _ffCleanup = setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of featureFlagCache.entries()) {
+    if (entry.expiresAt < now) featureFlagCache.delete(key);
+  }
+  for (const [key, entry] of systemConfigCache.entries()) {
+    if (entry.expiresAt < now) systemConfigCache.delete(key);
+  }
+}, 30_000);
+// Allow process to exit even if interval is running
+if (typeof _ffCleanup.unref === 'function') _ffCleanup.unref();
+
+/** Invalidate cache for a specific flag/config key after a write */
+export function invalidateFeatureFlagCache(flagKey: string): void {
+  for (const key of featureFlagCache.keys()) {
+    if (key.startsWith(`${flagKey}:`)) featureFlagCache.delete(key);
+  }
+}
+
+export function invalidateSystemConfigCache(configKey: string): void {
+  systemConfigCache.delete(configKey);
+}
+
+/** Clear all caches — for testing only */
+export function _clearAllCachesForTesting(): void {
+  featureFlagCache.clear();
+  systemConfigCache.clear();
 }
 
 // ---------------------------------------------------------------------------
@@ -87,6 +135,9 @@ export async function _updateSystemConfigInTx(
     },
   });
 
+  // Invalidate cache after write
+  invalidateSystemConfigCache(configKey);
+
   await logAdminAction({
     actorAdminId: adminId,
     actorRole: 'admin',
@@ -130,6 +181,7 @@ export async function toggleFeatureFlag(
 
 // ---------------------------------------------------------------------------
 // emergencyToggleSystemConfig — super_admin 1 人 · 复用 PRD-13 US-002 emergencyApprove
+// PRD-14 US-012 AC-5/6/7: 写 security_alert audit + 钉钉(isMock=true)
 // ---------------------------------------------------------------------------
 
 export async function emergencyToggleSystemConfig(
@@ -138,6 +190,10 @@ export async function emergencyToggleSystemConfig(
   superAdminId: number,
   incidentId: string,
 ): Promise<{ approvalRequestId: number }> {
+  if (!incidentId.trim()) {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'incidentId is required' });
+  }
+
   const config = await prisma.systemConfig.findUnique({ where: { configKey } });
   if (!config) {
     throw new TRPCError({ code: 'NOT_FOUND', message: `system_config '${configKey}' not found` });
@@ -167,11 +223,37 @@ export async function emergencyToggleSystemConfig(
     });
   });
 
+  // AC-6: 写 security_alert audit log · 必含 configKey + incidentId
+  await logAdminAction({
+    actorAdminId: superAdminId,
+    actorRole: 'super_admin',
+    eventCategory: 'security_alert',
+    eventType: 'emergency_switch_triggered',
+    payload: { configKey, configValue, incidentId, approvalRequestId: approvalReq.id },
+    traceId: createHash('md5')
+      .update(`emergency:${configKey}:${incidentId}:${Date.now()}`)
+      .digest('hex')
+      .slice(0, 16),
+    ip: '0.0.0.0',
+    userAgent: 'emergency-switch-service',
+    sessionId: 'system',
+    success: true,
+  }).catch(() => {});
+
+  // AC-7: 钉钉告警 D-077 isMock=true 默认
+  const dingtalk = new DingtalkService();
+  await dingtalk
+    .send(
+      `[紧急开关触发] configKey=${configKey} · incidentId=${incidentId} · adminId=${superAdminId} · approvalRequestId=${approvalReq.id}`,
+    )
+    .catch(() => {});
+
   return { approvalRequestId: approvalReq.id };
 }
 
 // ---------------------------------------------------------------------------
 // getFeatureFlagValue — 3 flagType 路由 · boolean / percentage / targeted
+// PRD-14 US-012 AC-10: 5s TTL cache(Map + setInterval)防 hot path 频繁查 DB
 // ---------------------------------------------------------------------------
 
 export async function getFeatureFlagValue(
@@ -179,35 +261,67 @@ export async function getFeatureFlagValue(
   userId?: number,
   plan?: string,
 ): Promise<boolean> {
+  const cacheKey = `${flagKey}:${userId ?? ''}:${plan ?? ''}`;
+  const cached = featureFlagCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
+  }
+
   const flag = await prisma.featureFlag.findUnique({ where: { flagKey } });
-  if (!flag || !flag.enabled) return false;
+  if (!flag || !flag.enabled) {
+    featureFlagCache.set(cacheKey, { value: false, expiresAt: Date.now() + CACHE_TTL_MS });
+    return false;
+  }
 
   const flagType = flag.flagType as 'boolean' | 'percentage' | 'targeted';
+  let result = false;
 
   if (flagType === 'boolean') {
-    return Boolean(flag.defaultValue);
-  }
-
-  if (flagType === 'percentage') {
+    result = Boolean(flag.defaultValue);
+  } else if (flagType === 'percentage') {
     const cfg = flag.rolloutConfig as { percentage?: number } | null;
     const pct = cfg?.percentage ?? 0;
-    if (userId === undefined) return false;
-    // md5 hash 分流: hash(flagKey + userId) → 0-99
-    const hash = createHash('md5').update(`${flagKey}:${userId}`).digest('hex');
-    const bucket = parseInt(hash.slice(0, 8), 16) % 100;
-    return bucket < pct;
-  }
-
-  if (flagType === 'targeted') {
+    if (userId === undefined) {
+      result = false;
+    } else {
+      // md5 hash 分流: hash(flagKey + userId) → 0-99
+      const hash = createHash('md5').update(`${flagKey}:${userId}`).digest('hex');
+      const bucket = parseInt(hash.slice(0, 8), 16) % 100;
+      result = bucket < pct;
+    }
+  } else if (flagType === 'targeted') {
     const cfg = flag.rolloutConfig as {
       target_users?: number[];
       target_plans?: string[];
     } | null;
 
-    if (userId !== undefined && cfg?.target_users?.includes(userId)) return true;
-    if (plan !== undefined && cfg?.target_plans?.includes(plan)) return true;
-    return false;
+    if (userId !== undefined && cfg?.target_users?.includes(userId)) {
+      result = true;
+    } else if (plan !== undefined && cfg?.target_plans?.includes(plan)) {
+      result = true;
+    } else {
+      result = false;
+    }
   }
 
-  return false;
+  featureFlagCache.set(cacheKey, { value: result, expiresAt: Date.now() + CACHE_TTL_MS });
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// getSystemConfigValue — read system_config · 5s TTL cache
+// PRD-14 US-012: used by EvolutionAgent + ContextAssembler for emergency bypass
+// ---------------------------------------------------------------------------
+
+export async function getSystemConfigValue(configKey: string): Promise<unknown> {
+  const cached = systemConfigCache.get(configKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
+  }
+
+  const config = await prisma.systemConfig.findUnique({ where: { configKey } });
+  const value = config?.configValue ?? null;
+
+  systemConfigCache.set(configKey, { value, expiresAt: Date.now() + CACHE_TTL_MS });
+  return value;
 }

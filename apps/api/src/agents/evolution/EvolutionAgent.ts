@@ -22,6 +22,7 @@ import { getDeepLearningSamples } from '@/memory/l4-profile';
 import { contextAssembler } from '@/services/context-assembler/ContextAssembler';
 import { detectEvolutionAnomalies } from '@/services/admin/evolution-health/anomaly-detection.service';
 import { DingtalkService } from '@/services/admin/notifications/dingtalk.service';
+import { getSystemConfigValue } from '@/services/admin/feature-flag/feature-flag.service';
 import { BaseSpecialist } from '@/specialists/base/BaseSpecialist';
 import { SchemaValidationError, LLMTimeoutError } from '@/specialists/base/errors';
 import type {
@@ -102,6 +103,19 @@ export class EvolutionAgent extends BaseSpecialist<EvolutionAgentInput, Evolutio
       req.traceId ??
       generateSpecialistTraceId(req.accountId, this.config.agentId as SpecialistId);
     const startedAt = Date.now();
+
+    // PRD-14 US-012 AC-3: emergency kill switch brownfield · not replacing main flow
+    if (await getSystemConfigValue('stop_evolution_agent')) {
+      logger.warn({ accountId: req.accountId, traceId }, 'evolution.execute.emergency_stopped');
+      return {
+        result: {} as EvolutionOutput,
+        isFallback: true,
+        modelUsed: 'emergency-disabled',
+        durationMs: Date.now() - startedAt,
+        tokensUsed: { prompt: 0, completion: 0, total: 0 },
+        traceId,
+      };
+    }
 
     // Step 1: 入参校验
     this.inputSchema.parse(req.userInput);

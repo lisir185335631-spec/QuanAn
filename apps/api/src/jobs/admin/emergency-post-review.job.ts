@@ -1,6 +1,7 @@
 // PRD-13 US-002 · emergency-post-review.job
 // AC-6: BullMQ cron '0 30 3 * * *' Asia/Shanghai 03:30 · jobId='emergency-post-review-recurring'
 // AC-6: scan postReviewRequired=true && postReviewedAt=null && decidedAt < NOW()-24h → post_review_overdue audit + dingtalk
+// PRD-14 US-012 AC-8: 扩 actionType 扫描范围 · 含 update_system_config(emergency_switch_triggered 路径)
 // SHIELD: tz: 'Asia/Shanghai' + jobId dedup on restart (D-096 错峰)
 // SHIELD: isMock=true DingtalkService default (D-077)
 
@@ -35,6 +36,8 @@ export async function scanEmergencyPostReviewOverdue(
 ): Promise<PostReviewOverdueResult> {
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
+  // PRD-14 US-012 AC-8: 扩扫描范围 — 含 update_system_config(by emergencyToggleSystemConfig) +
+  // existing emergency approval types(no actionType filter = catch-all for postReviewRequired)
   const overdueRequests = await prisma.approvalRequest.findMany({
     where: {
       postReviewRequired: true,
