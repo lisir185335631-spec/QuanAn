@@ -40,6 +40,8 @@ export function useActiveAccount() {
         { accountId: newAccountId },
         {
           onSuccess() {
+            // AC-9: persist active account id for demo/tooling reads
+            localStorage.setItem('aiip_active_account_id', String(newAccountId));
             // AC-3: clear old LS namespace then full reload — new account state served fresh
             if (currentAccountId !== null) {
               clearLsNamespace(localStorage, currentAccountId);
