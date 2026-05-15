@@ -15,7 +15,7 @@ import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { redis } from '@/lib/redis';
 import { runAutoVerdictForContent } from '@/services/admin/content-review/trending-auto-verdict.service';
-import { getFeatureFlagValue } from '@/services/admin/feature-flag/feature-flag.service';
+import { getSystemConfigValue } from '@/services/admin/feature-flag/feature-flag.service';
 
 import { TRENDING_SCRAPER_QUEUE_NAME } from './queue';
 
@@ -61,8 +61,8 @@ export async function processTrendingScraperJob(payload: TrendingScraperJobPaylo
   const { sourcePlatform, sourceItemId, sourceUrl, rawContent } = payload;
   const traceId = `trending-scraper-${sourcePlatform}-${sourceItemId}-${randomBytes(4).toString('hex')}`;
 
-  // PRD-14 US-012 AC-2: emergency kill switch brownfield · 5s TTL cache 防频繁查 DB
-  if (await getFeatureFlagValue('stop_trending_scraper')) {
+  // PRD-14 US-012 AC-2: emergency kill switch brownfield · stop_trending_scraper 在 system_config · 5s TTL cache 防频繁查 DB
+  if (await getSystemConfigValue('stop_trending_scraper')) {
     logger.warn({ sourcePlatform, sourceItemId, traceId }, 'trending_scraper.emergency_stopped');
     return;
   }

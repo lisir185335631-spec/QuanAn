@@ -94,7 +94,7 @@ const enableFallbackConfig = {
 
 const booleanFlag = {
   id: 10,
-  flagKey: 'stop_trending_scraper',
+  flagKey: 'new_ui_feature',
   flagType: 'boolean',
   defaultValue: true,
   enabled: true,
@@ -209,18 +209,18 @@ describe('getFeatureFlagValue — 5s TTL cache + 3 flagType 路由', () => {
     _clearAllCachesForTesting();
   });
 
-  it('boolean flagType: stop_trending_scraper=true → getFeatureFlagValue returns true', async () => {
+  it('boolean flagType: new_ui_feature=true → getFeatureFlagValue returns true', async () => {
     mockFeatureFlagFindUnique.mockResolvedValue(booleanFlag);
 
-    const result = await getFeatureFlagValue('stop_trending_scraper');
+    const result = await getFeatureFlagValue('new_ui_feature');
     expect(result).toBe(true);
   });
 
   it('5s TTL cache: 第二次调用不再查 DB', async () => {
     mockFeatureFlagFindUnique.mockResolvedValue(booleanFlag);
 
-    await getFeatureFlagValue('stop_trending_scraper');
-    await getFeatureFlagValue('stop_trending_scraper'); // should hit cache
+    await getFeatureFlagValue('new_ui_feature');
+    await getFeatureFlagValue('new_ui_feature'); // should hit cache
     // DB should only be called once despite 2 function calls
     expect(mockFeatureFlagFindUnique).toHaveBeenCalledTimes(1);
   });
@@ -260,5 +260,11 @@ describe('getSystemConfigValue — 5s TTL cache', () => {
     await getSystemConfigValue('stop_trending_scraper');
     await getSystemConfigValue('stop_trending_scraper');
     expect(mockSystemConfigFindUnique).toHaveBeenCalledTimes(1);
+  });
+
+  it('stop_trending_scraper: 真实 system_config 路径 · trending-scraper worker emergency stop 依赖此值', async () => {
+    mockSystemConfigFindUnique.mockResolvedValue({ ...stopTrendingConfig, configValue: true });
+    const val = await getSystemConfigValue('stop_trending_scraper');
+    expect(val).toBe(true);
   });
 });
