@@ -60,6 +60,27 @@ AUDIT_TIMEOUT_SECONDS = 10800      # 审计门禁超时：3 小时
 class AuditTimeoutError(Exception):
     """RCA-006(2026-05-15) · audit timeout 触发 · daemon 必须退出 · 不绕过 audit · 严格 Audit Gate 零容忍"""
     pass
+
+
+class RateLimitDetected(Exception):
+    """PRD-14 retro M-2 (2026-05-15) · Validator 撞 Anthropic rate limit · daemon 退出 + Step 4.5 路径触发"""
+    pass
+
+
+def _detect_rate_limit_in_validator_output(stdout: str) -> bool:
+    """PRD-14 retro M-2 (2026-05-15) · 检测 Validator stdout 含 Anthropic rate limit 标记
+    避免 ralph 进 retry hell · 浪费 30-90 min 等 reset
+    用法: run_validator 异常退出后 · 检测 stdout · 若命中 → raise RateLimitDetected
+    """
+    import re
+    patterns = [
+        r"You've hit your limit",
+        r"resets \d+(am|pm)",
+        r"rate limit exceeded",
+        r"You have exceeded the rate limit",
+    ]
+    return any(re.search(p, stdout, re.IGNORECASE) for p in patterns)
+
 MAX_RETRIES = 5                    # 单个 story 最大重试次数（确定性兜底，不依赖 LLM）
 MAX_PROGRESS_BYTES = 512 * 1024    # progress.txt 最大保留 512KB（超出时截断旧内容）
 
@@ -1350,6 +1371,27 @@ def run_validator(iteration: int, story_id: str | None) -> None:
     # 安全措施：Validator 未正常完成时（超时 / 非零退出 / 启动异常），不能信任 passes 状态
     # 同时递增 retryCount，防止 Validator 持续失败导致无限循环
     validator_failed = timed_out or exit_code is None or exit_code != 0
+
+    # PRD-14 retro M-2 (2026-05-15) · Validator 撞 Anthropic rate limit 检测
+    # 不算 ralph 错 · 是 infra block · daemon 退出 + 触发 Step 4.5 路径(Opus 直审 commit)
+    if validator_failed and exit_code == 1:
+        try:
+            output_log = SCRIPT_DIR / "ralph-output.log"
+            if output_log.exists():
+                tail = output_log.read_text(encoding='utf-8', errors='ignore')[-5000:]
+                if _detect_rate_limit_in_validator_output(tail):
+                    print(f"  [RATE-LIMIT] Validator 撞 Anthropic rate limit · 触发 Step 4.5 路径")
+                    print(f"  daemon 退出 · 不累加 retryCount(rate limit 是 infra block · 非 ralph 错)")
+                    print(f"  用户介入选项:")
+                    print(f"  1. Opus 走 OPUS-AUDIT-CHEATSHEET 5 步深审 commit · 手 patch prd.json passes=true")
+                    print(f"  2. 等 rate limit reset 后重启 daemon · ralph 重新 dev")
+                    print(f"  3. force-reject + 重启 daemon · ralph retry(等 reset 后)")
+                    raise RateLimitDetected(f"Validator hit Anthropic rate limit for {story_id}")
+        except RateLimitDetected:
+            raise
+        except Exception as e:
+            print(f"  [WARN] rate limit 检测异常: {e} · 继续 normal validator failed flow")
+
     if validator_failed:
         if timed_out:
             reason = "超时"
@@ -1792,7 +1834,22 @@ def main():
             # ─── 第二步：验证 ───
             write_lock(i, "validating", current_story)
             dashboard.set_state(phase="validating")
-            run_validator(i, current_story)
+            try:
+                run_validator(i, current_story)
+            except RateLimitDetected as e:
+                # PRD-14 retro M-2 (2026-05-15) · Validator 撞 rate limit · daemon 退出走 Step 4.5
+                print(f"\n[DAEMON EXIT] {e}")
+                print(f"  代码已 commit(若有) · 走 Opus Step 4.5 直审路径")
+                try:
+                    with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                        from datetime import datetime as _dt
+                        f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {current_story} · [PRD-14 M-2 RATE-LIMIT DAEMON EXIT]\n")
+                        f.write(f"- Validator 撞 Anthropic rate limit · daemon 退出(不累加 retryCount)\n")
+                        f.write(f"- 触发 Step 4.5 路径 · Opus 深审 commit · 手 patch prd.json passes=true\n")
+                        f.write(f"- 详见 AGENTS.md §11.7.4 + 全局 CLAUDE.md\n---\n\n")
+                except Exception:
+                    pass
+                sys.exit(2)
 
             # H2: 强制重新读取 prd.json（Validator 可能已修改）
             # ─── 第三步：审计门禁 ───

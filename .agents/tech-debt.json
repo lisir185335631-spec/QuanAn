@@ -1324,8 +1324,31 @@
       "fix_hint": "staging 启动 admin dev server · 手访问 /admin/constants?type=knowledge_case&key=case_xiaohongshu_001 · 走 AC10 7 步 checklist · 或 verify-prd-14.sh 加 admin agent-browser flow",
       "resolved_in_prd": null,
       "resolved_at": null
+    },
+    {
+      "id": "TD-69",
+      "title": "PRD-14 US-012 AC2 跨 story 协议漂移: getFeatureFlagValue('stop_trending_scraper') 应为 getSystemConfigValue",
+      "description": "US-011 AC3 明确 seed 'stop_trending_scraper' / 'stop_evolution_agent' / 'enable_fallback_prompt' 三个紧急开关到 **system_config** 表 · US-011 实现也正确 (prisma/seed.ts +57 line · system_config 表) · 但 US-012 AC2 文本写 `apps/api/src/workers/trending-scraper/index.ts 启动前调 getFeatureFlagValue('stop_trending_scraper')` 而非 getSystemConfigValue · 跨 story 命名漂移. US-013/014 同类 AC 也用 getFeatureFlagValue · 但都是 system_config flag · 应统一为 getSystemConfigValue. RESOLVED: US-012 audit 第一轮 reject 后 · ralph 按 REJECT-TEMPLATE 反例修 worker.ts (getFeatureFlagValue → getSystemConfigValue 一行) + emergency-switch.test.ts (rename fake flags + 新增 it 测真实生产路径) · commit 6dcc77f · 第二轮 audit PASS.",
+      "scope": [
+        "tasks/prd-14.md US-012 AC2",
+        "apps/api/src/services/admin/feature-flag/feature-flag.service.ts (US-011 实现 getFeatureFlagValue + getSystemConfigValue 两个函数)"
+      ],
+      "impact": "Medium: US-012 dev 时 ralph 可能 confusion · 或调错函数(getFeatureFlagValue 会找 feature_flags 表 · stop_trending_scraper 在 system_config 不在 feature_flags · 返 null 默认 false → 不触发 emergency stop)· 实际行为 fail-safe(默认不停)但跟 PRD AC 预期不符",
+      "severity": "Medium",
+      "categories": [
+        "cross-story-protocol",
+        "design-drift"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-011 (Opus audit · Foundation 档 F2 下游 AC 检查)",
+      "fix_by": "US-012 启动前 · 修 PRD AC2-4 文本 + US-012 dev 用 getSystemConfigValue",
+      "status": "resolved",
+      "fix_hint": "US-012 dev 时把 `getFeatureFlagValue('stop_trending_scraper')` 改为 `getSystemConfigValue('stop_trending_scraper')` (3 处 · trending-scraper / EvolutionAgent / ContextAssembler) · 或 prd skill 重写 US-012 AC2-4 prd.json 文本",
+      "resolved_in_prd": "PRD-14",
+      "resolved_at": "2026-05-15T08:23:13.540556Z"
     }
   ],
-  "last_updated": "2026-05-15T03:54:46.498364Z",
+  "last_updated": "2026-05-15T08:23:13.540682Z",
   "total": 44
 }

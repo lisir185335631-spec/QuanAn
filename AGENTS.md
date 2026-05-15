@@ -2822,6 +2822,74 @@ grep -q "QUANQN_ADMIN_CLIENT_ID" apps/admin/.env.production || exit 1
 - **触发** · CI 跑(无需 RUN_LIVE_TESTS · lightweight model cost 可控)· `pnpm test:judge` 14/14 pass
 - **PRD-5 起新 Specialist** · 必加 1-2 golden case 到 `tests/judge/` · 走同 judge-runner · 复用 lightweight model
 
+### §11.7 PRD-14 advanced-domains 沉淀(PRD-14 retro 2026-05-15 文档回流 · 5 条 commit 事实驱动)
+
+#### §11.7.1 admin 子项目目录扩展(PRD-14 US-009/014 commit 759a611/967199e)
+
+PRD-14 加了 2 个 admin page 目录 · 跟 §11.6 PRD-4 沉淀的 specialists/ 一样属于"重要新入口":
+
+- `apps/admin/src/pages/constants/` · 知识库常量管理 page(67 案例 / 23 公式 / 22 元素)
+  - `ConstantsPage.tsx` · 1250 行 · 4 Tab + Monaco lazy + 灰度配置 + LLM Judge UI + 回滚
+  - `components/ConstantKeyDropdown.tsx` + `HistoryTimeline.tsx` + `CanarySlider.tsx`(US-010 加)+ `LlmJudgeCard.tsx`(US-010 加)
+- `apps/admin/src/pages/featureFlags/` · 配置中心 page
+  - `FeatureFlagsPage.tsx` · 1250 行 · 4 Tab(emergency/flags/sysconfig/postReview)+ 4 KPI + EmergencyTriggerModal + EditFlagModal + EditConfigModal
+  - 第 4 Tab "后置复核" 1:1 fork PRD-13 US-011 PostReviewTab
+
+**入口约定** · 新 admin page **必须**在 `apps/admin/src/lib/admin-routes.ts` 注册(`requiredRole / group: 'p2-advanced' / prd: 14`)+ `apps/admin/src/router.tsx` 加 `<Route>`。
+
+#### §11.7.2 跨 Story 函数路由规则(PRD-14 US-012 TD-69 教训)· 红线级
+
+emergency switch / config 类查询函数**必须按表区分**:
+
+- **`getSystemConfigValue(configKey)`** · 查 **system_config** 表(`isEmergency=true` 的 3 关键开关 + 全局参数)
+- **`getFeatureFlagValue(flagKey, userId?, plan?)`** · 查 **feature_flags** 表(percentage / targeted / boolean 3 flagType)
+- **永不混用** · 否则 emergency stop 失效(TD-69 实证 · trending-scraper 用错 `getFeatureFlagValue('stop_trending_scraper')` → 失效)
+
+**审计实证** · Foundation 档 F2 跨 story 命名核对 可提前 catch(US-011 audit 时预测 TD-69 漂移 · 但 PRD AC 文本字面 ralph 仍触发 reject)
+
+#### §11.7.3 RCA-006 永久修复(daemon long-running audit timeout)· 跨所有未来 PRD 防御
+
+**触发场景** · daemon 等 Opus 审 ≥ 3h 时(`AUDIT_TIMEOUT_SECONDS=10800`)→ daemon **不再 silent skip 标 passed** · 改为 `raise AuditTimeoutError` + `sys.exit(2)` + `audit-gate.json` 保留 pending(零容忍 不绕过 audit)
+
+**用户介入 4 选项**:
+1. Manual audit · OPUS-AUDIT-CHEATSHEET 5 步 → `ralph-tools.py approve / reject`
+2. `ralph-tools.py force-reject "reason"` · daemon retry
+3. `ralph-tools.py block US-N "reason"` · 跳过此 story
+4. 重启 daemon · 内置 crash recovery 读 audit-gate.json + ralph-lock.json 自动续接
+
+**详** · 全局 `~/.claude/CLAUDE.md §5.5+ Audit Timeout Recovery SOP` + 本项目 `.agents/rca/RCA-006-audit-timeout-bypass.md`
+
+#### §11.7.4 Step 4.5 直审路径(Validator 撞 infra block 但代码已 commit)
+
+**触发条件**(全部满足):
+1. Validator 异常退出但代码已 commit(`git log --since='10 min ago' --oneline | grep "feat: \[US-X\]"`)
+2. 错误是 infra(Anthropic rate limit / 网络 timeout / health check fail)非 code bug
+3. ralph 进 retry hell 概率 ≥ 50%(reset 时间还 > 1h 等)
+
+**Opus 走流程**:
+1. kill daemon + clear lock + 备份 prd.json
+2. Opus 5 步 Cheat Sheet **深审 commit**(不简化)
+3. 通过 → 手 patch prd.json `passes=true retryCount=0 notes 标 [Step 4.5 路径]` + 登 TD(若有 deferred AC 如浏览器实测)
+4. 重启 daemon · 跳到下一 story
+
+**实证** · PRD-14 US-009(Validator 41 min 撞 rate limit · Opus 直审 commit 759a611 PASS · 详 `progress.txt 2026-05-15 12:00 - US-009 Opus 直审 approve`)
+
+#### §11.7.5 Foundation 档 F2 下游 AC 跨 story 命名核对(PRD-14 实证)
+
+Foundation 档审 audit 时**必跑 F2**(下游 N+1 / N+2 story AC 文本字面核对):
+
+```bash
+python3 scripts/ralph/ralph-tools.py deps | grep US-XXX     # 反向依赖
+for downstream in <反向依赖列表>; do
+  python3 scripts/ralph/ralph-tools.py story $downstream | grep -E "<本 story 符号 / 表名 / 函数名>"
+  # 若下游 AC 用错函数 / 错表名 → 必须在 audit 报告中提及 + 登记 TD
+done
+```
+
+**实证 ROI** · PRD-14 US-011 audit F2 catch TD-69(US-012 AC2 `getFeatureFlagValue('stop_trending_scraper')` vs US-007/US-011 用 `getSystemConfigValue`)· 即便 PRD AC 字面 dev 触发 reject · F2 提前 catch 让 reject feedback 直接引用 TD-69 + REJECT-TEMPLATE 4 反例 · ralph 一次修对(11 min)· 估省 22-30 min retry hell
+
+---
+
 ### §11.6.8 L5 自治 Agent 双路径白名单(PRD-8 TD-024 沉淀 · 2026-05-11 接受)
 
 - **背景** · PRD-8 实施 3 L5 自治 Agent · 因 BaseSpecialist execute() 模板方法在 L5(允许多次 LLM 调用 + 异步触发)场景不完全适用 · ralph 在 US-004 retry 1 + US-007 时采用**双路径**:
