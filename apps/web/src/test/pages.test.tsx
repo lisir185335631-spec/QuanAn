@@ -62,6 +62,7 @@ vi.mock('@/lib/trpc', () => ({
       listWithFavorites: { useQuery: () => ({ data: [], isLoading: false }) },
       kpiStats: { useQuery: () => ({ data: null, isLoading: false }) },
       favorite: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      detail: { useQuery: () => ({ data: null, isLoading: false }) },
     },
     myTopics: {
       list: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -158,7 +159,7 @@ describe('Tool pages render', () => {
 
   it('Trending renders h1 heading', () => {
     render(<MemoryRouter><Trending /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款情报库');
   });
 
   it('Copywriting renders h1 heading', () => {
