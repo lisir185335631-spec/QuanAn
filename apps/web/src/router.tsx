@@ -9,10 +9,11 @@
  */
 
 import { lazy } from 'react';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 
 import { RootLayout } from '@/layouts/RootLayout';
 import { StepLayout } from '@/layouts/StepLayout';
+import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
 
 // ── Step pages (9 + 2 sub-steps) — one shared chunk ──────────────────────────
@@ -63,8 +64,8 @@ export const router = createBrowserRouter([
     path: '/',
     element: <RootLayout />,
     children: [
-      // Root redirect
-      { index: true, element: <Navigate to="/step/1" replace /> },
+      // Home page
+      { index: true, element: <Home /> },
 
       // ── Step routes (9 core + 2 sub-steps) — nested under StepLayout ──────
       {
