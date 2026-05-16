@@ -82,6 +82,7 @@ vi.mock('@/lib/trpc', () => ({
     },
     stepData: {
       save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+      progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false }) },
     },
     stt: {
       transcribe: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ transcript: '测试语音', durationSec: 2, costUsd: 0.001 }), isPending: false }) },

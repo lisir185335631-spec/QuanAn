@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { StepProgress, STEP_ORDER_KEYS } from '@/components/StepProgress';
+import { trpc } from '@/lib/trpc';
 
 function HeroSection() {
   return (
@@ -38,10 +40,58 @@ function HeroSection() {
   );
 }
 
+function IpProgressSection() {
+  const { data: progress, isLoading } = trpc.stepData.progress.useQuery();
+  const completed = progress?.completedSteps ?? [];
+  const percent = Math.round((completed.length / 9) * 100);
+
+  const nextStepKey = STEP_ORDER_KEYS.find((k) => !(completed as string[]).includes(k));
+  const nextStepNum = nextStepKey?.replace('step', '');
+
+  return (
+    <section>
+      <h2 className="font-display text-2xl font-bold text-foreground mb-4">我的IP打造进度</h2>
+      <div className="glass-card rounded-xl p-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="font-cn text-sm text-muted-foreground">
+            已完成 <span className="text-primary font-bold">{completed.length}</span> / 9 步
+          </span>
+          <span className="text-primary font-bold">{percent}%</span>
+        </div>
+
+        <div className="w-full h-3 bg-muted/20 rounded-full overflow-hidden mb-6">
+          <div
+            className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+
+        <StepProgress completedSteps={completed} isLoading={isLoading} />
+
+        <div className="flex gap-3 mt-6 flex-wrap">
+          <Link to="/ip-plan">
+            <Button variant="outline" className="font-cn border-primary/30 text-primary hover:bg-primary/10">
+              查看IP方案
+            </Button>
+          </Link>
+          {nextStepNum && (
+            <Link to={`/step/${nextStepNum}`}>
+              <Button className="font-cn bg-primary text-primary-foreground hover:bg-primary/90">
+                继续
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main className="flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen">
       <HeroSection />
+      <IpProgressSection />
     </main>
   );
 }
