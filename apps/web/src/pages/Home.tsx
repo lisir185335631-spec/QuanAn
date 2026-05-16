@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { StepProgress, STEP_ORDER_KEYS } from '@/components/StepProgress';
 import { trpc } from '@/lib/trpc';
 import { FUNCTION_MATRIX, FUNCTION_MATRIX_FOOTER } from '@/lib/constants/function-matrix';
+import { WORKFLOW_STEPS } from '@/lib/constants/workflow';
 
 function HeroSection() {
   return (
@@ -128,12 +129,45 @@ function FunctionMatrixSection() {
   );
 }
 
+function WorkflowSection() {
+  return (
+    <section className="mt-16">
+      <h2 className="font-display text-4xl font-black text-center text-primary tracking-widest mb-4">
+        WORKFLOW
+      </h2>
+      <p className="font-cn text-center text-sm text-muted-foreground mb-12">
+        规范流程加上一站式短视频创作系统
+      </p>
+
+      <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-2">
+        {WORKFLOW_STEPS.map((step, i) => (
+          <div key={step.num} className="flex md:flex-row items-center">
+            <div className="flex flex-col items-center text-center flex-1">
+              <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/40 flex items-center justify-center mb-3">
+                <span className="font-display text-sm font-bold text-primary">{step.num}</span>
+              </div>
+              <span className="font-cn font-bold text-sm text-foreground mb-1">{step.title}</span>
+              <span className="font-cn text-xs text-muted-foreground">{step.desc}</span>
+            </div>
+            {i < 6 && (
+              <div className="hidden md:flex items-center self-center w-8 shrink-0">
+                <div className="w-full h-px bg-primary/20" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main className="flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen">
       <HeroSection />
       <IpProgressSection />
       <FunctionMatrixSection />
+      <WorkflowSection />
     </main>
   );
 }
