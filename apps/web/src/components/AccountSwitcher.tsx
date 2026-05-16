@@ -61,7 +61,7 @@ export function AccountSwitcher({ onCreateAccount }: AccountSwitcherProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1.5 h-8 px-2 text-on-surface"
+          className="gap-1.5 rounded-lg text-xs bg-secondary/50 border border-primary/15 hover:border-primary/30 px-2.5 py-1.5"
           aria-label="IP 账号切换"
           data-testid="account-switcher-trigger"
         >
@@ -72,7 +72,7 @@ export function AccountSwitcher({ onCreateAccount }: AccountSwitcherProps) {
           <ChevronDown className="h-3 w-3 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" className="w-52" data-testid="account-switcher-menu">
+      <DropdownMenuContent align="center" className="w-52 rounded-xl border border-primary/15 bg-popover/95 backdrop-blur-xl shadow-lg shadow-primary/5" data-testid="account-switcher-menu">
         <DropdownMenuLabel>IP 账号</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {accountList}

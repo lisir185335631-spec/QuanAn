@@ -1,14 +1,11 @@
-import { Menu, LogOut, Plus, ChevronDown, User, LogIn } from 'lucide-react';
+import { Menu, LogOut, Plus, ChevronDown, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,7 +19,34 @@ import { HEADER_NAV } from '@/lib/constants/header-nav';
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function UserDropdown() {
+function UserChip({ name }: { name: string }) {
+  return (
+    <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5">
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping-primary absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+      </span>
+      <span className="font-cn text-sm font-medium text-foreground">{name}</span>
+    </div>
+  );
+}
+
+function LogoutIconButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={onClick}
+      aria-label="退出登录"
+      data-testid="header-logout-icon"
+      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+    >
+      <LogOut className="h-4 w-4" />
+    </Button>
+  );
+}
+
+function HeaderRight() {
   const { user, login, logout } = useAuth();
 
   if (!user) {
@@ -41,50 +65,12 @@ function UserDropdown() {
     );
   }
 
-  const initials = user.name
-    .split(' ')
-    .map((n: string) => n[0])
-    .join('');
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 rounded-full"
-          aria-label="用户菜单"
-          data-testid="header-user-trigger"
-        >
-          <Avatar className="h-7 w-7">
-            <AvatarImage src="" alt={user.name} />
-            <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56" data-testid="header-user-menu">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-body-sm font-medium text-on-surface">{user.name}</span>
-            <span className="text-label-md text-muted-foreground">{user.email}</span>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
-          个人设置
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive-foreground focus:text-destructive-foreground"
-          onClick={logout}
-          data-testid="header-logout-button"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          退出登录
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-3">
+      <AccountSwitcher />
+      <UserChip name={user.name} />
+      <LogoutIconButton onClick={logout} />
+    </div>
   );
 }
 
@@ -237,17 +223,13 @@ export function Header() {
           </span>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1">
-          <AccountSwitcher />
-        </div>
-
         <div className="flex-1 flex justify-center">
           <HeaderNav />
         </div>
 
         <div className="ml-auto flex items-center gap-1">
           <div className="hidden sm:block">
-            <UserDropdown />
+            <HeaderRight />
           </div>
           <MobileNav />
         </div>
