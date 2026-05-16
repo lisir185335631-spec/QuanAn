@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { stepConfig } from '@/lib/stepConfig';
+import IpPlan from '@/pages/IpPlan';
 import Accounts from '@/pages/modules/Accounts';
 import DailyTasks from '@/pages/modules/DailyTasks';
 import Diagnosis from '@/pages/modules/Diagnosis';
@@ -82,7 +83,7 @@ vi.mock('@/lib/trpc', () => ({
     },
     stepData: {
       save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
-      progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false }) },
+      progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false, refetch: vi.fn() }) },
     },
     stt: {
       transcribe: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ transcript: '测试语音', durationSec: 2, costUsd: 0.001 }), isPending: false }) },
@@ -218,6 +219,25 @@ describe('Module pages render', () => {
   it('History renders h1 heading', () => {
     render(<MemoryRouter><History /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('操作历史');
+  });
+});
+
+describe('IpPlan page (US-010)', () => {
+  it('renders ip-plan-page with h1 我的IP方案', () => {
+    render(<MemoryRouter><IpPlan /></MemoryRouter>);
+    expect(screen.getByTestId('ip-plan-page')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('我的IP方案');
+  });
+
+  it('renders 9 step cards with 查看详情 buttons', () => {
+    render(<MemoryRouter><IpPlan /></MemoryRouter>);
+    const buttons = screen.getAllByRole('button', { name: '查看详情' });
+    expect(buttons).toHaveLength(9);
+  });
+
+  it('shows 已完成 0 / 9 步 with empty completedSteps', () => {
+    render(<MemoryRouter><IpPlan /></MemoryRouter>);
+    expect(screen.getByText(/已完成/)).toBeInTheDocument();
   });
 });
 
