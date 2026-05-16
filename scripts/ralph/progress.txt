@@ -189,3 +189,51 @@
   - Tailwind utility 颜色（violet-X/amber-X）不等于 CSS token（`--primary`）—— 即使视觉上相似，D4=B 严锁 token 不引入新 utility
   - PRD AC 中"紫色 gradient"描述与代码`from-primary to-primary/60`是同义词（因为 QuanQn primary token 实际是金色）—— 应以代码为准而非文字描述
 ---
+
+--- [RALPH] Iteration 9 ended: US-003 (15分钟 35秒) ---
+
+--- [RALPH] Iteration 10 started: US-004 at 2026-05-16 13:45 ---
+
+--- [RALPH] Iteration 1 started: US-004 at 2026-05-16 13:46 ---
+
+## 2026-05-16 13:50 - US-004
+- 实现了 FUNCTION MATRIX 区 · 15 卡(4 H3 分组 + footer 使用说明)
+- 更改的文件:
+  - apps/web/src/lib/constants/function-matrix.ts: 新建 · FunctionCard / FunctionGroup 接口 + FUNCTION_MATRIX(4 group) + FUNCTION_MATRIX_FOOTER · 严格按 dump §2.1
+  - apps/web/src/pages/Home.tsx: import FUNCTION_MATRIX + FUNCTION_MATRIX_FOOTER · 新增 FunctionMatrixSection · H2 font-display text-4xl text-primary tracking-widest · 4 H3 with 紫色短竖线 · grid responsive · hover glass-card 效果 · footer 卡居中
+  - screenshots/prd16-us004-home-matrix.png: AC-7 fullPage 截图
+- 质量检查: typecheck PASS · pnpm test 51/51 PASS
+- 浏览器验证: 截图确认 4 H3 顺序/15 卡/grid/footer 居中 · hover 样式需真实浏览器测试
+- AC-8 grep: 6处 FUNCTION_MATRIX 引用(import×2 + map + footer×3) ✅
+- AC-9: grid 用 Tailwind responsive className · 无 inline style ✅
+- **未来迭代的学习:**
+  - constants 文件导出 interface + data 常量是本项目标准模式 · 后续工具卡 story 可直接复用
+  - Home.tsx 各 Section 函数化组织 · 新增 section 直接在 export default 末尾追加
+---
+
+--- [RALPH] Iteration 1 ended: US-004 ---
+
+--- [RALPH] Iteration 11 started: US-004 at 2026-05-16 14:15 ---
+
+--- [RALPH] Iteration 2 started: US-004 at 2026-05-16 14:16 ---
+
+## 2026-05-16 14:16 - US-004 (Retry 2 · 验证修复)
+- 发现上次 Developer 超时时代码已成功 commit(dbb1e35) · 本次直接做验证而非重写
+- 验证 function-matrix.ts 存在且 15 卡数据严格对齐 dump §2.1 (AC-1/AC-2)
+- 验证 Home.tsx FunctionMatrixSection 正确 import + map 渲染 (AC-3/AC-4/AC-5)
+- 浏览器实测 http://localhost:5173 · 滚到底部验证:
+  - FUNCTION MATRIX H2 金色 Orbitron 居中 ✅
+  - 4 H3 分组顺序: 市场洞察/变现设计/内容创作/智能工具 + 紫色短竖线 ✅
+  - 14 工具卡 + 1 footer 使用说明 = 15 卡 ✅
+  - 响应式 grid className 用 Tailwind (无 inline style) ✅
+- 截图: screenshots/prd16-us004-home-matrix.png ✅
+- 质量检查: typecheck PASS · 51 tests PASS (AC-10)
+- grep 'FUNCTION_MATRIX' Home.tsx = 6 处 (import + map + footer ref = AC-8 ≥2 ✅)
+- **未来迭代的学习:**
+  - ralph 超时不代表 code 未 commit · 先 `git log --since='10 minutes ago'` 确认再决定行动(§9.6.5 TD-006)
+  - browse 二进制在 macOS 用 BROWSE_STATE_FILE env + node server-node.mjs 启动; /command POST endpoint
+  - node server 启动用 `BROWSE_STATE_FILE=".gstack/browse.json" node server-node.mjs &` 然后等 state file
+  - 浏览器 API: POST /command {"command":"goto","args":[url]} · {"command":"screenshot","args":[path]}
+---
+
+--- [RALPH] Iteration 2 ended: US-004 (验证完成) ---
