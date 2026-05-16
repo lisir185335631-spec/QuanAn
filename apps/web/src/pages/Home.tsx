@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { StepProgress, STEP_ORDER_KEYS } from '@/components/StepProgress';
 import { trpc } from '@/lib/trpc';
+import { FUNCTION_MATRIX, FUNCTION_MATRIX_FOOTER } from '@/lib/constants/function-matrix';
 
 function HeroSection() {
   return (
@@ -87,11 +88,52 @@ function IpProgressSection() {
   );
 }
 
+function FunctionMatrixSection() {
+  return (
+    <section className="mt-16">
+      <h2 className="font-display text-4xl font-black text-center text-primary tracking-widest mb-12">
+        FUNCTION MATRIX
+      </h2>
+
+      {FUNCTION_MATRIX.map((group) => (
+        <div key={group.title} className="mb-10">
+          <h3 className="font-display text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <span className="inline-block w-1 h-5 bg-primary rounded-full" />
+            {group.title}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {group.cards.map((card) => (
+              <Link to={card.href} key={card.href}>
+                <div className="glass-card rounded-xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer h-full">
+                  <div className="text-3xl mb-3">{card.icon}</div>
+                  <div className="font-display text-base font-bold text-foreground mb-1">{card.title}</div>
+                  <div className="font-cn text-xs text-muted-foreground">{card.desc}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="mt-10 max-w-md mx-auto">
+        <Link to={FUNCTION_MATRIX_FOOTER.href}>
+          <div className="glass-card rounded-xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer">
+            <div className="text-3xl mb-3">{FUNCTION_MATRIX_FOOTER.icon}</div>
+            <div className="font-display text-base font-bold text-foreground mb-1">{FUNCTION_MATRIX_FOOTER.title}</div>
+            <div className="font-cn text-xs text-muted-foreground">{FUNCTION_MATRIX_FOOTER.desc}</div>
+          </div>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main className="flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen">
       <HeroSection />
       <IpProgressSection />
+      <FunctionMatrixSection />
     </main>
   );
 }
