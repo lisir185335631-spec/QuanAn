@@ -61,7 +61,7 @@ function IpProgressSection() {
 
         <div className="w-full h-3 bg-muted/20 rounded-full overflow-hidden mb-6">
           <div
-            className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-full transition-all"
+            className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all"
             style={{ width: `${percent}%` }}
           />
         </div>
