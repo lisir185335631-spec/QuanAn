@@ -4,7 +4,8 @@
  * 切换走 useActiveAccount.switchTo(accountId) 整页刷新
  */
 
-import { ChevronDown, Cpu, Plus } from 'lucide-react';
+import { ChevronDown, Cpu, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -20,10 +21,10 @@ import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { trpc } from '@/lib/trpc';
 
 interface AccountSwitcherProps {
-  onCreateAccount?: () => void;
+  onCreateAccount?: () => void; // kept for backward compat, unused
 }
 
-export function AccountSwitcher({ onCreateAccount }: AccountSwitcherProps) {
+export function AccountSwitcher({ onCreateAccount: _onCreateAccount }: AccountSwitcherProps) {
   const { account: activeAccount, switchTo } = useActiveAccount();
   const { data: accounts = [] } = trpc.ipAccounts.list.useQuery(undefined, {
     staleTime: 30_000,
@@ -77,13 +78,11 @@ export function AccountSwitcher({ onCreateAccount }: AccountSwitcherProps) {
         <DropdownMenuSeparator />
         {accountList}
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="gap-2 text-primary focus:text-primary cursor-pointer"
-          onClick={onCreateAccount}
-          data-testid="account-switcher-create"
-        >
-          <Plus className="h-4 w-4" />
-          新建账号
+        <DropdownMenuItem asChild data-testid="account-switcher-manage">
+          <Link to="/accounts" className="gap-2 cursor-pointer flex items-center">
+            <Settings className="h-4 w-4" />
+            管理账号
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

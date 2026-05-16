@@ -38,7 +38,7 @@ test.describe('Header 三 dropdown', () => {
     await trigger.click();
     const menu = page.getByTestId('header-account-menu');
     await expect(menu).toBeVisible();
-    await expect(menu.getByText('新建账号')).toBeVisible();
+    await expect(menu.getByText('管理账号')).toBeVisible();
     await page.keyboard.press('Escape');
   });
 
