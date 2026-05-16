@@ -237,3 +237,146 @@
 ---
 
 --- [RALPH] Iteration 2 ended: US-004 (验证完成) ---
+
+--- [RALPH] Iteration 11 ended: US-004 (25分钟 8秒) ---
+
+--- [RALPH] Iteration 12 started: US-004 at 2026-05-16 14:40 ---
+
+--- [RALPH] Iteration 2 started: US-004 at 2026-05-16 14:45 ---
+
+## 2026-05-16 14:50 - US-004 (Iteration 2 · Opus reject 修复)
+- 针对 Opus 审计驳回: 将 function-matrix.ts 全部 15 条 desc 替换为 PRD AC-2 字面锁定文本
+- 根因: 首次实现时 ralph 把 desc 当"建议"创意改写, 违反 D1=A 像素级 layout + §0.3 复刻定调表锁定
+- 更改的文件:
+  - apps/web/src/lib/constants/function-matrix.ts: 15 desc 全替换为 aiipznt 实测原文
+  - screenshots/prd16-us004-home-matrix.png: 重新截图(已验证 15 卡 desc 正确)
+- 质量检查: typecheck PASS · pnpm test 51 tests PASS
+- 浏览器验证: 截图确认 FUNCTION MATRIX H2 + 4 H3 + 14卡 + 1 footer · desc 文字与 aiipznt 对齐
+- **未来迭代的学习:**
+  - PRD AC 中字面锁定的 desc/title/文案内容 = layout 的一部分, 不允许任何创意改写
+  - "像素级 layout 1:1 对齐" 包含用户感知文字(desc/title), 不只是 CSS/position
+  - 新 pattern: 字面锁定文案必须 grep 逐条验证, 不能靠视觉相似判断
+---
+
+--- [RALPH] Iteration 2 ended: US-004 (修复完成) ---
+
+--- [RALPH] Iteration 12 ended: US-004 (21分钟 14秒) ---
+
+--- [RALPH] Iteration 13 started: US-005 at 2026-05-16 15:01 ---
+
+## 2026-05-16 15:10 - US-005
+- 实现了首页 WORKFLOW 7 步系统化流程图
+- 更改的文件:
+  - apps/web/src/lib/constants/workflow.ts: 新建 · export WORKFLOW_STEPS · 7 步严格匹配 AC-1
+  - apps/web/src/pages/Home.tsx: 新增 WORKFLOW_STEPS import + WorkflowSection 函数 · H2/p/flex 容器 + 7 步 map + 圆形数字 + 中间连接线(i<6) · Home 组件末尾加 <WorkflowSection />
+  - screenshots/prd16-us005-home-workflow.png: AC-6 截图
+- 质量检查: typecheck PASS · pnpm test 51/51 PASS
+- 浏览器验证: 截图确认 WORKFLOW H2 + 7 步 desktop 横排 + 圆形紫色 outline + 数字 01-07 + 连接线 ✅
+- **未来迭代的学习:**
+  - browse 服务器 PID/port/token 存在 <project>/.gstack/browse.json · 多实例存活时会出现 Unauthorized 错误 · 需 kill 所有旧实例 + 等新服务器写 state file
+  - browse CLI 命令需要服务器 state file 与实际进程 PID/port 完全对应才能连接 · state file 过期时 CLI 静默失败
+  - WorkflowSection 连接线用 `i < 6` 条件渲染(AC-4)· 每步容器用 `flex md:flex-row items-center` 把连接线 div 紧随在步骤内容后
+---
+
+--- [RALPH] Iteration 13 ended: US-005 (19分钟 4秒) ---
+
+--- [RALPH] Iteration 14 started: US-006 at 2026-05-16 15:21 ---
+
+## 2026-05-16 15:24 - US-006
+- 实现了首页 ReadyToStartSection(第 5 区 · 收尾 CTA)
+- 更改的文件:
+  - apps/web/src/pages/Home.tsx: 新增 ReadyToStartSection 函数(section/H2/p/Link+Button) · Home 组件末尾加 <ReadyToStartSection />
+  - screenshots/prd16-us006-home-cta.png: AC-3 截图(滚到底部 · READY TO START? + 立即启动按钮)
+  - screenshots/prd16-us006-home-fullpage.png: AC-3 全页截图(5 区排列验证)
+- 质量检查: typecheck PASS · pnpm test 51/51 PASS
+- 浏览器验证: H2 "READY TO START?" ✅ · 鼓励语"是时候开始了，IP 打造在等你" ✅ · "立即启动 →" button ✅ · click → /step/1 ✅ · 5 区全部可见 ✅
+- **未来迭代的学习:**
+  - Home.tsx 5 区已完整: Hero → IpProgress → FunctionMatrix → Workflow → ReadyToStart
+  - 纯收尾 story 只需单文件追加 · scope 明确 · typecheck + test 即可 · 无需 constants 文件
+---
+
+--- [RALPH] Iteration 14 ended: US-006 (15分钟 13秒) ---
+
+--- [RALPH] Iteration 15 started: US-007 at 2026-05-16 15:36 ---
+
+--- [RALPH] Iteration 1 started: US-007 at 2026-05-16 15:38 ---
+
+## 2026-05-16 15:52 - US-007
+- 实现了 Header 4 一级菜单 click dropdown 重构
+- 更改的文件:
+  - apps/web/src/lib/constants/header-nav.ts: 新建 · HEADER_NAV 4 group 25 items 严格按 AC-1
+  - apps/web/src/components/Header.tsx: 删 TOOLS_14/NEW_MODULES_6/ToolsDropdown · 新增 HeaderNav(4 DropdownMenu) · MobileNav 4 分组替代旧 20 项列表
+  - screenshots/prd16-us007-header-{创作/策划/智能/更多}.png + mobile.png: AC-7 5 张截图
+- 质量检查: typecheck PASS · pnpm test 51/51 PASS · audit:redlines PASS
+- 浏览器验证: 4 dropdown 全展开验证 ✅ · 创作 5项/策划 8项/智能 6项/更多 6项全正确 ✅ · 移动端 sheet 显示 4 分组 ✅
+- **未来迭代的学习:**
+  - browse binary 直接调用 exit:1 · 实际 server 在跑 · 需用 curl POST /command 端点操作
+  - browse server API 端点是 /command (POST) 而非 /cmd · health 在 /health
+  - HEADER_NAV 引用必须至少 2 处(定义 + 渲染) · AC-9 红线 · SHIELD 注入有效
+---
+
+--- [RALPH] Iteration 1 ended: US-007 (14分钟) ---
+
+--- [RALPH] Iteration 15 ended: US-007 (45分钟 54秒) ---
+
+--- [RALPH] Iteration 16 started: US-008 at 2026-05-16 16:22 ---
+
+--- [RALPH] Iteration started: US-008 at 2026-05-16 16:30 ---
+
+## 2026-05-16 16:32 - US-008
+- 实现了 Header 右侧三件套重构: AccountSwitcher 紫色描边 + UserChip animate-ping + LogoutIconButton
+- 更改的文件:
+  - apps/web/src/components/AccountSwitcher.tsx: Button className → rounded-lg border border-primary/15 hover:border-primary/30 bg-secondary/50 · DropdownMenuContent className 加 rounded-xl backdrop-blur-xl shadow-primary/5
+  - apps/web/src/components/Header.tsx: 新增 UserChip(纯展示 div · animate-ping-primary 紫点 · 0 onClick) + LogoutIconButton(icon-only · data-testid=header-logout-icon · 直接 logout · 无确认) + HeaderRight(useAuth → 未登录=登录按钮 · 已登录=3件套) · 移除 UserDropdown + Avatar/User 未用 import · 移除 Header 左侧独立 AccountSwitcher(已并入 HeaderRight)
+  - screenshots/prd16-us008-header-right.png: dropdown 展开 + chip + icon 同框截图
+- 质量检查: typecheck PASS · 51 tests PASS
+- 浏览器验证: AccountSwitcher="AI 创业者小张 ▾" border 描边可见 · dropdown 展开=5 mock IP账号(douyin) · UserChip="Dev User" + 紫点 · LogoutIconButton=[→ icon] · 0 confirm/Dialog/Modal
+- AC-8 检查: grep onClick in UserChip → 0 hits ✓ · confirm/Dialog/Modal in Header.tsx → 0 hits ✓
+- **未来迭代的学习:**
+  - Header 右侧 AccountSwitcher 从左侧移到 HeaderRight 时要同步移除左侧独立 AccountSwitcher div(防双渲染)
+  - DropdownMenuLabel + DropdownMenuSeparator 随 UserDropdown 一起删除 · 否则 TS6133 unused import 报错
+  - browse server 动态 port · 需先 node server-node.mjs 后读 .gstack/browse.json 获 port+token · browse binary 在 server 未启动时 silent exit 1 · 不打 error
+---
+
+--- [RALPH] Iteration ended: US-008 ---
+
+--- [RALPH] Iteration 16 ended: US-008 (25分钟 31秒) ---
+
+--- [RALPH] Iteration 17 started: US-008 at 2026-05-16 16:47 ---
+
+## 2026-05-16 17:05 - US-008 (retry fix)
+- 修复 AC-5: AccountSwitcher dropdown 「新建账号 + Plus」→「管理账号 + Settings + Link to /accounts」
+- asChild DropdownMenuItem 包裹 react-router-dom Link，保持样式一致
+- 保留 onCreateAccount prop 声明(重命名 _onCreateAccount 消 TS 警告，向后兼容)
+- 同步更新 tests/e2e/header.spec.ts 断言文本「新建账号」→「管理账号」
+- 截图 screenshots/prd16-us008-header-right.png（dropdown 展开 + Dev User chip + 登出 icon 同框）
+- typecheck exit 0 · vitest exit 0(no test files · AC-7 PASS)
+- 更改的文件: apps/web/src/components/AccountSwitcher.tsx · tests/e2e/header.spec.ts · screenshots/prd16-us008-header-right.png
+- **未来迭代的学习：**
+  - AC 矛盾时 Validator 给出明确指引「以 AC-5 browser 验证为准」→ 直接执行，不需要反复确认
+  - browse 二进制有时需要手动 kill 旧 server 进程或先启动 bun/node server 才能正常工作
+  - 截图需要 backend(port 3000) + frontend(port 5173) 同时运行，DEV_OAUTH_MOCK=true 才能认证
+---
+
+--- [RALPH] Iteration 17 ended: US-008 (30分钟 25秒) ---
+
+--- [RALPH] Iteration 18 started: US-009 at 2026-05-16 17:18 ---
+
+--- [RALPH] Iteration started: US-009 at 2026-05-16 17:26 ---
+
+## 2026-05-16 17:26 - US-009
+- 实现了 /guide 全新页面 · USER GUIDE 标题 + 搜索过滤 + 5步推荐流程 + 系统概览3卡 + 13模块详解卡(点击展开steps) + FAQ5条accordion
+- 更改的文件:
+  - apps/web/src/lib/constants/guide.ts: 新建 · GuideModule/FAQ interface + GUIDE_MODULES(13模块严格按spec) + FAQS(5问5答)
+  - apps/web/src/pages/Guide.tsx: 新建 · 6 section · ModuleCard local expand state + FAQItem local open state + search filter useState
+  - apps/web/src/router.tsx: 加 import Guide + { path: 'guide', element: <Guide /> } 放 Home 之后
+  - screenshots/: 4张截图 full/module-expand/faq-expand/search-filter
+- 质量检查: typecheck PASS · pnpm test 51/51 PASS
+- 浏览器验证: gstack截图4张 · H1 USER GUIDE Orbitron金色大标题 ✅ · search "AI" filter → 4模块(爆款解析/爆款生成/AI视频/深度学习) ✅ · 模块卡展开steps ✅ · FAQ accordion展开答案 ✅
+- **未来迭代的学习:**
+  - Guide.tsx 无 trpc 调用 · 不需要在 pages.test.tsx 加新 mock · 直接 render 不会报错
+  - ModuleCard/FAQItem 用 local state(useState在组件内) 而非 parent 集中管理 · 代码更简洁 · AC明确说"各expand state"
+  - search filter 联动隐藏 RECOMMENDED FLOW + SYSTEM OVERVIEW 两个section · 保持 MODULE GUIDE + FAQ 始终可见 · 体验更流畅
+  - gstack browse 服务器需要手动 node server-node.mjs 启动 · 二进制命令 auth 需要从 .gstack/browse.json 读 token + port · 用 /command 端点 + Authorization Bearer
+---
+
