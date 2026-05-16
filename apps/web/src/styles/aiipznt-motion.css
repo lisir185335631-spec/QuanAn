@@ -1,0 +1,26 @@
+/* aiipznt-motion.css — animate-ping-primary · glass-card · data-grid-bg */
+
+@keyframes ping-primary {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-primary {
+  animation: ping-primary 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.glass-card {
+  background: color-mix(in oklch, var(--card) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklch, var(--primary) 15%, transparent);
+  box-shadow: 0 8px 32px color-mix(in oklch, var(--primary) 5%, transparent);
+}
+
+.data-grid-bg {
+  background-image:
+    linear-gradient(color-mix(in oklch, var(--primary) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklch, var(--primary) 3%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+}

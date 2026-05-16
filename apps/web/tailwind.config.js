@@ -125,11 +125,12 @@ export default {
         },
       },
       fontFamily: {
-        // === DESIGN.md typography segment ===
-        display: ['Manrope', 'system-ui', 'sans-serif'],
-        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-        label: ['Inter', 'system-ui', 'sans-serif'],
+        // === aiipznt alignment · PRD-16 US-001 ===
+        display: ['Orbitron', 'Rajdhani', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+        label: ['Rajdhani', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+        cn: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       fontSize: {
         // === DESIGN.md typography scale ===
