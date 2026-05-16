@@ -380,3 +380,49 @@
   - gstack browse 服务器需要手动 node server-node.mjs 启动 · 二进制命令 auth 需要从 .gstack/browse.json 读 token + port · 用 /command 端点 + Authorization Bearer
 ---
 
+
+--- [RALPH] Iteration 18 ended: US-009 (18分钟 54秒) ---
+
+--- [RALPH] Iteration 19 started: US-010 at 2026-05-16 17:36 ---
+
+--- [RALPH] Iteration 1 started: US-010 at 2026-05-16 17:40 ---
+
+## 2026-05-16 17:45 - US-010
+- 完全重写 apps/web/src/pages/IpPlan.tsx · 9 step 卡片网格 + 进度条 + 返回首页 + 刷新
+- 更改的文件:
+  - apps/web/src/pages/IpPlan.tsx: 完全重写 · STEP_CARDS 9 项(key 严格不含 step2) · ArrowLeft/FileText/RefreshCw icons · glass-card 进度条 · grid-cols-1/2/3 卡片网格 · isDone border-primary/40 切换
+  - apps/web/src/test/pages.test.tsx: 加 IpPlan import + 3 个 test case + stepData.progress mock 加 refetch: vi.fn()
+  - screenshots/prd16-us010-ip-plan.png: fullPage 截图(AC-8)
+- 质量检查: typecheck PASS · pnpm test 54 tests PASS (含新增 3 IpPlan tests)
+- 浏览器验证: 截图确认 ← 返回首页 / H1 我的IP方案 / 已完成 0/9步 / 0%进度条 / 9 step 卡片网格 / 查看详情 button 全部正确
+- **未来迭代的学习:**
+  - trpc useQuery mock 需含 refetch: vi.fn() · 否则调 refetch() 的 component 在 test 中崩溃
+  - STEP_CARDS key 严格不含 step2 · AC-10 grep 验证 9 条 key 全 pass · key=['1','3','3b','4','4b','5','6','7','8']
+  - playwright CLI (node_modules/.bin/playwright screenshot URL out.png --full-page) 可在 gstack browse 不可用时作为截图 fallback
+---
+
+--- [RALPH] Iteration 1 ended: US-010 ---
+
+--- [RALPH] Iteration 19 ended: US-010 (18分钟 0秒) ---
+
+--- [RALPH] Iteration 20 started: US-011 at 2026-05-16 17:55 ---
+
+--- [RALPH] Iteration 1 started: US-011 at 2026-05-16 18:00 ---
+
+## 2026-05-16 18:12 - US-011
+- 实现了 PRD-16 收官验证套件
+- 更改的文件:
+  - scripts/verify-prd-16.sh: 9 section 验证脚本 (AC-1,2,4) · set -u · ok()/fail() 计数器 · exit $FAIL · Result: 33 passed, 0 failed
+  - tests/e2e/prd16-home-flow.test.ts: playwright e2e · H1+4区+7 button clicks+AC-6 visual diff
+  - tests/e2e/prd16-guide-flow.test.ts: playwright e2e · USER GUIDE+13 modules+filter+FAQ accordion+5 steps
+  - tests/e2e/prd16-ip-plan-flow.test.ts: playwright e2e · 返回首页+H1+进度条+9 step 卡+AC-6 visual diff
+  - tests/e2e/prd16-header-dropdown-flow.test.ts: playwright e2e · 4 groups+25 items+mobile sheet
+  - apps/web/package.json: 新增 "test:e2e": "playwright test --config ../../playwright.config.ts" (AC-5)
+- 质量检查: typecheck PASS · pnpm test PASS (54 tests) · audit:redlines PASS · verify-prd-16.sh 33/33 · exit 0
+- **未来迭代的学习:**
+  - verify script 用 `set -u` 不用 `-e` 或 `-o pipefail` — grep 返回 0 hits 时 exit code=1 会被 pipefail 截断
+  - Noto Sans SC 在 Google Fonts URL 中是 `Noto+Sans+SC`(URL 编码) · grep 需用 `Noto.Sans.SC` 正则
+  - 从 apps/web 运行 playwright 需要 --config ../../playwright.config.ts 指向 root config
+  - playwright 测试不依赖 backend — trpc useQuery 失败时 UI 仍渲染静态 structure(null coalescing 防崩)
+  - prd16 e2e tests 用 @playwright/test (浏览器驱动) 而非 vitest(jsdom)· 两种共存在 tests/e2e/ 目录
+---
