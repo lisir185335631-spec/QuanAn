@@ -1347,8 +1347,31 @@
       "fix_hint": "US-012 dev 时把 `getFeatureFlagValue('stop_trending_scraper')` 改为 `getSystemConfigValue('stop_trending_scraper')` (3 处 · trending-scraper / EvolutionAgent / ContextAssembler) · 或 prd skill 重写 US-012 AC2-4 prd.json 文本",
       "resolved_in_prd": "PRD-14",
       "resolved_at": "2026-05-15T08:23:13.540556Z"
+    },
+    {
+      "id": "TD-70",
+      "title": "PRD-15 US-001 AC2 5 mock 账号 industry/platform 字段值跟 PRD 文本 drift",
+      "description": "PRD-15 US-001 AC2 文本写 mock 账号 industry='aigc'/'consulting'/'tech' 等 · platform='xiaohongshu'/'wechat'/'multi' · 但实际 schema enum 不允许这些值 · ralph 改用 schema 真实 enum 'enterprise'/'food'/'self_media'/'beauty' + platform='douyin'。属合理 brownfield 适配 · 但 PRD AC2 文本需修一致。",
+      "scope": [
+        "tasks/prd-15.md US-001 AC2",
+        "prisma/seed.ts:79-160 MOCK_IP_ACCOUNTS"
+      ],
+      "impact": "Low: 功能正确 · 仅 PRD 文档与实现命名 drift",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "doc-clarity"
+      ],
+      "created_in_prd": "PRD-15",
+      "detected_in_prd": "PRD-15",
+      "detected_in_story": "US-001 (Opus audit · Foundation F2)",
+      "fix_by": "PRD-15 retro 时改 PRD AC2 文本对齐 schema enum",
+      "status": "open",
+      "fix_hint": "PRD-15 retro 改 AC2: industry 值用 schema enum (enterprise/food/self_media/beauty) + platform=douyin (单平台 mock OK)",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ],
-  "last_updated": "2026-05-15T08:23:13.540682Z",
+  "last_updated": "2026-05-15T16:26:07.734215Z",
   "total": 44
 }

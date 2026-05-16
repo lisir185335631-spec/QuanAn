@@ -1,21 +1,27 @@
 
-> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
-> vitest run apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts
-
-
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
-{"level":"warn","time":"2026-05-13T01:53:29.033Z","pid":21607,"hostname":"returndeMacBook-Pro.local","hits":["网络赌博"],"mock":true,"msg":"[banned-word-mock] scan result:"}
-{"level":"warn","time":"2026-05-13T01:53:29.034Z","pid":21607,"hostname":"returndeMacBook-Pro.local","hits":[],"mock":true,"msg":"[banned-word-mock] scan result:"}
-{"level":"warn","time":"2026-05-13T01:53:29.034Z","pid":21607,"hostname":"returndeMacBook-Pro.local","hits":["色情内容"],"mock":true,"msg":"[banned-word-mock] scan result:"}
-{"level":"warn","time":"2026-05-13T01:53:29.034Z","pid":21607,"hostname":"returndeMacBook-Pro.local","hits":[],"mock":true,"msg":"[banned-word-mock] scan result:"}
-{"level":"warn","time":"2026-05-13T01:53:29.034Z","pid":21607,"hostname":"returndeMacBook-Pro.local","hits":["色情内容","网络赌博"],"mock":true,"msg":"[banned-word-mock] scan result:"}
-{"level":"warn","time":"2026-05-13T01:53:29.035Z","pid":21607,"hostname":"returndeMacBook-Pro.local","err":{"type":"Error","message":"network error","stack":"Error: network error\n    at /Users/return/Desktop/QuanQn/apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts:69:44\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"[banned-word] API call failed, falling back to needs_review"}
- ✓ apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts (12 tests) 4ms
- ✓ apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts (14 tests) 1ms
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > has 150+ lines (stub replaced)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > uses useSearchParams for URL state (AC-5 SHIELD #2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > supports ?tab=learn|library|apply URL values
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > renders 3 Tabs (学习/我的库/公式应用)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > imports LearnTab, LibraryTab, ApplyFormulaTab from components
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > passes onSaved callback to LearnTab for library navigation
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LearnTab calls trpc.deepLearning.parse.useMutation (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LearnTab textarea has ≥100 char validation (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > parse result shows coreFormula, hookType, structurePattern, emotionalArc, keywords (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LibraryTab calls trpc.deepLearning.list.useQuery (AC-3)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LibraryTab shows 截取文案 80字 truncation logic (AC-3)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LibraryTab has delete button calling trpc.deepLearning.delete (AC-3)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > ApplyFormulaTab calls trpc.deepLearning.applyFormula.useMutation (AC-4)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > exports deepLearningRouter with parse procedure (AC-6)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > exports deepLearningRouter with applyFormula procedure (AC-6)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > parse input requires sample ≥100 chars (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > does NOT call deepLearningArchive.create (LD-A-5)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > parse uses mockAnalysis for P1 (DeepLearnAgent留PRD-7+)
 
- Test Files  2 passed (2)
-      Tests  26 passed (26)
-   Start at  09:53:28
-   Duration  118ms (transform 21ms, setup 5ms, collect 24ms, tests 5ms, environment 0ms, prepare 20ms)
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  02:10:05
+   Duration  97ms (transform 13ms, setup 5ms, collect 8ms, tests 2ms, environment 0ms, prepare 20ms)
 

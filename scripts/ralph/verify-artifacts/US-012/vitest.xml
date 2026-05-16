@@ -1,73 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="34" failures="0" errors="0" time="0.149">
-    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" timestamp="2026-05-12T16:25:43.524Z" hostname="returndeMacBook-Pro.local" tests="34" failures="0" errors="0" skipped="0" time="0.010137625">
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=user groupBy=day returns correct shape" time="0.002280916">
+<testsuites name="vitest tests" tests="13" failures="0" errors="0" time="0.114">
+    <testsuite name="tests/unit/api/admin/emergency-switch.test.ts" timestamp="2026-05-15T08:18:43.906Z" hostname="returndeMacBook-Pro.local" tests="13" failures="0" errors="0" skipped="0" time="0.00291325">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprove + postReviewRequired &gt; stop_trending_scraper: 触发 emergencyApprove + 写 security_alert audit + 钉钉 isMock" time="0.001126333">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=specialist groupBy=week returns correct shape" time="0.000307333">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprove + postReviewRequired &gt; stop_evolution_agent: 触发 emergencyToggleSystemConfig · _updateSystemConfigInTx 走单点" time="0.000527583">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=model groupBy=month returns correct shape" time="0.000244292">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprove + postReviewRequired &gt; enable_fallback_prompt: 触发 requestApproval with emergencyMode + incidentId" time="0.000145416">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; dimension=provider groupBy=day returns correct shape" time="0.000222167">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprove + postReviewRequired &gt; incidentId 为空 → throw BAD_REQUEST" time="0.000292625">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; multiple rows: totalCost sums with Decimal precision" time="0.000243708">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="emergencyToggleSystemConfig — 3 关键紧急开关 + emergencyApprove + postReviewRequired &gt; configKey 不存在 → throw NOT_FOUND" time="0.000069">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; empty data returns {aggregations:[], summary:{totalCost:&quot;0.00&quot;}}" time="0.000227792">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getFeatureFlagValue — 5s TTL cache + 3 flagType 路由 &gt; boolean flagType: new_ui_feature=true → getFeatureFlagValue returns true" time="0.000089417">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; startDate &gt; endDate throws BAD_REQUEST" time="0.000351916">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getFeatureFlagValue — 5s TTL cache + 3 flagType 路由 &gt; 5s TTL cache: 第二次调用不再查 DB" time="0.000050125">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; date range &gt; 365 days throws BAD_REQUEST with &quot;date range too large&quot;" time="0.000168166">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getFeatureFlagValue — 5s TTL cache + 3 flagType 路由 &gt; percentage flagType: 100% → 所有 userId 都命中" time="0.00004025">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="aggregate &gt; callCount converts bigint to number" time="0.000171667">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getFeatureFlagValue — 5s TTL cache + 3 flagType 路由 &gt; targeted flagType: target_users 命中 → true" time="0.0000355">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; returns userTop10 with correct shape" time="0.000284792">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getFeatureFlagValue — 5s TTL cache + 3 flagType 路由 &gt; targeted flagType: target_plans 命中 → true" time="0.000038292">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; returns accountTop10 with correct shape" time="0.000178584">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getSystemConfigValue — 5s TTL cache &gt; stop_evolution_agent=true → EvolutionAgent bypass 依赖此值" time="0.00005225">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; handles null _sum.costUsd as &quot;0&quot;" time="0.000120666">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getSystemConfigValue — 5s TTL cache &gt; 5s TTL cache: getSystemConfigValue 第二次调用不再查 DB" time="0.000031916">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="top10 &gt; both lists empty when no data" time="0.00010425">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; groups by agentId and returns expected shape" time="0.000229">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; avgCostPerCall = totalCost / callCount (Decimal precision)" time="0.000154834">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; avgCostPerCall is &quot;0&quot; when callCount is 0" time="0.000127708">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="specialistBreakdown &gt; returns [] when no data" time="0.000093708">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; users above $5 threshold are included in alerts" time="0.00021425">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; users at or below $5 threshold are filtered out" time="0.000113834">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; exactly $5.000001 is included" time="0.000117958">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; severity=low for $5-$10 range" time="0.000099625">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; severity=medium for $10-$15 range" time="0.000100958">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; severity=high for &gt;= $15" time="0.000090959">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; returns [] when no users above threshold" time="0.000168042">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="alerts &gt; returns email from user lookup" time="0.00009575">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; startDate &gt; endDate throws BAD_REQUEST" time="0.000204166">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; date range &gt; 365 days throws BAD_REQUEST &quot;date range too large&quot;" time="0.000126666">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; &gt; 500k rows throws BAD_REQUEST &quot;export rows &gt; 500000&quot;" time="0.000377333">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; returns CSV with correct header line" time="0.000284917">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; returns CSV rows with correct field values" time="0.000188209">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; returns rowCount in result" time="0.000130917">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; empty data returns only header line" time="0.000104542">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; chunks DB reads: calls findMany multiple times for large datasets" time="0.00146775">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/cost.test.ts" name="exportCsv &gt; exactly 500k rows succeeds (boundary)" time="0.00026075">
+        <testcase classname="tests/unit/api/admin/emergency-switch.test.ts" name="getSystemConfigValue — 5s TTL cache &gt; stop_trending_scraper: 真实 system_config 路径 · trending-scraper worker emergency stop 依赖此值" time="0.000031166">
         </testcase>
     </testsuite>
 </testsuites>

@@ -1,17 +1,52 @@
 {
   "story_id": "US-015",
-  "validator_start_ts": "2026-05-13T01:42:00",
-  "validator_end_ts": "2026-05-13T01:45:30",
-  "test_command": "pnpm test (vitest run) + pnpm typecheck + pnpm audit:redlines-admin",
+  "validator_start_ts": "2026-05-15T17:48:30",
+  "validator_end_ts": "2026-05-15T17:50:45",
+  "test_command": "bash scripts/verify-prd-14.sh + pnpm test + pnpm typecheck + 5 audit commands",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "零回归: 1238 tests, 9 pre-existing failures (auth.test.ts/auth.me.test.ts/trace.test.ts) — 全部因 ECONNREFUSED :3000 (API server not running), 与 US-015 无关。US-015 自身 21 tests 全通过 (cost-anomaly.job.test.ts 11 + detect-anomalies.service.test.ts 10). typecheck 0 errors. audit:redlines-admin ALL PASS.",
+  "summary": {
+    "verify_prd14_sh": {
+      "pass": 51,
+      "fail": 0,
+      "warn": 0,
+      "skipped": 0,
+      "result": "ALL PASS · 51 checks"
+    },
+    "e2e_tests": {
+      "ab_experiment_steps": 11,
+      "constant_version_steps": 8,
+      "emergency_switch_steps": 7,
+      "cross_domain_steps": 6,
+      "total_e2e_passed": 32
+    },
+    "full_test_suite": {
+      "total_passed": 2012,
+      "total_skipped": 4,
+      "total_failed": 0,
+      "test_files": 183,
+      "baseline_required": 1875,
+      "baseline_met": true
+    },
+    "audit_commands": {
+      "audit_redlines": "PASS · 0 hits",
+      "audit_ld": "PASS · 0 fail",
+      "audit_redlines_admin": "PASS · ALL PASS · 11 LD-A + 6 R-A",
+      "audit_admin_rls_tables": "PASS · 26/26 admin + 15/15 main",
+      "audit_admin_rls": "PASS · 26/26 admin + 15/15 main"
+    },
+    "typecheck": {
+      "errors": 0,
+      "result": "PASS"
+    }
+  },
   "artifacts": [
+    "manifest.json",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "manifest.json"
+    "verify-prd-14.stdout.txt"
   ]
 }

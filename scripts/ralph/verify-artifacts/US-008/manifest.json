@@ -1,17 +1,20 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-13T04:08:00",
-  "validator_end_ts": "2026-05-13T04:18:00",
-  "test_command": "pnpm vitest run apps/api/src/workers/file-parser/__tests__/worker.test.ts apps/api/src/services/admin/content-review/__tests__/deep-learn-auto-verdict.service.test.ts",
+  "validator_start_ts": "2026-05-16T07:41:05",
+  "validator_end_ts": "2026-05-16T07:52:00",
+  "test_command": "pnpm vitest run tests/unit/web/pages/History.test.tsx tests/unit/api/history.test.ts + pnpm vitest run (full) + pnpm typecheck + browser e2e",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "全量测试 1491 tests: 9 pre-existing failures (auth.test.ts + trace.test.ts 需 dev server) 与 US-005/006 一致 US-008 无新引入失败。US-008 specific: 26 tests (16 worker + 9 verdict + 1 infra) 全绿。Typecheck 0 error。LD-A-5 grep verify 0 命中。audit-redlines 5 红线全 pre-existing (非 US-008 文件)。",
+  "notes": "41/41 story tests PASS. 2250/2250 full regression PASS (6 skipped). typecheck PASS (all workspaces). Browser: /history?view=timeline shows timeline+工具icon+摘要+三操作按钮; ?view=dashboard shows 4 KPI+4 chart testids; restore click navigates to /generate?topic=[xiaohongshu]...&restored=13583; textarea.value confirmed filled via JS (isEmpty:false). AC-8 fix (topicFromUrl wins over LS): ToolForm.tsx:70 spread fix + Generate.tsx:94 resolvedDefaults wins confirmed.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "manifest.json"
+    "validator-us-008-pass-1.png",
+    "validator-us-008-pass-2.png",
+    "validator-us-008-pass-3.png",
+    "validator-us-008-pass-4.png"
   ]
 }

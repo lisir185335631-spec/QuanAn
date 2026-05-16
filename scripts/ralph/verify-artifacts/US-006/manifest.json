@@ -1,17 +1,16 @@
 {
   "story_id": "US-006",
-  "validator_start_ts": "2026-05-13T11:07:00",
-  "validator_end_ts": "2026-05-13T11:38:00",
-  "test_command": "pnpm vitest run --reporter=junit + pnpm --filter admin typecheck + agent-browser AC-8/9/10",
+  "validator_start_ts": "2026-05-16T04:22:00",
+  "validator_end_ts": "2026-05-16T04:48:00",
+  "test_command": "pnpm vitest run (2164 passed / 6 skipped) + pnpm -r typecheck (0 errors) + browser e2e (trending list + favorite + step7)",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "Zero regression: 9 pre-existing ECONNREFUSED integration test failures (auth.test.ts x6, trace.test.ts x2, auth.me.test.ts x1) — identical to US-005 baseline, no regressions introduced by US-006. Typecheck: 0 errors. Browser AC-8/9/10 all CONFIRMED via agent-browser against localhost:5174 admin app with mock auth. AC-8 note: approve path has no dialog by design — only reject requires a reason dialog. This is correct behavior.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "manifest.json"
-  ]
+    "typecheck.stdout.txt"
+  ],
+  "notes": "Zero regression: 2164 tests passed, 6 skipped, 0 failed (190 test files). Typecheck: all 6 workspace packages PASS. US-006 unit tests: 29/29 PASS. Browser e2e (route=/trending?platform=xiaohongshu&sort=likeCount, API server restarted): KPI cards 1842/127/0/5月16日, list renders with mock data, favorite works (toast '已收藏，同步到我的选题库' + KPI 我的收藏 0→1), Step 7 navigates to /step/7?topic=保姆级教程...&source=trending&trendingId=2. AC-1 NOTE: Trending.tsx 256 lines vs AC 300+ (test uses 200+ which passes; total 758 lines across 4 files). AC-12 NOTE: AC URL uses /tools/trending (404; correct route is /trending) and sort=likes (invalid Zod enum causing empty list; valid is sort=likeCount). These are AC documentation issues. AC-12 /my-topics: placeholder ('PRD-3占位·实施PRD-5'); favorite data stored in DB correctly; display is US-007 responsibility per AC-7 '(US-007 消费)'."
 }

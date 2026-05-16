@@ -13,5 +13,5 @@ packages/clients typecheck: Done
 apps/api typecheck: Done
 apps/admin typecheck$ tsc --noEmit
 apps/web typecheck$ tsc --noEmit
-apps/admin typecheck: Done
 apps/web typecheck: Done
+apps/admin typecheck: Done

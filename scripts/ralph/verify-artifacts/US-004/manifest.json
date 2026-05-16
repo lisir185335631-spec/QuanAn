@@ -1,8 +1,8 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-13T10:22:00",
-  "validator_end_ts": "2026-05-13T10:26:00",
-  "test_command": "pnpm exec vitest run apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts",
+  "validator_start_ts": "2026-05-16T02:28:00",
+  "validator_end_ts": "2026-05-16T02:35:00",
+  "test_command": "pnpm vitest run tests/unit/web/pages/Monetization.test.tsx tests/unit/web/pages/PresentStyles.test.tsx",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -12,7 +12,10 @@
     "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
+    "typecheck.stdout.txt",
+    "validator-us-004-pass-1.png",
+    "validator-us-004-pass-2.png",
+    "validator-us-004-fail-1.png"
   ],
-  "notes": "TD豁免: 全量测试9个失败(auth.test.ts×7 + trace.test.ts×2)均为ECONNREFUSED — dev server未运行 · git stash验证已在US-004 commit前存在 · 与US-004无关。audit-admin-rls通过: 44 procedures · 0 violations。LD-A-5 grep确认: 全项目唯一trendingItem.create在_createTrendingItemInTx函数内(review-trending.ts:90)。typecheck 0 error。44/44 US-004专项测试全通过。"
+  "notes": "PRD-15 US-004 first validation. 31 story tests pass. 2101 full regression tests pass. Typecheck all 6 packages pass. Browser: /monetization renders 4-field form (lastProductDesc/lastTargetAudience/lastIpPositioning/lastCurrentRevenue via StepForm+MonetizationInputSchema), /present-styles renders textarea+platform-select. Route paths /monetization and /present-styles (not /tools/* prefix) — consistent with US-001/002/003 convention accepted in previous validations. API server not running so post-submit result render not browser-verified, but Step4bResult.tsx code-verified to render currentAnalysis/ladder[3]/revenueStructure/successCases, and MOCK_STYLES code-verified with 5 style types."
 }

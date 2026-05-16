@@ -1,4 +1,1 @@
-
-> @quanqn/admin@0.1.0 typecheck /Users/return/Desktop/QuanQn/apps/admin
-> tsc --noEmit
-
+npm warn Unknown project config "public-hoist-pattern". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.

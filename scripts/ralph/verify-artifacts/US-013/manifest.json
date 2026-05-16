@@ -1,18 +1,18 @@
 {
   "story_id": "US-013",
-  "validator_start_ts": "2026-05-13T08:00:00",
-  "validator_end_ts": "2026-05-13T08:09:00",
-  "test_command": "bash scripts/verify-prd-12.sh",
+  "validator_start_ts": "2026-05-15T16:34:00",
+  "validator_end_ts": "2026-05-15T16:35:20",
+  "test_command": "pnpm vitest run tests/unit/api/admin/feature-flag-routing.test.ts apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts",
   "exit_code": 0,
-  "zero_regression": "SKIPPED",
+  "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "Admin frontend + verify-prd-12.sh story. Zero-regression via pnpm typecheck (exit 0) + verify-prd-12.sh 32 PASS 0 FAIL. No pytest/vitest suite. 401 console errors are pre-existing (test env, no auth) — same as US-010/011/012.",
   "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "validator-us-013-pass-1.png",
-    "validator-us-013-pass-2.png"
-  ]
+    "typecheck.stdout.txt"
+  ],
+  "notes": "AC-spec tests: 36 passed (17 in feature-flag-routing.test.ts + 19 in feature-flag-rollout.test.ts). Zero-regression: 1947 tests, 0 failures. Typecheck: all 6 workspace projects passed. US-012 emergency-switch.test.ts: 13 tests passed (AC-6 verified)."
 }

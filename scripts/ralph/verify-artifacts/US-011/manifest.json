@@ -1,16 +1,16 @@
 {
   "story_id": "US-011",
-  "validator_start_ts": "2026-05-13T07:10:00",
-  "validator_end_ts": "2026-05-13T07:20:30",
-  "test_command": "pnpm typecheck (apps/admin) + pnpm test (zero regression)",
+  "validator_start_ts": "2026-05-15T07:43:02",
+  "validator_end_ts": "2026-05-15T07:48:30",
+  "test_command": "pnpm vitest run + pnpm typecheck + bash scripts/audit-redlines-admin.sh",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
+    "vitest-full.xml",
+    "vitest-full.stdout.txt",
     "typecheck.stdout.txt"
   ],
-  "notes": "TD exemption: pnpm @testing-library/react@16.3.2 resolves to react@19.2.6 for admin unit tests (layout/sidebar/audit-drawer). Confirmed pre-existing via git stash (failures identical at US-010 commit state). Caused by pnpm dependency resolution change after @react-pdf/renderer install pulled react@19 into pnpm store. NOT introduced by US-011. Registered as TD in tech-debt.json. All 11 ACs passed via code review + browser E2E."
+  "notes": "All 13 ACs verified. FeatureFlag+SystemConfig schema at prisma/schema.prisma L1226-1253 with indexes. Tables exist in DB. Seed ran: 3 system_config entries (stop_trending_scraper/stop_evolution_agent/enable_fallback_prompt, configValue=false, isEmergency=true). feature-flag.service.ts: _toggleFeatureFlagInTx + _updateSystemConfigInTx exported; toggleFeatureFlag->dual approval; emergencyToggleSystemConfig->emergencyApprove(PRD-13 US-002 pattern)+postReviewRequired=true; getFeatureFlagValue->3 flagType routes (boolean/percentage-md5/targeted). approvalGateService.ts DUAL_APPROVAL_ACTION_TYPES has toggle_feature_flag+update_system_config. AGENTS.md L2498 LD-A11 section present. audit-redlines-admin.sh ALL PASS (11 LD-A + 6 R-A). Zero regression: 1898 tests passed (0 failed, 0 errors). Typecheck: 6 projects Done, 0 errors."
 }

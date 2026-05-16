@@ -2902,6 +2902,163 @@ done
 
 ---
 
+### §11.8 PRD-15 frontend-completeness 沉淀(PRD-15 retro 2026-05-16 文档回流 · 23 commits 事实驱动)
+
+> **派生** · `.agents/retros/prd-15-vs-prd-14-retrospective.md §11-§16` · 9/9 PASSED + 67% 严格一轮通过率 + 3 reject 全 1 iter 修对 + 10656 行新增. PRD-15 是首个全前端 + brownfield mock data 整合 PRD · 沉淀 5 个跨 PRD 复用模式 · 防 PRD-16+ 重蹈.
+
+#### §11.8.1 主应用工具 page 完整化模式(PRD-15 US-002~006 6 stub 完整化沉淀)
+
+stub `<Tool/>` page → 完整工具 page 的统一套路 · 5 element 缺一不可:
+
+| Element | 实施 | grep 验证 |
+|---|---|---|
+| **StepForm + Schema 驱动** | `apps/web/src/pages/tools/<Tool>.tsx` 顶部 `import { StepForm } from '@/components/StepForm'` + `const schema = z.object({...})` | `grep -r "StepForm" apps/web/src/pages/tools/` |
+| **SSE 流式 / lazy import** | high+large story (US-002 Copywriting / US-005 PrivateDomain) 用 `useStreamdown()` + Suspense lazy import 大 component | `grep -r "useStreamdown\|React.lazy" apps/web/src/pages/tools/` |
+| **URL state(restoreFromUrl)** | history 跳转用 `useSearchParams` 读 `?restored=historyId` · 跨工具跳转用 `?source=trending&trendingId=` | `grep -rE "useSearchParams\\(\\)|searchParams.get\\('source'\\)" apps/web/src/pages/tools/` |
+| **debounce localStorage acc_ 前缀** | `useDebouncedCallback` + `getToolLsKey(accountId, toolName, draftKey)` (R-5 LD-009 严格) | `grep -r "getToolLsKey\|getLsKey" apps/web/src/pages/tools/` |
+| **跨 4 用户 mock 切换** | `<AccountSwitcher>` 顶 `useActiveAccount()` · 5 mock 账号下拉切换 + 每账号独立 LS state | `grep -r "AccountSwitcher\|useActiveAccount" apps/web/src/pages/tools/` |
+
+**实证 ROI** · PRD-15 US-002 Copywriting + US-005 PrivateDomain + US-006 Trending 都是 high+large 复杂工具 page · 套用此 5-element 模板 · ralph 1-2 iter 完成. 跨 PRD 复用价值 · 未来 ImageGen / VideoGen 类 stub 完整化都能套.
+
+#### §11.8.2 mock data + DEV_OAUTH_MOCK 双 flag 模式(PRD-15 US-001 + R-A3 红线沉淀)
+
+dev / demo 不真接 OAuth · 走 mock 路径 · **生产严格防泄露**:
+
+```typescript
+// apps/api/src/middleware/auth.ts:50-80
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
+  // R-A3 严格双 flag · 任一不满足都不走 mock
+  if (process.env.NODE_ENV === 'development' && process.env.DEV_OAUTH_MOCK === 'true') {
+    const accountId = req.headers['x-mock-account-id'] as string | undefined;
+    if (accountId && MOCK_ACCOUNTS.has(accountId)) {
+      req.user = { id: accountId, ...MOCK_ACCOUNTS.get(accountId)! };
+      return next();
+    }
+  }
+  // 真 OAuth 路径
+  return realAuthMiddleware(req, res, next);
+}
+```
+
+**严格双 flag** · `NODE_ENV === 'development'` AND `DEV_OAUTH_MOCK === 'true'` · 任一缺失走真 OAuth. **R-A3 实测**: `audit-redlines.sh` 跑 grep 命中 `DEV_OAUTH_MOCK` 必须同时 grep 到 `NODE_ENV === 'development'` 同行/同函数 · 单 flag 直接 fail.
+
+**5 mock IP 账号 seed** · `prisma/seed.ts seedMockIpAccounts()` 写 5 条覆盖 4 行业(food/beauty/self_media/enterprise)· dev demo 演示 4 用户路径不需要真 OAuth · 跨 PRD 复用 · 未来 PRD-16+ 任何 demo 模式都套此模板(双 flag · 严防 prod 泄露).
+
+#### §11.8.3 ls-namespace.ts 集中 helper(PRD-15 US-002/US-005 R-5 教训沉淀 · 红线级)
+
+LocalStorage 多账号隔离 **必须**走集中 helper · **禁**自定义 LS_PREFIX 变量拼接:
+
+```typescript
+// apps/web/src/lib/ls-namespace.ts
+export function getLsKey(accountId: string, key: string): string {
+  return `acc_${accountId}_${key}`;
+}
+
+export function getToolLsKey(accountId: string, tool: string, key: string): string {
+  return `acc_${accountId}_tool_${tool}_${key}`;
+}
+```
+
+**禁止 3 反例**(audit-redlines.sh R-5 真触发):
+
+```typescript
+// ❌ 反例 1: 缺账号隔离 (US-002 Copywriting 第 1 次 reject)
+localStorage.setItem('draft_' + userId, value);
+
+// ❌ 反例 2: LS_PREFIX 变量拼接 audit grep 看不到字面 acc_ (US-005 PrivateDomain 第 1 次 reject false positive)
+const LS_PREFIX = `acc_${accountId}_`;
+localStorage.setItem(LS_PREFIX + key, value);
+
+// ❌ 反例 3: 直接拼接 acc_ 但未走 helper (跨工具命名易漂移)
+localStorage.setItem(`acc_${accountId}_${key}`, value);
+```
+
+**唯一正例** · `localStorage.setItem(getToolLsKey(accountId, 'private_domain', \`draft_${userId}\`), value);`
+
+**红线 grep**: `grep -rE "localStorage\\.(setItem|getItem|removeItem)" apps/web/src/ | grep -v "getLsKey\\|getToolLsKey"` · 0 命中 = R-5 OK · 任意命中 = reject.
+
+**实证 ROI** · PRD-15 US-002 + US-005 + US-008 共 3 reject 中 2 reject 由此 catch · ralph 改用 helper 1 iter 修对. 已固化 plan-check 2.6.17(防 PRD-16+ 反复).
+
+#### §11.8.4 R-4 audit-friendly 注释模式(PRD-15 US-008 stats procedure 教训沉淀)
+
+stats / aggregate / groupBy / count 类 prisma 调用 audit-redlines.sh R-4 静态 grep 看不到字面 `accountId` · 必须加注释豁免:
+
+```typescript
+// apps/api/src/trpc/routers/history.ts:120-145 stats procedure
+export const historyStatsProcedure = protectedProcedure
+  .input(z.object({ from: z.date(), to: z.date() }))
+  .query(async ({ ctx, input }) => {
+    const accountId = ctx.user.activeAccountId;
+    const where = { accountId, createdAt: { gte: input.from, lte: input.to } };
+
+    // ✅ R-4 audit-friendly 注释 · 实际仍带 accountId
+    // RLS auto-filters: where.accountId enforces LD-009
+    const totalCost = await prisma.costLog.aggregate({
+      where,
+      _sum: { tokenCount: true, costCents: true }
+    });
+
+    // RLS auto-filters: where.accountId enforces LD-009
+    const byTool = await prisma.costLog.groupBy({
+      by: ['toolType'],
+      where,
+      _count: { _all: true }
+    });
+
+    return { totalCost, byTool };
+  });
+```
+
+**反例**(audit script 真触发 reject):
+
+```typescript
+// ❌ R-4 false positive · audit grep 看不到 .aggregate({ accountId 字面
+return prisma.costLog.aggregate({
+  where: { accountId, createdAt: { gte: start } },
+  _sum: { tokenCount: true }
+});
+```
+
+**触发条件**: 任意 prisma 调用含 `aggregate` / `groupBy` / `count` 且 `where` 通过变量传(不直接字面写 `{ accountId, ... }`)· 必须加 `// RLS auto-filters: where.accountId enforces LD-009` 注释.
+
+**实证 ROI** · PRD-15 US-008 history stats procedure 6 处 prisma 调用全用 where 变量 · 第 1 次 reject false positive · ralph 加注释 1 iter 修对. 已固化 plan-check 2.6.18(防 PRD-16+ 反复).
+
+#### §11.8.5 跨工具跳转 URL params 协议锁(PRD-15 US-006/007/008 跨域整合沉淀)
+
+跨工具跳转用 URL search params 传 source / 上下文 · 协议**严格锁定**禁漂移:
+
+| URL pattern | 来源 → 目标 | 用途 |
+|---|---|---|
+| `/tools/copywriting?source=trending&trendingId=<id>` | Trending → Copywriting | 从热点话题跳到文案工具 · 自动填话题 |
+| `/tools/private-domain?source=mytopics&topicId=<id>` | MyTopics → PrivateDomain | 从我的话题库跳到私域工具 · 自动填话题 |
+| `/tools/<tool>?restored=<historyId>` | History → 任意工具 | 从历史记录恢复表单 · 自动填全部字段 |
+
+**禁漂移 grep**: 任意 page 跳转 `useNavigate()(\`/tools/...?...\`)` 必须用上述 3 pattern 之一 · 自定义 `?from=xxx` / `?ref=xxx` 等都禁(跨工具命名易漂移).
+
+```typescript
+// apps/web/src/pages/tools/Trending.tsx:280 · 跳转 Copywriting
+const onJumpToCopywriting = (item: TrendingItem) => {
+  navigate(`/tools/copywriting?source=trending&trendingId=${item.id}`);
+};
+
+// apps/web/src/pages/tools/Copywriting.tsx:50 · 接收 trending
+const [searchParams] = useSearchParams();
+const trendingId = searchParams.get('trendingId');
+const source = searchParams.get('source');
+useEffect(() => {
+  if (source === 'trending' && trendingId) {
+    // 自动填话题 from trending
+    api.trending.getById.query({ id: trendingId }).then(item => {
+      setValue('topic', item.title);
+    });
+  }
+}, [source, trendingId]);
+```
+
+**实证 ROI** · PRD-15 US-006 Trending → Copywriting + US-007 MyTopics → PrivateDomain + US-008 History → 任意 · 3 跳转跨 4 工具 page · 全用此协议 · 0 漂移. 跨 PRD 复用 · 未来 PRD-16+ 任何跨工具跳转都套此 3 pattern.
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充

@@ -1,27 +1,402 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="11" failures="0" errors="0" time="0.119">
-    <testsuite name="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" timestamp="2026-05-12T17:28:32.865Z" hostname="returndeMacBook-Pro.local" tests="11" failures="0" errors="0" skipped="0" time="0.015693792">
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; returns a Buffer with PDF mime header" time="0.006828708">
+<testsuites name="vitest tests" tests="35" failures="0" errors="0" time="0.169">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" timestamp="2026-05-15T09:02:26.939Z" hostname="returndeMacBook-Pro.local" tests="35" failures="0" errors="0" skipped="0" time="0.012988167">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.getKpiStats &gt; returns 4 KPI numbers" time="0.003087333">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; filename matches cost-bill-{YYYY-MM}.pdf" time="0.000806208">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.getKpiStats &gt; returns zeros when no data" time="0.000430667">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; isEmpty=true when rowCount=0 (empty month)" time="0.000712875">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.getKpiStats &gt; allows readonly_admin to view KPI stats" time="0.00028575">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; generates empty bill without throwing when no cost records" time="0.001292417">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.getKpiStats &gt; queries featureFlag.count twice (total and enabled)" time="0.000244791">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; pdfHash is non-empty SHA-256 hex string" time="0.001642625">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listEmergencySwitches &gt; returns emergency configs with admin emails" time="0.000531875">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; pdfHash is reproducible given same inputs" time="0.00076325">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listEmergencySwitches &gt; queries with isEmergency=true filter" time="0.0007245">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; pdfHash excludes sensitive fields (SHIELD: anti_pattern PRD-9+LD-A-3)" time="0.000609209">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listEmergencySwitches &gt; returns empty array when no emergency configs" time="0.000205291">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; rowCount matches aggregate count" time="0.00099075">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listEmergencySwitches &gt; handles null admin email gracefully" time="0.000185791">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; YoY percent is +10.0% when cost rose from 100 to 110 year-over-year" time="0.000675">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listFeatureFlags &gt; returns feature flags with admin emails" time="0.000277583">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; calls renderToBuffer once per invocation" time="0.000535041">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listFeatureFlags &gt; orders by updatedAt desc" time="0.000301833">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
-        <testcase classname="apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts" name="generateMonthlyBill &gt; falls back to model breakdown when agentId groupBy returns empty" time="0.000495625">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listFeatureFlags &gt; allows readonly_admin to list feature flags" time="0.0001935">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listFeatureFlags &gt; returns rolloutConfig when present" time="0.000178375">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listSystemConfig &gt; returns non-emergency system configs" time="0.000188083">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listSystemConfig &gt; queries with isEmergency=false filter" time="0.00018675">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listSystemConfig &gt; allows readonly_admin to list system config" time="0.000156875">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.toggle &gt; calls toggleFeatureFlag service and returns approvalRequestId" time="0.000550167">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.toggle &gt; passes rolloutConfig to toggleFeatureFlag" time="0.000382875">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.toggle &gt; allows admin to toggle feature flags" time="0.000188666">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.toggle &gt; rejects input without flagKey" time="0.00062175">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.updateSystemConfig &gt; creates approval request for system config update" time="0.000528417">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.updateSystemConfig &gt; throws NOT_FOUND for unknown configKey" time="0.000212208">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.updateSystemConfig &gt; includes configKey and configValue in approval payload" time="0.000202708">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.updateSystemConfig &gt; rejects empty configKey" time="0.000170875">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listPostReview &gt; super_admin can list post-review items" time="0.000197542">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listPostReview &gt; throws FORBIDDEN for non-super_admin" time="0.000159416">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listPostReview &gt; throws FORBIDDEN for readonly_admin" time="0.000153792">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listPostReview &gt; queries with correct filters" time="0.000192583">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listPostReview &gt; includes firstApproverEmail in result" time="0.000148833">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.listPostReview &gt; limits to 50 results" time="0.000185708">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.emergencyToggleSystemConfig &gt; super_admin can trigger emergency toggle" time="0.000227459">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.emergencyToggleSystemConfig &gt; throws FORBIDDEN for admin role" time="0.000173667">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.emergencyToggleSystemConfig &gt; throws FORBIDDEN for readonly_admin" time="0.000189">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.emergencyToggleSystemConfig &gt; rejects non-emergency configKey" time="0.000173958">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.emergencyToggleSystemConfig &gt; rejects empty incidentId" time="0.000189542">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts" name="featureFlagsRouter.emergencyToggleSystemConfig &gt; supports all 3 emergency switch keys" time="0.000442917">
+            <system-err>
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanQn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+            </system-err>
         </testcase>
     </testsuite>
 </testsuites>

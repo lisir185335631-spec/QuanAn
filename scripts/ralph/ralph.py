@@ -146,10 +146,12 @@ def _get_cost_log_path() -> "Path":
     return COST_LOG_FILE
 
 
-def _check_claude_health(timeout: int = 20) -> bool:
-    """M-2 + RCA-004 (PRD-7 US-005 · 2026-05-10 · 全局 sync): 20s 内 'say OK' 测试 · 防 claude --print 系统级 hang
-    · timeout 5s 在 PRD-6 实测会误杀 (claude --print cold start ≈ 10s · Mac M3 + 健康 CLI)
-    · 20s 给 2x 余量 · 真 hang (>30 min) 仍能快速探测
+def _check_claude_health(timeout: int = 45) -> bool:
+    """M-2 + RCA-004 (PRD-7 US-005 · 2026-05-10 · 全局 sync) + PRD-15 retro M-3 (QuanQn 2026-05-16 · cold start race fix):
+    · 45s 内 'say OK' 测试 · 防 claude --print 系统级 hang
+    · timeout 5s 在 PRD-6 实测会误杀 (claude --print cold start ≈ 10-15s · Mac M3 + 健康 CLI)
+    · timeout 20s 在 QuanQn PRD-15 US-001 实测仍会偶撞边界(cold + 高负载 + Anthropic API 慢)→ retryCount 累加 5 次 BLOCKED bug
+    · 45s 给 3x cold start 余量 · 真 hang (>30 min) 仍能快速探测
     返回 True if claude CLI 健康 · False if hang/timeout/error.
     """
     if AGENT == "codex":
@@ -1309,13 +1311,18 @@ def run_developer(iteration: int, story_id: str | None) -> tuple[bool, bool]:
         print(f"[FAIL] 错误: {CLAUDE_INSTRUCTION_FILE} 不存在")
         return False, True
 
-    # M-2 (PRD-5 RCA-003): claude CLI 健康检测 · 防 30 min 0 bytes hang
+    # M-2 (PRD-5 RCA-003) + PRD-15 retro M-3 (QuanQn 2026-05-16 · cold start race fix):
+    #   旧: 2 次 fail 即 crashed=True 累 retryCount → cold start 偶撞 5 次 BLOCKED bug
+    #   新: 3 次 retry · 累计 wait ~210s · 真 hang(>5 min)才累 retryCount · 类比 _is_network_error 路径
     if not _check_claude_health():
-        print(f"[WARN] claude CLI health check 失败 · sleep 60s 重试 1 次")
-        time.sleep(60)
+        print(f"[WARN] claude CLI health check 失败 (1/3) · sleep 90s 等 cold start cache 暖")
+        time.sleep(90)
         if not _check_claude_health():
-            print(f"[FAIL] claude CLI 2 次 health check 全失败 · 标记 crashed (避免 30 min hang)")
-            return False, True  # crashed=True · 算 retryCount 但 1 min 内 fail-fast
+            print(f"[WARN] claude CLI health check 失败 (2/3) · sleep 120s 最后重试 (cold start race 通常 2-3 min 自愈)")
+            time.sleep(120)
+            if not _check_claude_health():
+                print(f"[FAIL] claude CLI 3 次 health check 全失败 (累计 wait 210s) · 真 hang · 标记 crashed")
+                return False, True  # crashed=True · 真 hang 才累 retryCount · 不是 cold start race
 
     # TD-009 (PRD-5 retro): 网络故障不算 retryCount · exponential backoff · max 3 次内重试
     timed_out = False
@@ -1346,13 +1353,18 @@ def run_validator(iteration: int, story_id: str | None) -> None:
         print(f"[WARN]  警告: {VALIDATOR_INSTRUCTION_FILE} 不存在，跳过验证")
         return
 
-    # M-2 (PRD-5 RCA-003): claude CLI 健康检测 · 防 hang
+    # M-2 (PRD-5 RCA-003) + PRD-15 retro M-3 (QuanQn 2026-05-16 · cold start race fix):
+    #   旧: 2 次 fail skip validation · 但 main 路径 validator_failed → 累 retryCount
+    #   新: 3 次 retry · 累计 wait ~210s · 真 hang 才 skip · 类比 _is_network_error 路径
     if not _check_claude_health():
-        print(f"[WARN] claude CLI health check 失败 · sleep 60s 重试 1 次")
-        time.sleep(60)
+        print(f"[WARN] claude CLI health check 失败 (1/3) · sleep 90s 等 cold start cache 暖")
+        time.sleep(90)
         if not _check_claude_health():
-            print(f"[FAIL] claude CLI 2 次 health check 全失败 · 跳过本轮 validation (避免 hang)")
-            return
+            print(f"[WARN] claude CLI health check 失败 (2/3) · sleep 120s 最后重试")
+            time.sleep(120)
+            if not _check_claude_health():
+                print(f"[FAIL] claude CLI 3 次 health check 全失败 (累计 wait 210s) · 跳过本轮 validation")
+                return
 
     # TD-009 (PRD-5 retro): 网络故障不算 retryCount · max 3 次重试
     duration = 0.0

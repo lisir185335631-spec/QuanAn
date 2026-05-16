@@ -1,19 +1,18 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-13T08:55:00",
-  "validator_end_ts": "2026-05-13T09:01:30",
-  "test_command": "pnpm test -- --exclude=tests/integration/** + pnpm typecheck + pnpm audit:admin-rls-tables + pnpm audit:redlines-admin",
+  "validator_start_ts": "2026-05-16T00:11:00",
+  "validator_end_ts": "2026-05-16T00:23:00",
+  "test_command": "pnpm vitest run + pnpm typecheck + pnpm playwright tests/e2e/validator-us001-ac9.spec.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "TD豁免: 9 integration tests (auth.test.ts/auth.me.test.ts/trace.test.ts) fail with ECONNREFUSED 127.0.0.1:3000 — require running dev server. Confirmed pre-existing: git diff 0b29446..HEAD -- tests/integration/ = 0 lines changed. US-001 added no integration tests. Unit suite: 1285 passed, 0 failed.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "audit-rls.txt",
-    "audit-redlines-admin.txt",
-    "manifest.json"
-  ]
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "typecheck.stdout.txt"
+  ],
+  "notes": "Retry 4 fix verified: localStorage.setItem('aiip_active_account_id', String(newAccountId)) confirmed in useActiveAccount.ts:44. Browser test (playwright): 5 mock accounts in AccountSwitcher (AI创业者小张/OPC经营者老王/实体店主陈姐/MCN矩阵号/Demo演示号), switched to 小张, localStorage.aiip_active_account_id=11350 written after switch. Zero-regression: 2017 passed / 0 failed / 6 skipped. Typecheck: 6 workspaces PASS. INDUSTRIES: 56 entries confirmed in both api and web. seed.test.ts: 7/7 PASS."
 }

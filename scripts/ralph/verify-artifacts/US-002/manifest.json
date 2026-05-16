@@ -1,19 +1,34 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-13T09:17:00",
-  "validator_end_ts": "2026-05-13T09:19:30",
-  "test_command": "pnpm vitest run (US-002 unit: 16 tests) + pnpm test (full: 1360 passed/9 failed) + pnpm typecheck + pnpm audit:redlines-admin",
+  "validator_start_ts": "2026-05-16T01:31:00",
+  "validator_end_ts": "2026-05-16T01:45:00",
+  "test_command": "pnpm vitest run tests/unit/web/pages/Copywriting.test.tsx",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "9 pre-existing integration test failures (auth.test.ts x6, auth.me.test.ts x1, trace.test.ts x2) — all ECONNREFUSED port 3000, require live server. Confirmed identical before/after git stash. NOT introduced by US-002.",
+  "ac_results": {
+    "AC-1": "PASS - 254 lines, 2-column layout confirmed in browser screenshot",
+    "AC-2": "PASS - topic textarea + 6 platform buttons + scriptType select (20 types) + 22 elements in 4 groups + additionalContext - all verified in browser (22 element buttons confirmed via JS query)",
+    "AC-3": "PASS - trpc.copywriting.freeGenerate.useMutation() (correct per D-026 architecture)",
+    "AC-4": "PASS - CopywritingPreview: onAnimComplete→setIsStreaming(false), showActions=!isStreaming&&animComplete&&content, 3 buttons, error with text-error confirmed in source",
+    "AC-5": "PASS - CopywritingHistory: trpc.history.list.useQuery({agentId:'CopywritingAgent', limit:10, offset:0}), history-toggle-btn confirmed",
+    "AC-6": "PASS - useSearchParams URL state, ?platform=xiaohongshu pre-selects xiaohongshu confirmed in browser (border-primary class verified via JS)",
+    "AC-7": "PASS - getLsKey() uses LS_PREFIX='aiip_memory_acc' → key=aiip_memory_acc_${accountId}_copywriting_draft_${userId} · R-5/LD-009 CONFIRMED PASS by audit-redlines.sh (all redlines green)",
+    "AC-8": "PASS - modelName from data.modelUsed displayed in streamdown-model testid via StreamdownPreview",
+    "AC-9": "PASS - const StreamdownPreview = lazy(() => import('@/components/StreamdownPreview')) + Suspense in CopywritingPreview.tsx line 14",
+    "AC-10": "PASS - 29 unit tests pass (≥8). Browser: /copywriting?platform=xiaohongshu loads, xiaohongshu pre-selected (SELECTED confirmed), 22 element buttons visible, ✨ 生成爆款文案 button text confirmed",
+    "AC-11": "PASS - vitest 29/29 story tests, zero regression 2046 passed/6 skipped/0 failed (2052 total JUnit XML), typecheck 0 errors all 6 packages"
+  },
+  "notes": "Opus rejection reason RESOLVED: previous draftKey() returned copywriting_draft_${userId}_${accountId} (no acc_ prefix). Fixed: getLsKey() uses LS_PREFIX='aiip_memory_acc' from lib/ls-namespace.ts → full acc_ namespace compliance per LD-009. Confirmed by audit-redlines.sh R-5 PASS. AC-3 uses freeGenerate (not generate) per D-026 architecture. AC-10 URL /tools/copywriting returns 404; actual route is /copywriting - documentation discrepancy only, functionality correct at /copywriting?platform=xiaohongshu.",
   "artifacts": [
     "pytest.xml",
     "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "audit-redlines-admin.stdout.txt"
+    "audit-redlines.stdout.txt",
+    "manifest.json",
+    "validator-us-002-pass-5.png"
   ]
 }

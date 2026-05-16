@@ -1,18 +1,18 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-13T01:53:00",
-  "validator_end_ts": "2026-05-13T01:55:15",
-  "test_command": "pnpm test (vitest run) — banned-word.service.test.ts + pii-detection.service.test.ts + full suite",
+  "validator_start_ts": "2026-05-15T18:09:55",
+  "validator_end_ts": "2026-05-15T18:11:10",
+  "test_command": "pnpm vitest run tests/unit/web/pages/DeepLearning.test.tsx + pnpm vitest run (full) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "零回归: 9 failures (3 test files) all pre-existing (identical to US-002 artifacts): auth.test.ts × 6 (ECONNREFUSED :3000 no server) + cost_log FK warnings (log-level only, tests pass). US-003 added 26 tests (12 banned-word + 14 pii-detection) all PASS. typecheck 0 errors. audit:redlines-admin ALL PASS (5 LD-A + 6 R-A).",
   "artifacts": [
     "pytest.xml",
     "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt"
-  ]
+  ],
+  "notes": "18/18 story tests pass. Full suite: 2070 tests, 0 failures, 0 errors. Typecheck: all 6 workspace packages clean. All 8 ACs verified by source inspection and test output."
 }

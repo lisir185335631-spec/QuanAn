@@ -1,39 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="16" failures="0" errors="0" time="0.121">
-    <testsuite name="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" timestamp="2026-05-13T01:18:45.328Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.003122666">
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-1: 写 trendingReviewQueue.create · 不写 trendingItem" time="0.000927875">
+<testsuites name="vitest tests" tests="29" failures="0" errors="0" time="0.139">
+    <testsuite name="tests/unit/web/pages/Copywriting.test.tsx" timestamp="2026-05-15T17:33:28.820Z" hostname="returndeMacBook-Pro.local" tests="29" failures="0" errors="0" skipped="0" time="0.002934292">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; imports and uses CopywritingForm" time="0.000411459">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; autoVerdict=auto_approved 时 status=auto_approved" time="0.0001035">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; imports and uses CopywritingPreview" time="0.0000825">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; autoVerdict=auto_rejected 时 status=auto_rejected · 违禁词命中" time="0.000086875">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; imports and uses CopywritingHistory sidebar" time="0.000073625">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; autoVerdict=needs_review 时 status=pending · 抽样率=1" time="0.000067459">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; calls trpc.copywriting.freeGenerate.useMutation()" time="0.000049375">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-4: P2002 重复 → log warn 不 throw" time="0.000935542">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; uses useSearchParams for URL state (AC-6)" time="0.000074041">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; 非 P2002 错误正常 rethrow" time="0.000317792">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; implements localStorage draft key (AC-7)" time="0.000069084">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-7: 成功写入后写 data_mutation/scraper_enqueue 审计日志" time="0.000094291">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; implements debounce for LS draft save (AC-7)" time="0.000057333">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; AC-1 反向验证: autoScanResult 是 Json 对象写入" time="0.0001665">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="Copywriting.tsx page structure &gt; sets isStreaming=true on mutation success" time="0.000046459">
         </testcase>
-        <testcase classname="apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts" name="processTrendingScraperJob &gt; P2002 时不写 data_mutation 审计" time="0.000086834">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingForm component structure &gt; renders topic textarea with data-testid" time="0.000079333">
         </testcase>
-    </testsuite>
-    <testsuite name="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" timestamp="2026-05-13T01:18:45.329Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.0005685">
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 命中违禁词 → auto_rejected" time="0.00011775">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingForm component structure &gt; renders 6 platform buttons" time="0.000098208">
         </testcase>
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 0 hit + 抽样率=0 → auto_approved" time="0.000141875">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingForm component structure &gt; imports SCRIPT_TYPE_LABELS from lib/constants/scripts" time="0.000060458">
         </testcase>
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 0 hit + 抽样率=1 → needs_review (必然被抽中)" time="0.000039875">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingForm component structure &gt; renders elements checkbox group from HOT_ELEMENT_GROUPS" time="0.000063083">
         </testcase>
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; scanResult 含 checkedAt ISO 时间戳" time="0.000066708">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingForm component structure &gt; renders submit button with ✨ 生成爆款文案" time="0.000040167">
         </testcase>
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; bannedWords 大小写不敏感匹配" time="0.000027916">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingForm component structure &gt; validates topic minimum length (≥10 字)" time="0.000039083">
         </testcase>
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 多条违禁词全部记录在 bannedWordHits" time="0.000074708">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="StreamdownPreview component structure &gt; renders ReactMarkdown with remark-gfm" time="0.000046209">
         </testcase>
-        <testcase classname="apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts" name="computeAutoVerdict &gt; 空内容 + 空规则 → auto_approved" time="0.000035">
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="StreamdownPreview component structure &gt; accepts isStreaming prop and animates content" time="0.000049417">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="StreamdownPreview component structure &gt; shows model meta chunk when modelName provided" time="0.000045">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingPreview component structure &gt; uses lazy StreamdownPreview + Suspense (AC-9)" time="0.000045875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingPreview component structure &gt; renders 复制全文 / 另存为模板 / 保存到历史 三按钮" time="0.000042458">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingPreview component structure &gt; renders error with color=error (AC-4)" time="0.000044375">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingHistory component structure &gt; queries trpc.history.list with agentId=CopywritingAgent" time="0.000059417">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="CopywritingHistory component structure &gt; renders toggle button for collapse" time="0.000045083">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="lib/constants/scripts.ts &gt; exports SCRIPT_TYPE_KEYS_20 and SCRIPT_TYPE_LABELS" time="0.000058667">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="copywritingFreeGenerateInput schema &gt; passes with valid scriptType + elements + topic" time="0.000421834">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="copywritingFreeGenerateInput schema &gt; fails when topic is too short (&lt; 1 char)" time="0.000153083">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="copywritingFreeGenerateInput schema &gt; fails when elements array is empty" time="0.00007425">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="copywritingFreeGenerateInput schema &gt; fails when elements exceed 8 items" time="0.000056209">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="localStorage key utilities &gt; draft key format is copywriting_draft_${userId}_${accountId}" time="0.000049459">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Copywriting.test.tsx" name="localStorage key utilities &gt; getToolLsKey produces correct aiip pattern" time="0.000036209">
         </testcase>
     </testsuite>
 </testsuites>

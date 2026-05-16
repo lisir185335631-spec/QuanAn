@@ -1,49 +1,19 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-13T10:41:00",
-  "validator_end_ts": "2026-05-13T10:52:00",
-  "test_command": "cd apps/admin && pnpm typecheck",
+  "validator_start_ts": "2026-05-15T19:55:00",
+  "validator_end_ts": "2026-05-15T20:08:00",
+  "test_command": "pnpm vitest run tests/unit/web/pages/PrivateDomain.test.tsx",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "td_exemptions": [
-    {
-      "id": "TD-PREEXIST-001",
-      "description": "9 integration tests fail with 'fetch failed' — require running API server. Same 9 failures present in US-004 artifact (auth.test.ts x6, auth.me.test.ts x1, trace.test.ts x2). Not caused by US-005.",
-      "evidence": "verify-artifacts/US-004/pytest-full.xml: identical 9 failures confirmed"
-    },
-    {
-      "id": "TD-PREEXIST-002",
-      "description": "Console errors (net::ERR_CONNECTION_REFUSED) from backend API not running. API startup fails due to pdf-forensic.service.ts importing 'react' package in backend — pre-existing bug outside US-005 scope.",
-      "evidence": "/tmp/quanqn-api.log: ERR_MODULE_NOT_FOUND: Cannot find package 'react' imported from apps/api/src/services/admin/audit/pdf-forensic.service.ts"
-    }
-  ],
+  "notes": "retryCount=1 Opus 驳回修复验证: R-5 localStorage 已从自定义 getDraftKey 改为 getToolLsKey (ls-namespace helper). pnpm audit:redlines 全部 PASS 0 命中. 40/40 unit tests pass. 全量 vitest 2141/2141 pass (0 failures). typecheck web+api 0 errors. AC-10 browse 工具受 RCA-005 多 session 冲突影响无法启动, 改用代码路径 + 单测双重验证: navigateTo('result') at PrivateDomain.tsx:267 (submit→result), :302 (restore→result), unit tests cover view switching/history restore.",
   "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ],
-  "browser_verification": {
-    "screenshots": [
-      "screenshots/validator-us-005-pass-1.png",
-      "screenshots/validator-us-005-pass-2.png",
-      "screenshots/validator-us-005-pass-3.png"
-    ],
-    "ac_results": {
-      "AC-1": "PASS — placeholder.tsx deleted (git show 4da34b0 confirmed git rm), admin-routes metadata.prd:12 at lines 78+87",
-      "AC-2": "PASS — ReviewTrendingFilters.tsx: status/platform(5 opts)/autoVerdict/dateRange + debounce 300ms timer (timerRef.current = setTimeout 300)",
-      "AC-3": "PASS — ReviewTrendingTable.tsx: DenseTable @quanqn/ui/admin, all 7 columns (queueId/platform/sourceUrl/autoVerdict/status/fetchedAt/操作)",
-      "AC-4": "PASS — TrendingReviewDrawer.tsx: 5 tabs visible in screenshot-2 (基本/rawContent/扫描结果/审核状态/链路追溯)",
-      "AC-5": "PASS — OverviewCards.tsx: 4 stat cards visible in screenshot-1 (待审核/已批准/已驳回/命中违禁词)",
-      "AC-6": "PASS — empty state text at ReviewTrendingTable.tsx:222 '暂无待审核内容 · TrendingScraper 抓回后自动入队'; error state renders correctly when backend down",
-      "AC-7": "PASS — ErrorBoundary isError branch renders '数据加载失败 · 重试' (screenshot-1); no white screen",
-      "AC-8": "PASS — RawContentSection: byteLen > 100_000 → default collapsed + '展开 rawContent · Xkb' lazy button",
-      "AC-9": "PASS — useSearchParams: filter switch updates URL (?platform=xiaohongshu visible in screenshot-3)",
-      "AC-10": "PASS — typecheck exit_code=0; dev server http://localhost:5174/admin/reviewTrending → 200",
-      "AC-11": "PASS — browser: 4 stat cards visible, 5 platform options confirmed, platform switch URL-updates, drawer 5 tabs visible",
-      "AC-12": "PASS (TD-PREEXIST-002) — console errors are all ERR_CONNECTION_REFUSED from pre-existing backend infra failure; 0 React key warnings",
-      "AC-13": "PASS — pnpm typecheck exit 0, 0 errors"
-    }
-  }
+    "typecheck.stdout.txt",
+    "vitest.stdout.txt"
+  ]
 }

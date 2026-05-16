@@ -1,8 +1,8 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-13T11:56:00",
-  "validator_end_ts": "2026-05-13T12:02:00",
-  "test_command": "pnpm test (vitest) + pnpm typecheck + pnpm audit:admin-rls-tables",
+  "validator_start_ts": "2026-05-15T20:53:00",
+  "validator_end_ts": "2026-05-16T04:59:00",
+  "test_command": "pnpm vitest run + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,9 +10,7 @@
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "audit-rls.txt",
-    "manifest.json"
+    "typecheck.stdout.txt"
   ],
-  "notes": "zero_regression PASS: 9 pre-existing integration test failures (auth.me.test.ts f=1, auth.test.ts f=6, trace.test.ts f=2) - ECONNREFUSED, require running dev server, unchanged from US-001 through US-006. US-007 schema tests 22/22 PASS. typecheck EXIT:0. audit-admin-rls-tables 26/26 PASS (includes 2 new tables: deep_learn_review_queue + user_violation_log). AC-5 fix confirmed: domain comment '\\u57df\\u2467 DeepLearning \\u5ba1\\u6838' present in audit script at line 29."
+  "notes": "2209 tests passed (0 failed). typecheck all pass. 45 US-007 unit tests pass. Browser: /my-topics?view=card+table renders, Step 7 jump navigates to /step/7?topic=...&source=mytopics&topicId=... Path: MyTopics.tsx placed in pages/modules/ (correct per project convention)"
 }

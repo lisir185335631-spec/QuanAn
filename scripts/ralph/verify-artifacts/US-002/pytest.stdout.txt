@@ -1,26 +1,38 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > AC-1: 写 trendingReviewQueue.create · 不写 trendingItem
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > autoVerdict=auto_approved 时 status=auto_approved
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > autoVerdict=auto_rejected 时 status=auto_rejected · 违禁词命中
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > autoVerdict=needs_review 时 status=pending · 抽样率=1
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > AC-4: P2002 重复 → log warn 不 throw
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > 非 P2002 错误正常 rethrow
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > AC-7: 成功写入后写 data_mutation/scraper_enqueue 审计日志
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > AC-1 反向验证: autoScanResult 是 Json 对象写入
- ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts > processTrendingScraperJob > P2002 时不写 data_mutation 审计
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > 命中违禁词 → auto_rejected
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > 0 hit + 抽样率=0 → auto_approved
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > 0 hit + 抽样率=1 → needs_review (必然被抽中)
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > scanResult 含 checkedAt ISO 时间戳
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > bannedWords 大小写不敏感匹配
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > 多条违禁词全部记录在 bannedWordHits
- ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts > computeAutoVerdict > 空内容 + 空规则 → auto_approved
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > imports and uses CopywritingForm
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > imports and uses CopywritingPreview
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > imports and uses CopywritingHistory sidebar
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > calls trpc.copywriting.freeGenerate.useMutation()
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > uses useSearchParams for URL state (AC-6)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > implements localStorage draft key (AC-7)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > implements debounce for LS draft save (AC-7)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > Copywriting.tsx page structure > sets isStreaming=true on mutation success
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingForm component structure > renders topic textarea with data-testid
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingForm component structure > renders 6 platform buttons
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingForm component structure > imports SCRIPT_TYPE_LABELS from lib/constants/scripts
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingForm component structure > renders elements checkbox group from HOT_ELEMENT_GROUPS
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingForm component structure > renders submit button with ✨ 生成爆款文案
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingForm component structure > validates topic minimum length (≥10 字)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > StreamdownPreview component structure > renders ReactMarkdown with remark-gfm
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > StreamdownPreview component structure > accepts isStreaming prop and animates content
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > StreamdownPreview component structure > shows model meta chunk when modelName provided
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingPreview component structure > uses lazy StreamdownPreview + Suspense (AC-9)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingPreview component structure > renders 复制全文 / 另存为模板 / 保存到历史 三按钮
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingPreview component structure > renders error with color=error (AC-4)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingHistory component structure > queries trpc.history.list with agentId=CopywritingAgent
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > CopywritingHistory component structure > renders toggle button for collapse
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > lib/constants/scripts.ts > exports SCRIPT_TYPE_KEYS_20 and SCRIPT_TYPE_LABELS
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > copywritingFreeGenerateInput schema > passes with valid scriptType + elements + topic
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > copywritingFreeGenerateInput schema > fails when topic is too short (< 1 char)
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > copywritingFreeGenerateInput schema > fails when elements array is empty
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > copywritingFreeGenerateInput schema > fails when elements exceed 8 items
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > localStorage key utilities > draft key format is copywriting_draft_${userId}_${accountId}
+ ✓ tests/unit/web/pages/Copywriting.test.tsx > localStorage key utilities > getToolLsKey produces correct aiip pattern
 
- Test Files  2 passed (2)
-      Tests  16 passed (16)
-   Start at  09:18:45
-   Duration  120ms (transform 24ms, setup 4ms, collect 32ms, tests 4ms, environment 0ms, prepare 20ms)
+ Test Files  1 passed (1)
+      Tests  29 passed (29)
+   Start at  01:31:05
+   Duration  142ms (transform 40ms, setup 5ms, collect 51ms, tests 3ms, environment 0ms, prepare 20ms)
 
-JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-002/pytest.xml

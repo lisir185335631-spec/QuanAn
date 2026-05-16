@@ -1,16 +1,46 @@
 {
   "story_id": "US-012",
-  "validator_start_ts": "2026-05-13T07:38:00",
-  "validator_end_ts": "2026-05-13T07:42:00",
-  "test_command": "pnpm vitest run (root) + pnpm typecheck",
+  "validator_start_ts": "2026-05-15T08:18:00",
+  "validator_end_ts": "2026-05-15T08:21:30",
+  "test_command": "pnpm vitest run tests/unit/api/admin/emergency-switch.test.ts + pnpm vitest run (full) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "16 pre-existing failures in tests/unit/admin/*.tsx (React version mismatch from US-005/ed600df) — unrelated to US-012. US-012 own tests: job=7/7 PASS, service=14/14 PASS.",
   "artifacts": [
+    "vitest.xml",
+    "vitest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ]
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ],
+  "opus_reject_greps": {
+    "getFeatureFlagValue_stop_trending_scraper_in_src": 0,
+    "getSystemConfigValue_stop_trending_scraper_in_src": 1,
+    "fake_flagKey_stop_trending_scraper_in_test": 0
+  },
+  "test_counts": {
+    "unit_emergency_switch": 13,
+    "full_total": 1911,
+    "full_passed": 1907,
+    "full_skipped": 4,
+    "full_failed": 0,
+    "full_errors": 0
+  },
+  "ac_summary": {
+    "ac1": "US-011 seed passes=true · stop_trending_scraper/stop_evolution_agent/enable_fallback_prompt seeded to system_config.isEmergency=true",
+    "ac2": "worker.ts:65 getSystemConfigValue('stop_trending_scraper') ✓ · 修复了 Opus 指出的 getFeatureFlagValue 用错",
+    "ac3": "EvolutionAgent.ts:108 getSystemConfigValue('stop_evolution_agent') → isFallback:true modelUsed:'emergency-disabled' ✓",
+    "ac4": "ContextAssembler.ts:140,225 _fetchActivePrompt + _fetchActiveConstants 检查 enable_fallback_prompt → null ✓",
+    "ac5": "emergencyToggleSystemConfig: requestApproval → emergencyApprove(postReviewRequired=true) → $transaction(_updateSystemConfigInTx) ✓",
+    "ac6": "logAdminAction eventType='emergency_switch_triggered' eventCategory='security_alert' payload含configKey+incidentId ✓",
+    "ac7": "DingtalkService isMock=true by default (DINGTALK_ENABLE!=='true') ✓",
+    "ac8": "emergency-post-review.job.ts: no actionType filter → catch-all for postReviewRequired (含 update_system_config) ✓",
+    "ac9": "emergency-switch.test.ts: 13 it blocks (≥8) · 覆盖 3 开关/bypass/emergencyApprove/postReviewRequired/5s TTL/3 flagType/钉钉isMock/system_config路径 ✓",
+    "ac10": "CACHE_TTL_MS=5000 Map+setInterval 30s cleanup · featureFlagCache + systemConfigCache ✓",
+    "ac11": "Brownfield: 所有 bypass 均为前置 if-return · 不替代原主流程 ✓",
+    "ac12": "1907 tests passed (≥1838) · 4 skipped · 0 failed ✓",
+    "ac13": "pnpm typecheck 6 workspaces all PASS ✓"
+  }
 }

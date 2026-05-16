@@ -1,14 +1,11 @@
 
-> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
-> vitest run apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts
-
-
  RUN  v2.1.9 /Users/return/Desktop/QuanQn
 
- ✓ apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts (44 tests) 10ms
+ ✓ tests/unit/web/pages/PresentStyles.test.tsx (17 tests) 2ms
+ ✓ tests/unit/web/pages/Monetization.test.tsx (14 tests) 1ms
 
- Test Files  1 passed (1)
-      Tests  44 passed (44)
-   Start at  10:23:27
-   Duration  151ms (transform 43ms, setup 4ms, collect 53ms, tests 10ms, environment 0ms, prepare 20ms)
+ Test Files  2 passed (2)
+      Tests  31 passed (31)
+   Start at  02:28:18
+   Duration  109ms (transform 18ms, setup 5ms, collect 18ms, tests 3ms, environment 0ms, prepare 20ms)
 

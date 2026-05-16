@@ -1,57 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="26" failures="0" errors="0" time="0.104">
-    <testsuite name="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" timestamp="2026-05-13T00:47:47.321Z" hostname="returndeMacBook-Pro.local" tests="26" failures="0" errors="0" skipped="0" time="0.002913833">
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts valid pending item" time="0.000708041">
+<testsuites name="vitest tests" tests="7" failures="0" errors="0" time="0.107">
+    <testsuite name="tests/unit/api/seed.test.ts" timestamp="2026-05-15T16:21:41.147Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.003493417">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedIndustries &gt; creates 56 industries on first run" time="0.001088666">
         </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; rejects unknown status value" time="0.000215">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedIndustries &gt; is idempotent: re-seed creates 0 new records" time="0.000239708">
         </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; rejects unknown autoVerdict value" time="0.0000835">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedMockIpAccounts &gt; creates 5 mock IP accounts on first run" time="0.00017375">
         </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts all valid status values" time="0.0001585">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedMockIpAccounts &gt; is idempotent: re-seed creates 0 new accounts" time="0.000125542">
         </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts all valid autoVerdict values" time="0.000089291">
+        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; contains exactly 56 industries" time="0.000068792">
         </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts JSON object for rawContent and autoScanResult" time="0.000060958">
+        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; contains industries in all 5 categories with correct counts" time="0.000087125">
         </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; rejects missing required fields" time="0.00005575">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingReviewQueueSchema &gt; accepts optional fields as undefined" time="0.00004225">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; accepts valid takedown with required fields only" time="0.000115208">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; rejects unknown reason value" time="0.00005">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; accepts all valid reason values" time="0.000064792">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; accepts valid appealResolution values" time="0.000046708">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; rejects unknown appealResolution" time="0.000041334">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="trendingTakedownSchema &gt; rejects non-integer trendingItemId" time="0.000048625">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; accepts valid rule" time="0.0000425">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; rejects unknown ruleType" time="0.00004675">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; accepts all valid ruleType values" time="0.0000525">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; accepts JSON object for ruleValue" time="0.000039292">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; rejects empty ruleKey" time="0.000037083">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; rejects missing updatedByAdminId" time="0.000038458">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="autoReviewRuleSchema &gt; defaults enabled to true when not provided" time="0.000030958">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; trendingReviewStatusEnum has 5 values" time="0.000261666">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; autoVerdictEnum has 3 values" time="0.000043917">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; takedownReasonEnum has 3 values" time="0.000043084">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; appealResolutionEnum has 2 values" time="0.000043167">
-        </testcase>
-        <testcase classname="apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts" name="enum exports &gt; ruleTypeEnum has 3 values" time="0.000045875">
+        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; all industries have required key, label, emoji, and category fields" time="0.001324083">
         </testcase>
     </testsuite>
 </testsuites>

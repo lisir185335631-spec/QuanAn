@@ -1,22 +1,19 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-13T12:51:00",
-  "validator_end_ts": "2026-05-13T12:54:30",
-  "test_command": "pnpm vitest run review-deep-learn.test.ts (43/43 PASS) + pnpm vitest run full (1521 passed, 9 pre-existing FAIL) + pnpm typecheck (0 error)",
+  "validator_start_ts": "2026-05-16T00:13:00",
+  "validator_end_ts": "2026-05-16T00:15:09",
+  "test_command": "bash scripts/verify-prd-15.sh + pnpm vitest run (4 E2E flows) + pnpm typecheck + 5 audit commands",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "zero_regression_note": "全量 vitest run: 1521 passed, 9 failed (all pre-existing ECONNREFUSED in tests/integration/api/ — confirmed identical failures via git stash before US-009 commits)",
-  "ld_a5_grep": "deepLearningArchive.create({ → 1 hit production only (review-deep-learn.ts:66)",
-  "audit_approval_gates": "15 checks, 0 missing — admin.reviewDeepLearn.banUploader in EXCEPTION list",
-  "audit_admin_rls": "50 procedures, 0 violations (44 prior + 6 US-009)",
-  "typecheck": "pnpm typecheck: 0 errors across all 6 workspace packages",
+  "notes": "AC-1: verify-prd-15.sh 9 sections 54 PASS 0 FAIL 2 WARN (deepLearnReview+trendingReview dirs=WARN not FAIL) exit 0. AC-2: Flow1 private-domain 8/8 steps PASS. AC-3: Flow2 copywriting+deeplearning 8/8 steps PASS. AC-4: Flow3 trending->myTopics->step7 7/7 steps PASS. AC-5: Flow4 mock-auth 6/6 steps PASS. AC-6: 5/5 audit commands ALL PASS (redlines+ld+redlines-admin+admin-rls-tables+admin-rls). AC-7: 2279 tests passed (>=2050) 0 fail. AC-8: typecheck 0 errors all 4 workspace packages. AC-9: bash scripts/verify-prd-15.sh 0 failures ALL PASS. AC-10: typecheck 0 errors.",
   "artifacts": [
+    "manifest.json",
     "pytest.xml",
     "pytest.stdout.txt",
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
+    "vitest-full.xml",
+    "vitest-full.stdout.txt",
     "typecheck.stdout.txt"
   ]
 }

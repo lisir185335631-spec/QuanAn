@@ -1,91 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="43" failures="0" errors="0" time="0.151">
-    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" timestamp="2026-05-13T04:52:55.826Z" hostname="returndeMacBook-Pro.local" tests="43" failures="0" errors="0" skipped="0" time="0.010457667">
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; returns paginated items and count" time="0.001964375">
+<testsuites name="vitest tests" tests="29" failures="0" errors="0" time="0.324">
+    <testsuite name="tests/e2e/prd15-copywriting-flow-e2e.test.ts" timestamp="2026-05-16T00:15:05.952Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.043162292">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 1: 个人 IP 起号者账号已创建" time="0.000340084">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; filters by statusFilter" time="0.000322">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 2: /tools/deep-learning — 学一段文案 → DeepLearnReviewQueue 写入 (保存我的库)" time="0.001166125">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; filters by userIdFilter" time="0.000219916">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 3: /tools/deep-learning 列表 — 见新加入的 pending 条目" time="0.001497459">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; filters by autoVerdictFilter" time="0.00016225">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 4: /tools/copywriting — 选脚本类型 + 元素 + 主题 → freeGenerate 提交" time="0.000289334">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; applies dateRange filter" time="0.000521625">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 5: SSE 流式输出 — mock markdown ≥200 chars (AC-5: freeGenerate 调 CopywritingAgent)" time="0.00008475">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; writes cross_account_query audit log" time="0.000664125">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 6: 保存到历史 — history.create (agentMode=free, scriptType=tutorial)" time="0.001940375">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; readonly_admin can call list" time="0.000280292">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 7: /history?tools=copywriting — 见新记录 (agentId=CopywritingAgent)" time="0.001760459">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; list &gt; handles empty results" time="0.000215375">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 8: cost_log 写入 (CopywritingAgent · tokensUsed=850 · 0 失败)" time="0.0017595">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns full item with autoScanResult and metadata" time="0.000193458">
+    </testsuite>
+    <testsuite name="tests/e2e/prd15-mock-auth-e2e.test.ts" timestamp="2026-05-16T00:15:05.953Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.0384305">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 1: DEV_OAUTH_MOCK=true → isDevOAuthMock() returns true (auth middleware AC-3)" time="0.000083542">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns userViolationCount from userViolationLog" time="0.000170416">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 2: auth.me 返 mock user — getDevMockUserAttrs 可查到 dev 用户" time="0.000550917">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns archiveId when approved" time="0.00011225">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 3: Header 显示 5 mock 账号下拉 — ipAccounts.list 返回 5 账号" time="0.001434084">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; returns textPreview from fileName" time="0.000097334">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 4: 切换 OPC 创业者 → localStorage.aiip_active_account_id 写入 (user.activeAccountId update)" time="0.002450583">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; truncates textPreview for very long filenames" time="0.000136708">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 5: reload 仍登录 + 账号选中 — activeAccountId 持久化" time="0.000297875">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; throws NOT_FOUND when item missing" time="0.000386625">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 6: 切换 MCN 矩阵号 — followers KPI = 1000-10000 · mcn-manager ipPositioning" time="0.001253459">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; detail &gt; readonly_admin can call detail" time="0.000125208">
+    </testsuite>
+    <testsuite name="tests/e2e/prd15-private-domain-e2e.test.ts" timestamp="2026-05-16T00:15:05.953Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.035149334">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 1: 测试用户 + OPC 账号已创建" time="0.000089833">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; approves a pending item and creates deepLearningArchive" time="0.000287166">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 2: /tools/private-domain?view=config — 提交 6 字段 → history 写入 (AC-3/AC-4)" time="0.001596834">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; calls queue update twice: status + archiveId (atomic)" time="0.000125041">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 3: history 内容包含 6 阶段 key (attract → repurchase)" time="0.001426209">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; deepLearningArchive.create called exactly once (LD-A-5)" time="0.000106958">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 4: 流式 6 阶段 — 验证阶段顺序符合 PRIVATE_DOMAIN_STAGES 定义" time="0.000071584">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; writes data_mutation/deep_learn_review_approve audit" time="0.000158291">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 5: cost_log 写入 (AC-8: mock 账单记录 provider=mock)" time="0.001780416">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; throws already_processed when status is approved" time="0.000159958">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 6: 第 2 次生成 (不同参数) → 再写 1 条 history" time="0.00070325">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; throws already_processed when archiveId is set" time="0.000103583">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 7: view=history — 列表含 2 条 PrivateDomainAgent 记录 (倒序)" time="0.001227291">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; throws NOT_FOUND when queue missing" time="0.00010875">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 8: cost_log 聚合 — 本账号 PrivateDomainAgent 调用计数 ≥1" time="0.001043333">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; approve &gt; readonly_admin approve → FORBIDDEN" time="0.000114917">
+    </testsuite>
+    <testsuite name="tests/e2e/prd15-trending-to-step7-e2e.test.ts" timestamp="2026-05-16T00:15:05.954Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.04618175">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 1: 用户 + 账号 + Trending 条目已创建" time="0.000085583">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; rejects item and upserts userViolationLog count+1" time="0.00025325">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 2: /tools/trending?platform=xiaohongshu — 收藏一条 (trending.favorite add)" time="0.003088542">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; writes data_mutation/deep_learn_review_reject audit" time="0.000143167">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 3: trending_favorites 表 — 记录已写入 + trendingItem 可查" time="0.00137425">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; triggers security_alert when violation count &gt;= 3" time="0.000166083">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 4: /my-topics?view=card&amp;source=trending — 收藏可见 (trending JOIN favorites)" time="0.001197958">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; does NOT trigger alert when violation count &lt; 3" time="0.000112958">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 5: 点击收藏 → Step 7 跳转 /step/7?topic=...&amp;trendingId=xxx (URL 参数构建)" time="0.000060584">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; throws already_rejected when status is rejected" time="0.000113459">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 6: Step 7 input 自动填充 + 提交 → step_data 写入 (含 trendingId)" time="0.002547959">
         </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; throws already_processed when status is approved (AC-9)" time="0.000131834">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; throws NOT_FOUND when queue missing" time="0.000120417">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; reject &gt; readonly_admin reject → FORBIDDEN" time="0.000113792">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; super_admin: auto_executed + creates approvalRequest + suspends via updateMany" time="0.0002805">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; admin: pending + creates approvalRequest + no suspension" time="0.000121958">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; super_admin writes high_risk_action/ban_uploader audit" time="0.000125041">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; admin writes high_risk_action/approval_request_create audit" time="0.000146208">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; throws uploader_already_suspended when suspendedAt is set" time="0.000122709">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; readonly_admin banUploader → FORBIDDEN" time="0.000080167">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; banUploader &gt; approvalRequest created with correct riskLevel=high" time="0.00036975">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; returns violations for a specific userId" time="0.00015575">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; returns all high-count violations when userId is undefined" time="0.000196166">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; writes cross_account_query audit log" time="0.000163542">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; readonly_admin can call userViolations" time="0.000121458">
-        </testcase>
-        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts" name="reviewDeepLearnRouter &gt; userViolations &gt; returns empty when no violations found" time="0.000111708">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 7: 双写验证 — trending_favorites + step_data 均已写入" time="0.005514958">
         </testcase>
     </testsuite>
 </testsuites>
