@@ -56,7 +56,20 @@ vi.mock('@/lib/trpc', () => ({
       search: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       getById: { useQuery: () => ({ data: null, isLoading: false }) },
     },
-    trending: { fetch: { useQuery: () => ({ data: [], isLoading: false }) } },
+    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
+    trending: {
+      fetch: { useQuery: () => ({ data: [], isLoading: false }) },
+      listWithFavorites: { useQuery: () => ({ data: [], isLoading: false }) },
+      kpiStats: { useQuery: () => ({ data: null, isLoading: false }) },
+      favorite: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+    myTopics: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      countBySource: { useQuery: () => ({ data: null, isLoading: false }) },
+      add: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      update: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     copywriting: {
       freeGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
       acquisitionGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
@@ -144,18 +157,18 @@ describe('Tool pages render', () => {
   });
 
   it('Trending renders h1 heading', () => {
-    render(<Trending />);
+    render(<MemoryRouter><Trending /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款库');
   });
 
   it('Copywriting renders h1 heading', () => {
-    render(<Copywriting />);
+    render(<MemoryRouter><Copywriting /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款文案创作');
   });
 
   it('Knowledge renders h1 heading', () => {
     render(<Knowledge />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('方法论知识库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('知识库');
   });
 });
 
@@ -196,7 +209,7 @@ describe('Module pages render', () => {
   });
 
   it('MyTopics renders h1 heading', () => {
-    render(<MyTopics />);
+    render(<MemoryRouter><MyTopics /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选题库');
   });
 
