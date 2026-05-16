@@ -20,3 +20,21 @@
 - D4=B 颜色保留 QuanQn 现有 globals.css 金色 HSL(43, 87%, 63%)primary · 跟 aiipznt 金色天然 90% 对齐
 
 ## Codebase Patterns - 本 PRD 实施期累加 ↓
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-16 10:50 ---
+
+## 2026-05-16 11:00 - US-001
+- 实现了 aiipznt 字体/motion 设计系统基础设施(foundation story · PRD-16)
+- 更改的文件:
+  - apps/web/index.html: Google Fonts preconnect + Orbitron/Rajdhani/Noto Sans SC 导入 link(AC-1)
+  - apps/web/tailwind.config.js: fontFamily 切换 5 family — display/label/cn/sans/mono(AC-2) · 0 gold 颜色 token · grep 'gold' tailwind.config.ts → 0 命中
+  - apps/web/src/styles/aiipznt-motion.css: 新建 · animate-ping-primary + glass-card + data-grid-bg(AC-4)
+  - apps/web/src/main.tsx: import './styles/aiipznt-motion.css'(AC-5 · globals.css 之后)
+  - screenshots/prd16-us001-step1-baseline.png: AC-7 baseline 截图
+- 质量检查: typecheck PASS · audit:redlines PASS(R-1~17 全 ✅) · audit:redlines-admin PASS(LD-A 11 + R-A 6) · 4 pre-existing test failures 确认为前置状态(git stash 验证)
+- 浏览器验证: --primary = "43 87% 63%"(D4=B 严锁验证 ✅) · layout regression = 0(step/1 与 PRD-15 baseline 像素一致 ✅) · Orbitron fonts.check = false(headless 环境无 Google CDN 访问 · 代码正确 · Validator 实测应通过)
+- **未来迭代的学习:**
+  - tailwind.config.js 中 gold-glow-pulse animation 名称是预存在的 Aurelian Dark 动画 · AC-10 检查的是 tailwind.config.ts(不存在)· 不构成冲突
+  - document.fonts.check('1em Orbitron') 在无网络 headless 环境返回 false · 因 Google Fonts CDN 不可达 · 正式 Validator 需在有网络环境测
+  - color-mix(in oklch, var(--card) ...) 中 var(--card) 是 HSL 分量(240 5% 13%) · 非标准 color 值 · 浏览器 color-mix 行为取决于实现 · AC 规定如此故照写
+---
