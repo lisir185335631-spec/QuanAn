@@ -178,3 +178,14 @@
   - 验证方式: grep -E "from-|via-|to-" Home.tsx → 全部必须是 -primary 或 -primary/[0-9]+ 系列
   - Opus reject 反例反复提到: 不允许用 violet-X / amber-X / yellow-X 等具名色 utility 作主品牌色
 ---
+
+--- [RALPH] Iteration 9 started: US-003 at 2026-05-16 13:29 ---
+
+## [2026-05-16 13:32] - US-003
+- 修复进度条 gradient: `from-violet-600 to-violet-400` → `from-primary to-primary/60`（1 行代码，AC-3 原文指定）
+- 截图 screenshots/prd16-us003-home-ipprogress.png（金色 gradient 与 Hero H1 同色系）
+- 更改的文件: apps/web/src/pages/Home.tsx (line 64), screenshots/prd16-us003-home-ipprogress.png
+- **未来迭代的学习:**
+  - Tailwind utility 颜色（violet-X/amber-X）不等于 CSS token（`--primary`）—— 即使视觉上相似，D4=B 严锁 token 不引入新 utility
+  - PRD AC 中"紫色 gradient"描述与代码`from-primary to-primary/60`是同义词（因为 QuanQn primary token 实际是金色）—— 应以代码为准而非文字描述
+---
