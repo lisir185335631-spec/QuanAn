@@ -161,6 +161,22 @@ function WorkflowSection() {
   );
 }
 
+function ReadyToStartSection() {
+  return (
+    <section className="text-center py-16 mb-8">
+      <h2 className="font-display text-4xl md:text-5xl font-black text-primary tracking-widest mb-4">
+        READY TO START?
+      </h2>
+      <p className="font-cn text-lg text-muted-foreground mb-8">是时候开始了，IP 打造在等你</p>
+      <Link to="/step/1">
+        <Button className="font-cn bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-4 text-lg">
+          立即启动 →
+        </Button>
+      </Link>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main className="flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen">
@@ -168,6 +184,7 @@ export default function Home() {
       <IpProgressSection />
       <FunctionMatrixSection />
       <WorkflowSection />
+      <ReadyToStartSection />
     </main>
   );
 }
