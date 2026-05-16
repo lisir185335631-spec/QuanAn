@@ -14,6 +14,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from '@/layouts/RootLayout';
 import { StepLayout } from '@/layouts/StepLayout';
 import Home from '@/pages/Home';
+import Guide from '@/pages/Guide';
 import NotFound from '@/pages/NotFound';
 
 // ── Step pages (9 + 2 sub-steps) — one shared chunk ──────────────────────────
@@ -66,6 +67,9 @@ export const router = createBrowserRouter([
     children: [
       // Home page
       { index: true, element: <Home /> },
+
+      // Guide page
+      { path: 'guide', element: <Guide /> },
 
       // ── Step routes (9 core + 2 sub-steps) — nested under StepLayout ──────
       {
