@@ -1,4 +1,5 @@
-import { Menu, LogOut, Plus, ChevronDown, Wrench, User, LogIn } from 'lucide-react';
+import { Menu, LogOut, Plus, ChevronDown, User, LogIn } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -17,34 +18,7 @@ import { AccountSwitcher } from '@/components/AccountSwitcher';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { useAuth } from '@/hooks/useAuth';
 import { trpc } from '@/lib/trpc';
-
-// ── Static data ────────────────────────────────────────────────────────────────
-
-const TOOLS_14 = [
-  { label: '全网爆款库', href: '/trending', category: '市场洞察' },
-  { label: '爆款文案创作', href: '/copywriting', category: '内容创作' },
-  { label: '14 呈现形式', href: '/present-styles', category: '市场洞察' },
-  { label: 'IP 变现模型', href: '/monetization', category: '变现设计' },
-  { label: '私域成交', href: '/private-domain', category: '变现设计' },
-  { label: '爆款元素生成', href: '/boom-generate', category: '变现设计' },
-  { label: 'AI 智能生成', href: '/generate', category: '内容创作' },
-  { label: '文案结构分析', href: '/analysis', category: '内容创作' },
-  { label: '短视频制作', href: '/video-production', category: '内容创作' },
-  { label: '获客型视频', href: '/acquisition-video', category: '内容创作' },
-  { label: '一键生成视频', href: '/ai-video', category: '智能工具' },
-  { label: '语音对话', href: '/voice-chat', category: '智能工具' },
-  { label: '深度学习', href: '/deep-learning', category: '智能工具' },
-  { label: '方法论知识库', href: '/knowledge', category: '智能工具' },
-] as const;
-
-const NEW_MODULES_6 = [
-  { label: 'IP 诊断', href: '/diagnosis' },
-  { label: '每日任务', href: '/daily-tasks' },
-  { label: '进化中心', href: '/evolution' },
-  { label: 'IP 账号', href: '/accounts' },
-  { label: '选题库', href: '/my-topics' },
-  { label: '历史记录', href: '/history' },
-] as const;
+import { HEADER_NAV } from '@/lib/constants/header-nav';
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
@@ -114,42 +88,37 @@ function UserDropdown() {
   );
 }
 
-
-function ToolsDropdown() {
+function HeaderNav() {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1.5 h-8 px-2 text-on-surface"
-          aria-label="工具入口"
-          data-testid="header-tools-trigger"
-        >
-          <Wrench className="h-3.5 w-3.5 text-primary" />
-          <span className="text-label-md font-medium">工具</span>
-          <ChevronDown className="h-3 w-3 text-muted-foreground" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" className="w-56" data-testid="header-tools-menu">
-        <DropdownMenuLabel>14 工具</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <ScrollArea className="h-52">
-          {TOOLS_14.map((tool) => (
-            <DropdownMenuItem key={tool.href} className="text-body-sm">
-              {tool.label}
-            </DropdownMenuItem>
-          ))}
-        </ScrollArea>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>6 新模块</DropdownMenuLabel>
-        {NEW_MODULES_6.map((mod) => (
-          <DropdownMenuItem key={mod.href} className="text-body-sm text-muted-foreground">
-            {mod.label}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <nav className="hidden lg:flex items-center gap-1">
+      {HEADER_NAV.map((group) => (
+        <DropdownMenu key={group.label}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 h-8 px-2.5 text-on-surface"
+              aria-label={group.label}
+            >
+              <span className="text-label-md font-medium">{group.label}</span>
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="min-w-[180px] rounded-xl border border-primary/15 bg-popover/95 backdrop-blur-xl shadow-lg shadow-primary/5 mt-1"
+          >
+            {group.items.map((item) => (
+              <DropdownMenuItem key={item.href} asChild>
+                <Link to={item.href} className="cursor-pointer">
+                  {item.label}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ))}
+    </nav>
   );
 }
 
@@ -168,14 +137,14 @@ function MobileNav() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 sm:hidden"
+          className="h-8 w-8 lg:hidden"
           aria-label="打开菜单"
           data-testid="header-hamburger"
         >
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 p-0" data-testid="header-mobile-sheet">
+      <SheetContent side="left" className="w-72 p-0 flex flex-col" data-testid="header-mobile-sheet">
         <SheetHeader className="px-4 pt-5 pb-3 border-b border-border">
           <SheetTitle className="text-h2">QuanQn</SheetTitle>
           {user ? (
@@ -196,7 +165,7 @@ function MobileNav() {
           )}
         </SheetHeader>
 
-        <ScrollArea className="flex-1 h-[calc(100vh-100px)]">
+        <ScrollArea className="flex-1">
           <div className="px-3 py-3 space-y-1">
             <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">IP 账号</p>
             {accounts.map((acc) => (
@@ -219,29 +188,23 @@ function MobileNav() {
 
             <Separator className="my-2" />
 
-            <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">14 工具</p>
-            {TOOLS_14.map((tool) => (
-              <button
-                key={tool.href}
-                className="w-full flex items-center px-2 py-2 rounded-md hover:bg-accent text-body-sm text-on-surface"
-              >
-                {tool.label}
-              </button>
+            {HEADER_NAV.map((group) => (
+              <div key={group.label}>
+                <p className="font-label uppercase tracking-wider px-2 text-label-md text-muted-foreground py-1">
+                  {group.label}
+                </p>
+                {group.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="w-full flex items-center px-2 py-2 rounded-md hover:bg-accent text-body-sm text-on-surface"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <Separator className="my-2" />
+              </div>
             ))}
-
-            <Separator className="my-2" />
-
-            <p className="px-2 text-label-md text-muted-foreground uppercase tracking-wider py-1">新模块</p>
-            {NEW_MODULES_6.map((mod) => (
-              <button
-                key={mod.href}
-                className="w-full flex items-center px-2 py-2 rounded-md hover:bg-accent text-body-sm text-muted-foreground"
-              >
-                {mod.label}
-              </button>
-            ))}
-
-            <Separator className="my-2" />
 
             {user && (
               <button
@@ -274,9 +237,12 @@ export function Header() {
           </span>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1 flex-1">
+        <div className="hidden sm:flex items-center gap-1">
           <AccountSwitcher />
-          <ToolsDropdown />
+        </div>
+
+        <div className="flex-1 flex justify-center">
+          <HeaderNav />
         </div>
 
         <div className="ml-auto flex items-center gap-1">
