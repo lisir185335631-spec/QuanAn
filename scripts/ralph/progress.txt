@@ -426,3 +426,26 @@
   - playwright 测试不依赖 backend — trpc useQuery 失败时 UI 仍渲染静态 structure(null coalescing 防崩)
   - prd16 e2e tests 用 @playwright/test (浏览器驱动) 而非 vitest(jsdom)· 两种共存在 tests/e2e/ 目录
 ---
+
+--- [RALPH] Iteration 20 ended: US-011 (1小时 17分钟 58秒) ---
+
+--- [RALPH] Iteration 21 started: US-011 at 2026-05-16 19:12 ---
+
+--- [RALPH] Iteration 3 started: US-011 at 2026-05-16 19:18 ---
+
+## 2026-05-16 19:25 - US-011
+- 收官 verify-prd-16.sh 9 sections + 4 e2e flows (第3次迭代 · 修复所有 CONFIRMED 问题)
+- 更改的文件:
+  - tests/e2e/prd16-home-flow.spec.ts (新建 · 从 .test.ts 重命名 + 修复 buttons 5-7)
+  - tests/e2e/prd16-guide-flow.spec.ts (新建 · 从 .test.ts 重命名 + 修复选择器)
+  - tests/e2e/prd16-header-dropdown-flow.spec.ts (新建 · 从 .test.ts 重命名)
+  - tests/e2e/prd16-ip-plan-flow.spec.ts (新建 · 从 .test.ts 重命名)
+  - tests/e2e/prd16-*.test.ts (删除 4 个旧文件)
+- **未来迭代的学习:**
+  - Playwright test files 必须用 .spec.ts，不能用 .test.ts — 根 vitest.config.ts include: tests/e2e/**/*.test.ts 会误收 .test.ts，导致 @playwright/test test.describe() 在 vitest 上下文崩溃
+  - Guide.tsx glass-card 存在 3 类: RECOMMENDED_FLOW(无 cursor-pointer) / SYSTEM_OVERVIEW(无 cursor-pointer) / ModuleCard(有 cursor-pointer) — 用 .glass-card.cursor-pointer 才能精确定位 ModuleCard
+  - 函数矩阵卡片 title 可能在 desc 中出现（如"爆款呈现形式"在"14种爆款呈现形式全解析"中），导致 getByText() strict mode 报 2 elements — 用 .first() 或 getByRole 消歧
+  - StepProgress.tsx 的步骤 div 无导航功能，测试导航必须用 FUNCTION_MATRIX cards (Link 包裹)
+  - verify-prd-16.sh 9 sections ALL PASS: 33/33 passed, 0 failed
+  - 4 e2e spec files: 24/24 tests passed on chromium
+---
