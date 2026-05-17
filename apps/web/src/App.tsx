@@ -1,8 +1,19 @@
+import { useEffect } from 'react';
+
 import { Toaster } from 'sonner';
 
 import { Header } from '@/components/Header';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { migrateLegacyLs } from '@/lib/migration/legacy-ls';
 
 export function App() {
+  const { account, isLoading } = useActiveAccount();
+
+  useEffect(() => {
+    if (isLoading || account === null) return;
+    migrateLegacyLs(localStorage, account.id);
+  }, [account?.id, isLoading]);
+
   return (
     <>
       <Toaster position="top-center" richColors />
