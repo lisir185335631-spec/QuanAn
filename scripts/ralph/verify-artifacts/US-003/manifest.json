@@ -1,15 +1,14 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-16T13:36:00",
-  "validator_end_ts": "2026-05-16T13:43:00",
-  "test_command": "cd apps/web && pnpm typecheck && pnpm test",
+  "validator_start_ts": "2026-05-17T13:46:00",
+  "validator_end_ts": "2026-05-17T13:52:00",
+  "test_command": "cd apps/web && pnpm typecheck && pnpm test + agent-browser AC-5/6/7",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "AC-1..8 all pass. Gradient fixed: from-primary to-primary/60 (gold rgb(242,202,80), per Opus audit requirement). No violet-/amber-/yellow- utilities in Home.tsx. Links: 查看IP方案→/ip-plan, 继续→/step/1. Screenshot saved to screenshots/prd16-us003-home-ipprogress.png. Typecheck exit 0. Vitest exit 0 (no test files).",
+  "notes": "AC-1..8 all pass. Selected state card renders with glass-card border-primary/40 bg-primary/5, emoji text-3xl, '已选择:美业', keywords '美容院、美发、美甲、美睫、纹绣'. CTA uses bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70, no violet/amber/gold. Disabled state shows STEP1_CTA_DISABLED_HINT. handleSubmit sets localStorage acc_step1 and navigates /step/3. Browser verified: click '💅美业' → state card appears (AC-5); CTA click → URL becomes /step/3 (AC-6); localStorage acc_step1 industry='beauty' (AC-7). Typecheck exit 0. Vitest 70 tests pass (8 files).",
   "artifacts": [
-    "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"

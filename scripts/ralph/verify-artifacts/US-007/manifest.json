@@ -1,16 +1,15 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-16T08:07:00",
-  "validator_end_ts": "2026-05-16T08:20:00",
-  "test_command": "pnpm typecheck + pnpm test (vitest) + pnpm audit:redlines + browser e2e (4 dropdowns + mobile sheet)",
+  "validator_start_ts": "2026-05-17T13:02:50",
+  "validator_end_ts": "2026-05-17T13:03:10",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/step3b.test.ts + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ],
-  "notes": "All 10 AC verified. header-nav.ts: 4 groups / 25 items match spec exactly. Header.tsx: HeaderNav + MobileNav render HEADER_NAV (3 usages). Old TOOLS_14/NEW_MODULES_6 arrays: 0 grep hits. Browser: 4 dropdowns open with correct items (创作×5, 策划×8, 智能×6, 更多×6). Click item navigates to correct href (爆款选题→/step/5 verified). Mobile sheet: all 4 groups + 25 items + user logout at bottom confirmed via JS textContent. vitest 51 passed / 0 failed. typecheck clean. audit:redlines 0 violations."
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ]
 }

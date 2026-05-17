@@ -1,8 +1,8 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-16T12:00:00",
-  "validator_end_ts": "2026-05-16T12:15:00",
-  "test_command": "pnpm vitest run + pnpm typecheck + pnpm audit:redlines + pnpm audit:redlines-admin + playwright AC-6 font check + AC-7 screenshot",
+  "validator_start_ts": "2026-05-17T12:39:00",
+  "validator_end_ts": "2026-05-17T12:40:45",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/industries.test.ts + pnpm vitest run (全量) + pnpm tsc --noEmit",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -11,6 +11,5 @@
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"
-  ],
-  "notes": "AC-1~10 全部通过。51 vitest tests pass. typecheck pass. audit:redlines 17 rules pass. audit:redlines-admin 11 LD-A + 6 R-A pass. AC-6: --primary=43 87% 63% 不变(D4=B锁), document.fonts.check('1em Orbitron')=true(body::before预载触发Orbitron:400:loaded). AC-7: step/1截图layout无回归. AC-9: gold token grep 0命中. AC-10: tailwind.config.js gold-glow-pulse为pre-existing animation名(非新增gold颜色token)."
+  ]
 }

@@ -1,8 +1,8 @@
 {
   "story_id": "US-010",
-  "validator_start_ts": "2026-05-16T09:45:00",
-  "validator_end_ts": "2026-05-16T09:53:00",
-  "test_command": "pnpm vitest run + pnpm typecheck",
+  "validator_start_ts": "2026-05-17T16:51:00",
+  "validator_end_ts": "2026-05-17T16:52:30",
+  "test_command": "pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts + pnpm test + pnpm tsc --noEmit + bash scripts/verify-prd-17.sh",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,6 +10,19 @@
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ]
+    "typecheck.stdout.txt",
+    "playwright.stdout.txt",
+    "manifest.json"
+  ],
+  "notes": {
+    "zero_regression": "70 tests passed (8 test files) — vitest run",
+    "typecheck": "0 errors — tsc --noEmit",
+    "playwright_e2e": "1 test passed (11.4s) — prd-17-step1-3-3b.spec.ts",
+    "verify_script": "12/12 checks passed — verify-prd-17.sh",
+    "screenshots": [
+      "apps/web/e2e/screenshots/prd-17-step1.png (127955 bytes)",
+      "apps/web/e2e/screenshots/prd-17-step3.png (88591 bytes)",
+      "apps/web/e2e/screenshots/prd-17-step3b.png (74398 bytes)"
+    ]
+  }
 }

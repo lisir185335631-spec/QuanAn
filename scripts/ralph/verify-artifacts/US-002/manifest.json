@@ -1,19 +1,16 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-16T04:10:00",
-  "validator_end_ts": "2026-05-16T04:17:00",
-  "test_command": "pnpm typecheck + pnpm test (vitest 51 tests) + pnpm audit:redlines + browser AC-6/AC-7",
+  "validator_start_ts": "2026-05-17T05:35:00",
+  "validator_end_ts": "2026-05-17T05:43:00",
+  "test_command": "pnpm vitest run + pnpm typecheck + browser verification",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "typecheck.stdout.txt",
-    "test.stdout.txt",
     "pytest-full.stdout.txt",
-    "pytest-full.xml",
-    "audit-redlines.stdout.txt",
+    "typecheck.stdout.txt",
     "manifest.json"
   ],
-  "notes": "All 9 ACs verified. typecheck 0 errors. 51 vitest tests passed (zero regression PASS). audit:redlines 0 violations (17 red lines all pass). Browser: URL stays at /, H1 Orbitron font confirmed (computed font-family starts with Orbitron), CTAs navigate correctly (/step/1 and /guide). Screenshot saved at screenshots/prd16-us002-home-hero.png (1440px). Only pre-existing React Router v7 warnings in console (no errors). AC-9: 0 gold hardcoded colors found."
+  "notes": "70 tests passed (pnpm vitest run). Typecheck clean. Browser verified: 6 tabs grid-cols-6 all correct, 56 industry cards grid rendered, search placeholder matches constant, tab filter (life→18), search filter (美容院→美业), combined filter (生活服务+教育→0+empty state), console 0 errors (only pre-existing React Router future flag warning)."
 }

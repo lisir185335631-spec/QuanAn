@@ -1,8 +1,8 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-16T00:00:00",
-  "validator_end_ts": "2026-05-16T00:15:00",
-  "test_command": "pnpm vitest run (web) + pnpm typecheck + agent-browser AC-5",
+  "validator_start_ts": "2026-05-17T08:18:00",
+  "validator_end_ts": "2026-05-17T08:28:00",
+  "test_command": "pnpm vitest run (70 tests) + pnpm typecheck + browser AC-12/13/14",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,9 +10,7 @@
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "validator-us-008-pass-7.png",
-    "validator-us-008-pass-8.png"
+    "typecheck.stdout.txt"
   ],
-  "notes": "AC-1 PASS: button/dropdown classNames correct. AC-2 PASS: HeaderRight=AccountSwitcher+UserChip+LogoutIconButton. AC-3 PASS: UserChip pure display. AC-4 PASS: icon-only logout. AC-5 PASS: 管理账号→/accounts in dropdown; NO 新建账号; UserChip pulsing dot; logout no modal. AC-6 PASS: screenshot saved. AC-7 PASS: 6/6 vitest pass, typecheck 0 errors. AC-8 PASS: 0 onClick/events on UserChip, 0 confirm/Dialog/Modal on logout."
+  "notes": "70/70 vitest tests pass. typecheck clean. AC-12 prefill confirmed via JS value check (textarea.value=我是 X). AC-13 all 5 H3 rendered after CTA. AC-14: 0 console errors (only pre-existing React Router warnings), 0 生成参考图 buttons, 5x{复制/重新生成/智能优化}=15 buttons correct."
 }

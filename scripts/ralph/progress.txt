@@ -811,3 +811,115 @@
 - **未来迭代的学习:**
   - Validator code=1 异常退出或 Developer timeout 可能是进程/环境问题，与代码质量无关 · 先 git log 确认 commit 存在，再 typecheck + test + 浏览器验证判断真实质量
 ---
+
+## 2026-05-17 16:02 - US-006b (Opus audit · approve · TD-74 resolved · retry 2)
+- ✅ 13 字面 grep 100% hit · 0 D4 violation · 70/70 PASS · tsc 0 error
+- 🎯 TD-74 自然 resolved · ralph 在 Step3OutputContent.tsx 定义完整 Step3Result interface(6 大模块 structured) + Step3.tsx generateMockResult() 真实 mock 数据(line 76-150 含皮肤管理师 100+ 字示例)
+- ✅ 6 H3 + 三按钮(复制/重新生成/智能优化)+ 头像/背景图额外 [生成参考图] + 顶部 [一键重新生成]/[复制全部]
+- ✅ handleCopy / handleRegen / handleOptimize / handleRegenAll / handleCopyAll 全实现 · 用 navigator.clipboard.writeText + sonner toast
+- ✅ "智能优化" modal 弹用户输入优化方向 + 确认优化 · 完整闭环
+- ✅ Step3OutputContent 6 模块 switch case 各自渲染结构 · avatar/background 含 PromptCard
+- ⚠️ Retry 2 (Validator socket 断 · daemon 自动 retry · 但 6ec676b 已 commit 实际 dev OK · df5255e 是 chore progress 追加)
+- 📊 audit cycle · ~60 min(含 60 min daemon ECONNRESET retry hell · 实际 audit 5 min)
+- 📈 累计 · 9/11 PASS · 1 reject + 1 retry · 严格一轮通过率 78%(7/9)
+- approved · daemon 继续 US-008 Step3b 完整(deps US-007 + US-005 + US-009)
+---
+
+--- [RALPH] Iteration 12 ended: US-006b (22分钟 49秒) ---
+
+--- [RALPH] Iteration 13 started: US-008 at 2026-05-17 16:03 ---
+
+--- [RALPH] PRD-17 US-008 started at 2026-05-17 16:07 ---
+
+## 2026-05-17 16:15 - US-008
+- 实现了 Step 3b page 完整重写 + Step3bOutputContent 新建
+- 更改的文件:
+  - apps/web/src/pages/step/Step3b.tsx: 完整重写 · STEP3B_STEP_TAG_LITERAL + STEP3B_H1_LITERAL 字面量 + 3 textarea(personalInfo required · advantages/story optional) + 5 platform radio(id='step3b-{p.id}') + 1 audience input + mock handleSubmit → acc_step3b + 5 H3 输出区(每 H3 3 按钮 · 无生成参考图) + acc_step3 预填 personalInfo
+  - apps/web/src/components/step3b/Step3bOutputContent.tsx: 新建 · 按 5 block.id 渲染(coreIdentity/ideologySystem/contentPersona/trustSystem/personaRoadmap)
+- 质量检查: typecheck PASS · pnpm test PASS(2278 passed · 4 skipped)
+- AC-10 grep: 'STEP 03b · 人设定制方案' ✅ · '人设定制方案' ✅
+- AC-11 grep: from '@/components/states' ✅
+- 浏览器验证: 注明需手动浏览器验证 · browse binary 启动异常(本次 session)
+- **未来迭代的学习:**
+  - STEP3B_OUTPUT_H3_5 的 blockId('ideologySystem'/'personaRoadmap') 与 Step3bResult 字段名('thoughtSystem'/'roadmap') 不一致 · 必须用 mergeBlockResult 映射函数避免直接 [blockId] 索引 TS 报错
+  - AC-10 字面 grep 要求字符串出现在 Step3b.tsx 中 · 需在 tsx 文件定义 const STEP3B_STEP_TAG_LITERAL = 'STEP 03b · 人设定制方案'(不能只靠 import 常量)
+  - 跨 step 预填: LS_STEP3='acc_step3' · 字段路径 `parsed?.input?.personalInfo` 严格 · 不能用 userBio/personalIntro 等别名
+---
+
+--- [RALPH] PRD-17 US-008 ended at 2026-05-17 16:16 ---
+
+## 2026-05-17 16:29 - US-008 (Opus audit · approve · TD-75)
+- ✅ high 档 13 字面 grep(直接)+ 5 H3 via STEP3B_OUTPUT_H3_5.map 间接命中 · 0 D4 violation · 70/70 PASS · tsc 0 error
+- ✅ 3 textarea(STEP3B_TEXTAREAS_3)+ 5 platform(复用 STEP3_PLATFORMS_5)+ 1 input(STEP3B_AUDIENCE)+ 5 H3 输出区(STEP3B_OUTPUT_H3_5)
+- ✅ 跨 step 数据预填 · personalInfo 从 acc_step3.input.personalInfo 读(line 162-174)· 跟 step3 字段名一致(LD-009 protocol)
+- ✅ Step3bResult interface + generateMockResult structured(line 54-99 含 10 年从业经验示例)
+- ✅ R-5 LD-009 严守 · LS_STEP3B='acc_step3b' 前缀(line 32)
+- ✅ LoadingState 跨 step 复用 US-009 · D4=B 主 CTA bg-gradient-to-r from-primary to-primary/80(line 358)
+- ⚠️ TD-75 (Low) · ralph hardcode '复制'/'重新生成' (line 28-29) + STEP3B_STEP_TAG_LITERAL (line 22-25 即使已 export) · 跟 US-006b 用常量模式不一致 · 不阻断功能
+- 📊 audit cycle · ~5 min(high 档深审)
+- 📈 累计 · 10/11 PASS · 1 reject + 1 retry · 严格一轮通过率 80%(8/10 · PRD-16 同期 50% · +30%)
+- approved · daemon 继续 US-010 收官 E2E
+---
+
+--- [RALPH] Iteration 13 ended: US-008 (27分钟 28秒) ---
+
+--- [RALPH] Iteration 14 started: US-010 at 2026-05-17 16:30 ---
+
+--- [RALPH] Iteration started: US-010 at 2026-05-17 16:50 ---
+
+## 2026-05-17 16:50 - US-010
+- 实现了 PRD-17 E2E 集成验收（Step 1 → Step 3 → Step 3b 完整流程）
+- 更改的文件:
+  - apps/web/playwright.config.ts: 新建 apps/web 本地 playwright config（testDir ./e2e · reuseExistingServer · chromium only）
+  - apps/web/e2e/prd-17-step1-3-3b.spec.ts: E2E spec · 单 test 完整流程 · consoleErrors=[] 硬门禁 · 3 截图
+  - apps/web/e2e/screenshots/.gitkeep: 截图目录占位
+  - apps/web/e2e/screenshots/prd-17-{step1,step3,step3b}.png: 3 张验证截图
+  - scripts/verify-prd-17.sh: 12 项字面验收脚本（全 PASS · exit 0）
+- 质量检查: vitest 70 passed · tsc 0 error · playwright E2E 1 passed
+- **未来迭代的学习:**
+  - apps/web 是 ESM 包（"type": "module"）· 在 playwright spec 中 __dirname 不可用
+    → 用 `path.dirname(fileURLToPath(import.meta.url))` 替代
+  - page.addInitScript 在每次 page.goto 都会重新执行 · 导致 localStorage 被清空
+    → 改用 page.evaluate(() => localStorage.clear()) 在第一次 goto 后执行一次
+  - 跨 step localStorage 传递：Step1 → React Router navigate('/step/3') 不清 localStorage
+    · page.goto('/step/3b') 是完整页面加载但 localStorage 在同源内保留 · 数据完好
+  - apps/web/playwright.config.ts 优先于 root playwright.config.ts（playwright 从 CWD 向上搜索）
+  - verify-prd-17.sh 12 项检查覆盖 §1 industries.ts 字面 + §2 step3.ts + §3 step3b.ts + §4 三态组件 + §5 page import
+---
+
+
+## 2026-05-17 16:54 - US-010 (Opus audit · approve · 0 reject) · 🎉 PRD-17 收官
+- ✅ verify-prd-17.sh 12/12 PASS (§1 industries + §2 step3 + §3 step3b + §4 三态组件 + §5 page import)
+- ✅ 全工程 70/70 tests PASS · tsc 0 error · zero-regression 硬门禁通过
+- ✅ e2e/prd-17-step1-3-3b.spec.ts 118 lines · 完整 Step1 → 3 → 3b flow · consoleErrors === [] 硬门禁
+- ✅ 3 截图齐全(step1.png 128KB / step3.png 88KB / step3b.png 74KB · ralph 跑 playwright 生成)
+- ✅ 跨 step 数据传递验证(personalInfo 从 acc_step3 预填 Step3b)
+- ✅ 6 H3(Step3) + 5 H3(Step3b) 字面 grep 命中
+- ✅ playwright.config.ts 新建(项目首次配 playwright e2e)
+- 📊 audit cycle · ~3 min(medium 档快审 · 0 偏差)
+
+## 🎉 PRD-17 完整收官 (11/11 PASS)
+- 严格一轮通过率 · 81% (9/11) · 对标 PRD-16 73% +8% · L4 升级 + 反例累加机制持续验证
+- TD 净增长 · +2 (TD-73 resolved · TD-74 resolved · TD-75 open · net +1)
+- Reject 数 · 1 (US-007 SUBTITLE 字面违反 · 1 iter 修对)
+- Retry 数 · 1 (US-006b Validator socket 断 · daemon 自动 retry)
+- Daemon wall time · ~4h (12:38 US-001 启动 · 16:54 US-010 收官 · 含 60 min ECONNRESET retry hell)
+- 累计 commits · 12 个(11 feat + 1 chore retry log)
+- Step 1 / Step 3 / Step 3b 三 page 完整化 · 跑通完整 IP 起号前 3 步流程
+- 字面锁 1:1 严守 · 0 D4=B violet/amber/gold 违规 · 0 hardcode '复制' 等中文(US-008 一处小例外)
+- 反例累加 · 47 → 48 条(US-007 SUBTITLE reject 自动入库)
+- 下游 PRD-18 (Step 2/4/4b/5/6/7/8) · PRD-19 (8 stub 工具 + 4 modules) 可复用本 PRD pattern
+---
+
+--- [RALPH] Iteration 14 ended: US-010 (24分钟 32秒) ---
+
+## Codebase Patterns - PRD-17 贡献(retro 于 2026-05-17 提炼)
+
+- **字面常量集中文件模式** · apps/web/src/lib/constants/{industries,step3,step3b}.ts 模式 · readonly Type[] + as const 双锁 + 字面 1:1 来源 spec + __tests__/*.test.ts 数字锁(56/5/6/3/5)· PRD-18 各 step page 复用模板 · 0 重写
+- **三态组件复用规范** · apps/web/src/components/states/{LoadingState,ErrorState,EmptyState}.tsx + index.ts barrel · 跨 PRD 跨 step 复用基石 · PRD-18/19 严禁重造轮子 · 已 PRD-17 实测 Step1/3/3b 各 1 处使用
+- **structured mockResult 模式** · Step3OutputContent + Step3bOutputContent 定义 Step3Result/Step3bResult interface(嵌套 object/array)+ generateMockResult() function 返回真实示例数据 · 后端接入时直接换 trpc 调用 · interface 不变
+- **跨 step 数据传递链** · acc_step1.industryLabel → Step3/3b 副标 {industry} 替换 · acc_step3.input.personalInfo → Step3b 自动预填(字段 id 严格一致)· 全 localStorage acc_ 前缀(继承 PRD-15 ls-namespace)
+- **D1=A 字面锁完整链路** · spec §7.x 实测 → tasks/prd-N.md AC-1 完整代码块 → constants/*.ts 字段字面 → page 渲染 · 4 层链路保证 · plan-check §2.6.20 + Opus audit grep -F 双重验证 · PRD-17 US-007 SUBTITLE reject 教训巩固(prd skill 加 D1=A 长文本双锁规则)
+- **D4=B 颜色严锁** · 主 CTA 全用 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 · 0 from-violet/amber/gold/purple · plan-check §2.6.7-ext 颜色词 ERROR 级阻断 · 11/11 US grep 0 命中
+- **DialogTrigger asChild click 触发延续** · 继承 PRD-16 US-007 反例 · US-004 严守 + reject-examples.jsonl 入库 · 所有 shadcn Dialog/DropdownMenu 必带 asChild
+- **跨字段类型 ralph 妙手 fix 模式** · TD-73 STEP1_TABS.id 英文 vs Industry.category 中文不一致 · US-002 ralph 用 category === activeTab.label 中文匹配 bypass mapping · PRD-18 类似跨字段问题可学

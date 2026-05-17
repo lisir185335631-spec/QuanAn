@@ -9,24 +9,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   STEP3B_AUDIENCE,
+  STEP3B_BUTTON_COPY,
   STEP3B_BUTTON_COPY_ALL,
   STEP3B_BUTTON_OPTIMIZE,
+  STEP3B_BUTTON_REGENERATE,
   STEP3B_CTA_LABEL,
+  STEP3B_H1,
   STEP3B_LOADING_TEXT,
   STEP3B_OUTPUT_H3_5,
+  STEP3B_STEP_TAG,
   STEP3B_SUBTITLE_TEMPLATE,
   STEP3B_TEXTAREAS_3,
   type Step3bOutputBlock,
 } from '@/lib/constants/step3b';
-
-// Literal constants for AC-10 grep
-const STEP3B_STEP_TAG_LITERAL = 'STEP 03b · 人设定制方案';
-const STEP3B_H1_LITERAL = '人设定制方案';
 import { STEP3_PLATFORMS_5 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
-const BUTTON_COPY = '复制';
-const BUTTON_REGENERATE = '重新生成';
 const LS_STEP1 = 'acc_step1';
 const LS_STEP3 = 'acc_step3';
 const LS_STEP3B = 'acc_step3b';
@@ -281,9 +279,9 @@ export default function Step3b() {
     <main className="flex-1 container py-8">
       {/* AC-1: step tag + H1 + subtitle */}
       <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP3B_STEP_TAG_LITERAL}
+        {STEP3B_STEP_TAG}
       </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP3B_H1_LITERAL}</h1>
+      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP3B_H1}</h1>
       <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
@@ -393,7 +391,7 @@ export default function Step3b() {
                       size="sm"
                       onClick={() => handleCopy(block.id)}
                     >
-                      {BUTTON_COPY}
+                      {STEP3B_BUTTON_COPY}
                     </Button>
                     <Button
                       variant="outline"
@@ -401,7 +399,7 @@ export default function Step3b() {
                       onClick={() => handleRegen(block.id)}
                       disabled={regenLoadingBlocks.includes(block.id)}
                     >
-                      {regenLoadingBlocks.includes(block.id) ? '生成中...' : BUTTON_REGENERATE}
+                      {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3B_BUTTON_REGENERATE}
                     </Button>
                     <Button
                       variant="outline"

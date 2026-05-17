@@ -21,8 +21,8 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/lib/constants/) 涉及的 TD · 主动 fix · commit message 加 [TD-XXX resolved] tag",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -68,8 +68,8 @@
       ],
       "depends_on": [],
       "priority": 2,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -121,8 +121,8 @@
       ],
       "depends_on": [],
       "priority": 3,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -167,8 +167,8 @@
       ],
       "depends_on": [],
       "priority": 4,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -220,14 +220,19 @@
         "使用 agent-browser 验证 · 56 行业 emoji 双行卡 grid 渲染 + 搜索框 placeholder 显示 '搜索行业名称或关键词（如：美容院、餐饮、教育...）' + 控制台 0 error",
         "Typecheck 通过"
       ],
-      "depends_on": ["US-001", "US-009"],
+      "depends_on": [
+        "US-001",
+        "US-009"
+      ],
       "priority": 5,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 Step1.tsx scope",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/Step1.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/Step1.tsx"
+      ],
       "test_command": "cd apps/web && pnpm tsc --noEmit",
       "size_hint": "medium",
       "risk_level": "medium",
@@ -247,14 +252,18 @@
         "使用 agent-browser · 验证 localStorage 存在 'acc_step1' key · 值含 industry: 'beauty'",
         "Typecheck 通过"
       ],
-      "depends_on": ["US-002"],
+      "depends_on": [
+        "US-002"
+      ],
       "priority": 6,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/Step1.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/Step1.tsx"
+      ],
       "test_command": "cd apps/web && pnpm tsc --noEmit",
       "size_hint": "small",
       "risk_level": "medium",
@@ -274,14 +283,18 @@
         "使用 agent-browser · Modal 关闭 · 顶部状态卡显示 '已选择:宠物服务(自定义)' · 底部 CTA 变可点击",
         "Typecheck 通过"
       ],
-      "depends_on": ["US-002"],
+      "depends_on": [
+        "US-002"
+      ],
       "priority": 7,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 shadcn Dialog 默认行为",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/Step1.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/Step1.tsx"
+      ],
       "test_command": "cd apps/web && pnpm tsc --noEmit",
       "size_hint": "small",
       "risk_level": "medium",
@@ -313,14 +326,19 @@
         "使用 agent-browser · 填 textarea + 选 '📱 抖音' · CTA 变可点击 · 点击进入 loading · 控制台 0 error",
         "Typecheck 通过"
       ],
-      "depends_on": ["US-005", "US-009"],
+      "depends_on": [
+        "US-005",
+        "US-009"
+      ],
       "priority": 8,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 Step3.tsx + form 模式",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/Step3.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/Step3.tsx"
+      ],
       "test_command": "cd apps/web && pnpm tsc --noEmit",
       "size_hint": "medium",
       "risk_level": "high",
@@ -365,14 +383,21 @@
         "使用 agent-browser · 每 H3 右侧三按钮可见 · 头像/背景图 H3 额外显示 [生成参考图] · 顶部右侧 [一键重新生成] [复制全部] 可见 · 点 H3 第 1 的 [复制] toast '已复制' · 控制台 0 error",
         "Typecheck 通过"
       ],
-      "depends_on": ["US-006a", "US-005"],
+      "depends_on": [
+        "US-006a",
+        "US-005"
+      ],
       "priority": 9,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/components/step3/Step3OutputContent.tsx"],
-      "files_to_modify": ["apps/web/src/pages/Step3.tsx"],
+      "files_to_create": [
+        "apps/web/src/components/step3/Step3OutputContent.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Step3.tsx"
+      ],
       "test_command": "cd apps/web && pnpm tsc --noEmit",
       "size_hint": "medium-large",
       "risk_level": "high",
@@ -421,14 +446,22 @@
         "使用 agent-browser · 每 H3 右侧三按钮 '复制' '重新生成' '智能优化' (无 [生成参考图])· 控制台 0 error",
         "Typecheck 通过"
       ],
-      "depends_on": ["US-007", "US-005", "US-009"],
+      "depends_on": [
+        "US-007",
+        "US-005",
+        "US-009"
+      ],
       "priority": 10,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 Step3b.tsx + 跨 step 预填 · large page 但复用 US-006 模式 · 不必拆",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/components/step3b/Step3bOutputContent.tsx"],
-      "files_to_modify": ["apps/web/src/pages/Step3b.tsx"],
+      "files_to_create": [
+        "apps/web/src/components/step3b/Step3bOutputContent.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Step3b.tsx"
+      ],
       "test_command": "cd apps/web && pnpm tsc --noEmit",
       "size_hint": "medium-large",
       "risk_level": "high",
@@ -472,10 +505,15 @@
         "★ 零回归硬门禁 · 跑全工程已有测试 · cd apps/web && pnpm test 全 PASS · 0 fail · 不允许引入 fail",
         "Typecheck 全工程 · cd apps/web && pnpm tsc --noEmit 0 error"
       ],
-      "depends_on": ["US-003", "US-004", "US-006b", "US-008"],
+      "depends_on": [
+        "US-003",
+        "US-004",
+        "US-006b",
+        "US-008"
+      ],
       "priority": 11,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 e2e 类 TD",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [

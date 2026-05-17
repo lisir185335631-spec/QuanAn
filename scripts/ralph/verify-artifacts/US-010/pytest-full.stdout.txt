@@ -5,17 +5,22 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ src/components/StepProgress.test.tsx (6 tests) 19ms
- ✓ src/test/step-progress.test.tsx (10 tests) 24ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 67ms
-stderr | src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 29ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 40ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 44ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 66ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/test/pages.test.tsx (30 tests) 176ms
+ ✓ src/test/pages.test.tsx (30 tests) 172ms
 
- Test Files  4 passed (4)
-      Tests  54 passed (54)
-   Start at  17:45:20
-   Duration  1.19s (transform 331ms, setup 123ms, collect 890ms, tests 287ms, environment 619ms, prepare 136ms)
+ Test Files  8 passed (8)
+      Tests  70 passed (70)
+   Start at  16:51:40
+   Duration  1.40s (transform 415ms, setup 386ms, collect 1.35s, tests 355ms, environment 2.17s, prepare 381ms)
 
+exit_code:0

@@ -1414,8 +1414,85 @@
       "resolved_in_prd": "prd-16-aiipznt-alignment",
       "resolved_at": "2026-05-17T03:55:20.497297",
       "resolved_notes": "PRD-16 retro 一并修 · TD-71 rm seed-knowledge-chunk.test.ts · TD-72 sed 5 q 加全角 ？"
+    },
+    {
+      "id": "TD-73",
+      "title": "PRD-17 US-001 · STEP1_TABS.id (英文) vs Industry.category (中文) 跨字段类型不一致",
+      "description": "ralph 实施 US-001 时为保持 PRD-15 IndustryDropdown 兼容(line 43-44 / 48 都用中文 category)· 选择 IndustryCategory 类型用中文 enum '生活服务'|'电商零售'|... · 但 STEP1_TABS.id 用英文 'life'|'ecom'|... · PRD AC 字面写英文 enum · 现实代码 architecture trade-off 跟 PRD AC 字面不一致 · 同时 STEP1_TABS[0].emoji 也偏离 PRD AC '' → '🌐'。下游 US-002 Tab 筛选实现 'activeTab.id === industry.category' 直接比较会永远 false · 必须加 TAB_ID_TO_CATEGORY mapping 或改 STEP1_TABS.id 用中文 label",
+      "scope": [
+        "apps/web/src/lib/constants/industries.ts:7",
+        "apps/web/src/lib/constants/industries.ts:36",
+        "apps/web/src/components/IndustryDropdown.tsx:43-48",
+        "tasks/prd-17.md#§1-US-001-AC-1"
+      ],
+      "impact": "Medium · US-002 实施时 Tab 筛选逻辑需要 TAB_ID_TO_CATEGORY mapping(否则 activeTab.id 'life' !== industry.category '生活服务' Tab 筛选永远 0 结果)· 若 ralph 漏 mapping → US-002 reject",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "cross-story-protocol"
+      ],
+      "created_in_prd": "prd-17-step1-3-3b",
+      "detected_in_prd": "prd-17-step1-3-3b",
+      "detected_in_story": "US-001 (Opus audit)",
+      "fix_by": "US-002 实施时一并处理(加 TAB_ID_TO_CATEGORY mapping · 或改 STEP1_TABS.id 改中文 label · 或反向改 industry.category 改英文 + 改 IndustryDropdown 适配)",
+      "status": "resolved",
+      "fix_hint": "推荐 Option A · US-002 实施时加 STEP1_CATEGORY_MAP 在 industries.ts · 如 export const STEP1_CATEGORY_MAP: Record<Step1Tab['id'], IndustryCategory | null> = { all: null, life: '生活服务', ecom: '电商零售', create: '内容创作', pro: '专业服务', mfg: '产业制造' }; · US-002 筛选用 industry.category === STEP1_CATEGORY_MAP[activeTab.id]",
+      "resolved_in_prd": "prd-17-step1-3-3b",
+      "resolved_at": "2026-05-17T13:41:35",
+      "resolved_in_story": "US-002",
+      "resolved_notes": "US-002 ralph 用 `ind.category === activeTab.label` (中文 vs 中文) 妙手解决类型不一致 · 不需 STEP1_CATEGORY_MAP mapping · activeTabId === \"all\" 特判用 STEP1_INDUSTRIES_56 全集 · Tab 筛选逻辑正确。STEP1_TABS[0].emoji \"🌐\" 仍偏离 PRD AC \"\" 但仅 cosmetic 视觉小偏差(全部行业 tab 多个 🌐 icon)· 已在 US-001 approve · 不再追究。"
+    },
+    {
+      "id": "TD-74",
+      "title": "PRD-17 US-006a · mockResult 简化为 string · US-006b 渲染要 array/object 结构 forward-looking mismatch",
+      "description": "ralph 实施 US-006a 时把 mockResult 6 大模块全简化为 string(line 81-93 · 如 videoReferences: '...占位...')· 但 PRD AC US-006b-2 要求 array/object 结构(videoReferences: Array<{title,description,platform,searchQuery}> × 3 / nickname: {recommended/strategy/platformAdjust} / avatar: {style/colorScheme/...})· US-006b ralph 接力时若直读 acc_step3.result 会撞 type mismatch · 需自行重新 mock 结构化数据",
+      "scope": [
+        "apps/web/src/pages/step/Step3.tsx:81-93",
+        "tasks/prd-17.md#§1-US-006b-AC-2"
+      ],
+      "impact": "Low · US-006b ralph 实施时会自然重新 mock(因为它要按 PRD AC structured 渲染)· 不算 blocker · 但 acc_step3 持久化的 mockResult 跨 reload 会被 US-006b 覆盖",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "forward-looking"
+      ],
+      "created_in_prd": "prd-17-step1-3-3b",
+      "detected_in_prd": "prd-17-step1-3-3b",
+      "detected_in_story": "US-006a (Opus audit)",
+      "fix_by": "US-006b 实施时自然 fix(ralph 重 mock structured)· 或 maintenance commit 统一",
+      "status": "resolved",
+      "fix_hint": "US-006b 应在 Step3.tsx 把 mockResult 改为 structured · videoReferences: 3 个 {title,description,platform,searchQuery}/nickname: {recommended,strategy,platformAdjust}/avatar: {style,colorScheme,...,aiPrompt}/background: 同/bio: {formula,versions × 6}/strategy: {visualConsistency,...,platformPriority}",
+      "resolved_in_prd": "prd-17-step1-3-3b",
+      "resolved_at": "2026-05-17T16:02:57",
+      "resolved_in_story": "US-006b",
+      "resolved_notes": "US-006b ralph 在 Step3OutputContent.tsx 定义完整 Step3Result interface(line 9-37 含 6 大模块嵌套 structured object)+ Step3.tsx generateMockResult() (line 76-150) 返回 structured object · 不是 US-006a string · 跟 PRD AC US-006b-2 完全一致。useEffect line 179-181 同时支持 saved.result 预填 · 跨 reload 安全。"
+    },
+    {
+      "id": "TD-75",
+      "title": "PRD-17 US-008 · Step3b.tsx hardcode 偏离统一常量 import 模式",
+      "description": "ralph 实施 US-008 时 · (1) line 28-29 hardcode BUTTON_COPY='复制' BUTTON_REGENERATE='重新生成' · 因 step3b.ts 没 export 这两按钮常量 · 跟 US-006b 用 STEP3_BUTTON_COPY/REGENERATE 模式不一致;(2) line 22-25 加 STEP3B_STEP_TAG_LITERAL/STEP3B_H1_LITERAL 重新 hardcode · 即使 step3b.ts 已 export 同名常量(注释说'for AC-10 grep')· 偏离常量集中原则。功能 OK(字面 1:1)· 但实现细节不统一",
+      "scope": [
+        "apps/web/src/pages/step/Step3b.tsx:22-29",
+        "apps/web/src/lib/constants/step3b.ts (缺 STEP3B_BUTTON_COPY/REGENERATE export)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟 US-006b 不一致 · PRD-18 后续 step page 应统一",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency"
+      ],
+      "created_in_prd": "prd-17-step1-3-3b",
+      "detected_in_prd": "prd-17-step1-3-3b",
+      "detected_in_story": "US-008 (Opus audit)",
+      "fix_by": "PRD-18 启动前 maintenance commit 统一 · 或下游 step page (Step4/4b/5/6/7/8) 实施时一并修",
+      "status": "resolved",
+      "fix_hint": "step3b.ts 新建 STEP3B_BUTTON_COPY/REGENERATE export(或 Step3b.tsx import STEP3_BUTTON_COPY/REGENERATE from step3.ts 复用)· 同时 Step3b.tsx line 22-25 删 LITERAL 替换为 STEP3B_STEP_TAG/STEP3B_H1 常量 import",
+      "resolved_in_prd": "prd-17-step1-3-3b",
+      "resolved_at": "2026-05-17T17:22:02",
+      "resolved_in_story": "maintenance commit (retro 收官)",
+      "resolved_notes": "PRD-17 retro 收官 maintenance fix · step3b.ts 新增 STEP3B_BUTTON_COPY/REGENERATE export · Step3b.tsx 删 hardcode BUTTON_COPY/REGENERATE/STEP3B_*_LITERAL · 全部用 step3b.ts 常量 import · 70/70 tests PASS · tsc 0 error · L4 升级 plan-check §2.6.21 已 apply 防 PRD-18+ 复发"
     }
   ],
-  "last_updated": "2026-05-17T03:55:20.497297",
+  "last_updated": "2026-05-17T17:22:02",
   "total": 44
 }

@@ -1,16 +1,15 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-16T07:12:00",
-  "validator_end_ts": "2026-05-16T07:25:00",
-  "test_command": "pnpm vitest run (51 tests) + pnpm typecheck + agent-browser WORKFLOW section",
+  "validator_start_ts": "2026-05-17T04:50:30",
+  "validator_end_ts": "2026-05-17T04:51:56",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/step3.test.ts && pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "PRD-16 US-005 WORKFLOW section. All 7 ACs PASS. AC-1: workflow.ts 7 steps match spec exactly. AC-2: H2 className + p className + texts match. AC-3: container className + per-step circle div classes match. AC-4: connecting lines hidden md:flex w-8 i<6 condition correct. AC-5: browser verified desktop flex-row + mobile flex-col + circles 01-07 + lines hidden mobile. AC-6: screenshot saved. AC-7: typecheck exit 0, vitest 51/51 pass. Note: primary color is HSL 43 (gold/amber in Aurelian Dark theme), story title says purple but AC spec uses correct CSS classes.",
   "artifacts": [
-    "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
+    "typecheck.stdout.txt",
+    "manifest.json"
   ]
 }

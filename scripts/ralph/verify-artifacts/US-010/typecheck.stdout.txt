@@ -1,4 +1,1 @@
-
-> @quanqn/web@0.1.0 typecheck /Users/return/Desktop/QuanQn/apps/web
-> tsc --noEmit
-
+exit_code:0

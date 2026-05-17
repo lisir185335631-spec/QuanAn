@@ -1,11 +1,25 @@
 
 > @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
-> vitest run --config vitest.config.ts run
+> vitest run --config vitest.config.ts
 
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
-filter:  run
-include: src/**/*.{test,spec}.{ts,tsx}
-exclude:  **/node_modules/**, **/dist/**, **/cypress/**, **/.{idea,git,cache,output,temp}/**, **/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*
-No test files found, exiting with code 0
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 2ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 3ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 34ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 40ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 34ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 74ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/test/pages.test.tsx (30 tests) 169ms
+
+ Test Files  8 passed (8)
+      Tests  70 passed (70)
+   Start at  13:46:19
+   Duration  1.33s (transform 452ms, setup 337ms, collect 1.37s, tests 358ms, environment 2.12s, prepare 373ms)
+
