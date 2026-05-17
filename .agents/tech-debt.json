@@ -1370,8 +1370,52 @@
       "fix_hint": "PRD-15 retro 改 AC2: industry 值用 schema enum (enterprise/food/self_media/beauty) + platform=douyin (单平台 mock OK)",
       "resolved_in_prd": null,
       "resolved_at": null
+    },
+    {
+      "id": "TD-71",
+      "title": "PRD-15 收尾遗留 · seed-knowledge-chunk.test.ts 引用已删 source",
+      "description": "PRD-15 收尾 commit e9fba62 删了 apps/api/scripts/seed-knowledge-chunk.ts 但忘删 tests/integration/api/seed-knowledge-chunk.test.ts · 跑 pnpm test 报 Failed to load url ../../../apps/api/scripts/seed-knowledge-chunk · 1 test file fail / 2278 tests pass · pre-existing 非本 PRD 引入",
+      "scope": [
+        "tests/integration/api/seed-knowledge-chunk.test.ts"
+      ],
+      "impact": "pnpm test 输出 1 failed test file · pollute zero-regression baseline · CI 可能 fail · 但 PRD-16 实施期可豁免 approve(非 PRD-16 引入)",
+      "severity": "Low",
+      "categories": [
+        "test-coverage",
+        "pre-existing-debt"
+      ],
+      "detected_in_prd": "prd-16-aiipznt-alignment",
+      "detected_in_story": "US-002 audit(pre-existing 实际来自 PRD-15 e9fba62 漏删)",
+      "fix_by": "PRD-16 retro 或 PRD-17 启动前 · rm test file 或重建 stub",
+      "status": "resolved",
+      "fix_hint": "选项 A · rm tests/integration/api/seed-knowledge-chunk.test.ts(seed-knowledge-chunk 功能 PRD-15 收尾已确认不需要)· 选项 B · 重建 apps/api/scripts/seed-knowledge-chunk.ts stub(若功能仍要)",
+      "resolved_in_prd": "prd-16-aiipznt-alignment",
+      "resolved_at": "2026-05-17T03:55:20.497297",
+      "resolved_notes": "PRD-16 retro 一并修 · TD-71 rm seed-knowledge-chunk.test.ts · TD-72 sed 5 q 加全角 ？"
+    },
+    {
+      "id": "TD-72",
+      "title": "PRD-16 US-009 /guide FAQ 5 q 缺全角问号",
+      "description": "ralph 实现 guide.ts FAQS 5 个 q 全缺全角 question mark(PRD AC-3 字面写含 question mark · ralph 漏 5 处). 视觉 accordion 仍可用, 不影响功能, 但 D1=A 像素级文字内容微 drift.",
+      "scope": [
+        "apps/web/src/lib/constants/guide.ts"
+      ],
+      "impact": "Low - accordion 视觉效果不变, 仅 question mark 缺失",
+      "severity": "Low",
+      "categories": [
+        "text-drift",
+        "punctuation-missing"
+      ],
+      "detected_in_prd": "prd-16-aiipznt-alignment",
+      "detected_in_story": "US-009 audit",
+      "fix_by": "PRD-16 retro 时 sed 5 q 加 question mark",
+      "status": "resolved",
+      "fix_hint": "sed -i 5 q 字符串末尾加 question mark",
+      "resolved_in_prd": "prd-16-aiipznt-alignment",
+      "resolved_at": "2026-05-17T03:55:20.497297",
+      "resolved_notes": "PRD-16 retro 一并修 · TD-71 rm seed-knowledge-chunk.test.ts · TD-72 sed 5 q 加全角 ？"
     }
   ],
-  "last_updated": "2026-05-15T16:26:07.734215Z",
+  "last_updated": "2026-05-17T03:55:20.497297",
   "total": 44
 }

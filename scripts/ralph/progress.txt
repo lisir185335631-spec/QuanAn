@@ -449,3 +449,15 @@
   - verify-prd-16.sh 9 sections ALL PASS: 33/33 passed, 0 failed
   - 4 e2e spec files: 24/24 tests passed on chromium
 ---
+
+--- [RALPH] Iteration 21 ended: US-011 (31分钟 1秒) ---
+
+## Codebase Patterns - PRD-16 贡献(retro 于 2026-05-17 提炼 · 跨 PRD 复用)
+- 字体设计系统切换 · Orbitron(大标题)+ Rajdhani(副标)+ Noto Sans SC(中文)· Google Fonts preconnect + display=swap · 仅 9 字重 ~150 KB 增量
+- glass-card / data-grid-bg / animate-ping-primary 3 utility 跨 4-7 US 复用 · color-mix(in oklch, var(--primary) X%, transparent) 紫色变体技巧(实际渲染金色因 --primary 是金色)
+- document.fonts.check('1em Orbitron') 需页面元素实际用 Orbitron:400 才返回 true · ralph 自创 body::before invisible preload trick + 自避 R-16 红线(放 index.html 不放 src/styles/)
+- Header 4 dropdown click 触发(非 hover)· shadcn DropdownMenuTrigger asChild 默认 click · min-w-[180px] rounded-xl border-primary/15 bg-popover/95 backdrop-blur-xl shadow-primary/5
+- D4=B 颜色严锁 · 不引入 Tailwind 默认色 utility(violet-X / amber-X / yellow-X 等)作主品牌色 · 仅 status semantic indicator(PhaseCard attract=blue / trust=yellow / DailyTasks easy=green / TrendingTable yellow-400 收藏)可保留
+- D1=A 像素级 layout · PRD AC 锁定的 desc / title / label / 文案 / 标点字面必须严格 1:1 · 不允许 ralph 创意改写 · 跨 US 协议锁(HEADER_NAV / FUNCTION_MATRIX / WORKFLOW_STEPS / GUIDE_MODULES / STEP_CARDS / FAQS 6 组 constants 文件 + 12 跨 US 命名锁)
+- RCA-006 path-B 救场实证 · US-007 dev timed_out 30 min + commit 1a23a64 完整 + validator 跑 + 1 iter 一次过 · 复杂 component 重构在 dev timeout 边界仍能交付
+- playwright e2e 必须用 .spec.ts(不能用 .test.ts · 根 vitest.config.ts include 会误收 · @playwright/test test.describe() 在 vitest 上下文崩溃)· tests/e2e/ 目录可 .spec.ts(playwright)+ .test.ts(vitest)共存

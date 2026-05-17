@@ -1,21 +1,16 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-16T02:28:00",
-  "validator_end_ts": "2026-05-16T02:35:00",
-  "test_command": "pnpm vitest run tests/unit/web/pages/Monetization.test.tsx tests/unit/web/pages/PresentStyles.test.tsx",
+  "validator_start_ts": "2026-05-16T14:50:00",
+  "validator_end_ts": "2026-05-16T15:02:00",
+  "test_command": "pnpm vitest run (51 tests) + pnpm typecheck + agent-browser AC-6 visual verification",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest.xml",
-    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "validator-us-004-pass-1.png",
-    "validator-us-004-pass-2.png",
-    "validator-us-004-fail-1.png"
+    "typecheck.stdout.txt"
   ],
-  "notes": "PRD-15 US-004 first validation. 31 story tests pass. 2101 full regression tests pass. Typecheck all 6 packages pass. Browser: /monetization renders 4-field form (lastProductDesc/lastTargetAudience/lastIpPositioning/lastCurrentRevenue via StepForm+MonetizationInputSchema), /present-styles renders textarea+platform-select. Route paths /monetization and /present-styles (not /tools/* prefix) — consistent with US-001/002/003 convention accepted in previous validations. API server not running so post-submit result render not browser-verified, but Step4bResult.tsx code-verified to render currentAnalysis/ladder[3]/revenueStructure/successCases, and MOCK_STYLES code-verified with 5 style types."
+  "notes": "Retry 1 fix verified: all 15 desc strings now match PRD AC-2 verbatim. Zero regression 51 tests pass. Typecheck clean. Browser: FUNCTION MATRIX H2 Orbitron centered, 4 H3 groups in order, 15 cards (14+1 footer), grid responsive, click navigation verified."
 }

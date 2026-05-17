@@ -3059,6 +3059,105 @@ useEffect(() => {
 
 ---
 
+### §11.9 PRD-16 aiipznt-alignment Phase-1 沉淀(PRD-16 retro 2026-05-17 文档回流 · 28 commits 事实驱动)
+
+> **派生** · `.agents/retros/prd-16-vs-prd-15-retrospective.md §12` · 11/11 PASSED · 73% 严格一轮通过率 · +6% vs PRD-15. PRD-16 是首个全前端 aiipznt 对齐 PRD · 沉淀 5 个跨 PRD 复用模式 + 2 L4 plan-check 升级(M-1 颜色词 ERROR / M-2 D1=A 文字字面锁) · 防 PRD-17~19 重蹈.
+
+#### §11.9.1 字体设计系统切换(PRD-16 US-001 · `apps/web/index.html` + `tailwind.config.js` + `styles/aiipznt-motion.css`)
+
+主应用 web 切 aiipznt 字体系统(D1=A 像素级 · 颜色保留 D4=B) ·
+
+| 元素 | 实施 | grep 验证 |
+|---|---|---|
+| **`display` family** | `Orbitron + Rajdhani + Noto Sans SC + system-ui + sans-serif` · 用于 H1/H2 大标题(FUNCTION MATRIX / WORKFLOW / READY TO START?) | `grep 'display:' apps/web/tailwind.config.js` |
+| **`label` family** | `Rajdhani + Noto Sans SC + system-ui + sans-serif` · 用于 H3 副标 + 移动端大类标题 + uppercase tracking-wider | `grep 'label:' apps/web/tailwind.config.js` |
+| **`cn` family** | `"Noto Sans SC" + system-ui + sans-serif` · 用于中文正文 + button 文字 + chip | `grep 'cn:' apps/web/tailwind.config.js` |
+| **Google Fonts preconnect** | `apps/web/index.html` head 加 `<link rel="preconnect" href="https://fonts.googleapis.com">` + 字体导入 link · `display=swap` 避 FOIT · 仅 9 字重 ~150 KB 增量 | `grep 'Orbitron\|Rajdhani\|Noto Sans SC' apps/web/index.html` |
+| **`body::before` Orbitron:400 preload trick** | ralph 自创(US-001 iter 4)· `body::before { font-family:'Orbitron'; font-weight:400; ... visibility:hidden; }` 触发字体下载 · 让 `document.fonts.check('1em Orbitron') === true` · 放 `index.html` 内联 `<style>` **不放 `src/styles/`**(避 R-16 grep `Orbitron` 误报) | `grep 'body::before' apps/web/index.html` |
+
+**实证 ROI** · PRD-16 全 7 US(US-002~006 + US-009 + US-010)用 `font-display/cn/label` utility · 0 字体漂移 · 视觉跟 aiipznt 1:1 对齐.
+
+#### §11.9.2 3 utility class 跨 4-7 US 复用(PRD-16 US-001 定义 · US-002~010 调用)
+
+`apps/web/src/styles/aiipznt-motion.css` 新建 3 utility · 跨多 US 共享 ·
+
+| utility | 定义 | 复用 US 数 | 关键技巧 |
+|---|---|:-:|---|
+| **`.glass-card`** | `background: color-mix(in oklch, var(--card) 80%, transparent); backdrop-filter: blur(12px); border: 1px solid color-mix(in oklch, var(--primary) 15%, transparent); box-shadow: 0 8px 32px color-mix(in oklch, var(--primary) 5%, transparent);` | 4 US(US-003 进度卡 / US-004 15 卡 / US-009 Guide 13 模块 / US-010 9 step 卡) | `color-mix(in oklch, var(--primary) X%, transparent)` 紫色变体技巧 · 实际渲染金色因 `--primary` 是金色 |
+| **`.data-grid-bg`** | `background-image: linear-gradient(color-mix(in oklch, var(--primary) 3%, transparent) 1px, transparent 1px), linear-gradient(90deg, ...); background-size: 24px 24px;` | 4 US(全 page main 容器 · Home/Guide/IpPlan) | 24×24 紫色 grid 背景 utility |
+| **`.animate-ping-primary`** | `@keyframes ping-primary { 75%, 100% { transform: scale(2); opacity: 0; } } .animate-ping-primary { animation: ping-primary 1s cubic-bezier(0,0,.2,1) infinite; }` | 2 US(US-001 定义 + US-008 sally zhao chip 跳动小圆点) | 紫色 ping 动画 · `var(--primary)` 主色 |
+
+**实证** · 3 utility 累计 10+ US-context 调用 · 0 命名漂移 · 单文件 26 行简洁实现.
+
+#### §11.9.3 Header 4 dropdown 25 nav 规则(PRD-16 US-007 · `apps/web/src/components/Header.tsx` + `lib/constants/header-nav.ts`)· 红线级
+
+主应用 Header 重构 · 32 page 共享 · 4 一级菜单 click 触发 + 25 二级项严格 ·
+
+```typescript
+// apps/web/src/lib/constants/header-nav.ts(57 行)
+export const HEADER_NAV: HeaderNavGroup[] = [
+  { label: '创作', items: [/* 5 items: 爆款选题→/step/5 / 文案生成→/step/7 / 文案解析→/video-analysis / 获客视频→/acquisition-video / 呈现形式→/present-styles */] },
+  { label: '策划', items: [/* 8 items: 选择行业→/step/1 / 账号包装→/step/3 / 人设定制→/step/3b / 执行计划→/step/4 / 变现路径→/step/4b / 拍摄计划→/step/6 / 直播策划→/step/8 / 私域成交→/private-domain */] },
+  { label: '智能', items: [/* 6 items: IP诊断→/diagnosis / 每日任务→/daily-tasks / AI视频→/ai-video / 语音对话→/voice-chat / 深度学习→/deep-learning / 进化仪表盘→/evolution */] },
+  { label: '更多', items: [/* 6 items: 账号管理→/accounts / 方法论→/knowledge / 使用说明→/guide / 我的IP方案→/ip-plan / 我的选题库→/my-topics / 历史记录→/history */] },
+];
+```
+
+**严守规则** ·
+- ✅ click 触发(非 hover)· shadcn `<DropdownMenuTrigger asChild>` 默认 click
+- ✅ dropdown 浮层 · `min-w-[180px] rounded-xl border-primary/15 bg-popover/95 backdrop-blur-xl shadow-primary/5 mt-1`
+- ✅ 25 二级项严格按 aiipznt-deep-dom-dump.md §1.2 实测 · 跨 PRD-17~19 不允许漂移
+- ✅ 移动端 sheet 同布局 · 4 大类分组 + 25 二级项 + 用户区固定底部
+- ❌ 不允许保留旧 `TOOLS_14 / NEW_MODULES_6` 数组(grep 0 命中)
+
+**实证** · PRD-16 US-007 1 iter 一次过(含 RCA-006 path-B 救场 · dev timed_out 30 min + commit 1a23a64 完整 + validator 跑过).
+
+#### §11.9.4 D4=B 颜色严锁(PRD-16 全 US · `apps/web/src/styles/globals.css` + `tailwind.config.js`)· 红线级
+
+主应用颜色 token 不动 · 全 PRD-16~19 适用 ·
+
+- ✅ `globals.css --primary: 43 87% 63%`(HSL 金色 hue=43)**完全不动**
+- ✅ 0 引入 Tailwind 默认色 utility(`violet-X / amber-X / yellow-X / blue-X / green-X / orange-X / red-X / pink-X`)作主品牌色
+- ✅ 仅 status semantic indicator 可保留 Tailwind 默认色 · 范围限定 ·
+  - `apps/web/src/pages/tools/components/PhaseCard.tsx` · attract=blue / add_wechat=green / trust=yellow / convert=orange(私域 6 阶段语义)
+  - `apps/web/src/pages/modules/DailyTasks.tsx` · easy=green(难度等级)
+  - `apps/web/src/pages/tools/components/PrivateDomainResultView.tsx` · text-green-500 / text-green-600(成功状态)
+  - `apps/web/src/pages/tools/components/TrendingTable.tsx` · text-yellow-400(收藏星标)
+- ❌ 主品牌色一律 `var(--primary)` / `text-primary` / `bg-primary` / `border-primary` / `from-primary to-primary/X` / `shadow-primary/X`
+- ❌ 0 OKLCH 金色 hex(`#eebc4a` 等)硬编码到 jsx style
+
+**audit grep 验证** · `grep -rE "violet-[0-9]|amber-[0-9]|gold:|var\(--gold" apps/web/src/ apps/web/tailwind.config.js` · 必须 0 命中(已 plan-check + Opus audit 锁).
+
+**实证 reject** · PRD-16 US-003 1 reject 来自 ralph 字面读 PRD "紫色 gradient" 引入 `from-violet-600 to-violet-400` · 1 行修对(`from-primary to-primary/60`).
+
+#### §11.9.5 D1=A 像素级文字内容字面锁(PRD-16 US-004 reject 教训)· 红线级
+
+PRD AC 锁定的文字内容必须严格 1:1 字面 · ralph 不允许创意改写 ·
+
+**6 constants.ts 数据字段必须字面 PRD AC** ·
+- `apps/web/src/lib/constants/function-matrix.ts` · FUNCTION_MATRIX 15 卡 + FUNCTION_MATRIX_FOOTER · 每卡 icon/title/desc/href 全字面
+- `apps/web/src/lib/constants/workflow.ts` · WORKFLOW_STEPS 7 步 · 每步 num/title/desc 全字面
+- `apps/web/src/lib/constants/header-nav.ts` · HEADER_NAV 4 group + 25 二级项 · 每项 label/href 全字面
+- `apps/web/src/lib/constants/guide.ts` · GUIDE_MODULES 13 模块 + FAQS 5 问 · 每条全字面(含中文标点 ？)
+- `apps/web/src/pages/IpPlan.tsx` STEP_CARDS · 9 卡 · 每卡 key/emoji/title/href 全字面(key 严格 `['1','3','3b','4','4b','5','6','7','8']` 跳 step2)
+- 各 page Hero / H1 / H2 / H3 / button 文字 / FAQ q&a 全字面
+
+**反例**(US-004 实证 · 必拦截) ·
+```typescript
+// ❌ ralph 创意改写
+{ desc: '追踪全平台热门内容趋势' }
+// ✅ PRD AC + aiipznt 实测字面
+{ desc: '一键抓取全平台爆款视频和文案' }
+```
+
+**audit grep 验证** · `grep -F '一键抓取全平台爆款视频和文案' apps/web/src/lib/constants/function-matrix.ts` 命中 1 次 · 其他 14 desc 同理.
+
+**实证 reject** · PRD-16 US-004 1 reject 来自 ralph 15 卡 desc 全 15 条创意改写 · 1 iter 修对(单文件 15 string 替换).
+
+**机制升级**(retro M-2 已固化 plan-check 2.6.20)· 防 PRD-17~19 反复.
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充

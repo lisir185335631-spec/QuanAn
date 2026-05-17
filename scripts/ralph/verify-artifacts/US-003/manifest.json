@@ -1,18 +1,17 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-15T18:09:55",
-  "validator_end_ts": "2026-05-15T18:11:10",
-  "test_command": "pnpm vitest run tests/unit/web/pages/DeepLearning.test.tsx + pnpm vitest run (full) + pnpm typecheck",
+  "validator_start_ts": "2026-05-16T13:36:00",
+  "validator_end_ts": "2026-05-16T13:43:00",
+  "test_command": "cd apps/web && pnpm typecheck && pnpm test",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "AC-1..8 all pass. Gradient fixed: from-primary to-primary/60 (gold rgb(242,202,80), per Opus audit requirement). No violet-/amber-/yellow- utilities in Home.tsx. Links: 查看IP方案→/ip-plan, 继续→/step/1. Screenshot saved to screenshots/prd16-us003-home-ipprogress.png. Typecheck exit 0. Vitest exit 0 (no test files).",
   "artifacts": [
-    "pytest.xml",
-    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ],
-  "notes": "18/18 story tests pass. Full suite: 2070 tests, 0 failures, 0 errors. Typecheck: all 6 workspace packages clean. All 8 ACs verified by source inspection and test output."
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ]
 }

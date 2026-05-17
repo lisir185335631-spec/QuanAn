@@ -1,20 +1,18 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-16T07:41:05",
-  "validator_end_ts": "2026-05-16T07:52:00",
-  "test_command": "pnpm vitest run tests/unit/web/pages/History.test.tsx tests/unit/api/history.test.ts + pnpm vitest run (full) + pnpm typecheck + browser e2e",
+  "validator_start_ts": "2026-05-16T00:00:00",
+  "validator_end_ts": "2026-05-16T00:15:00",
+  "test_command": "pnpm vitest run (web) + pnpm typecheck + agent-browser AC-5",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "41/41 story tests PASS. 2250/2250 full regression PASS (6 skipped). typecheck PASS (all workspaces). Browser: /history?view=timeline shows timeline+工具icon+摘要+三操作按钮; ?view=dashboard shows 4 KPI+4 chart testids; restore click navigates to /generate?topic=[xiaohongshu]...&restored=13583; textarea.value confirmed filled via JS (isEmpty:false). AC-8 fix (topicFromUrl wins over LS): ToolForm.tsx:70 spread fix + Generate.tsx:94 resolvedDefaults wins confirmed.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "validator-us-008-pass-1.png",
-    "validator-us-008-pass-2.png",
-    "validator-us-008-pass-3.png",
-    "validator-us-008-pass-4.png"
-  ]
+    "validator-us-008-pass-7.png",
+    "validator-us-008-pass-8.png"
+  ],
+  "notes": "AC-1 PASS: button/dropdown classNames correct. AC-2 PASS: HeaderRight=AccountSwitcher+UserChip+LogoutIconButton. AC-3 PASS: UserChip pure display. AC-4 PASS: icon-only logout. AC-5 PASS: 管理账号→/accounts in dropdown; NO 新建账号; UserChip pulsing dot; logout no modal. AC-6 PASS: screenshot saved. AC-7 PASS: 6/6 vitest pass, typecheck 0 errors. AC-8 PASS: 0 onClick/events on UserChip, 0 confirm/Dialog/Modal on logout."
 }

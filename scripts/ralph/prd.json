@@ -21,12 +21,18 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/index.html / tailwind.config.ts / styles/) 涉及的 TD · 主动 fix · 不等专项 story · commit message 加 [TD-XXX resolved] tag",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/styles/aiipznt-motion.css"],
-      "files_to_modify": ["apps/web/index.html", "apps/web/tailwind.config.ts", "apps/web/src/main.tsx"],
+      "files_to_create": [
+        "apps/web/src/styles/aiipznt-motion.css"
+      ],
+      "files_to_modify": [
+        "apps/web/index.html",
+        "apps/web/tailwind.config.ts",
+        "apps/web/src/main.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test && cd ../.. && pnpm audit:redlines",
       "size_hint": "medium",
       "risk_level": "foundation",
@@ -55,14 +61,20 @@
         "AC-8 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass · pnpm audit:redlines pass",
         "AC-9 · 反例预防 · grep -rE 'bg-yellow|bg-amber|text-gold|border-gold' apps/web/src/pages/Home.tsx 必须 0 命中 · 不允许 style={{ color: '#eebc4a' }} 硬编码金色 · 必须用 var(--primary) / text-primary / bg-primary"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 2,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/pages/Home.tsx / router.tsx) 涉及的 TD · 主动 fix",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/pages/Home.tsx"],
-      "files_to_modify": ["apps/web/src/router.tsx"],
+      "files_to_create": [
+        "apps/web/src/pages/Home.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/router.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "medium",
       "risk_level": "high",
@@ -90,14 +102,19 @@
         "AC-7 · 截图 screenshots/prd16-us003-home-ipprogress.png",
         "AC-8 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass"
       ],
-      "depends_on": ["US-001", "US-002"],
+      "depends_on": [
+        "US-001",
+        "US-002"
+      ],
       "priority": 3,
-      "passes": false,
-      "notes": "[TD-HINT] 复用 PRD-3 StepProgress · 不重写 · grep .agents/tech-debt.json status=open · 列本 story scope 涉及的 TD",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/Home.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/Home.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "small",
       "risk_level": "medium"
@@ -118,14 +135,21 @@
         "AC-9 · 反例预防 · grid layout 用 Tailwind responsive className · 不允许写 inline style={{ display: 'grid', gridTemplateColumns: ... }} 控制宽度",
         "AC-10 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass"
       ],
-      "depends_on": ["US-001", "US-002"],
+      "depends_on": [
+        "US-001",
+        "US-002"
+      ],
       "priority": 4,
-      "passes": false,
-      "notes": "[TD-HINT] 注意 15 卡 href 跟 dump §2.1 实测严格对齐 · 不允许漂移 · grep .agents/tech-debt.json status=open 评估 scope 重叠 TD",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/lib/constants/function-matrix.ts"],
-      "files_to_modify": ["apps/web/src/pages/Home.tsx"],
+      "files_to_create": [
+        "apps/web/src/lib/constants/function-matrix.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Home.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "large",
       "risk_level": "high",
@@ -152,14 +176,21 @@
         "AC-6 · 截图 screenshots/prd16-us005-home-workflow.png",
         "AC-7 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass"
       ],
-      "depends_on": ["US-001", "US-002"],
+      "depends_on": [
+        "US-001",
+        "US-002"
+      ],
       "priority": 5,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope workflow.ts / Home.tsx",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/lib/constants/workflow.ts"],
-      "files_to_modify": ["apps/web/src/pages/Home.tsx"],
+      "files_to_create": [
+        "apps/web/src/lib/constants/workflow.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Home.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "small",
       "risk_level": "medium"
@@ -174,14 +205,19 @@
         "AC-3 · 截图 screenshots/prd16-us006-home-cta.png · 同时 fullPage 截图 screenshots/prd16-us006-home-fullpage.png 验证整体首页 5 区(Hero + IpProgress + FunctionMatrix + Workflow + ReadyToStart)排列正确",
         "AC-4 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass"
       ],
-      "depends_on": ["US-001", "US-002"],
+      "depends_on": [
+        "US-001",
+        "US-002"
+      ],
       "priority": 6,
-      "passes": false,
-      "notes": "[TD-HINT] 收尾 Home.tsx 5 区 · scope Home.tsx 单文件",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/Home.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/Home.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "small",
       "risk_level": "medium"
@@ -202,14 +238,20 @@
         "AC-9 · 反例预防 · header-nav.ts 25 二级项的 href 必须严格跟 dump §1.2 对齐 · 任一漂移触发 reject(/voice-chat ≠ /voice · /ip-plan ≠ /my-ip-plan 等)· grep 'HEADER_NAV' apps/web/src/components/Header.tsx 至少 2 处(import + map 渲染)",
         "AC-10 · 反例预防 · 不允许保留旧 TOOLS_14 / NEW_MODULES_6 数组 · grep -E 'TOOLS_14|NEW_MODULES_6' apps/web/src/ 必须 0 命中"
       ],
-      "depends_on": ["US-001"],
+      "depends_on": [
+        "US-001"
+      ],
       "priority": 7,
-      "passes": false,
-      "notes": "[TD-HINT] Header 全局组件 · 影响 32 page · 修改 Header.tsx 同时必须严格回归 · 删旧 TOOLS_14/NEW_MODULES_6 后 grep 0 命中 · scope Header.tsx + header-nav.ts · grep .agents/tech-debt.json open TD 评估",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/lib/constants/header-nav.ts"],
-      "files_to_modify": ["apps/web/src/components/Header.tsx"],
+      "files_to_create": [
+        "apps/web/src/lib/constants/header-nav.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/components/Header.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test && cd ../.. && pnpm audit:redlines",
       "size_hint": "medium",
       "risk_level": "high",
@@ -237,14 +279,20 @@
         "AC-7 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass",
         "AC-8 · 反例预防 · grep -E 'onClick|onMouseEnter|onMouseLeave' apps/web/src/components/UserChip.tsx OR 在 Header.tsx 内 UserChip 函数 · 必须 0 命中(纯展示)· 反例预防 · 登出 button 不允许出现 confirm / Dialog / Modal 关键字"
       ],
-      "depends_on": ["US-001", "US-007"],
+      "depends_on": [
+        "US-001",
+        "US-007"
+      ],
       "priority": 8,
-      "passes": false,
-      "notes": "[TD-HINT] AccountSwitcher 复用 PRD-15 · 仅改样式 · 不动逻辑 · scope Header.tsx + AccountSwitcher.tsx",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/components/Header.tsx", "apps/web/src/components/AccountSwitcher.tsx"],
+      "files_to_modify": [
+        "apps/web/src/components/Header.tsx",
+        "apps/web/src/components/AccountSwitcher.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "small",
       "risk_level": "medium"
@@ -266,14 +314,22 @@
         "AC-10 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass",
         "AC-11 · 反例预防 · 13 模块的 href / title 必须严格跟 dump §2.1 + spec §9.1 对齐 · 不允许漂移 · grep 'GUIDE_MODULES' apps/web/src/pages/Guide.tsx 至少 2 处(import + map 渲染)"
       ],
-      "depends_on": ["US-001", "US-007"],
+      "depends_on": [
+        "US-001",
+        "US-007"
+      ],
       "priority": 9,
-      "passes": false,
-      "notes": "[TD-HINT] 全新 page · 13 模块卡 + FAQ accordion + filter · scope Guide.tsx + guide.ts + router.tsx · grep .agents/tech-debt.json open TD 评估",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["apps/web/src/pages/Guide.tsx", "apps/web/src/lib/constants/guide.ts"],
-      "files_to_modify": ["apps/web/src/router.tsx"],
+      "files_to_create": [
+        "apps/web/src/pages/Guide.tsx",
+        "apps/web/src/lib/constants/guide.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/router.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "large",
       "risk_level": "high",
@@ -303,14 +359,19 @@
         "AC-9 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass",
         "AC-10 · 反例预防 · 9 step 卡的 key 必须严格 ['1','3','3b','4','4b','5','6','7','8'](跳 step2)· 不允许 ['1','2','3',...] · grep 'STEP_CARDS' apps/web/src/pages/IpPlan.tsx 至少 1 处定义"
       ],
-      "depends_on": ["US-001", "US-003"],
+      "depends_on": [
+        "US-001",
+        "US-003"
+      ],
       "priority": 10,
-      "passes": false,
-      "notes": "[TD-HINT] 重写 IpPlan.tsx 单文件 · 9 step key 严格不含 step2 · scope IpPlan.tsx",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
-      "files_to_modify": ["apps/web/src/pages/IpPlan.tsx"],
+      "files_to_modify": [
+        "apps/web/src/pages/IpPlan.tsx"
+      ],
       "test_command": "cd apps/web && pnpm typecheck && pnpm test",
       "size_hint": "medium",
       "risk_level": "medium"
@@ -329,13 +390,30 @@
         "AC-7 · cd apps/web && pnpm typecheck pass · cd apps/web && pnpm test pass · pnpm audit:redlines pass · pnpm audit:redlines-admin pass · pnpm audit:ld pass · pnpm audit:admin-rls pass",
         "AC-8 · 反例预防 · 不允许跳过任一 section / e2e · 不允许 visual diff 颜色不一致 当 reject(D4=B 颜色保留 是预期)"
       ],
-      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006", "US-007", "US-008", "US-009", "US-010"],
+      "depends_on": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010"
+      ],
       "priority": 11,
-      "passes": false,
-      "notes": "[TD-HINT] 收官 US · 必须 grep .agents/tech-debt.json status=open 检查 PRD-16 期间是否累积新 TD · 评估 PRD-15 遗留 TD-70 是否本 PRD 顺手清(若 scope 重叠)· 不要专项 fix 高 severity TD",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
-      "files_to_create": ["scripts/verify-prd-16.sh", "tests/e2e/prd16-home-flow.test.ts", "tests/e2e/prd16-guide-flow.test.ts", "tests/e2e/prd16-ip-plan-flow.test.ts", "tests/e2e/prd16-header-dropdown-flow.test.ts"],
+      "files_to_create": [
+        "scripts/verify-prd-16.sh",
+        "tests/e2e/prd16-home-flow.test.ts",
+        "tests/e2e/prd16-guide-flow.test.ts",
+        "tests/e2e/prd16-ip-plan-flow.test.ts",
+        "tests/e2e/prd16-header-dropdown-flow.test.ts"
+      ],
       "files_to_modify": [],
       "test_command": "bash scripts/verify-prd-16.sh && cd apps/web && pnpm test:e2e -- prd16",
       "size_hint": "medium",

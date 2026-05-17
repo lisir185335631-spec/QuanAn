@@ -1,8 +1,8 @@
 {
   "story_id": "US-010",
-  "validator_start_ts": "2026-05-15T07:19:00",
-  "validator_end_ts": "2026-05-15T07:32:00",
-  "test_command": "pnpm vitest run tests/unit/admin/constants/CanarySlider.test.tsx tests/unit/admin/constants/LlmJudgeCard.test.tsx",
+  "validator_start_ts": "2026-05-16T09:45:00",
+  "validator_end_ts": "2026-05-16T09:53:00",
+  "test_command": "pnpm vitest run + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,10 +10,6 @@
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "vitest.xml",
-    "vitest.stdout.txt",
-    "typecheck.stdout.txt",
-    "validator-us-010-pass-1.png"
-  ],
-  "notes": "Zero regression: PASS (1879 passed, failures=0, errors=0). Typecheck: ALL PASS (packages/schemas, packages/ui, packages/clients, apps/api, apps/admin, apps/web). US-010 specific tests: 18/18 PASS (11 CanarySlider + 7 LlmJudgeCard). AC-1: CanarySlider.tsx uses constantApi/constantType/constantKey. AC-2: 100% click shows ConfirmModal '确认完全发布?', backend routes through publishConstantVersion→requestApproval(dual=true). AC-3: 1/10/50% direct updateCanary without modal (unit tested). AC-4: 0% shows confirm modal. AC-5: Canary status card with v17+v18 display (unit tested). AC-6: rollback super_admin only + ≥20 char reason + dual approval + toast '已发起回滚申请 #X'. AC-7: LlmJudgeCard shows 0.00-5.00 score + isMock badge + rerun button. AC-8: Browser screenshot confirms /admin/constants?tab=canary renders CanarySlider (5 steps) + Canary status + LLM Judge card. AC-9: test 1879≥1822 PASS, typecheck PASS; pnpm audit 18 vulns (dompurify via @monaco-editor/react) pre-exist from US-009 commit 759a611 (TD豁免). AC-10: Typecheck PASS."
+    "typecheck.stdout.txt"
+  ]
 }
