@@ -57,6 +57,9 @@ export const STEP3B_OUTPUT_H3_5: readonly Step3bOutputBlock[] = [
   { id: 'personaRoadmap', h3Label: '5. 人设打造路线图' },
 ] as const;
 
+// STEP3B_LOADING_TEXT · loading 文案
+export const STEP3B_LOADING_TEXT = 'AI 正在生成你的专属人设方案，预计 30-60 秒...';
+
 // STEP3B_CTA · 主 CTA + 操作按钮字面 1:1
 export const STEP3B_CTA_LABEL = '生成专属人设方案';
 export const STEP3B_BUTTON_OPTIMIZE = '智能优化';

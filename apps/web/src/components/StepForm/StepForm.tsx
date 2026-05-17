@@ -62,11 +62,12 @@ interface StepFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: ZodTypeAny;
   onSuccess?: (payload: { result: unknown; isFallback: boolean }) => void;
+  onLoadingChange?: (isLoading: boolean) => void;
 }
 
 // ── StepForm ──────────────────────────────────────────────────────────────────
 
-export function StepForm({ stepKey, schema, onSuccess }: StepFormProps) {
+export function StepForm({ stepKey, schema, onSuccess, onLoadingChange }: StepFormProps) {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
@@ -77,6 +78,10 @@ export function StepForm({ stepKey, schema, onSuccess }: StepFormProps) {
     abortRef.current = new AbortController();
     return () => { abortRef.current.abort(); };
   }, []);
+
+  useEffect(() => {
+    onLoadingChange?.(saveMutation.isPending);
+  }, [saveMutation.isPending, onLoadingChange]);
 
   const [submitted, setSubmitted] = useState(false);
 
