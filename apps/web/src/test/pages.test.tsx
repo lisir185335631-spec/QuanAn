@@ -84,6 +84,7 @@ vi.mock('@/lib/trpc', () => ({
     stepData: {
       get: { useQuery: () => ({ data: null, isLoading: false, isError: false, error: null, refetch: vi.fn() }) },
       save: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+      saveStream: { useSubscription: vi.fn() },
       progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false, refetch: vi.fn() }) },
     },
     stt: {
