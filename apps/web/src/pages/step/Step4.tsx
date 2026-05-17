@@ -1,27 +1,25 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Copy } from 'lucide-react';
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep, useStepData } from '@/hooks/useStepData';
 import {
   STEP4_BUTTON_COPY,
   STEP4_BUTTON_GENERATE,
   STEP4_H1,
   STEP4_INPUTS_3,
-  STEP4_LOADING_TEXT,
-  STEP4_OUTPUT_H3_3,
   STEP4_PLATFORMS_5,
   STEP4_RADIO_LABEL,
   STEP4_STEP_TAG,
   STEP4_SUBTITLE_TEMPLATE,
-  type Step4Result,
 } from '@/lib/constants/step4';
 import { cn } from '@/lib/utils';
-
-const LS_STEP1 = 'acc_step1';
-const LS_STEP4 = 'acc_step4';
 
 interface Step4FormData {
   platform: string;
@@ -30,149 +28,81 @@ interface Step4FormData {
   personal_info: string;
 }
 
-interface Step4Saved {
-  formData?: Step4FormData;
-  result?: Step4Result;
-}
-
-function readStep1Industry(): string {
-  try {
-    const raw = localStorage.getItem(LS_STEP1);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { industry?: string };
-      return parsed.industry ?? '你的行业';
-    }
-  } catch {
-    // ignore parse errors
-  }
-  return '你的行业';
-}
-
-function readStep4Saved(): Step4Saved | null {
-  try {
-    const raw = localStorage.getItem(LS_STEP4);
-    if (raw) return JSON.parse(raw) as Step4Saved;
-  } catch {
-    // ignore parse errors
-  }
-  return null;
-}
-
-function generateMockResult(formData: Step4FormData): Step4Result {
-  const platform = formData.platform || 'douyin';
-  return {
-    daily_tasks: [
-      `【${platform}】发布 1 条竖版短视频（时长 30-60 秒）`,
-      '早 9 点 / 午 12 点 / 晚 8 点各发 1 条帖子评论互动',
-      '回复所有粉丝评论 + 私信（不超过 20 条）',
-      '浏览行业 TOP 10 账号，收藏 3 条爆款分析结构',
-      '记录 1 个新选题 idea 到素材本',
-      '检查当日视频数据（完播率 / 点赞 / 评论）',
-      '拍摄明日视频素材（1-2 个片段）',
-      '学习 1 个平台运营干货（官方课 / 博主分析）',
-    ],
-    weekly_milestones: [
-      '第 1 周：发布 7 条内容，账号完播率 ≥ 30%，新增粉丝 50+',
-      '第 2 周：找到 1 个爆款选题方向，单条视频播放量 > 5000',
-      '第 3 周：粉丝突破 500，开通私信引流渠道',
-      '第 4 周：完成首月复盘，确定 3 个高互动内容类型',
-    ],
-    phase_kpis: [
-      {
-        phase: '第一阶段（1-30 天）',
-        kpi: '冷启动 · 内容测试',
-        target: '粉丝 1000 / 完播率 > 40% / 主页跳转率 > 5%',
-      },
-      {
-        phase: '第二阶段（31-90 天）',
-        kpi: '规模增长 · 变现探索',
-        target: '粉丝 5000 / 月播放 ≥ 50 万 / 首单变现',
-      },
-      {
-        phase: '第三阶段（91-180 天）',
-        kpi: '稳定变现 · 品牌打造',
-        target: '粉丝 2 万+ / 月收入 ≥ 1 万 / 复购率 > 30%',
-      },
-    ],
-  };
-}
-
-type PageState = 'idle' | 'loading' | 'result' | 'error';
-
 export default function Step4() {
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+  const { save, isSaving, dbQuery } = useStepData(accountId, 'step4');
+
   const [platform, setPlatform] = useState('');
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({
     follower_count: '',
     goal: '',
     personal_info: '',
   });
-  const [pageState, setPageState] = useState<PageState>('idle');
-  const [result, setResult] = useState<Step4Result | null>(null);
+  const [result, setResult] = useState<{ markdown: string } | null>(null);
 
-  const industry = readStep1Industry();
-  const subtitle = STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industry);
-  const isCtaDisabled = !platform || pageState === 'loading';
+  const prevIsSavingRef = useRef(false);
 
+  // Cross-step prefill: industry from step1 for subtitle
+  const step1Data = readOtherStep<{ industryLabel?: string }>(accountId, 'step1');
+  const industryLabel = step1Data?.industryLabel ?? '(未选择)';
+  const subtitle = STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel);
+  const isCtaDisabled = !platform || isSaving;
+
+  // Prefill form from namespaced LS on accountId change
   useEffect(() => {
-    const saved = readStep4Saved();
-    if (saved?.formData) {
-      setPlatform(saved.formData.platform ?? '');
+    if (accountId === null) return;
+    const saved = readOtherStep<Step4FormData>(accountId, 'step4');
+    if (saved) {
+      if (saved.platform) setPlatform(saved.platform);
       setFieldValues({
-        follower_count: saved.formData.follower_count ?? '',
-        goal: saved.formData.goal ?? '',
-        personal_info: saved.formData.personal_info ?? '',
+        follower_count: saved.follower_count ?? '',
+        goal: saved.goal ?? '',
+        personal_info: saved.personal_info ?? '',
       });
     }
-    if (saved?.result) {
-      setResult(saved.result);
-      setPageState('result');
-    }
-  }, []);
+  }, [accountId]);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  // Refetch after save completes (isSaving: true → false)
+  useEffect(() => {
+    if (prevIsSavingRef.current && !isSaving) {
+      void dbQuery.refetch();
+    }
+    prevIsSavingRef.current = isSaving;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSaving]);
+
+  // Sync markdown result from DB
+  useEffect(() => {
+    if (!dbQuery.data?.result) return;
+    const raw = dbQuery.data.result as Record<string, unknown>;
+    if (typeof raw.markdown === 'string') {
+      setResult({ markdown: raw.markdown });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbQuery.data?.result]);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isCtaDisabled) return;
-
-    setPageState('loading');
     const formData: Step4FormData = {
       platform,
       follower_count: fieldValues['follower_count'] ?? '',
       goal: fieldValues['goal'] ?? '',
       personal_info: fieldValues['personal_info'] ?? '',
     };
-
-    await new Promise<void>((r) => setTimeout(r, 2000 + Math.random() * 1000));
-
-    const mockResult = generateMockResult(formData);
-    localStorage.setItem(LS_STEP4, JSON.stringify({ formData, result: mockResult }));
-    setResult(mockResult);
-    setPageState('result');
+    save(formData as unknown as Record<string, unknown>);
     document.getElementById('step4-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  function handleRetry() {
-    setPageState('idle');
-    setResult(null);
-  }
-
-  async function handleCopy(text: string) {
+  async function handleCopy() {
+    if (!result) return;
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(result.markdown);
       toast.success('已复制');
     } catch {
       toast.error('复制失败 · 请手动');
     }
-  }
-
-  function getBlockText(blockId: string, r: Step4Result): string {
-    if (blockId === 'daily_tasks') return r.daily_tasks.join('\n');
-    if (blockId === 'weekly_milestones') return r.weekly_milestones.join('\n');
-    if (blockId === 'phase_kpis') {
-      return r.phase_kpis
-        .map((p) => `${p.phase}\n${p.kpi}：${p.target}`)
-        .join('\n\n');
-    }
-    return '';
   }
 
   return (
@@ -217,7 +147,6 @@ export default function Step4() {
           </div>
         </div>
 
-        {/* inputs — iterate STEP4_INPUTS_3 to avoid noUncheckedIndexedAccess errors */}
         {STEP4_INPUTS_3.map((input) => (
           <div key={input.id}>
             <label className="block text-body-sm font-label text-on-surface mb-2">
@@ -244,7 +173,6 @@ export default function Step4() {
           </div>
         ))}
 
-        {/* Main CTA */}
         <Button
           type="submit"
           disabled={isCtaDisabled}
@@ -256,67 +184,33 @@ export default function Step4() {
 
       {/* State feedback */}
       <div className="mt-8 max-w-2xl">
-        {pageState === 'loading' && <LoadingState text={STEP4_LOADING_TEXT} size="lg" />}
-        {pageState === 'error' && (
-          <ErrorState message="生成失败 · 请重试" onRetry={handleRetry} />
+        {isSaving && <LoadingState text="AI 正在制定执行计划 ..." size="lg" />}
+        {!isSaving && dbQuery.isError && (
+          <ErrorState
+            message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
+            onRetry={dbQuery.refetch}
+          />
         )}
-        {pageState === 'idle' && !result && (
+        {!isSaving && !dbQuery.isError && !result && (
           <EmptyState title={`提交表单后查看${STEP4_H1}`} />
         )}
       </div>
 
-      {/* Output section */}
-      {pageState === 'result' && result && (
-        <section id="step4-output" className="mt-10 max-w-4xl space-y-6">
-          {STEP4_OUTPUT_H3_3.map((block) => (
-            <div key={block.id} className="glass-card rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(getBlockText(block.id, result))}
-                >
-                  <Copy className="h-4 w-4 mr-1" />
-                  {STEP4_BUTTON_COPY}
-                </Button>
-              </div>
-
-              {block.id === 'daily_tasks' && (
-                <ul className="space-y-2">
-                  {result.daily_tasks.map((task, i) => (
-                    <li key={i} className="text-body-sm text-on-surface flex gap-2">
-                      <span className="text-primary font-label shrink-0">{i + 1}.</span>
-                      {task}
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {block.id === 'weekly_milestones' && (
-                <ul className="space-y-2">
-                  {result.weekly_milestones.map((milestone, i) => (
-                    <li key={i} className="text-body-sm text-on-surface flex gap-2">
-                      <span className="text-primary font-label shrink-0">•</span>
-                      {milestone}
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {block.id === 'phase_kpis' && (
-                <div className="space-y-4">
-                  {result.phase_kpis.map((item, i) => (
-                    <div key={i} className="glass-card rounded-lg p-4">
-                      <p className="text-body-sm font-label text-primary mb-1">{item.phase}</p>
-                      <p className="text-body-sm text-on-surface font-medium">{item.kpi}</p>
-                      <p className="text-body-sm text-muted-foreground mt-1">{item.target}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+      {/* Output section — markdown rendered */}
+      {!isSaving && result && (
+        <section id="step4-output" className="mt-10 max-w-4xl">
+          <div className="glass-card rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-2xl text-on-surface">{STEP4_H1}</h3>
+              <Button variant="outline" size="sm" onClick={() => { void handleCopy(); }}>
+                <Copy className="h-4 w-4 mr-1" />
+                {STEP4_BUTTON_COPY}
+              </Button>
             </div>
-          ))}
+            <article className="prose prose-sm max-w-none text-on-surface prose-headings:text-on-surface prose-p:text-muted-foreground prose-strong:text-on-surface prose-li:text-muted-foreground prose-a:text-primary">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.markdown}</ReactMarkdown>
+            </article>
+          </div>
         </section>
       )}
     </main>
