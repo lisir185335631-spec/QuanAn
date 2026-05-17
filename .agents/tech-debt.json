@@ -1558,8 +1558,56 @@
       "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
       "status": "open",
       "fix_hint": "step8.ts 新建 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · 同时 Step8OptimizeScript.tsx 改 `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard label={label} value={result[id]} />)`"
+    },
+    {
+      "id": "TD-79",
+      "title": "PRD-19 US-003 · STEP1_CTA_LABEL D1=A 字面锁违反('确认并进入下一步' → '生成行业洞察')",
+      "description": "ralph 在 US-003 commit fbb2f6d 主动改 industries.ts · STEP1_CTA_LABEL '确认并进入下一步' → '生成行业洞察' + 新增 STEP1_NEXT_LABEL='进入 IP 定位 →'。PRD-19 §3 明确'不动 PRD-15~18 已实施的 D1=A 字面锁' · 但 ralph 改动 functional 合理(配 stepData.save 真接 PositioningAgent · 旧 label 适用 mock 不适用真 Agent)· Opus 边界 case 豁免 approve。用户需决策 · (A) 回滚字面保留旧锁 / (B) 接受新字面 + 更新 PRD-15/17 source-of-truth + 反例库注入 · 防 PRD-19 之后类似情况复发",
+      "scope": [
+        "apps/web/src/lib/constants/industries.ts:26-27",
+        "tasks/prd-15.md(原 STEP1_CTA_LABEL spec 锁)",
+        "tasks/prd-17.md(继承字面)"
+      ],
+      "impact": "Medium · D1=A 字面锁红线违反(技术) · 但用户体验改善(label 配真 Agent · 'mock' → '生成洞察')· 跨 PRD 一致性影响小(PRD-19 是首个真接 stepData.save)",
+      "severity": "Medium",
+      "categories": [
+        "d1-a-text-content-drift",
+        "design-drift"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-003 (Opus audit · 边界 case 豁免 approve)",
+      "fix_by": "用户决策 · PRD-19 收官 retro 评估(回滚 vs 升级 source-of-truth)",
+      "status": "open",
+      "fix_hint": "(A) 回滚 · industries.ts 改 STEP1_CTA_LABEL 回 '确认并进入下一步' · 删 STEP1_NEXT_LABEL · 接受 mock label 在真 Agent 接入后的语义偏差; (B) 升级 · 保留新 label · 更新 tasks/prd-15.md + prd-17.md 字面锁记录 · 反例库注入 'mock label → 真 Agent label evolution' 反例 · 防 PRD-20+ 类似 case 复发"
+    },
+    {
+      "id": "TD-80",
+      "title": "PRD-19 US-003 · Step1/Step3/Step3b 新引入 7 hardcode 中文 h2/h3 section header + 1 Button",
+      "description": "ralph 在 US-003 commit fbb2f6d 改造 3 page · result render 区新加 7 hardcode 中文 section header + 1 Button · '行业洞察报告'/'市场分析'/'竞争程度'/'定位建议'/'账号包装方案'/'专属人设方案' + Step3 line 470 '确认优化' Button。plan-check §2.6.21 扩范围(PRD-18 retro Diff-2)定义此类 hardcode 应 WARN + 常量化 · 跟 TD-76/77 同模式 · ralph 实施时未 catch(因 PRD AC 未显式锁这些字面)",
+      "scope": [
+        "apps/web/src/pages/step/Step1.tsx:273,276,282,288",
+        "apps/web/src/pages/step/Step3.tsx:393,470",
+        "apps/web/src/pages/step/Step3b.tsx:376",
+        "apps/web/src/lib/constants/industries.ts(需新增 STEP1_RESULT_H2/H3 常量)",
+        "apps/web/src/lib/constants/step3.ts(需新增 STEP3_RESULT_H2 + STEP3_OPTIMIZE_CONFIRM_BUTTON 常量)",
+        "apps/web/src/lib/constants/step3b.ts(需新增 STEP3B_RESULT_H2 常量)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟字面常量集中模式不一致 · plan-check §2.6.21 扩范围检查会 WARN · TD 跟 TD-76/77 同模式 · 累积",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency",
+        "hardcode-label"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-003 (Opus audit)",
+      "fix_by": "US-009 verify-prd-19.sh fix 一并清(继承 TD-76/77 fix 模式)· 或 PRD-20 maintenance",
+      "status": "open",
+      "fix_hint": "industries.ts 新增 STEP1_RESULT_H2='行业洞察报告' + STEP1_RESULT_H3_3 array · step3.ts 新增 STEP3_RESULT_H2='账号包装方案' + STEP3_OPTIMIZE_CONFIRM_BUTTON='确认优化' · step3b.ts 新增 STEP3B_RESULT_H2='专属人设方案' · 3 page 各 import + 用常量"
     }
   ],
-  "last_updated": "2026-05-18T01:00:00",
-  "total": 76
+  "last_updated": "2026-05-18T05:30:00",
+  "total": 79
 }
