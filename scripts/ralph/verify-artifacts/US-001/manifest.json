@@ -1,13 +1,14 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-17T12:39:00",
-  "validator_end_ts": "2026-05-17T12:40:45",
-  "test_command": "pnpm vitest run src/lib/constants/__tests__/industries.test.ts + pnpm vitest run (全量) + pnpm tsc --noEmit",
+  "validator_start_ts": "2026-05-17T18:38:28",
+  "validator_end_ts": "2026-05-17T18:38:55",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/step4.test.ts + pnpm tsc --noEmit",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
+    "pytest.stdout.txt",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"

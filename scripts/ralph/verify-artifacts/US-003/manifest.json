@@ -1,14 +1,17 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-17T13:46:00",
-  "validator_end_ts": "2026-05-17T13:52:00",
-  "test_command": "cd apps/web && pnpm typecheck && pnpm test + agent-browser AC-5/6/7",
+  "validator_start_ts": "2026-05-17T18:55:00",
+  "validator_end_ts": "2026-05-17T18:57:30",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/step5.test.ts + pnpm typecheck + pnpm vitest run (zero-regression)",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "AC-1..8 all pass. Selected state card renders with glass-card border-primary/40 bg-primary/5, emoji text-3xl, '已选择:美业', keywords '美容院、美发、美甲、美睫、纹绣'. CTA uses bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70, no violet/amber/gold. Disabled state shows STEP1_CTA_DISABLED_HINT. handleSubmit sets localStorage acc_step1 and navigates /step/3. Browser verified: click '💅美业' → state card appears (AC-5); CTA click → URL becomes /step/3 (AC-6); localStorage acc_step1 industry='beauty' (AC-7). Typecheck exit 0. Vitest 70 tests pass (8 files).",
+  "notes": "AC-1..14 all PASS. step5.ts: STEP5_STEP_TAG/H1/SUBTITLE/INPUTS_2/FILE_UPLOADS_2/FILE_MAX_MB/FILE_ACCEPT/FILE_ACCEPT_LABEL/BUTTON_GENERATE/BUTTON_GO_STEP7/LOADING_TEXT/CATEGORIES_5/TOPICS_PER_CAT/TOTAL_TOPICS all present and correct. AC-11 grep: 流量型×2 变现型×2 人设型×2 认知型×2 案例型×2 一键生成5大类爆款选题×2 PDF、Word、TXT、Markdown、CSV×3. AC-12 数字锁: INPUTS_2.length===2 FILE_UPLOADS_2.length===2 CATEGORIES_5.length===5 TOPICS_PER_CAT===20 TOTAL_TOPICS===100. AC-13: step5.test.ts 8 assertions file present. AC-14: vitest 8/8 PASS exit 0, typecheck exit 0. Zero-regression: 91/91 PASS (11 test files).",
   "artifacts": [
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"

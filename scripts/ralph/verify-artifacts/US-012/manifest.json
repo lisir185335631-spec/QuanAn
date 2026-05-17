@@ -1,8 +1,8 @@
 {
   "story_id": "US-012",
-  "validator_start_ts": "2026-05-15T08:18:00",
-  "validator_end_ts": "2026-05-15T08:21:30",
-  "test_command": "pnpm vitest run tests/unit/api/admin/emergency-switch.test.ts + pnpm vitest run (full) + pnpm typecheck",
+  "validator_start_ts": "2026-05-18T00:02:00",
+  "validator_end_ts": "2026-05-18T00:10:00",
+  "test_command": "pnpm vitest run + pnpm tsc --noEmit + agent-browser http://localhost:5173/step/8",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,37 +10,24 @@
   "artifacts": [
     "vitest.xml",
     "vitest.stdout.txt",
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "manifest.json"
+    "typecheck.stdout.txt"
   ],
-  "opus_reject_greps": {
-    "getFeatureFlagValue_stop_trending_scraper_in_src": 0,
-    "getSystemConfigValue_stop_trending_scraper_in_src": 1,
-    "fake_flagKey_stop_trending_scraper_in_test": 0
-  },
   "test_counts": {
-    "unit_emergency_switch": 13,
-    "full_total": 1911,
-    "full_passed": 1907,
-    "full_skipped": 4,
-    "full_failed": 0,
-    "full_errors": 0
+    "vitest_total": 119,
+    "vitest_passed": 119,
+    "vitest_failed": 0
   },
   "ac_summary": {
-    "ac1": "US-011 seed passes=true · stop_trending_scraper/stop_evolution_agent/enable_fallback_prompt seeded to system_config.isEmergency=true",
-    "ac2": "worker.ts:65 getSystemConfigValue('stop_trending_scraper') ✓ · 修复了 Opus 指出的 getFeatureFlagValue 用错",
-    "ac3": "EvolutionAgent.ts:108 getSystemConfigValue('stop_evolution_agent') → isFallback:true modelUsed:'emergency-disabled' ✓",
-    "ac4": "ContextAssembler.ts:140,225 _fetchActivePrompt + _fetchActiveConstants 检查 enable_fallback_prompt → null ✓",
-    "ac5": "emergencyToggleSystemConfig: requestApproval → emergencyApprove(postReviewRequired=true) → $transaction(_updateSystemConfigInTx) ✓",
-    "ac6": "logAdminAction eventType='emergency_switch_triggered' eventCategory='security_alert' payload含configKey+incidentId ✓",
-    "ac7": "DingtalkService isMock=true by default (DINGTALK_ENABLE!=='true') ✓",
-    "ac8": "emergency-post-review.job.ts: no actionType filter → catch-all for postReviewRequired (含 update_system_config) ✓",
-    "ac9": "emergency-switch.test.ts: 13 it blocks (≥8) · 覆盖 3 开关/bypass/emergencyApprove/postReviewRequired/5s TTL/3 flagType/钉钉isMock/system_config路径 ✓",
-    "ac10": "CACHE_TTL_MS=5000 Map+setInterval 30s cleanup · featureFlagCache + systemConfigCache ✓",
-    "ac11": "Brownfield: 所有 bypass 均为前置 if-return · 不替代原主流程 ✓",
-    "ac12": "1907 tests passed (≥1838) · 4 skipped · 0 failed ✓",
-    "ac13": "pnpm typecheck 6 workspaces all PASS ✓"
+    "ac1": "Step8.tsx: STEP8_STEP_TAG + H1 + SUBTITLE_TEMPLATE.replace('{industry}', industry) ✓",
+    "ac2": "STEP8_SUBFUNCTIONS_2=[generate_plan, optimize_script] · default idx=0 · click切换 ✓",
+    "ac3": "Step8GeneratePlan.tsx: 4字段(textarea产品/input受众/radio5平台/radio3经验) + 主CTA STEP8_BUTTON_GENERATE_PLAN + 输出6 H3 InfoCard ✓",
+    "ac4": "Step8OptimizeScript.tsx: 2字段(textarea话术≥10字+charCounter/input优化目标可选) + 主CTA disabled当<10字 + 输出2 InfoCard ✓",
+    "ac5": "三态(idle/loading/result) + generateMockResult + setTimeout 3-5s ✓",
+    "ac6": "localStorage: 进入读acc_step1.industry注入subtitle · 提交后写acc_step8({sub_function,formData,result}) ✓",
+    "ac7": "grep 0 hardcode: 子功能/生成直播方案/AI优化话术/新手/有经验/资深/1.开场话术 全0命中 ✓",
+    "ac8": "grep 0 violet/amber 命中 ✓",
+    "ac9": "vitest 119/119 PASS · tsc --noEmit 0 error ✓",
+    "ac10": "browser: default子功能1·4字段form · 切子功能2·2字段form · 切回1·填字段·点[生成直播方案]·等5s·6 H3输出 · localStorage.getItem('acc_step8')非null · 无console error ✓",
+    "ac11": "pnpm tsc --noEmit 0 error ✓"
   }
 }

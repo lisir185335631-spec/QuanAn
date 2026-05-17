@@ -1,10 +1,10 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ tests/unit/api/seed.test.ts (7 tests) 4ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 1ms
 
  Test Files  1 passed (1)
-      Tests  7 passed (7)
-   Start at  00:21:45
-   Duration  107ms (transform 18ms, setup 5ms, collect 13ms, tests 4ms, environment 0ms, prepare 21ms)
+      Tests  5 passed (5)
+   Start at  18:38:31
+   Duration  351ms (transform 17ms, setup 20ms, collect 10ms, tests 1ms, environment 115ms, prepare 32ms)
 

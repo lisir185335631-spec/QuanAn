@@ -1,25 +1,24 @@
 
-> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
-> vitest run --config vitest.config.ts
-
-
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 2ms
- ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
- ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 3ms
- ✓ src/components/StepProgress.test.tsx (6 tests) 34ms
- ✓ src/test/step-progress.test.tsx (10 tests) 40ms
- ✓ src/components/states/__tests__/states.test.tsx (3 tests) 34ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 74ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 3ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 4ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 3ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 42ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 63ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 57ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 111ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
 stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/test/pages.test.tsx (30 tests) 169ms
+ ✓ src/test/pages.test.tsx (30 tests) 172ms
 
- Test Files  8 passed (8)
-      Tests  70 passed (70)
-   Start at  13:46:19
-   Duration  1.33s (transform 452ms, setup 337ms, collect 1.37s, tests 358ms, environment 2.12s, prepare 373ms)
+ Test Files  11 passed (11)
+      Tests  91 passed (91)
+   Start at  18:55:32
+   Duration  1.52s (transform 507ms, setup 500ms, collect 1.55s, tests 457ms, environment 3.04s, prepare 493ms)
 

@@ -1,16 +1,16 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-17T13:16:40",
-  "validator_end_ts": "2026-05-17T13:17:15",
-  "test_command": "pnpm vitest run src/components/states/__tests__/states.test.tsx && pnpm tsc --noEmit",
+  "validator_start_ts": "2026-05-17T21:48:00",
+  "validator_end_ts": "2026-05-17T21:57:00",
+  "test_command": "pnpm vitest run + pnpm tsc --noEmit + agent-browser e2e",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest-full.stdout.txt",
+    "vitest.xml",
+    "vitest.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"
-  ],
-  "notes": "vitest run: 3/3 states tests PASS + 70/70 full suite PASS (zero regression). typecheck: 0 errors. AC-7: Step1/Step3/Step3b all import from @/components/states (grep confirmed). All 9 ACs verified."
+  ]
 }

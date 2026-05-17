@@ -22,8 +22,8 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/lib/constants/) 涉及的 TD · 主动 fix · commit message 加 [TD-XXX resolved] tag",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -79,8 +79,8 @@
       ],
       "depends_on": [],
       "priority": 2,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -137,8 +137,8 @@
       ],
       "depends_on": [],
       "priority": 3,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -193,8 +193,8 @@
       ],
       "depends_on": [],
       "priority": 4,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -255,8 +255,8 @@
       ],
       "depends_on": [],
       "priority": 5,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照 · ★ NOTE size=large 是因为常量数据密度高(20+22+4+H4) · 但单文件无逻辑 ralph dev 1 iter 可完成(估 250 行) · prompt 字节 ~ 8K 安全 < 12K 红线",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -317,8 +317,8 @@
       ],
       "depends_on": [],
       "priority": 6,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -374,8 +374,8 @@
         "US-001"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -432,8 +432,8 @@
         "US-002"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -498,8 +498,8 @@
         "US-003"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -562,8 +562,8 @@
         "US-004"
       ],
       "priority": 10,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -620,8 +620,8 @@
         "US-005"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -686,8 +686,8 @@
         "US-011a"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -751,8 +751,8 @@
         "US-006"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -811,8 +811,8 @@
         "US-012"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照 · 主要 verify TD: 跨 PRD 累积 fetch-failed test 等",
+      "passes": true,
+      "notes": "",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [

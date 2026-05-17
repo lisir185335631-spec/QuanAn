@@ -1,15 +1,18 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-17T13:02:50",
-  "validator_end_ts": "2026-05-17T13:03:10",
-  "test_command": "pnpm vitest run src/lib/constants/__tests__/step3b.test.ts + pnpm typecheck",
+  "validator_start_ts": "2026-05-17T19:50:00",
+  "validator_end_ts": "2026-05-17T12:02:00",
+  "test_command": "pnpm exec vitest run (119 tests, 0 failed) + pnpm tsc --noEmit (0 errors) + agent-browser e2e step/4",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "retryCount=1 -> PASS on second attempt. All 11 AC verified. vitest 119/119, typecheck 0 errors, browser e2e: platform radio, inputs, generate, 3 H3 output, localStorage acc_step4 set.",
   "artifacts": [
-    "pytest-full.stdout.txt",
+    "vitest.xml",
+    "vitest.stdout.txt",
     "typecheck.stdout.txt",
-    "manifest.json"
+    "validator-us-007-pass-1-step4-initial.png",
+    "validator-us-007-pass-3-step4-result.png"
   ]
 }

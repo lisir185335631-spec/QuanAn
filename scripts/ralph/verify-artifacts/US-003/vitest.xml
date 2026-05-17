@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="13" failures="0" errors="0" time="0.28">
-    <testsuite name="tests/unit/specialists/EvolutionAgent.test.ts" timestamp="2026-05-11T02:16:42.426Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.004673125">
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="EvolutionAgent (US-003) &gt; happy path: LLM 成功 → insight 写入原子事务 · isFallback=false" time="0.001387042">
+<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.362">
+    <testsuite name="src/lib/constants/__tests__/step5.test.ts" timestamp="2026-05-17T10:56:27.642Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.001184875">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; SUBTITLE 字面严格 1:1 spec §7.6 line 1595" time="0.000336625">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="EvolutionAgent (US-003) &gt; fallback path: schema 无效 · previousInsight 可用 → isFallback=true · 不写 insight" time="0.000666083">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630" time="0.000228292">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="EvolutionAgent (US-003) &gt; cumulative merge: (fresh ∪ prev) 去重 · avoidList 同理 · 不超 top 10" time="0.000585208">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; INPUTS_2 数量锁 · length === 2" time="0.000050791">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=5 → 触发 enqueue (threshold:5)" time="0.001068958">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_UPLOADS_2 数量锁 · length === 2" time="0.000045291">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=19 → 不触发 enqueue" time="0.00008075">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_MAX_MB === 20" time="0.000034375">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=20 → 触发 enqueue (threshold:20)" time="0.000152625">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606" time="0.00003825">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=49 → 不触发 enqueue" time="0.000053459">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; TOTAL_TOPICS === 100" time="0.000035792">
         </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=50 → 触发 enqueue (threshold:50)" time="0.000106541">
-        </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=99 → 不触发 enqueue" time="0.000057083">
-        </testcase>
-        <testcase classname="tests/unit/specialists/EvolutionAgent.test.ts" name="enqueueIfThresholdMet threshold boundaries &gt; count=100 → 触发 enqueue (threshold:100)" time="0.00010875">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/integration/api/evolution-threshold.test.ts" timestamp="2026-05-11T02:16:42.427Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.044459792">
-        <testcase classname="tests/integration/api/evolution-threshold.test.ts" name="AC-10: 5 concurrent same-account feedback → exactly 1 enqueue &gt; 5 parallel enqueueIfThresholdMet calls → queue.add called exactly once (threshold:5)" time="0.00993825">
-        </testcase>
-        <testcase classname="tests/integration/api/evolution-threshold.test.ts" name="AC-10: 5 concurrent same-account feedback → exactly 1 enqueue &gt; counts 1-4 and 6-10 do NOT trigger enqueue" time="0.005034084">
-        </testcase>
-        <testcase classname="tests/integration/api/evolution-threshold.test.ts" name="AC-10: 5 concurrent same-account feedback → exactly 1 enqueue &gt; jobId deduplication: concurrent rush at threshold uses same jobId" time="0.002071917">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; Step5Topic interface 字段结构" time="0.000096334">
         </testcase>
     </testsuite>
 </testsuites>

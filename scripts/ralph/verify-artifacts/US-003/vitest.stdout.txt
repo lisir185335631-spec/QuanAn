@@ -1,33 +1,10 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > 5 parallel enqueueIfThresholdMet calls → queue.add called exactly once (threshold:5)
- ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > counts 1-4 and 6-10 do NOT trigger enqueue
- ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > jobId deduplication: concurrent rush at threshold uses same jobId
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > happy path: LLM 成功 → insight 写入原子事务 · isFallback=false
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > fallback path: schema 无效 · previousInsight 可用 → isFallback=true · 不写 insight
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > cumulative merge: (fresh ∪ prev) 去重 · avoidList 同理 · 不超 top 10
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=5 → 触发 enqueue (threshold:5)
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=19 → 不触发 enqueue
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=20 → 触发 enqueue (threshold:20)
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=49 → 不触发 enqueue
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=50 → 触发 enqueue (threshold:50)
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=99 → 不触发 enqueue
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=100 → 触发 enqueue (threshold:100)
-
- Test Files  2 passed (2)
-      Tests  13 passed (13)
-   Start at  10:13:44
-   Duration  279ms (transform 72ms, setup 9ms, collect 149ms, tests 45ms, environment 0ms, prepare 60ms)
-
-
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
-
- ✓ tests/judge/evolution-agent.judge.ts > EvolutionAgent LLM Judge — threshold:50 golden case > AC-13: golden case passes judge with score ≥ 8/10 (≥ 4.0/5)
- ✓ tests/judge/evolution-agent.judge.ts > EvolutionAgent LLM Judge — threshold:50 golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 1ms
 
  Test Files  1 passed (1)
-      Tests  2 passed (2)
-   Start at  10:13:57
-   Duration  170ms (transform 19ms, setup 0ms, collect 22ms, tests 2ms, environment 0ms, prepare 33ms)
+      Tests  8 passed (8)
+   Start at  18:55:19
+   Duration  360ms (transform 15ms, setup 20ms, collect 8ms, tests 1ms, environment 117ms, prepare 31ms)
 

@@ -1,16 +1,15 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-17T05:35:00",
-  "validator_end_ts": "2026-05-17T05:43:00",
-  "test_command": "pnpm vitest run + pnpm typecheck + browser verification",
+  "validator_start_ts": "2026-05-17T10:48:55",
+  "validator_end_ts": "2026-05-17T10:50:15",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/step4b.test.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
+    "pytest.stdout.txt",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "manifest.json"
-  ],
-  "notes": "70 tests passed (pnpm vitest run). Typecheck clean. Browser verified: 6 tabs grid-cols-6 all correct, 56 industry cards grid rendered, search placeholder matches constant, tab filter (life→18), search filter (美容院→美业), combined filter (生活服务+教育→0+empty state), console 0 errors (only pre-existing React Router future flag warning)."
+    "typecheck.stdout.txt"
+  ]
 }

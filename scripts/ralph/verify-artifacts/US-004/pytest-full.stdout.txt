@@ -1,83 +1,25 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 5 platforms
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 6 H3 output blocks
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > all platforms have emoji prefix
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > output H3 labels start with number 1-6
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 3 textareas
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 5 H3 output blocks
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > first textarea (personalInfo) is required
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > advantages and story are not required
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > H3 labels start with number 1-5
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > total count is 56
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 生活服务 count is 18
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 电商零售 count is 13
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_TABS > non-all tab counts sum to 56
- ✓ src/components/StepProgress.test.tsx > StepProgress > renders loading skeleton when isLoading=true
- ✓ src/components/StepProgress.test.tsx > StepProgress > renders 9 step items when loaded
- ✓ src/components/StepProgress.test.tsx > StepProgress > marks completed steps with status=completed
- ✓ src/components/StepProgress.test.tsx > StepProgress > marks first incomplete step as current, rest as pending
- ✓ src/components/StepProgress.test.tsx > StepProgress > shows 0/9 progress text when no steps completed
- ✓ src/components/StepProgress.test.tsx > StepProgress > STEP_ORDER_KEYS contains 9 keys
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 0/9 when completedSteps is empty
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 9/9 when all steps completed
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 3/9 when 3 steps completed
- ✓ src/test/step-progress.test.tsx > StepProgress > shows loading skeleton when isLoading=true
- ✓ src/test/step-progress.test.tsx > StepProgress > renders all 9 step items
- ✓ src/test/step-progress.test.tsx > StepProgress > marks completed step with data-status=completed
- ✓ src/test/step-progress.test.tsx > StepProgress > marks first incomplete step with data-status=current
- ✓ src/test/step-progress.test.tsx > StepProgress > marks later steps as pending
- ✓ src/test/step-progress.test.tsx > StepProgress > STEP_ORDER_KEYS has exactly 9 entries
- ✓ src/test/step-progress.test.tsx > StepProgress > accepts optional className prop without error
- ✓ src/components/states/__tests__/states.test.tsx > LoadingState > renders custom text
- ✓ src/components/states/__tests__/states.test.tsx > ErrorState > shows 重试 button when onRetry is provided
- ✓ src/components/states/__tests__/states.test.tsx > EmptyState > renders default title '暂无数据'
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders thumbs-up and thumbs-down buttons
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders helper text
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with good type and agentId on thumbs-up click
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with bad type and agentId on thumbs-down click
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > passes stepKey and agentId correctly for ip-plan
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-buttons wrapper
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-good on thumbs-up button
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-bad on thumbs-down button
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 1ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 2ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 2ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 8ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 44ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 83ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 83ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 35ms
 stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/test/pages.test.tsx > stepConfig > has all 9 step keys
- ✓ src/test/pages.test.tsx > stepConfig > step1 has non-empty title and description
- ✓ src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step2 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step5 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step8 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step9 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Trending renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Copywriting renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Knowledge renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Diagnosis renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Diagnosis shows empty state when no data
- ✓ src/test/pages.test.tsx > Module pages render > Evolution renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Evolution shows cold-start state when no data
- ✓ src/test/pages.test.tsx > Module pages render > Accounts renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Accounts shows empty state when no data
- ✓ src/test/pages.test.tsx > Module pages render > DailyTasks renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > MyTopics renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > History renders h1 heading
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders ip-plan-page with h1 我的IP方案
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders 9 step cards with 查看详情 buttons
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > shows 已完成 0 / 9 步 with empty completedSteps
- ✓ src/test/pages.test.tsx > VoiceChat page (US-012) > renders record button and turn list area
- ✓ src/test/pages.test.tsx > VoiceChat page (US-012) > shows idle status bar
- ✓ src/test/pages.test.tsx > VoiceChat page (US-012) > shows hang up button
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders children when no error
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders fallback UI when child throws
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders custom fallback when provided
- ✓ src/test/pages.test.tsx > ErrorBoundary > resets error state on button click
+ ✓ src/test/pages.test.tsx (30 tests) 168ms
 
- Test Files  8 passed (8)
-      Tests  70 passed (70)
-   Start at  14:04:00
-   Duration  1.38s (transform 463ms, setup 320ms, collect 1.38s, tests 340ms, environment 2.08s, prepare 386ms)
+ Test Files  12 passed (12)
+      Tests  97 passed (97)
+   Start at  19:02:46
+   Duration  1.52s (transform 493ms, setup 498ms, collect 1.45s, tests 429ms, environment 3.13s, prepare 527ms)
 

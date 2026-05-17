@@ -923,3 +923,351 @@
 - **D4=B 颜色严锁** · 主 CTA 全用 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 · 0 from-violet/amber/gold/purple · plan-check §2.6.7-ext 颜色词 ERROR 级阻断 · 11/11 US grep 0 命中
 - **DialogTrigger asChild click 触发延续** · 继承 PRD-16 US-007 反例 · US-004 严守 + reject-examples.jsonl 入库 · 所有 shadcn Dialog/DropdownMenu 必带 asChild
 - **跨字段类型 ralph 妙手 fix 模式** · TD-73 STEP1_TABS.id 英文 vs Industry.category 中文不一致 · US-002 ralph 用 category === activeTab.label 中文匹配 bypass mapping · PRD-18 类似跨字段问题可学
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-17 18:35 ---
+
+--- [RALPH] Iteration 1 started: US-001 (PRD-18) at 2026-05-17 18:37 ---
+
+## 2026-05-17 18:37 - US-001
+- 新建 apps/web/src/lib/constants/step4.ts · re-export STEP4_PLATFORMS_5 from step3 · STEP4_INPUTS_3(3 项) · STEP4_OUTPUT_H3_3(3 项) · STEP4_SUBTITLE_TEMPLATE 字面锁 · Step4Result interface
+- 新建 apps/web/src/lib/constants/__tests__/step4.test.ts · 5 assertions 全 PASS
+- 更改的文件:
+  - apps/web/src/lib/constants/step4.ts(新建)
+  - apps/web/src/lib/constants/__tests__/step4.test.ts(新建)
+- 质量检查: vitest 5/5 PASS · pnpm tsc --noEmit 0 error · grep 字面锁命中 1 次 ✅
+- **未来迭代的学习:**
+  - step4 re-export 模式: `export { STEP3_PLATFORMS_5 as STEP4_PLATFORMS_5 } from './step3'` — 单一真源,不重复定义
+  - SUBTITLE 字面必须含全角中文冒号(：)和末尾全角句号(。)，grep 双锁验证
+---
+
+--- [RALPH] Iteration 1 ended: US-001 (PRD-18) ---
+
+--- [RALPH] Iteration 1 ended: US-001 (6分钟 10秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-17 18:42 ---
+
+--- [RALPH] Iteration started: US-002 at 2026-05-17 18:46 ---
+
+## 2026-05-17 18:47 - US-002
+- 新建 apps/web/src/lib/constants/step4b.ts · 完整 Step4b 变现路径规划常量字面锁
+  - STEP4B_STEP_TAG / STEP4B_H1 / STEP4B_SUBTITLE_TEMPLATE(spec §7.5 line 1521 严格 1:1)
+  - STEP4B_TEXTAREA(product_description · required=true)+ STEP4B_INPUTS_3(3 项 · target_audience/ip_positioning/current_income)
+  - STEP4B_BUTTON_GENERATE/OPTIMIZE/REGENERATE/LOADING_TEXT
+  - STEP4B_THREE_STAGES: readonly [Step4bStage, Step4bStage, Step4bStage](tuple 类型 · 防 TS2532 index undefined)
+    · range='0→90万'/'100万→1000万'/'1000万→1亿' · spec §7.5 line 1546-1564 严格 1:1
+  - STEP4B_PRODUCT_TYPES_4 = ['引流品','信任品','利润品','后端产品'] as const
+  - STEP4B_OUTPUT_H3_5(5 H3 · market_analysis/three_stages/revenue_structure/success_cases/feedback)
+  - Interfaces: Step4bTextarea/Input/Stage/OutputBlock/ProductItem/StageDetail/Result
+- 新建 apps/web/src/lib/constants/__tests__/step4b.test.ts · 8 it() · 全 PASS
+- 更改的文件:
+  - apps/web/src/lib/constants/step4b.ts(新建)
+  - apps/web/src/lib/constants/__tests__/step4b.test.ts(新建)
+- 质量: vitest 8/8 PASS · typecheck 0 error · grep 字面量全命中
+- **未来迭代的学习:**
+  - readonly Step4bStage[] 索引访问触发 TS2532(Object is possibly undefined) · THREE_STAGES 改为 tuple 类型 readonly [Step4bStage, Step4bStage, Step4bStage] 解决
+  - SUBTITLE 含空格 "0→90 万" 而 THREE_STAGES range 无空格 "0→90万" · 两处不同 · spec 字面如此 · 1:1 锁
+---
+
+--- [RALPH] Iteration ended: US-002 ---
+
+--- [RALPH] Iteration 2 ended: US-002 (10分钟 35秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-17 18:52 ---
+
+--- [RALPH] Iteration started: US-003 at 2026-05-17 18:54 ---
+
+## 2026-05-17 18:54 - US-003
+- 实现了 step5.ts 常量文件(爆款选题库 Step 5 · foundation story · PRD-18)
+- 更改的文件:
+  - apps/web/src/lib/constants/step5.ts: 新建 · STEP5_STEP_TAG/H1/SUBTITLE · STEP5_INPUTS_2(2项) · STEP5_FILE_UPLOADS_2(2项) · STEP5_FILE_MAX_MB/ACCEPT/ACCEPT_LABEL · STEP5_BUTTON_GENERATE/GO_STEP7/LOADING_TEXT · STEP5_CATEGORIES_5(5项) · STEP5_TOPICS_PER_CAT=20 · STEP5_TOTAL_TOPICS=100 · Step5Topic/Step5Result interface
+  - apps/web/src/lib/constants/__tests__/step5.test.ts: 新建 · 8 assertions 全 PASS
+- 质量检查: vitest 8/8 PASS · typecheck 0 error
+- **未来迭代的学习:**
+  - STEP5_SUBTITLE 含 80+ 字 + 全角括号/逗号 · 字面严格 1:1 spec §7.6 line 1595 不可简化
+  - STEP5_BUTTON_GENERATE 字面含 '一键' + '5大类' + 半角空格 · 严格格式锁定
+  - 5 类 label 全中文 · 不允许翻译为英文 key
+  - Step5Topic.platform/difficulty/potential_stars 均为 union type 字面量 · 测试用具体值实例化验证
+---
+
+--- [RALPH] Iteration 3 ended: US-003 (6分钟 52秒) ---
+
+--- [RALPH] Iteration 4 started: US-004 at 2026-05-17 18:59 ---
+
+--- [RALPH] Iteration US-004 started: 2026-05-17 19:01 ---
+
+## 2026-05-17 19:01 - US-004
+- 实现了 Step 6 拍摄计划页面字面常量(foundation story · PRD-18)
+- 更改的文件:
+  - apps/web/src/lib/constants/step6.ts: 新建 · STEP6_STEP_TAG/H1/SUBTITLE + Step6Textarea interface + STEP6_TEXTAREA(含 \n\n placeholder + 「」全角引号) + STEP6_TEXTAREA_MIN_CHARS=10 + STEP6_CHAR_COUNTER_TEMPLATE='已输入 {count} 字' + STEP6_BUTTON_GENERATE/LOADING_TEXT + STEP6_OUTPUT_MODULES_3(3 项) + Step6StoryboardScene + Step6Result interfaces
+  - apps/web/src/lib/constants/__tests__/step6.test.ts: 6 assertions(SUBTITLE 字面 / TEXTAREA placeholder 含 \n\n / MIN_CHARS 10 / CHAR_COUNTER template / 3 模块 H3 / Step6Result interface 字段)
+- 质量检查: vitest 6/6 PASS · typecheck 0 error(非空断言 ! 修复 TS2532)
+- **未来迭代的学习:**
+  - `as const` 数组索引 readonly tuple 的 TypeScript strict mode 需要 `arr[i]!` 非空断言(TS2532 Object is possibly 'undefined')
+  - Step 5 pattern 直接复用: interface → page labels → textarea/inputs → numeric constants → buttons → output modules
+---
+
+--- [RALPH] Iteration 4 ended: US-004 (5分钟 53秒) ---
+
+--- [RALPH] Iteration 5 started: US-005 at 2026-05-17 19:05 ---
+
+## 2026-05-17 19:09 - US-005
+- 实现了 Step 7 文案生成 page 字面字符串常量集中到 apps/web/src/lib/constants/step7.ts
+- 更改的文件:
+  - apps/web/src/lib/constants/step7.ts: 新建 · 20 脚本类型 + 22 爆款元素(4 分组 6+5+6+5) + 4 H4 schema + 2 interfaces + 所有 buttons/placeholders/templates
+  - apps/web/src/lib/constants/__tests__/step7.test.ts: 新建 · 14 assertions 全 PASS · 含数字锁/字面锁/interface 结构验证
+- 质量检查: vitest 14/14 PASS · tsc --noEmit 0 error · AC-15 grep 7 条全命中 · AC-16 数字锁 20/4/22/4 全验证通过
+- **未来迭代的学习:**
+  - step7.ts 模式与 step6.ts 完全一致(Interface → 标签 → 数据数组 → form → buttons → templates)· 跨 step 常量文件用同一套结构
+  - STEP7_ELEMENTS_22 按 groupKey 分组 · 测试用 filter(e => e.groupKey === 'hook') 验证累加
+  - Step7Result.body = Step7DebateResult | object · object 允许其他 19 种脚本类型的自由 schema · TS 无需 union 所有类型
+---
+
+--- [RALPH] Iteration 5 ended: US-005 (9分钟 2秒) ---
+
+--- [RALPH] Iteration 6 started: US-006 at 2026-05-17 19:14 ---
+
+## 2026-05-17 19:16 - US-006
+- 新建 apps/web/src/lib/constants/step8.ts · Step 8 直播策划全量常量
+- 新建 apps/web/src/lib/constants/__tests__/step8.test.ts · 8 assertions
+- 更改的文件:
+  - apps/web/src/lib/constants/step8.ts (新建)
+  - apps/web/src/lib/constants/__tests__/step8.test.ts (新建)
+- 质量: vitest 8/8 PASS · typecheck 0 error
+- **未来迭代的学习:**
+  - STEP8_PLATFORMS_5 用 re-export 语法 `export { STEP3_PLATFORMS_5 as STEP8_PLATFORMS_5 } from './step3'` 而非 `import + const alias`，类型 re-export 同理
+  - Step8GeneratePlanInput 含 type: 'textarea' | 'input' 字段，区分两种输入控件，与 Step7Textarea 接口有差异
+  - generate_plan 和 optimize_script 两个子功能都复用同一 id='product_info' 和 id='target_audience'，这是 spec 设计；实现时不视为冲突
+---
+
+--- [RALPH] Iteration 6 ended: US-006 (6分钟 12秒) ---
+
+--- [RALPH] Iteration 7 started: US-007 at 2026-05-17 19:20 ---
+
+--- [RALPH] Iteration 1 started: US-007 at 2026-05-17 19:30 ---
+
+## 2026-05-17 19:35 - US-007
+- 重写 Step4.tsx(stub → 完整实现): radio 5 平台 + 3 输入(follower_count/goal/personal_info) + CTA + 3 H3 输出
+- 新增 STEP4_BUTTON_COPY 常量到 step4.ts(无法从 US-001 常量文件补充)
+- 更改的文件:
+  - apps/web/src/lib/constants/step4.ts: 新增 STEP4_BUTTON_COPY = '复制'
+  - apps/web/src/pages/step/Step4.tsx: 完整重写(stub → ~280 行完整实现)
+- 质量: tsc 0 error · 119 tests PASS · AC-7 零 hardcode · AC-8 零 D4=B · 浏览器验证 10/10 PASS
+- **未来迭代的学习:**
+  - noUncheckedIndexedAccess: true 导致 STEP4_INPUTS_3[0] 变 Step4Input | undefined · 改用 .map() 遍历避免
+  - 跨 step 读 acc_step1 时字段名是 industry(id) 而非 industryLabel(display) · 需按 AC 精确指定
+  - 在 form glass-card 外的输出区通过 pageState state machine 控制三态显示(idle/loading/error/result)
+  - STEP4_PLATFORMS_5 是从 step3 re-export 的 · 类型也要从 step3 import
+---
+
+--- [RALPH] Iteration 1 ended: US-007 (5分钟) ---
+
+--- [RALPH] Iteration 7 ended: US-007 (30分钟 40秒) ---
+
+--- [RALPH] Iteration 8 started: US-007 at 2026-05-17 19:51 ---
+
+## 2026-05-17 19:52 - US-007 (retryCount=1 · fix AC-7 hardcode violation)
+- 修复 Opus 驳回的 AC-7 hardcode 违反：EmptyState title="提交表单后查看执行计划" → title={`提交表单后查看${STEP4_H1}`}
+- 更改的文件：apps/web/src/pages/step/Step4.tsx (line 264 · 1 char change)
+- 验证：grep -F '执行计划' Step4.tsx = 0 hit ✅ · tsc 0 error ✅ · vitest 119/119 PASS ✅
+- **未来迭代的学习：**
+  - EmptyState/ErrorState/LoadingState 的 title 文本如果含 spec 锁字面必须用常量 import 拼接
+  - 方案 A template literal + 已有常量最稳(无需新增 STEP4_EMPTY_TITLE 常量)
+---
+
+--- [RALPH] Iteration 8 ended: US-007 (12分钟 42秒) ---
+
+--- [RALPH] Iteration 9 started: US-008 at 2026-05-17 20:04 ---
+
+--- [RALPH] Iteration started: US-008 at 2026-05-17 20:17 ---
+
+## 2026-05-17 20:28 - US-008
+- 重写 apps/web/src/pages/step/Step4b.tsx(完整 form + 三态 + localStorage + 三按钮交互)
+- 新建 apps/web/src/components/step4b/Step4bOutputContent.tsx(5 H3 · 市场分析 InfoCard + 三阶梯 Collapsible + 收入结构 list + 成功案例 + 反馈区)
+- 更改的文件:
+  - apps/web/src/pages/step/Step4b.tsx: 完全重写(旧 stub → 自定义 form + output)
+  - apps/web/src/components/step4b/Step4bOutputContent.tsx: 新建(5 H3 输出组件)
+- 质量检查:
+  - tsc --noEmit: 0 error ✓
+  - vitest: 38 tests 全 PASS ✓
+  - grep hardcode(生成变现路径/智能优化/重新生成/0→90万/引流品/信任品): 0 命中 ✓
+  - grep D4=B(from-violet/text-violet/bg-amber): 0 命中 ✓
+  - grep chart lib(recharts/visx/chart.js/nivo): 0 命中 ✓
+- 浏览器验证(gstack browse):
+  - /step/4b 初始态: STEP_TAG + H1 + 三按钮(generate disabled/optimize-regen enabled-disabled 正确) ✓
+  - 填入'美容院皮肤管理项目，客单价500-3000元' → 点 [生成变现路径] → 3-5s loading ✓
+  - 5 H3 全部渲染: 市场分析 InfoCard / 三阶梯折叠卡 / 收入结构 list + progress bar / 成功案例 / 反馈区 ✓
+  - 折叠卡展开: 产品矩阵(4 types) + 引流策略 + 成交流程(→箭头) + 关键动作(✓) + 风险提示(红色) ✓
+  - [智能优化] 点击 → loading + 旧结果保留 + 2-3s 后 mock 优化结果 ✓
+  - localStorage.getItem('acc_step4b') !== null → true ✓
+  - console errors: 0(仅 React Router future flag warning · pre-existing) ✓
+- **未来迭代的学习:**
+  - gstack browse server 通过 .gstack/browse.json 状态文件记录 port + token · 直接 HTTP API 调用时需读该文件
+  - framer-motion 未安装 · 用 tailwindcss-animate animate-in + fade-in + slide-in-from-bottom-4 + style animationDelay 实现相同入场效果
+  - noUncheckedIndexedAccess: tuple 字面量索引([0][1][2])无问题 · 变量索引需 ?? fallback · 显式列出 stageItems 数组避免泛型下标
+  - EmptyState/LoadingState 三态复用模式: loadingState + emptyState 各自独立条件 · result section 独立 · optimize/regen 不清空 result
+---
+
+--- [RALPH] Iteration ended: US-008 ---
+
+--- [RALPH] Iteration 9 ended: US-008 (45分钟 18秒) ---
+
+--- [RALPH] Iteration 10 started: US-009 at 2026-05-17 20:49 ---
+
+## 2026-05-17 21:05 - US-009
+- 实现了 Step 5 爆款选题库页面完整重写
+- 更改的文件:
+  - apps/web/src/pages/step/Step5.tsx: 完整重写(从 StepForm stub → 自定义 form + mock 生成器)· 2 必填 input(行业/产品)+ 2 file upload stub + CTA + 5 类 tab 输出
+  - apps/web/src/components/step5/Step5FileUpload.tsx: FileReader stub · 严守 LD-170(无 fetch/axios/XHR)· 20MB 限制 + 文件名/大小显示
+  - apps/web/src/components/step5/Step5TopicGrid.tsx: 5 tab × 20 选题 grid · 点选题写 acc_step5_selected_topic + navigate('/step/7')
+  - apps/web/src/test/pages.test.tsx: Step5 h1 断言更新为 '爆款选题库'(旧 stub 用 stepConfig 返回 '发布与运营' · 已过时)
+  - screenshots/validator-us-009-pass-{1,2}.png: 浏览器验证截图
+- 浏览器验证(playwright): H1 ✅ · 5 tabs ✅ · 20 选题/tab ✅ · 点击跳 step7 ✅ · acc_step5_selected_topic 非 null ✅ · 无 console error ✅
+- **未来迭代的学习:**
+  - Step5 旧 stub 依赖 stepConfig.get('step5') · 返回 '发布与运营' 而非爆款选题库 · pages.test.tsx 断言随之过时 · 重写 page 后必须同步更新 test
+  - D4=B 严锁 · data-[state=active]:bg-primary 不用 bg-violet-600(anti_pattern 库已有 · 本次遵守)
+  - LD-170 file upload stub · FileReader 只拿 metadata · 严禁 fetch/axios/XHR
+  - generateMockResult 中 PLATFORMS/DIFFICULTIES 数组 index 访问 TS 可能 undefined · 需 ?? fallback 显式 cast
+  - 5-tab Radix Tabs defaultValue 用 STEP5_CATEGORIES_5[0]?.key ?? 'traffic' 保护
+---
+
+--- [RALPH] Iteration 10 ended: US-009 (42分钟 41秒) ---
+
+--- [RALPH] Iteration 11 started: US-009 at 2026-05-17 21:32 ---
+
+--- [RALPH] Iteration 12 started: US-009 at 2026-05-17 21:36 ---
+
+## 2026-05-17 21:45 - US-009 (re-verification · retryCount=2 · 前两次 Validator/Developer 崩溃)
+- 实现已在前轮 commit 5268deb 中完成，本轮为重新验证通过所有 AC
+- 验证结果:
+  - AC-1: STEP5_STEP_TAG + H1 + SUBTITLE 渲染正确 ✅
+  - AC-2: glass-card form · 2 input 必填 + 2 file upload + CTA button ✅
+  - AC-3: Step5FileUpload.tsx · FileReader stub · 无真上传 · size > 20MB 显示错误 ✅
+  - AC-4: Step5TopicGrid.tsx · 5 tabs × 20 cards · 点击写 acc_step5_selected_topic + navigate /step/7 ✅
+  - AC-5: generateMockResult · setTimeout 3-5s · 100 选题 · title 包含行业关键词 ✅
+  - AC-6: acc_step1 industry 预填 + acc_step5 写入 + acc_step5_selected_topic 写入 ✅
+  - AC-7: grep 0 hardcode (一键生成/流量型/变现型/PDF、Word) ✅
+  - AC-8: grep 0 violet/amber (D4=B) ✅
+  - AC-9: grep 0 fetch/axios/XHR upload ✅
+  - AC-10: grep acc_step5_selected_topic 命中 Step5TopicGrid.tsx ✅
+  - AC-11: vitest 119 tests passed · tsc --noEmit 0 error ✅
+  - AC-12: 浏览器验证 · 填'美业'+'皮肤管理项目' → 生成 5 tab × 20 卡 → 点卡 → /step/7 → localStorage SET · 无 console error ✅
+  - AC-13: typecheck 0 error ✅
+- 根因说明: 前两次失败原因为 Validator/Developer agent 进程崩溃(非代码问题)，实现本身完全符合所有 AC
+- **未来迭代的学习:**
+  - Playwright `[type="text"]` 选择器不匹配无 type 属性的 input(浏览器默认 text 但选择器不匹配)· 应用 `input:not([type="file"])` 或直接 `input` 配合 nth
+  - gstack browse dist/browse 在此环境 exit 1(server 未启动) · 降级用 npx playwright screenshot 可截图
+  - Step5 的 localStorage 恢复逻辑会在已有 acc_step5 数据时直接显示结果(跳过生成步骤) · 测试时注意 localStorage 状态
+---
+
+--- [RALPH] Iteration 12 ended: US-009 (22分钟 11秒) ---
+
+--- [RALPH] Iteration 13 started: US-010 at 2026-05-17 21:58 ---
+
+## 2026-05-17 22:02 - US-010
+- 实现了 Step 6 page 完整重写(apps/web/src/pages/step/Step6.tsx)
+- 更改的文件:
+  - apps/web/src/pages/step/Step6.tsx: 完整重写 stub · textarea + 字符计数 + 3 模块输出
+- 实现要点:
+  - STEP6_TEXTAREA_MIN_CHARS 常量控制 disabled · 非 hardcode 10
+  - STEP6_CHAR_COUNTER_TEMPLATE.replace('{count}', String(text.length)) · 非 hardcode 中文
+  - useEffect 读 acc_step7.result.body.text 自动预填 · 优先 acc_step7 后 acc_step6
+  - generateMockResult: 5 镜头分镜 + 4 项拍摄方案 + 口播提词器
+  - 输出 3 H3 = STEP6_OUTPUT_MODULES_3[0/1/2].h3Label · 0 hardcode
+  - 分镜 table 用 ScrollArea + ScrollBar 横向滚动 · 8 列(时长/场景/景别/角度/运镜/情绪/台词/动作)
+  - JSX 注释中 0 中文字面(防 grep hardcode 误报)
+- **未来迭代的学习：**
+  - JSX 注释 `{/* 分镜脚本 */}` 也会被 grep 命中 · 应写 `{/* Output Module 1 */}` 等中性注释
+  - Step6 的 acc_step7 预填路径: acc7.result.body.text(非 acc7.result.text)· 注意嵌套层级
+  - 多 LS 顺序: 先读 acc_step7(预填优先级高)再读 acc_step6(恢复上次状态)· 用 prev || parsed.text 防 acc_step7 被覆盖
+---
+
+--- [RALPH] Iteration 13 ended: US-010 (15分钟 1秒) ---
+
+--- [RALPH] Iteration 14 started: US-011a at 2026-05-17 22:13 ---
+
+--- [RALPH] Iteration 1 started: US-011a at 2026-05-17 22:18 ---
+
+## 2026-05-17 22:30 - US-011a
+- 实现了 Step 7 page form 部分 · 20 脚本类型搜索 + 22 元素 4 分组多选 + 主题 textarea + 优化 input + 4 button
+- 新建文件:
+  - apps/web/src/components/step7/Step7ScriptTypeSearch.tsx · 上方 display template + search input + 2-4 col grid + 实时 filter
+  - apps/web/src/components/step7/Step7ElementMultiSelect.tsx · 4 分组 H4 + chip grid + Set 多选 + sticky 计数
+  - apps/web/src/pages/step/Step7.tsx · 重写 stub · form glass-card 4 主区 + cross-step 预填 + generateMockResult + 4 button
+- 质量检查: tsc --noEmit 0 error · vitest 119 tests PASS · grep violet/amber = 0 · grep hardcode strings = 0
+- 浏览器验证(gstack browse): default 'debate' 选中 + 当前脚本显示 '当前脚本：搞辩论...' ✅ · 搜索'剖'→1 result(案例分析 positioning 含剖) ✅ · 5 元素多选 → 已选 5 个 ✅ · 填主题→生成 button disabled=false ✅ · console 0 error ✅
+- **未来迭代的学习:**
+  - Step7 components 目录模式: Step7ScriptTypeSearch + Step7ElementMultiSelect 均 memo 化 + 接受 props(lift state 到 page)
+  - chip multi-select 用 button[type=button] + Set<string> + useCallback toggle · 严禁 RadioGroup
+  - cross-step 预填双层: 先 acc_step5_selected_topic(上游 step5 跳转来), 再 acc_step7.formData(本 step 缓存) · topic 用 prev || new(上游优先)
+  - generateMockResult 仅写 state → localStorage · output 区留 US-011b 实现(空 <section id="step7-output">)
+  - gstack browse binary exit 1 原因: 项目级 .gstack/browse.json 状态文件冲突 · 解决: bun 直接启 server.ts → binary 自动连接
+---
+
+--- [RALPH] Iteration 1 ended: US-011a ---
+
+--- [RALPH] Iteration 14 ended: US-011a (36分钟 35秒) ---
+
+--- [RALPH] Iteration 15 started: US-011b at 2026-05-17 22:50 ---
+
+## 2026-05-17 23:00 - US-011b
+- 实现了 Step 7 输出区 Step7OutputContent.tsx
+- 新建文件:
+  - apps/web/src/components/step7/Step7OutputContent.tsx: 4 H4 辩论模板渲染 + 评论引导 + 话题标签 chip + [重新生成][复制全部] 顶部按钮 + 每 H4 [复制] button
+- 修改文件:
+  - apps/web/src/lib/constants/step3.ts: 新增 STEP3_BUTTON_COPY_ALL = '复制全部' 常量
+  - apps/web/src/pages/step/Step7.tsx: import Step7OutputContent + 渲染输出区 + generateMockResult(formData) 签名改造 + 美容院 mock 示例 + Step7Result 类型替换 MockResult
+- 质量: typecheck 0 error · vitest 119/119 pass · 0 hardcode 话题抛出/正方/反方/我的立场/复制 · 0 violet/amber
+- **未来迭代的学习:**
+  - STEP3_BUTTON_COPY 复用跨 step · 话题标签渲染时加 # 前缀而非存储时加
+  - Step7Result.body 是 union type(Step7DebateResult | object)· 需在组件内 as DebateBody 来 narrow
+  - generateMockResult 始终 default debate 模板(AC-6 spec) · formData 仅存档用不影响内容
+---
+
+--- [RALPH] Iteration 15 ended: US-011b (21分钟 12秒) ---
+
+--- [RALPH] Iteration 16 started: US-012 at 2026-05-17 23:11 ---
+
+--- [RALPH] Iteration 17 started: US-012 at 2026-05-17 23:41 ---
+
+## 2026-05-17 23:43 - US-012
+- 实现了 Step 8 直播策划页面：2 子功能 H3 tab 切换 + 各自独立 form + 6 模块输出
+- 更改的文件:
+  - apps/web/src/pages/step/Step8.tsx: 完整页面（STEP_TAG + H1 + SUBTITLE + 2 tab 切换 + localStorage acc_step1 读取）
+  - apps/web/src/components/step8/Step8GeneratePlan.tsx: 子功能 1 form（4 字段：textarea/input/5 平台 radio/3 经验 radio）+ 6 模块 InfoCard 输出 + localStorage acc_step8 读写
+  - apps/web/src/components/step8/Step8OptimizeScript.tsx: 子功能 2 form（2 字段：textarea ≥10 字 + 字符计数 + input 可选）+ 2 InfoCard 输出 + localStorage 读写
+- 浏览器验证：
+  - AC-2 ✅ 2 H3 tab 切换正常（子功能 1/2）
+  - AC-3/4 ✅ 各自 form 渲染正常（4 字段 / 2 字段）
+  - AC-5/10 ✅ 点击生成 → 3-5s mock 延迟 → 6 模块 InfoCard 输出
+  - AC-6 ✅ localStorage.getItem('acc_step8') 非 null · 含 sub_function/formData/generate_plan
+  - AC-7 ✅ grep 0 hardcode 字面量
+  - AC-8 ✅ grep 0 violet/amber
+  - AC-9/11 ✅ vitest 119/119 PASS · tsc --noEmit 0 error
+  - 无 console error（仅 React Router future flag warning，非 error）
+- **未来迭代的学习：**
+  - Step8 组件已有完整实现，之前 retryCount=1 是因为 Developer 超时导致文件未 commit，代码实际已写好
+  - browse binary 需要 playwright chromium 已安装才能启动；在 macOS 上用 node server-node.mjs 作为 browse server 后端
+  - button:has-text("X") 匹配到多个时需要更精确的 CSS selector 或 JS click()
+---
+
+--- [RALPH] Iteration 17 ended: US-012 (30分钟 43秒) ---
+
+--- [RALPH] Iteration 18 started: US-013 at 2026-05-18 00:12 ---
+
+--- [RALPH] Iteration 1 started: US-013 at 2026-05-18 00:17 ---
+
+## 2026-05-18 00:28 - US-013
+- 实现了 PRD-18 完整 E2E playwright 测试(6 tests · 6 截图)+ verify-prd-18.sh(26 检查项)
+- 更改的文件:
+  - apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts: 新建 · 6 test · test1~6 覆盖 Step4/4b/5/6/7/8
+  - scripts/verify-prd-18.sh: 新建 · 26 检查项(6 constants 存在 + 6 pages 存在 + 5 字面常量 grep + D4=B + D3=A + 7 localStorage grep)
+  - apps/web/test-results/ (gitignored): 6 截图由 playwright 运行时生成
+- 质量检查: pnpm tsc --noEmit PASS · pnpm test 119/119 PASS · pnpm playwright test prd-18 6/6 PASS · bash scripts/verify-prd-18.sh 26/26 ALL PASS
+- **未来迭代的学习:**
+  - test-results/ 被 .gitignore 排除 · 截图是运行时产物 · 不提交到 git
+  - `text=搞辩论` 在 Step7 页面匹配到 2 个元素(displayText + grid button)· 需加 .first() 避免 strict mode violation
+  - PRD-18 Step7 debug 脚本类型默认选第一项(debate=搞辩论)· 不需要额外点击操作
+  - verify-prd-18.sh 可扩展为 26+ 检查项(3段: §1-§2 文件存在 · §3 字面常量 · §4-§6 grep 规则)
+---
+
+--- [RALPH] Iteration 18 ended: US-013 (15分钟 36秒) ---

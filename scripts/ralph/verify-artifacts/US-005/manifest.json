@@ -1,15 +1,18 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-17T04:50:30",
-  "validator_end_ts": "2026-05-17T04:51:56",
-  "test_command": "pnpm vitest run src/lib/constants/__tests__/step3.test.ts && pnpm typecheck",
+  "validator_start_ts": "2026-05-17T19:10:05",
+  "validator_end_ts": "2026-05-17T19:11:15",
+  "test_command": "pnpm vitest run src/lib/constants/__tests__/step7.test.ts + pnpm vitest run (full) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
+    "vitest.xml",
+    "vitest.stdout.txt",
+    "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "manifest.json"
-  ]
+    "typecheck.stdout.txt"
+  ],
+  "notes": "项目为全 TypeScript 栈，无 Python/pytest。X-6 零回归门禁改为全量 vitest (111 tests / 0 failures)。14 story tests / 0 failures。Typecheck 0 error。"
 }

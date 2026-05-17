@@ -1,25 +1,23 @@
 
-> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
-> vitest run --config vitest.config.ts
-
-
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
  ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
- ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 1ms
  ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
- ✓ src/test/step-progress.test.tsx (10 tests) 38ms
- ✓ src/components/StepProgress.test.tsx (6 tests) 41ms
- ✓ src/components/states/__tests__/states.test.tsx (3 tests) 41ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 70ms
-stderr | src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 2ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 29ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 43ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 47ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 85ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/test/pages.test.tsx (30 tests) 168ms
+ ✓ src/test/pages.test.tsx (30 tests) 171ms
 
- Test Files  8 passed (8)
-      Tests  70 passed (70)
-   Start at  13:31:45
-   Duration  1.40s (transform 438ms, setup 379ms, collect 1.33s, tests 362ms, environment 2.18s, prepare 403ms)
+ Test Files  10 passed (10)
+      Tests  83 passed (83)
+   Start at  18:49:02
+   Duration  1.43s (transform 508ms, setup 442ms, collect 1.49s, tests 384ms, environment 2.90s, prepare 474ms)
 

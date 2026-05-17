@@ -1,164 +1,226 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="70" failures="0" errors="0" time="1.373">
-    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-17T06:04:22.923Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.027391958">
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.009508042">
+<testsuites name="vitest tests" tests="97" failures="0" errors="0" time="1.453">
+    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-17T11:03:15.994Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.058029709">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.018442458">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.004170792">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.004042375">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.001335583">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.0156535">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.003423625">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.001458167">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.007938">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.017293583">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.000362458">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-17T06:04:22.923Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.069777583">
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.013056166">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.0018175">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.033605917">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.009450917">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.008731041">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.000979125">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.000699666">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.000594542">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.000203542">
         </testcase>
     </testsuite>
-    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-17T06:04:22.923Z" hostname="returndeMacBook-Pro.local" tests="30" failures="0" errors="0" skipped="0" time="0.16947225">
-        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.000438166">
+    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-17T11:03:15.995Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.082465875">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.012092541">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.000098416">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.004447542">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.032657208">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.033192958">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.014015333">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.012303792">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.001882542">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.001722917">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.001815792">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-17T11:03:15.995Z" hostname="returndeMacBook-Pro.local" tests="30" failures="0" errors="0" skipped="0" time="0.169676708">
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.000423834">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.00010075">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.032665458">
             <system-err>
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
             </system-err>
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.002022166">
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.002009417">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.012713">
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.013034">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.007639834">
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.007979291">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.001182542">
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.001209083">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.012072375">
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.0112885">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.032344792">
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.033292875">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.005674666">
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.005557541">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.003779458">
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.003500834">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.000947708">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.000928792">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.000704125">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.000712917">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.00139825">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.001434292">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.000746541">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.000719208">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.000722875">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.000757625">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.000255375">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.000285916">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.001278917">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.00127725">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.011389792">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.011095417">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.001957375">
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.002078916">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders ip-plan-page with h1 我的IP方案" time="0.003410459">
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders ip-plan-page with h1 我的IP方案" time="0.003343209">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders 9 step cards with 查看详情 buttons" time="0.008912708">
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders 9 step cards with 查看详情 buttons" time="0.008642375">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; shows 已完成 0 / 9 步 with empty completedSteps" time="0.0019395">
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; shows 已完成 0 / 9 步 with empty completedSteps" time="0.001801292">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.001689834">
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.001720583">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.001022917">
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.001038209">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.001886583">
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.001893042">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.000679583">
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.000701542">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.007042416">
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.007047667">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.000526">
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.000579">
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.011642916">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-17T06:04:22.924Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.043281209">
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.024735875">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.004456958">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.003285458">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.001278709">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.001657">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.001249792">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.001050916">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.001001375">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.000112833">
-        </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.003798167">
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.01182875">
         </testcase>
     </testsuite>
-    <testsuite name="src/components/states/__tests__/states.test.tsx" timestamp="2026-05-17T06:04:22.924Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.037749292">
-        <testcase classname="src/components/states/__tests__/states.test.tsx" name="LoadingState &gt; renders custom text" time="0.013552833">
+    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-17T11:03:15.996Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.061421333">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.024683125">
         </testcase>
-        <testcase classname="src/components/states/__tests__/states.test.tsx" name="ErrorState &gt; shows 重试 button when onRetry is provided" time="0.020229375">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.014372958">
         </testcase>
-        <testcase classname="src/components/states/__tests__/states.test.tsx" name="EmptyState &gt; renders default title &apos;暂无数据&apos;" time="0.001083541">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.001419167">
         </testcase>
-    </testsuite>
-    <testsuite name="src/lib/constants/__tests__/industries.test.ts" timestamp="2026-05-17T06:04:22.924Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.002223167">
-        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; total count is 56" time="0.000998167">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.002932583">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 生活服务 count is 18" time="0.00017825">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.004302333">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 电商零售 count is 13" time="0.000166333">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.001910459">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_TABS &gt; non-all tab counts sum to 56" time="0.000118667">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.000951">
         </testcase>
-    </testsuite>
-    <testsuite name="src/lib/constants/__tests__/step3.test.ts" timestamp="2026-05-17T06:04:22.925Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.002308167">
-        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 5 platforms" time="0.000900375">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.004352333">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 6 H3 output blocks" time="0.000144875">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.00022">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; all platforms have emoji prefix" time="0.000283167">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; output H3 labels start with number 1-6" time="0.000209708">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.004258875">
         </testcase>
     </testsuite>
-    <testsuite name="src/lib/constants/__tests__/step3b.test.ts" timestamp="2026-05-17T06:04:22.925Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.001429">
-        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 3 textareas" time="0.000582792">
+    <testsuite name="src/lib/constants/__tests__/industries.test.ts" timestamp="2026-05-17T11:03:15.996Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.001084375">
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; total count is 56" time="0.000369292">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 5 H3 output blocks" time="0.000066208">
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 生活服务 count is 18" time="0.00006275">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; first textarea (personalInfo) is required" time="0.000060666">
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 电商零售 count is 13" time="0.000050458">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; advantages and story are not required" time="0.000061875">
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_TABS &gt; non-all tab counts sum to 56" time="0.000051833">
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; H3 labels start with number 1-5" time="0.000072083">
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step3.test.ts" timestamp="2026-05-17T11:03:15.996Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.001793291">
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 5 platforms" time="0.000757625">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 6 H3 output blocks" time="0.000092917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; all platforms have emoji prefix" time="0.000165">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; output H3 labels start with number 1-6" time="0.000089083">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step3b.test.ts" timestamp="2026-05-17T11:03:15.996Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.00100325">
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 3 textareas" time="0.000382542">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 5 H3 output blocks" time="0.000058417">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; first textarea (personalInfo) is required" time="0.000057833">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; advantages and story are not required" time="0.000059375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; H3 labels start with number 1-5" time="0.000072417">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step4.test.ts" timestamp="2026-05-17T11:03:15.996Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.00223125">
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; SUBTITLE 字面严格 1:1 spec §7.4 line 1492" time="0.000744666">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; INPUTS_3 数量锁 · length === 3" time="0.000151292">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; OUTPUT_H3_3 数量锁 · length === 3" time="0.000125125">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; PLATFORMS_5 re-export · length === 5" time="0.000101667">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; Step4Result interface 字段结构" time="0.00032675">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step4b.test.ts" timestamp="2026-05-17T11:03:15.996Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.001305291">
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; 三阶梯 range 字面 1:1 spec §7.5 line 1546-1564" time="0.00039975">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; 4 产品类型字面 1:1 spec §7.5 line 1551" time="0.000229584">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; SUBTITLE 字面严格 1:1 spec §7.5 line 1521" time="0.000051791">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; OUTPUT_H3_5 数量锁 · length === 5" time="0.000036959">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; INPUTS_3 数量锁 · length === 3" time="0.000036208">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; TEXTAREA required === true · id === product_description" time="0.000047125">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; BUTTONS 3 字面 1:1 spec §7.5 line 1532" time="0.000057375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; Step4bResult interface 字段结构" time="0.00007425">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step5.test.ts" timestamp="2026-05-17T11:03:15.997Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.001604083">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; SUBTITLE 字面严格 1:1 spec §7.6 line 1595" time="0.000435333">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630" time="0.000242459">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; INPUTS_2 数量锁 · length === 2" time="0.000050875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_UPLOADS_2 数量锁 · length === 2" time="0.00003875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_MAX_MB === 20" time="0.000036875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606" time="0.000041917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; TOTAL_TOPICS === 100" time="0.000034542">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; Step5Topic interface 字段结构" time="0.000094708">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step6.test.ts" timestamp="2026-05-17T11:03:15.997Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.002282416">
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; SUBTITLE 字面严格 1:1 spec §7.7 line 1639" time="0.0006875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号" time="0.000251917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA_MIN_CHARS === 10" time="0.000104917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647" time="0.000125375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1" time="0.000150666">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; Step6Result interface 字段结构" time="0.000234167">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/states/__tests__/states.test.tsx" timestamp="2026-05-17T11:03:15.997Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.032528042">
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="LoadingState &gt; renders custom text" time="0.011797125">
+        </testcase>
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="ErrorState &gt; shows 重试 button when onRetry is provided" time="0.01911775">
+        </testcase>
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="EmptyState &gt; renders default title &apos;暂无数据&apos;" time="0.001106583">
         </testcase>
     </testsuite>
 </testsuites>
