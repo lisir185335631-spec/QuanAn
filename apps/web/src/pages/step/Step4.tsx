@@ -261,7 +261,7 @@ export default function Step4() {
           <ErrorState message="生成失败 · 请重试" onRetry={handleRetry} />
         )}
         {pageState === 'idle' && !result && (
-          <EmptyState title="提交表单后查看执行计划" />
+          <EmptyState title={`提交表单后查看${STEP4_H1}`} />
         )}
       </div>
 
