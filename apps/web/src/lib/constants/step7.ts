@@ -145,6 +145,9 @@ export const STEP7_TEXTAREA: Step7Textarea = {
 // STEP7_SEARCH_PLACEHOLDER · spec line 1679 · 字面 1:1
 export const STEP7_SEARCH_PLACEHOLDER = '搜索脚本...';
 
+// ─── TD-76 fix: Form section label constant ───────────────────────────────────
+export const STEP7_LABEL_SCRIPT_TYPE = '选择脚本类型';
+
 // ─── Optimize ─────────────────────────────────────────────────────────────────
 
 // STEP7_OPTIMIZE_LABEL + STEP7_OPTIMIZE_PLACEHOLDER · spec §7.8 line 1707 · 字面 1:1
