@@ -49,9 +49,9 @@ export function IndustryDropdown({
               </SelectLabel>
               {items.map((ind) => (
                 <SelectItem
-                  key={ind.key}
-                  value={ind.key}
-                  data-testid={`industry-item-${ind.key}`}
+                  key={ind.id}
+                  value={ind.id}
+                  data-testid={`industry-item-${ind.id}`}
                 >
                   {ind.emoji} {ind.label}
                 </SelectItem>
