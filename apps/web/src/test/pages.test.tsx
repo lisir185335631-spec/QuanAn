@@ -129,7 +129,7 @@ describe('stepConfig', () => {
 describe('Step pages render', () => {
   it('Step1 renders h1 with correct title', () => {
     render(<Step1 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 定位与身份建立');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选择你的行业赛道');
   });
 
   it('Step2 renders h1 with correct title', () => {
