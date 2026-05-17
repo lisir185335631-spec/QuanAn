@@ -142,8 +142,8 @@ describe('Step pages render', () => {
   });
 
   it('Step5 renders h1 with correct title', () => {
-    render(<Step5 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('发布与运营');
+    render(<MemoryRouter><Step5 /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款选题库');
   });
 
   it('Step8 renders h1 with correct title', () => {
