@@ -128,7 +128,11 @@ describe('stepConfig', () => {
 
 describe('Step pages render', () => {
   it('Step1 renders h1 with correct title', () => {
-    render(<Step1 />);
+    render(
+      <MemoryRouter>
+        <Step1 />
+      </MemoryRouter>,
+    );
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选择你的行业赛道');
   });
 

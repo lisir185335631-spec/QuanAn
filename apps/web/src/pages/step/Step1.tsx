@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { EmptyState } from '@/components/states';
 import {
+  type Industry,
+  STEP1_CTA_DISABLED_HINT,
+  STEP1_CTA_LABEL,
   STEP1_INDUSTRIES_56,
   STEP1_SEARCH_PLACEHOLDER,
   STEP1_TABS,
@@ -13,18 +17,21 @@ const STEP1_H1 = '选择你的行业赛道' as const;
 const STEP1_SUBTITLE = '覆盖抖音、视频号等主流平台的 56+ 个细分行业。你也可以自定义输入行业。' as const;
 
 export default function Step1() {
+  const navigate = useNavigate();
   const [activeTabId, setActiveTabId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIndustry, setSelectedIndustry] = useState<Industry | null>(null);
+  const [customIndustry] = useState<string>('');
 
   const activeTab = STEP1_TABS.find((t) => t.id === activeTabId) ?? STEP1_TABS[0]!;
 
-  // AC-5: tab filter first
+  // tab filter first
   const tabFiltered =
     activeTabId === 'all'
       ? STEP1_INDUSTRIES_56
       : STEP1_INDUSTRIES_56.filter((ind) => ind.category === activeTab.label);
 
-  // AC-6: search filter on top of tab filter
+  // search filter on top of tab filter
   const filteredIndustries = searchQuery.trim()
     ? tabFiltered.filter(
         (ind) =>
@@ -33,15 +40,47 @@ export default function Step1() {
       )
     : tabFiltered;
 
+  const isCtaDisabled = !selectedIndustry && !customIndustry;
+
+  function handleSubmit() {
+    if (isCtaDisabled) return;
+    localStorage.setItem(
+      'acc_step1',
+      JSON.stringify({
+        industry: selectedIndustry?.id ?? 'other',
+        industryLabel: selectedIndustry?.label ?? customIndustry,
+        customIndustry: customIndustry ?? undefined,
+      }),
+    );
+    navigate('/step/3');
+  }
+
   return (
     <main className="flex-1 container py-8">
+      {/* AC-1: 已选状态卡 — visible when selectedIndustry is non-null */}
+      {selectedIndustry && (
+        <div className="glass-card border-primary/40 bg-primary/5 rounded-lg p-4 mb-6 flex items-start gap-4">
+          <span className="text-3xl">{selectedIndustry.emoji}</span>
+          <div>
+            <p className="text-body-sm font-cn text-on-surface">
+              已选择:{selectedIndustry.label}
+            </p>
+            {selectedIndustry.keywords && selectedIndustry.keywords.length > 0 && (
+              <p className="text-body-sm text-muted-foreground mt-1">
+                关键词:{selectedIndustry.keywords.join('、')}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
         {STEP1_LABEL}
       </p>
       <h1 className="text-h1 font-display text-on-surface mb-2">{STEP1_H1}</h1>
       <p className="text-body-md text-muted-foreground mb-6">{STEP1_SUBTITLE}</p>
 
-      {/* AC-2: search box — placeholder from constant only */}
+      {/* search box — placeholder from constant only */}
       <div className="mb-4">
         <input
           type="text"
@@ -52,7 +91,7 @@ export default function Step1() {
         />
       </div>
 
-      {/* AC-3: 6 tabs, grid-cols-6, rendered from STEP1_TABS */}
+      {/* 6 tabs, grid-cols-6, rendered from STEP1_TABS */}
       <div className="grid grid-cols-6 gap-2 mb-6">
         {STEP1_TABS.map((tab) => (
           <button
@@ -71,15 +110,21 @@ export default function Step1() {
         ))}
       </div>
 
-      {/* AC-7 / AC-4: empty state or industry grid */}
+      {/* empty state or industry grid */}
       {filteredIndustries.length === 0 ? (
         <EmptyState title="未找到匹配的行业" description="尝试自定义输入" />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
           {filteredIndustries.map((ind) => (
             <div
               key={ind.id}
-              className="glass-card rounded-lg p-4 flex flex-col items-center text-center cursor-pointer hover:border-primary/40 transition-colors"
+              onClick={() => setSelectedIndustry(ind)}
+              className={[
+                'glass-card rounded-lg p-4 flex flex-col items-center text-center cursor-pointer transition-colors',
+                selectedIndustry?.id === ind.id
+                  ? 'border-primary/60 bg-primary/10'
+                  : 'hover:border-primary/40',
+              ].join(' ')}
             >
               <span className="text-3xl mb-2">{ind.emoji}</span>
               <span className="text-body-sm font-cn text-on-surface">{ind.label}</span>
@@ -87,6 +132,28 @@ export default function Step1() {
           ))}
         </div>
       )}
+
+      {/* AC-2 & AC-3: 主 CTA 按钮 */}
+      <div className="mt-4">
+        <button
+          type="button"
+          disabled={isCtaDisabled}
+          onClick={handleSubmit}
+          className={[
+            'w-full rounded-lg px-6 py-3 text-body-md font-label transition-colors',
+            isCtaDisabled
+              ? 'bg-surface-container text-muted-foreground cursor-not-allowed'
+              : 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-on-primary cursor-pointer',
+          ].join(' ')}
+        >
+          {STEP1_CTA_LABEL} →
+        </button>
+        {isCtaDisabled && (
+          <p className="text-body-sm text-muted-foreground text-center mt-2">
+            {STEP1_CTA_DISABLED_HINT}
+          </p>
+        )}
+      </div>
     </main>
   );
 }
