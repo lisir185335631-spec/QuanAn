@@ -148,7 +148,7 @@ describe('Step pages render', () => {
 
   it('Step8 renders h1 with correct title', () => {
     render(<Step8 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('持续迭代与升级');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('直播策划');
   });
 
   it('Step9 renders h1 with correct title', () => {

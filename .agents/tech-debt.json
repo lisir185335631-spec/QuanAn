@@ -1491,8 +1491,50 @@
       "resolved_at": "2026-05-17T17:22:02",
       "resolved_in_story": "maintenance commit (retro 收官)",
       "resolved_notes": "PRD-17 retro 收官 maintenance fix · step3b.ts 新增 STEP3B_BUTTON_COPY/REGENERATE export · Step3b.tsx 删 hardcode BUTTON_COPY/REGENERATE/STEP3B_*_LITERAL · 全部用 step3b.ts 常量 import · 70/70 tests PASS · tsc 0 error · L4 升级 plan-check §2.6.21 已 apply 防 PRD-18+ 复发"
+    },
+    {
+      "id": "TD-76",
+      "title": "PRD-18 US-011a · Step7.tsx hardcode form section label '选择脚本类型'",
+      "description": "ralph 实施 US-011a 时 · Step7.tsx line 150 form section label `<label>选择脚本类型</label>` hardcode 中文 · step7.ts 没 export 对应常量(如 STEP7_LABEL_SCRIPT_TYPE)· 偏离统一常量集中模式。功能 OK(字面渲染正确)· 但同 TD-75 hardcode 偏离模式 · 不在原 plan-check §2.6.21 button label 检查范围(form section label 边界 case)· Opus audit 边界豁免 approve",
+      "scope": [
+        "apps/web/src/pages/step/Step7.tsx:150",
+        "apps/web/src/lib/constants/step7.ts (缺 STEP7_LABEL_SCRIPT_TYPE export)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟字面常量集中模式不一致 · PRD-19 启动前 maintenance fix 推荐",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency"
+      ],
+      "created_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_story": "US-011a (Opus audit)",
+      "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
+      "status": "open",
+      "fix_hint": "step7.ts 新建 STEP7_LABEL_SCRIPT_TYPE='选择脚本类型' export · 同时 Step7.tsx line 150 改 `<label>{STEP7_LABEL_SCRIPT_TYPE}</label>`(或参考 STEP3_LABEL_* 模式跨 page 复用)"
+    },
+    {
+      "id": "TD-77",
+      "title": "PRD-18 US-012 · Step8OptimizeScript.tsx hardcode InfoCard label '优化后文案' / '优化说明'",
+      "description": "ralph 实施 US-012 时 · Step8OptimizeScript.tsx line 164-165 InfoCard props label hardcode 中文 `label=\"优化后文案\" / label=\"优化说明\"` · step8.ts 没 export 对应常量(如 STEP8_OPTIMIZE_OUTPUT_LABELS_2)· 偏离统一常量集中模式。功能 OK(字面渲染正确)· 但同 TD-75/TD-76 hardcode 偏离模式 · InfoCard props label 是边界 case · 不在原 plan-check §2.6.21 button 检查范围 · Opus audit 边界豁免 approve",
+      "scope": [
+        "apps/web/src/components/step8/Step8OptimizeScript.tsx:164-165",
+        "apps/web/src/lib/constants/step8.ts (缺 STEP8_OPTIMIZE_OUTPUT_LABELS_2 export)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟 Step8GeneratePlan 用 STEP8_OUTPUT_MODULES_6.h3Label 常量模式不一致 · PRD-19 启动前 maintenance fix 推荐",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency"
+      ],
+      "created_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_story": "US-012 (Opus audit)",
+      "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
+      "status": "open",
+      "fix_hint": "step8.ts 新建 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · 同时 Step8OptimizeScript.tsx 改 `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard label={label} value={result[id]} />)`"
     }
   ],
-  "last_updated": "2026-05-17T17:22:02",
-  "total": 44
+  "last_updated": "2026-05-18T01:00:00",
+  "total": 76
 }
