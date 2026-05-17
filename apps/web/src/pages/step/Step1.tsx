@@ -2,10 +2,25 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { EmptyState } from '@/components/states';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   type Industry,
   STEP1_CTA_DISABLED_HINT,
   STEP1_CTA_LABEL,
+  STEP1_CUSTOM_MODAL_CANCEL,
+  STEP1_CUSTOM_MODAL_CONFIRM,
+  STEP1_CUSTOM_MODAL_PLACEHOLDER,
+  STEP1_CUSTOM_MODAL_TITLE,
+  STEP1_CUSTOM_TRIGGER_LABEL,
   STEP1_INDUSTRIES_56,
   STEP1_SEARCH_PLACEHOLDER,
   STEP1_TABS,
@@ -21,7 +36,9 @@ export default function Step1() {
   const [activeTabId, setActiveTabId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState<Industry | null>(null);
-  const [customIndustry] = useState<string>('');
+  const [customIndustry, setCustomIndustry] = useState<string>('');
+  const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [customInput, setCustomInput] = useState('');
 
   const activeTab = STEP1_TABS.find((t) => t.id === activeTabId) ?? STEP1_TABS[0]!;
 
@@ -42,6 +59,12 @@ export default function Step1() {
 
   const isCtaDisabled = !selectedIndustry && !customIndustry;
 
+  function handleCustomConfirm() {
+    setCustomIndustry(customInput.trim());
+    setSelectedIndustry(null);
+    setCustomModalOpen(false);
+  }
+
   function handleSubmit() {
     if (isCtaDisabled) return;
     localStorage.setItem(
@@ -57,7 +80,7 @@ export default function Step1() {
 
   return (
     <main className="flex-1 container py-8">
-      {/* AC-1: 已选状态卡 — visible when selectedIndustry is non-null */}
+      {/* Status card — shown when industry selected from list */}
       {selectedIndustry && (
         <div className="glass-card border-primary/40 bg-primary/5 rounded-lg p-4 mb-6 flex items-start gap-4">
           <span className="text-3xl">{selectedIndustry.emoji}</span>
@@ -70,6 +93,18 @@ export default function Step1() {
                 关键词:{selectedIndustry.keywords.join('、')}
               </p>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Status card — shown when custom industry confirmed */}
+      {customIndustry && (
+        <div className="glass-card border-primary/40 bg-primary/5 rounded-lg p-4 mb-6 flex items-start gap-4">
+          <span className="text-3xl">✨</span>
+          <div>
+            <p className="text-body-sm font-cn text-on-surface">
+              已选择:{customIndustry}(自定义)
+            </p>
           </div>
         </div>
       )}
@@ -118,7 +153,10 @@ export default function Step1() {
           {filteredIndustries.map((ind) => (
             <div
               key={ind.id}
-              onClick={() => setSelectedIndustry(ind)}
+              onClick={() => {
+                setSelectedIndustry(ind);
+                setCustomIndustry('');
+              }}
               className={[
                 'glass-card rounded-lg p-4 flex flex-col items-center text-center cursor-pointer transition-colors',
                 selectedIndustry?.id === ind.id
@@ -133,7 +171,39 @@ export default function Step1() {
         </div>
       )}
 
-      {/* AC-2 & AC-3: 主 CTA 按钮 */}
+      {/* Custom industry Dialog — strictly click-triggered via DialogTrigger asChild */}
+      <div className="mb-4 text-center">
+        <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}>
+          <DialogTrigger asChild>
+            <Button variant="link">{STEP1_CUSTOM_TRIGGER_LABEL}</Button>
+          </DialogTrigger>
+          <DialogContent className="glass-card">
+            <DialogHeader>
+              <DialogTitle className="font-display">{STEP1_CUSTOM_MODAL_TITLE}</DialogTitle>
+            </DialogHeader>
+            <Input
+              maxLength={20}
+              placeholder={STEP1_CUSTOM_MODAL_PLACEHOLDER}
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+            />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCustomModalOpen(false)}>
+                {STEP1_CUSTOM_MODAL_CANCEL}
+              </Button>
+              <Button
+                disabled={!customInput.trim()}
+                className="bg-gradient-to-r from-primary to-primary/80"
+                onClick={handleCustomConfirm}
+              >
+                {STEP1_CUSTOM_MODAL_CONFIRM}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* 主 CTA 按钮 */}
       <div className="mt-4">
         <button
           type="button"
