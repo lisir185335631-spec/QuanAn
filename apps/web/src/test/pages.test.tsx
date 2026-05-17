@@ -82,7 +82,8 @@ vi.mock('@/lib/trpc', () => ({
       delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
     stepData: {
-      save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+      get: { useQuery: () => ({ data: null, isLoading: false, isError: false, error: null, refetch: vi.fn() }) },
+      save: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
       progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false, refetch: vi.fn() }) },
     },
     stt: {

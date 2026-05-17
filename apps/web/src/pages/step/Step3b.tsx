@@ -1,12 +1,14 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import Step3bOutputContent, {
   type Step3bResult,
 } from '@/components/step3b/Step3bOutputContent';
-import { LoadingState } from '@/components/states';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep, useStepData } from '@/hooks/useStepData';
 import {
   STEP3B_AUDIENCE,
   STEP3B_BUTTON_COPY,
@@ -25,28 +27,34 @@ import {
 import { STEP3_PLATFORMS_5 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
-const LS_STEP1 = 'acc_step1';
-const LS_STEP3 = 'acc_step3';
-const LS_STEP3B = 'acc_step3b';
-
-interface FormData {
-  personalInfo: string;
-  advantages: string;
-  story: string;
-  audience: string;
-}
-
-function readIndustryLabel(): string {
-  try {
-    const raw = localStorage.getItem(LS_STEP1);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { industryLabel?: string };
-      return parsed.industryLabel ?? '(未选择)';
-    }
-  } catch {
-    // ignore
-  }
-  return '(未选择)';
+// ── Backend Step3bOutput → frontend Step3bResult adapter ──────────────────────
+function adaptStep3bResult(raw: Record<string, unknown>): Step3bResult {
+  const ts = (raw.thoughtSystem as { coreBeliefs?: string[]; uniqueViews?: string[]; catchphrases?: string[] } | null) ?? {};
+  const cp = (raw.contentPersona as { contentPillars?: string[] } | null) ?? {};
+  const pr = (raw.personaRoadmap as { phase1?: string; phase2?: string; phase3?: string } | null) ?? {};
+  return {
+    coreIdentity: {
+      persona: typeof raw.coreIdentity === 'string' ? raw.coreIdentity : undefined,
+    },
+    thoughtSystem: {
+      coreIdeas: ts.coreBeliefs ?? [],
+      uniqueViews: ts.uniqueViews ?? [],
+      catchphrases: ts.catchphrases ?? [],
+    },
+    contentPersona: {
+      contentPillars: cp.contentPillars ?? [],
+    },
+    trustSystem: {
+      socialProof: typeof raw.trustBuilding === 'string' ? raw.trustBuilding : undefined,
+    },
+    roadmap: {
+      phases: [
+        pr.phase1 ? { label: '第一阶段', goal: pr.phase1, keyResults: [] } : null,
+        pr.phase2 ? { label: '第二阶段', goal: pr.phase2, keyResults: [] } : null,
+        pr.phase3 ? { label: '第三阶段', goal: pr.phase3, keyResults: [] } : null,
+      ].filter(Boolean) as { label: string; goal: string; keyResults: string[] }[],
+    },
+  };
 }
 
 function generateMockResult(): Step3bResult {
@@ -140,7 +148,18 @@ function getBlockText(blockId: Step3bOutputBlock['id'], result: Step3bResult): s
   return '';
 }
 
+interface FormData {
+  personalInfo: string;
+  advantages: string;
+  story: string;
+  audience: string;
+}
+
 export default function Step3b() {
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+  const { save, isSaving, dbQuery } = useStepData(accountId, 'step3b');
+
   const [formData, setFormData] = useState<FormData>({
     personalInfo: '',
     advantages: '',
@@ -148,53 +167,52 @@ export default function Step3b() {
     audience: '',
   });
   const [platform, setPlatform] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<Step3bResult | null>(null);
   const [regenLoadingBlocks, setRegenLoadingBlocks] = useState<string[]>([]);
 
-  const industryLabel = readIndustryLabel();
-  const subtitle = STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel);
-  const isCtaDisabled = !formData.personalInfo.trim() || !platform || isLoading;
+  const prevIsSavingRef = useRef(false);
 
-  // AC-6: prefill personalInfo from acc_step3
+  // Cross-step prefill: industry from step1, personalInfo from step3
+  const step1Data = readOtherStep<{ industryLabel?: string }>(accountId, 'step1');
+  const industryLabel = step1Data?.industryLabel ?? '(未选择)';
+  const subtitle = STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel);
+  const isCtaDisabled = !formData.personalInfo.trim() || !platform || isSaving;
+
+  // Prefill from new namespaced LS on accountId change
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_STEP3);
-      if (raw) {
-        const parsed = JSON.parse(raw) as { input?: { personalInfo?: string } };
-        const prefill = parsed?.input?.personalInfo ?? '';
-        if (prefill) {
-          setFormData((prev) => ({ ...prev, personalInfo: prefill }));
-        }
-      }
-    } catch {
-      // ignore
+    if (accountId === null) return;
+    // Prefill personalInfo from step3 if step3b not yet saved
+    const step3Data = readOtherStep<{ personalInfo?: string }>(accountId, 'step3');
+    const step3bData = readOtherStep<FormData & { platform?: string }>(accountId, 'step3b');
+    if (step3bData?.personalInfo) {
+      setFormData({
+        personalInfo: step3bData.personalInfo,
+        advantages: step3bData.advantages ?? '',
+        story: step3bData.story ?? '',
+        audience: step3bData.audience ?? '',
+      });
+      if (step3bData.platform) setPlatform(step3bData.platform);
+    } else if (step3Data?.personalInfo) {
+      setFormData((prev) => ({ ...prev, personalInfo: step3Data.personalInfo ?? '' }));
     }
-    // Also restore step3b saved data if returning
-    try {
-      const raw = localStorage.getItem(LS_STEP3B);
-      if (raw) {
-        const parsed = JSON.parse(raw) as {
-          input?: FormData & { platform?: string };
-          result?: Step3bResult;
-        };
-        if (parsed?.input) {
-          setFormData({
-            personalInfo: parsed.input.personalInfo ?? '',
-            advantages: parsed.input.advantages ?? '',
-            story: parsed.input.story ?? '',
-            audience: parsed.input.audience ?? '',
-          });
-          setPlatform(parsed.input.platform ?? '');
-        }
-        if (parsed?.result) {
-          setResult(parsed.result);
-        }
-      }
-    } catch {
-      // ignore
+  }, [accountId]);
+
+  // Refetch after save completes (isSaving: true → false)
+  useEffect(() => {
+    if (prevIsSavingRef.current && !isSaving) {
+      void dbQuery.refetch();
     }
-  }, []);
+    prevIsSavingRef.current = isSaving;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSaving]);
+
+  // Sync result from DB
+  useEffect(() => {
+    if (!dbQuery.data?.result) return;
+    const raw = dbQuery.data.result as Record<string, unknown>;
+    setResult(adaptStep3bResult(raw));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbQuery.data?.result]);
 
   function setField(field: keyof FormData, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -203,23 +221,7 @@ export default function Step3b() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isCtaDisabled) return;
-
-    setIsLoading(true);
-    await new Promise<void>((r) => setTimeout(r, 1500));
-
-    const mockResult = generateMockResult();
-
-    // AC-7: save to localStorage
-    localStorage.setItem(
-      LS_STEP3B,
-      JSON.stringify({
-        input: { ...formData, platform },
-        result: mockResult,
-      }),
-    );
-
-    setResult(mockResult);
-    setIsLoading(false);
+    save({ ...formData, platform });
     document.getElementById('step3b-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -277,7 +279,6 @@ export default function Step3b() {
 
   return (
     <main className="flex-1 container py-8">
-      {/* AC-1: step tag + H1 + subtitle */}
       <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
         {STEP3B_STEP_TAG}
       </p>
@@ -285,7 +286,7 @@ export default function Step3b() {
       <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        {/* AC-2: 3 textarea from STEP3B_TEXTAREAS_3 */}
+        {/* 3 textarea from STEP3B_TEXTAREAS_3 */}
         {STEP3B_TEXTAREAS_3.map((ta) => (
           <div key={ta.id}>
             <label className="block text-body-sm font-label text-on-surface mb-2">
@@ -303,7 +304,7 @@ export default function Step3b() {
           </div>
         ))}
 
-        {/* AC-3: 5 platform radio from STEP3_PLATFORMS_5, id='step3b-{p.id}' */}
+        {/* 5 platform radio */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             目标平台
@@ -336,7 +337,7 @@ export default function Step3b() {
           </div>
         </div>
 
-        {/* AC-4: 1 input 目标受众 */}
+        {/* 目标受众 input */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP3B_AUDIENCE.label}
@@ -348,74 +349,74 @@ export default function Step3b() {
           />
         </div>
 
-        {/* AC-5: main CTA */}
+        {/* Main CTA */}
         <div>
           <Button
             type="submit"
             disabled={isCtaDisabled}
             className={cn('w-full', !isCtaDisabled && 'bg-gradient-to-r from-primary to-primary/80')}
           >
-            {isLoading ? STEP3B_LOADING_TEXT : STEP3B_CTA_LABEL}
+            {STEP3B_CTA_LABEL}
           </Button>
         </div>
       </form>
 
-      {/* loading indicator */}
-      {isLoading && (
-        <div className="mt-8">
-          <LoadingState text={STEP3B_LOADING_TEXT} size="lg" />
-        </div>
-      )}
-
-      {/* AC-8: 5 H3 output area */}
-      {result && (
-        <section id="step3b-output" className="mt-10 max-w-4xl">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-display text-on-surface">专属人设方案</h2>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleCopyAll}>
-                {STEP3B_BUTTON_COPY_ALL}
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {STEP3B_OUTPUT_H3_5.map((block) => (
-              <div key={block.id} className="glass-card rounded-xl p-6">
-                <div className="flex items-start justify-between mb-4 gap-4">
-                  <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
-                  {/* AC-8: 每 H3 3 按钮 · 无 [生成参考图] */}
-                  <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCopy(block.id)}
-                    >
-                      {STEP3B_BUTTON_COPY}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleRegen(block.id)}
-                      disabled={regenLoadingBlocks.includes(block.id)}
-                    >
-                      {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3B_BUTTON_REGENERATE}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOptimize(block.id)}
-                    >
-                      {STEP3B_BUTTON_OPTIMIZE}
-                    </Button>
-                  </div>
-                </div>
-                {/* AC-9: Step3bOutputContent per block */}
-                <Step3bOutputContent blockId={block.id} result={result} />
+      {/* Result area */}
+      <div className="mt-8">
+        {isSaving ? (
+          <LoadingState text="正在分析人设方案 · 请稍候 ..." size="lg" />
+        ) : dbQuery.isError ? (
+          <ErrorState
+            message={dbQuery.error instanceof Error ? dbQuery.error.message : '加载失败'}
+            onRetry={dbQuery.refetch}
+          />
+        ) : result ? (
+          <section id="step3b-output" className="mt-2 max-w-4xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-display text-on-surface">专属人设方案</h2>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleCopyAll}>
+                  {STEP3B_BUTTON_COPY_ALL}
+                </Button>
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
+
+            <div className="space-y-6">
+              {STEP3B_OUTPUT_H3_5.map((block) => (
+                <div key={block.id} className="glass-card rounded-xl p-6">
+                  <div className="flex items-start justify-between mb-4 gap-4">
+                    <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
+                    <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                      <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
+                        {STEP3B_BUTTON_COPY}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRegen(block.id)}
+                        disabled={regenLoadingBlocks.includes(block.id)}
+                      >
+                        {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3B_BUTTON_REGENERATE}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleOptimize(block.id)}>
+                        {STEP3B_BUTTON_OPTIMIZE}
+                      </Button>
+                    </div>
+                  </div>
+                  <Step3bOutputContent blockId={block.id} result={result} />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <EmptyState title={`提交表单后查看${STEP3B_H1}`} />
+        )}
+      </div>
+
+      {isSaving && (
+        <div className="mt-2 text-center text-body-sm text-muted-foreground">
+          {STEP3B_LOADING_TEXT}
+        </div>
       )}
     </main>
   );

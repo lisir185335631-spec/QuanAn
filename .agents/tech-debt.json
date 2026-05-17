@@ -1493,6 +1493,31 @@
       "resolved_notes": "PRD-17 retro 收官 maintenance fix · step3b.ts 新增 STEP3B_BUTTON_COPY/REGENERATE export · Step3b.tsx 删 hardcode BUTTON_COPY/REGENERATE/STEP3B_*_LITERAL · 全部用 step3b.ts 常量 import · 70/70 tests PASS · tsc 0 error · L4 升级 plan-check §2.6.21 已 apply 防 PRD-18+ 复发"
     },
     {
+      "id": "TD-78",
+      "title": "PRD-19 US-002 · Step3.tsx LS_STEP3='acc_step3' hardcode 残留(partial 改造)",
+      "description": "ralph 在 US-002 commit 35d05b1 主动 forward delivery 改 Step3.tsx · 加 readOtherStep(accountId, 'step1') 替换 readStep1IndustryLabel 旧 helper(删除 LS_STEP1='acc_step1' + readStep1IndustryLabel function)· 但保留 LS_STEP3='acc_step3' hardcode · setItem(LS_STEP3, ...) / getItem(LS_STEP3) 仍 LD-009 违反(没 accountId 隔离)· US-002 越界改 Step3 是 partial 状态 · US-003 即将完整改 Step3 用 useStepData(accountId, 'step3') · 边界 case Opus 豁免 approve",
+      "scope": [
+        "apps/web/src/pages/step/Step3.tsx:43",
+        "apps/web/src/pages/step/Step3.tsx:57",
+        "apps/web/src/pages/step/Step3.tsx:186-187"
+      ],
+      "impact": "Medium · Step3 临时 LD-009 违反(跨账号 LS 数据串)· 但有效期短(US-003 即将完整 fix · 预估 30-45 min)· 用户实测概率低(单账号 dev 期不暴露)· US-003 必须 catch + fix",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "ld-009-partial"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-002 (Opus audit · 边界 case 豁免 approve)",
+      "fix_by": "US-003(必须 catch · 完整改 Step3.tsx 用 useStepData(accountId, 'step3') · 删除 LS_STEP3 hardcode)",
+      "status": "closed",
+      "fix_hint": "US-003 ralph dev 时 · 完整 Step3.tsx 改造 · 删除 LS_STEP3='acc_step3' 常量 + setItem(LS_STEP3,...) + getItem(LS_STEP3) · 改用 `const { save, load, dbQuery } = useStepData(accountId, 'step3')` · save 取代 setItem · load 取代 getItem · LS_STEP3 整个常量删除",
+      "closed_at": "2026-05-18",
+      "closed_by": "Ralph US-003",
+      "close_evidence": "US-003: Step3.tsx 완전 교체 · LS_STEP3=acc_step3 제거 · useStepData(accountId, step3) 적용 · grep LS_STEP3|acc_step3 0 hit"
+    },
+    {
       "id": "TD-76",
       "title": "PRD-18 US-011a · Step7.tsx hardcode form section label '选择脚本类型'",
       "description": "ralph 实施 US-011a 时 · Step7.tsx line 150 form section label `<label>选择脚本类型</label>` hardcode 中文 · step7.ts 没 export 对应常量(如 STEP7_LABEL_SCRIPT_TYPE)· 偏离统一常量集中模式。功能 OK(字面渲染正确)· 但同 TD-75 hardcode 偏离模式 · 不在原 plan-check §2.6.21 button label 检查范围(form section label 边界 case)· Opus audit 边界豁免 approve",

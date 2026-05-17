@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { EmptyState } from '@/components/states';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,6 +12,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { useStepData } from '@/hooks/useStepData';
 import {
   type Industry,
   STEP1_CTA_DISABLED_HINT,
@@ -22,6 +24,7 @@ import {
   STEP1_CUSTOM_MODAL_TITLE,
   STEP1_CUSTOM_TRIGGER_LABEL,
   STEP1_INDUSTRIES_56,
+  STEP1_NEXT_LABEL,
   STEP1_SEARCH_PLACEHOLDER,
   STEP1_TABS,
 } from '@/lib/constants/industries';
@@ -31,24 +34,59 @@ const STEP1_LABEL = 'STEP 01 · 选择行业赛道' as const;
 const STEP1_H1 = '选择你的行业赛道' as const;
 const STEP1_SUBTITLE = '覆盖抖音、视频号等主流平台的 56+ 个细分行业。你也可以自定义输入行业。' as const;
 
+interface Step1ApiResult {
+  industry: string;
+  marketAnalysis: string;
+  competitionLevel: 'low' | 'medium' | 'high';
+  recommendation: string;
+}
+
+const COMPETITION_LABEL: Record<Step1ApiResult['competitionLevel'], string> = {
+  low: '低竞争',
+  medium: '中等竞争',
+  high: '激烈竞争',
+};
+
 export default function Step1() {
   const navigate = useNavigate();
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+  const { save, isSaving, dbQuery } = useStepData(accountId, 'step1');
+
   const [activeTabId, setActiveTabId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState<Industry | null>(null);
   const [customIndustry, setCustomIndustry] = useState<string>('');
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [customInput, setCustomInput] = useState('');
+  const [result, setResult] = useState<Step1ApiResult | null>(null);
+
+  const prevIsSavingRef = useRef(false);
+
+  // Refetch after save completes (isSaving: true → false)
+  useEffect(() => {
+    if (prevIsSavingRef.current && !isSaving) {
+      void dbQuery.refetch();
+    }
+    prevIsSavingRef.current = isSaving;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSaving]);
+
+  // Sync result from DB when query updates
+  useEffect(() => {
+    if (dbQuery.data?.result) {
+      setResult(dbQuery.data.result as unknown as Step1ApiResult);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbQuery.data?.result]);
 
   const activeTab = STEP1_TABS.find((t) => t.id === activeTabId) ?? STEP1_TABS[0]!;
 
-  // tab filter first
   const tabFiltered =
     activeTabId === 'all'
       ? STEP1_INDUSTRIES_56
       : STEP1_INDUSTRIES_56.filter((ind) => ind.category === activeTab.label);
 
-  // search filter on top of tab filter
   const filteredIndustries = searchQuery.trim()
     ? tabFiltered.filter(
         (ind) =>
@@ -57,7 +95,7 @@ export default function Step1() {
       )
     : tabFiltered;
 
-  const isCtaDisabled = !selectedIndustry && !customIndustry;
+  const isCtaDisabled = (!selectedIndustry && !customIndustry) || isSaving;
 
   function handleCustomConfirm() {
     setCustomIndustry(customInput.trim());
@@ -67,15 +105,11 @@ export default function Step1() {
 
   function handleSubmit() {
     if (isCtaDisabled) return;
-    localStorage.setItem(
-      'acc_step1',
-      JSON.stringify({
-        industry: selectedIndustry?.id ?? 'other',
-        industryLabel: selectedIndustry?.label ?? customIndustry,
-        customIndustry: customIndustry ?? undefined,
-      }),
-    );
-    navigate('/step/3');
+    save({
+      industry: selectedIndustry?.id ?? 'other',
+      industryLabel: selectedIndustry?.label ?? customIndustry,
+      ...(customIndustry ? { customIndustry } : {}),
+    });
   }
 
   return (
@@ -115,7 +149,7 @@ export default function Step1() {
       <h1 className="text-h1 font-display text-on-surface mb-2">{STEP1_H1}</h1>
       <p className="text-body-md text-muted-foreground mb-6">{STEP1_SUBTITLE}</p>
 
-      {/* search box — placeholder from constant only */}
+      {/* search box */}
       <div className="mb-4">
         <input
           type="text"
@@ -126,7 +160,7 @@ export default function Step1() {
         />
       </div>
 
-      {/* 6 tabs, grid-cols-6, rendered from STEP1_TABS */}
+      {/* 6 tabs */}
       <div className="grid grid-cols-6 gap-2 mb-6">
         {STEP1_TABS.map((tab) => (
           <button
@@ -171,7 +205,7 @@ export default function Step1() {
         </div>
       )}
 
-      {/* Custom industry Dialog — strictly click-triggered via DialogTrigger asChild */}
+      {/* Custom industry Dialog */}
       <div className="mb-4 text-center">
         <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}>
           <DialogTrigger asChild>
@@ -203,7 +237,7 @@ export default function Step1() {
         </Dialog>
       </div>
 
-      {/* 主 CTA 按钮 */}
+      {/* 主 CTA */}
       <div className="mt-4">
         <button
           type="button"
@@ -216,12 +250,59 @@ export default function Step1() {
               : 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-on-primary cursor-pointer',
           ].join(' ')}
         >
-          {STEP1_CTA_LABEL} →
+          {STEP1_CTA_LABEL}
         </button>
-        {isCtaDisabled && (
+        {isCtaDisabled && !isSaving && (
           <p className="text-body-sm text-muted-foreground text-center mt-2">
             {STEP1_CTA_DISABLED_HINT}
           </p>
+        )}
+      </div>
+
+      {/* Result area */}
+      <div className="mt-10 max-w-2xl">
+        {isSaving ? (
+          <LoadingState text="正在分析行业 · 请稍候 ..." size="lg" />
+        ) : dbQuery.isError ? (
+          <ErrorState
+            message={dbQuery.error instanceof Error ? dbQuery.error.message : '加载失败'}
+            onRetry={dbQuery.refetch}
+          />
+        ) : result ? (
+          <section id="step1-output">
+            <h2 className="text-2xl font-display text-on-surface mb-6">行业洞察报告</h2>
+            <div className="space-y-4">
+              <div className="glass-card rounded-xl p-6">
+                <h3 className="font-display text-xl text-on-surface mb-3">市场分析</h3>
+                <p className="text-body-sm text-on-surface font-cn leading-relaxed">
+                  {result.marketAnalysis}
+                </p>
+              </div>
+              <div className="glass-card rounded-xl p-6">
+                <h3 className="font-display text-xl text-on-surface mb-3">竞争程度</h3>
+                <p className="text-body-sm text-on-surface font-cn">
+                  {COMPETITION_LABEL[result.competitionLevel] ?? result.competitionLevel}
+                </p>
+              </div>
+              <div className="glass-card rounded-xl p-6">
+                <h3 className="font-display text-xl text-on-surface mb-3">定位建议</h3>
+                <p className="text-body-sm text-on-surface font-cn leading-relaxed">
+                  {result.recommendation}
+                </p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <button
+                type="button"
+                onClick={() => navigate('/step/3')}
+                className="w-full rounded-lg px-6 py-3 text-body-md font-label bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-on-primary cursor-pointer transition-colors"
+              >
+                {STEP1_NEXT_LABEL}
+              </button>
+            </div>
+          </section>
+        ) : (
+          <EmptyState title={`提交表单后查看${STEP1_H1}`} />
         )}
       </div>
     </main>

@@ -23,7 +23,8 @@ export interface Step1Tab {
 
 // ── Step 1 字面常量 (D1=A 严锁 · 禁止改写) ──────────────────────────────────
 export const STEP1_SEARCH_PLACEHOLDER = '搜索行业名称或关键词（如：美容院、餐饮、教育...）' as const;
-export const STEP1_CTA_LABEL = '确认并进入下一步' as const;
+export const STEP1_CTA_LABEL = '生成行业洞察' as const;
+export const STEP1_NEXT_LABEL = '进入 IP 定位 →' as const;
 export const STEP1_CTA_DISABLED_HINT = '请先选择一个行业' as const;
 export const STEP1_CUSTOM_TRIGGER_LABEL = '自定义输入行业' as const;
 export const STEP1_CUSTOM_MODAL_TITLE = '自定义你的行业' as const;
