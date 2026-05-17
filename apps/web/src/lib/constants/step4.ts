@@ -49,6 +49,7 @@ export const STEP4_BUTTON_GENERATE = '生成执行计划';
 export const STEP4_RADIO_LABEL = '选择平台';
 export const STEP4_RADIO_REQUIRED = true;
 export const STEP4_LOADING_TEXT = 'AI 正在生成你的执行计划，预计 30-60 秒...';
+export const STEP4_BUTTON_COPY = '复制';
 
 // STEP4_SUBTITLE_TEMPLATE · 字面严格 1:1 来源 spec §7.4 line 1492 · 含全角中文冒号 · 末尾全角句号
 export const STEP4_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将为你制定每天具体做什么、每周里程碑、每个阶段 KPI 的可执行运营计划。';
