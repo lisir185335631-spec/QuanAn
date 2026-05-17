@@ -3216,6 +3216,75 @@ PRD-18 Step 4/4b/5/6/7/8 必延续 `acc_step{N}` 前缀模式。
 
 ---
 
+### §11.11 PRD-18 step-4-4b-5-6-7-8 沉淀(PRD-18 retro 2026-05-18 文档回流 · 16 commits 事实驱动)
+
+> **派生** · `.agents/retros/prd-18-vs-prd-17-retrospective.md §15-§16` · 14/14 ALL PASSED · 93% 严格一轮通过率 · +12% vs PRD-17(5 PRD 来首破 90%)· 反例库 48→49 + L4 升级第二次实战 + PRD-17 patterns forward delivery 三层叠加复利。PRD-18 完成 6 step page(Step4/4b/5/6/7a/7b/8)+ 6 constants 文件 + 7 子组件 + E2E 收官 + verify-prd-18.sh 26 检查项 · 沉淀 5 个跨 PRD 复用模式 + 2 L4 plan-check 升级(M-1 EmptyState template literal / M-2 §2.6.21 扩范围) · 防 PRD-19+ 重蹈。
+
+#### §11.11.1 EmptyState template literal pattern(跨 PRD 核心防御)· 红线级
+
+任何 step page 用 EmptyState · title 必须用 template literal 嵌 STEP{N}_H1 常量 · 严禁 hardcode 含 spec 字面:
+
+```typescript
+// ✅ 正例 · template literal · grep 编译前 0 hit
+<EmptyState title={`提交表单后查看${STEP4_H1}`} />
+
+// ❌ 反例 · hardcode 含 STEP4_H1='执行计划' 字面 · AC 字面 grep 命中 reject
+<EmptyState title="提交表单后查看执行计划" />
+```
+
+PRD-18 US-007 reject 教训 · 反例入 reject-examples.jsonl 第 49 条 · 跨 6 page 0 复发 · 节省 75 min 防御性收益。机制化 · 详 `~/.claude/commands/plan-check.md` §2.6.22 EmptyState title spec 字面常量检测。
+
+#### §11.11.2 structured mockResult 跨 page 复用模式(apps/web/src/components/step{N}/Step{N}OutputContent.tsx)
+
+每 page 必走 ·
+- 定义 `Step{N}FormData` interface (form 字段类型)
+- 定义 `Step{N}Result` interface (输出嵌套 object/array · 各模块独立 schema)
+- `generateMockResult(formData): Step{N}Result` function · 返回真实示例 100+ 字 · 行业相关
+- `setTimeout(2000~5000ms)` 模拟 loading · 配 LoadingState 复用
+- Step8 等多 subfunction 用 discriminator(sub_function key)隔离 state · `if (parsed.sub_function !== subfunctionKey) return` 防交叉污染
+
+后端 AI 接入前 · mockResult 模式严守(继承 PRD-17 §11.10.3)。LD-170/174 不接 backend API。
+
+#### §11.11.3 跨 step 数据传递链 9 keys(acc_ 前缀严守 · 继承 LD-009)
+
+| Step | localStorage key | 关键字段 |
+|---|---|---|
+| Step 1 | `acc_step1` | industry / industryLabel |
+| Step 3 | `acc_step3` | input + result |
+| Step 3b | `acc_step3b` | input + result |
+| Step 4 | `acc_step4` | input + result |
+| Step 4b | `acc_step4b` | input + result |
+| Step 5 | `acc_step5` | input + categories + topics |
+| Step 5 → 7 | `acc_step5_selected_topic` | (上游 step5 选题跳 step7 预填) |
+| Step 6 | `acc_step6` | text + result |
+| Step 7 | `acc_step7` | formData + result(含 body.text 供 Step6 预填) |
+| Step 8 | `acc_step8` | sub_function + formData + (generate_plan \| optimize_script) |
+
+跨 step 预填规则 · 字段 id 严格一致(personalInfo 跨 step3/3b 同名 · text 跨 step6/step7 同名)· 子选项隔离(Step8 sub_function discriminator 防交叉污染)。
+
+#### §11.11.4 re-export 跨 step 常量复用 + 字符计数 template
+
+- **re-export 模式** · `export { STEP3_PLATFORMS_5 as STEP{N}_PLATFORMS_5 } from './step3'` · 避免 5 platform 跨 step 重复定义(Step4 / Step8 复用)· button label 同模式(STEP3_BUTTON_COPY / REGENERATE / COPY_ALL 跨 page 直接 import)
+- **字符计数 template** · `STEP{N}_CHAR_COUNTER_TEMPLATE = '已输入 {count} 字'` + `template.replace('{count}', String(text.length))` · Step6 textarea ≥10 字 disabled + Step8OptimizeScript textarea ≥10 字 disabled · 不 hardcode '已输入'
+- **subfunction switcher + discriminator** · Step8 2 子功能(generate_plan + optimize_script)各自独立 form + state · subfunction key 作 LS 数据 discriminator 防交叉污染
+- **Set 数据结构 multi-select** · Step7 22 elements 4 分组多选用 `Set<string>` + `toggle(id)` useCallback · O(1) add/delete/has · 跨 group 共享一个 Set · 严禁 RadioGroup(多选场景)
+
+#### §11.11.5 LD-170 FileReader stub + LD-174 simple progress bar 严守(继承 PRD-16 §11.9.4 D4=B)
+
+- **LD-170 file upload stub** · `FileReader.readAsText(file)` + 仅取 metadata(name / size / type) · console.log 给开发参考 · 0 真上传 · 0 backend fetch · 文件知识库 1.0 不实现 backend(Step5 实证)
+- **LD-174 不用 chart 库** · `<div className="h-2 rounded-full bg-primary/10"><div className="bg-gradient-to-r from-primary to-primary/80" style={{ width: '45%' }} /></div>` · Step4b 收入结构用 simple progress bar 替代饼图 · 0 import recharts(recharts 是 Evolution.tsx + History.tsx 已有 dep · step4b 不用)
+- **PLATFORM_EMOJI map** · 抖音 🎵 / 小红书 📕 / 视频号 📹 / 快手 ⚡ / B站 🎬 · 跨 step 同 5 platform 一致 emoji · 防散点定义
+
+#### §11.11.6 D1=A / D4=B / DialogTrigger asChild 延续(继承 PRD-16 §11.9 + PRD-17 §11.10.5)
+
+- D1=A 文字字面锁 · 含 SUBTITLE/H1/step_tag 长文本 + EmptyState template literal(PRD-18 US-007 reject 教训补充 · 详见 ~/.claude/skills/prd/SKILL.md EmptyState template literal 必用模式)
+- D4=B 颜色严锁 · 主 CTA `bg-gradient-to-r from-primary to-primary/80` · 0 violet/amber/gold/purple
+- DialogTrigger asChild click 触发(继承 PRD-16 US-007 反例 · PRD-18 0 Dialog 未触)
+
+详 §11.9 PRD-16 + §11.10 PRD-17 沉淀。
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充
