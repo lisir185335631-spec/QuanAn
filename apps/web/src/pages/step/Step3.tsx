@@ -2,6 +2,9 @@ import { Copy, ImagePlus, RefreshCw } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep } from '@/hooks/useStepData';
+
 import Step3OutputContent, {
   getBlockText,
   type Step3Result,
@@ -37,21 +40,7 @@ import {
 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
-const LS_STEP1 = 'acc_step1';
 const LS_STEP3 = 'acc_step3';
-
-function readStep1IndustryLabel(): string {
-  try {
-    const raw = localStorage.getItem(LS_STEP1);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { industryLabel?: string };
-      return parsed.industryLabel ?? '(未选择)';
-    }
-  } catch {
-    // ignore parse errors
-  }
-  return '(未选择)';
-}
 
 interface Step3Saved {
   input?: {
@@ -150,6 +139,9 @@ function generateMockResult(): Step3Result {
 }
 
 export default function Step3() {
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
+
   const [personalInfo, setPersonalInfo] = useState('');
   const [platform, setPlatform] = useState('');
   const [audience, setAudience] = useState('');
@@ -164,7 +156,8 @@ export default function Step3() {
   const [optimizeBlockId, setOptimizeBlockId] = useState<Step3OutputBlock['id'] | null>(null);
   const [optimizeDirection, setOptimizeDirection] = useState('');
 
-  const industryLabel = readStep1IndustryLabel();
+  const step1Data = readOtherStep<{ industry?: string }>(accountId, 'step1');
+  const industryLabel = step1Data?.industry ?? '(未选择)';
   const subtitle = STEP3_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel);
   const isCtaDisabled = !personalInfo.trim() || !platform || isLoading;
 
