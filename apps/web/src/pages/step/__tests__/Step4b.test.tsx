@@ -41,19 +41,19 @@ describe('adaptStep4bResult', () => {
 
   it('maps revenueStructure primary at 60% and secondary at 25%/15%', () => {
     const result = adaptStep4bResult(mockRaw, '美容行业');
-    expect(result.revenue_structure[0].category).toBe('课程/知识付费');
-    expect(result.revenue_structure[0].percent).toBe(60);
-    expect(result.revenue_structure[1].category).toBe('品牌合作/赞助');
-    expect(result.revenue_structure[1].percent).toBe(25);
-    expect(result.revenue_structure[2].category).toBe('代理/分销');
-    expect(result.revenue_structure[2].percent).toBe(15);
+    expect(result.revenue_structure[0]!.category).toBe('课程/知识付费');
+    expect(result.revenue_structure[0]!.percent).toBe(60);
+    expect(result.revenue_structure[1]!.category).toBe('品牌合作/赞助');
+    expect(result.revenue_structure[1]!.percent).toBe(25);
+    expect(result.revenue_structure[2]!.category).toBe('代理/分销');
+    expect(result.revenue_structure[2]!.percent).toBe(15);
   });
 
   it('maps successCases title/summary to name/result fields', () => {
     const result = adaptStep4bResult(mockRaw, '美容行业');
-    expect(result.success_cases[0].name).toBe('张教练');
-    expect(result.success_cases[0].result).toContain('年收入200万');
-    expect(result.success_cases[1].name).toBe('李美妆');
+    expect(result.success_cases[0]!.name).toBe('张教练');
+    expect(result.success_cases[0]!.result).toContain('年收入200万');
+    expect(result.success_cases[1]!.name).toBe('李美妆');
   });
 
   it('handles empty ladder gracefully', () => {
