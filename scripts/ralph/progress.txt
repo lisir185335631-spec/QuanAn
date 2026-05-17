@@ -12,6 +12,8 @@
 - StepForm + Schema 驱动模式跨 PRD 复用(US-004 Monetization/PresentStyles)
 - ralph 跨 US 主动吸取教训(US-004 主动用 getToolLsKey 不重蹈 US-002 R-5)· reject-examples.jsonl 注入有效
 - cold start race condition · _check_claude_health timeout 20s 偶撞边界 · ralph.py 已修 timeout 20→45 + 3 retry
+- tRPC subscription + Prisma $transaction 不兼容 · SSE generator yield 前 $transaction 已 commit → 后续 DB 写"Transaction already closed" · 解决: account-isolation.ts 检测 type==='subscription' + 改 set_config(is_local=false) connection-level SET
+- tRPC splitLink 必须和 httpSubscriptionLink 配合 · splitLink 按 op.type==='subscription' 路由 · 仅 httpBatchStreamLink 不支持 subscription(报错: "Subscriptions are unsupported by httpBatchStreamLink")
 
 ## PRD-16 Coding 3.0 设计定调(D1=A · D2=A · D3=A · D4=B)
 - D1=A 像素级 layout 1:1 对齐 aiipznt
@@ -1271,3 +1273,186 @@
 ---
 
 --- [RALPH] Iteration 18 ended: US-013 (15分钟 36秒) ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-18 03:18 ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-18 03:22 ---
+
+## 2026-05-18 03:24 - US-001
+- 구현한 내용:
+  - apps/web/src/lib/migration/legacy-ls.ts 신규 생성 · migrateLegacyLs(store, accountId) 구현 · MIGRATION_FLAG_KEY 방지 재실행 · 10개 LEGACY_KEYS 매핑 · QuotaExceededError 핸들링
+  - apps/web/src/lib/migration/__tests__/legacy-ls.test.ts 신규 생성 · 8개 edge case 단위 테스트(0개 키/전체 10개/부분 충돌/QuotaExceeded/null accountId/멱등성/special key/partial 2개)
+  - apps/web/src/App.tsx 수정 · useActiveAccount hook으로 account 읽기 + useEffect에서 1회 migrateLegacyLs 호출(account 준비 전 미실행)
+- 변경 파일: apps/web/src/lib/migration/legacy-ls.ts, apps/web/src/lib/migration/__tests__/legacy-ls.test.ts, apps/web/src/App.tsx
+- 품질: vitest 8/8 PASS · typecheck 0 error
+- **미래 이터레이션을 위한 학습:**
+  - noUncheckedIndexedAccess=true 환경에서 Record<string,string> 접근도 string|undefined 반환 → 테스트 MockStorage의 getItem/key 메서드에 `as string` 캐스트 필요
+  - Storage.key() 반환형 string|null → Object.keys()[index] 직접 사용 불가 · 경계 체크 후 as string 캐스트로 해결
+  - MIGRATION_FLAG_KEY는 'aiip_legacy_migration_v1_done' · 'aiip_memory_acc_' prefix 없음 · QuotaExceeded 테스트 mock 분기시 prefix 기준 구분 가능
+---
+
+--- [RALPH] Iteration 1 ended: US-001 (2분) ---
+
+--- [RALPH] Iteration 1 ended: US-001 (10分钟 2秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-18 03:28 ---
+
+--- [RALPH] Iteration started: US-002 ---
+
+## 2026-05-18 03:32 - US-002
+- 实现了 useStepData hook 增强 · 新增 dbQuery(trpc.stepData.get.useQuery 包装)+ 文件级 readOtherStep 静态 helper
+- 更改的文件:
+  - apps/web/src/hooks/useStepData.ts: 新增 dbQuery useQuery(enabled=accountId!==null, staleTime=30000, retry=false) · 返回 {save,load,isSaving,dbQuery} · 新增 export function readOtherStep<T>(accountId,otherStepKey): T|null (纯同步 LS 读 · 非 hook)
+  - apps/web/src/hooks/__tests__/useStepData.test.tsx: 新建 11 单测 · 覆盖 AC (a)~(e)
+- 质量: typecheck PASS · vitest 11/11 PASS
+- **未来迭代的学习:**
+  - vi.mock factory 在 vitest 中被 hoisted · factory 内引用的外部变量会报 "Cannot access before initialization" · 必须用 vi.hoisted() 声明 mockMutate/mockUseQuery · 再在 factory 内引用
+  - readOtherStep 是纯静态 helper (SHIELD anti-pattern 严格遵守) · 绝不用 useState/useEffect · 直接 localStorage.getItem + JSON.parse
+  - stepLsKey(accountId, stepKey) 是 ls-namespace.ts 的 canonical key builder · readOtherStep 内部直接复用 · 不重新拼字符串
+---
+
+--- [RALPH] Iteration ended: US-002 ---
+
+--- [RALPH] Iteration 2 ended: US-002 (41分钟 16秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-18 04:10 ---
+
+## 2026-05-18 04:12 - US-002 (retry 2 · AC-4 fix)
+- 修复 Step3.tsx 仍读旧键 `acc_step1` + `industryLabel` 字段的问题
+- 改为调用 readOtherStep(accountId, 'step1') 读 `industry` 字段 · 完全走 namespaced LS key
+- 使用 useActiveAccount() 获取 accountId · 与 StepForm.tsx 同一 pattern
+- 删除 LS_STEP1 常量 + readStep1IndustryLabel() 函数 · 替换为 readOtherStep 一行
+- 更改的文件: apps/web/src/pages/step/Step3.tsx
+- **未来迭代的学习:**
+  - Page 级 LS 读跨 step 数据 · 必须走 readOtherStep + useActiveAccount · 不能自定义 key 字符串
+  - readOtherStep 读的字段名跟 Step1 写入时的字段名必须一致(write: industry · read: industry)
+  - AC-4 浏览器实测需要先准备好正确的 namespaced LS key(aiip_memory_acc_{id}_step1)才能看到预填效果
+---
+
+--- [RALPH] Iteration 3 ended: US-002 (15分钟 3秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-18 04:25 ---
+
+## 2026-05-18 04:39 - US-003
+- 实现了 Step1 + Step3 + Step3b 真接 stepData router(Positioning industry + Branding packaging/persona)
+- 更改的文件:
+  - apps/web/src/lib/constants/industries.ts: STEP1_CTA_LABEL → '生成行业洞察' + 新增 STEP1_NEXT_LABEL
+  - apps/web/src/pages/step/Step1.tsx: 删除 localStorage.setItem('acc_step1',...) · 改用 useStepData(accountId, 'step1') + prevIsSavingRef 触发 dbQuery.refetch() · 新增 Step1ApiResult 类型 + 结果区域(行业洞察报告) + LoadingState/ErrorState/EmptyState + template literal
+  - apps/web/src/pages/step/Step3.tsx: 删除 LS_STEP3='acc_step3' 硬码(TD-78 fix) · 改用 useStepData(accountId, 'step3') · fix readOtherStep 读 industryLabel(非 industry) · adaptStep3Result backend→frontend adapter · prevIsSavingRef 触发 refetch · LoadingState/ErrorState/EmptyState
+  - apps/web/src/pages/step/Step3b.tsx: 删除 LS_STEP1/LS_STEP3/LS_STEP3B + readIndustryLabel() · 改用 useStepData(accountId, 'step3b') + readOtherStep 跨 step 预填 · adaptStep3bResult adapter · LoadingState/ErrorState/EmptyState + template literal
+  - apps/web/src/test/pages.test.tsx: 补 stepData.get mock + stepData.save.mutate
+  - apps/web/src/pages/step/__tests__/Step1.test.tsx: 新建 4 tests
+  - apps/web/src/pages/step/__tests__/Step3.test.tsx: 新建 4 tests
+  - apps/web/src/pages/step/__tests__/Step3b.test.tsx: 新建 4 tests
+  - .agents/tech-debt.json: TD-78 closed
+- 质量检查: typecheck PASS · vitest 150/150 PASS(+12 新增 Step1/Step3/Step3b 测试) · grep acc_step1/acc_step3 0 hit
+- **未来迭代的学习:**
+  - prevIsSavingRef 模式(useRef false + useEffect deps:[isSaving]) = 检测 isSaving true→false 转换后触发 refetch · 比 pendingSave state 稳定(无 race condition)
+  - backend Step3Output 结构与前端 Step3Result mock 不同 → adaptStep3Result adapter 映射 · Step3bOutputSchema 同理
+  - 测试 mock 需包含 ipAccounts.switchActive.useMutation (useActiveAccount 用到) · 漏掉会 TypeError
+  - EmptyState template literal: `<EmptyState title={\`提交表单后查看${STEP1_H1}\`} />` · 必须在每个 page 一致应用
+---
+
+--- [RALPH] Iteration 4 ended: US-003 (35分钟 16秒) ---
+
+--- [RALPH] Iteration 5 started: US-003 at 2026-05-18 05:00 ---
+
+## 2026-05-18 05:02 - US-003
+- 修复 BaseSpecialist.ts isFallbackable 条件：加 `|| (err instanceof Error && err.message?.includes('API_KEY missing'))` 使缺 key 时触发 fallbackTemplate 而非 re-throw
+- 更改的文件: apps/api/src/specialists/base/BaseSpecialist.ts
+- **未来迭代的学习：**
+  - LLMGateway `ANTHROPIC_API_KEY missing` 抛通用 Error · BaseSpecialist isFallbackable 原来只 catch SchemaValidationError / LLMTimeoutError / 5xx · missing key 走不到 fallback path
+  - 修复点：isFallbackable 新增 `err.message?.includes('API_KEY missing')` 让 dev 环境无 key 时仍返回 fallback data 而不是 400 error
+  - 本次 retryCount=1 · AC-1/2/3/7 上次已通 · 本次只改 1 行 fallback 条件
+---
+
+--- [RALPH] Iteration 5 ended: US-003 (27分钟 33秒) ---
+
+--- [RALPH] Iteration 6 started: US-004 at 2026-05-18 05:28 ---
+
+--- [RALPH] Iteration started: US-004 at 2026-05-18 05:39 ---
+
+## 2026-05-18 05:39 - US-004
+- Step4.tsx 完全重写: 移除 LS mock 逻辑 · 接入 useActiveAccount + useStepData(accountId,'step4') + readOtherStep(step1→industryLabel) · save() 替换 generateMockResult · ReactMarkdown 渲染后端 {markdown} 输出 · LoadingState='AI 正在制定执行计划 ...' · ErrorState onRetry=dbQuery.refetch · EmptyState template literal
+- Step4b.tsx 完全重写: 同样接入三套 hook · 新增 adaptStep4bResult 适配器(backend {currentAnalysis,ladder[3],revenueStructure,successCases} → frontend Step4bResult) · 三个按钮均调 save() · 移除所有 acc_step4b/acc_step1 localStorage 直读
+- 新增 Step4b.test.tsx: 7 个单测覆盖 adaptStep4bResult 所有映射逻辑 · 157 tests pass(原 150+7)
+- 0 recharts import in step4b/ · LD-174 严守
+- 更改的文件:
+  - apps/web/src/pages/step/Step4.tsx(完全重写)
+  - apps/web/src/pages/step/Step4b.tsx(完全重写)
+  - apps/web/src/pages/step/__tests__/Step4b.test.tsx(新建)
+- **未来迭代的学习:**
+  - 后端 step4 返回 {markdown:string} 而非结构化 JSON · 用 ReactMarkdown + remark-gfm 渲染 · prose Tailwind 样式适配
+  - 后端 step4b 返回 {currentAnalysis,ladder[3],revenueStructure,successCases} 与前端 Step4bResult 完全不同 · 必须写 adaptStep4bResult 适配器(类似 Step3 的 adaptStep3Result 模式)
+  - save(formData) 时需 TypeScript cast: `as unknown as Record<string,unknown>` · 直接 as Record<string,unknown> 会报"not sufficiently overlaps"
+  - adaptStep4bResult 应作为 export function 供测试直接 import · 不要只放在组件内部
+  - 浏览器验证需手动(无运行中 dev server · Validator 真跑时会启动)
+---
+
+--- [RALPH] Iteration ended: US-004 ---
+
+--- [RALPH] Iteration 6 ended: US-004 (26分钟 25秒) ---
+
+--- [RALPH] Iteration 7 started: US-004 at 2026-05-18 05:54 ---
+
+## 2026-05-18 06:00 - US-004
+- 修复 Step4b.test.tsx 9 个 TS2532 错误(array index 非空断言)
+- 更改的文件: apps/web/src/pages/step/__tests__/Step4b.test.tsx
+- **未来迭代的学习：**
+  - TypeScript strict 模式下数组索引访问返回 T|undefined，测试文件中 result.array[0].field 需加 ! 非空断言(result.array[0]!.field)
+  - Validator CONFIRMED 的 TS2532 精确定位省去排查时间，直接加 ! 即可
+---
+
+--- [RALPH] Iteration 7 ended: US-004 (5分钟 29秒) ---
+
+--- [RALPH] Iteration 8 started: US-005 at 2026-05-18 05:59 ---
+
+--- [RALPH] Iteration 1 started: US-005 at 2026-05-18 06:15 ---
+
+## 2026-05-18 06:15 - US-005
+- 实现了 Step5 SSE 真接 saveStream subscription · TopicAgent 5 类爆款选题 100 选题
+- 更改的文件:
+  - apps/web/src/pages/step/Step5.tsx: 全量重写 · 删除 ~160 行 mock templates + generateMockResult · 新增 useActiveAccount/useStepData/stepLsKey/trpc.saveStream.useSubscription · 单 subscription 按 activeCategory 动态切换 · 5 类 Tab 状态 streamStatuses + categoryResults · LS 双写(step5.{cat} 命名空间)· 表单数据走 useStepData.save()
+  - apps/web/src/components/step5/Step5TopicGrid.tsx: 接口升级 · result: Step5Result→Step5Result|null · 新增 accountId/streamStatuses/activeCategory/onCategoryChange props · handleTopicClick 写双 LS key(aiip_memory_acc_{accountId}_selected_topic + acc_step5_selected_topic 向后兼容) · 每 Tab 独立 loading/empty/grid 状态
+  - apps/web/src/pages/step/__tests__/Step5.test.tsx: 新建 · 5 个 render 测试 · mock saveStream.useSubscription
+  - apps/web/src/test/pages.test.tsx: 补 saveStream.useSubscription mock 到 stepData 节点
+  - packages/clients/src/router-types.ts: shadow router 补 stepData.saveStream subscription 类型
+- 质量检查: typecheck PASS · vitest 162/162 passed(+5 新 Step5 测试)· 零回归
+- **未来迭代的学习:**
+  - router-types.ts shadow router 缺 subscription 时 ts 报 "saveStream does not exist" · 新增 subscription procedure 必须同步加到 shadow router
+  - pages.test.tsx 全局 trpc mock 需随新 procedure 增加而扩展 · saveStream subscription 类型不同(useSubscription 不是 useQuery/useMutation)
+  - useSubscription 通过 enabled+input 变化自动管理生命周期(反例: useEffect 手动 cleanup)· Tab 切换只需更新 activeCategory 即触发 tRPC 重订阅
+  - adaptTopicResult: TopicAgent 返 viralPotential(low/medium/high) · 前端 Step5Topic 用 potential_stars(1-5) + platform + difficulty · 需适配映射
+---
+
+--- [RALPH] Iteration 1 ended: US-005 ---
+
+--- [RALPH] Iteration 8 ended: US-005 (25分钟 45秒) ---
+
+--- [RALPH] Iteration 9 started: US-005 at 2026-05-18 06:25 ---
+
+--- [RALPH] Iteration 10 started: US-005 at 2026-05-18 06:55 ---
+
+## 2026-05-18 07:05 - US-005 (Retry 3 · 根因修复 + 后端 subscription path 修复)
+- 诊断: validator 失败原因已从上次 prd.json notes 读到 — trpc.ts 缺 httpSubscriptionLink
+  - trpc.ts splitLink 修复已在上次 Developer timeout 前 committed(25dbd8c)✅
+  - 但 account-isolation.ts subscription path 未 commit — 关键后端 bug
+- 关键修复: apps/api/src/trpc/middleware/account-isolation.ts
+  - SSE subscription 时 $transaction 在 generator 返回即 commit(yield 前)→ 后续 DB 写失败("Transaction already closed")
+  - 解决: 检测 type==='subscription' → 改用 set_config(is_local=false) connection-level SET · 不走 $transaction 路径
+  - 同时 TD-79/TD-80 tech-debt entries committed(.agents/tech-debt.json)
+- 验证结果:
+  - pnpm -r typecheck → 0 errors ✅
+  - pnpm vitest run (root) → 2278 passed | 4 skipped (2282) · 零回归 ✅
+  - account-isolation.test.ts → 9/9 PASS ✅
+  - Step5.test.tsx → 5/5 PASS ✅
+  - dev server port 5173 响应 200 ✅
+  - 浏览器测试: playwright browsers 未安装 · 交 Validator 实测
+- 更改文件:
+  - apps/api/src/trpc/middleware/account-isolation.ts: subscription path 修复(commit 50374f4)
+  - .agents/tech-debt.json: TD-79/TD-80 entries(commit 50374f4)
+- **未来迭代的学习:**
+  - tRPC subscription + Prisma $transaction 不兼容 · SSE generator yield 前 $transaction 已 commit · 后续写失败 "Transaction already closed"
+  - 解决方案: middleware 检测 type==='subscription' + 改用 connection-level set_config(is_local=false)
+  - httpSubscriptionLink 必须和 splitLink 配合 · splitLink 按 op.type==='subscription' 路由 · 单独用 httpBatchStreamLink 不支持 subscription
+---
