@@ -45,6 +45,9 @@ export const STEP3_BUTTON_GEN_IMAGE = '生成参考图';
 export const STEP3_HEADER_BUTTON_REGEN_ALL = '一键重新生成';
 export const STEP3_HEADER_BUTTON_COPY_ALL = '复制全部';
 
+// Step7 输出顶部 · [复制全部] — AC-3 命名锁
+export const STEP3_BUTTON_COPY_ALL = '复制全部';
+
 // STEP3_FORM_LABELS · 表单字段 label + placeholder 字面 1:1 来源 spec §7.2
 export const STEP3_FORM = {
   personalInfo: {

@@ -1,6 +1,7 @@
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import Step7OutputContent from '@/components/step7/Step7OutputContent';
 import { Step7ElementMultiSelect } from '@/components/step7/Step7ElementMultiSelect';
 import { Step7ScriptTypeSearch } from '@/components/step7/Step7ScriptTypeSearch';
 import { LoadingState } from '@/components/states';
@@ -19,36 +20,36 @@ import {
   STEP7_STEP_TAG,
   STEP7_SUBTITLE,
   STEP7_TEXTAREA,
+  type Step7Result,
 } from '@/lib/constants/step7';
 
 const LS_STEP7 = 'acc_step7';
 const LS_STEP5_SELECTED_TOPIC = 'acc_step5_selected_topic';
 
-interface MockResult {
-  script_type: string;
-  title: string;
-  body: {
-    topic_hook: string;
-    pros_arguments: string;
-    cons_arguments: string;
-    my_stance: string;
-    comment_guide: string;
-    topic_tags: string[];
-  };
+interface Step7FormData {
+  scriptId: string;
+  elements: string[];
+  topic: string;
+  optimize: string;
 }
 
-function generateMockResult(scriptId: string, topic: string): MockResult {
-  const script = STEP7_SCRIPT_TYPES_20.find((s) => s.id === scriptId);
+// AC-6: structured mockResult · 美容院如何选购仪器示例 · 4 H4 各 100-200 字 + 评论引导 + 3 话题标签
+function generateMockResult(_formData: Step7FormData): Step7Result {
   return {
-    script_type: scriptId,
-    title: `${script?.name ?? ''} · ${topic.slice(0, 20)}`,
+    script_type: 'debate',
+    title: '搞辩论 · 美容院到底该不该采购医美仪器？',
     body: {
-      topic_hook: `关于"${topic.slice(0, 30)}"，你是否好奇…`,
-      pros_arguments: '正方观点：支持者认为这是趋势所向，有大量案例支撑',
-      cons_arguments: '反方观点：质疑者认为存在认知误区，不可一概而论',
-      my_stance: '我的立场：基于数据与实操，理性支持正方核心论点',
-      comment_guide: '你怎么看？评论区聊聊，期待你的观点！',
-      topic_tags: ['#内容创作', '#干货分享', '#IP起号'],
+      title: '美容院医美仪器选购辩论',
+      topic_hook:
+        '美容院要不要采购动辄几十万的医美仪器？很多老板纠结了好几年，有人靠它翻盘，有人靠它亏损。这个问题没有标准答案，但背后的逻辑值得每个美容院老板认真研究一遍。选对了，你是差异化竞争的赢家；选错了，设备贷款就是一座大山。',
+      pros_arguments:
+        '支持采购方认为：仪器是差异化竞争的核心武器。顾客教育程度越来越高，单纯手法项目溢价空间收窄。引进热门项目如光子嫩肤、热玛吉可以显著提升客单价，复购周期也从每月缩短到每季，ROI 通常在 18 个月内回本。头部门店已经靠仪器筑起护城河，不跟进只会越来越难获客。',
+      cons_arguments:
+        '反对方则指出：大多数美容院月流水不到 15 万，根本扛不住设备贷款压力。仪器厂商培训参差不齐，操作失误风险极高，一旦出现皮肤灼伤投诉，赔偿加口碑损失远超利润。而且同类仪器越来越同质化，价格战已经把光子等项目单价打到地板价，投资回报并不如预期。',
+      my_stance:
+        '我的判断：先看客群画像再决定。如果主力客户月消费已超 2000 元且有年轻化需求，采购 1 台中端仪器（20 万内）是合理的扩张。但要先签好 20 单预购协议，确认真实需求存在再落单，不要靠直觉赌。小门店优先考虑租赁或分成合作，控制前期风险。',
+      comment_guide: '你们美容院有没有采购仪器？踩过哪些坑？评论区聊聊，我看到每条都会回！',
+      topic_tags: ['美容院经营', '医美仪器选购', 'IP起号'],
     },
   };
 }
@@ -63,7 +64,7 @@ export default function Step7() {
   const [topic, setTopic] = useState('');
   const [optimize, setOptimize] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [result, setResult] = useState<MockResult | null>(null);
+  const [result, setResult] = useState<Step7Result | null>(null);
 
   useEffect(() => {
     try {
@@ -78,7 +79,7 @@ export default function Step7() {
     try {
       const acc7 = JSON.parse(localStorage.getItem(LS_STEP7) ?? '{}') as {
         formData?: { scriptId?: string; elements?: string[]; topic?: string; optimize?: string };
-        result?: MockResult;
+        result?: Step7Result;
       };
       if (acc7?.formData?.scriptId) setSelectedScriptId(acc7.formData.scriptId);
       if (acc7?.formData?.elements?.length)
@@ -108,24 +109,38 @@ export default function Step7() {
     if (generateDisabled) return;
 
     setIsGenerating(true);
-
     await new Promise<void>((r) => setTimeout(r, 3000 + Math.random() * 2000));
 
-    const mockResult = generateMockResult(selectedScriptId, topic.trim());
+    const formData: Step7FormData = {
+      scriptId: selectedScriptId,
+      elements: Array.from(selectedElements),
+      topic: topic.trim(),
+      optimize: optimize.trim(),
+    };
+
+    const mockResult = generateMockResult(formData);
+
+    // AC-7: 跨 step localStorage · 写 acc_step7({formData, result})
     localStorage.setItem(
       LS_STEP7,
-      JSON.stringify({
-        formData: {
-          scriptId: selectedScriptId,
-          elements: Array.from(selectedElements),
-          topic: topic.trim(),
-          optimize: optimize.trim(),
-        },
-        result: mockResult,
-      })
+      JSON.stringify({ formData, result: mockResult }),
     );
+
     setResult(mockResult);
     setIsGenerating(false);
+  }
+
+  function handleRegenerate() {
+    if (!result) return;
+    const formData: Step7FormData = {
+      scriptId: selectedScriptId,
+      elements: Array.from(selectedElements),
+      topic: topic.trim(),
+      optimize: optimize.trim(),
+    };
+    const mockResult = generateMockResult(formData);
+    localStorage.setItem(LS_STEP7, JSON.stringify({ formData, result: mockResult }));
+    setResult(mockResult);
   }
 
   return (
@@ -209,9 +224,6 @@ export default function Step7() {
             variant="secondary"
             disabled={optimizeDisabled}
             className="w-full"
-            onClick={() => {
-              // US-011b implements optimize output
-            }}
           >
             {STEP7_BUTTON_OPTIMIZE}
           </Button>
@@ -243,9 +255,11 @@ export default function Step7() {
         </div>
       )}
 
-      {/* Output area — US-011b implements output modules */}
+      {/* AC-7: Step7OutputContent 渲染输出区 */}
       {result && !isGenerating && (
-        <section id="step7-output" className="mt-8 max-w-3xl" />
+        <section id="step7-output" className="mt-8 max-w-3xl">
+          <Step7OutputContent result={result} onRegenerate={handleRegenerate} />
+        </section>
       )}
     </main>
   );
