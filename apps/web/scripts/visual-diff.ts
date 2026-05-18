@@ -16,13 +16,19 @@ export async function expectVisualMatch(
   page: Page,
   options: ExpectVisualMatchOptions,
 ): Promise<void> {
-  if (options.viewport) {
-    await page.setViewportSize(options.viewport);
-  }
-  const baselinePath = path.join(AIIPZNT_BASELINE_DIR, options.baseline);
+  const {
+    baseline,
+    viewport = { width: 1440, height: 900 },
+    fullPage = true,
+    maxDiffPixelRatio = 0.05,
+    clip,
+  } = options;
+  await page.setViewportSize(viewport);
+  const filename = baseline.endsWith('.png') ? baseline : `${baseline}.png`;
+  const baselinePath = path.join(AIIPZNT_BASELINE_DIR, filename);
   await expect(page).toHaveScreenshot([baselinePath], {
-    maxDiffPixelRatio: options.maxDiffPixelRatio ?? 0.05,
-    fullPage: options.fullPage ?? false,
-    ...(options.clip != null ? { clip: options.clip } : {}),
+    maxDiffPixelRatio,
+    fullPage,
+    ...(clip != null ? { clip } : {}),
   });
 }

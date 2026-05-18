@@ -25,7 +25,7 @@ test.describe('PRD-21 Visual Baseline', () => {
     await page.goto('/');
     await expectVisualMatch(page, {
       baseline: '00-home.png',
-      viewport: { width: 1280, height: 900 },
+      viewport: { width: 1440, height: 900 },
       fullPage: true,
     });
   });
@@ -34,7 +34,7 @@ test.describe('PRD-21 Visual Baseline', () => {
     await page.goto('/guide');
     await expectVisualMatch(page, {
       baseline: '01-guide.png',
-      viewport: { width: 1280, height: 900 },
+      viewport: { width: 1440, height: 900 },
       fullPage: true,
     });
   });
@@ -43,19 +43,19 @@ test.describe('PRD-21 Visual Baseline', () => {
     await page.goto('/ip-plan');
     await expectVisualMatch(page, {
       baseline: '02-ip-plan.png',
-      viewport: { width: 1280, height: 900 },
+      viewport: { width: 1440, height: 900 },
       fullPage: true,
     });
   });
 
   test('header desktop matches 00-home-header crop', async ({ page }) => {
     await page.goto('/');
-    // Crop: capture header bar only (top 72px at desktop 1280px width)
+    // Crop: capture header bar only (top 80px at desktop 1440px width)
     await expectVisualMatch(page, {
       baseline: '00-home-header.png',
-      viewport: { width: 1280, height: 900 },
+      viewport: { width: 1440, height: 900 },
       fullPage: false,
-      clip: { x: 0, y: 0, width: 1280, height: 72 },
+      clip: { x: 0, y: 0, width: 1440, height: 80 },
     });
   });
 });
