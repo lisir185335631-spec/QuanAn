@@ -140,6 +140,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
         agentId: this.config.agentId,
         accountId: req.accountId,
         stepKey: req.stepKey,
+        agentMode: req.mode,
         traceId,
         modelUsed: raw.model,
         modelTier: this.config.execution.model_tier,
@@ -187,6 +188,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
         agentId: this.config.agentId,
         accountId: req.accountId,
         stepKey: req.stepKey,
+        agentMode: req.mode,
         traceId,
         modelUsed: 'fallback',
         modelTier: this.config.execution.model_tier,
@@ -245,6 +247,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
     agentId: string;
     accountId: number;
     stepKey?: string;
+    agentMode?: string;
     traceId: string;
     modelUsed: string;
     modelTier: string;
@@ -271,6 +274,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
           modelTier: data.modelTier,
           provider,
           callType: 'specialist_call',
+          agentMode: data.agentMode ?? null,
           promptTokens: data.promptTokens,
           completionTokens: data.completionTokens,
           totalTokens: data.totalTokens,
