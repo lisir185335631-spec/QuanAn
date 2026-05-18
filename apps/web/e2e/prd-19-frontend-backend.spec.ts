@@ -75,6 +75,29 @@ async function getStepLs(page: Page, accountId: number, stepKey: string): Promis
   return page.evaluate((k: string) => localStorage.getItem(k), lsKey);
 }
 
+/**
+ * DEV/TEST ONLY — delete stepData rows for the current account via tRPC.
+ * Uses simple non-batch POST format (tRPC v11 fetchRequestHandler).
+ */
+async function clearStepDataForTest(page: Page, stepKeys?: string[]): Promise<void> {
+  const input = stepKeys?.length ? { stepKeys } : {};
+  await page.evaluate(async (body: string) => {
+    try {
+      const res = await fetch('http://localhost:3000/trpc/stepData.deleteForTest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        console.warn('[clearStepDataForTest] response:', res.status);
+      }
+    } catch (err) {
+      console.warn('[clearStepDataForTest] fetch error:', err);
+    }
+  }, JSON.stringify(input));
+}
+
 /** Select an industry card and submit Step1 form. Waits for 行业洞察报告 result. */
 async function submitStep1(page: Page, industryText: string): Promise<void> {
   await page.locator('.glass-card', { hasText: industryText }).first().click();
@@ -105,6 +128,14 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
           '  If PG not running: brew services start postgresql@16',
       );
     }
+  });
+
+  // Navigate to step1 and clear step1 data for a clean test state
+  test.beforeEach(async ({ page }) => {
+    await page.goto(`${BASE_URL}/step/1`);
+    await page.waitForLoadState('networkidle', { timeout: 8_000 }).catch(() => {});
+    // Clear step1 DB data for current account to prevent stale-data false-positives
+    await clearStepDataForTest(page, ['step1']);
   });
 
   // ─── test (a): Step1 真接 PositioningAgent · LS↔DB 双写 ─────────────────────
@@ -152,7 +183,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     // Do NOT re-open + re-click accAId: Radix close animation detaches DOM elements on immediate reopen
     await page.keyboard.press('Escape');
 
-    // ── Account A: select '美食' (already on accA) ──
+    // ── Account A: select '美食' (beforeEach already cleared accA's step1) ──
     await page.goto(`${BASE_URL}/step/1`);
     await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
     await submitStep1(page, '美食');
@@ -176,16 +207,10 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     await page.goto(`${BASE_URL}/step/1`);
     await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
 
-    // RLS isolation check: as B, stepData.get must NOT return A's '美食' data
-    const dbBBeforeSubmit = await queryStepData(page, 'step1');
-    if (dbBBeforeSubmit !== null) {
-      // B may have prior data from a previous test run — verify it's not A's '美食'
-      const bIndustry = String(
-        (dbBBeforeSubmit.inputs as Record<string, unknown>).industryLabel ?? '',
-      );
-      // Only assert isolation if B had '美食' — if so it must be B's own data
-      // (We cannot distinguish from A's, so we accept this edge case in repeated runs)
-    }
+    // Clear accB's step1 data to ensure fresh submission (accB may have pre-existing data)
+    await clearStepDataForTest(page, ['step1']);
+    await page.reload();
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
 
     // Account B: select '美妆护肤'
     await submitStep1(page, '美妆');
@@ -226,6 +251,10 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     // Long timeout: 9 steps × up to 30s each = 270s + overhead
     test.setTimeout(360_000);
 
+    // Clear ALL step data for a fresh 9-step run
+    // (beforeEach only cleared step1; prior prd-19 runs may have written other steps)
+    await clearStepDataForTest(page, ['step1', 'step3', 'step3b', 'step4', 'step4b', 'step5', 'step6', 'step7', 'step8']);
+
     // ── Step 1 ─────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/1`);
     await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 15_000 });
@@ -246,7 +275,8 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     );
     await page.locator('label[for="douyin"]').click();
     await page.locator('button[type="submit"]', { hasText: '生成账号包装方案' }).click();
-    await expect(page.locator('text=账号包装方案')).toBeVisible({ timeout: 30_000 });
+    // Wait for step3-output section (unique ID — avoids strict-mode multi-match on heading text)
+    await expect(page.locator('#step3-output')).toBeVisible({ timeout: 30_000 });
     expect(await getStepLs(page, accountId!, 'step3')).not.toBeNull();
 
     // ── Step 3b ────────────────────────────────────────────────────────────────
@@ -254,7 +284,8 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     await expect(page.locator('h1').first()).toContainText('人设定制方案', { timeout: 10_000 });
     await page.locator('label[for="step3b-douyin"]').click();
     await page.locator('button[type="submit"]', { hasText: '生成专属人设方案' }).click();
-    await expect(page.locator('text=专属人设方案')).toBeVisible({ timeout: 30_000 });
+    // Wait for step3b-output section (unique ID)
+    await expect(page.locator('#step3b-output')).toBeVisible({ timeout: 30_000 });
     expect(await getStepLs(page, accountId!, 'step3b')).not.toBeNull();
 
     // ── Step 4 ─────────────────────────────────────────────────────────────────

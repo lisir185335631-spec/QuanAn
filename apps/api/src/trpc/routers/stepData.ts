@@ -8,6 +8,7 @@
  * Note: Zod schemas inlined — @quanqn/schemas/entities has the canonical definition for client use
  */
 
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { getProgress } from '@/services/ip-progress/IPProgressService';
@@ -464,4 +465,21 @@ export const stepDataRouter = router({
   progress: protectedProcedure.query(({ ctx }) =>
     getProgress(ctx.prisma, ctx.activeAccountId!)
   ),
+
+  /** DEV/TEST ONLY — delete stepData rows for the current account. Forbidden in production. */
+  deleteForTest: protectedProcedure
+    .input(z.object({ stepKeys: z.array(stepKeySchema).optional() }))
+    .mutation(async ({ ctx, input }) => {
+      if (process.env.NODE_ENV === 'production') {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'deleteForTest is disabled in production' });
+      }
+      const { prisma, activeAccountId } = ctx;
+      await prisma.stepData.deleteMany({
+        where: {
+          accountId: activeAccountId!,
+          ...(input.stepKeys?.length ? { stepKey: { in: input.stepKeys } } : {}),
+        },
+      });
+      return { ok: true };
+    }),
 });
