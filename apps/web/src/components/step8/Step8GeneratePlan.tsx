@@ -1,8 +1,9 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 
-import { LoadingState } from '@/components/states';
+import { EmptyState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useStepData } from '@/hooks/useStepData';
 import {
   STEP8_BUTTON_GENERATE_PLAN,
   STEP8_EXPERIENCE_3,
@@ -10,6 +11,7 @@ import {
   STEP8_GENERATE_LOADING_TEXT,
   STEP8_GENERATE_PLAN_INPUT,
   STEP8_GENERATE_PLAN_TEXTAREA,
+  STEP8_H1,
   STEP8_OUTPUT_MODULES_6,
   STEP8_PLATFORM_RADIO_LABEL,
   STEP8_PLATFORMS_5,
@@ -17,20 +19,12 @@ import {
 } from '@/lib/constants/step8';
 import { cn } from '@/lib/utils';
 
-const LS_STEP8 = 'acc_step8';
-
-export interface Step8GeneratePlanFormData {
-  productInfo: string;
-  targetAudience: string;
-  platform: string;
-  experience: string;
-}
-
-interface Step8LsShape {
-  sub_function: string;
-  formData?: Step8GeneratePlanFormData;
-  generate_plan?: Step8GeneratePlanResult;
-}
+// experience key → Chinese value sent to LivestreamAgent (AC-2 · 新手|有经验|资深)
+const EXPERIENCE_VALUE_MAP: Record<string, string> = {
+  novice: '新手',
+  experienced: '有经验',
+  expert: '资深',
+};
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
@@ -41,65 +35,84 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function generateMockResult(formData: Step8GeneratePlanFormData): Step8GeneratePlanResult {
-  const product = formData.productInfo.slice(0, 15) || '你的产品';
-  const audience = formData.targetAudience || '目标受众';
-  return {
-    opening: `大家好！欢迎来到直播间～今天带来超好用的${product}，专为${audience}打造。先点关注，好东西一个不错过！接下来 60 分钟我会亲身演示，教你如何用它解决最核心的痛点。`,
-    interaction: `来的宝宝扣 1！告诉我你们最想了解哪个功能？新进来的宝宝别急，马上重播一遍核心内容。老粉帮我欢迎新朋友！互动起来气氛才好！`,
-    deal: `限时福利来了！直播间专属价，今天只需这个价，还有赠品包邮！拍下联系客服备注直播间，48 小时内发货。先到先得，库存有限！`,
-    closing: `今天直播到这里，感谢所有陪伴的宝宝们！已下单的放心，48 小时内发货。没下单的先点关注，每周三、周六固定直播，下次还有更多好货。感谢大家！`,
-    traffic: `观看完整回放→主页置顶视频；下期预告已发朋友圈；邀请 3 个好友关注，私信"${product}"获取专属资料包；搜索"${audience}推荐"找到我们。`,
-    engagement: `每整点发福利抽奖，扣"想要"参与；限时问答答对送优惠券；说出你最大困扰主播现场解答；结尾连麦 3 位幸运观众随机赠礼。`,
-  };
-}
-
 interface Props {
   subfunctionKey: string;
+  accountId: number | null;
 }
 
-export function Step8GeneratePlan({ subfunctionKey }: Props) {
+export function Step8GeneratePlan({ subfunctionKey, accountId }: Props) {
   const [productInfo, setProductInfo] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
   const [platform, setPlatform] = useState<string>(STEP8_PLATFORMS_5[0]!.id);
   const [experience, setExperience] = useState<string>(STEP8_EXPERIENCE_3[0]!.key);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<Step8GeneratePlanResult | null>(null);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_STEP8);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as Step8LsShape;
-      if (parsed.sub_function !== subfunctionKey) return;
-      if (parsed.formData) {
-        const fd = parsed.formData;
-        if (fd.productInfo) setProductInfo(fd.productInfo);
-        if (fd.targetAudience) setTargetAudience(fd.targetAudience);
-        if (fd.platform) setPlatform(fd.platform);
-        if (fd.experience) setExperience(fd.experience);
-      }
-      if (parsed.generate_plan) setResult(parsed.generate_plan);
-    } catch {
-      // ignore parse errors
-    }
-  }, [subfunctionKey]);
+  const { save, load, isSaving, dbQuery } = useStepData(accountId, 'step8');
+  const prevIsSavingRef = useRef(false);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  // Restore form data from LS on mount (sub_function discriminator: prevents cross-contamination)
+  useEffect(() => {
+    if (accountId === null) return;
+    const raw = load();
+    if (!raw) return;
+    if (raw['sub_function'] !== subfunctionKey) return;
+    if (typeof raw['productInfo'] === 'string') setProductInfo(raw['productInfo']);
+    if (typeof raw['targetAudience'] === 'string') setTargetAudience(raw['targetAudience']);
+    if (typeof raw['platform'] === 'string') setPlatform(raw['platform']);
+    if (typeof raw['experience'] === 'string') {
+      // Stored as Chinese value ('有经验') — find matching key for radio state
+      const expEntry = STEP8_EXPERIENCE_3.find(
+        (e) => EXPERIENCE_VALUE_MAP[e.key] === raw['experience'],
+      );
+      if (expEntry) setExperience(expEntry.key);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId, subfunctionKey]);
+
+  // Refetch after save completes (isSaving: true → false)
+  useEffect(() => {
+    if (prevIsSavingRef.current && !isSaving) {
+      void dbQuery.refetch();
+    }
+    prevIsSavingRef.current = isSaving;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSaving]);
+
+  // Sync result from DB — check sub_function discriminator to prevent cross-contamination
+  useEffect(() => {
+    if (!dbQuery.data?.result) return;
+    const inputs = dbQuery.data.inputs as Record<string, unknown>;
+    if (inputs?.['sub_function'] !== 'generate_plan') return;
+    const raw = dbQuery.data.result as Record<string, unknown>;
+    if (
+      typeof raw['opening'] === 'string' &&
+      typeof raw['interaction'] === 'string' &&
+      typeof raw['deal'] === 'string' &&
+      typeof raw['closing'] === 'string' &&
+      typeof raw['traffic'] === 'string' &&
+      typeof raw['engagement'] === 'string'
+    ) {
+      setResult({
+        opening: raw['opening'],
+        interaction: raw['interaction'],
+        deal: raw['deal'],
+        closing: raw['closing'],
+        traffic: raw['traffic'],
+        engagement: raw['engagement'],
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbQuery.data]);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setIsGenerating(true);
-    const formData: Step8GeneratePlanFormData = { productInfo, targetAudience, platform, experience };
-    const delay = 3000 + Math.random() * 2000;
-    await new Promise<void>((r) => setTimeout(r, delay));
-    const mockResult = generateMockResult(formData);
-    const lsData: Step8LsShape = {
-      sub_function: subfunctionKey,
-      formData,
-      generate_plan: mockResult,
-    };
-    localStorage.setItem(LS_STEP8, JSON.stringify(lsData));
-    setResult(mockResult);
-    setIsGenerating(false);
+    save({
+      sub_function: 'generate_plan',
+      productInfo,
+      targetAudience,
+      platform,
+      experience: EXPERIENCE_VALUE_MAP[experience] ?? '有经验',
+    });
     document.getElementById('step8-generate-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -107,7 +120,7 @@ export function Step8GeneratePlan({ subfunctionKey }: Props) {
     <div className="space-y-8">
       {/* Form */}
       <form
-        onSubmit={(e) => { void handleSubmit(e); }}
+        onSubmit={(e) => { handleSubmit(e); }}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
         {/* Product textarea */}
@@ -200,16 +213,21 @@ export function Step8GeneratePlan({ subfunctionKey }: Props) {
         </div>
 
         {/* CTA */}
-        <Button type="submit" disabled={isGenerating} className="w-full sm:w-auto">
+        <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
           {STEP8_BUTTON_GENERATE_PLAN}
         </Button>
       </form>
 
-      {/* Loading */}
-      {isGenerating && <LoadingState text={STEP8_GENERATE_LOADING_TEXT} />}
+      {/* Three-state feedback */}
+      <div className="max-w-2xl">
+        {isSaving && <LoadingState text={STEP8_GENERATE_LOADING_TEXT} size="lg" />}
+        {!isSaving && !result && (
+          <EmptyState title={`提交表单后查看${STEP8_H1}`} />
+        )}
+      </div>
 
       {/* Output: 6 modules */}
-      {result && !isGenerating && (
+      {result && !isSaving && (
         <div id="step8-generate-output" className="space-y-6">
           {STEP8_OUTPUT_MODULES_6.map((module) => (
             <div key={module.id}>

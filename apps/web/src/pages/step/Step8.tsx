@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { Step8GeneratePlan } from '@/components/step8/Step8GeneratePlan';
 import { Step8OptimizeScript } from '@/components/step8/Step8OptimizeScript';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep } from '@/hooks/useStepData';
 import {
   STEP8_H1,
   STEP8_STEP_TAG,
@@ -10,28 +12,19 @@ import {
 } from '@/lib/constants/step8';
 import { cn } from '@/lib/utils';
 
-const LS_STEP1 = 'acc_step1';
-
-function readIndustry(): string {
-  try {
-    const raw = localStorage.getItem(LS_STEP1);
-    if (raw) {
-      const parsed = JSON.parse(raw) as { industry?: string };
-      return parsed.industry ?? '你的行业';
-    }
-  } catch {
-    // ignore
-  }
-  return '你的行业';
-}
-
 export default function Step8() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const { account } = useActiveAccount();
+  const accountId = (account as { id: number } | null)?.id ?? null;
   const [industry, setIndustry] = useState('你的行业');
 
   useEffect(() => {
-    setIndustry(readIndustry());
-  }, []);
+    if (accountId === null) return;
+    const step1Data = readOtherStep<{ industry?: string }>(accountId, 'step1');
+    if (step1Data?.industry) {
+      setIndustry(step1Data.industry);
+    }
+  }, [accountId]);
 
   const subtitle = STEP8_SUBTITLE_TEMPLATE.replace('{industry}', industry);
   const activeSubfunction = STEP8_SUBFUNCTIONS_2[activeIdx]!;
@@ -64,12 +57,12 @@ export default function Step8() {
         ))}
       </div>
 
-      {/* Active subfunction */}
+      {/* Active subfunction — sub_function discriminator 严守(PRD-18 §11.11.4) */}
       {activeSubfunction.key === 'generate_plan' && (
-        <Step8GeneratePlan subfunctionKey={activeSubfunction.key} />
+        <Step8GeneratePlan subfunctionKey={activeSubfunction.key} accountId={accountId} />
       )}
       {activeSubfunction.key === 'optimize_script' && (
-        <Step8OptimizeScript subfunctionKey={activeSubfunction.key} />
+        <Step8OptimizeScript subfunctionKey={activeSubfunction.key} accountId={accountId} />
       )}
     </main>
   );

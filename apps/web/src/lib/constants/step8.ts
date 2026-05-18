@@ -148,3 +148,13 @@ export const STEP8_OUTPUT_MODULES_6: readonly Step8OutputModule[] = [
   { id: 'traffic',     h3Label: '5. 引流策略' },
   { id: 'engagement',  h3Label: '6. 互动设计' },
 ] as const;
+
+// ─── Optimize Script Output Labels (2) ── TD-77 fix · 常量化防 hardcode ────────
+
+// STEP8_OPTIMIZE_OUTPUT_LABELS_2 · 2 项严格 · TD-77: InfoCard label 禁止 hardcode 中文
+export const STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [
+  { id: 'optimized_text',      label: '优化后文案' },
+  { id: 'optimization_notes',  label: '优化说明' },
+] as const;
+
+export type Step8OptimizeLabel = (typeof STEP8_OPTIMIZE_OUTPUT_LABELS_2)[number];

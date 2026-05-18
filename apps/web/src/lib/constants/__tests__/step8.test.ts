@@ -4,6 +4,7 @@ import {
   STEP8_SUBFUNCTIONS_2,
   STEP8_EXPERIENCE_3,
   STEP8_OUTPUT_MODULES_6,
+  STEP8_OPTIMIZE_OUTPUT_LABELS_2,
   STEP8_PLATFORMS_5,
   STEP8_BUTTON_GENERATE_PLAN,
   STEP8_BUTTON_OPTIMIZE_SCRIPT,
@@ -57,6 +58,14 @@ describe('STEP8 constants', () => {
 
   it('OPTIMIZE_MIN_CHARS === 10', () => {
     expect(STEP8_OPTIMIZE_MIN_CHARS).toBe(10);
+  });
+
+  it('STEP8_OPTIMIZE_OUTPUT_LABELS_2 · TD-77 fix · length === 2 · 禁 hardcode', () => {
+    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2.length).toBe(2);
+    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[0]!.id).toBe('optimized_text');
+    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[0]!.label).toBe('优化后文案');
+    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[1]!.id).toBe('optimization_notes');
+    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[1]!.label).toBe('优化说明');
   });
 
   it('Step8Result interface · generate_plan + optimize_script 两分支', () => {

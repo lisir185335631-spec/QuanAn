@@ -265,8 +265,9 @@ export const stepDataRouter = router({
         return { ok: true, data: updatedRow };
       }
 
-      // AC-3(US-010): call LivestreamAgent for step8 (直播话术 · 两段话术输出)
+      // AC-3(US-010): call LivestreamAgent for step8 · sub_function discriminator (US-007)
       if (input.stepKey === 'step8') {
+        const sub_function = String(input.inputs['sub_function'] ?? 'generate_plan');
         const agentRes = await livestreamAgent.execute({
           accountId: activeAccountId!,
           // Runtime inputSchema.parse validates experience enum; cast here for TS only
@@ -274,12 +275,39 @@ export const stepDataRouter = router({
           traceId: traceId ?? undefined,
           stepKey: input.stepKey,
         });
+
+        // Transform result based on sub_function discriminator
+        let transformedResult: Record<string, unknown>;
+        if (sub_function === 'optimize_script') {
+          // optimize_script: lastResult → optimized_text, lastOptimizedResult → optimization_notes
+          transformedResult = {
+            sub_function: 'optimize_script',
+            optimized_text: agentRes.result.lastResult,
+            optimization_notes: agentRes.result.lastOptimizedResult,
+          };
+        } else {
+          // generate_plan: split lastResult into 6 labeled sections
+          const sections = agentRes.result.lastResult.split(/\n{2,}/).filter((s) => s.trim());
+          const getSection = (i: number): string =>
+            sections[i] ?? sections[0] ?? agentRes.result.lastResult;
+          transformedResult = {
+            sub_function: 'generate_plan',
+            opening: getSection(0),
+            interaction: getSection(1),
+            deal: getSection(2),
+            closing: getSection(3),
+            traffic: getSection(4),
+            engagement:
+              sections.length > 5 ? getSection(5) : agentRes.result.lastOptimizedResult,
+          };
+        }
+
         const updatedRow = await prisma.stepData.update({
           where: {
             accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
           },
           data: {
-            result: agentRes.result as Prisma.InputJsonValue,
+            result: transformedResult as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
             status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,

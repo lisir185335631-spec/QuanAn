@@ -1,30 +1,20 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 
-import { LoadingState } from '@/components/states';
+import { EmptyState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useStepData } from '@/hooks/useStepData';
 import {
   STEP8_BUTTON_OPTIMIZE_SCRIPT,
+  STEP8_H1,
   STEP8_OPTIMIZE_CHAR_COUNTER_TEMPLATE,
   STEP8_OPTIMIZE_INPUT,
   STEP8_OPTIMIZE_LOADING_TEXT,
   STEP8_OPTIMIZE_MIN_CHARS,
+  STEP8_OPTIMIZE_OUTPUT_LABELS_2,
   STEP8_OPTIMIZE_TEXTAREA,
   type Step8OptimizeScriptResult,
 } from '@/lib/constants/step8';
-
-const LS_STEP8 = 'acc_step8';
-
-export interface Step8OptimizeScriptFormData {
-  scriptText: string;
-  optimizeGoal: string;
-}
-
-interface Step8OptimizeLsShape {
-  sub_function: string;
-  formData?: Step8OptimizeScriptFormData;
-  optimize_script?: Step8OptimizeScriptResult;
-}
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
@@ -35,82 +25,71 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function generateMockResult(formData: Step8OptimizeScriptFormData): Step8OptimizeScriptResult {
-  const preview = formData.scriptText.slice(0, 30);
-  const goal = formData.optimizeGoal || '提升整体表达效果';
-  return {
-    optimized_text: `【优化版本】${preview}…
-
-AI 已针对「${goal}」对您的话术进行深度优化，调整了以下方面：
-1. 开场更具吸引力，前 3 秒抓住观众注意力
-2. 痛点描述更精准，情感共鸣更强烈
-3. 行动引导更清晰，降低用户决策门槛
-4. 互动设计更自然，增强实时参与感
-5. 结尾收尾更有力，强化品牌记忆点
-
-完整优化后话术已整合以上所有改动，建议按照节奏提示词完成排练后再正式使用。`,
-    optimization_notes: `优化目标：${goal}
-
-主要改动说明：
-• 句式节奏：长句拆短，增加停顿感，适合口播节奏
-• 情感层次：增加共鸣词汇，强化"你也有过这样的困扰吗"类互动
-• 转化逻辑：优化 FABE 结构（特点→优势→利益→证据）
-• 互动密度：每 2-3 分钟一个互动钩子，防止观众流失
-• 禁用词检查：已替换平台敏感词，降低违规风险
-
-建议搭配使用：直播前完整朗读 2 遍，掌握节奏后再开播。`,
-  };
-}
-
 interface Props {
   subfunctionKey: string;
+  accountId: number | null;
 }
 
-export function Step8OptimizeScript({ subfunctionKey }: Props) {
+export function Step8OptimizeScript({ subfunctionKey, accountId }: Props) {
   const [scriptText, setScriptText] = useState('');
   const [optimizeGoal, setOptimizeGoal] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<Step8OptimizeScriptResult | null>(null);
 
+  const { save, load, isSaving, dbQuery } = useStepData(accountId, 'step8');
+  const prevIsSavingRef = useRef(false);
+
+  // Restore form data from LS on mount (sub_function discriminator: prevents cross-contamination)
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LS_STEP8);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as Step8OptimizeLsShape;
-      if (parsed.sub_function !== subfunctionKey) return;
-      if (parsed.formData) {
-        const fd = parsed.formData;
-        if (fd.scriptText) setScriptText(fd.scriptText);
-        if (fd.optimizeGoal) setOptimizeGoal(fd.optimizeGoal);
-      }
-      if (parsed.optimize_script) setResult(parsed.optimize_script);
-    } catch {
-      // ignore parse errors
+    if (accountId === null) return;
+    const raw = load();
+    if (!raw) return;
+    if (raw['sub_function'] !== subfunctionKey) return;
+    if (typeof raw['scriptText'] === 'string') setScriptText(raw['scriptText']);
+    if (typeof raw['optimizeGoal'] === 'string') setOptimizeGoal(raw['optimizeGoal']);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId, subfunctionKey]);
+
+  // Refetch after save completes (isSaving: true → false)
+  useEffect(() => {
+    if (prevIsSavingRef.current && !isSaving) {
+      void dbQuery.refetch();
     }
-  }, [subfunctionKey]);
+    prevIsSavingRef.current = isSaving;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSaving]);
+
+  // Sync result from DB — check sub_function discriminator to prevent cross-contamination
+  useEffect(() => {
+    if (!dbQuery.data?.result) return;
+    const inputs = dbQuery.data.inputs as Record<string, unknown>;
+    if (inputs?.['sub_function'] !== 'optimize_script') return;
+    const raw = dbQuery.data.result as Record<string, unknown>;
+    if (
+      typeof raw['optimized_text'] === 'string' &&
+      typeof raw['optimization_notes'] === 'string'
+    ) {
+      setResult({
+        optimized_text: raw['optimized_text'],
+        optimization_notes: raw['optimization_notes'],
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dbQuery.data]);
 
   const charCounterText = STEP8_OPTIMIZE_CHAR_COUNTER_TEMPLATE.replace(
     '{count}',
     String(scriptText.length),
   );
-  const submitDisabled = isGenerating || scriptText.length < STEP8_OPTIMIZE_MIN_CHARS;
+  const submitDisabled = isSaving || scriptText.length < STEP8_OPTIMIZE_MIN_CHARS;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (submitDisabled) return;
-    setIsGenerating(true);
-    const formData: Step8OptimizeScriptFormData = { scriptText, optimizeGoal };
-    const delay = 3000 + Math.random() * 2000;
-    await new Promise<void>((r) => setTimeout(r, delay));
-    const mockResult = generateMockResult(formData);
-    const lsData: Step8OptimizeLsShape = {
-      sub_function: subfunctionKey,
-      formData,
-      optimize_script: mockResult,
-    };
-    localStorage.setItem(LS_STEP8, JSON.stringify(lsData));
-    setResult(mockResult);
-    setIsGenerating(false);
+    save({
+      sub_function: 'optimize_script',
+      scriptText,
+      optimizeGoal,
+    });
     document.getElementById('step8-optimize-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -118,7 +97,7 @@ export function Step8OptimizeScript({ subfunctionKey }: Props) {
     <div className="space-y-8">
       {/* Form */}
       <form
-        onSubmit={(e) => { void handleSubmit(e); }}
+        onSubmit={(e) => { handleSubmit(e); }}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
         {/* Script textarea */}
@@ -155,14 +134,20 @@ export function Step8OptimizeScript({ subfunctionKey }: Props) {
         </Button>
       </form>
 
-      {/* Loading */}
-      {isGenerating && <LoadingState text={STEP8_OPTIMIZE_LOADING_TEXT} />}
+      {/* Three-state feedback */}
+      <div className="max-w-2xl">
+        {isSaving && <LoadingState text={STEP8_OPTIMIZE_LOADING_TEXT} size="lg" />}
+        {!isSaving && !result && (
+          <EmptyState title={`提交表单后查看${STEP8_H1}`} />
+        )}
+      </div>
 
-      {/* Output: 2 InfoCards */}
-      {result && !isGenerating && (
+      {/* Output: 2 InfoCards — TD-77 fix: 使用常量 map 禁止 hardcode */}
+      {result && !isSaving && (
         <div id="step8-optimize-output" className="space-y-4">
-          <InfoCard label="优化后文案" value={result.optimized_text} />
-          <InfoCard label="优化说明" value={result.optimization_notes} />
+          {STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => (
+            <InfoCard key={id} label={label} value={result[id]} />
+          ))}
         </div>
       )}
     </div>
