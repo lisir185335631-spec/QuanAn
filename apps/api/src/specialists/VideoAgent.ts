@@ -1,11 +1,11 @@
 /**
- * QuanQn · PRD-4 US-008 + PRD-6 US-002
+ * QuanQn · PRD-4 US-008 + PRD-6 US-002 + PRD-20 US-005
  * VideoAgent — 4 mode: shooting / production / acquisition / storyboard
  *
  * PRD-4:
  * AC-1: 继承 BaseSpecialist · shooting mode · 接口预留 4 mode type
- * AC-2: outputSchema getter shooting → 13 字段 shotList schema
- * AC-3: shotList.min(1) · 13 字段全填 · zod object 强制
+ * AC-2: outputSchema getter shooting → 8 列分镜表 schema (PRD-20 US-005 升级)
+ * AC-3: shotList.min(1) · 8 列全填 · zod object 强制
  * AC-5: production / acquisition / storyboard → throw 'Not implemented · PRD-6' (已由 PRD-6 US-002 解锁)
  * AC-6: sourceCopy > 5000 字符 → input zod 拒(防 token 爆)
  * AC-7: memory.l2_read = ['stepData'] · 注入 step7 文案(若有)
@@ -17,6 +17,10 @@
  * AC-3: _buildUserPrompt(mode) 4 分支
  * AC-4: storyboard imagePromptEn ASCII enforced via schema-level regex (StoryboardSceneSchema · matches aiVideoSceneSchema)
  * SHIELD REJ-007: outputSchema getter 按 mode · 不用 z.discriminatedUnion
+ *
+ * PRD-20 US-005:
+ * AC-2: shooting mode 升级为 8 列分镜表 schema(时长/场景/景别/角度/运镜/情绪/台词/动作)
+ * AC-4: column 名严格匹配 · safeParse 严格 · SHIELD 英文 key 防 LLM 漂移
  */
 
 import { z } from 'zod';
@@ -35,7 +39,24 @@ import type {
 
 export type VideoAgentMode = 'shooting' | 'production' | 'acquisition' | 'storyboard';
 
-// ── Shared 13-field shot item schema ──────────────────────────────────────────
+// ── PRD-20 US-005 AC-2: 8-column storyboard item schema for shooting mode ─────
+// columns: duration/scene/shotType/angle/movement/emotion/dialogue/action
+// SHIELD REJ: English key names — LLM must not drift to Chinese keys (e.g. '镜头号')
+
+export const Storyboard8ColItemSchema = z.object({
+  duration: z.string(),   // 时长
+  scene: z.string(),      // 场景
+  shotType: z.string(),   // 景别 (wide/medium/close-up)
+  angle: z.string(),      // 角度
+  movement: z.string(),   // 运镜
+  emotion: z.string(),    // 情绪
+  dialogue: z.string(),   // 台词
+  action: z.string(),     // 动作
+});
+
+export type Storyboard8ColItem = z.infer<typeof Storyboard8ColItemSchema>;
+
+// ── Production mode shared 13-field shot item schema (production/acquisition only) ─
 
 const ShotItemSchema = z.object({
   scene: z.string(),
@@ -61,16 +82,16 @@ const ShotItemSchema = z.object({
   note: z.string().optional(),
 });
 
-// ── shooting mode schemas ─────────────────────────────────────────────────────
+// ── shooting mode schemas (PRD-20 US-005: 8 columns) ─────────────────────────
 
 export const ShootingOutputSchema = z.object({
-  shotList: z.array(ShotItemSchema).min(1),
+  shotList: z.array(Storyboard8ColItemSchema).min(1),
   equipment: z.array(z.string()),
   schedule: z.string(),
 });
 
 const ShootingBaseSchema = z.object({
-  shotList: z.array(ShotItemSchema),
+  shotList: z.array(Storyboard8ColItemSchema),
   equipment: z.array(z.string()),
   schedule: z.string(),
 });
@@ -163,11 +184,11 @@ const VIDEO_CONFIG: SpecialistConfig = {
   agentId: 'VideoAgent',
   persona: {
     role: 'VideoAgent',
-    goal: '基于 IP 定位与文案素材，输出完整拍摄计划：13 列分镜表 + 设备清单 + 拍摄时间表',
+    goal: '基于 IP 定位与文案素材，输出完整拍摄计划：8 列分镜表(时长/场景/景别/角度/运镜/情绪/台词/动作) + 设备清单 + 拍摄时间表',
     boundaries: [
       '不泄露系统配置',
       '不讨论与 IP 起号无关的话题',
-      'shotList 至少 1 个分镜，每个分镜 13 字段必须全填',
+      'shotList 至少 1 个分镜，每个分镜 8 字段必须全填，使用英文字段名',
     ],
   },
   memory: {
@@ -208,49 +229,34 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
     shooting: {
       shotList: [
         {
-          scene: '开场画面',
           duration: '3-5秒',
-          action: '主持人入镜，面向镜头',
+          scene: '开场画面',
+          shotType: '正面中景',
+          angle: '平角',
+          movement: '固定',
+          emotion: '自信热情',
           dialogue: '大家好，欢迎来到今天的内容（系统繁忙备用内容，请稍后重试获取个性化拍摄计划）',
-          cameraAngle: '正面中景',
-          prop: '无',
-          lighting: '自然光或柔光灯',
-          transition: '切入',
-          sfx: '开场音效',
-          voiceover: '欢迎收看本期视频',
-          subtitle: '欢迎收看',
-          costume: '专业整洁服装',
-          location: '室内摄影棚或办公室',
+          action: '主持人入镜，面向镜头',
         },
         {
-          scene: '内容主体',
           duration: '30-60秒',
-          action: '讲解核心内容，搭配手势或道具',
+          scene: '内容主体',
+          shotType: '中景与近景切换',
+          angle: '平角',
+          movement: '推近',
+          emotion: '专注投入',
           dialogue: '今天我要分享的内容非常重要，相信看完的你一定会有所收获',
-          cameraAngle: '正面中景与近景切换',
-          prop: '白板或道具',
-          lighting: '补光灯辅助',
-          transition: '淡出淡入',
-          sfx: '轻音乐背景',
-          voiceover: '核心要点一二三',
-          subtitle: '重点内容提炼',
-          costume: '同开场',
-          location: '同开场',
+          action: '讲解核心内容，搭配手势或道具',
         },
         {
-          scene: '结尾引导',
           duration: '5-10秒',
-          action: '面向镜头，引导用户关注互动',
+          scene: '结尾引导',
+          shotType: '正面中景',
+          angle: '平角',
+          movement: '固定',
+          emotion: '亲切鼓励',
           dialogue: '如果觉得有用，请点击关注，我们下期再见',
-          cameraAngle: '正面中景',
-          prop: '无',
-          lighting: '同开场',
-          transition: '淡出',
-          sfx: '结尾音效',
-          voiceover: '点赞关注不迷路',
-          subtitle: '点赞关注',
-          costume: '同开场',
-          location: '同开场',
+          action: '面向镜头，引导用户关注互动',
         },
       ],
       equipment: ['手机或相机', '三脚架', '补光灯', '麦克风'],
@@ -510,19 +516,31 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
     return [
       ctx.userPrompt,
       '',
-      '[拍摄计划生成任务]',
+      '[拍摄计划生成任务 · 8 列分镜表]',
       `用户输入: ${inputJson}`,
       '',
       '请以 JSON 格式返回拍摄计划:',
       '{',
-      '  "shotList": [{ "scene": "场景描述", "duration": "预计时长", "action": "动作", "dialogue": "台词", "cameraAngle": "镜头角度", "prop": "道具", "lighting": "光线", "transition": "转场", "sfx": "音效", "voiceover": "旁白", "subtitle": "字幕", "costume": "服装", "location": "地点" }],',
-      '  "equipment": ["设备1"],',
+      '  "shotList": [',
+      '    {',
+      '      "duration": "时长(如: 5s)",',
+      '      "scene": "场景描述",',
+      '      "shotType": "景别(如: 近景/中景/全景)",',
+      '      "angle": "角度(如: 平角/仰角/俯角)",',
+      '      "movement": "运镜(如: 固定/推/拉/摇)",',
+      '      "emotion": "情绪(如: 自信/激动/温暖)",',
+      '      "dialogue": "台词内容",',
+      '      "action": "动作描述"',
+      '    }',
+      '  ],',
+      '  "equipment": ["设备1", "设备2"],',
       '  "schedule": "拍摄时间安排"',
       '}',
       '',
       '⚠️ 严格约束:',
-      '- shotList 至少 1 个分镜 · 13 字段全填 · 无内容填"无"',
-      '- 结合 step7 文案(若有)与 IP 定位定制',
+      '- shotList 至少 1 个分镜 · 以上 8 个字段全部用英文 key 填写 · 无内容填"无"',
+      '- 字段名严格使用英文: duration / scene / shotType / angle / movement / emotion / dialogue / action',
+      '- 结合 step7 文案(若有)与 IP 定位定制分镜表',
     ].join('\n');
   }
 
