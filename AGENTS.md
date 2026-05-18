@@ -3285,6 +3285,52 @@ PRD-18 US-007 reject 教训 · 反例入 reject-examples.jsonl 第 49 条 · 跨
 
 ---
 
+### §11.12 PRD-19 frontend ↔ backend 真接入沉淀(PRD-19 retro 2026-05-18 文档回流 · 19 commits 事实驱动)
+
+> **派生** · `.agents/retros/prd-19-vs-prd-18-retrospective.md §15-§16` · 9/9 ALL PASSED · 严格 89% · 跨架构 frontend bridge 首次 · 沉淀 4 跨 PRD 复用模式 + 3 L4 plan-check 升级(M-1 retry 早预警 / M-2 e2e baseline / M-3 边界 case TD 自动汇总) · 防 PRD-20+ 类似 case 复发
+
+#### §11.12.1 LS↔DB 双写 hook 增强模式 + 一次性 LS migration · 红线级
+
+`useStepData(accountId, stepKey)` 增 `dbQuery`(trpc.stepData.get useQuery 包装) + `readOtherStep` 静态 helper(纯 LS 读 · NOT a hook · 跨 step 数据预填统一 API)。
+
+老 LS 升级用 `migrateLegacyLs(store, accountId)` + MIGRATION_FLAG_KEY 防重跑 + LEGACY_TO_STEP map + 不覆盖新 key + QuotaExceededError 严格判断(`e instanceof DOMException && e.name === 'QuotaExceededError'`)+ 8 单测覆盖 5 类 edge(a/b/c/d/e)。
+
+PRD-20+ frontend bridge 类直接复用 · 严守 LD-009 namespaced LS。
+
+#### §11.12.2 跨架构 SSE 真接修复模式(infrastructure 沉淀)· 红线级
+
+trpc subscription 路径必须 ·
+- **client** (`apps/web/src/lib/trpc.ts`) · `splitLink({ condition: op.type==='subscription', true: httpSubscriptionLink, false: httpBatchStreamLink })`
+- **server middleware** (`apps/api/src/trpc/middleware/account-isolation.ts`) ·
+  ```typescript
+  if (type === 'subscription') {
+    await ctx.prisma.$executeRaw`SET ROLE quanqn_app`;
+    // connection-level SET (is_local=false) · 替代 tx SET LOCAL
+    await ctx.prisma.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, false)`;
+    return next();
+  }
+  ```
+
+**根因** · `$transaction commits 在 generator return 前(SSE long-lived connection)· 后续 DB 写失败 'Transaction already closed'`。connection-level SET 在 SSE 整个 connection lifecycle 都生效 · RLS 不断。
+
+PRD-20+ 通用 SSE infrastructure pattern · 详 PRD-19 US-005 4 commits 修复历史。
+
+#### §11.12.3 sub_function discriminator 双重严守(Step8 / 多 sub_function 场景)
+
+Step8 2 子功能 LS 数据 + DB result 都检 sub_function key:
+- **LS load** · `if (parsed.sub_function !== subfunctionKey) return`
+- **dbQuery sync** · `if (inputs?.['sub_function'] !== 'optimize_script') return`
+
+切换 Tab 不串数据 · PRD-20+ 类似多 sub_function 场景(generate/optimize/refine/分析 等)必走此双重 check 模式。
+
+#### §11.12.4 Specialist fallback API_KEY missing + E2E fallback path 设计
+
+BaseSpecialist (`apps/api/src/specialists/base/BaseSpecialist.ts`) isFallbackable += `err.message?.includes('API_KEY missing')` · 无 OPENAI_KEY 时 fallback mock + UI [降级] badge(status='fallback')。
+
+E2E 默认走 fallback 路径(D-187)· 但**必须**考虑 SSE chunks 模拟(参 TD-82 反例 · PRD-18 test3 fallback 不模拟 5 chunks 撞 30s timeout)。PRD-20+ E2E 设计需提前规划 fallback path SSE 行为(test.skip if no OPENAI_KEY 或 reduced timeout 或 fallback 模拟 chunks)。
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充
