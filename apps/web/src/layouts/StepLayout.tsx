@@ -31,11 +31,11 @@ export function StepLayout() {
   const agentId = STEP_AGENT_MAP[stepKey] ?? 'web-client';
 
   return (
-    <>
+    <div className="data-grid-bg flex-1">
       <Outlet />
       <div className="container pb-8">
         <FeedbackButton stepKey={stepKey} agentId={agentId} />
       </div>
-    </>
+    </div>
   );
 }

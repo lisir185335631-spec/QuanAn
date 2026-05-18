@@ -39,6 +39,7 @@
     "@types/react-virtualized": "^9.22.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "framer-motion": "^11",
     "lucide-react": "^0.460.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
