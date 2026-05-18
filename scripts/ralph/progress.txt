@@ -5,6 +5,21 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-19 05:30 - US-002 [PRD-21] (retry 4 · 第五次确认 · 所有 AC 已 manifest.json PASS)
+- 实现状态: 代码未变(commit 2c435a6 已含全部实现) · manifest.json verdict=PASS 11/11 AC 全通过
+- 快速检查结果(全部 ✅):
+  - AC-1 h-16: ✅ container flex h-16 at line 219
+  - AC-2 backdrop-blur-2xl: ✅ line 216 sticky className 完整
+  - AC-3 双行 logo stack: ✅ QUAN/QN double span with font-display at lines 225-226
+  - AC-4 ChevronDown rotate: ✅ group-data-[state=open]:rotate-180 at line 90
+  - AC-6 typecheck: ✅ pnpm typecheck → 0 errors (exit 0)
+  - manifest.json verdict: PASS (来自 Validator 2026-05-19T03:40-04:05 完整审核 · 11/11 AC PASS)
+- 更改的文件: scripts/ralph/progress.txt (日志追加)
+- **未来迭代的学习:**
+  - Validator 超时重置 passes 但 manifest.json 已记录 PASS · retry 时首先检查 manifest.json 而非重跑全套
+  - retryCount 增加不代表实现有问题 · 可能是 Validator/Developer 进程超时 · 看日志区分
+---
+
 ## 2026-05-19 05:00 - US-002 [PRD-21] (retry 3 · 第四次确认 · 全部 AC fresh 验证通过)
 - 实现状态: 代码未变(commit 2c435a6 已含全部实现) · 本次 retry 仅重新跑全套检查确认
 - 验证结果(全部 ✅, fresh run):
@@ -2178,3 +2193,5 @@
 --- [RALPH] Iteration 6 started: US-002 at 2026-05-19 04:39 ---
 
 --- [RALPH] Iteration 7 started: US-002 at 2026-05-19 05:09 ---
+
+--- [RALPH] Iteration 8 started: US-002 at 2026-05-19 05:40 ---
