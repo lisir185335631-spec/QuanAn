@@ -5,6 +5,19 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-19 04:30 - US-002 [PRD-21] (retry 2 · 第三次质量检查确认)
+- 实现状态: commit 2c435a6 已包含完整实现 · manifest.json PASS 已在 verify-artifacts/US-002/ · 本次 retry 再次确认
+- 验证结果(全部 ✅):
+  - AC-6 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-7 e2e chromium: ✅ 8/8 passed (chromium only · mobile 失败为 pre-existing hidden lg:flex 设计行为)
+  - AC-8 visual test: ✅ 4/4 prd21-visual-baseline passed (含 header desktop 00-home-header crop)
+  - manifest.json verdict: PASS · 11/11 AC 全通过 (来自前次 Validator 完整审核)
+- 更改的文件: scripts/ralph/progress.txt (日志追加)
+- **未来迭代的学习:**
+  - Validator 可能在写完 manifest.json PASS 后超时退出 · prd.json passes 未更新 → 造成 retry · 不代表实现有问题
+  - 重复 retry 时优先确认 verify-artifacts/US-NNN/manifest.json verdict 是否已 PASS · 避免重复大规模测试
+---
+
 ## 2026-05-19 02:00 - US-002 [PRD-21] (retry · Validator 超时后重新验证)
 - 实现状态: commit 2c435a6 已包含完整实现(首跑已提交) · 本次 retry 为重新跑质量检查 + 浏览器验证
 - 验证结果:
@@ -2145,3 +2158,7 @@
 - **未来迭代的学习:**
   - 无新 pattern(本次仅重复验证)
 ---
+
+--- [RALPH] Iteration 5 ended: US-002 (1小时 30分钟 23秒) ---
+
+--- [RALPH] Iteration 6 started: US-002 at 2026-05-19 04:39 ---
