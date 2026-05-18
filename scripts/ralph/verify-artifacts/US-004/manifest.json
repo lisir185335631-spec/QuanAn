@@ -1,18 +1,17 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-17T19:02:41",
-  "validator_end_ts": "2026-05-17T19:03:20",
-  "test_command": "pnpm vitest run src/lib/constants/__tests__/step6.test.ts + pnpm vitest run (full 97 tests) + pnpm typecheck",
+  "validator_start_ts": "2026-05-18T06:00:00",
+  "validator_end_ts": "2026-05-18T06:10:00",
+  "test_command": "pnpm vitest run (157 tests) + pnpm typecheck + code grep AC1/AC2/AC3/AC4/AC6",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
+  "notes": "AC7 TS2532 已修复 (非空断言 ! 加到 Step4b.test.tsx revenue_structure/success_cases 数组索引). 157 tests pass, typecheck clean.",
   "artifacts": [
-    "vitest.xml",
     "vitest.stdout.txt",
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ],
-  "notes": "All 12 ACs verified. AC-1: STEP6_STEP_TAG='STEP 06 · 生成拍摄计划' + STEP6_H1='拍摄计划' confirmed. AC-2: STEP6_SUBTITLE 字面 1:1 confirmed. AC-3: STEP6_TEXTAREA placeholder exact match including \\n\\n + 「」全角引号 + （）全角括号 + 全角句号. AC-4: STEP6_TEXTAREA_MIN_CHARS=10 + STEP6_CHAR_COUNTER_TEMPLATE='已输入 {count} 字' confirmed. AC-5: STEP6_BUTTON_GENERATE + STEP6_LOADING_TEXT confirmed. AC-6: STEP6_OUTPUT_MODULES_3 3 items with correct h3Labels. AC-7: Step6StoryboardScene interface with all 9 fields. AC-8: Step6Result interface with storyboard/shooting_plan/teleprompter. AC-9: All 5 grep patterns hit ≥1 in step6.ts. AC-10: MIN_CHARS=10 + OUTPUT_MODULES_3.length=3. AC-11: step6.test.ts exists with 6 assertions. AC-12: vitest 6/6 PASS + typecheck 0 errors. Zero regression: 97/97 tests PASS (12 test files)."
+    "vitest-full.stdout.txt",
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ]
 }

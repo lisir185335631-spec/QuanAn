@@ -17,8 +17,8 @@
       ],
       "depends_on": [],
       "priority": 1,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/lib/migration/, apps/web/src/App.tsx) 涉及的 TD · 主动 fix · 不等专项 story · commit message 加 [TD-XXX resolved] tag",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -62,16 +62,15 @@
       ],
       "depends_on": [],
       "priority": 2,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/hooks/) 涉及的 TD · 主动 fix · 不等专项 story · commit message 加 [TD-XXX resolved] tag",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
         "apps/web/src/hooks/__tests__/useStepData.test.tsx"
       ],
       "files_to_modify": [
-        "apps/web/src/hooks/useStepData.ts",
-        "apps/web/src/pages/step/Step3.tsx"
+        "apps/web/src/hooks/useStepData.ts"
       ],
       "test_command": "cd apps/web && pnpm vitest run src/hooks/useStepData.test.tsx",
       "size_hint": "small",
@@ -106,13 +105,10 @@
         "vitest 119+ tests zero-regression(全 PASS · tsc 0 error)· 旧 e2e PRD-15~17 spec 全 PASS",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002"
-      ],
+      "depends_on": ["US-001", "US-002"],
       "priority": 3,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/pages/step/Step1,Step3,Step3b) 涉及的 TD · 主动 fix",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
@@ -161,13 +157,10 @@
         "vitest 119+ tests zero-regression + Step4b 子组件单测 · 0 recharts import · grep `from 'recharts'` apps/web/src/components/step4b/ → 0 hit",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002"
-      ],
+      "depends_on": ["US-001", "US-002"],
       "priority": 4,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 Step4b 子组件相关 TD",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
@@ -217,13 +210,10 @@
         "vitest 119+ tests zero-regression",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002"
-      ],
+      "depends_on": ["US-001", "US-002"],
       "priority": 5,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 SSE / Step5 相关 TD",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
@@ -271,13 +261,10 @@
         "vitest 119+ tests zero-regression",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002"
-      ],
+      "depends_on": ["US-001", "US-002"],
       "priority": 6,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 TD-76 (Step7.tsx:150 hardcode '选择脚本类型') · 若 plan-check §2.6.21 扩范围 apply 后 audit grep 命中 · 一并 fix · commit message 加 [TD-76 resolved] tag",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
@@ -326,13 +313,10 @@
         "vitest 119+ tests zero-regression · TD-77 fix 单测覆盖(STEP8_OPTIMIZE_OUTPUT_LABELS_2.length === 2)",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-001",
-        "US-002"
-      ],
+      "depends_on": ["US-001", "US-002"],
       "priority": 7,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 TD-77 (Step8OptimizeScript.tsx:164-165 hardcode '优化后文案' / '优化说明')· 一并 fix · commit message 加 [TD-77 resolved] tag",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [],
@@ -382,16 +366,10 @@
         "真后端启动 dev script · 若 PG 未启 fail with msg `brew services start postgresql@16` · 若 OPENAI_KEY 缺 · fallback mock · status='fallback' · 验证 fallback path 跑通",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-003",
-        "US-004",
-        "US-005",
-        "US-006",
-        "US-007"
-      ],
+      "depends_on": ["US-003", "US-004", "US-005", "US-006", "US-007"],
       "priority": 8,
-      "passes": true,
-      "notes": "[TD-82 豁免 approve · Opus audit · prd-18 test3 pre-existing fail 非 US-008 引入 · commit f521761 (PRD-18 US-013) 创建 spec 时已存在此 bug · 5 retry 全同模式 FAIL 排除 US-008 引入 · 主任务 AC-1~4/6/7 全 PASS · AC-5 zero-regression 唯独 prd-18 test3 1 fail · 其余 2282 vitest + typecheck + prd-19 spec 3/4 + prd-17 全 PASS]",
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · E2E spec 可清旧 e2e 中已 resolved TD 残留",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
@@ -440,12 +418,10 @@
         "commit message 加 `[TD-76 resolved] + [TD-77 resolved]` tag",
         "Typecheck passes"
       ],
-      "depends_on": [
-        "US-008"
-      ],
+      "depends_on": ["US-008"],
       "priority": 9,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] US-009 主任务即是 TD-76 + TD-77 fix · 在 verify-prd-19.sh 用 grep 验证 + tech-debt.json 标 resolved",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [

@@ -1546,3 +1546,79 @@
   - DB-backed 页面 E2E: 如 previous test run 写过 DB · page 加载即显 result · button disabled → 加 networkidle + isVisible() 条件判断
   - text=XXX locator strict mode 失败通常因 topic card 内容也含该文本 · 改用 getByRole('tab') 或 .first()
 ---
+
+--- [RALPH] Iteration 14 ended: US-008 (30分钟 30秒) ---
+
+--- [RALPH] Iteration 15 started: US-008 at 2026-05-18 09:53 ---
+
+## 2026-05-18 10:30 - US-008
+- 修复 4 类 E2E 验证失败(retryCount=2 → 3)
+- 新增 stepData.deleteForTest dev-only mutation(TRPCError FORBIDDEN in production)
+- prd-19 test(a)/(b): beforeEach+clearStepDataForTest 清除存量 DB 数据 → 消除 stale-data false positive
+- prd-19 test(b): 切换 accB 后额外 clearStepDataForTest 清除 accB step1 存量
+- prd-19 test(c): clearStepDataForTest(['step1',...,'step8']) 保证 9-step 全新起跑; 严格选择器 text= → #step3-output / #step3b-output
+- prd-18 test1: add hasExistingResult branch + networkidle wait(同 test2 模式)
+- prd-18 test3: 5 个 tab timeout 全升 15_000(SSE streaming 中 !isSaving&&result → section 短暂隐藏)
+- prd-18 test5: debate h4 timeout 15s → 30s(LLM call + DB write 链路)
+- 更改文件: apps/api/src/trpc/routers/stepData.ts, apps/web/e2e/prd-19-frontend-backend.spec.ts, apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts
+- **未来迭代的学习：**
+  - tRPC v11 fetchRequestHandler 非 batch POST 格式: POST body = plain JSON input(无 {"json":...} wrapper)
+  - DEV_OAUTH_MOCK 不需要 session cookie; activeAccountId = user.activeAccountId in DB; account switch 更新 DB → 后续 deleteForTest 操作正确账号
+  - Step5 section 条件: (hasAnyResult || (hasSubmitted && !isActiveLoading)) → SSE 'started' 事件触发 isActiveLoading=true → section 临时消失 → 后续 tab assertions 需 timeout≥15s
+  - E2E 测试数据隔离: beforeEach clear 当前账号数据 + 测试体内 clear 其他账号数据 = 最可靠方案
+---
+
+--- [RALPH] Iteration 15 ended: US-008 (42分钟 35秒) ---
+
+--- [RALPH] Iteration 16 started: US-008 at 2026-05-18 10:36 ---
+
+## 2026-05-18 10:45 - US-008 (retry 3 → fix)
+- 针对 Validator CONFIRMED 3 处失败做精确修复
+- 更改的文件:
+  - apps/web/e2e/prd-19-frontend-backend.spec.ts: test(b) accAId 改用 getActiveAccountId() 替代 items.nth(0) 推断
+  - apps/api/src/specialists/PositioningAgent.ts: execution fallback 加 h3(每日任务表/每周里程碑/阶段KPI)
+  - apps/api/src/specialists/CopywritingAgent.ts: step7 fallback 换成 debate 结构(话题抛出/正方/反方/我的立场)
+  - apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts: test3 变现型/人设型/认知型/案例型 tab timeout 15s→30s
+- **未来迭代的学习：**
+  - E2E 不要用 DOM 位置(nth(0)) 推断"当前活跃"状态 · 要用 tRPC active endpoint 或 LS key 直接取
+  - Specialist fallback template 必须和 spec §7.4 OUTPUT_H3/H4 结构对齐 · 否则 fallback 路径 test 失败
+  - SSE 流式场景 tab 出现顺序有时间差 · 非首个 tab 需要更长 timeout(30s vs 15s)
+---
+
+--- [RALPH] Iteration 16 ended: US-008 (25分钟 58秒) ---
+
+--- [RALPH] Iteration 17 started: US-008 at 2026-05-18 11:02 ---
+
+## 2026-05-18 11:10 - US-008 (retry 5 · 4 CONFIRMED failures from Validator retry-4)
+- 针对 4 个 CONFIRMED 失败做精准修复（不重新实现，直接 fix spec）
+- 更改的文件:
+  - apps/web/e2e/prd-19-frontend-backend.spec.ts: 3 fixes
+    (1) test.describe.configure({ mode: 'serial' }) — 防 test(c) clearStepDataForTest 和 test(d)内 prd-18 subprocess 并发竞争
+    (2) A→B 和 B→A 账号切换: waitForLoadState('load') → waitForEvent('load') + waitForLoadState('networkidle') — 确保 reload 真发生后才继续
+    (3) test(c) Step5 line334: locator('text=流量型') → getByRole('tab', {name:'流量型'}) — 严格模式多匹配修复
+  - apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts: 1 fix
+    (4) test5 Step7 line247: locator('text=评论区引导') → .first() — 严格模式 2 元素匹配修复
+- 质量检查: typecheck PASS · 0 error
+- **未来迭代的学习:**
+  - Playwright account switch reload race: waitForLoadState('load') 在当前页已 loaded 时立即返回，必须用 waitForEvent('load') 先订阅再点击
+  - E2E test 并发隔离: clearStepDataForTest 会删除同一 accountId 的 DB 数据，若另一 worker 的 Step5 SSE 正在流式写入同一 account 会导致 React state/unmount 问题 → serial 模式根治
+  - strict mode 两步定位: getByRole('tab', { name }) 比 locator('text=X') 更精确，避免 subtitle/label 误匹配
+---
+
+--- [RALPH] Iteration 17 ended: US-008 (23分钟 36秒) ---
+
+--- [RALPH] Iteration 1 started: US-009 at 2026-05-18 11:30 ---
+
+## 2026-05-18 10:30 - US-009
+- 新建 scripts/verify-prd-19.sh(chmod +x) · 35 checks 分 10 § · 全部通过(35/35 PASS)
+- §1 LD-009(3) · §2 useStepData(3) · §3 trpc.stepData.save wiring(4) · §4 aiip_memory_acc_(4) · §5 D4=B(3) · §6 D3=A boundary(3) · §7 TD-76(4) · §8 TD-77(4) · §9 typecheck+vitest 181 tests(3) · §10 migration(4)
+- .agents/tech-debt.json TD-76 status open→resolved(fix 实际在 US-006 commit 2790c39 落地) + resolved_in_prd/resolved_at/resolved_notes
+- 修改的文件: scripts/verify-prd-19.sh(新建) · .agents/tech-debt.json
+- **未来迭代的学习:**
+  - verify script ROOT 路径: `${BASH_SOURCE[0]}` dir/.. = project root · dir/../.. = parent · 错一层全部 grep fail
+  - grep -r 输出格式 file:line:content · 第二层 grep `^\s*//` 无效(因前缀是 file:line) · 需用 grep -E `^[[:space:]]*(import|from)` 避开 comment 行
+  - vitest 输出两行 passed · "Test Files N passed" 和 "Tests N passed" · 要抓后者才是 test 总数
+  - wc -l 输出带前导空格 · 应用 grep -c 代替 wc -l 避免 "integer expression expected"
+---
+
+--- [RALPH] Iteration 1 ended: US-009 (14分钟 40秒) ---

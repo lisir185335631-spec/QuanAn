@@ -1,18 +1,17 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-17T19:50:00",
-  "validator_end_ts": "2026-05-17T12:02:00",
-  "test_command": "pnpm exec vitest run (119 tests, 0 failed) + pnpm tsc --noEmit (0 errors) + agent-browser e2e step/4",
+  "validator_start_ts": "2026-05-18T08:25:00",
+  "validator_end_ts": "2026-05-18T08:38:00",
+  "test_command": "cd apps/web && pnpm vitest run && pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "retryCount=1 -> PASS on second attempt. All 11 AC verified. vitest 119/119, typecheck 0 errors, browser e2e: platform radio, inputs, generate, 3 H3 output, localStorage acc_step4 set.",
+  "notes": "181 vitest tests pass (zero-regression). Typecheck clean (exit 0). Browser verified: /step/8 loads with STEP 08 header, both subfunction H3 tabs visible (子功能1+2), generate_plan form elements all present, tab switch to optimize_script works, button disabled below 10 chars confirmed, data isolation confirmed (switch back shows clean generate form). Backend: agentId=LivestreamAgent at stepData.ts:316, sub_function stored in inputs at line 83. TD-77 fix: STEP8_OPTIMIZE_OUTPUT_LABELS_2 exported from step8.ts:155, used via map in Step8OptimizeScript.tsx:148, unit test PASS at step8.test.ts:63-68. LS discriminator: Step8.tsx renders only active subfunction; GeneratePlan line 58 + OptimizeScript line 46 both check sub_function !== subfunctionKey before restore.",
   "artifacts": [
-    "vitest.xml",
     "vitest.stdout.txt",
+    "vitest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "validator-us-007-pass-1-step4-initial.png",
-    "validator-us-007-pass-3-step4-result.png"
+    "manifest.json"
   ]
 }

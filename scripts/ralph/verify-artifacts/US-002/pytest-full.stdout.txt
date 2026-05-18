@@ -1,23 +1,29 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 2ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 2ms
+ ✓ src/lib/constants/__tests__/step8.test.ts (8 tests) 2ms
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 2ms
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 17ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 126ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 3ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 3ms
  ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
- ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 1ms
- ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
- ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 2ms
- ✓ src/components/StepProgress.test.tsx (6 tests) 29ms
- ✓ src/test/step-progress.test.tsx (10 tests) 43ms
- ✓ src/components/states/__tests__/states.test.tsx (3 tests) 47ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 85ms
- ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 1ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 32ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 53ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 55ms
 stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/test/pages.test.tsx (30 tests) 171ms
+ ✓ src/test/pages.test.tsx (30 tests) 165ms
 
- Test Files  10 passed (10)
-      Tests  83 passed (83)
-   Start at  18:49:02
-   Duration  1.43s (transform 508ms, setup 442ms, collect 1.49s, tests 384ms, environment 2.90s, prepare 474ms)
+ Test Files  16 passed (16)
+      Tests  138 passed (138)
+   Start at  04:20:35
+   Duration  1.76s (transform 685ms, setup 594ms, collect 2.09s, tests 468ms, environment 4.83s, prepare 720ms)
 

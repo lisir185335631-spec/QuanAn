@@ -1,15 +1,16 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-17T10:48:55",
-  "validator_end_ts": "2026-05-17T10:50:15",
-  "test_command": "pnpm vitest run src/lib/constants/__tests__/step4b.test.ts",
+  "validator_start_ts": "2026-05-18T04:12:00",
+  "validator_end_ts": "2026-05-18T04:21:00",
+  "test_command": "pnpm vitest run src/hooks/__tests__/useStepData.test.tsx + pnpm typecheck + browser AC-4",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest.stdout.txt",
-    "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ]
+    "vitest.stdout.txt",
+    "typecheck.stdout.txt",
+    "pytest-full.stdout.txt"
+  ],
+  "notes": "Zero regression: 138 vitest tests passed across 16 files (exit 0). Typecheck: 0 errors. AC-4 browser: Step3 shows industry '科技' from LS key aiip_memory_acc_11350_step1 — subtitle rendered '当前行业：科技'. Console: 0 errors (only React Router future flag warnings, not errors). All 5 test cases (a-e) pass in useStepData.test.tsx (11 tests)."
 }

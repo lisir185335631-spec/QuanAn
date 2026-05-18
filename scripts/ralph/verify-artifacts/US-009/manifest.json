@@ -1,16 +1,18 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-17T21:48:00",
-  "validator_end_ts": "2026-05-17T21:57:00",
-  "test_command": "pnpm vitest run + pnpm tsc --noEmit + agent-browser e2e",
+  "validator_start_ts": "2026-05-18T11:42:00",
+  "validator_end_ts": "2026-05-18T11:43:43",
+  "test_command": "pnpm typecheck + pnpm vitest run + bash scripts/verify-prd-19.sh",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "vitest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"
-  ]
+  ],
+  "notes": "verify-prd-19.sh 35/35 checks PASS in 5.6s. Typecheck exit 0. Vitest 181 tests PASS. TD-76 resolved (STEP7_LABEL_SCRIPT_TYPE). TD-77 resolved (STEP8_OPTIMIZE_OUTPUT_LABELS_2). Commit f1c42a2 has [TD-76 resolved][TD-77 resolved] tags."
 }

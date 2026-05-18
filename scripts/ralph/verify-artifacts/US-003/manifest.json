@@ -1,18 +1,15 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-17T18:55:00",
-  "validator_end_ts": "2026-05-17T18:57:30",
-  "test_command": "pnpm vitest run src/lib/constants/__tests__/step5.test.ts + pnpm typecheck + pnpm vitest run (zero-regression)",
+  "validator_start_ts": "2026-05-17T21:05:00",
+  "validator_end_ts": "2026-05-17T21:25:00",
+  "test_command": "pnpm vitest run (zero-regression) + pnpm typecheck + agent-browser e2e",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "AC-1..14 all PASS. step5.ts: STEP5_STEP_TAG/H1/SUBTITLE/INPUTS_2/FILE_UPLOADS_2/FILE_MAX_MB/FILE_ACCEPT/FILE_ACCEPT_LABEL/BUTTON_GENERATE/BUTTON_GO_STEP7/LOADING_TEXT/CATEGORIES_5/TOPICS_PER_CAT/TOTAL_TOPICS all present and correct. AC-11 grep: 流量型×2 变现型×2 人设型×2 认知型×2 案例型×2 一键生成5大类爆款选题×2 PDF、Word、TXT、Markdown、CSV×3. AC-12 数字锁: INPUTS_2.length===2 FILE_UPLOADS_2.length===2 CATEGORIES_5.length===5 TOPICS_PER_CAT===20 TOTAL_TOPICS===100. AC-13: step5.test.ts 8 assertions file present. AC-14: vitest 8/8 PASS exit 0, typecheck exit 0. Zero-regression: 91/91 PASS (11 test files).",
+  "notes": "API server was restarted (PID 8425 from May 16 → new PID after kill) to apply the AC fallback fix from commit 5c76889. After restart, fallback triggered correctly: status='fallback', has_result=true, industryLabel='餐饮美食'. All ACs passed.",
   "artifacts": [
-    "vitest.xml",
     "vitest.stdout.txt",
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"
   ]

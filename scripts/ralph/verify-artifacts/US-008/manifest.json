@@ -1,18 +1,21 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-17T20:33:00",
-  "validator_end_ts": "2026-05-17T20:46:02",
-  "test_command": "pnpm vitest run src/pages/step/ src/components/step4b/ && pnpm tsc --noEmit",
-  "exit_code": 0,
+  "validator_start_ts": "2026-05-18T11:10:00",
+  "validator_end_ts": "2026-05-18T11:25:00",
+  "test_command": "pnpm typecheck && pnpm vitest run && pnpm playwright test e2e/prd-19-frontend-backend.spec.ts && pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts",
+  "exit_code": 1,
   "zero_regression": "PASS",
-  "verdict": "PASS",
-  "failing_ac": null,
-  "notes": "AC-3: framer-motion not imported; CSS animate-in (tailwindcss-animate) used instead — visually equivalent, avoids bundle bloat. AC-10: recharts present in apps/web/package.json (pre-existing from PRD-16 US-005 commit 0fbea02, NOT added by US-008); step4b/ components have 0 recharts imports.",
+  "verdict": "FAIL",
+  "failing_ac": ["AC-5"],
+  "notes": "AC-7 PASS (typecheck 0 errors). Vitest 2282/2282 PASS (zero_regression=PASS). test(a) PASS. test(b) PASS (acc isolation A→B→A now works correctly). test(c) PASS (9-step flow + 0 hardcode grep). test(d) FAIL: prd-18 test3 '変現型' tab not found 30s — PRE-EXISTING bug since commit f521761 (US-013), failing in every US-008 validator run. prd-18 test5 strict-mode NOW FIXED.",
   "artifacts": [
-    "vitest.stdout.txt",
-    "vitest.xml",
-    "vitest-full.stdout.txt",
     "typecheck.stdout.txt",
+    "vitest-full.stdout.txt",
+    "vitest-full.xml",
+    "prd19-e2e-retry5.stdout.txt",
+    "prd-17-18-e2e-retry5.stdout.txt",
+    "validator-us-008-retry5-prd18-test3-fail.png",
+    "validator-us-008-retry5-testd-prd18-test3-fail.png",
     "manifest.json"
   ]
 }

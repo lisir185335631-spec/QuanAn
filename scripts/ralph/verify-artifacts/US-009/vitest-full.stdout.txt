@@ -1,132 +1,65 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > 三阶梯 range 字面 1:1 spec §7.5 line 1546-1564
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > 4 产品类型字面 1:1 spec §7.5 line 1551
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > SUBTITLE 字面严格 1:1 spec §7.5 line 1521
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > OUTPUT_H3_5 数量锁 · length === 5
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > INPUTS_3 数量锁 · length === 3
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > TEXTAREA required === true · id === product_description
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > BUTTONS 3 字面 1:1 spec §7.5 line 1532
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > Step4bResult interface 字段结构
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > SUBFUNCTIONS_2 · 2 个 h3Label 字面 1:1 · 含全角冒号
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > EXPERIENCE_3 · 3 个 label 含中点 · · 严禁 hyphen 或逗号
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > OUTPUT_MODULES_6 · 6 个 h3Label 字面 1:1 spec §7.9 line 1782
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > PLATFORMS_5 re-export from step3 · length === 5
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > BUTTON_GENERATE_PLAN + BUTTON_OPTIMIZE_SCRIPT 字面 1:1
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > OPTIMIZE_MIN_CHARS === 10
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > Step8Result interface · generate_plan + optimize_script 两分支
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_TYPES_20 长度 === 20
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_TYPES_20 第 1 = debate · 字面 1:1
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENTS_22 长度 === 22
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > 4 分组累加严格 6+5+6+5 = 22
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > DEBATE_H4_4 4 个 h4Label 字面 1:1 · 严禁 H4. 前缀 · 严禁英文
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SEARCH_PLACEHOLDER 字面 1:1 spec line 1679
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENT_COUNTER_TEMPLATE 含全角括号 · 字面 1:1 spec line 1693
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_DISPLAY_TEMPLATE 含全角冒号 + 半角 hyphen · 字面 1:1 spec line 1701
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > BUTTONS 4 字面 1:1 spec §7.8 line 1710-1712
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SUBTITLE 字面 1:1 spec §7.8 line 1671
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > Step7DebateResult interface 字段结构
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > Step7Result interface 字段结构 · body 默认为 Step7DebateResult
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > TEXTAREA id/label/placeholder 字面 1:1 spec §7.8 line 1699
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENT_GROUPS_4 length === 4 · 4 个 label 字面 1:1
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > SUBTITLE 字面严格 1:1 spec §7.6 line 1595
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > INPUTS_2 数量锁 · length === 2
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > FILE_UPLOADS_2 数量锁 · length === 2
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > FILE_MAX_MB === 20
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > TOTAL_TOPICS === 100
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > Step5Topic interface 字段结构
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > SUBTITLE 字面严格 1:1 spec §7.7 line 1639
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > TEXTAREA_MIN_CHARS === 10
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > Step6Result interface 字段结构
- ✓ src/components/StepProgress.test.tsx > StepProgress > renders loading skeleton when isLoading=true
- ✓ src/components/StepProgress.test.tsx > StepProgress > renders 9 step items when loaded
- ✓ src/components/StepProgress.test.tsx > StepProgress > marks completed steps with status=completed
- ✓ src/components/StepProgress.test.tsx > StepProgress > marks first incomplete step as current, rest as pending
- ✓ src/components/StepProgress.test.tsx > StepProgress > shows 0/9 progress text when no steps completed
- ✓ src/components/StepProgress.test.tsx > StepProgress > STEP_ORDER_KEYS contains 9 keys
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 0/9 when completedSteps is empty
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 9/9 when all steps completed
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 3/9 when 3 steps completed
- ✓ src/test/step-progress.test.tsx > StepProgress > shows loading skeleton when isLoading=true
- ✓ src/test/step-progress.test.tsx > StepProgress > renders all 9 step items
- ✓ src/test/step-progress.test.tsx > StepProgress > marks completed step with data-status=completed
- ✓ src/test/step-progress.test.tsx > StepProgress > marks first incomplete step with data-status=current
- ✓ src/test/step-progress.test.tsx > StepProgress > marks later steps as pending
- ✓ src/test/step-progress.test.tsx > StepProgress > STEP_ORDER_KEYS has exactly 9 entries
- ✓ src/test/step-progress.test.tsx > StepProgress > accepts optional className prop without error
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders thumbs-up and thumbs-down buttons
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders helper text
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with good type and agentId on thumbs-up click
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with bad type and agentId on thumbs-down click
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > passes stepKey and agentId correctly for ip-plan
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-buttons wrapper
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-good on thumbs-up button
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-bad on thumbs-down button
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 3 textareas
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 5 H3 output blocks
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > first textarea (personalInfo) is required
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > advantages and story are not required
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > H3 labels start with number 1-5
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > SUBTITLE 字面严格 1:1 spec §7.4 line 1492
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > INPUTS_3 数量锁 · length === 3
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > OUTPUT_H3_3 数量锁 · length === 3
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > PLATFORMS_5 re-export · length === 5
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > Step4Result interface 字段结构
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > total count is 56
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 生活服务 count is 18
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 电商零售 count is 13
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_TABS > non-all tab counts sum to 56
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 5 platforms
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 6 H3 output blocks
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > all platforms have emoji prefix
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > output H3 labels start with number 1-6
- ✓ src/components/states/__tests__/states.test.tsx > LoadingState > renders custom text
- ✓ src/components/states/__tests__/states.test.tsx > ErrorState > shows 重试 button when onRetry is provided
- ✓ src/components/states/__tests__/states.test.tsx > EmptyState > renders default title '暂无数据'
+ ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 2ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step8.test.ts (9 tests) 4ms
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 5ms
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 44ms
+ ✓ src/pages/step/__tests__/Step4b.test.tsx (7 tests) 3ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 145ms
+stderr | src/pages/step/__tests__/Step8.test.tsx > Step8 > renders h1 with 直播策划
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step8.test.tsx (7 tests) 143ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 2ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 58ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 42ms
+stderr | src/pages/step/__tests__/Step7.test.tsx > Step7 > renders h1 with 文案生成
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step7.test.tsx (6 tests) 123ms
+stderr | src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step5.test.tsx (5 tests) 89ms
+stderr | src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step6.test.tsx (5 tests) 64ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 1ms
+stderr | src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step1.test.tsx (4 tests) 159ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 19ms
+stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3b.test.tsx (4 tests) 139ms
+stderr | src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3.test.tsx (4 tests) 52ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 42ms
 stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/test/pages.test.tsx > stepConfig > has all 9 step keys
- ✓ src/test/pages.test.tsx > stepConfig > step1 has non-empty title and description
- ✓ src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step2 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step5 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step8 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step9 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Trending renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Copywriting renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Knowledge renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Diagnosis renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Diagnosis shows empty state when no data
- ✓ src/test/pages.test.tsx > Module pages render > Evolution renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Evolution shows cold-start state when no data
- ✓ src/test/pages.test.tsx > Module pages render > Accounts renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Accounts shows empty state when no data
- ✓ src/test/pages.test.tsx > Module pages render > DailyTasks renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > MyTopics renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > History renders h1 heading
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders ip-plan-page with h1 我的IP方案
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders 9 step cards with 查看详情 buttons
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > shows 已完成 0 / 9 步 with empty completedSteps
- ✓ src/test/pages.test.tsx > VoiceChat page (US-012) > renders record button and turn list area
- ✓ src/test/pages.test.tsx > VoiceChat page (US-012) > shows idle status bar
- ✓ src/test/pages.test.tsx > VoiceChat page (US-012) > shows hang up button
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders children when no error
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders fallback UI when child throws
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders custom fallback when provided
- ✓ src/test/pages.test.tsx > ErrorBoundary > resets error state on button click
+ ✓ src/test/pages.test.tsx (30 tests) 239ms
 
- Test Files  14 passed (14)
-      Tests  119 passed (119)
-   Start at  21:04:19
-   Duration  1.72s (transform 597ms, setup 510ms, collect 1.89s, tests 456ms, environment 4.20s, prepare 698ms)
+ Test Files  24 passed (24)
+      Tests  181 passed (181)
+   Start at  11:42:37
+   Duration  2.27s (transform 1.10s, setup 1.08s, collect 4.65s, tests 1.38s, environment 6.59s, prepare 1.01s)
 
