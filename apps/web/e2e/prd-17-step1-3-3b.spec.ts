@@ -44,8 +44,10 @@ test.describe('PRD-17 Step1 → Step3 → Step3b E2E', () => {
     // 选择 '美业' 行业卡
     await page.locator('.glass-card', { hasText: '美业' }).first().click();
 
-    // 点击主 CTA
-    await page.locator('button', { hasText: '确认并进入下一步' }).click();
+    // PRD-19: CTA 改为 '生成行业洞察' → 等 LLM/fallback 结果 → 再点 '进入 IP 定位 →'
+    await page.locator('button', { hasText: '生成行业洞察' }).click();
+    await expect(page.locator('text=行业洞察报告')).toBeVisible({ timeout: 30_000 });
+    await page.locator('button', { hasText: '进入 IP 定位 →' }).click();
 
     // ─── Step 3 ────────────────────────────────────────────────────────────────
     await page.waitForURL('**/step/3', { timeout: 10_000 });

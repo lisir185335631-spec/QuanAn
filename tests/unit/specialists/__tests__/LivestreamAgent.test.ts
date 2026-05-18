@@ -64,7 +64,7 @@ function makeGateway(contents: unknown[]): ILLMGateway {
 const BASE_REQ = {
   accountId: 42,
   userInput: {
-    experience: '中级' as const,
+    experience: '有经验' as const,
     topic: '护肤精华推荐',
     targetAudience: '25-35岁女性，关注护肤',
   },
