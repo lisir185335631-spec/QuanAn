@@ -30,9 +30,13 @@ async function getActiveAccountId(page: Page): Promise<number | null> {
     const fromLs = localStorage.getItem('aiip_active_account_id');
     if (fromLs) return parseInt(fromLs, 10);
 
-    // Query active account via tRPC (DEV_OAUTH_MOCK auto-authenticates)
+    // Query active account via tRPC direct URL (DEV_OAUTH_MOCK auto-authenticates)
+    // Use absolute URL http://localhost:3000/trpc — Vite proxy /api/trpc has no rewrite,
+    // so /api/trpc/... → localhost:3000/api/trpc/... (404). Direct is correct.
     try {
-      const res = await fetch('/api/trpc/ipAccounts.active?input=%7B%7D');
+      const res = await fetch('http://localhost:3000/trpc/ipAccounts.active?input=%7B%7D', {
+        credentials: 'include',
+      });
       if (!res.ok) return null;
       const json = (await res.json()) as Record<string, unknown>;
       const data = (json?.result as Record<string, unknown>)?.data as Record<string, unknown> | null;
@@ -45,14 +49,15 @@ async function getActiveAccountId(page: Page): Promise<number | null> {
   });
 }
 
-/** Query stepData row from backend via tRPC proxy (DEV_OAUTH_MOCK auto-auth). */
+/** Query stepData row from backend via tRPC direct URL (DEV_OAUTH_MOCK auto-auth). */
 async function queryStepData(
   page: Page,
   stepKey: string,
 ): Promise<Record<string, unknown> | null> {
   return page.evaluate(async (sk) => {
     const input = JSON.stringify({ stepKey: sk });
-    const url = `/api/trpc/stepData.get?input=${encodeURIComponent(input)}`;
+    // Direct URL — Vite proxy /api/trpc has no path rewrite, must use backend directly
+    const url = `http://localhost:3000/trpc/stepData.get?input=${encodeURIComponent(input)}`;
     try {
       const res = await fetch(url, { credentials: 'include' });
       if (!res.ok) return null;
@@ -105,7 +110,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
   // ─── test (a): Step1 真接 PositioningAgent · LS↔DB 双写 ─────────────────────
   test('test (a) · Step1 真接 PositioningAgent · LS↔DB 双写', async ({ page }) => {
     await page.goto(`${BASE_URL}/step/1`);
-    await expect(page.locator('h1')).toContainText('选择你的行业赛道', { timeout: 15_000 });
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 15_000 });
 
     // Get active accountId (needed for LS key verification)
     const accountId = await getActiveAccountId(page);
@@ -133,7 +138,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
   // ─── test (b): acc 切换 · 数据隔离 ──────────────────────────────────────────
   test('test (b) · acc 切换 · 数据隔离 · Step1 industry 不串', async ({ page }) => {
     await page.goto(`${BASE_URL}/step/1`);
-    await expect(page.locator('h1')).toContainText('选择你的行业赛道', { timeout: 15_000 });
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 15_000 });
 
     // Collect account A and B IDs from AccountSwitcher dropdown
     await page.locator('[data-testid="account-switcher-trigger"]').click();
@@ -143,15 +148,13 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     const accBTestId = await items.nth(1).getAttribute('data-testid');
     const accAId = parseInt(accATestId!.replace('account-switcher-item-', ''), 10);
     const accBId = parseInt(accBTestId!.replace('account-switcher-item-', ''), 10);
+    // Close dropdown — already on accA (items.nth(0) == active account, switchTo is idempotent)
+    // Do NOT re-open + re-click accAId: Radix close animation detaches DOM elements on immediate reopen
     await page.keyboard.press('Escape');
 
-    // ── Account A: select '美食' ──
-    await page.locator('[data-testid="account-switcher-trigger"]').click();
-    await page.locator(`[data-testid="account-switcher-item-${accAId}"]`).click();
-    await page.waitForLoadState('load');
-
+    // ── Account A: select '美食' (already on accA) ──
     await page.goto(`${BASE_URL}/step/1`);
-    await expect(page.locator('h1')).toContainText('选择你的行业赛道', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
     await submitStep1(page, '美食');
 
     // Verify A's LS before switching away
@@ -166,11 +169,12 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Switch to Account B (clears A's LS, reloads) ──
     await page.locator('[data-testid="account-switcher-trigger"]').click();
+    await page.locator(`[data-testid="account-switcher-item-${accBId}"]`).waitFor({ timeout: 5_000 });
     await page.locator(`[data-testid="account-switcher-item-${accBId}"]`).click();
     await page.waitForLoadState('load');
 
     await page.goto(`${BASE_URL}/step/1`);
-    await expect(page.locator('h1')).toContainText('选择你的行业赛道', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
 
     // RLS isolation check: as B, stepData.get must NOT return A's '美食' data
     const dbBBeforeSubmit = await queryStepData(page, 'step1');
@@ -200,11 +204,12 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Switch back to Account A (clears B's LS, reloads) ──
     await page.locator('[data-testid="account-switcher-trigger"]').click();
+    await page.locator(`[data-testid="account-switcher-item-${accAId}"]`).waitFor({ timeout: 5_000 });
     await page.locator(`[data-testid="account-switcher-item-${accAId}"]`).click();
     await page.waitForLoadState('load');
 
     await page.goto(`${BASE_URL}/step/1`);
-    await expect(page.locator('h1')).toContainText('选择你的行业赛道', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
 
     // A's LS was cleared by the B→A switch; page now fetches from DB
     await expect(page.locator('text=行业洞察报告')).toBeVisible({ timeout: 15_000 });
@@ -223,7 +228,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 1 ─────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/1`);
-    await expect(page.locator('h1')).toContainText('选择你的行业赛道', { timeout: 15_000 });
+    await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 15_000 });
     const accountId = await getActiveAccountId(page);
     expect(accountId).not.toBeNull();
 
@@ -235,7 +240,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     await page.waitForURL('**/step/3', { timeout: 10_000 });
 
     // ── Step 3 ─────────────────────────────────────────────────────────────────
-    await expect(page.locator('h1')).toContainText('账号包装方案', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('账号包装方案', { timeout: 10_000 });
     await page.locator('textarea').first().fill(
       '我是一名有10年经验的美食博主，记录家常菜制作，帮助300+粉丝学会厨艺。',
     );
@@ -246,7 +251,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 3b ────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/3b`);
-    await expect(page.locator('h1')).toContainText('人设定制方案', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('人设定制方案', { timeout: 10_000 });
     await page.locator('label[for="step3b-douyin"]').click();
     await page.locator('button[type="submit"]', { hasText: '生成专属人设方案' }).click();
     await expect(page.locator('text=专属人设方案')).toBeVisible({ timeout: 30_000 });
@@ -254,7 +259,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 4 ─────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/4`);
-    await expect(page.locator('h1')).toContainText('执行计划', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('执行计划', { timeout: 10_000 });
     await page.locator('label[for="step4-platform-douyin"]').click();
     await page.locator('button[type="submit"]', { hasText: '生成执行计划' }).click();
     await expect(page.locator('h3').filter({ hasText: '1. 每日任务表' })).toBeVisible({
@@ -264,7 +269,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 4b ────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/4b`);
-    await expect(page.locator('h1')).toContainText('变现路径', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('变现路径', { timeout: 10_000 });
     await page.locator('textarea').first().fill(
       '美食类特色农产品，展示家乡特产，客单价50-200元',
     );
@@ -276,7 +281,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 5 (SSE saveStream) ────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/5`);
-    await expect(page.locator('h1')).toContainText('爆款选题库', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('爆款选题库', { timeout: 10_000 });
     // Fill 2 required inputs: industry + product
     await page.locator('input').nth(0).fill('美食');
     await page.locator('input').nth(1).fill('家常菜制作分享');
@@ -287,7 +292,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 6 ─────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/6`);
-    await expect(page.locator('h1')).toContainText('拍摄计划', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('拍摄计划', { timeout: 10_000 });
     await page.locator('textarea').first().fill(
       '美食博主如何用抖音获客100个精准粉丝，这是实操分享，帮你快速起号变现。',
     );
@@ -299,7 +304,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 7 ─────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/7`);
-    await expect(page.locator('h1')).toContainText('文案生成', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('文案生成', { timeout: 10_000 });
     await page.locator('textarea').first().fill('美食博主要不要专注一个垂类还是多元发展？正反方辩论');
     await page.locator('button[type="submit"]', { hasText: '生成爆款文案' }).click();
     await expect(page.locator('h4').filter({ hasText: '话题抛出' })).toBeVisible({
@@ -309,7 +314,7 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
 
     // ── Step 8 ─────────────────────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/step/8`);
-    await expect(page.locator('h1')).toContainText('直播策划', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('直播策划', { timeout: 10_000 });
     // Sub-function 1 (generate_plan) is active by default
     await expect(page.locator('button', { hasText: '子功能 1：生成直播方案' })).toBeVisible();
     // Fill product textarea

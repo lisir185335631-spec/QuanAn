@@ -1456,3 +1456,93 @@
   - 解决方案: middleware 检测 type==='subscription' + 改用 connection-level set_config(is_local=false)
   - httpSubscriptionLink 必须和 splitLink 配合 · splitLink 按 op.type==='subscription' 路由 · 单独用 httpBatchStreamLink 不支持 subscription
 ---
+
+--- [RALPH] Iteration 10 ended: US-005 (42分钟 55秒) ---
+
+--- [RALPH] Iteration 11 started: US-006 at 2026-05-18 07:38 ---
+
+## 2026-05-18 07:50 - US-006
+- 实现了 Step6 + Step7 真接 stepData router(VideoAgent + CopywritingAgent)
+- 更改的文件:
+  - apps/web/src/lib/constants/step7.ts: 新增 STEP7_LABEL_SCRIPT_TYPE 常量(TD-76 fix)
+  - apps/web/src/pages/step/Step6.tsx: 替换 localStorage 直读 → useStepData(accountId,'step6') + readOtherStep 跨step预填; save({ text }) → VideoAgent shooting mode; ShootingOutput 渲染(shotList 8列/equipment/schedule)
+  - apps/web/src/pages/step/Step7.tsx: 替换 localStorage 直读 → useStepData(accountId,'step7') + readOtherStep; save({ topic,optimizeDir,scriptType,elements }) → CopywritingAgent; TD-76 fix STEP7_LABEL_SCRIPT_TYPE; 跨step预填 readOtherStep(accountId,'selected_topic')
+  - apps/web/src/components/step7/Step7OutputContent.tsx: 接受真 CopywritingOutput({ markdown,structure,hooks,cta }); ReactMarkdown 渲染辩论内容; cta=评论引导; hooks=话题标签chips
+  - apps/web/src/pages/step/__tests__/Step6.test.tsx: 新建 5 单元测试
+  - apps/web/src/pages/step/__tests__/Step7.test.tsx: 新建 6 单元测试
+- 质量检查: typecheck PASS · vitest 173 tests PASS(零回归, +11 新测试)
+- **未来迭代的学习:**
+  - VideoAgent shooting mode 返回 { shotList, equipment, schedule } 非 { storyboard, shooting_plan, teleprompter }(旧 mock 格式不同); 8列渲染 = 从 13列 shotList 选 duration/scene/cameraAngle/action/dialogue/lighting/prop/location
+  - CopywritingAgent step7 mode 返回 { markdown, structure, hooks, cta } 而非 Step7Result 格式; hooks 作话题标签/cta 作评论引导
+  - readOtherStep(accountId,'selected_topic') 是 step5 TopicGrid 写入时的 key('selected_topic' per migration map acc_step5_selected_topic→selected_topic); 不是 'step5_selected_topic'
+  - prevIsSavingRef pattern(useRef+useEffect): 检测 save 完成时机(isSaving true→false)→ dbQuery.refetch() 同步 DB 结果; 跟 Step4.tsx 完全一致
+  - TD-76 resolved: step7.ts 新增 STEP7_LABEL_SCRIPT_TYPE 常量, Step7.tsx line 164 用常量替换 hardcode
+---
+
+--- [RALPH] Iteration 11 ended: US-006 (30分钟 53秒) ---
+
+--- [RALPH] Iteration 12 started: US-007 at 2026-05-18 08:09 ---
+
+## 2026-05-18 08:24 - US-007
+- 实现了 Step8 两子功能真接 LivestreamAgent stepData router
+- 更改的文件:
+  - apps/api/src/specialists/LivestreamAgent.ts: EXPERIENCE_VALUES 从 ['新手','中级','高级'] 改为 ['新手','有经验','资深'] 匹配前端枚举
+  - apps/api/src/trpc/routers/stepData.ts: step8 分支加 sub_function 判断 · generate_plan 将 lastResult 按 \n{2,} 分割成 6 字段 · optimize_script 将 lastResult/lastOptimizedResult map 到 optimized_text/optimization_notes
+  - apps/web/src/lib/constants/step8.ts: 新增 STEP8_OPTIMIZE_OUTPUT_LABELS_2 常量(TD-77 fix)
+  - apps/web/src/pages/step/Step8.tsx: 引入 useActiveAccount + readOtherStep · 传 accountId 给子组件 · 读 step1 industry 跨 step 预填
+  - apps/web/src/components/step8/Step8GeneratePlan.tsx: 全面重写 · 用 useStepData(accountId,'step8') · EXPERIENCE_VALUE_MAP 映射 key→中文 · sub_function discriminator · 真 LLM 结果读取 · EmptyState template literal
+  - apps/web/src/components/step8/Step8OptimizeScript.tsx: 全面重写 · 用 useStepData(accountId,'step8') · STEP8_OPTIMIZE_OUTPUT_LABELS_2.map 替代 hardcode(TD-77) · sub_function discriminator · EmptyState template literal
+  - apps/web/src/lib/constants/__tests__/step8.test.ts: 新增 STEP8_OPTIMIZE_OUTPUT_LABELS_2 覆盖测试
+  - apps/web/src/pages/step/__tests__/Step8.test.tsx: 新建 7 测试
+- **未来迭代的学习:**
+  - LivestreamAgent 总返回 { lastResult, lastOptimizedResult } · 需在 router 层按 sub_function 做 transform · generate_plan 用段落分割(按 \n{2,}) 得 6 字段 · optimize_script 直接 map 2 字段
+  - sub_function discriminator 在 DB inputs 存储 · 前端读 dbQuery.data.inputs.sub_function 做结果隔离 · 与 LS load() 的 sub_function check 双重保护
+  - experience key(novice/experienced/expert) → 中文值('新手'/'有经验'/'资深') 须在前端 save() 前映射 · 避免 router 知晓前端枚举实现
+  - EmptyState template literal pattern: `提交表单后查看${STEP8_H1}` 非 hardcode 字符串(anti_pattern US-007)
+---
+
+--- [RALPH] Iteration 12 ended: US-007 (29分钟 6秒) ---
+
+--- [RALPH] Iteration 13 started: US-008 at 2026-05-18 08:38 ---
+
+--- [RALPH] Iteration 1 started: US-008 at 2026-05-18 09:08 ---
+
+## 2026-05-18 09:08 - US-008
+- 实现了 PRD-19 E2E playwright 集成验收规范(4 tests · 真后端闭环)
+- 更改的文件:
+  - apps/web/e2e/prd-19-frontend-backend.spec.ts: 新建 · 4 tests (a)Step1 DB+LS双写 (b)acc隔离 (c)9step完整流程 (d)zero-regression
+  - apps/web/e2e/prd-17-step1-3-3b.spec.ts: Step1 CTA 从 '確認并进入下一步' → '生成行业洞察' + wait result → '进入 IP 定位 →'
+  - tests/unit/specialists/__tests__/LivestreamAgent.test.ts: BASE_REQ experience '中级' → '有经验'(EXPERIENCE_VALUES drift 修复)
+- 质量检查: pnpm typecheck PASS · pnpm vitest run PASS(2278 passed · 0 failed · 修复了 LivestreamAgent 2 个 pre-existing 失败)
+- **未来迭代的学习:**
+  - vite proxy '/api/trpc' → 'http://localhost:3000' 使 page.evaluate fetch('/api/trpc/...') 在 playwright 中可透传后端调用
+  - DEV_OAUTH_MOCK=true 时后端 tRPC context.ts 对无 session cookie 的请求自动注入 dev 用户 → E2E spec 无需显式登录
+  - AccountSwitcher data-testid="account-switcher-item-{id}" 可用于 playwright 精确切换账号
+  - 嵌套运行 playwright(execSync pnpm playwright test)时 reuseExistingServer=true 会复用外层 webServer · 不产生端口冲突
+  - LivestreamAgent EXPERIENCE_VALUES 在 US-007 从 ['新手','中级','高级'] 改为 ['新手','有经验','资深'] · 测试 BASE_REQ 未同步 → test drift
+  - prd-17 spec CTA 按钮从 '確認并进入下一步' 变为 PRD-19 的 '生成行业洞察' 后需更新为 2 步流程: 点 CTA → 等 '行业洞察报告' → 点 '进入 IP 定位 →'
+---
+
+--- [RALPH] Iteration 13 ended: US-008 (44分钟 11秒) ---
+
+--- [RALPH] Iteration 14 started: US-008 at 2026-05-18 09:23 ---
+
+## 2026-05-18 09:40 - US-008 (Iteration 2 · 精准修复 3 CONFIRMED 问题)
+- 针对 Validator CONFIRMED 的 3 个失败项精准修复:
+  1. prd-19 getActiveAccountId/queryStepData URL 错误 → 改用 http://localhost:3000/trpc/... 直连后端
+     (Vite proxy /api/trpc 无 rewrite rule · 转发到 localhost:3000/api/trpc/... → 404)
+  2. prd-19 test (b) accA item detach → 移除 Escape+reopen+点 accA 多余步骤(已在 accA)
+     + 后续 B/A switch 加 .waitFor() 防 Radix 动画 detach
+  3. prd-18 4/6 tests FAIL → locator('h1').first() 修 strict mode(tests 1/5)
+     + test 2 加 networkidle wait + hasExistingResult 条件绕过 DB 已存结果导致 button disabled
+     + test 3 tab selector 改 getByRole('tab', {name:...}) 修 strict text=流量型
+- 更改的文件:
+  - apps/web/e2e/prd-19-frontend-backend.spec.ts
+  - apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts
+- 质量检查: typecheck PASS · vitest 2278/2282 PASS (4 pre-existing skip)
+- **未来迭代的学习:**
+  - E2E spec page.evaluate() 调 tRPC 必须用绝对 URL http://localhost:3000/trpc/... · Vite proxy /api/trpc 无 rewrite 转 404
+  - Radix DropdownMenu: Escape 关闭后立即 reopen+click 会 detach · 需加 .waitFor() 或避免不必要 reopen
+  - DB-backed 页面 E2E: 如 previous test run 写过 DB · page 加载即显 result · button disabled → 加 networkidle + isVisible() 条件判断
+  - text=XXX locator strict mode 失败通常因 topic card 内容也含该文本 · 改用 getByRole('tab') 或 .first()
+---

@@ -29,7 +29,7 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     });
     await page.reload();
 
-    await expect(page.locator('h1')).toContainText('执行计划', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('执行计划', { timeout: 10_000 });
 
     // AC: step tag
     await expect(page.locator('text=STEP 04 · 制定执行计划')).toBeVisible();
@@ -67,22 +67,32 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     });
     await page.reload();
 
-    await expect(page.locator('h1')).toContainText('变现路径', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('变现路径', { timeout: 10_000 });
 
     // AC: step tag
     await expect(page.locator('text=STEP 04b · 变现路径规划')).toBeVisible();
 
-    // 填产品描述 textarea (必填)
-    const productTextarea = page.locator('textarea').first();
-    await productTextarea.fill('专业皮肤管理服务，提供光子嫩肤、热玛吉等医美项目，客单价 2000-10000 元');
+    // Wait for DB query to settle so we can check if previous results are shown
+    // (prd-19 test (c) may have already written step4b data → button becomes disabled)
+    await page.waitForLoadState('networkidle', { timeout: 8_000 }).catch(() => {});
+    const hasExistingResult = await page.locator('h3').filter({ hasText: '1. 市场分析' }).isVisible();
 
-    // 提交
-    await page.locator('button[type="submit"]', { hasText: '生成变现路径' }).click();
+    if (!hasExistingResult) {
+      // 填产品描述 textarea (必填)
+      const productTextarea = page.locator('textarea').first();
+      await productTextarea.fill('专业皮肤管理服务，提供光子嫩肤、热玛吉等医美项目，客单价 2000-10000 元');
 
-    // 等 5 H3 输出
-    await expect(page.locator('h3').filter({ hasText: '1. 市场分析' })).toBeVisible({
-      timeout: 15_000,
-    });
+      // 提交
+      await page.locator('button[type="submit"]', { hasText: '生成变现路径' }).click();
+
+      // 等首个 H3 输出
+      await expect(page.locator('h3').filter({ hasText: '1. 市场分析' })).toBeVisible({
+        timeout: 15_000,
+      });
+    }
+
+    // 等 5 H3 输出 (whether freshly generated or loaded from DB)
+    await expect(page.locator('h3').filter({ hasText: '1. 市场分析' })).toBeVisible();
     await expect(page.locator('h3').filter({ hasText: '2. 三阶梯变现路径' })).toBeVisible();
     await expect(page.locator('h3').filter({ hasText: '3. 收入结构' })).toBeVisible();
     await expect(page.locator('h3').filter({ hasText: '4. 成功案例参考' })).toBeVisible();
@@ -121,12 +131,12 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     // 提交生成
     await page.locator('button', { hasText: '一键生成 5大类 爆款选题' }).click();
 
-    // 等 5 类 tab
-    await expect(page.locator('text=流量型')).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator('text=变现型')).toBeVisible();
-    await expect(page.locator('text=人设型')).toBeVisible();
-    await expect(page.locator('text=认知型')).toBeVisible();
-    await expect(page.locator('text=案例型')).toBeVisible();
+    // 等 5 类 tab (use role selector to avoid strict mode when topic cards also contain category text)
+    await expect(page.getByRole('tab', { name: '流量型' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('tab', { name: '变现型' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '人设型' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '认知型' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: '案例型' })).toBeVisible();
 
     // 当前 tab(流量型) 下应有 20 个选题 card
     const topicCards = page.locator('[role="tabpanel"] button');
@@ -201,7 +211,7 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     await page.goto(`${BASE_URL}/step/7`);
     await page.evaluate(() => localStorage.clear());
 
-    await expect(page.locator('h1')).toContainText('文案生成', { timeout: 10_000 });
+    await expect(page.locator('h1').first()).toContainText('文案生成', { timeout: 10_000 });
 
     // AC: step tag
     await expect(page.locator('text=STEP 07 · AI 智能文案生成')).toBeVisible();
