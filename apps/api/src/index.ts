@@ -18,6 +18,7 @@ import { cors } from 'hono/cors';
 
 import { lucia } from '@/lib/auth/lucia';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
+import { validateEnv } from '@/lib/env';
 import { logger, traceStore } from '@/lib/logger';
 import { checkDbConnection , prisma } from '@/lib/prisma';
 import { createContext } from '@/trpc/context';
@@ -25,6 +26,18 @@ import { appRouter } from '@/trpc/routers/_app';
 
 // Validate env at module load — exits early on misconfiguration (AC-10, AC-14)
 validateStartupConfig();
+
+// LLM env validation — warns on missing keys + logs mode (real / fallback)
+const _llmEnv = validateEnv();
+logger.info(
+  {
+    llmMode: _llmEnv.llmMode,
+    model: _llmEnv.LLM_DEFAULT_MODEL,
+    openAiKey: _llmEnv.OPENAI_API_KEY ? '✓' : '✗ fallback',
+    anthropicKey: _llmEnv.ANTHROPIC_API_KEY ? '✓' : '✗ fallback',
+  },
+  'llm.init',
+);
 
 const app = new Hono();
 
