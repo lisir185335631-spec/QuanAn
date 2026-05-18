@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { getProgress } from '@/services/ip-progress/IPProgressService';
 import { brandingAgent } from '@/specialists/BrandingAgent';
 import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
-import { livestreamAgent } from '@/specialists/LivestreamAgent';
+import { livestreamAgent, type LivestreamOutput } from '@/specialists/LivestreamAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { positioningAgent } from '@/specialists/PositioningAgent';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
@@ -278,19 +278,23 @@ export const stepDataRouter = router({
         });
 
         // Transform result based on sub_function discriminator
+        // PRD-20 merge note: LivestreamAgent 现在支持 sub_function discriminator 直接输出 dual schema
+        // 但 stepData router 这段 transform 是 PRD-19 时期写的 · 基于 legacy LivestreamOutput
+        // cast 通过 TS · runtime 兼容(若 LivestreamAgent legacy fallback path)· PRD-21 可清理
+        const legacyResult = agentRes.result as LivestreamOutput;
         let transformedResult: Record<string, unknown>;
         if (sub_function === 'optimize_script') {
           // optimize_script: lastResult → optimized_text, lastOptimizedResult → optimization_notes
           transformedResult = {
             sub_function: 'optimize_script',
-            optimized_text: agentRes.result.lastResult,
-            optimization_notes: agentRes.result.lastOptimizedResult,
+            optimized_text: legacyResult.lastResult,
+            optimization_notes: legacyResult.lastOptimizedResult,
           };
         } else {
           // generate_plan: split lastResult into 6 labeled sections
-          const sections = agentRes.result.lastResult.split(/\n{2,}/).filter((s) => s.trim());
+          const sections = legacyResult.lastResult.split(/\n{2,}/).filter((s: string) => s.trim());
           const getSection = (i: number): string =>
-            sections[i] ?? sections[0] ?? agentRes.result.lastResult;
+            sections[i] ?? sections[0] ?? legacyResult.lastResult;
           transformedResult = {
             sub_function: 'generate_plan',
             opening: getSection(0),
@@ -299,7 +303,7 @@ export const stepDataRouter = router({
             closing: getSection(3),
             traffic: getSection(4),
             engagement:
-              sections.length > 5 ? getSection(5) : agentRes.result.lastOptimizedResult,
+              sections.length > 5 ? getSection(5) : legacyResult.lastOptimizedResult,
           };
         }
 
