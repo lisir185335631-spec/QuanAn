@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --max-warnings=0",
     "test": "vitest run --config vitest.config.ts",
-    "test:e2e": "playwright test --config ../../playwright.config.ts"
+    "test:e2e": "playwright test --config ../../playwright.config.ts",
+    "test:visual": "playwright test --config ../../playwright.config.ts --project=chromium prd21-visual-baseline --update-snapshots",
+    "test:visual:check": "playwright test --config ../../playwright.config.ts --project=chromium prd21-visual-baseline"
   },
   "dependencies": {
     "@fontsource/inter": "^5.0.0",

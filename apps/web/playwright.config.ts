@@ -13,6 +13,15 @@ export default defineConfig({
   workers: 1,
   reporter: [['list']],
 
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.05,
+      threshold: 0.2,
+      animations: 'disabled',
+      caret: 'hide',
+    },
+  },
+
   use: {
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:5173',
     trace: 'on-first-retry',
