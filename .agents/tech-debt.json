@@ -1535,8 +1535,12 @@
       "detected_in_prd": "prd-18-step-4-4b-5-6-7-8",
       "detected_in_story": "US-011a (Opus audit)",
       "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
-      "status": "open",
-      "fix_hint": "step7.ts 新建 STEP7_LABEL_SCRIPT_TYPE='选择脚本类型' export · 同时 Step7.tsx line 150 改 `<label>{STEP7_LABEL_SCRIPT_TYPE}</label>`(或参考 STEP3_LABEL_* 模式跨 page 复用)"
+      "status": "resolved",
+      "fix_hint": "step7.ts 新建 STEP7_LABEL_SCRIPT_TYPE='选择脚本类型' export · 同时 Step7.tsx line 150 改 `<label>{STEP7_LABEL_SCRIPT_TYPE}</label>`(或参考 STEP3_LABEL_* 模式跨 page 复用)",
+      "resolved_in_prd": "prd-19-frontend-backend-bridge",
+      "resolved_at": "2026-05-18T10:00:00",
+      "resolved_in_story": "US-006 (commit 2790c39) + US-009 TD-76 resolve tag",
+      "resolved_notes": "US-006 ralph 主动 catch · step7.ts 新增 export const STEP7_LABEL_SCRIPT_TYPE = '选择脚本类型' · Step7.tsx line 145-148 改 {STEP7_LABEL_SCRIPT_TYPE} pattern · commit message tag [TD-76 resolved] · grep 验证 hardcode 选择脚本类型 JSX 0 hit in Step7.tsx · US-009 verify-prd-19.sh §7 检验并 tech-debt.json resolved"
     },
     {
       "id": "TD-77",
@@ -1556,8 +1560,12 @@
       "detected_in_prd": "prd-18-step-4-4b-5-6-7-8",
       "detected_in_story": "US-012 (Opus audit)",
       "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
-      "status": "open",
-      "fix_hint": "step8.ts 新建 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · 同时 Step8OptimizeScript.tsx 改 `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard label={label} value={result[id]} />)`"
+      "status": "resolved",
+      "fix_hint": "step8.ts 新建 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · 同时 Step8OptimizeScript.tsx 改 `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard label={label} value={result[id]} />)`",
+      "resolved_in_prd": "prd-19-frontend-backend-bridge",
+      "resolved_at": "2026-05-18T08:40:00",
+      "resolved_in_story": "US-007 (commit 22d1d79)",
+      "resolved_notes": "US-007 ralph 主动 catch · step8.ts 新增 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{id:optimized_text,label:优化后文案},{id:optimization_notes,label:优化说明}] as const + export Step8OptimizeLabel type + step8.test.ts 9 行单测 · Step8OptimizeScript.tsx:148 改 .map(({id,label}) => <InfoCard label={label} value={result[id]} />) 模式 · commit message tag [TD-77 resolved] · grep 验证 hardcode 优化后文案/优化说明 0 hit in Step8OptimizeScript.tsx"
     },
     {
       "id": "TD-79",
@@ -1606,8 +1614,55 @@
       "fix_by": "US-009 verify-prd-19.sh fix 一并清(继承 TD-76/77 fix 模式)· 或 PRD-20 maintenance",
       "status": "open",
       "fix_hint": "industries.ts 新增 STEP1_RESULT_H2='行业洞察报告' + STEP1_RESULT_H3_3 array · step3.ts 新增 STEP3_RESULT_H2='账号包装方案' + STEP3_OPTIMIZE_CONFIRM_BUTTON='确认优化' · step3b.ts 新增 STEP3B_RESULT_H2='专属人设方案' · 3 page 各 import + 用常量"
+    },
+    {
+      "id": "TD-81",
+      "title": "PRD-19 US-005 · Step5TopicGrid.tsx LD-009 临时双写 backward compat(Step7 PRD-18 hardcode 兼容)",
+      "description": "ralph 在 US-005 commit 6a9a2a1 实施 Step5TopicGrid.tsx · handleTopicClick 双写 LS · (1) 新 namespaced key `aiip_memory_acc_${accountId}_selected_topic` 严守 LD-009(2) old `acc_step5_selected_topic` backward compat 给 Step7(PRD-18 实施 · 还在 hardcode 读老 key)· US-006(Step6+Step7 真接)必须 catch · 改 Step7 用 readOtherStep(accountId, 'selected_topic') + 删除 Step5TopicGrid:76 backward compat hardcode setItem · 跟 TD-78 partial 模式同类",
+      "scope": [
+        "apps/web/src/components/step5/Step5TopicGrid.tsx:69-77",
+        "apps/web/src/pages/step/Step7.tsx(US-006 时需改 selected_topic 读取路径)"
+      ],
+      "impact": "Low · dead code · Step7 已 migrate 不再需要 backward compat · 2 lines 浪费 < 1ms LS write · 不影响功能 · US-006 漏 catch · 留 US-009 fix",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "ld-009-partial",
+        "backward-compat-transient"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-005 (Opus audit · 边界 case 豁免 approve)",
+      "fix_by": "US-009(US-006 仅 partial fix · Step7 已 migrate readOtherStep selected_topic · 但 Step5TopicGrid backward compat 双写未删 · US-009 verify-prd-19.sh 一并清)",
+      "status": "open",
+      "fix_hint": "(1) Step5TopicGrid.tsx:73-76 删除 backward compat · 改 ternary 为 `namespacedKey === null ? return : setItem(namespacedKey, ...)` · 只保留 1 次 setItem · (2) 删 comment line 75 · (3) grep apps/web/src/ 'acc_step5_selected_topic' 0 hit 验证",
+      "partial_fix_note": "US-006 commit 2790c39 · Step7.tsx:52 已 readOtherStep(accountId, \"selected_topic\") migrate · 但 Step5TopicGrid.tsx 76 backward compat 双写未删(ralph 漏 catch · over-defensive)· 改 fix_by 至 US-009 verify-prd-19.sh 一并清"
+    },
+    {
+      "id": "TD-82",
+      "title": "PRD-18 US-013 · e2e/prd-18-step-4-5-6-7-8.spec.ts test3 Step5 SSE pre-existing fail(US-008 5 retry catch · 不是 US-008 引入)",
+      "description": "PRD-18 US-013 commit f521761 创建 e2e/prd-18-step-4-5-6-7-8.spec.ts 时 test3 'Step 5 → 5 tabs 100 选题' 已 FAIL · 期望 5 类 Tab(流量型/变现型/人设型/认知型/案例型)在 30s 内全部 visible · 实际 getByRole('tab', { name: '变现型' }) timeout 30s · 根因 · test3 假设真后端 SSE 完整跑 + 5 chunks · 但 dev 环境 fallback mock(TopicAgent fallback 返回静态 100 选题 · 不真触发 5 SSE 'done' chunks)· tab 元素被 ralph SSE subscription enabled 控制 · fallback path 一次性返回 5 类 100 选题但不模拟 5 chunks 逐 tab 出现。PRD-18 我审 US-013 时 zero-regression 没 catch(可能 e2e 跑过但 result 部分 fail · 没明示)· US-008 5 retry 全同模式 FAIL · 排除 US-008 引入 · pre-existing TD 豁免 approve",
+      "scope": [
+        "apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:120-175 (test3 entire)",
+        "apps/web/src/pages/step/Step5.tsx (SSE fallback path 不 fire 5 chunks issue)",
+        "apps/api/src/specialists/TopicAgent.ts (fallback 返回静态 100 选题 vs 真 5 chunks)"
+      ],
+      "impact": "Medium · zero-regression e2e 测试假绿灯(PRD-18 收尾时 + PRD-19 US-008 5 retry 验证均 fail · 不破坏主功能 · 但暴露 fallback mode SSE 测试覆盖不全)· 5 PRD 累计 fallback path 跟真 SSE path 测试不对称 · 长期 risk",
+      "severity": "Medium",
+      "categories": [
+        "pre-existing-test-debt",
+        "e2e-fallback-coverage",
+        "test-design-flaw"
+      ],
+      "created_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-008 (5 retry max + Opus audit · pre-existing TD 豁免 approve)",
+      "fix_by": "US-009 verify-prd-19.sh fix 或 PRD-20 maintenance",
+      "status": "open",
+      "fix_hint": "(A) 修 PRD-18 test3 · 加 `test.skip(!process.env.OPENAI_API_KEY, 'SSE真后端测试 · fallback mode 不模拟 5 chunks 不可测')` 或减阈值 5s; (B) 修 Step5 fallback path · 模拟 5 SSE 'done' chunks 每 1-2s · 让 5 tab 渐进 visible; (C) 修 TopicAgent fallback · 5 chunks 而非 1 次性返回 100 选题; 推荐 (A) test.skip 最快 + 留 PRD-20 真后端集成测时再 (B/C) 完整 fix",
+      "pre_existing_confirm": "scripts/ralph/verify-artifacts/US-008/prd-17-18-e2e.stdout.txt line 4 显示 US-008 第一次验证前 test3 已 ✘ · ralph 5 retry 同模式 FAIL · git log commit f521761 (PRD-18 US-013) 创建 spec 时已含此 bug · 排除 US-008 引入"
     }
   ],
-  "last_updated": "2026-05-18T05:30:00",
-  "total": 79
+  "last_updated": "2026-05-18T11:30:00",
+  "total": 81
 }
