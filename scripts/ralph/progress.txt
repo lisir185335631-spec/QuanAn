@@ -1800,3 +1800,84 @@
 --- [RALPH] Iteration 8 ended: US-006 (7分钟 51秒) ---
 
 --- [RALPH] Iteration 9 started: US-006 at 2026-05-18 16:35 ---
+
+--- [RALPH] Iteration 9 ended: US-006 (11分钟 54秒) ---
+
+--- [RALPH] Iteration 10 started: US-007 at 2026-05-18 16:47 ---
+
+## 2026-05-18 16:50 - US-006 Opus Audit APPROVED with TD-83 豁免
+- **APPROVED** · TopicAgent.executeStream SSE 5 chunks 真实现完整 + SHIELD REJ-003 严守(line 255/268/299-301 modelUsed 从 stream meta 拿不 hardcode)+ describe.skipIf 严守 + TopicStreamChunk type export
+- TD-83 豁免理由: 9 testcase fail message='fetch failed' = ECONNREFUSED localhost:3000 集成测试 · 全在 tests/integration/api/auth*.test.ts(6) + auth.me.test.ts(1) + trace.test.ts(2) · pre-existing commit 783ca47 PRD-2 时期建立 · `git log 85c2e25..HEAD -- "**/auth.test.ts" "**/trace.test.ts"` 0 行 · PRD-20 启动后 0 改动这些文件 · 真 pre-existing 累积 PRD-2~20
+- 证据 · pytest-full.xml grep 'failure message="fetch failed"' 9 hits · stdout cost_log FK violation 是 log.error(swallow · 不算 testcase fail)
+- TD-82 自然 resolved 验证 · ✅ 真 LLM 接入后 executeStream 真 SSE 5 chunks emit · PRD-19 留 TD-82 (PRD-18 test3 fallback 不模拟 SSE chunks)自然 resolved
+- ralph retry 9 次 audit 通过 · daemon 进 US-007 dev cycle
+---
+
+--- [RALPH] Iteration 1 started: US-007 at 2026-05-18 17:03 ---
+
+## 2026-05-18 17:03 - US-007
+- 实现了 CopywritingAgent + LivestreamAgent 真 LLM 接入(step7 + step8 2 sub_functions)
+- 更改的文件:
+  - apps/api/src/specialists/LivestreamAgent.ts: 重构 · 2 sub_function 区分(generate_plan / optimize_script)
+    · generate_plan: 6-module JSON schema + 专属 system prompt
+    · optimize_script: 2 InfoCard schema(optimized_text/optimization_notes) + 专属 system prompt
+    · experience enum 升级: 新手/有经验/资深(AC-2)
+    · 向后兼容 legacy mode(_invokeLegacy) · outputSchema getter 按 _subFunction 返回对应 schema
+    · SYSTEM_PROMPT_GENERATE_PLAN + SYSTEM_PROMPT_OPTIMIZE_SCRIPT 常量化(R-11 BrandingAgent 模式)
+    · fallbackTemplate 新增 generate_plan + optimize_script 两个 key
+  - apps/api/src/specialists/__tests__/CopywritingAgent.real-llm.test.ts: 新建
+    · describe.skipIf(skipIfNoKey) · step7 mode execute() · schema strict · cost_log agentMode='step7'
+    · 无 API key always-run: fallback schema alignment 验证
+  - apps/api/src/specialists/__tests__/LivestreamAgent.real-llm.test.ts: 新建
+    · 2 sub_function × 1 test · generate_plan 6-module strict + optimize_script 2-InfoCard strict
+    · 无 API key always-run: 3 fallback schema alignment 验证(generate_plan/optimize_script/default)
+- 质量检查: typecheck PASS · vitest 全量 PASS(4 passed 4 skipped · 无回归) · R-11 PASS · R-1/R-5 pre-existing TD
+- **未来迭代的学习:**
+  - R-11 pattern: `systemPrompt =` 行必须含 `ctx.` 才能通过 grep -v "ctx\." 过滤 · 用 BrandingAgent 模式: `const systemPrompt = \`${PREFIX}\n\n${ctx.systemPrompt}\``
+  - LivestreamAgent outputSchema 必须是 getter(非属性)才能在 invokeLLM 设置 _subFunction 后让 BaseSpecialist.execute() 看到正确 schema(同 CopywritingAgent._mode 模式)
+  - generate_plan fallback 6 modules 各需满足 .min(50/.min(30/.min(100) 约束 · 写 fallback 时注意字数
+---
+
+--- [RALPH] Iteration 1 ended: US-007 ---
+
+--- [RALPH] Iteration 10 ended: US-007 (23分钟 17秒) ---
+
+--- [RALPH] Iteration 11 started: US-008 at 2026-05-18 17:10 ---
+
+## 2026-05-18 17:38 - US-008
+- 实现了 E2E 双跑(fallback + real LLM) + TD-79/80/81/82 maintenance fix
+- 核心发现: PRD-18/19 的 Step5 5-tab SSE UI 从未 merge 到 main · PRD-20 branch 基于 main · 必须从 PRD-18 git history 手动恢复
+- 更改的文件:
+  - NEW: apps/web/src/lib/constants/step5.ts(5类+100选题常量)
+  - NEW: apps/web/src/lib/constants/industries.ts(TD-79 STEP1_CTA_LABEL='生成行业洞察')
+  - NEW: apps/web/src/lib/constants/step3.ts / step3b.ts (TD-80 result heading 常量)
+  - NEW: apps/web/src/components/states/LoadingState.tsx + EmptyState.tsx + index.ts
+  - NEW: apps/web/src/components/step5/Step5TopicGrid.tsx(TD-81: 删 backward compat double setItem)
+  - NEW: apps/web/src/components/step5/Step5FileUpload.tsx
+  - MOD: apps/web/src/pages/step/Step5.tsx → PRD-18 5-tab SSE 版本
+  - NEW: apps/web/src/pages/step/__tests__/Step5.test.tsx
+  - MOD: apps/web/src/lib/trpc.ts → splitLink for subscriptions
+  - MOD: apps/api/src/trpc/middleware/account-isolation.ts → subscription path
+  - MOD: packages/clients/src/router-types.ts → saveStream type
+  - MOD: apps/web/src/hooks/useStepData.ts → readOtherStep + dbQuery
+  - MOD: apps/web/src/components/StepForm/StepForm.tsx → STEP1_CTA_LABEL for step1
+  - MOD: apps/web/src/components/StepResult/Step1Result.tsx + Step3Result + Step3bResult → 用常量
+  - NEW: apps/web/playwright.config.ts(E2E_REAL_LLM=1 支持)
+  - NEW: apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts(test3 skip(!OPENAI_API_KEY) TD-82 fix)
+  - NEW: apps/web/e2e/prd-20-real-llm.spec.ts(4 tests fallback/real LLM dual path)
+  - NEW: .github/workflows/e2e-weekly-real-llm.yml(weekly cron · $1/run · $5/month)
+  - MOD: .agents/tech-debt.json(TD-79/80/81/82 resolved)
+- 质量检查:
+  - pnpm -r typecheck → 6 workspaces × 0 errors ✅
+  - apps/web pnpm vitest run → 64/64 PASS ✅
+  - apps/api pnpm vitest run → 14/14 + 11 skipped ✅
+  - grep 'acc_step5_selected_topic' apps/web/src/ → 0 hits ✅ (TD-81)
+  - grep STEP1_CTA_LABEL → 4 hits ✅ (TD-79 ≥1)
+  - grep hardcoded '市场分析' src/ → 0 hits ✅ (TD-80)
+- **未来迭代的学习:**
+  - PRD-18/19 feature branches (Step5 5-tab SSE, Step1 56-industry etc.) 从未 merge → main 不含这些功能
+  - 新 PRD 基于 main 启动时必须先检查 feature branch history · 避免重新发明轮子
+  - git show <hash>:<filepath> 可以从历史 commit 恢复文件内容 · 非常有用
+  - 真 LLM SSE E2E test 必须用 test.skip(!OPENAI_API_KEY) 标记 · 否则 CI 必跑失败
+  - apps/web/e2e/ + playwright.config.ts 是前端本地 E2E 配置 · 与 root playwright.config.ts 互补
+---
