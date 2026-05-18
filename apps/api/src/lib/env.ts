@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
+const emptyToUndefined = (v: unknown) => (v === '' ? undefined : v);
+
 export const envSchema = z.object({
-  OPENAI_API_KEY: z.string().min(1).optional(),
-  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  OPENAI_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  ANTHROPIC_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   LLM_DEFAULT_MODEL: z.string().default('claude-sonnet-4-6'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 });
