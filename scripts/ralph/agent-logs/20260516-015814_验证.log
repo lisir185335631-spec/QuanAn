@@ -1,0 +1,35 @@
+prd.json 已正确更新。
+
+---
+
+## 验证结果: US-003 **FAIL**
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|:---:|---|
+| AC-1: DeepLearning.tsx 150+ 行 | ✓ | 180 行 |
+| AC-2: Tab 1 学习 + parse mutation + 5字段结构化结果 | ✓ | LearnTab 实现完整 |
+| AC-3: Tab 2 我的库 DenseTable + 80字截取 + 操作 | ✓ | LibraryTab 完整 |
+| AC-4: Tab 3 公式应用 + applyFormula mutation | ✓ | ApplyFormulaTab 完整 |
+| AC-5: URL state ?tab=learn\|library\|apply | ✓ | useSearchParams 实现 |
+| AC-6: 4 tRPC procedures | ✓ | parse/list/delete/applyFormula 全存在 |
+| AC-7: ≥6 it tests | ✓ | **18 tests 全 PASS** |
+| AC-8: vitest pass + typecheck PASS | ✗ | typecheck ✓，但零回归失败 |
+
+### X-6 零回归门禁失败
+
+```
+FAIL tests/unit/api/specialists-flow.test.ts (2 tests)
+  deepLearning.list > calls deepLearningArchive.findMany with isActive filter by default
+  deepLearning.delete > soft-deletes archive by setting isActive=false
+```
+
+**根因 (git diff 已证实)**: US-003 将 `deepLearning.ts` 的 `list` 和 `delete` 从 `deepLearningArchive` 改为 `deepLearnReviewQueue`，但 `tests/unit/api/specialists-flow.test.ts` 中对应的 mock 和 assertions 未更新。
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-003/`
+生成: `pytest.xml` (18 passed), `pytest-full.xml` (2 failed/2062 passed), `typecheck.stdout.txt` (0 errors), `manifest.json`
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1` · **修复方向已在 notes 中给出完整 CONFIRMED 指引**

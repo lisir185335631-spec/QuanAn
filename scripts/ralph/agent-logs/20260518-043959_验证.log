@@ -1,0 +1,32 @@
+---
+
+## 验证结果: US-003 **FAIL**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | Step1 删除 hardcode acc_step1 · useStepData('step1') + save() | ✅ PASS |
+| AC-2 | Step3/Step3b useStepData + readOtherStep 跨 step 预填 | ✅ PASS |
+| AC-3 | LoadingState/ErrorState/EmptyState template literal 规范 | ✅ PASS |
+| AC-4 | 浏览器 step/1 · 选行业 · 提交 · result 渲染 | ❌ **FAIL** |
+| AC-5 | DB row 存在 + status in ['completed','fallback'] | ⚠️ PARTIAL |
+| AC-6 | vitest 150 tests PASS + tsc 0 error | ✅ PASS |
+| AC-7 | typecheck passes | ✅ PASS |
+
+### 失败根因(CONFIRMED)
+
+**AC-4**: `apps/api/src/workers/llm-gateway/index.ts:122` 在 ANTHROPIC_API_KEY 缺失时抛出 `Error("ANTHROPIC_API_KEY missing for reasoning tier")`，此错误**不被** `BaseSpecialist.isFallbackable` 捕获（只捕捉 `SchemaValidationError`/`LLMTimeoutError`/`'5xx'`），导致整个 `stepData.save` mutation 返回 tRPC error → 前端 `[useStepData] DB write failed` toast → `dbQuery.refetch()` 返回 result=null → EmptyState 显示而非结果渲染。
+
+**修复方向**: `BaseSpecialist.ts:152-155` 在 `isFallbackable` 条件中加入 `|| (err instanceof Error && err.message?.includes('API_KEY missing'))` 使缺 key 触发 `fallbackTemplate`。
+
+**AC-5 警告**: DB row 存在 ✅，status='completed' ✅，但 `inputs.industryLabel='餐饮美食'`（AC 写 `=== '美食'` 为 spec 笔误，industries.ts 中该 industry label 为 '餐饮美食'）。
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+生成: vitest.stdout.txt (150 passed), typecheck.stdout.txt (exit 0), manifest.json (verdict=FAIL)
+```
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`

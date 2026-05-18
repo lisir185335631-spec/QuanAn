@@ -1,0 +1,34 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 依据 |
+|---|---|---|
+| AC-1: dailyTasks router 4 procedures · LD-009 双层防护 | ✓ PASS | `protectedProcedure` → FORBIDDEN on null activeAccountId + `set_config('app.current_account_id')` RLS + 每个 procedure 显式 `WHERE accountId=activeAccountId` |
+| AC-2: getToday/markCompleted/getHistory/regenerateToday | ✓ PASS | getToday findFirst 今日 row · markCompleted map+filter 重算 completedCount · getHistory limit 7/30 orderBy desc · regenerateToday enqueue priority=1 |
+| AC-3: 前端 today + history + CompletionBar(N/M) | ✓ PASS | DailyTasks.tsx TodaySection + HistorySection + CompletionBar 组件 · screenshots 确认渲染 |
+| AC-4: optimistic update · toast 失败回滚 | ✓ PASS | handleComplete() 先 `utils.setData` 乐观更新 → `await mutateAsync` → onError `setData(previousToday)` + `toast.error` |
+| AC-5: regenerateToday 30s polling | ✓ PASS | `refetchInterval: isRegenerating ? 3000 : false` · setTimeout(30s) · useEffect 任务到达即停 |
+| AC-6: 3 张截图 (N=0/3/5) | ✓ PASS | playwright daily-tasks.spec.ts 2/2 (chromium+mobile) · screenshot-n0-empty/n3-normal/n5-max.png 视觉确认正确 |
+| AC-7: 无控制台错误 · markCompleted immediate response | ✓ PASS | e2e 无 console.error · optimistic update 先于 mutation |
+| AC-8: typecheck 0 + lint 0 + test 全过 | ✓ PASS | `pnpm typecheck` 6 workspaces exit 0 · `pnpm lint --max-warnings=0` exit 0 · vitest 803 tests 0 failures |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+├── manifest.json          ← 已更新 (zero_regression=PASS, verdict=PASS)
+├── vitest.xml             ← 14 passed (AC 指定 unit tests)
+├── vitest.stdout.txt      ← 14 passed
+├── vitest-full.xml        ← 803 passed (零回归)
+├── vitest-full.stdout.txt ← 85 test files, 803 tests, 0 failures
+├── typecheck.stdout.txt   ← 0 errors
+├── e2e.stdout.txt         ← daily-tasks.spec.ts 2/2
+├── screenshot-n0-empty.png
+├── screenshot-n3-normal.png
+└── screenshot-n5-max.png
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount` 重置为 0，`notes` 已清空。US-001~US-008 全部通过，US-009~US-013 待执行。

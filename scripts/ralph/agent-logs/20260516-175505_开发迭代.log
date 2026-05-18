@@ -1,0 +1,8 @@
+US-011 is still PENDING (awaiting Validator verification). There is 1 story pending, so I don't output the COMPLETE marker. My implementation is done and committed. The Validator will now verify US-011.
+
+**Summary**: US-011 is implemented with:
+- `scripts/verify-prd-16.sh` — 9-section verification script, 33 passes, 0 failed, exits 0
+- 4 playwright e2e tests in `tests/e2e/prd16-*.test.ts` covering home, guide, ip-plan, and header dropdown flows
+- Visual diff logic via layout structural checks + screenshot file existence assertions
+- `apps/web/package.json` updated with `test:e2e` script pointing to root playwright config
+- All quality checks pass (typecheck, test, audit:redlines)

@@ -1,0 +1,38 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | worker.ts 实现上传校验→PII/banned扫描→autoVerdict→写 deepLearnReviewQueue | ✓ |
+| AC-2 ★ | `grep -r 'prisma.deepLearningArchive.create' apps/api/src/workers/file-parser/` → **0 命中** (LD-A-5) | ✓ |
+| AC-3 | deep-learn-auto-verdict.service.ts: 强PII→auto_rejected / banned→auto_rejected / 抽样10%→needs_review / 其他→auto_approved | ✓ |
+| AC-4 | fileSize > 20MB → return + logger.warn + 不入queue | ✓ |
+| AC-5 | fileMime 不在 ALLOWED_MIME_TYPES → return + logger.warn | ✓ |
+| AC-6 | autoScanResult 存 redactedTextPreview (≤200 chars)，bannedWordScan 在 redactedText 上执行 | ✓ |
+| AC-7 | fileUrl = `mock-s3://bucket/${fileName}` | ✓ |
+| AC-8 | adminAuditLog eventCategory='data_mutation' eventType='file_parser_enqueue', actorAdminId=0 actorRole=system | ✓ |
+| AC-9 | queue.ts defaultJobOptions.attempts=3; worker failed event写 system_alert/file_parser_failed | ✓ |
+| AC-10 | worker.test.ts: **16 tests** (≥12) 覆盖 5 file type / 4 autoVerdict分支 / size限制 / mime白名单 | ✓ |
+| AC-11 | deep-learn-auto-verdict.service.test.ts: **9 tests** (≥8) | ✓ |
+| AC-12 | pnpm test: US-008 26 tests 全绿; typecheck 0 error; audit-redlines 失败全为 pre-existing | ✓ |
+| AC-13 | typecheck 0 error (全量 pnpm -r typecheck) | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+├── manifest.json      (verdict=PASS, zero_regression=PASS)
+├── pytest-full.xml    (1491 tests, 9 pre-existing failures, exit_code=0 for US-008 scope)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt
+```
+
+### X-6 零回归
+
+- 全量: 1491 tests，9 failures — 与 US-005/006 相同的 pre-existing auth/trace 集成测试（需 dev server），US-008 **零新增失败**
+- US-008 专项: **26 passed (0 failed)**
+
+### 判决
+
+`prd.json.passes = true`

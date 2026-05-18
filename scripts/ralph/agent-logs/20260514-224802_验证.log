@@ -1,0 +1,33 @@
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| # | 验收标准 | 结果 |
+|---|---|:---:|
+| AC-1 | prisma/schema.prisma AbExperiment + AbAssignment 已写(line 1127/1146)· 字段完整 + index 已加 | ✓ |
+| AC-2 | migration `20260514143912_prd_14_ab_experiments` 成功 · ab_experiments + ab_assignments 表存在 · 0 row | ✓ |
+| AC-3 | ab-experiment.service.ts 导出 `_startAbExperimentInTx` + `_stopAbExperimentInTx` + `createAbExperiment` + `startAbExperiment` + `assignUserToVariant` | ✓ |
+| AC-4 | `_startAbExperimentInTx` 接 tx 参数 · status='running' + startedAt · eventType='ab_experiment_start' + eventCategory='high_risk_action' · 不自起 $transaction | ✓ |
+| AC-5 | `_stopAbExperimentInTx` status='stopped' + stoppedAt + resultSummary · audit eventType='ab_experiment_stop' · stopReason 在 payload | ✓ |
+| AC-6 | `assignUserToVariant` md5 deterministic hash · bucket % 100 → control/variant_a/variant_b · upsert(update:{}) | ✓ |
+| AC-7 | `startAbExperiment` 强制 `requestApproval({actionType:'start_ab_experiment', requireDualApproval:true})` · DUAL_APPROVAL_ACTION_TYPES set 已加 'start_ab_experiment' | ✓ |
+| AC-8 | AGENTS.md §10.1 LD-A9 节已写 · grep 实测 0 命中 | ✓ |
+| AC-9 | `scripts/audit-redlines-admin.sh` line 161+ 加 §LD-A9 段 · 9 LD-A 总检测 | ✓ |
+| AC-10 | PRD-13 approvalGateService.ts 8 个原有 dual actionType 完整保留 | ✓ |
+| AC-11 | `pnpm audit:redlines` ✅ · `pnpm audit:ld` ✅ · `pnpm audit:redlines-admin` ALL PASS 9 LD-A + 6 R-A | ✓ |
+| AC-12 | 全量 vitest: **1739 passed**, 4 skipped, **0 fail** (≥ 1730 ✓ · 本 US 新增 12 tests) | ✓ |
+| AC-13/14 | `pnpm typecheck` 6 workspace packages 全部 Done · 0 errors | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  manifest.json          (exit_code=0, zero_regression=PASS, verdict=PASS)
+  pytest-full.xml        (1739 passed, 0 failed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt   (0 errors)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,327 @@
+{
+  "config": {
+    "configFile": "/Users/return/Desktop/QuanQn/apps/web/playwright.config.ts",
+    "rootDir": "/Users/return/Desktop/QuanQn/apps/web/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/return/Desktop/QuanQn/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "prd-19-frontend-backend.spec.ts",
+      "file": "prd-19-frontend-backend.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "PRD-19 · frontend ↔ backend 真接入",
+          "file": "prd-19-frontend-backend.spec.ts",
+          "line": 111,
+          "column": 6,
+          "specs": [
+            {
+              "title": "test (a) · Step1 真接 PositioningAgent · LS↔DB 双写",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7391,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:46:27.993Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-8aec349d2a5e12af83fd",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "test (b) · acc 切换 · 数据隔离 · Step1 industry 不串",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8674,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"美食\"\u001b[39m\nReceived string:    \u001b[31m\"美妆护肤\"\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"美食\"\u001b[39m\nReceived string:    \u001b[31m\"美妆护肤\"\u001b[39m\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:251:77",
+                        "location": {
+                          "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                          "column": 77,
+                          "line": 251
+                        },
+                        "snippet": "  249 |     const dbA2 = await queryStepData(page, 'step1');\n  250 |     expect(dbA2).not.toBeNull();\n> 251 |     expect(String((dbA2!.inputs as Record<string, unknown>).industryLabel)).toContain('美食');\n      |                                                                             ^\n  252 |     expect(String((dbA2!.inputs as Record<string, unknown>).industryLabel)).not.toContain('美妆');\n  253 |   });\n  254 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                            "column": 77,
+                            "line": 251
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"美食\"\u001b[39m\nReceived string:    \u001b[31m\"美妆护肤\"\u001b[39m\n\n  249 |     const dbA2 = await queryStepData(page, 'step1');\n  250 |     expect(dbA2).not.toBeNull();\n> 251 |     expect(String((dbA2!.inputs as Record<string, unknown>).industryLabel)).toContain('美食');\n      |                                                                             ^\n  252 |     expect(String((dbA2!.inputs as Record<string, unknown>).industryLabel)).not.toContain('美妆');\n  253 |   });\n  254 |\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:251:77"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:46:35.461Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json/prd-19-frontend-backend-PR-b0dbc--·-数据隔离-·-Step1-industry-不串-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json/prd-19-frontend-backend-PR-b0dbc--·-数据隔离-·-Step1-industry-不串-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                        "column": 77,
+                        "line": 251
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-d16079461605bf058930",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 170,
+              "column": 3
+            },
+            {
+              "title": "test (c) · 9 step 完整流程 · DB 真存 · 0 hardcode acc_step{N}",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8752,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=流量型')\nExpected: visible\nError: strict mode violation: locator('text=流量型') resolved to 2 elements:\n    1) <p class=\"text-body-md text-muted-foreground mb-8\">输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI 将结合这些素材一次性生成 5 大类…</p> aka getByText('输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，')\n    2) <button role=\"tab\" type=\"button\" tabindex=\"-1\" data-state=\"active\" aria-selected=\"true\" data-orientation=\"horizontal\" data-radix-collection-item=\"\" id=\"radix-:rr:-trigger-traffic\" aria-controls=\"radix-:rr:-content-traffic\" class=\"inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-5…>流量型</button> aka getByRole('tab', { name: '流量型' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=流量型')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=流量型')\nExpected: visible\nError: strict mode violation: locator('text=流量型') resolved to 2 elements:\n    1) <p class=\"text-body-md text-muted-foreground mb-8\">输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI 将结合这些素材一次性生成 5 大类…</p> aka getByText('输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，')\n    2) <button role=\"tab\" type=\"button\" tabindex=\"-1\" data-state=\"active\" aria-selected=\"true\" data-orientation=\"horizontal\" data-radix-collection-item=\"\" id=\"radix-:rr:-trigger-traffic\" aria-controls=\"radix-:rr:-content-traffic\" class=\"inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-5…>流量型</button> aka getByRole('tab', { name: '流量型' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=流量型')\u001b[22m\n\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:327:44",
+                        "location": {
+                          "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                          "column": 44,
+                          "line": 327
+                        },
+                        "snippet": "  325 |     await page.locator('button', { hasText: '一键生成 5大类 爆款选题' }).click();\n  326 |     // Wait for any category tab to appear (streaming complete)\n> 327 |     await expect(page.locator('text=流量型')).toBeVisible({ timeout: 30_000 });\n      |                                            ^\n  328 |     expect(await getStepLs(page, accountId!, 'step5')).not.toBeNull();\n  329 |\n  330 |     // ── Step 6 ─────────────────────────────────────────────────────────────────"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                            "column": 44,
+                            "line": 327
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=流量型')\nExpected: visible\nError: strict mode violation: locator('text=流量型') resolved to 2 elements:\n    1) <p class=\"text-body-md text-muted-foreground mb-8\">输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI 将结合这些素材一次性生成 5 大类…</p> aka getByText('输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，')\n    2) <button role=\"tab\" type=\"button\" tabindex=\"-1\" data-state=\"active\" aria-selected=\"true\" data-orientation=\"horizontal\" data-radix-collection-item=\"\" id=\"radix-:rr:-trigger-traffic\" aria-controls=\"radix-:rr:-content-traffic\" class=\"inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-5…>流量型</button> aka getByRole('tab', { name: '流量型' })\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=流量型')\u001b[22m\n\n\n  325 |     await page.locator('button', { hasText: '一键生成 5大类 爆款选题' }).click();\n  326 |     // Wait for any category tab to appear (streaming complete)\n> 327 |     await expect(page.locator('text=流量型')).toBeVisible({ timeout: 30_000 });\n      |                                            ^\n  328 |     expect(await getStepLs(page, accountId!, 'step5')).not.toBeNull();\n  329 |\n  330 |     // ── Step 6 ─────────────────────────────────────────────────────────────────\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:327:44"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:46:44.358Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json/prd-19-frontend-backend-PR-7de8a-真存-·-0-hardcode-acc-step-N--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json/prd-19-frontend-backend-PR-7de8a-真存-·-0-hardcode-acc-step-N--chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                        "column": 44,
+                        "line": 327
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-b22653fbe84f4902cbbc",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "test (d) · zero-regression · typecheck + vitest + 旧 e2e prd-17/18",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 109909,
+                      "error": {
+                        "message": "Error: 旧 e2e specs failed:\nCommand failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts",
+                        "stack": "Error: 旧 e2e specs failed:\nCommand failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:414:13",
+                        "location": {
+                          "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                          "column": 13,
+                          "line": 414
+                        },
+                        "snippet": "  412 |       );\n  413 |     } catch (e) {\n> 414 |       throw new Error(`旧 e2e specs failed:\\n${(e as NodeJS.ErrnoException).message}`);\n      |             ^\n  415 |     }\n  416 |   });\n  417 | });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                            "column": 13,
+                            "line": 414
+                          },
+                          "message": "Error: 旧 e2e specs failed:\nCommand failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts\n\n  412 |       );\n  413 |     } catch (e) {\n> 414 |       throw new Error(`旧 e2e specs failed:\\n${(e as NodeJS.ErrnoException).message}`);\n      |             ^\n  415 |     }\n  416 |   });\n  417 | });\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:414:13"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:46:53.413Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json/prd-19-frontend-backend-PR-c4da2-heck-vitest-旧-e2e-prd-17-18-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e-retry4.json/prd-19-frontend-backend-PR-c4da2-heck-vitest-旧-e2e-prd-17-18-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                        "column": 13,
+                        "line": 414
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-d3c5f39932ea36bf7c61",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 377,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-18T02:46:27.705Z",
+    "duration": 135725.049,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,17 @@
+US-007 is complete. Here's a summary of what was implemented:
+
+**AC-1**: `prisma/seed.ts` — `seedConstantsToVersions()` reads 67 cases + 23 formulas + 23 elements from `lib/constants/` and INSERTs 113 rows into `constant_versions` (status='active', createdByAdminId=0) + 113 rows into `constant_canary_config` (canaryPct=0). Confirmed via psql.
+
+**AC-2**: `constant-embed.service.ts` — `rebuildConstantVectorIndex()` calls `llmGateway.embed()`, UPSERTs into `knowledge_chunk` by `(type=constantType, title=constantKey)`, writes `cost_log` with `eventType='constant_embed_rebuild'`. Failure before embed → no cost_log written (SHIELD).
+
+**AC-3**: `constant-embed-rebuild.job.ts` — BullMQ Queue + Worker with `jobId='constant-embed-'+versionId` dedup (SHIELD TD-058), attempts=3, +5s delay.
+
+**AC-4**: `_publishConstantVersionInTx` fires the delayed embed job fire-and-forget after successful publish.
+
+**AC-5**: `publishConstantVersion` auto-evaluates `judgeScore` via `evaluateConstantVersion(isMock=true)` when null, then proceeds with threshold check.
+
+**AC-6**: 8 tests — 3 constantType routing + fail-without-cost-log + 1536d mock embedding + evaluateConstantVersion mock/throw.
+
+**AC-7**: `index.ts` wires `constantEmbedWorker`.
+
+**AC-8/9/10**: lib/constants unchanged, 1821 tests pass (+8 new), typecheck 0 errors.

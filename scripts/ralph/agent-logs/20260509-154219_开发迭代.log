@@ -1,0 +1,11 @@
+US-008 is complete. Here's what was implemented:
+
+**Files changed:**
+- `apps/web/src/components/ui/progress.tsx` — new shadcn Progress component (installed `@radix-ui/react-progress`)
+- `apps/web/src/pages/tools/Analysis.tsx` — rewritten: real ToolForm + `trpc.analysis.analyze.useMutation` + `AnalysisResult` + `FeedbackButton`
+- `apps/web/src/components/ToolResult/AnalysisResult.tsx` — rewritten: `JSON.parse(data.content)` → 5 dimension Progress bars with color (≥80 green/≥60 yellow/<60 red), optimizations Cards, rewriteSnippet, error handling for parse fail → "解析失败·请重试" and `overall` missing → N/A
+- `apps/web/src/components/ToolForm/ToolForm.tsx` — analysis case: added character count via `watch('copy')`
+- `tests/unit/web/pages/Analysis.test.tsx` — 31 unit tests across 6 describe groups
+- `tests/e2e/tool-analysis.spec.ts` — 1 e2e test with CI mock
+
+**Quality:** `pnpm typecheck ✅` · `pnpm test 507/507 ✅`

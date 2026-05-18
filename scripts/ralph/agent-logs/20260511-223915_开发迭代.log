@@ -1,0 +1,1 @@
+Fix complete. The single-line change: `chunk.similarity !== null` → `chunk.similarity !== undefined` at `ContextAssembler.ts:207`. The schema's `similarity` type is `number|undefined` (zod `.optional()`), so `!== null` didn't narrow the undefined case — typecheck now passes with 0 errors, lint 0, and all 884 tests pass.

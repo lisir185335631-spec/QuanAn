@@ -1,0 +1,3 @@
+US-005 修复完成。
+
+**修复内容**：AC-4 要求全部 step 页面都有 FeedbackButton，上次只在 IpPlan.tsx 有。本次在全部 11 个 Step 页（Step1~Step9，含 Step3b/Step4b）加了 import 和 `<FeedbackButton stepKey="stepN" />`，同时补全了 vitest mock 中缺失的 `costLog.logFeedback.useMutation`。30 tests 全绿，typecheck 通过，已 commit。

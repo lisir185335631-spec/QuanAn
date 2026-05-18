@@ -1,0 +1,56 @@
+prd.json 已更新。验证完成。
+
+---
+
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 验证结果 | 说明 |
+|---|:-:|---|
+| AC-1 OAuthProvider 抽象 | ✓ | providers.ts: interface + MockProvider + GoogleProvider + getProvider() factory |
+| AC-2 mock session cookie | ✓ | 集成测试通过 — httpOnly+sameSite=lax+secure=false(dev) 代码确认 |
+| **AC-3 Header 显示 dev@local.test** | **✗ FAIL** | React 无法挂载 — 见下方根因 |
+| AC-4 auth.me 返回用户信息 | ✓ | 集成测试通过 |
+| AC-5 DB users 表新增行 | ✓ | DB 确认: open_id='mock-dev-001', email='dev@local.test', login_method='mock' |
+| AC-6 audit_log auth.login | ✓ | DB 确认: event_type='auth.login', payload={"provider":"mock"} |
+| AC-7 Google OAuth (阶段 B) | — | 无 Google 凭据，代码已实现但无法运行测试 |
+| AC-8 CSRF 防护 | ✓ | 单元测试 requiresCsrfCheck('google')=true；?mock=true 不再绕过 |
+| AC-9 frontend toast | — | 因 AC-3 app 崩溃无法在浏览器验证；代码路径正确 |
+| AC-10 非法 provider exit 1 | ✓ | 单元测试通过 |
+| AC-11 过期 session → unauthenticated | ✓ | 集成测试通过 |
+| AC-12 二次登录不重复创 user | ✓ | DB 确认：1 行用户，多次 upsert 正常 |
+| AC-13 性能 < 500ms | ✓ | 性能测试通过 |
+| AC-14 SESSION_SECRET ≥ 32 char | ✓ | 单元测试通过 |
+| AC-15 production 强制 secure=true | ✓ | 单元测试通过 + 代码确认 |
+| AC-16 Typecheck passes | ✓ | api: exit 0，web: exit 0 |
+| **AC-17 Tests pass (E2E 2)** | **✗ FAIL** | Playwright header.spec.ts 6/6 全超时 |
+
+### 根因
+
+`apps/web/src/lib/trpc.ts:8` 的 shadow router 模式 `import { initTRPC } from '@trpc/server'` 在浏览器端抛出：
+
+```
+Error: You're trying to use @trpc/server in a non-server environment.
+This is not supported by default.
+```
+
+React 无法挂载 → `#root` 为空 → Header 组件永远不渲染 → AC-3 失败。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+已生成: pytest-full.xml (26 passed), tsc.txt (exit 0), tsc-web.txt (exit 0),
+        playwright-e2e.stdout.txt (6 failed), manifest.json
+```
+
+### 判决
+
+```
+prd.json.passes = false
+prd.json.retryCount = 2 (从 1 增至 2)
+prd.json.blocked = false
+```
+
+**修复方向**：移除 `@trpc/server` 的浏览器端 import。将 `apps/web/src/lib/trpc.ts` 改为用手写 `interface AppRouter { auth: { me: ... } }` 替代 shadow router，或将 router 类型提取到 `packages/clients/src/router-types.ts`（纯 interface，无 server import）。

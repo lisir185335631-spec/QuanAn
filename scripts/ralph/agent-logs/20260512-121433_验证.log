@@ -1,0 +1,37 @@
+## 验证结果: US-002 **PASS**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| 1 | lucia-admin.ts · sessionCookie name='admin_session_id' · ttl 12h + idle 30min Redis | ✓ |
+| 2 | Redis namespace 'admin:session:*' · grep 'app:session:' = 0 | ✓ |
+| 3 | oauth-admin-mock.ts · isMock=true + isActive=true 校验 | ✓ |
+| 4 | oauth-admin-google.ts stub · throw PRR config required (5 env) | ✓ |
+| 5 | oauth-admin-factory.ts · getAdminOAuthProvider() + prod startup gate | ✓ |
+| 6 | admin/auth.ts · 3 procedure (login + logout + me) · adminRouter.auth | ✓ |
+| 7 | context-admin.ts · admin_session_id cookie → validateSession → ctx inject | ✓ |
+| 8 | admin-client.ts · createTRPCReact<AdminRouter>() · httpBatchLink /trpc/admin | ✓ |
+| 9 | Login.tsx · email input + mock OAuth 按钮(DEV) + Google stub disabled | ✓ |
+| 10 | auth-lucia.test.ts 17 tests pass (≥12) | ✓ |
+| 11 | auth-router.test.ts 8 tests pass | ✓ |
+| 12 | auth-flow.test.ts 1 integration test pass | ✓ |
+| 13 | POST login → 200 + sessionId + Set-Cookie admin_session_id; HttpOnly; SameSite=Lax | ✓ |
+| 14 | admin_audit_log: success=true (integration test) + failure paths (unit tests) | ✓ |
+| 15 | .env.production 不存在 (OK) + validateAdminStartupConfig prod guard | ✓ |
+| 16 | Typecheck passes (6 workspaces) | ✓ |
+| 17 | Browser: /login 打开 + super@quanqn.com 提交成功 | ✓ |
+| 18 | admin_session_id cookie 存在 (HttpOnly: true, SameSite: Lax) | ✓ |
+| 19 | Redirect → /admin · AdminLayout 可见 | ✓ |
+| 20 | Refresh /admin · session 恢复 · 不被 logout | ✓ |
+| 21 | Invalid email → toast [alert]: user_not_found · 页面不破 | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-002/`
+已更新: `pytest-full.xml` (961 passed, 0 failed), `typecheck.stdout.txt` (all clean), `manifest.json` (verdict=PASS), `unit-tests.stdout.txt` (26 passed)
+
+### 关键修复确认
+commit `4d236db` — CORS: `/trpc/admin/*` 移到 `/trpc/*` 之前，Hono preflight early-return 不再拦截 admin 请求。browser ACs 17-21 全部通过。
+
+### 判决
+`prd.json.passes = true`, `retryCount = 0`, `notes = ""`

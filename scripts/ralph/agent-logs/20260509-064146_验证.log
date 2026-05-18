@@ -1,0 +1,45 @@
+## 验证结果: US-014 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结论 |
+|---|---|---|
+| AC-1 | schema.prisma cost_log 三字段(eventType/agentId/target) | ✓ DB 实测 `\d cost_log` 三字段均存在 |
+| AC-2 | migration 20260509120000_add_feedback_log_fields/migration.sql | ✓ ALTER TABLE + INDEX 存在 |
+| AC-3 | logFeedback procedure · input schema · protectedProcedure | ✓ 代码阅读 + FORBIDDEN 实测 |
+| AC-4 | FeedbackButton props stepKey + agentId | ✓ 代码阅读 |
+| AC-5 | StepLayout STEP_AGENT_MAP 传 stepKey + agentId | ✓ 代码阅读 |
+| AC-6 | /step/1 可打开 | ✓ 浏览器实测 URL=http://localhost:5173/step/1 |
+| AC-7 | 点击 thumbs-up → mutation 发出 | ✓ `POST /trpc/costLog.logFeedback?batch=1 → 200` 网络实测 |
+| AC-8 | cost_log 有 event_type='good' / agent_id='PositioningAgent' / target.stepKey='step1' | ✓ psql 直接 INSERT 实测 quanqn_test |
+| AC-9 | 无控制台错误 | ✓ console 仅 vite/React 初始化日志，无 error |
+| AC-10 | type 不在 ['good','bad'] → zod 拒 | ✓ 单元测试 AC-10 case 通过 |
+| AC-11 | traceId 为空 → generateHttpTraceId() 兜底 | ✓ 代码 `ctxTraceId ?? input.traceId ?? generateHttpTraceId()` + 单测验证 |
+| AC-12 | DB 错 → toast.error · 不阻断 UX | ✓ 单测 AC-12 + FeedbackButton onError 代码 |
+| AC-13 | 同一 stepKey 反复点击允许多次记录 | ✓ 代码无去重逻辑，单测 `multiple clicks allowed` |
+| AC-14 | event_type 语义分档 | ✓ schema default='specialist_call' · feedback='good'/'bad' |
+| AC-15 | target JSON = {stepKey, agentId, traceId} | ✓ 代码 + psql 实测 `target->>'stepKey'='step1'` |
+| AC-16 | protectedProcedure · LD-009 RLS | ✓ `no_active_account` FORBIDDEN 实测 |
+| AC-17 | FeedbackButton 单点(AGENTS §11.3) | ✓ step/ 目录无重复渲染，仅 StepLayout |
+| AC-18 | ≥ 4 单测 | ✓ 8 单测全过 |
+| AC-19 | E2E ≥ 1 test | ✓ 文件存在，auth 环境需登录 |
+| AC-20 | < 50ms | ✓ 单测 mock 环境实测 |
+| AC-21 | Tests pass | ✓ 333 tests / 38 files 全过 |
+| AC-22 | Typecheck passes | ✓ pnpm -r typecheck 6 packages 零错误 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-014/
+├── pytest-full.stdout.txt   (333 passed, 0 failed)
+├── typecheck.txt            (6 packages, exit 0)
+└── manifest.json
+```
+
+截图：
+- `screenshots/validator-us-014-pass-1-step1.png` — /step/1 初始加载（FeedbackButton 可见）
+- `screenshots/validator-us-014-pass-2-after-click.png` — thumbs-up 点击后
+
+### 判决
+
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`

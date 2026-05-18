@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="7" failures="0" errors="0" time="0.107">
-    <testsuite name="tests/unit/api/seed.test.ts" timestamp="2026-05-15T16:21:41.147Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.003493417">
-        <testcase classname="tests/unit/api/seed.test.ts" name="seedIndustries &gt; creates 56 industries on first run" time="0.001088666">
+<testsuites name="vitest tests" tests="5" failures="0" errors="0" time="0.214">
+    <testsuite name="src/lib/env.test.ts" timestamp="2026-05-18T12:09:05.005Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.00249475">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (a) 全 key 存在 → mode=real" time="0.001224542">
         </testcase>
-        <testcase classname="tests/unit/api/seed.test.ts" name="seedIndustries &gt; is idempotent: re-seed creates 0 new records" time="0.000239708">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (b) key 缺 → mode=fallback + warning log" time="0.000186375">
         </testcase>
-        <testcase classname="tests/unit/api/seed.test.ts" name="seedMockIpAccounts &gt; creates 5 mock IP accounts on first run" time="0.00017375">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (c) LLM_DEFAULT_MODEL default claude-sonnet-4-6" time="0.000117083">
         </testcase>
-        <testcase classname="tests/unit/api/seed.test.ts" name="seedMockIpAccounts &gt; is idempotent: re-seed creates 0 new accounts" time="0.000125542">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (d) NODE_ENV default development" time="0.0000965">
         </testcase>
-        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; contains exactly 56 industries" time="0.000068792">
-        </testcase>
-        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; contains industries in all 5 categories with correct counts" time="0.000087125">
-        </testcase>
-        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; all industries have required key, label, emoji, and category fields" time="0.001324083">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (e) malformed env → throw" time="0.000519875">
         </testcase>
     </testsuite>
 </testsuites>

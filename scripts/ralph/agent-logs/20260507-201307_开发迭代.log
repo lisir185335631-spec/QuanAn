@@ -1,0 +1,11 @@
+US-001 验证完成。所有 7 条 AC 满足：
+
+- **pnpm typecheck** 全 workspace 退出码 0 (8.4s < 30s) ✓
+- **无残留错误 import**：`@/server/...` 已全部修正为正确路径 ✓
+- **`@quanqn/*` 路径解析**：tsconfig paths 双轨配置 + typecheck 通过 ✓
+- **`.gitkeep` 全部保留**：26 个占位文件完整 ✓
+- **pnpm install** 2.4s（< 60s）✓
+- **typecheck passes** ✓
+- **tests pass**（无测试文件，vitest 退出码 0）✓
+
+实施提交：`3c392dc feat: [US-001] - 修复 monorepo 代码迁移产物(import 路径 + typecheck 干净)`

@@ -1,0 +1,9 @@
+US-014 is complete. Here's what was implemented:
+
+**Schema**: Added `eventType String @default("specialist_call") @db.VarChar(32)` to `CostLog` in prisma/schema.prisma + new index, with matching migration SQL applied to both dev and test DBs.
+
+**Backend** (`costLog.ts`): `logFeedback` upgraded to write `cost_log` rows with `eventType='good'|'bad'`, `callType='feedback'`, `agentId`, `target={stepKey,agentId,traceId}`. DB errors return `{ok:false}` non-blocking. TraceId chains from ctx → input → `generateHttpTraceId()`.
+
+**Frontend**: `FeedbackButton` gains `agentId: string` prop with `onError→toast.error`. `StepLayout` adds `STEP_AGENT_MAP` constant (step1→PositioningAgent … step8→LivestreamAgent) and passes both props. `IpPlan.tsx` passes `agentId='web-client'`.
+
+**Tests**: 7 unit tests (`feedback-log.test.ts`) + 1 E2E test (`feedback-log.spec.ts`). All 333 tests pass, typecheck clean.

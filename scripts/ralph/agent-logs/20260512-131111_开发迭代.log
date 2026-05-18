@@ -1,0 +1,17 @@
+US-005 is complete. Here's a summary of what was built:
+
+**US-005 · admin Layout 骨架 — 全部完成**
+
+核心实现:
+- `AdminLayout.tsx` — CSS Grid: topbar(60px) + sidebar(240px) + main + statusbar(24px) + AuditDrawer(portal)
+- `Sidebar.tsx` — 16 域 NavLink, 4 组分组, isActive 高亮
+- `TopBar.tsx` — 品牌 + email/role badge + 🔔 drawer toggle + logout dropdown  
+- `AuditDrawer.tsx` — React Portal slide-from-right, audit.listMine 30s polling, ESC 关闭
+- `StatusBar.tsx` — ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin
+- 16 个 placeholder 页面 + React Router 完整路由
+- `packages/ui/admin` — tokens.ts + DenseTable stub
+- `apps/api/src/trpc/routers/admin/audit.ts` — listMine 真实 stub
+
+测试: 18 React 组件测试(jsdom) + 115 文件/1026 总测试全绿 · typecheck 0 errors
+
+浏览器验证截图已保存至 `screenshots/admin-*-us-005.png`，AuditDrawer 显示了 `admin_login` 审计行。

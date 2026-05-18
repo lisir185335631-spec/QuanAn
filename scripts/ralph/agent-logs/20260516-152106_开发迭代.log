@@ -1,0 +1,9 @@
+US-006 完成。实现摘要：
+
+**AC 验证结果：**
+- AC-1 ✅ — `ReadyToStartSection` 已加入 `Home.tsx`，`section/H2/p/Link+Button` className 严格按 AC 字面
+- AC-2 ✅ — 浏览器访问 `/`，滚到底，H2 + 鼓励语 + CTA 全部可见，点击 `立即启动 →` 跳转 `/step/1`
+- AC-3 ✅ — `screenshots/prd16-us006-home-cta.png`（底部 CTA 区）+ `screenshots/prd16-us006-home-fullpage.png`（5 区全页排列）均已截图确认
+- AC-4 ✅ — `pnpm typecheck` PASS · `pnpm test` 51/51 PASS
+
+commit: `b6a66b5 feat: [US-006] 首页 READY TO START? CTA 区`

@@ -1,0 +1,53 @@
+## 验证结果: US-012 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | `acquisitionGenerate` procedure · `protectedProcedure.input(...).mutation(...)` | ✓ |
+| AC-2 | history row · `agentId='CopywritingAgent'` · `agentMode='acquisition'` · `contentType='markdown'` | ✓ |
+| AC-3 | explicit `accountId` 双层防护 (LD-009) | ✓ |
+| AC-4 | markdown CTA post-validate · 缺失 retry 1 次 | ✓ |
+| AC-5 | `cost_log` 由 BaseSpecialist 自动写 | ✓ |
+| AC-6 | `Generate.tsx` mode select 加 `'acquisition'` option | ✓ |
+| AC-7 | acquisition 表单字段: scriptType + elements + conversionGoal(required) + topic | ✓ |
+| AC-8 | `router-types.ts` shadow router 加 `copywriting.acquisitionGenerate` (line 290) | ✓ |
+| AC-9 | 4 unit tests 全 PASS (4/4 · 0 failures) | ✓ |
+| AC-10 | boundary: `elements.min(1).max(8)` · `markdown.min(200).max(500)` | ✓ |
+| AC-11 | integration test < 5s | **✗ 缺失** |
+| AC-12 | browser e2e · acquisition mode 表单 · ToolResult 含 CTA | ✓ |
+| AC-13 | `pnpm typecheck` 6 ws 0 error | ✓ |
+| AC-14 | unit test exit code 0 | ✓ |
+
+### X-6 零回归门禁
+
+全量 vitest: **716 tests · 1 failure**
+
+```
+FAIL tests/unit/web/pages/Generate.test.tsx
+  "LS-first dual-write: localStorage.setItem in Generate.tsx handleSubmit"
+  expected '/**\n * Generate.tsx...' to contain 'handleSubmit'
+```
+
+根因: US-012 重命名 `handleSubmit` → `handleFreeSubmit` 但未更新该测试断言 (`Generate.test.tsx:169`)
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+├── vitest.xml              (4 passed · US-012 unit tests)
+├── vitest.stdout.txt
+├── pytest-full.xml         (716 tests · 1 failure · X-6 失败)
+├── pytest-full.stdout.txt
+├── typecheck.txt           (0 errors · 6 workspaces)
+├── manifest.json
+└── validator-us-012-pass-1-acquisition.png  (AC-12 browser screenshot)
+```
+
+### 判决
+
+`prd.json.passes = false · retryCount = 1`
+
+**两项 CONFIRMED 失败:**
+1. **X-6 回归**: `tests/unit/web/pages/Generate.test.tsx:169` — 测试期望 `handleSubmit` 但实现改为 `handleFreeSubmit`，需同步更新测试断言
+2. **AC-11 缺失**: `tests/integration/api/copywriting-acquisition-llm.test.ts` 不存在，需参考 `copywriting-free-llm.test.ts` 创建

@@ -1,0 +1,13 @@
+US-006 完成。所有 AC 通过：
+
+| AC | 状态 |
+|---|---|
+| AC-1: routes-34.spec.ts 全部路由可达 | ✅ |
+| AC-2: ip-plan.spec.ts 0/9 + 切账号 | ✅ |
+| AC-3: feedback-button.spec.ts · strict mode 修复 | ✅ 修复 |
+| AC-4: vitest ≥200 tests | ✅ 201 |
+| AC-5: playwright 全过 (含 PRD-2 4 e2e) | ✅ 100/100 |
+| AC-6: pnpm typecheck 0 error | ✅ |
+| AC-7: pnpm lint 0 warning | ✅ |
+
+**两个根因**：① StepLayout + 各 Step 页面双重渲染 FeedbackButton → 移除页面内的副本；② `account-isolation`/`ls-db-sync` 测试用了已删除的 alias router 名称（`step.saveStepData`/`account.switchActive`）→ 修正为 `stepData.save`/`ipAccounts.switchActive`。

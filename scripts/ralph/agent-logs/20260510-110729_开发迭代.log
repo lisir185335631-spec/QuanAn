@@ -1,0 +1,19 @@
+US-004 is complete. Here's what was implemented:
+
+**7 files changed, committed as `feat: [US-004]`:**
+
+1. **`packages/schemas/…/videoProduction.schema.ts`** — Added Chinese error message `'原始文案至少 10 字符'` for `sourceCopy.min(10)` (AC-10)
+
+2. **`ToolForm.tsx`** — Added `'video-production'` to `ToolKey` union, `renderToolFields` case with 4 fields (sourceCopy textarea, videoType select with short_form/long_form, duration select with 15s/30s/60s/180s, additionalContext textarea), and `getDefaultValues` entry
+
+3. **`VideoProductionResult.tsx`** (new) — Renders JSON-parsed `ProductionOutput` as a scrollable 13-column storyboard table (固定列名: 镜头号/景别/角度/运镜/时长/画面描述/台词/字幕/音效/BGM/道具/参考/备注 → mapped to the 13 ShotItem fields), plus equipment card and schedule card, with JSON parse error fallback
+
+4. **`ToolResult.tsx`** — Added `'video-production'` to `ToolResultKey` and switch case
+
+5. **`VideoProduction.tsx`** (rewritten) — Real form using `ToolForm(toolKey="video-production")`, `trpc.videoProduction.generate.useMutation`, `?historyId` pre-fill via `trpc.history.detail.useQuery`, `FeedbackButton(agentId="VideoAgent")`
+
+6. **`VideoProduction.test.tsx`** (new) — 21 unit tests across 5 describes (all passing)
+
+7. **`tool-video-production.spec.ts`** (new) — 1 e2e test with JSONL mock pattern (same as PRD-5)
+
+**Verification:** `pnpm typecheck` 6 ws 0 errors · `pnpm test` 62 files 622 tests exit 0.

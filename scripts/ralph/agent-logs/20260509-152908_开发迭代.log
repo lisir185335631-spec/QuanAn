@@ -1,0 +1,9 @@
+US-007 is complete. All 481 tests pass and typecheck is clean.
+
+**What was implemented:**
+- `apps/api/src/trpc/routers/analysis.ts` — `analysisRouter` with `analyze` protectedProcedure that calls `analysisAgent.execute({ mode: 'structural' })` and writes history with `contentType='json'`, `content=JSON.stringify(result)`
+- `_app.ts` — registered `analysis: analysisRouter`
+- `packages/clients/src/router-types.ts` — added `AnalysisHistoryRow` type and shadow `analysis.analyze` route
+- 4 unit tests (happy, zod fail, fallback, agentMode) and 1 integration test (mock LLM complete + real DB)
+
+**Key learning:** `AnalysisAgent.invokeLLM` calls `llmGateway.complete()` (not stream), so integration test mocks must return `content` as a **parsed object**, not a JSON string — otherwise `outputSchema.safeParse(string)` fails and triggers the fallback path.

@@ -1,0 +1,30 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > email 脱敏 → <EMAIL>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > CN phone 11 位 → <PHONE>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > id_card 18 位 → <ID_CARD>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > bank card 16-19 位 → <BANK_CARD>
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · string masking > 无 PII → 原样
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > 递归脱敏 nested object string
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > Date / Map / Set / Buffer 不破坏
+ ✓ tests/unit/lib/compliance.test.ts > piiMask · recursive object masking > null / undefined / number / boolean 原样
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 医疗 industry → markdown 末尾加医疗免责
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 金融 industry → 投资风险免责
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 法律 industry → 法律意见免责
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 非敏感 industry (健身) → 原样不加
+ ✓ tests/unit/lib/compliance.test.ts > appendDisclaimerIfSensitive > 空 industry → 原样
+ ✓ tests/unit/lib/compliance.test.ts > attachDisclaimerMeta > 医疗 → 加 _disclaimer 字段
+ ✓ tests/unit/lib/compliance.test.ts > attachDisclaimerMeta > 非敏感 → 不加 _disclaimer
+ ✓ tests/unit/lib/compliance.test.ts > ContextAssembler._formatUserPrompt 接 piiMask (TD-016) > input string 含 PII → userPrompt 含 <EMAIL>/<PHONE> 而非原文
+ ✓ tests/unit/lib/compliance.test.ts > ContextAssembler._formatUserPrompt 接 piiMask (TD-016) > input object 嵌套 PII → 递归脱敏
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 医疗 industry + markdown output → 末尾追加医疗免责
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 医疗 industry + JSON output → 加 _disclaimer 元数据
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > 非敏感 industry (健身) → markdown 不加 disclaimer
+ ✓ tests/unit/lib/compliance.test.ts > BaseSpecialist.execute 接 disclaimer (TD-016) > input 没 industry → 原样无 disclaimer
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  18:16:15
+   Duration  279ms (transform 104ms, setup 5ms, collect 185ms, tests 4ms, environment 0ms, prepare 21ms)
+

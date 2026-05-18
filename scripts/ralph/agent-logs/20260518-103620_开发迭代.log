@@ -1,0 +1,6 @@
+US-008 修复完成。4 处精确修复均已提交（typecheck + 2282 vitest tests 全绿）：
+
+1. **test(b) accAId bug** — 用 `getActiveAccountId()` 直接取活跃账号 ID，不再靠 `items.nth(0)` 位置推断（line 193 null 根因已消除）
+2. **PositioningAgent execution fallback** — 加入 `### 1. 每日任务表` / `### 2. 每周里程碑` / `### 3. 阶段 KPI` 三个 h3，对齐 spec §7.4
+3. **CopywritingAgent step7 fallback** — 替换为 debate 结构，含 `#### 话题抛出` / `#### 正方` / `#### 反方` / `#### 我的立场`
+4. **prd-18 test3 tab timeout** — 变现型/人设型/认知型/案例型 从 15s 增至 30s，覆盖 SSE 流速差

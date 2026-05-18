@@ -1,0 +1,13 @@
+US-001 fix is complete. Here's the summary:
+
+**Root cause confirmed:** `.env` was missing `DEV_OAUTH_MOCK=true`, causing `isDevOAuthMock()` to return `false`, making `auth.me` return "unauthenticated" instead of the mock user. This prevented the 5 mock IP accounts from loading in AccountSwitcher.
+
+**Fix applied:**
+- Added `DEV_OAUTH_MOCK=true` to local `.env` (gitignored, not committed)
+- Added `DEV_OAUTH_MOCK=true` with documentation to `.env.example` (committed as `fix: [US-001]`)
+
+**Verification:**
+- `curl auth.me` → `{"ok":true,"user":{"id":20007,"email":"dev@quanqn.local"}}` ✓
+- `curl ipAccounts.list` → 5 mock accounts returned ✓
+- `seed.test.ts` → 7/7 pass ✓
+- `pnpm typecheck` → 6 workspaces PASS ✓

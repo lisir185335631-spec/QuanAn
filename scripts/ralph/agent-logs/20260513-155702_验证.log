@@ -1,0 +1,33 @@
+---
+
+## 验证结果: US-013 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|---|---|---|---|
+| AC-1 | adminRouter index.ts 挂载 reviewTrendingRouter + reviewDeepLearnRouter | ✅ PASS | grep 命中 2 行 + verify-prd-12.sh §5 PASS |
+| AC-2 | admin-routes.ts 2 路由 prd: 12 | ✅ PASS | grep prd: 12 count=2 + verify-prd-12.sh §6 PASS |
+| AC-3 | 2 placeholder.tsx 已删 | ✅ PASS | ls 确认不存在 + verify-prd-12.sh §6 PASS |
+| AC-4 | verify-prd-12.sh 9 段 self-test | ✅ PASS | 脚本读取确认 §1~§9 完整 9 段 |
+| AC-5 | chmod +x · ≥30 PASS / 0 FAIL | ✅ PASS | **32 PASS / 0 FAIL / 1 WARN(pre-existing lint)** · exit 0 |
+| AC-6 | fast mode 仅 skip §8 · keep 静态 audit | ✅ PASS | SKIP_INTEGRATION=1 → §8 SKIP · §1-7+§9 全 PASS |
+| AC-7 | /admin/reviewTrending + /admin/reviewDeepLearn 全 200 · DenseTable 流畅 | ✅ PASS | 截图 pass-1/2 确认两页面正确渲染 |
+| AC-8 | 8 业务页全 visible 在 sidebar · 切换无 console error | ✅ PASS | 8 页切换 non-401 error=0 · sidebar 截图确认 |
+| AC-9 | Typecheck passes | ✅ PASS | pnpm typecheck exit 0 · typecheck.stdout.txt 落盘 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-013/
+  manifest.json         (verdict: PASS)
+  pytest-full.xml       (SKIPPED — frontend-only story)
+  pytest-full.stdout.txt (verify-prd-12.sh 32 PASS 0 FAIL 验证)
+  typecheck.stdout.txt  (exit 0)
+  validator-us-013-pass-1.png  (/admin/reviewTrending 页面截图)
+  validator-us-013-pass-2.png  (/admin/reviewDeepLearn 页面截图)
+```
+
+### 判决
+
+`prd.json.passes = true` · PRD-12 全 13/13 PASSED · [DONE] All stories resolved!

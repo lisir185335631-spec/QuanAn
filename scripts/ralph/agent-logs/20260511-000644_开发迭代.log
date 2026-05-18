@@ -1,0 +1,10 @@
+US-001 is `passes: false` (PENDING/WAIT - Validator hasn't run yet). All 8 stories are pending. US-001 is implemented and committed. The Validator will set `passes: true` after verifying. I'll stop here since my implementation task is complete.
+
+US-001 implementation done: **727 tests ✓ · typecheck 0 errors ✓ · lint 0 warnings ✓**. Commit `aa6273a`.
+
+Key changes:
+- `packages/schemas`: 4 schema files aligned to canonical SoT (VideoAgent.ts/CopywritingAgent.ts inline schemas), plus 3 import/order lint fixes
+- `apps/api specialists`: VideoAgent.ts regex `[ -~\t\n\r]` → `[\x00-\x7F]`
+- `apps/api routers`: 4 router files delete inline schemas, import canonical from `@quanqn/schemas/specialist-io`
+- `apps/api tsconfig.json`: removed `rootDir` to allow cross-package imports
+- `tests`: updated `video-schemas.test.ts` to match new field tables (727 tests, +5 vs PRD-6)

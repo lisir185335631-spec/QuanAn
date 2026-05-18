@@ -1,0 +1,15 @@
+US-008 完成。实现摘要：
+
+**后端** (`history.ts`):
+- 新增 `stats` procedure，聚合 `cost_log` 表，返回 totalCalls/failureRate/avgDurationMs/topTools/dailyTrend/durationHistogram/modelDistribution
+- `list` 新增 `tools[]` 参数，通过 `TOOL_AGENT_MAP` 映射 14 个工具 slug → agentId 过滤
+
+**前端** (`History.tsx`，494 行完全重写):
+- **View 1 timeline**: 按天分组，每条显示工具 icon+名+输入输出摘要 60 字+时间 HH:MM，三个操作按钮（查看/恢复重跑/删除）
+- **View 2 dashboard**: 4 KPI 卡 + 4 recharts 图表（折线图/饼图/柱状图×2）
+- URL state `?view`, `?tools`, `?dateRange` 三维联动
+- 14 工具 multi-select chips 面板
+- Sheet Drawer 查看完整输出
+- 恢复并重跑覆盖 8 种 agentMode + 6 种 agentId fallback
+
+**测试**: 41 tests（27 前端源码检查 + 14 API 单元），全套 2250 tests 零回归，typecheck 0 errors。

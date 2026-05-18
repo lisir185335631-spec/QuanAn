@@ -1,0 +1,6 @@
+US-006 完成。两处修复均已验证：
+
+1. **AC-2 fix** (`evolution.ts:336`): `db.$transaction([...])` → 两个顺序 `await`，修复了 `accountIsolationMiddleware` 将 `ctx.prisma` 替换为 transaction client 导致无法嵌套 batch 事务的问题
+2. **AC-4 fix** (`feedback-evolution-loop.spec.ts:11`): `__dirname` → `fileURLToPath(new URL('.', import.meta.url))`，修复了 Playwright ESM context 不提供 `__dirname` 的问题
+
+4 e2e 测试全过(2.3s)，774 vitest 测试全过，typecheck 0 error。

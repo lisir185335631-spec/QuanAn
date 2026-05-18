@@ -1,0 +1,1 @@
+US-006 complete. `_check_exit_code()` added as the first gate after manifest load — missing key, non-int type, and non-zero value all hard-reject with `sys.exit(1)` and the exact AC-specified `[FAIL]` messages. Both project and global copies updated. All 4 AC-7 mock scenarios verified, AC-8 (US-001 still ARTIFACTS VALID), and AC-9 (syntax clean).

@@ -1,0 +1,16 @@
+US-005 implementation is complete. Here's a summary of what was built:
+
+**US-005: PrivateDomain 完整化** — all 11 ACs implemented:
+
+- **`PrivateDomain.tsx`**: 18-line stub → 403-line full implementation with 4 view modes
+- **URL state** (`?view=flow|config|result|history`) and **localStorage draft** with 1s debounce
+- **5 new components**:
+  - `PhaseCard.tsx` — 6-phase card with expand/collapse, 已生成/未生成 status
+  - `PrivateDomainFlowView.tsx` — ui/_1 flow diagram with 6 phase cards + connectors
+  - `PrivateDomainConfigView.tsx` — ui/_5 config form (6 fields: productDescription/productPrice/targetAudience/ipPositioning/currentChannel/monthlyTraffic)
+  - `PrivateDomainResultView.tsx` — ui/_7 SOP result with animated phase connectors
+  - `PrivateDomainHistoryView.tsx` — ui/_14 dense table + restore to View 1-3
+- **Schema + Router updated**: new 6-field input, `buildMockSop()` generates structured 6-phase SOP JSON
+- **`router-types.ts`** shadow router updated with `privateDomain.generate`
+- **34 tests** in `PrivateDomain.test.tsx` — all pass
+- **2129/2129 tests** pass, **0 typecheck errors**

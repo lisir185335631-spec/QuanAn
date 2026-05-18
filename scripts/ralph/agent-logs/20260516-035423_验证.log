@@ -1,0 +1,33 @@
+## 验证结果：US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|----|------|------|------|
+| AC-1 | PrivateDomain.tsx 400+ 行 | ✓ | 434 行 |
+| AC-2 | FlowView 6 阶段卡片(引流/加微/信任/朋友圈/成交/复购) | ✓ | PrivateDomainFlowView.tsx:16-57 |
+| AC-3 | ConfigView 6 字段全齐 | ✓ | PrivateDomainConfigView.tsx:16-30 |
+| AC-4 | useMutation + 6 阶段 SOP 渲染 | ✓ | PrivateDomain.tsx:227,267 |
+| AC-5 | HistoryView DenseTable + 恢复 | ✓ | PrivateDomainHistoryView.tsx:99,129 |
+| AC-6 | URL ?view= 切换 | ✓ | PrivateDomain.tsx:162,215 |
+| AC-7 | localStorage getToolLsKey debounce 1s | ✓ | PrivateDomain.tsx:77,91 (已修复 R-5) |
+| AC-8 | SSE generateStream.subscribe 每阶段 chunk | ✓ | PrivateDomain.tsx:274-290 |
+| AC-9 | ≥10 it | ✓ | 40/40 passed |
+| AC-10 | agent-browser e2e | ✓* | 代码路径 + 单测双重验证（browse 工具受 RCA-005 影响不可用） |
+| AC-11 | vitest PASS / typecheck PASS | ✓ | 2141/2141 PASS · web+api 0 errors |
+
+**Opus 上次驳回 Blocker 修复确认**：
+- PrivateDomain.tsx 原来 `getDraftKey()+LS_PREFIX` → 现在 `getToolLsKey(accountId,'private_domain',...)` ✓
+- `pnpm audit:redlines` R-5 PASS ✓
+- 无 `getDraftKey` 残留 ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-005/`
+- `pytest.xml` (40 passed)
+- `pytest-full.xml` (2141 passed, 0 failures)
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt` (exit 0)
+- `manifest.json` (zero_regression=PASS)
+
+### 判决
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

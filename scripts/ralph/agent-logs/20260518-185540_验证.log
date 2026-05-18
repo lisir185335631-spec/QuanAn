@@ -1,0 +1,33 @@
+验证完成。以下是 US-008 验证结果摘要：
+
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|----|------|------|
+| AC-1 prd-20 spec 4 tests | ✓ | 3 PASS + 1 correctly skipped(无 OPENAI_API_KEY) |
+| AC-2 GitHub CI weekly workflow | ✓ | .github/workflows/e2e-weekly-real-llm.yml 存在，含 cron + secret |
+| AC-3 playwright.config.ts timeout/retries | ✓ | E2E_REAL_LLM=1 → timeout=90s, retries=2 |
+| AC-4 TD-79 fix | ✓ | STEP1_CTA_LABEL/STEP1_NEXT_LABEL 定义 + StepForm 使用 |
+| AC-5 TD-80 fix | ✓ | 所有常量定义并在 Step1/3/3b.tsx 引用，hardcode 0 hit |
+| AC-6 TD-81 fix | ✓ | acc_step5_selected_topic 0 hit in src/ |
+| AC-7 TD-82 验证 | ✓ | prd-20 test(a) fallback/real LLM 双路径覆盖 |
+| AC-8 tech-debt.json | ✓ | TD-79/80/81/82 全部 status=resolved |
+| AC-9 prd-20 fallback e2e | ✓ | 3/3 PASS |
+| **AC-10 typecheck + vitest + 旧 e2e** | **✗** | typecheck ✓, vitest 888/901(9 ECONNREFUSED 预存性), **prd-18 e2e 5/6 FAIL** |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+已生成: vitest-full.xml (888 passed, 9 ECONNREFUSED), typecheck.stdout.txt (PASS), e2e-prd18.stdout.txt (5 fail), e2e-prd20.stdout.txt (3 pass)
+```
+
+### 根因(CONFIRMED)
+
+prd-18 spec `5f73903` 恢复时保留了 5 处 STEP tag 断言(`STEP 04 · 制定执行计划` 等)，但 step 4/4b/6/7/8 页面已通过 StepForm/StepResult 抽象重构，step-tag 常量已删除，这 5 个页面不再渲染任何 `STEP 0X · ...` 标签。
+
+### 修复建议
+
+删除 prd-18 spec 第 38/85/192/228/274 行的 5 处 `.toBeVisible()` STEP tag 断言即可，保留所有 h1 和 H3 result 断言不变。

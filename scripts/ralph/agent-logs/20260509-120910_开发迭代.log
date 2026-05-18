@@ -1,0 +1,21 @@
+US-001 is complete. Here's a summary of what was implemented:
+
+**US-001 · Foundation** — all 22 AC satisfied:
+
+1. **constants.ts** — `HOT_ELEMENT_KEYS_22` (22项 · 4组: 心理唤起4+社会心理6+修辞结构6+信息密度6) + `SCRIPT_TYPE_KEYS_20` (20项 · tutorial…duo_chat) + label maps + group metadata
+
+2. **analysis.schema.ts** — `analysisStructuralInput/Output` + `analysisViralInput/Output` zod schemas
+
+3. **Schema rewrites** — `copywriting` (backward compat + freeGenerate), `boomGenerate` (element-based), `videoAnalysis` (copy-based · removed URL-based)
+
+4. **ContextAssembler** — `templates/analysis.ts` (PROMPTS.md §9.1 persona+methodology) + registered in `SPECIALIST_TEMPLATES`
+
+5. **ToolForm** — `ToolForm.tsx` (4 toolKey · useForm+zodResolver+LS-first dual-write+AbortController) + `ScriptTypeSelect.tsx` (ScrollArea h-72) + `ElementsMultiSelect.tsx` (4组 collapsible · ScrollArea h-96)
+
+6. **ToolResult** — `ToolResult.tsx` (switch by toolKey) + 4 sub-components
+
+7. **ls-namespace** — `getToolLsKey(accountId, toolKey, suffix)` D-031
+
+8. **TD-016** — 7 routers agentId 全改 PascalCase Class name · audit grep 0命中
+
+9. **59 新测试** + 9 存量测试更新 · **402/402 全绿** · typecheck ✅

@@ -1,0 +1,10 @@
+US-004 is complete. Here's what was implemented:
+
+**Summary:**
+- Created `apps/web/src/lib/parseDesignTokens.js` — reads `ui/aurelian_dark/DESIGN.md` YAML frontmatter, throws `'YAML frontmatter parse failed at L<n>'` on corrupt YAML, YAML wins over text section (LD-015)
+- Updated `apps/web/tailwind.config.js` — all colors now derived from `tokens.colors.*`, zero hardcoded hex literals (`grep '#[0-9a-f]{6}'` = 0), keyframes use `hexToRgba()` helper
+- Created `apps/web/src/vite-env.d.ts` — Vite types + `@fontsource/*` module declarations
+- Updated `apps/web/src/main.tsx` — imports Manrope/400/600/700, Plus Jakarta Sans/400/600, Inter/400/500/600
+- Updated `apps/web/src/styles/globals.css` — body uses `theme('colors.background')` / `theme('colors.on-background')`
+- Created `tests/unit/parseDesignTokens.test.ts` — 10 unit tests covering all parsing scenarios
+- All 9 ACs pass: typecheck ✓, tests 10/10 ✓, CSS 38.75 kB < 50KB ✓

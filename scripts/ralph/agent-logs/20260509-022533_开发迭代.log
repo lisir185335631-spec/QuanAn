@@ -1,0 +1,11 @@
+US-006 实现完成并已提交。
+
+**实现摘要：**
+
+1. **`apps/api/src/specialists/MonetizationAgent.ts`** — 单 mode Specialist，继承 BaseSpecialist，五层配置（model_tier='reasoning', timeout_ms=45000），Step4bOutputSchema 含 ladder[3]/revenueStructure/successCases[2]。AC-5 currentRevenue 字段 optional + prompt 注入零基础提示，AC-6 检测冷启动并注入 `[首次接触变现 · 暂无 IP 定位上下文]`。
+   
+2. **`apps/api/src/trpc/routers/stepData.ts`** — 新增 step4b 分支，调用 `monetizationAgent.execute()` 后写回 stepData 结果。
+
+3. **`tests/unit/specialists/__tests__/MonetizationAgent.test.ts`** — 5 tests：happy / fallback(ladder 4 阶梯→SchemaValidationError) / edge(currentRevenue 缺失) / cold start / config 验证。用 `vi.hoisted()` 解决 vitest mock hoisting 问题。
+
+全部 262 tests ✅，typecheck ✅。

@@ -1,0 +1,9 @@
+US-005 修复完成。
+
+**修复内容：**
+- `privateDomain.ts`: `generate` mutation 末尾加 `prisma.costLog.create`（mock 值：modelTier/modelUsed/provider 均为 `'mock'`，costUsd=0）
+- `specialists-flow.test.ts`: 在 `tx` 和 `prisma` mock 中都加入 `costLog: { create: vi.fn(...) }`
+
+**根因：** `account-isolation` 中间件用 `$transaction` 把 `ctx.prisma` 替换成事务客户端 `tx`，所以路由内的 `prisma.costLog.create` 实际访问的是 `tx.costLog`——只加到 `prisma` mock 不够，`tx` 也必须有。
+
+**验证：** 2129/2135 pass，typecheck 0 errors。

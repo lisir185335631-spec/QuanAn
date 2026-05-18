@@ -1,0 +1,11 @@
+US-006 iteration 2 is complete. Summary of what changed:
+
+**Security fix (Opus audit blocker resolved):**
+
+1. **`apps/api/src/lib/auth/providers.ts`** — `requiresCsrfCheck` now takes a single `providerName` param instead of `(isMockRequest, providerName)`. The attacker-controlled `?mock=true` query param no longer has any influence on CSRF enforcement. Also added prod+mock guard to `validateStartupConfig()`: `OAUTH_PROVIDER=mock` in `NODE_ENV=production` now exits with code 1.
+
+2. **`apps/api/src/index.ts`** — Removed the `isMock` variable entirely; call site updated to `requiresCsrfCheck(provider.name)`.
+
+3. **`tests/unit/auth/providers.test.ts`** — Deleted the buggy `returns false when request is explicitly mock (?mock=true)` test (it was verifying the vulnerability as a feature). Rewrote 4 `requiresCsrfCheck` tests with single-arg signature including an explicit attack-scenario test. Added `validateStartupConfig` prod+mock test.
+
+**Result:** 26 tests pass, typecheck clean across all 6 workspaces.

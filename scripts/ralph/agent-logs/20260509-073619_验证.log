@@ -1,0 +1,39 @@
+prd.json updated. Here is the validation summary:
+
+---
+
+## 验证结果: US-015 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 状态 |
+|---|---|---|
+| AC-1 | BaseSpecialist.execute() fallback try-catch | ✓ |
+| AC-2 | 7 Specialist 各加 fallbackTemplate | ✓ |
+| AC-3 | StepResult 检测 isFallback → FallbackBanner | ✓ |
+| AC-4 | FallbackBanner 含文案 + 重试 button | ✓ |
+| AC-5/6/7 | 浏览器验证 e2e | ✗ |
+| AC-9 | no fallbackTemplate → re-throw | ✓ (unit tested) |
+| AC-10 | fallbackTemplate 满足 outputSchema | ✓ (unit tested) |
+| AC-11 | DB 写失败 → log error 不 crash | ✓ |
+| AC-12 | status='fallback' 不计入 progress | ✓ |
+| AC-13 | cost_log model='fallback' tokens=0 | ✓ (unit tested) |
+| AC-14 | FallbackBanner 必含重试按钮 | ✓ |
+| AC-15 | fallback 路径 <100ms | ✓ |
+| AC-16 | fallback.test.ts ≥7 tests | ✓ (10 tests) |
+| AC-17 | e2e fallback.spec.ts | ✗ |
+| AC-18 | Tests pass | ✗ (playwright 2 failed) |
+| AC-19 | Typecheck passes | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-015/`
+已生成: `typecheck.txt` (exit 0), `typecheck-web.txt` (exit 0), `pytest-full.stdout.txt` (343 passed), `e2e-fallback.txt` (2 failed), `manifest.json`
+
+### 根因(CONFIRMED)
+
+`tests/e2e/fallback.spec.ts:64` 的 locator `[data-testid="industry-select"]` 在 DOM 中不存在。Playwright 等待 30s 超时，与 30s 整体 test timeout 重叠，page context 被强制关闭，line 70 报 "Target page, context or browser has been closed"。
+
+**修复方向**: 将 locator 改为 `[data-testid="step-form-step1"] [role="combobox"]` 并加 `{ timeout: 2000 }` 短超时，`step-form-step1` 存在于 `StepForm.tsx:132`。
+
+### 判决
+`prd.json.passes = false` · `retryCount = 2`

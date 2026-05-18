@@ -1,0 +1,40 @@
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | seedIndustries() + 56 行业 + Industry model | ✓ |
+| AC-2 | seedMockIpAccounts() 5 mock 账号覆盖 4 路径 | ✓ |
+| AC-3 | DEV_OAUTH_MOCK env flag · isDevOAuthMock() · auth.ts | ✓ |
+| AC-4 | ipAccounts.list auto-bind · NODE_ENV=development && accounts.length===0 | ✓ |
+| AC-5 | AccountSwitcher · switchTo(acc.id) · 整页刷新 | ✓ |
+| AC-6 | IndustryDropdown 56 行业 · category 分组 | ✓ |
+| AC-7 | pnpm db:seed 输出 ✓ industries seeded · created=0 · skipped=56 + 幂等 | ✓ |
+| AC-8 | seed.test.ts 7/7 tests (≥4 要求) | ✓ |
+| AC-9 | 浏览器: 5 账号显示 · 切换小张 · localStorage.aiip_active_account_id=11350 ✓ | ✓ |
+| AC-10 | pnpm vitest 2017 passed / 0 failed · 6 workspaces typecheck PASS | ✓ |
+
+### 关键验证证据
+
+**AC-9 localStorage 修复确认**：`useActiveAccount.ts:44` — `localStorage.setItem('aiip_active_account_id', String(newAccountId))`
+
+**浏览器测试（Playwright）**：
+- AccountSwitcher 弹出 6 个菜单项：AI创业者小张、OPC经营者老王、实体店主陈姐、MCN矩阵号、Demo演示号 + 新建账号
+- 切换到小张后 localStorage 写入 `11350`
+- 行业分类（美食/美妆/美业/服饰/电商/教育）6/7 分类可见
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+├── pytest-full.xml       (2017 passed, 0 failed)
+├── pytest-full.stdout.txt
+├── pytest.xml            (seed.test.ts 7/7)
+├── pytest.stdout.txt
+└── typecheck.stdout.txt  (6 workspaces PASS)
+```
+
+### 判决
+
+`prd.json.US-001.passes = true` · `retryCount = 0` · `notes = ""`

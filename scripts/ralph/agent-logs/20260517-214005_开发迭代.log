@@ -1,0 +1,11 @@
+All 13 ACs for US-009 verified:
+
+- **typecheck**: 0 errors
+- **vitest**: 119 tests passed
+- **Zero hardcode**: no `一键生成`/`流量型`/`变现型`/`PDF、Word` literals in page/components
+- **Zero violet/amber** (D4=B clean)
+- **Zero real upload**: no fetch/axios/XHR patterns in step5 components
+- **acc_step5_selected_topic** wired in `Step5TopicGrid.tsx`
+- **Browser test**: filled `美业` + `皮肤管理项目` → 5 tabs × 20 cards appeared → clicked card → navigated to `/step/7` → localStorage SET → no console errors
+
+The previous retryCount=2 failures were Validator/Developer process crashes, not code defects. The implementation committed in `5268deb` is complete and correct.

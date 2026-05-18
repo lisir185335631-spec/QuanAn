@@ -1,0 +1,27 @@
+## 验证结果: US-006a [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|---|---|---|---|
+| AC-1 | 顶部 STEP3_STEP_TAG + H1 + 副标含 industryLabel | ✓ | 浏览器文本: "STEP 03 · 账号包装方案" + H1 + "当前行业：美业" |
+| AC-2 | 4 字段 form (textarea min-h-[160px] font-cn + 5 radio grid-cols + 2 input) + label + * | ✓ | Step3.tsx:119-181 + 截图可见 |
+| AC-3 | CTA type=submit + disabled 逻辑 + gradient from-primary | ✓ | Step3.tsx:186-191 + CTA enabled 截图 |
+| AC-4 | disabled 时显示 STEP3_CTA_DISABLED_HINT | ✓ | Step3.tsx:192-196 + 首次截图底部提示文字 |
+| AC-5 | handleSubmit mock → localStorage acc_step3 6 模块 | ✓ | JS 查询: result keys=videoReferences,nickname,avatar,background,bio,strategy |
+| AC-6 | 进入 page 预填 | ✓ | reload 后 textarea 值 + radio douyin 均回填 |
+| AC-7 | 字面 grep (via 常量 import 间接) | ✓ | step3.ts 全部 4 条命中 |
+| AC-8 | import from '@/components/states' | ✓ | Step3.tsx:3 LoadingState 导入 |
+| AC-9 | 浏览器: /step/1→美业→/step/3 验证标题 | ✓ | 截图: STEP 03 + H1 + 当前行业：美业 |
+| AC-10 | 5 platform 完整显示 + textarea placeholder | ✓ | 全部 5 项命中 + placeholder 字面正确 |
+| AC-11 | 填写→CTA 可点→loading→0 console error | ✓ | loading 截图 + `(no console errors)` |
+| AC-12 | Typecheck 通过 | ✓ | tsc --noEmit exit:0 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006a/`
+- `manifest.json` (verdict=PASS)
+- `pytest-full.stdout.txt` (70 passed, 8 test files)
+- `typecheck.stdout.txt` (clean)
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

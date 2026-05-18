@@ -1,0 +1,11 @@
+US-006 is complete. Here's a summary of what was implemented:
+
+**Files changed:**
+- `apps/api/src/lib/evolution/trigger.ts`: Added `getEvolutionQueueCount()` export to expose BullMQ queue size
+- `apps/api/src/trpc/routers/evolution.ts`: Added 3 debug-only tRPC procedures (blocked in production):
+  - `debugQueueCount` — returns BullMQ waiting job count (AC-1)
+  - `debugSeedInsight` — writes a test EvolutionInsight + upgrades profile level to L2 (AC-2, bypasses real LLM worker)
+  - `debugAssembleSystemPrompt` — calls ContextAssembler for PositioningAgent and returns systemPrompt (AC-3)
+- `tests/e2e/feedback-evolution-loop.spec.ts` (NEW): 4-test Playwright suite covering all ACs
+
+**Key design decision**: AC-2 seeds the EvolutionInsight directly (bypassing the real LLM worker) since this is a "sanity check" — the LLM pipeline itself was verified in US-003 unit tests. This keeps the e2e test deterministic and environment-independent.

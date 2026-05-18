@@ -1,0 +1,15 @@
+US-009 is complete. Here's what was implemented:
+
+**`apps/api/src/workers/image-gen/dall-e-3.ts`** — Full DALL-E 3 worker replacing the stub:
+- `IMAGE_GEN_ENABLED=false` → placeholder URL, no cost (dev mode)
+- `IMAGE_GEN_ENABLED=true` + OPENAI_API_KEY → real DALL-E 3 call (`model=dall-e-3`, `size=1024x1024`, `quality=standard`, 30s timeout)
+- 3 retries with exponential backoff (1s/2s/4s)
+- `cost_log` write: `eventType='image_gen'`, `provider='openai'`, `costUsd=0.04`, `imageCount=1`
+- `Asset` write with all required fields + `sceneIndex`/`accountId`/`traceId` (REJ-008)
+- `history.scenes` read-modify-write via `$transaction` + `findFirst(id+accountId)` + `JSON.parse` + `update(id)` — no `$executeRaw` (REJ-009)
+
+**Key fixes discovered:**
+- `openai` is in `apps/api/node_modules` only → `vitest.config.ts` needed an alias to make `vi.mock('openai')` intercept correctly (same root cause as the `@trpc/server` import issue)
+- `vi.hoisted()` is the correct pattern for sharing mock references in `vi.mock` factories
+
+**Results:** 6 unit tests + 1 integration test pass · 67 files / 661 tests total · typecheck 6 ws 0 errors

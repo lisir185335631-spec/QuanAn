@@ -1,0 +1,35 @@
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | `kpi-snapshot.job.ts` 新建 · Queue('admin:kpi-snapshot') + Worker · 调 computeSnapshot | ✓ `apps/api/src/jobs/admin/kpi-snapshot.job.ts:21-42` |
+| AC-2 | `scheduleDailySnapshot` · pattern `0 * * * *` tz `Asia/Shanghai` jobId `daily-snapshot-recurring` | ✓ `kpi-snapshot.job.ts:83-93` |
+| AC-3 | `scheduleWeeklySnapshot` · pattern `0 4 * * 1` tz `Asia/Shanghai` jobId `weekly-snapshot-recurring` | ✓ `kpi-snapshot.job.ts:95-105` |
+| AC-4 | `scheduleMonthlySnapshot` · pattern `0 4 1 * *` tz `Asia/Shanghai` jobId `monthly-snapshot-recurring` | ✓ `kpi-snapshot.job.ts:107-117` |
+| AC-5 | `server.ts` 启动调 3 schedule 函数 | ✓ `index.ts:289-294` |
+| AC-6 | BullMQ attempts:3 · 第 3 次失败写 `admin_audit_log` eventCategory=`system_alert` eventType=`kpi_snapshot_failed` | ✓ `kpi-snapshot.job.ts:45-76` |
+| AC-7 | jobId 唯一约束防 double-fire | ✓ 3 个 schedule 函数均传 jobId，BullMQ 内置去重 |
+| AC-8 | 单元测试 7 条全 PASS（cron注册·worker调computeSnapshot·final failure audit log·non-final无log·undefined job） | ✓ 7/7 passed |
+| AC-9 | `pnpm test + pnpm typecheck` 0 error | ✓ 全 6 workspace typecheck clean；9 failures 均为 pre-existing 集成测试(ECONNREFUSED :3000) |
+| AC-10 | `pnpm audit:redlines-admin` 0 命中 | ✓ ALL PASS · 5 LD-A + 6 R-A |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+├── manifest.json         (verdict=PASS, zero_regression=PASS)
+├── pytest-full.xml       (1051 tests, 9 pre-existing integration failures)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt  (all 6 workspaces clean)
+└── audit-redlines-admin.stdout.txt (ALL PASS)
+```
+
+### 零回归说明
+
+9 个失败全部为 `tests/integration/api/` 下的集成测试，失败原因是 `ECONNREFUSED :3000`（测试环境未运行 server），已通过 `git stash` 回退到 US-001 提交验证同样失败，确认为 pre-existing，与 US-002 变更无关。
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,28 @@
+验证完成。写验证结果摘要：
+
+---
+
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | seedConstantsToVersions() 读 67案例+23公式+23元素 · INSERT constant_versions+constant_canary_config | ✓ |
+| AC-2 | rebuildConstantVectorIndex · llmGateway.embed + UPSERT knowledge_chunk + cost_log | ✓ |
+| AC-3 | BullMQ delayed job · jobId='constant-embed-'+versionId · attempts=3 | ✓ |
+| AC-4 | _publishConstantVersionInTx 成功后 fire-and-forget +5s BullMQ job | ✓ |
+| AC-5 | publishConstantVersion 触发 evaluateConstantVersion(isMock=true) 写 judgeScore | ✓ |
+| AC-6 | constant-embed.service.test.ts 8 个测试 (≥6) · 含 3 type路由+失败no-cost_log+1536d | ✓ |
+| AC-7 | index.ts line 349-351 wires constantEmbedWorker | ✓ |
+| AC-8 | lib/constants/*.ts 原文件未改动 | ✓ |
+| AC-9 | 1821 tests passed (≥1790) · 0 failures | ✓ |
+| AC-10 | typecheck 全 6 packages PASS | ✓ |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-007/` — pytest-full.xml (1821 passed), pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

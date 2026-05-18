@@ -1,0 +1,3 @@
+US-003 fix complete. Single-line change: `from-primary to-primary/60` → `from-violet-600 to-violet-400` at `apps/web/src/pages/Home.tsx:64`. Typecheck and 51 tests pass. Committed as `fix: [US-003] progress bar gradient violet (from-violet-600/400, not from-primary gold)`.
+
+**Root cause confirmed by validator:** `--primary` is gold HSL `43 87% 63%` (D4=B design decision), so `from-primary` produces gold gradient. Hard-coded `from-violet-600/400` bypasses the CSS variable entirely and always renders purple.

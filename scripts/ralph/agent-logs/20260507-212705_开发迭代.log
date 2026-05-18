@@ -1,0 +1,21 @@
+US-003 の実装が完了しました。
+
+**実装サマリー:**
+
+- `.npmrc` にPrisma hoisting設定追加 → `pnpm db:generate` がmonorepoで正常動作
+- `apps/api/src/lib/prisma.ts` — PrismaClientシングルトン + DB起動チェック（失敗時 "DB connection failed" + exit 1）
+- `apps/api/src/trpc/` — tRPC v11初期化・コンテキスト・`auth.me`プロシージャ・AppRouter
+- `apps/api/src/index.ts` — `@hono/node-server`でHonoをNode.jsで起動 + tRPCアダプター連結
+- `prisma/migrations/20260507000000_init/` — `migrate diff`で生成したSQLをbaseline適用
+- `tests/integration/api/auth.me.test.ts` — HTTP fetch統合テスト
+
+**全AC検証結果:**
+- AC-1 ✓ `pnpm --filter @quanqn/api dev` → ポート3000で起動
+- AC-2 ✓ `curl /trpc/auth.me` → `{"result":{"data":{"ok":false,"error":"unauthenticated"}}}`
+- AC-3 ✓ Prisma clientインポート可能・usersテーブルクエリ成功
+- AC-4 ✓ auth.me P50 = 10-14ms
+- AC-5 ✓ DB接続失敗時 "DB connection failed" ログ + exit 1
+- AC-6 ✓ `.npmrc`ホイスト方式で解決（READMEコメントはprisma.ts内に記載）
+- AC-7 ✓ context: prisma + traceId('pending') + req
+- AC-8 ✓ typecheck: exit 0
+- AC-9 ✓ test: 1 passed

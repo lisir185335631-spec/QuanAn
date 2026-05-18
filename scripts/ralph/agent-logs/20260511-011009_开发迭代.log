@@ -1,0 +1,6 @@
+US-004 完成。
+
+- `index.ts` 删除了 inline `ImageGenJobPayload` interface 和 `ImageGenJobResult` type（共 -15 行）
+- 顶部加 `import type { ... } from '@quanqn/schemas/specialist-io'`
+- 加 `export type { ... }` 保持 backward compat，`dall-e-3.ts`/`queue.ts`/`worker.ts` 无需修改
+- typecheck 6 ws 0 error ✓，test 727 passed ✓

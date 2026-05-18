@@ -1,0 +1,11 @@
+US-013 is complete. Here's what was implemented:
+
+**Backend (`history.ts`)**: `detail` procedure now joins the Asset table when `agentMode='storyboard'`, returning a `scenes[]` array with `sceneImageUrl` from Asset's `publicUrl`. Explicit `accountId` double-layer guard on both the history and asset queries.
+
+**Types (`router-types.ts`)**: Added `HistoryDetailScene` type and updated `HistoryDetailOutput` to include optional `scenes?: HistoryDetailScene[]`.
+
+**History.tsx**: 3 new filter options (production/acquisition/storyboard), 5 new badge colours (蓝/红/紫/绿 differentiated by agentId for acquisition disambiguation), and 5 new route mappings with acquisition agentId disambiguation.
+
+**Tool pages** (VideoProduction, AcquisitionVideo, AiVideo, Generate): Added SHIELD REJ-010-compliant LS writes on `?historyId` pre-fill; Generate adds `?mode=acquisition` → mode switch via `useEffect`.
+
+**Tests**: 16/16 pass (11 existing + 5 new). 6-workspace typecheck: 0 errors.

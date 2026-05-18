@@ -1,0 +1,7 @@
+US-003 完成。新建了 `apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts`：
+- `describe.skipIf(!OPENAI_API_KEY && !ANTHROPIC_API_KEY)` — CI 安全，无 key 自动跳过
+- 2 个测试：(a) industry mode 验证 `marketAnalysis/competitionLevel/recommendation` + schema safeParse；(b) execution mode 验证 `markdown` 以 `# 执行计划` 开头 + 长度 ≥ 1000
+- AC-3 schema drift 防御：`Step1OutputSchema.safeParse / Step4OutputSchema.safeParse` 严格验证
+- AC-5 cost_log 验证：mock `prisma.costLog.create` 捕获调用，验证 `promptTokens/completionTokens/costUsd > 0`
+- `PositioningAgent.ts` 本身已 brownfield wire，无需修改
+- 全量 typecheck 0 error，10 旧测试零回归

@@ -1,0 +1,14 @@
+US-007 is implemented and committed. Here's a summary:
+
+**What was built:**
+- `apps/admin/src/pages/users/index.tsx` — main page with DenseTable list, URL-persisted filters (page/search/role/plan/industry/sort), pagination, drawer state
+- `UsersOverviewCards.tsx` — 4 stat cards (total users, paid users via parallel queries; active 7d/risk users show "—" pending backend stats endpoint)
+- `UserListFilters.tsx` — 6 dropdowns + search with debounce 300ms
+- `UserDetailDrawer.tsx` — right-side slide-in drawer + 5 tabs (Basic/Activity/Cost/Audit/Accounts) all as inline sub-components in one file (anti-pattern: 13-file split avoided per SHIELD)
+- `ChangePlanDialog.tsx`, `BanUserDialog.tsx`, `ResetPasswordDialog.tsx` — action dialogs calling tRPC mutations
+- `PlanBadge.tsx` — free/pro/enterprise/banned colored badge
+- `packages/ui` DenseTable upgraded with `useVirtualizer` virtualScroll + `onRowClick` + `selectedKey`
+- `admin-router-types.ts` — users 5-procedure shadow types added
+- `router.tsx` updated + `placeholder/users.tsx` deleted
+
+**Validation:** All 3 workspace typechecks pass (0 errors). 1089 unit tests pass; 3 pre-existing integration failures unchanged.

@@ -1,0 +1,36 @@
+## 验证结果：US-011 FAIL
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|:---|:---:|---|
+| AC-1 FilePreviewPanel PDF/Word/TXT/CSV | ✓ | 全分支实现，代码正确 |
+| AC-2 UserViolationsTab DenseTable 7列 | ✓ | count>=3 filter，readonly check |
+| AC-3 BanUploaderDialog min10 + 角色文案 | ✓ | 前端逻辑正确 |
+| AC-4 index.tsx 4 Tab 集成 | ✓ | 待审核/已批准/已驳回/用户违规累计 |
+| AC-5 readonly_admin 隐藏操作列 | ✓ | isReadonly ? baseColumns : [...+actionCol] |
+| AC-6 unsupported MIME fallback | ✓ | 正确显示 '预览见 PRR · 当前查看 metadata' |
+| AC-7 reason<10 disabled+红字 | ✓ | 浏览器实测确认 |
+| AC-8 suspended user disabled | ✓ | canSubmit && !isSuspended |
+| **AC-9 Browser API 实测** | **✗** | **所有 API 调用 404** |
+| **AC-10 console 0 error** | **✗** | **因 API 404 有 console error** |
+| AC-11 typecheck | ✓ | pnpm typecheck EXIT 0 |
+
+### CONFIRMED Bug（需 ralph dev 修复）
+
+```
+失败定位: apps/api/src/trpc/routers/admin/index.ts:45
+当前代码: deepLearn: reviewDeepLearnRouter,
+目标代码: reviewDeepLearn: reviewDeepLearnRouter,
+```
+
+所有 `adminTrpc.reviewDeepLearn.*` 运行时 404 — userViolations/banUploader/list/detail/approve/reject 全部受影响。typecheck 通过是因为 `packages/clients/src/admin-router-types.ts:455` 有手写类型声明，与 runtime router key 无强制绑定。
+
+### 产物
+
+- `verify-artifacts/US-011/pytest-full.xml` — 零回归 966 tests PASS
+- `verify-artifacts/US-011/pytest-full.stdout.txt` — vitest 输出
+- `verify-artifacts/US-011/typecheck.stdout.txt` — typecheck 0 errors
+- `verify-artifacts/US-011/manifest.json` — verdict: FAIL, exit_code: 1
+
+`prd.json` US-011: `passes=false`, `retryCount=2`，notes 含 CONFIRMED 修复方向。

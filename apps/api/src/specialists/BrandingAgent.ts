@@ -100,6 +100,18 @@ const TIMEOUT_MS: Record<Mode, number> = {
   persona: 45_000,
 };
 
+// AC-1 SHIELD: mode-specific system prompt prefixes (双 mode 严格区分 · 不允许单 prompt 双 mode)
+const SYSTEM_PROMPT_PREFIX: Record<Mode, string> = {
+  packaging:
+    '[账号包装专家模式] 你的职责是为中文社交媒体创作者提供完整的账号包装方案，' +
+    '包括昵称创作、头像视觉描述、背景图设计、各平台个性化简介和整体品牌策略。' +
+    '输出必须严格遵循 JSON schema 结构。',
+  persona:
+    '[人设定制专家模式] 你的职责是为中文社交媒体创作者构建系统化的个人人设体系，' +
+    '包括核心身份定位、思维体系（核心信念/独特观点/口头禅）、内容支柱、信任建立策略和三阶段成长路线图。' +
+    '输出必须严格遵循 JSON schema 结构。',
+};
+
 // ── AC-1: 五层配置 ─────────────────────────────────────────────────────────────
 
 const BRANDING_CONFIG: SpecialistConfig = {
@@ -211,9 +223,12 @@ export class BrandingAgent extends BaseSpecialist<BrandingInput, BrandingOutput>
         ? { type: 'json_schema' as const, schema: Step3BaseSchema }
         : { type: 'json_schema' as const, schema: Step3bBaseSchema };
 
+    // SHIELD: mode-specific system prompt (not shared single prompt)
+    const systemPrompt = `${SYSTEM_PROMPT_PREFIX[mode]}\n\n${ctx.systemPrompt}`;
+
     return this.llmGateway.complete({
       model_tier: this.config.execution.model_tier,
-      systemPrompt: ctx.systemPrompt,
+      systemPrompt,
       userPrompt,
       responseFormat,
       metadata: {

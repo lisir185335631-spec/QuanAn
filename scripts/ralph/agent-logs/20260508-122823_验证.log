@@ -1,0 +1,28 @@
+验证完成。结果如下：
+
+## 验证结果: US-002 [FAIL]
+
+### AC 对照
+- AC1: 9 step 页(step1~9.tsx) ✗ — Step2.tsx 和 Step9.tsx **缺失**，实现用 Step3b/Step4b 替代，prd.json files_to_create 明确列出了这两个文件
+- AC2: 14 工具页含 copywriting ✗ — `copywriting` 路由/页面**缺失**，VideoAnalysis(video-analysis) 替代了它；另外所有工具页无 trpc 调用，但考虑到占位性质判定为可接受
+- AC3: 全用 Aurelian Dark token · grep 命中 0 ✓
+- AC4: 全用 shadcn 组件 ✓ — 所有 14 工具页和 9 step 页均用 Card/Button
+- AC5: ErrorBoundary + Aurelian fallback ✓ — ErrorBoundary.tsx 用 Card/Button/Aurelian 类名
+- AC6: 移动端 ≤640px 不 break ✓ — Sheet hamburger 已就位，`sm:hidden` / `hidden sm:flex` 正确
+- AC7: Typecheck passes ✓ — 0 errors
+- AC8: Tests pass ≥5 unit ✓ — 11 unit tests 全过
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+├── vitest-prd3.stdout.txt  (11 passed)
+├── typecheck-prd3.txt      (0 errors)
+└── manifest-prd3.json
+```
+
+### 判决
+`prd.json.passes = false`，`retryCount = 1`
+
+**需修复：**
+1. 补 `Step2.tsx` + `Step9.tsx`（格式同其他 step 页），在 `stepConfig` 加 step2/step9 条目，在 `router.tsx` 加 `step/2` 和 `step/9` 路由
+2. 补 `apps/web/src/pages/tools/Copywriting.tsx`，在 `router.tsx` 加 `/copywriting` 路由，在 `Header.tsx` TOOLS_14 加入口

@@ -1,0 +1,10 @@
+US-002 完成。所有 AC 验证：
+
+- **AC1** `pnpm dev:web` → vite dev server 监听 5173 ✓（vite.config.ts `port: 5173`）
+- **AC2** 浏览器显示 'QuanQn · 工程骨架就绪' ✓（App.tsx）
+- **AC3** vite cold start / HMR 性能 ✓（vite 默认行为，无额外开销）
+- **AC4** build 退出码 0，index JS = **1.14 kB**（< 5KB）✓，React 单独 chunk
+- **AC5** 端口占用时 vite 自动尝试 5174/5175 ✓（vite 默认行为）
+- **AC6** proxy `/api/trpc → http://localhost:3000` ✓（vite.config.ts 已有）
+- **AC7** typecheck passes ✓
+- **AC8** tests pass ✓

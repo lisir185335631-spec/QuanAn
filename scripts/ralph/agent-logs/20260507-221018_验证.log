@@ -1,0 +1,39 @@
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|:-:|---|:-:|---|
+| 1 | tailwind.config.js 解析 DESIGN.md YAML frontmatter | ✓ | `parseTokensFromFile()` 读取 `ui/aurelian_dark/DESIGN.md`，提取 colors/rounded/spacing |
+| 2 | body 背景色从 YAML 派生·不 hardcode | ✓ | `globals.css:8` `background-color: theme('colors.background')` → YAML `background: '#131316'` |
+| 3 | @fontsource 三包 import 到 main.tsx | ✓ | `main.tsx:4-11` 含 manrope/plus-jakarta-sans/inter，包已安装 |
+| 4 | tailwind.config.js grep '#[0-9a-f]{6}' 命中 0 | ✓ | grep 无输出 |
+| 5 | YAML 损坏时报错含 'YAML frontmatter parse failed at L\<n\>' | ✓ | 测试输出: `YAML frontmatter parse failed at L5: unexpected end...` |
+| 6 | YAML 优先于文字段 | ✓ | 单元测试 + node 验证：text section 的 `#D4AF37` 不泄漏到 tokens |
+| 7 | CSS build 后 < 50KB | ✓ | `dist/assets/index-aMKlceW1.css` = **38.75 kB** |
+| 8 | Typecheck passes | ✓ | `pnpm --filter @quanqn/web typecheck` 退出码 0 |
+| 9 | token 解析单元测试 | ✓ | **10/10 tests passed** |
+
+### 零回归门禁 (X-6)
+
+全量 vitest 运行：**11 tests passed, 0 failed** (包含 `parseDesignTokens.test.ts` + `auth.me.test.ts`)
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+  manifest.json          ← 元数据
+  typecheck.txt          ← exit_code 0
+  vitest.xml             ← JUnit: 10 tests, 0 failures
+  vitest.stdout.txt      ← 10 passed
+  pytest-full.xml        ← JUnit: 11 tests, 0 failures
+  pytest-full.stdout.txt ← 11 passed
+  ac5-yaml-corrupt.txt   ← YAML corrupt 报错验证
+  ac6-yaml-wins.txt      ← YAML wins 验证
+```
+
+### 判决
+
+`prd.json US-004.passes = true` ✓

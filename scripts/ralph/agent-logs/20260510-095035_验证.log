@@ -1,0 +1,38 @@
+## 验证结果: US-002 FAIL
+
+### AC 对照
+
+- AC-1 ✓ VideoAgent.ts 3 mode throw 已移除，均走 invokeLLM 分支
+- AC-2 ✓ outputSchema getter switch 4 case + default throw，D-028 模式
+- AC-3 ✓ `_buildUserPrompt` 4 分支；production 含 13 列分镜+设备+排期；acquisition 含 CTA+转化路径；storyboard 含 5-8 scenes + imagePromptEn 必英文
+- AC-4 ✓ `_invokeStoryboard` ASCII post-validate + retry 1 次 + throw SchemaValidationError
+- AC-5 ✓ CopywritingAgent acquisition mode 实现，schema min(200).max(500) + metadata{ctaPosition,conversionGoal} + prompt 分支
+- AC-6 ✓ 3 template 文件存在 (video-production.ts / acquisition-video.ts / ai-video.ts)，含 persona + methodology
+- AC-7 ✓ SPECIALIST_TEMPLATES 含 `'VideoAgent:production'` / `'VideoAgent:acquisition'` / `'VideoAgent:storyboard'` 3 key
+- AC-8 ✓ VideoAgent.test.ts 13 tests (4 原 + 9 新)，production/acquisition/storyboard 各 3，junit 0 failures
+- AC-9 ✓ CopywritingAgent.test.ts 3 acquisition tests (happy + CTA missing + markdown boundary)，0 failures
+- **AC-10 ✗ FAIL** — 无 VideoAgent invokeLLM nock SDK integration test
+- AC-11 ✓ 单元测试 ~11ms 总耗时，远低于 200ms 门槛
+- AC-12 ✓ `pnpm typecheck` 6 ws 0 error
+- AC-13 ✓ 30 tests exit 0
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+  manifest.json
+  typecheck.txt
+  test-specialists.stdout.txt
+  pytest.xml          (30 tests, 0 failures)
+  pytest-full.xml     (592 tests, 0 failures, 0 errors)
+  pytest-full.stdout.txt
+```
+
+### X-6 零回归门禁
+592 tests · 0 failures · 0 errors ✓
+
+### 判决
+`prd.json.passes = false` · retryCount = 1
+
+**根因**：AC-10 要求 `tests/integration/api/video-agent-llm.test.ts`（nock 拦截 Anthropic SDK + VideoAgent.execute production/acquisition/storyboard 任一 mode + nock.isDone() + schema 验证 + < 3s），但该文件不存在，整个 integration 目录下没有任何引用 VideoAgent 的测试文件。
+
+**修复方向**：新建 `tests/integration/api/video-agent-llm.test.ts`，沿用 `tests/integration/api/specialist-llm.test.ts` 模式（nock + real LLMGateway + mock rate-limiter/cost-logger），测试 production mode 一次调用，assert 输出满足 ProductionOutputSchema + nock.isDone() + 耗时 < 3000ms。

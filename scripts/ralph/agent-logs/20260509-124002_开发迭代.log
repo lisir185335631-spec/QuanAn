@@ -1,0 +1,8 @@
+US-002 is complete. All 22 ACs satisfied:
+
+- **AnalysisAgent** created (~300 lines): 2 mode (viral/structural), `model_tier='lightweight'`, `timeout_ms=30000`, non-SSE `complete()`, `inputSchema` union getter, `outputSchema` per-mode getter with `throw 'Unknown mode'` fallback, fallback templates satisfying all `min()` constraints, singleton `export const analysisAgent`
+- **CopywritingAgent** updated: `outputSchema` getter covers all 4 modes; `free`/`boom` SSE stream via `_consumeStream`; `acquisition` throws `'Not implemented · PRD-6'` (D-035); fallback templates for `free` (463 chars ≥ 400) and `boom` (205-220 chars each ≥ 200)
+- **Templates** updated with PROMPTS.md §5.1/5.4/5.5 (copywriting) and §9.1/9.2/9.3 (analysis)
+- **Tests**: 8 new AnalysisAgent tests + 8 new CopywritingAgent tests (free×4, boom×4) → 416/416 ✅
+- **Audit greps**: PRD-5=0 ✓, stream.meta.model=5≥2 ✓, analysisAgent export=1 ✓, SDK imports=0 ✓, loop=0 ✓
+- **Typecheck** clean across all packages ✅

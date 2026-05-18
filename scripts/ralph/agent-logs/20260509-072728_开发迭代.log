@@ -1,0 +1,13 @@
+US-015 is complete. All 343 tests pass and typecheck is clean.
+
+**What was implemented:**
+
+The story was already ~90% done from a previous iteration. The remaining failures were:
+
+1. **TopicAgent** — `fallbackTemplate` had keys `traffic/monetize/persona/cognition/case` but no `default`. When `req.mode` is undefined (TopicAgent uses `userInput.category`, not `mode`), `req.mode ?? 'default'` → `'default'` → not found → re-threw instead of falling back. Fixed by adding a `default` key pointing to the traffic template.
+
+2. **CopywritingAgent** — fallback markdown was ~399 chars but `CopywritingOutputSchema` requires `min(500)`. `satisfies CopywritingOutput` only checks TypeScript types, not zod runtime constraints. Fixed by expanding the markdown to ~800+ chars.
+
+3. **LivestreamAgent** — fallback `lastResult`/`lastOptimizedResult` were ~161 chars each but schema requires `min(200)`. Same root cause. Fixed by adding more content to each string.
+
+4. **TopicAgent.test.ts** — Two edge-case tests expected `SchemaValidationError` to be thrown, but US-015 changed that behavior: schema failures now route to fallback instead of throwing. Updated tests to assert `isFallback: true` instead.

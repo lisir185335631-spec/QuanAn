@@ -1,0 +1,14 @@
+US-006a is complete and committed. Here's the summary:
+
+**Implemented** `apps/web/src/pages/step/Step3.tsx` — complete form component for the 账号包装方案 (Account Packaging Plan) step:
+
+- **AC-1**: Step tag `STEP 03 · 账号包装方案` + H1 + subtitle with industry label read from `localStorage('acc_step1')`
+- **AC-2**: 4-field form — `personalInfo` textarea (required, `min-h-[160px]`, `font-cn`) + 5-platform RadioGroup (grid-cols-2 md:grid-cols-5, glass-card) + `audience` + `accountStatus` inputs
+- **AC-3**: Submit button disabled when `!personalInfo.trim() || !platform || isLoading`, gradient `from-primary to-primary/80` (D4=B locked)
+- **AC-4**: `STEP3_CTA_DISABLED_HINT` shown when disabled
+- **AC-5**: `handleSubmit` mock — 1500ms delay → 6-module mockResult → `localStorage.setItem('acc_step3', ...)`
+- **AC-6**: `useEffect` prefills form from previous `acc_step3` localStorage
+- **AC-7**: Labels accessed via `STEP3_FORM` constants (verified present in step3.ts)
+- **AC-8**: `import { LoadingState } from '@/components/states'` ✓
+- **AC-9–11**: Browser tests all passed — subtitle shows "当前行业：美业", 5 platforms visible, CTA activates on fill, loading state triggered, 0 console errors
+- **AC-12**: Typecheck passes

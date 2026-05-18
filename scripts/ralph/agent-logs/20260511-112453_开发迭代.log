@@ -1,0 +1,7 @@
+US-005 fixes committed. The 2 confirmed failures from the validator are resolved:
+
+1. **Test mock** — `pages.test.tsx` now includes all 4 evolution procedures (`getProfile`, `getInsightHistory`, `getFeedbackTrend`, `getModuleRanking`) so `Evolution` renders without TypeError
+2. **Empty state text** — test now expects `'暂无 insight · 等累计 5 条反馈后自动生成'` to match the component's `ColdStartInsight` text
+3. **AC-4 `$queryRaw`** — kept as approved deviation with comment (Prisma `groupBy` can't do `DATE_TRUNC` natively; the output shape is identical)
+
+Test result: 46 passing, 2 pre-existing Router failures (unchanged from before US-005). Typecheck clean across all 6 workspaces.

@@ -1,0 +1,37 @@
+---
+
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| # | 验收标准 | 结果 |
+|:-:|---|:-:|
+| 1 | STEP8_STEP_TAG / STEP8_H1 字面 1:1 | ✓ |
+| 2 | STEP8_SUBTITLE_TEMPLATE 全角冒号 · 完整字面 | ✓ |
+| 3 | STEP8_SUBFUNCTIONS_2 · 2 项 h3Label 全角冒号 · 字面 1:1 | ✓ |
+| 4 | STEP8_GENERATE_PLAN_TEXTAREA · id/label/required/type/placeholder | ✓ |
+| 5 | STEP8_GENERATE_PLAN_INPUT · id/target_audience/required=false/type=input | ✓ |
+| 6 | STEP8_PLATFORMS_5 re-export STEP3_PLATFORMS_5 + STEP8_PLATFORM_RADIO_LABEL | ✓ |
+| 7 | STEP8_EXPERIENCE_3 · 3 项 · 中点 `·` · 严禁 hyphen | ✓ |
+| 8 | STEP8_EXPERIENCE_RADIO_LABEL + STEP8_BUTTON_GENERATE_PLAN | ✓ |
+| 9 | STEP8_OPTIMIZE_TEXTAREA · required=true · 全角括号 | ✓ |
+| 10 | STEP8_OPTIMIZE_INPUT · 全角括号 placeholder | ✓ |
+| 11 | STEP8_BUTTON_OPTIMIZE_SCRIPT + STEP8_OPTIMIZE_MIN_CHARS=10 + CHAR_COUNTER_TEMPLATE | ✓ |
+| 12 | STEP8_GENERATE_LOADING_TEXT + STEP8_OPTIMIZE_LOADING_TEXT 字面 1:1 | ✓ |
+| 13 | STEP8_OUTPUT_MODULES_6 · 6 项 h3Label 字面 1:1 | ✓ |
+| 14 | Step8Result interface · 两分支 generate_plan? / optimize_script? | ✓ |
+| 15 | 字面 grep 9 条全命中 | ✓ |
+| 16 | 数字锁: SUBFUNCTIONS_2.length=2 / EXPERIENCE_3.length=3 / OUTPUT_MODULES_6.length=6 | ✓ |
+| 17 | step8.test.ts · 8 assertions 覆盖全 | ✓ |
+| 18 | vitest run 8/8 PASS · typecheck 0 error | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/`
+- `vitest.xml` — 8 passed, 0 failures
+- `vitest.stdout.txt` — 8 tests pass
+- `pytest-full.stdout.txt` — 全量 vitest 119 tests, 0 failures（无 backend，以 vitest 为零回归门禁）
+- `typecheck.stdout.txt` — 0 errors
+- `manifest.json` — verdict=PASS, zero_regression=PASS
+
+### 判决
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

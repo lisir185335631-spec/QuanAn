@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.361">
-    <testsuite name="src/lib/constants/__tests__/step8.test.ts" timestamp="2026-05-17T11:17:57.125Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.001082625">
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号" time="0.00028725">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; SUBFUNCTIONS_2 · 2 个 h3Label 字面 1:1 · 含全角冒号" time="0.000093875">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; EXPERIENCE_3 · 3 个 label 含中点 · · 严禁 hyphen 或逗号" time="0.000148">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; OUTPUT_MODULES_6 · 6 个 h3Label 字面 1:1 spec §7.9 line 1782" time="0.000061083">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; PLATFORMS_5 re-export from step3 · length === 5" time="0.000045875">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; BUTTON_GENERATE_PLAN + BUTTON_OPTIMIZE_SCRIPT 字面 1:1" time="0.000054125">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; OPTIMIZE_MIN_CHARS === 10" time="0.000039375">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; Step8Result interface · generate_plan + optimize_script 两分支" time="0.000058625">
+<testsuites name="vitest tests" tests="1" failures="0" errors="0" time="0.283">
+    <testsuite name="src/specialists/__tests__/TopicAgent.real-llm.test.ts" timestamp="2026-05-18T08:40:37.121Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/TopicAgent.real-llm.test.ts" name="TopicAgent SSE real LLM &gt; (a) executeStream — 5 done chunks · all categories present · schema valid · cost_log tokens &gt; 0" time="0">
+            <skipped/>
         </testcase>
     </testsuite>
 </testsuites>

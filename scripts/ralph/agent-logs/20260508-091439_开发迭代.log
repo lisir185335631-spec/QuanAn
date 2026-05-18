@@ -1,0 +1,1 @@
+US-004 is verified complete. The implementation was correctly committed at `bb0786b` — 109/109 tests pass, typecheck clean, working tree clean. The Opus round-6 notes described a pre-commit dirty-tree state that no longer exists; no code changes were needed. The Validator will now run to set `passes: true`.

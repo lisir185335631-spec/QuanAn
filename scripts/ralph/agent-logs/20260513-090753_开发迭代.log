@@ -1,0 +1,12 @@
+US-002 구현 완료. 커밋 `fd93a6d`.
+
+**구현 내용:**
+- `apps/api/src/workers/trending-scraper/queue.ts` — BullMQ Queue, attempts:3
+- `apps/api/src/workers/trending-scraper/worker.ts` — LD-A-5 강제: `trendingReviewQueue.create` 사용, `trendingItem.create` 없음
+  - P2002 catch + log warn (AC-4)
+  - `data_mutation/scraper_enqueue` 감사 로그 (AC-7)
+  - 최종 실패 시 `system_alert/scraper_enqueue_failed` 감사 로그 (AC-6)
+- `apps/api/src/services/admin/content-review/trending-auto-verdict.service.ts`
+  - `computeAutoVerdict` 순수 함수: 금지어→auto_rejected, 샘플링 미적중→auto_approved, else→needs_review
+  - scanResult null→needs_review 보수 전략 (AC-5/D-081)
+- 테스트 16개 통과 (worker 9 + service 7), typecheck 0 errors, grep AC-2 0 hits, audit-redlines-admin ALL PASS

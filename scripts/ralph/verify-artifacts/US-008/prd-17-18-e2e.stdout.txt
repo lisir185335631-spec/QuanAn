@@ -1,0 +1,104 @@
+
+Running 7 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/prd-17-step1-3-3b.spec.ts:20:3 › PRD-17 Step1 → Step3 → Step3b E2E › 完整流程：行业选择 → 账号包装 → 人设定制 (7.2s)
+  ✘  2 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 (21.5s)
+  ✓  3 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:56:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品 → 生成变现路径 → 5 H3 + 3 阶梯 (9.9s)
+  ✘  4 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:112:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 (11.2s)
+  ✓  5 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:169:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成拍摄计划 → 3 模块 (6.9s)
+  ✘  6 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:203:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 (21.9s)
+  ✓  7 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:246:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 切子功能1 → 填字段 → 生成直播方案 → 6 H3 (7.2s)
+
+
+  1) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h3').filter({ hasText: '1. 每日任务表' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('h3').filter({ hasText: '1. 每日任务表' })[22m
+
+
+      42 |
+      43 |     // 等 3 H3 输出
+    > 44 |     await expect(page.locator('h3').filter({ hasText: '1. 每日任务表' })).toBeVisible({
+         |                                                                      ^
+      45 |       timeout: 15_000,
+      46 |     });
+      47 |     await expect(page.locator('h3').filter({ hasText: '2. 每周里程碑' })).toBeVisible();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:44:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/error-context.md
+
+  2) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:112:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('tab', { name: '变现型' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('tab', { name: '变现型' })[22m
+
+
+      134 |     // 等 5 类 tab (use role selector to avoid strict mode when topic cards also contain category text)
+      135 |     await expect(page.getByRole('tab', { name: '流量型' })).toBeVisible({ timeout: 15_000 });
+    > 136 |     await expect(page.getByRole('tab', { name: '变现型' })).toBeVisible();
+          |                                                          ^
+      137 |     await expect(page.getByRole('tab', { name: '人设型' })).toBeVisible();
+      138 |     await expect(page.getByRole('tab', { name: '认知型' })).toBeVisible();
+      139 |     await expect(page.getByRole('tab', { name: '案例型' })).toBeVisible();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:136:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/error-context.md
+
+  3) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:203:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h4').filter({ hasText: '话题抛出' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('h4').filter({ hasText: '话题抛出' })[22m
+
+
+      228 |
+      229 |     // 等 4 H4 (debate 模式)
+    > 230 |     await expect(page.locator('h4').filter({ hasText: '话题抛出' })).toBeVisible({
+          |                                                                  ^
+      231 |       timeout: 15_000,
+      232 |     });
+      233 |     await expect(page.locator('h4').filter({ hasText: '正方' })).toBeVisible();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:230:66
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/error-context.md
+
+  3 failed
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:112:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:203:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 
+  4 passed (1.5m)

@@ -1,0 +1,27 @@
+验证完成。最终结果：
+
+---
+
+## 验证结果: US-010 PASS
+
+### AC 对照
+
+| # | 验收标准 | 结果 |
+|---|---|:-:|
+| AC-1 | consoleErrors === [] 硬门禁 | ✓ |
+| AC-2 | Step 1: h1 + step tag + 6 tabs 可见 + 截图 | ✓ |
+| AC-3 | Step 3: h1 + step tag + 副标 + 5 platforms + 6 H3 输出 + 截图 | ✓ |
+| AC-4 | Step 3b: h1 + step tag + 副标 + personalInfo 预填(/美容师/) + 5 H3 输出 + 截图 | ✓ |
+| AC-5 | .gitkeep + 3 截图 PNG 存在 | ✓ |
+| AC-6 | `pnpm playwright test` 全 PASS | ✓ (1 passed, 11.4s) |
+| AC-7 | verify-prd-17.sh ≥12 项检查 | ✓ (12/12) |
+| AC-8 | chmod +x + 运行 exit 0 | ✓ |
+| AC-9 | 零回归硬门禁 `pnpm test` | ✓ (70 tests passed) |
+| AC-10 | Typecheck `pnpm tsc --noEmit` 0 error | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-010/`
+已生成: `pytest-full.xml` (70 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt` (0 errors), `playwright.stdout.txt` (1 passed), `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

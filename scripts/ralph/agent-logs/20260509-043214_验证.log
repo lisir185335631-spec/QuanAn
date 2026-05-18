@@ -1,0 +1,38 @@
+---
+
+## 验证结果: US-011 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | 9 input schemas 导出 | ✓ |
+| AC-2 | StepForm.tsx 使用 zodResolver + useMutation | ✓ |
+| AC-3 | 4 个字段组件存在 | ✓ |
+| AC-4 | 9 个 schema'd 步骤页面使用 StepForm | ✓ |
+| AC-5 | browser 打开 /step/1 | ✓ |
+| AC-6 | 选 medical → submit | ✓ |
+| AC-7 | 显示「提交成功」 | SUSPECTED（API 未运行，代码逻辑正确） |
+| **AC-8** | **无控制台错误** | **✗ CONFIRMED：初次渲染 12 个 React 错误** |
+| AC-9 | zod 校验失败 → inline error，不发请求 | ✓（「行业必填」确认） |
+| AC-10 | mutation 失败 → toast.error | ✓ |
+| AC-11 | AbortController 取消 | ✓（代码验证） |
+| AC-12 | FeedbackButton grep 0 命中 | ✓ |
+| AC-13 | z.object inline grep 0 命中 | ✓ |
+| AC-14 | 中文错误信息 | ✓ |
+| AC-15 | hardcode color grep 0 命中 | ✓ |
+| **AC-16** | **StepForm.test.tsx ≥ 5 tests** | **✗ CONFIRMED：文件存在 26 tests，但 vitest 找不到** |
+| AC-17 | 性能指标 | 无法验证（无 instrumentation） |
+| **AC-18** | **Tests pass** | **✗ CONFIRMED：`pnpm test tests/unit/web/StepForm.test.tsx` → "No test files found"** |
+| AC-19 | Typecheck passes | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-011/`  
+已生成: `pytest-full.xml` (292 passed · 零回归), `typecheck.txt` (PASS), `manifest.json`
+
+### 判决
+`prd.json.passes = false`，`retryCount = 1`
+
+**两处 CONFIRMED 失败**：
+1. **vitest.config.ts `include` 模式缺 `.tsx`** → `StepForm.test.tsx` 完全不可执行，需改为 `['tests/unit/**/*.test.{ts,tsx}']`
+2. **初次渲染 12 个 React 控制台错误** → `useForm()` 在 React concurrent mode 首次渲染抛 `"Invalid hook call"` + `"Cannot read properties of null (reading 'useRef')"` ，需在 `vite.config.ts` 加 `resolve.dedupe: ['react', 'react-dom', 'react-hook-form']` 或修复 pnpm workspace React 版本去重

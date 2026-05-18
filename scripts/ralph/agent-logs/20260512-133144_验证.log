@@ -1,0 +1,37 @@
+验证完成。
+
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | AdminLayout.tsx grid topbar(60px)+sidebar(240px)+main+portal+statusbar(24px) | ✓ |
+| AC-2 | TopBar: 品牌+email badge+role badge+logout dropdown+🔔 | ✓ |
+| AC-3 | Sidebar: 16域4组+NavLink+isActive+h-calc(100vh-60px-48px) | ✓ |
+| AC-4 | AuditDrawer: React Portal+listMine+30s polling+ESC/outside关 | ✓ |
+| AC-5 | StatusBar: 24px+ENV/RLS/WAF/MFA/Role 5字段+stub全黄 | ✓ |
+| AC-6 | admin-routes.ts: 16域 metadata array+4分组 | ✓ |
+| AC-7 | 16个 placeholder 文件，各显示 'PRD-XX 域 N 待落地' | ✓ |
+| AC-8 | `wc -l = 16` | ✓ |
+| AC-9 | router.tsx: 16域+/login+/admin默认+404捕获 | ✓ |
+| AC-10 | packages/ui/src/admin/{index.ts,tokens.ts,DenseTable.tsx}，导出路径 `"./admin"` | ✓ |
+| AC-11 | admin.css: Aurelian Dark+row hover+sidebar active+drawer slide动画 | ✓ |
+| AC-12 | audit.ts: listMine procedure stub 返回最近50条 | ✓ |
+| AC-13~15 | layout/sidebar/audit-drawer 单测各6 pass，共18 pass | ✓ |
+| AC-16~17 | grep R-A5 = 0（无LLM调用/API Key引用） | ✓ |
+| AC-18 | tsc --noEmit exit_code=0 | ✓ |
+| AC-19~23 | 浏览器E2E：登录→/admin，TopBar品牌+角色+邮箱，Sidebar导航，AuditDrawer开关，StatusBar 5字段 | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-005/
+├── pytest-full.xml     (1030 tests, 0 failures)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt (0 errors)
+├── knowledge-page.png  (layout screenshot)
+└── manifest.json       (zero_regression: PASS)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

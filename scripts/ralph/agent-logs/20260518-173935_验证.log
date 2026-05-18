@@ -1,0 +1,43 @@
+验证完成。
+
+---
+
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|:---:|
+| AC-1 | prd-20-real-llm.spec.ts 4 tests + test.describe | ✓ |
+| AC-2 | .github/workflows/e2e-weekly-real-llm.yml weekly cron | ✓ |
+| AC-3 | playwright.config.ts timeout 90s + retries 2 | ✓ |
+| AC-4 | TD-79 STEP1_CTA_LABEL='生成行业洞察' + STEP1_NEXT_LABEL ≥1 hit | ✓ |
+| AC-5 | TD-80 6 constants + Step1/3/3b.tsx 改用常量 + hardcode 0 hit | ✓ |
+| AC-6 | TD-81 acc_step5_selected_topic 0 hit | ✓ |
+| AC-7 | TD-82 prd-18 test3 skip(!OPENAI_API_KEY) | ✓ |
+| AC-8 | tech-debt.json TD-79/80/81/82 status=resolved | ✓ |
+| **AC-9** | **agent-browser e2e 4 tests PASS** | **✗ FAIL** |
+| **AC-10** | **typecheck PASS + zero-regression vitest** | **✗ PARTIAL FAIL** |
+
+### CONFIRMED 失败
+
+**AC-9 — `test.skip` 位置错误导致全部 4 tests SKIPPED:**
+- 复现命令: `cd apps/web && E2E_BASE_URL=http://localhost:5173 pnpm exec playwright test e2e/prd-20-real-llm.spec.ts`
+- 实际输出: `4 skipped`（not passing）
+- 根因: `test.skip(!HAS_OPENAI_KEY || !REAL_LLM, ...)` 在 `test.describe` 内但 **test 函数外**调用 → Playwright v1.48 会 skip 该 describe 内**全部** tests。fallback 模式下 condition=true → 4 tests 全 skip
+
+**AC-10 — R-001 新回归:**
+- `tests/integration/api/stt-whisper.test.ts` + `tts-openai.test.ts` R-001 grep FAIL
+- 根因: US-008 新建 `apps/web/e2e/*.ts` 含 `process.env.OPENAI_API_KEY` → 现有 R-001 grep(`apps/web --include="*.ts"`) 命中这些 e2e 文件
+
+### 修复方向
+
+1. **Fix 1 (AC-9)**: 将 `test.skip(...)` 移进 test(b) 函数体内，让 a/c/d 在 fallback 模式正常运行
+2. **Fix 2 (R-001)**: 将两个 R-001 test 的 grep 路径从 `apps/web` 改为 `apps/web/src`（排除 e2e/）
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`  
+`manifest.json`(verdict=FAIL) · `pytest-full.xml`(901 tests 13 fail) · `typecheck.stdout.txt`(0 errors) · `e2e-prd20.stdout.txt`(4 skipped)
+
+`prd.json.passes = false`  
+`retryCount = 1`

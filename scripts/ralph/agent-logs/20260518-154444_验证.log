@@ -1,0 +1,24 @@
+All done. Here's the validation summary:
+
+---
+
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+- **AC-1** ✓ `MonetizationAgent.invokeLLM` 调用 `this.llmGateway.complete()` 真实 LLM 调用；`Step4bOutputSchema` 用 `.length(3)` 强制 ladder 三阶梯，`revenueStructure.secondary.length(2)`，`successCases.length(2)` 严格验证
+- **AC-2** ✓ `VideoAgent.invokeLLM` 按 `req.mode` dispatch 到 `_invokeShooting`；`ShootingBaseSchema` + `ShootingOutputSchema` 均基于 `Storyboard8ColItemSchema`（8 列：duration/scene/shotType/angle/movement/emotion/dialogue/action）
+- **AC-3** ✓ 两个 `*.real-llm.test.ts` 已存在，均使用 `describe.skipIf(skipIfNoKey)`，各含 1 个测试
+- **AC-4** ✓ `EXPECTED_8_COLS` 数组在 VideoAgent 测试中严格检查 8 列名；两个测试均使用 `safeParse`；MonetizationAgent 测试 `expect(output.ladder).toHaveLength(3)`
+- **AC-5** ✓ 两个 Agent 的 `agentId` 正确设置（`MonetizationAgent`/`VideoAgent`）；`BaseSpecialist._writeCostLog` 通过 `prisma.costLog.create()` 写入，测试验证 `promptTokens/completionTokens/costUsd > 0`
+- **AC-6** ✓ 测试命令正确，no API key 时 skip（exit_code=0，符合 CI 安全设计）
+- **AC-7** ✓ Typecheck: 0 错误；Zero-regression: 10 passed, 6 skipped（全部 real-LLM 测试按设计 skip），0 failures
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-005/`
+已生成: `pytest-full.xml` (10 passed), `pytest-full.stdout.txt`, `pytest.xml`, `pytest.stdout.txt`, `typecheck.stdout.txt`
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

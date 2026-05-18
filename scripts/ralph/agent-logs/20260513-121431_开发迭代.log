@@ -1,0 +1,13 @@
+US-009 の実装が完了しました。
+
+**実装サマリー:**
+
+- `review-deep-learn.ts`: 6つの `adminProcedure` を実装
+  - `list`: page/pageSize/statusFilter/userIdFilter/dateRange/autoVerdictFilter · cross_account_query audit
+  - `detail`: textPreview(redacted fileName) + userViolationCount + userViolations
+  - `approve`: $transaction · update queue + `_createDeepLearningArchiveInTx`(LD-A-5 単点) + archiveId更新
+  - `reject`: userViolationLog.upsert count+1 · count≥3 → security_alert/user_violation_warning
+  - `banUploader`: Approval Gates stub · super_admin auto_executed / admin pending
+  - `userViolations`: userId or null(count≥3) · cross_account_query audit
+
+- **検証結果**: 42 unit tests ✅ · typecheck 0 error ✅ · audit-admin-rls 50 procedures 0 violations ✅ · audit-approval-gates 15 checks 0 missing ✅ · LD-A-5 grep 1命中(admin内) ✅

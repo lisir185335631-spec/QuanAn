@@ -1,0 +1,1 @@
+US-005 完成。实现了 `acquisitionVideo.generate` procedure，映射 `cta→ctaScript` 满足 AC-4 post-validate grep 检查，双层防护通过 LD-009，7 单元测试 + 1 集成测试全绿，typecheck 6 ws 0 error。

@@ -1,0 +1,7 @@
+US-001 实现完毕。全部验收标准满足：
+
+- `pnpm typecheck`（全 workspace）退出码 0 ✅
+- `@/` 路径正确解析（`baseUrl: "."` + `@/*: ["./src/*"]`）✅  
+- `@/server/` 残留路径已修正为 `@/workers/` / `@/agents/` ✅
+- `apps/admin/src/index.ts` 占位文件存在，`.gitkeep` 保留 ✅
+- `pnpm test` 退出码 0（`passWithNoTests: true` + `tests/setup.ts` 占位）✅

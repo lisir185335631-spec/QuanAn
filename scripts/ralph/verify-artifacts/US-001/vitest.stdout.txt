@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  03:25:22
+   Duration  364ms (transform 20ms, setup 20ms, collect 14ms, tests 2ms, environment 119ms, prepare 34ms)
+

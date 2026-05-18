@@ -1,0 +1,11 @@
+US-004 retry-2 complete. Summary of changes:
+
+**Root cause fixed**: `VideoProductionResult.tsx` had 4 wrong header→key mappings (镜头号→`scene`, 景别→`transition`, 画面描述→`voiceover`, BGM→`lighting`).
+
+**Changes made**:
+1. **`VideoAgent.ts`**: Added 7 optional fields to `ShotItemSchema` (`index`, `angle`, `movement`, `description`, `bgm`, `reference`, `note`), updated `_buildProductionPrompt` JSON template to include these 7 fields, added them to all 3 production fallback shots.
+2. **`VideoProductionResult.tsx`**: Added 7 new fields to `ShotItem` interface; fixed all 7 wrong COLUMNS mappings to semantic 1:1 alignment.
+3. **`VideoProduction.test.tsx`**: Added `describe` block with 2 tests verifying the corrected header→key mappings.
+4. **`tool-video-production.spec.ts`**: Updated e2e mock data to include the 7 new fields in each shot.
+
+Results: `pnpm typecheck` 6 ws 0 errors · `pnpm test` 624/624 pass.

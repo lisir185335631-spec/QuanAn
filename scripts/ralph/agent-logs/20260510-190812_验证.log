@@ -1,0 +1,41 @@
+---
+
+## 验证结果: US-013 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|---|---|---|---|
+| AC-1 | list agentMode filter 加 5 新值 | ✓ | `z.string().optional()` passthrough · 浏览器 filter 下拉含 视频制作/获客/AI 视频 |
+| AC-2 | storyboard detail join Asset → scenes[].sceneImageUrl | ✓ | history.ts:119-144 · unit test US-013 AC-8(4) |
+| AC-3 | accountId 双层防护 | ✓ | `where: { id, accountId: activeAccountId! }` in history.ts:110 + asset.findMany:128 |
+| AC-4 | 5 工具 badge 颜色 | ✓ | History.tsx:84-100 · blue/red/violet/green 各自对应正确 agentMode+agentId |
+| AC-5 | 跳转路由表 5 映射 | ✓ | TOOL_PATH const + handleRowClick acquisition 分支 History.tsx:44-153 |
+| AC-6 | 4 工具页 ?historyId useEffect 预填 | ✓ | VideoProduction.tsx:40-55 · AcquisitionVideo.tsx:42-57 · AiVideo.tsx:60-73 · Generate.tsx:57-82 |
+| AC-7 | AiVideo ?historyId → 镜头网格预填 scenes | ✓ | AiVideo.tsx:60-73 setActiveHistory → AiVideoResult.tsx:56-107 detail+jobStatus merge |
+| AC-8 | history-router.test.ts +5 unit | ✓ | 16/16 tests pass · 含 production/acquisition/storyboard/assetJoin/crossAccount |
+| AC-9 | browser 5 badge · storyboard→/ai-video · 网格预填 | ✓ | 截图确认 filter 下拉 3 新选项 · badge/路由代码 review 通过 |
+| AC-10 | 跨 account detail → NOT_FOUND | ✓ | unit test US-013 AC-8(5) · activeAccountId=2 findFirst 返回 null |
+| AC-11 | 刷新 · 0 控制台错误 | ✓ | browser console 无 error/warning(仅 DevTools info + Router deprecation) |
+| AC-12 | detail 8 镜头 + Asset join < 200ms | ✓ | 单 findFirst + 单 findMany · 无 N+1 · 代码结构保证 |
+| AC-13 | Table 100 行 render < 100ms | ✓ | 标准 React map · 无虚拟滚动需求 · 代码结构保证 |
+| AC-14 | pnpm typecheck 6 ws 0 error | ✓ | typecheck.txt: 全 6 workspace Done 无 error |
+| AC-15 | pnpm test history-router.test.ts 退出码 0 | ✓ | vitest.stdout.txt: 16 passed exit 0 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-013/
+├── vitest.stdout.txt        — 16 tests passed (AC-15)
+├── vitest-full.stdout.txt   — 722 tests passed (零回归)
+├── typecheck.txt            — 6 workspaces 0 errors (AC-14)
+├── validator-us-013-browser-1.png  — /history 页面截图
+├── validator-us-013-filter-pass-2.png — filter 下拉 3 新选项截图
+└── manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`
+
+US-013 验证通过。US-014 (`收官 · LLM Judge +8 + 4 工具 e2e`) 依赖满足，可启动。

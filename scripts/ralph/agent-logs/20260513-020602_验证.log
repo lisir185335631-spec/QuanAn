@@ -1,0 +1,34 @@
+## 验证结果: US-016 [PASS]
+
+### AC 对照
+
+- **AC-1** ✓ `audit.ts` 新建 `adminAuditRouter` · 5 procedure (`byTraceId/byUserId/byAdminId/search/exportPdf`) 全走 `adminProcedure`（= `publicAdminProcedure + 6 middleware gates`，正确且更安全；audit-admin-rls.ts 32 procedures 0 violations 确认）
+- **AC-2** ✓ `byTraceId` · `traceId min 8` zod · `$transaction + $executeRaw SET LOCAL` · `Promise.all` 4 表并行 · `createdAt` 升序合并 · 写 `cross_account_query + view_trace_timeline` audit
+- **AC-3** ✓ `byUserId` · 分页(`skip = (page-1)*pageSize`) + `eventCategory` filter + 时间范围 + 按 category 分组
+- **AC-4** ✓ `byAdminId` · `super_admin` 直通 · `readonly_admin` 需 `x-actor-mode: legal` · 高风险事件 `isHighRisk=true`
+- **AC-5** ✓ `search` · `keyword min 2 max 100` zod · `prisma.contains mode:'insensitive'` · `take: 200`
+- **AC-6** ✓ `exportPdf` mutation · 4 表并行查询 → `generateForensicPdf` → `base64` 返回 · 写 `export_forensic_pdf` audit
+- **AC-7** ✓ `traceId` 不存在时返回 `{ timeline: [], summary: { eventCount: 0, spanMs: 0 } }` 不抛 error
+- **AC-8** ✓ 普通 `admin` 调 `byAdminId` → `FORBIDDEN`（测试通过）
+- **AC-9** ✓ `'; DROP TABLE`, `"quoted"`, `; --` 等特殊字符 · `prisma.contains` 自动 escape · 不抛 error
+- **AC-10** ✓ `byTraceId` 写 `cross_account_query` audit；`exportPdf` 写 `export_forensic_pdf` audit (LD-A-3 append-only)
+- **AC-11** ✓ `readonly_admin + x-actor-mode: legal` 全权访问；无 legal 或 role=admin → FORBIDDEN
+- **AC-12** ✓ `audit-redlines-admin.sh` ALL PASS (5 LD-A + 6 R-A) · `audit-admin-rls.ts` 32 procedures 0 violations ≥ 26 · `audit-approval-gates.ts` ALL PASS
+- **AC-13** ✓ 35 单元测试（≥ 25）覆盖全部 5 procedure 场景
+- **AC-14** ✓ US-016 单测 35/35 pass · typecheck 0 errors · 全量套件 9 failures 均为 pre-existing 集成测试（需 live server，git stash 验证与 US-016 无关）
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-016/
+├── manifest.json           ← zero_regression: PASS, verdict: PASS
+├── pytest.xml              ← 35 passed (US-016 specific)
+├── pytest.stdout.txt       ← US-016 unit test output
+├── pytest-full.xml         ← 1273 tests, 9 failures (all pre-existing)
+├── pytest-full.stdout.txt  ← full suite output
+└── typecheck.stdout.txt    ← 0 errors
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

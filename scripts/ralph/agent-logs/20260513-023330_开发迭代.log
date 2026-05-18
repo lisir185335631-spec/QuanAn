@@ -1,0 +1,13 @@
+US-018 实现完成。总结：
+
+**实现内容：**
+
+1. **`PdfForensicTemplate.tsx`** — 4页式取证 PDF 模板：封面页（案件号/取证人/traceId/空记录证据）、时间线页（50条/页防 OOM）、签名页（手签+司法盖章占位+完整 hash）、每页固定 footer（`Content-Hash: SHA-256 = {hash}` + 分页 N/M + 取证时间）
+
+2. **`pdf-forensic.service.ts`** — 替换 stub 为真实实现：redact 敏感字段后计算 payloadHash/contentHash、来源推断、50MB 拒绝、返回 `Promise<Buffer>`
+
+3. **`audit.ts exportPdf`** — reason min(10) Zod 验证（AC-11）、super_admin/readonly_admin-legal 角色检查（AC-13）、adminUser 查邮箱、timeline source 标记、audit eventType=`export_audit_forensic_pdf` + pdfHash + eventCount（AC-7）
+
+4. **前端** — 下载文件名改为 `audit-forensic-{traceId12}-{ts}.pdf`（AC-8）
+
+5. **测试** — 9 个 audit-forensic 单元测试 + 8 个 exportPdf 更新测试，共 48/48 通过，typecheck 0 错误，audit:redlines-admin ALL PASS

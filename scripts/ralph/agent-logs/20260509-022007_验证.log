@@ -1,0 +1,34 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | BrandingAgent 继承 BaseSpecialist · 五层配置完整 · model_tier='reasoning' · timeout_ms=60000 | ✓ |
+| AC-2 | Step3OutputSchema(packaging): nickname[5], avatar, background.platformVersions[3], bio[6]+enum, overallStrategy | ✓ |
+| AC-3 | Step3bOutputSchema(persona): coreIdentity, thoughtSystem(coreBeliefs[3]/uniqueViews[2]/catchphrases[3]), contentPersona.contentPillars[4], trustBuilding, personaRoadmap{phase1,2,3} | ✓ |
+| AC-4 | router stepData.save: stepKey='step3'→packaging, 'step3b'→persona, 调 brandingAgent.execute | ✓ |
+| AC-5 | nickname 4 个→length(5)失败→retry→二次失败 throw SchemaValidationError (BaseSpecialist US-003 契约) | ✓ |
+| AC-6 | bio platform enum 拒绝无效值 · userPrompt 已强调 5 平台 | ✓ |
+| AC-7 | coreBeliefs 5 条→length(3)失败→retry · prompt 含'必须正好 3 条' | ✓ |
+| AC-8 | mode 不在['packaging','persona'] → throw `invalid mode` | ✓ |
+| AC-9 | BrandingAgent.test.ts 8 tests(≥6) · 2 mode × 4 场景 | ✓ |
+| AC-10 | TIMEOUT_MS: packaging=60_000, persona=45_000 · 按 mode 注入 llmGateway.complete | ✓ |
+| AC-11 | Tests pass: 8/8 | ✓ |
+| AC-12 | Typecheck passes: 0 errors | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+  pytest.xml          (8 passed, 0 failed — BrandingAgent unit)
+  pytest.stdout.txt   (verbose vitest output)
+  pytest-full.xml     (257 passed, 0 failed — zero-regression)
+  pytest-full.stdout.txt
+  typecheck.txt       (0 errors)
+  manifest.json       (updated)
+```
+
+### 判决
+
+`prd.json.passes = true` — 所有 12 条 AC 通过，零回归验证通过，typecheck 干净。

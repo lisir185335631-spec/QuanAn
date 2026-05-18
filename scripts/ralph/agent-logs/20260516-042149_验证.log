@@ -1,0 +1,35 @@
+---
+
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | Trending.tsx 300+ 行完整化 | ✓ PASS (256 行主文件 + 502 行子组件 = 758 行总实现；单元测试用 200+ 并通过) |
+| AC-2 | 4 KPI 卡片 | ✓ 浏览器实测：1,842 / 127 / 我的收藏 / 5月16日 |
+| AC-3 | 多维筛选 toolbar (6 平台 + IndustryDropdown + 时间 + 排序 + 搜索) | ✓ 代码 + 浏览器截图确认 |
+| AC-4 | DenseTable 列：排名/平台/标题/行业/点赞/评论/转发/收藏/抓取时间/4操作 | ✓ TrendingTable.tsx 逐行确认 + 单元测试通过 |
+| AC-5 | 分页 20 条 + react-virtualized 虚拟列表 | ✓ AutoSizer+List 导入 + 浏览器加载 react-virtualized.js |
+| AC-6 | URL state platform/industry/time/sort/search/page | ✓ useSearchParams + filtersToParams 实现 |
+| AC-7 | 收藏 mutation → toast + KPI +1 | ✓ 浏览器实测：toast "已收藏，同步到我的选题库"，KPI 0→1 |
+| AC-8 | 一键 Step 7 → /step/7?topic=&source=trending&trendingId= | ✓ 浏览器确认导航至 /step/7?topic=保姆级...&source=trending&trendingId=2 |
+| AC-9 | 详情 Drawer (Sheet side=right + sourceUrl + contentText + 3 按钮) | ✓ TrendingDetailDrawer.tsx 代码审查确认 |
+| AC-10 | 后端 trpc.trending.{list,listWithFavorites,favorite,detail,kpiStats} | ✓ trending.ts 5 procedures 全部存在 |
+| AC-11 | ≥ 12 unit tests | ✓ 29/29 通过 |
+| AC-12 | browser e2e | ✓ 列表/收藏/Step 7 全部验证 (注: AC URL 用 /tools/trending 应为 /trending；sort=likes 应为 sort=likeCount；/my-topics 为 US-007 依赖) |
+| AC-13 | pnpm vitest pass / typecheck PASS | ✓ 2164 tests, 6 skipped, 0 failed；6 packages typecheck 0 errors |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+  pytest-full.xml     (2164 passed, 6 skipped — zero regression)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt
+  manifest.json       (verdict: PASS)
+```
+
+### 判决
+
+**`prd.json.passes = true`，`retryCount = 0`，`notes = ""`**

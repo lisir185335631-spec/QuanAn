@@ -1,0 +1,15 @@
+US-019 完成。实现摘要：
+
+**已交付：**
+- `apps/api/src/services/admin/invites/campaign.service.ts` — CRUD 5 函数 + `getCampaignFunnel()` 4 阶段漏斗（注册→激活→9步完成→D30留存），所有 DB 操作走 `SET LOCAL app.role='admin'` adminRLS bypass
+- `apps/api/src/services/admin/invites/__tests__/campaign.test.ts` — 18 tests，覆盖 CRUD + funnel + 所有 ValidationError 路径
+- `package.json` — 新增 `audit:admin-rls-tables` 脚本
+
+**所有 AC 验证通过：**
+- AC-1: schema 已有 InviteCampaign ✓ (init migration)
+- AC-2/3: 表已建成，RLS DISABLED ✓
+- AC-4: audit-admin-rls-tables.sh 已含 invite_campaigns ✓
+- AC-5-9: service 层实现含漏斗、@unique 友好错误、quota/日期/status 转换验证 ✓
+- AC-10: 18 tests (≥8) ✓
+- AC-11: pnpm test + typecheck 0 error ✓
+- AC-12: `pnpm audit:admin-rls-tables` → invite_campaigns | RLS OFF | ✓

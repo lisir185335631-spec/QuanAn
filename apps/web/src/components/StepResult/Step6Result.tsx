@@ -2,20 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
+// PRD-20 US-005: 8-column storyboard schema (duration/scene/shotType/angle/movement/emotion/dialogue/action)
 interface ShotItem {
-  scene?: string;
   duration?: string;
-  action?: string;
+  scene?: string;
+  shotType?: string;
+  angle?: string;
+  movement?: string;
+  emotion?: string;
   dialogue?: string;
-  cameraAngle?: string;
-  prop?: string;
-  lighting?: string;
-  transition?: string;
-  sfx?: string;
-  voiceover?: string;
-  subtitle?: string;
-  costume?: string;
-  location?: string;
+  action?: string;
 }
 interface Step6Data {
   shotList?: ShotItem[];
@@ -33,19 +29,14 @@ function Skeleton({ className }: { className?: string }) {
 }
 
 const SHOT_COLUMNS: { key: keyof ShotItem; label: string }[] = [
-  { key: 'scene', label: '场景' },
   { key: 'duration', label: '时长' },
-  { key: 'action', label: '动作' },
+  { key: 'scene', label: '场景' },
+  { key: 'shotType', label: '景别' },
+  { key: 'angle', label: '角度' },
+  { key: 'movement', label: '运镜' },
+  { key: 'emotion', label: '情绪' },
   { key: 'dialogue', label: '台词' },
-  { key: 'cameraAngle', label: '机位' },
-  { key: 'prop', label: '道具' },
-  { key: 'lighting', label: '灯光' },
-  { key: 'transition', label: '转场' },
-  { key: 'sfx', label: '音效' },
-  { key: 'voiceover', label: '旁白' },
-  { key: 'subtitle', label: '字幕' },
-  { key: 'costume', label: '服装' },
-  { key: 'location', label: '地点' },
+  { key: 'action', label: '动作' },
 ];
 
 export function Step6Result({ data, isFallback }: Props) {
@@ -104,7 +95,7 @@ export function Step6Result({ data, isFallback }: Props) {
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan={14} className="px-3 py-6 text-center text-muted-foreground">
+                      <td colSpan={9} className="px-3 py-6 text-center text-muted-foreground">
                         暂无分镜
                       </td>
                     </tr>

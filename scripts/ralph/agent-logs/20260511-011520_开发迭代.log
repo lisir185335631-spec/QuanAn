@@ -1,0 +1,7 @@
+US-005 实现完成：
+
+- **全局** `~/.claude/scripts/ralph/ralph.py:119` timeout `5 → 20`，docstring 加 RCA-004 PRD-7 US-005 注释
+- **全局** `sync-to-project.sh` 新增 `_check_ralph_version()`（md5sum 比对）+ `--force` 自动 cp 并备份旧版，不带 `--force` 仅警告
+- **项目副本** `scripts/ralph/ralph.py` 已通过 `--force` sync，timeout=20 确认
+- **RCA-004** status 标 resolved，§5.2 加 PRD-7 US-005 落地标记
+- 所有 AC grep 验证通过，python3 -m py_compile + bash -n syntax 验证通过

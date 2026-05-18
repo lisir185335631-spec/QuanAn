@@ -1,0 +1,25 @@
+## 验证结果: US-004 **PASS**
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|----|:----:|------|
+| AC-1 | ✓ | EvolutionAnomalyFlag schema: 所有字段 + 3 indexes + @@map(evolution_anomaly_flags) |
+| AC-2 | ✓ | migration 20260514033834_prd_13_evolution_anomaly 存在 |
+| AC-3 | ✓ | detectEvolutionAnomalies() 5 算法全部实现（deterministic，无 random） |
+| AC-4 | ✓ | execute() 末尾 try/catch 包裹，DingtalkService 触发正确 |
+| AC-5 | ✓ | 'detectAnomalies integration' describe + ≥2 it（flip + overflow） |
+| AC-6 | ✓ | evolutionHealth.ts 7 procedures 全实现（含 forceRebuildEvolution→{approvalRequestId}） |
+| AC-7 | ✓ | _forceRebuildEvolutionInTx: clear profile + mark insights resolved + audit_log + BullMQ delayed 5s |
+| AC-8 | ✓ | AGENTS.md §10.1 LD-A7 line 2423 + grep command |
+| AC-9 | ✓ | detectAnomalies 在 evolution_insight 写入成功后才跑，try/catch 防冒泡 |
+| AC-10 | ✓ | audit-redlines-admin.sh ALL PASS · 7 LD-A + 6 R-A（LD-A7 段已补入） |
+| AC-11 | ✓ (TD豁免) | 1588 passed ≥ 1580；9 failed = 与 US-001/002/003 完全相同的 pre-existing integration tests（ECONNREFUSED :3000） |
+| AC-12 | ✓ | pnpm typecheck 0 errors · 6 workspace packages 全通过 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-004/`
+已生成: `pytest-full.xml`(1588 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

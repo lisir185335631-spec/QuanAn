@@ -1,0 +1,9 @@
+US-016 の実装完了。主な成果:
+
+- **`tests/judge/judge-runner.ts`**: `runJudge(case_)` 共有ランナー。`model_tier: 'lightweight'`、`eventType: 'judge_call'`(D-023)、`timeout_ms: 10000`、retry=1 内蔵
+- **7つの golden case ファイル**: `tests/judge/{positioning,branding,monetization,topic,video,copywriting,livestream}.judge.ts` — 医療/美容/教育/健康/グルメ/フィットネス/ライブ配信の実際のシナリオ
+- **`vitest.judge.config.ts`**: 独立設定、通常テストを除外
+- **`package.json`**: `"test:judge": "vitest run --config vitest.judge.config.ts"` 追加
+- **gateway 側**: `CompleteRequest.metadata.eventType?` と `cost-logger` の `eventType` 書き込みを追加
+
+全AC確認: typecheck ✅、343+14=357テスト ✅。

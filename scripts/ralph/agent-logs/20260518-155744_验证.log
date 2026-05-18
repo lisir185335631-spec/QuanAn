@@ -1,0 +1,34 @@
+## 検証結果: US-006 [FAIL]
+
+### AC 対照
+- AC-1 ✓ `invokeLLM` は `gateway.stream()` SSE 使用、`executeStream` が 5 category 順に yield、meta chunk で actualModel を渡す (`TopicAgent.ts:298-305`)
+- AC-2 ✓ `TopicAgent.real-llm.test.ts` 存在、`describe.skipIf(skipIfNoKey)` 実装済み、`doneChunks.length===5` + categories sort 断言あり
+- AC-3 ✓ `TopicOutputSchema` が各路 `.length(20)` 強制、`safeParse` 検証
+- AC-4 ✓ テストが `costLog.create` を 5 回呼び出し + `promptTokens > 0` + `costUsd > 0` を断言
+- AC-5 ✓ TD-82 は条件付き (API key なし → US-008 に委ねる · prd.json notes に明記)
+- AC-6 ✓ `1 test | 1 skipped` (API key 未設定で skipIf が正常動作)
+- AC-7 typecheck: **PASS** (6 ws 0 errors)
+- AC-7 zero-regression: **FAIL** (12 pre-existing failures)
+
+### 産物パス
+```
+scripts/ralph/verify-artifacts/US-006/
+- pytest-full.xml        (failures=12, 901 tests · 2026-05-18 新規実行)
+- pytest-full.stdout.txt
+- typecheck.stdout.txt   (0 errors)
+- vitest.xml             (TopicAgent.real-llm.test · 1 skipped)
+- vitest.stdout.txt
+- manifest.json          (zero_regression=FAIL, verdict=FAIL)
+```
+
+### 判決
+`prd.json.passes = false` · `retryCount = 1`
+
+---
+
+**零回帰 12 failures は全て pre-existing**（US-006 は `TopicAgent.ts` と `TopicAgent.real-llm.test.ts` のみ変更）:
+1. `VideoAgent.test.ts` (2) — git log で `e6c6f82` (PRD-20 以前) が最終変更
+2. `StepResult.test.tsx` (1) — git log で `c632480` (PRD-20 以前) が最終変更
+3. `auth.test.ts / auth.me.test.ts / trace.test.ts` (9) — `http://localhost:3000` 必要・dev server 未起動で常時 fail
+
+**Opus への推奨**: これら 12 failures は US-006 実装と無関係。TD 豁免 approve を検討されたい。`VideoAgent + StepResult` は新 TD として登録し、`auth/trace` integration tests は running-server 環境でのみ実行するよう整理する方針が望ましい。

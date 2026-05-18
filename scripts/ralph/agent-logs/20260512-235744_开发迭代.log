@@ -1,0 +1,15 @@
+US-012 实现完毕。总结：
+
+**实现内容（`apps/api/src/trpc/routers/admin/cost.ts`）：**
+- `aggregate` — `$queryRaw` + `Prisma.raw` 白名单防注入，4 dimension × 3 groupBy，Decimal 全程累加
+- `top10` — `groupBy` userId + accountId 并行，取各 top 10
+- `specialistBreakdown` — `groupBy` agentId，`avgCostPerCall = totalCost.div(Decimal(callCount))`
+- `alerts` — 最近 24h per-user sum > $5，3 档 severity，邮件从 user 表 batch 查
+- `exportCsv` — chunk 1000 fetchMany，500k 行 gate，Decimal.toString()，CSV header 正确
+
+**验证结果：**
+- `pnpm typecheck` 0 错误
+- 34 tests 全过（≥ 25 要求）
+- `audit-redlines-admin.sh`: **ALL PASS · 5 LD-A + 6 R-A**
+- `audit-admin-rls.ts`: Checked **26** procedures · 0 violations · cost 5 个全识别
+- `money-critical` 注释 6 条（≥ 5 要求）

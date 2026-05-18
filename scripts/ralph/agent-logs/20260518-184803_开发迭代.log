@@ -1,0 +1,7 @@
+两个修复已完成并提交(5f73903)：
+
+**F-1** — `prd-18-step-4-5-6-7-8.spec.ts` 从 d9a594b 基础还原，更新5个 h1 期望值与 `stepConfig.ts` 一致（`step4="内容生产准备"`、`step4b="变现规划"`、`step6="数据分析与复盘"`、`step7="变现规划"`、`step8="持续迭代与升级"`），恢复 `.first()`/`networkidle`/`hasExistingResult` 逻辑，将 test3 skip 改为 `test.skip(!HAS_OPENAI_KEY)` inside body。
+
+**F-2** — `LivestreamAgent.test.ts:67` `experience: '中级'` → `'有经验'`，对齐 US-007 升级后的 enum `['新手','有经验','资深']`。
+
+质量验证：typecheck 全绿，LivestreamAgent 5 tests pass，vitest 888 passed（9个 ECONNREFUSED 是预存 S-1 环境依赖问题，非本次引入）。

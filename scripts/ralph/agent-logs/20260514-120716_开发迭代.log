@@ -1,0 +1,9 @@
+US-005 完成。提交内容总结：
+
+- **quota-adjustment.service.ts** — `_adjustQuotaInTx`（原子 tx）+ `adjustUserQuota`（delta>500 触发 dual-approval）+ `listUserQuotas` + `getUserQuotaTimeline`
+- **quota-expiry.job.ts** — BullMQ delayed job（jobId dedup 防重复 expiry）+ cleanup cron 00:30 Asia/Shanghai
+- **quota.ts** tRPC router — 6 procedures（getQuotaOverview/listUserQuotas/getUserDetail/adjustQuota/listAdjustmentLog/getActiveAdjustments）
+- **rate-limiter.ts** — whitelist bypass 前置检查（whitelistExpiresAt > now() 时跳过 Redis token bucket），不替代原有限流逻辑
+- **index.ts / admin/index.ts** — wire cleanup cron + quotaRouter 替换 placeholder
+- **seed** — 3 个现有用户 seeded 到 user_quota（free plan）
+- **验证** — 1610 tests pass（≥1595 AC）· 0 typecheck errors · ALL PASS 7 LD-A + 6 R-A

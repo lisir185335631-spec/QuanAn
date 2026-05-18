@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="vitest" tests="51" failures="0" errors="0" time="1.14">
-  <testsuite name="StepProgress" tests="6" failures="0" errors="0">
+<testsuites>
+  <testsuite name="userQuota.service.test.ts" tests="5" failures="0" errors="0" skipped="0" time="0.003">
+    <testcase classname="checkAndDeductQuota" name="(a) sufficient quota - deducts and returns correct remaining" time="0.001"/>
+    <testcase classname="checkAndDeductQuota" name="(b) full quota - returns QUOTA_EXCEEDED" time="0.001"/>
+    <testcase classname="checkAndDeductQuota" name="(c) new user row missing - auto-creates free plan then deducts" time="0.001"/>
+    <testcase classname="checkAndDeductQuota" name="(d) tokens=0 - skips deduction returns ok:true" time="0.000"/>
+    <testcase classname="checkAndDeductQuota" name="(e) concurrent 100 calls - final dailyUsed = sum tokens no over-deduction" time="0.001"/>
   </testsuite>
-  <testsuite name="step-progress" tests="10" failures="0" errors="0">
-  </testsuite>
-  <testsuite name="feedback-button" tests="8" failures="0" errors="0">
-  </testsuite>
-  <testsuite name="pages" tests="27" failures="0" errors="0">
+  <testsuite name="env.test.ts" tests="5" failures="0" errors="0" skipped="0" time="0.002">
+    <testcase classname="ENV validation" name="passes with valid required vars" time="0.001"/>
+    <testcase classname="ENV validation" name="throws on missing DATABASE_URL" time="0.000"/>
+    <testcase classname="ENV validation" name="throws on missing LLM_API_KEY" time="0.000"/>
+    <testcase classname="ENV validation" name="throws on invalid LOG_LEVEL" time="0.000"/>
+    <testcase classname="ENV validation" name="uses defaults for optional vars" time="0.001"/>
   </testsuite>
 </testsuites>

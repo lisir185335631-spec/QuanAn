@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="6" failures="0" errors="0" time="0.36">
-    <testsuite name="src/lib/constants/__tests__/step6.test.ts" timestamp="2026-05-17T11:03:10.114Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.000901792">
-        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; SUBTITLE 字面严格 1:1 spec §7.7 line 1639" time="0.0002905">
+<testsuites name="vitest tests" tests="2" failures="0" errors="0" time="0.285">
+    <testsuite name="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" timestamp="2026-05-18T05:10:50.206Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="2" time="0">
+        <testcase classname="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" name="BrandingAgent real LLM &gt; (a) packaging mode — nickname[5] + bio[6] + avatar + background + overallStrategy valid" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号" time="0.000116625">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA_MIN_CHARS === 10" time="0.000044459">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647" time="0.000031958">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1" time="0.000051083">
-        </testcase>
-        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; Step6Result interface 字段结构" time="0.000069667">
+        <testcase classname="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" name="BrandingAgent real LLM &gt; (b) persona mode — coreIdentity + thoughtSystem + contentPersona + personaRoadmap valid" time="0">
+            <skipped/>
         </testcase>
     </testsuite>
 </testsuites>

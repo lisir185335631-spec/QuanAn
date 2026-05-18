@@ -1,13 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.364">
-    <testsuite name="src/lib/constants/__tests__/step4b.test.ts" tests="8" failures="0" errors="0" skipped="0">
-        <testcase name="三阶梯 range 字面 1:1 spec §7.5 line 1546-1564" />
-        <testcase name="4 产品类型字面 1:1 spec §7.5 line 1551" />
-        <testcase name="SUBTITLE 字面严格 1:1 spec §7.5 line 1521" />
-        <testcase name="OUTPUT_H3_5 数量锁 · length === 5" />
-        <testcase name="INPUTS_3 数量锁 · length === 3" />
-        <testcase name="TEXTAREA required === true · id === product_description" />
-        <testcase name="BUTTONS 3 字面 1:1 spec §7.5 line 1532" />
-        <testcase name="Step4bResult interface 字段结构" />
-    </testsuite>
-</testsuites>
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/api
+
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts (5 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  12:42:03
+   Duration  155ms (transform 16ms, setup 0ms, collect 13ms, tests 3ms, environment 0ms, prepare 30ms)
+

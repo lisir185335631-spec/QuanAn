@@ -1,0 +1,35 @@
+## 验证结果: US-011 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|---|---|---|:---:|
+| AC-1 | index.tsx 替换 placeholder · DenseTable + Tab + 抽屉 state | ✓ | index.tsx 完整实现 |
+| AC-2 | 4 数字卡片(总账号/活跃7d/异常/Top3行业) + 行业/平台 2 饼图(Recharts PIE_COLORS) | ✓ | index.tsx:118-268 |
+| AC-3 | DenseTable virtualScroll · 列(id/name/industry/platform/level/stage/updatedAt/操作) | ✓ | DenseTable props: `virtualScroll`, `emptyText`, columns 7+1 |
+| AC-4 | 异常 Tab · 列(accountId/anomalyType/severity/detectedAt/操作) | ✓ | AnomalyTab.tsx — raw `<table>` 而非 DenseTable(minor deviation, 功能完整, 50条上限) |
+| AC-5 | AccountDetailDrawer · 6 tabs · StepProgressChart + 进化档案 + 历史时间线 + 备注 + 异常flag | ✓ | AccountDetailDrawer.tsx:67-74 TABS定义 |
+| AC-6 | AccountListFilters · 4 dropdown + 搜索框 debounce 300ms | ✓ | AccountListFilters.tsx:65 `setTimeout(..., 300)` |
+| AC-7 | AnomalyTab resolve/falsePositive 调 ipAccounts.unflag | ✓ | AnomalyTab.tsx:44, 64-68 |
+| AC-8 | ForceFreezeDialog · reason textarea + forceFreeze | ✓ | ForceFreezeDialog.tsx:25 mutation pattern |
+| AC-9 | admin-routes.ts prd: 11 · placeholder.tsx 已删 | ✓ | grep: `prd: 11`, no placeholder file |
+| AC-10 | readonly_admin 隐藏 [强制冻结] | ✓ | buildColumns isReadonly null return; drawer header guard |
+| AC-11 | 列表空显示 '未找到匹配账号' | ✓ | DenseTable `emptyText="未找到匹配账号"` |
+| AC-12 | browser: 顶部+列表+异常Tab+抽屉全 visible | ✓ | 截图 validator-us-011-pass-1/2/3.png |
+| AC-13 | 点账号行 → 抽屉打开 · 6 tabs visible | ✓ | browser: ?accountId=1 → drawer 打开, 6 tabs 全见 |
+| AC-14 | 强制冻结弹窗 → toast(super_admin)/'已提交'(admin) | ✓ | ForceFreezeDialog:27-31, backend: auto_executed/pending |
+| AC-15 | 切异常 Tab · resolve → 异常消失 | ✓ | AnomalyTab: onSuccess refetch; filter `!f.resolvedAt` |
+| AC-16 | Recharts BarChart `{step,progress,fill:'var(--accent-purple)'}` | ✓ | StepProgressChart.tsx:16-22 |
+| AC-17 | console 0 error · Typecheck 通过 | ✓ | `pnpm typecheck` EXIT 0 (admin + api) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-011/
+已生成: pytest-full.xml (2 typecheck tests PASS), pytest-full.stdout.txt, typecheck.stdout.txt
+manifest.json: verdict=PASS, zero_regression=PASS
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

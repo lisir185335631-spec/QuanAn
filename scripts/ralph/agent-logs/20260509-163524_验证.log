@@ -1,0 +1,35 @@
+---
+
+## 验证结果：US-009 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结论 |
+|:--:|---|:--:|
+| AC-1 | videoAnalysis.ts analyze → analysisAgent.execute({ mode:'viral', userInput }) | ✓ |
+| AC-2 | history.create 全字段：agentId/agentMode/sourceType/inputSummary/content/contentType/scriptType=null/elements/isFallback/tokensUsed/modelUsed/durationMs/traceId | ✓ |
+| AC-3 | rewrite procedure 已删（videoAnalysis.ts 仅有 analyze） | ✓ |
+| AC-4 | router-types.ts shadow: videoAnalysis.analyze input/output 正确·无 rewrite shadow | ✓ |
+| AC-5 | integration test 存在并通过（nock SDK + real DB + elements 映射） | ✓ |
+| AC-6 | 4 unit tests: happy + zod fail empty lastCopy + fallback + elements[] | ✓ |
+| AC-7 | schema min(10) + max(3000) 均在位；< 10 case 测试验证；> 3000 由 zod 保证 | ✓ |
+| AC-8 | AnalysisAgent insights < 3 → schema fail → isFallback，由 AnalysisAgent.test.ts:136 覆盖 | ✓ |
+| AC-9 | elements=[] → history.elements=[] 不阻断，单元测试通过 | ✓ |
+| AC-10 | BaseSpecialist _writeCostLog callType='specialist_call'；eventType DB default='specialist_call' | ✓ |
+| AC-11 | P95 < 12s：非功能性 SLA，不可在 mock LLM 测试中验证；生产监控覆盖 | ─ |
+| AC-12 | Tests pass：5/5 US-009 tests + 511/511 zero regression | ✓ |
+| AC-13 | Typecheck passes：全 workspace 6 项目 tsc --noEmit 无错 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+├── pytest-full.xml          511 passed, 0 failed
+├── pytest-full.stdout.txt   全量测试 stdout
+├── typecheck.txt            all 6 projects Done
+└── manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

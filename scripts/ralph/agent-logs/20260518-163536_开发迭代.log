@@ -1,0 +1,25 @@
+## US-006 最终状态报告
+
+**实现：完整 ✅** — 所有代码变更已在之前迭代提交（f968b46 feat + ccd72be 漂移修复）
+
+**本轮验证结果（retry 3）：**
+
+| 检查项 | 状态 |
+|---|:-:|
+| Typecheck (6 workspaces) | ✅ 0 errors |
+| AC-6 real-llm test (skipIf) | ✅ 1 skipped (per design) |
+| AC-1 SSE invokeLLM + meta chunk | ✅ TopicAgent.ts:267 |
+| AC-2 describe.skipIf + 5 categories | ✅ |
+| AC-3 schema drift + safeParse | ✅ TopicAgent.ts:45 |
+| AC-4 cost_log 5×_writeCostLog | ✅ |
+| AC-5 TD-82 (no API key) | ✅ skip(per AC 条款) |
+| 9 ECONNREFUSED 失败 | ⚠️ 预存性 · 超出 scope |
+
+**TD 豁免申请（给 Opus）：**
+
+9 个 ECONNREFUSED 失败均为预存性基础设施依赖测试：
+1. 3 个文件在 merge-base `1a1300f` 已存在（PRD-20 启动前）
+2. PRD-20 分支对这 3 个文件零 commits
+3. 测试明确 `fetch('http://localhost:3000/api/...')` — 需要运行中的 dev server
+4. 无法通过代码修改修复（是环境约束，不是代码 bug）
+5. 建议 TD category = `infrastructure-dependent-integration-test`

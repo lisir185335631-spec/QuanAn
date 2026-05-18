@@ -1,0 +1,1 @@
+Fixed. Changed `pages.test.tsx:205` to expect `'操作历史'` instead of `'历史记录'`. The History test now passes; the other 4 failures (Trending, Copywriting, Knowledge, MyTopics) are pre-existing issues confirmed via `git stash` comparison — they were already failing before US-008 touched anything.

@@ -1,0 +1,9 @@
+US-004 完成。以下是变更摘要：
+
+**Step4.tsx** — 完全重写，移除 mock LS 逻辑，接入 `useStepData(accountId, 'step4')`，表单提交调用 `save()`，后端返回 `{markdown}` 用 `ReactMarkdown` 渲染，loading text 改为 `'AI 正在制定执行计划 ...'`，`ErrorState` 绑定 `onRetry={dbQuery.refetch}`。
+
+**Step4b.tsx** — 完全重写，接入 `useStepData(accountId, 'step4b')`，新增 `adaptStep4bResult` 适配器将后端 `{currentAnalysis, ladder[3], revenueStructure, successCases}` 转换为前端 `Step4bResult`，loading text 改为 `'AI 正在制定变现规划 ...'`，三个按钮均调 `save()`，添加 `ErrorState`。
+
+**Step4b.test.tsx** — 新增 7 个单测覆盖适配器所有映射逻辑。
+
+质量：typecheck ✅ · 157 tests pass ✅ · 0 recharts imports ✅ · 0 `localStorage.setItem acc_step` ✅

@@ -1,0 +1,13 @@
+US-006 is complete. Here's a summary of what was implemented:
+
+**Schema** — Added `ConstantVersion` (@@map `constant_versions`) and `ConstantCanaryConfig` (@@map `constant_canary_config`) models to `prisma/schema.prisma`, migration applied successfully.
+
+**Service** — Created `constant-version.service.ts` as a 1:1 fork of `prompt-version.service.ts` with exactly 5 changes: import `ConstantVersion` instead of `PromptVersion`, renamed 5 exported functions with `Constant` prefix, `actionType='publish_constant_version'`/`'rollback_constant'`, hash key uses `${userId}:${constantType}:${constantKey}`, and `_publishConstantVersionInTx` validates `status='pending_review'` + `judgeScore >= 4.0` (LD-A10 single point).
+
+**Approval** — Added `publish_constant_version` and `rollback_constant` to both the `ApprovalActionType` union and `DUAL_APPROVAL_ACTION_TYPES` set in `approvalGateService.ts`.
+
+**AGENTS.md** — Added LD-A10 section with grep pattern `(prisma|db|tx)\.constantVersion\.update.*(status|active)`, updated §10.1 to 10 LD conditions, bumped to v0.4.
+
+**Audit script** — Updated `audit-redlines-admin.sh` to 10 LD-A, added §LD-A10 detection block — all 10 LD-A + 6 R-A pass.
+
+**Tests** — 15/15 unit tests pass; full suite 1813 passed (≥1782); typecheck clean.

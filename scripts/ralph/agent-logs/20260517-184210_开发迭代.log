@@ -1,0 +1,6 @@
+US-002 完成。
+
+**实现摘要：**
+- 新建 `apps/web/src/lib/constants/step4b.ts`：完整 Step4b 变现路径规划常量，所有字面量 1:1 来源 spec §7.5 line 1516-1585
+- 新建测试文件 `__tests__/step4b.test.ts`：8 it() 全部通过，typecheck 0 error
+- 关键修复：`STEP4B_THREE_STAGES` 改为 tuple 类型 `readonly [Step4bStage, Step4bStage, Step4bStage]`，避免 TypeScript TS2532 索引访问报错

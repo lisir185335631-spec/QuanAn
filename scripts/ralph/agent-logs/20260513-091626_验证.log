@@ -1,0 +1,42 @@
+prd.json 更新完成。所有验证结果汇总：
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | worker.ts 写 `prisma.trendingReviewQueue.create` | ✓ (worker.ts:70) |
+| AC-2 | ★ LD-A-5: grep `prisma.trendingItem.create` → 0 命中 | ✓ EXIT:1 (无匹配) |
+| AC-3 | trending-auto-verdict.service.ts 三态 autoVerdict 逻辑 | ✓ (service.ts:37-59) |
+| AC-4 | @@unique P2002 catch + log warn 不阻塞 | ✓ (worker.ts:96-102，测试覆盖) |
+| AC-5 | scanResult null → `needs_review` (D-081) | ✓ (service.ts:91-101 catch 块) |
+| AC-6 | BullMQ `attempts:3` + failed event 写 `system_alert/scraper_enqueue_failed` | ✓ (queue.ts:22，worker.ts:124-151) |
+| AC-7 | 审计写 `data_mutation/scraper_enqueue` actorAdminId=0 actorRole=system | ✓ (worker.ts:87-93，测试覆盖) |
+| AC-8 | worker 单测 ≥ 8 | ✓ 9 tests |
+| AC-9 | trending-auto-verdict 单测 ≥ 5 | ✓ 7 tests |
+| AC-10 | `pnpm test` 全过 + `pnpm typecheck` 0 error + audit-redlines-admin ALL PASS | ✓ (9 failures pre-existing TD) |
+| AC-11 | Typecheck passes | ✓ 0 errors |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+├── manifest.json          (verdict=PASS, zero_regression=PASS)
+├── pytest.xml             (16 passed — US-002 unit tests)
+├── pytest.stdout.txt
+├── pytest-full.xml        (1360 passed / 9 pre-existing failures)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt   (0 errors)
+└── audit-redlines-admin.stdout.txt (ALL PASS · 5 LD-A + 6 R-A)
+```
+
+### 零回归门禁
+
+9 个失败全为 pre-existing tech debt（`tests/integration/api/auth*` + `trace.test.ts`，ECONNREFUSED port 3000，需要运行中的服务端），git stash 前后完全一致，未被 US-002 引入。
+
+### 判决
+
+`prd.json.US-002.passes = true` ✅

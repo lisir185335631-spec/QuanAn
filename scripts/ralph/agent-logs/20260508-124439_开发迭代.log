@@ -1,0 +1,1 @@
+US-003 완료. 5개 페이지에 실제 tRPC 훅을 추가하고(Diagnosis/Evolution/Accounts/Knowledge/Trending), 4개 순수 플레이스홀더 유지, shadow router 타입 확장, 24개 테스트 통과, typecheck clean. 커밋: `4758bf5`.

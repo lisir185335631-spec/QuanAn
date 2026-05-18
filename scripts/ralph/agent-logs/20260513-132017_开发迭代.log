@@ -1,0 +1,12 @@
+US-011 is complete. Here's what was implemented:
+
+**3 new files created:**
+- `FilePreviewPanel.tsx` — routes by `fileMime`: PDF stub (no cross-origin iframe), Word fallback + textPreview, TXT/MD inline with redact label, CSV as `<table>` (max 20 rows), unsupported fallback
+- `UserViolationsTab.tsx` — queries `reviewDeepLearn.userViolations`, filters `count >= 3`, DenseTable with 6 columns, readonly_admin hides action column, suspended users get disabled button
+- `BanUploaderDialog.tsx` — reason textarea (min 10 chars enforced with red text + disabled submit), calls `banUploader` mutation, shows '冻结成功' for `auto_executed` or '已提交等审批' for `pending`
+
+**2 files updated:**
+- `index.tsx` — 4-tab bar (`TabBar` component), URL-driven active tab, violations tab swaps in `UserViolationsTab`, other tabs preset `statusFilter`
+- `DeepLearnReviewDrawer.tsx` — `§2.5 文件预览` section added between file metadata and scan results
+
+Typecheck: 0 errors. Tests: no regression from baseline.

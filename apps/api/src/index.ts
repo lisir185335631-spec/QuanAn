@@ -20,6 +20,7 @@ import { lucia } from '@/lib/auth/lucia';
 import { validateAdminStartupConfig } from '@/lib/auth/oauth-admin-factory';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
 import { updateLastLogin } from '@/middleware/auth';
+import { validateEnv } from '@/lib/env';
 import { logger, traceStore } from '@/lib/logger';
 import { checkDbConnection , prisma } from '@/lib/prisma';
 import { createAdminContext } from '@/server/context-admin';
@@ -31,6 +32,18 @@ import { handleExportUsersCSV } from '@/trpc/routers/admin/users';
 // Validate env at module load — exits early on misconfiguration (AC-10, AC-14)
 validateStartupConfig();
 validateAdminStartupConfig();
+
+// LLM env validation — warns on missing keys + logs mode (real / fallback)
+const _llmEnv = validateEnv();
+logger.info(
+  {
+    llmMode: _llmEnv.llmMode,
+    model: _llmEnv.LLM_DEFAULT_MODEL,
+    openAiKey: _llmEnv.OPENAI_API_KEY ? '✓' : '✗ fallback',
+    anthropicKey: _llmEnv.ANTHROPIC_API_KEY ? '✓' : '✗ fallback',
+  },
+  'llm.init',
+);
 
 const app = new Hono();
 

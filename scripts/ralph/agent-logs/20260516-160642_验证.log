@@ -1,0 +1,32 @@
+## 验证结果: US-007 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | header-nav.ts 4 group / 25 items 严格匹配 | ✓ |
+| AC-2 | HeaderNav 函数 · nav className + DropdownMenu + 正确 className | ✓ |
+| AC-3 | `<HeaderNav />` 替换 `<ToolsDropdown />` · import HEADER_NAV | ✓ |
+| AC-4 | MobileNav 4 大类分组 · group label `<p>` 格式 + items `<Link>` | ✓ |
+| AC-5 | 浏览器验证: 4 dropdown 展开(创作×5 / 策划×8 / 智能×6 / 更多×6) · click 跳对应 href | ✓ |
+| AC-6 | 移动端 sheet: 4 大类 + 25 项 + 用户区底部 (JS textContent 验证) | ✓ |
+| AC-7 | 5 张截图全部落盘 (创作/策划/智能/更多/mobile.png) | ✓ |
+| AC-8 | typecheck pass · pnpm test 51/51 · audit:redlines 0 violations | ✓ |
+| AC-9 | HEADER_NAV 3 处命中(import + 2 map) · href 与 spec 完全对齐 | ✓ |
+| AC-10 | `grep TOOLS_14\|NEW_MODULES_6` → 0 命中 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-007/
+├── manifest.json       (verdict=PASS, zero_regression=PASS)
+├── pytest-full.xml     (51 passed, vitest JUnit)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt
+```
+
+### 判决
+
+`prd.json US-007.passes = true` · retryCount = 0 · notes = ""
+
+US-007 全部通过，7 个 story 已 PASSED，4 个 pending 等待后续执行。

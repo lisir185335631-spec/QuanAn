@@ -71,3 +71,6 @@ export const STEP3B_BUTTON_COPY_ALL = '复制全部';
 export const STEP3B_STEP_TAG = 'STEP 03b · 人设定制方案';
 export const STEP3B_H1 = '人设定制方案';
 export const STEP3B_SUBTITLE_TEMPLATE = '当前行业：{industry}。输入你的个人信息和故事，AI 将精准识别你的独特人设、记忆点、思想体系，打造有辨识度的个人 IP。';
+
+// PRD-20 TD-80 fix: Step3bResult heading 常量
+export const STEP3B_RESULT_H2 = '专属人设方案' as const;

@@ -1,0 +1,25 @@
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| # | AC | 状态 | 证据 |
+|:-:|---|:---:|---|
+| 1 | Step8.tsx · 2 子功能 H3 tab 切换保留 · sub_function discriminator 严守 · LS 不匹配 return | ✓ | `Step8.tsx:61-66` 用 `activeSubfunction.key` 条件渲染；`Step8GeneratePlan.tsx:58` + `Step8OptimizeScript.tsx:46` 各自 `if (raw['sub_function'] !== subfunctionKey) return` |
+| 2 | Step8GeneratePlan + OptimizeScript 各自 useStepData · save({sub_function,...}) · 替换 mockResult · experience enum | ✓ | 两文件均 `useStepData(accountId, 'step8')`；`save({sub_function: 'generate_plan'/'optimize_script', ...})` 已实现；EXPERIENCE_VALUE_MAP 映射 novice→新手/experienced→有经验/expert→资深 |
+| 3 | TD-77 fix · STEP8_OPTIMIZE_OUTPUT_LABELS_2 export · map 替代 hardcode | ✓ | `step8.ts:155-158` 常量已 export；`Step8OptimizeScript.tsx:148` 使用 map |
+| 4 | Browser e2e · 2 tab 切换 · 各自表单 · 数据隔离 | ✓ | 截图已保存；tab 切换验证通过；切回 generate_plan 后表单干净(无 optimize 数据泄漏) |
+| 5 | 真后端 · agentId === 'LivestreamAgent' · inputs.sub_function 正确 | ✓ | `stepData.ts:316` agentId: 'LivestreamAgent'；`stepData.ts:83` inputs 含 sub_function 存库 |
+| 6 | vitest 119+ zero-regression · TD-77 单测 | ✓ | **181 tests** all pass；`step8.test.ts:63-68` STEP8_OPTIMIZE_OUTPUT_LABELS_2.length===2 单测通过 |
+| 7 | Typecheck passes | ✓ | `pnpm typecheck` exit 0 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-007/
+├── vitest.stdout.txt       (181 passed, 0 failed)
+├── vitest-full.stdout.txt  (16 Step8-specific tests passed)
+├── typecheck.stdout.txt    (exit 0)
+└── manifest.json           (verdict: PASS)
+```
+
+### 判决
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`

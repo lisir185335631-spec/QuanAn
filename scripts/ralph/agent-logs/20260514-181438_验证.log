@@ -1,0 +1,44 @@
+All 12 ACs verified. Writing the final validation summary:
+
+---
+
+## 验证结果: US-010 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | admin-routes.ts /compliance entry · requiredRole='readonly_admin' | ✓ `apps/admin/src/lib/admin-routes.ts:121-127` |
+| AC-2 | 4 KPI 卡片(今日触发免责/违禁词/PII命中率/行业Top5) | ✓ `index.tsx:457-482` · 浏览器截图确认 |
+| AC-3 | 56行业饼图(前10+其他) Recharts PieChart + 时间趋势 + 日/周/月 Tab + 行业 multi-select | ✓ `index.tsx:485-624` |
+| AC-4 | DenseTable · timestamp/eventCategory/eventType/industry/userId(redacted)/payloadSummary | ✓ `index.tsx:309-380` · SHIELD LD-A-3 遵守 |
+| AC-5 | 分组 by eventType / by industry / 不分组 三档 | ✓ `index.tsx:633-741` · select 切换验证 |
+| AC-6 | ComplianceReportPdf.tsx · @react-pdf 4节+签名栏 | ✓ `components/ComplianceReportPdf.tsx:1-419` |
+| AC-7 | PDFDownloadLink 导出按钮 | ✓ `index.tsx:434-452` |
+| AC-8 | 配置免责模板 · super_admin only · toast '功能开发中 · P9.4' | ✓ `index.tsx:417-432` |
+| AC-9 | agent-browser: /admin/compliance 4KPI+饼图+趋势+列表+PDF按钮+分组切换 | ✓ 4张截图 `screenshots/validator-us-010-pass-*.png` |
+| AC-10 | pnpm audit:redlines-admin · 0 命中 | ✓ ALL PASS · 8 LD-A + 6 R-A |
+| AC-11 | pnpm test ≥1670 pass · 0 fail | ✓ 1686 passed / 4 skipped / 0 failed |
+| AC-12 | Typecheck passes | ✓ 0 errors (all 6 packages) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-010/
+├── manifest.json           (verdict=PASS, zero_regression=PASS)
+├── pytest-full.xml         (1690 tests: 1686 passed, 4 skipped, 0 failed)
+├── pytest-full.stdout.txt
+├── pytest.stdout.txt       (compliance.test.ts: 25 passed)
+└── typecheck.stdout.txt    (0 errors)
+screenshots/
+├── validator-us-010-pass-1.png  (页面全览)
+├── validator-us-010-pass-2.png  (grouping: 按事件类型)
+├── validator-us-010-pass-3.png  (grouping: 按行业)
+└── validator-us-010-pass-4.png  (PDF按钮状态)
+```
+
+### 判决
+
+**prd.json.passes = true** · retryCount = 0 · notes = ""
+
+US-010 全部 12 条 AC 通过。prd.json 已更新。

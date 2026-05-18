@@ -1,0 +1,15 @@
+US-015 e2e tests are now passing. Here's what was fixed across two commits:
+
+**Root cause chain** (validator's confirmed diagnosis → real issues found):
+1. `[data-testid="industry-select"]` didn't exist → 30s locator timeout consumed the test budget → page context closed
+2. After fixing timeout: combobox opened but dropdown blocked the submit button
+3. After fixing combobox: `route.fulfill(JSON)` can't mock tRPC v11's JSONL stream format
+4. After replacing with `page.addInitScript` fetch mock: `getByText('系统繁忙')` matched 2 elements (banner + result content)
+
+**Key fixes:**
+- Locator changed to `[data-testid=step-form-step1] [role=combobox]` with `{ timeout: 2000 }`
+- Added option selection after combobox opens (to close dropdown before submit)
+- Replaced `page.route` with `page.addInitScript` + proper tRPC JSONL format (3-line stream: HEAD + chunk0 + chunk1)
+- Scoped text assertion to `getByTestId('fallback-banner').getByText(...)`
+
+Final state: vitest 325/325 ✅, typecheck ✅, chromium 1.5s ✅, mobile 1.8s ✅

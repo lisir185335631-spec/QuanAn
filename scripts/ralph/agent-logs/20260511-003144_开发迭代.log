@@ -1,0 +1,5 @@
+AC-7 fix complete. Summary:
+
+- **Changed**: `apps/api/src/specialists/CopywritingAgent.ts` — added `import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io'` (placed after `./base/types` per ASCII sort order within the `type` group: `.` < `@`), and changed `CopywritingAcquisitionOutput` to re-export the canonical type instead of inferring from the inline schema.
+- **Gates**: pnpm test 727/727 ✓ · typecheck 6ws 0 error ✓ · lint --max-warnings=0 ✓
+- **Key learning**: In the `type` ESLint import group, `./local` sorts before `@external` (ASCII `.`=46 < `@`=64), which is counter-intuitive but is what ESLint enforces.

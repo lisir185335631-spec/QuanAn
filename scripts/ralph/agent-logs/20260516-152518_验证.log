@@ -1,0 +1,32 @@
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | ReadyToStartSection 函数 + 所有 className + 文字内容 | ✓ PASS |
+| AC-2 | 浏览器访问 / · 滚底 · H2+鼓励语+CTA 可见 · click→/step/1 | ✓ PASS |
+| AC-3 | 截图 prd16-us006-home-cta.png + fullpage 5 区排列验证 | ✓ PASS |
+| AC-4 | pnpm typecheck exit 0 · pnpm test run exit 0 | ✓ PASS |
+
+### 关键验证证据
+
+- **AC-1**: `Home.tsx:164-178` `ReadyToStartSection` 函数存在，`section className="text-center py-16 mb-8"` ✓，H2/p/Button 文字和 className 完全匹配
+- **AC-2**: 浏览器点击 `@e27 "立即启动 →"` → `Clicked @e27 → now at http://localhost:5173/step/1` ✓
+- **AC-3**: fullpage 截图确认 5 区 Hero→IpProgress→FunctionMatrix→Workflow→ReadyToStart 顺序正确
+- **AC-4**: typecheck stdout 无错误；vitest run exit 0
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-006/
+  typecheck.stdout.txt    (exit 0, no errors)
+  pytest-full.stdout.txt  (exit 0, no test files)
+  manifest.json           (verdict=PASS)
+
+screenshots/
+  prd16-us006-home-cta.png
+  prd16-us006-home-fullpage.png
+```
+
+### 判决
+`prd.json US-006: passes=true, notes="", retryCount=0`

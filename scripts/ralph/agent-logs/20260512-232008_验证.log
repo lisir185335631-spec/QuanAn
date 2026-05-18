@@ -1,0 +1,32 @@
+## 验证结果: US-010 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `accountsRouter` via `adminTrpcRouter`, 6 procedures 全走 `adminProcedure`(= `publicAdminProcedure` + 6-gate chain) | ✓ |
+| AC-2 | list: 10 字段 zod input, `$transaction + SET LOCAL`(via adminRLSMiddleware), `Promise.all` ip_accounts+count, include evolutionProfile+user+_count, audit 'cross_account_query'/'list_ip_accounts' | ✓ |
+| AC-3 | detail: `Promise.all` 6 表并行(account+user / stepData / evolutionProfile+insights / history take50 / adminNotes / anomalyFlags WHERE resolvedAt IS NULL), audit | ✓ |
+| AC-4 | flag: 写 `ip_account_anomaly_flags`, zod input(accountId/anomalyType/severity/evidence) | ✓ |
+| AC-5 | unflag: 更新 resolvedAt + resolvedByAdminId + resolution 三值 enum | ✓ |
+| AC-6 | addNote: 写 `ip_account_admin_notes`, visibleToOtherAdmin 字段 + default=true | ✓ |
+| AC-7 | forceFreeze super_admin: `approval_requests`(status=auto_executed) + `ipAccount.update({frozenAt,frozenByAdminId,freezeReason})` + audit 'high_risk_action'/'force_freeze_account' | ✓ |
+| AC-8 | `schema.prisma` IpAccount 有 frozenAt/frozenByAdminId/freezeReason 3 字段(lines 155-157) | ✓ |
+| AC-9 | 已冻结账号 forceFreeze → TRPCError BAD_REQUEST 'account already frozen' | ✓ |
+| AC-10 | admin (非 super_admin) forceFreeze → `{status:'pending'}` approval request, `ipAccount.update` 不触发 | ✓ |
+| AC-11 | readonly_admin 调 flag/unflag/addNote/forceFreeze → `guardMutation()` 抛 403 'privilege_escalation' | ✓ |
+| AC-12 | 同 (accountId, anomalyType) 当日重复 flag → 'already flagged today' | ✓ |
+| AC-13 | unflag 已 resolved anomaly → 'already resolved' | ✓ |
+| AC-14 | `audit-approval-gates.ts` 含 `accounts.forceFreeze` EXCEPTION, `pnpm audit:approval-gates` → Checked 11 (≥8) · 0 missing | ✓ |
+| AC-15 | 36 unit tests (≥30): list 9 / detail 4 / flag 5 / unflag 5 / addNote 4 / forceFreeze 8 | ✓ |
+| AC-16 | `pnpm test` 1158 passed (3 pre-existing integration TD, TD-exempt) + `pnpm typecheck` 0 errors | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-010/`
+已生成: `pytest-full.xml`(1158 passed · 3 pre-existing TD) · `pytest-full.stdout.txt` · `typecheck.stdout.txt` · `manifest.json`
+
+### TD 豁免
+3 个 integration test 文件失败与 US-010 无关 — 在 US-009 artifact 中已存在相同失败集。具体: `evolution-threshold.test.ts`(P2022 column plan 不存在)、`ip-progress-integration.test.ts`(undefined accountId teardown)、`rls-isolation.test.ts`(undefined in array)。属 pre-existing TD。
+
+### 判决
+`prd.json passes = true` · `notes = ""` · `retryCount = 0`

@@ -1,0 +1,26 @@
+## 验证结果: US-001 PASS
+
+### AC 对照
+
+- AC1: `apps/api/src/lib/env.ts` 存在 · `envSchema` export + `validateEnv()` export · 有 key 时 log `mode=real`，无 key 时 `console.warn` + log `mode=fallback` ✓
+- AC2: `apps/api/src/lib/env.test.ts` 存在 · 5 单测全覆盖 (a)~(e) · **5/5 passed** ✓
+- AC3: `apps/api/src/index.ts` 启动时调 `validateEnv()` · logger.info 含 `llmMode / model / openAiKey / anthropicKey` ✓
+- AC4: `.env.example` · `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `LLM_DEFAULT_MODEL` 全部存在 · fallback 注释完整 · `grep 'OPENAI_API_KEY'` 命中 ✓
+- AC5: `pnpm vitest run src/lib/env.test.ts` → **5 passed, exit 0** ✓
+- AC6: `pnpm typecheck` → **0 errors, exit 0** ✓
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  manifest.json          (verdict=PASS, zero_regression=PASS)
+  pytest.xml             (5 passed — AC 特定)
+  pytest.stdout.txt      (5 passed)
+  pytest-full.xml        (5 passed — 零回归)
+  pytest-full.stdout.txt (5 passed)
+  typecheck.stdout.txt   (0 errors)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

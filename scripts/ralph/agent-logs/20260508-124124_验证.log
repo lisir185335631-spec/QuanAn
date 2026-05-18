@@ -1,0 +1,25 @@
+prd.json updated correctly. Here's the validation summary:
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+- **AC1** ✓ `Step2.tsx` + `Step9.tsx` 均存在，`stepConfig` 有 `step2`/`step9` 条目，h1 从 stepConfig 读取
+- **AC2** ✓ 14 工具路由全部注册：generate/analysis/copywriting/video-production/acquisition-video/ai-video/boom-generate/private-domain/monetization/voice-chat/deep-learning/knowledge/trending/present-styles
+- **AC3** ✓ `grep '#[0-9a-f]{6}'` 在 step/tools 页面命中 0
+- **AC4** ✓ 全部页面使用 shadcn `Card`/`CardHeader`/`CardContent`/`Button`
+- **AC5** ✓ `ErrorBoundary` 组件存在，Aurelian Dark token fallback UI，4 个 unit test 验证崩溃兜底
+- **AC6** ✓ `container` + `max-w-2xl` 布局，≤640px 不会溢出
+- **AC7** ✓ `tsc --noEmit` 退出码 0，0 errors
+- **AC8** ✓ 14 unit tests 全通过（要求 ≥5）
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-002/`
+- `vitest-prd3.xml` (14 passed, 0 failed)
+- `vitest-prd3.stdout.txt`
+- `typecheck-prd3.txt` (0 errors)
+- `manifest-prd3.json` (updated)
+
+### 判决
+`prd.json.passes = true`，`retryCount` 重置为 0，`notes` 清空。

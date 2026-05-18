@@ -1,0 +1,9 @@
+US-007 구현 완료. 주요 내용:
+
+**구현한 것:**
+1. `apps/api/src/specialists/base/types.ts` — `LLMStreamChunk` 타입 추가, `ILLMGateway`에 선택적 `stream?()` 메서드 추가 (기존 mock 호환성 유지)
+2. `apps/api/src/specialists/TopicAgent.ts` — 5개 category discriminated union 스키마, SSE 스트리밍 `invokeLLM()`, 5층 설정 (`streaming=true`, `timeout_ms=60000`, `model_tier='reasoning'`), AC-9 category enum 검증, AC-12 단절 시 JSON.parse 실패 → BaseSpecialist retry
+3. `apps/api/src/trpc/routers/stepData.ts` — `saveStream` SSE subscription 추가. 즉시 `{ type: 'started' }` yield (첫 chunk < 3s), `topicAgent.execute()` 호출, DB upsert, `{ type: 'done', result }` yield
+4. `tests/unit/specialists/__tests__/TopicAgent.test.ts` — 10개 테스트 (5 category 정상 경로 + 단절/length=19 엣지 케이스 + config/enum 검증)
+
+**결과:** pnpm typecheck ✅, pnpm test 272/272 ✅, commit `85f8d9c`

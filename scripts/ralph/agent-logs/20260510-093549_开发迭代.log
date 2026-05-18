@@ -1,0 +1,13 @@
+US-002の実装が完了しました。
+
+**実装内容：**
+
+1. **VideoAgent.ts** — production/acquisition/storyboard 3モード解錠、`outputSchema getter` 完全4-wayスイッチ（D-028パターン）、`_buildUserPrompt(mode)` 4分岐、storyboard `imagePromptEn` ASCII post-validate（retry 1回、失敗時SchemaValidationError → fallback）
+
+2. **CopywritingAgent.ts** — acquisition モード解錠（D-035落地）、`CopywritingAcquisitionOutputSchema`（markdown 200-500字 + ctaPosition refine）、`_invokeAcquisition` + `_buildAcquisitionUserPrompt` 追加
+
+3. **ContextAssemblerテンプレート3ファイル新規作成** — `video-production.ts` / `acquisition-video.ts` / `ai-video.ts`、index.ts barrel に `'VideoAgent:production'` / `'VideoAgent:acquisition'` / `'VideoAgent:storyboard'` 3エントリ追加
+
+4. **テスト** — VideoAgent +9件（production/acquisition/storyboard各3件）、CopywritingAgent +3件（acquisition happy + CTA missing fail + boundary）
+
+5. **検証結果** — `pnpm typecheck` 6ワークスペース0エラー、`pnpm test` 592/592全通過

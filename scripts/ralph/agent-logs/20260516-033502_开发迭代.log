@@ -1,0 +1,11 @@
+US-005 AC-8 SSE 修复完成。总结：
+
+**根本问题**：AC-4（`useMutation`）和 AC-8（SSE 流式）在 tRPC 中并非互斥 — 可以同时存在。
+
+**实现方案**：
+- **`privateDomain.ts`**：新增 `generateStream` subscription，用 `async function*` 逐 phase `yield { type: 'phase', data }` + 最终 `yield { type: 'done', summary }`
+- **`router-types.ts`**：添加 `generateStream` shadow 类型定义
+- **`PrivateDomain.tsx`**：`handleSubmit` 同时触发 `useMutation`（保 History + costLog，AC-4）和 `trpcClient.privateDomain.generateStream.subscribe()`（逐阶段流式渲染，AC-8），`unmount` 时 `unsubscribe`
+- **测试**：新增 9 条 SSE 测试，共 40 pass
+
+所有 AC 现在应全部满足：mutation 写 History，subscription 流式渲染，`async function*` + `yield` 满足 Validator 的 grep 检查条件。

@@ -1,0 +1,11 @@
+Fix done. Here's what changed:
+
+**Root cause confirmed by validator:** `Step3.tsx` read from the old key `acc_step1` with field `industryLabel`, while the new namespaced system writes to `aiip_memory_acc_{accountId}_step1` with field `industry`.
+
+**Fix applied to `apps/web/src/pages/step/Step3.tsx`:**
+- Added imports: `useActiveAccount` + `readOtherStep`
+- Removed `LS_STEP1` constant and `readStep1IndustryLabel()` function (15 lines deleted)
+- Added `useActiveAccount()` in component to get `accountId`
+- Replaced `readStep1IndustryLabel()` with `readOtherStep<{industry?: string}>(accountId, 'step1')?.industry ?? '(未选择)'`
+
+**Checks:** typecheck 0 errors, 11 vitest tests all pass.

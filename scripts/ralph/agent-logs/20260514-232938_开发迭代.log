@@ -1,0 +1,8 @@
+US-003 已在之前的迭代中实现并提交。所有验证通过：
+
+- **12 tests** pass（`ab-stop-loss.test.ts`）
+- **1767 tests** total pass（≥1750 AC 满足）
+- **typecheck** 0 errors
+- **commit** `f9efdee feat: [US-003]` 已存在
+
+实现完整：BullMQ hourly cron（`0 0 * * * *` Asia/Shanghai）、双条件 stop_loser + effect < -30%、dedupe per experimentId per day、DingtalkService isMock=true、`_stopAbExperimentInTx` 单点 stop、audit log `security_alert` + reasoning、manual stop、failed 兜底、`scheduleAbStopLoss()` 已 wire 到 `index.ts`。

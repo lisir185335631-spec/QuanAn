@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { STEP3_RESULT_H2 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
 interface BioItem {
@@ -44,6 +45,8 @@ export function Step3Result({ data, isFallback }: Props) {
           AI 返回了备用结果 · 内容仅供参考
         </p>
       )}
+
+      <h2 className="text-h2 font-display text-on-surface">{STEP3_RESULT_H2}</h2>
 
       <Card>
         <CardHeader className="pb-3">

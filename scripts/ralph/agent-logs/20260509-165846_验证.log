@@ -1,0 +1,42 @@
+## 验证结果: US-010 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | VideoAnalysis.tsx 真表单 ToolForm + lastTitle optional + lastCopy min10 | ✓ |
+| AC-2 | submit → trpc.videoAnalysis.analyze.mutate · onSuccess setResult · onError toast.error | ✓ |
+| AC-3 | VideoAnalysisResult 子组件 · elements Badge + insights Card 高/中/低 + ReactMarkdown | ✓ |
+| AC-4 | hotElementsZh.ts 22 项(键与 HOT_ELEMENT_KEYS_22 完全匹配) | ✓ |
+| AC-5 | ToolForm case 'video-analysis' → getToolLsKey(accountId, toolKey, 'input') | ✓ |
+| AC-6 | 20 unit tests 全通过(≥5 要求) | ✓ |
+| AC-7 | tests/e2e/tool-video-analysis.spec.ts 存在，CI mock 模式完整 | ✓ |
+| AC-8 | lastCopy < 10 字 → zod fail(schema 实测 safeParse) | ✓ |
+| AC-9 | JSON.parse fail → 显示"解析失败" | ✓ |
+| AC-10 | elements 空数组 → 显示"无识别元素" | ✓ |
+| AC-11 | FeedbackButton agentId=AnalysisAgent · 无 hex/cyan hardcode 颜色 | ✓ |
+| AC-12 | 纯 React 条件渲染，无重计算 | ✓ |
+| AC-13 | browser 验证 · 4 element tags (恐惧/稀缺/社会证明/猎奇) · 3 insights (高/高/中) · rewriteVersion markdown · 无控制台错误 | ✓ |
+| AC-14 | 55 test files / 531 tests 全通过(零回归) | ✓ |
+| AC-15 | pnpm typecheck 6 个 workspace 全通过 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-010/
+- pytest-full.stdout.txt (531 passed, 0 failed)
+- typecheck.txt (6 workspaces, exit 0)
+- unit-tests.txt (20 unit tests, all passed)
+- manifest.json (updated)
+- validator-us-010-pass-1-before-submit.png
+- validator-us-010-pass-2-with-result.png
+```
+
+### 备注
+
+- `ANTHROPIC_API_KEY` 在 `.env` 中为空 → AC-13 browser 测试用 fetch mock（与 e2e spec 相同 pattern），属于**前置环境约束，非代码 bug**
+- `bg-amber-500/10 text-amber-600` 用于中等影响色 → 不在 LD-015 禁止列表(text-cyan/bg-cyan/#00e5ff)，非违规
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

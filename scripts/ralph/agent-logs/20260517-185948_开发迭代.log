@@ -1,0 +1,4 @@
+US-004 完成。
+
+- 新建 `apps/web/src/lib/constants/step6.ts`：`STEP6_STEP_TAG/H1/SUBTITLE` + `Step6Textarea` interface + `STEP6_TEXTAREA`（含完整 `\n\n` placeholder、「」全角引号、全角括号）+ `STEP6_TEXTAREA_MIN_CHARS=10` + `STEP6_CHAR_COUNTER_TEMPLATE='已输入 {count} 字'` + `STEP6_OUTPUT_MODULES_3`（3 项 h3Label 字面锁）+ `Step6StoryboardScene` / `Step6Result` interfaces
+- 新建测试文件 6 assertions 全 PASS，typecheck 0 error，已 commit `974bc1a`

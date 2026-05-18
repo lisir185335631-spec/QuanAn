@@ -1,0 +1,5 @@
+US-003 is complete. The `freeGenerate` procedure is live with:
+- **Router**: `copywriting.freeGenerate` — protectedProcedure calling `CopywritingAgent(mode='free')` with full `history.create` field set (agentMode, contentType, scriptType, elements, isFallback, tokensUsed, modelUsed, durationMs, traceId)
+- **4 unit tests**: happy path, zod BAD_REQUEST on empty topic, fallback path (isFallback=true), agentMode="free" field
+- **1 integration test**: mock stream → real DB → history+cost_log field verification
+- **421/421 tests pass**, typecheck clean

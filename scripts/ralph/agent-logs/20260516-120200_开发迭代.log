@@ -1,0 +1,11 @@
+US-002 实现完成，所有 AC 验证通过：
+
+- **AC-1** ✅ router.tsx 改为 `<Home />` + 移除旧 Navigate redirect
+- **AC-2** ✅ Home.tsx 含 HeroSection · H1 Orbitron 巨大紫色 outline
+- **AC-3** ✅ 3 副标题 (OPC全案落地… / AI+短视频+IP / 全链路变现)
+- **AC-4** ✅ 引用副标 "重新构造一个人是怎样不变形的"
+- **AC-5** ✅ 2 CTA (启动智能分析→/step/1 · 使用说明→/guide)
+- **AC-6** ✅ 浏览器实测：URL 保持 `/`，点击 CTA 正确跳转
+- **AC-7** ✅ 截图 `screenshots/prd16-us002-home-hero.png` 已保存
+- **AC-8** ✅ typecheck PASS · 51 tests PASS · audit:redlines PASS
+- **AC-9** ✅ 0 个金色硬编码命中

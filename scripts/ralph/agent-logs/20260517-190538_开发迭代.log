@@ -1,0 +1,1 @@
+US-005 完成。新建 `step7.ts`（20 脚本类型 + 22 爆款元素 4 分组 + 4 H4 schema + 全部 buttons/templates/interfaces）和 `step7.test.ts`（14 assertions 全 PASS），typecheck 0 error，AC-15 字面 grep 7 条全命中，AC-16 数字锁 20/4/22/4 验证通过。

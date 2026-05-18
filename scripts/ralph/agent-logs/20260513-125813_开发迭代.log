@@ -1,0 +1,19 @@
+US-010 is complete. Summary:
+
+**Implemented US-010: reviewDeepLearn UI part 1 — list + drawer**
+
+Files created:
+- `apps/admin/src/pages/reviewDeepLearn/index.tsx` — main page with ErrorBoundary + URL filter persistence
+- `apps/admin/src/pages/reviewDeepLearn/OverviewCards.tsx` — 3 stat cards [待审核/命中PII/命中违禁]
+- `apps/admin/src/pages/reviewDeepLearn/ReviewDeepLearnFilters.tsx` — 5 filters with 300ms debounce
+- `apps/admin/src/pages/reviewDeepLearn/ReviewDeepLearnTable.tsx` — DenseTable with virtualScroll, client-side fileMime filter, empty state text
+- `apps/admin/src/pages/reviewDeepLearn/DeepLearnReviewDrawer.tsx` — right-side drawer with 6 stacked sections (basic info / file metadata / autoScanResult with PII+banned highlighting / text preview with >5KB collapse / violations / archive chain) + approve/reject action panel
+
+Files modified:
+- `packages/clients/src/admin-router-types.ts` — added `reviewDeepLearn` shadow router with all 6 procedures
+- `apps/admin/src/router.tsx` — replaced placeholder import with real page
+
+Files deleted:
+- `apps/admin/src/pages/admin/placeholder/reviewDeepLearn.tsx` (git rm)
+
+Typecheck: 0 errors. Tests: identical to US-009 baseline (3 failed / 139 passed — all pre-existing).

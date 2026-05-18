@@ -1,0 +1,327 @@
+{
+  "config": {
+    "configFile": "/Users/return/Desktop/QuanQn/apps/web/playwright.config.ts",
+    "rootDir": "/Users/return/Desktop/QuanQn/apps/web/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/return/Desktop/QuanQn/apps/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "prd-19-frontend-backend.spec.ts",
+      "file": "prd-19-frontend-backend.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "PRD-19 · frontend ↔ backend 真接入",
+          "file": "prd-19-frontend-backend.spec.ts",
+          "line": 111,
+          "column": 6,
+          "specs": [
+            {
+              "title": "test (a) · Step1 真接 PositioningAgent · LS↔DB 双写",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7443,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:18:13.746Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-8aec349d2a5e12af83fd",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "test (b) · acc 切换 · 数据隔离 · Step1 industry 不串",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7417,
+                      "error": {
+                        "message": "Error: Account A LS should have step1\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m",
+                        "stack": "Error: Account A LS should have step1\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:193:55",
+                        "location": {
+                          "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                          "column": 55,
+                          "line": 193
+                        },
+                        "snippet": "  191 |     // Verify A's LS before switching away\n  192 |     const lsA = await getStepLs(page, accAId, 'step1');\n> 193 |     expect(lsA, 'Account A LS should have step1').not.toBeNull();\n      |                                                       ^\n  194 |     expect(String(JSON.parse(lsA!).industryLabel)).toContain('美食');\n  195 |\n  196 |     // Verify A's DB"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                            "column": 55,
+                            "line": 193
+                          },
+                          "message": "Error: Account A LS should have step1\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeNull\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mnull\u001b[39m\n\n  191 |     // Verify A's LS before switching away\n  192 |     const lsA = await getStepLs(page, accAId, 'step1');\n> 193 |     expect(lsA, 'Account A LS should have step1').not.toBeNull();\n      |                                                       ^\n  194 |     expect(String(JSON.parse(lsA!).industryLabel)).toContain('美食');\n  195 |\n  196 |     // Verify A's DB\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:193:55"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:18:21.263Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json/prd-19-frontend-backend-PR-b0dbc--·-数据隔离-·-Step1-industry-不串-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json/prd-19-frontend-backend-PR-b0dbc--·-数据隔离-·-Step1-industry-不串-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                        "column": 55,
+                        "line": 193
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-d16079461605bf058930",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 170,
+              "column": 3
+            },
+            {
+              "title": "test (c) · 9 step 完整流程 · DB 真存 · 0 hardcode acc_step{N}",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 360000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 37947,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h3').filter({ hasText: '1. 每日任务表' })\nExpected: visible\nTimeout: 30000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('h3').filter({ hasText: '1. 每日任务表' })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h3').filter({ hasText: '1. 每日任务表' })\nExpected: visible\nTimeout: 30000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('h3').filter({ hasText: '1. 每日任务表' })\u001b[22m\n\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:296:70",
+                        "location": {
+                          "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                          "column": 70,
+                          "line": 296
+                        },
+                        "snippet": "  294 |     await page.locator('label[for=\"step4-platform-douyin\"]').click();\n  295 |     await page.locator('button[type=\"submit\"]', { hasText: '生成执行计划' }).click();\n> 296 |     await expect(page.locator('h3').filter({ hasText: '1. 每日任务表' })).toBeVisible({\n      |                                                                      ^\n  297 |       timeout: 30_000,\n  298 |     });\n  299 |     expect(await getStepLs(page, accountId!, 'step4')).not.toBeNull();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                            "column": 70,
+                            "line": 296
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h3').filter({ hasText: '1. 每日任务表' })\nExpected: visible\nTimeout: 30000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for locator('h3').filter({ hasText: '1. 每日任务表' })\u001b[22m\n\n\n  294 |     await page.locator('label[for=\"step4-platform-douyin\"]').click();\n  295 |     await page.locator('button[type=\"submit\"]', { hasText: '生成执行计划' }).click();\n> 296 |     await expect(page.locator('h3').filter({ hasText: '1. 每日任务表' })).toBeVisible({\n      |                                                                      ^\n  297 |       timeout: 30_000,\n  298 |     });\n  299 |     expect(await getStepLs(page, accountId!, 'step4')).not.toBeNull();\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:296:70"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:18:28.902Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json/prd-19-frontend-backend-PR-7de8a-真存-·-0-hardcode-acc-step-N--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json/prd-19-frontend-backend-PR-7de8a-真存-·-0-hardcode-acc-step-N--chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                        "column": 70,
+                        "line": 296
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-b22653fbe84f4902cbbc",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 250,
+              "column": 3
+            },
+            {
+              "title": "test (d) · zero-regression · typecheck + vitest + 旧 e2e prd-17/18",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 140112,
+                      "error": {
+                        "message": "Error: 旧 e2e specs failed:\nCommand failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts",
+                        "stack": "Error: 旧 e2e specs failed:\nCommand failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:408:13",
+                        "location": {
+                          "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                          "column": 13,
+                          "line": 408
+                        },
+                        "snippet": "  406 |       );\n  407 |     } catch (e) {\n> 408 |       throw new Error(`旧 e2e specs failed:\\n${(e as NodeJS.ErrnoException).message}`);\n      |             ^\n  409 |     }\n  410 |   });\n  411 | });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                            "column": 13,
+                            "line": 408
+                          },
+                          "message": "Error: 旧 e2e specs failed:\nCommand failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts\n\n  406 |       );\n  407 |     } catch (e) {\n> 408 |       throw new Error(`旧 e2e specs failed:\\n${(e as NodeJS.ErrnoException).message}`);\n      |             ^\n  409 |     }\n  410 |   });\n  411 | });\n    at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:408:13"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-18T02:19:07.164Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json/prd-19-frontend-backend-PR-c4da2-heck-vitest-旧-e2e-prd-17-18-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-008/prd19-e2e.json/prd-19-frontend-backend-PR-c4da2-heck-vitest-旧-e2e-prd-17-18-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts",
+                        "column": 13,
+                        "line": 408
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "19ffc7eb62d210a84966-d3c5f39932ea36bf7c61",
+              "file": "prd-19-frontend-backend.spec.ts",
+              "line": 371,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-18T02:18:13.448Z",
+    "duration": 193929.772,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

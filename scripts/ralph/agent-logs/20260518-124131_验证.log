@@ -1,0 +1,33 @@
+验证完成。最终汇总：
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 依据 |
+|---|---|---|---|
+| AC-1 | `userQuota.service.ts` 存在，`checkAndDeductQuota` 用 `$executeRaw` 原子 UPDATE WHERE | ✓ | `apps/api/src/services/quota/userQuota.service.ts:39-43` — `$executeRaw` 单条 UPDATE...WHERE daily_used + tokens <= daily_quota |
+| AC-2 | 5 个单测：(a)充足扣额 (b)已满QUOTA_EXCEEDED (c)新用户auto-create (d)tokens=0跳过 (e)并发100不超扣 | ✓ | 5 tests passed，含 Promise.all 100 并发模拟 |
+| AC-3 | `BaseSpecialist._writeCostLog` 真接 `prisma.costLog.create`，含完整字段 + `Decimal` costUsd | ✓ | `BaseSpecialist.ts:265-284`，含 accountId/agentId/modelTier/provider/tokens/costUsd(Decimal)/durationMs/success/isFallback/traceId |
+| AC-4 | `cost-logger.ts` 真接 prisma，同 BaseSpecialist 模式 | ✓ | `cost-logger.ts:57-79`，`prisma.costLog.create` with Decimal costUsd |
+| AC-5 | `ErrorState.tsx` 加 `quota-exceeded` variant，onRetry button 隐藏 | ✓ | `ErrorState.tsx:18-23`，`showRetry: false`，message 与 AC 完全一致 |
+| AC-6 | test_command 通过 | ✓ | 5 passed，exit 0 |
+| AC-7 | Typecheck passes | ✓ | `tsc --noEmit` exit 0 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+  pytest.xml            (5 passed - AC 测试)
+  pytest.stdout.txt     (vitest 原始输出)
+  pytest-full.xml       (10 passed - 零回归全量)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt  (tsc --noEmit 通过)
+  manifest.json         (zero_regression=PASS)
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

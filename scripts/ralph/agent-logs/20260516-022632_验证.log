@@ -1,0 +1,24 @@
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | Monetization.tsx 100+ 行 · StepForm step4b · 4 输入字段 · generate mutation · StepResult 渲染 | ✓ (141行) |
+| AC-2 | PresentStyles.tsx 80+ 行 · textarea 文案 + select 平台 · 5 种呈现风格 · recommend mutation | ✓ (302行) |
+| AC-3 | URL state useSearchParams · localStorage draft 各自 key | ✓ |
+| AC-4 | Monetization.test.tsx ≥4 it (14个) + PresentStyles.test.tsx ≥4 it (17个) | ✓ 31 tests |
+| AC-5 | browser: 页面加载 · 表单渲染 · 字段齐全 | ✓ (路由 /monetization & /present-styles, 同 US-001/002/003 约定) |
+| AC-6 | pnpm vitest pass · typecheck PASS | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-004/`  
+已生成: `pytest.xml` (31 passed) · `pytest-full.xml` (2101 passed, 0 failures) · `typecheck.stdout.txt` (EXIT:0) · `manifest.json`
+
+### 零回归
+**PASS** — 2101 tests, 0 failures, 0 errors
+
+### 判决
+`prd.json.passes = true`

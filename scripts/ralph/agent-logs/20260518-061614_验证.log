@@ -1,0 +1,24 @@
+prd.json updated correctly. Here is the validation summary:
+
+---
+
+## 验证结果: US-005 [FAIL]
+
+### AC 对照
+- AC-1: Step5.tsx 使用 `useStepData(accountId, 'step5')` + `trpc.stepData.saveStream.useSubscription` ✓ (代码正确)
+- AC-2: 5 Tab 独立 subscription · `enabled: hasSubmitted && streamStatuses[activeCategory] === 'idle'` · 切 Tab 重置 loading→idle ✓ (代码逻辑正确)
+- AC-3: Step5FileUpload.tsx 不变 · FileReader.readAsText + 仅 metadata · 0 后端 fetch ✓
+- AC-4: Step5TopicGrid.tsx 接收真 SSE result · topic 点击写 `aiip_memory_acc_{accountId}_selected_topic` + backward compat key · navigate('/step/7') ✓
+- AC-5: **✗ FAIL** — 提交表单后页面立即崩溃 `Error: Subscriptions are unsupported by httpBatchStreamLink`。`apps/web/src/lib/trpc.ts:41-57` 只配了 `httpBatchStreamLink`，未配 `httpSubscriptionLink`。无 LoadingState、无选题渲染。
+- AC-6: 后端 saveStream 代码正确（`agentId: 'TopicAgent'`，每类 20 topics × 5 类）✓ (backend OK)
+- AC-7: vitest 零回归 **2278 passed / 0 failed** ✓
+- AC-8: Typecheck **0 errors** ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-005/`
+已生成: vitest.stdout.txt (2278 passed), typecheck.stdout.txt (0 errors), manifest.json (verdict=FAIL)
+
+### 判决
+`prd.json.passes = false`, `retryCount = 1`
+
+**修复方向**: `apps/web/src/lib/trpc.ts` 的 `links` 需改为 `splitLink`，subscription 操作走 `httpSubscriptionLink({url: .../trpc})`，其他走 `httpBatchStreamLink`。

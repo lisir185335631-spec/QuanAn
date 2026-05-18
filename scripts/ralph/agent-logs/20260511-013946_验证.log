@@ -1,0 +1,25 @@
+US-007 验证完成，所有 AC 通过。
+
+---
+
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+- AC-1 ✓ — `_check_existing_commit(story_id, since='30 minutes ago')` 定义于 `ralph.py:817`，`subprocess.run git log --since=...` + `re.compile` 精确匹配 + hash 提取
+- AC-2 ✓ — `ralph.py:1669` 在 `retryCount >= MAX_RETRIES` 判断内、BLOCKED 路径之前调用
+- AC-3 ✓ — `_write_path_b_audit_gate` 写入 `{status:'pending', story_id, commit_hash, reason:'路径 B 自动触发...'}` — AC-3 mock 实测确认
+- AC-4 ✓ — 未命中时 `s_check['blocked']=True` 原有行为保持，AC-7 mock 确认
+- AC-5 ✓ — `[PATH-B] story={story_id} retry=... git_log_hit={hash}` 日志在 `ralph.py:1671`；`_write_path_b_audit_gate` 同时输出 `PENDING_DETECTED` → daemon stdout → `ralph-output.log`
+- AC-6 ✓ — `test_ac6_commit_found` mock 测试通过，返回 hash `3c6b28a`
+- AC-7 ✓ — `test_ac7_no_commit` + `test_ac7_git_nonzero_exit` 均返回 None
+- AC-8 ✓ — `since='30 minutes ago'` 传入 `git --since`；`test_ac8_cross_prd_window` 验证空输出 → None
+- Typecheck ✓ — `python3.11 -m py_compile` 两个副本均 exit_code=0
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-007/
+已生成: pytest-full.xml (727/727 passed), pytest-full.stdout.txt, manifest.json
+```
+
+### 判决
+`prd.json.passes = true` — 已写入

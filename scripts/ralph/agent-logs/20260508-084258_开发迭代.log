@@ -1,0 +1,15 @@
+US-003 is complete. Here's a summary of what was implemented:
+
+**Files created/modified:**
+
+- `apps/api/src/trpc/routers/ipAccounts.ts` — 6 procedures: `list` (RLS `user_id` isolation returns all user accounts), `active`, `create`, `update`, `delete` (soft-delete), `switchActive` (globalProcedure → updates `user.activeAccountId` + writes `audit_log 'account.switch'`)
+- `apps/api/src/trpc/routers/stepData.ts` — 4 procedures: `get`, `getAll`, `save` (upsert via composite key), `progress` (9-step completion count); all reads omit explicit `where:{accountId}` per SHIELD anti-pattern
+- `packages/schemas/src/entities/ipAccount.schema.ts` — 7-field zod schema + create/update inputs (AC-3)
+- `packages/schemas/src/entities/stepData.schema.ts` — stepKey enum (9 keys) + input schemas (AC-4)
+- `apps/api/src/trpc/routers/_app.ts` — registers both new routers
+- `packages/clients/src/router-types.ts` — extends shadow router with `ipAccounts` + `stepData`
+- `tests/unit/api/ipAccounts-stepData.test.ts` — 18 unit tests covering all 10 procedures
+
+**Result:** `pnpm typecheck ✅` · `pnpm test 98/98 ✅`
+
+**Key decisions:** API routers use inline Zod schemas (can't import `@quanqn/schemas` source due to `rootDir` constraint); `ip_accounts` RLS uses `user_id` isolation (not `account_id`), so `list` returns all user accounts without manual `where:{userId}`; `switchActive` uses `globalProcedure` to bypass RLS when updating the global `users` table.

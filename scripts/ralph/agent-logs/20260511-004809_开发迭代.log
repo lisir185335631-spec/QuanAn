@@ -1,0 +1,7 @@
+US-002 is complete. Summary of what was implemented:
+
+- **`_cleanup_stale_verify_artifacts(threshold_hours=24) -> int`** added to `scripts/ralph/ralph.py` — scans `verify-artifacts/US-*/` glob, unlinks files with `mtime > threshold_hours`, logs `[CLEANUP] Removed N stale files (>Xh) in verify-artifacts/`
+- Called once inside `_daemon_relaunch()` before spawning the child process (AC-2)
+- **8 pytest unit tests** in `scripts/ralph/test_cleanup_stale.py` using `patch.object` to mock `SCRIPT_DIR` — all pass (AC-6)
+- Real run removed 109 of 212 stale files; PRD-7 US-001 files (written <1h ago) were preserved (AC-7)
+- `pnpm typecheck` 0 errors, `pnpm test` 727/727 pass (AC-9/10)

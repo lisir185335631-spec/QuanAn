@@ -1,0 +1,15 @@
+US-010 is complete. Here's what was implemented:
+
+**Schema**: Added `frozenAt`, `frozenByAdminId`, `freezeReason` to `IpAccount`; added Prisma relations between `IpAccount` ↔ `IpAccountAdminNote` and `IpAccountAnomalyFlag`; generated migration `20260512151405_add_ipaccount_frozen_relations`.
+
+**Router** (`accounts.ts`): 6 procedures via `adminProcedure` (6-gate chain):
+- `list` — multi-filter with `Promise.all([findMany, count])`, includes `_count.anomalyFlags`
+- `detail` — `Promise.all` 6-table parallel
+- `flag` — creates anomaly flag, same-day duplicate check → `ValidationError('already flagged today')`
+- `unflag` — updates `resolvedAt/resolvedByAdminId/resolution`, already-resolved guard
+- `addNote` — writes `ip_account_admin_notes`
+- `forceFreeze` — Approval Gates stub: `super_admin` auto-executes, `admin` returns `{status:'pending'}`, already-frozen guard
+
+**Updated**: `admin/index.ts` (replaced placeholder), `audit-approval-gates.ts` (added `accounts.forceFreeze` exception, gate raised to 8).
+
+**Tests**: 36 unit tests pass; `pnpm typecheck` 0 errors; `pnpm audit:approval-gates` PASS (11 checks, 0 missing).

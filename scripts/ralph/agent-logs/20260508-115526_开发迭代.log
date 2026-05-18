@@ -1,0 +1,10 @@
+US-001 완료. 최종 검증 요약:
+
+**구현 완료:**
+- ✅ AC-1: `account.ts` + `step.ts` 삭제, `_app.ts`에서 import 제거
+- ✅ AC-2: `useActiveAccount` → `trpc.ipAccounts.{active,switchActive}`, `useStepData` → `trpc.stepData.save`
+- ✅ AC-3: `router.tsx` — `createBrowserRouter` 34 routes (1 index + 9 step + 14 tools + 6 modules + 3 aux + 1 catch-all)
+- ✅ AC-4: 전체 route에 `React.lazy + Suspense` 적용, `webpackChunkName`으로 모듈별 chunk 공유
+- ✅ AC-5: `RootLayout` — Header outlet 공유, `*` catch-all → `NotFound`
+- ✅ AC-7: `pnpm typecheck` ✅ (전체 monorepo)
+- ✅ AC-8: `pnpm test` 186/186 ✅ (기존 174 → 186, +12 신규 테스트)

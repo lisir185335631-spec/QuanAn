@@ -1,0 +1,13 @@
+US-001 is complete. Summary of what was implemented:
+
+- **`prisma/schema.prisma`** — Added `Industry` model with migration
+- **`prisma/seed.ts`** — Added `seedIndustries()` (56 rows, idempotent, outputs `✓ industries seeded · created=56`) and `seedMockIpAccounts()` (5 mock accounts for `dev@quanqn.local`, outputs `✓ mock_ip_accounts seeded · created=5`)
+- **`apps/api/src/middleware/auth.ts`** — Added `isDevOAuthMock()` + `getDevMockUserAttrs()` helpers for `DEV_OAUTH_MOCK` env flag
+- **`apps/api/src/trpc/context.ts`** — When `DEV_OAUTH_MOCK=true`, skips Lucia session and returns the seeded dev user
+- **`apps/api/src/trpc/routers/ipAccounts.ts`** — `list` procedure: in `NODE_ENV=development` with 0 accounts, auto-creates 5 mock accounts
+- **`apps/web/src/components/AccountSwitcher.tsx`** — New standalone account switcher using `useActiveAccount.switchTo()`
+- **`apps/web/src/components/IndustryDropdown.tsx`** — 56-industry dropdown grouped by 5 categories
+- **`apps/web/src/lib/constants/industries.ts`** — Web-side industry constants
+- **`apps/web/src/components/Header.tsx`** — Refactored to use `AccountSwitcher`
+- **`tests/unit/api/seed.test.ts`** — 7 tests (all pass): seed creates 56 industries, idempotency, 5 mock accounts, idempotency, INDUSTRIES constant validation
+- Typecheck: 3 workspaces PASS · Tests: 2019 passed / 0 failed

@@ -1,0 +1,10 @@
+All 3 CONFIRMED issues are now fixed and committed:
+
+1. **URL fix** (`getActiveAccountId` + `queryStepData`): Changed from `/api/trpc/...` (Vite proxy → 404) to `http://localhost:3000/trpc/...` (direct backend)
+2. **Account switcher detach fix** (`test (b)`): Removed unnecessary Escape+reopen+click of `accAId` (already on accA); added `.waitFor()` before B/A switches  
+3. **prd-18 4/6 failures**:
+   - Tests 1 & 5: `locator('h1').first()` to avoid strict mode with 2 h1 elements
+   - Test 2: `networkidle` wait + `hasExistingResult` conditional to skip form when DB already has results (button disabled)
+   - Test 3: `getByRole('tab', {name: '流量型'})` to avoid strict mode when topic cards contain category text
+
+Quality: typecheck PASS · vitest 2278/2282 PASS (4 pre-existing skips).

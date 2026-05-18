@@ -1,0 +1,10 @@
+US-004 实现完成并验证：
+
+**已完成的工作：**
+- `function-matrix.ts` — 15 卡数据严格按 dump §2.1，4 H3 分组 + 1 footer
+- `Home.tsx` — `FunctionMatrixSection` 完整实现，响应式 grid，紫色描边 hover
+- 浏览器实测验证：FUNCTION MATRIX H2 金色居中 ✅，4 分组顺序正确 ✅，14+1=15 卡 ✅
+- `screenshots/prd16-us004-home-matrix.png` ✅
+- typecheck PASS，51 tests PASS，grep FUNCTION_MATRIX 6 处 ✅
+
+代码已 commit，等待 Validator 通过审计门禁后继续下一 story（US-005）。

@@ -1,0 +1,35 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Step 1: admin submitForReview(v18) → pending_review + approval_request created
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Step 2: super_admin#1 approveRequest → first_approved + firstApproverAdminId set
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Step 3: same super_admin#1 tries to approve again → FORBIDDEN_SAME_APPROVER
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Step 4: super_admin#2 approveRequest → approved + _publishPromptVersionInTx callback
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Step 5: ContextAssembler getActivePromptVersion → returns v18 content
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Step 6: admin_audit_log contains prompt_version_publish + dual_approval_completed
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Edge: approveRequest on already-approved request throws BAD_REQUEST
+ ✓ tests/e2e/admin/prd13-dual-approval-e2e.test.ts > PRD-13 US-012 · dual approval E2E > Edge: requestApproval with single-approval actionType sets requireDualApproval=false
+ ✓ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts > PRD-13 US-012 · evolution rebuild E2E > admin forceRebuildEvolution → requestApproval(dual=true)
+ ✓ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts > PRD-13 US-012 · evolution rebuild E2E > super_admin#1 first approval → first_approved state
+ ✓ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts > PRD-13 US-012 · evolution rebuild E2E > super_admin#2 second approval → status=approved
+ ✓ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts > PRD-13 US-012 · evolution rebuild E2E > _forceRebuildEvolutionInTx callback → evolution_profile cleared + insights resolved
+ ✓ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts > PRD-13 US-012 · evolution rebuild E2E > Edge: same super_admin cannot approve twice in dual-approval
+ ✓ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts > PRD-13 US-012 · evolution rebuild E2E > enqueueEvolutionRebuildJob → BullMQ queue.add called with rebuild payload
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > emergencyApprove → status=approved, emergencyMode=true, postReviewRequired=true
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > 12h later: scanEmergencyPostReviewOverdue → no overdue alert (< 24h threshold)
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > 24h+ later: scanEmergencyPostReviewOverdue → overdue alert + audit_log post_review_overdue
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > postReviewApprove → postReviewedAt + postReviewerAdminId written
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > Edge: postReviewApprove on already-reviewed request throws BAD_REQUEST
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > Edge: emergencyApprove requires super_admin role — non-super_admin rejected
+ ✓ tests/e2e/admin/prd13-emergency-flow.test.ts > PRD-13 US-012 · emergency approval flow E2E > Edge: emergencyApprove requires emergencyIncidentId
+ ✓ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts > PRD-13 US-012 · quota expiry E2E > adjustQuota(delta=300) → quota adjustment created + delayed job added
+ ✓ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts > PRD-13 US-012 · quota expiry E2E > simulate 24h → processExpiry → dailyQuota rollback + expiredAt written
+ ✓ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts > PRD-13 US-012 · quota expiry E2E > quota expiry idempotent — calling processExpiry again is a no-op
+ ✓ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts > PRD-13 US-012 · quota expiry E2E > processExpiry for nonexistent adjustmentId is a no-op
+
+ Test Files  4 passed (4)
+      Tests  25 passed (25)
+   Start at  19:26:02
+   Duration  370ms (transform 54ms, setup 5ms, collect 93ms, tests 178ms, environment 0ms, prepare 24ms)
+
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-012/pytest.xml

@@ -1,0 +1,7 @@
+US-004 第3次实现完成。精准修复了 Validator 确认的3个 AC 缺失：
+
+- **AC-3**: `list` 端点现在从 `resultSummary.pValue` 提取 `currentPValue`，列表新增 p-value 列（<0.05 绿色高亮）
+- **AC-4**: 过滤器区域新增管理员 ID 输入框 + 开始/结束日期选择器，通过 `createdByAdminId` / `startDateFrom` / `startDateTo` 参数传给后端
+- **AC-5**: Drawer 操作区新增"📊 详细分析"按钮
+
+typecheck 全 PASS，1793/1793 tests PASS，已 commit `29007df`。

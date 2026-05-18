@@ -1,0 +1,25 @@
+## 验证结果: US-003 **PASS**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | IpProgressSection + trpc.stepData.progress.useQuery() | ✓ |
+| AC-2 | H2 `font-display text-2xl font-bold text-foreground mb-4` · "我的IP打造进度" | ✓ |
+| AC-3 | glass-card 容器 · 已完成 N/9步 · 进度百分比 · 进度条 div className 结构 | ✓ |
+| AC-4 | `<StepProgress completedSteps={completed} isLoading={isLoading} />` 直接复用 | ✓ |
+| AC-5 | 查看IP方案→/ip-plan · 继续→/step/1(第一未完成) · 全完成时不渲染 | ✓ |
+| AC-6 | 进度条 **紫色** gradient `rgb(124,58,237)→rgb(167,139,250)`（violet-600→violet-400，非金色）| ✓ |
+| AC-7 | 截图 `screenshots/prd16-us003-home-ipprogress.png` | ✓ |
+| AC-8 | typecheck exit 0 · pnpm test exit 0 | ✓ |
+
+### 关键修复验证
+- **根因**: 上次 `from-primary`（`--primary: 43 87% 63%` = HSL 金色）
+- **修复**: `from-violet-600 to-violet-400`
+- **浏览器实测 gradient**: `linear-gradient(to right, rgb(124, 58, 237), rgb(167, 139, 250))` = 紫色 ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-003/`  
+已生成: `manifest.json` (verdict=PASS) · `pytest-full.xml` · `pytest-full.stdout.txt` · `typecheck.stdout.txt`
+
+**prd.json**: `passes=True`, `retryCount=0`, `notes=""`

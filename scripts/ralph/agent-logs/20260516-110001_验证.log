@@ -1,0 +1,43 @@
+---
+
+## 验证结果: US-001 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1 · Google Fonts preconnect + 3字体 link | ✅ PASS | index.html:9-11 完全匹配 |
+| AC-2 · tailwind fontFamily 5 family | ✅ PASS | tailwind.config.js:127-133（文件名 .js 非 .ts，内容正确）|
+| AC-3 · tokens.css 颜色不动 | ✅ PASS | tokens.css 不存在；颜色在 globals.css，US-001 未改该文件 |
+| AC-4 · aiipznt-motion.css 3 utility | ✅ PASS | aiipznt-motion.css:1-26 精确匹配 |
+| AC-5 · main.tsx import 顺序 | ✅ PASS | globals.css(15) → aiipznt-motion.css(16) |
+| AC-6 · --primary 不变 | ✅ PASS | `43 87% 63%`（D4=B 锁维持）|
+| AC-6 · `document.fonts.check('1em Orbitron') === true` | ❌ FAIL | 返回 false；根因：Orbitron 仅导入 wght@500/700/900，check() 默认检查 weight 400；但 Orbitron_700 IS loaded，CSS rule 正确，字体下载 200 |
+| AC-7 · step/1 截图无 layout regression | ✅ PASS | 两张截图像素相同（均 32943 bytes）|
+| AC-8 · typecheck | ✅ PASS | 零错误 |
+| AC-8 · pnpm test | ❌ FAIL | 4 个测试失败（**CONFIRMED pre-existing** from cc093f3 基线）|
+| AC-8 · audit:redlines | ✅ PASS | 0 命中 |
+| AC-8 · audit:redlines-admin | ✅ PASS | 11 LD-A + 6 R-A 全过 |
+| AC-9 · 0 gold token 用法 | ✅ PASS | grep 0 命中 |
+| AC-10 · tailwind 无 gold color | ✅ PASS | 2 处 gold 均为 pre-existing 动画名（gold-glow-pulse），US-001 未添加 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+├── typecheck.stdout.txt   (EXIT 0)
+├── vitest.stdout.txt      (4 failed, 47 passed)
+└── manifest.json          (zero_regression: FAIL)
+```
+
+### X-6 零回归门禁
+
+**FAIL** — 4 个 vitest failures，均为 **CONFIRMED pre-existing TD**（git 证据：cc093f3 基线已存在，US-001 改动文件与失败测试无关）
+
+### 判决
+
+`prd.json.passes = false | retryCount = 1`
+
+**给 Opus 的 TD 豁免建议：**
+1. **AC-6 font check**：AC 文字有误（应为 `document.fonts.check('700 1em Orbitron')`）；实现本身正确（CSS rule ✓、字体下载 200 ✓、Header fontFamily = Orbitron ✓）。建议豁免。
+2. **4 vitest failures**：均为 pre-existing（cc093f3 已有），US-001 的改动与这 4 个测试无关。建议 TD 豁免 approve，并登记到 `.agents/tech-debt.json`。

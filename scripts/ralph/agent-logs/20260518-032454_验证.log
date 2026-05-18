@@ -1,0 +1,27 @@
+---
+
+## 验证结果: US-001 **PASS**
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|:-:|
+| AC-1 | `legacy-ls.ts` 存在，export `migrateLegacyLs`，LEGACY_KEYS 10 条，FLAG_KEY 正确，防重跑逻辑完整 | ✓ |
+| AC-2 | `__tests__/legacy-ls.test.ts` 覆盖全部 5 类 edge case（null accountId / 0 key / 全 10 key / 新 key 不覆盖 / QuotaExceeded） | ✓ |
+| AC-3 | `App.tsx` 在 `useEffect` 中 call `migrateLegacyLs(localStorage, account.id)`，guard `isLoading || account === null`，不在 SSR 跑 | ✓ |
+| AC-4 | 10 个 LS 同步读写，< 50ms 无疑义（vitest 2ms 完成） | ✓ |
+| AC-5 | `pnpm vitest run src/lib/migration/__tests__/legacy-ls.test.ts` → **8 tests passed** | ✓ |
+| AC-6 | `pnpm typecheck` → **0 error** | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  vitest.stdout.txt   (8 tests passed)
+  typecheck.stdout.txt (0 errors)
+  manifest.json       (zero_regression=PASS, exit_code=0)
+```
+
+### 判决
+
+`prd.json.userStories[US-001].passes = true`，`retryCount = 0`，`notes = ""`

@@ -1,0 +1,41 @@
+US-002 验证完成，结果：**PASS**。
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|:---:|
+| AC-1 | significance.service.ts 存在，导出 chiSquareTest + welchTTest + computeExperimentSignificance | ✓ |
+| AC-2 | SignificanceTestResult interface 含 8 字段 (metric/testType/pValue/isSignificant/effect/sampleSize/confidence/recommendation) | ✓ |
+| AC-3 | Chi-square 用 `@stdlib/stats-base-dists-chisquare-cdf` · df=1 · `1 - chisquareCdf(chi2, 1)` 双侧 | ✓ |
+| AC-4 | Welch t-test 用 `@stdlib/stats-base-dists-t-cdf` · Welch-Satterthwaite df · `2*(1-tCdf(|t|,df))` 双侧 | ✓ |
+| AC-5 | 3 标准 metric: conversion (COUNT DISTINCT completed steps ≥7) / retention (last_login_at ≥ assigned_at+7d) / cost (SUM cost_usd per user) | ✓ |
+| AC-6 | CustomMetric interface + Promise.all 并行 fetch | ✓ |
+| AC-7 | sampleSize < 30 → recommendation='inconclusive', pValue=null, effect=null | ✓ |
+| AC-8 | p≥0.05→continue · p<0.05+better→stop_winner · p<0.05+worse>10%→stop_loser | ✓ |
+| AC-9 | package.json 含两个 @stdlib 依赖，node_modules 已安装 | ✓ |
+| AC-10 | 16 单测覆盖 fixture（50% vs 70% chi-sq p<0.01；mean=100 vs 120 Welch t p<0.001）| ✓ |
+| AC-11 | 仅新增查询，不修改任何现有数据路径 | ✓ |
+| AC-12 | 1755 tests ≥ 1742 ✓；typecheck 0 errors ✓；audit 18 vulns 全为 pre-existing（TD 豁免）| ✓ |
+| AC-13 | Typecheck passes (0 errors, 6 workspace packages) | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+├── pytest-full.xml         (162 files, 1755 passed)
+├── pytest-full.stdout.txt  (full output)
+├── typecheck.stdout.txt    (0 errors)
+└── manifest.json           (verdict: PASS, zero_regression: PASS)
+```
+
+### TD 豁免
+
+`pnpm audit` 18 vulns (13 moderate + 5 high) 全部在 `apps/admin > @monaco-editor/react > monaco-editor > dompurify` 路径，与 US-002 新增的 `@stdlib` 包无关，属 pre-existing tech debt。
+
+### 判决
+
+`prd.json.passes = true`（已写入）

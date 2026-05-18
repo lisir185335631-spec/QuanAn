@@ -1,0 +1,8 @@
+US-009 is complete. All 8 unit tests pass, full test suite (87 files, 812 tests) passes with zero regressions. 
+
+**Implementation summary:**
+- `workers/stt/whisper.ts` — `WhisperSttWorker` with D-038 pattern (direct OpenAI SDK, not LLMGateway), inline WAV duration parser, configurable timeout/maxRetries
+- `lib/rate-limit/stt.ts` — Redis sliding window, 50/user/day default  
+- `trpc/routers/stt.ts` — `stt.transcribe` mutation: base64 → Buffer → rate check → Whisper → cost_log
+- Unit tests use nock 14 to intercept OpenAI fetch calls; `maxRetries: 0` disables SDK retry loop so API error tests don't timeout
+- AC-9 verified: 0 `OPENAI_API_KEY` references in `apps/web`

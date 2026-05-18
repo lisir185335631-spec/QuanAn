@@ -1,0 +1,41 @@
+---
+
+## 验证结果: US-005 **FAIL**
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|----|:----:|------|
+| AC1 schema 2 字段 | ✅ | `lastLoginAt DateTime?` + `lastLoginIp String? @db.VarChar(45)` 均在 schema.prisma |
+| AC2 4 @@index | ✅ | role / plan / industry / lastLoginAt(sort:Desc) 全部在 schema |
+| AC3 migration SQL | ✅ | `ALTER TABLE "users" ADD COLUMN last_login_at` + 4 `CREATE INDEX` 均在 migration 文件 |
+| AC4 psql 实跑 | ✅ | `\d users` 确认 `last_login_at timestamp(3)` + `last_login_ip varchar(45)` + 4 indexes |
+| AC5 RLS ON | ❌ | `relrowsecurity=f`（AC 要求 `t`）|
+| AC6 auth.ts update | ✅ | `updateLastLogin()` 调用 `prisma.user.update({ lastLoginAt: new Date(), lastLoginIp: ... })` |
+| AC7 try/catch 不阻塞 | ✅ | `try { await update } catch(e) { logger.warn(...) }` |
+| AC8 IPv6 ≤45 | ✅ | `ip.slice(0, 45)` 安全截断 |
+| AC9 zod schema | ✅ | `lastLoginAt: z.date().nullable().optional()` + `lastLoginIp: z.string().max(45).nullable().optional()` |
+| AC10 4 单元测试 | ✅ | 4 tests all passed |
+| AC11 typecheck 0 error | ✅ | `pnpm typecheck` exit_code=0 |
+| AC11 pnpm test | ❌ | 全量 3 files failed（X-6 门禁） |
+| AC12 audit:redlines-admin | ✅ | ALL PASS · 5 LD-A + 6 R-A |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+pytest.xml (4 passed - story specific)
+pytest.stdout.txt
+pytest-full.xml (failures=3 pre-existing)
+pytest-full.stdout.txt
+typecheck.stdout.txt (0 errors)
+manifest.json (verdict=FAIL)
+```
+
+### 判决
+
+**prd.json.passes = false, retryCount = 1**
+
+两个失败均属 **pre-existing** 状态：
+1. **AC5 RLS**: `users` 表从未被加入 `manual_rls.sql` 的 ENABLE 列表（`ip_accounts`/`feedback_logs`/`cost_log` 等已开启，`users`/`sessions`/`invite_codes` 从未开启）。US-005 没有改变 RLS 状态，是存量 tech debt。建议 Opus 按 **TD 豁免规则** 处理。
+2. **X-6 零回归**: 3 个 integration test 失败经 `git stash` 确认为 pre-existing（stash 前后同样失败），非本 story 引入。建议 Opus 按 **TD 豁免规则** 处理。

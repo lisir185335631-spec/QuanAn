@@ -1,0 +1,45 @@
+prd.json updated. Here's the validation summary:
+
+---
+
+## 验证结果: US-006 **FAIL**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | BoomGenerate.tsx 真表单 ToolForm + ElementsMultiSelect + industry + theme | ✓ |
+| AC-2 | submit → trpc.boomGenerate.generate.mutate · onSuccess setResult | ✓ |
+| AC-3 | BoomGenerateResult · split '---' → 5 Card grid md:grid-cols-2 + react-markdown + 字数 + copy | ✓ |
+| AC-4 | LS namespace getToolLsKey(accountId, "boomGenerate", "input") | ✓ |
+| AC-5 | industry default 从 useActiveAccount 读 | ✓ |
+| AC-6 | 单元测试 ≥ 5 | ✓ (28 tests 全通) |
+| AC-7 | e2e · 选 elements → submit → 5 卡片 + copy button | **✗** |
+| AC-8 | split ≠ 5 → 提示"输出格式异常" + 显示原始 content | ✓ |
+| AC-9 | clipboard 失败 → toast.error("复制失败 · 请手动") | ✓ |
+| AC-10 | FeedbackButton 复用 · 0 hardcode color | ✓ |
+| AC-11 | 性能要求 | ✓ (source verified) |
+| AC-12 | 浏览器验证 · 5 卡片 + copy button + 无控制台错误 | **✗** |
+| AC-13 | Tests pass | **✗** |
+| AC-14 | Typecheck passes | ✓ |
+
+### 根因(CONFIRMED)
+
+`scarcity`（稀缺）属于 `信息密度` (INFORMATION_DENSITY_KEYS) 组。`ElementsMultiSelect` 默认 `information: false`（折叠）。e2e 测试点击 `[data-element="scarcity"]` 前未展开该组 → 2s timeout。
+
+**截图**: `screenshots/validator-us-006-fail-1.png` 清晰可见信息密度▼折叠。
+
+### 修复建议
+
+在 e2e test 第 7 步前加：
+```ts
+await page.locator('button').filter({ hasText: '信息密度' }).click();
+await scarcityBtn.click({ timeout: 3000 });
+```
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/`  
+生成: `vitest.stdout.txt` (28 passed), `typecheck.txt` (0 errors), `playwright.stdout.txt` (2 failed), `manifest.json`
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`

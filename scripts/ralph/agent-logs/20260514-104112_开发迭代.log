@@ -1,0 +1,16 @@
+US-002 实现完成。
+
+**完成内容:**
+
+1. **Schema 扩展** (`prisma/schema.prisma`) - 新增 7 字段 + 3 索引，migration 成功应用
+2. **`approvalGateService.ts`** (新建) - 完整 dual-approval service：
+   - `ApprovalActionType` 类型 (D-094 清单)
+   - `requestApproval()` - 含 emergencyMode 必填校验
+   - `_approveRequestInTx()` - P-6 单点事务抽象
+   - `approveRequest()` - 双路径：单人立即批 / 双人第一批保持 pending + 第二批 SHIELD 校验
+   - `emergencyApprove()` - 仅 super_admin，自动设 `postReviewRequired=true` + audit
+   - `postReviewApprove()` - 复核人不能是原审批人校验
+3. **`emergency-post-review.job.ts`** (新建) - BullMQ cron `0 30 3 * * *` Asia/Shanghai，扫 24h 超期未复核，dingtalk(isMock=true)
+4. **`index.ts`** - wire `scheduleEmergencyPostReview()`
+5. **17 个新 unit tests** 覆盖所有 SHIELD 校验
+6. **验证**: typecheck 0 errors · audit:redlines/ld/redlines-admin 0 命中 · 1567 tests passing (≥1555)

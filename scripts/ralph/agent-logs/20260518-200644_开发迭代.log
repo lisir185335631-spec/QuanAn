@@ -1,0 +1,8 @@
+US-001 implementation is complete and verified:
+
+- `apps/api/src/lib/env.ts` — zod `envSchema` with `emptyToUndefined` preprocessor + `validateEnv()` (warns on missing keys, never throws for missing optional keys)
+- `apps/api/src/lib/env.test.ts` — 5 tests all pass (a–e)
+- `apps/api/src/index.ts` — calls `validateEnv()` at startup, logs `llmMode`/`model`/key status
+- `.env.example` — OPENAI_API_KEY / ANTHROPIC_API_KEY / LLM_DEFAULT_MODEL documented with fallback behavior comment
+
+Quality checks: 5/5 tests ✅, typecheck 0 errors ✅. All 6 ACs satisfied.

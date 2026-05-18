@@ -1,0 +1,16 @@
+{
+  "story_id": "US-006b",
+  "validator_start_ts": "2026-05-17T07:47:00",
+  "validator_end_ts": "2026-05-17T08:02:00",
+  "test_command": "pnpm vitest run (70 tests) + pnpm typecheck + agent-browser e2e",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ],
+  "notes": "70/70 vitest tests pass. typecheck clean. Browser: 6 H3 blocks rendered correctly, buttons per H3 confirmed (3 standard + 生成参考图 for avatar/background), header buttons visible, clipboard mock confirmed toast '已复制', console 0 errors (only Vite debug + React Router v6 future-flag warning)."
+}

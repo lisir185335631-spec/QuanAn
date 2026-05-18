@@ -1,0 +1,39 @@
+prd.json 已更新。验证结果汇总：
+
+---
+
+## 验证结果: US-012 [FAIL]
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|---|---|
+| AC-1: verify-prd-13.sh ≥8 section | ✅ PASS | 33/33 static checks pass |
+| AC-2: prd13-dual-approval-e2e.test.ts | ✅ PASS | 文件存在，结构正确 |
+| AC-3: Steps 1~6 dual approval E2E | ✅ PASS | 8 tests pass (6 steps + 2 edge) |
+| AC-4: prd13-emergency-flow.test.ts | ✅ PASS | 7 tests pass |
+| AC-5: prd13-quota-expiry-e2e.test.ts | ✅ PASS | 4 tests pass |
+| AC-6: prd13-evolution-rebuild-e2e.test.ts | ✅ PASS | 6 tests pass |
+| AC-7: 5 audit scripts 全过 | ❌ FAIL | `audit:redlines` exit=1 (US-011 console.log pre-existing) + `audit:admin-rls` 命令不存在 (AC naming error) |
+| AC-8: pnpm test ≥1720 pass · 0 fail | ❌ FAIL | 1721 pass ✅ 但 6 fail (pre-existing TD-054，rls-bypass-cross-account.test.ts) |
+| AC-9: pnpm typecheck 0 errors | ✅ PASS | 全部 6 package 0 errors |
+| AC-10: verify-prd-13.sh 0 failures | ✅ PASS | 33 pass, 0 fail, 1 skipped (E2E separate pass) |
+| AC-11: Typecheck passes | ✅ PASS | 同 AC-9 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-012/`
+- `pytest.xml` (25 E2E passed)
+- `pytest-full.xml` (1731 tests, 6 pre-existing failures)
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt` (0 errors)
+- `manifest.json` (verdict=FAIL, zero_regression=FAIL)
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`
+
+**所有失败均为 pre-existing TD，非 US-012 引入**：
+- AC-7 失败 1：console.log 由 US-011 AC-11 commit cabb9b1 明确要求，非 US-012 代码
+- AC-7 失败 2：`audit:admin-rls` 命令不存在，AC spec 命名错误，`audit:admin-rls-tables` 本身 PASS
+- AC-8：6 failures 全在 rls-bypass-cross-account.test.ts，US-006 引入，US-011 validator 记录基线 16 failed，US-012 后 6 failed（改善，无回归）
+
+建议 Opus 按 TD 豁免规则处理：将 approvals.ts console.log 替换为 logger.info 可修复 AC-7 失败 1；AC-7 失败 2 为 AC spec bug；AC-8 为 TD-054 豁免。

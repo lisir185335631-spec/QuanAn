@@ -1,0 +1,56 @@
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | History.tsx 200+ 行 (839 行，在 modules/) | ✓ |
+| AC-2 | 时间线视图 · 按天分组 · 工具+摘要+时间+操作 | ✓ |
+| AC-3 | dashboard 4 KPI + 4 chart | ✓ |
+| AC-4 | URL state ?view=timeline\|dashboard | ✓ |
+| AC-5 | 14 工具 multi-select · URL ?tools= | ✓ |
+| AC-6 | **自定义日期** · 今日/本周/本月/**自定义日期** + date pickers | ✓ (已修复) |
+| AC-7 | trpc.history.list + stats procedure | ✓ |
+| AC-8 | 恢复并重跑 → /generate?topic=...&restored=13583 | ✓ |
+| AC-9 | History.test.tsx ≥ 8 it (实为 27 it) | ✓ |
+| AC-10 | history.ts 4 procedure + API 测试 | ✓ |
+| AC-11 | browser e2e: timeline→dashboard→restore | ✓ |
+| AC-12 | pnpm vitest pass / typecheck PASS | **✗** |
+
+### 失败项 (CONFIRMED)
+
+**AC-12 — apps/web 本地测试套件回归**
+
+```
+复现命令: cd apps/web && node_modules/.bin/vitest run --config vitest.config.ts 2>&1 | grep FAIL
+
+apps/web/src/test/pages.test.tsx:205
+Expected: 历史记录
+Received: 操作历史
+```
+
+- 根因: US-008 将 `History.tsx:689` 的 `<h1>` 从 `"历史记录"` 改为 `"操作历史"`，未更新 `pages.test.tsx`
+- 其余 4 个 pages.test.tsx 失败 (Trending/Copywriting/Knowledge/MyTopics) 均为预存在缺陷，非 US-008 引入
+
+**零回归 (root vitest)**: 2256 tests, 0 failures ✓  
+**TypeCheck**: 全部 PASS ✓
+
+### 建议修复
+
+更新 `apps/web/src/test/pages.test.tsx:205`：
+```ts
+// 当前 (FAIL)
+expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('历史记录');
+// 目标 (PASS)
+expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('操作历史');
+```
+
+**绝对不能** 把 History.tsx h1 改回 `"历史记录"` — 文件头注释明确写 `"操作历史"` 是正确实现。
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-008/`
+- `vitest-full.xml` — 根 vitest 2256 tests, 0 failures (PASS)
+- `vitest-web-local.xml` — apps/web local: 51 tests, 5 failures
+- `typecheck.stdout.txt` — all PASS
+- `manifest.json` — verdict: FAIL

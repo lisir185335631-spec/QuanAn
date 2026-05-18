@@ -1,0 +1,1 @@
+Fix complete. Single-line change: `STEP3B_SUBTITLE_TEMPLATE` now matches the PRD AC-1 literal exactly — "输入你的个人信息**和故事**，AI **将精准识别**…**打造有辨识度的个人 IP**". All 5 tests pass, typecheck clean.

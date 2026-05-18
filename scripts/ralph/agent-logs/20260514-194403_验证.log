@@ -1,0 +1,30 @@
+All 12 stories PASSED. Validation complete.
+
+---
+
+## 验证结果: US-012 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC1 | verify-prd-13.sh ≥8 sections · 38/38 PASS | ✅ |
+| AC2 | prd13-dual-approval-e2e.test.ts · 真 Prisma(quanqn_test) + seed v18 | ✅ |
+| AC3 | Steps 1-6: submitForReview→first_approved→FORBIDDEN_SAME_APPROVER→approved→v18→audit_log | ✅ |
+| AC4 | prd13-emergency-flow.test.ts · 7 tests: emergencyApprove+12h/24h+postReviewApprove | ✅ |
+| AC5 | prd13-quota-expiry-e2e.test.ts · adjustQuota+24h rollback+idempotent (schema用`expiredAt`非`revokedAt`，语义等价) | ✅ |
+| AC6 | prd13-evolution-rebuild-e2e.test.ts · dual approval+_forceRebuildEvolutionInTx+BullMQ | ✅ |
+| AC7 | audit:admin-rls alias在package.json · 5/5 audit 全过 | ✅ |
+| AC8 | 1727 passed ≥ 1720 · 0 fail (160 test files) | ✅ |
+| AC9 | typecheck 0 errors | ✅ |
+| AC10 | verify-prd-13.sh 0 failures · 8 sections all PASS | ✅ |
+| AC11 | Typecheck passes | ✅ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-012/`
+已生成: `vitest-full.xml` (1727 passed), `vitest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`
+
+**所有 12 stories PASSED — PRD-13 全部完成。**

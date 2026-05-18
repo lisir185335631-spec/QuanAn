@@ -1,0 +1,33 @@
+US-001 PASS確定。検証結果をまとめます。
+
+---
+
+## 検証結果: US-001 [PASS]
+
+### AC 対照
+
+| AC | 内容 | 判定 | 根拠 |
+|---|---|---|---|
+| AC-1 | `TrendingReviewQueue` model · schema.prisma L984-1009 · `@@unique([sourcePlatform,sourceItemId])` + 4 indexes | ✓ | prisma/schema.prisma:984-1009 確認 · DB index 6本確認 |
+| AC-2 | `TrendingTakedown` model + 2 indexes | ✓ | schema.prisma:1012-1026 · DB index確認 |
+| AC-3 | `AutoReviewRule` model + `@@unique([ruleType,ruleKey])` + 1 index | ✓ | schema.prisma:1029-1041 · DB index確認 |
+| AC-4 | `20260513000000_add_trending_review_tables` migration · 3 CREATE TABLE + indexes | ✓ | `fix: [US-001] AC-4 migration file` コミットで修正済 |
+| AC-5 | `manual_admin_rls.sql` 3行 ALTER TABLE DISABLE RLS · DB実測 `relrowsecurity=f` | ✓ | 3テーブル全て `relrowsecurity=f` 確認 |
+| AC-6 | `audit-admin-rls-tables.sh` 3表追加 + `# 域⑦ TrendingItem 審核` コメント | ✓ | `fix: [US-001] AC-6` コミットで修正済 |
+| AC-7 | `trending-review.schema.ts` · 3 zod schema 厳密 export · enum 一致 | ✓ | schema.ts:1-76 全 export確認 |
+| AC-8 | `pnpm audit:admin-rls-tables` · 0 mismatches | ✓ | 26/26 admin tables PASS(13+3+10 PRD累積) |
+| AC-9 | 単体テスト 9+ 件 · enum/必須/JSON 型 | ✓ | 26 tests PASS |
+| AC-10 | `pnpm test` 全過 · `pnpm typecheck` 0 error · audit-redlines-admin ALL PASS | ✓ | 1285 unit tests PASS · typecheck 0 error · ALL PASS |
+| AC-11 | Typecheck passes | ✓ | 全ワークスペース 0 error |
+
+### 産物パス
+```
+scripts/ralph/verify-artifacts/US-001/
+生成済: pytest-full.xml (1285 passed, 0 failed) · pytest-full.stdout.txt · typecheck.stdout.txt · audit-rls.txt · audit-redlines-admin.txt · manifest.json
+```
+
+### TD 豁免ログ
+- **TD (pre-existing)**: integration tests 9件 (auth.test.ts/auth.me.test.ts/trace.test.ts) `ECONNREFUSED 127.0.0.1:3000` — 実行中の API サーバーが必要。US-001 は `tests/integration/` を一切変更していない (`git diff` 0 lines)。豁免approve。
+
+### 判決
+`prd.json` US-001: `passes = true` · `retryCount = 0` · `notes = ""`

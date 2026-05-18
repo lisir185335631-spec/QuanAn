@@ -1,0 +1,28 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+- AC-1 ✓ `privateDomain.ts` · 1 procedure(generate) · protectedProcedure mock
+- AC-2 ✓ `diagnosis.ts` · 3 procedure(generate/history/latest) · protectedProcedure mock
+- AC-3 ✓ `evolution.ts` · 7 procedure(evolve/getConfig/updateConfig/history/recentFeedback/feedbackTrend/moduleRanking) · 全 mock
+- AC-4 ✓ `deepLearning.ts` · 5 procedure(list/create/createFromFile/learn/delete) · 文件解析留 PRD-7
+- AC-5 ✓ `packages/schemas/src/specialist-io/` · 4 schema 文件 + index.ts 全导出
+- AC-6 ✓ evolution 7 procedure 全 mock · EvolutionAgent 留 PRD-8(P7)
+- AC-7 ✓ Typecheck exit 0 (无错误)
+- AC-8 ✓ 22 unit tests in `specialists-flow.test.ts` (≥ 16 要求) · 全量 129/129 passed
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-005/
+├── typecheck.txt       (exit_code=0)
+├── pytest-full.xml     (22 US-005 cases + 109 regression, 0 failures)
+├── pytest-full.stdout.txt  (129 passed, vitest run)
+└── manifest.json
+```
+
+### 零回归门禁
+全量 vitest run: **129 passed, 0 failed, 0 errors** · exit 0 ✅
+
+### 判决
+`prd.json.US-005.passes = true` · `retryCount = 0` · `notes = ""`
+
+5/8 stories PASSED。US-006/007/008 待执行。

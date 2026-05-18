@@ -1,0 +1,1 @@
+US-009 fix is complete. The single change was adding the `scheduleAnomalyDetection()` import and call to `index.ts` startup sequence (after KPI snapshot crons, before `serve()`). All 10 anomaly-detection tests pass, typecheck is clean at 0 errors, and the commit is in.

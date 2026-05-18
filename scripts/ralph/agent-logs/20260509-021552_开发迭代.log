@@ -1,0 +1,7 @@
+US-005 完成。
+
+**实现摘要：**
+- `apps/api/src/specialists/BrandingAgent.ts` — 继承 BaseSpecialist，2 mode (packaging/persona)，五层配置完整，`outputSchema` getter 按 `_mode` 返回对应严格 schema（遵循 REJ-007），packaging timeout=60s，persona timeout=45s
+- `apps/api/src/trpc/routers/stepData.ts` — step3→packaging，step3b→persona，与 step1/step4 同构
+- `tests/unit/specialists/__tests__/BrandingAgent.test.ts` — 8 tests，覆盖 2 mode × 3 场景 + invalid mode + config 验证
+- typecheck ✅ · 257/257 tests ✅

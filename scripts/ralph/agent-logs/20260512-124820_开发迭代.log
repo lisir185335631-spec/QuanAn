@@ -1,0 +1,11 @@
+US-004 の実装が完了しました。US-001〜003 は PASSED、US-004 は Validator 検証待ちです。
+
+**実装サマリー:**
+
+- **`apps/api/src/lib/admin/audit-helpers.ts`** (新規): `redactSensitiveFields`（password/token/apiKey/secret/credential を `[REDACTED]` に）、`extractActionType`、`extractCrossAccountFlag` の3ヘルパー
+- **`apps/api/src/services/admin/admin-audit-service.ts`** (新規): `logAdminAction` — traceId+eventType の idempotency チェック付き append-only write、内部 try-catch で業務をブロックしない
+- **`apps/api/src/trpc/middleware/admin/auditLog.ts`** (真接): wrapNext+try-catch で `cross_account_query` を後置自動写入（4 eventType 分岐コメント付き）
+- **`auth.ts`** (リファクタ): 直接 prisma call → `logAdminAction` service 経由に変更（AC-4）
+- **`approvalGateCheck.ts`** (更新): throw 前に `logAdminAction` で `approval_request_create` 書き込み（AC-6）
+- **テスト**: auditLog-middleware.test.ts(10) + admin-audit-service.test.ts(6) + audit-log-write.test.ts(統合1) = 17 tests pass
+- 全 112 test files pass・typecheck 0 errors・lint 0 errors

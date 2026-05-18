@@ -1,0 +1,8 @@
+Done. The fix adds three things to `PromptsPage.tsx`:
+
+1. **`lastSavedVersionIdRef`** — tracks the version ID from the last `saveDraft` call, avoiding stale-closure issues when reading React state inside mutation callbacks.
+2. **30s timer** — fires `showToast('评分超时 · 30s 后自动重试 · 也可手动重跑评分')` if the LLM Judge hasn't scored within 30 seconds.
+3. **5s polling loop** — refetches history every 5s; if `judgeScore !== null` arrives for the submitted version, the timers are cancelled (score arrived in time, no toast needed).
+4. **Cleanup `useEffect`** — clears both timers on unmount to prevent memory leaks.
+
+All other ACs were already passing. Typecheck: 0 errors. Tests: 1642 passed / 0 fail.

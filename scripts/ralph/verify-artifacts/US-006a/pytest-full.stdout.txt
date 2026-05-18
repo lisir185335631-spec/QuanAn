@@ -1,0 +1,25 @@
+
+> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
+> vitest run --config vitest.config.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 3ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 34ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 49ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 40ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 74ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/test/pages.test.tsx (30 tests) 174ms
+
+ Test Files  8 passed (8)
+      Tests  70 passed (70)
+   Start at  14:35:08
+   Duration  1.37s (transform 441ms, setup 334ms, collect 1.38s, tests 378ms, environment 2.19s, prepare 390ms)
+

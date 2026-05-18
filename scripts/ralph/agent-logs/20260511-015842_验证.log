@@ -1,0 +1,31 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 证据 |
+|----|------|------|
+| AC-1 | ✅ PASS | Header.tsx:140-148 N-tiered 逻辑: n>=4→ScrollArea h-60; n>=2→div maxH=n*44px; n=1→plain div |
+| AC-2 | ✅ PASS | mock OAuth 登录 dev@local.test 成功，AccountDropdown 点开 |
+| AC-3 | ✅ PASS | N=1: 133px(无ScrollArea) · N=2: 166px compact · N=3: 199px compact · N=4: ScrollArea=240px |
+| AC-4 | ✅ PASS | screenshot-1/2/3/4.png 已保存 |
+| AC-5 | ✅ PASS | 无控制台错误，无 Radix portal break |
+| AC-6 | ✅ PASS | typecheck 6 ws 0 error；lint --max-warnings=0 全过 |
+| AC-7 | ✅ PASS | pnpm test 75 files / 727 tests / 0 failures |
+| AC-8 | ✅ PASS | account-step-auth(15) ✓ · account-isolation(9) ✓ · header.spec(6/6) ✓ · account-switch e2e ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-008/
+  manifest.json        (exit_code=0, zero_regression=PASS)
+  vitest-full.xml      (75 files, 727 passed)
+  vitest-full.stdout.txt
+  typecheck.txt        (6 ws, 0 errors)
+  lint.txt             (0 warnings)
+  screenshot-1.png     (N=1: plain div, 133px)
+  screenshot-2.png     (N=2: compact 166px)
+  screenshot-3.png     (N=3: compact 199px)
+  screenshot-4.png     (N=4: ScrollArea 240px)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

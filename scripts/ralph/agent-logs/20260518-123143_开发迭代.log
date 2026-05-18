@@ -1,0 +1,11 @@
+US-002 is complete. Here's a summary of what was implemented:
+
+**Files created:**
+- `apps/api/src/services/quota/userQuota.service.ts` — `checkAndDeductQuota` using atomic `$executeRaw UPDATE...WHERE daily_used + tokens <= daily_quota` (prevents race-condition over-deduction). Auto-creates free plan row for new users. Handles tokens=0 skip.
+- `apps/api/src/services/quota/__tests__/userQuota.service.test.ts` — 5 tests all passing: sufficient quota / full quota QUOTA_EXCEEDED / new user auto-create / tokens=0 skip / concurrent 100 calls no over-deduction.
+- `apps/web/src/components/states/ErrorState.tsx` — `quota-exceeded` variant with message `[配额超限] 今日 token 已用尽 · 明日 reset`, onRetry button hidden.
+
+**Files modified:**
+- `apps/api/src/specialists/base/BaseSpecialist.ts` — fixed `_writeCostLog` to calculate real `costUsd` via inline `calcCostUsd(model, promptTokens, completionTokens)` instead of hardcoded `'0.000000'`.
+
+All tests pass, both typechecks pass (0 errors).

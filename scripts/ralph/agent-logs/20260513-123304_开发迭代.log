@@ -1,0 +1,7 @@
+Two fixes applied and verified:
+
+1. **AC-5 (LD-A-5)**: `deepLearning.ts` `create` and `createFromFile` procedures now write to `deepLearnReviewQueue(status=pending)` instead of directly calling `deepLearningArchive.create`. `grep verify` now shows exactly 1 hit in the entire codebase (the approved single point in `_createDeepLearningArchiveInTx`).
+
+2. **AC-9**: `reject` handler now guards against `status === 'approved'` with `throw TRPCError BAD_REQUEST already_processed`, alongside the existing `already_rejected` guard.
+
+Tests: 43/43 pass for review-deep-learn, 16/16 for file-parser, typecheck 0 errors.

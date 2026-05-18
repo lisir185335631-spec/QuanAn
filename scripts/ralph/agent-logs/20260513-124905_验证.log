@@ -1,0 +1,47 @@
+prd.json 更新成功。验证完毕，输出最终报告。
+
+---
+
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+| # | AC | 状态 | 证据 |
+|:-:|---|:-:|---|
+| AC-1 | 6 procedure 全 adminProcedure | ✓ | audit-admin-rls 50 procedures 0 violations |
+| AC-2 | list: zod 6 参数 + cross_account_query audit | ✓ | review-deep-learn.ts:82-96, :168-179 |
+| AC-3 | detail: autoScanResult + metadata + textPreview + userViolationCount | ✓ | review-deep-learn.ts:188-213 |
+| AC-4 | approve: $transaction + queue.status='approved' + archive.create + archiveId + audit | ✓ | review-deep-learn.ts:220-273 |
+| AC-5 | ★ deepLearningArchive.create 全项目仅 1 命中 | ✓ | grep: 1 hit (review-deep-learn.ts:66), 其余均为注释/test expectations |
+| AC-6 | reject: upsert count+1 + audit reject + count>=3 → security_alert | ✓ | review-deep-learn.ts:281-358, test "triggers security_alert when count >= 3" |
+| AC-7 | banUploader: Approval Gates stub + suspendedAt + high_risk_action audit | ✓ | review-deep-learn.ts:367-463 |
+| AC-8 | userViolations: userId 或 null(count>=3), desc count, cross_account_query | ✓ | review-deep-learn.ts:470-508 |
+| AC-9 | approve/reject 已处理 → ValidationError; banUploader 已 suspended → ValidationError | ✓ | already_processed / already_rejected / uploader_already_suspended guards |
+| AC-10 | readonly_admin: approve/reject/banUploader 全 403 | ✓ | guardMutation() + 3 tests FORBIDDEN |
+| AC-11 | admin banUploader → pending(super_admin 审) | ✓ | test "admin: pending + no suspension" |
+| AC-12 | adminRouter index.ts 挂载 reviewDeepLearn | ✓ | index.ts:45 `deepLearn: reviewDeepLearnRouter` |
+| AC-13 | audit-approval-gates: reviewDeepLearn.banUploader 在 EXCEPTION，15 checks 0 missing | ✓ | `pnpm audit:approval-gates` 全绿 |
+| AC-14 | audit-admin-rls AST ≥ 50 procedures 0 violations | ✓ | `Checked 50 procedure(s) · 0 violations` |
+| AC-15 | 单元测试 30+ | ✓ | 43 tests: list×8 / detail×7 / approve×8 / reject×8 / banUploader×7 / userViolations×5 |
+| AC-16 | pnpm test 全过 | ✓ | 1521 passed; 9 failures = pre-existing ECONNREFUSED integration tests (confirmed via git stash) |
+| AC-17 | typecheck 0 error | ✓ | `pnpm typecheck` 6 packages 全 Done, EXIT:0 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+├── manifest.json        (verdict: PASS, zero_regression: PASS)
+├── pytest.xml           (43 tests, 0 failed)
+├── pytest.stdout.txt    (43 passed, story-specific)
+├── pytest-full.xml      (1534 total, 9 pre-existing FAIL)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt (0 errors)
+```
+
+### 零回归豁免
+
+9 integration test failures (`tests/integration/api/auth.test.ts`, `trace.test.ts`, `auth.me.test.ts`) 均为 pre-existing tech debt — 需要运行中的 server (ECONNREFUSED :3000)，与 US-009 无关。**git stash 前后失败数相同（9 = 9），确认为豁免**。
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,26 @@
+US-001 implementation complete. Here's a summary of what was delivered:
+
+---
+
+**US-001 完成** — 所有 18 AC 验证通过：
+
+| AC | 内容 | 状态 |
+|---|---|---|
+| AC-1 | pnpm-workspace.yaml + 5 sub-packages | ✅ |
+| AC-2 | src/* 已在正确 apps/ 路径 | ✅ |
+| AC-3 | apps/admin Vite SPA 6 文件 | ✅ |
+| AC-4 | 14 admin models in schema.prisma | ✅ |
+| AC-5 | grep -B1 @rls(disabled) ≥ 13 处 = **14** | ✅ |
+| AC-6 | manual_admin_rls.sql 28 DISABLE + helper functions | ✅ |
+| AC-7 | audit-admin-rls-tables.sh exit 0 | ✅ |
+| AC-8 | 7 middleware stubs + index.ts barrel | ✅ |
+| AC-9 | adminRouter health stub + 13 sub-trees | ✅ |
+| AC-10 | lib/admin/constants.ts + types.ts | ✅ |
+| AC-11 | middleware-stubs.test.ts 7 tests | ✅ |
+| AC-12 | admin-schema.test.ts 12 tests | ✅ |
+| AC-13 | PRD-9 e2e 6/6 pass | ✅ |
+| AC-14 | typecheck 6 workspaces 0 errors | ✅ |
+| AC-15 | lint --max-warnings=0 | ✅ |
+| AC-16 | test 935 passing ≥ 920 | ✅ |
+| AC-17 | migrate-monorepo.sh 10 steps | ✅ |
+| AC-18 | typecheck passes | ✅ |

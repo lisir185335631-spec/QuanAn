@@ -1,0 +1,30 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 证据 |
+|---|---|---|
+| AC-1 AccountSwitcher 样式 | ✓ PASS | button: `rounded-lg text-xs bg-secondary/50 border border-primary/15 hover:border-primary/30 px-2.5 py-1.5`; dropdown: `rounded-xl border border-primary/15 bg-popover/95 backdrop-blur-xl shadow-lg shadow-primary/5` |
+| AC-2 HeaderRight 三件套 | ✓ PASS | `<AccountSwitcher /><UserChip name={user.name} /><LogoutIconButton onClick={logout} />` (Header.tsx:69-74) |
+| AC-3 UserChip 纯展示 | ✓ PASS | animate-ping-primary pulsing dot, no onClick/events |
+| AC-4 LogoutIconButton icon-only | ✓ PASS | `data-testid="header-logout-icon"` icon-only, 直接调 logout, 无 modal |
+| AC-5 browser 验证 | ✓ PASS | dropdown 含「管理账号→/accounts」(manage testid), 无「新建账号」; UserChip pulsing dot; logout 无 dialog |
+| AC-6 截图 | ✓ PASS | `screenshots/prd16-us008-header-right.png` (dropdown+chip+icon同框) |
+| AC-7 typecheck + test | ✓ PASS | typecheck exit 0; vitest 6/6 passed |
+| AC-8 反例预防 | ✓ PASS | UserChip 0 onClick/events; logout 0 confirm/Dialog/Modal |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+├── manifest.json         (verdict=PASS, zero_regression=PASS)
+├── pytest-full.xml       (6 tests, 0 failures, 0 errors)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt  (exit 0)
+├── validator-us-008-pass-7.png
+└── validator-us-008-pass-8.png
+```
+
+### 判决
+
+`prd.json.passes = true`, `retryCount = 0`, `notes = ""`

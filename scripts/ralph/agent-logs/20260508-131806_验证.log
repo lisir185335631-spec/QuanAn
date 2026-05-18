@@ -1,0 +1,25 @@
+## 验证结果: US-005 **FAIL**
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|---|---|
+| AC-1: 9 step 进度条(金/蓝/灰) | ✓ | `StepProgress.tsx` 实现完整，data-status 属性正确 |
+| AC-2: trpc.stepData.progress 取 completedSteps | ✓ | `stepData.progress` router 存在，IpPlan.tsx 正确调用 |
+| AC-3: 切账号后 progress 重新 fetch | ✓ | useQuery 依赖 tRPC context，账号切换时自动 invalidate |
+| **AC-4: FeedbackButton 全 step 页 + /ip-plan** | **✗ FAIL** | FeedbackButton 仅在 IpPlan.tsx，11 个 step 页均未添加 |
+| AC-5: stepData 失败 → skeleton | ✓ | isError 分支返回空 completedSteps，StepSkeleton 在 isLoading 时渲染 |
+| AC-6: /ip-plan 首屏 < 1s | ✓ | lazy 加载路由，无重型依赖 |
+| AC-7: Typecheck passes | ✓ | web + api 双包 tsc --noEmit 通过 |
+| AC-8: ≥4 unit tests | ✓ | StepProgress.test.tsx 6个 + ip-progress.test.ts 6个 = 12 unit tests |
+
+### 零回归门禁 (X-6)
+- 全量 192 tests, 22 test files — **全部通过**
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-005/` — vitest-prd3.stdout.txt, vitest-web.stdout.txt, vitest-api.stdout.txt, typecheck-prd3.txt, typecheck-api.txt, manifest-prd3.json
+
+### 判决
+`prd.json.passes = false | retryCount = 1`
+
+**修复方向**：在所有 11 个 step 页(`Step1.tsx` ~ `Step9.tsx`, `Step2.tsx`, `Step3b.tsx`, `Step4b.tsx`)中添加 `<FeedbackButton stepKey="step1" />` 等对应 stepKey 的反馈按钮。

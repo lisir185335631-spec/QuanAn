@@ -1,0 +1,16 @@
+US-003 is complete. Here's a summary of what was implemented:
+
+**AC coverage:**
+- **AC-1/2**: Schema updated — `PromptVersion.mode` and `PromptCanaryConfig.mode` are non-nullable with `@default("default")`, `strategy @default("user_id_hash")`
+- **AC-3**: Migration `20260514030818_prd_13_prompt_versions` applied; 14 Specialist × mode=default seeded from templates
+- **AC-4**: `_publishPromptVersionInTx(tx, params)` — single-point function, accepts tx, never creates its own transaction (SHIELD rule)
+- **AC-5**: `publishPromptVersion` validates `status='pending_review'` + `judgeScore >= 4.0` + `requestApproval(requireDualApproval=true)`
+- **AC-6**: `rollbackPrompt` requests dual approval; `executeRollback` archives current + restores previous archived version in tx
+- **AC-7**: `updateCanaryConfig` validates `canaryPct ∈ {0,1,10,50,100}`; pct=100 triggers `publishPromptVersion`
+- **AC-8**: `getActivePromptVersion` uses deterministic MD5 hash `parseInt(hash,16) % 100` (not `Math.random()`)
+- **AC-9/13**: ContextAssembler adds 6th parallel fetch; uses DB prompt content with fallback to `templates/*.ts`
+- **AC-10**: `llm-judge.service.ts` — mock mode returns 4.2–4.8 score + writes `judgeScore`
+- **AC-11**: Both `publish` and `rollback` call `requestApproval` — no bypass
+- **AC-12**: LD-A-6 added to AGENTS.md + grep check in `audit-redlines-admin.sh`
+- **AC-14**: `pnpm audit:redlines-admin` → `ALL PASS · 6 LD-A + 6 R-A`
+- **AC-15/16**: 1584 tests pass (≥1565), typecheck 0 errors

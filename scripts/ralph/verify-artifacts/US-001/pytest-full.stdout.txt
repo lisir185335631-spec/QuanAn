@@ -1,22 +1,24 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/api
 
- ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
- ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
- ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 2ms
- ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
- ✓ src/test/step-progress.test.tsx (10 tests) 51ms
- ✓ src/components/StepProgress.test.tsx (6 tests) 33ms
- ✓ src/components/states/__tests__/states.test.tsx (3 tests) 39ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 61ms
-stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts > checkAndDeductQuota > (a) sufficient quota → deducts and returns correct remaining
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts > checkAndDeductQuota > (b) full quota → returns QUOTA_EXCEEDED
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts > checkAndDeductQuota > (c) new user row missing → auto-creates free plan then deducts
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts > checkAndDeductQuota > (d) tokens=0 → skips deduction, returns ok:true
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts > checkAndDeductQuota > (e) concurrent 100 calls → final dailyUsed === Σ tokens, no over-deduction
+ ✓ src/lib/env.test.ts > validateEnv > (a) 全 key 存在 → mode=real
+ ✓ src/lib/env.test.ts > validateEnv > (b) key 缺 → mode=fallback + warning log
+ ✓ src/lib/env.test.ts > validateEnv > (c) LLM_DEFAULT_MODEL default claude-sonnet-4-6
+ ✓ src/lib/env.test.ts > validateEnv > (d) NODE_ENV default development
+ ✓ src/lib/env.test.ts > validateEnv > (e) malformed env → throw
+ ✓ src/specialists/__tests__/CopywritingAgent.real-llm.test.ts > CopywritingAgent fallback schema alignment (no key) > step7 fallback satisfies CopywritingOutputSchema
+ ✓ src/specialists/__tests__/LivestreamAgent.real-llm.test.ts > LivestreamAgent fallback schema alignment (no key) > generate_plan fallback satisfies GeneratePlanOutputSchema
+ ✓ src/specialists/__tests__/LivestreamAgent.real-llm.test.ts > LivestreamAgent fallback schema alignment (no key) > optimize_script fallback satisfies OptimizeScriptOutputSchema
+ ✓ src/specialists/__tests__/LivestreamAgent.real-llm.test.ts > LivestreamAgent fallback schema alignment (no key) > default fallback satisfies LivestreamOutputSchema
 
- ✓ src/test/pages.test.tsx (30 tests) 164ms
+ Test Files  4 passed | 5 skipped (9)
+      Tests  14 passed | 11 skipped (25)
+   Start at  20:09:21
+   Duration  591ms (transform 535ms, setup 0ms, collect 2.39s, tests 17ms, environment 1ms, prepare 611ms)
 
- Test Files  9 passed (9)
-      Tests  75 passed (75)
-   Start at  18:38:37
-   Duration  1.34s (transform 446ms, setup 397ms, collect 1.31s, tests 354ms, environment 2.60s, prepare 465ms)
-
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-001/pytest-full.xml

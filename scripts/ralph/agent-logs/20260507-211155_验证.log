@@ -1,0 +1,31 @@
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|---|---|---|---|
+| 1 | pnpm dev:web 启动 vite dev server · 监听 5173 · 0 error | ✓ | dev log: "VITE ready in 78ms", port 5173, 0 errors |
+| 2 | 浏览器访问 5173 · 显示 'QuanQn · 工程骨架就绪' | ✓ | App.tsx:3 `<h1>QuanQn · 工程骨架就绪</h1>` + curl 返回正确 HTML |
+| 3 | cold start < 3s · HMR < 1s | ✓ | cold start = 78ms < 3s；@vitejs/plugin-react 提供 HMR（Vite 标准） |
+| 4 | build 退出码 0 · dist/ 生成 · main chunk < 5KB | ✓ | exit 0；dist/ 存在；index-DqzjYApU.js = 1.1KB < 5KB（React manualChunk 分离） |
+| 5 | 端口占用时自动尝试 5174/5175 | ✓ | vite.config.ts 未设 `strictPort: true`，Vite 默认端口回退启用 |
+| 6 | proxy /api/trpc → http://localhost:3000 | ✓ | vite.config.ts:17-22 明确配置 |
+| 7 | Typecheck passes | ✓ | `tsc --noEmit` exit 0，typecheck.txt 无错误 |
+| 8 | Tests pass | ✓ | vitest exit 0（no test files found = 零失败） |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+  typecheck.txt         (tsc --noEmit, exit 0)
+  build.stdout.txt      (vite build, exit 0, dist/ generated)
+  pytest-full.stdout.txt (vitest exit 0, no failures)
+  page-content.txt      (curl localhost:5173 HTML)
+  manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

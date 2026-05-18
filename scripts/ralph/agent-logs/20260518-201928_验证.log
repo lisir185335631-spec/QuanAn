@@ -1,0 +1,30 @@
+验证完成。
+
+---
+
+## 验证结果: US-009 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1: 40+ 检查项 | ✗ | 脚本实有 33 项 (7 项不足) |
+| AC-2: specialist-tuning-baseline.md | ✓ | 268 行，含 8 Agent 文档 |
+| AC-3: TD-79/80/81/82 resolved | ✓ | 全 status=resolved, 含 commit + §X PASS 证据 |
+| AC-4: SKIP 路径 + ≥25 PASS | ✓ | 29≥25, exit 0 |
+| AC-5: 25/40 PASS + 15 SKIP | ✗ | 实际 29/33 PASS + 4 SKIP (总数 33≠40) |
+| AC-6: commit message TD tags | ✓ | 四个 [TD-XX resolved] 全在 |
+| AC-7: typecheck + vitest 181+ | ✓ | 0 typecheck errors; 897/901 tests PASS |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+已更新: manifest.json (verdict=FAIL), pytest-full.xml (897 passed), pytest-full.stdout.txt, typecheck.stdout.txt
+```
+
+### 判决
+
+- `prd.json.passes = false`
+- `retryCount = 1`
+- 根因: verify script 实现了 33 个检查项，AC 明文要求 40+。需补充 7 个有意义的 §10.x 检查项（LLMGateway fallback 验证、cost_log schema、Prisma migration 等）使总数达到 40，并调整 SKIP 路径使无 key 时 SKIP 数达 15。

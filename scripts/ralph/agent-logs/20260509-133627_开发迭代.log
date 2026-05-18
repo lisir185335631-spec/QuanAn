@@ -1,0 +1,14 @@
+US-004 is complete. Here's what was implemented:
+
+**Changes made:**
+1. **`ToolForm.tsx`** — Added `'freeGenerate'` to `ToolKey` type with its own case (ScriptTypeSelect + ElementsMultiSelect + TextareaField for topic). Changed LS suffix from `'form'` to `'input'` globally to align with AC-3.
+
+2. **`FreeGenerateResult.tsx`** — Upgraded from `<pre>` to `ReactMarkdown + remark-gfm` rendering. Supports both `content` (API response) and `markdown` fields. Added isFallback banner and word count display.
+
+3. **`ToolResult.tsx`** — Added `isFallback?: boolean` prop, added `'freeGenerate'` to `ToolResultKey` type with its own case.
+
+4. **`router-types.ts`** — Added `FreeGenerateHistoryRow` type, `copywriting.freeGenerate` mutation stub, and `history.detail` query stub for US-011 pre-fill.
+
+5. **`Generate.tsx`** — Full replacement: ToolForm with `toolKey='freeGenerate'`, LS-first dual-write to `getToolLsKey(accountId, 'freeGenerate', 'input')`, AbortController on unmount, US-011 historyId stub via `useSearchParams`, result renders ToolResult + FeedbackButton.
+
+6. **22 unit tests** and **1 e2e test** created. All 443 tests pass, typecheck clean.

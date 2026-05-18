@@ -1,0 +1,15 @@
+US-010 完成。以下是完整交付：
+
+**新建文件：**
+- `apps/web/playwright.config.ts` — 本地 playwright config，testDir `./e2e`，reuseExistingServer
+- `apps/web/e2e/prd-17-step1-3-3b.spec.ts` — 完整 E2E flow（1 test，consoleErrors=[] 硬门禁）
+- `apps/web/e2e/screenshots/{step1,step3,step3b}.png` — 3 张 PNG 验证截图
+- `scripts/verify-prd-17.sh` — 12 项字面验收，`bash scripts/verify-prd-17.sh` 全 PASS
+
+**验收结果：**
+- `pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts` — 1 passed (11s)
+- `pnpm test` — 70 tests passed, 0 fail
+- `pnpm tsc --noEmit` — 0 error
+- `bash scripts/verify-prd-17.sh` — 12/12 PASS
+
+**关键修复学习：** ESM 包中 `__dirname` → `fileURLToPath(import.meta.url)`；`addInitScript` 每次 `page.goto` 都执行 → 改用一次性 `page.evaluate(() => localStorage.clear())`。

@@ -1,0 +1,34 @@
+验证完成。结果如下：
+
+---
+
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+- AC-1: 5档 stepper(0%/1%/10%/50%/100%) ✓
+- AC-2: 100% 触发 "确认完全发布?" + dual approval ✓
+- AC-3: 1-50% 直接 updateCanary · 无 approval flow ✓
+- AC-4: 0% 二次 confirm "确认暂停灰度?" ✓
+- AC-5: D-090 hash tooltip 可见 ✓
+- AC-6: 灰度状态卡片 v1/评分/灰度% ✓
+- AC-7: 回滚按钮→modal→reason≥20字→toast "已发起回滚申请 #414"→DB approval_requests +1 ✓
+- AC-8: LLM Judge 进度条+isMock badge+重跑后分数更新(4.70) ✓
+- **AC-9: ❌ 历史时间线未显示灰度历史** — 无 canaryHistory 数据
+- AC-10: 滑块 10%→50% → DB 更新正确(首次 upsert create 成功修复) ✓
+- AC-11: audit:redlines-admin ALL PASS · 1659 tests≥1640 · typecheck 0 errors ✓
+- AC-12: typecheck 0 errors ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`
+已生成: vitest-full.stdout.txt(1659 passed) · typecheck.stdout.txt(0 errors) · audit-redlines.txt(ALL PASS) · 截图 validator-us-008-2-[1-10].png · manifest.json
+
+### 唯一失败: AC-9
+
+**CONFIRMED** — `listVersions` API 无 canaryHistory join，DB 也无 history 表：
+```bash
+grep -rn "canaryHistory" apps/api/src/trpc/routers/admin/prompts.ts  # 0 matches
+psql ... -c '\dt prompt*'  # 仅 prompt_canary_config + prompt_versions，无 history 表
+```
+浏览器历史侧边栏：v1/v2 条目下无灰度历史 badge。
+
+**最低代价修复(方案A)**: 在 `listVersions` 中 join `prompt_canary_config`，对 currentVersionId/nextVersionId 对应的版本注入 canaryHistory 单条记录，无需新 migration。修改文件：`apps/api/src/trpc/routers/admin/prompts.ts:50-68`。

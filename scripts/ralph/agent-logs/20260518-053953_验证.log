@@ -1,0 +1,33 @@
+## 验证结果：US-004 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC1 | useStepData(accountId,'step4'/'step4b') + readOtherStep 跨 step 预填 | ✅ |
+| AC2 | Step4bOutputContent 接受真数据 · 3阶梯 + StageCard 折叠 + animate-in + simple progress bar · 0 recharts | ✅ |
+| AC3 | LoadingState 文本精确 · ErrorState onRetry={dbQuery.refetch} · EmptyState template literal | ✅ |
+| AC4 | 浏览器测试 + DB row.inputs/row.result 真存(id=245/246) + grep localStorage.setItem.*acc_step = 0 hit | ✅ |
+| AC5 | step4→agentId='PositioningAgent' · step4b→agentId='MonetizationAgent'（DB 实证） | ✅ |
+| AC6 | 157 vitest 全通(>119) · Step4b adaptStep4bResult 7 测试通过 · grep recharts = 0 hit | ✅ |
+| AC7 | Typecheck passes | ❌ |
+
+### AC7 CONFIRMED 失败
+
+- **复现命令**: `cd apps/web && pnpm typecheck`
+- **实际错误**: `TS2532: Object is possibly 'undefined'` × 9 处，全部在 `src/pages/step/__tests__/Step4b.test.tsx:44-49,54-56`
+- **根因**: 数组索引访问 `result.revenue_structure[0].category` 等，TypeScript strict 模式返回 `T | undefined`
+- **修复**: 加 `!` 非空断言：`result.revenue_structure[0]!.category`
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+  manifest.json (verdict=FAIL)
+  vitest.stdout.txt (157 tests PASS)
+  typecheck.stdout.txt (9 TS2532 errors)
+```
+
+### 判决
+
+`prd.json passes = false · retryCount = 1`

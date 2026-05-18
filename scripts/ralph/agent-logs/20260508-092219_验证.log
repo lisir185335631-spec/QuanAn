@@ -1,0 +1,35 @@
+US-004 已标记为 PASSED。
+
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | copywriting.ts · 4 procedure(generate/optimize/list/delete) | ✓ 全部就位，mock 数据返回 `[mock]` |
+| AC-2 | videoAnalysis.ts · 2 procedure(analyze/rewrite) | ✓ 就位，写 history + mock |
+| AC-3 | videoProduction.ts · 3 procedure(generate/generateStoryboard/generateSceneImage) | ✓ 就位 |
+| AC-4 | boomGenerate.ts · 1 procedure(generate) | ✓ 就位 |
+| AC-5 | monetization.ts · 1 procedure(generate) | ✓ 就位 |
+| AC-6 | 5 router zod 校验(LD-013) · input/output 在 packages/schemas/src/specialist-io/ | ✓ 5 个 schema 文件 + index.ts 全部就位 |
+| AC-7 | 每 mutation 写 history 表 · trace_id 写入 | ✓ 所有 mutation 用 `ctx.traceId`，测试逐一验证 `createArgs.data.traceId === 'test-trace-001'` |
+| AC-8 | 5 router 不调 LLMGateway | ✓ grep 结果：5 个文件 LLMGateway 引用数均为 0 |
+| AC-9 | Typecheck passes | ✓ `tsc --noEmit` 退出码 0 |
+| AC-10 | Tests pass · ≥ 11 unit | ✓ specialists-creation.test.ts 11 tests 全部通过 |
+
+### 零回归门禁
+
+全量 109 tests · 12 test files · **全部通过** · 退出码 0。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+已生成: manifest.json · pytest-full.stdout.txt · typecheck.txt
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ''`

@@ -1,0 +1,11 @@
+US-005 实现完成。
+
+**实现摘要：**
+
+- **Step5.tsx 全量重写** — 删除 ~160 行 mock 模板数据，改用 `useActiveAccount` + `useStepData(accountId, 'step5')` 持久化表单，用单个 `trpc.stepData.saveStream.useSubscription` 按 `activeCategory` 动态切换（input 变化时 tRPC 自动重订阅），per-category 状态和结果分别存 `streamStatuses` / `categoryResults`，LS 双写 `step5.{cat}` 命名空间
+
+- **Step5TopicGrid.tsx** — 接口升级为接受 `accountId/streamStatuses/activeCategory/onCategoryChange`，每 Tab 显示各自的 loading/empty/grid 状态，选题点击写双 LS key（namespaced + 向后兼容 `acc_step5_selected_topic`）
+
+- **packages/clients/src/router-types.ts** — shadow router 补 `stepData.saveStream` subscription 类型定义
+
+- **测试** — 新建 `Step5.test.tsx`（5 个 render 测试），修 `pages.test.tsx` 全局 mock，全套 162/162 通过，typecheck 零错

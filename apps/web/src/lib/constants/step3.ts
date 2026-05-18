@@ -82,3 +82,7 @@ export const STEP3_SUBTITLE_TEMPLATE = '当前行业：{industry}。输入你的
 
 // STEP3_LOADING_TEXT · loading 文案
 export const STEP3_LOADING_TEXT = 'AI 正在生成你的账号包装方案，预计 30-60 秒...';
+
+// PRD-20 TD-80 fix: Step3Result heading + Optimize button 常量
+export const STEP3_RESULT_H2 = '账号包装方案' as const;
+export const STEP3_OPTIMIZE_CONFIRM_BUTTON = '确认优化' as const;

@@ -1,21 +1,18 @@
 {
   "story_id": "US-008",
-  "validator_start_ts": "2026-05-18T11:10:00",
-  "validator_end_ts": "2026-05-18T11:25:00",
-  "test_command": "pnpm typecheck && pnpm vitest run && pnpm playwright test e2e/prd-19-frontend-backend.spec.ts && pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts",
+  "validator_start_ts": "2026-05-18T19:40:00",
+  "validator_end_ts": "2026-05-18T20:05:00",
+  "test_command": "pnpm vitest run (root 901 tests) + pnpm -r typecheck + playwright prd-20 + playwright prd-18",
   "exit_code": 1,
   "zero_regression": "PASS",
   "verdict": "FAIL",
-  "failing_ac": ["AC-5"],
-  "notes": "AC-7 PASS (typecheck 0 errors). Vitest 2282/2282 PASS (zero_regression=PASS). test(a) PASS. test(b) PASS (acc isolation A→B→A now works correctly). test(c) PASS (9-step flow + 0 hardcode grep). test(d) FAIL: prd-18 test3 '変現型' tab not found 30s — PRE-EXISTING bug since commit f521761 (US-013), failing in every US-008 validator run. prd-18 test5 strict-mode NOW FIXED.",
+  "failing_ac": "AC-10 (prd-18 e2e tests 1/2/4/6 — toBeVisible timeout 30s · LLM mutation > 30s)",
   "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "vitest-full.stdout.txt",
-    "vitest-full.xml",
-    "prd19-e2e-retry5.stdout.txt",
-    "prd-17-18-e2e-retry5.stdout.txt",
-    "validator-us-008-retry5-prd18-test3-fail.png",
-    "validator-us-008-retry5-testd-prd18-test3-fail.png",
-    "manifest.json"
-  ]
+    "e2e-prd18.stdout.txt",
+    "e2e-prd20.stdout.txt"
+  ],
+  "notes": "Zero-regression vitest root 901 tests PASS (0 failures). Typecheck PASS all 6 packages. prd-20 E2E: 3 PASS + 1 skip (b correctly skipped without E2E_REAL_LLM=1 + OPENAI_API_KEY). AC-1~8 static code checks PASS: prd-20-real-llm.spec.ts 4-test describe, GitHub CI workflow, playwright.config.ts real-LLM timeouts, TD-79/80/81/82 all resolved in tech-debt.json + grep verified. prd-18 E2E: 4/6 FAIL — tests 1(step4)/2(step4b)/4(step6)/6(step8) timeout at exactly 30s waiting for step-result. Playwright trace confirms button click succeeds, mutation is initiated but LLM response takes > 30s. test5 (step7/CopywritingAgent) PASS. Fix: increase toBeVisible timeout in failing tests from 30_000 to 60_000."
 }

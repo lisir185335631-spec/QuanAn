@@ -1,0 +1,37 @@
+prd.json 已更新。现在输出完整验证报告。
+
+---
+
+## 验证结果: US-003 FAIL
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|---|---|---|---|
+| AC-1 | execute() 真接 LLMGateway.complete(model_tier='reasoning') | ✓ | EvolutionAgent.ts:231 |
+| AC-2 | invokeLLM 注 recentFeedbacks(N=count/5) + samples(DLA limit 10) + previousInsight | ✓ | EvolutionAgent.ts:203-217 |
+| AC-3 | prisma.$transaction([profile.update, insight.create]) | ✓ | grep $transaction 命中 EvolutionAgent.ts:321 |
+| AC-4 | 累积式 merge preferredCatchphrases ∪ prev 去重 top 10 + unit test | ✓ | _mergeInsight:256, Test 3 pass |
+| AC-5 | safeParse 失败 → isFallback=true, 用 previousInsight, 不写 insight | ✓ | _buildFallbackResponse:356, Test 2 pass |
+| AC-6 | BullMQ Worker, retry 3, dead-letter alert stub | ✓ | worker.ts, queue.ts attempts:3 |
+| AC-7 | $queryRaw INSERT ON CONFLICT RETURNING 防 race, THRESHOLDS={5,20,50,100} | ✓ | trigger.ts:25-36 |
+| AC-8 | feedback.create 后异步 enqueueIfThresholdMet, 不阻塞 | ✓ (⚠️ 位置偏差) | evolution.ts:121 (在 evolve 而非 costLog.logFeedback) |
+| AC-9 | eventType='l5_agent' cost_log 写第 4 类 | ✓ | EvolutionAgent.ts:241, cost-logger.ts:22 |
+| **AC-10** | **并发 race test integration test** | **✗** | **tests/integration/api/evolution-threshold.test.ts 文件不存在** |
+| AC-11 | 8 tests (happy/fallback/阈值边界/累积合并) | ✓ | 10 tests passed |
+| AC-12 | typecheck 0 + lint 0 + test 全过 | ✓ | typecheck exit 0, lint exit 0, 754 tests pass |
+| **AC-13** | **LLM Judge 1 case, 评分 ≥ 4.0/5** | **✗** | **tests/judge/evolution-agent.judge.ts 文件不存在** |
+| Typecheck | pnpm typecheck | ✓ | exit 0 |
+| Tests | pnpm test | ✓ | 754/754 pass |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+已生成: pytest-full.xml (754 passed, 0 failures), vitest.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+- `prd.json.passes = false`
+- `prd.json.retryCount = 1`
+
+**根因**: AC-10 (`tests/integration/api/evolution-threshold.test.ts`) 和 AC-13 (`tests/judge/evolution-agent.judge.ts`) 两个 `files_to_create` 文件未被创建。其余 13 项 AC 全部通过，零回归 754/754，typecheck/lint 0 错误。

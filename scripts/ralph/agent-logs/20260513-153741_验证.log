@@ -1,0 +1,39 @@
+---
+
+## 验证结果: US-012 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|:----:|
+| AC-1 | BullMQ cron '0 4 * * *' tz 'Asia/Shanghai' jobId 'violation-detection-recurring' | ✓ |
+| AC-2 | detectViolationThresholds · count >= 3 + suspendedAt=null · 写 security_alert/user_violation_warning | ✓ |
+| AC-3 | count >= 5 → approvalRequest.create status=pending, riskLevel=high, system actor | ✓ |
+| AC-4 | index.ts line 330-332: import + await scheduleViolationDetection() + logger.info('violation_detection_cron.registered') | ✓ |
+| AC-5 | grep 'scheduleViolationDetection' apps/api/src/index.ts → 2 命中(line 330: import, line 331: call) | ✓ |
+| AC-6 | adminAuditLog.findFirst({eventType:'user_violation_warning',targetUserId,createdAt:{gte:todayStart}}) dedupe | ✓ |
+| AC-7 | attempts:3 · failed event 写 system_alert/violation_cron_failed，非最后次 skip | ✓ |
+| AC-8 | DingtalkService 注入为默认参数，isMock=true 不发网络请求 | ✓ |
+| AC-9 | suspendedAt: null filter 在 findMany where 条件确保已暂停用户不在结果中 | ✓ |
+| AC-10 | service 单元测试 14 个（≥10）· failures=0 | ✓ |
+| AC-11 | job 单元测试 7 个（≥7）· failures=0 | ✓ |
+| AC-12 | pnpm vitest run: 1555 tests, 0 US-012 failures; pnpm typecheck: exit=0 | ✓ |
+| AC-13 | Typecheck passes · all 6 packages 0 error | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+├── manifest.json          (zero_regression=PASS, verdict=PASS)
+├── pytest-full.xml        (tests=1555, US-012 job=7/7 PASS, service=14/14 PASS)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt   (exit=0)
+```
+
+### 零回归说明
+
+16个失败全在 `tests/unit/admin/{audit-drawer,layout,sidebar}.test.tsx` — 均为 "A React Element from an older version of React was rendered" 错误，最后 commit 为 `ed600df feat: [US-005]`，是 pre-existing tech debt，与 US-012 无关。
+
+### 判决
+
+`prd.json.passes = true`

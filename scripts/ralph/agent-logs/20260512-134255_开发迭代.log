@@ -1,0 +1,7 @@
+US-006 is complete. The implementation includes:
+
+- **8 integration tests** in `tests/integration/admin/rls-bypass-cross-account.test.ts` covering all 7 AC + 1 structural invariant
+- **3 helper files**: `fixtures/admin-seed.ts`, `helpers/admin-context.ts`, `helpers/sql-introspect.ts`
+- **vitest config** updated with `pool: 'forks'` + `singleFork: true`
+- **package.json** `test:admin-integration` script added
+- **116 test files · 1034 tests pass · typecheck 0 errors**

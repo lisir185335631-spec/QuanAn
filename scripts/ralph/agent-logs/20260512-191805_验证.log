@@ -1,0 +1,23 @@
+## 验证结果: US-006 PASS
+
+### AC 对照
+- AC-1: usersRouter 创建于 users.ts · 5 procedure 全走 adminProcedure(建于 publicAdminProcedure + 6 gate 链) ✓
+- AC-2: zod input 8 字段 ✓ · `$transaction+SET LOCAL` 由 adminRLSMiddleware Gate-5 处理 ✓ · Promise.all users+count ✓ · audit cross_account_query/list_users ✓
+- AC-3: Promise.all 5 Tab 并行(user+ipAccounts+evolutionProfile / ipAccount[] / costAggregate / auditLog[] / stepData[]) ✓ · audit view_user_detail ✓
+- AC-4: changePlan super_admin→auto_executed + prisma.user.update + audit approvalRequestId / admin→pending 24h ✓
+- AC-5: banUser riskLevel=high requireDualApproval=true ✓ · super_admin/admin 双路径 ✓
+- AC-6: randomBytes(8).hex + passwordHash update + email stub(log) + audit data_mutation/reset_password ✓
+- AC-7: 同套餐 → BAD_REQUEST 'already on plan ${plan}' ✓
+- AC-8: 已 banned → BAD_REQUEST 'already banned' ✓
+- AC-9: readonly_admin → guardMutation → FORBIDDEN + privilege_escalation audit ✓
+- AC-10: audit-approval-gates.ts EXCEPTION 含 users.changePlan + users.banUser ✓ · Checked 9 ≥ 7, 0 missing ✓
+- AC-11: audit service auto-redact + SHA-256(JSON.stringify(redact(payload))) ✓
+- AC-12: 25 tests 全覆盖 list/detail/changePlan/banUser/resetPassword/权限边界 ✓
+- AC-13: pnpm test 25/25 ✓ · typecheck 0 error ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/`
+生成: `pytest-full.xml`(3 pre-existing fails | 118 passed · 零回归 PASS), `pytest-full.stdout.txt`, `typecheck.stdout.txt`(0 errors), `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`

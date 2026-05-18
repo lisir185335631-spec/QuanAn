@@ -1,118 +1,82 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="51" failures="0" errors="0" time="1.067">
-    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-16T08:18:35.859Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.01932725">
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.009256625">
+<testsuites name="vitest tests" tests="25" failures="0" errors="0" time="0.42">
+    <testsuite name="src/lib/env.test.ts" timestamp="2026-05-18T09:04:46.271Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.004597625">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (a) 全 key 存在 → mode=real" time="0.001233416">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.003909708">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (b) key 缺 → mode=fallback + warning log" time="0.00169425">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.0014735">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (c) LLM_DEFAULT_MODEL default claude-sonnet-4-6" time="0.0001695">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.001311292">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (d) NODE_ENV default development" time="0.000118625">
         </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.002862167">
-        </testcase>
-        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.000099167">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (e) malformed env → throw" time="0.00061275">
         </testcase>
     </testsuite>
-    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-16T08:18:35.860Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.064842291">
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.009636375">
+    <testsuite name="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.275Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="2" time="0">
+        <testcase classname="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" name="BrandingAgent real LLM &gt; (a) packaging mode — nickname[5] + bio[6] + avatar + background + overallStrategy valid" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.001703709">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.03340625">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.008402167">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.007856083">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.000798958">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.001059708">
-        </testcase>
-        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.001464">
+        <testcase classname="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" name="BrandingAgent real LLM &gt; (b) persona mode — coreIdentity + thoughtSystem + contentPersona + personaRoadmap valid" time="0">
+            <skipped/>
         </testcase>
     </testsuite>
-    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-16T08:18:35.860Z" hostname="returndeMacBook-Pro.local" tests="27" failures="0" errors="0" skipped="0" time="0.159575584">
-        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.00040875">
+    <testsuite name="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.275Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="2" time="0.00215775">
+        <testcase classname="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" name="CopywritingAgent step7 real LLM &gt; (a) step7 mode — markdown has # heading · schema valid · cost_log agentMode=step7 · tokens &gt; 0" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.000089417">
+        <testcase classname="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" name="CopywritingAgent step7 real LLM &gt; (b) fallback mock schema alignment — CopywritingAgent.fallbackTemplate.step7 satisfies CopywritingOutputSchema" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.049838125">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.002076834">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.006328792">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.006064583">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.001163916">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.014993209">
-            <system-err>
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.025771833">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.005887875">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.00357775">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.000909833">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.000719541">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.001397167">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.000712375">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.000696167">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.000256458">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.001256375">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.011488125">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.001908708">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.001802292">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.000962042">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.003024292">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.000665542">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.004954833">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.000551375">
-        </testcase>
-        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.0113755">
+        <testcase classname="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" name="CopywritingAgent fallback schema alignment (no key) &gt; step7 fallback satisfies CopywritingOutputSchema" time="0.001442667">
         </testcase>
     </testsuite>
-    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-16T08:18:35.862Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.023634083">
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.012180833">
+    <testsuite name="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.276Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="2" time="0.0023405">
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent real LLM &gt; (a) generate_plan — 6-module JSON schema strict · cost_log agentMode=generate_plan · tokens &gt; 0" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.001936125">
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent real LLM &gt; (b) optimize_script — 2 InfoCard schema strict · cost_log agentMode=optimize_script · tokens &gt; 0" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.001433375">
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent fallback schema alignment (no key) &gt; generate_plan fallback satisfies GeneratePlanOutputSchema" time="0.001569084">
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.001231417">
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent fallback schema alignment (no key) &gt; optimize_script fallback satisfies OptimizeScriptOutputSchema" time="0.000095542">
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.001752209">
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent fallback schema alignment (no key) &gt; default fallback satisfies LivestreamOutputSchema" time="0.0000725">
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.001155333">
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/MonetizationAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.276Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/MonetizationAgent.real-llm.test.ts" name="MonetizationAgent real LLM &gt; (a) 3-stage monetization — ladder[3] + revenueStructure + successCases[2] valid" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.001139708">
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/PositioningAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.277Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="2" time="0">
+        <testcase classname="src/specialists/__tests__/PositioningAgent.real-llm.test.ts" name="PositioningAgent real LLM &gt; (a) industry mode — market_analysis/competition_level/recommendation valid" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.000966209">
+        <testcase classname="src/specialists/__tests__/PositioningAgent.real-llm.test.ts" name="PositioningAgent real LLM &gt; (b) execution mode — daily_tasks/weekly_milestones/stage_kpis in markdown valid" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.000120333">
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/TopicAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.278Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/TopicAgent.real-llm.test.ts" name="TopicAgent SSE real LLM &gt; (a) executeStream — 5 done chunks · all categories present · schema valid · cost_log tokens &gt; 0" time="0">
+            <skipped/>
         </testcase>
-        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.001246917">
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/VideoAgent.real-llm.test.ts" timestamp="2026-05-18T09:04:46.278Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/VideoAgent.real-llm.test.ts" name="VideoAgent real LLM &gt; (a) shooting mode — 8-column storyboard schema strict match + cost_log valid" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/services/quota/__tests__/userQuota.service.test.ts" timestamp="2026-05-18T09:04:46.278Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.002755334">
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (a) sufficient quota → deducts and returns correct remaining" time="0.000876667">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (b) full quota → returns QUOTA_EXCEEDED" time="0.00013275">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (c) new user row missing → auto-creates free plan then deducts" time="0.000985958">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (d) tokens=0 → skips deduction, returns ok:true" time="0.000113917">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (e) concurrent 100 calls → final dailyUsed === Σ tokens, no over-deduction" time="0.000279209">
         </testcase>
     </testsuite>
 </testsuites>

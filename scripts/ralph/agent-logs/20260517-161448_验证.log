@@ -1,0 +1,30 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | STEP3B_STEP_TAG_LITERAL + H1 + 副标 subtitle | ✓ |
+| AC-2 | 3 textarea via STEP3B_TEXTAREAS_3.map · required/optional · label+placeholder from constants | ✓ |
+| AC-3 | 5 platform radio from STEP3_PLATFORMS_5 · grid-cols-2 md:grid-cols-5 · id=step3b-{p.id} | ✓ |
+| AC-4 | 1 input 目标受众 from STEP3B_AUDIENCE | ✓ |
+| AC-5 | CTA disabled 逻辑 · gradient · 正确 labels | ✓ |
+| AC-6 | acc_step3 → personalInfo 预填 | ✓ (JS value check confirmed '我是 X') |
+| AC-7 | handleSubmit mock · acc_step3b 写 localStorage | ✓ |
+| AC-8 | 5 H3 via STEP3B_OUTPUT_H3_5 · 每 H3 [复制][重新生成][智能优化] 三按钮 | ✓ |
+| AC-9 | Step3bOutputContent.tsx · 5 block 类型全实现 · roadmap 3 阶段 | ✓ |
+| AC-10 | grep 'STEP 03b · 人设定制方案' / '人设定制方案' 命中 | ✓ |
+| AC-11 | grep "from '@/components/states'" 命中 | ✓ |
+| AC-12 | 浏览器: 选美业→Step3设personalInfo→Step3b 预填'我是 X' | ✓ |
+| AC-13 | 浏览器: 填 advantages/story · 选抖音 · CTA · 5 H3 全渲染 | ✓ |
+| AC-14 | 浏览器: 5×3=15 按钮 · 0 个'生成参考图' · console 0 error | ✓ |
+| AC-15 | typecheck 0 error | ✓ |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-008/`  
+已生成: `pytest-full.xml` (70 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+
+`prd.json.passes = true` — US-008 全 15 条 AC 通过，零回归 70/70，typecheck clean。

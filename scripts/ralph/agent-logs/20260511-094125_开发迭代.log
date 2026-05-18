@@ -1,0 +1,12 @@
+US-003 完成。总结所实现的内容：
+
+**实现的文件：**
+- `apps/api/src/specialists/EvolutionAgent.ts` — 完整覆写 `execute()`，接入 LLMGateway(reasoning)，实现 Rule 3 累积合并 + `$transaction` 原子事务 + fallback 降级
+- `apps/api/src/lib/evolution/trigger.ts` — `enqueueIfThresholdMet`，通过 `INSERT ON CONFLICT UPDATE RETURNING` 原子防竞态，严格只在 count ∈ {5,20,50,100} 时 enqueue
+- `apps/api/src/workers/evolution/worker.ts` — BullMQ Worker，concurrency=5 + jobId 去重实现"per account 1 并发" + dead-letter 告警 stub
+- `apps/api/src/trpc/routers/evolution.ts` — evolve mutation 加 `void enqueueIfThresholdMet()` hook（不阻塞）
+- `apps/api/src/workers/llm-gateway/cost-logger.ts` — D-040 扩展 `l5_agent` eventType
+- `apps/api/src/specialists/base/types.ts` — `LLMCompleteRequest.metadata` 加可选 `eventType`
+- `tests/unit/specialists/EvolutionAgent.test.ts` — 10 个测试全覆盖 AC-11 要求
+
+**质量：** typecheck 0 + lint 0 + 754 tests 全过（0 失败）。

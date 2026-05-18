@@ -1,0 +1,7 @@
+US-007 fix complete. The root cause was that `invokeLLM` was throwing on JSON.parse failure, causing BaseSpecialist's Step 3 catch to re-throw with no retry path. The fix:
+
+1. Extracted `_consumeStream()` helper to dedup stream consumption logic
+2. On JSON.parse failure: internally retry the stream once (`_consumeStream` called again)
+3. If both attempts fail: return `{ content: null, isFallback: true }` instead of throwing — this lets BaseSpecialist's Step 4 safeParse fail normally, triggering its own retry, and ultimately throwing `SchemaValidationError`
+
+Typecheck: ✅ Tests: 272/272 ✅

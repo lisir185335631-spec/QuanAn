@@ -1,0 +1,47 @@
+验证完成。
+
+---
+
+## 验证结果: US-009 **FAIL**
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1: 6 procedure 全 adminProcedure | ✅ | list/detail/approve/reject/banUploader/userViolations 均用 adminProcedure |
+| AC-2: list zod + cross_account_query | ✅ | 所有 6 字段 + audit 事件 |
+| AC-3: detail + textPreview + violationCount | ✅ | 返回完整数据 |
+| AC-4: approve $transaction + archive + audit | ✅ | 事务内 update→create→update + logAdminAction |
+| **AC-5: ★ deepLearningArchive.create 全项目仅 1 命中** | ❌ **FAIL** | 见下 |
+| AC-6: reject upsert count+1 + count>=3 alert | ✅ | userViolationLog.upsert + security_alert |
+| AC-7: banUploader Approval Gates | ✅ | super_admin auto_executed / admin pending |
+| AC-8: userViolations + cross_account_query | ✅ | count>=3 filter + desc order |
+| **AC-9: 已处理 queue ValidationError** | ❌ **FAIL** | reject 未守护 approved 状态 |
+| AC-10: readonly_admin 403 | ✅ | guardMutation FORBIDDEN |
+| AC-11: admin banUploader pending | ✅ | status='pending' approvalRequest |
+| AC-12: adminRouter 挂载 | ✅ | `deepLearn: reviewDeepLearnRouter` |
+| AC-13: audit-approval-gates 0 missing | ✅ | "Checked 15 · 0 missing" |
+| AC-14: audit-admin-rls ≥50 procedures 0 violations | ✅ | "Checked 50 · 0 violations" |
+| AC-15: 30+ 单元测试 | ✅ | 42 tests |
+| AC-16: pnpm test 全过 | ✅ (零回归) | Story 测试 42/42 PASS；9 pre-existing failures (ECONNREFUSED:3000, git stash 验证一致) TD豁免 |
+| AC-17: typecheck 0 error | ✅ | pnpm typecheck 通过 |
+
+### CONFIRMED 失败详情
+
+**AC-5 BLOCKER:**
+```
+复现命令: grep -rn "deepLearningArchive\.create" apps/ --include="*.ts" | grep -v "//"
+实际 3 命中:
+  review-deep-learn.ts:66  ← 允许(approve 单点)
+  deepLearning.ts:76       ← 违规(P1 mock .create procedure — PRD-2 US-005)
+  deepLearning.ts:98       ← 违规(P1 mock .createFromFile procedure — PRD-2 US-005)
+```
+修复: 将 `deepLearning.ts` 的 `create`/`createFromFile` 两个 mutation 中的 `prisma.deepLearningArchive.create` 替换为写入 `deepLearnReviewQueue(status='pending')`，与 US-008 worker 路径保持一致。
+
+**AC-9 FAIL:**
+```
+代码位置: review-deep-learn.ts:293
+当前: if (queue.status === 'rejected') → throw already_rejected
+缺少: if (queue.status === 'approved') → throw already_processed
+```
+修复: `reject` handler 加 `status === 'approved'` 守护。

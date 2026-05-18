@@ -1,0 +1,33 @@
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+- AC-1: LS先写aiip_memory_acc_{accountId}_{stepKey}，DB后写，失败不回滚 ✓ (useStepData.ts:25,41)
+- AC-2: useActiveAccount返active，switchTo清旧namespace ✓ (useActiveAccount.ts:37-44)
+- AC-3: useEvolution读evolution_profile缓存LS aiip_memory_acc_{id}_evolution ✓ (useEvolution.ts:25-32)
+- AC-4: ls-namespace.ts LS key规范，18 keys单测全覆盖 ✓ (ls-namespace.test.ts key-01~key-18)
+- AC-5: DB失败toast '已保存到本地 · 网络恢复后同步' + trace_id日志 ✓ (useStepData.ts:46,48)
+- AC-6: 切账号后旧prefix 0命中 ✓ (hooks.test.ts "grep simulation")
+- AC-7: 多tab独立LS，不污染 ✓ (hooks.test.ts "multiple tabs" MockStorage隔离)
+- AC-8: LS 5MB prune非active namespace ✓ (pruneLsNamespaces, key-18)
+- AC-9: LS read同步<1ms，DB async fire-and-forget，useMemo防重渲染 ✓
+- AC-10: Typecheck 0 errors ✓
+- AC-11: 83/83 vitest通过（含hooks.test.ts 16条新测试）✓
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+├── vitest.xml        (83 tests, 0 failures)
+├── vitest.stdout.txt (83 passed, 10 files)
+├── typecheck.txt     (0 errors)
+└── manifest.json     (exit_code=0)
+```
+
+### 判决
+
+```
+prd.json.passes = true
+prd.json.notes  = ""
+prd.json.retryCount = 0
+```

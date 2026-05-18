@@ -1,0 +1,10 @@
+US-006 complete. Summary:
+
+**Implemented:**
+- `knowledge.ts` — 7 procedures: `getRecommendations`/`getScriptCases` return static mocks (RAG 留 PRD-9); `getFavorites`/`addFavorite`/`removeFavorite`/`getNotes`/`addNote` hit the DB with `protectedProcedure` (per-account RLS isolation, AC-6)
+- `trending.ts` — 3 procedures: `fetch`/`listByIndustry`/`listByStyle` all use `globalProcedure` (no RLS, AC-5), return mock data (真抓取 留 PRD-6)
+- `invite.ts` — `redeem` uses `globalProcedure`; checks code exists → not used → updates `usedById`/`usedAt`/`usedCount`; throws CONFLICT 409 on duplicate (AC-4)
+- 3 schema files, `_app.ts` + `schemas/index.ts` updated
+- 14 new unit tests → 143/143 ✅, typecheck ✅
+
+**One fix applied:** removed direct `@trpc/server` import in `invite.test.ts` (known pattern: package lives in `apps/api/node_modules`, not monorepo root).

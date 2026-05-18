@@ -1,0 +1,32 @@
+
+> quanqn@0.1.0 audit:redlines /Users/return/Desktop/QuanQn
+> bash scripts/audit-redlines.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QuanQn · 17 红线检测
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+本脚本覆盖 12 条 grep 红线 ·
+  R-1/2/3/4/5/9/10/11/15/16/17 + LD-011 + console禁用
+
+其他 5 条复杂红线由 audit-ld.sh 检测 ·
+  R-6 新表 RLS · R-7 schema 漂移 · R-8 zod 缺失
+  R-12 transaction · R-13 乐观锁 · R-14 PII/免责
+
+Monorepo source paths (TD-017 修 · 2026-05-09):
+  apps/api/src/, apps/web/src/, apps/admin/src/, packages/*/src/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ R-1 · LLM SDK 唯一入口 (LLMGateway · non-chat workers 豁免: image-gen/embedding/rag/tts/stt)
+✅ R-2 · Specialist 不互调 (排除 JSDoc)
+✅ R-3 · Specialist 单次 LLM
+✅ R-4 · DB 查询带 accountId (含 multi-line where 块 + by-id RLS 安全 + 'RLS auto-filters' 注释 design choice)
+✅ R-5 · Redis/LS 命名空间 (helper 函数封装 acc_ 前缀)
+✅ AGENTS §6.9 · 无 console.log / debugger
+✅ R-10 · 无 any 兜底 (eslint-disable 注释豁免)
+✅ R-11 · prompt 走 ContextAssembler
+✅ R-15 · Specialist 12/14
+✅ R-16 · 视觉系统合规 (Aurelian Dark)
+✅ R-17 · trending 走第三方授权 (无 puppeteer/playwright)
+✅ LD-011 · 仅 pgvector (PostgreSQL 扩展)
+
+✅ 所有红线检测通过 · 0 命中

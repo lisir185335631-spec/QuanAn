@@ -1,0 +1,21 @@
+US-017 实现完成。总结：
+
+**实现了什么：**
+
+1. **`playwright.config.ts`** — 加 `timeout: 600_000`（10 min，AC-17）
+
+2. **`router.tsx`** — 补 `step/3b` 和 `step/4b` 路由（原先缺失导致 e2e 导航 404）
+
+3. **`stepData.ts` (save handler)** — 新增 step5 和 step7 的同步 LLM 调用分支：
+   - step5：从 `inputs.lastCategory` 提取 category → `topicAgent.execute()` → 持久化
+   - step7：`copywritingAgent.execute(mode=step7)` → 持久化 + 写 history 表
+   - 使 UI form 提交后能返回真实 result（原来 step5/7 穿透返回 null result）
+
+4. **`tests/e2e/ip-flow-9-steps.spec.ts`**（243 行）— 9 步真 LLM e2e：
+   - `test.describe.serial`，CI skip，10 min timeout
+   - 全 UI 交互：navigate → fill form → click submit → wait LLM(60s) → verify result
+   - 最终验证 `/ip-plan` 显示 `9/9` + 9 步全 `data-status="completed"`
+
+5. **`tests/e2e/ip-flow-account-isolation.spec.ts`**（AC-16/22）— acc2 无数据 → 0/9 验证 LD-009 RLS
+
+**质量验证：** pnpm typecheck ✅ · pnpm test 343/343 ✅

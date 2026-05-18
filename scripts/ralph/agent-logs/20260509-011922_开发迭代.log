@@ -1,0 +1,16 @@
+US-003 完成。变更摘要：
+
+**核心实现:**
+- `BaseSpecialist.ts`: `generateSpecialistTraceId`(AC-5) + schema 校验失败 retry×1(AC-3) + `AbortError→LLMTimeoutError`(AC-6) + `callType='specialist_call'` + `target` jsonb(AC-4)
+- `anthropic-provider.ts`: `responseFormat:json_schema` → `tool_use` 模式强制结构化输出(AC-2)
+- `openai-provider.ts`: `responseFormat:json_schema` → `json_object` 模式 + `JSON.parse`(AC-2)
+- `SchemaValidationError`: 接受 `ZodError|string` + `llmRawOutput`(向后兼容)
+
+**DB:**
+- `prisma/schema.prisma`: `cost_log.target Json?` 新增
+- 已 `ALTER TABLE` 应用到 `quanqn` + `quanqn_test` 双库
+
+**测试:**
+- `tests/unit/specialists/base.llm.test.ts`: 8 tests (retry/timeout/traceId/cost\_log/responseFormat)
+- `tests/integration/api/specialist-llm.test.ts`: 1 test (nock tool\_use + 真实 DB cost\_log 查 SQL)
+- `pnpm typecheck` ✅ · `pnpm test 241/241` ✅

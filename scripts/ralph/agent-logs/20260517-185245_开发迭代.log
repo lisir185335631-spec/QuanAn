@@ -1,0 +1,5 @@
+US-003 完成。
+
+- 新建 `apps/web/src/lib/constants/step5.ts`：完整 5 大类常量（2 input + 2 file upload + 5 categories + Step5Topic/Step5Result interface + 数字锁常量）
+- 新建 `apps/web/src/lib/constants/__tests__/step5.test.ts`：8 assertions 全部通过
+- typecheck 0 error，所有字面 grep（流量型/变现型/人设型/认知型/案例型/一键生成 5大类 爆款选题/PDF、Word...）均命中

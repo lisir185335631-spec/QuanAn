@@ -1,0 +1,29 @@
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 结论 | 依据 |
+|----|------|------|
+| AC-1: 函数签名 `_cleanup_stale_verify_artifacts(threshold_hours: int = 24) -> int` | ✓ | ralph.py:1404 |
+| AC-2: daemon 启动时调用 | ✓ | ralph.py:1451 (在 `_daemon_relaunch()` 内调用) |
+| AC-3: 扫 US-*/ glob, mtime > threshold 时 unlink | ✓ | ralph.py:1419-1428 |
+| AC-4: 不删 24h 内文件 | ✓ | `test_keeps_files_within_threshold` 单测验证 |
+| AC-5: 日志 `[CLEANUP] Removed N stale files (>Xh) in verify-artifacts/` | ✓ | ralph.py:1430, `test_logs_cleanup_message` 验证 |
+| AC-6: pytest unit 用 mocking 验证 cleanup 逻辑 | ✓ | 8/8 通过 |
+| AC-7: 实测 find 命令, 当前 0 文件被删 (所有文件 < 24h) | ✓ | 函数正常执行, 无 stale 文件则无误删 |
+| AC-8: 不再误报 60h+ 跨度 | ✓ | audit-artifacts.py 报 15.2h (intra-PRD, 非 US-002 scope), 无 60h+ |
+| Typecheck passes | ✓ | `python3 -m py_compile ralph.py` 0 errors |
+| Tests pass | ✓ | 8 pytest 全过 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+  pytest.xml           (8 passed)
+  pytest.stdout.txt    (8 passed in 0.02s)
+  pytest-full.xml      (8 passed)
+  pytest-full.stdout.txt
+  manifest.json        (exit_code=0, verdict=PASS)
+```
+
+### 判决
+`prd.json.passes = true`

@@ -1,0 +1,39 @@
+US-004 验证完成。
+
+---
+
+## 验证结果: US-004 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | auditLog.ts · wrapNext + try-catch + 4 eventType 分支 + latencyMs/ip/ua/traceId | ✓ |
+| AC-2 | admin-audit-service.ts · logAdminAction + prisma create + idempotent | ✓ |
+| AC-3 | audit-helpers.ts · extractCrossAccountFlag + extractActionType + redactSensitiveFields | ✓ |
+| AC-4 | auth.login 调 logAdminAction · eventType='admin_login' success/failed | ✓ |
+| AC-5 | adminRLS 注入 ctx.crossAccountAccessed=true · auditLog 后置读取写 cross_account_query | ✓ |
+| AC-6 | approvalGateCheck 在 throw 前 await logAdminAction eventType='approval_request_create' | ✓ |
+| AC-7 | console.error('[ADMIN AUDIT WRITE FAILED]', err) · 不阻塞 business | ✓ |
+| AC-8 | redactSensitiveFields grep ≥ 1 (实测 = 3) | ✓ |
+| AC-9 | prisma.adminAuditLog.update/delete/upsert = 0 | ✓ |
+| AC-10 | auditLog-middleware.test.ts 10 unit pass | ✓ |
+| AC-11 | admin-audit-service.test.ts 6 unit pass | ✓ |
+| AC-12 | audit-log-write.test.ts 1 集成测试 pass · ≥ 3 rows | ✓ |
+| AC-13 | `@@index([createdAt(sort: Desc)])` ✓ · `@@index([actorAdminId, createdAt(sort: Desc)])` ✓ · **注意**: AC 写 `adminUserId` 但 schema 字段是 `actorAdminId`，功能等效 | ✓ (注) |
+| AC-14 | Typecheck passes · 全 6 workspace 0 errors | ✓ |
+
+### 零回归门禁
+`pnpm vitest run` · 112 test files passed · 1008 passed / 4 skipped / **0 failed** ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-004/`
+- `pytest-full.xml` (1008 passed)
+- `pytest-full.stdout.txt` (原始输出)
+- `typecheck.stdout.txt` (0 errors)
+- `manifest.json` (verdict=PASS)
+
+### AC-13 说明（供 Opus 参考）
+AC 写 `@@index([adminUserId, createdAt(sort: Desc)])`，但 schema 中该字段实名为 `actorAdminId`。`@@index([actorAdminId, createdAt(sort: Desc)])` 存在，功能完全等效。这是 AC 使用了旧字段名，实现语义正确。
+
+**prd.json 已更新**: US-004 `passes = true`，4 个 story 已通过，3 个待执行（US-005/006/007）。

@@ -1,0 +1,19 @@
+US-001 implementation complete. Summary of what was delivered:
+
+**5 zod schemas** (`packages/schemas/src/specialist-io/`):
+- `videoProduction.schema.ts` — rewritten with PRD-6 production mode schema (sourceCopy/videoType/duration/additionalContext)
+- `acquisitionVideo.schema.ts` — acquisition video mode (sourceCopy/conversionGoal/ctaText)
+- `aiVideo.schema.ts` — storyboard mode with AC-exact scenesCount union + imagePromptEn ASCII regex
+- `acquisitionCopywriting.schema.ts` — acquisition copywriting (productInfo/conversionGoal/ctaText)
+- `imageGen.schema.ts` — ImageGenJobPayload + union result (success/error)
+
+**ImageGen Worker skeleton** (`apps/api/src/workers/image-gen/`):
+- `index.ts` — `IImageGenWorker` interface with inlined types (rootDir constraint)
+- `dall-e-3.ts` — stub impl (`throw 'PRD-6 US-009 真接'`)
+- `queue.ts` — BullMQ Queue + `startImageGenWorker()` stub
+
+**3 constants** with `as const satisfies ReadonlyArray` (LD-013): `videoTypes`, `videoDurations`, `imageStyles`
+
+**Prisma**: `Asset.sceneIndex Int?` + composite index `[accountId, relatedStepKey, sceneIndex]` · migration applied.
+
+**Tests**: 19 unit tests · `pnpm typecheck` 6ws 0 errors · `pnpm test` 582/582 pass.

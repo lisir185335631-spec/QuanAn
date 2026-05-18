@@ -1,0 +1,38 @@
+## 验证结果: US-001 FAIL
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|---|---|---|---|
+| AC-1 | `seedIndustries()` 56 行业 + Industry model | ✓ | `prisma/seed.ts:37`, `schema.prisma:21` Industry model 存在 |
+| AC-2 | `seedMockIpAccounts()` 5 mock 账号覆盖 4 路径 + demo | ✓ | `prisma/seed.ts:79`, 5 账号定义完整 |
+| AC-3 | `auth.ts` DEV_OAUTH_MOCK flag · isDevOAuthMock() + getDevMockUserAttrs() | ✓ | `middleware/auth.ts:11` 实现正确 |
+| AC-4 | `ipAccounts.list` brownfield 自动绑 mock | ✓ | `ipAccounts.ts:46` NODE_ENV=development 时自动绑定 |
+| AC-5 | AccountSwitcher 组件 · switchTo 整页刷新 | ✓ | `AccountSwitcher.tsx:27` 实现完整 |
+| AC-6 | IndustryDropdown 56 行业 · 5 分类分组 | ✓ | 浏览器 JS 验证: `role=option` count=56, `role=group` count=5 |
+| AC-7 | `pnpm db:seed` 输出格式 · 幂等 | ✓ | DB 已 seeded: `psql COUNT industries=56, mock_accounts=5` |
+| AC-8 | `seed.test.ts` ≥ 4 it | ✓ | 7 测试用例: industries 56 + idempotent + accounts 5 + idempotent + constant 3条 |
+| **AC-9** | **browser AccountSwitcher 5 mock 账号 · 切换 · localStorage** | **✗ FAIL** | `auth.me` 返回 `unauthenticated`，根因：`.env` 缺 `DEV_OAUTH_MOCK=true` |
+| AC-10 | vitest 1820+ pass / typecheck PASS | ✓ | `pytest-full.xml`: 2023 tests, failures=0; typecheck: 6 workspaces PASS |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  manifest.json          (exit_code=1, zero_regression=PASS, verdict=FAIL)
+  pytest-full.xml        (2023 tests, failures=0, errors=0)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt   (6 workspaces PASS)
+  validator-us-001-initial-1.png
+  validator-us-001-step1-2.png
+  validator-us-001-industry-3.png
+  validator-us-001-fail-1.png
+```
+
+### 判决
+
+**passes = false** · retryCount = 1
+
+**根因（CONFIRMED）**: `.env` 缺少 `DEV_OAUTH_MOCK=true`。`isDevOAuthMock()` 检查 `process.env.DEV_OAUTH_MOCK === 'true'` 但该变量未设置，导致 API 始终返回 `unauthenticated`，AccountSwitcher 无法获取 mock 账号列表。
+
+**修复方向**: 在项目根 `.env` 添加 `DEV_OAUTH_MOCK=true` 一行，重启 API server 即可解决。

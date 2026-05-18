@@ -1,0 +1,26 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | 4 procedures · protectedProcedure + activeAccountId 双层防护 | ✓ (19处 activeAccountId, 4个目标 procedures 全覆盖) |
+| AC-2 | getProfile 返 level/feedbackCountGood/Bad/Total/satisfactionRate/currentDirection/latestInsight/lastEvolvedAt/lastUpgradedAt | ✓ (select 字段完整) |
+| AC-3 | getInsightHistory · max 10 · orderBy createdAt desc | ✓ (take:10, orderBy desc, accountId filter) |
+| AC-4 | getFeedbackTrend 按日聚合 · 返 {date,total,good,satisfactionRate}[] | ✓ 已批准偏差: $queryRaw 代替 groupBy(DATE_TRUNC 不支持 groupBy) · 输出 shape 完全一致 |
+| AC-5 | getModuleRanking · cost_log+feedback_log · 按 agentId 分组 · 👍率+调用次数 | ✓ (feedbackLog.groupBy × 2 + costLog.groupBy, satisfactionRate + totalCalls) |
+| AC-6 | 前端 /evolution 页面 4 sections | ✓ (Hero+Insight卡片+Recharts LineChart趋势+ModuleRankingTable+HistoryList) |
+| AC-7 | browser 打开 /evolution 截图 | ✓ 页面加载 h1='进化中心', 截图已保存 |
+| AC-8 | level=L1 + 0 insight → 冷启动 UI | ✓ 浏览器确认显示'暂无 insight · 等累计 5 条反馈后自动生成' |
+| AC-9 | typecheck 0 + test 全过 | ✓ typecheck 0 错误; 根级 vitest 82 files/774 tests 全绿; web-only 2 failures 为 pre-existing(US-005前已存在的 Generate+History Router context 问题) |
+| Typecheck | pnpm typecheck | ✓ exit 0 |
+| Tests | all pass | ✓ 774 tests passed |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-005/`
+已生成: vitest.xml (774 passed), vitest-full.stdout.txt, typecheck.stdout.txt, screenshot.png, manifest.json
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,35 @@
+prd.json updated correctly. Here is the validation summary:
+
+---
+
+## 验证结果: US-002 [FAIL]
+
+### AC 对照
+- AC-1: LS 先写 `stepLsKey(accountId,stepKey)` (useStepData.ts:25), DB 后写 fire-and-forget (line 35), onError 无 LS rollback ✓
+- AC-2: `getActive` query (useActiveAccount.ts:23), `clearLsNamespace` on switch (line 39-41) ✓
+- AC-3: `getProfile` query (useEvolution.ts:18), `evolutionLsKey` cache (line 29) ✓
+- AC-4: ls-namespace.ts 存在，18 个键单元测试全部通过 ✓
+- AC-5: toast `'已保存到本地 · 网络恢复后同步'` (useStepData.ts:40) ✓ | **`cost_log 写 trace_id` 未实现** — onError 只有 toast，无 trace_id 日志写入 ✗
+- AC-6: `clearLsNamespace` 移除所有旧 namespace，test key-17 覆盖跨账号隔离 ✓
+- AC-7: React 状态天然 per-tab，LS namespace 隔离防污染 ✓
+- AC-8: `pruneLsNamespaces` 函数存在且在 save() 中调用 (line 32)，test key-18 覆盖 ✓
+- AC-9: 代码设计支持性能要求（同步 LS read、async DB write），无基准测试 — 设计层满足 ✓
+- AC-10: `tsc --noEmit` 0 错误 ✓
+- AC-11: 零回归 vitest 67/67 通过，ls-namespace 18 键全绿 ✓ | **`tests/unit/web/hooks.test.ts` 缺失**（files_to_create 指定） ✗
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+├── vitest.xml          (JUnit, 18 ls-namespace + 49 existing = 67 passed)
+├── vitest.stdout.txt   (verbose run output)
+├── pytest-full.xml     (zero-regression JUnit, 67 passed, 0 failed)
+├── typecheck.txt       (exit 0, 0 errors)
+└── manifest.json
+```
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`
+
+**需修复**:
+1. `apps/web/src/hooks/useStepData.ts` — `onError` 补写 trace_id 日志（如 `console.error('[useStepData] DB write failed', { traceId })`，或调用 trpc 客户端链路已注入的 trace context）
+2. `tests/unit/web/hooks.test.ts` — 创建 hook 逻辑路径单元测试（MockStorage + mock tRPC mutation 测试 save/load/switch/prune 分支）

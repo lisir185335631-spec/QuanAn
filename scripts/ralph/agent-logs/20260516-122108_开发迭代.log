@@ -1,0 +1,6 @@
+US-003 is complete. Summary:
+
+- **`apps/web/src/pages/Home.tsx`**: Added `IpProgressSection` with H2, glass-card, completed/percent display, horizontal progress bar, reused `<StepProgress>`, and two buttons (查看IP方案 → /ip-plan, 继续 → first incomplete step)
+- **`apps/web/src/test/pages.test.tsx`**: Added `progress.useQuery` mock to `stepData` so tests pass
+- **`screenshots/prd16-us003-home-ipprogress.png`**: Browser screenshot showing all elements
+- **typecheck**: PASS · **tests**: 51/51 PASS · **browser**: verified all AC elements visible

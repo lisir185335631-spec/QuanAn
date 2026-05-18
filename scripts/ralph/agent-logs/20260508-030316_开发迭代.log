@@ -1,0 +1,13 @@
+US-007 is implemented and committed. Summary of what was delivered:
+
+**AC coverage:**
+- **AC-1** `BaseSpecialist.ts` — abstract `execute()` already existed; confirmed correct
+- **AC-2** `ContextAssembler.ts` — added `IContextAssembler` interface + `assembleStep(step, accountId)` stub returning `{ step, accountId, lastResults: {} }`
+- **AC-3** `LLMGateway` — added `selectTier(modelHint, costBudget): ModelTier` pass-through
+- **AC-4** `logger.ts` — pino with `mixin()` that auto-injects `traceId` from `AsyncLocalStorage`
+- **AC-5** `trpc/middleware/trace.ts` — middleware reads `x-trace-id` header, generates 16-char hex if absent, writes to `ctx.traceId` and runs `traceStore.run()`
+- **AC-6** Full-stack chain: frontend `fetch` injects `x-trace-id` → Hono middleware sets `traceStore` → tRPC `publicProcedure` re-confirms via `traceMiddleware` → pino auto-injects via `mixin`
+- **AC-7** TypeScript abstract enforcement — compile-verified by `pnpm typecheck`
+- **AC-8/AC-9** Verified via integration test: echo test + generated ID format
+- **AC-11** LLMGateway tier config: reasoning=claude-sonnet, lightweight=gpt-4o-mini (existing `MODEL_BY_TIER`)
+- **AC-12/AC-13** `pnpm typecheck` ✅ · `pnpm test` 36/36 ✅

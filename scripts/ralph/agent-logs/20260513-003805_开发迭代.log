@@ -1,0 +1,17 @@
+US-013 is complete. Here's a summary of what was implemented:
+
+**Files created:**
+- `apps/admin/src/pages/cost/index.tsx` — main page with time range + dimension dropdowns, DenseTable detail + CSV export
+- `apps/admin/src/pages/cost/CostOverviewCards.tsx` — 3 stat cards (total/MoM/YoY) + Top 10 bar  
+- `apps/admin/src/pages/cost/CostTopUsersChart.tsx` — Top 10 horizontal BarChart with `$ ${v.toFixed(2)}` formatting
+- `apps/admin/src/pages/cost/CostBreakdownChart.tsx` — multiline chart (model/Specialist toggle) + provider pie chart, Recharts Cell fill `var(--accent-X)`
+- `apps/admin/src/pages/cost/CostAlertsPanel.tsx` — right panel showing daily>$5 alerts with severity badges
+
+**Files modified:**
+- `apps/admin/src/router.tsx` — replaced `CostPlaceholder` with `CostPage`
+- `packages/clients/src/admin-router-types.ts` — added `cost` shadow router (5 procedures)
+
+**Files deleted:**
+- `apps/admin/src/pages/admin/placeholder/cost.tsx`
+
+All quality checks pass: 0 typecheck errors, 1202 tests pass.

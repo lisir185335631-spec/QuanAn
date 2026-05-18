@@ -6,6 +6,7 @@ Scope: 6 of 7 workspace projects
 packages/schemas typecheck$ tsc --noEmit
 packages/ui typecheck$ tsc --noEmit
 packages/ui typecheck: Done
+apps/admin typecheck: Done
 packages/schemas typecheck: Done
 packages/clients typecheck$ tsc --noEmit
 apps/api typecheck$ tsc --noEmit

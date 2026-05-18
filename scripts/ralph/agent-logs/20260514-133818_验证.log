@@ -1,0 +1,29 @@
+prd.json 更新完成。
+
+---
+
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | route entry in admin-routes.ts | ✓ (lib/admin-routes.ts, path=/admin/evolution-health, requiredRole=readonly_admin) |
+| AC-2 | EvolutionHealthPage.tsx 新建 | ✓ 文件存在于 pages/evolutionHealth/ |
+| AC-3 | 4 KPI 卡片 + 饼图 + HealthGauge | ✓ 浏览器确认 4 卡片渲染 |
+| AC-4 | DenseTable 异常账号列表 6 列 | ✓ 代码 + 浏览器行显示 |
+| AC-5 | 筛选/排序/分页 cursor-based | ✓ 浏览器 3 个 filter dropdown 可见 |
+| AC-6 | EvolutionHealthDrawer + ConfirmModal | ✓ 代码 + 单元测试 13/13 |
+| AC-7 | 空/加载/错误状态 + 响应式 | ✓ 代码 + 浏览器确认 |
+| AC-8 | 浏览器验证页面渲染 + KPI + 列表 | ✓ 截图 validator-us-006-pass-02.png |
+| AC-9 | Drawer + ConfirmModal reason≥10 验证 | ✓ 截图 pass-03/04.png; reason<10 禁用按钮; reason≥10 启用 |
+| AC-10 | pnpm audit:redlines-admin 0 命中 | ✓ ALL PASS 7 LD-A + 6 R-A |
+| AC-11 | pnpm test ≥1610 pass · 0 fail | ✓ 1633 pass / 0 fail / 3 skipped |
+| AC-12 | typecheck 0 errors | ✓ 所有 workspace 通过 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/`
+已生成: `pytest-full.xml` (1633 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,6 @@
+US-006b is complete. The implementation:
+
+- **New file**: `apps/web/src/components/step3/Step3OutputContent.tsx` — exports `Step3Result` type, `getBlockText()` helper, and the content renderer that handles all 6 block IDs with their specific sub-structures
+- **Modified**: `apps/web/src/pages/step/Step3.tsx` — added result state, 5 handlers (copy/regen/optimize/regenAll/copyAll), the full `<section id='step3-output'>` with header buttons using `STEP3_HEADER_BUTTON_REGEN_ALL/COPY_ALL` constants, `STEP3_OUTPUT_H3_6.map()` rendering with per-H3 buttons strictly from constants, extra `[生成参考图]` for avatar/background blocks, and a Dialog modal for the optimize direction input
+
+All AC verified: typecheck passes, 6 H3s render, buttons use constants (no hardcoded Chinese), console shows 0 errors.

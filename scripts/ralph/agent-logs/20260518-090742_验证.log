@@ -1,0 +1,36 @@
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `prd-19-frontend-backend.spec.ts` 文件存在，4 tests，正确结构 | ✓ |
+| AC-2 | test (a) · Step1 真接 PositioningAgent · LS↔DB 双写 | ✗ |
+| AC-3 | test (b) · acc 切换 · 数据隔离 | ✗ |
+| AC-4 | `grep apps/web/src/pages/step/` 0 hardcode `acc_step{N}` | ✓ |
+| AC-5 | test (d) · prd-17/18 zero-regression | ✗ |
+| AC-7 | Typecheck passes | ✓ |
+
+### CONFIRMED 失败原因
+
+**失败项1 (tests a/c)** — Vite proxy 路径不匹配导致 `getActiveAccountId()` 返回 null：
+- Spec helper 使用相对 URL `/api/trpc/ipAccounts.active`
+- Vite proxy 转发到 `localhost:3000/api/trpc/...` (没有 rewrite)
+- 后端路由在 `/trpc/...`（无 `/api` 前缀）→ 404
+- 验证：`curl http://localhost:5173/api/trpc/... → 404`，`curl http://localhost:3000/trpc/... → 200`
+- 修复：helper 改用直连 `http://localhost:3000/trpc/...`（与 `TRPC_URL` 一致）
+
+**失败项2 (test b)** — account-switcher item 在点击时 DOM detach（60s timeout）：
+- Radix DropdownMenu 关闭动画导致 DOM 元素 detach
+- 修复：去掉冗余的"重新选择 accA"步骤（已在 accA），直接 goto /step/1
+
+**失败项3 (test d)** — prd-18 4/6 测试失败（pre-existing TD from US-004/006）：
+- US-004 真接 DB 后页面显示存储结果，prd-18 strict `locator('h1')` 命中 2 个元素
+- US-006 fallback 渲染增加了结果区 h1 标签
+- US-008 修了 prd-17 但漏修 prd-18
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/` — typecheck PASS · vitest 2278 passed · prd-19 e2e 4/4 FAIL
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`

@@ -1,0 +1,15 @@
+US-008 implementation complete. Here's a summary of what was done:
+
+**TD-79 fix** — Created `apps/web/src/lib/constants/industries.ts` with `STEP1_CTA_LABEL='生成行业洞察'` + `STEP1_NEXT_LABEL='进入 IP 定位 →'`. Updated `StepForm.tsx` step1 button to use the constant. grep ≥1 hit ✅
+
+**TD-80 fix** — Added `STEP1_RESULT_H2='行业洞察报告'` + `STEP1_RESULT_H3_3` to `industries.ts`. Created `step3.ts` with `STEP3_RESULT_H2='账号包装方案'` + `STEP3_OPTIMIZE_CONFIRM_BUTTON='确认优化'`. Created `step3b.ts` with `STEP3B_RESULT_H2='专属人设方案'`. Updated `Step1Result.tsx`, `Step3Result.tsx`, `Step3bResult.tsx` to use constants. Hardcoded strings grep = 0 hits ✅
+
+**TD-81 fix** — Created `Step5TopicGrid.tsx` without the backward compat double `setItem('acc_step5_selected_topic', ...)`. grep = 0 hits in source ✅
+
+**TD-82 fix** — Restored `apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts` from git history with `test.skip(!HAS_OPENAI_KEY)` on test3 (5-tab SSE requires real LLM).
+
+**E2E setup** — Created `apps/web/playwright.config.ts` with `E2E_REAL_LLM=1` support (90s timeout + retries 2). Created `apps/web/e2e/prd-20-real-llm.spec.ts` with 4 tests (fallback/real LLM dual path). Created `.github/workflows/e2e-weekly-real-llm.yml` (weekly cron, ~$5/month).
+
+**Infrastructure** — Brought in Step5 5-tab SSE UI from PRD-18 git history: `Step5TopicGrid`, `Step5FileUpload`, `LoadingState`/`EmptyState` state components, `step5.ts` constants, updated `Step5.tsx`. Fixed `trpc.ts` splitLink for SSE subscriptions, `account-isolation.ts` subscription path, `router-types.ts` `saveStream` type, `useStepData.ts` `readOtherStep` helper.
+
+**Quality gates** — typecheck 6 workspaces × 0 errors ✅, 64 unit tests pass ✅.

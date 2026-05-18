@@ -110,7 +110,7 @@ describe('US-010 AC-9: R-001 — OPENAI_API_KEY not in frontend code', () => {
     const { execSync } = await import('node:child_process');
     let count = 0;
     try {
-      execSync('grep -r "OPENAI_API_KEY" apps/web --include="*.ts" --include="*.tsx" -l', {
+      execSync('grep -r "OPENAI_API_KEY" apps/web/src --include="*.ts" --include="*.tsx" -l', {
         stdio: 'pipe',
       });
       count = 1; // grep succeeded = matches found

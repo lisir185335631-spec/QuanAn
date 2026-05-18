@@ -1,0 +1,16 @@
+US-001 实现完成。所有 AC 均已满足：
+
+**已完成：**
+- **AC-1**: KnowledgeChunk prisma schema + `prisma migrate dev` 通过
+- **AC-2**: 手写 HNSW index migration SQL + 已应用到 DB
+- **AC-3**: `packages/schemas/src/rag/index.ts` 含 KnowledgeChunkContent/KnowledgeChunkType/RagRetrieveParams/3 metadata schemas，显式 barrel re-export
+- **AC-4**: `openai-embedding.ts` D-038 独立 worker，`encoding_format: 'float'`，各错误路径 TRPCError
+- **AC-5**: cost_log eventType='embedding_call'，provider/modelUsed/promptTokens/audioSeconds=null/charactersIn 完整写入
+- **AC-6**: `retrieve.ts` → EmbeddingWorker → `$queryRawUnsafe` pgvector `<=>` cosine top-K → KnowledgeChunkContent[]
+- **AC-7**: rate limit 100/user/day sliding window，50/100 边界通过，101 抛 TOO_MANY_REQUESTS
+- **AC-8**: grep 0 命中
+- **AC-9**: embedding.test.ts 9 tests 全过
+- **AC-10**: rag-retrieve.test.ts 5 tests 全过
+- **AC-11**: typecheck 6ws 0 errors · lint 0 warnings · 875 tests 全过
+
+**关键学习**：OpenAI SDK v4.104 默认 `encoding_format='base64'`，必须显式传 `'float'` 才能得到 float[] 用于 pgvector。

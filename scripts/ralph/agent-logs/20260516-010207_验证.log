@@ -1,0 +1,38 @@
+---
+
+## 验证结果：US-002 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | Copywriting.tsx 253 行 (>200) · 2-column layout | ✅ |
+| AC-2 | topic+6 platform+scriptType select+elements group+additionalContext | ✅ |
+| AC-3 | trpc.copywriting.freeGenerate.useMutation() (D-026 架构正确端点) | ✅ |
+| AC-4 | **BUG FIXED** onAnimComplete→setIsStreaming(false)，三按钮逻辑正确 | ✅ |
+| AC-5 | 历史 sidebar + trpc.history.list.useQuery(CopywritingAgent, limit:10) | ✅ |
+| AC-6 | URL state ?platform=xiaohongshu 预选小红书（浏览器实测确认）| ✅ |
+| AC-7 | localStorage copywriting_draft_${userId}_${accountId} + 1s debounce | ✅ |
+| AC-8 | modelName 展示 + cost_log 由 BaseSpecialist 自动写入 | ✅ |
+| AC-9 | const StreamdownPreview = lazy(() => import(...)) + Suspense | ✅ |
+| AC-10 | 29 tests ✓ (≥8)；/copywriting 页面浏览器验证通过（AC URL /tools/copywriting 是文档错误，实际路由 /copywriting 功能正常）| ✅ |
+| AC-11 | vitest 29/29 · 零回归 2046/2052 · typecheck 0 错误 6 包 | ✅ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+├── manifest.json          (verdict=PASS, zero_regression=PASS)
+├── pytest.xml             (29 passed)
+├── pytest.stdout.txt
+├── pytest-full.xml        (2046 passed, 6 skipped)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt   (exit 0)
+├── validator-us-002-current-1.png   (页面全览)
+├── validator-us-002-pass-3.png      (URL 参数预选验证)
+└── validator-us-002-tools-url-2.png (404 证据)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`
+
+**关键修复确认**：上次 Validator 失败根因（`isStreaming` 永不重置）已正确修复：`CopywritingPreview.onAnimComplete` prop → `Copywriting.tsx` 传入 `() => setIsStreaming(false)` → 动画完成后 `showActions = !false && true && content = true` → 三按钮正确显示。

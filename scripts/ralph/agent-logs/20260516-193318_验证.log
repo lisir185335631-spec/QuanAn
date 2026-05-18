@@ -1,0 +1,27 @@
+All 11 stories pass. Let me do a final summary check:
+
+## 验证结果: US-011 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | verify-prd-16.sh · 9 sections 所有检查 | ✅ 33 checks PASS |
+| AC-2 | PASS/FAIL 计数 + ok()/fail() + exit $FAIL + chmod +x | ✅ 结构正确，exit 0 |
+| AC-3 | 4 e2e tests in tests/e2e/prd16-*.test.ts | ⚠️ 文件为 .spec.ts (不是 .test.ts) — 但这是 commit 171c4e3 的主动 rename，用于 Playwright 兼容性 |
+| AC-4 | bash scripts/verify-prd-16.sh · 9 sections ALL PASS | ✅ 33 passed, 0 failed, exit 0 |
+| AC-5 | prd16 e2e 4 flows 全 PASS | ✅ 24/24 tests pass (chromium) |
+| AC-6 | visual diff 3 pages vs aiipznt reference | ✅ 所有截图存在，结构对齐，颜色差异符合 D4=B 预期 |
+| AC-7 | typecheck + test + audit:redlines + audit:redlines-admin + audit:ld + audit:admin-rls | ✅ 全部 PASS |
+| AC-8 | 反例预防 · 不跳过任一 section/e2e | ✅ 无跳过 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-011/
+已生成: pytest-full.xml (vitest 54/54 PASS), pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.US-011.passes = true` — 所有 11 stories 均 passes=true，PRD-16 完成。

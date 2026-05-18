@@ -1,0 +1,31 @@
+US-020 is marked PASSED. Here is the validation summary:
+
+---
+
+## 验证结果: US-020 PASS
+
+### AC 对照
+
+- **AC-1** ✓ `invites.ts` 新建 `invitesRouter` · 6 procedure (list/create/batchImport/invalidate/detail/campaignFunnel) · 全走 `adminProcedure`（继承自 `publicAdminProcedure`）
+- **AC-2** ✓ list 有 zod 5 字段输入 · `ctx.adminPrisma` 是 adminRLS 中间件注入的 `$transaction + set_config(is_local=true)` tx 客户端 · 写 audit `list_invite_codes`
+- **AC-3** ✓ create mutation · code optional 自动 `randomBytes(8).hex.toUpperCase()` · campaign/expiresAt/quotaLimit · 写 audit `create_invite_code` · 不走 Approval Gate
+- **AC-4** ✓ batchImport · papaparse header:true · `BATCH_IMPORT_MAX_ROWS=10000` · `BATCH_CHUNK_SIZE=100` · 批量逐 chunk 插入
+- **AC-5** ✓ invalidate · super_admin → `status:'auto_executed'` + 立即 update + audit `high_risk_action/invalidate_invite_code` · admin → `status:'pending'` + 写 approval_request · 不 update code
+- **AC-6** ✓ detail · 返回 invite + activationHistory(auditLog · IP/userAgent) + step9Progress(stepData)
+- **AC-7** ✓ campaignFunnel · 调 `getCampaignFunnel(campaignKey)` · 返 `[{stage,count}]` 4 stage 数组
+- **AC-8** ✓ invalidate 已失效 → `TRPCError BAD_REQUEST 'already invalidated'`
+- **AC-9** ✓ batchImport 重复 code → P2002 catch → `errors.push({row,code,reason:'duplicate code'})` 跳过继续
+- **AC-10** ✓ batchImport >10000 → `TRPCError BAD_REQUEST 'exceeds limit'`
+- **AC-11** ✓ `audit-approval-gates.ts` EXCEPTION_PROCEDURES 列表含 `'admin.invites.invalidate'`
+- **AC-12** ✓ 27 tests (list×4, create×5, batchImport×5, invalidate×6, detail×3, campaignFunnel×4) ≥ 20
+- **AC-13** ✓ `pnpm test` 27 story tests pass · 零回归(9 pre-existing ECONNREFUSED integration failures = US-018 baseline) · `pnpm typecheck` 0 errors
+- **AC-14** ✓ `pnpm audit:approval-gates` → Checked 13 ≥ 9 · 0 missing
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-020/`  
+`pytest.xml` (27 passed) · `pytest.stdout.txt` · `pytest-full.xml` (1331 tests, 9 pre-existing fails) · `pytest-full.stdout.txt` · `typecheck.stdout.txt` · `manifest.json`
+
+### 判决
+
+`prd.json.passes = true`

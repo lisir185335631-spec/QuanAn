@@ -1,0 +1,46 @@
+## 验证结果: US-004 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|:---:|---|
+| AC-1 | ✓ | ContextAssembler._composeSystemPrompt 对全 11 Specialist 注入 Section 4 (evolutionInsight!=null 时) |
+| AC-2 | ✓ | _buildSection4: 6 字段全注入，空数组行跳过 |
+| AC-3 | ✗ | literal grep 返 4 命中（EvolutionAgent.ts · pre-existing US-003）|
+| AC-4 | ✓ | PositioningAgent insight 注入 test 通过 |
+| AC-5 | ✓ | 11 Specialist × 1 case 全通过 |
+| AC-6 | ✓ | evolutionInsight=null → 无 [Section 4] · 既有 prompt 结构不破 |
+| AC-7 | ✓ | 8 specialist unit test files · 76/76 通过 |
+| AC-8 | ✓ | LLM Judge mock 2 case · score ≥ 4/5 |
+| AC-9 | ✓ | typecheck 0 errors · vitest 774/774 |
+| files_to_create | ✗ | insight-injection.test.ts + insight-injection.judge.ts 未创建(测试在 context-assembler.test.ts) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+├── manifest.json       (exit_code=1, zero_regression=PASS, verdict=FAIL)
+├── vitest.xml          (774 passed, 0 failed)
+├── vitest.stdout.txt   (全量运行日志)
+└── typecheck.stdout.txt (0 errors)
+```
+
+### 零回归 (X-6)
+
+**PASS** — 774 tests (81 files) · 0 failed · 0 errors
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`
+
+---
+
+**核心问题说明（给 Opus audit 参考）：**
+
+1. **AC-3 literal 失败** — `grep 'evolutionInsight' apps/api/src/specialists/` 返回 4 命中，全部在 **EvolutionAgent.ts**。这 4 处是 US-003 引入的 pre-existing 代码，US-004 commit 未修改该文件（git log 确认）。命中内容均为读 `ctx.evolutionInsight`（读 CA 组装结果，非自拼 prompt）和 `prisma.evolutionInsight.create`（DB 表名）— 不是 D-007 违规。11 个生成型 Specialist 自身无任何命中 ✓。
+
+2. **files_to_create 未创建** — AC-4/5/6/8 对应测试写入了 `context-assembler.test.ts` 末尾（22 条新测试，全部通过）而非指定文件。功能覆盖齐全，是文件位置偏差。
+
+修复建议（供 ralph dev 参考）：
+- AC-3：在 `apps/api/src/specialists/` 排除 EvolutionAgent.ts，或改 grep 命令（`| grep -v EvolutionAgent.ts`）更精准匹配违规场景
+- files_to_create：要么创建指定文件（迁移测试），要么更新 prd.json 的 files_to_modify 与实际一致

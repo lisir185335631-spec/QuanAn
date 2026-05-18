@@ -1,0 +1,16 @@
+US-012 is implemented and committed. Here's the summary:
+
+**US-012 完成** — commit `49c70bd`
+
+All acceptance criteria verified:
+- ✅ AC-1: STEP8_STEP_TAG + H1 + SUBTITLE (替换 {industry} from localStorage)
+- ✅ AC-2: 2 子功能 H3 tab 切换 (子功能 1 default, click 切换到子功能 2, 再切回)
+- ✅ AC-3: `Step8GeneratePlan.tsx` — 4 字段 (textarea/input/5 平台 radio/3 经验 radio) + 主 CTA
+- ✅ AC-4: `Step8OptimizeScript.tsx` — 2 字段 (textarea ≥10 字 + charCounter + input 可选) + disabled 规则
+- ✅ AC-5: setTimeout 3-5s mock + structured result
+- ✅ AC-6: localStorage `acc_step8` 写入确认 (非 null)
+- ✅ AC-7: grep 0 hardcode 字面量
+- ✅ AC-8: grep 0 violet/amber (D4=B 合规)
+- ✅ AC-9: vitest 119/119 PASS
+- ✅ AC-10: 浏览器实测 — 6 H3 输出模块渲染、localStorage 非 null、无 console error
+- ✅ AC-11: tsc --noEmit 0 error

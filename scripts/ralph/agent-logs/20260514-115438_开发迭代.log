@@ -1,0 +1,5 @@
+US-004 修复完成。根因是 `scripts/audit-redlines-admin.sh` 缺少 LD-A7 段且计数为旧值，修复内容：
+
+- LD-A6 后插入 LD-A7 检测（grep `evolutionProfile.update.*null` / `evolutionInsight.updateMany.*resolved`，排除 `_forceRebuildEvolutionInTx` 单点函数）
+- 头部注释、显示 echo、条数 echo、ALL PASS 末尾消息全部从 5/6 LD-A 统一改为 7 LD-A
+- 验证：`ALL PASS · 7 LD-A + 6 R-A` ✓，typecheck 0 errors ✓，1588 pass ✓

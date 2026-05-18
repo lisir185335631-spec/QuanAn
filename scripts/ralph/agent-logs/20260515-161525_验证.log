@@ -1,0 +1,43 @@
+## 验证结果: US-012 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|:-:|---|:-:|---|
+| AC1 | 3 关键开关已 seed(US-011) | ✓ | US-011 passes=true · seed AC 明确 isEmergency=true |
+| AC2 | trending-scraper worker.ts 用 getSystemConfigValue | ✓ | worker.ts:65 `getSystemConfigValue('stop_trending_scraper')` · 修复了 Opus 指出的 bug |
+| AC3 | EvolutionAgent.ts execute() 检查 stop_evolution_agent | ✓ | EvolutionAgent.ts:108 · return isFallback:true modelUsed:'emergency-disabled' |
+| AC4 | ContextAssembler.ts 双点 enable_fallback_prompt bypass | ✓ | ContextAssembler.ts:140,225 · _fetchActivePrompt + _fetchActiveConstants |
+| AC5 | emergencyToggleSystemConfig: requestApproval→emergencyApprove→$tx | ✓ | feature-flag.service.ts:187-253 · postReviewRequired=true |
+| AC6 | 写 security_alert audit · 含 configKey+incidentId | ✓ | feature-flag.service.ts:230-246 · eventType='emergency_switch_triggered' |
+| AC7 | 钉钉 isMock=true 默认 | ✓ | DingtalkService: DINGTALK_ENABLE!=='true' isMock |
+| AC8 | 24h 后置复核 cron 扩 emergency_switch_triggered | ✓ | emergency-post-review.job.ts: no actionType filter = catch-all |
+| AC9 | emergency-switch.test.ts ≥ 8 it · 覆盖全场景 | ✓ | 13 it blocks · 含新增 "system_config 真实路径" test |
+| AC10 | 5s TTL cache Map+setInterval | ✓ | feature-flag.service.ts:50-74 · CACHE_TTL_MS=5000 |
+| AC11 | 不破坏 PRD-5/9/13 主流程 | ✓ | 所有 bypass 均为前置 if-return brownfield |
+| AC12 | pnpm test ≥ 1838 | ✓ | **1907 passed** (4 skipped, 0 failed) |
+| AC13 | typecheck 全 PASS | ✓ | 6 workspaces PASS |
+
+### Opus Reject 指定 Grep 验证
+
+| 命令 | 期望 | 实测 |
+|---|:-:|:-:|
+| `getFeatureFlagValue('stop_trending_scraper')` in src/ 非测试 | 0 | **0** ✓ |
+| `getSystemConfigValue('stop_trending_scraper')` in src/ 非测试 | 1 | **1** ✓ (worker.ts:65) |
+| fake `flagKey: 'stop_trending_scraper'` in test | 0 | **0** ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+  manifest.json      (verdict=PASS · zero_regression=PASS)
+  vitest.xml         (13 passed)
+  vitest.stdout.txt
+  pytest-full.xml    (1907 passed · 0 failed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt (6 workspaces PASS)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

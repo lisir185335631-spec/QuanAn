@@ -1,0 +1,10 @@
+Done. The fix was surgical:
+
+**Root cause**: `accountIsolationMiddleware` wraps every `protectedProcedure` call in a `$transaction` and replaces `ctx.prisma` with the transaction client `tx`. The `tx` mock in `makeCtx()` didn't include `deepLearnReviewQueue`, so when `deepLearning.create` (which now routes through `deepLearnReviewQueue.create` per LD-A-5) ran inside the middleware, it got `undefined.create()`.
+
+**Fix** (1 file, 3 changes):
+1. Added `deepLearnReviewQueue` mock to both `tx` and `prisma` objects in `makeCtx()`
+2. Updated `deepLearning.create` test to assert `deepLearnReviewQueue.create` called and check `{ ok, queueId, status }` return shape
+3. Updated `deepLearning.createFromFile` test similarly with `fileUrl` passthrough assertion
+
+Result: 20/20 tests pass, 0 typecheck errors, 9 pre-existing integration failures unchanged.

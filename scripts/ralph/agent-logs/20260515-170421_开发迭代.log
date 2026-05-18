@@ -1,0 +1,9 @@
+US-014 AC-4 fix complete. The changes:
+
+1. **Backend router** (`featureFlags.ts`): Added `reason: z.string().min(1)` to `emergencyToggleSystemConfig` input schema
+2. **Service** (`feature-flag.service.ts`): Added `reason` parameter with `BAD_REQUEST` guard; included in `actionPayload` and audit log
+3. **Frontend** (`FeatureFlagsPage.tsx`): Added `reason` non-empty validation in `handleSubmit` + passes `reason` to `mutate`
+4. **Shadow types** (`admin-router-types.ts`): Added `reason: string` to the stub type
+5. **Tests**: Updated 3 test files + added new "reason 为空 → throw" tests
+
+Result: 1980 tests pass, typecheck clean on both api and admin.

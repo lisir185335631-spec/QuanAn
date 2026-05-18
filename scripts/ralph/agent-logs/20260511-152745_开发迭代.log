@@ -1,0 +1,15 @@
+US-010 完成。实现摘要：
+
+**新建文件 (7个)**：
+- `apps/api/src/lib/constants/ttsLimits.ts` — TTS 常量 (max 4000 chars, $0.015/1K)
+- `apps/api/src/lib/rate-limit/tts.ts` — Redis INCR 滑动窗口限速 (100/user/day)
+- `apps/api/src/workers/tts/index.ts` — ITtsWorker 接口定义
+- `apps/api/src/workers/tts/openai-tts.ts` — OpenAITtsWorker (audio.speech.create → mp3 Buffer → Asset + cost_log)
+- `apps/api/src/trpc/routers/tts.ts` — tts.synthesize mutation (protectedProcedure + rate limit)
+- `tests/unit/api/workers/tts.test.ts` — 9 单元测试 (happy/boundary/oversize/timeout/rate-limit/API error)
+- `tests/integration/api/tts-openai.test.ts` — 1 集成测试 (CI skip)
+
+**修改文件 (1个)**：
+- `apps/api/src/trpc/routers/_app.ts` — 注册 ttsRouter
+
+**质量验证**：typecheck ✅ · 822 tests 全过 ✅ · 0 regression

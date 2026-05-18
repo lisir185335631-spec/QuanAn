@@ -1,0 +1,9 @@
+US-015 is complete. All ACs are implemented:
+
+**Delivered:**
+- `cost-anomaly.job.ts` — BullMQ cron `'15 * * * *'` tz `Asia/Shanghai`, jobId `'cost-anomaly-recurring'`, attempts:3, final failure → `system_alert/cron_failed` audit
+- `detect-anomalies.service.ts` — `$transaction` + `SET LOCAL`, 24h `SUM(cost_usd) > $5`, dedupe via `adminAuditLog.findFirst`, `security_alert/cost_anomaly_detected` with payloadHash SHA-256, Decimal throughout
+- `dingtalk.service.ts` — `isMock = DINGTALK_ENABLE !== 'true'` (default mock), mock logs warning, real mode requires URL (ConfigurationError fail-fast), DingTalk API spec body
+- `index.ts` — `scheduleCostAnomalyDetection()` registered, logs `[bullmq] admin:cost-anomaly worker started`
+- `.env.example` — `DINGTALK_WEBHOOK_URL` + `DINGTALK_ENABLE` added
+- **21 unit tests** across 2 test files, 0 typecheck errors, all admin redlines PASS

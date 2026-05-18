@@ -1,0 +1,1 @@
+US-001 完成。`pnpm typecheck` 全 workspace 退出码 0，6 项修复已 commit：`baseUrl` 根因修复、2 处旧 `@/server/*` 路径、`payload` 未捕获 bug、未使用参数、admin 空目录占位文件。

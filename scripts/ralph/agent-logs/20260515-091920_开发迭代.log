@@ -1,0 +1,11 @@
+US-006 was already fully implemented in commit `79f4e13`. All ACs verified:
+
+- **Schema**: ConstantVersion + ConstantCanaryConfig models in prisma/schema.prisma ✅
+- **Migration**: `20260515011044_prd_14_constant_versions` applied ✅
+- **Service**: 5 functions fork from prompt-version.service.ts with 5 changes (import, func names, actionType, hash key adds constantType) ✅
+- **approvalGateService**: `publish_constant_version` + `rollback_constant` in `DUAL_APPROVAL_ACTION_TYPES` ✅
+- **AGENTS.md**: LD-A10 section added ✅
+- **audit-redlines-admin.sh**: LD-A10 segment, ALL PASS · 10 LD-A + 6 R-A ✅
+- **Tests**: 1813 pass ≥ 1782 requirement ✅
+- **Typecheck**: 0 errors ✅
+- **prompt-version.service.ts untouched** ✅

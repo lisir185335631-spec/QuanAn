@@ -1,0 +1,11 @@
+US-007 实现完成。以下是本次工作摘要：
+
+**实现内容：**
+- `apps/api/src/trpc/routers/aiVideo.ts` — `aiVideoRouter` 含 `generateStoryboard`（rate limit → VideoAgent storyboard → history.create → BullMQ 入队 → 返回 jobIds）和 `jobStatus`（双层 accountId 防护 → 解析 scenes 状态计数）
+- `_app.ts` 注册 `aiVideo` router
+- `packages/clients/src/router-types.ts` 添加 shadow router types
+- `tests/unit/api/ai-video-router.test.ts` — 10 个单元测试（rate limit/boundary/fallback/RLS/jobStatus）
+- `tests/integration/api/ai-video-flow.test.ts` — 2 个集成测试（real DB + mock queue）
+- `vitest.config.ts` 添加 `@trpc/server` alias（修复 `vi.hoisted` + TRPCError 共用时的解析问题）
+
+**验证结果：** pnpm typecheck 6 ws 0 error · pnpm test 71 files 682 tests 全部通过

@@ -1,0 +1,75 @@
+name: E2E Weekly Real LLM
+
+on:
+  schedule:
+    # Every Sunday at 02:00 UTC (cost ~$1/run · ~$5/month)
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      test_filter:
+        description: 'Playwright test filter (optional)'
+        required: false
+        default: ''
+
+jobs:
+  e2e-real-llm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      E2E_REAL_LLM: '1'
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      E2E_BASE_URL: 'http://localhost:5173'
+      DATABASE_URL: ${{ secrets.DATABASE_URL_CI }}
+      REDIS_URL: 'redis://localhost:6379'
+
+    services:
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: cd apps/web && pnpm exec playwright install chromium
+
+      - name: Build
+        run: pnpm build
+
+      - name: Start dev server (background)
+        run: |
+          cd apps/web && pnpm dev &
+          cd apps/api && pnpm dev &
+          npx wait-on http://localhost:5173 http://localhost:3000 --timeout 60000
+
+      - name: Run real LLM E2E tests
+        run: |
+          cd apps/web
+          TEST_FILTER="${{ github.event.inputs.test_filter }}"
+          if [ -n "$TEST_FILTER" ]; then
+            pnpm exec playwright test e2e/prd-20-real-llm.spec.ts --grep "$TEST_FILTER"
+          else
+            pnpm exec playwright test e2e/prd-20-real-llm.spec.ts
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-real-llm-results
+          path: apps/web/test-results/
+          retention-days: 30

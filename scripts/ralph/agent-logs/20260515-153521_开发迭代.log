@@ -1,0 +1,16 @@
+US-011 实现完成。
+
+**验收摘要：**
+- AC-1 ✅ FeatureFlag + SystemConfig 已在 schema.prisma (line 1226-1254)，含 `@@index([enabled])` / `@@index([isEmergency])`
+- AC-2 ✅ Migration 已同步（tables 在 init migration 创建，`Already in sync`）
+- AC-3 ✅ seed 3 紧急开关：stop_trending_scraper / stop_evolution_agent / enable_fallback_prompt，isEmergency=true
+- AC-4 ✅ `_toggleFeatureFlagInTx` + `_updateSystemConfigInTx` 两个分开的单点函数（SHIELD：不合并）
+- AC-5 ✅ `toggleFeatureFlag` → `requestApproval(actionType='toggle_feature_flag', dual=true)`
+- AC-6 ✅ `emergencyToggleSystemConfig` → `requestApproval` → `emergencyApprove`（复用 PRD-13 US-002，不重写）
+- AC-7 ✅ `getFeatureFlagValue` 3 flagType 路由：boolean / percentage(md5 hash) / targeted
+- AC-8 ✅ `approvalGateService.ts` 加 `toggle_feature_flag` + `update_system_config` 进 DUAL_APPROVAL_ACTION_TYPES
+- AC-9 ✅ AGENTS.md §10.1 加 LD-A11 节（v0.5），11 条 LD
+- AC-10 ✅ `audit-redlines-admin.sh` 加 §LD-A11，全计数 10→11，`ALL PASS · 11 LD-A + 6 R-A`
+- AC-11 ✅ PRD-13 8 LD-A 全过（audit script 无回归）
+- AC-12 ✅ 1894 tests pass (≥1830)，15 新增 feature-flag tests
+- AC-13 ✅ typecheck 0 errors

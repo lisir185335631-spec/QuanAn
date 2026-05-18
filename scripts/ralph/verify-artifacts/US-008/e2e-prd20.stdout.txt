@@ -1,0 +1,18 @@
+<testsuites id="" name="" tests="4" failures="0" skipped="1" errors="0" time="1.842485">
+<testsuite name="prd-20-real-llm.spec.ts" timestamp="2026-05-18T11:45:04.732Z" hostname="chromium" tests="4" failures="0" skipped="1" time="1.543" errors="0">
+<testcase name="PRD-20 fallback › (a) Step5 SSE — fallback shows 1 tab, real LLM shows 5 tabs progressive" classname="prd-20-real-llm.spec.ts" time="0.253">
+</testcase>
+<testcase name="PRD-20 fallback › (b) real LLM cost_log — verify cost entry recorded after step1 generation" classname="prd-20-real-llm.spec.ts">
+<properties>
+<property name="skip" value="(b) requires real LLM + OPENAI_API_KEY">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="PRD-20 fallback › (c) userQuota — verify API returns quota info or quota-related headers" classname="prd-20-real-llm.spec.ts" time="1.251">
+</testcase>
+<testcase name="PRD-20 fallback › (d) zero-regression vitest — placeholder (run pnpm test separately)" classname="prd-20-real-llm.spec.ts" time="0">
+</testcase>
+</testsuite>
+</testsuites>

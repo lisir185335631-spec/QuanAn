@@ -1,0 +1,35 @@
+prd.json updated. Final validation report:
+
+---
+
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | invokeLLM real SSE · 5 chunks · meta chunk 首 yield | ✓ 代码审查通过 |
+| AC-2 | TopicAgent.real-llm.test.ts · skipIf · for-await · 5 done chunks · sorted categories | ✓ 代码审查通过 |
+| AC-3 | Schema drift · topics.length===20 · safeParse 严格 | ✓ 代码审查通过 |
+| AC-4 | cost_log 真接 · tokens > 0 · costUsd > 0 | ✓ 代码审查通过 |
+| AC-5 | TD-82 验证准备 | ⏭ SKIP (无 API keys + 无 dev server · AC 明确 "若存在") |
+| AC-6 | test_command 通过 | ⏭ SKIP (describe.skipIf 无 API key · per design ✓) |
+| AC-7 | Typecheck PASS ✓ · zero-regression | ✗ **9 ECONNREFUSED failures** |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-006/`
+- `pytest-full.xml` — 901 tests · 9 failed · 888 passed
+- `pytest-full.stdout.txt` — full output
+- `typecheck.stdout.txt` — 6 ws 0 errors ✓
+- `vitest.xml` / `vitest.stdout.txt` — 1 skipped ✓
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 2`
+
+**⚠️ 重要说明给 Opus:**
+- 9 个 ECONNREFUSED failures 均为**预存性基础设施依赖测试**(auth.test.ts 在 merge-base commit `1a1300f` 已存在 · PRD-20 开始前)
+- Developer 已修复本轮 3 个可修复的漂移(VideoAgent 8-col + StepResult) — 上轮 12 → 本轮 9
+- 剩余 9 个测试需要 `localhost:3000` dev server 运行 · **不在 US-006 code scope**
+- Ralph dev 无需再尝试修复这 9 个测试 · 建议 Opus 申请 TD 豁免 approve

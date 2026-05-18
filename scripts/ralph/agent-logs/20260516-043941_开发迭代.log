@@ -1,0 +1,16 @@
+US-007 完成。以下是交付摘要：
+
+**实现内容：**
+
+- **后端** `apps/api/src/trpc/routers/myTopics.ts` — 5 个 procedure：
+  - `list`: 聚合 3 数据源（step_data stepKey='step5' + trending_favorites JOIN trending_items + topics sourceType='manual'），支持 source/industry/search 过滤 + 分页
+  - `add`: 手动添加选题到 `topics` 表（category 字段存行业）
+  - `update`: 更新手动选题
+  - `delete`: 按 id 前缀路由（manual → topic.deleteMany，trending → trendingFavorite.deleteMany）
+  - `countBySource`: 返回 {step5, trending, manual} 计数
+
+- **前端** `apps/web/src/pages/modules/MyTopics.tsx`（574 行）— 卡片/表格双视图、URL state、多维筛选、AddTopicModal、EditTopicModal、一键跳 Step 7（`/step/7?topic=&source=mytopics&topicId=xxx`）
+
+- **类型** `packages/clients/src/router-types.ts` — `MyTopicItem`/`MyTopicSource` + shadow router
+
+- **测试** — 27 个前端 + 18 个 API 测试全部通过；全套 2209 tests zero regression；typecheck 0 errors

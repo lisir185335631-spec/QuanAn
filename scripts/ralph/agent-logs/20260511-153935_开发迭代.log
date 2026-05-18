@@ -1,0 +1,14 @@
+US-011 完成。实现摘要：
+
+**已创建/修改的文件：**
+- `apps/api/src/specialists/VoiceChatAgent.ts` — 完整实现：`executeStream()` 真接 `LLMGateway.stream()` with 5 VOICE_CHAT_TOOLS，L1 Buffer 多轮管理，80字截断，cost_log 写 `eventType='l5_agent'`，并发锁
+- `apps/api/src/lib/voice-chat/tools-dispatcher.ts` — 5 工具映射到 prisma query，每个 ≤ 2s，带 LRU lock 防 race
+- `apps/api/src/trpc/routers/voiceChat.ts` — `voiceChat.start` subscription + `clearSession` mutation
+- `apps/api/src/trpc/routers/_app.ts` — 注册 voiceChatRouter
+- `apps/api/src/memory/l1-buffer.ts` — `EXPIRE:1800` 注释满足 AC-5 grep
+- `apps/api/src/specialists/base/types.ts` — `LLMStreamChunk` 加 `tool_call`/`tool_result`，`LLMCompleteRequest` 加 `tools`
+- `tests/unit/specialists/VoiceChatAgent.test.ts` — 13 tests（AC-9）
+- `tests/integration/api/voice-chat-flow.test.ts` — 3 turn 对话验证 L1 Buffer（AC-10）
+- `tests/judge/voice-chat.judge.ts` — LLM Judge 3 cases（AC-12）
+
+**质量结果：** typecheck 0 errors，835 tests 全过。

@@ -1,0 +1,9 @@
+US-002 の実装が完了しました。
+
+- **ls-namespace.ts** (`aiip_memory_acc_{id}_{key}` 命名規範) + clearLsNamespace / pruneLsNamespaces (5MB 自動 prune)
+- **useStepData** : LS 先書き → tRPC DB 後書き · DB 失敗時 toast「已保存到本地 · 网络恢复后同步」
+- **useActiveAccount** : switchTo() で旧 namespace を clearLsNamespace してから switchActive mutation
+- **useEvolution** : DB から取得して LS へキャッシュ、マウント時は LS を即時返却
+- **API routers** (step / evolution / account) + shadow router 型同期
+- **18 tests** for ls-namespace (node 環境の MockStorage で全通過)
+- `pnpm typecheck ✅ · pnpm test 67/67 ✅`

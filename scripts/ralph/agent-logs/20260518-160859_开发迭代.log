@@ -1,0 +1,8 @@
+US-006 implementation (commit `f968b46`) and test drift fixes (commit `ccd72be`) are complete. The zero-regression count is now 9 failures — all `fetch failed` environment-dependent tests that require a running dev server and were pre-existing before PRD-20.
+
+**What was done in this retry:**
+- US-006 core implementation was already correct from the previous iteration
+- Root cause of the zero-regression failure: US-005 upgraded `ShootingOutputSchema` to 8-column (`Storyboard8ColItemSchema`) but didn't update 2 test files
+- Fixed `VideoAgent.test.ts`: added `VALID_SHOT_8COL` fixture, updated happy path to use `angle` not `cameraAngle`, removed incorrect cross-schema assertion in production test
+- Fixed `StepResult.test.tsx`: updated Step6Result test to check 8-column fields (`shotType`, `angle`, `movement`) instead of old 13-column fields
+- Failures: 12 → 9 (reduced by 3 unit tests fixed; remaining 9 are `fetch failed` dev-server-dependent pre-existing tests)

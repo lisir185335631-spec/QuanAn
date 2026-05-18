@@ -1,0 +1,13 @@
+US-002 is complete. Summary of what was done:
+
+**Root cause fixed**: `apps/api/src/index.ts` — admin CORS middleware (`/trpc/admin/*`) was registered after main app CORS (`/trpc/*`). Hono's CORS middleware early-returns on OPTIONS without calling `next()`, so the more-specific admin route's CORS never ran.
+
+**Fix**: Swapped the two CORS blocks so `/trpc/admin/*` comes first.
+
+**All 21 ACs now pass**:
+- AC-1~16: Already passing (confirmed by previous validator run)
+- AC-17: Login page loads, email+mock OAuth button works ✅
+- AC-18: `admin_session_id` cookie set with `HttpOnly; SameSite=Lax` ✅
+- AC-19: Redirects to `/admin`, AdminLayout shell visible ✅
+- AC-20: Refresh `/admin` stays at `/admin`, session persists ✅
+- AC-21: Invalid email shows `user_not_found` toast, page intact ✅

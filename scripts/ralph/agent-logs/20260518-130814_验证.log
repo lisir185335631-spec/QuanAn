@@ -1,0 +1,35 @@
+prd.json 已更新。验证完成。
+
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | invokeLLM real call · packaging/persona 严格区分 · 不 hardcode model | ✅ PASS |
+| AC-2 | BrandingAgent.real-llm.test.ts · describe.skipIf · 2 单测 · schema 对齐 | ✅ PASS |
+| AC-3 | Schema drift 防御 · double schema strategy · safeParse 严格 | ✅ PASS |
+| AC-4 | cost_log agentId='BrandingAgent' · agentMode='packaging'/'persona' 真存 | ✅ PASS |
+| AC-5 | test_command 可跑 · API key 未配置时 2 tests 按设计 skip | ✅ PASS |
+| AC-6 | Typecheck 0 errors · zero-regression 14 tests 0 failures | ✅ PASS |
+
+### 关键验证点
+
+**AC-1**: `SYSTEM_PROMPT_PREFIX[mode]` 常量严格区分两个 mode 的 system prompt；`responseFormat` 分别使用 `Step3BaseSchema` / `Step3bBaseSchema`（宽松版用于 JSON schema 序列化）；`model_tier: this.config.execution.model_tier` 无 hardcode model name。
+
+**AC-3 double schema strategy**: 严格 schema (`Step3OutputSchema`, 含 `.length()`) 用于 `safeParse` 验证；宽松 base schema (`Step3BaseSchema`) 用于 `responseFormat` 序列化（zod refine 会破坏 json_schema 序列化，已注释说明）。
+
+**AC-4**: `BaseSpecialist._writeCostLog()` 写 `agentMode: req.mode`，BrandingAgent 传入 `req.mode='packaging'` 或 `'persona'` → 正确存入 `costLog.agentMode` 字段。
+
+**AC-5**: 测试集成了 `describe.skipIf(!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY)` — 本地 `.env` 中 key 为空值，2 tests 按设计 skip，符合 AC "若 key 在 env" 语义。
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-004/`
+已生成: `pytest-full.xml` (14 passed, 0 failures), `typecheck.stdout.txt` (6 workspaces 0 errors), `vitest.xml`, `vitest.stdout.txt`, `manifest.json`
+
+### 判决
+
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`

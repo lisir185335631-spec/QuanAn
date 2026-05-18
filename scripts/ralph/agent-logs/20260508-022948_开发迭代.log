@@ -1,0 +1,12 @@
+US-006 is complete. Here's what was fixed in this iteration:
+
+**Root causes addressed:**
+1. **CORS blocked all tRPC requests** — `trpc-accept: application/jsonl` header sent by tRPC v11's `httpBatchStreamLink` wasn't in the server's `allowHeaders`. Fixed by adding `'trpc-accept'` to `apps/api/src/index.ts`.
+
+2. **`@trpc/server` in browser bundle** — The shadow router was moved from `trpc.ts` (direct `import { initTRPC }`) to `packages/clients/src/router-types.ts`, with `trpc.ts` using `import type` which esbuild strips completely.
+
+3. **E2E mock format mismatch** — tRPC v11's `httpBatchStreamLink` uses a compressed JSONL back-reference format that can't be replicated statically. Changed the auth E2E test to use the real mock OAuth flow (`goto /auth/login → waitForURL 5173`).
+
+4. **Mobile viewport hiding desktop elements** — Added `setViewportSize({ width: 1280, height: 720 })` to tests checking `hidden sm:block/flex` elements.
+
+**Results:** typecheck ✅, 26/26 unit+integration ✅, 12/12 E2E ✅

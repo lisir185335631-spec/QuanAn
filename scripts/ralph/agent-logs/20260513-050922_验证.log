@@ -1,0 +1,44 @@
+---
+
+## 驗證結果：US-022 FAIL
+
+### AC 對照
+
+| AC | 描述 | 結果 |
+|----|------|------|
+| AC-1 | DenseTableColumn/DenseTableProps interface | ✅ PASS |
+| AC-2 | useVirtualizer estimateSize=32 | ✅ PASS |
+| AC-3 | sortable 列頭 asc/desc/null 切換 | ✅ PASS |
+| AC-4 | onRowClick callback | ✅ PASS |
+| AC-5 | loading=true 顯示 5 行 skeleton | ✅ PASS |
+| AC-6 | data 空顯示 "无数据" | ✅ PASS |
+| AC-7 | @tanstack/react-virtual dep + version bump | ✅ PASS |
+| AC-8 | index.ts export 類型 | ✅ PASS |
+| AC-9 | 6 placeholder.tsx 已刪 | ✅ PASS |
+| AC-10 | admin-routes.ts 6 prd:11 + 16 路由 | ✅ PASS |
+| AC-11 | verify-prd-11.sh 新建 + chmod +x | ✅ PASS |
+| AC-12 | verify-prd-11.sh 33 PASS / 0 FAIL | ✅ PASS |
+| AC-13 | 5 list 頁用 DenseTable (NSM=dashboard by design) | ✅ PASS |
+| **AC-14** | **onSort → procedure 重發請求** | **❌ FAIL** |
+| AC-15 | onRowClick → 抽屜打開 (code verified) | ✅ PASS |
+| AC-16 | 6 頁面 0 JS errors (browser verified) | ✅ PASS |
+| AC-17 | pnpm typecheck 0 errors | ✅ PASS |
+| AC-18 | audit-self-test.sh 0 FAIL | ✅ PASS |
+
+### 產物路徑
+```
+scripts/ralph/verify-artifacts/US-022/
+├── manifest.json        (FAIL · exit_code=1)
+├── pytest-full.xml      (1322 unit PASS · 9 integration FAIL pre-existing)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt (0 errors)
+```
+
+### 判決
+**prd.json.passes = false · retryCount = 1**
+
+**唯一 CONFIRMED 失敗**：AC-14 — `grep -rn "onSort" apps/admin/src/pages/` 返回空，所有業務頁面均無 `onSort` prop 傳入 DenseTable，也無 `sortable:true` 欄位定義，無法觸發 procedure 重發請求。
+
+**修復方向**：在 users/accounts/invites 等頁面的 columns 定義加 `sortable: true`，傳入 `onSort={(key, dir) => setSort({key,dir})}` 並將 sort 參數連接到 tRPC procedure query input。
+
+**TD 豁免**：9 integration test 失敗為 pre-existing（US-018 在 API backend 引入 react import 導致服務無法啟動）；lint errors 為 US-015 pre-existing。以上均非 US-022 引入，已登記。

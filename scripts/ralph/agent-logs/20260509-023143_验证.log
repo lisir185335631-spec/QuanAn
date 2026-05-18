@@ -1,0 +1,35 @@
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | MonetizationAgent extends BaseSpecialist · 五层配置完整 · model_tier='reasoning' · timeout_ms=45000 | ✓ |
+| AC-2 | outputSchema: currentAnalysis+ladder[3]+revenueStructure+successCases[2] | ✓ |
+| AC-3 | router stepData.save stepKey='step4b' → monetizationAgent.execute | ✓ |
+| AC-4 | ladder[4]→ zod length(3) 失败 → retry → SchemaValidationError | ✓ |
+| AC-5 | currentRevenue .optional() · 缺失时 userPrompt 注入 '用户未填当前营收' | ✓ |
+| AC-6 | cold start → systemPrompt '[新用户 · 暂无 step 数据]' → userPrompt 注入 '[首次接触变现 · 暂无 IP 定位上下文]' | ✓ |
+| AC-7 | memory.l2_read=['stepData'] · ContextAssembler 注入 step1+step3+step4 | ✓ |
+| AC-8 | 5 tests ≥ 4 · happy/fallback/edge(currentRevenue)/cold start 全覆盖 | ✓ |
+| AC-9 | config model_tier='reasoning' + timeout_ms=45000 (runtime 不可 unit 测) | ✓ |
+| AC-10 | Tests pass: 5/5 unit + 262/262 全量零回归 | ✓ |
+| AC-11 | Typecheck: 6 workspace 全部 clean | ✓ |
+
+### AGENTS.md 红线检查
+
+- REJ-001 (@anthropic-ai/sdk import): MonetizationAgent.ts 无 SDK 直引 ✓（BaseSpecialist.ts 中 `'openai'` 字符串为 pre-existing provider 判断，US-001 已审计通过）
+- REJ-002 (LLM loop): grep 0 命中 ✓
+- REJ-003 (硬编码 model 名): MonetizationAgent.ts 无 claude-*/gpt-* 字符串 ✓
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-006/
+  ├── manifest.json
+  ├── pytest-full.stdout.txt   (262 passed, exit_code=0)
+  ├── pytest.stdout.txt        (5 passed, exit_code=0)
+  └── typecheck.txt            (6 projects, exit_code=0)
+```
+
+### 判决
+`prd.json.passes = true` · retryCount = 0 · notes = ""

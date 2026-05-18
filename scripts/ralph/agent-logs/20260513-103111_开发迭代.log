@@ -1,0 +1,15 @@
+US-005 is complete. Here's what was implemented:
+
+**5 new files** in `apps/admin/src/pages/reviewTrending/`:
+- `index.tsx` — main page with `useSearchParams` URL persistence, pagination, drawer state
+- `OverviewCards.tsx` — 4 stat cards (待审核/已批准/已驳回/命中违禁词)
+- `ReviewTrendingFilters.tsx` — status/platform(5)/autoVerdict/dateRange filters with 300ms debounce
+- `ReviewTrendingTable.tsx` — `DenseTable` with `useVirtualizer`, custom empty text per AC-6, error fallback per AC-7
+- `TrendingReviewDrawer.tsx` — 5-tab drawer (基本/rawContent/扫描结果/审核状态/链路追溯), rawContent >100KB auto-collapsed per AC-8
+
+**Other changes:**
+- `router.tsx`: placeholder → real page
+- `packages/clients/src/admin-router-types.ts`: fixed wrong key `trending→reviewTrending` + added all 6 procedure type shadows
+- Deleted `placeholder/reviewTrending.tsx`
+
+**Verification:** `pnpm typecheck` 0 errors, dev server 200, 4 cards visible, 5 platforms in filter, 0 React errors/key warnings in console.

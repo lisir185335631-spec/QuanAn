@@ -1,0 +1,31 @@
+prd.json 已正确更新。截图已在上次 pass 验证中保存，本次为纯代码补丁验证。
+
+---
+
+## 验证结果: US-011 **PASS**
+
+### AC 对照
+- AC-1: admin-routes.ts 含 /approvals 路由 ✓
+- AC-2: 4 数字 KPI 卡片 ✓
+- AC-3: DenseTable 待审批列表（含全部列）✓
+- AC-4: ApprovalDetailDrawer 内容 + actionPayload JSON 高亮 + 影响范围预估 stub ✓
+- AC-5: 历史决策参考 + 批准/拒绝按钮 + 决策理由 ≥10 字 ✓
+- AC-6: 紧急通道按钮 super_admin only ✓
+- AC-7: first_approved 绿条提示 ✓
+- AC-8: 第一审批人 disabled + tooltip 逻辑 ✓
+- AC-9: 已决策 Tab 切换 ✓
+- AC-10: 后置复核 Tab + EmergencyApproveModal ✓
+- AC-11: approveRequest / rejectRequest / emergencyApprove 三处 console.log 通知 stub ✓ **（retryCount=1 修复已验证 · approvals.ts:323-324）**
+- AC-12: agent-browser E2E 已在 retryCount=0 验证通过 ✓
+- AC-13: pnpm audit:redlines-admin 0 命中 · ALL PASS ✓
+- AC-14/15: 1706 tests / 0 failures · typecheck 0 errors ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-011/`
+- vitest-full.xml (1706 tests / 0 failures / 0 errors)
+- vitest-full.stdout.txt
+- typecheck.stdout.txt (0 errors)
+- manifest.json (verdict=PASS, zero_regression=PASS)
+
+### 判决
+`prd.json.passes = true`, `notes = ""`, `retryCount = 0`

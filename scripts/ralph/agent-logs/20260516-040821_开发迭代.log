@@ -1,0 +1,14 @@
+US-006 完成。以下是实现摘要：
+
+**后端**
+- `prisma/schema.prisma` + `migration`: 新建 `TrendingFavorite` 表 (`trending_favorites`)
+- `trending.ts` 路由: 新增 `list` / `listWithFavorites` / `favorite` / `detail` / `kpiStats` 5 个 procedures，保留旧 `fetch/listByIndustry/listByStyle` 向后兼容
+- `router-types.ts`: 新增 `TrendingListItem` / `TrendingDetailItem` / `TrendingKpiStats` 类型 + shadow procedures
+
+**前端**
+- `Trending.tsx`: 256 行完整页面 — 4 KPI 卡片 + 多维筛选 + DenseTable + 分页 + 详情 Drawer + URL state (7 字段)
+- `TrendingFilters.tsx`: 6 平台 multi-select + IndustryDropdown + 时间范围/排序/搜索
+- `TrendingTable.tsx`: react-virtualized `AutoSizer + List` 虚拟列表，每行 4 个操作按钮
+- `TrendingDetailDrawer.tsx`: 右侧 Sheet，原文链接 + 完整内容 + 3 操作按钮
+
+**测试**: 29 tests pass (全套 2164/2164 ✓) · typecheck 0 errors ✓

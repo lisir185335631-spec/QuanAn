@@ -1,0 +1,10 @@
+US-004 完成。所有验收标准通过：
+
+- **AC-1** ✅ `<Dialog open={customModalOpen}>` + `<DialogTrigger asChild><Button variant="link">` — click 触发，无 hover
+- **AC-2** ✅ `DialogContent glass-card` + `DialogTitle font-display` + `Input maxLength=20` + `STEP1_CUSTOM_MODAL_PLACEHOLDER`
+- **AC-3** ✅ 取消(variant='outline') + 确认使用(disabled if !trim · gradient) — 全部用常量
+- **AC-4** ✅ `handleCustomConfirm` 三联动 + 状态卡显示 `✨ 已选择:{customIndustry}(自定义)`
+- **AC-5** ✅ 4 个字面量全在 `industries.ts` 常量中，Step1.tsx 通过 import 间接命中
+- **AC-6** ✅ 浏览器实测：点击触发 Dialog 弹出
+- **AC-7** ✅ 确认后 Modal 关闭、状态卡正确显示、CTA 可点击
+- **AC-8** ✅ TypeScript typecheck 零错误

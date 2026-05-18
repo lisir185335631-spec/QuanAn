@@ -1,0 +1,18 @@
+US-005 implementation complete. Summary of what was delivered:
+
+**新建文件:**
+- `apps/api/src/trpc/routers/costLog.ts` — `logFeedback` mutation 写 audit_log 追踪 traceId (P0 trace, PRD-7 留 evolution)
+- `apps/web/src/components/StepProgress.tsx` — 9 step 进度条: 完成金/当前蓝/待办灰 + loading skeleton
+- `apps/web/src/components/FeedbackButton.tsx` — 调 `trpc.costLog.logFeedback` 的反馈按钮占位
+- `apps/web/src/layouts/StepLayout.tsx` — 嵌套路由 wrapper, 通过 `useLocation` 自动为全 9 step 页注入 FeedbackButton
+- `apps/web/src/components/StepProgress.test.tsx` — 6 unit tests (StepProgress)
+- `tests/unit/api/ip-progress.test.ts` — 6 unit tests (IPProgressService)
+
+**修改文件:**
+- `IPProgressService.ts` — 完整 DB 实施, 从 stub 改为真实 `prisma.stepData.findMany({ where: { accountId } })`
+- `apps/api/src/trpc/routers/_app.ts` — 注册 costLogRouter
+- `packages/clients/src/router-types.ts` — 加 costLog shadow router
+- `apps/web/src/pages/IpPlan.tsx` — 完整实施 (stepData.progress + skeleton + FeedbackButton)
+- `apps/web/src/router.tsx` — step 路由改嵌套结构 (StepLayout 包装)
+
+**结果:** pnpm typecheck ✅ · 192/192 + 30/30 tests ✅

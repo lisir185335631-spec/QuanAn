@@ -1,0 +1,41 @@
+## 验证结果：US-001 — FAIL（第2次）
+
+### AC 对照
+
+| AC | 状态 | 备注 |
+|----|------|------|
+| AC-1 | ✅ | wght@400 添加以支持AC-6的fonts.check |
+| AC-2 | ✅ | 5个fontFamily已定义 |
+| AC-3 | ✅ | tokens.css为项目原结构（不存在）· globals.css未变 |
+| AC-4 | ✅ | aiipznt-motion.css 3个utility内容正确 |
+| AC-5 | ✅ | globals.css → aiipznt-motion.css 顺序正确 |
+| AC-6 | ✅ | --primary=43 87% 63%（未变）· fonts.check('1em Orbitron')=true |
+| AC-7 | ✅ | 截图保存至 screenshots/prd16-us001-step1-baseline.png |
+| AC-8 | ❌ | pnpm test 仍1个失败 |
+| AC-9 | ✅ | 0命中 |
+| AC-10 | ✅ | gold-glow-pulse为预存动画 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+已生成: manifest.json (verdict=FAIL), vitest-r2.stdout.txt (1 failed/50 passed)
+typecheck.stdout.txt (PASS)
+```
+
+### 判决
+
+```
+prd.json.passes = false
+retryCount = 2
+```
+
+**唯一剩余失败** — `apps/web/src/test/pages.test.tsx` Trending test：
+
+```
+## CONFIRMED
+- TrendingDetailDrawer.tsx:34 调用 trpc.trending.detail.useQuery
+- pages.test.tsx trending mock 缺 detail 键 → undefined.useQuery 报错
+- 复现: cd apps/web && pnpm test
+- 修复: 在 trending mock 加 detail: { useQuery: () => ({ data: null, isLoading: false }) }
+```

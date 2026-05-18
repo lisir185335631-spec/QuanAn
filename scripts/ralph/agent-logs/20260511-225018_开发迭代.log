@@ -1,0 +1,21 @@
+US-004 implementation is complete. Here's a summary of what was built:
+
+**API (`apps/api/src/trpc/routers/knowledge.ts`)**: Added 3 `publicProcedure` endpoints:
+- `knowledge.list` — prisma query returning `KnowledgeChunkContent[]` (no embedding field)
+- `knowledge.search` — mutation calling `ragRetrieveWorker.retrieve` with `accountId=0` for public rate-limit bucket
+- `knowledge.getById` — single item lookup
+
+**Frontend (`apps/web/src/pages/tools/Knowledge.tsx`)**: Full page with:
+- h1 '知识库' + shadcn Tabs (案例/公式/元素) with `data-testid="knowledge-tabs"`
+- Search input with 300ms debounce, triggers `knowledge.search` on ≥2 chars
+- CaseCard (scriptType + industry badges + content[:100] + expand toggle)
+- FormulaCard (category badge + full content)
+- ElementCard (psychologyTag badge + full content)
+- Empty state with '暂无匹配结果 · 试试矛盾冲突 / AIDA / 稀缺性等关键词'
+- Status bar with `aria-live="polite"`
+
+**Types (`packages/clients/src/router-types.ts`)**: Added `KnowledgeChunkContent` shadow type and updated knowledge shadow router with list/search/getById.
+
+**Tests (`tests/unit/web/pages/Knowledge.test.tsx`)**: 23 source-inspection tests covering all AC dimensions.
+
+**Quality**: `pnpm typecheck 0` · `pnpm lint 0` · 907 tests pass · 2 browser screenshots saved.

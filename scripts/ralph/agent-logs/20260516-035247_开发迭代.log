@@ -1,0 +1,8 @@
+Fix complete. The change was minimal — 3 lines removed (the `getDraftKey` function + `LS_PREFIX` import), replaced with `getToolLsKey` calls inline:
+
+- `import { LS_PREFIX }` → `import { getToolLsKey }`
+- Removed `getDraftKey()` function entirely
+- `localStorage.getItem(getDraftKey(userId, accountId))` → `localStorage.getItem(getToolLsKey(accountId, 'private_domain', \`draft_${userId}\`))`
+- `localStorage.setItem(getDraftKey(userId, accountId), ...)` → `localStorage.setItem(getToolLsKey(accountId, 'private_domain', \`draft_${userId}\`), ...)`
+
+Results: R-5 ✅ · typecheck 0 errors · 40/40 tests pass.

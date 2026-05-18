@@ -1,0 +1,15 @@
+US-021 完成。所有质量门禁通过：
+
+- **pnpm typecheck** → 0 errors (全部 6 packages)
+- **vitest** → 1318 tests pass (9 pre-existing integration test failures 与本次改动无关)
+- **pnpm audit:redlines-admin** → ALL PASS (5 LD-A + 6 R-A)
+
+**实现内容：**
+- `pages/invites/index.tsx` — 主页面（4数字卡片 / 操作栏[创建+批量导入+导出] / DenseTable列表+分页+筛选 / campaign Tab）
+- `CreateInviteDialog.tsx` — 单条创建模态（code可选 / campaign dropdown / expiresAt / quotaLimit）
+- `BatchImportDialog.tsx` — CSV批量导入（进度条 + 第N行错跳过显示）
+- `CampaignFunnelChart.tsx` — Recharts FunnelChart（data含fill，SHIELD合规）
+- `InviteDetailDrawer.tsx` — 抽屉（激活历史 + 9步进度）
+- `router.tsx` — 替换 InvitesPlaceholder → InvitesPage
+- `placeholder/invites.tsx` — git rm
+- `admin-router-types.ts` — 补充 inviteCodes 6 procedure shadow types

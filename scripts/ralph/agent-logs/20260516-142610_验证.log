@@ -1,0 +1,3 @@
+**STATUS: DONE**
+
+US-004 全部 10 条 AC 验证通过。`prd.json` 已更新 `passes=true, retryCount=0, notes=""`。产物落盘至 `scripts/ralph/verify-artifacts/US-004/`，截图保存至 `screenshots/prd16-us004-home-matrix.png`。编排器可继续下一 story (US-005)。

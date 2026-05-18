@@ -1,0 +1,36 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `~/.claude/scripts/ralph/ralph.py:119` timeout 默认 20 | ✅ `def _check_claude_health(timeout: int = 20)` |
+| AC-2 | docstring 含 'RCA-004 (PRD-7 US-005 · 2026-05-10 · 全局 sync)' | ✅ line 120 确认 |
+| AC-3 | sync-to-project.sh 加 `_check_ralph_version()` 函数 (md5sum) | ✅ 已实现 (line 52-69) |
+| AC-4 | `--force` flag → 自动 cp + 备份旧版 | ✅ 已实现 (line 79-88) |
+| AC-5 | 不带 `--force` 仅 prompt warning | ✅ 已实现 (line 90-97) |
+| AC-6 | RCA-004.md status=resolved + §5.2 完成标记 | ✅ "✅ resolved" + "PRD-7 US-005 落地 · 2026-05-11" |
+| AC-7 | 实测 sync-to-project.sh exit 0 不报错 | ✅ exit 0, "already in sync" |
+| AC-8 | grep timeout=20 命中 1 / grep timeout=5 命中 0 | ✅ 两条 grep 验证通过 |
+| AC-9 | 项目副本 scripts/ralph/ralph.py timeout=20 | ✅ line 119 确认 |
+| AC-10 (Typecheck) | py_compile 0 error | ✅ exit 0 |
+
+### X-6 零回归
+
+```
+pnpm test (vitest run)
+75 test files passed / 727 tests passed / 0 failed
+```
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+  manifest.json     (exit_code=0, zero_regression=PASS, verdict=PASS)
+  pytest-full.stdout.txt  (vitest 75/727 全过)
+  sync-run.stdout.txt     (sync-to-project.sh exit 0 输出)
+```
+
+### 判决
+
+`prd.json.passes = true` — US-005 所有 10 条 AC 全部通过，零回归通过，产物已落盘。

@@ -1,0 +1,49 @@
+---
+
+## 验证结果: US-001 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | seedIndustries() · 56 行业 · Industry model | ✓ |
+| AC-2 | seedMockIpAccounts() · 5 mock 账号 · 4路径+demo | ✓ |
+| AC-3 | DEV_OAUTH_MOCK env flag · auth.ts mock user | ✓ |
+| AC-4 | ipAccounts.list brownfield · dev 模式自动绑 mock | ✓ |
+| AC-5 | AccountSwitcher · 5 账号列表 · switchTo 整页刷新 | ✓ |
+| AC-6 | IndustryDropdown · 56 行业按 category 分组 | ✓ |
+| AC-7 | pnpm db:seed 输出格式 + 幂等 | ✓ |
+| AC-8 | seed.test.ts 7 tests ≥4 (全通过) | ✓ |
+| AC-9 | browser: 5账号✓ · 切换✓ · 56行业✓ · **localStorage.aiip_active_account_id** | ❌ |
+| AC-10 | X-6零回归 2017 pass/0 fail/6 skip · typecheck 6 ws PASS | ✓ |
+
+### 失败 CONFIRMED
+
+**AC-9 局部失败: `localStorage.aiip_active_account_id` 从未写入**
+
+- 复现命令: `localStorage.getItem('aiip_active_account_id')` → `null`
+- 场景: 页面加载后 null · 切换账号(OPC 经营者老王) reload 后仍 null
+- 根因: `grep -rn "aiip_active_account_id" apps/web/src/` → **0 results**
+- 实现走 server-side: `trpc.ipAccounts.switchActive` 把 activeAccountId 存服务端 · `useActiveAccount` onSuccess 只做 `clearLsNamespace + reload` · 无 localStorage write
+
+### 建议修复方向 (仅基于 CONFIRMED)
+
+**方向 A (推荐 · 1行)** — `apps/web/src/hooks/useActiveAccount.ts` onSuccess:
+```ts
+onSuccess() {
+  localStorage.setItem('aiip_active_account_id', String(newAccountId));
+  if (currentAccountId !== null) { clearLsNamespace(localStorage, currentAccountId); }
+  window.location.reload();
+}
+```
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-001/`
+- `pytest-full.xml` (2017 passed / 0 failed)
+- `typecheck.stdout.txt` (6 workspaces PASS)
+- `validator-us-001-pass-2-accounts.png` (5账号截图)
+- `validator-us-001-pass-3-industries.png` (56行业分类截图)
+- `validator-us-001-pass-4-after-switch.png` (切换后截图)
+
+### 判决
+`prd.json.passes = false` · `retryCount = 3` · 9/10 AC 通过 · 单点修复: `useActiveAccount.ts` onSuccess 加 1 行 localStorage write

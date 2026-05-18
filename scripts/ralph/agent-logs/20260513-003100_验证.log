@@ -1,0 +1,40 @@
+prd.json updated. Here is the final validation summary:
+
+---
+
+## 验证结果: US-012 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | costRouter 新建, 5 procedure 全走 adminProcedure (extends publicAdminProcedure+6 gates), money-critical 注释 | ✓ |
+| AC-2 | aggregate zod input ✓ · $transaction+SET LOCAL via adminRLSMiddleware (ctx.adminPrisma 是 tx-scoped client) ✓ · Prisma.raw 白名单 + template literal ✓ · 返回正确 shape ✓ | ✓ |
+| AC-3 | top10 groupBy userId + accountId, _sum costUsd, orderBy desc, take:10, 两组 | ✓ |
+| AC-4 | specialistBreakdown groupBy agentId, 返 {specialistId,totalCost,callCount,avgCostPerCall} | ✓ |
+| AC-5 | alerts 24h窗口, $5 阈值 (COST_ALERT_THRESHOLD), {userId,email,dailySpent,threshold,severity} | ✓ |
+| AC-6 | exportCsv chunk=1000 + 防OOM + 正确 CSV header | ✓ |
+| AC-7 | startDate > endDate → BAD_REQUEST (测试验证) | ✓ |
+| AC-8 | >365天 → 'date range too large' (测试验证) | ✓ |
+| AC-9 | >500k行 → 'export rows > 500000' (测试验证) | ✓ |
+| AC-10 | 空数据 → {aggregations:[], summary:{totalCost:'0.00'}} (测试验证) | ✓ |
+| AC-11 | Decimal全程: new Prisma.Decimal(), .toString() 返前端, 无 .toNumber() | ✓ |
+| AC-12 | audit-redlines-admin.sh ALL PASS · money-critical 注释 ≥5 (找到 5 inline + 1 header) | ✓ |
+| AC-13 | audit-admin-rls.ts Checked 26 procedures ≥21 | ✓ |
+| AC-14 | 34 单元测试 ≥25, 覆盖 aggregate 4dim×3groupBy/top10/specialistBreakdown/alerts 阈值/exportCsv stream | ✓ |
+| AC-15 | pnpm test 1202 passed 0 error · pnpm typecheck 0 errors (全 6 workspace) | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+├── pytest-full.xml           (1206 tests, failures=0, errors=0)
+├── pytest-full.stdout.txt    (vitest run 摘要)
+├── typecheck.stdout.txt      (6 workspace 全 pass)
+├── audit-redlines-admin.stdout.txt (ALL PASS · 5 LD-A + 6 R-A)
+└── manifest.json             (verdict=PASS, zero_regression=PASS)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · **US-012 全部 15 条 AC 通过**

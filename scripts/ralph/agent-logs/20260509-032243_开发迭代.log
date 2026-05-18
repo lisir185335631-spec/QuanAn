@@ -1,0 +1,8 @@
+US-007 fix complete. Summary of what was changed:
+
+- **`types.ts`**: Added `meta?: { model: string }` to `LLMStreamChunk` interface
+- **`llm-gateway/index.ts`**: Added `meta?: { model: string }` to `StreamChunk` interface; `stream()` now yields `{ type: 'meta', meta: { model: MODEL_BY_TIER[tier].primary } }` as first chunk
+- **`TopicAgent.ts`**: `_consumeStream` now captures `model` from meta chunks and returns it; `invokeLLM` uses `stream.model || ''` (empty string fallback) instead of hardcoded `'claude-sonnet-4-6'`
+- **`TopicAgent.test.ts`**: Mock gateways now yield a meta chunk; added dedicated test verifying `res.modelUsed` equals the model name from the meta chunk
+
+Verification passed: grep 0 hits for hardcoded model names in `specialists/`, typecheck 0 errors, 273/273 tests.

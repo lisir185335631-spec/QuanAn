@@ -1,0 +1,32 @@
+---
+
+## 验证结果：US-009 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结论 |
+|----|------|------|
+| AC-1 | router.tsx 加 `{ path: 'guide', element: <Guide /> }` + import | ✓ |
+| AC-2 | Guide.tsx 默认导出 + 正确 main className + 6 sections + useState | ✓ |
+| AC-3 | guide.ts 13 模块（名称严格对齐）+ 5 FAQ（问题严格对齐）| ✓ |
+| AC-4 | H1 className 完全匹配规格 | ✓ |
+| AC-5 | SearchBox input className + max-w-md mx-auto | ✓ |
+| AC-6 | grid-cols-3 + filter 逻辑 + ModuleCard click expand + ol steps | ✓ |
+| AC-7 | FAQItem +/- toggle + max-w-3xl mx-auto | ✓ |
+| AC-8 | 浏览器实测：USER GUIDE 渲染 · 模块展开 · FAQ accordion · search 'AI' → 4 匹配模块 | ✓ |
+| AC-9 | 4 张截图已保存（full/module-expand/faq-expand/search-filter）| ✓ |
+| AC-10 | typecheck exit 0 · vitest 51 tests passed | ✓ |
+| AC-11 | GUIDE_MODULES 在 Guide.tsx 出现 3 次（import + filter + render ≥2）| ✓ |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-009/`  
+已生成：`pytest-full.stdout.txt`（51 tests passed）、`typecheck.stdout.txt`（exit 0）、`manifest.json`
+
+### 截图
+
+`screenshots/prd16-us009-guide-{full,module-expand,faq-expand,search-filter}.png` 4 张已保存
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

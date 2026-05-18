@@ -1,0 +1,43 @@
+---
+
+## 验证结果: US-009 PASS
+
+### AC 对照
+
+| # | AC | 状态 | 证据 |
+|---|---|:---:|---|
+| 1 | IpAccountAdminNote schema + 2 indexes | ✓ | schema.prisma:917-928 |
+| 2 | IpAccountAnomalyFlag schema + 3 indexes | ✓ | schema.prisma:931-946 |
+| 3 | 2 表 + 5 indexes 建成 | ✓ | psql 直查 7 rows (5 非 PK) |
+| 4 | manual_admin_rls.sql + psql 确认 RLS OFF | ✓ | rowsecurity=f 双表 |
+| 5 | audit-admin-rls-tables.sh 含两张新表 | ✓ | sh:22-23 |
+| 6 | detectAccountAnomalies + $transaction + SET LOCAL + 4 types | ✓ | service.ts:10-176 |
+| 7 | inactive_no_feedback type | ✓ | service.ts:30-61 |
+| 8 | evolution_stalled type | ✓ | service.ts:66-95 |
+| 9 | frequent_account_switch type | ✓ | service.ts:100-126 |
+| 10 | cost_spike type | ✓ | service.ts:131-172 |
+| 11 | BullMQ cron '0 5 * * *' tz Asia/Shanghai jobId 'anomaly-detection-recurring' | ✓ | job.ts:40-44 |
+| 12 | 同日 dedupe (todayStart + resolvedAt: null) | ✓ | service.ts 所有 findFirst |
+| 13 | 已 resolved 不再 detect (resolvedAt: null) | ✓ | service.ts 所有 findFirst |
+| 14 | ≥ 8 单元测试，4 type + dedupe | ✓ | 10/10 PASS |
+| 15 | pnpm test 0 error + typecheck 0 error + audit-rls 0 命中 | ✓ | 全通过；3 pre-existing TD 豁免 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+  manifest.json        (verdict=PASS, zero_regression=PASS)
+  pytest.xml           (US-009 专属 10 tests passed)
+  pytest.stdout.txt    (10/10 PASS)
+  pytest-full.xml      (全量 1122 passed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt (0 errors)
+```
+
+### TD 豁免
+
+3 个 pre-existing integration test failures (`evolution-threshold`, `ip-progress-integration`, `rls-isolation`) — git stash 确认在 US-009 代码前完全相同，非本 story 引入。已登记为 pre-existing TD。
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`

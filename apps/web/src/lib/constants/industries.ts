@@ -129,3 +129,7 @@ export const INDUSTRY_CATEGORY_EMOJI: Record<IndustryCategory, string> = {
   '专业服务': '💼',
   '产业制造': '🏭',
 };
+
+// PRD-20 TD-80 fix: Step1Result 结果区 heading 常量
+export const STEP1_RESULT_H2 = '行业洞察报告' as const;
+export const STEP1_RESULT_H3_3 = ['市场分析', '竞争程度', '定位建议'] as const;

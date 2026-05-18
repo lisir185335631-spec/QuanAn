@@ -1,0 +1,31 @@
+---
+
+## 验证结果: US-001 PASS
+
+### AC 对照
+
+- AC-1: KnowledgeChunk 表 + pgvector 字段 + 迁移已应用 ✓ (`_prisma_migrations` confirmed at 19:53:56)
+- AC-2: HNSW migration `20260511195403_add_knowledge_chunk_hnsw` 已应用 ✓ (applied at 20:08:23, index `knowledge_chunk_embedding_hnsw` confirmed in DB via `\d knowledge_chunk`)
+- AC-3: `packages/schemas/src/rag/index.ts` — KnowledgeChunkType/KnowledgeChunkContent/RagRetrieveParams/caseMetadataSchema/formulaMetadataSchema/elementMetadataSchema 全部 ✓
+- AC-4: `openai-embedding.ts` D-038 模式, text-embedding-3-small, 1536-dim, TRPCError 错误路径 ✓
+- AC-5: cost_log embedding_call — eventType/provider/modelUsed/costUsd/promptTokens/audioSeconds=null/charactersIn 全 ✓
+- AC-6: `ragRetrieveWorker.retrieve()` — EmbeddingWorker + `$queryRawUnsafe` pgvector `<=>` top-K + KnowledgeChunkContent[] ✓
+- AC-7: rate limit wired at line 38 in `embed()`, INCR+expire(86400), 50/100/101 boundary unit tests 4/4 pass ✓
+- AC-8: `grep -r 'OPENAI_API_KEY' apps/web` → 0 命中 ✓
+- AC-9: embedding.test.ts 10 tests (5 happy/error/cost + 4 rate-limit boundary + 1 key format) all pass ✓
+- AC-10: rag-retrieve.test.ts 5 tests all pass ✓
+- AC-11: typecheck 6ws 0 errors + lint 0 warnings + 875 tests pass ✓
+- Typecheck passes: ✓
+- Tests pass: ✓
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-001/`
+- `pytest-full.xml` (877 tests: 875 passed, 2 skipped, **0 failures**)
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt` (6 workspaces, 0 errors)
+- `manifest.json` (zero_regression=PASS, verdict=PASS)
+
+### 判决
+
+`prd.json.passes = true`, `retryCount = 0`, `notes = ""`

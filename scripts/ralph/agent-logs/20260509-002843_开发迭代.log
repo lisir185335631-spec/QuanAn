@@ -1,0 +1,8 @@
+US-002 の実装が完了しました。
+
+**実装概要:**
+- `services/context-assembler/ContextAssembler.ts` — 4路並行 fetch (`Promise.allSettled` + 5s timeout) · L2 実prismaクエリ · L4/L5 降格 · §6.4 接口契約完全対応
+- `workers/methodology-query/index.ts` — `MethodologyQueryWorker`(in-memory 定数クエリ)
+- `templates/` — 7 Specialist のペルソナ+メソドロジーテンプレート
+- `tests/unit/services/context-assembler.test.ts` — 16テスト(全AC網羅: 4路fetch/timeout/cold-start/R-001/性能/accountId隔離)
+- **233/233 tests pass** · typecheck ✅

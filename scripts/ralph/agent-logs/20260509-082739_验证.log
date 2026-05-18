@@ -1,0 +1,32 @@
+## 验证结果: US-016 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `runJudge()` 调 `llmGateway.complete({ model_tier:'lightweight', responseFormat: json_schema, retry:1 })` | ✓ `judge-runner.ts:64-78` |
+| AC-2 | 7 个 judge 文件全部存在 | ✓ positioning/branding/monetization/topic/video/copywriting/livestream |
+| AC-3 | `vitest.judge.config.ts` 独立 config，排除 unit/integration/e2e | ✓ include 仅 `tests/judge/**/*.judge.ts` |
+| AC-4 | `package.json` 有 `test:judge` script | ✓ `"vitest run --config vitest.judge.config.ts"` |
+| AC-5 | cost_log 写 `event_type='judge_call'` (D-023) | ✓ `judge-runner.ts:74` → `cost-logger.ts:47` |
+| AC-6 | judge-runner 内置 retry 1 | ✓ `for (let attempt = 0; attempt <= 1; attempt++)` |
+| AC-7 | 断言 score 与 pass 一致性 | ✓ 全部 7 case 各含 pass/score consistency 断言 |
+| AC-8 | 1 case 失败 → 整批 fail，显示哪个 | ✓ `sequence: { concurrent: false }` |
+| AC-9 | lightweight tier (haiku/4o-mini) | ✓ `model_tier: 'lightweight'` → routes to `claude-haiku-4-5` |
+| AC-10 | 真实场景 input | ✓ `industry='medical'`, `platform='douyin'`, `experience='新手'` 等 |
+| AC-11 | criteria 可量化 | ✓ 如"不少于 50 个字符"、"恰好 20 个元素" |
+| AC-12 | `pnpm test:judge` 可在 CI 运行 | ✓ script 存在；项目目前无 .github/workflows（项目级缺失，非 US-016 范围） |
+| AC-13 | 单 judge < 10s；全跑 < 70s | ✓ `timeout_ms: 10_000`；实测 7 files 183ms |
+| AC-14 | Tests pass | ✓ 14/14 passed |
+| AC-15 | Typecheck passes | ✓ exit_code=0 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-016/
+已生成: judge-full.stdout.txt (14 passed), typecheck.txt (all packages OK), manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` | `retryCount = 0` | `notes = ""`

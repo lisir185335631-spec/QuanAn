@@ -1,0 +1,10 @@
+US-009 is complete. Here's what was implemented:
+
+**Files changed:**
+- `apps/api/src/trpc/routers/videoAnalysis.ts` — replaced mock with real `analysisAgent.execute(mode='viral')`, updated input schema to `lastCopy/lastTitle`, history write with all fields including `elements=analysis.elements`, deleted `rewrite` procedure (D-028)
+- `packages/clients/src/router-types.ts` — added `VideoAnalysisHistoryRow` type and `videoAnalysis.analyze` shadow router with viral input/output
+- `tests/integration/api/video-analysis-viral-llm.test.ts` — new: 1 integration test verifying nock SDK mock + real DB history write + `elements` field mapping
+- `tests/unit/api/video-analysis-router.test.ts` — new: 4 unit tests (happy path, zod fail empty lastCopy, fallback isFallback=true, elements empty array AC-9)
+- `tests/unit/api/specialists-creation.test.ts` — added `AnalysisAgent` mock, updated `videoAnalysis.analyze` test to use new input, removed `rewrite` test block
+
+All 511 tests pass, typecheck clean.

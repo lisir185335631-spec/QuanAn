@@ -1,0 +1,34 @@
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1 | ✓ | `TopicAgent extends BaseSpecialist`; 单 mode; `outputSchema=z.discriminatedUnion('category',[...])` 5 路; 每路 `topics.length(20)` |
+| AC-2 | ✓ | 5 category 各含 `z.object({category:z.literal(...), topics:z.array(...).length(20)})`; `TopicItemSchema` 含全部 5 字段 |
+| AC-3 | ✓ | `_consumeStream` 内 `for await` 循环; 累积 `chunk.delta`; `chunk.type==='done'` 捕获 tokens; 最后 `JSON.parse(accumulated)` |
+| AC-4 | ✓ | `tools=['llm.stream']`, `streaming=true`, `timeout_ms=60000`, `model_tier='reasoning'` (`TopicAgent.ts:137-143`) |
+| AC-5 | ✓ | `hotElements` 23 项(自检允许 22-23); `scriptTypes` 恰好 20 项 |
+| AC-6 | ✓ | `knowledge.rag=['knowledge_cases','trending']` |
+| AC-7 | ✓ | `memory.l2_read=['stepData']` |
+| AC-8 | ✓ | `stepData.saveStream` subscription (`stepData.ts:191-250`); 立即 yield `{type:'started'}`; 调 `topicAgent.execute()`; yield `{type:'done',result}` |
+| AC-9 | ✓ | `z.enum(TOPIC_CATEGORIES)` 拒绝非法 category |
+| AC-10 | ✓ | system prompt 强调"必须正好 20 条"; `length(20)` 失败 → BaseSpecialist retry |
+| AC-11 | ✓ | `viralPotential:z.enum(['low','medium','high'])` 拒绝非法值 |
+| AC-12 | ✓ | `TopicAgent.ts:190-216`: JSON.parse 失败 → catch → 内部 retry stream → 仍失败 → return `isFallback:true`(fallback) |
+| AC-13 | ✓ | 10 tests (≥7): 5 category happy path + 断流 edge + length=19 edge + config + AC-9 + viralPotential |
+| AC-14 | ✓ | `saveStream` 立即 yield `started` → 首 chunk < 3s; `timeout_ms=60000` 确保 < 60s |
+| AC-15 | ✓ | 10/10 story tests pass; 272/272 全量回归通过 |
+| AC-16 | ✓ | `npx tsc --noEmit` exit code 0 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-007/`
+- `pytest.stdout.txt` — 10 passed
+- `pytest-full.stdout.txt` — 272 passed, 0 failed
+- `typecheck.txt` — 0 errors
+- `manifest.json` — verdict: PASS
+
+### 判决
+`prd.json.passes = true`, `notes = ""`, `retryCount = 0`
+
+**说明**: 前次 FAIL (AC-12) 已由开发者修复 — `invokeLLM` 现在内部捕获 JSON.parse 错误并 retry stream 一次，若仍失败返回 `isFallback:true` fallback 结果，完全符合 AC-12 规格。

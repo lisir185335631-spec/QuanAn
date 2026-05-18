@@ -1,0 +1,1 @@
+US-007 완료. `apps/web/src/lib/constants/step3b.ts` 생성(STEP3B_TEXTAREAS_3 3항목 / STEP3B_OUTPUT_H3_5 5항목 / 전체 상수)과 테스트 파일(5/5 통과) 커밋됨. typecheck 에러 없음, 11개 grep literal 전부 명중.

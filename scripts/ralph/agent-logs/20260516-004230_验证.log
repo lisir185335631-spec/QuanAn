@@ -1,0 +1,34 @@
+## 验证结果: US-002 **FAIL**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | Copywriting.tsx 252 行(>200) · 2-column 布局 | ✓ |
+| AC-2 | topic/platform(6)/scriptType(20)/elements(grouped)/additionalContext 五字段 | ✓ |
+| AC-3 | trpc.copywriting.freeGenerate.useMutation() (D-026 规范) | ✓ |
+| **AC-4** | **完成后三按钮(复制全文/另存为模板/保存到历史)** | **✗ FAIL** |
+| AC-5 | trpc.history.list.useQuery({agentId:'CopywritingAgent'}) | ✓ |
+| AC-6 | URL state useSearchParams · ?topic/platform/scriptType 实时更新 | ✓ |
+| AC-7 | localStorage draft copywriting_draft_${userId}_${accountId} · debounce 1s | ✓ |
+| AC-8 | SSE meta model 名 `fallback` 显示在 streamdown-model | ✓ |
+| AC-9 | lazy StreamdownPreview + Suspense | ✓ |
+| AC-10 | 29 unit tests PASS · browser 打开页面正常 | ✓ |
+| AC-11 | pnpm vitest 2052 passed · typecheck 0 errors | ✓ |
+
+### 失败根因 (CONFIRMED)
+
+**`Copywriting.tsx:124`** 的 `setIsStreaming(true)` 在 `onSuccess` 后触发动画，但从无回调路径重置为 `false`。`CopywritingPreview.tsx:50` 的 `showActions = !isStreaming && animComplete && content` 永为 `false`，三按钮永不渲染。
+
+**修复方向**：`CopywritingPreview` 增加 `onAnimComplete` prop，父组件 `Copywriting.tsx` 传入 `() => setIsStreaming(false)`。
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+  manifest.json        → verdict=FAIL, failing_ac=AC-4
+  pytest-full.xml      → 2052 tests, 0 failures
+  typecheck.stdout.txt → 0 errors
+  validator-us-002-fail-1.png → 生成后三按钮缺失截图
+```
+
+**判决**: `prd.json.passes = false`, `retryCount = 1`

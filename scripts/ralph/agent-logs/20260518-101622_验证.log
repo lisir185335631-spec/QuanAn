@@ -1,0 +1,30 @@
+验证完成。以下是本次验证结果：
+
+---
+
+## 验证结果: US-008 [FAIL - 第3次]
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|---|---|
+| AC-1 文件 + describe + 4 tests | ✓ PASS | 4 个 test 均存在于 spec |
+| AC-2 test (a) LS↔DB 双写 | ✓ PASS | 清洁状态提交 '美食' → DB row + LS 双写 7.4s |
+| AC-3 test (b) acc 切换数据隔离 | ✗ FAIL | `lsA = null` at line 193 |
+| AC-4 test (c) 9 step 完整流程 | ✗ FAIL | step4 `h3.filter('1. 每日任务表')` 30s 超时 |
+| AC-5 test (d) zero-regression | ✗ FAIL | prd-18 3/6 FAIL |
+| AC-6 fallback path | △ 隐式 | test (a) 用 fallback 跑通，PG running |
+| AC-7 Typecheck | ✓ PASS | tsc 0 error all packages |
+
+### 3 个 CONFIRMED 根因
+
+1. **test (b) line 193** — `accAId` 从 `items.nth(0)` 推断，不一定等于 `activeAccountId`。LS 按实际 active account 写，用错 ID 读 → null。**修复**: 用 `getActiveAccountId(page)` 取 accAId
+
+2. **test (c) step4 + prd-18 test1** — `PositioningAgent` execution mode fallback 用 `### 行动步骤` 结构，不含 `### 1. 每日任务表`。无 LLM key 时走 fallback，ReactMarkdown 渲染结果不包含目标 h3。**修复**: fallback markdown 加 `### 1. 每日任务表 / ### 2. 每周里程碑 / ### 3. 阶段 KPI`
+
+3. **prd-18 test3/test5** — `TopicAgent` SSE 第2个 tab 在 15s 内未出现；`CopywritingAgent` step7 fallback 无 debate 结构 h4。**修复**: tab timeout 增至 30s；step7 fallback 加 `#### 话题抛出 / #### 正方 / #### 反方 / #### 我的立场`
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/` — manifest.json (exit_code=1, zero_regression=PASS), typecheck.stdout.txt, vitest-full.stdout.txt, prd19-e2e.stdout.txt, prd-17-18-e2e-retry3.stdout.txt
+
+**prd.json**: `passes=false`, `retryCount=3`, `blocked=false`

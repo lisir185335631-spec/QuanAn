@@ -1,0 +1,37 @@
+US-010 验证完成，prd.json 已更新。
+
+---
+
+## 验证结果: US-010 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `openai-tts.ts` 真接 OpenAI SDK · `model='tts-1'` · `voice='nova'` default | ✓ (`openai-tts.ts:60-65`) |
+| AC-2 | 4000 chars max 校验 | ✓ (`openai-tts.ts:39-44` · `TTS_MAX_CHARS=4000`) |
+| AC-3 | mp3 buffer → `Asset.create` · `accountId` 双层防护 · 返 `publicUrl` | ✓ (`openai-tts.ts:81-98` · `accountId` 传入 + placeholder URL) |
+| AC-4 | `cost_log` eventType=`tts_call` · `costUsd = ceil(len/1000)*0.015` | ✓ (`openai-tts.ts:100-122`) |
+| AC-5 | `TTS_DAILY_LIMIT_PER_USER=100` · sliding window (Redis INCR + 86400s expire) | ✓ (`rate-limit/tts.ts`) |
+| AC-6 | `tts.synthesize` mutation · `protectedProcedure` + rate limit + TTS + Asset 写入 | ✓ (`tts.ts:23-55` · `ttsRouter` 注册到 `_app.ts:40`) |
+| AC-7 | 错误路径 oversize/timeout/rate-limit/API error 各 1 unit | ✓ (9 unit tests · 全 PASS) |
+| AC-8 | 5 unit tests · 1 integration(CI skip) | ✓ (9 unit + 1 integration pass + 1 skipped=CI skip 正确) |
+| AC-9 | `Asset.publicUrl` 返回 · placeholder `/static/placeholder-audio.mp3` · PRR 留 S3 | ✓ (`openai-tts.ts:24` · AC-9 注释明确) |
+| AC-10/Typecheck/Tests | `pnpm typecheck 0 + test 全过` | ✓ typecheck 0 errors · 全套 822 tests pass |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-010/
+├── manifest.json          (verdict=PASS, zero_regression=PASS)
+├── vitest.stdout.txt      (unit: 9 passed)
+├── vitest-integration.stdout.txt (1 passed + 1 skipped CI)
+├── vitest-full.stdout.txt (89 files, 822 passed, 2 skipped)
+├── vitest.xml             (JUnit full · 824 total, 0 failed)
+├── vitest-api.xml         (JUnit TTS-specific)
+└── typecheck.stdout.txt   (0 errors)
+```
+
+### 判决
+
+**prd.json.passes = true** · US-010 全部 AC 通过 · 零回归 PASS · typecheck 0 errors。

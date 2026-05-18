@@ -1,0 +1,22 @@
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+- AC-1: STEP6_STEP_TAG / STEP6_H1 ✓ (step6.ts:47-48)
+- AC-2: STEP6_SUBTITLE 字面 1:1 spec §7.7 line 1639 ✓ (step6.ts:51-52)
+- AC-3: STEP6_TEXTAREA placeholder 含 `\n\n` + `「」` + `（）` + 全角句号 ✓ (step6.ts:62-63)
+- AC-4: STEP6_TEXTAREA_MIN_CHARS=10 + STEP6_CHAR_COUNTER_TEMPLATE='已输入 {count} 字' ✓ (step6.ts:69-70)
+- AC-5: STEP6_BUTTON_GENERATE + STEP6_LOADING_TEXT ✓ (step6.ts:74-75)
+- AC-6: STEP6_OUTPUT_MODULES_3 3 项 h3Label 字面 1:1 ✓ (step6.ts:81-85)
+- AC-7: Step6StoryboardScene interface 9 字段 ✓ (step6.ts:22-32)
+- AC-8: Step6Result interface storyboard/shooting_plan/teleprompter ✓ (step6.ts:34-43)
+- AC-9: 5 条 grep 全部命中 ≥1 次 ✓
+- AC-10: MIN_CHARS===10 + OUTPUT_MODULES_3.length===3 ✓
+- AC-11: step6.test.ts 存在，6 assertions ✓
+- AC-12: vitest 6/6 PASS + typecheck 0 error ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-004/`
+已生成: vitest.xml (6 passed), pytest-full.xml (97 passed, 0 failures), typecheck.stdout.txt (0 errors)
+
+### 判决
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

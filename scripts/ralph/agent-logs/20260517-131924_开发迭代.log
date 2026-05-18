@@ -1,0 +1,7 @@
+US-002 实现完成。
+
+**变更摘要：**
+- `apps/web/src/pages/step/Step1.tsx`：完整重写 — 移除 StepForm 通用方案，加入字面常量 step 标签/H1/副标、搜索框（`STEP1_SEARCH_PLACEHOLDER`）、6 tab grid（`STEP1_TABS`）、56 行业 glass-card grid（`STEP1_INDUSTRIES_56`）、tab+search 叠加过滤、EmptyState 复用
+- `apps/web/src/test/pages.test.tsx`：Step1 H1 断言同步更新为 '选择你的行业赛道'
+
+**验证通过：** typecheck ✅ · vitest 70 tests ✅ · 浏览器 6 tab + 56 卡 + placeholder + 0 error ✅

@@ -1,0 +1,13 @@
+US-007 implementation is complete. Here's a summary:
+
+**What was implemented:**
+
+- `anthropic-provider.ts` — request builder + response parser for Anthropic (no SDK import, satisfies AC-7 R-1)
+- `openai-provider.ts` — same for OpenAI (satisfies AC-8 R-1)  
+- `rate-limiter.ts` — `@upstash/ratelimit` token bucket (Free 50/Pro 500/Enterprise 5000 per day) + `RateLimitError` class; gracefully passes through when Upstash env vars absent (local dev)
+- `cost-logger.ts` — writes `cost_log` rows via Prisma with USD cost estimation; non-fatal on failure
+- `index.ts` — all SDK imports centralized here (AC-7/8); real `_callAnthropic`/`_callOpenAI` with AbortController timeout; retry 1× before fallback; both-fail → template; AC-5 early API key validation before retry/fallback logic
+
+**Test counts:** 6 unit (rate) + 9 unit (fallback) + 1 integration (nock 14) = 16 new tests; 159/159 total pass. Typecheck ✅.
+
+**R-1 verification:** `from '@anthropic-ai/sdk'` and `from 'openai'` grep both return only `index.ts`. API keys never appear in log statements (AC-9 ✅).

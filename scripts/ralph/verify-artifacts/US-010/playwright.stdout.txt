@@ -1,0 +1,6 @@
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="12.159510999999998">
+<testsuite name="prd-17-step1-3-3b.spec.ts" timestamp="2026-05-17T08:51:48.815Z" hostname="chromium" tests="1" failures="0" skipped="0" time="11.872" errors="0">
+<testcase name="PRD-17 Step1 → Step3 → Step3b E2E › 完整流程：行业选择 → 账号包装 → 人设定制" classname="prd-17-step1-3-3b.spec.ts" time="11.872">
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,40 @@
+---
+
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+- **AC1**: 6 新模块页 ✓
+  - `/diagnosis` → `Diagnosis.tsx` 调 `trpc.diagnosis.latest.useQuery()`
+  - `/daily-tasks` → `DailyTasks.tsx` 占位
+  - `/evolution` → `Evolution.tsx` 调 `trpc.evolution.history.useQuery({})`
+  - `/accounts` → `Accounts.tsx` 调 `trpc.ipAccounts.list.useQuery()`
+  - `/my-topics` → `MyTopics.tsx` 占位
+  - `/history` → `History.tsx` 占位
+  - 全部在 `router.tsx:92-97` 注册
+
+- **AC2**: 3 辅助页 ✓
+  - `/knowledge` → `Knowledge.tsx` 调 `trpc.knowledge.getRecommendations.useQuery({})`
+  - `/trending` → `Trending.tsx` 调 `trpc.trending.fetch.useQuery({})`
+  - `/settings` → `Settings.tsx` 占位
+  - 路由注册于 `router.tsx:76,89,102`
+
+- **AC3**: 全 Aurelian Dark + shadcn ✓ — `grep '#[0-9a-f]{6}'` 命中 0；全部使用 `text-on-surface`/`text-muted-foreground`/`text-primary` token + `Card/CardContent/CardHeader` shadcn 组件
+
+- **AC4**: Typecheck passes ✓ — `tsc --noEmit` exit code 0
+
+- **AC5**: Tests pass ≥ 3 unit ✓ — **24/24 passed**，其中 Module pages 9 条专门覆盖 US-003（Diagnosis×2, Evolution×2, Accounts×2, DailyTasks, MyTopics, History）
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+  typecheck-prd3.txt      (exit 0)
+  vitest-prd3.stdout.txt  (24 passed)
+  vitest-prd3.xml         (JUnit · 24 passed)
+  manifest-prd3.json
+```
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

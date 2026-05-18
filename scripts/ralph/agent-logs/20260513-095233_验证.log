@@ -1,0 +1,25 @@
+## 验证结果: US-003 PASS
+
+### AC 对照
+- AC-1 ✓ `BannedWordService` constructor `isMock = process.env.BANNED_WORD_ENABLE !== 'true'` — `banned-word.service.ts:58`
+- AC-2 ✓ `MOCK_DICTIONARY` 20 词（政治/暴力/色情/赌博各 5）· scan 用 `String.includes` 匹配 — `:25-50`
+- AC-3 ✓ `isMock=false + empty webhookUrl` → 抛 `ConfigurationError` — `:64-66`
+- AC-4 ✓ `isMock=false + URL` → fetch POST · 失败 fallback `needs_review` — `:81-96`
+- AC-5 ✓ `PIIDetectionService` 4 regex (ID_CARD/PHONE_CN/EMAIL/BANK_CARD) · `detect` 返 `{idCards/phones/emails/bankCards/total}` — `pii-detection.service.ts:6-34`
+- AC-6 ✓ `redact` 替换为 `[ID-REDACTED]/[PHONE-REDACTED]/[EMAIL-REDACTED]/[CARD-REDACTED]` — `:37-43`
+- AC-7 ✓ 2 singleton export: `bannedWordService` + `piiDetectionService` — `:101`, `pii:47`
+- AC-8 ✓ `.env.example` 含 `BANNED_WORD_ENABLE` + `BANNED_WORD_API_URL` 注释 — 行 24-27
+- AC-9 ✓ `banned-word.service.test.ts` 12 tests (> 8) 全 PASS
+- AC-10 ✓ `pii-detection.service.test.ts` 14 tests (> 10) 全 PASS
+- AC-11 ✓ `pnpm test` 26 新增 tests 全 PASS · `audit:redlines-admin` ALL PASS (5 LD-A + 6 R-A)
+- AC-12 ✓ `pnpm typecheck` 0 error
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-003/`
+已生成: `pytest.xml` (26 passed), `pytest.stdout.txt`, `pytest-full.xml` (1386 passed / 9 pre-existing failed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 零回归确认
+9 failures 与 US-002 产物完全一致（`auth.test.ts` × 6 ECONNREFUSED 无 server + cost_log FK log-only warnings）— pre-existing TD，US-003 未引入新回归。
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

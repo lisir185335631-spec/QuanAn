@@ -1,0 +1,9 @@
+**US-004 fix complete.** The single change was:
+
+- `apps/api/src/jobs/admin/kpi-snapshot.job.ts:15`: `'admin:kpi-snapshot'` → `'admin-kpi-snapshot'`
+
+BullMQ v5 rejects queue names containing colons at construction time, causing the API server to crash before binding the port. After the fix, the server starts cleanly, and all NSM page ACs pass:
+- AC-13: tRPC batch (getOverview/getFunnel/getDistributions/getAlerts) returns 200
+- AC-14: 0 console errors post-login (only pre-existing React Router future flag warnings)
+- AC-15: `--bg-base=#0a0a0a` non-empty
+- AC-11: skeleton + "等待首次聚合" + 手动触发 button visible for super_admin

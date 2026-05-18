@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="25" failures="0" errors="0" time="0.371">
+    <testsuite name="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" timestamp="2026-05-14T11:26:03.046Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.047788792">
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Step 1: admin submitForReview(v18) → pending_review + approval_request created" time="0.006165917">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Step 2: super_admin#1 approveRequest → first_approved + firstApproverAdminId set" time="0.001651208">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Step 3: same super_admin#1 tries to approve again → FORBIDDEN_SAME_APPROVER" time="0.00097225">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Step 4: super_admin#2 approveRequest → approved + _publishPromptVersionInTx callback" time="0.009912042">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Step 5: ContextAssembler getActivePromptVersion → returns v18 content" time="0.000756709">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Step 6: admin_audit_log contains prompt_version_publish + dual_approval_completed" time="0.001599541">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Edge: approveRequest on already-approved request throws BAD_REQUEST" time="0.000585542">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-dual-approval-e2e.test.ts" name="PRD-13 US-012 · dual approval E2E &gt; Edge: requestApproval with single-approval actionType sets requireDualApproval=false" time="0.000981">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/e2e/admin/prd13-emergency-flow.test.ts" timestamp="2026-05-14T11:26:03.047Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.034816292">
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; emergencyApprove → status=approved, emergencyMode=true, postReviewRequired=true" time="0.010325334">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; 12h later: scanEmergencyPostReviewOverdue → no overdue alert (&lt; 24h threshold)" time="0.000930083">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; 24h+ later: scanEmergencyPostReviewOverdue → overdue alert + audit_log post_review_overdue" time="0.002502041">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; postReviewApprove → postReviewedAt + postReviewerAdminId written" time="0.002090542">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; Edge: postReviewApprove on already-reviewed request throws BAD_REQUEST" time="0.00046275">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; Edge: emergencyApprove requires super_admin role — non-super_admin rejected" time="0.001387542">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-emergency-flow.test.ts" name="PRD-13 US-012 · emergency approval flow E2E &gt; Edge: emergencyApprove requires emergencyIncidentId" time="0.001157541">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" timestamp="2026-05-14T11:26:03.047Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.046322333">
+        <testcase classname="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" name="PRD-13 US-012 · evolution rebuild E2E &gt; admin forceRebuildEvolution → requestApproval(dual=true)" time="0.000935584">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" name="PRD-13 US-012 · evolution rebuild E2E &gt; super_admin#1 first approval → first_approved state" time="0.001811875">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" name="PRD-13 US-012 · evolution rebuild E2E &gt; super_admin#2 second approval → status=approved" time="0.004031083">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" name="PRD-13 US-012 · evolution rebuild E2E &gt; _forceRebuildEvolutionInTx callback → evolution_profile cleared + insights resolved" time="0.004119708">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" name="PRD-13 US-012 · evolution rebuild E2E &gt; Edge: same super_admin cannot approve twice in dual-approval" time="0.002565833">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts" name="PRD-13 US-012 · evolution rebuild E2E &gt; enqueueEvolutionRebuildJob → BullMQ queue.add called with rebuild payload" time="0.000981167">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/e2e/admin/prd13-quota-expiry-e2e.test.ts" timestamp="2026-05-14T11:26:03.047Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.048862958">
+        <testcase classname="tests/e2e/admin/prd13-quota-expiry-e2e.test.ts" name="PRD-13 US-012 · quota expiry E2E &gt; adjustQuota(delta=300) → quota adjustment created + delayed job added" time="0.018743417">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-quota-expiry-e2e.test.ts" name="PRD-13 US-012 · quota expiry E2E &gt; simulate 24h → processExpiry → dailyQuota rollback + expiredAt written" time="0.005417375">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-quota-expiry-e2e.test.ts" name="PRD-13 US-012 · quota expiry E2E &gt; quota expiry idempotent — calling processExpiry again is a no-op" time="0.000624875">
+        </testcase>
+        <testcase classname="tests/e2e/admin/prd13-quota-expiry-e2e.test.ts" name="PRD-13 US-012 · quota expiry E2E &gt; processExpiry for nonexistent adjustmentId is a no-op" time="0.00041525">
+        </testcase>
+    </testsuite>
+</testsuites>

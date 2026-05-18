@@ -1,0 +1,30 @@
+---
+
+## 验证结果: US-015 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|----|------|------|------|
+| AC-1 | BaseSpecialist.execute() try-catch fallback 路径 | ✓ | BaseSpecialist.ts:142-186 |
+| AC-2 | 7 Specialist 各加 static readonly fallbackTemplate | ✓ | 7 个文件均含 `static override readonly fallbackTemplate` |
+| AC-3 | StepResult 检测 isFallback → 渲染 FallbackBanner | ✓ | StepResult.tsx:53 |
+| AC-4 | FallbackBanner 含 '系统繁忙' + 重试 button | ✓ | FallbackBanner.tsx:21-35 |
+| AC-5/6/7/8 | e2e: fetch mock → isFallback=true → banner 显示 + 重试 → 表单恢复 | ✓ | e2e 2/2 pass |
+| AC-9 | 无 fallbackTemplate → re-throw | ✓ | unit test AC-9 (NoFallbackSpecialist test) |
+| AC-10 | fallbackTemplate 静态 type guard | ✓ | unit test AC-10 pass |
+| AC-11 | DB write fallback 失败 → log only | ✓ | BaseSpecialist.ts:244-247 catch → logger.error |
+| AC-12 | isFallback=true → status='fallback' · progress 不计入 | ✓ | stepData.ts:113 + IPProgressService.ts:44 |
+| AC-13 | cost_log model='fallback' tokens=0 | ✓ | BaseSpecialist.ts:163-176 + unit test |
+| AC-14 | FallbackBanner 必含重试按钮 | ✓ | FallbackBanner.tsx:27-35 |
+| AC-15 | fallback < 100ms | ✓ | 路径无 LLM 调用 · e2e 总耗时 1.9s/2 tests |
+| AC-16 | unit tests ≥ 7 | ✓ | 10 tests pass |
+| AC-17 | e2e ≥ 1 test | ✓ | 2/2 pass (chromium + mobile) |
+| AC-18/19 | Tests pass + Typecheck passes | ✓ | 343/343 unit · API/Web tsc clean |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-015/`  
+已生成: `pytest-full.xml` (343 passed) · `pytest-full.stdout.txt` · `typecheck.txt` (clean) · `typecheck-web.txt` (clean) · `fallback-unit.stdout.txt` (10/10) · `e2e-fallback-new.txt` (2/2)
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ''`

@@ -1,0 +1,10 @@
+US-003 is complete. Here's a summary of what was implemented:
+
+**Files changed:**
+- `apps/api/src/trpc/routers/videoProduction.ts` — Rewrote `generate` with real VideoAgent production mode integration, `videoProductionInputSchema` (sourceCopy min(10)/max(3000)), explicit `findFirst({ where: { id, accountId: activeAccountId! } })` double guard (LD-009/TD-019), full history fields. Kept `generateStoryboard`/`generateSceneImage` stubs for backward compatibility.
+- `packages/clients/src/router-types.ts` — Added `VideoProductionHistoryRow` type and `videoProduction.generate` shadow route.
+- `tests/unit/api/specialists-creation.test.ts` — Added VideoAgent mock, `findFirst` to `makeCtx`, updated generate test to use new input schema.
+- `tests/unit/api/video-production-router.test.ts` (new) — 6 unit tests: happy path, sourceCopy <10 BAD_REQUEST, boundary min/max, fallback isFallback=true, cross-account RLS (findFirst→null→INTERNAL_SERVER_ERROR).
+- `tests/integration/api/video-production-llm.test.ts` (new) — nock intercepts Anthropic API, real DB history + cost_log writes, 66ms << 5s.
+
+**Verification:** `pnpm typecheck` 6 ws 0 errors · `pnpm test` 61 files 601 tests all pass.

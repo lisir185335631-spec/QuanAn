@@ -1,0 +1,11 @@
+US-011 完成。提交 `928638f`。
+
+**实现摘要**：
+- `accounts/index.tsx` — 主页面：4 stat cards（总账号/活跃7d/异常/Top3行业）+ 行业/平台 Recharts 饼图 + 全部/异常 Tab 切换 + DenseTable virtualScroll（emptyText="未找到匹配账号"）+ URL params 持久化
+- `StepProgressChart.tsx` — Recharts BarChart，9步，数据含 `fill: 'var(--accent-purple)'`
+- `AccountDetailDrawer.tsx` — 右侧抽屉 6 tabs：基本/进度图/进化档案/历史/备注/异常flag，含强制冻结按钮（readonly_admin 隐藏）
+- `AccountListFilters.tsx` — industry/platform/level/stage 4 dropdown + 300ms debounce 搜索
+- `AnomalyTab.tsx` — per-account detail 查询 + 展开 flag 行，resolve/falsePositive 调 `accounts.unflag`
+- `ForceFreezeDialog.tsx` — reason 文本框 + forceFreeze mutation，super_admin 直执行/admin 提交审批
+- `packages/clients/src/admin-router-types.ts` — 补全 `ipAccounts` shadow router 6 procedures
+- typecheck 通过 (0 errors)，placeholder 已删除

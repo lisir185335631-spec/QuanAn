@@ -1,0 +1,11 @@
+US-002 is complete. Here's a summary of what was implemented:
+
+**Files created:**
+- `apps/api/src/jobs/admin/kpi-snapshot.job.ts` — Queue(`admin:kpi-snapshot`) + Worker that calls `computeSnapshot`, 3 schedule functions with correct cron patterns/tz/jobId, failed-event handler that writes `admin_audit_log` on final failure (3rd attempt)
+- `apps/api/src/jobs/admin/__tests__/kpi-snapshot.job.test.ts` — 7 unit tests covering all AC requirements
+
+**Files modified:**
+- `apps/api/src/index.ts` — calls `scheduleDailySnapshot/Weekly/Monthly` in `start()`
+- `package.json` — adds `audit:redlines-admin` script
+
+**Quality gates:** 7/7 new tests pass, full suite 1038 pass (9 pre-existing integration test failures requiring live server are unchanged), typecheck 0 errors, `pnpm audit:redlines-admin` ALL PASS.

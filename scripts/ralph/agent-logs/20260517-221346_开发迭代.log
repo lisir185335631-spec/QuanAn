@@ -1,0 +1,11 @@
+US-011a is complete. Here's what was implemented:
+
+**3 new files committed:**
+- `apps/web/src/components/step7/Step7ScriptTypeSearch.tsx` — current script display template + search input + 2-4 col grid with realtime case-insensitive filter by name+positioning, selected card gets `border-primary shadow`
+- `apps/web/src/components/step7/Step7ElementMultiSelect.tsx` — 4 group H4 headers + chip grid (22 chips), `Set<string>` multi-toggle with `React.memo`, sticky counter using `STEP7_ELEMENT_COUNTER_TEMPLATE`
+- `apps/web/src/pages/step/Step7.tsx` — full rewrite with form glass-card, cross-step prefill from `acc_step5_selected_topic` + `acc_step7`, `generateMockResult` stub, 4 buttons (primary disabled when topic empty, optimize disabled until result)
+
+**Verification results:**
+- tsc: 0 errors, vitest: 119/119 pass
+- Zero violet/amber, zero hardcoded Chinese strings
+- Browser: default 'debate' selected ✅, search '剖' → 1 result ✅, 5 elements → counter "已选 5 个" ✅, topic filled → button enabled ✅, no console errors ✅

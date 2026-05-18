@@ -1,0 +1,28 @@
+## 验证结果: US-011b [PASS]
+
+### AC 对照
+
+- **AC-1** ✅ `Step7OutputContent.tsx` 存在 · title 居中 font-bold · `script_type === 'debate'` 时渲染 `STEP7_DEBATE_H4_4` · 4 H4 字面 1:1 `['话题抛出','正方','反方','我的立场']`
+- **AC-2** ✅ 每 H4 区显示 content + 右上角 [复制] button 使用 `STEP3_BUTTON_COPY` · 评论引导(comment_guide) + 3 话题标签 chip 渲染 `#{tag}` 前缀
+- **AC-3** ✅ 顶部 [重新生成] `STEP3_BUTTON_REGENERATE` + [复制全部] `STEP3_BUTTON_COPY_ALL` 常量引用
+- **AC-4** ✅ 非 debate 类型渲染通用 `[hook/body/cta]` 3 段 · `// TODO: PRD-19 扩展 20 类独立 schema` 注释存在
+- **AC-5** ✅ `getBlockText` 函数模式 · `copyToClipboard` 调用 `navigator.clipboard.writeText` + `toast('已复制')`(try/catch 包裹)
+- **AC-6** ✅ `generateMockResult` 返回 debate 模板 · 美容院仪器示例 · 4 H4 各 100-200 字 · 评论引导 + 3 话题标签 · setTimeout 3-5s
+- **AC-7** ✅ `Step7.tsx` import `Step7OutputContent` 并渲染 · 提交后 `setResult` + `setIsGenerating(false)` · localStorage `acc_step7` 写入确认
+- **AC-8** ✅ `grep '话题抛出'/'正方'/'反方'/'我的立场'` 0 hardcode · 按钮标签全用 `STEP3_BUTTON_COPY` 常量
+- **AC-9** ✅ `grep violet/amber` 0 命中
+- **AC-10** ✅ vitest **119 passed** · `tsc --noEmit` **0 error**
+- **AC-11** ✅ 浏览器测试通过: `/step/7` 加载 → 填写主题 → 点击生成 → 3-5s 后 4 H4 输出(话题抛出/正方/反方/我的立场)+ 评论引导 + 3 话题标签 chip 全部显示 · 点击 [复制] toast 触发(headless clipboard API 拒绝 → fallback toast 显示，机制正常) · `localStorage.acc_step7` 非 null · 无 console error
+- **AC-12** ✅ `pnpm tsc --noEmit` 0 error
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-011b/
+已生成: vitest.xml (119 passed), vitest.stdout.txt, typecheck.stdout.txt, manifest.json
+截图: screenshots/validator-us-011b-pass-{1-4}.png
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,1 @@
+US-004 fix complete. The 9 TS2532 errors in `Step4b.test.tsx` are resolved by adding `!` non-null assertions to array index accesses at lines 44–49 and 54–56. Typecheck passes cleanly, all 157 vitest tests green.

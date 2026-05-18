@@ -1,0 +1,11 @@
+
+Running 6 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 (10.7s)
+  ✓  2 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:56:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品 → 生成变现路径 → 5 H3 + 3 阶梯 (12.4s)
+  ✓  3 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:102:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 (11.4s)
+  ✓  4 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:159:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成拍摄计划 → 3 模块 (10.6s)
+  ✓  5 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:193:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 (12.2s)
+  ✓  6 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:236:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 切子功能1 → 填字段 → 生成直播方案 → 6 H3 (12.3s)
+
+  6 passed (1.2m)

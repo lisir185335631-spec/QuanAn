@@ -1,0 +1,46 @@
+prd.json 已更新。验证完成。
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | schema ApprovalRequest +7 字段 +3 @@index | ✓ |
+| AC-2 | migration prd-13-approval-dual 成功 | ✓ (DB 已同步) |
+| AC-3 | requestApproval() 新参数 + emergencyMode 校验 | ✓ |
+| AC-4 | approveRequest() dual path + FORBIDDEN_SAME_APPROVER | ✓ |
+| AC-5 | emergencyApprove() super_admin only + audit eventType=emergency_approval | ✓ |
+| AC-6 | emergency-post-review.job.ts BullMQ cron '0 30 3 * * *' + scheduleEmergencyPostReview() 在 index.ts wired | ✓ |
+| AC-7 | postReviewApprove() + reviewerAdminId !== firstApproverAdminId 校验 | ✓ |
+| AC-8 | _approveRequestInTx 单点函数 · 3 of 7 call sites (remaining in US-004+) | ✓ |
+| AC-9 | 所有新字段 @default(false) — PRD-10/11/12 backward compat | ✓ |
+| AC-10 | audit:redlines / audit:ld / audit:redlines-admin · 0 hits | ✓ |
+| AC-11 | pnpm test: 1567 passed ≥ 1555 · 零回归: PASS (9 失败 pre-existing CONFIRMED) | ✓ |
+| AC-12 | pnpm typecheck: 0 errors | ✓ |
+| AC-13 | Typecheck passes | ✓ |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-002/`
+
+| 文件 | 内容 |
+|---|---|
+| `pytest-full.xml` | 全量 vitest JUnit (1567 passed / 9 pre-existing fails) |
+| `pytest-full.stdout.txt` | 全量 vitest stdout |
+| `pytest.xml` | US-002 特定 17 tests JUnit (0 fail) |
+| `typecheck.stdout.txt` | typecheck 0 errors |
+| `manifest.json` | 元数据 · verdict=PASS · zero_regression=PASS |
+
+### 零回归注记
+
+9 个集成测试失败均为 **pre-existing**:
+- **CONFIRMED via git stash**: stash US-002 所有改动后仍然 9 tests fail (auth.test.ts ×6 + auth.me.test.ts ×1 + trace.test.ts ×2)
+- 根因: API server 未运行 (ECONNREFUSED :3000)；server 启动失败是 pre-existing issue (pdf-forensic.service.ts 导入 react · commit 6c0bbd9 · 早于 US-002)
+- US-002 代码改动不涉及 auth / trace / auth.me 路径
+
+### 判决
+
+`prd.json` → `US-002.passes = true`，`retryCount = 0`，`notes = ""`

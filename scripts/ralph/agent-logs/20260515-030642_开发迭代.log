@@ -1,0 +1,11 @@
+US-004 is complete. Here's what was fixed and committed:
+
+**Root cause of previous failure**: The story had 3 TypeScript errors + test setup bugs that blocked validation.
+
+**Fixes applied:**
+1. `AbExperimentDrawer.tsx` — removed unused `sectionStyle` and `metricResults` vars; changed `detail?.variantConfig && (...)` → `!= null &&` to fix `unknown` JSX type error
+2. `abExperiments.test.ts` (backend) — `makeCtx` now uses mocked `prisma` with `$transaction` so `adminRLS` middleware doesn't fail; fixed `stopReason` length (15 chars → 23 chars to pass `min(20)` validation); added `mockAbAssignmentCount.mockResolvedValueOnce(100)` for `getDetail` test
+3. `AbExperimentsPage.test.tsx` (frontend) — DenseTable mock prop renamed from `rows` to `data`; removed `vi.useFakeTimers()` that caused 30s timeout with `userEvent.click`
+4. `AbExperimentsPage.tsx` — added "暂无实验" empty state when `items.length === 0`
+
+**Final state**: typecheck 0 errors · 1793 tests pass · redlines-admin ALL PASS (9 LD-A + 6 R-A)

@@ -1,0 +1,38 @@
+## 验证结果：US-003 **PASS**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|:---:|
+| AC-1 | execute() 无 stub throw · LLMGateway.complete(reasoning) | ✓ |
+| AC-2 | recentFeedbacks(N=count/5) + samples(DLA limit 10) + previousInsight | ✓ |
+| AC-3 | prisma.$transaction([profile.update, insight.create]) · grep 命中 1+ | ✓ |
+| AC-4 | _mergeInsight fresh∪prev 去重 top 10 · unit test 验证 | ✓ |
+| AC-5 | safeParse 失败 → isFallback=true · previousInsight 降级 · 不写 insight | ✓ |
+| AC-6 | BullMQ Worker · retry 3 · dead-letter alert stub(attemptsMade≥3) | ✓ |
+| AC-7 | trigger.ts · INSERT ON CONFLICT UPDATE RETURNING · count ∈ {5,20,50,100} | ✓ |
+| AC-8 | hook 在 evolution.evolve (而非 costLog.logFeedback) — 语义正确¹ | ✓ |
+| AC-9 | eventType='l5_agent' grep 命中 1+ | ✓ |
+| AC-10 | 集成测试 3 cases · 并发 race · 真实 DB | ✓ |
+| AC-11 | 10 tests (happy/fallback/merge + 7 边界) ≥ 8 | ✓ |
+| AC-12 | typecheck 0 + lint 0 + test 全过 | ✓ |
+| AC-13 | LLM Judge score=9/10 ≥ 4.0/5 | ✓ |
+| Typecheck | tsc --noEmit 0 errors | ✓ |
+| Tests | pnpm vitest run all pass | ✓ |
+
+> ¹ AC-8 `(costLog.logFeedback)` 是 PRD 措辞偏差：`costLog.logFeedback` 写 `cost_log`，不是 `feedback_log`。hook 放在 `evolution.evolve`（feedbackLog.create 后异步调）语义上正确。前次 SUSPECTED 已确认为 PRD 措辞问题而非实现错误。
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-003/`
+
+- `vitest.xml` — 13 tests (US-003 专用)
+- `vitest.stdout.txt` — 完整输出
+- `pytest-full.xml` — 零回归 757 tests
+- `pytest-full.stdout.txt` — 零回归原始输出
+- `typecheck.stdout.txt` — 0 errors
+- `manifest.json` — exit_code=0, zero_regression=PASS
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,50 @@
+## 验证结果: US-005 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | 4 procedures + protectedProcedure + activeAccountId ≥4 处 | ✓ 4 procedures × 双层防护，activeAccountId 出现 12+ 次 |
+| AC-2 | getProfile 返回完整字段 shape | ✓ level/feedbackCountGood/Bad/Total/satisfactionRate/currentDirection/latestInsight/lastEvolvedAt/lastUpgradedAt 全在 select |
+| AC-3 | getInsightHistory max10 desc order accountId filter | ✓ `take:10, orderBy:{createdAt:'desc'}, where:{accountId:activeAccountId!}` |
+| AC-4 | **getFeedbackTrend 用 prisma groupBy** | ✗ **SPEC DEVIATION** — 实现用 `$queryRaw + DATE_TRUNC`，非 prisma groupBy；结果形状正确但不符 AC 字面 |
+| AC-5 | getModuleRanking cost_log+feedback_log groupBy agentId | ✓ parallel groupBy + JS merge，含 totalCalls |
+| AC-6 | 前端 4 sections (Hero/Insight/趋势/排名/历史) | ✓ 全部 5 section 均存在，Recharts LineChart 实现趋势图 |
+| AC-7 | 浏览器测 /evolution 已登录截图 | ✓ 截图已保存 verify-artifacts/US-005/screenshot.png |
+| AC-8 | cold-start UI 可见 | ✓ "暂无 insight · 等累计 5 条反馈后自动生成" 在截图中可见 |
+| AC-9 | typecheck 0 + lint 0 + tests all pass | ✗ **FAIL** — 2 Evolution 新增回归（详见下） |
+| Typecheck passes | tsc --noEmit | ✓ 0 errors |
+
+### CONFIRMED 零回归失败 (新增 2 条回归)
+
+**验证命令**: `pnpm --filter @quanqn/web test 2>&1 | grep FAIL`
+
+**回归 1**: `FAIL src/test/pages.test.tsx > Module pages render > Evolution renders h1 heading`
+- 根因: `pages.test.tsx` trpc mock 仅含 `evolution.history`，缺少 `getProfile/getInsightHistory/getFeedbackTrend/getModuleRanking`
+- US-005 新 Evolution 页面调用全 4 个新 procedure，mock 缺失 → render 失败 → h1 无法渲染
+- 定位: `apps/web/src/test/pages.test.tsx:125`
+
+**回归 2**: `FAIL src/test/pages.test.tsx > Module pages render > Evolution shows empty state when no data`
+- 根因: 测试期待文字 `'暂无进化记录'`（旧组件 empty state），US-005 改为 `'暂无 insight · 等累计 5 条反馈后自动生成'`
+- 定位: `apps/web/src/test/pages.test.tsx:130-132`
+
+**Pre-existing（与 US-005 无关，commit 2443e93 前已存在）**: `Generate h1` + `History h1` 两条
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+├── manifest.json          (exit_code=1, zero_regression=FAIL, verdict=FAIL)
+├── typecheck.stdout.txt   (0 errors)
+├── vitest.stdout.txt      (4 failed | 44 passed, 2 new regressions)
+└── screenshot.png         (evolution page authenticated, cold-start UI visible)
+```
+
+### 判决
+
+`prd.json.passes = false, retryCount = 1`
+
+**修复指令给 Ralph dev**:
+1. `apps/web/src/test/pages.test.tsx` trpc mock 补全 4 个 evolution procedure
+2. Evolution empty state 测试期望文字改为 `'暂无 insight · 等累计 5 条反馈后自动生成'`
+3. AC-4: 二选一（保留 `$queryRaw` 并在本次 Opus 审核标注 approved deviation，或改为 prisma groupBy）

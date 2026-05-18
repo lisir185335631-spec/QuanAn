@@ -1,0 +1,29 @@
+验证完成。
+
+---
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| AC | 结论 | 证据 |
+|---|---|---|
+| AC-1: 删 account/step.ts · _app.ts 移除 | ✅ PASS | `ls routers/` 不含 account.ts/step.ts; `_app.ts` 无相关 import |
+| AC-2: hooks 改调 ipAccounts/stepData | ✅ PASS | `useActiveAccount.ts:29` `trpc.ipAccounts.switchActive`; `useStepData.ts:17` `trpc.stepData.save`; `useEvolution.ts` 存在未改 |
+| AC-3: createBrowserRouter 34 路由 | ✅ PASS | 9 step + 14 tools + 6 modules + 3 aux + 1 index redirect + 1 catch-all = 34; `router.test.ts` 逐项验证通过 |
+| AC-4: 全部路由 React.lazy + Suspense skeleton | ✅ PASS | 所有页面组件 `lazy()` 加载; `RootLayout` 内 `<Suspense fallback={<PageSkeleton />}>`; NotFound catch-all 为 eager（合理特例） |
+| AC-5: Header layout 共享(outlet) · 未知路径 → NotFound | ✅ PASS | `RootLayout` = Header + Suspense + Outlet; `{path:'*', element:<NotFound/>}` |
+| AC-6: 首屏 < 2s · chunk 共享 | ✅ 静态 PASS | webpackChunkName 'step'/'tools'/'modules' 正确注解; 实际毫秒测量留 US-006 e2e 覆盖 |
+| AC-7: Typecheck passes | ✅ PASS | 全 6 workspace 0 error; exit_code=0 |
+| AC-8: Tests pass · 174 不破坏 | ✅ PASS | 186 tests passed, 0 failures（+12 新 router tests; 原 174 全通过） |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-001/
+├── manifest-prd3.json   ← PRD-3 验证元数据
+├── typecheck-prd3.txt   ← pnpm typecheck 全 6 workspace 0 error
+└── vitest-prd3.stdout.txt ← 21 files, 186 passed, 0 failed
+```
+
+### 判决
+`prd.json.US-001.passes = true` · `notes = ""` · `retryCount = 0`

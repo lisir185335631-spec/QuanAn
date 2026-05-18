@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="vitest" tests="70" failures="0" errors="0" skipped="0" time="1.38">
+    <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="industries constants" time="0.002"/>
+    <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="step3 constants" time="0.002"/>
+    <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="step3b constants" time="0.002"/>
+    <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress" time="0.024"/>
+    <testcase classname="src/test/step-progress.test.tsx" name="step-progress" time="0.029"/>
+    <testcase classname="src/components/states/__tests__/states.test.tsx" name="states" time="0.037"/>
+    <testcase classname="src/test/feedback-button.test.tsx" name="feedback-button" time="0.063"/>
+    <testcase classname="src/test/pages.test.tsx" name="pages" time="0.166"/>
+  </testsuite>
+</testsuites>

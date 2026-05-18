@@ -1,0 +1,48 @@
+验证完成。最终报告：
+
+---
+
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 内容 | 结果 |
+|----|------|------|
+| AC-1 | routes-34.spec.ts 34 路由全部可访问 | ✅ 33+33 tests pass (chromium+mobile) |
+| AC-2 | ip-plan 0/9 显示 | ✅ |
+| AC-2 | ip-plan 切换账号后 fetch | ✗ **FAIL** - `waitForNavigation` 30s 超时 |
+| AC-3 | feedback-button.spec.ts 4 tests | ✅ 4+4 pass (chromium+mobile) — 严格模式问题已修 |
+| AC-4 | vitest ≥ 200 tests | ✅ **201 tests passed** |
+| AC-5 | playwright e2e 全过 | ✗ FAIL (ip-plan 切换账号导致) |
+| AC-6 | typecheck 全 6 workspace | ✅ 0 error |
+| AC-7 | lint clean | ✅ 0 warnings |
+| AC-8 | Typecheck passes | ✅ |
+| AC-9 | Tests pass 全套 | ✗ FAIL |
+
+### 失败根因
+
+`ip-plan.spec.ts:51` "切换账号后 /ip-plan 重新 fetch 进度" 在 chromium + mobile 均持续失败（isolated 也失败）：
+
+- DB 累积了 30+ 个 `dev@local.test` 的 IP 账号（active_account_id=78，max_id=81）
+- 点击新建账号的 dropdown item 后，`window.location.reload()` 未触发
+- 快照确认: dropdown 菜单有 30 条 account item，目标 item 在底部
+
+### 修复建议
+
+1. **ip-plan.spec.ts 切换测试** — 先调用 `trpcMutate('ipAccounts.switchActive', { accountId: someExistingId })` 确保当前活跃账号不等于新建账号（避免幂等 no-op）
+2. 或改用 `page.route()` 拦截 switchActive 请求验证被触发，不依赖 `waitForNavigation`
+3. 长期：e2e `afterEach` 清理创建的测试账号
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+├── manifest.json         ✓
+├── vitest.stdout.txt     201 tests passed
+├── pytest-full.stdout.txt  (vitest 全量零回归 — 201 passed)
+├── typecheck.txt         6 workspaces 0 error
+├── lint.txt              exit 0, 0 warnings
+└── playwright.stdout.txt ip-plan 切换账号超时 FAIL
+```
+
+**判决: passes = false | retryCount = 2**

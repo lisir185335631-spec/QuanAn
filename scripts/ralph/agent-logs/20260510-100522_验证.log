@@ -1,0 +1,38 @@
+prd.json 已正确写入。验证完成，输出结论。
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 结论 | 证据 |
+|---|---|---|
+| AC-1: VideoAgent 移除 throw 'PRD-6' | ✅ | `VideoAgent.ts` production/acquisition/storyboard 全部走 invokeLLM 分支，无 throw |
+| AC-2: outputSchema getter 4-mode switch | ✅ | `VideoAgent.ts:362-369` 完整 switch(this._mode) |
+| AC-3: _buildUserPrompt 4 分支 + prompt 约束 | ✅ | production 含 13 字段/设备/排期；acquisition 含 CTA/转化路径；storyboard 含 5-8 scenes/imagePromptEn 英文 |
+| AC-4: storyboard imagePromptEn ASCII post-validate + retry 1 + SchemaValidationError | ✅ | `VideoAgent.ts:484-495` asciiRe 校验 + retry + throw SchemaValidationError |
+| AC-5: CopywritingAgent acquisition 解锁 + schema(200-500 + ctaPosition) | ✅ | `CopywritingAgent.ts:95-113` CopywritingAcquisitionOutputSchema + _invokeAcquisition |
+| AC-6: 3 新 template 文件 | ✅ | video-production.ts / acquisition-video.ts / ai-video.ts 均存在，含 persona + methodology |
+| AC-7: index.ts barrel 3 入口 | ✅ | `templates/index.ts:37-39` 'VideoAgent:production' / 'VideoAgent:acquisition' / 'VideoAgent:storyboard' |
+| AC-8: VideoAgent +9 unit tests | ✅ | production 3 + acquisition 3 + storyboard 3，30 tests 全通过 |
+| AC-9: CopywritingAgent acquisition +3 unit tests | ✅ | happy + CTA missing + markdown boundary，全通过 |
+| AC-10: VideoAgent invokeLLM nock SDK 集成测试 < 3s | ✅ | `video-agent-llm.test.ts` 通过，nock.isDone()=true |
+| AC-11: unit 9+3 总跑 < 200ms | ✅ | 30 tests 实测 10ms |
+| AC-12: pnpm typecheck 6 ws 0 error | ✅ | exit_code=0 |
+| AC-13: pnpm test 两文件 退出码 0 | ✅ | 30 tests passed |
+
+### X-6 零回归
+
+全量 593 tests，0 failures，0 errors ✅
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+已生成: typecheck.txt (0 errors), vitest.xml (30 passed), pytest-full.xml (593 passed)
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

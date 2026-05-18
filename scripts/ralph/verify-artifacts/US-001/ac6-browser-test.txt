@@ -1,0 +1,26 @@
+# AC-6 Browser Test Results (R3 Validator)
+# Date: 2026-05-16
+# Method: playwright @playwright/test headless chromium
+
+--primary computed value: 43 87% 63%
+(color lock D4=B: value unchanged from globals.css baseline -- PASS)
+
+Font diagnostics:
+  Orbitron:400 status: unloaded
+  Orbitron:500 status: unloaded
+  Orbitron:700 status: loaded  (page bold elements use it)
+  Orbitron:900 status: unloaded
+
+document.fonts.check('1em Orbitron') = false  <-- FAIL
+  (1em defaults to weight:400; Orbitron:400 is registered but unloaded)
+  (no page element uses Orbitron at weight:400 to trigger download)
+
+document.fonts.load('500 1em Orbitron') = succeeded
+  (confirms Google Fonts IS reachable; font can be loaded programmatically)
+
+Google Fonts network: CSS request status: unknown (cross-origin -- normal)
+  Orbitron:700 woff2 was successfully downloaded (confirmed by loaded status)
+
+AC-6 VERDICT: FAIL (Orbitron font check)
+  PASS: --primary value preserved (D4=B lock)
+  FAIL: document.fonts.check('1em Orbitron') !== true

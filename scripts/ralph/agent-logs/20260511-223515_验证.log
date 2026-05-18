@@ -1,0 +1,45 @@
+prd.json 更新完成。验证写入正确。
+
+---
+
+## 验证结果: US-003 FAIL
+
+### AC 对照
+
+| AC | 结论 | 说明 |
+|---|---|---|
+| AC-1 `_fetchRag` 推断策略 | ✅ PASS | code review: 3 分支逻辑(CopywritingAgent·TopicAgent·默认8)正确，非生成型返 [] |
+| AC-2 `[Section 6]` 注入格式 | ✅ PASS | `_buildSection6` format 正确，空时跳过 |
+| AC-3 5路 Promise.allSettled | ✅ PASS | stepData + L4Insight + samples + _fetchRag + methodology，各自 5s timeout |
+| AC-4 `L5_rag` layersUsed | ✅ PASS | ragChunks.length>0 → push 'L5_rag'，无 hit 则不含 |
+| AC-5 D-007 grep 0 命中 | ✅ PASS | specialists/ 目录 ragChunks/ragRetrieve/knowledge_chunk = 0 |
+| AC-6 5 unit tests | ✅ PASS | 5/5 passed |
+| AC-7 3 integration tests | ✅ PASS | 3/3 passed |
+| AC-8 LLM Judge 4 tests | ✅ PASS | 4/4 passed |
+| AC-9 typecheck 0 + lint 0 | ❌ FAIL | typecheck 1 error |
+| Typecheck passes | ❌ FAIL | 同上 |
+
+### CONFIRMED 失败
+
+```
+复现命令: pnpm typecheck
+实际错误: apps/api/src/services/context-assembler/ContextAssembler.ts(207,59): 
+          error TS18048: 'chunk.similarity' is possibly 'undefined'.
+```
+
+**根因**: `packages/schemas/src/rag/index.ts:47` — `similarity: z.number().min(0).max(1).optional()` → TS 类型是 `number | undefined`（无 null）。lint 修复把 `!= null` → `!== null`，但 `!== null` 不排除 `undefined`，TS 仍报错。**正确修复**：`!== undefined`（1 行改动）。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+生成: pytest-full.xml (884 passed, 0 failed), pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+
+- `prd.json.passes = false`
+- `prd.json.retryCount = 2`
+- 零回归: PASS (96 files · 884 passed · 0 failed)
+- lint: PASS
+- typecheck: FAIL (1 error · ContextAssembler.ts:207)

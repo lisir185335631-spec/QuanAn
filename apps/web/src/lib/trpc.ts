@@ -1,7 +1,7 @@
 /**
  * tRPC client for the main app — US-006
  * US-007: injects X-Trace-Id header on every fetch for end-to-end trace propagation.
- * Uses httpBatchStreamLink with credentials:include for session cookie support.
+ * PRD-19 US-005: splitLink routes subscriptions to httpSubscriptionLink (SSE).
  * AppRouter type lives in @quanqn/clients/router-types so apps/web can import it
  * via 'import type' — Vite/esbuild erases type-only imports, keeping @trpc/server
  * out of the browser bundle.

@@ -1,0 +1,7 @@
+US-010 완료. 결과 요약:
+
+- **Step6.tsx 완전 재작성** — 1 textarea + 字符计数 + 3 출력 모듈 (分镜脚本 table / 拍摄方案 4-list / 口播提词器 pre-formatted)
+- **모든 AC 통과**: 0 hardcode, 0 violet/amber (D4=B 클린), `STEP6_TEXTAREA_MIN_CHARS` 상수 사용, `STEP6_CHAR_COUNTER_TEMPLATE.replace()` 패턴
+- **vitest 6/6 PASS**, `tsc --noEmit` 0 errors
+- **브라우저 실측 PASS** — 5자 입력 시 버튼 disabled, 17자 입력 후 활성화, 클릭 후 3모듈 출력, `acc_step6` localStorage 저장 확인
+- commit: `af39026`

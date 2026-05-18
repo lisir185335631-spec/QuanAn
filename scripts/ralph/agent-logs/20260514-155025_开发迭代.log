@@ -1,0 +1,1 @@
+Done. The fix: `updateCanary` mutation changed from `updateMany` (which silently no-ops when no row exists) to `upsert` with the `specialistId_mode` composite unique key. Added a `findFirst` lookup for the active version to populate `currentVersionId` on first create. Tests updated to match. All 1659 tests pass, typecheck clean.

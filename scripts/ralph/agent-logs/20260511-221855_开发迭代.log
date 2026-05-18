@@ -1,0 +1,13 @@
+US-003 is complete. Here's a summary of what was implemented:
+
+**ContextAssembler.ts** — upgraded `_fetchRag` from placeholder `[]` to real RAG with agentId-based strategy:
+- CopywritingAgent (non-boom): 3 case + 1 formula + 1 element via parallel `ragRetrieveWorker.retrieve` calls
+- TopicAgent / BoomGenerator (CopywritingAgent mode=boom): 3 element + 2 case
+- Other 8 generative: 3 case + 2 element
+- Non-generative (DiagnosisAgent/DeepLearnAgent/EvolutionAgent): skip, return `[]`
+
+Added `_buildSection6` for `[Section 6] RAG 知识库参考` injection — skipped when ragChunks empty (D-020 degradation). Updated `metadata.layersUsed` to include `L5_rag` when chunks are found, and `ragHits` by type.
+
+**Tests**: 5 unit tests (AC-6) + 3 integration tests (AC-7) + 1 LLM judge (AC-8). Added `@/workers/rag` mock to 2 existing test files to prevent real embedding network calls.
+
+**Results**: typecheck 0, 884/888 tests pass (4 CI-only skipped), AC-5 grep = 0 hits, single ContextAssembler class confirmed.

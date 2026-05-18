@@ -1,0 +1,19 @@
+<COMPLETE>
+
+US-022 完成。以下是本次实现的摘要：
+
+**DenseTable.tsx 重写**
+- 新 interface：`DenseTableColumn<T>` (key/label/width?/sortable?/render?) + `DenseTableProps<T>` (columns/data/loading?/onRowClick?/onSort?)
+- 始终用 `useVirtualizer` (estimateSize=32)，100k+ 行 60fps
+- `loading=true` → 5 行 skeleton 占位；空 data → '无数据'
+- sortable 列头：none→asc→desc→null 三态切换 + `onSort` callback
+
+**5 业务页迁移**：`header:` → `label:`，`rows=` → `data=`，去除 `keyField`/`virtualScroll` 冗余 props
+
+**packages/ui/admin/index.ts**：补 export `DenseTableProps` type
+
+**scripts/verify-prd-11.sh**：9 段验收脚本，`SKIP_INTEGRATION=1` 下 33 PASS / 0 FAIL
+
+**audit 修复（bonus）**：
+- `audit-admin-rls-tables.sh`：扩展 13→26 表，修复 PRD-10 新增表遗漏（TD-039）
+- `audit-self-test.sh`：修复 Test1 grep 模式 + Test2 误报 `.env.production` 可选文件

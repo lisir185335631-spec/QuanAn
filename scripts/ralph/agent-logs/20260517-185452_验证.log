@@ -1,0 +1,26 @@
+prd.json 更新正确。
+
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+- AC-1: STEP5_STEP_TAG = 'STEP 05 · 爆款选题库' + STEP5_H1 = '爆款选题库' ✓
+- AC-2: STEP5_SUBTITLE 字面 1:1 spec §7.6 line 1595，含全角括号（）+ 全角逗号 ✓ (vitest test 验证)
+- AC-3: STEP5_INPUTS_2 2 项，industry + product，required=true，placeholder 字面正确 ✓
+- AC-4: STEP5_FILE_UPLOADS_2 2 项，product_doc + persona_doc，required=false，placeholder 字面正确 ✓
+- AC-5: STEP5_FILE_MAX_MB=20 + STEP5_FILE_ACCEPT='.pdf,.doc,.docx,.txt,.md,.csv' + STEP5_FILE_ACCEPT_LABEL='PDF、Word、TXT、Markdown、CSV' ✓
+- AC-6: STEP5_BUTTON_GENERATE='一键生成 5大类 爆款选题' + STEP5_BUTTON_GO_STEP7='生成爆款文案' + STEP5_LOADING_TEXT='AI 正在生成 100 个爆款选题，预计 60-120 秒...' ✓ (vitest test 验证)
+- AC-7: STEP5_CATEGORIES_5 5 项，key/label/description 字面 1:1 spec §7.6 line 1626-1630 ✓ (vitest labels test 验证)
+- AC-8: STEP5_TOPICS_PER_CAT=20 + STEP5_TOTAL_TOPICS=100 ✓ (vitest TOTAL test 验证)
+- AC-9: Step5Topic interface 含全部字段，platform/difficulty/potential_stars union 类型完整 ✓ (vitest interface test 验证)
+- AC-10: Step5Result interface { topics: Step5Topic[], generated_at: string } ✓
+- AC-11: 字面 grep 全部命中 ≥1 次（流量型×2, 变现型×2, 人设型×2, 认知型×2, 案例型×2, 一键生成 5大类 爆款选题×2, PDF、Word、TXT、Markdown、CSV×3）✓
+- AC-12: 数字锁全部满足（INPUTS_2.length===2, FILE_UPLOADS_2.length===2, CATEGORIES_5 labels 5项, TOPICS_PER_CAT===20, TOTAL_TOPICS===100）✓
+- AC-13: step5.test.ts 8 assertions 文件存在 ✓
+- AC-14: vitest 8/8 PASS exit 0，typecheck exit 0 ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-003/`
+已生成: vitest.xml (8 passed), vitest.stdout.txt, pytest-full.xml (91 tests 0 failures), pytest-full.stdout.txt, typecheck.stdout.txt (exit 0), manifest.json
+
+### 判决
+`prd.json.passes = true`，零回归 91/91 PASS，US-003 验证通过。
