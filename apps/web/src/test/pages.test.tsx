@@ -67,7 +67,9 @@ vi.mock('@/lib/trpc', () => ({
       delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
     stepData: {
-      save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+      get: { useQuery: () => ({ data: null, isLoading: false, isError: false, error: null, refetch: vi.fn() }) },
+      save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), mutate: vi.fn(), isPending: false }) },
+      saveStream: { useSubscription: vi.fn() },
     },
     stt: {
       transcribe: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ transcript: '测试语音', durationSec: 2, costUsd: 0.001 }), isPending: false }) },
@@ -122,8 +124,8 @@ describe('Step pages render', () => {
   });
 
   it('Step5 renders h1 with correct title', () => {
-    render(<Step5 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('发布与运营');
+    render(<MemoryRouter><Step5 /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款选题库');
   });
 
   it('Step8 renders h1 with correct title', () => {
@@ -155,7 +157,7 @@ describe('Tool pages render', () => {
 
   it('Knowledge renders h1 heading', () => {
     render(<Knowledge />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('方法论知识库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('知识库');
   });
 });
 

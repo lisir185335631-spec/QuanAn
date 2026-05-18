@@ -18,6 +18,8 @@ import { stepLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 
+import { STEP1_CTA_LABEL } from '@/lib/constants/industries';
+
 import { CategorySelect } from './CategorySelect';
 import { IndustrySelect } from './IndustrySelect';
 import { PlatformSelect } from './PlatformSelect';
@@ -141,7 +143,7 @@ export function StepForm({ stepKey, schema, onSuccess }: StepFormProps) {
         disabled={saveMutation.isPending}
         className="w-full sm:w-auto"
       >
-        {saveMutation.isPending ? '生成中…' : '开始生成'}
+        {saveMutation.isPending ? '生成中…' : (stepKey === 'step1' ? STEP1_CTA_LABEL : '开始生成')}
       </Button>
     </form>
   );

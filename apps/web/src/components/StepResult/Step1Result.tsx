@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { STEP1_RESULT_H2, STEP1_RESULT_H3_3 } from '@/lib/constants/industries';
 import { cn } from '@/lib/utils';
 
 interface Step1Data {
@@ -46,6 +47,8 @@ export function Step1Result({ data, isFallback }: Props) {
         </p>
       )}
 
+      <h2 className="text-h2 font-display text-on-surface">{STEP1_RESULT_H2}</h2>
+
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-body-lg">行业定位</CardTitle>
@@ -57,7 +60,7 @@ export function Step1Result({ data, isFallback }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-body-lg">市场分析</CardTitle>
+          <CardTitle className="text-body-lg">{STEP1_RESULT_H3_3[0]}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-body-sm text-muted-foreground leading-relaxed">
@@ -68,7 +71,7 @@ export function Step1Result({ data, isFallback }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-body-lg">竞争程度</CardTitle>
+          <CardTitle className="text-body-lg">{STEP1_RESULT_H3_3[1]}</CardTitle>
         </CardHeader>
         <CardContent>
           <span className={cn('text-body-md font-semibold', COMPETITION_COLORS[level])}>
@@ -79,7 +82,7 @@ export function Step1Result({ data, isFallback }: Props) {
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-body-lg">定位建议</CardTitle>
+          <CardTitle className="text-body-lg">{STEP1_RESULT_H3_3[2]}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-body-sm text-muted-foreground leading-relaxed">

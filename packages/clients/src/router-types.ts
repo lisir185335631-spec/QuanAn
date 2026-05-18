@@ -358,6 +358,20 @@ const _shadowRouter = _t.router({
         ok: true,
         data: { stepKey: '', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
       })),
+    saveStream: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as
+            | { stepKey: 'step5'; category: 'traffic' | 'monetize' | 'persona' | 'cognition' | 'case'; inputs: Record<string, unknown> }
+            | { stepKey: 'step7'; inputs: Record<string, unknown> },
+      )
+      // eslint-disable-next-line require-yield
+      .subscription(async function* () {
+        yield {} as
+          | { type: 'started'; traceId: string }
+          | { type: 'done'; result: Record<string, unknown> }
+          | { type: 'error'; message: string };
+      }),
     progress: _t.procedure.query((): StepProgressOutput => ({
       completed: 0,
       total: 9,

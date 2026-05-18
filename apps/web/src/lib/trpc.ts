@@ -1,7 +1,7 @@
 /**
  * tRPC client for the main app — US-006
  * US-007: injects X-Trace-Id header on every fetch for end-to-end trace propagation.
- * Uses httpBatchStreamLink with credentials:include for session cookie support.
+ * PRD-19 US-005: splitLink routes subscriptions to httpSubscriptionLink (SSE).
  * AppRouter type lives in @quanqn/clients/router-types so apps/web can import it
  * via 'import type' — Vite/esbuild erases type-only imports, keeping @trpc/server
  * out of the browser bundle.
@@ -9,7 +9,7 @@
  */
 
 import { QueryClient } from '@tanstack/react-query';
-import { httpBatchStreamLink } from '@trpc/client';
+import { httpBatchStreamLink, httpSubscriptionLink, splitLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 
 import type { AppRouter, AuthMeOutput } from '@quanqn/clients/router-types';
@@ -38,20 +38,28 @@ export const queryClient = new QueryClient({
   },
 });
 
+const TRPC_URL = `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000'}/trpc`;
+
 export const trpcClient = trpc.createClient({
   links: [
-    httpBatchStreamLink({
-      url: `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000'}/trpc`,
-      fetch(url, options) {
-        return fetch(url, {
-          ...options,
-          credentials: 'include',
-          headers: {
-            ...(options?.headers as Record<string, string> | undefined),
-            'x-trace-id': genTraceId(),
-          },
-        });
-      },
+    splitLink({
+      condition: (op) => op.type === 'subscription',
+      true: httpSubscriptionLink({
+        url: TRPC_URL,
+      }),
+      false: httpBatchStreamLink({
+        url: TRPC_URL,
+        fetch(url, options) {
+          return fetch(url, {
+            ...options,
+            credentials: 'include',
+            headers: {
+              ...(options?.headers as Record<string, string> | undefined),
+              'x-trace-id': genTraceId(),
+            },
+          });
+        },
+      }),
     }),
   ],
 });
