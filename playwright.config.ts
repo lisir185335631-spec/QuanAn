@@ -10,6 +10,9 @@ export default defineConfig({
   workers: 1,
   reporter: [['html'], ['github']],
 
+  snapshotDir: '/tmp/aiipznt-clone-research/screenshots',
+  snapshotPathTemplate: '{snapshotDir}/{arg}{ext}',
+
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.05,

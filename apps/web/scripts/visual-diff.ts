@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
@@ -25,8 +24,7 @@ export async function expectVisualMatch(
   } = options;
   await page.setViewportSize(viewport);
   const filename = baseline.endsWith('.png') ? baseline : `${baseline}.png`;
-  const baselinePath = path.join(AIIPZNT_BASELINE_DIR, filename);
-  await expect(page).toHaveScreenshot([baselinePath], {
+  await expect(page).toHaveScreenshot([filename], {
     maxDiffPixelRatio,
     fullPage,
     ...(clip != null ? { clip } : {}),

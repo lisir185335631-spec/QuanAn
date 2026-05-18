@@ -83,11 +83,11 @@ function HeaderNav() {
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1 h-8 px-2.5 text-on-surface"
+              className="group gap-1 h-8 px-2.5 text-on-surface"
               aria-label={group.label}
             >
               <span className="text-label-md font-medium">{group.label}</span>
-              <ChevronDown className="h-3 w-3 text-muted-foreground" />
+              <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -213,15 +213,19 @@ function MobileNav() {
 export function Header() {
   return (
     <header
-      className="sticky top-0 z-40 w-full border-b border-border bg-surface-container-low/90 backdrop-blur-sm"
+      className="sticky top-0 z-40 w-full border-b border-border bg-surface-container-low/90 backdrop-blur-2xl"
       data-testid="app-header"
     >
-      <div className="container flex h-12 items-center gap-2">
-        <div className="flex items-center gap-2 mr-3">
-          <span className="text-body-md font-display font-semibold text-primary tracking-tight select-none">
-            QuanQn
-          </span>
-        </div>
+      <div className="container flex h-16 items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 mr-3">
+          <div className="h-8 w-8 rounded bg-primary flex items-center justify-center shrink-0">
+            <span className="text-on-primary font-display font-black text-xs">Q</span>
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="font-display font-bold text-primary text-sm tracking-tight">QUAN</span>
+            <span className="font-display font-bold text-primary text-sm tracking-tight">QN</span>
+          </div>
+        </Link>
 
         <div className="flex-1 flex justify-center">
           <HeaderNav />
