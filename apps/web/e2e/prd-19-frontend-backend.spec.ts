@@ -109,6 +109,9 @@ async function submitStep1(page: Page, industryText: string): Promise<void> {
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
+  // Serial mode: test(c) clears step5/DB data; test(d) spawns prd-18 subprocess.
+  // Running them in parallel would cause clearStepDataForTest in (c) to race with prd-18 test3's SSE stream.
+  test.describe.configure({ mode: 'serial' });
   // Pre-flight: verify backend API is reachable via proxy
   test.beforeAll(async ({ request }) => {
     let backendOk = false;
@@ -207,8 +210,13 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     // ── Switch to Account B (clears A's LS, reloads) ──
     await page.locator('[data-testid="account-switcher-trigger"]').click();
     await page.locator(`[data-testid="account-switcher-item-${accBId}"]`).waitFor({ timeout: 5_000 });
+    // Set up load-event listener BEFORE click — account switch triggers a full page reload.
+    // waitForLoadState('load') may resolve for the CURRENT state before reload starts;
+    // waitForEvent('load') is set up before click and catches the reload's load event.
+    const loadPromiseB = page.waitForEvent('load');
     await page.locator(`[data-testid="account-switcher-item-${accBId}"]`).click();
-    await page.waitForLoadState('load');
+    await loadPromiseB;
+    await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
 
     await page.goto(`${BASE_URL}/step/1`);
     await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
@@ -236,8 +244,11 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     // ── Switch back to Account A (clears B's LS, reloads) ──
     await page.locator('[data-testid="account-switcher-trigger"]').click();
     await page.locator(`[data-testid="account-switcher-item-${accAId}"]`).waitFor({ timeout: 5_000 });
+    // Same load-event pattern as A→B switch above.
+    const loadPromiseA = page.waitForEvent('load');
     await page.locator(`[data-testid="account-switcher-item-${accAId}"]`).click();
-    await page.waitForLoadState('load');
+    await loadPromiseA;
+    await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
 
     await page.goto(`${BASE_URL}/step/1`);
     await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 10_000 });
@@ -323,8 +334,9 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     await page.locator('input').nth(0).fill('美食');
     await page.locator('input').nth(1).fill('家常菜制作分享');
     await page.locator('button', { hasText: '一键生成 5大类 爆款选题' }).click();
-    // Wait for any category tab to appear (streaming complete)
-    await expect(page.locator('text=流量型')).toBeVisible({ timeout: 30_000 });
+    // Wait for the '流量型' tab to appear — use getByRole to avoid strict-mode multi-match
+    // (subtitle text also contains '流量型', so locator('text=流量型') matches 2 elements)
+    await expect(page.getByRole('tab', { name: '流量型' })).toBeVisible({ timeout: 30_000 });
     expect(await getStepLs(page, accountId!, 'step5')).not.toBeNull();
 
     // ── Step 6 ─────────────────────────────────────────────────────────────────

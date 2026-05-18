@@ -243,8 +243,9 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     await expect(page.locator('h4').filter({ hasText: '反方' })).toBeVisible();
     await expect(page.locator('h4').filter({ hasText: '我的立场' })).toBeVisible();
 
-    // 评论引导区
-    await expect(page.locator('text=评论区引导')).toBeVisible();
+    // 评论引导区 — use first() to avoid strict-mode multi-match:
+    // <strong>评论区引导：</strong> and <p class="text-xs">评论区引导</p> both match
+    await expect(page.locator('text=评论区引导').first()).toBeVisible();
 
     await page.screenshot({ path: path.join(RESULTS_DIR, 'prd-18-step-7.png') });
 
