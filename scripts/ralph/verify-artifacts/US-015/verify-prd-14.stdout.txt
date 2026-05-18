@@ -1,0 +1,81 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QuanQn PRD-14 P9.4 advanced-domains · 可重复验收
+  起点: /Users/return/Desktop/QuanQn · 时间: 2026-05-15 17:48:40
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━ §1 audit-redlines-admin · 11 LD-A + 6 R-A 全过 ━━━
+  ✅ PASS: audit-redlines-admin · ALL PASS · 11 LD-A + 6 R-A
+  ✅ PASS: audit-redlines-admin.sh 含 LD-A9 检测段
+  ✅ PASS: audit-redlines-admin.sh 含 LD-A10 检测段
+  ✅ PASS: audit-redlines-admin.sh 含 LD-A11 检测段
+
+━━━ §2 prisma/schema.prisma · 6 张 PRD-14 相关表 ━━━
+  ✅ PASS: schema 含 constant_versions 表 (@@map)
+  ✅ PASS: schema 含 constant_canary_config 表 (@@map)
+  ✅ PASS: schema 含 admin_ab_experiment 表
+  ✅ PASS: schema 含 ab_assignments 表
+  ✅ PASS: schema 含 feature_flags 表
+  ✅ PASS: schema 含 system_config 表
+
+━━━ §3 7 _xxxInTx 单点函数存在 + 0 dual-write 绕过 ━━━
+  ✅ PASS: _startAbExperimentInTx 单点函数存在
+  ✅ PASS: _stopAbExperimentInTx 单点函数存在
+  ✅ PASS: _publishConstantVersionInTx 单点函数存在
+  ✅ PASS: _toggleFeatureFlagInTx 单点函数存在
+  ✅ PASS: _updateSystemConfigInTx 单点函数存在
+  ✅ PASS: _approveRequestInTx 单点函数存在
+  ✅ PASS: _publishPromptVersionInTx 单点函数存在
+  ✅ PASS: 0 dual-write: ab_experiment.status 仅在 _xxxInTx 内修改
+  ✅ PASS: 0 dual-write: constant_versions.status='active' 仅在 _publishConstantVersionInTx
+
+━━━ §4 plan-check 2.6.17 LD-A 三方一致性(AGENTS.md + 源码 + audit 脚本) ━━━
+  ✅ PASS: AGENTS.md 含 LD-A9/10/11 (3/3)
+  ✅ PASS: apps/api/src 源码注释含 LD-A9/10/11 (3/3)
+  ✅ PASS: audit-redlines-admin.sh 含 LD-A9/10/11 (3/3)
+
+━━━ §5 ContextAssembler · 7 路 Promise.allSettled 并行 ━━━
+  ✅ PASS: ContextAssembler 使用 Promise.allSettled
+  ✅ PASS: ContextAssembler 7 路并行 fetch(withTimeout × 7 ≥7)
+  ✅ PASS: ContextAssembler 含第 7 路 _fetchActiveConstants (PRD-14 US-008)
+  ✅ PASS: ContextAssembler enable_fallback_prompt bypass 出现 4 处(≥2)
+
+━━━ §6 BullMQ · 9 admin cron worker ━━━
+  ✅ PASS: admin jobs 含        9 个 BullMQ Queue(≥9)
+  ✅ PASS: admin jobs 含        9 个 BullMQ Worker(≥9)
+  ✅ PASS: ab-stop-loss.job.ts 存在
+  ✅ PASS: emergency-post-review.job.ts 存在
+  ✅ PASS: constant-embed-rebuild.job.ts 存在
+  ✅ PASS: ab-stop-loss.job.ts 含 hourly cron pattern
+  ✅ PASS: emergency-post-review.job.ts 含 03:30 cron pattern
+
+━━━ §7 admin tRPC · PRD-14 三大 router ≥17 procedure ━━━
+  ✅ PASS: PRD-14 三大 router 共 27 个 procedure(≥17)
+  ✅ PASS: router abExperiments.ts 含 createAbExperiment procedure
+  ✅ PASS: router abExperiments.ts 含 startAbExperiment procedure
+  ✅ PASS: router featureFlags.ts 含 emergencyToggleSystemConfig procedure
+  ✅ PASS: router constants.ts 含 submitForReview procedure
+  ✅ PASS: router constants.ts 含 rollbackVersion procedure
+  ✅ PASS: abExperimentsRouter 已接入 admin index
+
+━━━ §8 admin pages · 4 PRD-14 页面 ━━━
+  ✅ PASS: admin page 存在: abExperiments/AbExperimentsPage.tsx
+  ✅ PASS: admin page 存在: abExperiments/ExperimentDetailPage.tsx
+  ✅ PASS: admin page 存在: constants/ConstantsPage.tsx
+  ✅ PASS: admin page 存在: featureFlags/FeatureFlagsPage.tsx
+
+━━━ §9 E2E · 4 flows fixture stub ━━━
+  ✅ PASS: E2E 测试文件存在: prd14-ab-experiment-e2e.test.ts
+  ✅ PASS: E2E 测试文件存在: prd14-constant-version-e2e.test.ts
+  ✅ PASS: E2E 测试文件存在: prd14-emergency-switch-e2e.test.ts
+  ✅ PASS: E2E 测试文件存在: prd14-cross-domain-e2e.test.ts
+  → 正在运行 4 个 E2E flow tests...
+  ✅ PASS: 4 E2E flow tests 全部通过
+  ✅ PASS: E2E tests: 32 passed
+
+━━━ typecheck · 全 6 workspace packages 0 errors ━━━
+  ✅ PASS: pnpm typecheck 0 errors
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  验收结果汇总: ✅ 51 PASS · ❌ 0 FAIL · ⚠️  0 WARN · ⏭️  0 SKIPPED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ ALL PASS · PRD-14 advanced-domains 验收通过

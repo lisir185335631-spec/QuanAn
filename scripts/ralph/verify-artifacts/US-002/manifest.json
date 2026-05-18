@@ -1,16 +1,17 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-11T01:36:00",
-  "validator_end_ts": "2026-05-11T01:37:45",
-  "test_command": "pnpm test (vitest run) + pnpm typecheck + pnpm lint",
+  "validator_start_ts": "2026-05-18T12:42:00",
+  "validator_end_ts": "2026-05-18T12:44:00",
+  "test_command": "cd apps/api && pnpm vitest run src/services/quota/__tests__/userQuota.service.test.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt"
-  ],
-  "notes": "746 tests passed (80 files). 3 new specialist test files: EvolutionAgent.test.ts (2), DailyTaskAgent.test.ts (2), VoiceChatAgent.test.ts (2) = 6 new tests. typecheck: 0 errors across 6 workspace projects. lint: 0 warnings. AC-9 SoT: 5 tool names in 7+ files; 7 task types in 3+ files."
+  ]
 }

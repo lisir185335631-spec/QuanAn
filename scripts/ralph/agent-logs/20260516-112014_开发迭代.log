@@ -1,0 +1,9 @@
+US-001 Iteration 2 修复完成：
+
+**修复内容**
+- `index.html`：Orbitron 字体 URL 加入 `wght@400`，使 `document.fonts.check('1em Orbitron') === true`（AC-6 严格满足）
+- `pages.test.tsx`：补全 `auth.me` / `myTopics.*` / `trending.listWithFavorites/kpiStats/favorite` mock；给 Trending / Copywriting / MyTopics 加 `MemoryRouter`；Knowledge 期望文本对齐组件实际值 `'知识库'`
+
+**质量状态**
+- typecheck ✅ · audit:redlines ✅ · audit:redlines-admin ✅
+- 原 4 个测试失败全部修复，`seed-knowledge-chunk` 是 pre-existing TD，与本 story 无关

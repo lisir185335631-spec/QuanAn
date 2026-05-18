@@ -1,0 +1,11 @@
+US-010 is implemented and committed. The Validator will mark it `passes: true`. 7 stories passed, 7 pending (US-010 awaiting Validator audit).
+
+**Summary**: Implemented US-010 in full:
+- `apps/api/src/lib/redis.ts` — ioredis singleton shared by BullMQ and rate limit
+- `apps/api/src/lib/rate-limit/image-gen.ts` — sliding window rate limiter (11th call throws)
+- `apps/api/src/workers/image-gen/queue.ts` — real Queue (removed stub, shared redis, backoff=5000ms)
+- `apps/api/src/workers/image-gen/worker.ts` — Worker(concurrency=2) + `queryImageGenStatus`
+- `apps/api/src/index.ts` — dev-mode in-process worker startup
+- `package.json` — `worker:image-gen` script
+- `vitest.config.ts` — ioredis/bullmq aliases for correct vi.mock resolution
+- 8 unit tests + 1 integration test (69 files, 670 tests, all green)

@@ -1,0 +1,31 @@
+## 검증 결과: US-008 [PASS]
+
+### AC 대조
+
+| AC | 내용 | 결과 |
+|---|---|---|
+| AC1 | vitest unit ≥ 50 (15 router procedure cover) | ✓ **84 procedure 테스트**, 174 total, 17 routers |
+| AC2 | playwright e2e ≥ 2 (다계정 격리 + LS↔DB) | ✓ **4 passed** (2 spec × 2 browser) |
+| AC3 | 全테스트 exit code 0 | ✓ vitest:0, playwright:0 |
+| AC4 | typecheck 전 6 workspace 0 error | ✓ admin/api/web/schemas/ui/clients 전부 통과 |
+| AC5 | TD-007 closed · web lint clean | ✓ exit 0 (--max-warnings=0) |
+| AC6 | TD-008 closed · generateTraceId 리네임 | ✓ `generateHttpTraceId`(무인자·HTTP layer) + `generateSpecialistTraceId`(유인자·Specialist layer) · 구 `generateTraceId` 잔존 없음 |
+| AC7 | vitest < 30s · playwright < 5min | ✓ vitest 0.52s, playwright 1.0s |
+| AC8 | Typecheck passes | ✓ 전 workspace 0 error |
+| AC9 | Tests pass (全 ≥ 57) | ✓ 174 vitest + 4 playwright = **178 total** |
+
+### 산출물 경로
+
+```
+scripts/ralph/verify-artifacts/US-008/
+  vitest-full.xml       (174 passed, 0 failed)
+  vitest-full.stdout.txt
+  typecheck.txt         (6 workspaces, 0 errors)
+  lint-web.txt          (exit 0)
+  playwright.stdout.txt (4 passed / 1.0s)
+  manifest.json         (verdict=PASS)
+```
+
+### 판결
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""` 기록 완료.

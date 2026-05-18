@@ -1,0 +1,5 @@
+US-004 done. Summary of changes:
+
+- **BrandingAgent.ts**: Added `SYSTEM_PROMPT_PREFIX` per mode (packaging/persona), `invokeLLM` now builds `systemPrompt = prefix + ctx.systemPrompt` — satisfies SHIELD anti-pattern (no single shared prompt for dual modes)
+- **BaseSpecialist.ts**: `_writeCostLog` accepts optional `agentMode`; both success and fallback paths pass `req.mode`; `prisma.costLog.create` now writes `agentMode` — satisfies AC-4
+- **BrandingAgent.real-llm.test.ts**: 2 tests with `describe.skipIf` (CI safe), verifying schema, `isFallback=false`, `tokensUsed > 0`, `agentMode='packaging'/'persona'` in cost_log — 10 pass / 4 skip, zero regression

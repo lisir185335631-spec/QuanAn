@@ -1,0 +1,1 @@
+US-006 修复完成。根因是 e2e 测试直接点击 `[data-element="scarcity"]`，而 scarcity 在 `信息密度` 组（默认折叠），元素在 DOM 中但不可见。修复方式：在点击 scarcity 前先展开该分组。2/2 e2e（chromium + mobile）全通，476 unit tests 无回归，typecheck 零错误。

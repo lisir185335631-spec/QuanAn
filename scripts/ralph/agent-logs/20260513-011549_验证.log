@@ -1,0 +1,43 @@
+## 验证结果: US-014 [FAIL]
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|---|---|
+| AC-1 | ✓ | @react-pdf/renderer ^4.5.1 in packages/ui/package.json; PdfBillTemplate.tsx at packages/ui/src/admin/ |
+| AC-2 | ✓ | `generateMonthlyBill(month, adminId): Promise<GenerateBillResult>` 完整实现 |
+| AC-3 | ✓ | `exportMonthlyPdf` mutation 返回 `{filename, contentType, size, data:base64}` |
+| AC-4 | ✓ | `[月度账单 PDF]` 按钮 + `handleExportPdf()` + 浏览器 download |
+| AC-5 | ✓ | `PageFooter` fixed + `Content-Hash: SHA-256 = {hash}` + `Page N/M` + actorEmail + generatedAt |
+| AC-6 | ✓ | 头页: 月份 + QuanQn logo placeholder + 总成本 + yoyPercent |
+| AC-7 | ✓ | `isEmpty=true` → `本月无成本记录` 文字 · 不抛 error (单测验证) |
+| AC-8 | ✓ | catch 块 → TRPCError INTERNAL_SERVER_ERROR + logAdminAction `export_failed` |
+| AC-9 | ✓ | `ROWS_PER_PAGE=50` 分页 · continuation pages 循环 |
+| AC-10 | ✓ | `eventCategory:'export'` + `eventType:'export_cost_monthly_pdf'` + `pdfHash:'[REDACTED]'` |
+| AC-11 | SKIP | 需要运行中服务器 + admin 认证 · 环境未就绪 |
+| AC-12 | ✓ | 11/11 单元测试全通过 |
+| **AC-13** | **✗** | **pnpm typecheck 2 个错误** |
+| AC-14 | ✓ | audit:redlines-admin ALL PASS |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-014/
+已生成: pytest.xml (11 passed), pytest-full.xml (1204 passed + 9 pre-existing fails), 
+         pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`
+
+### AC-13 具体错误(两处都在 pdf-bill.test.ts)
+
+```
+pdf-bill.test.ts:6  TS6133: 'createHash' is declared but its value is never read.
+pdf-bill.test.ts:72 TS2339: Property 'contentType' does not exist on type 'GenerateBillResult'.
+```
+
+修复方向:
+1. 删除第6行 `import { createHash } from 'node:crypto'`
+2. 删除第72行 `expect(result.contentType).toBeUndefined()` (contentType 不在 service 层 — 该断言本身的注释已说明这一点，直接删除即可)

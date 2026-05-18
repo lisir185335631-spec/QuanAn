@@ -1,0 +1,174 @@
+<testsuites id="" name="" tests="6" failures="4" skipped="1" errors="0" time="125.15186899999999">
+<testsuite name="prd-18-step-4-5-6-7-8.spec.ts" timestamp="2026-05-18T11:45:11.881Z" hostname="chromium" tests="6" failures="4" skipped="1" time="124.006" errors="0">
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 + 粉丝量 + 填信息 + 选目标 → 生成执行计划 → 结果可见" classname="prd-18-step-4-5-6-7-8.spec.ts" time="31.095">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--e805d-粉丝量-填信息-选目标-→-生成执行计划-→-结果可见-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--e805d-粉丝量-填信息-选目标-→-生成执行计划-→-结果可见-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:62:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 + 粉丝量 + 填信息 + 选目标 → 生成执行计划 → 结果可见 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-testid="step-result-step4"]')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 30000ms
+      - waiting for locator('[data-testid="step-result-step4"]')
+
+
+      90 |
+      91 |     // Wait for result component to appear
+    > 92 |     await expect(page.locator('[data-testid="step-result-step4"]')).toBeVisible({ timeout: 30_000 });
+         |                                                                     ^
+      93 |
+      94 |     await page.screenshot({ path: path.join(RESULTS_DIR, 'prd-18-step-4.png') });
+      95 |
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:92:69
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--e805d-粉丝量-填信息-选目标-→-生成执行计划-→-结果可见-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--e805d-粉丝量-填信息-选目标-→-生成执行计划-→-结果可见-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品描述 + 选营收 → 生成变现路径 → 结果可见" classname="prd-18-step-4-5-6-7-8.spec.ts" time="30.622">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--ad2ab-·-填产品描述-选营收-→-生成变现路径-→-结果可见-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--ad2ab-·-填产品描述-选营收-→-生成变现路径-→-结果可见-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:103:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品描述 + 选营收 → 生成变现路径 → 结果可见 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-testid="step-result-step4b"]')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 30000ms
+      - waiting for locator('[data-testid="step-result-step4b"]')
+
+
+      123 |
+      124 |     // Wait for result
+    > 125 |     await expect(page.locator('[data-testid="step-result-step4b"]')).toBeVisible({ timeout: 30_000 });
+          |                                                                      ^
+      126 |     // Verify key result sections (Step4bResult renders CardTitles)
+      127 |     await expect(page.locator('text=现状分析').first()).toBeVisible();
+      128 |
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:125:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--ad2ab-·-填产品描述-选营收-→-生成变现路径-→-结果可见-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--ad2ab-·-填产品描述-选营收-→-生成变现路径-→-结果可见-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填" classname="prd-18-step-4-5-6-7-8.spec.ts">
+<properties>
+<property name="skip" value="requires OPENAI_API_KEY for real LLM 5 tab SSE">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成分镜表 → 分镜表可见" classname="prd-18-step-4-5-6-7-8.spec.ts" time="30.431">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--cce8d-ep-6-·-粘贴文案-→-生成分镜表-→-分镜表可见-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--cce8d-ep-6-·-粘贴文案-→-生成分镜表-→-分镜表可见-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:195:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成分镜表 → 分镜表可见 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-testid="step-result-step6"]')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 30000ms
+      - waiting for locator('[data-testid="step-result-step6"]')
+
+
+      210 |
+      211 |     // Wait for result (Step6Result renders "分镜表" card)
+    > 212 |     await expect(page.locator('[data-testid="step-result-step6"]')).toBeVisible({ timeout: 30_000 });
+          |                                                                     ^
+      213 |     await expect(page.locator('text=分镜表').first()).toBeVisible();
+      214 |
+      215 |     await page.screenshot({ path: path.join(RESULTS_DIR, 'prd-18-step-6.png') });
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:212:69
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--cce8d-ep-6-·-粘贴文案-→-生成分镜表-→-分镜表可见-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--cce8d-ep-6-·-粘贴文案-→-生成分镜表-→-分镜表可见-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选脚本类型 + 填话题 → 生成文案 → 结果可见" classname="prd-18-step-4-5-6-7-8.spec.ts" time="0.786">
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 选平台 + 选经验等级 → 生成直播话术 → 初版 + 优化版可见" classname="prd-18-step-4-5-6-7-8.spec.ts" time="30.845">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--6eca1-台-选经验等级-→-生成直播话术-→-初版-优化版可见-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--6eca1-台-选经验等级-→-生成直播话术-→-初版-优化版可见-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:255:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 选平台 + 选经验等级 → 生成直播话术 → 初版 + 优化版可见 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-testid="step-result-step8"]')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 30000ms
+      - waiting for locator('[data-testid="step-result-step8"]')
+
+
+      274 |
+      275 |     // Wait for result (Step8Result renders "初版话术" + "优化版话术" cards)
+    > 276 |     await expect(page.locator('[data-testid="step-result-step8"]')).toBeVisible({ timeout: 30_000 });
+          |                                                                     ^
+      277 |     await expect(page.locator('text=初版话术').first()).toBeVisible();
+      278 |     await expect(page.locator('text=优化版话术').first()).toBeVisible();
+      279 |
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:276:69
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--6eca1-台-选经验等级-→-生成直播话术-→-初版-优化版可见-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../scripts/ralph/verify-artifacts/US-008/e2e-prd18.xml/prd-18-step-4-5-6-7-8-PRD--6eca1-台-选经验等级-→-生成直播话术-→-初版-优化版可见-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>

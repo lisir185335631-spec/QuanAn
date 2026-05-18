@@ -1,0 +1,13 @@
+US-016 implementation is complete. Here's a summary:
+
+**Files created/modified:**
+- `apps/api/src/services/admin/audit/pdf-forensic.service.ts` — US-018 stub (`generateForensicPdf` returns base64 placeholder)
+- `apps/api/src/trpc/routers/admin/audit.ts` — 5 new procedures + existing `listMine`
+- `apps/api/src/trpc/routers/admin/__tests__/audit.test.ts` — 35 unit tests
+
+**Key design decisions:**
+- `byTraceId` uses `$executeRaw` template literal (not `$executeRawUnsafe`) for SET LOCAL to pass R-A4
+- `byAdminId` reads `x-actor-mode` header for the `readonly_admin + legal` mode check per the SHIELD pattern
+- All 5 procedures use `adminProcedure` (satisfies LD-A3 via adminRLS in chain)
+
+**All checks pass:** typecheck ✓ · 35 tests ✓ · audit-redlines ALL PASS (5LD-A + 6R-A) ✓ · audit-admin-rls.ts 32 procedures ✓

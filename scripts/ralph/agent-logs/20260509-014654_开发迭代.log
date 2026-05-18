@@ -1,0 +1,9 @@
+US-004 实现完成。全部 249 个测试通过，typecheck 通过。
+
+**实现摘要：**
+
+- **`PositioningAgent.ts`**: 继承 BaseSpecialist，五层配置完整（reasoning tier，60s timeout，retry=1），`outputSchema` 是 getter 按 `_mode` 返回 Step1/Step4 schema（REJ-007），`_validateMode()` 做 runtime check（AC-8），导出单例（REJ-004）
+
+- **`stepData.ts`**: save mutation 内 step1/step4 调 positioningAgent，agent 结果写回 `stepData.result`
+
+- **`PositioningAgent.test.ts`**: 8 tests，2 mode × 3 场景（happy/retry/cold-start）+ mode validation + 五层配置验证

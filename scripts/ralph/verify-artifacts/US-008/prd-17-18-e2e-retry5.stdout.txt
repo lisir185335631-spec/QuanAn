@@ -1,0 +1,43 @@
+
+Running 7 tests using 1 worker
+
+[1A[2K[1/7] [chromium] › e2e/prd-17-step1-3-3b.spec.ts:20:3 › PRD-17 Step1 → Step3 → Step3b E2E › 完整流程：行业选择 → 账号包装 → 人设定制
+[1A[2K[2/7] [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3
+[1A[2K[3/7] [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:65:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品 → 生成变现路径 → 5 H3 + 3 阶梯
+[1A[2K[4/7] [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:121:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填
+[1A[2K  1) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:121:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('tab', { name: '变现型' })
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 30000ms[22m
+    [2m  - waiting for getByRole('tab', { name: '变现型' })[22m
+
+
+      143 |     // 等 5 类 tab — 流量型 先出；后续 4 类等 SSE 流续出，给足 30s
+      144 |     await expect(page.getByRole('tab', { name: '流量型' })).toBeVisible({ timeout: 15_000 });
+    > 145 |     await expect(page.getByRole('tab', { name: '变现型' })).toBeVisible({ timeout: 30_000 });
+          |                                                          ^
+      146 |     await expect(page.getByRole('tab', { name: '人设型' })).toBeVisible({ timeout: 30_000 });
+      147 |     await expect(page.getByRole('tab', { name: '认知型' })).toBeVisible({ timeout: 30_000 });
+      148 |     await expect(page.getByRole('tab', { name: '案例型' })).toBeVisible({ timeout: 30_000 });
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:145:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/error-context.md
+
+
+[1A[2K[5/7] [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:178:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成拍摄计划 → 3 模块
+[1A[2K[6/7] [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:212:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导
+[1A[2K[7/7] [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:256:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 切子功能1 → 填字段 → 生成直播方案 → 6 H3
+[1A[2K  1 failed
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:121:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+  6 passed (1.4m)

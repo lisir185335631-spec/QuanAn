@@ -1,0 +1,20 @@
+
+> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
+> vitest run --config vitest.config.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/components/StepProgress.test.tsx (6 tests) 20ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 23ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 66ms
+ ❯ src/test/pages.test.tsx (27 tests | 1 failed) 148ms
+   × Tool pages render > Trending renders h1 heading 17ms
+     → Cannot read properties of undefined (reading 'useQuery')
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 50 passed (51)
+   Start at  11:33:17
+   Duration  1.14s (transform 317ms, setup 122ms, collect 865ms, tests 256ms, environment 632ms, prepare 145ms)
+
+ ELIFECYCLE  Test failed. See above for more details.

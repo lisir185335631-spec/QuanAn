@@ -1,0 +1,30 @@
+US-012 is now `passes: true, notes: "", retryCount: 0`. The grep result above was for a different story. All artifacts are written. Let me do a final summary:
+
+---
+
+## 验证结果: US-012 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC1 | STEP8_STEP_TAG + H1 + SUBTITLE.replace('{industry}') ✓ | ✓ |
+| AC2 | STEP8_SUBFUNCTIONS_2 · default 子功能1 · click 切换 ✓ | ✓ |
+| AC3 | Step8GeneratePlan.tsx · 4 字段 + 6 H3 InfoCard 输出 ✓ | ✓ |
+| AC4 | Step8OptimizeScript.tsx · 2 字段 + disabled <10字 + 2 InfoCard 输出 ✓ | ✓ |
+| AC5 | 三态 + generateMockResult + setTimeout 3-5s ✓ | ✓ |
+| AC6 | localStorage: 进入读 acc_step1.industry · 提交后写 acc_step8 ✓ | ✓ |
+| AC7 | grep 0 hardcode (子功能/生成直播方案/AI优化话术/新手等) ✓ | ✓ |
+| AC8 | grep 0 violet/amber ✓ | ✓ |
+| AC9 | vitest 119/119 PASS · tsc 0 error ✓ | ✓ |
+| AC10 | browser: default子功能1·4字段·切子功能2·2字段·填字段·点生成·5s后6 H3输出·acc_step8非null·无error ✓ | ✓ |
+| AC11 | pnpm tsc --noEmit 0 error ✓ | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-012/` — vitest.xml, vitest.stdout.txt, typecheck.stdout.txt, manifest.json  
+4 张截图 → `screenshots/validator-us-012-pass-{1-4}.png`
+
+### 判决
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`
+
+唯一 console warning 是 React Router v7 future flags (pre-existing · 非错误 · 全项目共有)。

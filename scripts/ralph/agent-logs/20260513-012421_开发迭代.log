@@ -1,0 +1,5 @@
+Fixed. Two TypeScript errors in `pdf-bill.test.ts`:
+1. Removed unused `createHash` import (line 6)
+2. Removed invalid `result.contentType` assertion (line 72) — `contentType` lives at the router layer, not in `GenerateBillResult`
+
+`pnpm typecheck` → 0 errors, 11/11 unit tests pass.

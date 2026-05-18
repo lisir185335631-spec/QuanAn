@@ -1,0 +1,29 @@
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+- AC-1: `videoProduction.ts` 存在，export `videoProductionRouter`，含 `generate` procedure ✓
+- AC-2: `protectedProcedure.input(videoProductionInputSchema).mutation` 调 `videoAgent.execute(mode='production')`，写 history with agentId='VideoAgent', agentMode='production', contentType='json', explicit accountId ✓
+- AC-3: grep 命中 `where: { id: row.id, accountId: activeAccountId! }` — ≥1 匹配 ✓
+- AC-4: `BaseSpecialist._writeCostLog` 以 `callType='specialist_call'`、`modelUsed='claude-sonnet-4-6'`、`accountId` 写入 cost_log。Integration test `expect(costRow?.callType).toBe('specialist_call')` 通过 ✓
+- AC-5: `_app.ts` 注册 `videoProduction: videoProductionRouter` ✓
+- AC-6: `router-types.ts` shadow router 含 `videoProduction.generate` (input/output 类型完整) ✓
+- AC-7: 4 单元测试覆盖 happy path、BAD_REQUEST、isFallback=true、RLS 隔离 → INTERNAL_SERVER_ERROR ✓
+- AC-8: Integration test nock + real DB，exit 0，耗时 63ms < 5s，nock.isDone()=true，history+cost_log 均写入 DB ✓
+- AC-9: Schema `min(10)/max(3000)`。测试：10 chars pass、3001 chars fail、< 10 chars fail ✓
+- AC-10: History model 有 `@@index([accountId, agentId])` 索引，filter agentId+agentMode 支持，< 200ms 可保证 ✓
+- AC-11: typecheck 6 ws 0 error ✓
+- AC-12: `pnpm test` 两个文件 exit 0，7/7 通过 ✓
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+已生成: vitest.xml (7 passed), vitest.stdout.txt, typecheck.txt (0 errors), pytest-full.stdout.txt (601 passed), manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` | `retryCount = 0` | `notes = ""`
+
+**注**: LLMGateway cost-logger 在 integration tests 中记录 `cost_log.write_failed`（userId FK 违反）属**跨 story 预存在问题**，与 US-003 实现无关。BaseSpecialist 的 `_writeCostLog`（`callType='specialist_call'`，无 userId）独立成功，满足 AC-4。601 全量测试零回归通过。

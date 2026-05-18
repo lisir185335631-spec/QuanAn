@@ -1,0 +1,40 @@
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|----|:----:|------|
+| AC-1 · admin-routes.ts route entry | ✅ | `/admin/evolution-health` + `readonly_admin` 就位 (`lib/admin-routes.ts`) |
+| AC-2 · EvolutionHealthPage.tsx | ✅ | 文件存在，嵌套在 AdminLayout |
+| AC-3 · 4 KPI 卡 + 饼图 + 仪表 | ✅ | 浏览器截图确认全部渲染 |
+| AC-4 · DenseTable + 6 列 | ✅ | 复用 `@quanqn/ui/admin` DenseTable |
+| AC-5 · 筛选 + cursor 分页 | ✅ | FilterBar 3 selects + prevItems/cursor 状态机 |
+| AC-6 · Drawer + timeline + 强制重跑 | ✅ | `EvolutionHealthDrawer.tsx` 实现完整，role gate `super_admin` |
+| AC-7 · 空/加载/错误状态 | ✅ | 代码确认 + 浏览器截图显示错误状态 |
+| AC-8 · 浏览器页面渲染 | ✅ | 页面渲染，4 KPI 卡可见 (`screenshots/validator-us-006-evolution-health-01.png`) |
+| AC-9 · Drawer 交互 + Approval toast | ⚠️ SUSPECTED | API 后端无法启动，无法获取数据行，无法点击测试；代码正确，23 单元测试全通过 |
+| AC-10 · audit:redlines-admin 0 命中 | ✅ | ALL PASS · 7 LD-A + 6 R-A (含 LD-A7) |
+| AC-11 · ≥1610 pass · 0 fail | ❌ FAIL | 1633 pass (≥1610 ✅) · **9 fail** (ECONNREFUSED) |
+| AC-12 · Typecheck 0 errors | ✅ | 全量 0 errors |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+  pytest-full.xml       — JUnit XML (9 fail, pre-existing ECONNREFUSED)
+  pytest-full.stdout.txt — 完整 test 输出
+  typecheck.stdout.txt  — 0 errors
+  manifest.json         — 元数据 (verdict=FAIL, zero_regression=FAIL)
+```
+
+### CONFIRMED 失败
+
+**AC-11**: `pnpm test` → 9 failed (3 files: auth.test.ts×6, auth.me.test.ts×1, trace.test.ts×2) — 全部 `ECONNREFUSED localhost:3000`，在 US-006 commit (HEAD) 之前已存在 (`git show HEAD~1:tests/integration/api/auth.test.ts` → 文件存在)。
+
+**API 后端无法启动**: `ERR_MODULE_NOT_FOUND: react in apps/api/src/services/admin/audit/pdf-forensic.service.ts` → AC-9 浏览器 Drawer 验证被阻断。
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`
+
+**Opus 请注意**: 两项失败均为 pre-existing TD，非 US-006 引入：(1) 9 个 integration test 需要运行中的 API 服务器；(2) pdf-forensic.service.ts 的 React import 阻止 API 启动。代码实现质量良好（23 US-006 单元测试全通过，LD-A7 通过，typecheck 干净）。是否豁免请 Opus 判断。

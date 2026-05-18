@@ -1,0 +1,8 @@
+US-003 完成。实现了：
+
+1. **已选状态卡**（AC-1）：`selectedIndustry` 非空时在顶部显示 `glass-card border-primary/40 bg-primary/5`，含 emoji `text-3xl`、`已选择:{label}`、`关键词:{keywords.join('、')}`
+2. **行业卡片点击选中**：点击卡片设置 `selectedIndustry`，选中态加 `border-primary/60 bg-primary/10`
+3. **主 CTA 按钮**（AC-2）：`from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70` + `→`，无 violet/amber/gold
+4. **disabled 状态**（AC-3）：`!selectedIndustry && !customIndustry` 时 button disabled + 显示 `STEP1_CTA_DISABLED_HINT`
+5. **handleSubmit**（AC-4）：`localStorage.setItem('acc_step1', ...)` + `navigate('/step/3')`
+6. **测试修复**：Step1 测试加 `MemoryRouter` wrapper（AC-8 typecheck 通过，70 tests 全绿）

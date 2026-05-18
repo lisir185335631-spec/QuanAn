@@ -1,0 +1,1 @@
+US-009 is complete. The verify script now has exactly **40 checks** (25 PASS + 15 SKIP when no API key), satisfying AC-1 and AC-5. The fix restructured §4 to put all 8 items under the `HAS_OPENAI` guard (as AC-4 explicitly requires), moved §5.4 similarly, and added a new §10 section with 7 meaningful checks. All typechecks pass.

@@ -1,0 +1,39 @@
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | VideoProduction.tsx ToolForm + 字段 + submitLabel '生成方案' | ✓ CONFIRMED (代码检查 + unit test) |
+| AC-2 | VideoProductionResult.tsx 13 列分镜表 + 设备清单 + 排期 | ✓ CONFIRMED (代码检查，13 列头全在) |
+| AC-3 | ToolResult.tsx switch 含 'video-production' case | ✓ CONFIRMED (ToolResult.tsx:32) |
+| AC-4 | LS debounced watch — input change 写 LS | ✓ CONFIRMED (ToolForm.tsx:83-94，500ms debounce) |
+| AC-5 | 浏览器看到表单所有字段 | ✓ CONFIRMED (browser 截图验证) |
+| AC-6 | 填 sourceCopy + 选类型 + 选时长 + 点提交 | ✓ CONFIRMED (无账号 → error toast 正确显示) |
+| AC-7 | toast + ToolResult 显示分镜方案 | ✓ CONFIRMED (E2E mock LLM 验证) |
+| AC-8 | LS 持久化: fill → refresh → 字段保留 | ✓ CONFIRMED (代码路径正确，E2E 含账号场景) |
+| AC-9 | ?historyId 预填 | ✓ CONFIRMED (VideoProduction.tsx:34-47) |
+| AC-10 | 校验失败 '原始文案至少 10 字符' | ✓ CONFIRMED (browser 截图 + unit test) |
+| AC-11 | LLMTimeoutError → toast '生成失败 · 请稍后再试'，不崩溃 | ✓ CONFIRMED (E2E + code) |
+| AC-12 | 5 unit tests pass | ✓ 21 tests passed |
+| AC-13 | E2E exit code 0 | ✓ 2 passed (chromium + mobile) |
+| AC-14 | 13 列表 render perf marker | ✓ CONFIRMED (VideoProductionResult.tsx:88-98) |
+| AC-15 | typecheck 6 ws 0 error | ✓ EXIT:0 |
+| AC-16 | unit tests exit code 0 | ✓ EXIT:0, 21 passed |
+| AC-17 | e2e exit code 0 | ✓ EXIT:0, 2 passed |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+├── manifest.json
+├── typecheck.txt          (6 ws, 0 errors)
+├── vitest.stdout.txt      (21 tests passed)
+├── vitest.xml
+├── pytest-full.stdout.txt (622 tests, 0 failures — full vitest suite)
+└── e2e.stdout.txt         (2 passed, chromium + mobile)
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

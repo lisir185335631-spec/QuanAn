@@ -1,0 +1,32 @@
+prd.json confirmed updated. US-007 is now `passes: true`.
+
+---
+
+## 验证结果: US-007 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | DeepLearnReviewQueue schema · 14 字段 + 4 indexes | ✓ |
+| AC-2 | UserViolationLog · @@unique([userId,violationType]) + 2 indexes | ✓ |
+| AC-3 | migration 2 CREATE TABLE IF NOT EXISTS | ✓ |
+| AC-4 | manual_admin_rls.sql 2 DISABLE RLS · psql relrowsecurity=f 实测 | ✓ |
+| AC-5 | audit script 含 `# 域⑧ DeepLearning 审核` 注释 (commit ba3dbc7) | ✓ **已修复** |
+| AC-6 | audit-admin-rls-tables 26/26 PASS · 0 mismatches (含 2 新表) | ✓ |
+| AC-7 | zod schema · violationType enum + status enum 严格匹配 | ✓ |
+| AC-8 | @@unique 存在 · upsertUserViolationSchema 定义防 race | ✓ |
+| AC-9 | 22 单元测试 (>>8) | ✓ |
+| AC-10/11 | vitest 22/22 PASS · typecheck exit 0 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-007/
+已生成: pytest-full.xml (1465 tests, 9 pre-existing integration failures), 
+        pytest-full.stdout.txt, typecheck.stdout.txt, audit-rls.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

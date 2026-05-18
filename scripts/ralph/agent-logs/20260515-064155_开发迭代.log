@@ -1,0 +1,18 @@
+US-005 is complete. Here's a summary of what was implemented:
+
+**Backend (`apps/api`):**
+- Added `'promote_ab_experiment_winner'` to `ApprovalActionType` + `DUAL_APPROVAL_ACTION_TYPES`
+- Added 4 new tRPC procedures to `abExperimentsRouter`:
+  - `getDetailByKey` — fetch experiment by `experimentKey` (for URL routing)
+  - `getVariantMetrics` — per-variant conversion rate + Wilson 95% CI + 7-day retention + avg LLM cost
+  - `getCumulativeTimeline` — cumulative daily assignments per variant (30d window)
+  - `promoteWinner` — creates dual-approval request to promote winner variant
+
+**Frontend (`apps/admin`):**
+- `ExperimentDetailPage.tsx` — full standalone page at `/admin/ab-experiments/:experimentKey` with 4 KPI cards, conversion BarChart with ErrorBar CI, 7-day retention LineChart, cost BarChart, significance conclusions, and action panel
+- `ExperimentTimeline.tsx` — Recharts AreaChart with 3 variant colors and gradient fill
+- `ExperimentReportPdf.tsx` — 4-section PDF (实验信息 / 多维结果 / 时间线 / 签名) using `@react-pdf/renderer`
+- `router.tsx` — added new route
+- `AbExperimentDrawer.tsx` — "详细分析" button now uses `useNavigate` to go to the detail page
+
+**Tests:** +5 new unit tests (16 total in abExperiments), +mock fix in AbExperimentDrawer test. Final: **1798 pass · typecheck 0 errors · audit:redlines-admin ALL PASS**.

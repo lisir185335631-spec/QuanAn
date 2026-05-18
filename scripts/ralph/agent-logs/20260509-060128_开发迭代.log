@@ -1,0 +1,12 @@
+US-013 is complete. Here's a summary of what was implemented:
+
+**Files changed:**
+- **NEW** `apps/api/src/services/ip-progress/IPProgressService.ts` — `getProgress(prisma, accountId)` with `STEP_KEYS_9` (no step2), `status:'completed'` filter, returns `{ completed, total:9, completedSteps }`
+- **UPDATED** `apps/api/src/trpc/routers/stepData.ts` — `progress` procedure now calls `getProgress(ctx.prisma, ctx.activeAccountId!)` via `protectedProcedure`; removed stale inline logic and unused `STEP_KEYS` constant
+- **UPDATED** `packages/clients/src/router-types.ts` — `StepProgressOutput.completedKeys` → `completedSteps`; shadow router synced
+- **UPDATED** `apps/web/src/pages/IpPlan.tsx` — `progress?.completedKeys` → `progress?.completedSteps`
+- **REWRITTEN** `tests/unit/api/ip-progress.test.ts` — 7 tests covering 0/9, 3/9, 9/9, account isolation, status filter, step2 exclusion
+- **NEW** `tests/integration/api/ip-progress-integration.test.ts` — 3 real-DB tests: 7 completed → 7/9, in_progress/failed not counted, step2 not counted
+- **FIXED** `tests/unit/api/ipAccounts-stepData.test.ts` — one-line fix for renamed field
+
+All 325 tests pass, typecheck clean.

@@ -1,0 +1,6 @@
+US-001 AC-8 测试问题已修复并提交：
+
+1. **`trpc.trending.detail` mock 缺失** → 在 `pages.test.tsx` trending mock 对象中补入 `detail: { useQuery: () => ({ data: null, isLoading: false }) }`，修复 `TrendingDetailDrawer` mount 时的 `undefined` 崩溃
+2. **h1 断言文本不匹配** → 将 `'全网爆款库'` 改为 `'全网爆款情报库'`，与实际组件文本对齐
+
+测试结果：**51 passed, 0 failed**。Commit: `09df8c2`。

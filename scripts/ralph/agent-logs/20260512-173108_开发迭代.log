@@ -1,0 +1,13 @@
+US-003 is complete. Here's a summary:
+
+**Implemented:**
+- `apps/api/src/trpc/routers/admin/nsm.ts` — `nsmRouter` with 5 procedures, all using `adminProcedure` (6-gate middleware chain):
+  - `getOverview`: queries latest + previous daily snapshot, computes deltas, writes `data_query/nsm_overview` audit; returns `null` when table empty (AC-9)
+  - `getFunnel`: returns `funnelData` filtered by date+granularity
+  - `getDistributions`: returns 3 pie chart distributions from latest snapshot JSON fields
+  - `getAlerts`: scans last 3 daily snapshots for consecutive metric deterioration, writes `data_query/nsm_alerts` audit
+  - `triggerSnapshot`: super_admin-only; manually checks role, writes `privilege_escalation` audit + throws 403 for non-super_admin; calls `computeSnapshot` + writes `high_risk_action/manual_snapshot_trigger` audit
+- `apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts` — 23 unit tests covering all 5 procedures and AC boundaries
+- `apps/api/src/trpc/routers/admin/index.ts` — replaced `nsmPlaceholder` with real `nsmRouter`
+
+**All checks pass:** 23 tests ✓, typecheck 0 errors ✓, `audit-admin-rls.ts` 10 procedures 0 violations ✓, `audit-redlines-admin.sh` ALL PASS ✓

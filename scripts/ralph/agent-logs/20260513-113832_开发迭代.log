@@ -1,0 +1,11 @@
+US-007 is complete. Summary of what was implemented:
+
+**Migration** (`20260513120000_add_deep_learn_review_tables/migration.sql`) — formal domain ⑧ registration with `CREATE TABLE IF NOT EXISTS` for both tables + 7 indexes. Registered via `migrate resolve --applied` (14 migrations, DB up to date).
+
+**Zod schemas:**
+- `deep-learn-review.schema.ts` — `deepLearnReviewStatusEnum` (5 values), `deepLearnAutoVerdictEnum` (3 values), `deepLearnReviewQueueSchema`
+- `user-violation.schema.ts` — `violationTypeEnum` (pii_upload/banned_content/trending_abuse/other), `userViolationLogSchema`, `upsertUserViolationSchema` (separate type for service-layer upsert, anti-race per SHIELD)
+
+**Tests** — 22 tests covering all enums, happy paths, rejection of invalid values, optional fields, missing required fields.
+
+**Verification**: `pnpm typecheck` 0 errors, 22/22 tests pass, `audit-admin-rls-tables.sh` 26/26 admin RLS=false · 15/15 main RLS=true · 0 mismatches.

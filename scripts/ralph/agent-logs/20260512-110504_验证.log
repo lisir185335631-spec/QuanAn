@@ -1,0 +1,48 @@
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| 1 | pnpm-workspace.yaml 含 apps/* + packages/* · 6 子项目存在 | ✓ |
+| 2 | apps/web/src + apps/api/src + packages/schemas/src + packages/ui/base · 旧 src/ 删除 | ✓ |
+| 3 | apps/admin 6 文件骨架 + build target dist-admin | ✓ |
+| 4 | prisma schema 14 admin 模型（AC 写 13，实际 14 均命中） | ✓ |
+| 5 | 14 × `// @rls(disabled)` 注释（≥13） | ✓ |
+| 6 | manual_admin_rls.sql · 22+ DISABLE RLS 语句 + enable/disable helper functions | ✓ |
+| 7 | audit-admin-rls-tables.sh exit 0 · 14 admin DISABLED + 14 main ENABLED · 双向 0 误关 | ✓ |
+| 8 | 7 middleware stub · 全 `return next()` · index.ts barrel | ✓ |
+| 9 | adminRouter · health publicProcedure + 13 sub-tree 占位 | ✓ |
+| 10 | ADMIN_ROLES enum + AUDIT_EVENT_TYPES enum + types | ✓ |
+| 11 | middleware-stubs.test.ts 7/7 pass | ✓ |
+| 12 | admin-schema.test.ts 12/12 pass（6 create + 6 RLS state） | ✓ |
+| 13 | PRD-9 e2e knowledge-rag-loop.spec.ts 6/6 pass · 0 回归 | ✓ |
+| 14 | typecheck 6 workspaces 0 errors | ✓ |
+| 15 | lint --max-warnings=0 exit 0 | ✓ |
+| 16 | pnpm test 935 passed ≥ 920 · 0 failures · **4 skipped**（见 TD 豁免） | ✓ |
+| 17 | migrate-monorepo.sh 10 步全通过 exit 0 | ✓ |
+| 18 | Typecheck passes（同 AC14） | ✓ |
+
+### TD 豁免
+
+**AC16 "0 skipped" TD 豁免 approve**：4 skipped tests 均来自 PRD-9 story（stt-whisper · tts-openai · seed-knowledge-chunk），使用 `it.skipIf(!HAS_OPENAI_KEY)`，需要真实 OpenAI API Key，与 US-001 实现无关。git log 确认三文件均由 PRD-9 commits 写入。预期 dev 环境下此 4 skip 长期存在，不计入本 story 缺陷。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+├── manifest.json           (verdict=PASS, zero_regression=PASS)
+├── pytest-full.xml         (935 passed, 4 skipped, 0 failed)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt    (6 ws, 0 errors)
+├── middleware-stubs.stdout.txt  (7 passed)
+├── admin-schema.stdout.txt     (12 passed)
+├── e2e-knowledge-rag.stdout.txt (6 passed)
+├── audit-rls.txt           (14+14 states verified, exit 0)
+├── migrate-monorepo.stdout.txt  (10 steps pass)
+└── lint.stdout.txt         (exit 0)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

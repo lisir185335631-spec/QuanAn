@@ -1,33 +1,153 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="14" failures="0" errors="0" time="0.177">
-    <testsuite name="tests/unit/api/daily-tasks-router.test.ts" timestamp="2026-05-11T05:25:17.380Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.007278">
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getToday &gt; AC-2: returns today DailyTask row when record exists" time="0.0020265">
+<testsuites name="vitest tests" tests="64" failures="0" errors="0" time="1.095">
+    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-18T11:04:42.888Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.029467291">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.015610667">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getToday &gt; AC-2: returns null when no record for today" time="0.000285458">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.004417625">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getToday &gt; AC-1: queries with accountId (explicit double-layer guard)" time="0.000210291">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.001598084">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getHistory &gt; AC-2: returns list ordered by taskDate desc" time="0.000547042">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.00334425">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getHistory &gt; AC-2: respects limit=30" time="0.000227084">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.003593209">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.getHistory &gt; AC-1: queries with accountId isolation" time="0.00020375">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.000104667">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-2: marks task completed and recalculates completedCount" time="0.00037825">
+    </testsuite>
+    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-18T11:04:42.889Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.065215208">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.009682958">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-1: NOT_FOUND when record belongs to different account" time="0.0003825">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.001847292">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-2: findFirst uses accountId guard (LD-009)" time="0.000193167">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.033562333">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.markCompleted &gt; AC-4: already-completed task stays completed (idempotent)" time="0.000221459">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.008996041">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.regenerateToday &gt; AC-2: enqueues daily-task job and returns ok + scheduledDate + jobId" time="0.000519333">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.008457167">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.regenerateToday &gt; AC-2: INTERNAL_SERVER_ERROR when queue add fails" time="0.001355208">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.0009255">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks.regenerateToday &gt; AC-1: jobId includes accountId for per-account isolation" time="0.000167584">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.000683541">
         </testcase>
-        <testcase classname="tests/unit/api/daily-tasks-router.test.ts" name="dailyTasks protectedProcedure guard &gt; AC-1: getToday FORBIDDEN when activeAccountId=null" time="0.000118916">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.000596458">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-18T11:04:42.889Z" hostname="returndeMacBook-Pro.local" tests="27" failures="0" errors="0" skipped="0" time="0.122489833">
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.00044525">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.00008475">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.049952334">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.002201875">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.003942459">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.007095875">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.001172208">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.010639625">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.001136375">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.000904917">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.003818666">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.000981458">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.0007305">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.001649583">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.000805917">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.003326209">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.000354042">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.001327166">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.000649666">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.005252792">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.002159583">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.001222">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.003065791">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.000604417">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.005064125">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.000573">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.012651">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-18T11:04:42.890Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.028496584">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.01404975">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.001743166">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.001358041">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.002410167">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.003835459">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.001325791">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.000984584">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.000996208">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.000120917">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.0011675">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step5.test.ts" timestamp="2026-05-18T11:04:42.891Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.002624417">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; SUBTITLE 字面严格 1:1 spec §7.6 line 1595" time="0.000697209">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630" time="0.000494625">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; INPUTS_2 数量锁 · length === 2" time="0.000125583">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_UPLOADS_2 数量锁 · length === 2" time="0.000085833">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_MAX_MB === 20" time="0.00007725">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606" time="0.000107">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; TOTAL_TOPICS === 100" time="0.000078166">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; Step5Topic interface 字段结构" time="0.000170166">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/step/__tests__/Step5.test.tsx" timestamp="2026-05-18T11:04:42.891Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.04081975">
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders h1 with 爆款选题库" time="0.032328333">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders EmptyState when no result" time="0.002722833">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders CTA button 一键生成" time="0.001951625">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders industry input placeholder" time="0.00161425">
+        </testcase>
+        <testcase classname="src/pages/step/__tests__/Step5.test.tsx" name="Step5 &gt; renders STEP_TAG" time="0.001746958">
         </testcase>
     </testsuite>
 </testsuites>

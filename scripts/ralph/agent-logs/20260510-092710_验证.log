@@ -1,0 +1,41 @@
+---
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| # | AC 描述 | 结果 |
+|:-:|---|:-:|
+| 1 | 5 schema 文件存在且 export Input/Output zod | ✓ |
+| 2 | videoProductionInput zod 字段精确匹配（min/max/enum） | ✓ |
+| 3 | aiVideoInput · scenesCount union(5/6/7/8) + errorMap | ✓ |
+| 4 | aiVideoOutput scenes 元素 · imagePromptEn ASCII regex + min(5).max(8) | ✓ |
+| 5 | imageGen schema · Payload 6 字段 + Result union | ✓ |
+| 6 | image-gen 3 worker 文件 · IImageGenWorker interface + stub throw | ✓ |
+| 7 | prisma migration 20260510000000 · sceneIndex + 复合索引 · deploy exit 0 | ✓ |
+| 8 | 3 constants 文件 · `as const satisfies ReadonlyArray` pattern (LD-013) | ✓ |
+| 9 | barrel index.ts 加 5 schema export | ✓ |
+| 10 | video-schemas.test.ts 19 unit tests ≥10 | ✓ |
+| 11 | boundary tests: scenesCount 5/8 pass · 9 fail · 中文 imagePromptEn fail | ✓ |
+| 12 | 100次 parse 耗时 **2.15ms** < 50ms | ✓ |
+| 13 | pnpm typecheck 6 ws 0 error | ✓ |
+| 14 | pnpm test video-schemas.test.ts 退出码 0 · 19 tests passed | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  pytest.stdout.txt        — 19 passed (0 failed)
+  pytest-full.stdout.txt   — 582 passed, 58 files (0 failed) · 零回归通过
+  typecheck.txt            — 6 workspaces Done (0 errors)
+  perf.stdout.txt          — 2.15ms / 100 iterations
+  manifest.json            — exit_code: 0
+```
+
+### X-6 零回归门禁
+
+全量 vitest run：**582 tests passed / 58 files · 0 failures · 0 errors**
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

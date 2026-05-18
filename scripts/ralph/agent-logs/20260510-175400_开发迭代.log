@@ -1,0 +1,12 @@
+US-012 完成。提交 `424d2ac`，所有 AC 已实现：
+
+**已完成的改动：**
+
+1. **`packages/schemas` · `acquisitionCopywritingInputSchema`** — 新增含 `scriptType/elements/conversionGoal/topic` 的 zod schema
+2. **`CopywritingAgent._buildAcquisitionUserPrompt`** — 改用新字段名，prompt 约束明确含 CTA 关键词
+3. **`copywriting.ts` · `acquisitionGenerate`** — `protectedProcedure` + `accountId!` 双层防护 + post-validate CTA retry（`/关注|私信|点击|获取|领取/`，isFallback=false 时才重试）
+4. **`ToolForm.tsx`** — `ToolKey` 加 `'acquisition'`，`renderToolFields` 新增 acquisition case（ScriptTypeSelect + ElementsMultiSelect + conversionGoal + topic）
+5. **`ToolResult.tsx`** — `ToolResultKey` 加 `'acquisition'`，复用 `FreeGenerateResult`
+6. **`Generate.tsx`** — pill tab mode select（自由创作 / 获客文案），两套 `ToolForm` + 两套 mutation
+7. **`router-types.ts`** — shadow router 补 `copywriting.acquisitionGenerate`
+8. **`tests/unit/api/copywriting-acquisition.test.ts`** — 4/4 ✅ · typecheck 6 ws 0 error ✅

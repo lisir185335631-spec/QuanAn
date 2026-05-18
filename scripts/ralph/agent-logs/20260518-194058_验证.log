@@ -1,0 +1,50 @@
+## 验证结果: US-008 FAIL
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1: prd-20-real-llm.spec.ts 4 tests | ✓ | 文件存在，4 tests describe 正确 |
+| AC-2: .github/workflows/e2e-weekly-real-llm.yml | ✓ | weekly cron + OPENAI_API_KEY secret |
+| AC-3: playwright.config.ts real-LLM timeout 90s + retries 2 | ✓ | 已配置 |
+| AC-4: TD-79 fix · STEP1_CTA_LABEL='生成行业洞察' | ✓ | grep ≥1 hit |
+| AC-5: TD-80 fix · 硬编码 0 hit | ✓ | Step1/3/3b 全改用常量 |
+| AC-6: TD-81 fix · acc_step5_selected_topic 0 hit | ✓ | 只保留 namespaced key |
+| AC-7: TD-82 验证 · prd-18 test3 skip | ✓ | test.skip(!HAS_OPENAI_KEY) |
+| AC-8: tech-debt.json TD-79/80/81/82 resolved | ✓ | all 4 status=resolved |
+| **AC-9: prd-20 4 tests PASS** | ⚠️ | 3 PASS + 1 skip (b 需 REAL_LLM=1) |
+| **AC-10: e2e 旧 PRD-18 全 PASS** | ✗ | **4/6 FAIL** |
+
+### 零回归门禁
+
+- vitest root: **901 tests PASS**，0 failures ✓
+- typecheck: 全 6 packages PASS ✓
+- prd-20 E2E: 3 PASS + 1 skip ✓
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+- pytest-full.xml (901 tests, 0 failures)
+- pytest-full.stdout.txt
+- typecheck.stdout.txt  
+- e2e-prd20.stdout.txt (3 pass + 1 skip)
+- e2e-prd18.stdout.txt (4 fail)
+```
+
+### 失败根因 (CONFIRMED)
+
+prd-18 tests 1/2/4/6 在 `toBeVisible({ timeout: 30_000 })` 精确 30s 超时。Playwright trace 确认：提交按钮 IS clicked，但 `stepData.save` mutation（调用 PositioningAgent/MonetizationAgent/VideoAgent/LivestreamAgent）在 30s 内未返回结果。test5 (CopywritingAgent/step7) 在 < 30s 内完成。
+
+### 修复方向
+
+修改 `apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts`，将 tests 1/2/4/6 的 `toBeVisible` timeout 从 `30_000` 改为 `60_000`（与 playwright.config.ts 全局 60s 对齐）：
+
+- `:92` step4 result
+- `:125` step4b result  
+- `:212` step6 result
+- `:276` step8 result
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 5` · `blocked = true`（达到最大重试次数）

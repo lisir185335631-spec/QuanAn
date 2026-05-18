@@ -1,0 +1,9 @@
+US-007 完成。
+
+**实现摘要：**
+- `Step4.tsx` 从 stub 完整重写：radio 5 平台 + 3 输入项（`.map()` 遍历避免 `noUncheckedIndexedAccess` 报错）+ CTA disabled 逻辑
+- `generateMockResult`：8 每日任务 + 4 每周里程碑 + 3 阶段 KPI
+- 三态组件：`LoadingState` / `ErrorState`(onRetry) / `EmptyState`(idle)
+- 跨 step localStorage：读 `acc_step1.industry`，写 `acc_step4`
+- 3 H3 输出区 + 复制按钮（常量 `STEP4_BUTTON_COPY`）
+- AC-7 零 hardcode、AC-8 零 D4=B、`tsc` 0 error、119 tests PASS、浏览器验证全通过

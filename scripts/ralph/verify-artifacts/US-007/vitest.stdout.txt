@@ -1,42 +1,11 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/api
 
-{"level":"info","time":"2026-05-11T04:27:30.761Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.761Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.762Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.762Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.762Z","pid":49947,"hostname":"returndeMacBook-Pro.local","accountId":10,"traceId":"tr_10_DailyTaskAgent_1778473650762_ywhc","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","accountId":11,"traceId":"tr_11_DailyTaskAgent_1778473650763_l6ti","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","accountId":12,"traceId":"tr_12_DailyTaskAgent_1778473650763_jyqb","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
- ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-9: 3 active accounts → runForAllActiveAccounts → 3 jobs enqueued
- ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-9: Worker 处理所有 3 jobs → DailyTask 表 upsert 3 行
- ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-5: 同日同账号 jobId 相同 → BullMQ 幂等保证
-{"level":"info","time":"2026-05-11T04:27:30.774Z","pid":49946,"hostname":"returndeMacBook-Pro.local","accountId":1,"traceId":"tr_1_DailyTaskAgent_1778473650774_k7hq","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.775Z","pid":49946,"hostname":"returndeMacBook-Pro.local","accountId":2,"traceId":"tr_2_DailyTaskAgent_1778473650775_gf05","msg":"daily_task.cold_start"}
-{"level":"warn","time":"2026-05-11T04:27:30.776Z","pid":49946,"hostname":"returndeMacBook-Pro.local","agentId":"DailyTaskAgent","traceId":"tr_4_DailyTaskAgent_1778473650776_61i5","issues":"[\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 3,\n    \"type\": \"array\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Array must contain at least 3 element(s)\",\n    \"path\": [\n      \"tasks\"\n    ]\n  }\n]","msg":"daily_task.schema_validation.retry"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T1: 冷启动 stepData=0 → 返回 5 模板 tasks · isFallback=false · modelUsed=cold-start-template
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T2: 冷启动 evolutionProfile=null (有 stepData) → 仍走模板
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T3: 非冷启动 → 调 LLMGateway.complete(lightweight) · 返回 LLM tasks
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T4: LLM 输出 schema 不合规 → retry 1 次 · 二次成功返回
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T5: buildColdStartTasks() 返回 5 条合规 TaskItem (uuid · ctaUrl 以 / 开头)
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T6: cron schedule string "0 0 * * *" 符合 5-field cron 格式
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T7: runForAllActiveAccounts — 5 活跃账号 → enqueue 5 jobs
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T8: DailyTask BullMQ Worker 创建时 concurrency=5
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T9: 同日同账号 jobId 相同 → BullMQ 保证幂等
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T10: Worker 注册了 failed 事件监听器 (dead-letter 告警)
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-12 LJ1: LLM 真接输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-12 LJ2: cold-start 模板输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5
+ ✓ src/specialists/__tests__/LivestreamAgent.real-llm.test.ts (5 tests | 2 skipped) 1ms
+ ✓ src/specialists/__tests__/CopywritingAgent.real-llm.test.ts (3 tests | 2 skipped) 1ms
 
  Test Files  2 passed (2)
-      Tests  15 passed (15)
-   Start at  12:27:30
-   Duration  290ms (transform 77ms, setup 7ms, collect 250ms, tests 7ms, environment 0ms, prepare 45ms)
+      Tests  4 passed | 4 skipped (8)
+   Start at  17:04:33
+   Duration  301ms (transform 94ms, setup 0ms, collect 293ms, tests 2ms, environment 0ms, prepare 86ms)
 

@@ -1,0 +1,10 @@
+US-010 is now complete. Here's what was done:
+
+**Root cause of AC-9 failure**: `generateSceneImage` in `videoProduction.ts` was a stub that called `prisma.history.create` directly. It never called `imageGenQueue.add()` or `checkImageGenRateLimit()`. The code comment incorrectly said "PRD-6 US-005 真接".
+
+**Fix**:
+1. Updated `generateSceneImageInput` schema: replaced optional `prompt` with required `imagePromptEn` + optional `imageStyle` (default `'vivid'`)
+2. Replaced stub body with real dispatch: `checkImageGenRateLimit()` → `imageGenQueue.add('scene-image', payload)` → catch Redis errors → `TRPCError INTERNAL_SERVER_ERROR '生成失败 · 请稍后再试'`
+3. Updated `specialists-creation.test.ts`: added `vi.mock` for `bullmq`, `ioredis`, `@/workers/image-gen/queue`, and `@/lib/rate-limit/image-gen`; updated the test call/assertions to match new contract
+
+**Result**: 670 tests pass, typecheck 0 errors across 6 workspaces.

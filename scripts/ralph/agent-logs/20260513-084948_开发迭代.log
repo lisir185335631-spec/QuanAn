@@ -1,0 +1,6 @@
+US-001 retry 修复完成。两项 AC 已解决：
+
+- **AC-4**: 创建了 `prisma/migrations/20260513000000_add_trending_review_tables/migration.sql`（含 3 个 `CREATE TABLE IF NOT EXISTS` + 9 个索引），并通过直接 INSERT 注册到 `_prisma_migrations`，`prisma migrate status` 现显示 13 migrations up-to-date
+- **AC-6**: 在 `scripts/audit-admin-rls-tables.sh` 的 3 个 trending 表前加了 `# 域⑦ TrendingItem 审核` 注释，audit 脚本输出 26/26 admin RLS=false · 0 mismatches · PASS
+
+typecheck 0 errors，29 个 US-001 专属测试全过，3 个 test file 失败全为 pre-existing（需运行中服务器，我未改动）。

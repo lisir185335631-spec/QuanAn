@@ -1,0 +1,9 @@
+US-003 is complete. Here's a summary:
+
+**Implemented**:
+- `apps/web/src/pages/tools/DeepLearning.tsx` — 180-line full page with 3-tab UI (学习/我的库/公式应用), URL state `?tab=learn|library|apply`, and a stats bar
+- `apps/web/src/pages/tools/components/DeepLearningTabs.tsx` — LearnTab (textarea + platform select → parse → show `{coreFormula, hookType, structurePattern, emotionalArc, keywords[]}`), LibraryTab (80-char truncated table with apply/delete), ApplyFormulaTab (formula select → topic input → generate)
+- `apps/api/src/trpc/routers/deepLearning.ts` — added `parse` (mock analysis + queue entry) and `applyFormula` (formula-guided mock generation), modified `list` to return `DeepLearnReviewQueue` entries for immediate UI visibility (LD-A-5 compliant — no direct archive.create)
+- `packages/schemas/src/specialist-io/deepLearning.schema.ts` — parse/applyFormula input/output schemas
+- `packages/clients/src/router-types.ts` — deepLearning shadow router + `DeepLearningQueueItem`/`DeepLearningParseResult` types
+- `tests/unit/web/pages/DeepLearning.test.tsx` — 18 tests (18/18 pass, 258 total zero regressions, typecheck 0 errors)

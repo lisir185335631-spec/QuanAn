@@ -1,0 +1,13 @@
+US-005 implementation is complete. Here's what was done in this retry iteration:
+
+**Root cause analysis:** The previous validator run failed on AC-5 (page crashes with "Subscriptions are unsupported by `httpBatchStreamLink`"). The `trpc.ts` splitLink fix had already been committed (`25dbd8c`) in the prior developer timeout cycle, but a second critical backend fix was left uncommitted.
+
+**Fix committed this iteration (`50374f4`):**
+- `apps/api/src/trpc/middleware/account-isolation.ts`: Added subscription path that uses connection-level `set_config(is_local=false)` instead of transaction-scoped `SET LOCAL`. Critical because `$transaction` commits when the SSE generator is returned (before yield), causing "Transaction already closed" errors for all DB writes inside the stream.
+- `.agents/tech-debt.json`: TD-79/TD-80 entries from US-003 Opus audit.
+
+**Quality gates passed:**
+- Typecheck: 0 errors ✅
+- Vitest (full suite): 2278 passed / 4 skipped (2282) — zero regression ✅  
+- `account-isolation.test.ts`: 9/9 PASS ✅
+- `Step5.test.tsx`: 5/5 PASS ✅

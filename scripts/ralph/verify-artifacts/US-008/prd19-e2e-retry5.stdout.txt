@@ -1,0 +1,34 @@
+
+Running 4 tests using 1 worker
+
+[1A[2K[1/4] [chromium] › e2e/prd-19-frontend-backend.spec.ts:145:3 › PRD-19 · frontend ↔ backend 真接入 › test (a) · Step1 真接 PositioningAgent · LS↔DB 双写
+[1A[2K[2/4] [chromium] › e2e/prd-19-frontend-backend.spec.ts:173:3 › PRD-19 · frontend ↔ backend 真接入 › test (b) · acc 切换 · 数据隔离 · Step1 industry 不串
+[1A[2K[3/4] [chromium] › e2e/prd-19-frontend-backend.spec.ts:267:3 › PRD-19 · frontend ↔ backend 真接入 › test (c) · 9 step 完整流程 · DB 真存 · 0 hardcode acc_step{N}
+[1A[2K[chromium] › e2e/prd-19-frontend-backend.spec.ts:267:3 › PRD-19 · frontend ↔ backend 真接入 › test (c) · 9 step 完整流程 · DB 真存 · 0 hardcode acc_step{N}
+
+
+[1A[2K[4/4] [chromium] › e2e/prd-19-frontend-backend.spec.ts:389:3 › PRD-19 · frontend ↔ backend 真接入 › test (d) · zero-regression · typecheck + vitest + 旧 e2e prd-17/18
+[1A[2K  1) [chromium] › e2e/prd-19-frontend-backend.spec.ts:389:3 › PRD-19 · frontend ↔ backend 真接入 › test (d) · zero-regression · typecheck + vitest + 旧 e2e prd-17/18 
+
+    Error: 旧 e2e specs failed:
+    Command failed: pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts e2e/prd-18-step-4-5-6-7-8.spec.ts
+
+      424 |       );
+      425 |     } catch (e) {
+    > 426 |       throw new Error(`旧 e2e specs failed:\n${(e as NodeJS.ErrnoException).message}`);
+          |             ^
+      427 |     }
+      428 |   });
+      429 | });
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-19-frontend-backend.spec.ts:426:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-19-frontend-backend-PR-c4da2-heck-vitest-旧-e2e-prd-17-18-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-19-frontend-backend-PR-c4da2-heck-vitest-旧-e2e-prd-17-18-chromium/error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › e2e/prd-19-frontend-backend.spec.ts:389:3 › PRD-19 · frontend ↔ backend 真接入 › test (d) · zero-regression · typecheck + vitest + 旧 e2e prd-17/18 
+  3 passed (2.4m)

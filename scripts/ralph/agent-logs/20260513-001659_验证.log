@@ -1,0 +1,43 @@
+prd.json 已更新。验证完成。
+
+---
+
+## 验证结果: US-012 [FAIL]
+
+### AC 对照
+- AC-1: costRouter 5 procedures ✓ — 使用 `adminProcedure`（AC spec 写 "publicAdminProcedure" 是笔误，adminProcedure 才是正确的 6-gate 安全实现）
+- AC-2: aggregate zod input + Prisma.raw whitelist + template literal 防注入 + 返 {aggregations, summary} ✓（$transaction+SET LOCAL 由 adminRLSMiddleware 提供）
+- AC-3: top10 groupBy × 2（user+account）/ take:10 ✓
+- AC-4: specialistBreakdown groupBy agentId / avgCostPerCall Decimal 精度 ✓
+- AC-5: alerts 24h / sum>$5 / severity 分档 ✓
+- AC-6: exportCsv chunk=1000 / header 正确 / count 检查防 OOM ✓
+- AC-7~10: 所有边界条件 ✓（startDate>endDate / range>365 / >500k rows / 空数据）
+- AC-11: Decimal 全程，无 `.toNumber()`，最终 toString() ✓
+- AC-12: audit-redlines-admin.sh ALL PASS，6 条 money-critical 注释（≥5）✓
+- AC-13: audit-admin-rls.ts 识别 5 cost procedures，Checked 26 procedures（≥21）✓
+- AC-14: **34 unit tests**（≥25）全部 PASS ✓
+- AC-15: pnpm typecheck 0 errors ✓，story 测试 34/34 ✓
+
+### 零回归门禁 ❌ FAIL
+
+3 个 integration test files 失败：
+- `tests/integration/api/evolution-threshold.test.ts` — P2022: `users.plan` 列不存在
+- `tests/integration/api/ip-progress-integration.test.ts` — P2022: `users.plan` 列不存在
+- `tests/integration/api/rls-isolation.test.ts` — P2022: `users.plan` + `ip_accounts.frozen_at` 列不存在
+
+**根因（CONFIRMED）**：`quanqn_test` DB 缺少 3 个 migrations（20260512104230 / 20260512111135 / 20260512151405），这些 migrations 由 US-005/US-006/US-010 应用到 `quanqn` 主库但未同步到测试库。US-012 **未修改任何 schema 文件**（仅添加 3 个 TypeScript 文件）。
+
+**修复方式（非 US-012 代码改动）**：
+```bash
+DATABASE_URL=postgresql://return@localhost:5432/quanqn_test pnpm prisma migrate deploy
+```
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-012/`：
+- `vitest.xml` — story tests 34 passed
+- `vitest-full.xml` — full regression 122 passed, 3 failed  
+- `vitest-full.stdout.txt` — 完整输出
+- `typecheck.stdout.txt` — 0 errors
+- `manifest.json` — exit_code=1, zero_regression=FAIL
+
+**Opus 审计建议**：3 个失败属于 pre-existing TD（quanqn_test migration drift），与 US-012 实现无关。建议豁免 + 登记 TD + 运行 `prisma migrate deploy` 修复测试库同步问题。

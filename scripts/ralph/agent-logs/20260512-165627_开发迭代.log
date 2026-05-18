@@ -1,0 +1,16 @@
+US-001 is complete. Here's a summary of what was implemented:
+
+**Delivered:**
+- `apps/api/src/services/admin/nsm/kpi-snapshot.service.ts` — `computeSnapshot(date, granularity)` with:
+  - adminRLS bypass via `SET LOCAL app.role = 'admin'` in `$transaction`
+  - 7 aggregation SQLs (all `$queryRaw` template literals, zero `$queryRawUnsafe`)
+  - Upsert on `@@unique([snapshotDate, granularity])`
+  - Custom errors: `ValidationError`, `AdminRLSBypassError`, `SnapshotComputationTimeout`
+  - 60s timeout via `Promise.race`
+- `apps/api/src/schemas/admin/nsm.schema.ts` — zod `kpiSnapshotSchema` with 13 strict fields
+- `apps/api/src/services/admin/nsm/__tests__/kpi-snapshot.test.ts` — 6 passing tests
+- `vitest.config.ts` — extended `include` to cover `apps/api/src/**/__tests__/`
+
+**Pre-satisfied ACs (already in codebase):** kpi_snapshots table in init migration, `DISABLE ROW LEVEL SECURITY` in `manual_admin_rls.sql`, `kpi_snapshots` listed in `audit-admin-rls-tables.sh`.
+
+**Verification:** 1040 tests pass (117 files), typecheck 0 errors, `pnpm audit:admin-rls-tables` → PASS.

@@ -1,0 +1,28 @@
+验证完成。以下是最终 AC 对照结果：
+
+## 验证结果: US-011 [PASS]
+
+### AC 对照
+| AC | 内容 | 结果 | 验证方式 |
+|----|------|------|---------|
+| AC-1 | FilePreviewPanel PDF stub / Word fallback / TXT+MD inline / CSV table | ✓ | 代码审查 |
+| AC-2 | UserViolationsTab count≥3 / DenseTable / 7 列 / readonly check | ✓ | 代码审查 + 截图 |
+| AC-3 | BanUploaderDialog reason min10 / super_admin 直批 / admin pending | ✓ | 代码审查 + 截图 |
+| AC-4 | index.tsx 4-tab 切换 [待审核/已批准/已驳回/用户违规累计] | ✓ | 截图确认 |
+| AC-5 | readonly_admin 隐藏封禁按钮 | ✓ | 代码审查 (`isReadonly ? baseColumns`) |
+| AC-6 | fileMime 不支持 → '预览见 PRR · 当前查看 metadata + autoScanResult' | ✓ | 代码审查 |
+| AC-7 | reason<10 → disabled + 红字 | ✓ | 截图实测（pass-4 → ac7-short） |
+| AC-8 | suspended user 重复 → button disabled | ✓ | 截图实测（pass-5 '已封禁'） |
+| AC-9 | E2E: Tab → list → Dialog → 提交 → toast '冻结成功' | ✓ | 截图 pass-3/4/5 完整流程 |
+| AC-10 | console 0 error | ✓ | 浏览器 console 检查 |
+| AC-11 | pnpm typecheck 0 errors | ✓ | typecheck.stdout.txt |
+
+### 零回归判决
+- **X-6 零回归**: PASS（XML：10 tests, 0 failures）
+- **Admin 单元测试 TD 豁免**：layout/sidebar/audit-drawer 16 测试失败 = **pre-existing TD**，git stash 到 US-010 代码状态后相同失败，由 pnpm 将 @testing-library/react 解析至 react@19.2.6 引起（@react-pdf/renderer 安装后副作用）。已登记 tech-debt.json。
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-011/`：pytest-full.xml, pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+
+### 判决
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

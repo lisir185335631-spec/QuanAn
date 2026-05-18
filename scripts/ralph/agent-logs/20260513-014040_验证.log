@@ -1,0 +1,43 @@
+US-015 验证完成。
+
+---
+
+## 验证结果: US-015 [PASS]
+
+### AC 对照
+
+| # | AC | 状态 | 证据 |
+|---|---|:---:|---|
+| 1 | BullMQ cron '15 * * * *' tz 'Asia/Shanghai' jobId 'cost-anomaly-recurring' | ✓ | cost-anomaly.job.ts:81-82 |
+| 2 | detectCostAnomalies() · $transaction + SET LOCAL · cost_log 24h sum > $5 | ✓ | detect-anomalies.service.ts:38-50 |
+| 3 | DingtalkService.isMock = DINGTALK_ENABLE !== 'true'（默认 mock） | ✓ | dingtalk.service.ts:30 |
+| 4 | isMock=true → log '[dingtalk-mock] webhook would send:' + {ok:true,mock:true} | ✓ | dingtalk.service.ts:43-44 |
+| 5 | isMock=false + 空 webhookUrl → ConfigurationError fail-fast | ✓ | dingtalk.service.ts:36-38 |
+| 6 | isMock=false + webhookUrl → fetch POST {msgtype:'text',text:{content}} | ✓ | dingtalk.service.ts:48-57 |
+| 7 | dedupe via adminAuditLog.findFirst(cost_anomaly_detected + targetUserId + todayStart) | ✓ | detect-anomalies.service.ts:57-64 |
+| 8 | attempts:3 · 第 3 次失败写 'system_alert'/'cron_failed' | ✓ | cost-anomaly.job.ts:20,38-68 |
+| 9 | audit 'security_alert'/'cost_anomaly_detected' · payloadHash SHA-256 | ✓ | detect-anomalies.service.ts:80-104 |
+| 10 | index.ts 启动调 scheduleCostAnomalyDetection() + log | ✓ | index.ts:326-327，job.ts:85 |
+| 11 | .env.example 加 DINGTALK_WEBHOOK_URL + DINGTALK_ENABLE 注释 | ✓ | apps/api/.env.example:24-27 |
+| 12 | 21 unit tests ≥ 8（dingtalk × webhookUrl + detect 0/1/$5.01/dedupe/cron 失败） | ✓ | 11+10 tests，全通过 |
+| 13 | pnpm test 0 error (US-015 scope) + pnpm typecheck 0 error | ✓ | 零回归 9 pre-existing server 依赖失败，非 US-015 引入 |
+| 14 | audit:redlines-admin ALL PASS · money-critical 注释 grep | ✓ | detect-anomalies.service.ts:5,15,42 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-015/
+├── manifest.json         (zero_regression=PASS, verdict=PASS)
+├── pytest-full.xml       (1238 tests, 9 pre-existing failures @ auth/trace integration)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt  (0 errors)
+```
+
+### 零回归说明
+9 个失败测试均为 `ECONNREFUSED :3000`（需要实时 API 服务器）：
+- `auth.test.ts` / `auth.me.test.ts` — 最后修改于 US-006（早于 US-015）
+- `trace.test.ts` — 最后修改于 US-007
+
+US-015 commit 未触碰任何这些文件，属于 **TD（pre-existing infrastructure）**，非回归。
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ''`

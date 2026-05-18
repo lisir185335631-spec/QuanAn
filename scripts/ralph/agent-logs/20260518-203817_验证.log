@@ -1,0 +1,32 @@
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | verify-prd-20.sh 40+ 检查项 | ✓ 40 items: 25 PASS + 15 SKIP |
+| AC-2 | specialist-tuning-baseline.md 8 Specialist | ✓ 268 行, 8 Specialist 全记录 |
+| AC-3 | TD-79/80/81/82 status=resolved | ✓ 全部 resolved, resolved_in_prd + resolved_notes 齐全 |
+| AC-4 | SKIP 路径正确 (无 key → §3.4/§4/§5.4 SKIP) | ✓ 15 SKIP + 25 PASS + 0 FAIL, exit 0 |
+| AC-5 | bash verify script 真跑 → 25/40 PASS + 15 SKIP | ✓ 实测确认 |
+| AC-6 | commit 含 [TD-79/80/81/82 resolved] | ✓ commits 7ba1522 + 33bb884 均含 4 tags |
+| AC-7 | Typecheck + zero-regression | ✓ typecheck 0 errors; workspace vitest apps/api+web 全 PASS |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-009/
+已生成: manifest.json (verdict=PASS), vitest-full.xml (900/901, 1 flaky timing),
+        typecheck.stdout.txt (0 errors), vitest-api.xml, pytest-full.xml
+```
+
+### 零回归说明
+Full root vitest: 901 tests, 900 passed, 1 flaky fail。
+
+**失败项**: `rls-isolation.test.ts:144` — `expected 89 to be less than 50`
+
+**CONFIRMED**: 同一测试隔离运行即通过 (49ms < 50ms)。并发跑时 89ms 是机器负载所致。  
+**CONFIRMED**: 该测试在 US-001 (`021035a`) 引入，非 US-009 改动。  
+**SUSPECTED TD**: 50ms 阈值在并发跑全套 901 个 tests 时偏紧，应登记 TD 调高阈值或标 flaky。
+
+### 判决
+`prd.json.passes = true` · retryCount 归零

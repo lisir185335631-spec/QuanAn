@@ -1,0 +1,6 @@
+AC-14 修复完成。
+
+**变更摘要**：
+- `users/index.tsx`: `email` + `lastLoginAt` 列加 `sortable: true`，新增 `handleSort` 回调映射到 `FilterState['sortBy']`，传 `onSort={handleSort}` 给 DenseTable → 点列头触发 URL param 更新 → tRPC `users.list` 重发请求
+- `accounts/index.tsx`: 同样模式，`name` + `updatedAt` 列可排序，`onSort` wired 到 `AccountFilterState['sortBy']`
+- `pnpm typecheck` 0 错误，已 commit

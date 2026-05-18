@@ -1,0 +1,41 @@
+---
+
+## 验证结果: US-009 FAIL
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|---|
+| AC-1 | admin-routes.ts 含 `/admin/quota` · `readonly_admin` | ✓ |
+| AC-2 | 4 KPI 卡片（Free/Pro/Enterprise 套餐 + 异常用户） | ✓ |
+| AC-3 | UsageLineChart.tsx Recharts LineChart 3 套餐分组 | ✓ |
+| AC-4 | DenseTable 7 列含 lastCallAt · 筛选 + 排序 | ✓ |
+| AC-5 | Drawer 历史 adjustments 列表（已失效）| ✓ |
+| AC-6 | 调整面板 · dual approval > 500 · reason ≥ 10 字 | ✓ |
+| **AC-7** | **浏览器验证 4 KPI + 折线 + 异常用户列表 + Drawer** | **✗ FAIL** |
+| AC-8 | toast '已立即生效' / '已发起 Approval 申请' | SKIP（AC-7 阻断） |
+| AC-9 | pnpm audit:redlines-admin · 0 命中 | ✓ |
+| AC-10 | pnpm test ≥ 1655 pass · 0 fail（实测 1668 passed） | ✓ |
+| AC-11 | Typecheck 0 errors | ✓ |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-009/`
+- `pytest-full.xml` (1668 passed, 4 skipped, 0 failed)
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt` (0 errors)
+- `manifest.json` (verdict=FAIL, zero_regression=PASS)
+
+### 根因（CONFIRMED）
+
+`apps/api/src/services/admin/quota/quota-adjustment.service.ts` 中 3 个 raw SQL 函数使用 snake_case 列名，但 `user_quota` 表实际列名为 camelCase（无 `@map` 修饰符）：
+
+1. **`getUsageStatsByPlan` L292-295**: `daily_quota`/`daily_used` → `"dailyQuota"`/`"dailyUsed"`
+2. **`getHourlyTrendByPlan` L333**: `uq.user_id` → `uq."userId"`
+3. **`listAnomalousUsers` L379-416**: `JOIN "user"` → `JOIN users`；`user_id`/`daily_used`/`daily_quota`/`is_on_whitelist`/`whitelist_expires_at` 全部需改 camelCase
+
+`psql \d user_quota` 实测确认列名 `"userId"` `"dailyQuota"` `"dailyUsed"` `"isOnWhitelist"` `"whitelistExpiresAt"`。
+
+### 判决
+
+`prd.json.passes = false · retryCount = 2 · blocked = false`

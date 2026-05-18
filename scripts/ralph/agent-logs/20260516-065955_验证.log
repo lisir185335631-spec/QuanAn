@@ -1,0 +1,40 @@
+**STATUS: DONE_WITH_CONCERNS**
+
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|----|------|------|
+| AC-1 | ✓ | `apps/web/src/pages/modules/History.tsx` · 840 行(项目惯例路径) |
+| AC-2 | ✓ | 时间线视图 · 按天分组 · 工具icon+名+摘要+时间+3操作按钮 |
+| AC-3 | ✓ | Dashboard · 4 KPI + 4 chart · browser 截图确认 |
+| AC-4 | ✓ | `useSearchParams` · `?view=timeline\|dashboard` URL state |
+| AC-5 | ✓ | 14工具 multi-select · `?tools=` URL state |
+| AC-6 | ✓ | 今日/本周/本月/自定义日期 + date pickers |
+| AC-7 | ✓ | `trpc.history.list.useQuery` · `toolsToAgentIds` 映射正确 |
+| **AC-8** | **✗** | **restore 后 target page topic 字段为空** |
+| AC-9 | ✓ | 27 unit tests PASS |
+| AC-10 | ✓ | 4 procedures · 14 unit tests PASS |
+| AC-11 | ✓ | browser 打开 timeline → dashboard 4 chart → 点恢复 → 跳 `/generate?topic=...&restored=13583` |
+| AC-12 | ✓ | vitest 2250/2250 PASS · typecheck PASS |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+  manifest.json (exit_code=1, zero_regression=PASS, verdict=FAIL)
+  pytest-full.xml (2250 passed)
+  pytest-full.stdout.txt
+  pytest.xml (41 passed: 27 web + 14 api)
+  pytest.stdout.txt
+  typecheck.stdout.txt
+```
+
+### 判决
+
+`prd.json.passes = false · retryCount = 2`
+
+**根因(CONFIRMED)**: `Generate.tsx:35` 读取 `?historyId=` 参数，但 `History.tsx getToolRestoreUrl` 生成 `?topic=...&restored=historyId`。参数名不匹配 (`restored` ≠ `historyId`)，导致 history detail query 不触发。同时 `?topic=` URL 参数完全未被读取，topic textarea 保持空值。
+
+**修复方向**: `Generate.tsx` 加一行兼容读取 `?restored=` as `historyId` alias + 读取 `?topic=` 直接初始化 topic 字段 defaultValue。

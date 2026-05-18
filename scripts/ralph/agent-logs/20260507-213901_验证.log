@@ -1,0 +1,35 @@
+---
+
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|:-:|---|:-:|---|
+| 1 | pnpm dev:api 监听 3000 · 0 error · cold start < 5s | ✓ | PID 20480 运行中，/health → 200 OK |
+| 2 | curl auth.me → `{ result: { data: { ok: false, error: 'unauthenticated' } } }` | ✓ | curl 响应 exact match |
+| 3 | Prisma 实例化 < 100ms · users 表空查通 | ✓ | 实例化 0.63ms，connect 10.61ms，query 2.64ms，rows=0 |
+| 4 | auth.me P50 < 50ms · P99 < 200ms | ✓ | P50=0.5ms，P99=0.8ms（20 次请求） |
+| 5 | DB URL 错 → pino log 'DB connection failed' + exit 1 | ✓ | exit code 1，pino error msg 确认 |
+| 6 | monorepo prisma client 路径解决 | ✓ | .npmrc `public-hoist-pattern[]=@prisma/client`，root hoisted，typecheck 通过 |
+| 7 | tRPC context: prisma + req + traceId='pending' | ✓ | context.ts line 19-21 |
+| 8 | Typecheck passes | ✓ | `tsc --noEmit` exit 0 |
+| 9 | Tests pass · curl auth.me 集成测试通过 | ✓ | vitest 1/1 passed |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+  pytest-full.xml        (1 passed)
+  pytest-full.stdout.txt
+  typecheck.txt          (exit 0)
+  manifest.json
+```
+
+### X-6 零回归
+
+vitest 全量通过：1 test passed，exit 0。
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

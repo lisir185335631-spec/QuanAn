@@ -1,0 +1,1 @@
+US-009 is complete. The verify script passes 35/35 checks and TD-76 is now marked resolved in tech-debt.json. Commit `f1c42a2` contains both changes with `[TD-76 resolved] [TD-77 resolved]` tags.

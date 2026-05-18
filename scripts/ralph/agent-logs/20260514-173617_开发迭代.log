@@ -1,0 +1,9 @@
+AC-5 修复完成。
+
+**变更摘要**：
+- `quota-adjustment.service.ts`: SQL 加 `u.created_at`，`AnomalousUserRow` interface 加 `createdAt: Date | null`，映射加 `createdAt: r.created_at`
+- `QuotaDetailDrawer.tsx`: `QuotaUserRow` 加 `createdAt?: Date | string | null`，用户信息区加 `<StatRow label="加入时间" value={fmtDate(selected.createdAt ?? null)} />`
+- `QuotaPage.tsx`: 行映射加 `createdAt: item.createdAt`
+- `packages/clients/src/admin-router-types.ts`: shadow router 的 `listAnomalousUsers` items 加 `createdAt: Date | null`（关键：admin 前端通过 shadow router 获取类型，必须同步）
+
+测试：1668 passed · 0 failed，typecheck 0 errors。

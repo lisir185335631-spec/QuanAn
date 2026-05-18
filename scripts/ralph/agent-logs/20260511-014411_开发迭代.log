@@ -1,0 +1,19 @@
+US-008 is complete. Here's a summary:
+
+**What was implemented:**
+
+`apps/web/src/components/Header.tsx` — `AccountDropdown` now uses N-tiered rendering instead of an unconditional `<ScrollArea className="h-60">`:
+
+- **N=1**: `<div>{items}</div>` — plain div, no ScrollArea, compact
+- **N=2-3**: `<div style={{ maxHeight: n*44px, overflowY: 'auto' }}>{items}</div>` — compact with proportional max-height
+- **N≥4**: `<ScrollArea className="h-60">{items}</ScrollArea>` — existing scrollable behavior
+
+**ToolsDropdown (line 188-)** unchanged — 14 items at fixed count, `h-52` is appropriate.
+
+**Verification:**
+- `pnpm typecheck` — 6 workspaces, 0 errors ✓
+- `pnpm lint --max-warnings=0` — clean ✓
+- `pnpm test` — 75 files, 727 tests ✓
+- 4 screenshots saved to `verify-artifacts/US-008/screenshot-{1,2,3,4}.png`
+
+**Key learning:** `ipAccounts.list` uses `protectedProcedure` (requires `activeAccountId`). In browser tests, must call `switchActive` after creating accounts before `list` returns data.

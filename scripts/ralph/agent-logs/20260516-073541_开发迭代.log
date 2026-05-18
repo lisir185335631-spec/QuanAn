@@ -1,0 +1,11 @@
+The fix is complete. Here's what was done:
+
+**Root cause (two-layer bug):**
+1. `Generate.tsx` line 94: `historyDefaults ?? lsDefaults ?? (topicFromUrl ? ...)` — `lsDefaults` is non-nullish (has `topic: ""`), so `topicFromUrl` was never reached
+2. `ToolForm.tsx` line 70: `{...resolvedDefaults, ...parsed}` — LS spread would override `topic` even if `resolvedDefaults.topic` was non-empty
+
+**Fixes:**
+1. `Generate.tsx`: Changed to `historyDefaults ?? (topicFromUrl ? {...lsDefaults, topic: topicFromUrl} : lsDefaults)` — preserves other LS fields (scriptType, elements) but `topicFromUrl` wins on `topic`
+2. `ToolForm.tsx`: Changed to `{...resolvedDefaults, ...parsed, ...(resolvedDefaults.topic ? {topic: resolvedDefaults.topic} : {})}` — protects non-empty `resolvedDefaults.topic` from LS override
+
+All 2250 tests pass, typecheck clean.

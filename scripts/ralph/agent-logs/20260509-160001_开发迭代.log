@@ -1,0 +1,8 @@
+US-008 修复完成。
+
+**变更内容：**
+
+1. `packages/schemas/src/specialist-io/analysis.schema.ts:14` — 为 `copy` 字段的 `.min(10)` 和 `.max(3000)` 加上中文 message 参数
+2. `tests/unit/web/pages/Analysis.test.tsx:162` — 将 `expect(msg).toBeTruthy()` 改为 `expect(msg).toContain('字')` 真正验证中文内容
+
+全部 507 测试通过，typecheck 0 errors，提交 `e1010b6`。

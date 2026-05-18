@@ -1,0 +1,13 @@
+US-013 complete. Summary of what was implemented:
+
+**`feature-flag.service.ts` changes:**
+- Added `rolloutConfigSchema` (AC-3): `z.discriminatedUnion('flagType', [...])` with 3 branches (boolean/percentage/targeted) — exported for reuse
+- Fixed hash order (AC-1): `${userId}:${flagKey}` instead of the old reversed `${flagKey}:${userId}`
+- Changed `_toggleFeatureFlagInTx` to use `upsert` instead of `update` (AC-4) — supports arbitrary new flagKeys
+- Removed `NOT_FOUND` throw from `toggleFeatureFlag` — now validates `rolloutConfig` via schema and always creates a dual-approval request
+
+**New test files:**
+- `tests/unit/api/admin/feature-flag-routing.test.ts` — 17 tests covering all AC-5 scenarios (percentage 0%/50%/100%, targeted user/plan, boolean, unknown flagKey, zod schema)
+- `apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts` — 19 tests covering zod schema edge cases, hash determinism, and upsert create paths
+
+**Result:** 1943 tests passing (+36 net new), 0 regressions, typecheck clean.

@@ -1,0 +1,42 @@
+---
+
+## 验证结果: US-011 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | apps/api/src/trpc/routers/history.ts 新建(~119 行) | ✓ |
+| AC-2 | list query 带全字段 select + agentId/agentMode/sourceType/dateRange/limit/offset 过滤 | ✓ |
+| AC-3 | detail query(findFirst + accountId 显式 where + NOT_FOUND) | ✓ |
+| AC-4 | delete mutation(deleteMany + accountId 显式 guard + { ok: true }) | ✓ |
+| AC-5 | _app.ts 注册 history: historyRouter | ✓ |
+| AC-6 | router-types.ts shadow router 含 history.list/detail/delete | ✓ |
+| AC-7 | History.tsx ~243 行 · Table + 5 列 + 双筛选器 | ✓ |
+| AC-8 | 点行 navigate(`/${toolPath}?historyId=${id}`) · 4 种 mode 映射正确 | ✓ |
+| AC-9 | Generate/BoomGenerate/Analysis/VideoAnalysis 全部加 useSearchParams + history.detail.useQuery + setResult | ✓ |
+| AC-10 | history-router.test.ts 11 个 unit tests (≥6 required) | ✓ |
+| AC-11 | history-flow.spec.ts · CI mock e2e · 完整 7 步流程 | ✓ |
+| AC-12 | limit > 100 → zod max(100) → BAD_REQUEST · dateRange enum 验证 | ✓ |
+| AC-13 | detail 不存在 → NOT_FOUND · delete 跨账号 → accountId 显式拦截 | ✓ |
+| AC-14 | @@index([accountId, createdAt(sort: Desc)]) 已建 | ✓ |
+| AC-15 | 性能约束 — 查询简单 + index 已建(单测不可测 P95) | ✓ |
+| AC-16 | e2e CI mock 覆盖全流程(表格渲染→筛选→点行→跳转→预填→无错误) | ✓ |
+| AC-17 | Tests pass — 542 tests, 0 failures(56 files) | ✓ |
+| AC-18 | Typecheck passes — 6 packages 全 clean | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-011/
+├── manifest.json
+├── pytest-full.xml   (542 passed, 0 failed)
+├── pytest-full.stdout.txt
+└── typecheck.txt     (6 packages clean)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`
+
+**补注**: AC-3 描述 "findUniqueOrThrow · accountId RLS auto"，实现用了更安全的 `findFirst + 显式 accountId where`，符合 AGENTS.md SHIELD REJ-008（explicit accountId where），NOT_FOUND 行为等价，接受。

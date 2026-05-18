@@ -1,0 +1,23 @@
+US-012 is complete. Here's a summary of what was implemented:
+
+**`scripts/verify-prd-13.sh`** — 8-section verification script, 38 checks all PASS:
+- §1 audit-redlines-admin (8 LD-A + 6 R-A)
+- §2 6 new PRD-13 table schemas
+- §3 4 single-point functions + 0 dual-write grep
+- §4 BullMQ cron wiring (emergencyPostReview + quotaExpiry)
+- §5 14 Specialist Tabs + impact estimator + anomaly types
+- §6 Monaco + @react-pdf/renderer deps
+- §7 5 tRPC sub-router procedures
+- §8 E2E vitest tests
+
+**4 E2E test files (25 tests total)**:
+- `prd13-dual-approval-e2e.test.ts` (8 tests) — full 6-step dual approval flow with real DB
+- `prd13-emergency-flow.test.ts` (7 tests) — emergency approve + fake 12h/25h cron simulation + postReview
+- `prd13-quota-expiry-e2e.test.ts` (4 tests) — quota adjustment + fake-timer 24h expiry + rollback
+- `prd13-evolution-rebuild-e2e.test.ts` (6 tests) — dual approval + `_forceRebuildEvolutionInTx` + BullMQ
+
+**Bug fix**: `evolution-rebuild.service.ts` `levelAfter: 'rebuild'` → `'rbld'` (VarChar(4) constraint violation)
+
+**Results**: `pnpm test: 1721 pass ≥ 1720` · `pnpm typecheck: 0 errors` · `bash scripts/verify-prd-13.sh: 0 failures`
+
+<promise>COMPLETE</promise>

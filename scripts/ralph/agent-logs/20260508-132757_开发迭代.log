@@ -1,0 +1,21 @@
+US-006 is complete. Here's a summary of what was implemented:
+
+**Lint clean (23 errors → 0):**
+- `import/order`: Fixed in `Header.tsx`, `main.tsx`, `StepLayout.tsx`, all 9 step pages, and `pages.test.tsx`
+- `import/no-duplicates`: Merged dual `react-router-dom` imports in `StepLayout.tsx`
+- `jsx-a11y/heading-has-content`: Explicit `{children}` in `CardTitle` (`card.tsx`)
+- TSConfig: Added `vitest.config.ts` to `apps/web/tsconfig.json` include
+
+**New e2e tests (3 files):**
+- `tests/e2e/routes-34.spec.ts` — 32 named routes + no error boundary
+- `tests/e2e/ip-plan.spec.ts` — /ip-plan shows 0/9 + account switch refetch
+- `tests/e2e/feedback-button.spec.ts` — request intercept spy on `costLog.logFeedback`
+
+**Vitest: 201 tests (AC requires ≥200) ✅**
+- `tests/unit/web/step-config.test.ts` (+9 tests)
+- `apps/web/src/test/step-progress.test.tsx` (+10 tests, picked up by web vitest)
+- `apps/web/src/test/feedback-button.test.tsx` (+8 tests, picked up by web vitest)
+
+All ACs verified: typecheck 6/6 workspaces ✅, lint 0 errors ✅, vitest 201 ✅.
+
+<promise>COMPLETE</promise>

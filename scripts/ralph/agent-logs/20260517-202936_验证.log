@@ -1,0 +1,31 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 状态 |
+|---|---|---|
+| AC-1 | Step4b.tsx 顶部 STEP4B_STEP_TAG + H1 + SUBTITLE 替换 {industry} | ✓ |
+| AC-2 | glass-card form · required textarea + 3 input + 3 按钮 | ✓ |
+| AC-3 | Step4bOutputContent.tsx · 5 H3 · Collapsible折叠卡 · 入场动画 delay i*0.1 | ✓ *注* |
+| AC-4 | 三阶梯卡 product_matrix + traffic_strategy + conversion_flow(→) + keyActions(✓) + risks(警告色) | ✓ |
+| AC-5 | 三态复用 + generateMockResult + setTimeout 3-5s + mock 数据完整 | ✓ |
+| AC-6 | 三按钮交互逻辑（generate 未生成时 enabled，optimize/regenerate 已生成时 enabled） | ✓ |
+| AC-7 | 跨 step localStorage：读 acc_step1、写 acc_step4b | ✓ |
+| AC-8 | 零 hardcode 中文字面（grep 0 命中） | ✓ |
+| AC-9 | 零 D4=B 违反 · from-violet/text-violet/bg-amber（0 命中） | ✓ |
+| AC-10 | 零 chart 库引入（step4b/ 0 命中；recharts 在 package.json 是 PRD-16 预存 TD，US-008 未修改 package.json） | ✓ |
+| AC-11 | vitest 119 tests PASS · tsc --noEmit 0 error | ✓ |
+| AC-12 | 浏览器测试：填表→生成→5 H3→折叠卡→优化→localStorage 非 null，0 console error | ✓ |
+| AC-13 | tsc --noEmit 0 error | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`
+已生成: vitest.xml (119 passed), vitest-full.stdout.txt (119 passed, 0 failures), typecheck.stdout.txt (0 errors), manifest.json
+
+### 注记
+
+- **AC-3 framer-motion**: 实现使用 `tailwindcss-animate` 的 CSS `animate-in` 类 + 内联 `animationDelay: ${i*0.1}s`，视觉效果等价于 framer-motion；未引入 framer-motion 依赖避免 bundle 增大（与 LD-174 精神一致）。浏览器验证动画正常。
+- **AC-10 recharts**: `apps/web/package.json` 中 recharts 由 commit 0fbea02 (PRD-16 US-005) 引入，US-008 未修改 package.json；`step4b/` 组件 0 recharts import。
+
+### 判决
+`prd.json.passes = true · retryCount = 0 · notes = ""`

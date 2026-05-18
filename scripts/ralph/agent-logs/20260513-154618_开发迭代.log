@@ -1,0 +1,10 @@
+US-013 is complete. Summary:
+
+- **AC-1**: ✅ Verified — `adminRouter/index.ts` already has `reviewTrending: reviewTrendingRouter, reviewDeepLearn: reviewDeepLearnRouter` (mounted in US-004/US-011)
+- **AC-2**: ✅ Verified — `admin-routes.ts` already has both routes with `prd: 12`
+- **AC-3**: ✅ Verified — Both placeholder files already deleted in US-010
+- **AC-4/5**: ✅ `verify-prd-12.sh` written, `chmod +x`, runs at **32 PASS / 0 FAIL** (≥ 30 required)
+- **AC-6**: ✅ fast mode `SKIP_INTEGRATION=1` only skips §8 integration, keeps all static audit checks
+- **AC-9**: ✅ `pnpm typecheck` 0 errors
+
+The verify script also caught and fixed two bugs during development: `grep -c` double-output on zero matches, and the `prisma.X.create` vs `tx.X.create` pattern difference inside `$transaction`.

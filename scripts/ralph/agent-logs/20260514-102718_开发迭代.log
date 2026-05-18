@@ -1,0 +1,1 @@
+US-001 完成。新增 `tests/unit/agents/specialists/DailyTaskAgent.test.ts`，覆盖 4 个核心场景（冷启动、非冷启动 LLM 调用、schema retry、AbortError），共 10 个 it()。全套通过：1559 tests passed（+10，基线 1549），0 typecheck errors，TD-056 status 已更新为 resolved。

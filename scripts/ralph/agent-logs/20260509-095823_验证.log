@@ -1,0 +1,33 @@
+---
+
+## 验证结果: US-018 PASS
+
+### AC 对照
+
+| AC | 内容 | 结果 |
+|---|---|---|
+| AC-1 | `pnpm test` ≥ 259 tests | ✓ **343 passed** (39 files) |
+| AC-2 | `pnpm test:judge` 7 cases | ✓ **7 files, 14 tests passed** |
+| AC-3 | `pnpm test:e2e` ≥ 104 | ✓ **106 passed**, 2 skipped (ip-flow-9-steps real LLM — 按设计跳过) |
+| AC-4 | `pnpm typecheck` 6 ws 0 error | ✓ **6/6 workspaces clean** |
+| AC-5 | `pnpm lint` (web) 0 warnings | ✓ **0 warnings, 0 errors** |
+| AC-6/7 | 全套 exit code 0 | ✓ **全部 exit 0** |
+| AC-8 | 产物写入 verify-artifacts/US-018/ | ✓ **6 产物文件已落盘** |
+| AC-12 | 时间预算 | ✓ vitest 5.31s, judge 0.49s, e2e 1m43s, typecheck 2.84s, lint 3.68s — 全达标 |
+| AC-13/14 | Tests pass + Typecheck passes | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-018/
+├── manifest.json
+├── vitest-full.stdout.txt   (343 passed)
+├── judge.stdout.txt         (14 passed)
+├── e2e.stdout.txt           (106 passed, 2 skipped)
+├── typecheck.stdout.txt     (6 ws clean)
+└── lint.stdout.txt          (0 warnings)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,15 @@
+US-001 实现完成。以下是交付物摘要：
+
+**新建文件：**
+- `apps/api/src/lib/env.ts` — zod `envSchema` + `validateEnv()` · 缺 key → fallback warning，malformed → throw
+- `apps/api/src/lib/env.test.ts` — 5 单测全部通过（5/5 PASS）
+- `apps/api/vitest.config.ts` — 本地 vitest config，支持 `cd apps/api && pnpm vitest run src/lib/env.test.ts`
+
+**修改文件：**
+- `apps/api/src/index.ts` — 模块加载时调 `validateEnv()` + `logger.info('llm.init')` 结构化日志
+- `.env.example` — 新增 `LLM_DEFAULT_MODEL=claude-sonnet-4-6` + fallback 行为注释
+
+**质量验证：**
+- `pnpm vitest run src/lib/env.test.ts` → 5/5 PASS
+- `pnpm typecheck` → 0 error
+- Root vitest 9 失败均为 pre-existing 集成测试（需 HTTP server，ECONNREFUSED）

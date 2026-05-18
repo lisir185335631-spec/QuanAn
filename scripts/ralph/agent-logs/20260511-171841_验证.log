@@ -1,0 +1,47 @@
+全部 13 个 Story PASSED。
+
+---
+
+## 验证结果: US-013 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 依据 |
+|---|---|---|
+| AC-1 judge 50+ | ✓ | 51 tests pass (20 judge files) |
+| AC-2 vitest 750+ | ✓ | 861 pass, 2 skipped, 0 fail |
+| AC-3 typecheck 6 ws 0 error | ✓ | pnpm typecheck 全部 workspace 通过 |
+| AC-4 lint 0 warnings | ✓ | pnpm lint --max-warnings=0 通过 |
+| AC-5 e2e 145+ | ✓ | 158 pass, 2 skipped |
+| AC-6 3 new specs workers=1 | ✓ | evolution-loop/daily-task-flow/voice-chat-flow 各 2 project 共 6 tests pass |
+| AC-7 6 eventType grep | ✓ | specialist_call:35, judge_call:25(judge-runner.ts), image_gen:6, l5_agent:18, stt_call:6, tts_call:6 |
+| AC-8 BullMQ 4 queues | ✓ | image-gen/evolution/daily-task queues 确认；voice-chat 同步无 queue（若有=可选） |
+| AC-9 cron '0 0 * * *' | ✓ | 3 hits in daily-task-runner.ts + index.ts |
+| AC-10 voice_chat:acc | ✓ | 2 hits (l1-buffer.ts KEY_PREFIX + template) |
+| AC-11 5th route fetch | ✓ | Promise.allSettled([5 items]) 确认，文件注释"5 路并行" |
+| AC-12 evolutionInsight ≥11 | ✓ | 50 hits 全库；ContextAssembler._composeSystemPrompt 中央注入覆盖全 11 specialist |
+| AC-13 VOICE_CHAT_TOOLS 3处 | ✓ | VoiceChatAgent.ts(定义) / tools-dispatcher.ts(dispatch) / voice-chat-agent.ts template(描述) 5 工具名一致 |
+| AC-14 14 specialists | ✓ | ls apps/api/src/specialists/*.ts = 14 |
+| AC-15 workers ≥8 | ✓ | 9 worker 目录 |
+| AC-16 browser 3页截图 | ✓ | /evolution(进化中心) + /daily-tasks(立即生成按钮) + /voice-chat(麦克风UI) 均无 ErrorBoundary |
+| AC-17 D-046~D-055 | ✓ | PRD-7 D-046~049 + PRD-8 D-050~055 均有对应代码实现 |
+| AC-18 patterns 回传 | ✓ | progress.txt 第 3677 行有 US-013 条目含新 patterns |
+| Typecheck passes | ✓ | 同 AC-3 |
+| Tests pass | ✓ | vitest 861 + judge 51 + e2e 158 全过 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-013/
+  vitest-full.xml      (861 tests, 0 failures)
+  vitest-full.stdout.txt
+  typecheck.stdout.txt  (6 ws, 0 errors)
+  lint.stdout.txt       (0 warnings)
+  judge.stdout.txt      (51 pass)
+  e2e-full.stdout.txt   (158 pass)
+  evolution-loop.png / daily-task-flow.png / voice-chat-flow.png (e2e 截图)
+  browser-*-validator.png (3 validator 截图)
+  manifest.json         (zero_regression=PASS, verdict=PASS)
+```
+
+### 判决
+`prd.json.passes = true` · US-013 通过 · PRD-8 全 13 Story 均 PASSED · `[DONE] All stories resolved!`

@@ -1,0 +1,27 @@
+## 验证结果: US-010 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | STEP6_STEP_TAG + H1 + SUBTITLE | ✓ 浏览器截图确认 |
+| AC-2 | form glass-card · textarea 必填 · 字符计数 · button disabled={text.length < 10} | ✓ 5字→"已输入 5 字"+disabled 确认 |
+| AC-3 | useEffect 预填 acc_step7 | ✓ 代码检查确认 |
+| AC-4 | Step6FormData + generateMockResult · 5镜头+方案+口播 · acc_step6 | ✓ 生成后 localStorage 有完整结构 |
+| AC-5 | 输出 3 H3 · 分镜 table(8列) · 拍摄方案(4 list) · 口播提词器(pre) | ✓ 浏览器截图确认全部渲染 |
+| AC-6 | 零 hardcode · grep Step6.tsx = 0 字面 | ✓ 0 matches |
+| AC-7 | 零 D4=B · grep violet/amber = 0 | ✓ 0 matches |
+| AC-8 | vitest 全 PASS · tsc 0 error | ✓ 119 passed, 0 errors |
+| AC-9 | 浏览器全流程 e2e | ✓ 5字disabled/15字enabled/生成3模块/acc_step6非null/无console error |
+| AC-10 | tsc --noEmit 0 error | ✓ 已确认 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-010/`
+- `vitest.xml` (119 passed)
+- `vitest-full.stdout.txt` (119 tests, 14 files)
+- `typecheck.stdout.txt` (0 errors)
+- `manifest.json` (verdict=PASS)
+- `screenshots/validator-us-010-pass-{1-4}.png`
+
+### 判决
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`

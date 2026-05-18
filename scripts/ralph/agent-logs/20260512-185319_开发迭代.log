@@ -1,0 +1,5 @@
+US-005 AC5 fix is complete. Summary of what was done:
+
+- **AC5 fixed**: Added `ALTER TABLE users ENABLE ROW LEVEL SECURITY;` to `manual_rls.sql` along with 4 policies (select open for auth email lookups, update own for lastLoginAt, insert open for registration, admin full access)
+- **Verified**: `psql` confirms `relrowsecurity=t`, typecheck 0 errors, `pnpm audit:redlines-admin` ALL PASS
+- **X-6 pre-existing failures**: Same 3 files failing as before this iteration (rls-isolation/evolution-threshold/ip-progress-integration) — no new regressions, Opus should TD-exempt these per Validator recommendation

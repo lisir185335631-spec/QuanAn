@@ -1,0 +1,17 @@
+All work for US-008 is complete. Summary of what was done:
+
+**TD-008** (closed): Renamed `generateTraceId` across the codebase:
+- `trpc.ts`: `generateHttpTraceId()` (no-param, HTTP layer)
+- `agents/base/types.ts`: `generateSpecialistTraceId(accountId, agentId)` (Specialist layer)
+- Updated all callers: `trace.ts`, `BaseSpecialist.ts`, `base.test.ts`
+
+**TD-007** (closed): Fixed all 14 web lint errors:
+- `Header.tsx`: `onClick={login}` → `onClick={() => void login()}` ×2 (no-misused-promises)
+- `vite-env.d.ts`: Added `ImportMetaEnv` interface (unsafe-any)
+- `useActiveAccount/useEvolution/useStepData.ts`: Fixed import/order ×5 + eqeqeq ×6
+
+**Unit tests** (15 new): `account-step-auth.test.ts` covers `account.getActive`, `account.switchActive` (zod + auth errors), `step.saveStepData` (zod), `auth.me` — completing coverage for all 17 routers.
+
+**E2E tests** (2 new): Multi-account RLS isolation and LS↔DB dual-write, using `page.evaluate` fetch with session cookies.
+
+**Results**: 174/174 tests ✅ · 6/6 workspaces typecheck ✅ · web lint clean ✅

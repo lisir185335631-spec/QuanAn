@@ -1,0 +1,38 @@
+US-004 验证通过。更新完整产物总结：
+
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | function-matrix.ts 存在，export FUNCTION_MATRIX + FUNCTION_MATRIX_FOOTER，每卡含 icon/title/desc/href | ✓ |
+| AC-2 | 4 group 数据严格，15 desc 全 15 条字面精准命中（grep 验证全部通过） | ✓ |
+| AC-3 | FunctionMatrixSection 函数存在，import 正确，H2 className 精确匹配 | ✓ |
+| AC-4 | grid className "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 存在，4 个 grid ✓ | ✓ |
+| AC-5 | footer 卡 mt-10 max-w-md mx-auto 居中，Link to /guide | ✓ |
+| AC-6 | 浏览器验证：H2 Orbitron 居中，4 H3 分组顺序正确，H3 前有竖线，15 卡，grid 布局，click /trending + /guide 跳转正常 | ✓ |
+| AC-7 | `screenshots/prd16-us004-home-matrix.png` 已生成（210K） | ✓ |
+| AC-8 | grep FUNCTION_MATRIX → 5 处命中（import + map + footer 相关），no inline href | ✓ |
+| AC-9 | 无 inline style grid，全用 Tailwind className | ✓ |
+| AC-10 | vitest 51 tests PASS，typecheck clean | ✓ |
+
+### 零回归门禁
+- vitest run: 4 files, 51 tests, all passed
+- typecheck: tsc --noEmit 退出码 0
+
+### 关键修复确认
+本次 retry 1 的 Opus reject 原因（15 desc 字面改写）已修复——grep 全部 15 条字面字符串，全部精准命中。
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-004/
+├── manifest.json          (verdict: PASS, zero_regression: PASS)
+├── pytest-full.stdout.txt (51 tests passed)
+├── pytest-full.xml
+└── typecheck.stdout.txt   (clean)
+```
+
+**prd.json**: US-004 `passes=true`, `notes=""`, `retryCount=0`

@@ -1,0 +1,9 @@
+US-005 is complete. All 448 tests pass and typecheck is clean. The implementation:
+
+1. **`boomGenerate.ts`** — replaced the `stepKey`-based mock with a real `copywritingAgent.execute({ mode: 'boom', userInput })` call, writes history with D-032 `---`-separated content, full field coverage including `scriptType=null`, and AC-8 industry fallback from DB.
+
+2. **`tests/unit/api/boom-generate-router.test.ts`** — 4 unit tests: happy path (agent called + `---` separator), zod fail (empty elements), fallback path (isFallback=true propagates), agentMode="boom" invariant.
+
+3. **`tests/integration/api/boom-generate-llm.test.ts`** — 1 integration test: nock mock stream → real DB history row with `---` separator + cost_log write verified.
+
+4. **`tests/unit/api/specialists-creation.test.ts`** — updated `vi.mock` to return boom format when `mode='boom'`, added `ipAccount.findUnique` to the prisma mock, updated test input to use new `elements` schema.

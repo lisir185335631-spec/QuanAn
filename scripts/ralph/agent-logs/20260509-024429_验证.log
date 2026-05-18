@@ -1,0 +1,35 @@
+prd.json is valid. Validation complete.
+
+---
+
+## 验证结果: US-007 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|----|------|------|
+| AC-1 | ✓ | TopicAgent extends BaseSpecialist; discriminatedUnion 5 路 |
+| AC-2 | ✓ | 5 category schemas 各含 topics.length(20) + 5 字段 |
+| AC-3 | ✓ | for-await SSE streaming; chunk.type==='done' per interface (无 .final 字段) |
+| AC-4 | ✓ | tools=['llm.stream']; streaming=true; timeout_ms=60000; model_tier='reasoning' |
+| AC-5 | ✓ | hotElements(23 实物/~22 去重); scriptTypes(20); ContextAssembler 注入 |
+| AC-6 | ✓ | rag=['knowledge_cases','trending'] |
+| AC-7 | ✓ | memory.l2_read=['stepData'] |
+| AC-8 | ✓ | saveStream subscription; stepKey='step5'; yield started → execute → yield done |
+| AC-9 | ✓ | z.enum(TOPIC_CATEGORIES); 测试确认 invalid category rejects |
+| AC-10 | ✓ | length(20) safeParse 失败 → Step 4 retry → SchemaValidationError |
+| AC-11 | ✓ | viralPotential z.enum; 测试确认 |
+| **AC-12** | **✗** | **断流 JSON.parse 失败 → throw 直接 re-throw; 无 retry, 无 fallback** |
+| AC-13 | ✓ | 10 tests ≥ 7 |
+| AC-14 | ✓ | yield started 先于 execute(); timeout_ms=60000 |
+| AC-15 | ✓ | 10/10 tests pass |
+| AC-16 | ✓ | typecheck exit 0 |
+
+### 零回归门禁
+31 test files / 272 tests — 全部通过
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-007/` — manifest.json, pytest-full.stdout.txt, pytest.stdout.txt, typecheck.txt
+
+### 判决
+**FAIL** — AC-12 未实现。`BaseSpecialist.ts:79` Step 3 直接 re-throw，JSON.parse 失败路径没有 retry 1 次 + fallback。修复方向：在 `TopicAgent.invokeLLM` 内部 catch JSON.parse 错误，retry stream 一次，若仍失败返回 `isFallback: true` 的 fallback 结果。

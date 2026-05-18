@@ -1,0 +1,31 @@
+prd.json 更新完成。输出最终验证报告。
+
+---
+
+## 验证结果：US-002 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | useStepData.ts 新增 dbQuery (useQuery + enabled/staleTime/retry) + 返回 { save, load, isSaving, dbQuery } | ✓ |
+| AC-2 | 文件级 export readOtherStep<T>，stepLsKey 拼 key，accountId===null 返回 null，JSON.parse 失败 catch + warn | ✓ |
+| AC-3 | useStepData.test.tsx 共 11 tests：(a)save 触发 mutation，(b)load 读 LS，(c)dbQuery enabled，(d)readOtherStep null safety，(e)JSON.parse 失败 warn | ✓ |
+| AC-4 | 浏览器 /step/3，设 aiip_memory_acc_11350_step1={industry:"科技"}，副标题显示"当前行业：科技"，0 console error | ✓ |
+| AC-5 | pnpm vitest run → 11 passed, exit 0 | ✓ |
+| AC-6 | pnpm typecheck → 0 errors | ✓ |
+
+### 零回归门禁（X-6）
+- 138 tests passed across 16 files，exit 0
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-002/`
+- `vitest.stdout.txt` — 11 passed
+- `typecheck.stdout.txt` — 0 errors  
+- `pytest-full.stdout.txt` — 138 passed (全量 vitest)
+- `manifest.json` — verdict=PASS
+
+### 截图
+`screenshots/validator-us-002-ac4-1.png` — Step3 显示"当前行业：科技"，activeAccount=AI创业者小张(id=11350)
+
+**判决：prd.json passes = true，retryCount = 0**

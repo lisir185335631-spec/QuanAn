@@ -1,0 +1,10 @@
+US-014 is PENDING (waiting for validator). There are still 8 more stories to complete. The task for this invocation is done - US-014 is implemented and committed.
+
+US-014 实现完成，已 commit。
+
+**已完成的工作：**
+- `packages/ui/src/admin/PdfBillTemplate.tsx` — React PDF 模板（头页 + 分项明细50行/页 + 签名页 + 每页 footer hash）
+- `apps/api/src/services/admin/cost/pdf-bill.service.ts` — `generateMonthlyBill()` · redact 哈希 · YoY计算 · 空账单安全处理
+- `apps/api/src/trpc/routers/admin/cost.ts` — `exportMonthlyPdf` mutation（base64返回 + audit日志 + 失败500）
+- `apps/admin/src/pages/cost/index.tsx` — [月度账单 PDF] 按钮 + blob下载
+- 11/11 单元测试通过 · 0 typecheck errors · audit:redlines-admin ALL PASS

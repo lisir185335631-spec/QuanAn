@@ -1,0 +1,31 @@
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+| AC | 状态 | 验证方式 |
+|---|---|---|
+| AC-1: OAuthProvider 抽象 | ✓ | 代码 providers.ts |
+| AC-2: mock login → session cookie HttpOnly+sameSite=Lax+secure=false(dev) | ✓ | integration test + curl |
+| AC-3: 重定向首页 + Header 显示 dev@local.test | ✓ | E2E playwright test |
+| AC-4: auth.me 返 {ok:true, user:{...}} | ✓ | integration test |
+| AC-5: DB users 表新增 1 行 | ✓ | DB 查询确认 |
+| AC-6: audit_log 写 auth.login+provider=mock | ✓ | DB 查询确认 |
+| AC-7: Google OAuth 实现 | ✓(code) | GoogleProvider 代码完整，无 real creds |
+| AC-8: CSRF state 不匹配 → 401 | ✓ | unit test requiresCsrfCheck + 代码路径 |
+| AC-9: GOOGLE_CLIENT_ID 未设 → 500 + toast | ✓ | providers.ts throws + useAuth.ts toast |
+| AC-10: OAUTH_PROVIDER=foo → exit(1) | ✓ | unit test |
+| AC-11: session 过期 → unauthenticated | ✓ | integration test |
+| AC-12: 二次登录不重复创建 user | ✓ | DB 验证 count=1 + last_signed_in 更新 |
+| AC-13: callback <500ms, auth.me <100ms | ✓ | perf integration test |
+| AC-14: SESSION_SECRET ≥32 启动检查 | ✓ | unit test |
+| AC-15: production 强制 secure=true | ✓ | 代码 + unit test |
+| AC-16: Typecheck passes | ✓ | pnpm typecheck exit 0 |
+| AC-17: 26 vitest + 12 E2E 全通过 | ✓ | 产物文件确认 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/`  
+已生成: `vitest-final.xml` (26 passed), `playwright-final.stdout.txt` (12/0), `tsc-final.txt` (exit 0)
+
+### 判决
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`
+
+迭代 4 修复（tRPC type isolation + CORS + E2E real OAuth flow）使所有测试通过。验证完成。

@@ -1,0 +1,35 @@
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | Generate.tsx 真表单 ToolForm + 3 子字段 | ✓ `toolKey="freeGenerate"` + ScriptTypeSelect + ElementsMultiSelect + TextareaField |
+| AC-2 | toast.error("生成失败 · 请稍后重试") | ✓ ToolForm.tsx:102 已修复含"稍后" |
+| AC-3 | LS namespace `aiip_memory_acc_{id}_tool_freeGenerate_input` | ✓ `getToolLsKey(accountId,'freeGenerate','input')` 正确 |
+| AC-4 | useEffect(?historyId) + `trpc.history.detail.useQuery` 预填 | ✓ Generate.tsx:50-62 |
+| AC-5 | ToolResult + react-markdown + remark-gfm | ✓ FreeGenerateResult.tsx 已用 ReactMarkdown + remarkGfm |
+| AC-6 | ≥5 unit tests | ✓ 22/22 通过 |
+| AC-7 | e2e 选 tutorial + 结果 + isFallback=false | ✓ 2/2 通过（chromium + mobile），`/教程演示/i` 已修复 |
+| AC-8 | AbortController on unmount | ✓ Generate.tsx:31-35 + ToolForm.tsx:52-55 |
+| AC-9 | LD-015 0 hardcode color | ✓ grep `#[0-9a-fA-F]{6}` 命中 0 |
+| AC-10 | FeedbackButton 复用 | ✓ Generate.tsx:118 `agentId="CopywritingAgent"` |
+| AC-11 | 性能要求 | ✓ 浏览器验证无卡顿，代码结构符合 |
+| AC-12 | agent-browser 实测 /generate 完整流程 | ✓ ToolForm 渲染，3 字段可见，无控制台错误 |
+| AC-13 | Tests pass | ✓ 443/443 unit + 22/22 Generate + 2/2 e2e |
+| AC-14 | Typecheck passes | ✓ 全 6 个 workspace 无报错 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-004/
+  pytest-full.xml      (443 passed)
+  pytest-full.stdout.txt
+  unit-generate.xml    (22 passed)
+  unit-generate.stdout.txt
+  typecheck.txt        (all clean)
+  e2e-tool-generate.stdout.txt (2 passed)
+  manifest.json
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

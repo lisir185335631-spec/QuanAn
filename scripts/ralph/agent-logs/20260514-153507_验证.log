@@ -1,0 +1,50 @@
+---
+
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 依据 |
+|---|---|---|
+| AC-1: 5 档 stepper | ✅ PASS | 浏览器截图确认 0%/1%/10%/50%/100% |
+| AC-2: 100% → confirm modal + dual approval | ✅ PASS | 代码验证 `setConfirm('100pct')` + `requestApproval(dual=true)` |
+| AC-3: 1-50% 直接调 trpc · 不走 Approval | ✅ PASS | Toast "灰度比例已更新为 10%" 出现 |
+| AC-4: 0% → 客户端二次 confirm | ✅ PASS | 代码验证 `setConfirm('0pct')` → ConfirmModal |
+| AC-5: currentVersion vs nextVersion + D-090 tooltip | ✅ PASS | 截图确认版本卡 + ? tooltip |
+| AC-6: Canary status 卡片 | ✅ PASS | 截图确认 v1 灰度 0% current |
+| AC-7: 一键回滚 + reason ≥ 20 字 + dual approval | ✅ PASS | `approval_requests` count 0→1 DB 验证 |
+| AC-8: LlmJudgeCard 评分卡 | ✅ PASS | 截图 4.57/5.00 进度条 + 跑分时间 + isMock |
+| AC-9: HistoryTimeline canaryHistory | ✅ PASS | 代码验证 `canaryHistory` 字段渲染逻辑 |
+| **AC-10: 浏览器 e2e** | ❌ **FAIL** | prompt_canary_config 表无更新（见下） |
+| AC-11: redlines 0 + test 1659 pass + typecheck 0 | ✅ PASS | 命令实跑通过 |
+| AC-12: Typecheck passes | ✅ PASS | `pnpm typecheck` 0 errors |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`  
+已生成: `pytest-full.xml`（1659 passed）, `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`, 6 张浏览器截图
+
+---
+
+## CONFIRMED · AC-10 失败详情
+
+**失败项: 调滑块 10%→50% 后 `prompt_canary_config` 表无更新**
+
+- **复现命令:** `psql postgresql://return@localhost:5432/quanqn -c "SELECT \"specialistId\", mode, \"canaryPct\" FROM prompt_canary_config WHERE \"specialistId\" = 'PositioningAgent';"`
+- **实际输出:** `0 行记录`（表为空）
+- **失败定位:** `apps/api/src/trpc/routers/admin/prompts.ts:211` — `updateCanary` 用 `updateMany`，无既有记录时静默 no-op
+- **根因:** `prisma.promptCanaryConfig.updateMany` 不创建记录；须改为 `upsert`
+
+**建议修复（仅基于 CONFIRMED）:**
+```typescript
+// prompts.ts:211 — 将 updateMany 改为 upsert
+await prisma.promptCanaryConfig.upsert({
+  where: { specialistId_mode: { specialistId: input.specialistId, mode: input.mode } },
+  update: { canaryPct: input.canaryPct, updatedByAdminId: adminId },
+  create: { specialistId: input.specialistId, mode: input.mode, canaryPct: input.canaryPct, updatedByAdminId: adminId },
+});
+```
+
+### 判决
+- `prd.json.passes = false`
+- `retryCount = 1`
+- 零回归: PASS（1659 tests, 0 fail）

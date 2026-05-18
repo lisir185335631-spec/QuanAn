@@ -1,0 +1,34 @@
+US-006 在 prd.json 中已是 passes=true, retryCount=0, blocked=false。我的独立验证结果一致，无需修改。
+
+---
+
+## 验证结果: US-006 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC1 | ConstantVersion 模型 — 全字段 + @@unique + 2 index + @@map | ✓ PASS |
+| AC2 | ConstantCanaryConfig 模型 — 全字段 + @@unique + @@map | ✓ PASS |
+| AC3 | Migration `20260515011044_prd_14_constant_versions` 存在 | ✓ PASS |
+| AC4 | constant-version.service.ts — 1:1 fork · 5 函数 Constant 前缀 · actionType · hash key 含 constantType | ✓ PASS |
+| AC5 | _publishConstantVersionInTx — 接 tx · 校验 pending_review + judgeScore≥4.0 · archive + set active + upsert canary | ✓ PASS |
+| AC6 | publishConstantVersion / rollbackConstant 均调 requestApproval(requireDualApproval:true) | ✓ PASS |
+| AC7 | approvalGateService DUAL_APPROVAL_ACTION_TYPES 含 'publish_constant_version' + 'rollback_constant' | ✓ PASS |
+| AC8 | getActiveConstantVersion — md5(userId:constantType:constantKey).slice(0,8) % 100 < canaryPct 路由 | ✓ PASS |
+| AC9 | AGENTS.md §10.1 LD-A10 节已加 · grep 实测 0 命中 | ✓ PASS |
+| AC10 | audit-redlines-admin.sh LD-A10 段存在 · 现场重跑 ALL PASS 10 LD-A + 6 R-A | ✓ PASS |
+| AC11 | prompt-version.service.ts 最后 git 记录为 US-003 commit · US-006 未触碰 | ✓ PASS |
+| AC12 | vitest 1813 passed / 4 skipped / 0 failed (≥1782) · typecheck 0 errors | ✓ PASS |
+| AC13 | pnpm -r typecheck — 6 packages/apps 全 0 errors | ✓ PASS |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+已生成: pytest-full.xml (1813 passed), pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` (已确认) · `retryCount = 0` · `blocked = false`

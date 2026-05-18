@@ -1,0 +1,33 @@
+## 验证结果: US-003 **PASS**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | cron `'0 0 * * * *'` / tz `Asia/Shanghai` / jobId `ab-stop-loss-recurring` / attempts=3 | ✓ |
+| AC-2 | `scanAbExperimentsForStopLoss` 扫 status='running' + `computeExperimentSignificance` | ✓ |
+| AC-3 | 双条件 `recommendation='stop_loser' && effect < -0.3`（-20% 不触发） | ✓ |
+| AC-4 | `_stopAbExperimentInTx(tx, {adminId:0, stopReason:'auto_stop_loss', resultSummary})` | ✓ |
+| AC-5 | audit log `eventType='ab_experiment_auto_stop_loss'` `eventCategory='security_alert'` + reasoning | ✓ |
+| AC-6 | `DingtalkService` 默认 `isMock=true`（`DINGTALK_ENABLE !== 'true'`） | ✓ |
+| AC-7 | dedupe via `adminAuditLog.findFirst` + `payload.path['experimentId']` + 24h 窗口 | ✓ |
+| AC-8 | `stopAbExperimentManual` → `_stopAbExperimentInTx(stopReason='manual')` 单点不绕过 | ✓ |
+| AC-9 | `tests/unit/api/admin/ab-stop-loss.test.ts` 12 个 `it` 全通过（≥8 ✓） | ✓ |
+| AC-10 | `scheduleAbStopLoss()` wired in `index.ts` line 344-346 | ✓ |
+| AC-11 | 全量 1767 tests 零失败，既有 7 个 BullMQ cron 未破坏 | ✓ |
+| AC-12 | 1767 ≥ 1750 ✓；typecheck 全 PASS | ✓ |
+| AC-13 | typecheck 6 个 workspace 包全 PASS | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+├── manifest.json        (verdict: PASS)
+├── pytest-full.xml      (1767 passed, 0 failed)
+├── pytest-full.stdout.txt
+├── pytest.xml           (12 passed story-specific)
+├── pytest.stdout.txt
+└── typecheck.stdout.txt (0 errors)
+```
+
+### 判决
+`prd.json.passes = true` / `notes = ""` / `retryCount = 0`

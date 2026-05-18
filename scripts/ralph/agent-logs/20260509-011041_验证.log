@@ -1,0 +1,37 @@
+US-002 is now PASSED. Validation complete.
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+- **AC-1**: `ContextAssembler.ts` 导出 class，`assemble(req) => Promise<AssembledContext>` ✓
+- **AC-2**: `Promise.allSettled` 使用，`withTimeout(p, 5_000)` 各路独立，任一 settled rejected 降级注入空段 ✓
+- **AC-3**: `templates/` 下 7 个文件 (positioning/branding/monetization/topic/video/copywriting/livestream)，`SPECIALIST_TEMPLATES` 正确映射 ✓
+- **AC-4**: `_fetchConstants()` 真接 `methodologyQueryWorker.getAll()` ✓
+- **AC-5**: L2 stepData null/空 → `'[新用户 · 暂无 step 数据]'` 占位 ✓
+- **AC-6**: L4 EvolutionProfile 始终 null → `'[L1 阶段 · 暂无进化档案]'` 占位 (CS-2) ✓
+- **AC-7**: L5 RAG `_fetchRag()` 返回 `[]`，`needRag` 字段保留在 `AssembleRequest` 接口 ✓
+- **AC-8**: `metadata.layersUsed` 仅含成功层 ✓
+- **AC-9**: `contextTokens = Math.ceil((systemPrompt.length + userPrompt.length) / 4)` ✓
+- **AC-10 (R-001)**: `grep 'BASE_LLM_URL|LLM_API_KEY|sk-'` → 0 命中 ✓
+- **AC-11**: 16 tests in `context-assembler.test.ts`(≥ 10)，覆盖 4 路 fetch/timeout/冷启动/7 agentId/模板/token/metadata ✓
+- **AC-12**: `assemble ≤ 800ms` 测试通过 ✓
+- **AC-13**: 232 tests, 0 failures, 0 errors ✓
+- **AC-14**: typecheck 全 6 workspace PASS ✓
+
+### 驳回点验证 (四项硬要求)
+1. ✅ `BaseSpecialist.ts:15` — `import ... from '@/services/context-assembler/ContextAssembler'` (旧路径 0 命中)
+2. ✅ `apps/api/src/agents/base/ContextAssembler.ts` — 已删除 (No such file)
+3. ✅ `base.test.ts` vi.mock 路径 — 两处均指向 `@/services/context-assembler/ContextAssembler`
+4. ✅ 旧 8th test (stub 的 assembleStep) 随 stub 删除，总测试数 232 (正常)
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-002/`
+- `pytest-full.xml` (232 passed, 0 failed)
+- `pytest-full.stdout.txt` (vitest run exit_code=0)
+- `typecheck.txt` (6 ws PASS)
+- `manifest.json` (已更新)
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

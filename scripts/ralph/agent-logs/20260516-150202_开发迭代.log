@@ -1,0 +1,6 @@
+US-005 完成。实现了：
+
+- **`workflow.ts`** — `WORKFLOW_STEPS` 常量，7 步严格按 AC-1 规格
+- **`Home.tsx`** — `WorkflowSection` 函数，H2 WORKFLOW + 副标题 + flex 横排 7 步，每步圆形紫色 outline 数字 + title + desc + 6 条 `hidden md:flex` 连接线
+- **截图** — `screenshots/prd16-us005-home-workflow.png` 已验证
+- **typecheck** + **51 tests** 全通过

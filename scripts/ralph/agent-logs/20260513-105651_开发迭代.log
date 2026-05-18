@@ -1,0 +1,13 @@
+US-006 is complete. Here's what was delivered:
+
+**3 new files:**
+- `BatchActionBar.tsx` — 全选/取消全选 + 已选N计数 + [批量批准]/[批量驳回]按钮，>100条 disabled + 警告
+- `RejectReasonDialog.tsx` — 覆盖层弹窗，min 5字符校验，提交前 disabled + 红字提示
+- `AutoRuleConfigPanel.tsx` — ruleType dropdown + ruleKey + JSON ruleValue textarea(前端 JSON.parse 校验) + enabled toggle，调 `configRules` mutation
+
+**3 modified files:**
+- `ReviewTrendingTable.tsx` — 新增 `selectedIds/onToggleSelect` props，动态插入 checkbox 列（含 `stopPropagation` 防 drawer 误触）
+- `index.tsx` — 完整重构：4个 Tab（待审核/已批准/已驳回/规则配置），super_admin 才见规则 Tab，BatchActionBar + RejectReasonDialog 集成，tab 切换清空 selectedIds
+- `ReviewTrendingFilters.tsx` — 新增 `hideStatus` prop，Tab 控制状态时隐藏 status 下拉框
+
+**验证：** `pnpm typecheck` 0 errors，`pnpm vitest run` 1430 passed，3 failed 均为 pre-existing integration ECONNREFUSED（无服务端运行），零回归。

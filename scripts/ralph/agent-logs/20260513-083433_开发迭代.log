@@ -1,0 +1,13 @@
+US-001 完成。
+
+**交付摘要：**
+- 创建 `apps/api/src/schemas/admin/trending-review.schema.ts` — 3 个 zod schema 严格 export（`trendingReviewQueueSchema` / `trendingTakedownSchema` / `autoReviewRuleSchema`），枚举与 prisma model 注释完全一致，JSON 字段用 `z.record(z.unknown())`
+- 创建 `apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts` — 26 个单元测试，覆盖所有 enum 校验、必填字段、JSON 类型、optional fields
+
+**AC 验证：**
+- AC-1~4: 3 张表已在 init migration 就位，DB `relrowsecurity=f` ✓  
+- AC-5/6: `manual_admin_rls.sql` + `audit-admin-rls-tables.sh` 均预置 ✓  
+- AC-7: zod schema 文件新建 ✓  
+- AC-8: `audit:admin-rls-tables` 26/26 PASS ✓  
+- AC-9: 26 tests（>9）✓  
+- AC-10/11: typecheck 0 errors，audit-redlines-admin ALL PASS ✓

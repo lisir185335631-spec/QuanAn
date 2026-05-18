@@ -1,0 +1,7 @@
+US-002 修复完成。两个验证失败项已解决：
+
+1. **AC1 修复**：创建 `Step2.tsx`（受众研究与竞品分析）+ `Step9.tsx`（品牌商业化与社群运营），stepConfig 加对应 key，router 路由从 `step/3b`/`step/4b` 改为 `step/2`/`step/9`
+
+2. **AC2 修复**：创建 `Copywriting.tsx`，router 路由从 `video-analysis` 改为 `copywriting`，Header TOOLS_14 更新入口
+
+TypeCheck 0 错误，14 个 unit tests 全部通过（含 Step2/Step9/Copywriting 新渲染测试）。

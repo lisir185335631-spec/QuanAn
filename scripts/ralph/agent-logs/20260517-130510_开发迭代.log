@@ -1,0 +1,18 @@
+US-009 is complete. Here's a summary of what was implemented:
+
+**Created:**
+- `apps/web/src/components/states/LoadingState.tsx` — `Loader2` + `animate-spin` + `text-primary`, `size` prop (sm/md/lg)
+- `apps/web/src/components/states/ErrorState.tsx` — `AlertTriangle` + `glass-card` + `text-destructive`, shows `重试` button when `onRetry` is provided
+- `apps/web/src/components/states/EmptyState.tsx` — `Inbox` default icon + `text-muted-foreground/60`, `icon`/`action` slots
+- `apps/web/src/components/states/index.ts` — barrel with 3 named exports
+- `apps/web/src/components/states/README.md` — 5-line usage spec
+- `apps/web/src/components/states/__tests__/states.test.tsx` — 3 tests, all pass
+
+**Modified:**
+- `StepForm.tsx` — added `onLoadingChange?: (isLoading: boolean) => void` prop, wired via `useEffect` on `saveMutation.isPending`
+- `step3b.ts` — added `STEP3B_LOADING_TEXT` constant
+- `Step1.tsx` — industry search input + `<EmptyState>` when filter yields 0 results
+- `Step3.tsx` — `isSubmitting` state + `<LoadingState text={STEP3_LOADING_TEXT}>` during submission
+- `Step3b.tsx` — same pattern with `STEP3B_LOADING_TEXT`
+
+All 70 tests pass, typecheck clean.

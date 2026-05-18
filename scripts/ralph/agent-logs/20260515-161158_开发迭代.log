@@ -1,0 +1,7 @@
+US-012 fix committed. The two changes:
+
+1. **`worker.ts`**: Swapped `getFeatureFlagValue` → `getSystemConfigValue` (both the import and the call at line 65) — `stop_trending_scraper` lives in `system_config`, not `feature_flags`
+
+2. **`emergency-switch.test.ts`**: Changed `booleanFlag.flagKey` from `'stop_trending_scraper'` to `'new_ui_feature'`, updated the matching `getFeatureFlagValue` tests to use that key, and added a new `getSystemConfigValue` test for the `stop_trending_scraper` worker bypass path
+
+All 1907 tests pass, typecheck clean.

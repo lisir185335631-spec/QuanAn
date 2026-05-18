@@ -1,0 +1,258 @@
+<testsuites id="" name="" tests="6" failures="6" skipped="0" errors="0" time="52.766166">
+<testsuite name="prd-18-step-4-5-6-7-8.spec.ts" timestamp="2026-05-18T10:11:23.677Z" hostname="chromium" tests="6" failures="6" skipped="0" time="51.041" errors="0">
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3" classname="prd-18-step-4-5-6-7-8.spec.ts" time="10.178">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:20:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "执行计划"
+    Received string:    "内容生产准备"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 10000ms
+      - waiting for locator('h1')
+        12 × locator resolved to <h1 class="text-h1 font-display text-on-surface mb-2">内容生产准备</h1>
+           - unexpected value "内容生产准备"
+
+
+      32 |     await page.reload();
+      33 |
+    > 34 |     await expect(page.locator('h1')).toContainText('执行计划', { timeout: 10_000 });
+         |                                      ^
+      35 |     await expect(page.locator('text=STEP 04 · 制定执行计划')).toBeVisible();
+      36 |
+      37 |     await page.locator('label[for="step4-platform-douyin"]').click();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:34:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品 → 生成变现路径 → 5 H3 + 3 阶梯" classname="prd-18-step-4-5-6-7-8.spec.ts" time="10.176">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--f1bc8--·-填产品-→-生成变现路径-→-5-H3-3-阶梯-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--f1bc8--·-填产品-→-生成变现路径-→-5-H3-3-阶梯-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:49:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品 → 生成变现路径 → 5 H3 + 3 阶梯 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "变现路径"
+    Received string:    "变现规划"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 10000ms
+      - waiting for locator('h1')
+        12 × locator resolved to <h1 class="text-h1 font-display text-on-surface mb-2">变现规划</h1>
+           - unexpected value "变现规划"
+
+
+      61 |     await page.reload();
+      62 |
+    > 63 |     await expect(page.locator('h1')).toContainText('变现路径', { timeout: 10_000 });
+         |                                      ^
+      64 |     await expect(page.locator('text=STEP 04b · 变现路径规划')).toBeVisible();
+      65 |
+      66 |     const productTextarea = page.locator('textarea').first();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:63:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/prd-18-step-4-5-6-7-8-PRD--f1bc8--·-填产品-→-生成变现路径-→-5-H3-3-阶梯-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/prd-18-step-4-5-6-7-8-PRD--f1bc8--·-填产品-→-生成变现路径-→-5-H3-3-阶梯-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填" classname="prd-18-step-4-5-6-7-8.spec.ts" time="0.218">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toBeVisible() failed" type="expect.toBeVisible">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:86:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('text=流量型')
+    Expected: visible
+    Error: strict mode violation: locator('text=流量型') resolved to 2 elements:
+        1) <p class="text-body-md text-muted-foreground mb-8">输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI 将结合这些素材一次性生成 5 大类…</p> aka getByText('输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，')
+        2) <button role="tab" type="button" tabindex="-1" data-state="active" aria-selected="true" data-orientation="horizontal" data-radix-collection-item="" id="radix-:rf:-trigger-traffic" aria-controls="radix-:rf:-content-traffic" class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-5…>流量型</button> aka getByRole('tab', { name: '流量型' })
+
+    Call log:
+      - Expect "toBeVisible" with timeout 30000ms
+      - waiting for locator('text=流量型')
+
+
+      104 |
+      105 |     // 等 5 类 tab 渐进出现 (真 LLM SSE 5 chunks)
+    > 106 |     await expect(page.locator('text=流量型')).toBeVisible({ timeout: 30_000 });
+          |                                            ^
+      107 |     await expect(page.locator('text=变现型')).toBeVisible({ timeout: 60_000 });
+      108 |     await expect(page.locator('text=人设型')).toBeVisible({ timeout: 60_000 });
+      109 |     await expect(page.locator('text=认知型')).toBeVisible({ timeout: 60_000 });
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:106:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成拍摄计划 → 3 模块" classname="prd-18-step-4-5-6-7-8.spec.ts" time="10.142">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--36188-ep-6-·-粘贴文案-→-生成拍摄计划-→-3-模块-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--36188-ep-6-·-粘贴文案-→-生成拍摄计划-→-3-模块-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:134:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成拍摄计划 → 3 模块 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "拍摄计划"
+    Received string:    "数据分析与复盘"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 10000ms
+      - waiting for locator('h1')
+        12 × locator resolved to <h1 class="text-h1 font-display text-on-surface mb-2">数据分析与复盘</h1>
+           - unexpected value "数据分析与复盘"
+
+
+      141 |     await page.evaluate(() => localStorage.clear());
+      142 |
+    > 143 |     await expect(page.locator('h1')).toContainText('拍摄计划', { timeout: 10_000 });
+          |                                      ^
+      144 |     await expect(page.locator('text=STEP 06 · 生成拍摄计划')).toBeVisible();
+      145 |
+      146 |     const textarea = page.locator('textarea').first();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:143:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/prd-18-step-4-5-6-7-8-PRD--36188-ep-6-·-粘贴文案-→-生成拍摄计划-→-3-模块-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/prd-18-step-4-5-6-7-8-PRD--36188-ep-6-·-粘贴文案-→-生成拍摄计划-→-3-模块-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导" classname="prd-18-step-4-5-6-7-8.spec.ts" time="10.153">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:159:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "文案生成"
+    Received string:    "变现规划"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 10000ms
+      - waiting for locator('h1')
+        14 × locator resolved to <h1 class="text-h1 font-display text-on-surface mb-2">变现规划</h1>
+           - unexpected value "变现规划"
+
+
+      166 |     await page.evaluate(() => localStorage.clear());
+      167 |
+    > 168 |     await expect(page.locator('h1')).toContainText('文案生成', { timeout: 10_000 });
+          |                                      ^
+      169 |     await expect(page.locator('text=STEP 07 · AI 智能文案生成')).toBeVisible();
+      170 |
+      171 |     await expect(page.locator('text=搞辩论').first()).toBeVisible();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:168:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 切子功能1 → 填字段 → 生成直播方案 → 6 H3" classname="prd-18-step-4-5-6-7-8.spec.ts" time="10.174">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--cce6c-切子功能1-→-填字段-→-生成直播方案-→-6-H3-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/prd-18-step-4-5-6-7-8-PRD--cce6c-切子功能1-→-填字段-→-生成直播方案-→-6-H3-chromium/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(locator).toContainText(expected) failed" type="expect.toContainText">
+<![CDATA[  [chromium] › prd-18-step-4-5-6-7-8.spec.ts:188:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 切子功能1 → 填字段 → 生成直播方案 → 6 H3 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('h1')
+    Expected substring: "直播策划"
+    Received string:    "持续迭代与升级"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 10000ms
+      - waiting for locator('h1')
+        12 × locator resolved to <h1 class="text-h1 font-display text-on-surface mb-2">持续迭代与升级</h1>
+           - unexpected value "持续迭代与升级"
+
+
+      200 |     await page.reload();
+      201 |
+    > 202 |     await expect(page.locator('h1')).toContainText('直播策划', { timeout: 10_000 });
+          |                                      ^
+      203 |     await expect(page.locator('text=STEP 08 · 直播策划')).toBeVisible();
+      204 |     await expect(page.locator('button', { hasText: '子功能 1：生成直播方案' })).toBeVisible();
+      205 |
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:202:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/prd-18-step-4-5-6-7-8-PRD--cce6c-切子功能1-→-填字段-→-生成直播方案-→-6-H3-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/prd-18-step-4-5-6-7-8-PRD--cce6c-切子功能1-→-填字段-→-生成直播方案-→-6-H3-chromium/error-context.md
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>
+undefined
+/Users/return/Desktop/QuanQn/apps/web:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: playwright test e2e/prd-18-step-4-5-6-7-8.spec.ts --reporter=junit

@@ -1,0 +1,34 @@
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|---|---|:---:|---|
+| AC-1 | LLMGateway.complete(lightweight · 30s) | ✓ | `DailyTaskAgent.ts:263` `model_tier:'lightweight', timeout_ms:30_000` |
+| AC-2 | 冷启动判定 → 5 模板 tasks · isFallback=false · modelUsed='cold-start-template' | ✓ | `DailyTaskAgent.ts:187-199` 两个条件 (stepCount=0 OR evolutionProfile=null) |
+| AC-3 | cron.schedule('0 0 * * *') + index.ts boot 时 .start() | ✓ | `daily-task-runner.ts:68-83`; `index.ts:237-239` |
+| AC-4 | runForAllActiveAccounts · isActive+updatedAt>7d · forEach enqueue | ✓ | `daily-task-runner.ts:28-61` |
+| AC-5 | @@unique([accountId, taskDate]) · Worker upsert 幂等 · 重复 cron 不重复建行 | ✓ | `schema.prisma: @@unique([accountId, taskDate])`; `worker.ts:37-59` |
+| AC-6 | BullMQ Worker concurrency=5 · retry 3 · dead-letter stub | ✓ | `worker.ts:68-94` + `queue.ts:20 attempts:3` |
+| AC-7 | regenerateToday mutation · 用户主动触发 | ✓ | `dailyTasks.ts:80-106` |
+| AC-8 | 10 unit tests 全通过 | ✓ | 15 tests (T1-T10 + LJ1-LJ2 + AC-9 × 3) 全 pass |
+| AC-9 | 3 accounts seed → 3 jobs enqueued → DailyTask 表 3 行 | ✓ | integration test AC-9 × 2 通过 |
+| AC-10 | cost_log eventType='l5_agent' | ✓ | `DailyTaskAgent.ts:273` `eventType:'l5_agent'` |
+| AC-11 | typecheck 0 + lint 0 + test 全过 | ✓ | 789/789 vitest PASS; typecheck EXIT 0 |
+| AC-12 | LLM Judge 2 case 评分 ≥ 4.0/5 | ✓ | LJ1+LJ2 均 5.0/5.0 |
+| Typecheck passes | pnpm typecheck 0 errors | ✓ | 6 packages all done, exit 0 |
+| Tests pass | 全量零回归 | ✓ | 789/789 (含 US-007 新增 15 tests) |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-007/
+  pytest-full.xml       (789 passed, 0 failed)
+  pytest-full.stdout.txt
+  vitest.xml            (15 passed — US-007 专属)
+  vitest.stdout.txt
+  typecheck.stdout.txt  (exit 0, 6 packages)
+  manifest.json         (verdict=PASS, zero_regression=PASS)
+```
+
+### 判决
+`prd.json.US-007.passes = true` — 全部 14 条 AC 验证通过，零回归 789/789，typecheck 0 错。

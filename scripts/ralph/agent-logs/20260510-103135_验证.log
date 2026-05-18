@@ -1,0 +1,37 @@
+All done. Here is the final verdict:
+
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 状态 | 证据 |
+|---|---|---|
+| AC-1 | ✓ | VideoAgent.ts:372-376 — production/acquisition/storyboard 全部走 invokeLLM 分支，无 throw 'PRD-6' |
+| AC-2 | ✓ | outputSchema getter 4-case switch (VideoAgent.ts:349-357) |
+| AC-3 | ✓ | `_buildUserPrompt(mode)` 4 分支 (VideoAgent.ts:469-572)；production 含 13 列分镜+设备+排期 prompt，acquisition 含 CTA+转化路径，storyboard 含 5-8 scenes+imagePromptEn ASCII |
+| AC-4 | ✓ | StoryboardSceneSchema `.regex(/^[\x00-\x7F]+$/)` 模式级 ASCII 强制 (VideoAgent.ts:112-114)；非 ASCII → schema fail → fallback；测试覆盖 |
+| AC-5 | ✓ | CopywritingAgent acquisition: `CopywritingAcquisitionOutputSchema` (markdown.min(200).max(500) + ctaPosition refine)，`_invokeAcquisition` 方法，outputSchema getter 覆盖 acquisition case |
+| AC-6 | ✓ | video-production.ts、acquisition-video.ts、ai-video.ts 均存在，含 persona + methodology |
+| AC-7 | ✓ | templates/index.ts SPECIALIST_TEMPLATES 加了 `'VideoAgent:production'`、`'VideoAgent:acquisition'`、`'VideoAgent:storyboard'` (lines 37-39) |
+| AC-8 | ✓ | VideoAgent.test.ts 14 tests：原始 4 + production×3 + acquisition×3 + storyboard×4 |
+| AC-9 | ✓ | CopywritingAgent.test.ts 3 acquisition tests：happy + CTA missing + markdown 200/500 boundary |
+| AC-10 | ✓ | Integration test (nock SDK): **49ms < 3s** limit |
+| AC-11 | ✓ | Unit tests: **10ms < 200ms** limit |
+| AC-12 | ✓ | `pnpm typecheck`: 6 workspaces，**0 errors** |
+| AC-13 | ✓ | `pnpm test` VideoAgent + CopywritingAgent: exit code 0，31 tests |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-002/`
+- vitest.xml (31 passed, 0 failed)
+- vitest.stdout.txt
+- pytest-full.xml (593 passed, 0 failed — zero-regression gate)
+- pytest-full.stdout.txt
+- typecheck.txt (6 ws, 0 errors)
+- manifest.json
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

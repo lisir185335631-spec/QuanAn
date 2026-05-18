@@ -1,0 +1,24 @@
+---
+
+## 驗證結果: US-006 [PASS]
+
+### AC 對照
+
+| AC | 描述 | 結果 |
+|---|---|---|
+| AC-1 | `_check_exit_code(manifest: dict) -> tuple[bool, str]` 函數存在 | ✓ `audit-artifacts.py:63` |
+| AC-2 | main 流程 manifest load 後第一步調 · 失敗立即 `sys.exit(1)` | ✓ `audit-artifacts.py:250-255` |
+| AC-3 | 缺 `exit_code` key → `[FAIL]` + exit 1 | ✓ 實測 mock manifest 確認 |
+| AC-4 | `exit_code` 非 int (`str`) → reject | ✓ 實測 `exit_code='0'` 確認 |
+| AC-5 | `exit_code != 0` → `[FAIL] manifest exit_code=1 ≠ 0` + exit 1 | ✓ 實測確認 |
+| AC-6 | `zero_regression=PASS` 仍要求 `exit_code=0` | ✓ 實測 `zero_regression=PASS + exit_code=1` → 仍 reject |
+| AC-7 | 4 種 mock 情境全通過 | ✓ 缺 key / 非 int / exit 1 / exit 0 全符合預期 |
+| AC-8 | `audit-artifacts.py US-001` 實際通過 | ✓ `→ ARTIFACTS VALID` exit 0 |
+| Typecheck | `python3 -m py_compile` 0 error | ✓ 本地 + 全局兩個檔案都 PASS |
+
+### 零回歸門禁
+- `pnpm test`: 727/727 passed, 0 failures, 0 errors
+- 產物: `scripts/ralph/verify-artifacts/US-006/pytest-full.xml` + `pytest-full.stdout.txt`
+
+### 判決
+`prd.json.US-006.passes = true`，`notes = ""`，`retryCount = 0`

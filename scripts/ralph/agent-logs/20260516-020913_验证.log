@@ -1,0 +1,24 @@
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | DeepLearning.tsx 完整化 18→180 行，3-tab 结构 | ✓ (180 行) |
+| AC-2 | LearnTab: textarea ≥100字验证 + parse mutation → 结果显示 (coreFormula/hookType/structurePattern/emotionalArc/keywords) | ✓ (DeepLearningTabs.tsx:76,65-73,144-183) |
+| AC-3 | LibraryTab: DenseTable · 截取80字 + 公式名 + 平台 + 时间 + 应用/删除 | ✓ (slice(0,80) at :271, delete mutation at :222) |
+| AC-4 | ApplyFormulaTab: 选公式 + 新主题 → applyFormula mutation | ✓ (DeepLearningTabs.tsx:325) |
+| AC-5 | URL state ?tab=learn\|library\|apply (SHIELD #2) | ✓ (useSearchParams at :81-93) |
+| AC-6 | tRPC: parse/list/delete/applyFormula 4 procedure | ✓ (deepLearning.ts:67-233) |
+| AC-7 | ≥6 it tests (实际 18 it) | ✓ (18/18 passed) |
+| AC-8 | vitest pass / typecheck PASS | ✓ (2070 tests, 0 failures; typecheck clean) |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+已生成: pytest.xml (18 passed), pytest-full.xml (2070 passed, 0 failures), 
+        pytest.stdout.txt, pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

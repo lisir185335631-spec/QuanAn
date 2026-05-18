@@ -1,0 +1,6 @@
+US-006 迭代 2 完成。三项验证失败全部修复：
+- **AC-9**：`useAuth.ts login()` 改为先 `fetch` probe，500 时用 `sonner` toast 展示"登录暂不可用，请稍后再试"；`App.tsx` 挂载 `<Toaster />`
+- **AC-8**：从 `providers.ts` 提取 `requiresCsrfCheck()` 纯函数，`providers.test.ts` 加 4 条专项单元测试（google provider/mock provider/bypass 路径），集成测试 AC-8 断言改为显式 mock bypass 验证
+- **AC-13**：`auth.test.ts` 加性能断言块（callback < 500ms、auth.me < 100ms、全流程 < 3s）
+
+Typecheck 全 pass，18 单元测试 pass。

@@ -1,0 +1,7 @@
+US-003 is complete. Summary:
+
+- **Fix**: Progress bar gradient was already corrected to `from-primary to-primary/60` (gold, not violet) in a prior commit
+- **Verification**: No `violet-`/`amber-`/`yellow-` utilities in Home.tsx; all gradients use `--primary` token
+- **Typecheck**: pass · **Tests**: 51/51 pass
+- **Screenshot**: `screenshots/prd16-us003-home-ipprogress.png` — shows gold gradient matching Hero H1
+- **Committed**: `3ebcbb5`

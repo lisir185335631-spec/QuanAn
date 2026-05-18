@@ -1,0 +1,14 @@
+US-004 实现完成。
+
+**完成摘要：**
+
+- `apps/api/src/trpc/routers/admin/review-trending.ts` — 6 个 adminProcedure
+  - `list`: 分页 + 多维度 filter + audit `data_query/list_trending_review_queue`
+  - `detail`: 返回完整 rawContent + autoScanResult + trendingItemId 链路追溯
+  - `approve`: `$transaction` 原子操作 · 防双重入库 · audit `trending_review_approve`
+  - `reject`: rejectReason min 5 · 防重复拒绝 · audit `trending_review_reject`
+  - `batchAction`: zod max(100) · 每 item 独立 audit · 含 approve 原子路径
+  - `configRules`: 仅 super_admin · 非 super_admin → privilege_escalation audit + 403
+- **LD-A-5**: `_createTrendingItemInTx` 单点函数，`trendingItem.create` 全项目仅 1 命中
+- `index.ts` 挂载 `reviewTrending: reviewTrendingRouter`，audit-admin-rls 确认 44 procedures 0 violations
+- 44 unit tests · typecheck 0 errors · audit-redlines ALL PASS

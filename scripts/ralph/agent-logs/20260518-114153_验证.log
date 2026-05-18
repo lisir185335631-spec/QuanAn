@@ -1,0 +1,28 @@
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | scripts/verify-prd-19.sh 存在 + chmod +x + 35+ 检查项 | ✓ (-rwxr-xr-x, 35 checks/10 §) |
+| AC-2 | §1 LD-009(0 hardcode) · §2 useStepData ≥9(17 hits) · §3 save wiring ≥9(13 hits) | ✓ |
+| AC-3 | §4 aiip_memory_acc_ ≥5(5 hits) · §5 D4=B 0 hits · §6 D3=A 0 跨应用 | ✓ |
+| AC-4 | §7 STEP7_LABEL_SCRIPT_TYPE 1 hit · §8 STEP8_OPTIMIZE_OUTPUT_LABELS_2 1 hit · §9 typecheck+vitest 181 tests · §10 migration exists | ✓ |
+| AC-5 | TD-76 fix: step7.ts exports STEP7_LABEL_SCRIPT_TYPE · Step7.tsx line 148 使用 · tech-debt.json resolved | ✓ |
+| AC-6 | TD-77 fix: step8.ts exports STEP8_OPTIMIZE_OUTPUT_LABELS_2 · Step8OptimizeScript.tsx line 148 .map 模式 · tech-debt.json resolved | ✓ |
+| AC-7 | 脚本执行 5.6s (< 60s) · 全部 § 通过 exit 0 | ✓ |
+| AC-8 | commit f1c42a2 含 `[TD-76 resolved] [TD-77 resolved]` tags | ✓ |
+| AC-9 | typecheck exit 0 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+  manifest.json      — verdict=PASS, zero_regression=PASS
+  typecheck.stdout.txt — exit 0
+  vitest-full.stdout.txt — 181 tests PASS
+```
+
+### 判决
+
+`prd.json` US-009 `passes = true`，`retryCount = 0`，`notes = ""`

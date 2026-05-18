@@ -1,0 +1,25 @@
+US-004 验证通过，写入 manifest.json 和 prd.json 完成。
+
+**验证结论 — US-004: PASS**
+
+| AC | 结果 | 证据 |
+|----|------|------|
+| AC-1 | ✅ | `apps/admin/src/pages/nsm/index.tsx` 完整 NSM dashboard 已实现 |
+| AC-2 | ✅ | `gridTemplateColumns: '1fr 320px'` at line 92 |
+| AC-3 | ✅ | NsmOverviewCards: 4 卡片 + delta vs 上日 |
+| AC-4 | ✅ | NsmFunnel: `<FunnelChart>` + `fill:'var(--accent-purple)'` |
+| AC-5 | ✅ | NsmDistributions: 3 `<PieChart>` + hover 显示数字+占比 |
+| AC-6 | ✅ | NsmAlerts: metric/severity/deltaPct/钉钉状态 |
+| AC-7 | ✅ | `admin-routes.ts` nsm 路由 `prd: 11` |
+| AC-8 | ✅ | `placeholder.tsx` 不存在（已删）|
+| AC-9 | ✅ | 4 个 `nsm.*` useQuery 并发 |
+| AC-10 | ✅ | `NsmErrorBoundary` 含 "数据加载失败 · 点击重试" |
+| AC-11 | ✅ | 空表 → skeleton + "等待首次聚合" + super_admin [手动触发] |
+| AC-12 | ✅ | readonly_admin role check，隐藏触发按钮 |
+| AC-13 | ✅ | 浏览器：4 卡片+漏斗+3饼图+告警 · tRPC batch → 200 |
+| AC-14 | ✅ | 0 console errors，0 React key warning |
+| AC-15 | ✅ | `--bg-base = #0a0a0a`（非空）|
+| AC-16 | ✅ | 刷新后登录态保持，NSM 数据正确加载 |
+| AC-17 | ✅ | `tsc --noEmit` admin + api 双通过 |
+
+零回归：163 admin 相关测试 0 失败。9 个已有失败均在 `auth/trace` 集成测试（与 US-004 无关，pre-existing）。

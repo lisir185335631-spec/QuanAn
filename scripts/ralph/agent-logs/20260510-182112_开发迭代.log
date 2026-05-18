@@ -1,0 +1,6 @@
+US-012 retry fix complete. Fixed the two CONFIRMED issues:
+
+1. **Generate.test.tsx:169** — updated assertion from `handleSubmit` → `handleFreeSubmit` to match the renamed function in Generate.tsx
+2. **Missing integration test** — created `tests/integration/api/copywriting-acquisition-llm.test.ts` using the same nock+real-DB pattern as the free-mode test; completed in 47ms (well under the 5s AC-11 limit)
+
+Full suite: 75 files, 717 tests, 0 typecheck errors.

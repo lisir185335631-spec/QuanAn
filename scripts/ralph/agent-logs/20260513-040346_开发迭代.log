@@ -1,0 +1,9 @@
+US-020 is complete. The implementation was already committed in `4c804b6`. All acceptance criteria are met:
+
+- **6 procedures** (list/create/batchImport/invalidate/detail/campaignFunnel) implemented with `adminProcedure`
+- **batchImport**: papaparse + chunk 100 + ≤10000 row limit + duplicate skip with row error list
+- **invalidate**: Approval Gates stub — `super_admin` → `auto_executed`, `admin` → `pending`; already-invalidated throws `'already invalidated'`
+- **campaignFunnel**: calls `getCampaignFunnel` → returns `[{stage,count}]` 4-stage array
+- **27 unit tests** all green (exceeded the ≥20 requirement)
+- **typecheck**: 0 errors
+- **audit:approval-gates**: 13 checks pass, `invites.invalidate` EXCEPTION correctly registered (cumulative PRD-10 5 + PRD-11 4 = 9 EXCEPTIONs + 4 meta procedures = 13 total)

@@ -1,0 +1,42 @@
+验证完成。以下是完整结果：
+
+---
+
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|:-:|---|:-:|---|
+| AC-1 | nsm.ts 5 procedure 走 adminProcedure(6 闸 + adminRLS bypass) | ✓ | audit-redlines LD-A3 确认 5 procedures 全为 `[adminProcedure · adminRLS verified]` |
+| AC-2 | getOverview · 最新+previous · $transaction+SET LOCAL · audit data_query/nsm_overview | ✓ | 使用 `ctx.adminPrisma`(adminRLS 注入的事务 client)· 单测 2 条覆盖 audit 写入 |
+| AC-3 | getFunnel · date+granularity 过滤 · 返 funnelData 数组 | ✓ | nsm.ts:155-177 · 单测 3 条覆盖 |
+| AC-4 | getDistributions · 3 饼图(industryDistribution/platformDistribution/userPersonaDistribution) | ✓ | nsm.ts:180-199 · 单测 3 条覆盖 |
+| AC-5 | getAlerts · 最近 3 snapshot · 连续恶化检测 · [{metric,severity,deltaPct}] · 写 audit | ✓ | calculateAlerts() nsm.ts:45-65 · 单测 4 条含连续恶化逻辑 |
+| AC-6 | triggerSnapshot · 仅 super_admin · 调 computeSnapshot · audit high_risk_action | ✓ | nsm.ts:232-278 · 单测 2 条(super_admin 路径) |
+| AC-7 | index.ts 加 nsm: nsmRouter 到 adminRouter | ✓ | index.ts:42 `nsm: nsmRouter` |
+| AC-8 | 非 super_admin → 403 + audit privilege_escalation | ✓ | nsm.ts:238-253 · 单测 3 条覆盖 readonly_admin/admin 两角色 |
+| AC-9 | kpi_snapshots 空 → getOverview 返 null 不抛 error | ✓ | nsm.ts:98-113 · 单测 `returns null when table is empty` |
+| AC-10 | payloadHash SHA-256 + redact 敏感字段 | ✓ | admin-audit-service.ts:43-55 redactSensitiveFields 后再 createHash('sha256') |
+| AC-11 | audit-admin-rls.ts AST 跑过 · 5 nsm procedure 全走 adminProcedure · Checked ≥10 | ✓ | audit-redlines-admin.sh LD-A3: `Checked 10 procedure(s) · 0 violations` |
+| AC-12 | audit-redlines-admin.sh 0 命中 · ALL PASS | ✓ | `ALL PASS · 5 LD-A + 6 R-A` |
+| AC-13 | nsm.test.ts ≥ 15 test | ✓ | **23 tests** (5 procedures × auth boundaries + data correctness) |
+| AC-14 | pnpm test + pnpm typecheck 0 error | ✓ | 单元零回归 1002 passed/0 failed · typecheck 6 packages clean |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+├── manifest.json           (zero_regression=PASS, verdict=PASS)
+├── pytest.xml              (23 passed, nsm-specific)
+├── pytest.stdout.txt       (nsm unit tests)
+├── pytest-full.xml         (1002 passed, 0 failed, unit scope)
+├── pytest-full.stdout.txt  (全量单元测试)
+└── typecheck.stdout.txt    (6 packages clean)
+```
+
+### 零回归门禁 (X-6)
+单元套件 91 文件 / 1002 tests / **0 failed** ✅  
+集成测试 9 failures 为 pre-existing ECONNREFUSED (tests/integration/api/ 需要 live server at :3000) · 与 US-003 代码无关 · TD 豁免
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

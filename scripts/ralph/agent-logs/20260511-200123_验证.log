@@ -1,0 +1,30 @@
+验证完成。以下是完整验证报告：
+
+---
+
+## 验证结果: US-001 **FAIL**
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|:---:|---|
+| AC-1 (KnowledgeChunk schema) | ✓ | 表字段正确; 但 `prisma migrate dev` 会因 AC-2 失败而失败 |
+| **AC-2 (HNSW migration)** | **✗** | migration.sql 中表名 `"KnowledgeChunk"` 错，应为 `"knowledge_chunk"` (@@map)；migration 未应用于 Prisma tracking；`prisma migrate dev` 报 P1014 |
+| AC-3 (schemas/rag/index.ts) | ✓ | 所有类型和 schema 正确导出 |
+| AC-4 (EmbeddingWorker) | ✓ | D-038 模式，直接调 OpenAI SDK |
+| AC-5 (cost_log) | ✓ | eventType/provider/modelUsed/costUsd 字段全部正确 |
+| AC-6 (RagRetrieveWorker) | ✓ | `<=>` cosine 距离，正确参数化查询 |
+| **AC-7 (rate limit)** | **✗** | `checkEmbeddingRateLimit` 已定义但从未在 `embed()` 或 `retrieve()` 中调用；生产路径 rate limit 不生效 |
+| AC-8 (R-001 grep) | ✓ | apps/web 中 0 命中 OPENAI_API_KEY |
+| AC-9 (embedding.test.ts 9 tests) | ✓ | 全通过 |
+| AC-10 (rag-retrieve.test.ts 5 tests) | ✓ | 全通过 |
+| AC-11/12/13 (typecheck + tests) | ✓ | 6ws 0 errors; 93 files 875 passed |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-001/`
+已生成: `pytest-full.xml` (875 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1` · 需 Ralph 修复 2 处:
+1. **AC-2**: `migration.sql` 表名改 `"knowledge_chunk"` → `prisma migrate dev` 通过
+2. **AC-7**: `openai-embedding.ts` `embed()` 开头加 `checkEmbeddingRateLimit(payload.accountId)` 调用

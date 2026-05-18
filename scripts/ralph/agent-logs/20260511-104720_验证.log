@@ -1,0 +1,28 @@
+All verified. Here's the summary:
+
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+- AC-1 ✓: ContextAssembler._composeSystemPrompt 对所有 agentId 统一注入 Section 4（evolutionInsight≠null 时），覆盖全 11 生成型 Specialist
+- AC-2 ✓: _buildSection4 注入 direction/styleTone/preferredCatchphrases/avoidList/strongPoints/weakPoints，空数组字段跳过对应行
+- AC-3 ✓: `grep 'evolutionInsight' apps/api/src/specialists/` 返回 0 命中（exit 1）— EvolutionAgent.ts 已移至 `agents/evolution/`，D-007 约束满足
+- AC-4 ✓: PositioningAgent + evolutionInsight → systemPrompt 含 [Section 4] 用户偏好画像（vitest 通过）
+- AC-5 ✓: 全 11 Specialist（含 PrivateDomainAgent/DiagnosisAgent/DeepLearnAgent）× 1 case = 11 tests 全通过
+- AC-6 ✓: evolutionInsight=null → systemPrompt 不含 [Section 4]，既有结构不破
+- AC-7 ✓: 零回归 82 test files，774 tests 全过
+- AC-8 ✓: mock LLM Judge PositioningAgent/CopywritingAgent 评分 ≥ 4/5
+- AC-9 ✓: typecheck 0 errors，lint 0 errors（修复 EvolutionAgent.ts 2 处 import 空行），tests 全过
+
+**修复说明**: EvolutionAgent.ts 存在 2 处 `import/order` 空行 lint 错误（`@/` import group 内空行）— 纯空白字符修复，无逻辑变更。
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-004/`  
+已生成: vitest.xml (17 passed), vitest-full.xml (774 passed), vitest.stdout.txt, vitest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+
+### 判决
+
+`prd.json.userStories[US-004].passes = true`, retryCount = 0, notes = ""

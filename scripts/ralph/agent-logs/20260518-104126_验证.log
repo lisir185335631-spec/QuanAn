@@ -1,0 +1,29 @@
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+- AC-1: 4 tests 存在于 prd-19-frontend-backend.spec.ts ✓
+- AC-2 / test(a): Step1 PositioningAgent LS↔DB 双写 ✓
+- AC-3 / test(b): ✗ — 切回 Account A 后 DB 返回 "美妆护肤" 非 "美食"
+- AC-4 / test(c): ✗ — `locator('text=流量型')` strict mode violation (subtitle p + tab button 2 elements)
+- AC-5 / test(d): ✗ — prd-18 test3: '变现型' tab 30s 未找到；prd-18 test5: `text=评论区引导` 2 elements strict mode
+- AC-6: fallback path 已实装 ✓
+- AC-7: typecheck 0 errors ✓
+- Zero-regression: vitest 2278/2282 PASS ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`
+- typecheck.stdout.txt (0 errors)
+- vitest-full.stdout.txt / vitest-full.xml (2278 passed)
+- prd19-e2e-retry4.stdout.txt / prd-17-18-e2e-retry4.stdout.txt
+- 失败截图: validator-us-008-retry4-test-b-fail.png / validator-us-008-retry4-prd18-test3-fail.png
+
+### 判决
+`prd.json.passes = false` · `retryCount = 4`
+
+**4 个 CONFIRMED 失败，对应 3 个修复方向：**
+
+1. **test(c) line 327**: `locator('text=流量型')` → `getByRole('tab', { name: '流量型' })`（Step5 subtitle 包含 "流量型" 字面量）
+2. **prd-18 test5 line 247**: `locator('text=评论区引导')` → `page.locator('p', { hasText: '评论区引导' })`
+3. **test(b) AC-3 数据隔离**: 切 A→B 后 `waitForLoadState('load')` 可能早于 `switchActiveMutation.onSuccess` 返回，导致后续操作仍在 A 上执行 → 需改用 `waitForNavigation()` 或加更可靠的 navigation wait
+
+prd-18 test3 (失败项3) 疑似并发问题（prd-19 test(c) 和 test(d) 并发操作同一账号 step5），建议 ralph 先单独跑 `prd-18-step-4-5-6-7-8.spec.ts` 确认是否复现。

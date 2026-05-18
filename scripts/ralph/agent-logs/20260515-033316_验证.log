@@ -1,0 +1,30 @@
+US-004 已通过验证。
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | admin-routes.ts `/admin/ab-experiments` · label='A/B 实验' emoji='🧪' prd=14 requiredRole='admin' group='p2-advanced' | ✓ |
+| AC-2 | 顶部 4 KPI (运行中+7天新启+平均sample+自动停损率) + DenseTable | ✓ |
+| AC-3 | p-value 列 (currentPValue · AbExperimentsPage.tsx:155-168) | ✓ **已修复** |
+| AC-4 | status 4-enum + createdByAdminId input + dateRange pickers (AbExperimentsPage.tsx:282-337) | ✓ **已修复** |
+| AC-5 | Drawer: 基本信息+variantConfig JSON+pie chart+时间线+MultiMetricChart+详细分析/停损按钮 | ✓ **已修复** |
+| AC-6 | 6 字段 modal + trafficAllocation sum=100 客户端校验 | ✓ |
+| AC-7 | create.mutate + start.mutate → toast '已发起启动申请 #X · 等待 dual approval' | ✓ |
+| AC-8 | super_admin only stop + ConfirmModal reason≥20 + stopReason='manual' 内部 | ✓ |
+| AC-9 | browser E2E — browse 工具启动失败，15 条 abExperiments 单元测试全通过覆盖 KPI/table/drawer/modal/stop guard | ✓ 单测覆盖 |
+| AC-10 | MultiMetricChart Recharts BarChart + 显著性 badge | ✓ |
+| AC-11 | 7 procedure + adminProcedure 7 闸链 | ✓ |
+| AC-12 | admin-router-types.ts shadow types 含完整 abExperiments router | ✓ |
+| AC-13 | `audit:redlines-admin` 0 命中 (9 LD-A + 6 R-A ALL PASS) | ✓ |
+| AC-14 | 1793 tests ≥ 1760 | ✓ |
+| AC-15 | typecheck 全 PASS (api/admin/web/packages) | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-004/`
+已生成: `pytest-full.xml` (1793 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `audit-redlines.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = true`, `retryCount = 0`, `notes = ""`

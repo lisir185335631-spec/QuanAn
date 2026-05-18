@@ -1,0 +1,46 @@
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | History.tsx 200+ 行 (839行 · pages/modules/History.tsx) | ✓ |
+| AC-2 | Timeline 按天分组 · 工具icon+名+摘要+时间+3操作按钮 | ✓ |
+| AC-3 | Dashboard 4 KPI + 4 chart (LineChart/PieChart/BarChart) | ✓ |
+| AC-4 | URL state ?view=timeline\|dashboard | ✓ |
+| AC-5 | 14工具multi-select · ?tools= URL state | ✓ |
+| AC-6 | 今日/本周/本月/自定义日期 + 日期选择器 | ✓ |
+| AC-7 | trpc.history.list.useQuery + 后端 stats 聚合 cost_log | ✓ |
+| **AC-8** | **恢复并重跑 input 字段自动填充** | **✗ FAIL** |
+| AC-9 | History.test.tsx 27 tests (≥8) 全通过 | ✓ |
+| AC-10 | 4 procedure (list/detail/delete/stats) + history.test.ts | ✓ |
+| AC-11 | Browser: timeline/dashboard/restore 跳转正确 (pre-fill 失败) | 部分✓ |
+| AC-12 | vitest 2250/2250 PASS · typecheck PASS | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+├── manifest.json       (verdict=FAIL · exit_code=1)
+├── pytest.xml          (57 passed · story tests)
+├── pytest.stdout.txt   (57 passed)
+├── pytest-full.xml     (2256 passed · zero regression)
+├── pytest-full.stdout.txt (2250 passed 6 skipped)
+└── typecheck.stdout.txt   (all workspaces PASS)
+```
+
+### 根因 (CONFIRMED)
+
+ToolForm 的 lazy `useState` 初始化时从 LS 读取 `freeGenerate` namespace 数据，该数据有 `{"topic":""}` (空字符串，来自前一 session 的使用记录)，通过 `{...resolvedDefaults, ...parsed}` 展开覆盖了来自 URL 的 `topicFromUrl`。结果 textarea 初始化为空，URL param 被静默忽略。
+
+### 修复方向
+
+在 `ToolForm.tsx:70` 的合并逻辑改为：当 `resolvedDefaults.topic` 非空时，不允许 LS 覆盖 topic 字段：
+
+```ts
+return { ...resolvedDefaults, ...parsed, ...(resolvedDefaults.topic ? { topic: resolvedDefaults.topic } : {}) }
+```
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 3`

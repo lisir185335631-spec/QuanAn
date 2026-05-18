@@ -1,0 +1,9 @@
+US-010 实现完成，状态总结：
+
+- **`apps/web/src/lib/constants/hotElementsZh.ts`** — 新建，22 项中文映射（fear→恐惧、scarcity→稀缺 等）
+- **`VideoAnalysis.tsx`** — 真表单，ToolForm + analyzeVideoInput schema + trpc.videoAnalysis.analyze mutation + FeedbackButton + AbortController
+- **`VideoAnalysisResult.tsx`** — 完整重写：JSON.parse(data.content) → elements Badge tag（中文映射）+ insights Card（高/中/低颜色）+ rewriteVersion react-markdown
+- **`router.tsx`** — 补 lazy import + `/video-analysis` 路由（PRD-3 占位时漏注册）
+- **单元测试** 30 个（source inspection 模式）+ **E2E** 1 个（JSONL mock）
+- **浏览器验证** ✅ 表单渲染正常，zod < 10 字校验生效，无 JS 错误
+- **531/531 tests ✅ · typecheck ✅**

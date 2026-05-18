@@ -1,0 +1,17 @@
+US-004 implementation complete. Here's what was delivered:
+
+**Files created:**
+- `apps/admin/src/pages/nsm/index.tsx` — Main NSM dashboard with `grid-cols-[1fr_320px]` layout, class-based `ErrorBoundary`
+- `apps/admin/src/pages/nsm/NsmOverviewCards.tsx` — 4 KPI cards with delta, skeleton state for empty table, `[手动触发]` button (super_admin only)
+- `apps/admin/src/pages/nsm/NsmFunnel.tsx` — Recharts `FunnelChart` with `fill:'var(--accent-purple)'` on each data point
+- `apps/admin/src/pages/nsm/NsmDistributions.tsx` — 3 PieCharts side-by-side with hover showing count+%
+- `apps/admin/src/pages/nsm/NsmAlerts.tsx` — Right-side alert panel with severity color-coding
+
+**Files modified:**
+- `packages/clients/src/admin-router-types.ts` — Added NSM 5 procedure type definitions to shadow router
+- `apps/admin/src/styles/admin.css` — Added `--bg-base`, `--accent-purple`, `--accent-blue`, `--accent-green`, `--accent-amber` tokens
+- `apps/admin/src/router.tsx` — Replaced `NsmPlaceholder` with `NsmDashboard`
+
+**Files deleted:** `apps/admin/src/pages/admin/placeholder/nsm.tsx` (git rm, 1 delete in diff)
+
+**Quality:** Admin typecheck 0 errors, 23 NSM API tests pass.

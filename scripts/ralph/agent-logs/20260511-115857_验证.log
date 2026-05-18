@@ -1,0 +1,33 @@
+## 验证结果: US-006 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:--:|------|:----:|
+| AC-1 | e2e: seed 4 feedbacks + 5th → BullMQ queue 收到 1 job | ✓ |
+| AC-2 | debugSeedInsight → EvolutionInsight +1 行 + profile level=L2 | ✓ |
+| AC-3 | PositioningAgent systemPrompt 含 '[Section 4] 用户偏好画像' | ✓ |
+| AC-4 | EvolutionAgent.ts 含 `eventType: 'l5_agent'`（grep 命中） | ✓ |
+| AC-5 | typecheck 0 errors + tests 全过 | ✓ |
+| Typecheck passes | pnpm typecheck 6 ws 0 error | ✓ |
+| Tests pass | vitest 774/774 零回归 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+├── manifest.json          → exit_code=0, zero_regression=PASS, verdict=PASS
+├── vitest.xml             → 774 passed
+├── vitest.stdout.txt
+├── typecheck.stdout.txt   → 6 ws 0 error
+├── playwright-final.xml   → 4 passed, 0 failures, 0 errors
+└── e2e.stdout.txt         → 4 passed (2.3s)
+```
+
+### 判决
+
+**prd.json.passes = true** · retryCount 重置为 0 · notes 清空。
+
+两处修复均已验证通过：
+1. `evolution.ts:debugSeedInsight` — `db.$transaction([...])` → 改为 `await upsert + await create` 顺序写入（Prisma InteractiveTransaction 不支持嵌套 batch transaction）
+2. `feedback-evolution-loop.spec.ts:15` — `__dirname` → `dirname(fileURLToPath(import.meta.url))` ESM 兼容写法

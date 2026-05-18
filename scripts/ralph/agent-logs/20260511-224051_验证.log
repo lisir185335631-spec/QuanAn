@@ -1,0 +1,32 @@
+验证完成。US-003 状态更新为 PASSED。
+
+---
+
+## 验证结果：US-003 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|----|------|------|
+| AC-1: `_fetchRag` 真 RAG + 3分支推断 | ✓ | CopywritingAgent(3case+1formula+1element), TopicAgent/BoomGen(3element+2case), 其他8(3case+2element), 非生成型返[] |
+| AC-2: `_composeSystemPrompt` [Section 6] 注入 | ✓ | `_buildSection6` 格式正确, ragChunks=[]时跳过(D-020降级) |
+| AC-3: 5路 Promise.allSettled 结构 | ✓ | stepData + L4EvolutionInsight + samples + _fetchRag + constants, 各路独立5s timeout |
+| AC-4: metadata.layersUsed 真实反映 | ✓ | ragChunks>0 → 含'L5_rag'; 为空 → 不含 |
+| AC-5: D-007 单一入口 grep 0命中 | ✓ | `grep -rn 'ragChunks\|ragRetrieve\|knowledge_chunk' apps/api/src/specialists/` → 空 |
+| AC-6: unit test 5/5 | ✓ | context-assembler-rag.test.ts 全通过 |
+| AC-7: integration test 3/3 | ✓ | rag-injection.test.ts 全通过 |
+| AC-8: LLM Judge 4/4 (score=9/10 ≥ 4.0/5) | ✓ | rag-injection.judge.ts 全通过 |
+| AC-9: typecheck 0 + lint 0 + 全套测试 | ✓ | tsc exit 0, eslint 0 warnings, vitest 888 tests passed |
+| Typecheck passes | ✓ | `chunk.similarity !== undefined` 修复已就位(L207) |
+| Tests pass | ✓ | 888 tests, 0 failures, 0 errors |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+已生成: pytest-full.xml (888 passed), pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount` 重置为 0，`notes` 清空。US-004 (PENDING) 是下一个待执行 story。

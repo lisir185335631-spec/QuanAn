@@ -1,0 +1,14 @@
+US-011 is complete. Summary of what was fixed in this 3rd retry:
+
+**C1 (vitest contamination):** Renamed all 4 `prd16-*.test.ts` → `.spec.ts`. Root `vitest.config.ts` includes `tests/e2e/**/*.test.ts` — Playwright's `test.describe()` crashes in vitest context. `.spec.ts` files are not picked up by vitest.
+
+**C2 (guide-flow selectors):**
+- Used `.glass-card.cursor-pointer` (ModuleCards only) instead of `.glass-card` — Guide.tsx has 3 types of glass-cards (RECOMMENDED_FLOW + SYSTEM_OVERVIEW + ModuleCard), only ModuleCards have `cursor-pointer`
+- Fixed placeholder `'搜索功能说明...'` (not `'搜索模块...'`)
+- Fixed first-card click to use `.glass-card.cursor-pointer` (not RECOMMENDED_FLOW cards)
+
+**C3 (home-flow navigation):** Replaced broken buttons 5-7 (StepProgress divs have no navigation) with actual FUNCTION_MATRIX `<Link>` cards: `全网爆款库→/trending`, `爆款元素生成→/boom-generate`, `爆款呈现形式→/present-styles`
+
+**Bonus fix:** `爆款呈现形式` strict mode violation (title+desc both match) — added `.first()`
+
+**Results:** `verify-prd-16.sh` 33/33 PASS · 4 e2e spec files 24/24 PASS on chromium · all audits green.

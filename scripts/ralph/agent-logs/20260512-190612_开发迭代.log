@@ -1,0 +1,11 @@
+US-006 complete. Here's what was implemented:
+
+**Files changed:**
+- `prisma/schema.prisma` + migration: `User` model gains `isBanned`, `bannedAt`, `passwordHash` fields
+- `apps/api/src/trpc/routers/admin/users.ts` (new): 5 procedures — `list` (paginated + multi-filter + Promise.all), `detail` (5-tab parallel), `changePlan` (approval stub with super_admin auto-execute / admin pending), `banUser` (riskLevel=high, same pattern), `resetPassword` (temp password + email stub)
+- `apps/api/src/trpc/routers/admin/index.ts`: swapped placeholder for real `usersRouter`
+- `apps/api/src/services/admin/admin-audit-service.ts`: added `approvalRequestId` support
+- `apps/api/src/lib/admin/audit-helpers.ts`: changed sensitive key detection from exact match to substring (so `tempPassword`, `passwordHash` → `[REDACTED]`)
+- `scripts/audit-approval-gates.ts`: EXCEPTION list with `users.changePlan` + `users.banUser`, 9 checks pass
+- `package.json`: `audit:approval-gates` script added
+- `apps/api/src/trpc/routers/admin/__tests__/users.test.ts` (new): 25 tests, all passing

@@ -1,0 +1,18 @@
+US-004 完成。变更摘要：
+
+**`useActiveAccount.ts`**
+- AC-4 幂等：`if (same id) return`
+- AC-3：`onSuccess` 改为 `clearLsNamespace(old) + window.location.reload()`
+- AC-5：`onError` 加 `toast.error('切换失败 · 请重试')`
+- 移除不再需要的 `refetch`
+
+**`Header.tsx`**
+- 移除 `MOCK_ACCOUNTS` 静态数据
+- `AccountDropdown` 改用 `useActiveAccount()` + `trpc.ipAccounts.list.useQuery()`（AC-1/2）
+- 每个 account item 加 `onClick={() => switchTo(acc.id)}` + `data-testid`
+- `MobileNav` 同步更新
+
+**`tests/e2e/account-switch.spec.ts`**（新建）
+- 完整 e2e：mock OAuth 登录 → 创建 2 个账号 → 种入 LS key → 切换 → 验证 key 清空（AC-3/7）
+
+typecheck ✅ · 186/186 tests ✅ · commit `20b0397`

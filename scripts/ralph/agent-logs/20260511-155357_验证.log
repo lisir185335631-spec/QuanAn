@@ -1,0 +1,48 @@
+prd.json updated. Verification complete.
+
+---
+
+## 验证结果: US-011 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | execute() → llmGateway.stream!() · model_tier='reasoning' · tools=VOICE_CHAT_TOOLS · timeout 30s | ✓ VoiceChatAgent.ts:247-259 |
+| AC-2 | 5 工具映射 get_current_step→stepData / search_history→history.findMany / query_diagnosis→diagnosisReport / get_today_tasks→dailyTask / get_evolution_insights→evolutionInsight | ✓ tools-dispatcher.ts:34-105 |
+| AC-3 | L1 Buffer pushTurn user+assistant · getTurns(10) 注入下次调用 | ✓ unit test 确认 pushTurn×2 + getTurns(1,10) |
+| AC-4 | tRPC subscription voiceChat.start · delta/tool_call/tool_result/done chunks | ✓ voiceChat.ts + subscription test pass |
+| AC-5 | grep EXPIRE.1800 l1-buffer.ts 命中 1+ | ✓ l1-buffer.ts:25 `redis.expire(key, 1800)` 1 match |
+| AC-6 | cost_log eventType='l5_agent' + agentMode=null + modelUsed | ✓ VoiceChatAgent.ts:363-387 |
+| AC-7 | ≤80 字 post-validate 截断 | ✓ `[...assistantText].slice(0,80)+"…"` VoiceChatAgent.ts:294-296 |
+| AC-8 | 同 accountId 单 thread 防 race | ✓ withAccountLock(tools-dispatcher) + _activeSessions Map(VoiceChatAgent) |
+| AC-9 | unit test 12 tests | ✓ 13/13 pass (超 12) |
+| AC-10 | integration 3 turn · 3 user + 3 assistant turns | ✓ 2/2 pass |
+| AC-11 | pnpm typecheck 0 + lint 0 + test 全过 | ✓ 0 errors · 835 passed |
+| **AC-12** | **LLM Judge 3 case 评分 ≥ 4.0/5** | **✗ FAIL** |
+| Typecheck | passes | ✓ |
+| Tests pass | passes | ✓ |
+
+### AC-12 失败详情
+
+**CONFIRMED** — `ANTHROPIC_API_KEY=` 在 `.env` 中为空值，vitest 不加载 `.env`，LLMGateway 在调用时 fail-fast 抛出 `ANTHROPIC_API_KEY missing for lightweight tier`（`apps/api/src/workers/llm-gateway/index.ts:122`）。judge tests 文件 `tests/judge/voice-chat.judge.ts` 存在且结构正确（3 cases: 0/1/2 工具），但 3 个 case 全部以该错误失败。
+
+**建议修复方向**（选一）：
+- **选项 A**：填入有效 `ANTHROPIC_API_KEY` 到 `.env` 并让 vitest 加载（`vitest.config.ts` 加 `loadEnv`）
+- **选项 B**：在 `voice-chat.judge.ts` 中 `vi.mock` `llmGateway`，返回固定分数，使 judge 可在无 API key 环境运行
+- **选项 C**：`it.skipIf(!process.env.ANTHROPIC_API_KEY)` 跳过缺 key 环境，避免 fail
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-011/
+manifest.json (exit_code=1, zero_regression=PASS, verdict=FAIL)
+vitest.xml (unit 13/13)
+vitest-full.stdout.txt (unit+integration 15/15)
+typecheck.stdout.txt (0 errors)
+pytest-full.stdout.txt (zero-reg: 90 files 835 passed)
+```
+
+### 判决
+
+`prd.json.passes = false | retryCount = 1`

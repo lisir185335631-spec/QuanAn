@@ -1,0 +1,12 @@
+US-005 完成。
+
+**实现摘要：**
+
+- **privateDomain.ts**: 1 procedure `generate`，写 History row，agentId=`private_domain`
+- **diagnosis.ts**: 3 procedures `generate`/`history`/`latest`，`generate` 写 DiagnosisReport row（mock，isFallback=true）
+- **evolution.ts**: 保留 US-002 的 `getProfile`，新增 7 procedures（`evolve`/`getConfig`/`updateConfig`/`history`/`recentFeedback`/`feedbackTrend`/`moduleRanking`）
+- **deepLearning.ts**: 5 procedures（`list`/`create`/`createFromFile`/`learn`/`delete`），createFromFile 存 placeholder，delete 做 soft delete
+- 4 个 schema 文件写入 `packages/schemas/src/specialist-io/`
+- `tests/unit/api/specialists-flow.test.ts`: 20 个单元测试
+
+结果：`pnpm typecheck` ✅ · `pnpm test` 129/129 ✅ · commit `b9c5b1c`

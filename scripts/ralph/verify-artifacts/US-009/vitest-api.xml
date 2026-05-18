@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="25" failures="0" errors="0" time="0.959">
+    <testsuite name="src/lib/env.test.ts" timestamp="2026-05-18T12:39:09.735Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.006094708">
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (a) 全 key 存在 → mode=real" time="0.004524959">
+        </testcase>
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (b) key 缺 → mode=fallback + warning log" time="0.000190625">
+        </testcase>
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (c) LLM_DEFAULT_MODEL default claude-sonnet-4-6" time="0.000124">
+        </testcase>
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (d) NODE_ENV default development" time="0.000095917">
+        </testcase>
+        <testcase classname="src/lib/env.test.ts" name="validateEnv &gt; (e) malformed env → throw" time="0.00050675">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.759Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="2" time="0">
+        <testcase classname="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" name="BrandingAgent real LLM &gt; (a) packaging mode — nickname[5] + bio[6] + avatar + background + overallStrategy valid" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="src/specialists/__tests__/BrandingAgent.real-llm.test.ts" name="BrandingAgent real LLM &gt; (b) persona mode — coreIdentity + thoughtSystem + contentPersona + personaRoadmap valid" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.772Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="2" time="0.004524459">
+        <testcase classname="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" name="CopywritingAgent step7 real LLM &gt; (a) step7 mode — markdown has # heading · schema valid · cost_log agentMode=step7 · tokens &gt; 0" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" name="CopywritingAgent step7 real LLM &gt; (b) fallback mock schema alignment — CopywritingAgent.fallbackTemplate.step7 satisfies CopywritingOutputSchema" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="src/specialists/__tests__/CopywritingAgent.real-llm.test.ts" name="CopywritingAgent fallback schema alignment (no key) &gt; step7 fallback satisfies CopywritingOutputSchema" time="0.003609042">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.783Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="2" time="0.004647125">
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent real LLM &gt; (a) generate_plan — 6-module JSON schema strict · cost_log agentMode=generate_plan · tokens &gt; 0" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent real LLM &gt; (b) optimize_script — 2 InfoCard schema strict · cost_log agentMode=optimize_script · tokens &gt; 0" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent fallback schema alignment (no key) &gt; generate_plan fallback satisfies GeneratePlanOutputSchema" time="0.002888125">
+        </testcase>
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent fallback schema alignment (no key) &gt; optimize_script fallback satisfies OptimizeScriptOutputSchema" time="0.000602541">
+        </testcase>
+        <testcase classname="src/specialists/__tests__/LivestreamAgent.real-llm.test.ts" name="LivestreamAgent fallback schema alignment (no key) &gt; default fallback satisfies LivestreamOutputSchema" time="0.00031025">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/MonetizationAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.805Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/MonetizationAgent.real-llm.test.ts" name="MonetizationAgent real LLM &gt; (a) 3-stage monetization — ladder[3] + revenueStructure + successCases[2] valid" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/PositioningAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.815Z" hostname="returndeMacBook-Pro.local" tests="2" failures="0" errors="0" skipped="2" time="0">
+        <testcase classname="src/specialists/__tests__/PositioningAgent.real-llm.test.ts" name="PositioningAgent real LLM &gt; (a) industry mode — market_analysis/competition_level/recommendation valid" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="src/specialists/__tests__/PositioningAgent.real-llm.test.ts" name="PositioningAgent real LLM &gt; (b) execution mode — daily_tasks/weekly_milestones/stage_kpis in markdown valid" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/TopicAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.816Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/TopicAgent.real-llm.test.ts" name="TopicAgent SSE real LLM &gt; (a) executeStream — 5 done chunks · all categories present · schema valid · cost_log tokens &gt; 0" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/specialists/__tests__/VideoAgent.real-llm.test.ts" timestamp="2026-05-18T12:39:09.816Z" hostname="returndeMacBook-Pro.local" tests="1" failures="0" errors="0" skipped="1" time="0">
+        <testcase classname="src/specialists/__tests__/VideoAgent.real-llm.test.ts" name="VideoAgent real LLM &gt; (a) shooting mode — 8-column storyboard schema strict match + cost_log valid" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/services/quota/__tests__/userQuota.service.test.ts" timestamp="2026-05-18T12:39:09.816Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.006283125">
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (a) sufficient quota → deducts and returns correct remaining" time="0.002014">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (b) full quota → returns QUOTA_EXCEEDED" time="0.000348875">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (c) new user row missing → auto-creates free plan then deducts" time="0.002314334">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (d) tokens=0 → skips deduction, returns ok:true" time="0.000265041">
+        </testcase>
+        <testcase classname="src/services/quota/__tests__/userQuota.service.test.ts" name="checkAndDeductQuota &gt; (e) concurrent 100 calls → final dailyUsed === Σ tokens, no over-deduction" time="0.000610625">
+        </testcase>
+    </testsuite>
+</testsuites>

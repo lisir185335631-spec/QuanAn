@@ -1,0 +1,30 @@
+验证完成。结果如下：
+
+---
+
+## 验证结果: US-005 [FAIL]
+
+### AC 对照
+| AC | 结果 | 证据 |
+|---|:---:|---|
+| AC-1: 400+ 行 | ✓ | 403 行确认 |
+| AC-2: 6 阶段卡片 | ✓ | 浏览器: 引流/加微/信任/朋友圈/成交/复购 全显示 |
+| AC-3: 配置表单 6 字段 | ✓ | 浏览器: 所有字段可填，submit 正常 |
+| AC-4: useMutation + SOP | ✓ | 浏览器: 提交→result 6 阶段数据渲染 |
+| AC-5: 历史回看 + restore | ✓ | 浏览器: 历史表有新记录，restore-btn 存在 |
+| AC-6: URL state ?view= | ✓ | 浏览器: URL 跳转正确 |
+| AC-7: localStorage debounce 1s | ✓ | 34 unit tests pass |
+| AC-8: cost_log 写入 | ✓ | privateDomain.ts:120 `costLog.create` 存在（第2次修复成功）|
+| **AC-8: SSE 流式输出** | **✗** | `grep subscription/async*` = 0 行；仍是 `.mutation()` 同步返回 |
+| AC-9: ≥10 tests | ✓ | 34 tests pass |
+| AC-10: browser e2e | ✓ | 5/5 steps PASS（填表→result→history）|
+| AC-11: vitest + typecheck | ✓ | 2135/0 PASS；typecheck 0 errors |
+
+### 零回归
+`scripts/ralph/verify-artifacts/US-005/pytest-full.xml` — 2135 passed, 0 failures
+
+### 关键判定依据
+
+AC-4 明确要求 `useMutation()`，AC-8 要求 SSE（tRPC 中 SSE = `.subscription()`）。两者在 tRPC 架构中**互斥**。开发者已明确标注 `real SSE留 PRD-16+` 并修复了 cost_log。**Opus 审计时建议以 TD 豁免 AC-8-SSE**（mutation 满足 AC-4，cost_log 满足 AC-8 的写入要求，SSE 作为 TD 推 PRD-16+）。
+
+**prd.json 更新**: `passes=false`, `retryCount=2`

@@ -1,0 +1,40 @@
+prd.json 已正确更新：`passes=false`, `retryCount=2`, `blocked=false`。
+
+---
+
+## 验证结果: US-001 [FAIL] — 第2次
+
+**pnpm typecheck**: PASS (6 workspaces, 0 errors) ✓
+
+**X-6 零回归门禁**: **FAIL** — `2016 passed / 3 failed / 4 skipped`
+
+### AC 对照
+
+- AC-1 ~ AC-8: 第1次已验证 PASS，代码未改动，继续 PASS
+- AC-9 (本次修复目标): auth.me 现返回 `{ok:true, user:{id:20007, email:'dev@quanqn.local'}}` ✓ — DEV_OAUTH_MOCK 已生效
+- AC-10 (typecheck): PASS ✓
+- **X-6 零回归**: **FAIL** — 3 个 integration test 被 DEV_OAUTH_MOCK=true 打破
+
+### CONFIRMED 失败根因
+
+1. `tests/integration/api/auth.me.test.ts:19` — 期望无 session 时返回 `unauthenticated`，但 DEV_OAUTH_MOCK=true 使 auth.me 始终返回 mock user
+2. `tests/integration/api/auth.test.ts:68` — 测试用旧 email `dev@local.test`，但实际 mock user 是 `dev@quanqn.local`
+3. `tests/integration/api/auth.test.ts:103` — expired session 期望 `ok: false`，被 DEV_OAUTH_MOCK 绕过返回 `ok: true`
+
+### 建议修复方向
+
+**方向 A（推荐）**: 在 3 个失败测试中 `beforeAll` 里临时 override `process.env.DEV_OAUTH_MOCK = ''`，测试结束后还原，让 integration test 走真实 session 逻辑；同时把 `auth.test.ts:68` 的 `dev@local.test` 改为 `dev@quanqn.local`。
+
+**方向 B**: 在 `vitest.config.ts` 全局设 `process.env.DEV_OAUTH_MOCK = ''`，但需为 AC-9 browser test 单独保留 DEV_OAUTH_MOCK 能力。
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-001/
+pytest-full.xml (2023 tests, 3 failures)
+pytest-full.stdout.txt
+typecheck.stdout.txt (6 ws, 0 errors)
+manifest.json (zero_regression=FAIL, exit_code=1)
+```
+
+### 判决
+`prd.json.passes = false` · `retryCount = 2` · `notes = CONFIRMED 3 失败`

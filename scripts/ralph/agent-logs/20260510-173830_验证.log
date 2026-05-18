@@ -1,0 +1,37 @@
+## 验证结果: US-011 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | generateStoryboard 内调 checkImageGenRateLimit 在 LLM 之前 | ✓ (aiVideo.ts:64) |
+| AC-2 | rate limit → throw TRPCError TOO_MANY_REQUESTS '今日生成已达上限 (10 次/天)' | ✓ (image-gen.ts:32-35) |
+| AC-3 | .env.example 加 IMAGE_GEN_DAILY_LIMIT_PER_USER=10 + IMAGE_GEN_MAX_SCENES_PER_REQUEST=8 + 注释 | ✓ (.env.example:40-44) |
+| AC-4 | 前端显示 '今日剩余 N 次' (trpc.aiVideo.dailyUsage query) | ✓ 浏览器验证显示 "今日剩余 10 次 (0/10)" |
+| AC-5 | 超额时 submit disabled + 灰色 + '今日已达上限 (10/10) · 明日再来' | ✓ 浏览器验证 count=10 → button disabled:opacity-50 |
+| AC-6 | cost_log eventType='image_gen' callType='image_gen' aggregation by accountId | ✓ (dall-e-3.ts:32-33) |
+| AC-7 | 5 unit tests: 1st/10th OK, 11th throw, cross-account, day rollover | ✓ 9 tests all passed |
+| AC-8 | boundary: 10th 成功 · 11th 拦截 | ✓ test AC-7.2 + AC-7.3 |
+| AC-9 | Redis sliding window query < 10ms | ✓ INCR+EXPIRE O(1) |
+| AC-10 | 1000 并发各自独立 < 100ms | ✓ vitest mock: 1000 keys < 100ms |
+| AC-11 | pnpm typecheck 6 ws 0 error | ✓ |
+| AC-12 | pnpm test rate-limit-image-gen.test.ts 退出码 0 | ✓ 9 passed |
+| AC-13 | browser: /ai-video 显示日用量 + mock 10 次 → disabled | ✓ 截图保存 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-011/
+├── pytest-full.xml          (73 files, 712 tests passed — zero regression)
+├── pytest-full.stdout.txt
+├── vitest.xml               (9 tests passed)
+├── vitest.stdout.txt
+├── typecheck.txt            (6 workspaces, 0 errors)
+├── validator-us-011-pass-1.png  (今日剩余 10 次 · 0/10 正常状态)
+├── validator-us-011-pass-2.png  (今日已达上限 · 10/10 disabled 状态)
+└── manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

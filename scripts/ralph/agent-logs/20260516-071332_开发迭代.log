@@ -1,0 +1,10 @@
+All three fix points are correct. Here's a summary of what was done:
+
+**Root cause** (CONFIRMED by validator): `History.tsx` generates restore URLs with `?restored=ID` but `Generate.tsx` only read `?historyId=`, so the `historyDetail` query never fired and the topic field had no source of truth.
+
+**Three-part fix in `Generate.tsx`:**
+1. **Line 35-37**: `rawHistoryId` now reads both `?historyId=` and `?restored=` (alias). `topicFromUrl` reads `?topic=` synchronously from URL.
+2. **Line 90**: `historyDefaults.topic` → `topicFromUrl || historyDetail.inputSummary || ''` (uses URL topic when detail loads).
+3. **Line 94**: `resolvedDefaults` now chains `historyDefaults ?? lsDefaults ?? (topicFromUrl ? { topic: topicFromUrl } : undefined)` — URL topic is available immediately at mount, before the async `historyDetail` resolves.
+
+**Verified**: Playwright headless test confirmed `MATCH: true` — `textarea.value = "[xiaohongshu] 如何在小红书30天内快速涨粉到1000+"`. All 2250 unit tests pass, typecheck clean.

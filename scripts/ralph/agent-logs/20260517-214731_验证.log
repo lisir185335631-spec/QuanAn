@@ -1,0 +1,25 @@
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | Step5.tsx · STEP5_STEP_TAG + H1 + SUBTITLE | ✓ 浏览器截图确认 |
+| AC-2 | form glass-card · 2 input 必填 + 2 file upload + CTA | ✓ 截图 + snapshot @e7/@e8/@e9/@e10/@e11 |
+| AC-3 | Step5FileUpload.tsx · FileReader.readAsText + 20MB 校验 | ✓ 代码 L34/L38 |
+| AC-4 | Step5TopicGrid.tsx · 5 tabs × 20 cards + 跳 step7 | ✓ snapshot @e1~@e25 + navigate 到 /step/7 |
+| AC-5 | generateMockResult · setTimeout 3-5s · 100 选题含行业词 | ✓ 实测 3s 后出 100 选题含「美业」 |
+| AC-6 | 跨 step localStorage · acc_step1 预填 + acc_step5 写入 | ✓ 代码 LS_STEP1/LS_STEP5 实现 |
+| AC-7 | 零 hardcode · 0 字面 '一键生成'/'流量型'/'变现型' | ✓ grep 0 命中 |
+| AC-8 | 零 D4=B · grep 0 violet/amber | ✓ |
+| AC-9 | 零真上传 · grep 0 fetch/axios/XHR upload | ✓ |
+| AC-10 | acc_step5_selected_topic 在 TopicGrid.tsx L51 | ✓ grep 命中 |
+| AC-11 | vitest 全 PASS · tsc 0 error | ✓ 14 files / 119 tests PASS · tsc exit 0 |
+| AC-12 | browser: 填表 → 生成 → 5tab/20选题/美业关键词 → 点选题 → /step/7 → localStorage 非 null | ✓ 全流程验证通过 |
+| AC-13 | Typecheck passes | ✓ tsc --noEmit exit 0 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-009/`：`vitest.xml` (119 passed)、`vitest.stdout.txt`、`typecheck.stdout.txt`、`manifest.json` (zero_regression=PASS)
+
+### 判决
+`prd.json.passes = true`、`notes = ""`、`retryCount = 0`

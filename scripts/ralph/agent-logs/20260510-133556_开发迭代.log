@@ -1,0 +1,19 @@
+US-006 is complete. Here's a summary of what was implemented:
+
+**Files created/modified:**
+
+1. **`apps/web/src/lib/schemas/acquisitionVideoFrontend.ts`** — Standalone zod schema with `conversionGoal.min(1, '转化目标必填')` and `z.preprocess` for empty-string-to-undefined on duration
+
+2. **`apps/web/src/pages/tools/AcquisitionVideo.tsx`** — Rewritten with real ToolForm (4 fields), `trpc.acquisitionVideo.generate.useMutation`, `?historyId` pre-fill, FeedbackButton, AbortController cleanup
+
+3. **`apps/web/src/components/ToolResult/AcquisitionVideoResult.tsx`** — Renders `{ script, ctaScript, conversionPath, keyMessages }` with: script card, ★ CTA highlighted card (border-primary bg-primary/10 + '转化指令' title), and ordered conversion path list
+
+4. **`apps/web/src/components/ToolForm/ToolForm.tsx`** — Added `'acquisition-video'` to `ToolKey`, `renderToolFields` case (sourceCopy textarea + conversionGoal input required + platform select + duration select), and `getDefaultValues` entry
+
+5. **`apps/web/src/components/ToolResult/ToolResult.tsx`** — Added `'acquisition-video'` to `ToolResultKey` and switch case
+
+6. **`tests/unit/web/pages/AcquisitionVideo.test.tsx`** — 22 unit tests across 5 groups
+
+7. **`tests/e2e/tool-acquisition-video.spec.ts`** — 1 e2e test with tRPC JSONL mock
+
+**Results:** pnpm typecheck 6 ws 0 error · pnpm test 654/654 · pnpm test:e2e 2 passed (chromium + mobile)

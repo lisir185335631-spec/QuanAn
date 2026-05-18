@@ -1,0 +1,6 @@
+US-007 第 3 次迭代完成。两个 CONFIRMED 修复项:
+
+1. **AC-6 创建人字段** — VersionCard JSX 补渲染 `管理员 #${createdByAdminId}`，紧跟创建时间之后
+2. **AC-6 灰度配置按钮** — 补加蓝色透明边框按钮，点击跳 `/admin/canary?specialist=<id>`，同步添加 `specialistId` prop
+
+typecheck 0 errors · 1642 tests pass · 0 fail · 已 commit `4a708d4`。

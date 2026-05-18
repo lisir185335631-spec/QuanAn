@@ -1,0 +1,8 @@
+US-008 完成。实现了：
+
+- **`aiVideoFrontend.ts`** — Zod schema，`scenesCount` 用 `z.preprocess` 将 select 字符串强转 number
+- **`ToolForm.tsx`** — 新增 `'ai-video'` case，三字段：sourceCopy textarea + scenesCount select(5-8) + imageStyle select(vivid|natural)
+- **`AiVideo.tsx`** — 完整 polling UX：提交后拿 `historyId` → LS 写入（account namespace）→ 挂载时 LS 恢复 → `?historyId=N` 支持 → rate limit banner
+- **`AiVideoResult.tsx`** — 双数据源：`history.detail`（description/imagePromptEn/duration）+ `jobStatus` polling（3s interval，allCompleted 停止）→ 镜头卡片网格 grid-cols-2/3，skeleton→img→retry button
+- **`ToolResult.tsx`** — 新增 `'ai-video'` case
+- **21 unit tests** (7 主题组) + **1 E2E test** — 703/703 全通过，typecheck 0 error

@@ -1,0 +1,8 @@
+US-003 구현 완료. 요약:
+
+**변경 사항:**
+- **Step1.tsx**: `localStorage.setItem('acc_step1', ...)` 제거 → `useStepData(accountId, 'step1')`로 교체. `prevIsSavingRef` 패턴으로 save 완료 후 `dbQuery.refetch()` 트리거. 행업 결과 표시 섹션 추가(LoadingState/ErrorState/EmptyState + template literal)
+- **Step3.tsx**: TD-78 fix — `LS_STEP3='acc_step3'` 하드코드 완전 제거. `useStepData(accountId, 'step3')` 사용. `readOtherStep`에서 `industryLabel` 키 수정. backend→frontend 어댑터 추가
+- **Step3b.tsx**: `LS_STEP1/LS_STEP3/LS_STEP3B` + `readIndustryLabel()` 전부 제거. `useStepData(accountId, 'step3b')` + `readOtherStep` 크로스 step 프리필 적용
+- 테스트 12개 신규 생성 (Step1/Step3/Step3b), 전체 150개 통과
+- TD-78 closed

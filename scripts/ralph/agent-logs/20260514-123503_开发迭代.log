@@ -1,0 +1,14 @@
+US-006 is complete. Summary of what was built:
+
+**Files created:**
+- `apps/admin/src/pages/evolutionHealth/EvolutionHealthPage.tsx` — main page with 4 KPI cards, L-distribution PieChart, flywheel HealthGauge SVG, DenseTable with filters (anomalyType/severity/resolved), cursor-based pagination
+- `apps/admin/src/pages/evolutionHealth/EvolutionHealthDrawer.tsx` — account detail drawer with timeline, KPI cards, ConfirmModal for force-rebuild (super_admin only, SHIELD enforced)
+- `apps/admin/src/pages/evolutionHealth/components/LDistributionPie.tsx` — Recharts PieChart for L1(grey)→L5(gold) distribution
+- `apps/admin/src/pages/evolutionHealth/components/HealthGauge.tsx` — SVG semicircle gauge, green/yellow/red status
+- `apps/admin/src/pages/evolutionHealth/components/EvolutionTimelineList.tsx` — merged insights+flags timeline, sorted by date
+- `tests/unit/admin/evolutionHealth/EvolutionHealthPage.test.tsx` — 10 tests
+- `tests/unit/admin/evolutionHealth/EvolutionHealthDrawer.test.tsx` — 13 tests (including SHIELD checks)
+
+**Files modified:** `admin-routes.ts`, `router.tsx`, `admin-router-types.ts` (added input types to evolution procedures), `vitest.config.ts` (aliases + subdirectory jsdom glob)
+
+**Results:** 1633 pass · 9 fail (pre-existing ECONNREFUSED) · 0 typecheck errors · ALL PASS 7 LD-A + 6 R-A

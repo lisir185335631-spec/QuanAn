@@ -1,0 +1,58 @@
+---
+
+## 验证结果: US-002 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | lucia-admin.ts · sessionCookie=admin_session_id, ttl=12h, idle Redis 30min | ✅ PASS |
+| AC-2 | grep app:session: = 0 | ✅ PASS |
+| AC-3 | mockOAuthCallback · isMock+isActive 校验 | ✅ PASS |
+| AC-4 | googleWorkspaceOAuthStub · throw PRR message with 5 env | ✅ PASS |
+| AC-5 | getAdminOAuthProvider + validateAdminStartupConfig prod gate | ✅ PASS |
+| AC-6 | adminRouter.auth 3 procedure 注册 | ✅ PASS |
+| AC-7 | createAdminContext · 读 admin_session_id cookie + 注入 ctx | ✅ PASS |
+| AC-8 | admin-client.ts createTRPCReact<AdminRouter>() · /trpc/admin | ✅ PASS |
+| AC-9 | Login.tsx email + mock OAuth 按钮(DEV only) + Google disabled | ✅ PASS (截图) |
+| AC-10 | auth-lucia.test.ts 17 tests pass (≥ 12) | ✅ PASS |
+| AC-11 | auth-router.test.ts 8 tests pass | ✅ PASS |
+| AC-12 | auth-flow.test.ts 1 integration pass | ✅ PASS |
+| AC-13 | POST /trpc/admin/auth.login → 200 + sessionId + Set-Cookie HttpOnly;SameSite=Lax | ✅ PASS (curl 直连) |
+| AC-14 | admin_audit_log admin_login success + failed 各 1 row | ✅ PASS (DB 查询) |
+| AC-15 | .env.production 不存在 + startup gate process.exit(1) | ✅ PASS |
+| AC-16 | Typecheck passes | ✅ PASS |
+| AC-17 | 浏览器打开 /login 提交 super@quanqn.com | ❌ **FAIL** |
+| AC-18 | cookie admin_session_id 存在 after login | ❌ **FAIL** |
+| AC-19 | redirect /admin · AdminLayout 可见 | ❌ **FAIL** |
+| AC-20 | Refresh /admin · session 恢复 | ❌ **FAIL** |
+| AC-21 | Invalid email 显示 toast 错误 | ❌ **FAIL** (CORS 先报 "Failed to fetch") |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-002/
+  pytest-full.xml        (tests=965, failures=0, errors=0) ← 零回归 PASS
+  pytest-full.stdout.txt (103 files, 961 passed, 4 skipped)
+  typecheck.stdout.txt   (全包通过)
+  unit-tests.stdout.txt  (26 tests pass)
+  manifest.json          (exit_code=1, zero_regression=PASS, verdict=FAIL)
+```
+
+### 根因 (CONFIRMED)
+
+**CORS 中间件注册顺序错误** — `apps/api/src/index.ts:40-49`
+
+```
+// 当前错误顺序:
+app.use('/trpc/*',       cors({ origin: 'http://localhost:5173' }))  ← line 40, 先注册
+app.use('/trpc/admin/*', cors({ origin: 'http://localhost:5174' }))  ← line 51, 后注册
+```
+
+Hono CORS middleware 对 OPTIONS preflight 请求 early return 不调 `next()`，导致主应用 CORS (5173) 拦截 `/trpc/admin/auth.login?batch=1` 的 preflight — origin 5174 ≠ 5173，所以不设 `Access-Control-Allow-Origin`，浏览器拒绝请求。
+
+**修复**: 将 `app.use('/trpc/admin/*', cors(...))` 移至 `app.use('/trpc/*', cors(...))` 之前。
+
+### 判决
+- `prd.json.passes = false`
+- `retryCount = 2`
+- `blocked = false`

@@ -1,0 +1,1 @@
+Fixed. Added `console.log('[STUB] Notify requester ...: request approved')` to the `approveRequest` mutation at `apps/api/src/trpc/routers/admin/approvals.ts:322`, mirroring the pattern already in `rejectRequest`. All 1702 tests pass, typecheck clean, committed as `cabb9b1`.

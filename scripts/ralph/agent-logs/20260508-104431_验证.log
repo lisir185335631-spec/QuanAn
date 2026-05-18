@@ -1,0 +1,37 @@
+---
+
+## 検証結果: US-008 [FAIL]
+
+### AC 対照
+
+| AC | 内容 | 結果 |
+|:--:|---|:--:|
+| AC1 | vitest unit ≥ 50 (15 router全 procedure cover · zod 含) | ✓ (160 unit / 174 total) |
+| **AC2** | playwright e2e ≥ 2 (多账号隔離 + LS↔DB) | **✗ 2/2 FAIL** |
+| **AC3** | 全テスト退出碼 0 | **✗ playwright exit code 1** |
+| AC4 | typecheck 全 6 workspace 0 error | ✓ |
+| AC5 | TD-007 closed · web lint clean | ✓ (exit 0) |
+| AC6 | TD-008 closed · generateHttpTraceId / generateSpecialistTraceId | ✓ |
+| AC7 | vitest < 30s | ✓ (580ms) |
+| AC8 | Typecheck passes | ✓ |
+| **AC9** | Tests pass 全 ≥ 57 | **✗ playwright 0/2** |
+
+### 失敗根本原因
+
+`ipAccounts.create` が `protectedProcedure` を使用 → `activeAccountId != null` を要求 → 新規ユーザーは初回ログイン後 `activeAccountId = null` → API が `FORBIDDEN: no_active_account` を返す → `data[0]?.result?.data` が `undefined` → `accountA.id` で `TypeError`。
+
+**修正指示:**
+- `apps/api/src/trpc/routers/ipAccounts.ts` の `create` を `protectedProcedure` → `globalProcedure` に変更（import は既に存在）
+- 新規アカウント作成は `userId: user!.id` で紐付けるため `activeAccountId` 不要
+
+### 産物パス
+
+```
+scripts/ralph/verify-artifacts/US-008/
+生成済み: vitest-full.xml (174 passed), typecheck.txt (0 errors), lint-web.txt (clean),
+         playwright.stdout.txt (2 failed), playwright-*.png (失敗スクリーンショット)
+```
+
+### 判決
+
+`prd.json.passes = false` · `retryCount = 1`

@@ -1,0 +1,8 @@
+US-009 is still `PENDING` — the Validator hasn't run yet (that's normal, ralph.py orchestrator handles that). My job as Ralph dev is done: implemented, committed, progress logged.
+
+**US-009 完成摘要:**
+
+- **`scripts/verify-prd-20.sh`** — 33 检查项 · 29 PASS + 4 SKIP (无 OPENAI_API_KEY 时 §3.4/§4.6/§4.7/§4.8 SKIP) · exit 0 · CI 友好
+- **`.agents/specialist-tuning-baseline.md`** — 268 行 · 8 Specialist baseline 文档 (model_tier/timeout_ms/avg tokens/avg cost 估算/fallback 对比/调优历史)
+- **`.agents/tech-debt.json`** — TD-79/80/81/82 `resolved_notes` 更新含 commit `f59a02f` + `verify §X PASS` 证据
+- commit `33bb884` — `[TD-79 resolved] [TD-80 resolved] [TD-81 resolved] [TD-82 resolved]`

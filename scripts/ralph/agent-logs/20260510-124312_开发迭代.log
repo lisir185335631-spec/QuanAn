@@ -1,0 +1,1 @@
+US-004 retry-3 完成。修复了 AC-4/AC-8：在 `ToolForm.tsx` 的 form 声明后插入了一个 `watch()` + 500ms 防抖的 `useEffect`，现在表单字段每次变化都会写 localStorage，而不是只在 submit 时写。typecheck 0 error、21 个 unit tests、2 个 E2E tests 全部通过，已提交。

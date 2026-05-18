@@ -1,0 +1,8 @@
+US-001 AC-6 is fixed. The root cause was that Google Fonts registers all Orbitron weights in `FontFaceSet` but only downloads them on demand — no element used weight:400, so it stayed `unloaded`. The fix adds a hidden `body::before` in `index.html` (outside `apps/web/src/` to avoid R-16) that forces the browser to fetch Orbitron:400 before `document.fonts.ready` resolves.
+
+**Results:**
+- `node check-ac6-v2.mjs` → `Orbitron loaded: true` ✅
+- All 17 redlines pass ✅
+- 51 tests pass ✅  
+- Typecheck pass ✅
+- Committed: `b3c27ef`

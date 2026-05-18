@@ -1,0 +1,17 @@
+US-001 is complete. Here's a summary of what was implemented:
+
+**US-001: ab_experiments + ab_assignments schema + service + Approval 触发 · foundation**
+
+**Delivered:**
+1. **Schema**: Added `createdAt @default(now())` to `AbExperiment` model (AC-1 verified fields complete, AC-2 migration succeeded)
+2. **Migration**: `20260514143912_prd_14_ab_experiments` applied, 0 rows seeded
+3. **Service** (`apps/api/src/services/admin/ab-experiment/ab-experiment.service.ts`):
+   - `_startAbExperimentInTx(tx, ...)` — accepts tx, sets `status='running'`, writes `ab_experiment_start` audit (AC-3/4)
+   - `_stopAbExperimentInTx(tx, ...)` — accepts tx, sets `status='stopped'` + resultSummary + stopReason in payload (AC-5)
+   - `createAbExperiment(params)` — creates draft experiment with trafficAllocation validation (AC-3)
+   - `startAbExperiment(params)` — always forces dual approval with `start_ab_experiment` actionType (AC-7)
+   - `assignUserToVariant(experimentId, userId)` — deterministic md5 hash, upsert with `update:{}` to preserve existing assignment (AC-6)
+4. **approvalGateService.ts**: Added `'start_ab_experiment'` to `ApprovalActionType` union and `DUAL_APPROVAL_ACTION_TYPES` set (AC-7/10)
+5. **AGENTS.md §10.1**: Updated to 9 LD-A, added LD-A9 section (AC-8)
+6. **audit-redlines-admin.sh**: Updated to 9 LD-A + LD-A9 detection segment (AC-9/11)
+7. **Tests**: 12 new tests → 1739 total pass, 0 fail (AC-12); typecheck 0 errors (AC-13/14); all audit scripts ALL PASS (AC-11)

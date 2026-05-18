@@ -1,0 +1,6 @@
+US-002 TD-012 全部修复完成：
+- `agents/base/ContextAssembler.ts` 已删除（-145 行，单一真理源确立）
+- `specialists/base/BaseSpecialist.ts` 正确导入 `services/context-assembler/`
+- 两个测试文件 mock 路径同步
+- `agents/base/BaseSpecialist.ts`（PRD-2 死代码）编译恢复
+- typecheck 6 ws 0 error，232 tests pass

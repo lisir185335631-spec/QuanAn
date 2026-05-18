@@ -1,0 +1,6 @@
+US-001 완료. 구현 내용:
+
+- **`apps/web/src/lib/migration/legacy-ls.ts`** — `migrateLegacyLs(store, accountId)` 구현. 10개 legacy key(`acc_step1` ~ `acc_step8` + `acc_step5_selected_topic`) → LD-009 규범 키로 1회 마이그레이션. `MIGRATION_FLAG_KEY`로 재실행 방지, `QuotaExceededError` 시 `console.warn` + continue, `accountId === null` 즉시 반환.
+- **`apps/web/src/lib/migration/__tests__/legacy-ls.test.ts`** — 8개 단위 테스트 (0키/전체10/부분충돌/QuotaExceeded/null accountId/멱등성/selected_topic 특수키/부분 2개) 전부 통과.
+- **`apps/web/src/App.tsx`** — `useActiveAccount`로 account 준비 확인 후 `useEffect`에서 1회 `migrateLegacyLs` 호출. SSR 미실행, account 미준비 미실행.
+- typecheck 0 error, vitest 8/8 PASS.

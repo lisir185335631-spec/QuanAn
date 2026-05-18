@@ -1,0 +1,47 @@
+验证完成。
+
+## 验证结果: US-001 [FAIL]
+
+### AC 对照
+
+| AC | 结论 | 说明 |
+|----|------|------|
+| AC-1 | ✓ | videoProduction.schema.ts 13 必填 + 7 optional · shotList.min(1) 不变 |
+| AC-2 | ✓ | acquisitionVideo.schema.ts output 4 字段 script/cta/conversionPath/keyMessages · conversionGoal z.string().min(1) |
+| AC-3 | ✓ | aiVideo.schema.ts output 加 title: z.string() · scenesCount z.union([literal(5/6/7/8)]) |
+| AC-4 | ✓ | acquisitionCopywriting.schema.ts 仅 acquisitionCopywritingInputSchema · output markdown/metadata{ctaPosition,conversionGoal} + .refine |
+| AC-5 | ✓ | imageGen.schema.ts 保持现状 |
+| AC-6 | ✓ | VideoAgent.ts regex `/^[\x00-\x7F]+$/` 与 aiVideoSceneSchema 100% 一致 |
+| **AC-7** | **✗ FAIL** | **CopywritingAgent.ts 无任何 `from '@quanqn/schemas'` import · CopywritingAcquisitionOutput 仍从 inline schema 推导(line 118)而非复用 @quanqn/schemas/specialist-io 的 AcquisitionCopywritingOutput** |
+| AC-8 | ✓ | videoProduction.ts `import { videoProductionInput } from '@quanqn/schemas/specialist-io'` |
+| AC-9 | ✓ | acquisitionVideo.ts `import { acquisitionVideoInput } from '@quanqn/schemas/specialist-io'` |
+| AC-10 | ✓ | aiVideo.ts `import { aiVideoInput } from '@quanqn/schemas/specialist-io'` |
+| AC-11 | ✓ | copywriting.ts `import { acquisitionCopywritingInputSchema, SCRIPT_TYPE_KEYS_20, HOT_ELEMENT_KEYS_22 } from '@quanqn/schemas/specialist-io'` |
+| AC-12 | ✓ | 727/727 tests pass |
+| AC-13 | ✓ | 5 grep 验证全过 |
+| AC-14 | ✓ | pnpm test 727 · typecheck 0 error · lint --max-warnings=0 通过 |
+| AC-15 | ✓ | 51 video router unit tests 通过 |
+| AC-16 | ✓ | D-046 comment 已在 acquisitionCopywriting.schema.ts 文件头 |
+
+### CONFIRMED 失败根因
+
+```
+复现命令: grep -n "from '@quanqn/schemas'" apps/api/src/specialists/CopywritingAgent.ts
+实际输出: (0 results)
+
+期望: import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io';
+当前: export type CopywritingAcquisitionOutput = z.infer<typeof CopywritingAcquisitionOutputSchema>;  // line 118
+```
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+已生成: pytest-full.stdout.txt (727 passed), typecheck.txt (0 error), lint.txt (clean), manifest.json
+```
+
+### 判决
+
+`prd.json.userStories[US-001].passes = false · retryCount = 1`
+
+**修复方向**: 在 `CopywritingAgent.ts` 顶部加 `import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io';`，并将 line 118 改为 `export type CopywritingAcquisitionOutput = AcquisitionCopywritingOutput;`。Schema inline 定义本身字段已 canonical，可保留不动。

@@ -1,0 +1,6 @@
+US-008 AC-9 修复完成。
+
+**变更摘要**：
+- `apps/api/src/trpc/routers/admin/prompts.ts` — `listVersions` 改为 `Promise.all` 同时获取 versions + canaryConfig，对每个 version 若其 id 匹配 `currentVersionId` 或 `nextVersionId` 则注入 `canaryHistory: [{canaryPct, updatedAt}]`，前端 `HistoryTimeline` 已有渲染逻辑无需改动
+- `apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts` — 新增 3 个 `listVersions` 测试覆盖空配置、currentVersionId 匹配、nextVersionId 匹配三个场景
+- 测试: 1662 pass ≥1640、typecheck 0 errors、redlines ALL PASS (7 LD-A + 6 R-A)

@@ -1,0 +1,9 @@
+US-008 구현 완료. 결과 요약:
+
+**구현 내용**:
+- **`apps/api/src/trpc/routers/admin/users.ts`**: `escapeCsvField` (CSV 특수문자 이스케이프), `formatUserCsvRow` (행 포맷), `handleExportUsersCSV` (스트리밍 핸들러) 추가 — 1000행 청크, 500k 초과 거부, audit 기록, readonly_admin 허용
+- **`apps/api/src/index.ts`**: `/admin/export/*` CORS 규칙 + `GET /admin/export/users` 라우트 등록
+- **`apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts`**: 23개 단위 테스트 (escape 6개 · row format 5개 · HTTP handler 12개) — 전부 통과
+- **`apps/admin/src/pages/users/index.tsx`**: [CSV 导出] 버튼 추가 — `fetch(credentials: include)` → `Blob` → `URL.createObjectURL` → 다운로드
+
+**검증**: 23 tests pass · typecheck 0 errors (전체 workspace)

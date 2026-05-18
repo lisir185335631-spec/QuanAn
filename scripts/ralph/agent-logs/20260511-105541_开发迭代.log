@@ -1,0 +1,20 @@
+US-005 完成。总结：
+
+**实现内容：**
+
+1. **`apps/api/src/trpc/routers/evolution.ts`** — 新增 3 个真实 procedure：
+   - `getInsightHistory` — max 10 · desc · 显式 `accountId: activeAccountId!` 双层防护
+   - `getFeedbackTrend` — `$queryRaw` DATE_TRUNC 日聚合，返回 `{ date, total, good, satisfactionRate }[]`
+   - `getModuleRanking` — `feedbackLog.groupBy + costLog.groupBy` 并发 join，按满意率排序
+   - 更新 `getProfile` 加 `latestInsight` 字段
+
+2. **`apps/web/src/pages/modules/Evolution.tsx`** — 完整 5 section 页面（Hero + InsightCard + TrendChart + ModuleRanking + HistoryList），AC-8 cold-start UI 已验证
+
+3. **`packages/clients/src/router-types.ts`** — 同步 shadow router 类型
+
+4. **安装 recharts** — Recharts line chart 用于趋势图
+
+**验证结果：**
+- `pnpm typecheck` ✅  `pnpm lint` ✅  `pnpm test` 774/774 ✅
+- 浏览器截图 `verify-artifacts/US-005/screenshot.png` ✅
+- Cold-start UI "暂无 insight · 等累计 5 条反馈后自动生成" ✅

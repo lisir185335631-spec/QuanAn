@@ -1,0 +1,33 @@
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+- AC-1: `review-trending.ts` 新建 `reviewTrendingRouter` · 6 procedure 全使用 `adminProcedure` ✓
+- AC-2: list - zod(page/pageSize/statusFilter/platformFilter/dateRange/autoVerdictFilter) · `$transaction + SET LOCAL` 通过 `adminRLSMiddleware`(set_config is_local=true) · 分页+filter · audit `data_query/list_trending_review_queue` ✓
+- AC-3: detail - 返回完整 rawContent + autoScanResult + trendingItemId(链路追溯) ✓
+- AC-4: approve - `$transaction` 原子: update status + `_createTrendingItemInTx` + update trendingItemId + audit ✓
+- AC-5: ★ LD-A-5 单点 grep 确认: 全项目唯一 `trendingItem.create` 在 `_createTrendingItemInTx`(review-trending.ts:90) · 排除测试文件和注释后仅 1 命中 ✓
+- AC-6: reject - rejectReason min 5(zod) · status='rejected' + audit trending_review_reject ✓
+- AC-7: batchAction - queueIds max 100 · each item 单独 audit ✓
+- AC-8: configRules - `guardSuperAdmin()` · 非 super_admin → privilege_escalation audit + 403 · audit config_change/auto_review_rule_update ✓
+- AC-9: approve 已 approved → `already_approved` · 已有 trendingItemId → `already_has_trending_item` · reject 已 rejected → `already_rejected` ✓
+- AC-10: batchAction queueIds > 100 → zod ValidationError(max(BATCH_MAX=100)) ✓
+- AC-11: readonly_admin - approve/reject/batchAction/configRules 全 403 · list/detail 可访问 ✓
+- AC-12: adminRouter index.ts `reviewTrending: reviewTrendingRouter` 已挂载 ✓
+- AC-13: audit-admin-rls.ts AST **44 procedures · 0 violations** ✓ (CONFIRMED via `tsx scripts/audit-admin-rls.ts`)
+- AC-14: 44 unit tests(≥30) · 覆盖 list filter / detail / approve(双重检测) / reject / batchAction(>100拒) / configRules super_admin only / 各鉴权 ✓
+- AC-15: 44/44 US-004 测试全通过 · typecheck 0 error · 全量 9 failures 均为 pre-existing ECONNREFUSED(TD豁免) ✓
+- AC-16: Typecheck passes ✓
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-004/`
+已生成: `pytest.xml`(44 passed) · `pytest.stdout.txt` · `pytest-full.xml`(1443 total · 9 pre-existing failures) · `pytest-full.stdout.txt` · `typecheck.stdout.txt`(0 errors) · `manifest.json`
+
+### TD 豁免
+
+全量测试 9 个失败为 pre-existing tech debt(auth/trace integration tests — ECONNREFUSED · dev server 未运行)。通过 `git stash` 验证已在 US-004 commit 前存在。
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

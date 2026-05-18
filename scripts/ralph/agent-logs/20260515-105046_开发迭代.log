@@ -1,0 +1,17 @@
+US-009 实现完成。
+
+**已实现内容：**
+
+1. **`constants.ts` router** (8 procedures): `listKeys` / `getActiveVersion` / `listVersions` / `saveDraft` / `submitForReview` / `rollbackVersion` / `updateCanary` / `runLlmJudge`
+
+2. **`ConstantsPage.tsx`**: 3-Tab (知识案例/公式/元素) + URL state `useSearchParams` + VersionCard + Monaco 编辑器 + Diff 模式 + debounce 1s localStorage + 保存/提交审核/回滚 按钮
+
+3. **`ConstantKeyDropdown.tsx`**: 按 type 加载 67/23/22 选项
+
+4. **`HistoryTimeline.tsx`**: 版本时间线 + Monaco preview modal (language='json')
+
+5. **`admin-routes.ts`**: 加 `/admin/constants` (label='知识库管理', emoji='📚', p2-advanced → 17 routes total)
+
+6. **`admin-router-types.ts`**: 加 constants 影子路由 (8 procedures type mirror)
+
+7. **测试**: 172 files pass, 1861 tests pass (≥1812 AC), typecheck 0 errors

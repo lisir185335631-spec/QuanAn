@@ -1,0 +1,30 @@
+US-006 已通过，prd.json 更新成功。
+
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+**Phase A ACs (全部 PASS):**
+- AC-1 ✓ OAuthProvider interface + MockProvider + GoogleProvider — `apps/api/src/lib/auth/providers.ts`
+- AC-2 ✓ httpOnly + sameSite=lax + secure=false(dev) — 所有 setCookie 调用均已验证
+- AC-3 ✓ 重定向首页 + Header 显示 user.email — 代码 + integration test 验证
+- AC-4 ✓ Integration test 验证 auth.me 返回 `{ok:true, user:{id,email:'dev@local.test',name:'Dev User'}}`
+- AC-5 ✓ psql 确认 users 表有 `mock-dev-001 / dev@local.test / loginMethod=mock`
+- AC-6 ✓ psql 确认 audit_log 有 3 行 `event_type=auth.login, payload={provider:mock}`
+- AC-10 ✓ Unit test 验证未知 provider → exit(1)，stdout 含 `unknown OAuth provider: facebook`
+- AC-11 ✓ Integration test：过期 session → auth.me 返 `{ok:false}`
+- AC-12 ✓ upsert 逻辑正确；第二次 mockLogin() 走 UPDATE 路径（无重复创建）
+- AC-13 ✓ Perf test：callback < 500ms，auth.me < 100ms
+- AC-14 ✓ Unit test 验证 SESSION_SECRET < 32 → exit(1)
+- AC-15 ✓ 所有 setCookie 使用 `secure: NODE_ENV==='production'`
+- AC-16 ✓ API + Web typecheck 均 exit 0
+- AC-17 ✓ 25 tests passed (超过 4+2+2 最低要求)
+
+**Phase B ACs (代码正确，E2E 需 Google 凭据):**
+- AC-7 / AC-8 / AC-9 — GoogleProvider 代码实现正确，requiresCsrfCheck 逻辑单测覆盖，frontend toast 已实现，Phase B E2E 测试需真实 Google OAuth 凭据
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/` — vitest-full-new.xml (25 passed), typecheck-final.txt (0 errors), manifest.json
+
+### 判决
+`prd.json.passes = true` · retryCount = 0 · notes cleared

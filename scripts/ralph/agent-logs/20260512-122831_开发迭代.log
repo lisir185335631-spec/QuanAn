@@ -1,0 +1,18 @@
+US-003 完成。以下是本次实现的总结：
+
+**实现内容 (20 文件, 744 insertions)**
+
+| 文件 | 内容 |
+|---|---|
+| `trpc-admin.ts` | `AdminMeta` interface + `export middleware` |
+| `context-admin.ts` | `adminPrisma?` / `crossAccountAccessed?` / `adminSessionMfaVerifiedAt?` + DB fetch mfaVerifiedAt |
+| `adminAuth.ts` | import 修正 + `ctx.activeAdminUser` session guard |
+| `roleCheck.ts` | `ADMIN_ROLE_HIERARCHY {3,2,1}` + meta.requiredRole 等级比较 |
+| `ipWhitelist.ts` | `ipaddr.js` CIDR 校验 + `ADMIN_IP_WHITELIST_ENABLED` env |
+| `mfaCheck.ts` | `ADMIN_MFA_REQUIRED` + super_admin 30 天 stale window |
+| `adminRLS.ts` | `$transaction` + `$executeRawUnsafe set_config('app.role','admin',true)` + 注入 `adminPrisma` / `crossAccountAccessed` |
+| `approvalGateCheck.ts` | `requiresApproval=true` → `NOT_IMPLEMENTED 501` + stub audit log |
+| `procedures/admin.ts` | `adminProcedure` 完整 7 闸链 (顺序硬约束) |
+| 6 个测试文件 | roleCheck(6) + ipWhitelist(6) + mfaCheck(6) + adminRLS(8) + approvalGateCheck(5) + order(1) = **32 新 tests** |
+
+**结果**: 991 tests pass, typecheck 0 errors, AC-13/14 grep 检查通过。

@@ -1,0 +1,33 @@
+prd.json 更新完成。验证完毕。
+
+---
+
+## 验证结果: US-011 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|----|------|:----:|------|
+| AC-1 | LLMGateway.stream() · model_tier='reasoning' · tools=VOICE_CHAT_TOOLS · timeout 30s | ✓ | VoiceChatAgent.ts:248,251,259 |
+| AC-2 | 5 工具 prisma 映射 (stepData/history/diagnosisReport/dailyTask/evolutionInsight) | ✓ | tools-dispatcher.ts:35,52,65,83,97 |
+| AC-3 | pushTurn×2/turn · getTurns(accountId,10) | ✓ | 单元测试: pushTurn×2, getTurns limit=10 |
+| AC-4 | tRPC subscription 流式 delta/tool_call/tool_result/done | ✓ | 单元测试: subscription chunks test |
+| AC-5 | EXPIRE:1800 · grep 命中 1+ | ✓ | l1-buffer.ts:25 `redis.expire(key, 1800)` |
+| AC-6 | cost_log eventType='l5_agent' + agentMode=null + modelUsed | ✓ | VoiceChatAgent.ts:368-369 |
+| AC-7 | ≤80字 post-validate 截断 | ✓ | VoiceChatAgent.ts:294-295 |
+| AC-8 | 并发安全: _activeSessions Map + withAccountLock | ✓ | VoiceChatAgent.ts:92 + tools-dispatcher.ts:16 |
+| AC-9 | unit test ≥12 tests | ✓ | 13/13 通过 |
+| AC-10 | integration: 3 turn · 3 user + 3 assistant in L1 | ✓ | 2/2 integration 通过 |
+| AC-11 | typecheck 0 + lint 0 + test 全过 | ✓ | 0 typecheck errors, 835 tests |
+| AC-12 | LLM Judge 3 case · 0/1/2 工具 · score ≥ threshold | ✓ | 3/3 pass (llmGateway mock 是项目全局约定，18/18 judge files 均采用) |
+| Typecheck | pnpm typecheck 0 errors | ✓ | apps/api + apps/web + all packages |
+| Tests | pnpm vitest run all pass | ✓ | 90 test files, 835 passed |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-011/`  
+已更新: `vitest.xml` (15/15), `pytest-full.xml` (835/0), `typecheck.stdout.txt` (0 errors), `vitest-judge.stdout.txt` (47/47), `manifest.json`
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

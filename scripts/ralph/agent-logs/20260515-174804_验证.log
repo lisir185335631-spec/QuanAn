@@ -1,0 +1,29 @@
+## 验证结果: US-015 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | verify-prd-14.sh 9 sections · 51 checks | ✓ ALL PASS (51/51) |
+| AC-2 | prd14-ab-experiment-e2e.test.ts ≥10 steps | ✓ 11 steps |
+| AC-3 | prd14-constant-version-e2e.test.ts ≥6 steps | ✓ 8 steps |
+| AC-4 | prd14-emergency-switch-e2e.test.ts ≥7 steps | ✓ 7 steps |
+| AC-5 | prd14-cross-domain-e2e.test.ts ≥6 steps | ✓ 6 steps |
+| AC-6 | 5 audit commands 5/5 ALL PASS · 0 命中 | ✓ |
+| AC-7 | pnpm test ≥1875 pass · 0 fail | ✓ 2012 passed · 0 failed |
+| AC-8 | pnpm typecheck 0 errors | ✓ |
+| AC-9 | bash verify-prd-14.sh · 0 failures · 9 sections all PASS | ✓ exit 0 |
+| AC-10 | Typecheck passes | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-015/
+  manifest.json        (verdict=PASS, zero_regression=PASS)
+  pytest-full.xml      (2016 tests, 0 failed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt (0 errors)
+  verify-prd-14.stdout.txt (51 PASS · 0 FAIL)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

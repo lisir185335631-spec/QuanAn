@@ -1,0 +1,1 @@
+Three confirmed lint fixes applied and committed. US-003 retry complete — `pnpm lint` exits clean with 0 errors. All other AC (typecheck, 884 tests, AC-1~8 implementation) were already passing from the first iteration.

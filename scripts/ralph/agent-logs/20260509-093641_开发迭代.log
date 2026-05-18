@@ -1,0 +1,11 @@
+US-018 implementation complete. All quality gates pass:
+
+- **pnpm test**: 343/343 ✅ (5.3s)
+- **pnpm test:judge**: 14/14 ✅ (186ms)
+- **pnpm test:e2e**: 106 passed, 0 failed, 2 skipped ✅ (1.8min)
+- **pnpm typecheck**: 6 workspaces, 0 errors ✅
+- **pnpm lint**: 0 warnings ✅
+
+**Root cause of the 2-3 flaky e2e failures**: Playwright's `fullyParallel: true` ran `chromium` and `mobile` projects simultaneously. Both projects share the same `dev@local.test` mock OAuth user. Concurrent `switchActive` mutations from different test workers would overwrite each other's `user.activeAccountId`, causing tests like `account-switch`, `account-isolation`, and `ls-db-sync` to read the wrong active account.
+
+**Fix**: `playwright.config.ts` → `workers: 1` + `fullyParallel: false`. Tests now run serially (1.8 min total) with no race conditions. 106 tests pass vs 104 previously failing.

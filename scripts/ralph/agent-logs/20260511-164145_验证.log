@@ -1,0 +1,40 @@
+prd.json 已更新。记录验证结论。
+
+---
+
+## 验证结果: US-012 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|----|------|------|------|
+| AC-1 | 录音按钮 + turn list + audio player + status bar | ✓ | 浏览器截图确认，`data-testid="record-button"` + `turn-list` 存在 |
+| AC-2 | MediaRecorder webm/opus · max 30s · 按住录 + 松开发 | ✓ | 代码审查：`getUserMedia({audio:true})` / `30_000` timer / `onMouseDown`+`onMouseUp` / `audio/webm;codecs=opus` |
+| AC-3 | STT → user bubble → voiceChat.start subscription 流式 | ✓ | 代码审查：`trpc.stt.transcribe.useMutation` + `trpcClient.voiceChat.start.subscribe` + `UserBubble`/`AssistantBubble` |
+| AC-4 | done event → tts.synthesize → audio play(autoplay) | ✓ | 代码审查：`chunk.type === 'done'` → `synthesizeMutation` + `<audio autoPlay>` |
+| AC-5 | 5 工具 call card 渲染 · 折叠展开 | ✓ | 代码审查：`ToolCallCard` + `expanded` + `entry.args` / `entry.result` |
+| AC-6 | 30s silence detection · 主动问'还想聊什么吗?' | ✓ | 代码审查：`silenceTimerRef` + `setTimeout 30_000` + '还想聊什么吗?' |
+| AC-7 | 挂掉按钮 → clearBuffer + 显示总结 | ✓ | 代码审查：`handleHangUp` + `clearSessionMutation` + `SummaryPanel` + '本次对话' |
+| AC-8 | WebRTC mock 复杂 · 降级跑 unit + manual visual | ✓ | 26 unit tests PASS + 浏览器截图 |
+| AC-9 | 无 console error · 无 stream leak | ✓ | `getTracks().stop()` 在 stop + unmount 双处释放；console 仅 React Router warning(pre-existing) |
+| AC-10 | typecheck 0 + lint 0 + test 全过 | ✓ | **lint: 0 errors** (fixed async+caption) / **typecheck: 0 errors** / **26 unit tests PASS** |
+| AC-11 | agent-browser 打开 /voice-chat · 成功 load | ✓ | 浏览器截图 + DOM 验证 `record-button` + `turn-list` FOUND |
+| Typecheck | passes | ✓ | `tsc --noEmit` 0 errors |
+| Tests | pass | ✓ | 26/26 VoiceChat tests + 861/861 full regression |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+├── manifest.json          (exit_code=0, verdict=PASS)
+├── vitest.xml             (26 tests PASS)
+├── vitest.stdout.txt
+├── vitest-full.xml        (861 tests PASS, 2 skipped)
+├── vitest-full.stdout.txt
+├── typecheck.stdout.txt   (0 errors)
+└── validator-us-012-pass-3-voicechat.png (浏览器截图)
+```
+
+### 判决
+
+`prd.json.passes = true`, `retryCount = 0`, `notes = ""`

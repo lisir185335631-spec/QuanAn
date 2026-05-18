@@ -1,0 +1,34 @@
+prd.json 写入正确。
+
+---
+
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `acquisitionVideoRouter` + `generate` procedure | ✓ `acquisitionVideo.ts:47` |
+| AC-2 | `videoAgent.execute(mode='acquisition')` · history `agentId='VideoAgent'` `agentMode='acquisition'` | ✓ `acquisitionVideo.ts:58-93` |
+| AC-3 | 双层 accountId 防护: create `accountId:activeAccountId!` + findFirst `where:{accountId:activeAccountId!}` | ✓ `acquisitionVideo.ts:75,96-101` |
+| AC-4 | `ctaScript: acquisitionResult.cta` · 含 CTA 关键词 (`关注/私信/获取/领取`) | ✓ 单测 + 集成测试 regex 验证通过 |
+| AC-5 | `_app.ts` 注册 `acquisitionVideo: acquisitionVideoRouter` | ✓ `_app.ts:29` |
+| AC-6 | `router-types.ts` shadow router `acquisitionVideo.generate` | ✓ `router-types.ts:353` |
+| AC-7 | 4 unit tests (happy / zod fail / fallback / RLS 隔离) | ✓ 7/7 通过 (含 3 boundary) |
+| AC-8 | integration: nock SDK + 真 DB · < 5s | ✓ 1/1 通过, 66ms |
+| AC-9 | boundary 10/3000/3001 | ✓ 含在 AC-7 的 3 条 boundary tests |
+| AC-10 | `pnpm typecheck` 6 ws 0 error | ✓ 退出码 0 |
+| AC-11 | combined tests 退出码 0 | ✓ 8/8 通过 |
+
+### X-6 零回归门禁
+全量 632 tests / 64 files — **0 failed 0 errors** ✓
+
+### TD 豁免
+`cost_log_user_id_fkey` FK 错误为**预存 TD** (US-003~US-018 全部存在，已被 catch 不阻塞响应)，US-005 未引入。集成测试通过 BaseSpecialist `specialist_call` 写入确认 costLog 功能。
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-005/`
+生成: `vitest.xml` (8 passed) · `vitest-full.stdout.txt` (632 passed) · `pytest-full.xml` (632 passed) · `typecheck.txt` (0 errors) · `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

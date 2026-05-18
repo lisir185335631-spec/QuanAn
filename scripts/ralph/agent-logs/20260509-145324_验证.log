@@ -1,0 +1,31 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:--:|---|:--:|
+| 1 | `boomGenerate.ts`: protectedProcedure + `generateBoomInput` + `copywritingAgent.execute({ mode: 'boom', userInput })` | ✓ |
+| 2 | `history.create` D-032 格式：`candidates.join('\n\n---\n\n')` + 全字段填充 (agentId/agentMode/contentType/inputSummary/scriptType/elements/isFallback/tokensUsed/modelUsed/durationMs/traceId) | ✓ |
+| 3 | `tests/integration/api/boom-generate-llm.test.ts` 1 integration：mock stream + 5 候选 → 1 行 history '---' 分隔验证 + cost_log 写入 | ✓ |
+| 4 | `tests/unit/api/boom-generate-router.test.ts` 4 unit：happy + zod fail elements 空 + fallback(isFallback=true) + agentMode="boom" | ✓ |
+| 5 | schema `.min(1, 'elements 至少 1 项')` + `.max(8, 'elements 最多 8 项')` 已定义；unit test 验证 empty → BAD_REQUEST | ✓ |
+| 6 | `BoomOutputSchema.length(5)` → schema fail → BaseSpecialist retry → 二次失败 → fallback；`CopywritingAgent.test.ts:286` "boom fallback: bad candidates length → isFallback=true" | ✓ |
+| 7 | `BaseSpecialist._writeCostLog` 自动写 `callType='specialist_call'`，agentId='CopywritingAgent'；integration test 验证 cost_log 存在 | ✓ |
+| 8 | industry 未提供 → `prisma.ipAccount.findUnique` 读 activeAccount.industry | ✓ |
+| 9 | timeout_ms=60000 by config；history.create < 50ms（integration test 49ms） | ✓ |
+| 10 | X-6 全量 448 tests / 48 files → **0 failure 0 error** | ✓ |
+| 11 | `pnpm typecheck` → all 6 workspaces clean | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+├── pytest-full.xml       (JUnit XML · 448 tests passed)
+├── pytest-full.stdout.txt (full test stdout)
+├── typecheck.txt          (all workspaces clean)
+└── manifest.json          (exit_code=0)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ''`

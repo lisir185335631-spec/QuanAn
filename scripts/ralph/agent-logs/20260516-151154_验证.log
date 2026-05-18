@@ -1,0 +1,22 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+- AC-1: workflow.ts 存在，7 步数据完全匹配规格 ✓
+- AC-2: H2 className `font-display text-4xl font-black text-center text-primary tracking-widest mb-4` ✓；p className ✓；文字 WORKFLOW + 副标题 ✓
+- AC-3: 容器 `flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-2` ✓；圆形 div `w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/40` ✓；num/title/desc 渲染正确 ✓
+- AC-4: 连接线 `hidden md:flex items-center self-center w-8 shrink-0` ✓；`w-full h-px bg-primary/20` ✓；`i < 6` 条件 ✓
+- AC-5: 浏览器实测 — desktop flex-row 横排 7 步 ✓；mobile flex-col 竖排 ✓；圆形数字 01-07 ✓；连接线 mobile 隐藏 ✓
+- AC-6: 截图保存至 `screenshots/prd16-us005-home-workflow.png` ✓
+- AC-7: `pnpm typecheck` exit 0 ✓；`pnpm test` 51/51 passed ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-005/`
+已生成: `pytest-full.xml` (51 passed)、`pytest-full.stdout.txt`、`typecheck.stdout.txt` (0 errors)、`manifest.json`
+
+### 注意事项
+Story 标题说"紫色连接线"，但项目 Aurelian Dark 主题 `--primary` 为 HSL 43°（金色/琥珀色）。AC 代码类 `border-primary/40` / `bg-primary/20` 实现正确，视觉呈现为金色符合设计系统，不是实现缺陷。
+
+### 判决
+**prd.json US-005 → passes = true，retryCount = 0，notes = ""**
+
+PRD-16 进度：5/11 stories PASSED，US-006 为下一个待执行。

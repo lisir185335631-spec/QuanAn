@@ -1,0 +1,30 @@
+---
+
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+- AC-1: `CopywritingAgent extends BaseSpecialist` · step7 mode only · 五层配置完整 ✓
+- AC-2: `CopywritingOutputSchema` = `z.object({markdown:.min(500), structure, hooks:.min(1), cta}).refine(/^# .+/m)` ✓
+- AC-3: `invokeLLM` 重写 `_consumeStream` · `streaming=true` / `timeout_ms=60000` ✓
+- AC-4: `stepData.saveStream` discriminated union 含 `step7` → `copywritingAgent.execute(mode='step7')` ✓
+- AC-5: `copywriting.ts` generate 改调 `copywritingAgent` · optimize/list/delete 保留 mock ✓
+- AC-6: `memory.l2_read=['stepData','history']` ✓
+- AC-7: `memory.l2_write=['history']` · `stepData.saveStream` step7 分支写 `history` 表 ✓
+- AC-8: `knowledge.constants=['hotElements','scriptTypes']` ✓
+- AC-9: `tools=['llm.stream']` · `execution.streaming=true` · `execution.timeout_ms=60000` ✓
+- AC-10: heading refine 失败 → BaseSpecialist retry → `SchemaValidationError` ✓ (test 通过)
+- AC-11: hooks empty → `min(1)` 失败 → retry → `SchemaValidationError` ✓ (test 通过)
+- AC-12: 断流 JSON.parse 失败 → internal retry → isFallback → BaseSpecialist safeParse fail → throw ✓ (test 通过)
+- AC-13: free/boom/acquisition → `throw 'Not implemented · PRD-5'` ✓ (3 parameterized tests 通过)
+- AC-14: 9 tests ≥ 5 · happy / fallback / 断流 / heading 校验 / hooks 校验 + modelUsed + config ✓
+- AC-15: `model_tier='reasoning'` · `timeout_ms=60000` · `streaming=true` config-level ✓ (runtime LLM 无法 unit test)
+- AC-16: Tests pass ✓ — 9/9 story tests · 287/287 full suite zero regression
+- AC-17: Typecheck passes ✓ — all 6 packages clean
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-009/`  
+生成: `pytest-full.xml` (287 passed) · `pytest-full.stdout.txt` · `typecheck.txt` · `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`

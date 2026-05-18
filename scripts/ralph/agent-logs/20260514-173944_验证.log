@@ -1,0 +1,24 @@
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | `/admin/quota` 路由注册 `requiredRole=readonly_admin` | ✓ |
+| AC-2 | 4 KPI 卡片 (FREE/PRO/Enterprise 用户数+使用率 + 异常用户数+趋势箭头) | ✓ |
+| AC-3 | `UsageLineChart` Recharts 24h × 3 套餐折线 | ✓ |
+| AC-4 | `DenseTable` 异常用户列表 · 6 列 + plan/status/threshold 筛选 | ✓ |
+| AC-5 | Drawer · email/plan/**createdAt** + 24h 时间线 + active/历史 adjustments + 操作面板 | ✓ |
+| AC-6 | 调整面板 · 3 类型 select · delta max 500/5000 · reason ≥10 · dual approval > 500 | ✓ |
+| AC-7 | 浏览器验证: /admin/quota 4 KPI + 折线 + 列表; 点 row → Drawer 打开 | ✓ |
+| AC-8 | delta=300 toast '已立即生效 24h' ✓ · delta=600 toast '已发起 Approval 申请 #439' ✓ | ✓ |
+| AC-9 | `pnpm audit:redlines-admin` ALL PASS · 8 LD-A + 6 R-A | ✓ |
+| AC-10 | `pnpm test` 1668 passed (≥1655) · 0 failed | ✓ |
+| AC-11 | `pnpm typecheck` 0 errors | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-009/`
+已生成: `pytest-full.xml` (1668 passed) · `pytest-full.stdout.txt` · `typecheck.stdout.txt` · `audit-redlines-admin.stdout.txt` · `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

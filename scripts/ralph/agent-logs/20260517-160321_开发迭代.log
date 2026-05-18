@@ -1,0 +1,9 @@
+US-008 已实现并 commit，等待 Validator 验证。
+
+**完成摘要：**
+
+实现了 US-008 的完整 Step 3b 页面：
+
+- **重写** `apps/web/src/pages/step/Step3b.tsx`：STEP3B_STEP_TAG/H1 字面常量 + 3 textarea（personalInfo required） + 5 platform radio（id=`step3b-{p.id}`） + 1 audience input + mock handleSubmit → `acc_step3b` + 5 H3 输出区（每 H3 3 按钮，无生成参考图） + `acc_step3` 预填 personalInfo
+- **新建** `apps/web/src/components/step3b/Step3bOutputContent.tsx`：按 5 block.id 渲染（coreIdentity/ideologySystem/contentPersona/trustSystem/personaRoadmap，含 roadmap 3 阶段）
+- 关键教训：blockId `ideologySystem`/`personaRoadmap` 与 Result 字段 `thoughtSystem`/`roadmap` 不一致，需要 mapping 函数避免 TS 报错；AC-10 字面 grep 需要在 tsx 文件内定义常量而非只靠 import

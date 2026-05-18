@@ -1,0 +1,33 @@
+Done. Here is the final validation report:
+
+---
+
+## 验证结果: US-002 PASS
+
+### AC 对照
+
+| AC | 结果 | 证据 |
+|----|------|------|
+| AC-1 | ✅ PASS | 254 行，浏览器截图确认 2-column 布局 |
+| AC-2 | ✅ PASS | topic textarea + 6 平台按钮 + scriptType(20 选) + 22 元素(4 组) + additionalContext，浏览器 JS 查询确认 22 element buttons |
+| AC-3 | ✅ PASS | `trpc.copywriting.freeGenerate.useMutation()` (per D-026) |
+| AC-4 | ✅ PASS | `onAnimComplete→setIsStreaming(false)`, `showActions=!isStreaming&&animComplete&&content`, 3 按钮, error 用 `text-error` |
+| AC-5 | ✅ PASS | `trpc.history.list.useQuery({agentId:'CopywritingAgent', limit:10})`, `history-toggle-btn` |
+| AC-6 | ✅ PASS | `useSearchParams` + `?platform=xiaohongshu` 浏览器确认预选小红书 (`border-primary` JS 验证 = `SELECTED`) |
+| AC-7 | ✅ PASS | **Opus 驳回原因已修复**：`getLsKey()` 使用 `LS_PREFIX='aiip_memory_acc'` → `audit-redlines.sh R-5 ✅` |
+| AC-8 | ✅ PASS | `modelName` from `data.modelUsed`，`streamdown-model` testid |
+| AC-9 | ✅ PASS | `lazy(() => import('@/components/StreamdownPreview'))` + `Suspense` (CopywritingPreview.tsx:14) |
+| AC-10 | ✅ PASS | 29 unit tests (≥8)；浏览器 /copywriting?platform=xiaohongshu：小红书预选 ✅，22 元素按钮 ✅，"✨ 生成爆款文案" ✅ |
+| AC-11 | ✅ PASS | vitest 29/29；零回归 2046 passed/0 failed/6 skipped；typecheck 0 errors (6 packages) |
+
+### 零回归产物
+`scripts/ralph/verify-artifacts/US-002/`
+- `pytest-full.xml` → tests=2052, failures=0, errors=0  
+- `pytest-full.stdout.txt` → `Tests 2046 passed | 6 skipped (2052)`
+- `typecheck.stdout.txt` → 全部通过，0 错误
+- `audit-redlines.stdout.txt` → R-5 ✅ 所有红线检测通过 · 0 命中
+
+### 判决
+`prd.json.passes = true` ✅  
+`retryCount = 0` ✅  
+`notes = ""` ✅

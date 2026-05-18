@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 9ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  03:32:27
+   Duration  331ms (transform 22ms, setup 20ms, collect 46ms, tests 9ms, environment 117ms, prepare 37ms)
+

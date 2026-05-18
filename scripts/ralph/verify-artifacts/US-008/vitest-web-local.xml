@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="51" failures="5" errors="0" time="1.052">
+    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-15T22:40:50.704Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.018281041">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.0090135">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.003871167">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.001368625">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.00132875">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.002137417">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.000106166">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-15T22:40:50.705Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.067041">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.012084834">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.003840834">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.033583083">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.008352917">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.006556958">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.000813667">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.000640875">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.000558583">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-15T22:40:50.705Z" hostname="returndeMacBook-Pro.local" tests="27" failures="5" errors="0" skipped="0" time="0.125357292">
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.000426834">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.000080791">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.049878916">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.002079834">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.00657975">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.006152541">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.001165542">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.014034167">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.008462375">
+            <system-err>
+Error: Uncaught [Error: useLocation() may be used only in the context of a &lt;Router&gt; component.]
+    at reportException (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useLocation() may be used only in the context of a &lt;Router&gt; component.
+    at Object.invariant [as UNSAFE_invariant] (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@remix-run+router@1.23.2/node_modules/@remix-run/router/history.ts:494:11)
+    at Object.useLocation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:105:3)
+    at Proxy.useSearchParams (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router-dom@6.30.3_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/react-router-dom/index.tsx:1494:18)
+    at Trending (/Users/return/Desktop/QuanQn/apps/web/src/pages/tools/Trending.tsx:118:43)
+    at renderWithHooks (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+Error: Uncaught [Error: useLocation() may be used only in the context of a &lt;Router&gt; component.]
+    at reportException (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useLocation() may be used only in the context of a &lt;Router&gt; component.
+    at Object.invariant [as UNSAFE_invariant] (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@remix-run+router@1.23.2/node_modules/@remix-run/router/history.ts:494:11)
+    at Object.useLocation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:105:3)
+    at Proxy.useSearchParams (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router-dom@6.30.3_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/react-router-dom/index.tsx:1494:18)
+    at Trending (/Users/return/Desktop/QuanQn/apps/web/src/pages/tools/Trending.tsx:118:43)
+    at renderWithHooks (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+The above error occurred in the &lt;Trending&gt; component:
+
+    at Trending (/Users/return/Desktop/QuanQn/apps/web/src/pages/tools/Trending.tsx:98:65)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="useLocation() may be used only in the context of a &lt;Router&gt; component." type="Error">
+Error: useLocation() may be used only in the context of a &lt;Router&gt; component.
+ ❯ Object.invariant [as UNSAFE_invariant] ../../node_modules/.pnpm/@remix-run+router@1.23.2/node_modules/@remix-run/router/history.ts:494:11
+ ❯ Object.useLocation ../../node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:105:3
+ ❯ Proxy.useSearchParams ../../node_modules/.pnpm/react-router-dom@6.30.3_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/react-router-dom/index.tsx:1494:18
+ ❯ Trending src/pages/tools/Trending.tsx:118:43
+ ❯ renderWithHooks ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ beginWork$1 ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5
+            </failure>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.000965542">
+            <system-err>
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading &apos;me&apos;)]
+    at reportException (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading &apos;me&apos;)
+    at Module.useAuth (/Users/return/Desktop/QuanQn/apps/web/src/hooks/useAuth.ts:14:50)
+    at Copywriting (/Users/return/Desktop/QuanQn/apps/web/src/pages/tools/Copywriting.tsx:51:20)
+    at renderWithHooks (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+Error: Uncaught [TypeError: Cannot read properties of undefined (reading &apos;me&apos;)]
+    at reportException (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12) TypeError: Cannot read properties of undefined (reading &apos;me&apos;)
+    at Module.useAuth (/Users/return/Desktop/QuanQn/apps/web/src/hooks/useAuth.ts:14:50)
+    at Copywriting (/Users/return/Desktop/QuanQn/apps/web/src/pages/tools/Copywriting.tsx:51:20)
+    at renderWithHooks (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+The above error occurred in the &lt;Copywriting&gt; component:
+
+    at Copywriting (/Users/return/Desktop/QuanQn/apps/web/src/pages/tools/Copywriting.tsx:44:42)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="Cannot read properties of undefined (reading &apos;me&apos;)" type="TypeError">
+TypeError: Cannot read properties of undefined (reading &apos;me&apos;)
+ ❯ Module.useAuth src/hooks/useAuth.ts:14:50
+ ❯ Copywriting src/pages/tools/Copywriting.tsx:51:20
+ ❯ renderWithHooks ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ beginWork$1 ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5
+ ❯ renderRootSync ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26473:7
+ ❯ recoverFromConcurrentError ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:25889:20
+            </failure>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.004864666">
+            <failure message="expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  方法论知识库
+Received:
+  知识库" type="Error">
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  方法论知识库
+Received:
+  知识库
+ ❯ src/test/pages.test.tsx:158:55
+            </failure>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.000940875">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.000765375">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.001517166">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.000808625">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.000790583">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.000267333">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.001311459">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.001057459">
+            <system-err>
+Error: Uncaught [Error: useNavigate() may be used only in the context of a &lt;Router&gt; component.]
+    at reportException (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useNavigate() may be used only in the context of a &lt;Router&gt; component.
+    at Object.invariant [as UNSAFE_invariant] (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@remix-run+router@1.23.2/node_modules/@remix-run/router/history.ts:494:11)
+    at useNavigateUnstable (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:189:3)
+    at Proxy.useNavigate (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:185:46)
+    at MyTopics (/Users/return/Desktop/QuanQn/apps/web/src/pages/modules/MyTopics.tsx:341:20)
+    at renderWithHooks (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+Error: Uncaught [Error: useNavigate() may be used only in the context of a &lt;Router&gt; component.]
+    at reportException (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at beginWork$1 (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27490:7)
+    at performUnitOfWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12) Error: useNavigate() may be used only in the context of a &lt;Router&gt; component.
+    at Object.invariant [as UNSAFE_invariant] (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@remix-run+router@1.23.2/node_modules/@remix-run/router/history.ts:494:11)
+    at useNavigateUnstable (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:189:3)
+    at Proxy.useNavigate (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:185:46)
+    at MyTopics (/Users/return/Desktop/QuanQn/apps/web/src/pages/modules/MyTopics.tsx:341:20)
+    at renderWithHooks (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at HTMLUnknownElement.callCallback (/Users/return/Desktop/QuanQn/node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+    at HTMLUnknownElement.callTheUserObjectsOperation (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+    at innerInvokeEventListeners (/Users/return/Desktop/QuanQn/node_modules/.pnpm/jsdom@25.0.1/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+The above error occurred in the &lt;MyTopics&gt; component:
+
+    at MyTopics (/Users/return/Desktop/QuanQn/apps/web/src/pages/modules/MyTopics.tsx:591:42)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+            </system-err>
+            <failure message="useNavigate() may be used only in the context of a &lt;Router&gt; component." type="Error">
+Error: useNavigate() may be used only in the context of a &lt;Router&gt; component.
+ ❯ Object.invariant [as UNSAFE_invariant] ../../node_modules/.pnpm/@remix-run+router@1.23.2/node_modules/@remix-run/router/history.ts:494:11
+ ❯ useNavigateUnstable ../../node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:189:3
+ ❯ Proxy.useNavigate ../../node_modules/.pnpm/react-router@6.30.3_react@18.3.1/node_modules/react-router/lib/hooks.tsx:185:46
+ ❯ MyTopics src/pages/modules/MyTopics.tsx:341:20
+ ❯ renderWithHooks ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:15486:18
+ ❯ mountIndeterminateComponent ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:20103:13
+ ❯ beginWork ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:21626:16
+ ❯ beginWork$1 ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:27465:14
+ ❯ performUnitOfWork ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26599:12
+ ❯ workLoopSync ../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:26505:5
+            </failure>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.00192475">
+            <failure message="expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  历史记录
+Received:
+  操作历史" type="Error">
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  历史记录
+Received:
+  操作历史
+ ❯ src/test/pages.test.tsx:205:55
+            </failure>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.0019555">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.001138083">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.003028458">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.000611584">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.001206791">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.000546">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.012160584">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-15T22:40:50.709Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.02419525">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.012658708">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.001657792">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.001397458">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.001338">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.002028916">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.001254042">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.000886083">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.001053916">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.000120542">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.001343459">
+        </testcase>
+    </testsuite>
+</testsuites>

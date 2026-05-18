@@ -1,0 +1,51 @@
+产物落盘，验证完成。
+
+---
+
+## 验证结果：US-012 — **FAIL**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC1 | verify-prd-13.sh ≥8 sections · 38 checks | ✅ 38/38 PASS |
+| AC2 | prd13-dual-approval-e2e.test.ts 存在 · seed setup | ✅ |
+| AC3 | Steps 1-6 全覆盖 | ✅ 8 tests PASS |
+| AC4 | prd13-emergency-flow.test.ts | ✅ 7 tests PASS |
+| AC5 | prd13-quota-expiry-e2e.test.ts | ✅ 4 tests PASS |
+| AC6 | prd13-evolution-rebuild-e2e.test.ts | ✅ 6 tests PASS |
+| AC7 | audit:redlines/ld/redlines-admin/admin-rls-tables 全过 | ⚠️ 4/5 PASS · `audit:admin-rls` 命令不存在(AC naming error) |
+| AC8 | pnpm test ≥1720 pass · 0 fail | ❌ **1726 pass ✅ · 1 fail ❌** |
+| AC9 | pnpm typecheck 0 errors | ✅ |
+| AC10 | bash scripts/verify-prd-13.sh 0 failures | ✅ 38/38 |
+| AC11 | Typecheck passes | ✅ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+已生成: pytest-full.stdout.txt (1726 pass, 1 fail), typecheck.stdout.txt (0 errors), manifest.json (exit_code=1)
+E2E: 25 passed via pnpm vitest run tests/e2e/admin/prd13-*.test.ts
+```
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 2`
+
+---
+
+**失败核心 — CONFIRMED**
+
+**AC8 失败：`tests/integration/admin/auth-flow.test.ts:111`**
+
+- 复现命令：`pnpm vitest run tests/integration/admin/auth-flow.test.ts`
+- 失败：`expect(auditLogs.some((l) => l.success)).toBe(true)` — `false`
+- 根因（三层）：
+  1. `quanqn` 主 DB 有 stale entry：`admin_audit_log id=3903`, `eventType='admin_login'`, `traceId='integration-test'`, `actorAdminId=0`, `success=false`，创建于 `2026-05-14 11:17:20`（US-012 开发期测试遗留）
+  2. `admin-audit-service.ts:38-42` — `logAdminAction` 幂等检查 `WHERE traceId+eventType`，命中旧 entry 后直接 `return`，`success=true` 写入被跳过
+  3. `auth-flow.test.ts:34` — `afterAll` 只清 `actorAdminId > 0`，`actorAdminId=0`（失败登录记录）未清理
+
+**修复方向（两步都要做）：**
+
+1. 清 stale entry：`DELETE FROM admin_audit_log WHERE id=3903`（消除当前阻塞）
+2. 修 `auth-flow.test.ts` afterAll：同时删除 `actorAdminId=0 AND traceId='integration-test'` 的 entry（防未来同类问题）

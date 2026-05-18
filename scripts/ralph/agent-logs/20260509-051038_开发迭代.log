@@ -1,0 +1,15 @@
+US-012 实现完成。总结：
+
+**实现内容：**
+- 创建 `apps/web/src/components/StepResult/` 目录，包含 11 个文件：
+  - `StepResult.tsx` — 通用 wrapper，按 stepKey switch
+  - 9 个具体 Result 组件（Step1/3/3b/4/4b/5/6/7/8Result）
+  - `index.ts` barrel export
+- Step5 用 `ScrollArea h-96` 包裹 20 选题（AC-11）
+- Step6 用横向滚动 `ScrollBar` 渲染 13 列分镜表
+- Step4/7 用 `react-markdown + remark-gfm`（安装了 remark-gfm）
+- 0 硬编码颜色，0 `dangerouslySetInnerHTML`
+- 修改 9 个 step 页面，提交成功后渲染 `<StepResult>`
+- 修改 `StepForm` 加 `onSuccess` 回调
+- 修改 `stepData` router + `router-types.ts` 暴露 `isFallback`
+- 10 tests pass，321/321 全过，typecheck 0 error

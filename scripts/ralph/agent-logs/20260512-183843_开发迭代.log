@@ -1,0 +1,13 @@
+US-005 is complete. Here's a summary of what was implemented:
+
+**Changes committed (`feat: [US-005]`):**
+- `prisma/schema.prisma`: Added `plan String @default("free")`, `lastLoginAt DateTime?`, `lastLoginIp String? @db.VarChar(45)` to `model User` + 4 indexes (`role`, `plan`, `industry`, `lastLoginAt DESC`)
+- `prisma/migrations/20260512104230_add_user_lastlogin_indexes/migration.sql`: ALTER TABLE + 4 CREATE INDEX applied to DB
+- `apps/api/src/middleware/auth.ts` (NEW): `updateLastLogin()` with try/catch — failure logs warning, never blocks login
+- `apps/api/src/index.ts`: `/auth/callback` calls `void updateLastLogin(prisma, user.id, clientIp)` after session creation
+- `packages/schemas/src/entities/user.schema.ts` (NEW): zod `userSchema` with optional `lastLoginAt`/`lastLoginIp`
+- `apps/api/src/middleware/__tests__/auth-lastlogin.test.ts` (NEW): 4 tests (success/failure/IPv4/IPv6) — all pass
+
+**Quality gates:** 4/4 tests pass · typecheck 0 errors · `audit:redlines-admin` ALL PASS · 3 pre-existing integration failures unchanged.
+
+**Note for Opus audit:** AC-5 claims `relrowsecurity=t` for `users` but `manual_rls.sql` explicitly excludes `users` as a global table — `relrowsecurity=f` is the correct architecture. `plan` field was added to `User` (not in AC-1's "2 fields" count) because `@@index([plan])` and US-007's `prisma.user.update({plan})` both require it.

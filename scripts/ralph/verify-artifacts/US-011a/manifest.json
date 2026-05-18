@@ -1,0 +1,38 @@
+{
+  "story_id": "US-011a",
+  "validator_start_ts": "2026-05-17T22:34:00",
+  "validator_end_ts": "2026-05-17T22:48:00",
+  "test_command": "pnpm vitest run + pnpm tsc --noEmit",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "artifacts": [
+    "vitest.stdout.txt",
+    "vitest.xml",
+    "typecheck.stdout.txt",
+    "manifest.json"
+  ],
+  "browser_verified": true,
+  "browser_evidence": [
+    "validator-us-011a-pass-1.png (initial state: debate default selected)",
+    "validator-us-011a-pass-2.png (search '剖' → only case_study visible, selected)",
+    "validator-us-011a-pass-3.png (5 elements selected, topic filled, generate button enabled)",
+    "validator-us-011a-pass-4.png (reload: debate default re-confirmed, counter=0)"
+  ],
+  "ac_summary": [
+    "AC1: PASS - Step7.tsx with STEP7_STEP_TAG + H1 + SUBTITLE",
+    "AC2: PASS - 4 form sections in spec order (脚本/元素/主题/优化)",
+    "AC3: PASS - Step7ScriptTypeSearch.tsx search + grid + filter + display template",
+    "AC4: PASS - Step7ElementMultiSelect.tsx 4 groups + 22 chips + sticky counter",
+    "AC5: PASS - textarea required + placeholder correct; optimize label/placeholder correct",
+    "AC6: PASS - 4 buttons: generate(disabled when no topic) + optimize(disabled when no result) + 2 nav",
+    "AC7: PASS - localStorage prefill from acc_step5_selected_topic + acc_step7",
+    "AC8: PASS - generateMockResult + setIsGenerating + setTimeout 3-5s mock",
+    "AC9: PASS - grep 0 hardcoded strings found",
+    "AC10: PASS - grep 0 violet/amber D4=B violations",
+    "AC11: PASS - vitest 119/119 passed",
+    "AC12: PASS - browser: debate default, search filter, counter '已选 5 个', button enable, no console errors",
+    "AC13: PASS - tsc --noEmit exit 0"
+  ]
+}

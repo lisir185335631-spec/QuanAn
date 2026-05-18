@@ -1,0 +1,31 @@
+验证完成。总结验证结果：
+
+---
+
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | BatchActionBar · 多选 + 批量按钮 · max 100 disabled · 调 batchAction | ✓ |
+| AC-2 | RejectReasonDialog · min 5 校验 · disabled + 红字 | ✓ |
+| AC-3 | AutoRuleConfigPanel · ruleType/ruleKey/ruleValue JSON editor/enabled toggle | ✓ |
+| AC-4 | Tab [待审核/已批准/已驳回/规则配置] 集成 | ✓ |
+| AC-5 | 0 条 disabled · reason < 5 disabled + 红字 | ✓ |
+| AC-6 | ruleValue JSON.parse catch + 错误提示 | ✓ |
+| AC-7 | admin/readonly_admin 隐藏规则配置 Tab | ✓ |
+| AC-8 | 多选 3 行 → '已选 3' + 批量批准 → toast | ✓ CONFIRMED via browser |
+| AC-9 | super_admin → 规则配置 Tab → 添加规则 → toast | ✓ CONFIRMED via browser |
+| AC-10 | admin/readonly_admin 规则 Tab 不可见 | ✓ CONFIRMED via browser |
+| AC-11 | pnpm typecheck 0 error | ✓ |
+| AC-12 | Typecheck passes | ✓ |
+
+### 零回归
+9 个集成测试失败（ECONNREFUSED port 3000）— 与 US-005 baseline 完全一致，US-006 未引入任何新失败。
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/` → pytest-full.xml · pytest-full.stdout.txt · typecheck.stdout.txt · manifest.json
+
+### 判决
+`prd.json.passes = true` · retryCount = 0 · notes = ""

@@ -1,0 +1,12 @@
+US-009 implementation complete. 6 stories remain pending (US-010 through US-013). The implementation passed all AC checks:
+
+- ✅ `STEP5_STEP_TAG` + H1 `STEP5_H1` + `STEP5_SUBTITLE` rendered
+- ✅ Glass-card form with 2 required inputs (`STEP5_INPUTS_2`) + 2 file upload stubs (`STEP5_FILE_UPLOADS_2`) + CTA `STEP5_BUTTON_GENERATE`
+- ✅ `Step5FileUpload.tsx` — FileReader stub, 20MB limit, metadata display, no real upload (LD-170 clean)
+- ✅ `Step5TopicGrid.tsx` — 5 Tabs × 20 topic cards, click writes `acc_step5_selected_topic` + navigates to `/step/7`
+- ✅ Mock generates 100 topics (5 cats × 20) with industry keyword interpolated in titles
+- ✅ Cross-step localStorage: reads `acc_step1` industry to pre-fill, writes `acc_step5` on submit
+- ✅ Zero hardcode (`一键生成`/`流量型`/`PDF、Word` all from constants)
+- ✅ Zero D4=B violations (no `violet`/`amber`)
+- ✅ Zero real upload (no `fetch`/`axios`/`XMLHttpRequest`)
+- ✅ 119 vitest tests pass, typecheck clean

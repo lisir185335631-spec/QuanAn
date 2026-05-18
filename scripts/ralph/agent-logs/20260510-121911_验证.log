@@ -1,0 +1,53 @@
+prd.json 已更新。验证完成，输出最终报告：
+
+---
+
+## 验证结果: US-004 FAIL
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | VideoProduction.tsx ToolForm + 4 字段 + "生成方案" | ✓ |
+| AC-2 | VideoProductionResult.tsx 13 列分镜表 + 设备清单 + 排期 | ✓ |
+| AC-3 | ToolResult.tsx switch case 'video-production' | ✓ |
+| **AC-4** | **LS input change 写 LS** | **✗** |
+| AC-5 | 浏览器看到表单所有字段 | ✓ |
+| AC-6 | 填表单 + 选类型/时长 + 点提交 | ✓ (e2e) |
+| AC-7 | 提交后 toast + 13列分镜表 + 设备清单 + 排期 | ✓ (e2e) |
+| **AC-8** | **fill → refresh → 字段保留** | **✗** |
+| AC-9 | ?historyId 不崩溃 | ✓ |
+| AC-10 | 空 sourceCopy 显示中文 zod 错误 | ✓ |
+| AC-11 | mock LLMTimeoutError → toast + 不崩溃 | ✓ (code + e2e) |
+| AC-12 | 21 unit tests pass | ✓ |
+| AC-13 | e2e mock LLM pass | ✓ (2 tests, chromium+mobile) |
+| AC-14 | 13列表 perf marker | ✓ (performance.mark + measure 已实现) |
+| AC-15 | typecheck 6 ws 0 error | ✓ |
+| AC-16 | unit tests 退出码 0 | ✓ |
+| AC-17 | e2e 退出码 0 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+├── typecheck.txt          (6 ws 0 error)
+├── vitest.xml             (21 passed)
+├── vitest.stdout.txt      (21 passed)
+├── e2e.xml                (2 passed)
+├── e2e.stdout.txt         (2 passed)
+├── pytest-full.xml        (598 unit tests)
+├── pytest-full.stdout.txt (598 passed)
+└── manifest.json          (verdict: FAIL)
+```
+
+### 失败根因
+
+**CONFIRMED · AC-4/AC-8: LS 只在 submit 时写**
+
+`ToolForm.tsx:88` 的 `localStorage.setItem` 在 `handleSubmit` 内部，没有 `useEffect(watch(), ...)` debounced 订阅。用户填写后刷新（未 submit）→ 字段丢失。
+
+**修复方向:** 在 ToolForm.tsx `form` 声明后添加 500ms debounce watch 订阅写 LS（详见 prd.json notes）。只需改 ToolForm.tsx 一个文件。
+
+### 判决
+
+`prd.json.passes = false | retryCount = 3`

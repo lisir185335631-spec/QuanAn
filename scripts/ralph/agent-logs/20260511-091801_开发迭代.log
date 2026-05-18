@@ -1,0 +1,17 @@
+US-002 complete. All quality gates passed:
+
+- **typecheck**: 0 errors
+- **lint**: `--max-warnings=0` clean
+- **tests**: 746/746 (740 existing + 6 new)
+- **AC-9 SoT 验证 3**: 5 VOICE_CHAT_TOOLS names present in VoiceChatAgent.ts
+- **AC-9 SoT 验证 4**: 7 task types grep ≥7 lines in DailyTaskAgent.ts
+
+Key files created (17 total):
+- `EvolutionAgent.ts` / `DailyTaskAgent.ts` / `VoiceChatAgent.ts` — 3 L5 Specialist skeletons
+- `workers/evolution/` + `workers/daily-task/` — BullMQ queues only (Workers留 US-003/007)
+- `cron/daily-task-runner.ts` — schedule defined, `start()` 不调 (留 US-007)
+- 3 ContextAssembler templates + updated `templates/index.ts` SPECIALIST_TEMPLATES
+- `types/node-cron.d.ts` — ambient type declaration for node-cron v3
+- 6 unit tests
+
+**Key learnings**: skeleton `execute()` must use `Promise.reject()` not `throw` (vitest `rejects.toThrow()` needs rejected Promise); `ZodDefault` fields need `as unknown as z.ZodType<TOut>` cast; node-cron v3 needs ambient declaration.

@@ -1,0 +1,8 @@
+US-009 CopywritingAgent 实现完成。
+
+**交付物：**
+- `apps/api/src/specialists/CopywritingAgent.ts` — 继承 BaseSpecialist，step7 mode 单跑，SSE 流式（_consumeStream 同 TopicAgent），outputSchema getter 含 refine heading 校验，timeout=60000
+- `apps/api/src/trpc/routers/copywriting.ts` — generate 从 mock 改为调 copywritingAgent，写真实 markdown 到 history；optimize/list/delete 保持 mock
+- `apps/api/src/trpc/routers/stepData.ts` — saveStream input 扩展为 discriminatedUnion(step5|step7)，step7 分支调 CopywritingAgent 并写 stepData + history
+- `tests/unit/specialists/__tests__/CopywritingAgent.test.ts` — 9 tests 覆盖所有 AC
+- pnpm typecheck ✅ · pnpm test 287/287 ✅

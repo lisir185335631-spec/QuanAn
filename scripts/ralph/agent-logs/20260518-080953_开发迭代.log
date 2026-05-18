@@ -1,0 +1,13 @@
+US-007 is complete. Here's what was implemented:
+
+**Backend:**
+- `LivestreamAgent.ts`: Updated `EXPERIENCE_VALUES` to `['新手', '有经验', '资深']` to match frontend enum
+- `stepData.ts` router: Added sub_function discriminator for step8 — `generate_plan` splits `lastResult` by paragraph into 6 labeled fields; `optimize_script` maps directly to `{optimized_text, optimization_notes}`
+
+**Frontend:**
+- `step8.ts` constants: Added `STEP8_OPTIMIZE_OUTPUT_LABELS_2` constant (TD-77 fix — InfoCard labels no longer hardcoded)
+- `Step8.tsx`: Added `useActiveAccount` + passes `accountId` to both sub-components; reads industry from step1 via `readOtherStep`
+- `Step8GeneratePlan.tsx`: Replaced mock with `useStepData(accountId, 'step8')` + real agent result + sub_function discriminator + EmptyState template literal
+- `Step8OptimizeScript.tsx`: Replaced mock with `useStepData` + `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map()` (TD-77) + sub_function discriminator
+
+**Tests:** 181 passing (up from 173, +8 new), typecheck clean, redlines 0.

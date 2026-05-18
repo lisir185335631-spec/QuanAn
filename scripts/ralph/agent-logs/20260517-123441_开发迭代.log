@@ -1,0 +1,6 @@
+US-001 complete. Summary:
+
+- **`industries.ts`** rewritten: `Industry` interface renamed `key`→`id`, added `Step1Tab` interface, `STEP1_TABS` (6 tabs with counts), `STEP1_INDUSTRIES_56` (56 industries, counts verified: life=18, ecom=13, create=7, pro=14, mfg=4), and all 8 `STEP1_*` string literals with exact spec wording.
+- **`IndustryDropdown.tsx`** updated: `ind.key` → `ind.id` to follow the renamed field.
+- **`__tests__/industries.test.ts`** created: 4 assertions all pass.
+- Typecheck: 0 errors. Vitest: 4/4 pass.

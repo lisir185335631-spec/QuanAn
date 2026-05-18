@@ -1,0 +1,12 @@
+US-011 完成。所有验收标准已实现：
+
+**已实现的 AC**：
+- **AC-1**: `generateStoryboard` 在 LLM 前调 `checkImageGenRateLimit` (已存在于 US-007，本次确认)
+- **AC-2**: 错误消息修正为 `'今日生成已达上限 (10 次/天)'`
+- **AC-3**: `.env.example` 新增 `IMAGE_GEN_DAILY_LIMIT_PER_USER=10` + `IMAGE_GEN_MAX_SCENES_PER_REQUEST=8`
+- **AC-4**: `aiVideo.dailyUsage` query + 前端显示 `'今日剩余 N 次'`
+- **AC-5**: `isOverLimit` 时 ToolForm submit 按钮 disabled + `'今日已达上限 (N/N) · 明日再来'`
+- **AC-6**: `cost_log eventType='image_gen'` 已由 US-009 实现，数据源完整
+- **AC-7-10**: 9 unit tests 覆盖 5 AC-7 场景 + boundary + 1000-concurrent + `getImageGenDailyUsage`
+- **AC-11**: `pnpm typecheck` 6 ws 0 error ✅
+- **AC-12**: `pnpm test tests/unit/api/rate-limit-image-gen.test.ts` 9 passed ✅

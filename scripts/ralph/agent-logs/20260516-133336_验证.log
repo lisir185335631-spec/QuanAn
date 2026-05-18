@@ -1,0 +1,33 @@
+---
+
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 状态 |
+|----|------|------|
+| AC-1 | IpProgressSection + trpc.stepData.progress.useQuery() + percent = completed.length/9 | ✅ |
+| AC-2 | H2 `font-display text-2xl font-bold text-foreground mb-4` · 文字 我的IP打造进度 | ✅ |
+| AC-3 | glass-card 容器 + 进度条 `from-primary to-primary/60`(金色 rgb(242,202,80) · 符合 Opus 审计要求) | ✅ |
+| AC-4 | `<StepProgress completedSteps={completed} isLoading={isLoading} />` 复用 | ✅ |
+| AC-5 | 查看IP方案→/ip-plan · 继续→/step/1(STEP_ORDER_KEYS 正确匹配 stepKey 格式) · 9 步全完成时不渲染 | ✅ |
+| AC-6 | 浏览器验证 · 梯度颜色金色(primary token)· 宽度 0%(0/9 已完成)· StepProgress 9 图标 · 链接跳转正确 | ✅ |
+| AC-7 | `screenshots/prd16-us003-home-ipprogress.png` 已存 | ✅ |
+| AC-8 | typecheck exit 0 · pnpm test exit 0 (no test files · zero regression PASS) | ✅ |
+
+### 关键验证点(Opus 审计 blocker 已修复)
+- 进度条 `from-violet-600 to-violet-400` 已改回 `from-primary to-primary/60` ✓
+- `grep violet-|amber-|yellow- Home.tsx` → 0 命中 ✓
+- 所有 gradient class 均为 `-primary` 系列 ✓
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+├── pytest-full.xml        (0 tests, 0 failures - zero regression PASS)
+├── pytest-full.stdout.txt (vitest exit 0)
+├── typecheck.stdout.txt   (tsc exit 0)
+└── manifest.json          (verdict=PASS, zero_regression=PASS)
+```
+
+### 判决
+`prd.json.passes = true · retryCount = 0 · notes = ""`

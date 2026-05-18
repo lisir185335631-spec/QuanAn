@@ -1,0 +1,42 @@
+---
+
+## 検証結果: US-010 **FAIL**
+
+### AC 対照 (18項目)
+
+| AC | 結果 | 根拠 |
+|---|:-:|---|
+| AC-1 queue.ts 真実装 | ✓ | `imageGenQueue = new Queue('image-gen', { attempts:3, backoff:exponential/5000 })` |
+| AC-2 concurrency=2 | ✓ | `worker.ts: concurrency: 2` |
+| AC-3 worker.ts 新建 | ✓ | `new Worker('image-gen', async (job) => imageGen(job.data), { concurrency: 2 })` |
+| AC-4 redis.ts ioredis singleton | ✓ | `maxRetriesPerRequest: null` + REDIS_URL fallback |
+| AC-5 checkImageGenRateLimit | ✓ | INCR+EXPIRE+TTL 86400, count>10 → throw TRPCError |
+| AC-6 UTC date D-044 | ✓ | `.toISOString().slice(0,10)` |
+| AC-7 completed 反写 | ✓ | `dall-e-3.ts: updateHistoryScene(status='completed')` |
+| AC-8 retry→failed | ✓ | `attempts=3`, 全リトライ失敗時 `status='failed'` |
+| **AC-9 Redis不可達 5xx** | **✗ FAIL** | `generateSceneImage` が stub のまま — `imageGenQueue.add()` 未接続 |
+| AC-10 worker:image-gen script | ✓ | root `package.json` に存在 |
+| AC-11 dev mode in-process起動 | ✓ | `index.ts: process.env.NODE_ENV === 'development'` 条件 |
+| AC-12 8 unit tests | ✓ | vitest 8 passed |
+| AC-13 integration BullMQ+Redis | ✓ | vitest 1 passed (50ms) |
+| AC-14 rate limit <10ms | SUSPECTED | 明示的タイミングテスト未実装 (INCR推定<2ms) |
+| AC-15 queue.add() <50ms | SUSPECTED | 明示的タイミングテスト未実装 |
+| AC-16 Worker spawn <200ms | SUSPECTED | 明示的タイミングテスト未実装 |
+| AC-17 typecheck 0 error | ✓ | 6 workspaces all pass |
+| AC-18 test exit code 0 | ✓ | 9 tests passed |
+
+### 産物パス
+```
+scripts/ralph/verify-artifacts/US-010/
+├── typecheck.txt     — 6 ws 0 error
+├── vitest.stdout.txt — 9 tests passed
+├── vitest.xml        — JUnit XML
+└── manifest.json     — 更新済み
+```
+
+X-6 零回帰: 全量 669 tests PASS
+
+### 判決
+`prd.json.passes = false` · `retryCount = 1`
+
+**ブロッカー**: `apps/api/src/trpc/routers/videoProduction.ts:141-157` — `generateSceneImage` が `[mock]` stub のまま。`imageGenQueue.add()` 未呼び出しのため Redis 不可達エラーハンドリング (AC-9) が未実装。Ralph には `generateSceneImage` に `checkImageGenRateLimit → imageGenQueue.add() + try/catch → TRPCError('生成失败 · 请稍后再试')` を実装するよう指示。

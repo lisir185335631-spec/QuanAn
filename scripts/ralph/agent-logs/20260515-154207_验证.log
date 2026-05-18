@@ -1,0 +1,32 @@
+---
+
+## 検証結果: US-011 **PASS**
+
+### AC 対照
+
+| AC | 結果 | 根拠 |
+|---|:-:|---|
+| AC-1: FeatureFlag + SystemConfig schema | ✅ | L1226-1253, index 確認済み |
+| AC-2: migration 成功 | ✅ | テーブルがDB に存在（init migration 経由）|
+| AC-3: seed 3 system_config | ✅ | 実測: 3 rows, configValue=false, isEmergency=true |
+| AC-4: _toggleFeatureFlagInTx + _updateSystemConfigInTx | ✅ | feature-flag.service.ts L43, L76 |
+| AC-5: toggleFeatureFlag dual approval | ✅ | requestApproval({actionType:'toggle_feature_flag', requireDualApproval:true}) |
+| AC-6: emergencyToggleSystemConfig super_admin pattern | ✅ | emergencyApprove() 複用 + postReviewRequired パターン |
+| AC-7: getFeatureFlagValue 3 flagType ルート | ✅ | boolean / percentage(md5) / targeted(target_users/plans) |
+| AC-8: DUAL_APPROVAL_ACTION_TYPES に 2 型追加 | ✅ | approvalGateService.ts L31-52 |
+| AC-9: AGENTS.md LD-A11 + grep 0 命中 | ✅ | L2498, grep 結果 0 |
+| AC-10: audit-redlines-admin.sh §LD-A11 | ✅ | ALL PASS 11 LD-A + 6 R-A |
+| AC-11: PRD-13 8 LD-A 不破壊 | ✅ | audit-redlines-admin.sh 全通過 |
+| AC-12: test ≥ 1830 / typecheck PASS | ✅ | 1898 tests passed, typecheck 6 projects 0 errors |
+| AC-13: Typecheck passes | ✅ | 全 6 プロジェクト Done |
+
+### 産物パス
+
+```
+scripts/ralph/verify-artifacts/US-011/
+生成済: vitest-full.xml (1898 passed), vitest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判決
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""` に更新完了。

@@ -1,0 +1,11 @@
+US-004 完成。核心变更：
+
+**实现**（`ContextAssembler.ts`）：
+- 新增 `_buildSection4()` 方法：将 `EvolutionInsightContent` 的 6 个字段格式化为 `[Section 4] 用户偏好画像` 文本段，空数组字段跳过对应行
+- `_composeSystemPrompt()` 加第 4 参数 `evolutionInsight`，非 null 时注入该段，null 时整段跳过
+- `assemble()` 将已 fetch 的 `evolutionInsight` 传入，闭合 L4→prompt 路径
+
+**测试**（`context-assembler.test.ts`）：
+- +21 项新测试覆盖 AC-4/5/6/8：11 个生成型 Specialist 各 1 case injection 验证、negative null case、空字段跳过、LLM Judge × 2
+
+**质量门**: typecheck 0 · lint 0 · test 774/774 ✓ · AC-3 grep 0 命中 ✓

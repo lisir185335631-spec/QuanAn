@@ -1,0 +1,5 @@
+US-005 完成。
+
+- 新建 `apps/web/src/lib/constants/step3.ts`：5 platforms + 6 H3 blocks + STEP3_FORM + 所有 button/CTA/page 常量，全部 D1=A 字面 1:1
+- 新建 `apps/web/src/lib/constants/__tests__/step3.test.ts`：4 assertions 全部 PASS
+- typecheck 0 error，13 项 grep 全部命中 ≥1 次

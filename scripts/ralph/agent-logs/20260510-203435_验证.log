@@ -1,0 +1,50 @@
+所有 14 个 story 全部 PASSED。现在输出完整验证报告。
+
+---
+
+## 验证结果: US-014 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | tests/judge/video-production.judge.ts · 2 golden case + 13列+model_tier+judge_call | ✓ 存在，4 tests，含 model_tier='lightweight' + eventType='judge_call' 测试 |
+| AC-2 | tests/judge/video-acquisition.judge.ts · 理财+教育 · ctaScript CTA关键词 | ✓ 存在，4 tests，含 ctaScript/conversionPath 验证 |
+| AC-3 | tests/judge/video-storyboard.judge.ts · 5-8 scenes · imagePromptEn ASCII | ✓ 存在，5 tests，含 ASCII_ONLY_REGEX 验证 |
+| AC-4 | tests/judge/copywriting-acquisition.judge.ts · 育儿+医美 · 200-500字+CTA | ✓ 存在，4 tests，含长度+末尾CTA验证 |
+| AC-5 | pnpm test:judge 退出码 0 · ≥30/30 pass | ✓ **39 passed (15 files) exit 0** |
+| AC-6 | video-tools-integration.spec.ts · test.describe.serial · 4工具+history | ✓ 存在，5步全通过 |
+| AC-7 | workers=1 + fullyParallel=false | ✓ playwright.config.ts 已确认 |
+| AC-8 | web lint --max-warnings=0 exit 0 | ✓ exit 0 |
+| AC-9 | api lint --max-warnings=0 exit 0 | ✓ exit 0 |
+| AC-10 | typecheck 6 workspaces 0 error | ✓ 6 workspaces Done |
+| AC-11 | pnpm test ≥ 620/620 | ✓ **722/722 pass (75 files)** |
+| AC-12 | pnpm test:e2e ≥ 138/138 | ✓ **142 passed 2 skipped** |
+| AC-13 | cost_log 3类 eventType grep | ✓ specialist_call(cost-logger.ts+routers) · judge_call(video-production.judge.ts:3) · image_gen(dall-e-3.ts:1) |
+| AC-14 | judge 30 tests < 5 min | ✓ Duration 362ms |
+| AC-15 | e2e 6新spec < 90s | ✓ 全套2.5min，mocked LLM新spec秒级完成 |
+| AC-16 | manifest.json 含5 stdout文件 | ✓ manifest.json 已更新 |
+| AC-17 | verify-artifacts 5 stdout全存在 · audit-artifacts.py VALID | ✓ ARTIFACTS VALID |
+| AC-18 | agent-browser: 4工具+history · 0错误 · 0 ErrorBoundary | ✓ 4页面load+form visible · 无ErrorBoundary · 无console error · 仅React Router deprecation warning(pre-existing) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-014/
+├── vitest-full.stdout.txt  (722 passed)
+├── judge.stdout.txt        (39 passed)
+├── e2e.stdout.txt          (142 passed 2 skipped)
+├── typecheck.stdout.txt    (6 workspaces Done)
+├── lint.stdout.txt         (exit 0 web+api)
+└── manifest.json           (exit_code=0)
+```
+
+### 判决
+
+```
+prd.json US-014.passes = true
+prd.json US-014.notes = ""
+prd.json US-014.retryCount = 0
+```
+
+**PRD-6 全部 14 个 story 已 PASSED，[DONE] All stories resolved!**

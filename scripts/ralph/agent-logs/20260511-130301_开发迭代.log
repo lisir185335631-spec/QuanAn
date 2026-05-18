@@ -1,0 +1,10 @@
+US-008 实现完成，所有 AC 验收：
+
+- **AC-1 ✅** `dailyTasks` router 4 procedures，`protectedProcedure` 双层防护
+- **AC-2 ✅** `getToday`/`markCompleted`/`getHistory`/`regenerateToday` 全部实现
+- **AC-3 ✅** `/daily-tasks` 渲染 today + history + CompletionBar
+- **AC-4 ✅** `markCompleted` optimistic update → 失败回滚
+- **AC-5 ✅** `regenerateToday` 30s polling + timeout
+- **AC-6 ✅** 三张截图：N=0(215KB)/N=3(305KB)/N=5(323KB) 存入 `verify-artifacts/US-008/`
+- **AC-7 ✅** 无控制台错误
+- **AC-8 ✅** typecheck 0 + lint 0 + 803 tests + e2e 2/2 通过

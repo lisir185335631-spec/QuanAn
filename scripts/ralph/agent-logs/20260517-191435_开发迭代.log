@@ -1,0 +1,5 @@
+US-006 实现完成。
+
+- **新建** `apps/web/src/lib/constants/step8.ts`：2 子功能、5 平台 re-export、3 经验（含中点 ·）、6 输出模块、2 表单输入对、Step8Result interface 等全量常量，字面严格 1:1 spec §7.9
+- **新建** `apps/web/src/lib/constants/__tests__/step8.test.ts`：8 assertions 全 PASS
+- typecheck 0 error，commit 已推

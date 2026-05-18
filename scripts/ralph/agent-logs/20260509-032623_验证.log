@@ -1,0 +1,44 @@
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结论 |
+|---|---|---|
+| AC-1 | extends BaseSpecialist · z.discriminatedUnion 5路 | ✓ |
+| AC-2 | 每路 z.object({category:z.literal,topics:.length(20)}) · 5 字段 | ✓ |
+| AC-3 | invokeLLM for await stream · accumulated delta → JSON.parse | ✓ |
+| AC-4 | tools=['llm.stream'] · streaming=true · timeout_ms=60000 · model_tier='reasoning' | ✓ |
+| AC-5 | knowledge.constants=['hotElements','scriptTypes'] | ✓ |
+| AC-6 | knowledge.rag=['knowledge_cases','trending'] | ✓ |
+| AC-7 | memory.l2_read=['stepData'] | ✓ |
+| AC-8 | stepData.saveStream .subscription · stepKey='step5' 调 topicAgent.execute | ✓ |
+| AC-9 | invalid category → z.enum 拒 (test: AC-9: invalid category rejects) | ✓ |
+| AC-10 | system prompt '必须正好 20 条' · persona.boundaries 含限制 | ✓ |
+| AC-11 | viralPotential z.enum(['low','medium','high']) · outputSchema 拒非法值 (test 覆盖) | ✓ |
+| AC-12 | JSON.parse 失败 → _consumeStream retry 1 → isFallback(null) → BaseSpecialist retry | ✓ |
+| AC-13 | 11 tests ≥ 7 (5 category + 断流 + length失败 + modelUsed + config + AC-9 + viralPotential) | ✓ |
+| AC-14 | timeout_ms=60000 · started chunk 立即 yield(结构满足) | ✓ |
+| AC-15 | Tests pass | ✓ |
+| AC-16 | Typecheck passes | ✓ |
+
+**D-019 / REJ-003 驳回问题已修复**:
+- TopicAgent.ts 无硬编码 model 名 (`grep 0 命中`) ✓
+- LLMStreamChunk 接口新增 `meta?: { model: string }` ✓
+- LLMGateway.stream() 首 chunk 发 `type: 'meta'` meta.model ✓
+- `_consumeStream` 读取 meta 返回真实 model ✓
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-007/
+├── pytest.xml            (11 passed TopicAgent tests)
+├── pytest.stdout.txt
+├── pytest-full.xml       (273 passed, 0 failures — 零回归)
+├── pytest-full.stdout.txt
+├── typecheck.txt         (6 ws 0 errors)
+└── manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

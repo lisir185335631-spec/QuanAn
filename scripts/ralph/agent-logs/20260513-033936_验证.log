@@ -1,0 +1,35 @@
+## 검증 결과: US-019 PASS
+
+### AC 대조
+
+| AC | 설명 | 결과 |
+|---|---|---|
+| AC-1 | `model InviteCampaign` schema.prisma 960행 — campaignKey @unique / name / description / createdByAdminId / totalQuota / usedCount / startsAt / endsAt / status / 2 indexes | ✓ |
+| AC-2 | `prisma migrate dev --name add_invite_campaigns` — `invite_campaigns` 테이블 + 4 indexes DB에 존재 (`\d invite_campaigns` 실증) | ✓ |
+| AC-3 | `manual_admin_rls.sql` 36행: `ALTER TABLE invite_campaigns DISABLE ROW LEVEL SECURITY` 존재 + psql 실측 RLS DISABLED 확인 | ✓ |
+| AC-4 | `audit-admin-rls-tables.sh` 24행: `invite_campaigns # 域⑥ 邀請码` 포함 | ✓ |
+| AC-5 | `campaign.service.ts` CRUD + `getCampaignFunnel` 4단계(창건→激活→9步完成→D30留存) + `withAdminRole` → `SET LOCAL` 사용 | ✓ |
+| AC-6 | P2002 unique 에러 → `CampaignKeyConflictError` throw (테스트 통과) | ✓ |
+| AC-7 | `totalQuota <= 0` → `ValidationError('totalQuota must be > 0')` | ✓ |
+| AC-8 | `endsAt <= startsAt` → `ValidationError('endsAt must be > startsAt')` | ✓ |
+| AC-9 | `ALLOWED_TRANSITIONS.ended = []` → ended→active 불허 (테스트 통과) | ✓ |
+| AC-10 | 단위 테스트 18개 (CRUD + funnel + 각 ValidationError) ≥ 8 | ✓ |
+| AC-11 | `pnpm vitest run` 18/18 통과 · `pnpm typecheck` 0 error | ✓ |
+| AC-12 | `pnpm audit:admin-rls-tables` → `invite_campaigns RLS DISABLED ✓` · Summary: 13/13 | ✓ |
+
+### 산물 경로
+
+```
+scripts/ralph/verify-artifacts/US-019/
+  pytest-full.xml         (18 passed)
+  pytest-full.stdout.txt  (18 passed)
+  typecheck.stdout.txt    (0 errors)
+  audit-rls.stdout.txt    (PASS: 13/13 admin, 15/15 main)
+  manifest.json
+```
+
+### 제로 회귀 비고
+
+전체 스위트에서 3 파일 / 9 테스트 실패 — 모두 `tests/integration/api/` 아래 서버 포트 3000 ECONNREFUSED 오류로, US-018 이전부터 동일한 수치(pre-existing TD). US-019 코드와 무관함.
+
+**`prd.json` 업데이트 완료: US-019 `passes=true`**

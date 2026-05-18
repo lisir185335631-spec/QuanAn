@@ -1,0 +1,41 @@
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 证据 |
+|---|---|---|
+| AC-1 PromptVersion schema | ✓ | prisma/schema.prisma:786 · 所有字段 + @@unique([specialistId,mode,version]) + 2 index + @@map |
+| AC-2 PromptCanaryConfig schema | ✓ | schema:823 · @@unique([specialistId,mode]) composite key + @@map |
+| AC-3 migration + 14 Specialist seed | ✓ | migrations/20260514030818_prd_13_prompt_versions + seed.ts:288 seedPromptVersions() 14 keys |
+| AC-4 _publishPromptVersionInTx 单点 | ✓ | prompt-version.service.ts:27 · tx 参数正确传入 |
+| AC-5 publishPromptVersion 校验 | ✓ | status='pending_review' + judgeScore>=4.0 + requestApproval(requireDualApproval=true) |
+| AC-6 rollbackPrompt | ✓ | requestApproval(requireDualApproval=true) + executeRollback → version DESC findFirst |
+| AC-7 updateCanaryConfig | ✓ | VALID_CANARY_PCT={0,1,10,50,100}, canaryPct=100 → publishPromptVersion |
+| AC-8 getActivePromptVersion hash | ✓ | md5(`${userId}:${specialistId}`).slice(0,8) → parseInt(16)%100 < canaryPct |
+| AC-9 ContextAssembler 集成 | ✓ | ContextAssembler.ts:54 第 6 路 _fetchActivePrompt |
+| AC-10 llm-judge isMock=true | ✓ | llm-judge.service.ts · isMock=true default, score 4.2~4.8, writes judgeScore |
+| AC-11 双重 approval 强制 | ✓ | publishPromptVersion + rollbackPrompt 均 requestApproval({requireDualApproval:true}) |
+| AC-12 AGENTS LD-A-6 | ✓ | AGENTS.md:2406 LD-A6 红线 + grep 检测命令 |
+| AC-13 ContextAssembler fallback | ✓ | activePromptContent===null → tmpl?.persona ?? default (brownfield 安全) |
+| AC-14 audit:redlines-admin | ✓ | ALL PASS · 6 LD-A + 6 R-A |
+| AC-15 pnpm test ≥1565 pass | ✓ (TD豁免) | 1584 passed ✓; 9 failures = US-002 相同 pre-existing ECONNREFUSED:3000 |
+| AC-16 typecheck 0 errors | ✓ | pnpm typecheck 全 6 packages Done |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-003/
+  manifest.json        ← verdict=PASS, zero_regression=PASS, 16 AC summary
+  pytest-full.xml      ← 1597 tests, 9 failures (pre-existing, same as US-002)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt ← 0 errors
+```
+
+### 零回归 TD 豁免说明
+9 项失败 (CONFIRMED pre-existing，非 SUSPECTED):
+- **复现命令**: `pnpm exec vitest run --reporter=junit 2>/dev/null | grep "FAIL\|Tests"` → 同样 9 failures
+- **失败定位**: `tests/integration/api/auth.test.ts:~12` — `const API = 'http://localhost:3000'` (需要 live server)
+- **pre-existing 证据**: `git show 915d1a0 --name-only | grep "auth\|trace"` → 空输出(US-003 commit 未触碰这 3 个文件); US-002 `pytest-full.xml` 也有相同 9 项失败
+- **TD 登记**: 这些 integration tests 需要 dev server on :3000 才能通过，属于测试环境配置问题，非 US-003 regression
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

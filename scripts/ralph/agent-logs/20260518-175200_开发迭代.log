@@ -1,0 +1,7 @@
+US-008 retry 2 complete. All fixes applied and verified:
+
+1. **Fix 1 (AC-9)**: Moved `test.skip(!HAS_OPENAI_KEY || !REAL_LLM)` inside test(b)'s body — was at describe level, causing all 4 tests to skip.
+2. **Fix 2 (R-001)**: Changed grep scope from `apps/web` → `apps/web/src` in both `stt-whisper.test.ts` and `tts-openai.test.ts` — e2e files no longer falsely match the OPENAI_API_KEY check.
+3. **Fix 3 (locator precision)**: Fixed two strict mode violations in test(a): `text=流量型` → `getByRole('tab', {name:'流量型'})`, `[role="tabpanel"]` → `[role="tabpanel"][data-state="active"]`, plus added `ERR_CONNECTION_REFUSED` to console error allowlist.
+
+**Results**: 3 passed + 1 skipped (test b correctly skipped without OPENAI_API_KEY), typecheck clean.

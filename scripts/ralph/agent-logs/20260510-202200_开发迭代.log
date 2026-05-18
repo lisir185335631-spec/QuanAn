@@ -1,0 +1,9 @@
+Committed. US-014 is complete. All gates pass:
+
+- **vitest** 722/722 (75 files) ≥620 ✅
+- **judge** 39/39 (15 files) ≥30 ✅  
+- **e2e** 142 passed, 2 skipped ≥138 ✅
+- **typecheck** 6 workspaces 0 errors ✅
+- **lint** web+api `--max-warnings=0` exit 0 ✅
+- **AC-13** cost_log 3类 eventType grep 全命中 ✅
+- **verify-artifacts/US-014** 5 stdout 文件 + manifest.json · `audit-artifacts.py` ARTIFACTS VALID ✅

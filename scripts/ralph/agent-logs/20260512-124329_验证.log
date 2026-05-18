@@ -1,0 +1,41 @@
+---
+
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|:---:|
+| 1 | roleCheck.ts — ADMIN_ROLE_HIERARCHY={super_admin:3,admin:2,readonly_admin:1}，meta.requiredRole 等级比较，不足 throw FORBIDDEN | ✓ |
+| 2 | ipWhitelist.ts — env ADMIN_IP_WHITELIST_ENABLED=false 默认 pass，=true 时 ipaddr.js CIDR 校验，不命中 throw FORBIDDEN | ✓ |
+| 3 | mfaCheck.ts — env ADMIN_MFA_REQUIRED=false 默认 pass，=true+super_admin+mfa stale>30天 throw PRECONDITION_FAILED 412 | ✓ |
+| 4 | adminRLS.ts — $transaction wrap + $executeRawUnsafe set_config LOCAL=true，注入 ctx.adminPrisma + crossAccountAccessed=true | ✓ |
+| 5 | approvalGateCheck.ts — meta.requiresApproval=true throw NOT_IMPLEMENTED 501，message='PRD-13 真闭环'，cause 含 actionType+riskLevel | ✓ |
+| 6 | admin.ts — adminProcedure = 7闸按序 .use() 链，顺序硬约束 | ✓ |
+| 7 | roleCheck.test.ts — 6 unit pass | ✓ (6/6) |
+| 8 | ipWhitelist.test.ts — 6 unit pass | ✓ (6/6) |
+| 9 | mfaCheck.test.ts — 6 unit pass | ✓ (6/6) |
+| 10 | adminRLS.test.ts — 8 unit pass | ✓ (8/8) |
+| 11 | approvalGateCheck.test.ts — 5 unit pass | ✓ (5/5) |
+| 12 | 6闸顺序硬验证 · procedures-admin.test.ts — 改顺序 test fail | ✓ (1/1) |
+| 13 | grep '$executeRawUnsafe\|$queryRawUnsafe' apps/api/src/trpc/routers/admin/ = 0 (R-A6) | ✓ (0 hits) |
+| 14 | grep 'set_config.*app.role.*admin' adminRLS.ts ≥ 1 (LD-A3) | ✓ (line 12) |
+| 15 | package.json 加 ipaddr.js ^2.1.0 | ✓ |
+| 16 | .env.example 加 ADMIN_IP_WHITELIST_ENABLED + ADMIN_IP_WHITELIST_CIDRS + ADMIN_MFA_REQUIRED | ✓ |
+| 17 | Typecheck passes | ✓ (6 packages clean) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+├── manifest.json          verdict=PASS, zero_regression=PASS
+├── pytest-full.xml        32 passed (US-003 specific)
+├── pytest-full.stdout.txt 32/32 passed
+└── typecheck.stdout.txt   6 packages, 0 errors
+```
+
+**零回归**: 全量 109 test files / 991 tests passed, 4 skipped, 0 failed
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

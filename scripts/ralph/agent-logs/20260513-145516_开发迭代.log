@@ -1,0 +1,1 @@
+Done. The single-line fix: `deepLearn: reviewDeepLearnRouter` → `reviewDeepLearn: reviewDeepLearnRouter` in `apps/api/src/trpc/routers/admin/index.ts:45`, plus removal of the orphaned `deepLearn: _t.router({})` stub in `admin-router-types.ts`. All 6 `adminTrpc.reviewDeepLearn.*` frontend calls will now correctly route to the real procedures. `pnpm typecheck` passes 0 errors.

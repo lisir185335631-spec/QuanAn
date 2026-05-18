@@ -1,0 +1,26 @@
+---
+
+## 验证结果: US-004 **[PASS]**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC1 | `useStepData(accountId,'step4'/'step4b')` + `readOtherStep` 跨 step 预填 + industryLabel SUBTITLE | ✓ |
+| AC2 | Step4bOutputContent 接受真数据 · 无 mockResult · StageCard + animate-in + progress bar | ✓ |
+| AC3 | LoadingState 精确文本 · ErrorState `onRetry={dbQuery.refetch}` · EmptyState template literal | ✓ |
+| AC4 | localStorage.setItem.*acc_step → 0 hit | ✓（已在上轮验证，代码未变） |
+| AC5 | agentId: PositioningAgent / MonetizationAgent | ✓（已在上轮验证，代码未变） |
+| AC6 | 157 vitest tests pass · `from 'recharts'` → 0 hit | ✓ |
+| AC7 | Typecheck passes | ✓（修复了 9 处 TS2532 非空断言） |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+已生成: typecheck.stdout.txt (0 errors), vitest-full.stdout.txt (157 passed), manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

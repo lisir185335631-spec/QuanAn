@@ -1,0 +1,1 @@
+US-004 iteration 2 complete. Fixed all 15 `desc` fields in `function-matrix.ts` to exactly match PRD AC-2 literal strings (the Opus reject root cause). Screenshot updated, typecheck and 51 tests pass. Committed as `c7c72bc`.

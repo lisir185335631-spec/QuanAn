@@ -1,0 +1,39 @@
+---
+
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 结论 | 依据 |
+|---|---|---|
+| AC-1: 4+1 feedback → BullMQ 1 job | ✓ **PASS** | playwright XML: no error element |
+| AC-2: seed insight → +1行 + L2 | ✗ **FAIL** | `TypeError: db.$transaction is not a function` at evolution.ts:336 |
+| AC-3: systemPrompt 含 [Section 4] | ✗ **FAIL** | cascade from AC-2 — no insight seeded |
+| AC-4: EvolutionAgent 源码 grep | ✗ **FAIL** | `ReferenceError: __dirname is not defined` at spec:188 |
+| AC-5 / Typecheck / Tests | Typecheck ✓, vitest 774/774 ✓ | e2e 失败不影响 vitest 零回归 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+  manifest.json         (verdict=FAIL, zero_regression=PASS)
+  playwright-final.xml  (4 tests: 1 pass, 1 failure, 2 errors)
+  e2e.stdout.txt        (完整 playwright 输出)
+  vitest.xml            (774 passed, 0 failed)
+  vitest.stdout.txt
+  typecheck.stdout.txt  (0 errors)
+```
+
+### 两个独立 bug 需 ralph 修复
+
+**Bug 1 (AC-2)** — `evolution.ts:336` `db.$transaction([...])` 报错  
+- 根因：`accountIsolationMiddleware` 把 `ctx.prisma` 替换成 Prisma transaction client (`tx`)，transaction client 不支持再调 `$transaction([])`  
+- 修复：改为顺序 `await db.evolutionProfile.upsert({...}); await db.evolutionInsight.create({...})`
+
+**Bug 2 (AC-4)** — `feedback-evolution-loop.spec.ts:188` `__dirname` 未定义  
+- 根因：Playwright 以 ESM 模块运行，Node.js ESM 无 `__dirname` 全局  
+- 修复：改用 `import.meta.dirname`（Node ≥21.2）或 `fileURLToPath(new URL('.', import.meta.url))`
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1` · `blocked = false`

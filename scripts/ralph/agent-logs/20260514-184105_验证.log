@@ -1,0 +1,43 @@
+验证完成。以下是结果摘要：
+
+---
+
+## 验证结果: US-011 FAIL
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|----|------|------|
+| AC-1 | ✓ | admin-routes.ts 有 /approvals · label='Approval Gates' · emoji='🛡️' · requiredRole='admin' |
+| AC-2 | ✓ | 4 KPI 卡片全部实现：待审批数/平均时长/拒绝率/紧急SLA |
+| AC-3 | ✓ | DenseTable 含所有列：申请ID/actionType(中文标签)/requester/riskLevel/Dual/EMERGENCY badge/expiresAt progress bar/status |
+| AC-4 | ✓ | ApprovalDetailDrawer 含 ImpactEstimator · 4 种 actionType stub 齐全 · PII 脱敏 |
+| AC-5 | ✓ | 历史决策参考(近10条) · 批准/拒绝按钮 · 决策理由≥10字校验 |
+| AC-6 | ✓ | 紧急批准按钮 super_admin only · EmergencyApproveModal · incidentId 必填客户端+服务端双校验 |
+| AC-7 | ✓ | status=first_approved → 绿条 "第一审批已通过 by ... · 等待第二审批人" |
+| AC-8 | ✓ | 第一审批人 → 批准按钮 disabled + tooltip "您已是第一审批人 · 不能两次批" · 服务端 FORBIDDEN_SAME_APPROVER 兜底 |
+| AC-9 | ✓ | Tab 切换：待审批/历史决策(含 decidedAt/approver/decision_reason/emergencyMode/postReviewStatus) |
+| AC-10 | ✓ | super_admin+emergency → 红条 + EmergencyApproveModal · postReviewRequired=true · audit log eventType='emergency_approval' · 后置复核 Tab super_admin only |
+| AC-11 | **✗ FAIL** | `approveRequest` mutation **缺失** console.log 通知 stub · reject(line 362)和emergency(line 413)有 · approve 无 |
+| AC-12 | ✓ | Browser E2E: 登录→/admin/approvals→KPI+列表→Drawer→影响范围预估→填理由→批准→status='first_approved' |
+| AC-13 | ✓ | pnpm audit:redlines-admin · ALL PASS (8 LD-A + 6 R-A · 0 命中) |
+| AC-14 | ✓ | 1702 tests passed · 0 fail |
+| AC-15 | ✓ | typecheck 0 errors |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-011/`  
+已生成: `pytest-full.xml` (1702 passed), `typecheck.stdout.txt` (0 errors), `manifest.json`
+
+### 失败定位
+
+```
+文件: apps/api/src/trpc/routers/admin/approvals.ts
+位置: approveRequest mutation, lines 297-324
+复现: grep -n "console.log\|STUB" apps/api/src/trpc/routers/admin/approvals.ts
+# → 仅 line 362 (reject) + line 413 (emergency) 有 STUB, approve path 无
+
+修复: 在 approveRequestSvc 调用后添加:
+console.log(`[STUB] Notify requester: request ${input.requestId} ${result.displayStatus}`);
+参考: line 361-362 rejectRequest 的写法
+```

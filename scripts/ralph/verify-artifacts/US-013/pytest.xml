@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="36" failures="0" errors="0" time="0.138">
+    <testsuite name="tests/unit/api/admin/feature-flag-routing.test.ts" timestamp="2026-05-15T08:34:08.244Z" hostname="returndeMacBook-Pro.local" tests="17" failures="0" errors="0" skipped="0" time="0.003702208">
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — percentage flagType routing (AC-1) &gt; percentage 0% → 所有 userId 返回 false" time="0.000644167">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — percentage flagType routing (AC-1) &gt; percentage 100% → 所有 userId 返回 true" time="0.000145125">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — percentage flagType routing (AC-1) &gt; percentage 50% → deterministic · 同 userId×flagKey 多次一致 (AC-1)" time="0.00010675">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — percentage flagType routing (AC-1) &gt; percentage: userId 缺失 → false (无 userId 无法分流)" time="0.000038208">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — targeted flagType routing (AC-2) &gt; targeted: userId in target_users → true" time="0.000046291">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — targeted flagType routing (AC-2) &gt; targeted: plan in target_plans → true" time="0.000041">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — targeted flagType routing (AC-2) &gt; targeted: userId 不在 + plan 不在 → false" time="0.00003375">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — boolean flagType routing &gt; boolean flagType: defaultValue=true → true" time="0.000032458">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="getFeatureFlagValue — boolean flagType routing &gt; boolean flagType: defaultValue=false → false" time="0.000035542">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="toggleFeatureFlag — 任意 flagKey upsert + dual approval (AC-4) &gt; 未知 flagKey → 不抛 NOT_FOUND · 创建 dual approval request" time="0.000734375">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="toggleFeatureFlag — 任意 flagKey upsert + dual approval (AC-4) &gt; 已知 flagKey + valid rolloutConfig(percentage) → approval request" time="0.0003925">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="toggleFeatureFlag — 任意 flagKey upsert + dual approval (AC-4) &gt; invalid rolloutConfig (非 discriminatedUnion) → zod 校验抛错 (AC-3)" time="0.000553416">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="rolloutConfigSchema — discriminatedUnion 严格校验 (AC-3) &gt; boolean: { flagType: &quot;boolean&quot; } → valid" time="0.000081625">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="rolloutConfigSchema — discriminatedUnion 严格校验 (AC-3) &gt; percentage: { flagType: &quot;percentage&quot;, percentage: 50 } → valid" time="0.000063917">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="rolloutConfigSchema — discriminatedUnion 严格校验 (AC-3) &gt; targeted: { flagType: &quot;targeted&quot;, target_users: [1,2], target_plans: [&quot;pro&quot;] } → valid" time="0.000169375">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="rolloutConfigSchema — discriminatedUnion 严格校验 (AC-3) &gt; percentage out of range: percentage=101 → zod 抛错" time="0.000095167">
+        </testcase>
+        <testcase classname="tests/unit/api/admin/feature-flag-routing.test.ts" name="rolloutConfigSchema — discriminatedUnion 严格校验 (AC-3) &gt; targeted: 非法 plan → zod 抛错" time="0.000069875">
+        </testcase>
+    </testsuite>
+    <testsuite name="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" timestamp="2026-05-15T08:34:08.245Z" hostname="returndeMacBook-Pro.local" tests="19" failures="0" errors="0" skipped="0" time="0.001381">
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; boolean branch &gt; { flagType: &quot;boolean&quot; } → 通过" time="0.000087041">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; boolean branch &gt; boolean + extra keys → 不通过(strict)" time="0.000051792">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; percentage branch &gt; percentage=0 → 通过" time="0.000072583">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; percentage branch &gt; percentage=100 → 通过" time="0.00005725">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; percentage branch &gt; percentage=-1 → 失败" time="0.000057542">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; percentage branch &gt; percentage=101 → 失败" time="0.000034542">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; percentage branch &gt; percentage 缺失 → 失败" time="0.000036041">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; targeted branch &gt; target_users + target_plans → 通过" time="0.0000555">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; targeted branch &gt; 仅 target_users(optional target_plans) → 通过" time="0.0000395">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; targeted branch &gt; 仅 target_plans(optional target_users) → 通过" time="0.000045334">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; targeted branch &gt; 非法 plan(&quot;basic&quot;) → 失败" time="0.000053291">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; targeted branch &gt; target_users 含浮点数 → 失败" time="0.000046666">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; unknown flagType &gt; flagType=&quot;custom&quot; → 失败(discriminatedUnion 只允许 3 分支)" time="0.000042458">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="rolloutConfigSchema — zod discriminatedUnion 完整校验 (AC-3) &gt; unknown flagType &gt; 无 flagType → 失败" time="0.000042583">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="percentage hash 确定性 (AC-1 · SHIELD) &gt; 同 userId×flagKey 多次调 → 同 bucket" time="0.000090167">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="percentage hash 确定性 (AC-1 · SHIELD) &gt; 不同 userId → 大概率不同 bucket(非随机)" time="0.000071208">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="percentage hash 确定性 (AC-1 · SHIELD) &gt; hash input 顺序: userId:flagKey (非 flagKey:userId)" time="0.000103458">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="_toggleFeatureFlagInTx — upsert 支持任意 flagKey (AC-4) &gt; 新 flagKey: upsert.create 被调用 · flagType 默认 boolean" time="0.000135875">
+        </testcase>
+        <testcase classname="apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts" name="_toggleFeatureFlagInTx — upsert 支持任意 flagKey (AC-4) &gt; percentage flagType: upsert.create.flagType = &quot;percentage&quot;" time="0.000065625">
+        </testcase>
+    </testsuite>
+</testsuites>

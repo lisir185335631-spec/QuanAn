@@ -1,0 +1,41 @@
+---
+
+## 验证结果: US-008 **FAIL**
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|---|---|
+| AC-1 | ✅ PASS | AccountSwitcher button 含 `rounded-lg text-xs bg-secondary/50 border border-primary/15 hover:border-primary/30 px-2.5 py-1.5`；dropdown 含 `rounded-xl border border-primary/15 bg-popover/95 backdrop-blur-xl shadow-lg shadow-primary/5` |
+| AC-2 | ✅ PASS | `HeaderRight` 函数返回 `<AccountSwitcher /> + <UserChip name={user.name} /> + <LogoutIconButton onClick={logout} />` |
+| AC-3 | ✅ PASS | `UserChip` 是纯 display div，含 `animate-ping-primary` span，无 onClick/hover |
+| AC-4 | ✅ PASS | `LogoutIconButton` icon-only Button，`onClick={logout}` 直接退出，无 confirm/Dialog/Modal |
+| AC-5 | ❌ **FAIL** | Dropdown 有「新建账号」而非「管理账号 → /accounts」（见 AccountSwitcher.tsx:80-87） |
+| AC-6 | ⚠️ 存档 | 截图已存 `screenshots/prd16-us008-header-right.png`（dropdown 展开 + chip + icon 同框），但因 AC-5 失败整体 FAIL |
+| AC-7 | ✅ PASS | `pnpm typecheck` exit 0；`pnpm vitest run` 51 tests passed |
+| AC-8 | ✅ PASS | `UserChip` 函数无 onClick/onMouseEnter/onMouseLeave；`LogoutIconButton` 无 confirm/Dialog/Modal |
+
+### CONFIRMED 失败
+
+**AC-5 · dropdown 缺少「管理账号 → /accounts」**
+- 复现：访问 `http://localhost:5173/`，点击「AI 创业者小张 ▾」按钮
+- 实际：IP账号标题 + 5账号列表 + **「新建账号」**
+- 期望：IP账号标题 + 5账号列表 + **「管理账号 → /accounts」**
+- 定位：`apps/web/src/components/AccountSwitcher.tsx:80-87`
+
+⚠️ **AC 矛盾**：AC-1 说「不动内部逻辑」，但 AC-5 要求「管理账号 → /accounts」链接——建议以 AC-5 browser 验证为准，在 AccountSwitcher 添加导航到 `/accounts` 的 DropdownMenuItem。
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-008/
+  manifest.json (exit_code=1, zero_regression=PASS, verdict=FAIL)
+  pytest-full.xml (51 passed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt
+  validator-us-008-fail-1.png (dropdown + chip + icon 截图)
+  validator-us-008-fail-2.png (dropdown 全高截图)
+  validator-us-008-fail-3.png (全页面截图)
+```
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1` · `blocked = false`

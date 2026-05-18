@@ -1,0 +1,48 @@
+prd.json 已更新。以下是 US-014 的完整验证报告：
+
+---
+
+## 验证结果: US-014 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1 | ✓ PASS | admin-routes.ts `/admin/feature-flags` · label='配置中心' emoji='⚙️' prd=14 requiredRole='admin' |
+| AC-2 | ✓ PASS | 3 Tab + 条件第 4 Tab(super_admin only) + useSearchParams URL state |
+| AC-3 | ✓ PASS | listEmergencySwitches isEmergency=true · DenseTable 5列(configKey/configValue/变更人/时间/操作) |
+| AC-4 | ✗ **FAIL** | incidentId 必填 ✓ 但 **reason(决策理由)未校验为必填且未传入 mutation** ✗ |
+| AC-5 | ✓ PASS | emergency 操作 canAct=isSuperAdmin · disabled + title '需 super_admin 权限' |
+| AC-6 | ✓ PASS | flags DenseTable 6列(flagKey/flagType badge/enabled/rollout摘要/变更/编辑) |
+| AC-7 | ✓ PASS | EditFlagModal + toggle.mutate + dual approval + toast '已发起 Approval #X' |
+| AC-8 | ✓ PASS | 系统配置 DenseTable + lazy Monaco + updateSystemConfig dual approval |
+| AC-9 | ⚠ WARN | listPostReview 用 actionType='update_system_config'(非 'emergency_switch_triggered')；无独立 PostReviewTab 组件可复用(功能等效) |
+| AC-10 | ✓ PASS | 4 KPI: totalFlags/enabledFlags/recentChanges/emergencyActivations |
+| AC-11 | ⏭ SKIP | 无运行服务器无法完成 agent-browser 测试 |
+| AC-12 | ✓ PASS | 8 procedures + 7 middleware 闸链 |
+| AC-13 | ✓ PASS | 1978 tests 全部通过，approvals 页面未受影响 |
+| AC-14 | ✓ PASS | 1978 ≥ 1860 · typecheck EXIT:0 · audit:redlines-admin ALL PASS |
+| AC-15 | ✓ PASS | api + admin typecheck 全 PASS |
+
+### CONFIRMED 失败
+
+**AC-4 · reason 字段未传递到 mutation**
+- 复现: `FeatureFlagsPage.tsx:170-173` — `emergencyToggle.mutate({configKey, incidentId})` 无 reason
+- 后端 schema 也无 reason 字段
+- AC-4 明确 "必填 incidentId + 决策理由"；AC-11 明确 "reason 提交"
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-014/
+├── manifest.json      (verdict=FAIL, zero_regression=PASS)
+├── pytest.xml         (35 tests passed)
+├── pytest-full.xml    (1978 tests passed)
+├── pytest-full.stdout.txt
+├── pytest.stdout.txt
+└── typecheck.stdout.txt
+```
+
+### 判决
+
+`prd.json.passes = false`, `retryCount = 1`

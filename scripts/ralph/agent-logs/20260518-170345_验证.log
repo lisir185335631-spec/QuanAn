@@ -1,0 +1,22 @@
+## 验证结果: US-007 PASS
+
+### AC 对照
+
+- **AC-1** ✓ — CopywritingAgent.ts `invokeLLM()` → `_invokeStep7()` → `gateway.stream()` → `_consumeStream()` 真 SSE。model 从 meta chunk 读（非硬编码）。`history.create` 已在 `stepData.ts:255` brownfield wiring。
+- **AC-2** ✓ — LivestreamAgent.ts `invokeLLM()` 按 sub_function 分派：`_invokeGeneratePlan()`（6 模块 GeneratePlanBaseSchema）vs `_invokeOptimizeScript()`（2 InfoCard OptimizeScriptBaseSchema）。独立 system prompt 各自定义。experience enum `['新手','有经验','资深']` zod.enum 验证 at line 97-102。
+- **AC-3** ✓ — 两个 `*.real-llm.test.ts` 存在。`describe.skipIf(skipIfNoKey)` guard 正确。always-run fallback 对齐测试：CopywritingAgent 1 个，LivestreamAgent 3 个，全部通过。
+- **AC-4** ✓ — CopywritingOutputSchema refine（markdown 必含 # heading · min 500）；GeneratePlanOutputSchema 6 字段 min 约束；OptimizeScriptOutputSchema 2 字段 min 约束。Fallback templates 经 always-run 测试验证。（AC 描述的 "body.text 嵌套" 在实现中以顶层 `markdown` 字段实现，无独立 body.text 字段，测试文件与实现一致。）
+- **AC-5** ✓ — `BaseSpecialist._writeCostLog(agentMode: req.mode)` at line 139。CopywritingAgent mode='step7' → agentMode='step7'；LivestreamAgent mode='generate_plan'/'optimize_script' → agentMode 对应传入。
+- **AC-6** ✓ — `pnpm vitest run CopywritingAgent.real-llm.test.ts LivestreamAgent.real-llm.test.ts`：8 tests，4 skipped（无 API key），4 passed，0 failed。
+- **AC-7** ✓ — typecheck 无错误（exit 0）；零回归：14 passed，0 failed。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-007/
+已生成: vitest.xml (8 tests · 0 failures), pytest-full.xml (14 passed · 0 failed), typecheck.stdout.txt (clean), manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` | `retryCount = 0` | `notes = ""`

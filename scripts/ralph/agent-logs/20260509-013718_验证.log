@@ -1,0 +1,43 @@
+---
+
+## 驗證結果: US-003 [PASS]
+
+### AC 對照（13/13）
+
+| AC | 描述 | 結果 |
+|:--:|---|:--:|
+| 1 | `invokeLLM` 抽象方法 · 子類透過 `this.llmGateway.complete()` 實現 | ✓ |
+| 2 | LLMGateway 支援 `responseFormat: json_schema` · Anthropic: tool_use · OpenAI: json_object | ✓ |
+| 3 | `safeParse` 失敗 → retry 1 次 → 二次失敗 throw `SchemaValidationError` | ✓ |
+| 4 | cost_log 完整欄位 · `callType='specialist_call'` · `target={stepKey,agentId}` jsonb | ✓ |
+| 5 | `generateSpecialistTraceId(accountId, agentId)` · 格式 `tr_42_PositioningAgent_ts_rand` | ✓ |
+| 6 | AbortError → `LLMTimeoutError(agentId, timeoutMs)` | ✓ |
+| 7 | 5xx/限流 → primary 失敗 → fallback 模型 → 仍失敗 throw | ✓ |
+| 8 | cost_log 寫失敗 → `logger.error` 不 crash · integration test 實證 | ✓ |
+| 9 | `base.llm.test.ts` ≥ 6 tests → **8 tests** | ✓ |
+| 10 | `specialist-llm.test.ts` nock SDK + real DB cost_log + SQL 查驗 | ✓ |
+| 11 | `timeout_ms=30_000` via AbortController · cost_log write 本地 PG < 50ms | ✓ |
+| 12 | Tests pass: **9/9** US-003 + **241/241** 全量 | ✓ |
+| 13 | Typecheck: **0 errors** across 6 workspace projects | ✓ |
+
+### 產物路徑
+
+```
+scripts/ralph/verify-artifacts/US-003/
+├── pytest.xml          (9 passed — US-003 specific)
+├── pytest.stdout.txt
+├── pytest-full.xml     (241 passed — X-6 零回歸)
+├── pytest-full.stdout.txt
+├── typecheck.txt       (0 errors)
+└── manifest.json
+```
+
+### 判決
+
+`prd.json.passes = true` · `notes = ""` · `retryCount = 0`
+
+---
+
+**備注給 Opus Audit**：
+- 全量測試第一次跑時 `auth.test.ts` 有 2 個失敗，原因是 `DATABASE_URL` 指向 `quanqn_test` 而不是 `quanqn`（auth.test.ts 需要主庫 + localhost:3000 server）。用正確環境變數重跑後 241/241 全過。US-003 未改任何 auth 相關代碼。
+- integration test 中 LLMGateway 內部的 `writeCostLog`（`callType='complete'`）因 `userId=0` FK violation 寫入失敗，被 try/catch 捕捉並 logged（符合 AC-8 語義）。Specialist 自身的 `_writeCostLog`（`callType='specialist_call'`）成功寫入，是測試驗證的目標行。

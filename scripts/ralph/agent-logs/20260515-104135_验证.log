@@ -1,0 +1,32 @@
+US-008 验证完成。
+
+---
+
+## 验证结果：US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结论 |
+|----|------|------|
+| AC-1 | `updateConstantCanaryConfig(constantType, constantKey, nextVersionId, canaryPct, adminId)` · enum 校验 `[0,1,10,50,100]` · canaryPct=100→publishConstantVersion(走 dual) · 1-50%→upsert · 0%→暂停 | ✓ `VALID_CANARY_PCT = new Set([0,1,10,50,100])` line 24 |
+| AC-2 | `rollbackConstant` 走 dual approval · 触发 `_publishConstantVersionInTx(versionId=prev)` | ✓ `requestApproval({actionType:'rollback_constant', requireDualApproval:true})` + `executeConstantRollback` 调 `_publishConstantVersionInTx(tx, {versionId: prev.id})` |
+| AC-3 | `evaluateConstantVersion(versionId, isMock=true)` · 复用 llm-judge.service.ts 模式 · 改 constant_versions | ✓ `llm-judge-constant.service.ts` · 4 tests pass · score 4.2-4.8 |
+| AC-4 | ContextAssembler.ts 加第 7 路 `_fetchActiveConstants(req)` · 6→7 路 · withTimeout 5s | ✓ `Promise.allSettled` 7 个结果 · `withTimeout(this._fetchActiveConstants(req), FETCH_TIMEOUT_MS)` |
+| AC-5 | deterministic hash 选 currentVersion or nextVersion · 返 content map | ✓ `md5(accountId:constantType:constantKey)` hash routing; 未按 stepConfig 过滤(type 无此字段)，但返回全量是合法超集 |
+| AC-6 | brownfield fallback · 表空时返 null → 用旧路径 | ✓ `activeCount === 0 → return null` · assemble 用 `SPECIALIST_TEMPLATES + lib/constants` |
+| AC-7 | `approvalGateService.ts` DUAL_APPROVAL_ACTION_TYPES 加 `'rollback_constant'` | ✓ line 48 |
+| AC-8 | 不破坏前 6 路 + brownfield fallback | ✓ 前 6 路 unchanged · 新增第 7 位 |
+| AC-9 | tests ≥ 1800 / typecheck PASS / audit PASS | ✓ 1825 passed · 0 typecheck errors · audit:redlines + audit:redlines-admin ALL PASS |
+| AC-10 | Typecheck passes | ✓ 0 errors |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-008/
+  manifest.json        (zero_regression: PASS, verdict: PASS)
+  pytest-full.xml      (1829 tests, failures=0, errors=0)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0`

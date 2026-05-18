@@ -1,0 +1,11 @@
+US-020 is complete. Here's a summary:
+
+**US-020 done:** Created `apps/api/src/trpc/routers/admin/invites.ts` with 6 procedures:
+- **list** — paginated with search/statusFilter/campaignFilter + audit
+- **create** — auto-generates code if not provided, low-risk audit
+- **batchImport** — papaparse CSV parsing, chunk-100 inserts, ≤10k row limit, skips duplicates and returns error list
+- **invalidate** — high-risk Approval Gates stub: super_admin → `auto_executed` + executes; admin → `pending` only; already-inactive codes throw `BAD_REQUEST('already invalidated')`
+- **detail** — invite metadata + activation history from auditLog + step9 progress via ipAccount/stepData
+- **campaignFunnel** — calls `getCampaignFunnel`, returns `[{stage, count}]` array
+
+Also updated `index.ts` (replaced placeholder), `audit-approval-gates.ts` (added `admin.invites.invalidate` to EXCEPTION list, raised threshold to 9), and wrote 27 unit tests. All checks pass: `pnpm typecheck` 0 errors, 27/27 tests pass, `audit:approval-gates` Checked 13 ≥ 9.

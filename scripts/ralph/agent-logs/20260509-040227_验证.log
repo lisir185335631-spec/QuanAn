@@ -1,0 +1,35 @@
+验证完成。
+
+---
+
+## 验证结果: US-010 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | 继承 BaseSpecialist · 单 mode · 五层配置 · model_tier='reasoning' · timeout_ms=30000 | ✓ 确认 (LivestreamAgent.ts:92, :83, :85) |
+| AC-2 | outputSchema = z.object({ lastResult: z.string().min(200), lastOptimizedResult: z.string().min(200) }) | ✓ 确认 (LivestreamAgent.ts:29-32) |
+| AC-3 | router stepData.save · stepKey='step8' 调 livestreamAgent.execute({ userInput }) | ✓ 确认 (stepData.ts:211-235) |
+| AC-4 | lastResult/lastOptimizedResult < 200 → zod min(200) 失败 → retry | ✓ BaseSpecialist:83-99 safeParse→retry 1次→SchemaValidationError · 单测 fallback 验证 |
+| AC-5 | experience 不在 ['新手','中级','高级'] → input zod 拒 | ✓ z.enum(EXPERIENCE_VALUES) · LLM 未被调用 |
+| AC-6 | memory.l2_read = ['stepData'] | ✓ 配置确认 |
+| AC-7 | knowledge.constants = ['industries'] | ✓ 配置确认 |
+| AC-8 | tests/unit/specialists/__tests__/LivestreamAgent.test.ts ≥ 4 tests | ✓ 5 tests (happy/fallback/edge/cold start/config)，全部通过 |
+| AC-9 | reasoning · 短输出 < 30s | ✓ timeout_ms=30000 · model_tier='reasoning' 配置已到位 |
+| AC-10 | Tests pass | ✓ 277/277 tests passed (零回归门禁) |
+| AC-11 | Typecheck passes | ✓ tsc --noEmit exit 0 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-010/
+├── pytest-full.xml     (5 tests, 0 failures — LivestreamAgent 专项)
+├── pytest-full.stdout.txt  (277 tests, 0 failures — 全量零回归)
+├── typecheck.txt       (exit 0)
+└── manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

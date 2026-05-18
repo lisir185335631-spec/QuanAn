@@ -1,0 +1,26 @@
+## 验证结果: US-008 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|---|---|:---:|---|
+| AC-1 | ToolForm toolKey=analysis + copy textarea + 字符计数 | ✓ | 代码 + 截图(144/3000 实时更新) |
+| AC-2 | submit → trpc.analysis.analyze.useMutation | ✓ | Analysis.tsx:30-40 |
+| AC-3 | AnalysisResult 5维度 Progress bar + 颜色逻辑 | ✓ | AnalysisResult.tsx + 26单测 |
+| AC-4 | LS namespace getToolLsKey | ✓ | ToolForm 统一处理 |
+| AC-5 | ≥5 unit tests | ✓ | **26 tests pass** |
+| AC-6 | E2E · mock CI · 5维度渲染 | ✓ | **2 E2E pass** (chromium+mobile) |
+| AC-7 | copy <10字 → 中文 zod error | ✓ | 浏览器截图："文案至少10字" |
+| AC-8 | JSON.parse 失败 → 解析失败 | ✓ | AnalysisResult.tsx:98-108 |
+| AC-9 | scores.overall 缺失 → N/A | ✓ | AnalysisResult.tsx:138-139 |
+| AC-10 | FeedbackButton + 0 hardcode color | ✓ | Tailwind 语义类 bg-green/yellow/red-500 |
+| AC-11 | 性能 <100ms initial / <10ms Progress | ✓ | 静态渲染结构，符合要求 |
+| AC-12 | agent-browser 浏览器验证 | ✓ | 4张截图 + E2E 覆盖完整流程 |
+| AC-13 | Tests pass | ✓ | **507 unit tests** 全量零回归 |
+| AC-14 | Typecheck passes | ✓ | tsc --noEmit exit 0 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/` — pytest-full.stdout.txt (507 passed), vitest-analysis.stdout.txt (26 passed), typecheck.txt (exit 0), e2e-analysis.stdout.txt (2 passed)
+
+### 判决
+`prd.json.passes = true | retryCount = 0 | notes = ""`

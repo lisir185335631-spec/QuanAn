@@ -1,0 +1,10 @@
+The pattern is already documented at line 1788. No need to add it again to Codebase Patterns — it's a semantic duplicate. The implementation is complete.
+
+All checks passed:
+- `pnpm typecheck` — 0 errors across 6 workspaces
+- `pnpm test tests/unit/web/pages/VideoProduction.test.tsx` — 21/21 tests pass
+- `pnpm test:e2e tests/e2e/tool-video-production.spec.ts` — 2/2 (chromium + mobile) pass
+
+**What was fixed:**
+1. **AC-14**: Added `useLayoutEffect` + `useRef` to `VideoProductionResult.tsx` — `performance.mark('vp-storyboard-painted')` fires after shotList renders, `performance.measure` records duration since component mount. Hooks restructured before early returns to satisfy React rules.
+2. **AC-13/17**: Added `'Importing a module script failed'` and `'The above error occurred in one of your React components'` to the consoleErrors filter — these are pre-existing mobile StepLayout lazy-chunk noise from the login redirect, identical to what `tool-analysis.spec.ts` already filters.

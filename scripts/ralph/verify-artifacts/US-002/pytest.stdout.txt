@@ -1,17 +1,10 @@
-============================= test session starts ==============================
-platform darwin -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0 -- /Users/return/.local/bin/python3.11
-cachedir: .pytest_cache
-rootdir: /Users/return/Desktop/QuanQn
-collecting ... collected 8 items
 
-scripts/ralph/test_cleanup_stale.py::test_removes_files_older_than_threshold PASSED [ 12%]
-scripts/ralph/test_cleanup_stale.py::test_keeps_files_within_threshold PASSED [ 25%]
-scripts/ralph/test_cleanup_stale.py::test_removes_only_stale_keeps_fresh PASSED [ 37%]
-scripts/ralph/test_cleanup_stale.py::test_multiple_story_dirs PASSED     [ 50%]
-scripts/ralph/test_cleanup_stale.py::test_no_verify_artifacts_dir PASSED [ 62%]
-scripts/ralph/test_cleanup_stale.py::test_empty_story_dir PASSED         [ 75%]
-scripts/ralph/test_cleanup_stale.py::test_custom_threshold PASSED        [ 87%]
-scripts/ralph/test_cleanup_stale.py::test_logs_cleanup_message PASSED    [100%]
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/api
 
-- generated xml file: /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-002/pytest.xml -
-============================== 8 passed in 0.02s ===============================
+ ✓ src/services/quota/__tests__/userQuota.service.test.ts (5 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  12:42:03
+   Duration  155ms (transform 16ms, setup 0ms, collect 13ms, tests 3ms, environment 0ms, prepare 30ms)
+

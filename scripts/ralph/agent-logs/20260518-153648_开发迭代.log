@@ -1,0 +1,9 @@
+US-005 完成。总结：
+
+**已实现：**
+1. **VideoAgent.ts** — shooting mode 从 13 列升级为 8 列分镜表 schema（duration/scene/shotType/angle/movement/emotion/dialogue/action），新增 `Storyboard8ColItemSchema` 和 `Storyboard8ColItem` type 导出，SHIELD 英文 key 防 LLM 漂移
+2. **Step6Result.tsx** — 同步更新 8 列显示（ShotItem interface + SHOT_COLUMNS + colSpan 14→9）
+3. **MonetizationAgent.real-llm.test.ts** — `describe.skipIf(无 key)` · ladder[3] 严格验证 + schema safeParse + cost_log tokens>0
+4. **VideoAgent.real-llm.test.ts** — `describe.skipIf(无 key)` · EXPECTED_8_COLS 严格列名匹配 + per-item safeParse + cost_log tokens>0
+
+**质量：** typecheck 0 error（api + web）· 10 passed + 6 skipped · zero-regression

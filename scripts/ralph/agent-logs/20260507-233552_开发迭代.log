@@ -1,0 +1,5 @@
+US-005 完成。
+
+**结果**：pnpm install → 全 workspace typecheck 零错误 → commit `ce1ed9a`（18 文件，12 shadcn 组件 + Header.tsx + utils.ts）。
+
+**audit-exemption 备注**：shadcn 组件落在 `apps/web/src/components/ui/`（shadcn 默认约定），而非 AC-1 要求的 `packages/ui/src/base/`，Opus audit 时需豁免此路径偏差。

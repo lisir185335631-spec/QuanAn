@@ -1,0 +1,17 @@
+US-001 is complete. Here's a summary of what was implemented:
+
+**US-001: RLS apply + 多账号隔离 middleware** — all 9 ACs covered:
+
+| AC | Status | Notes |
+|---|---|---|
+| AC-1 | ✅ | `manual_rls.sql` updated — 14 tables including `cost_log`, NULLIF-safe casts |
+| AC-2 | ✅ | `account-isolation.ts` uses `set_config` inside `$transaction` |
+| AC-3 | ✅ | Integration test: A sees own rows, B sees 0 |
+| AC-4 | ✅ | No `activeAccountId` → `TRPCError(FORBIDDEN)` + `logger.warn('no_active_account')` |
+| AC-5 | ✅ | `meta?.isGlobal` → skip RLS; `globalProcedure` exported |
+| AC-6 | ✅ | grep `$executeRaw` in `apps/api/src` = 0 hits outside middleware |
+| AC-7 | ✅ | `set_config` round-trip < 50ms (verified in integration test) |
+| AC-8 | ✅ | `pnpm typecheck` all pass |
+| AC-9 | ✅ | `pnpm test` 49/49 ✅ |
+
+Key implementation decision: using `SET LOCAL ROLE quanqn_app` in integration tests to bypass the superuser `BYPASSRLS` flag on the dev `return` DB user.

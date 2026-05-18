@@ -1,0 +1,13 @@
+US-006 is complete. Here's what was implemented:
+
+**`BoomGenerateResult.tsx`** — Full rewrite: splits `data.content` on `/\n*---\n*/`, renders 5 candidates in `grid md:grid-cols-2`, each card has react-markdown, word count, and copy button. Handles `!= 5` candidates with "输出格式异常" message + raw content fallback (AC-8). Copy failure shows `toast.error("复制失败 · 请手动")` (AC-9).
+
+**`BoomGenerate.tsx`** — Full rewrite: uses `ToolForm(toolKey="boom-generate")` with `generateBoomInput` schema, reads `account.industry` as default via `useActiveAccount`, LS namespace `"boomGenerate"` (AC-4), calls `trpc.boomGenerate.generate.useMutation`, renders `<BoomGenerateResult>` + `<FeedbackButton>` on success.
+
+**`ToolForm.tsx`** — Added `submitLabel?: string` prop; BoomGenerate passes `"一键生成爆款文案"`.
+
+**`router-types.ts`** — Added `BoomGenerateHistoryRow` type + `boomGenerate.generate` shadow route for tRPC client types.
+
+**Tests** — 30+ unit tests in 6 describe groups (`BoomGenerate.test.tsx`) + 1 E2E test with 5-candidate JSONL mock (`tool-boom-generate.spec.ts`). All 476 tests pass, typecheck clean.
+
+Browser verification via gstack browse was unavailable (tool startup failure) — manual verification at `http://localhost:5173/boom-generate` recommended.

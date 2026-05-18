@@ -1,0 +1,39 @@
+prd.json 已更新。验证完成，总结如下：
+
+---
+
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| AC | 状态 | 关键证据 |
+|---|:---:|---|
+| AC-1 callProvider 真实施 + 4 models | ✓ | `_callAnthropic` 调 `client.messages.create()`, `_callOpenAI` 调 `client.chat.completions.create()`; MODEL_BY_TIER 4 model 配齐 |
+| AC-2 @upstash/ratelimit token bucket 3 档 | ✓ | `Ratelimit.tokenBucket(limit,'1d',limit)`; PLAN_LIMITS={free:50,pro:500,enterprise:5000} |
+| AC-3 primary fail→retry 1→fallback | ✓ | `_callWithRetry(primary,req,1)` = 2 次 primary; 测试确认 Anthropic 调 2 次, OpenAI 1 次 |
+| AC-4 两 provider 失败→模板+log+cost_log | ✓ | `logger.error('llm.both_failed')` + `writeCostLog({success:false,errorCode:'BOTH_FAILED'})` |
+| AC-5 API key 缺→精确 error 消息 | ✓ | `ANTHROPIC_API_KEY missing for reasoning tier` regex 测试通过 |
+| AC-6 cost_log 字段全写 | ✓ | userId/model/tokens/durationMs/success/isFallback/traceId 均在 writeCostLog 中落盘 |
+| AC-7 ★ R-1 anthropic-sdk 唯一入口 | ✓ | grep 仅命中 `llm-gateway/index.ts` 1 文件 |
+| AC-8 ★ R-1 openai 唯一入口 | ✓ | grep 仅命中 `llm-gateway/index.ts` 1 文件 |
+| AC-9 ★ API key 零 log | ✓ | grep API_KEY + log 关键词 → 0 命中 |
+| AC-10 latency/cost SLA | NOTE | 生产 SLA, 不可 unit test; 实现用 60s timeout + Upstash; 成本估算合理 |
+| AC-11 超 quota→RateLimitError 不调 LLM | ✓ | `callProviderSpy.not.toHaveBeenCalled()` 测试通过 |
+| AC-12 Typecheck | ✓ | 6 packages exit 0 |
+| AC-13 ≥6 单元 + 1 集成 | ✓ | 15 单元(vi.mock) + 1 集成(nock) = 16/16 通过 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-007/
+  manifest.json         — 本次验证元数据 (verdict: PASS)
+  typecheck.txt         — 全 6 packages typecheck exit 0
+  unit-tests.stdout.txt — 16 story 专属测试全通过
+  pytest-full.stdout.txt — 全量 159/159 零回归通过
+```
+
+### 判决
+
+- `prd.json.passes = true`
+- `notes = ""`
+- `retryCount = 0`

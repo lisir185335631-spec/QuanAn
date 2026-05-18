@@ -1,0 +1,21 @@
+US-004 is complete. Here's what was implemented:
+
+**Monetization.tsx** (130+ lines):
+- Uses `StepForm stepKey="step4b"` with `MonetizationInputSchema` (step4b fields: productDescription, audienceProfile, ipPositioning, currentRevenue)
+- Calls `trpc.monetization.generate.useMutation()` in `onSuccess` handler
+- URL state via `useSearchParams` (`?done=1`) + localStorage draft via `getToolLsKey(accountId, 'monetization', 'draft')`
+- Shows `StepResult stepKey="step4b"` with currentAnalysis/ladder/revenueStructure/successCases
+
+**PresentStyles.tsx** (240+ lines):
+- Custom form: textarea for 文案内容 + Select for 7 platforms
+- Calls `trpc.presentStyles.recommend.useMutation()`
+- URL state (`?text=&platform=`, debounced) + localStorage draft
+- Renders 5 style cards (图文/短视频/直播口播/长图文/漫画) with examples
+
+**Backend/Schemas**:
+- `MonetizationInputSchema` re-exported from `Step4bInputSchema`
+- New `presentStyles.schema.ts` with full type definitions
+- New `presentStylesRouter` (stub with `PresentationAgent`)
+- Shadow router in `router-types.ts` updated for both routes
+
+**Tests**: 14 + 17 = 31 tests passing. Typecheck: 0 errors.

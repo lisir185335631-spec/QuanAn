@@ -1,0 +1,25 @@
+## 验证结果: US-001 [PASS]
+
+**所有 16 项 AC 全部通过。**
+
+### 关键修复确认 (R1 → R2)
+
+AC-7 (唯一第 1 次失败项) 已修复：
+- `apps/api/src/specialists/CopywritingAgent.ts:28` — `import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io'` ✓
+- `CopywritingAgent.ts:119` — `export type CopywritingAcquisitionOutput = AcquisitionCopywritingOutput` ✓
+
+### X-6 零回归门禁
+
+```
+vitest run: 727/727 pass (75 test files)
+typecheck:  6 workspaces · 0 errors
+lint:       --max-warnings=0 · 0 warnings
+```
+
+### prd.json 写入
+
+```
+US-001: passes=true · notes="" · retryCount=0
+```
+
+产物已写入 `scripts/ralph/verify-artifacts/US-001/`。编排器可继续推进 audit-gate 流程。

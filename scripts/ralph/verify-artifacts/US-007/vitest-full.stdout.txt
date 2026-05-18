@@ -1,0 +1,15 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/lib/constants/__tests__/step8.test.ts (9 tests) 1ms
+stderr | src/pages/step/__tests__/Step8.test.tsx > Step8 > renders h1 with 直播策划
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step8.test.tsx (7 tests) 51ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  08:36:43
+   Duration  655ms (transform 65ms, setup 81ms, collect 184ms, tests 52ms, environment 454ms, prepare 102ms)
+

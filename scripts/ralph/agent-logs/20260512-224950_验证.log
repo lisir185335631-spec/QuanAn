@@ -1,0 +1,26 @@
+## 验证结果: US-009 PASS
+
+### AC 对照
+
+- AC-1: IpAccountAdminNote schema ✓ — prisma/schema.prisma:917-928, 所有字段 + 2 indexes 正确
+- AC-2: IpAccountAnomalyFlag schema ✓ — prisma/schema.prisma:931-946, 所有字段 + 3 indexes 正确
+- AC-3: 2 tables + 5 indexes 建成 ✓ — psql 确认 ip_account_admin_notes(2 idx) + ip_account_anomaly_flags(3 idx) 存在于 DB（含在 init migration 中）
+- AC-4: manual_admin_rls.sql DISABLE RLS ✓ — psql 确认 rowsecurity=f 两张表
+- AC-5: audit-admin-rls-tables.sh 含两表 ✓ — 脚本运行 13/13 PASS
+- AC-6: detectAccountAnomalies() Promise<{detected}> + $transaction + SET LOCAL ✓
+- AC-7: inactive_no_feedback detect ✓ — 7d history + 0 feedback
+- AC-8: evolution_stalled detect ✓ — 7d no new insight
+- AC-9: frequent_account_switch detect ✓ — 同 user 3+ accounts in 7d
+- AC-10: cost_spike detect ✓ — last-24h > 3× avg daily (30d)
+- AC-11: BullMQ cron '0 5 * * *' tz Asia/Shanghai jobId 'anomaly-detection-recurring' ✓
+- AC-12: same-day dedupe ✓ — findFirst(detectedAt >= todayStart + resolvedAt: null)
+- AC-13: 已 resolved 的不再 detect ✓ — 所有 findFirst 含 resolvedAt: null
+- AC-14: 10 unit tests ✓ — ≥8 required，4 anomaly types + dedupe 全覆盖
+- AC-15: pnpm test 0 regressions ✓, pnpm typecheck 0 errors ✓, audit:admin-rls-tables 0 命中 ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-009/`
+已生成: pytest-full.xml (1139 tests · 3 pre-existing failures unrelated to US-009), pytest-full.stdout.txt, typecheck.stdout.txt
+
+### 判决
+`prd.json.passes = true`, `retryCount = 0`, `notes = ""`

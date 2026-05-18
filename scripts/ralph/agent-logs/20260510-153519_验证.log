@@ -1,0 +1,42 @@
+## 验证结果: US-009 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | dall-e-3.ts 真实施 · 移除 throw 占位 · 实现 generateImage | ✓ |
+| AC-2 | OpenAI SDK 仅 dall-e-3.ts import · 其他位置 0 image API 调用 | ✓ |
+| AC-3 | 调用参数 model/size/style/quality=standard | ✓ (line 147-154) |
+| AC-4 | IMAGE_GEN_ENABLED 开关 | ✓ (line 124-127) |
+| AC-5 | OPENAI_API_KEY 缺失 throw · 不暴露 key 值 | ✓ (line 131-133) |
+| AC-6 | 3 retries exponential backoff · 失败返回 error result | ✓ (line 141-168) |
+| AC-7 | cost_log 写入 eventType=image_gen · 字段全 | ✓ (line 28-45) |
+| AC-8 | Asset 写入 · explicit accountId | ✓ (line 53-70) |
+| AC-9 | history.scenes 反写 · prisma ORM transaction · read-modify-write | ✓ (line 82-116) |
+| AC-10 | cost-logger.ts VALID_EVENT_TYPES 含 image_gen | ✓ (line 19) |
+| AC-11 | .env.example 加 IMAGE_GEN_ENABLED + OPENAI_API_KEY | ✓ |
+| AC-12 | 6 unit tests 全部通过 | ✓ (7 passed) |
+| AC-13 | integration test mock OpenAI + real DB 通过 | ✓ |
+| AC-14 | boundary 约束 (代码层面) | ✓ (实现 payload 类型约束) |
+| AC-15 | mock 调用 < 100ms | ✓ (integration test 验证) |
+| AC-16 | cost_log < 50ms | ✓ (integration test 验证) |
+| AC-17 | pnpm typecheck 0 error | ✓ (exit_code=0) |
+| AC-18 | 指定 tests 退出码 0 | ✓ (7 passed, exit_code=0) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+├── typecheck.txt       (0 errors)
+├── vitest.stdout.txt   (7 passed)
+├── vitest.xml          (661 tests, 0 failures - full suite)
+└── manifest.json
+```
+
+### 零回归 (X-6)
+
+全量 661 tests · 0 failures · 0 errors ✓
+
+### 判决
+
+`prd.json.passes = true` · retryCount=0 · notes 清空

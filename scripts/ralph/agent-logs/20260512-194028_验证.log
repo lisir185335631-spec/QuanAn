@@ -1,0 +1,51 @@
+## 验证结果: US-007 [FAIL]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|---|---|
+| AC-1 | ✓ | index.tsx 存在，placeholder.tsx 已删 |
+| AC-2 | ✓ | UsersOverviewCards.tsx 4 数字卡片 |
+| AC-3 | ✓ | UserListFilters.tsx debounce 300ms |
+| AC-4 | ✓ | UserDetailDrawer.tsx 5 Tab 全内嵌同一文件 |
+| AC-5 | **✗ FAIL** | 4处缺失（见下） |
+| AC-6 | ✓ | ChangePlanDialog 完整 |
+| AC-7 | **✗ FAIL** | BanUserDialog 缺少 durationDays |
+| AC-8 | ✓ | ResetPasswordDialog 含临时密码可复制 |
+| AC-9 | ✓ | PlanBadge 4色 |
+| AC-10 | ✓ | DenseTable virtualScroll 6列 onRowClick |
+| AC-11 | ✓ | admin-routes.ts users prd:11 |
+| AC-12 | ✓ | 单 detail query 内部 Promise.all 5 并行 DB 查询（语义一致） |
+| AC-13 | ✓ | admin 角色 toast '已提交·等审批' |
+| AC-14 | ✓ | isReadonly 隐藏操作按钮 |
+| AC-15 | ✓ | 4卡片+6过滤控件+6列（浏览器确认） |
+| AC-16 | ✓ | 搜索 URL 更新 |
+| AC-17 | ✓ | 抽屉打开 5 Tab 全可见 |
+| AC-21 | ✓ | ROW_HEIGHT=32px |
+| AC-22 | ✓ | URL params 持久化 |
+| AC-23 | ✓ | 无 JS 错误（401 是预期 auth 错误） |
+
+### CONFIRMED 失败详情
+
+**AC-5 失败项 ×4：**
+1. `ActivityTab` 缺 **反馈饼图** — 只显示正/负反馈数字，无饼图
+   - 复现: `grep -n "pie\|chart\|Pie" apps/admin/src/pages/users/UserDetailDrawer.tsx` → 无匹配
+2. `ActivityTab` 缺 **30天日历** — 完全没有实现
+   - 复现: `grep -n "calendar\|Calendar\|heatmap" apps/admin/src/pages/users/UserDetailDrawer.tsx` → 无匹配
+3. `CostTab` 缺 **月度折线图** — 只有 totalTokens/totalCalls 聚合卡片
+4. `CostTab` Top5 Specialist 是 **placeholder stub** — 代码写死 `"Top 5 Specialist 成本数据待接入 · 需 cost_log 聚合索引"`
+
+**AC-7 失败项 ×1：**
+5. `BanUserDialog` 无 `durationDays` 字段 — UI state 和 banUserInput schema 均缺失
+
+### 零回归门禁
+
+全量 vitest 1130+ 测试，failures=3 与 US-006 产物完全一致（`evolution-threshold` / `ip-progress-integration` / `rls-isolation` 均为预存在 FK 约束 TD），**零新回归**。
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-007/`：`typecheck.stdout.txt` · `pytest-full.xml` · `pytest-full.stdout.txt` · `manifest.json`
+
+---
+
+**prd.json 已更新**：`passes=false`, `retryCount=1`，修复建议已写入 notes 字段供下轮 ralph 使用。

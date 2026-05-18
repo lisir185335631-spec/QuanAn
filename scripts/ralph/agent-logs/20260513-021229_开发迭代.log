@@ -1,0 +1,14 @@
+US-017 is complete. Here's a summary of what was implemented:
+
+**Files created:**
+- `apps/admin/src/pages/audit/index.tsx` — Main page with 3 stat cards (日操作量/cross_account_query/异常事件 derived from `listMine`), TraceLookupInput, 用户/admin Tab switcher, AuditTimeline, PDF forensic export button + dialog
+- `apps/admin/src/pages/audit/TraceLookupInput.tsx` — trace_id input (min 8 chars) + submit
+- `apps/admin/src/pages/audit/AuditTimeline.tsx` — DenseTable with `virtualScroll={items > 100}` (built-in useVirtualizer), eventCategory colors (auth=blue / data_query=gray / cross_account=orange / high_risk_action=red / security_alert=red), payloadHash column
+- `apps/admin/src/pages/audit/AuditDetailDrawer.tsx` — Right-side drawer with payloadHash prominently displayed, collapsible prompt/response/context/raw payload sections
+
+**Files modified:**
+- `packages/clients/src/admin-router-types.ts` — Added byTraceId/byUserId/byAdminId/search/exportPdf to audit shadow router
+- `apps/admin/src/router.tsx` — Replaced `AuditPlaceholder` with `AuditPage`
+- Deleted `apps/admin/src/pages/admin/placeholder/audit.tsx`
+
+**Verification:** `pnpm typecheck` passes with 0 errors. All 1260 existing tests continue to pass (9 pre-existing integration failures unrelated to this story).

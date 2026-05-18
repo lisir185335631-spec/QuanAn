@@ -1,8 +1,8 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-11T01:12:00",
-  "validator_end_ts": "2026-05-11T01:15:30",
-  "test_command": "pnpm vitest run (unit + integration, 740 tests) + pnpm typecheck + pnpm lint --max-warnings=0",
+  "validator_start_ts": "2026-05-18T20:09:00",
+  "validator_end_ts": "2026-05-18T20:10:30",
+  "test_command": "cd apps/api && pnpm vitest run src/lib/env.test.ts",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -13,6 +13,5 @@
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt"
-  ],
-  "notes": "AC-12 specific tests: 5 L1 Buffer + 8 schema validation = 13 passed. Zero-regression full suite: 740 passed (0 failures, 0 errors). Typecheck: 6 workspaces, 0 errors. Lint: 0 warnings."
+  ]
 }

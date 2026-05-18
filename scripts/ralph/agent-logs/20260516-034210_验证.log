@@ -1,0 +1,33 @@
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | PrivateDomain.tsx 400+ 行 | ✓ (438 行) |
+| AC-2 | 6 阶段卡片 · 引流/加微/信任/朋友圈打造/成交/复购 · 状态(未生成/已生成) · 点击展开 | ✓ |
+| AC-3 | 配置表单 6 字段 | ✓ |
+| AC-4 | useMutation + 6 阶段 SOP 渲染 + 阶段间连线动画 | ✓ |
+| AC-5 | 历史回看 DenseTable + restore 按钮 | ✓ |
+| AC-6 | URL state ?view=flow\|config\|result\|history | ✓ (browser 实测) |
+| AC-7 | localStorage draft debounce 1s | ✓ |
+| AC-8 | generateStream .subscription(async function* ...) · yield phase/done chunks | ✓ (privateDomain.ts:150) |
+| AC-9 | tests/unit/web/pages/PrivateDomain.test.tsx ≥ 10 it | ✓ (40 tests, all pass) |
+| AC-10 | browser: config 填表→submit→result 6 阶段渲染→history 见新记录 | ✓ (3 screenshots) |
+| AC-11 | pnpm vitest pass / typecheck PASS | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+├── manifest.json        (exit_code=0, zero_regression=PASS, verdict=PASS)
+├── pytest.xml           (40 passed)
+├── pytest.stdout.txt    (40 passed)
+├── pytest-full.xml      (2141 passed, 0 failures, 0 errors)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt (6 workspaces, all PASS)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

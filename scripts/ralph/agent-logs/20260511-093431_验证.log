@@ -1,0 +1,31 @@
+验证完成。
+
+---
+
+## 验证结果: US-002 PASS
+
+### AC 对照
+- AC-1: EvolutionAgent.ts ✓ — BaseSpecialist 继承 · agentId='EvolutionAgent' · outputSchema=EvolutionInsightContentSchema · model_tier='reasoning' · timeout_ms=60000 · execute() throw 'PRD-8 US-003 真接'
+- AC-2: DailyTaskAgent.ts ✓ — agentId='DailyTaskAgent' · outputSchema=DailyTaskOutputSchema · model_tier='lightweight' · timeout_ms=30000 · execute() throw 'PRD-8 US-007 真接'
+- AC-3: VoiceChatAgent.ts ✓ — agentId='VoiceChatAgent' · model_tier='reasoning' · tools=['llm.stream','llm.tools'] · execute() throw 'PRD-8 US-011 真接' · 顶部 export VOICE_CHAT_TOOLS 5 工具
+- AC-4: workers/evolution/queue.ts + workers/daily-task/queue.ts ✓ — BullMQ Queue + Redis connection · 无 Worker 启动
+- AC-5: cron/daily-task-runner.ts ✓ — cron.schedule('0 0 * * *') · scheduled=false · 无 cron.start()
+- AC-6: 3 ContextAssembler templates ✓ — evolution-agent.ts / daily-task-agent.ts / voice-chat-agent.ts · 各含 persona + methodology
+- AC-7: SPECIALIST_TEMPLATES ✓ — EvolutionAgent / DailyTaskAgent / VoiceChatAgent 3 entries 已加
+- AC-8: type alias re-export ✓ — 3 Specialist 文件均 import type + export type 双写
+- AC-9: SoT ✓ — 5 工具 name 在 7 个文件一致(VoiceChatAgent.ts · voice-chat-agent.ts · voiceChat.schema.ts 等) · 7 task type 在 3 个文件 ≥7 出现
+- AC-10: 6 unit tests ✓ — 3 Specialist 各 2 tests (stub throw + schema getter) 全过
+- AC-11: pnpm typecheck 0 error ✓ · pnpm lint --max-warnings=0 ✓
+- AC-12: pnpm test 746/746 ✓ (740 existing + 6 new)
+- Typecheck passes ✓
+- Tests pass ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-002/`
+- `pytest-full.xml` (746 passed, 0 failed, 0 errors)
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt`
+- `manifest.json` (zero_regression=PASS · verdict=PASS)
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

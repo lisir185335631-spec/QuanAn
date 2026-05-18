@@ -1,0 +1,11 @@
+US-011 实现完成。
+
+**完成摘要：**
+
+- `packages/schemas/src/specialist-io/step-inputs.schema.ts` — 9 个 input schemas (Step1/3/3b/4/4b/5/6/7/8) + 5 个常量集合（56行业/5平台/5类别/20脚本类型/23爆款元素）
+- `StepForm.tsx` — 通用 wrapper：`useForm(zodResolver)` + `trpc.stepData.save.useMutation` + LS-first 双写（REJ-010/035）+ AbortController unmount 清理
+- 4 个字段组件：`IndustrySelect`（56行业分组+ScrollArea）、`PlatformSelect`、`CategorySelect`、`TextareaField`
+- Step1~Step8 页面（含 3b/4b）替换占位卡片 → `<StepForm />`
+- `tests/unit/web/StepForm.test.tsx` — 19 个测试（schema 结构/submit-happy/zod-fail-Chinese-error/mutation-success/error）
+- 所有 AC grep 检查通过：0 FeedbackButton in pages/step/、0 hardcode color、0 inline z.object 重复定义
+- `pnpm typecheck ✅` · `pnpm test 292/292 ✅`

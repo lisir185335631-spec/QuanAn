@@ -1,0 +1,10 @@
+US-007 is implemented and committed. Here's what was done:
+
+**Changes:**
+- `scripts/ralph/ralph.py` (+ global `~/.claude/scripts/ralph/ralph.py`, kept in sync):
+  - Added `import re`
+  - New `_check_existing_commit(story_id, since='30 minutes ago')` — runs `git log --since=<since> --oneline` in `PROJECT_ROOT`, regex-matches `[story_id]`, returns the 7-char hash or `None`
+  - New `_write_path_b_audit_gate(story_id, commit_hash)` — writes `audit-gate.json` with PATH-B metadata (`commit_hash`, `reason`, `status=pending`) and emits `PENDING_DETECTED:` for the Monitor
+  - Modified P2 MAX_RETRIES block: when `retryCount >= 5`, first checks git log; if commit found (and `[PATH-B]` not already in notes), sets `passes=True`, writes PATH-B audit-gate, waits for Opus review; if PATH-B already tried or no commit found → original BLOCKED behavior
+
+- `scripts/ralph/test_path_b.py` — 6 mock tests, all passing (AC-3/AC-6/AC-7/AC-8)

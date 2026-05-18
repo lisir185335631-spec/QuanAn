@@ -1,0 +1,6 @@
+US-004 완료. 5개 Specialist mock router(copywriting 4개 + videoAnalysis 2개 + videoProduction 3개 + boomGenerate 1개 + monetization 1개)를 구현했고, 11/11 단위 테스트 통과 및 typecheck 클린.
+
+**주요 결정 사항:**
+- API의 `rootDir: "./src"` 제약으로 인해 `@quanqn/schemas` 직접 import 불가 → 기존 `ipAccounts`/`stepData` 패턴과 동일하게 router 내부에 Zod schema 인라인
+- `packages/schemas/src/specialist-io/` 에는 클라이언트(웹/어드민) 사용을 위한 canonical schema 파일 6개 생성
+- `traceMiddleware`가 `publicProcedure`에서 `traceId`를 덮어쓰므로, 테스트 mock Request에 `x-trace-id` 헤더 추가 필요

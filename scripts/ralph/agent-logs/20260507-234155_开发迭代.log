@@ -1,0 +1,17 @@
+**US-006 实现完成**。
+
+交付内容：
+
+**后端：**
+- `apps/api/src/lib/auth/` — Lucia v3 Prisma adapter + lucia 实例 + OAuthProvider 抽象（MockProvider + GoogleProvider with arctic v3）
+- `prisma/schema.prisma` + 迁移 — 新增 `sessions` 表
+- `apps/api/src/index.ts` — CORS、`/auth/login`、`/auth/callback`、`/auth/logout` 路由 + 启动校验（SESSION_SECRET ≥32、OAUTH_PROVIDER 合法）
+- `apps/api/src/trpc/context.ts` — 异步 context 读 lucia session cookie → user
+- `apps/api/src/trpc/routers/auth.ts` — `auth.me` 返回真实用户
+
+**前端：**
+- `apps/web/src/lib/trpc.ts` — shadow-router pattern（本地 initTRPC 构建 AppRouter type，避免跨包 rootDir 问题）
+- `apps/web/src/hooks/useAuth.ts` — `useAuth()` hook
+- `apps/web/src/components/Header.tsx` — 实时登录态（未登录→登录按钮，已登录→头像 dropdown）
+
+**测试：** 4 单元 + 2 集成 + 2 E2E 风格 = 19 tests · all pass；typecheck 全 workspace 通过

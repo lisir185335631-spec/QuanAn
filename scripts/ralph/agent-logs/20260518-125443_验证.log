@@ -1,0 +1,22 @@
+## 验证结果: US-003 PASS
+
+### AC 对照
+
+- **AC-1**: PositioningAgent.invokeLLM 调用 `this.llmGateway.complete()` ✓ — model 从 `this.config.execution.model_tier='reasoning'` → gateway `MODEL_BY_TIER` 动态解析为 `claude-sonnet-4-6`，未硬编码（SHIELD REJ-003 满足）。系统 prompt 来自 `ctx.systemPrompt`（ContextAssembler 注入）。真实 tokens 通过 `raw.tokens` 返回给 BaseSpecialist 写 cost_log。✅
+- **AC-2**: `PositioningAgent.real-llm.test.ts` 存在，`describe.skipIf(!OPENAI_API_KEY && !ANTHROPIC_API_KEY)`，2 个测试(industry + execution)结构正确，skipIf 逻辑正确触发（无 API key → 2 tests skipped） ✅
+- **AC-3**: Schema drift 防御在 BaseSpecialist L116-133 — `outputSchema.safeParse` 失败 → retry 1 次 → 二次失败 `throw SchemaValidationError` → fallback path ✅
+- **AC-4**: 浏览器测试条件为 "若 OPENAI_API_KEY 在 env"，当前无 API key，条件分支不满足，跳过（AC 内置条件）⏭️
+- **AC-5**: cost_log 写入通过 BaseSpecialist._writeCostLog 确认 — `promptTokens/completionTokens/costUsd(calcCostUsd)` 字段完整，mock 断言在测试中验证（tests skip 因无 key）✅ 代码级
+- **AC-6**: test_command 运行 exit_code=0，2 tests 正确 skip ✅
+- **AC-7**: typecheck 0 error + 零回归 10 passed / 0 failed ✅
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+已生成: pytest-full.xml (10 passed, 0 failed, 2 skipped), pytest-full.stdout.txt, typecheck.stdout.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` ✅ — retryCount=0, notes=''

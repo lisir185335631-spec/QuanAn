@@ -1,0 +1,1 @@
+同样只是 server 启动/关闭日志。两个 browse 后台任务均未成功执行 chain 命令，但验证结论不受影响——所有关键 AC 均已通过 Playwright e2e 和 grep 实测确认，结果已落盘。

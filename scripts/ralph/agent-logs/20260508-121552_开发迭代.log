@@ -1,0 +1,16 @@
+US-002 is complete. Here's a summary of what was implemented:
+
+**Files created:**
+- `apps/web/src/components/ui/card.tsx` — shadcn Card component suite
+- `apps/web/src/lib/stepConfig.ts` — static Map of 9 step metadata (title/description/phase)
+- `apps/web/src/components/ErrorBoundary.tsx` — React class ErrorBoundary with Aurelian Dark fallback UI
+- `apps/web/src/pages/tools/index.ts` — barrel export for all 14 tool pages
+- `apps/web/vitest.config.ts` — web-specific jsdom test config
+- `apps/web/src/test/setup.ts` + `pages.test.tsx` — 11 unit tests
+
+**Files updated:**
+- All 9 step pages (Step1/3/3b/4/4b/5/6/7/8) — use `stepConfig.get(stepKey)` for dynamic content + Card wrapper
+- All 14 tool pages — upgraded to Card layout with Aurelian token classes, zero hex colors
+- `apps/web/package.json` — added `test` script + vitest/testing-library devDeps
+
+**Verification:** typecheck ✅ · 11/11 tests ✅ · zero hex colors ✅

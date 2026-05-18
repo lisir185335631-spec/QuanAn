@@ -1,0 +1,11 @@
+US-008 实现完成。
+
+**变更摘要：**
+- **新建** `llm-judge-constant.service.ts` — 镜像 `llm-judge.service.ts`，专属常量 LLM Judge，mock 模式写 `constant_versions.judgeScore`
+- **新建** `__tests__/llm-judge-constant.test.ts` — 4 个测试覆盖 score range / DB write / 默认 isMock / real eval throw
+- **修改** `constant-version.service.ts` — 将 `evaluateConstantVersion` import 来源改为新的专属 judge 服务
+- **修改** `ContextAssembler.ts` — 6 路扩展到 7 路，新增 `_fetchActiveConstants`：brownfield fallback（表空返 null）+ deterministic hash 路由 canary 版本，非 null 时注入 `[Section 7]` 并推入 `layersUsed`
+
+`approvalGateService.ts` 中 `'rollback_constant'` 已在 AC-7 指定的两处存在，无需修改。
+
+验证结果：typecheck 0 errors，1825 tests pass（≥1800 AC）。

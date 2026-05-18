@@ -1,0 +1,35 @@
+---
+
+## 验证结果: US-001 **PASS**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:--:|---|:--:|
+| AC-1 | `industries.ts` 含 `STEP1_TABS` 6 项(all/life/ecom/create/pro/mfg) + `Step1Tab` interface + `as const` + `readonly` | ✓ |
+| AC-2 | `STEP1_INDUSTRIES_56: readonly Industry[]` · 56 项 · life=18 / ecom=13 / create=7 / pro=14 / mfg=4 · 每项含 id/label/emoji/category | ✓ |
+| AC-3 | `STEP1_SEARCH_PLACEHOLDER = '搜索行业名称或关键词（如：美容院、餐饮、教育...）'` 字面 1:1 | ✓ |
+| AC-4 | `STEP1_CTA_LABEL` + `STEP1_CTA_DISABLED_HINT` 全部存在 | ✓ |
+| AC-5 | 5 个 STEP1_CUSTOM_* 常量全部存在 | ✓ |
+| AC-6 | 字面 grep 5 个词各命中 ≥1 次(全部行业×2 / 生活服务×23 / 搜索行业名称×1 / 确认并进入×1 / 自定义输入行业×1) | ✓ |
+| AC-7 | 数字锁: life=18, ecom=13, create=7, pro=14, mfg=4, sum=56; TABS非all sum=18+13+7+14+4=56 | ✓ |
+| AC-8 | `__tests__/industries.test.ts` 含 4 assertions(total 56 / life 18 / ecom 13 / tab sum 56) | ✓ |
+| AC-9 | `pnpm vitest run` → **4/4 passed** · 0 failures | ✓ |
+| AC-10 | `pnpm tsc --noEmit` → **0 errors** | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  manifest.json         (verdict=PASS, zero_regression=PASS)
+  pytest-full.stdout.txt (58 tests passed, 5 test files)
+  typecheck.stdout.txt  (0 errors)
+```
+
+### 零回归 X-6
+
+全量 vitest: **58 tests passed / 5 files** · 0 failures · EXIT=0
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

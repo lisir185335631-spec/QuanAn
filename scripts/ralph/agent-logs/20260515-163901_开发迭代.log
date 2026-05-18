@@ -1,0 +1,21 @@
+US-014 완료. 요약:
+
+**구현 완료:**
+
+1. **featureFlags.ts** (backend) - 1개에서 8개 procedure로 확장:
+   - `getKpiStats` - 4 KPI (총 flag 수 / 활성 flag / 7일 변경 / 긴급 스위치 횟수)
+   - `listEmergencySwitches` - isEmergency=true 시스템 설정 목록
+   - `listFeatureFlags` - feature_flags 테이블 목록
+   - `listSystemConfig` - 비긴급 시스템 설정 목록
+   - `toggle` - feature flag 듀얼 승인 통해 변경
+   - `updateSystemConfig` - 시스템 설정 듀얼 승인 통해 변경
+   - `listPostReview` - 긴급 스위치 후置 검토 목록 (super_admin only)
+   - `emergencyToggleSystemConfig` - 기존 1-click 긴급 실행
+
+2. **FeatureFlagsPage.tsx** - 4 KPI 카드 + 3 Tab (긴급 스위치 / 통용 flags / 시스템 설정) + 후치 검토 Tab (super_admin only) + URL 상태 관리
+
+3. **admin-routes.ts** - `/admin/config` → `/admin/feature-flags` (label='配置中心', requiredRole='admin')
+
+4. **featureFlags.test.ts** - 35개 단위 테스트
+
+검증: typecheck 0 오류 ✓ · 1978/1982 테스트 통과 ✓

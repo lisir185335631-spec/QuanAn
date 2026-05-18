@@ -1,0 +1,7 @@
+US-002 完成。
+
+**已完成**：
+- `useStepData.ts` — 新增 `dbQuery = trpc.stepData.get.useQuery({ stepKey }, { enabled: accountId !== null, staleTime: 30_000, retry: false })`，返回值扩展为 `{ save, load, isSaving, dbQuery }`
+- 文件级 `readOtherStep<T>` 静态 helper — 纯同步 LS 读，JSON.parse 失败 catch + `console.warn` + return null（严格遵守 SHIELD 反例：非 hook）
+- `apps/web/src/hooks/__tests__/useStepData.test.tsx` — 11 个单测全部通过，覆盖 AC (a)~(e)
+- typecheck 0 error，commit `988f5c5`

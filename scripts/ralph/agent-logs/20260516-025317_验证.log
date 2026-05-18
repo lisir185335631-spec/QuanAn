@@ -1,0 +1,25 @@
+## 验证结果：US-005 FAIL
+
+### AC 对照
+
+| AC | 结论 | 证据 |
+|---|---|---|
+| AC-1: 400+ 行 | ✅ PASS | 403 行实测 |
+| AC-2: 6 阶段卡片+展开 | ✅ PASS | FlowView + PhaseCard 代码验证 |
+| AC-3: 配置表单 6 字段 | ✅ PASS | PrivateDomainConfigView.tsx 6 字段齐全 |
+| AC-4: mutation + 6阶段 SOP + 连线动画 | ✅ PASS | phase-arrow animate-bounce 代码验证 |
+| AC-5: DenseTable 历史+恢复 | ✅ PASS | PrivateDomainHistoryView.tsx 验证 |
+| AC-6: URL state ?view= | ✅ PASS | useSearchParams 确认 |
+| AC-7: localStorage draft 1s debounce | ✅ PASS | setTimeout(1000) 确认 |
+| **AC-8: SSE + cost_log 写入** | ❌ **FAIL** | `grep SSE/costLog → 0 行`，privateDomain.ts:99 是同步 `.mutation()` |
+| AC-9: ≥10 tests | ✅ PASS | 34/34 全通过 |
+| AC-10: 浏览器 e2e | ✅ PASS | 4 项全过（config→result→history）|
+| AC-11: vitest + typecheck | ✅ PASS | 2135 tests 0 failures，typecheck 0 errors |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-005/` — 已生成: pytest-full.xml (2135 passed, 0 failed)，pytest-full.stdout.txt，typecheck.stdout.txt，manifest.json (verdict=FAIL)
+
+### 判决
+
+`prd.json.passes = false`，retryCount = 1。失败原因：AC-8 的 SSE 流式输出和 cost_log 写入均未实现（开发者注释明确写"SSE streaming留 PRD-16+"，router 为同步 mock mutation，无 `costLog.create`）。修复建议：最小代价是在 mutation 末尾加 `prisma.costLog.create({...零成本 mock 行})`；完整修复是实现真实 SSE。

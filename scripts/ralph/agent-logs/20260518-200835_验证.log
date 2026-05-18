@@ -1,0 +1,27 @@
+prd.json 已更新。
+
+---
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+- **AC-1**: `apps/api/src/lib/env.ts` 存在，`envSchema` 导出含 4 字段，`validateEnv()` 校验失败 throw + error log，成功 log mode ✓
+- **AC-2**: `apps/api/src/lib/env.test.ts` 存在，5 单测 (a)~(e) 全覆盖 ✓
+- **AC-3**: `apps/api/src/index.ts:31` 调用 `validateEnv()`，logger.info 记录 llmMode + 各 key 状态 ✓
+- **AC-4**: `.env.example` grep 命中 `OPENAI_API_KEY`(line 35) + `ANTHROPIC_API_KEY`(line 34) + `LLM_DEFAULT_MODEL`(line 38)，fallback 注释已写 ✓
+- **AC-5**: `pnpm vitest run src/lib/env.test.ts` → 5 passed, 0 failed ✓
+- **AC-6**: `pnpm typecheck` → exit 0, 0 errors ✓
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-001/
+  pytest.xml           (5 passed)
+  pytest.stdout.txt
+  pytest-full.xml      (14 passed | 0 failed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt (0 errors)
+  manifest.json        (verdict=PASS)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

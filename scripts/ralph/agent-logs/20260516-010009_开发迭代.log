@@ -1,0 +1,5 @@
+修复完成。
+
+**根因**：`Copywriting.tsx` 的 `onSuccess` 设置 `setIsStreaming(true)` 后，没有任何路径能将它重置为 `false`。`CopywritingPreview` 内部的 `handleAnimComplete` 只更新局部 `animComplete` 状态，父组件的 `isStreaming` 始终为 `true`，导致 `showActions = !isStreaming && animComplete && content` 永远为 `false`。
+
+**修复**：在 `CopywritingPreview` 增加 `onAnimComplete` prop，动画完成时通知父组件调 `setIsStreaming(false)`；同时用 `useEffect` 在 `content` 置 null 时重置 `animComplete`，防止二次生成时复用旧状态。

@@ -1,0 +1,14 @@
+US-008 实现完成。以下是完整交付内容：
+
+**后端 (3 个新 tRPC procedures)**
+- `updateCanary` — 0-50% 直接更新 DB；100% → `requestApproval(publish_prompt, dual=true)`，不直接写库
+- `rollback` — reason ≥ 20 字 + `requestApproval(rollback_prompt, dual=true)`，返回 `approvalRequestId`
+- `runLlmJudge` — 调用 `evaluatePromptVersion(isMock=true)`，返回 score/isMock/runAt
+
+**前端 (新建 2 个组件 + 更新 2 个)**
+- `CanarySlider.tsx` — 5档 stepper + confirm modal 逻辑（SHIELD：5档 enum 不允许任意数字）+ 一键回滚（super_admin, dual approval）
+- `LlmJudgeCard.tsx` — 进度条评分 + 重跑按钮
+- `HistoryTimeline.tsx` — 扩展灰度历史展示
+- `PromptsPage.tsx` — 新增 `?tab=editor|canary` URL param + canary tab 内容
+
+**测试：** 17 新增 tests（10 router + 7 component），总 1659 pass，typecheck 0 errors，redlines-admin ALL PASS。

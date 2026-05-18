@@ -1,0 +1,33 @@
+---
+
+## 検証結果: US-003 FAIL
+
+### AC 対照
+
+| AC | 結果 | 詳細 |
+|---|---|---|
+| AC-1 | ✅ | IpProgressSection定義・HeroSection後・trpc.stepData.progress.useQuery() |
+| AC-2 | ✅ | H2 className正確・「我的IP打造进度」テキスト |
+| AC-3 | ✅/⚠️ | glass-card構造・className正確。ただし視覚的に金色グラデーション |
+| AC-4 | ✅ | `<StepProgress completedSteps={completed} isLoading={isLoading} />` 正しく複用 |
+| AC-5 | ✅ | 查看IP方案→/ip-plan · 继续→/step/1 · 全完成時非表示ロジック |
+| **AC-6** | **❌** | **進度条グラデーションが金色 `rgb(242,202,80)`, 紫色要求** |
+| AC-7 | ✅ | スクリーンショット保存済み |
+| AC-8 | ✅ | typecheck PASS · pnpm test 51/51 PASS |
+
+### 零回帰
+```
+scripts/ralph/verify-artifacts/US-003/
+- pytest-full.xml     (51 tests PASS)
+- pytest-full.stdout.txt
+- typecheck.stdout.txt (EXIT:0)
+- manifest.json       (exit_code=1, zero_regression=PASS, verdict=FAIL)
+```
+
+### 根因 (CONFIRMED)
+`apps/web/src/styles/globals.css:17` に `--primary: 43 87% 63%` (HSL gold) が定義されており、Home.tsx:64 の `bg-gradient-to-r from-primary to-primary/60` が金色グラデーションを生成。AC-6 の「紫色 gradient (D4=B · 不是金色)」要件に違反。
+
+### 修正方法
+`apps/web/src/pages/Home.tsx:64` のグラデーションを `from-primary` から明示的な紫/violet クラス (`from-violet-600 to-violet-400` など) に変更すること。
+
+**prd.json 更新済み: passes=false · retryCount=1**

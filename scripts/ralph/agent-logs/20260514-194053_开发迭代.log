@@ -1,0 +1,7 @@
+US-012 is now fully resolved:
+
+- **CONFIRMED-1 fixed**: Deleted the stale `id=3903` DB entry (`actorAdminId=0, success=false`) and updated `auth-flow.test.ts` afterAll to also clean future stale entries with `actorAdminId=0, traceId='integration-test'`
+- **CONFIRMED-2 fixed**: Added `audit:admin-rls` alias in `package.json` → maps to `audit-admin-rls-tables.sh`
+- **Results**: 1727 pass / 0 fail · typecheck 0 errors · verify-prd-13.sh 38/38 PASS
+
+<promise>COMPLETE</promise>

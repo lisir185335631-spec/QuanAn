@@ -1,0 +1,26 @@
+## 验证结果: US-007 FAIL
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | DeepLearnReviewQueue 全部字段 + 4 indexes | ✓ PASS |
+| AC-2 | UserViolationLog 全部字段 + @@unique + 2 indexes | ✓ PASS |
+| AC-3 | migration 2 CREATE TABLE | ✓ PASS |
+| AC-4 | manual_admin_rls.sql 2 行 DISABLE RLS · psql relrowsecurity=f | ✓ PASS |
+| AC-5 | audit-admin-rls-tables.sh 含 '域⑧ DeepLearning 审核' 注释 | ✗ **FAIL** |
+| AC-6 | 26/26 admin tables 全过 0 mismatches | ✓ PASS |
+| AC-7 | violationType enum + status enum 同 trending | ✓ PASS |
+| AC-8 | @@unique + upsertUserViolationSchema 导出 | ✓ PASS |
+| AC-9 | 22 unit tests (>8) | ✓ PASS |
+| AC-10/11 | pnpm typecheck 0 errors | ✓ PASS |
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-007/` — vitest.xml (22 passed), pytest-full.xml (1465 total, 9 pre-existing failures), typecheck.stdout.txt (EXIT:0), manifest.json
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`
+
+**根因**: `scripts/audit-admin-rls-tables.sh` lines 28-30 的 `deep_learn_review_queue` 和 `user_violation_log` 两表在列表中，但 `# 域⑦ TrendingItem 审核` 区块下没有 `# 域⑧ DeepLearning 审核` 分隔注释。修复方法：在 `auto_review_rules` 与 `deep_learn_review_queue` 之间插入一行 `# 域⑧ DeepLearning 审核`。

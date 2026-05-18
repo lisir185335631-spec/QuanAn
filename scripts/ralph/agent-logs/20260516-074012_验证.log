@@ -1,0 +1,29 @@
+US-008 已通过，更新 prd.json 完成。
+
+---
+
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | History.tsx 200+ 行 | ✓ 839 行 · 位于 modules/ (项目惯例，路由正确) |
+| AC-2 | View 1 timeline · 按天分组 · icon+名+摘要+时间+3操作 | ✓ 截图确认 |
+| AC-3 | View 2 dashboard · 4 KPI + 4 chart | ✓ testids + 截图确认 |
+| AC-4 | URL state ?view=timeline\|dashboard | ✓ useSearchParams verified |
+| AC-5 | 14 工具 multi-select · URL ?tools= | ✓ TOOL_DEFS 15 entries + testids |
+| AC-6 | 今日/本周/本月/自定义日期 | ✓ 4 选项 + date pickers |
+| AC-7 | trpc.history.list.useQuery · 聚合 cost_log | ✓ 后端 list procedure 实现 |
+| AC-8 | 恢复并重跑 · URL params + 自动填充 | ✓ JS 确认: textarea.value="[xiaohongshu]..." · isEmpty=false |
+| AC-9 | ≥ 8 tests · Drawer | ✓ 41 tests · history-detail-drawer testid 存在 |
+| AC-10 | 4 procedure + history.test.ts | ✓ list/detail/delete/stats + 14 tests pass |
+| AC-11 | Browser: timeline→dashboard→恢复→跳转 | ✓ 完整 e2e 流程验证 |
+| AC-12 | vitest PASS · typecheck PASS | ✓ 2250 passed · 全 workspace typecheck clean |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`  
+已生成: `pytest-full.xml` (2250 passed) · `pytest-full.stdout.txt` · `typecheck.stdout.txt` · 4 screenshots
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

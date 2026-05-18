@@ -1,0 +1,34 @@
+---
+
+## 验证结果: US-007 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | /prompts route 注册 | ✓ router.tsx line 48 + lib/admin-routes.ts line 103 |
+| AC-2 | @monaco-editor/react@4 | ✓ apps/admin/package.json |
+| AC-3 | MonacoEditor handlebars + vs-dark + readOnly | ✓ aurelian-dark theme with vs-dark base |
+| AC-4 | 14 SPECIALISTS TabBar | ✓ 全部 14 个 specialist 定义 |
+| AC-5 | URL params 持久化 + CopywritingAgent 5 modes | ✓ useSearchParams |
+| **AC-6** | **创建人字段 + 灰度配置按钮** | ✓ **FIXED** — line 242-244 + line 315 |
+| AC-7 | Monaco 80% + DiffEditor toggle | ✓ 浏览器截图确认 |
+| AC-8 | debounce 1s + localStorage + saveDraft + submitForReview | ✓ |
+| AC-9 | HistoryTimeline 版本号/评分/状态/创建人/时间 + 预览 + 回滚 | ✓ |
+| **AC-10** | **LLM Judge 超时 toast 30s + 轮询** | ✓ **FIXED** — judgeTimeoutRef + 30s setTimeout |
+| AC-11 | 浏览器看到 14 Tab + 版本卡片 + Monaco + 时间线 | ✓ 截图确认 |
+| AC-12 | 编辑模式 + Diff 视图 + Tab 切换 URL 变更 | ✓ 截图确认 |
+| AC-13 | pnpm audit:redlines-admin 0 命中 | ✓ ALL PASS · 7 LD-A + 6 R-A |
+| AC-14 | pnpm test ≥ 1625 pass · 0 fail | ✓ 1642 passed · 0 fail |
+| AC-15 | typecheck 0 errors | ✓ exit_code=0 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-007/`
+- `pytest-full.xml` — tests=1646 failures=0 errors=0
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt` — 0 errors
+- `manifest.json` — verdict=PASS
+- 浏览器截图 4 张（AC-11/12 视觉证据）
+
+### 判决
+`prd.json passes = true` · `retryCount = 0` · `notes = ""`

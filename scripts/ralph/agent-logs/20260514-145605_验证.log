@@ -1,0 +1,45 @@
+---
+
+## 验证结果：US-007 FAIL
+
+### 零回归门禁 (X-6)
+- `pnpm test`: **1642 passed · 0 fail** ✓ (≥1625 要求满足)
+- `pnpm typecheck`: **0 errors** ✓
+
+### AC 对照
+
+| AC | 结论 | 说明 |
+|---|---|---|
+| AC-1 | ✓ | `/admin/prompts` 在 router.tsx 注册 + ADMIN_ROUTES |
+| AC-2 | ✓ | `@monaco-editor/react: "4"` in package.json |
+| AC-3 | ✓ | language=handlebars · aurelian-dark · readOnly prop |
+| AC-4 | ✓ | 14 SPECIALISTS TabBar |
+| AC-5 | ✓ | useSearchParams · CopywritingAgent 5 modes |
+| **AC-6** | **✗ FAIL** | 见下方 CONFIRMED |
+| AC-7 | ✓ | Monaco 80% + DiffMonacoEditor toggle |
+| AC-8 | ✓ | debounce + localStorage + saveDraft + submitForReview + toast |
+| AC-9 | ✓ | HistoryTimeline + 预览 modal + 回滚(super_admin) |
+| AC-10 | ✓ **FIXED** | judgeTimeoutRef 30s + toast '评分超时…' 已实现 |
+| AC-11/12 | ✓ | 前次 browser 验证确认 |
+| AC-13 | ✓ | audit:redlines-admin ALL PASS (7 LD-A + 6 R-A) |
+| AC-14 | ✓ | 1642 pass · 0 fail · typecheck 0 errors |
+| AC-15 | ✓ | typecheck passes |
+
+### CONFIRMED 失败项 (AC-6)
+
+**失败1**: VersionCard 未渲染 `createdByAdminId`
+- 复现: `grep -n "createdByAdminId" apps/admin/src/pages/prompts/PromptsPage.tsx`
+- 结果: 仅出现在 interface 定义(line 163)，JSX body 无任何渲染
+- AC 要求: "创建时间 / 创建人"
+
+**失败2**: VersionCard 缺少"灰度配置"按钮
+- 复现: `grep -n "灰度配置" apps/admin/src/pages/prompts/PromptsPage.tsx`
+- 结果: 0 matches，VersionCard buttons section 只有 编辑 button (lines 277-297)
+- AC 要求: `<Button> 编辑 + <Button> 灰度配置(跳 US-008)`
+
+### 修复方向
+
+1. 在 VersionCard JSX 创建时间后添加 `管理员 #{version.createdByAdminId}` 显示
+2. 在 VersionCard buttons section 添加灰度配置按钮，跳到 `/admin/canary` 或 US-008 路径（US-008 未实装时可用 disabled 样式或 placeholder href）
+
+**产物路径**: `scripts/ralph/verify-artifacts/US-007/` — manifest.json · pytest-full.xml · pytest-full.stdout.txt · typecheck.stdout.txt

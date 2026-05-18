@@ -1,0 +1,7 @@
+US-010 is complete. Here's a summary:
+
+**Implemented:**
+- `CanarySlider.tsx` — 1:1 fork of PRD-13 US-008's CanarySlider adapted for constants. Uses `constantType` + `constantKey` instead of `specialistId` + `mode`. 5-step enum `[0,1,10,50,100]` (SHIELD: no free number input). 100% triggers confirm modal + dual approval via backend. 1-50% direct `constants.updateCanary`. 0% client double-confirm. Rollback: ConfirmModal with reason ≥ 20 chars → `constants.rollbackVersion` → toast `已发起回滚申请 #X`.
+- `LlmJudgeCard.tsx` — Fork of PRD-13 LlmJudgeCard using `constants.runLlmJudge`. Shows 0.00-5.00 score, isMock badge, rerun button.
+- `ConstantsPage.tsx` — Added secondary tab bar (编辑内容 | 灰度配置), `tab` URL param, canary tab renders CanarySlider + LlmJudgeCard, "灰度配置" button navigates to `?tab=canary`.
+- **18 new tests** (CanarySlider: 11, LlmJudgeCard: 7). **1879 total tests pass** (≥1822). **Typecheck PASS**.

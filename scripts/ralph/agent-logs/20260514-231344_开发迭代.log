@@ -1,0 +1,8 @@
+US-003 完成。
+
+**实现摘要：**
+
+- `apps/api/src/jobs/admin/ab-stop-loss.job.ts` — BullMQ hourly cron (`'0 0 * * * *'` Asia/Shanghai)，`scanAbExperimentsForStopLoss` 扫所有 running 实验，双条件触发（`stop_loser AND effect < -30%`），dedupe per experimentId per day，调 `_stopAbExperimentInTx(stopReason='auto_stop_loss')`，写 `security_alert` 审计含 reasoning，钉钉告警 isMock=true；`stopAbExperimentManual` 满足 AC-8 单点约束
+- `apps/api/src/index.ts` — wire `scheduleAbStopLoss()`
+- `tests/unit/api/admin/ab-stop-loss.test.ts` — 12 it（满足 ≥8 AC）
+- typecheck 0 errors，1767 tests pass（满足 ≥1750 AC）

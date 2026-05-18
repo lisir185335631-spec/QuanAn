@@ -1,0 +1,30 @@
+验证结果：US-009 **FAIL**
+
+---
+
+## 验证结果: US-009 [FAIL]
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|---|---|---|
+| AC-1 | ✓ | `/admin/quota` 在 `lib/admin-routes.ts` 注册 · `requiredRole: 'readonly_admin'` · 侧边栏显示 |
+| AC-2 | ✓ | 4 KPI 卡片(Free/Pro/Enterprise 用户数+均用率 + 异常用户数+趋势箭头) |
+| AC-3 | ✓ | `UsageLineChart.tsx` 使用 Recharts LineChart · 24h × 3 plan 分组 |
+| **AC-4** | **✗** | DenseTable **缺少 `lastCallAt` 列** · 现有 6 列(userId/email/plan/usage/whitelist/action)，AC 要求含 `lastCallAt` 的 7 列 |
+| **AC-5** | **✗** | `QuotaDetailDrawer` **缺少"历史 adjustments 列表(已失效)"** · 只有 `getActiveAdjustments`，无过期历史查询和 UI section |
+| AC-6 | ✓ | `adjustmentType` select · `delta` input(max 500 客服/5000 super_admin) · `reason` textarea ≥10字 · delta>500 触发 dual approval |
+| AC-7 | 未跑 | AC-4/5 已 CONFIRMED FAIL · 不进行浏览器测试 |
+| AC-8 | 未跑 | 同上 |
+| AC-9 | ✓ | `pnpm audit:redlines-admin` ALL PASS · 8 LD-A + 6 R-A · LD-A8 0 命中 |
+| AC-10 | ✓ | 1672 passed ≥ 1655 · 0 fail |
+| AC-11 | ✓ | typecheck 0 errors |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-009/`
+已生成: `pytest-full.xml`(1672 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+- `prd.json.passes = false`
+- `retryCount = 1`
+- 零回归 PASS · typecheck PASS · redlines PASS

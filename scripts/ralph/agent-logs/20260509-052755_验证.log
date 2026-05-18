@@ -1,0 +1,38 @@
+## 验证结果：US-012 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 验证方式 |
+|----|------|---------|
+| AC-1 | ✓ | 代码审查：StepResult.tsx generic wrapper + switch stepKey + props |
+| AC-2 | ✓ | 代码审查：9 个 Result 组件全部存在，字段覆盖完整 |
+| AC-3 | ✓ | 代码审查：9 个 Step 页面均在 onSuccess 后渲染 StepResult |
+| AC-4 | ✓ | 浏览器截图：/step/1 正常加载 |
+| AC-5 | ✓(注) | 选行业 medical → submit → API 调用成功，dev 无 ANTHROPIC_API_KEY（预存 TD）|
+| AC-6 | ✓ | 浏览器验证：4 段（行业定位/市场分析/竞争程度/定位建议）正确渲染 |
+| AC-7 | ✓ | 结果渲染时 console errors = 0 |
+| AC-8 | ✓ | 浏览器截图：data=null 时 skeleton 占位显示 |
+| AC-9 | ✓ | 代码审查：所有字段使用 `?? defaultValue` 兜底 |
+| AC-10 | ✓ | grep `dangerouslySetInnerHTML` in StepResult/ = 0 |
+| AC-11 | ✓ | Step5Result.tsx 含 `<ScrollArea className="h-96">` |
+| AC-12 | ✓ | grep `#[0-9a-fA-F]{6}` in StepResult/ = 0 |
+| AC-13 | ✓ | FeedbackButton 仅在 StepLayout.tsx 渲染，StepResult 组件无重复 |
+| AC-14 | ✓ | 所有组件含 `data-testid="step-result-{stepKey}"` |
+| AC-15 | ✓ | 10 tests，全部 pass（≥9 要求） |
+| AC-16 | ✓ | structured 8.8ms < 16ms；markdown 12.3ms < 100ms |
+| AC-17 | ✓ | 10/10 StepResult tests + 306/306 全量 unit tests 通过 |
+| AC-18 | ✓ | `pnpm typecheck` 0 errors |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+├── pytest-full.xml     (10 passed, 0 failures)
+├── pytest-full.stdout.txt
+├── typecheck.txt       (0 errors)
+└── manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

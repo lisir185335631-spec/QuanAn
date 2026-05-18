@@ -1,0 +1,41 @@
+验证完成，结果如下：
+
+---
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| 1 | `constants.ts` HOT_ELEMENT_KEYS_22 (22项) + SCRIPT_TYPE_KEYS_20 (20项) | ✓ |
+| 2 | `analysis.schema.ts` 4 schemas (viral/structural input+output) | ✓ |
+| 3 | `copywriting.schema.ts` 重写 + 保留 PRD-4 backward compat + freeGenerate新增 | ✓ |
+| 4 | `boomGenerate.schema.ts` 重写 element-based + boomOutput.candidates.length(5) | ✓ |
+| 5 | `videoAnalysis.schema.ts` 重写 copy-based (删 URL-based) | ✓ |
+| 6 | `index.ts` 加 analysis + constants barrel export | ✓ |
+| 7 | `templates/analysis.ts` persona="你是文案分析师" + methodology="22元素心理学+67RAG" | ✓ |
+| 8 | `templates/index.ts` SPECIALIST_TEMPLATES 加 AnalysisAgent 入口 | ✓ |
+| 9 | `ToolForm.tsx` useForm + zodResolver + LS-first dual-write + AbortController + defaultValues | ✓ |
+| 10 | `ScriptTypeSelect.tsx` 20类型 dropdown + ScrollArea h-72 | ✓ |
+| 11 | `ElementsMultiSelect.tsx` 22元素 4组分类 + collapsible + ScrollArea h-96 | ✓ |
+| 12 | `ToolResult.tsx` switch by toolKey → 4 子组件 | ✓ |
+| 13 | 4个 Result子组件 新建 (FreeGenerate/BoomGenerate/Analysis/VideoAnalysis) | ✓ |
+| 14 | `ls-namespace.ts` getToolLsKey → `aiip_memory_acc_${id}_tool_${toolKey}_${suffix}` | ✓ |
+| 15 | `copywriting.ts` line 106 修 + 7 router agentId 全大写 Class name | ✓ |
+| 16 | audit grep: `agentId: '[a-z]` → **0命中** | ✓ |
+| 17 | audit grep: `packages/schemas import apps/api` → **0命中** | ✓ |
+| 18 | `specialist-io.test.ts` 26个测试 (≥8) | ✓ |
+| 19 | `ToolForm.test.tsx` 20个测试 (≥8) | ✓ |
+| 20 | `ToolResult.test.tsx` 13个测试 (≥4) | ✓ |
+| 21 | Tests pass — 全量 402/402 通过 (0 failures, 0 errors) | ✓ |
+| 22 | Typecheck passes — 6个 workspace 全 clean | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-001/
+已生成: pytest-full.xml (59 story tests PASS), pytest-full.stdout.txt (402 total PASS), typecheck.txt (0 errors), manifest.json
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

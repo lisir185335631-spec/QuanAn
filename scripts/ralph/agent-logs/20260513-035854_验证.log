@@ -1,0 +1,36 @@
+## 验证结果: US-020 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | invitesRouter · 6 procedure 全走 adminProcedure (=publicAdminProcedure + 6-gate chain) | ✓ `invites.ts:92` |
+| AC-2 | list · zod input · adminRLS $transaction+SET LOCAL · 写 audit | ✓ `adminRLS.ts` middleware 已处理；`list` 写 `list_invite_codes` audit |
+| AC-3 | create · zod input · low 风险 · 不走 Approval · 写 audit | ✓ `invites.ts:171` |
+| AC-4 | batchImport · papaparse · chunk 100 · ≤10000 限制 | ✓ `invites.ts:229` BATCH_CHUNK_SIZE=100, BATCH_IMPORT_MAX_ROWS=10000 |
+| AC-5 | invalidate · 高风险 · super_admin→auto_executed / admin→pending · 写 approval_requests + high_risk_action audit | ✓ `invites.ts:315-384` |
+| AC-6 | detail · 邀请码 + 激活历史(who/when/IP) + step9 progress | ✓ `invites.ts:391-486` |
+| AC-7 | campaignFunnel · 调 getCampaignFunnel · 返 [{stage,count}] | ✓ `invites.ts:492-515`；4 stages |
+| AC-8 | invalidate 已失效 → `already invalidated` | ✓ `invites.ts:307-309` |
+| AC-9 | batchImport 重复 code → skip + 返回错误行列表 | ✓ `invites.ts:260-264` P2002 catch |
+| AC-10 | batchImport > 10000 行 → ValidationError | ✓ `invites.ts:219-224` |
+| AC-11 | audit-approval-gates.ts 加 invites.invalidate EXCEPTION | ✓ `scripts/audit-approval-gates.ts:24` |
+| AC-12 | 单元测试 ≥ 20 test | ✓ 27 tests (invites.test.ts) |
+| AC-13 | pnpm test + typecheck 0 error | ✓ 27/27 pass；typecheck 0 errors |
+| AC-14 | pnpm audit:approval-gates · Checked ≥ 9 | ✓ Checked 13 with approval gate · 0 missing |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-020/
+├── manifest.json         (exit_code=0, zero_regression=PASS, verdict=PASS)
+├── pytest-full.xml       (tests=1331, failures=9[pre-existing])
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt
+```
+
+全量回归：9 failures 全为 integration tests ECONNREFUSED (pre-existing，无运行中 server)，与 US-020 无关；invites.test.ts 27 tests PASS。
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0`

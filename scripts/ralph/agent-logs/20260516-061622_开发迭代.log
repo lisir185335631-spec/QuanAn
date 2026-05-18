@@ -1,0 +1,7 @@
+AC-6 修复完成：
+
+- **History.tsx**: `DateRange` 加 `'custom'`，`DATE_RANGE_OPTIONS` 第 4 项由「全部」改为「自定义日期」，当选中 custom 时在 Controls 区渲染两个 `<input type="date">`（`data-testid="date-range-from/to"`），dateFrom/dateTo 存入 URL params，切换回其他选项时自动清除
+- **history.ts**: `DATE_RANGE_VALUES` 加 `'custom'`，`buildDateFilter` 新增 custom 分支处理 dateFrom/dateTo，`list`/`stats` procedure 各加两个可选参数
+- **router-types.ts**: 同步更新前端 tRPC 类型声明
+
+结果：typecheck 0 errors ✓，vitest 2250/2250 通过 ✓，已 commit。

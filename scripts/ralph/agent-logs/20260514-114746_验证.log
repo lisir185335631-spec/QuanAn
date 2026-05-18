@@ -1,0 +1,51 @@
+prd.json 已更新。验证完成。
+
+---
+
+## 验证结果: US-004 FAIL
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|:---:|---|
+| AC-1 | ✅ | EvolutionAnomalyFlag schema: 全部字段 + 3 index + @@map |
+| AC-2 | ✅ | migration 20260514033834_prd_13_evolution_anomaly 存在 |
+| AC-3 | ✅ | anomaly-detection.service.ts: detectEvolutionAnomalies 5 算法全实现 |
+| AC-4 | ✅ | EvolutionAgent.execute() 末尾 try/catch 调 detectEvolutionAnomalies + DingtalkService(isMock 默认) |
+| AC-5 | ✅ | tests/unit/agents/evolution/EvolutionAgent.test.ts: `detectAnomalies integration` describe + 4 it(flip/overflow/no-flip/no-overflow), 4/4 通过 |
+| AC-6 | ✅ | evolutionHealth.ts: 7 procedure 全部就位(getLDistribution/getFlywheelHealth/listAnomalies/getAccountTimeline/forceRebuildEvolution/markAnomalyResolved/getAnomalyStats) |
+| AC-7 | ✅ | evolution-rebuild.service.ts: _forceRebuildEvolutionInTx + enqueueEvolutionRebuildJob(BullMQ 5s delay) |
+| AC-8 | ✅ | AGENTS.md §10 LD-A7 已添加(line 2423); manual grep 0 命中 |
+| AC-9 | ✅ | try/catch 包裹 detectEvolutionAnomalies,主流程不受影响 |
+| **AC-10** | **❌** | **audit-redlines-admin.sh 缺 LD-A7 grep 段。脚本输出 "ALL PASS · 6 LD-A + 6 R-A" 应为 "7 LD-A + 6 R-A"** |
+| AC-11 | ✅ (TD豁免) | 1588 pass ≥ 1580 ✓; 9 fail = 与 US-001/002/003 完全相同的 ECONNREFUSED integration tests |
+| AC-12 | ✅ | typecheck 0 errors |
+
+### CONFIRMED 失败
+
+**AC-10 失败**:
+- 复现: `bash scripts/audit-redlines-admin.sh`
+- 实际输出: `ALL PASS · 6 LD-A + 6 R-A`
+- 期望: 脚本应包含 LD-A7 grep 检测段并输出 `7 LD-A + 6 R-A`
+
+**修复指引**: 在 `scripts/audit-redlines-admin.sh` LD-A6 段之后插入 LD-A7 检测块:
+```bash
+# LD-A7 · evolution_profile clear / evolution_insight resolved 仅由 _forceRebuildEvolutionInTx 改
+grep -rn "prisma\.evolutionProfile\.update.*null\|prisma\.evolutionInsight\.updateMany.*isFallback" \
+  apps/api/src --include='*.ts' | grep -v '_forceRebuildEvolutionInTx' | grep -v 'evolution-rebuild.service.ts' | grep -v '.test.'
+```
+同时把 exit 消息从 `6 LD-A` 改为 `7 LD-A`。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+  pytest-full.xml          (1588 passed, 9 failed pre-existing)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt     (0 errors)
+  manifest.json            (verdict: FAIL · failing_ac: AC-10)
+```
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`

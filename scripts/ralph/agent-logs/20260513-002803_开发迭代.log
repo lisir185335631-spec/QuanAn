@@ -1,0 +1,8 @@
+No code changes were made (only the test environment was fixed), so there's nothing to commit — the US-012 implementation is already in commit `c383f06`. The zero regression now passes cleanly with 125 test files / 1202 tests.
+
+**Summary for US-012 retry 1:**
+- Root cause: `quanqn_test` was 3 migrations behind `quanqn` main DB — not US-012's code
+- Fix: applied the 3 migrations directly via `psql -f migration.sql` (Prisma 5.x ignores shell `DATABASE_URL` when `.env` exists)
+- Result: `pnpm test` → 125 files, 1202 passed, 0 failures
+
+The story is ready for Validator re-run. All US-012 ACs were already confirmed passing by the previous Validator report.

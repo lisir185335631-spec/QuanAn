@@ -1,0 +1,13 @@
+All changes are complete. Here's a summary of what was fixed:
+
+**Root causes addressed:**
+
+1. **tests (a) & (b) — stale DB data**: Account 11351 had pre-existing '美业' step1 data. Added `stepData.deleteForTest` dev-only backend mutation + `clearStepDataForTest` helper in tests. `beforeEach` now clears step1 before each test; test (b) also clears accB's step1 before submitting.
+
+2. **test (c) — strict mode violation**: `locator('text=账号包装方案')` matched 5 elements (heading, button, tag, description, placeholder). Fixed by using `#step3-output` / `#step3b-output` section IDs which are unique and only render when the agent result is ready.
+
+3. **prd-18 test 1 — hasExistingResult missing**: Step4 had DB data from prior prd-19 runs. Added `networkidle` wait + `hasExistingResult` branch (same pattern as test 2) to skip form resubmission when result already exists.
+
+4. **prd-18 test 3 — tab timeout 5s**: Step5's SSE streaming sets `isActiveLoading=true` which hides the section temporarily. All 5 tab timeouts increased to 15s.
+
+5. **prd-18 test 5 — h4 timeout 15s**: Step7 LLM call + DB write chain can take >15s. Increased to 30s.

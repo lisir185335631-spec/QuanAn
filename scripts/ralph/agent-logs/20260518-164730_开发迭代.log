@@ -1,0 +1,19 @@
+US-007 is complete. Here's a summary:
+
+**What was implemented:**
+
+**LivestreamAgent.ts** (modified):
+- Added 2 sub_function support: `generate_plan` (6-module JSON) and `optimize_script` (2 InfoCard)
+- `generate_plan` schema: `{opening, warmup, product, conversion, faq, closing}` — each module has distinct system prompt (SHIELD PRD-19 §11.11.4 discriminator)
+- `optimize_script` schema: `{optimized_text, optimization_notes}` — separate system prompt
+- Updated experience enum: `新手/有经验/资深` (AC-2)
+- `outputSchema` getter returns the correct schema per `_subFunction` (same pattern as CopywritingAgent._mode)
+- Legacy mode backward-compatible (`{lastResult, lastOptimizedResult}`)
+- System prompts use `SYSTEM_PROMPT_*\n\n${ctx.systemPrompt}` pattern (passes R-11 audit)
+- fallbackTemplate covers all 3 modes
+
+**CopywritingAgent.real-llm.test.ts** (new): step7 mode execute() → verifies markdown `# heading`, schema, `agentMode='step7'`, tokens > 0; always-run fallback schema alignment test
+
+**LivestreamAgent.real-llm.test.ts** (new): 2 sub_functions tested individually; 3 always-run fallback schema alignment tests; real LLM tests skipIf no API key
+
+All checks pass: typecheck ✓, vitest 4 passed/4 skipped ✓, R-11 ✓, zero-regression ✓

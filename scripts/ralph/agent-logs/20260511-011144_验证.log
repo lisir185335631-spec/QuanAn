@@ -1,0 +1,28 @@
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | 删 inline `ImageGenJobPayload` interface + `ImageGenJobResult` type | ✓ 已删除，文件共 24 行无 inline 定义 |
+| AC-2 | 顶部加 `import type { ... } from '@quanqn/schemas/specialist-io'` | ✓ line 9 |
+| AC-3 | 保留 `export interface IImageGenWorker` | ✓ line 16-18 |
+| AC-4 | `export type { ImageGenJobPayload, ImageGenJobResult }` re-export | ✓ line 12 |
+| AC-5 | `grep -E '^export (interface|type) ImageGenJob'` 命中 0 | ✓ exit code 1（无匹配）|
+| AC-6 | workers/ 全用法仍 OK via re-export | ✓ dall-e-3.ts / queue.ts / worker.ts 均 import 自 `./index` |
+| AC-7 | pnpm typecheck 6 ws 0 error | ✓ 全部 Done |
+| AC-8 | pnpm test 全过 | ✓ 727 passed (0 failed) |
+| Typecheck | passes | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-004/
+├── manifest.json       (exit_code=0)
+├── typecheck.stdout.txt (6 ws Done)
+└── vitest.stdout.txt   (727 passed)
+```
+
+### 判决
+
+`prd.json.passes = true`

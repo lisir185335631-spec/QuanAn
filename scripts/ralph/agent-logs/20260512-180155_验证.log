@@ -1,0 +1,50 @@
+## 验证结果: US-004 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | index.tsx 替换 placeholder | ✓ git: D apps/admin/src/pages/admin/placeholder/nsm.tsx |
+| AC-2 | grid-cols-[1fr_320px] 布局 | ✓ index.tsx:92 `gridTemplateColumns: '1fr 320px'` |
+| AC-3 | 4 大数字卡片 + delta | ✓ NsmOverviewCards.tsx CARDS 数组 + fmtDelta |
+| AC-4 | FunnelChart + fill per data point | ✓ NsmFunnel.tsx:34 `fill: 'var(--accent-purple)'` |
+| AC-5 | 3 饼图 + hover 数字+占比 | ✓ NsmDistributions.tsx formatter: `${num} (${pct}%)` |
+| AC-6 | 告警栏 metric/severity/deltaPct/钉钉 | ✓ NsmAlerts.tsx |
+| AC-7 | admin-routes.ts prd: 11 | ✓ admin-routes.ts:22 `prd: 11` |
+| AC-8 | 1 delete in git diff | ✓ git show HEAD: D apps/admin/src/pages/admin/placeholder/nsm.tsx |
+| AC-9 | 4 并发 useQuery + React Query auto-dedupe | ✓ 4 useQuery 调用 + tRPC batch 确认 |
+| AC-10 | ErrorBoundary '数据加载失败·点击重试' | ✓ NsmErrorBoundary 实现完整 |
+| AC-11 | 空表 → skeleton + '等待首次聚合' + [手动触发] | ✓ !data 分支 + role===super_admin 门控 |
+| AC-12 | readonly_admin 隐藏触发按钮 | ✓ role 检查，distributions 始终显示 |
+| AC-13 | Network 4 tRPC 请求 200 | ✗ **API server 崩溃 · 全部 pending** |
+| AC-14 | console 0 error / 0 React key warning | ✗ **3 ERR_CONNECTION_REFUSED** |
+| AC-15 | --bg-base 非空 | ✓ `#0a0a0a` |
+| AC-16 | 刷新登录态保持 | ✓ 刷新后仍在 /admin/nsm |
+| AC-17 | Typecheck 通过 | ✓ tsc --noEmit 0 error |
+
+### 根因 (CONFIRMED)
+
+**复现命令**: `pnpm --filter api dev`
+
+**实际错误**:
+```
+Error: Queue name cannot contain :
+  at apps/api/src/jobs/admin/kpi-snapshot.job.ts:21
+  KPI_SNAPSHOT_QUEUE_NAME = 'admin:kpi-snapshot'  ← 冒号不允许
+```
+
+**修复位置**: `apps/api/src/jobs/admin/kpi-snapshot.job.ts:15`
+将 `'admin:kpi-snapshot'` 改为 `'admin-kpi-snapshot'`（同时更新引用此常量的 Worker 注册代码）
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-004/
+  pytest-full.xml     (9 failures · 全为 pre-existing integration tests · API not running)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt (0 errors)
+  manifest.json       (verdict=FAIL · failing_ac=[AC-13,AC-14])
+```
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`
+US-004 UI 代码本身实现正确(AC-1~12, AC-15~17 全通过)，失败原因是 US-002 引入的 BullMQ 队列名冒号 bug 阻止 API 服务启动。修复 kpi-snapshot.job.ts:15 队列名后重新验证 AC-13/AC-14 即可通过。

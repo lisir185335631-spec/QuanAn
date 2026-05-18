@@ -1,0 +1,36 @@
+---
+
+## 验证结果: US-002 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | router.tsx: `{ index: true, element: <Home /> }` + import Home, 无旧 Navigate | ✓ |
+| AC-2 | Home.tsx: HeroSection + Home 默认导出 + 正确 main/h1 className + style | ✓ |
+| AC-3 | 3 副标题 p (OPC/AI+短视频+IP/全链路变现) 含正确 className | ✓ |
+| AC-4 | 引用副标 p + font-cn italic text-sm className | ✓ |
+| AC-5 | 2 CTA: Link to=/step/1 启动智能分析 + Link to=/guide 使用说明, className 完全匹配 | ✓ |
+| AC-6 | URL 保持 `/` (不 redirect) · H1 Orbitron 字体已加载 · 启动智能分析 → /step/1 · 使用说明 → /guide | ✓ |
+| AC-7 | 截图已保存 `screenshots/prd16-us002-home-hero.png` 1440px | ✓ |
+| AC-8 | typecheck 0 errors · vitest 51/51 passed · audit:redlines 0 violations | ✓ |
+| AC-9 | grep 0 命中 (无 bg-yellow/bg-amber/text-gold/border-gold · 无硬编码金色) | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+  manifest.json        (zero_regression=PASS, verdict=PASS)
+  typecheck.stdout.txt (0 errors)
+  test.stdout.txt      (51 tests passed)
+  pytest-full.xml      (zero regression: 51 passed, 0 failed)
+  audit-redlines.stdout.txt (17 redlines all pass)
+```
+
+### 判决
+
+```
+prd.json.passes = true
+prd.json.notes  = ""
+prd.json.retryCount = 0
+```

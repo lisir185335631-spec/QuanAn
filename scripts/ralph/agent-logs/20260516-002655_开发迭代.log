@@ -1,0 +1,10 @@
+US-002 実装完了。
+
+**実装内容:**
+- `Copywriting.tsx`: 18行 stub → 215行完全実装。2カラムレイアウト、URL state (`useSearchParams`)、localStorage draft (debounce 1s)、`trpc.copywriting.freeGenerate.useMutation()`
+- `CopywritingForm.tsx`: topic(≥10字) + platform select(6プラットフォーム: 小红书/抖音/视频号/快手/B站/微博) + scriptType select(20種) + elements checkbox group(22要素/4グループ) + additionalContext
+- `CopywritingPreview.tsx`: lazy `StreamdownPreview` + Suspense、完了後に3つのアクションボタン(複製/テンプレート保存/履歴保存)、エラー表示
+- `CopywritingHistory.tsx`: 折りたたみサイドバー、`trpc.history.list`(agentId=CopywritingAgent·limit=10)、クリックで状態を復元
+- `StreamdownPreview.tsx`: `requestAnimationFrame`によるタイプライター効果でSSE流式をシミュレート、modelNameのmeta chunk表示
+- `lib/constants/scripts.ts`: scriptsタイプのweb用re-export
+- **検証**: typecheck 0エラー、29テスト全合格、全量2046テスト零回帰

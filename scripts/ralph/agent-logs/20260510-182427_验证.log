@@ -1,0 +1,41 @@
+验证完成。
+
+---
+
+## 验证结果: US-012 **PASS**
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | acquisitionGenerate procedure · protectedProcedure.input(acquisitionCopywritingInputSchema) · 调 copywritingAgent(mode='acquisition') | ✓ |
+| AC-2 | history row agentId='CopywritingAgent' · agentMode='acquisition' · contentType='markdown' | ✓ |
+| AC-3 | explicit activeAccountId 双层防护 (LD-009) | ✓ |
+| AC-4 | markdown 200-500 字 + CTA post-validate grep · 缺 CTA retry 1 次 | ✓ |
+| AC-5 | cost_log 由 BaseSpecialist 自动写 (callType='specialist_call') | ✓ (integration test 实测 DB) |
+| AC-6 | Generate.tsx mode select 含 'acquisition' tab | ✓ |
+| AC-7 | 表单字段: scriptType select + elements multi-select + conversionGoal + topic | ✓ (截图确认) |
+| AC-8 | router-types.ts shadow router copywriting.acquisitionGenerate | ✓ |
+| AC-9 | 4 unit tests 全通过 | ✓ (4/4) |
+| AC-10 | boundary: markdown min(200)/max(500) + elements min(1)/max(8) schema 约束 | ✓ |
+| AC-11 | integration test < 5s | ✓ (245ms) |
+| AC-12 | browser: /generate → acquisition mode → 填表 → ToolResult 显示 markdown 含 CTA | ✓ (截图 "获取") |
+| AC-13 | pnpm typecheck 6 ws 0 error | ✓ |
+| AC-14 | pnpm test unit tests 退出码 0 | ✓ |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+  vitest.xml           (4 passed)
+  vitest.stdout.txt    (4/4 pass)
+  vitest-full.stdout.txt (X-6: 75 files 717 tests pass)
+  typecheck.txt        (6 ws, 0 error)
+  e2e.stdout.txt       (integration 245ms)
+  manifest.json        (exit_code=0)
+  validator-us-012-pass-2-form.png   (表单填充截图)
+  validator-us-012-pass-2-result.png (ToolResult + CTA截图)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

@@ -1,0 +1,12 @@
+US-002 fix complete. Here's what changed:
+
+**Blocker fixed**: `StoryboardSceneSchema` now matches `packages/schemas/src/specialist-io/aiVideo.schema.ts:aiVideoSceneSchema` exactly — 4 fields (index, description, imagePromptEn, duration) with correct constraints (`.int().positive()`, `.min(20).max(500)`, `.min(20).regex(/^[\x00-\x7F]+$/)`).
+
+**Cascade changes**:
+- `StoryboardBaseSchema` updated to 4-field format for LLM guidance
+- `_invokeStoryboard` simplified — schema regex now enforces ASCII, so no post-validate loop needed; `SchemaValidationError` import removed
+- Fallback template scenes updated to 4-field format with validated description/imagePromptEn lengths
+- Storyboard prompt updated to ask for index/description/imagePromptEn/duration (no voiceover/music)
+- Tests: `VALID_STORYBOARD_SCENE` updated to 4-field format, all 3 existing storyboard tests updated, +1 schema-level Chinese-fail test added
+
+**Verification**: 31/31 unit tests pass · typecheck 6ws 0 errors · `diff StoryboardSceneSchema aiVideoSceneSchema` → only schema name differs · `grep "post-validate\|safeParse.*content"` → 0 results.

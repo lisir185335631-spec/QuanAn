@@ -1,0 +1,52 @@
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | routes-34.spec.ts · 34 路由全部可访问 | ✓ 全 32 命名路由 chromium+mobile 全过 |
+| AC-2 | ip-plan.spec.ts · 0/9 + 切账号 refetch | ✓ 3 tests × 2 browsers 全过 |
+| AC-3 | feedback-button.spec.ts · 点击反馈 → mutation spy | ✗ strict mode 违反(见下) |
+| AC-4 | vitest ≥ 200 tests | ✓ 201 passed |
+| AC-5 | playwright e2e 全过(PRD-2 4 + PRD-3 4 = 8) | ✗ 10 failures |
+| AC-6 | pnpm typecheck 全 6 workspace 0 error | ✓ 0 errors |
+| AC-7 | pnpm lint clean | ✓ 0 warnings |
+| AC-8 | Typecheck passes | ✓ |
+| AC-9 | Tests pass(全套) | ✗ playwright 10 failures |
+
+### 失败详情
+
+**feedback-button.spec.ts (AC-3, AC-5 的 6/10 failures)**
+
+根因：step 页面(如 `/step/1`, `/step/2`) 上有 **2 个** `data-testid="feedback-good/bad/buttons"` 元素，Playwright strict mode 在 `getByTestId()` 匹配到多个元素时报错：
+```
+strict mode violation: getByTestId('feedback-good') resolved to 2 elements:
+  1) getByRole('main').getByTestId('feedback-good')
+  2) getByTestId('feedback-good').nth(1)
+```
+
+影响：3 tests × 2 browsers = **6 failures**（thumbs-up + thumbs-down + visible-on-9-pages）  
+注意：`/ip-plan FeedbackButton fires with stepKey=ip-plan` 测试 **通过** — /ip-plan 只有 1 个 FeedbackButton
+
+**account-isolation.spec.ts + ls-db-sync.spec.ts (AC-5 的另 4/10 failures)**
+
+根因：`stepData.save` tRPC mutation 返回 `undefined`，`saveResult.ok` 报 TypeError。这是 PRD-2 遗留问题，非 US-006 引入。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+  pytest-full.stdout.txt   (vitest 201 passed)
+  typecheck.txt            (6 workspaces, exit 0)
+  lint.txt                 (0 warnings, exit 0)
+  playwright.stdout.txt    (10 failed, 90 passed)
+  manifest.json            (exit_code=1)
+```
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`
+
+**修复建议**：`feedback-button.spec.ts` 的 strict mode 问题有两种修法：
+1. 修测试：用 `page.getByRole('main').getByTestId('feedback-good').first()` 限定范围
+2. 修组件：排查 step 页为何 FeedbackButton 被渲染两次（可能是 Layout + StepPage 各渲染一次）

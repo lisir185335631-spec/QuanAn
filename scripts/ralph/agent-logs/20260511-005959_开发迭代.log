@@ -1,0 +1,13 @@
+US-003 is complete. Here's what was done:
+
+**AC-1** — Added `### §5 · 产物清单 (必落)` section to `~/.claude/scripts/ralph/VALIDATOR.md` listing 4 required artifacts (manifest.json with `exit_code`/`zero_regression` fields, pytest-full.xml, pytest-full.stdout.txt, typecheck.stdout.txt) plus a manifest field example with `zero_regression`.
+
+**AC-2** — `check_timestamp()` now checks `data.get('zero_regression') in (True, 'PASS', 'passed')` → prints `[INFO] timestamps check skipped: ...` and returns True.
+
+**AC-3** — pytest-full.xml missing now prints `[INFO]` instead of `[WARN]`, still doesn't block audit pass.
+
+**AC-4 + AC-6** — Added `zero_regression: "PASS"` to US-001's manifest. Running `python audit-artifacts.py --story US-001` now outputs `→ ARTIFACTS VALID` with 0 false positives.
+
+**AC-5** — Project copy `scripts/ralph/audit-artifacts.py` synced with global.
+
+**AC-7** — Python syntax validated with `ast.parse`.

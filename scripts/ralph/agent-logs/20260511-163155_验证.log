@@ -1,0 +1,36 @@
+prd.json correctly updated. Final summary:
+
+---
+
+## 验证结果: US-012 FAIL
+
+### AC 对照
+
+| AC | 结果 | 依据 |
+|---|---|---|
+| AC-1: 页面渲染 + 录音按钮 + turn list + status bar | ✓ | browser 截图 + 代码 |
+| AC-2: MediaRecorder webm/opus · max 30s · 按住录/松开发 | ✓ | VoiceChat.tsx:385-407 |
+| AC-3: STT→用户气泡→voiceChat.start subscription→流式 | ✓ | startVoiceChatWith 函数 |
+| AC-4: done→tts.synthesize→audio autoPlay | ✓ | VoiceChat.tsx:301-325 |
+| AC-5: 5 工具 call card · 折叠展开 | ✓ | ToolCallCard 组件 line 79-109 |
+| AC-6: 30s silence detection | ✓ | scheduleSilencePrompt 30_000ms |
+| AC-7: 挂掉→clearBuffer+总结显示 | ✓ | SummaryPanel + clearSessionMutation |
+| AC-8: browser mock 降级 unit+visual | ✓ | 可降级，视觉确认通过 |
+| AC-9: 无 stream leak | ✓ | stopRecorder + cleanup on unmount |
+| **AC-10: lint 0 + test 全过** | **✗ FAIL** | 2 lint errors + test 文件缺失 |
+| AC-11: browser 加载 · 按钮+turn-list 可见 | ✓ | browser 截图确认 |
+| Typecheck passes | ✓ | 0 errors |
+| Tests pass | ✗ | VoiceChat.test.tsx 不存在 |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-012/`
+- `vitest-full.xml` (837 tests, 0 failures — X-6 零回归 PASS)
+- `typecheck.stdout.txt` (0 errors)
+- `manifest.json` (verdict=FAIL)
+
+### 判决: passes = false, retryCount = 1
+
+**需修复3处：**
+1. `VoiceChat.tsx:335` — `startVoiceChatWith` 移除 `async`（函数体无 await）
+2. `VoiceChat.tsx:148` — `<audio>` 加 `<track kind="captions" src="" default />` 或 eslint-disable-line
+3. 创建 `tests/unit/web/pages/VoiceChat.test.tsx`（参考 AcquisitionVideo.test.tsx 结构）

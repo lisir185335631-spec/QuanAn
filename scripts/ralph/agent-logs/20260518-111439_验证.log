@@ -1,0 +1,38 @@
+---
+
+## 验证结果：US-008 [FAIL · BLOCKED]
+
+### AC 对照
+
+| AC | 结果 | 说明 |
+|---|:---:|---|
+| AC-1 · spec文件 4 tests | ✅ | `prd-19-frontend-backend.spec.ts` 存在，4 个 test |
+| AC-2 · test(a) Step1 LS↔DB | ✅ | PositioningAgent fallback，DB row + LS 镜像验证通过 |
+| AC-3 · test(b) acc 切换隔离 | ✅ | A(美食)→B(美妆)→A 跨账号 0 数据串，此次首次通过 |
+| AC-4 · test(c) 9 step + 0 hardcode | ✅ | 9 步全走通，grep 0 hardcode acc_step{N} |
+| AC-5 · test(d) zero-regression | ❌ | prd-18 test3 (Step5 `変現型` tab 30s 未出) 持续失败 |
+| AC-6 · fallback path | ✅ | 无 OPENAI_KEY 时 status='fallback'，全程通过 |
+| AC-7 · typecheck | ✅ | 0 errors |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-008/
+- vitest-full.xml          (2282 passed, 0 failed)
+- typecheck.stdout.txt     (0 errors)
+- prd19-e2e-retry5.stdout.txt    (3/4 passed)
+- prd-17-18-e2e-retry5.stdout.txt (6/7 passed)
+- validator-us-008-retry5-prd18-test3-fail.png
+```
+
+### CONFIRMED 失败
+
+- **AC-5 / prd-18 test3**：`getByRole('tab', { name: '変現型' })` element not found (30s timeout)
+  - 复现：`cd apps/web && pnpm playwright test e2e/prd-18-step-4-5-6-7-8.spec.ts`
+  - 定位：`prd-18-step-4-5-6-7-8.spec.ts:145`
+  - **★ PRE-EXISTING**：此 bug 在 commit `f521761`（US-013）创建 prd-18 spec 时已存在。US-008 第一轮 `prd-17-18-e2e.stdout.txt` 就已记录该测试失败，5 轮迭代均失败，非 US-008 引入。
+
+### 判决
+- `prd.json.passes = false`
+- `retryCount = 5`（达上限）→ `blocked = true`
+
+**★ Opus audit 建议**：prd-18 test3 是 pre-existing TD（commit f521761），US-008 的 AC-1/2/3/4/6/7 全 PASS。建议以 TD 豁免方式 approve，并将 test3 bug 登记 `.agents/tech-debt.json`。

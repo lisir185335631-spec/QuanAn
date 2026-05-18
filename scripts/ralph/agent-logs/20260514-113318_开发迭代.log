@@ -1,0 +1,13 @@
+US-004 is complete. Here's what was implemented:
+
+**Schema + Migration**: Added `resolvedByAdminId` field to `EvolutionAnomalyFlag` model and ran migration `20260514033834_prd_13_evolution_anomaly`.
+
+**5 Anomaly Types** (`anomaly-detection.service.ts`): `frequent_style_flip` (7-day direction flips ≥2), `avoidlist_overflow` (>50 unique avoid terms), `negative_feedback_dominant` (30-day negative > positive×2), `flywheel_stalled` (7-day no new insight), `conflicting_insights` (same direction with prefer↔avoid contradictions). Uses `Promise.allSettled` so one detector failure doesn't break others.
+
+**EvolutionAgent.ts**: Anomaly detection wrapped in try/catch added after `_writeEvolutionTransaction` — exceptions never bubble to main flow (SHIELD).
+
+**7-procedure tRPC router** (`evolutionHealth.ts`): `getLDistribution`, `getFlywheelHealth`, `listAnomalies` (cursor-based), `getAccountTimeline`, `forceRebuildEvolution` (creates dual-approval request, returns `{approvalRequestId}`), `markAnomalyResolved`, `getAnomalyStats`.
+
+**`_forceRebuildEvolutionInTx`**: Single-point function clears `evolutionProfile.latestInsight`, marks all `evolutionInsight.isFallback=true/levelAfter='rebuild'`, writes audit log — the LD-A-7 red line.
+
+**Results**: typecheck 0 errors · 1588 tests pass (9 pre-existing integration failures unchanged) · `pnpm audit:redlines-admin` ALL PASS.

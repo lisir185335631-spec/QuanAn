@@ -1,0 +1,35 @@
+검증 완료. 결과 요약:
+
+---
+
+## 검증 결과: US-001 **PASS**
+
+### AC 대조
+
+| AC | 결과 | 근거 |
+|---|:---:|---|
+| AC-1: KpiSnapshot 13 필드 schema | ✓ | prisma/schema.prisma 확인 — 13필드, Decimal(5,4), @@unique, @@index 모두 정확 |
+| AC-2: 마이그레이션 | ✓ | init migration(20260507_init L535) 이미 CREATE TABLE + 1 unique + 1 index 포함. 전 PRD(7ec68b5)에서 사전 추가됨 |
+| AC-3: manual_admin_rls.sql + psql relrowsecurity=f | ✓ | grep line 33 확인, psql `relrowsecurity=f` 실측 확인 |
+| AC-4: $transaction + SET LOCAL + 6-table aggregation | ✓ | 코드 읽기 — SET LOCAL app.role='admin' 정확 사용(SET 아님) |
+| AC-5: 7개 SQL 모두 $queryRaw template literal | ✓ | `$queryRawUnsafe` = 0 instances 확인 |
+| AC-6: upsert snapshotDate_granularity compound key | ✓ | where + update + create 경로 코드 확인 |
+| AC-7: 미래 날짜/잘못된 granularity ValidationError + 빈 feedback 0.0000 | ✓ | safeDivDec(0n, 0n) → '0.0000' 로직 확인 + 테스트 통과 |
+| AC-8: AdminRLSBypassError + SnapshotComputationTimeout 60s | ✓ | Promise.race([compute(), setTimeout(60_000)]) 확인 |
+| AC-9: zod kpiSnapshotSchema 13 필드 strict | ✓ | rate: z.number().min(0).max(1), funnelData: z.array().length(6) 확인 |
+| AC-10: audit-admin-rls-tables.sh + 실측 ✓ | ✓ | `✓ kpi_snapshots RLS DISABLED` 실행 확인 |
+| AC-11: 4 단위 테스트 (6개 실제) 전부 통과 | ✓ | 6/6 passed (3ms) |
+| AC-12: pnpm test 전체 통과 + typecheck 0 error | ✓ | 전체 suite 0 failures 0 errors; typecheck 0 errors |
+
+### 산출물 경로
+
+`scripts/ralph/verify-artifacts/US-001/`
+- `pytest.xml` (6 passed)
+- `pytest-full.xml` (전체 suite 0 failures)
+- `pytest-full.stdout.txt`
+- `typecheck.stdout.txt` (0 errors)
+- `manifest.json` (zero_regression=PASS, verdict=PASS)
+
+### 판결
+
+`prd.json.passes = true` · retryCount = 0

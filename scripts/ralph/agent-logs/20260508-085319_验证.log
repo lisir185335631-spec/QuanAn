@@ -1,0 +1,57 @@
+验证完成。
+
+---
+
+## 验证结果: US-003 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | ipAccounts 6 procedure · 全过 RLS middleware | ✓ |
+| AC-2 | stepData 4 procedure · 全过 RLS | ✓ |
+| AC-3 | ipAccount.schema.ts · 7 字段 | ✓ |
+| **AC-4** | **stepData.schema.ts · stepKey enum + inputs/result Json** | **✗** |
+| AC-5 | list 无 where userId · RLS 兜底 | ✓ |
+| AC-6 | switchActive 更新 activeAccountId + audit_log 'account.switch' | ✓ |
+| AC-7 | stepData.save 写 DB + 返回 row | ✓ |
+| AC-8 | stepData.get 无 where accountId · RLS 兜底 | ✓ |
+| AC-9 | list<100ms · save<200ms | ⚠️ 无法在 unit 层验证 |
+| AC-10 | Typecheck passes | ✓ |
+| AC-11 | ≥ 10 unit tests · 15 passed | ✓ |
+
+### 失败原因（AC-4）
+
+`packages/schemas/src/entities/stepData.schema.ts` 缺少 `result` Json 字段。
+
+Prisma model 有 `result Json?`（nullable），但 schema 文件只导出了：
+- `stepKeySchema`（enum）✓
+- `saveStepDataInput`（stepKey + inputs）✓
+- `getStepDataInput`（stepKey only）✓
+- **没有包含 result 字段的完整 entity schema**
+
+对比 `ipAccount.schema.ts` 有完整 `ipAccountSchema`（7 字段含服务端字段），stepData.schema.ts 应补：
+
+```ts
+export const stepDataSchema = z.object({
+  stepKey: stepKeySchema,
+  inputs: z.record(z.unknown()),
+  result: z.unknown().nullable(),
+  version: z.number(),
+  updatedAt: z.date(),
+});
+export type StepData = z.infer<typeof stepDataSchema>;
+```
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-003/`
+- `typecheck.txt`（@quanqn/api + @quanqn/schemas，均 exit 0）
+- `vitest.xml`（15 passed / 0 failed）
+- `vitest.stdout.txt`（15/15 verbose 输出）
+- `pytest-full.xml`（零回归：24 tests / 0 failures）
+- `manifest.json`（verdict=FAIL，详细 AC 对照）
+
+### 判决
+
+`prd.json.passes = false · retryCount = 1`

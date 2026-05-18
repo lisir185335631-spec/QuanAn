@@ -1,0 +1,1 @@
+All 25 tests pass (18 unit + 7 integration) and both typechecks pass. The three issues from the validator notes were already fixed in commit `783ca47` — this iteration verified correctness and committed the progress log. The validator timed out last round but the code is complete and correct.

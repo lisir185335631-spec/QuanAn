@@ -1,0 +1,1 @@
+US-012 retry fix complete. Replaced the 3 `console.log` stubs in `approvals.ts` (lines 324, 365, 416) with `logger.info` — this was the only blocker for `pnpm audit:redlines`. All other checks pass: typecheck 0 errors, 1721 tests pass (≥1720 AC), verify-prd-13.sh and E2E tests were already passing from the previous iteration.

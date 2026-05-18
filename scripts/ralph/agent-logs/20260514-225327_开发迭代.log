@@ -1,0 +1,15 @@
+US-002 is complete. All ACs satisfied:
+
+- **AC-1** ✅ `significance.service.ts` exports `chiSquareTest` + `welchTTest` + `computeExperimentSignificance`
+- **AC-2** ✅ `SignificanceTestResult` interface with all required fields including `recommendation`
+- **AC-3** ✅ Chi-square uses `@stdlib/stats-base-dists-chisquare-cdf`, df=1, p=1-CDF
+- **AC-4** ✅ Welch t-test uses `@stdlib/stats-base-dists-t-cdf`, allows unequal variances, two-sided
+- **AC-5** ✅ 3 standard metrics: conversion (step_key count≥7), retention (last_login_at≥assigned_at+7d), cost (SUM cost_usd)
+- **AC-6** ✅ Custom metrics array, `Promise.all` parallel fetch
+- **AC-7** ✅ `sampleSize < 30` → `recommendation='inconclusive'`, no p-value computed
+- **AC-8** ✅ p>0.05→continue, p<0.05+better→stop_winner, p<0.05+worse>10%→stop_loser
+- **AC-9** ✅ Both `@stdlib` packages added to `apps/api/package.json`
+- **AC-10** ✅ 16 unit tests with known-value fixtures (chi-square, Welch t-test, all recommendation paths)
+- **AC-11** ✅ Only new queries added, no existing paths touched
+- **AC-12** ✅ 1755 pass (≥1742), typecheck 0 errors
+- **AC-13** ✅ Typecheck passes

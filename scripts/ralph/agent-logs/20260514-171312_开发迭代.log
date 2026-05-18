@@ -1,0 +1,7 @@
+All three confirmed SQL issues fixed:
+
+1. **`getUsageStatsByPlan`** — `daily_quota`/`daily_used` → `"dailyQuota"`/`"dailyUsed"`
+2. **`getHourlyTrendByPlan`** — `uq.user_id` → `uq."userId"`
+3. **`listAnomalousUsers`** — `JOIN "user"` → `JOIN users`, all snake_case column refs → quoted camelCase, `statusFilter` and `data.map` field names synced
+
+Typecheck: 0 errors. Tests: 1668 pass, 0 fail.

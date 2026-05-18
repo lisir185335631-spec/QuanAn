@@ -1,0 +1,6 @@
+US-010 is now implemented and committed. All 292 tests pass, typecheck clean. The Validator will update `passes=true` based on the artifacts.
+
+**Summary:** LivestreamAgent (step8) is complete:
+- `LivestreamAgent.ts`: single-mode Specialist, 5-layer config with `model_tier='reasoning'` / `timeout_ms=30000`, `outputSchema` with `lastResult` + `lastOptimizedResult` (both min 200), `experience` enum validation (`['新手','中级','高级']`), `memory.l2_read=['stepData']`, `knowledge.constants=['industries']`
+- `stepData.ts`: step8 branch calls `livestreamAgent.execute()` and persists result
+- `LivestreamAgent.test.ts`: 5 tests (happy / fallback / edge / cold-start / config)

@@ -1,0 +1,6 @@
+US-011 retry 2 complete. Two config fixes applied and committed:
+
+1. **AC-16/AC-18 fixed**: `vitest.config.ts` include pattern extended to `*.{test.ts,test.tsx}` — `StepForm.test.tsx` now runs (19 schema tests, all pass)
+2. **AC-8 fixed**: `apps/web/vite.config.ts` gains `resolve.dedupe: ['react', 'react-dom']` — eliminates the "mismatching versions of React" hook errors on first render of `/step/*` pages
+
+All 311 tests pass, typecheck clean, and the three grep AC checks (AC-12/13/15) all return 0 hits.

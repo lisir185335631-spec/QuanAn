@@ -1,0 +1,5 @@
+修复完成。两处 CONFIRMED 问题均已解决：
+- **AC-7**: `toast.loading('生成中...')` 在提交时立即触发，完成/失败后 `toast.dismiss()` 消除
+- **AC-11**: `'请稍后重试'` → `'请稍后再试'`，精确匹配 AC 文本
+
+typecheck 0 error，622/622 测试全绿，已 commit `33bc240`。

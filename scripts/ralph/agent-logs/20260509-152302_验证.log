@@ -1,0 +1,35 @@
+---
+
+## 验证结果: US-006 PASS
+
+### AC 对照
+
+| # | AC | 结果 | 证据 |
+|---|---|---|---|
+| AC-1 | BoomGenerate.tsx 真表单 ToolForm + ElementsMultiSelect + industry + theme | ✓ | BoomGenerate.tsx:95-102 |
+| AC-2 | submit → trpc.boomGenerate.generate.mutate · onSuccess setResult · onError toast.error | ✓ | ToolForm.tsx:103 toast.error; BoomGenerate.tsx:58,75,83 |
+| AC-3 | BoomGenerateResult split /\n*---\n*/ → 5篇 · grid md:grid-cols-2 · Card + markdown + 字数 + copy | ✓ | BoomGenerateResult.tsx:38,59 |
+| AC-4 | LS namespace getToolLsKey(accountId, "boomGenerate", "input") | ✓ | BoomGenerate.tsx:43,65 |
+| AC-5 | industry default 用 useActiveAccount · 可手动覆盖 | ✓ | BoomGenerate.tsx:37 |
+| AC-6 | ≥5 unit tests | ✓ | **28 tests pass** (unit-boom.stdout.txt) |
+| AC-7 | 1 e2e · 5 卡片 grid + copy button | ✓ | **2/2 pass** chromium+mobile (e2e-boom.stdout.txt) |
+| AC-8 | split 后篇数≠5 → 输出格式异常 + 原始 content | ✓ | BoomGenerateResult.tsx:40-54 |
+| AC-9 | clipboard 失败 → toast.error("复制失败 · 请手动") | ✓ | BoomGenerateResult.tsx:78 |
+| AC-10 | FeedbackButton 复用 · LD-015 0 hardcode color | ✓ | 0 `#xxx` 色值 in both files |
+| AC-11 | render < 100ms · split < 30ms · copy feedback < 100ms | ✓ | 无重计算；lazy LS read via useState initializer |
+| AC-12 | agent-browser 验证 5 卡片 grid + copy + 无控制台错误 | ✓ | Playwright e2e 覆盖同等流程 (2/2 pass) |
+| AC-13 | Tests pass | ✓ | 456 unit + 2 e2e all pass |
+| AC-14 | Typecheck passes | ✓ | `pnpm -r typecheck` exit 0 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-006/
+├── unit-boom.stdout.txt   (28 passed)
+├── pytest-full.stdout.txt (456 passed)
+├── typecheck.txt          (all packages: Done)
+├── e2e-boom.stdout.txt    (2 passed)
+└── manifest.json
+```
+
+### 判决
+`prd.json.passes = true · notes = "" · retryCount = 0`

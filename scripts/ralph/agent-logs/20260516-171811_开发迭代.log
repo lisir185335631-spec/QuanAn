@@ -1,0 +1,15 @@
+**STATUS: DONE**
+
+US-009 is complete. Here's what was delivered:
+
+- **`apps/web/src/lib/constants/guide.ts`** — `GUIDE_MODULES` (13 modules, strictly matching spec names) + `FAQS` (5 Q&A pairs) with TypeScript interfaces
+- **`apps/web/src/pages/Guide.tsx`** — Full Guide page with:
+  - H1 "USER GUIDE" in Orbitron `text-primary` + subtitle
+  - Search input (filters 13 module cards, hides flow/overview when active)
+  - 5-step RECOMMENDED FLOW with arrows
+  - SYSTEM OVERVIEW (3 cards + tips box)
+  - 13 MODULE cards in grid (click-to-expand steps)
+  - 5 FAQ accordion items
+- **`apps/web/src/router.tsx`** — Route `{ path: 'guide', element: <Guide /> }` added
+- **4 screenshots** — full, module-expand, faq-expand, search-filter verified via browser
+- **typecheck PASS · 51/51 tests PASS**

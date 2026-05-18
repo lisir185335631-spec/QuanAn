@@ -1,0 +1,34 @@
+---
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 状态 |
+|---|---|---|
+| AC-1 | extends BaseSpecialist · 五层配置完整(persona role='PositioningAgent' / l2_read=['stepData'] / constants=['industries'] / tools=['llm.complete'] / model_tier='reasoning' timeout_ms=60000 retry=1) | ✓ |
+| AC-2 | Step1OutputSchema: industry/marketAnalysis.min(50)/competitionLevel.enum/recommendation.min(50) | ✓ |
+| AC-3 | Step4OutputSchema: markdown.min(1000) + refine /^# 执行计划/ | ✓ |
+| AC-4 | outputSchema getter 按 `this._mode` 返回对应 schema (REJ-007 合规) | ✓ |
+| AC-5 | stepData.ts save: step1→mode='industry', step4→mode='execution', 单例 positioningAgent 调用 | ✓ |
+| AC-6 | INDUSTRY_KEYS 常量全量注入 prompt · LLM 自行处理自定义行业 | ✓ |
+| AC-7 | zod refine 失败→BaseSpecialist retry 1→二次失败 throw SchemaValidationError | ✓ |
+| AC-8 | Mode 编译期 union + runtime _validateMode throw | ✓ |
+| AC-9 | Cold start: ContextAssembler 注入占位 '[新用户 · 暂无 step 数据]'(功能等价) · LLM 不假设 step3 数据 | ✓ |
+| AC-10 | 8 tests (≥6) · 2 mode × 3 场景(happy/fallback/cold start) + mode check + config check | ✓ |
+| AC-11 | execution.model_tier='reasoning' · timeout_ms=60000 配置到位 | ✓ |
+| AC-12 | cost_log 写入: callType='specialist_call', agentId='PositioningAgent' 每次写入 | ✓ |
+| AC-13 | 8/8 unit tests passed | ✓ |
+| AC-14 | All packages typecheck clean (0 errors) | ✓ |
+
+**额外检查**:
+- REJ-001 合规: `grep '@anthropic-ai/sdk' specialists/` → 0 命中 ✓
+- REJ-004 合规: stepData.ts 无 inline `new PositioningAgent()` · 用 module-level 单例 ✓
+- REJ-007 合规: outputSchema getter 按 mode 分路返回 ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-004/`
+已生成: `pytest-full.xml` (249 passed) · `pytest-full.stdout.txt` · `pytest.xml` (8 passed) · `pytest.stdout.txt` · `typecheck.txt` · `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

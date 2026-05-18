@@ -1,0 +1,37 @@
+prd.json 已更新。验证完成，写最终 log。
+
+---
+
+## 验证结果: US-012 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 证据 |
+|----|------|:----:|------|
+| AC-1 | 3 关键开关已 seed | ✓ | `prisma/seed.ts:451-469` · 3 条 isEmergency:true |
+| AC-2 | trending-scraper worker brownfield bypass | ✓ | `worker.ts` processTrendingScraperJob 首行 `getFeatureFlagValue('stop_trending_scraper')` → warn + return |
+| AC-3 | EvolutionAgent execute() 紧急停止 | ✓ | `EvolutionAgent.ts` execute() 头部 `getSystemConfigValue('stop_evolution_agent')` → `isFallback:true modelUsed:'emergency-disabled'` |
+| AC-4 | ContextAssembler fallback bypass | ✓ | `_fetchActivePrompt` + `_fetchActiveConstants` 均检查 `enable_fallback_prompt` → return null → templates 降级 |
+| AC-5 | emergencyToggleSystemConfig 内部实现 | ✓ | requestApproval → emergencyApprove(postReviewRequired=true) → `$transaction(_updateSystemConfigInTx)` |
+| AC-6 | security_alert 审计 | ✓ | `eventType='emergency_switch_triggered'` `eventCategory='security_alert'` payload 含 configKey+incidentId |
+| AC-7 | 钉钉 D-077 isMock=true | ✓ | `DingtalkService` constructor: `isMock = DINGTALK_ENABLE !== 'true'`（默认 true） |
+| AC-8 | 24h 后置复核 cron 扩扫描范围 | ✓ | `emergency-post-review.job.ts` 无 actionType 过滤，覆盖 update_system_config 路径 |
+| AC-9 | emergency-switch.test.ts ≥ 8 it | ✓ | 12 个 it blocks（5+5+2 跨 3 describe） |
+| AC-10 | 5s TTL cache | ✓ | `CACHE_TTL_MS=5000`，Map+setInterval 30s 清理 |
+| AC-11 | 不破坏 PRD-5/9/13 现有主流程 | ✓ | 全部 brownfield 前置 bypass，代码注释明确 "not replacing main flow" |
+| AC-12 | pnpm test ≥ 1838 / typecheck PASS | ✓ | 1906 passed, 0 failed, typecheck 6 workspace 全 PASS |
+| AC-13 | Typecheck passes | ✓ | 同上 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-012/
+├── pytest-full.xml       (tests=1910 failures=0 errors=0)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt  (6 workspaces PASS)
+└── manifest.json         (zero_regression=PASS verdict=PASS)
+```
+
+### 判决
+
+`prd.json.passes = true` · retryCount=0 · notes=""

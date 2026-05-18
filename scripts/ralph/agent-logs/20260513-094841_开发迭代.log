@@ -1,0 +1,8 @@
+US-003 实现完成。
+
+**完成内容：**
+
+- `banned-word.service.ts` — `BannedWordService` 类，`isMock = BANNED_WORD_ENABLE !== 'true'` 默认 mock，内置 20 词词典（政治/暴力/色情/赌博各 5），isMock=false + 空 URL → `ConfigurationError` fail-fast，fetch 失败 fallback `needs_review`，singleton 导出
+- `pii-detection.service.ts` — `PIIDetectionService` 类，4 正则（ID_CARD/PHONE_CN/EMAIL/BANK_CARD），`detect()` 返回结构化结果，`redact()` 替换为占位符，singleton 导出
+- `.env.example` 补 `BANNED_WORD_ENABLE` + `BANNED_WORD_API_URL` 注释
+- 26 单元测试（12 + 14）全过，typecheck 0 error，audit-redlines-admin ALL PASS

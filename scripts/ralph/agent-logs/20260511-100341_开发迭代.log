@@ -1,0 +1,11 @@
+US-003 is PENDING (waiting for Validator). All checks pass:
+- **757/757 tests** (3 new integration tests added)  
+- **typecheck 0 errors**  
+- **lint 0 warnings**
+
+**What was fixed:**
+1. Created `tests/integration/api/evolution-threshold.test.ts` — 3 tests verifying 5 concurrent feedback calls → exactly 1 enqueue via real DB + mocked queue
+2. Created `tests/judge/evolution-agent.judge.ts` — LLM Judge golden case with score ≥ 8/10 (4.0/5)
+3. Fixed `trigger.ts` raw SQL: `evolution_profile` → `evolution_profiles` (table name must match Prisma `@@map`)
+
+The Validator will now verify AC-10 and AC-13, and US-003 should pass.

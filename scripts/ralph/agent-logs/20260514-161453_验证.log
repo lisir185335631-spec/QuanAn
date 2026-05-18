@@ -1,0 +1,29 @@
+验证完成。以下是最终报告：
+
+---
+
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | CanarySlider 5 档 stepper (0/1/10/50/100%) | ✓ — UI 截图确认 |
+| AC-2 | 选 100% → confirm modal + requestApproval(dual) | ✓ — 代码验证：`updateCanary` router 100% 走 `requestApproval` |
+| AC-3 | 选 1-50% → 直接调 updateCanary (不走 Approval) | ✓ — 浏览器网络请求：POST `prompts.updateCanary` 直接 200 |
+| AC-4 | 选 0% → 客户端二次 confirm | ✓ — `ConfirmModal` 弹出，`confirm === '0pct'` 分支 |
+| AC-5 | currentVersion/nextVersion 同行 + D-090 tooltip | ✓ — `VersionInfoRow` + `HASH_TOOLTIP` 渲染确认 |
+| AC-6 | Canary status 卡片展示版本详情 | ✓ — UI 截图：v1 评分 4.7 灰度 0% current |
+| AC-7 | 一键回滚 super_admin · reason≥20 · approval #418 toast | ✓ — 浏览器实测：POST `prompts.rollback` 200，toast"已发起回滚申请 #418" |
+| AC-8 | LlmJudgeCard 评分进度条 + 重跑(isMock 4.0-4.8) | ✓ — 重跑后分数从 4.70 变 4.33，toast 确认 |
+| AC-9 | HistoryTimeline 每版本显示灰度历史 | ✓ — 编辑器 tab 截图：v1 下"灰度历史 50%"标签可见 |
+| AC-10 | agent-browser e2e 全流程 | ✓ — 全部操作浏览器实测通过 |
+| AC-11 | redlines 0 命中 · tests ≥1640 pass 0 fail | ✓ — 1666 passed，0 failed；redlines ALL PASS |
+| AC-12 | Typecheck passes | ✓ — exit=0，0 errors |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`  
+已生成: `pytest-full.xml` (1666 passed), `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

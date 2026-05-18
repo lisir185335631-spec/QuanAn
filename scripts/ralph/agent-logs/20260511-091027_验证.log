@@ -1,0 +1,42 @@
+prd.json updated correctly. Here is the complete validation report:
+
+---
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | evolution.schema.ts: EvolutionInsightContentSchema + InsightsSchema + TriggerTypeSchema | ✓ |
+| AC-2 | dailyTask.schema.ts: DailyTaskOutputSchema + TaskItemSchema + TaskTypeEnum (7 types) | ✓ |
+| AC-3 | voiceChat.schema.ts: VoiceChatTurnSchema + VoiceChatBufferSchema + VOICE_CHAT_TOOLS (5 tools) | ✓ |
+| AC-4 | l1-buffer.ts: ioredis · 3 API · Redis key `voice_chat:acc_${id}:turns` · max 20 + TTL 1800s + LPUSH/LRANGE/EXPIRE | ✓ |
+| AC-5 | l4-profile.ts: getLatestInsight + getDeepLearningSamples · 复用 prisma queries | ✓ |
+| AC-6 | l5-trending.ts: getHotTrending(category?, limit=20) 返空数组 + TODO 注释 'PRD-9 真接 trending API' | ✓ |
+| AC-7 | AssembledContext 加 evolutionInsight?: EvolutionInsightContent \| null | ✓ |
+| AC-8 | assemble() 第 5 路 Promise.allSettled fetch L4 insight · 5s timeout · 失败 evolutionInsight=null | ✓ |
+| AC-9 | index.ts barrel: 3 exports (evolution/dailyTask/voiceChat 各 1 命中) | ✓ |
+| AC-10 | EvolutionInsightContent / DailyTaskOutput / VoiceChatTurn z.infer + export type 同时输出 | ✓ |
+| AC-11 | SoT §1.0.5: 验证1 新 schema 在 packages/schemas 非 inline · 验证2 router z.object 全 .input() 上下文 · 验证5 type alias chain re-export 存在 | ✓ |
+| AC-12 | vitest unit: 5 L1 Buffer tests + 8 schema validation tests = 13 passed | ✓ |
+| AC-13 | pnpm typecheck 6 ws 0 error · pnpm lint --max-warnings=0 全过 | ✓ |
+| AC-14 | pnpm test: 740 passed (0 failures, 0 errors) · 零回归 ✓ | ✓ |
+| Typecheck | 6 workspaces pass | ✓ |
+| Tests | 740/740 pass | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-001/
+├── manifest.json          (verdict=PASS, zero_regression=PASS)
+├── pytest.xml             (AC-12: 13 passed)
+├── pytest.stdout.txt
+├── pytest-full.xml        (X-6: tests=740, failures=0, errors=0)
+├── pytest-full.stdout.txt
+└── typecheck.stdout.txt   (6 workspaces, 0 errors)
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`
+
+所有 16 项 AC 全部通过。

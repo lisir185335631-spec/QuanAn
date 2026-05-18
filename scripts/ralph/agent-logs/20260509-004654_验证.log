@@ -1,0 +1,33 @@
+---
+
+## 验证结果: US-002 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | `ContextAssembler.ts` 导出 class · `assemble(req) => Promise<AssembledContext>` | ✓ `apps/api/src/services/context-assembler/ContextAssembler.ts:32` |
+| AC-2 | `Promise.allSettled` 5路并行 · 各路独立 5s timeout · 失败降级 | ✓ 代码 L38-45 + 测试 L2-timeout/reject 用例全通过 |
+| AC-3 | `templates/` 下 7 Specialist 模板片段 | ✓ 7 文件均存在(positioning/branding/monetization/topic/video/copywriting/livestream) |
+| AC-4 | `MethodologyQueryWorker.getAll()` 拉常量 | ✓ `apps/api/src/workers/methodology-query/index.ts` 存在并被导入 |
+| AC-5 | L2 stepData 失败 → `[新用户 · 暂无 step 数据]` 占位 | ✓ 代码 L126-131 + 测试通过 |
+| AC-6 | L4 EvolutionProfile null → `[L1 阶段 · 暂无进化档案]` 占位 | ✓ 代码 L133 + 测试通过 |
+| AC-7 | L5 RAG 降级跑空 · `ragHits = []` · `needRag` 接口保留 | ✓ 代码 L64 + `AssembleRequest.needRag` 字段保留 |
+| AC-8 | `metadata.layersUsed` 真实反映成功层 | ✓ 测试"layersUsed 仅含成功层"通过 |
+| AC-9 | `contextTokens = ceil(chars/4)` | ✓ 代码 L75 + 测试通过 |
+| AC-10 | `grep 'BASE_LLM_URL\|LLM_API_KEY\|sk-'` 命中 0 | ✓ grep exit:1(无命中) |
+| AC-11 | `tests/unit/services/context-assembler.test.ts` ≥ 10 tests | ✓ 16 个测试用例 |
+| AC-12 | `assemble` 耗时 ≤ 800ms | ✓ 测试用例通过(< 800ms) |
+| AC-13 | Tests pass | ✓ 233/233 passed · 0 failures |
+| AC-14 | Typecheck passes | ✓ 6 workspace packages 全部 `tsc --noEmit` 通过 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-002/
+已生成: pytest-full.xml (233 passed, 0 failures), pytest-full.stdout.txt, typecheck.txt, manifest.json
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

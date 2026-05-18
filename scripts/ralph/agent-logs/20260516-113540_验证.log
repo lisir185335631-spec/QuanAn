@@ -1,0 +1,72 @@
+---
+
+## 验证结果: US-001 [FAIL] · 第 3 次
+
+### AC 对照
+
+| AC | 结论 | 说明 |
+|----|------|------|
+| AC-1 | ✅ PASS | Google Fonts 3 字体 link 已加入 index.html（Orbitron 含额外 wght@400 是超集，可接受） |
+| AC-2 | ✅ PASS | tailwind.config.js 5 个 fontFamily 全部正确 |
+| AC-3 | ✅ PASS | tokens.css 不存在属项目原结构；globals.css 颜色 `--primary: 43 87% 63%` 未变（D4=B 锁通过） |
+| AC-4 | ✅ PASS | aiipznt-motion.css 存在，3 个 utility class 内容完全正确 |
+| AC-5 | ✅ PASS | main.tsx 已引入 aiipznt-motion.css，顺序在 globals.css 之后 |
+| **AC-6** | **❌ FAIL** | `--primary` 值未变 ✅；但 `document.fonts.check('1em Orbitron') === false` ❌ |
+| AC-7 | ✅ PASS | step/1 截图 layout 与 baseline 一致，无 layout regression |
+| AC-8 | ✅ PASS | 51 vitest 测试全通过；typecheck pass；audit:redlines 17 项全过；audit:redlines-admin 11 LD-A + 6 R-A 全过 |
+| AC-9 | ✅ PASS | grep gold token refs 0 命中 |
+| AC-10 | ✅ PASS | tailwind.config.ts（不存在）0 命中；config.js 中 gold 只在动画名，非新增颜色系列 |
+
+### AC-6 FAIL 根因（CONFIRMED）
+
+```
+复现命令: node check-ac6-v2.mjs
+实际输出: Orbitron loaded: false
+
+深度诊断:
+  Orbitron:400 → status: unloaded  ← fonts.check('1em Orbitron') 检查此 weight → false
+  Orbitron:500 → status: unloaded
+  Orbitron:700 → status: loaded ✓  (页面 bold 标题元素触发下载)
+  Orbitron:900 → status: unloaded
+
+根因: Google Fonts URL 含 wght@400，但浏览器只在元素使用时才下载对应字重文件。
+页面 font-display 元素全为 bold(weight:700)，无元素使用 weight:400，
+导致 Orbitron:400 仅注册未下载 → fonts.check('1em Orbitron') = false
+```
+
+### 建议修复（Ralph 优先选 A）
+
+**方案 A（推荐）**：在 `apps/web/src/styles/globals.css` 的 `body` 末尾加：
+```css
+/* Preload Orbitron 400 for fonts.check API */
+body::before {
+  content: '';
+  font-family: 'Orbitron';
+  font-weight: 400;
+  position: fixed;
+  visibility: hidden;
+  pointer-events: none;
+  font-size: 0;
+}
+```
+
+**方案 B**：在 `apps/web/src/main.tsx` 加（`import './styles/aiipznt-motion.css'` 之后）：
+```js
+document.fonts.load('400 1em Orbitron').catch(() => {});
+```
+
+验证命令：`node check-ac6-v2.mjs` → 期望 `Orbitron loaded: true`
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  manifest.json        (exit_code=1, zero_regression=PASS, verdict=FAIL)
+  pytest-full.stdout.txt  (51 passed, 0 failed)
+  typecheck.stdout.txt    (tsc --noEmit: 0 errors)
+  ac6-browser-test.txt   (fonts diagnostics)
+```
+
+### 判决
+
+`prd.json.passes = false`，`retryCount = 3`

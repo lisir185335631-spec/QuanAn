@@ -1,0 +1,36 @@
+验证完成。以下是 US-008 第 2 次验证结果：
+
+---
+
+## 验证结果: US-008 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | prd-19-frontend-backend.spec.ts 存在 · 4 tests · describe 匹配 | ✓ |
+| AC-7 | Typecheck passes | ✓ (0 errors) |
+| AC-4 (grep) | 0 hardcode `acc_step{N}` in src/pages/step/ | ✓ (0 hits) |
+| Zero regression | vitest 181 passed | ✓ PASS |
+| **AC-2 (test a)** | DB row industryLabel='美食' | ✗ 返回 '美业' |
+| **AC-3 (test b)** | 账号隔离数据不串 | ✗ 切回 A 后返回 '美妆护肤' |
+| **AC-4 (test c)** | 9 step 完整流程 · strict selector | ✗ `text=账号包装方案` 5 elements |
+| **AC-5 (test d)** | prd-18 旧 e2e 全 PASS | ✗ prd-18 3/6 失败 |
+
+### CONFIRMED 根因
+
+**1. DEV_OAUTH_MOCK 无 cookie 时返回 account 11351**  
+Playwright 新浏览器上下文无 session cookie → backend 返回 account 11351（不是 11350）。11351 已有 step1 '美业' 存量数据 → `submitStep1` 的 `toBeVisible('行业洞察报告')` 立即通过（旧数据已可见）→ 未触发新保存 → tests a/b/c 全部依赖这个账号且读到旧数据。
+
+**2. test (c) strict selector 失败**  
+`locator('text=账号包装方案')` 匹配 5 个 DOM 元素（step tag、h1、描述、按钮、placeholder）→ strict mode violation。
+
+**3. prd-18 状态污染**  
+prd-19 test c 历史运行已将 step4/5/7 写入 DB。prd-18 独立运行时 test1(step4)/test3(step5)/test5(step7) 发现存量结果→ 按钮/tab/h4 行为不符预期。
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-008/`  
+生成: vitest-full.xml (181 passed), typecheck.stdout.txt (0 errors), prd19-e2e.stdout.txt (4/4 FAIL), prd-17-18-e2e.stdout.txt (prd-17 1/1 PASS, prd-18 4/6 PASS 3 FAIL)
+
+### 判决
+`prd.json.passes = false · retryCount = 2 · notes 已写入 CONFIRMED 根因 + 三条修复方向`

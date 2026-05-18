@@ -1,0 +1,51 @@
+## 验证结果: US-004 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 状态 |
+|---|---|---|
+| AC-1 | ToolForm + ScriptTypeSelect + ElementsMultiSelect + TextareaField | ✓ |
+| AC-2 | toast.error 文本 `"生成失败 · 请稍后重试"` | ✗ 文本不匹配 |
+| AC-3 | LS key `aiip_memory_acc_{id}_tool_freeGenerate_input` | ✓ |
+| AC-4 | historyId stub + `enabled: !!historyId` | ✓ |
+| AC-5 | ToolResult → FreeGenerateResult → react-markdown + remark-gfm | ✓ |
+| AC-6 | ≥5 unit tests (实际 22 tests) | ✓ |
+| AC-7 | e2e test 运行 FAIL | ✗ regex 不匹配 |
+| AC-8 | AbortController on unmount | ✓ |
+| AC-9 | 0 hardcode color in Generate.tsx | ✓ |
+| AC-10 | FeedbackButton agentId="CopywritingAgent" | ✓ |
+| AC-11 | 性能指标 (< 100ms render) | 未实测 (need perf tool) |
+| AC-12 | 浏览器验证 (mock LLM) | ✓ 截图见 pass-3.png |
+| AC-13 | Tests pass | ✗ e2e 2/2 FAIL |
+| AC-14 | Typecheck | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-004/
+├── pytest-full.xml     (424 passed, 0 failures)
+├── pytest-full.stdout.txt
+├── typecheck.txt       (exit 0)
+└── manifest.json       (exit_code: 1, verdict: FAIL)
+
+screenshots/
+├── validator-us-004-pass-1.png  (/generate 初始渲染)
+├── validator-us-004-pass-2.png  (表单填写完成)
+├── validator-us-004-pass-3.png  (mock 结果渲染)
+└── validator-us-004-fail-2.png  (e2e test 失败截图)
+```
+
+### 判决
+`prd.json.passes = false`，`retryCount = 1`
+
+---
+
+**2 项 CONFIRMED 失败：**
+
+**AC-7 (e2e 回归)**
+- 复现：`pnpm test:e2e tests/e2e/tool-generate.spec.ts`  
+- 错误：`TimeoutError` at `tests/e2e/tool-generate.spec.ts:113` — `/教知识/` 找不到，实际选项是 `"教程演示"`  
+- 修复：第 110-113 行改 `/教知识|tutorial/i` → `/教程演示/i`
+
+**AC-2 (toast 文本)**
+- 错误：`apps/web/src/components/ToolForm/ToolForm.tsx:102` — `'生成失败 · 请重试'` vs AC 要求 `"生成失败 · 请稍后重试"`  
+- 修复：补上 `稍后` 两字

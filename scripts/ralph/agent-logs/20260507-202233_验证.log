@@ -1,0 +1,40 @@
+验证完成。最终报告如下：
+
+---
+
+## 验证结果: US-001 [FAIL]
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|---|
+| 1 | pnpm typecheck (root) 退出码 0 | ✓ EXIT 0，6 个 workspace 全通过 |
+| 2 | 无 'Cannot find module @/...' 残留 | ✓ typecheck 无错误，@/ 在 apps/api 内正确解析 |
+| 3 | @quanqn/* 路径解析正确(tsconfig paths · vite alias) | ✓ vite.config.ts 三条 alias + tsconfig.base.json paths 就位 |
+| 4 | .gitkeep 不删 · 注释保留 | ✓ 25+ .gitkeep 保留；admin/src/index.ts 有完整 PRD-10~14 注释 |
+| 5 | pnpm install < 60s · typecheck < 30s | ✓ install ~2s · typecheck ~1.3s |
+| 6 | Typecheck passes | ✓ |
+| 7 | Tests pass | **✗ pnpm test EXIT 1 — "No test files found"** |
+
+### 失败根因
+
+1. `tests/setup.ts` 文件缺失（vitest.config.ts `setupFiles` 引用此文件）
+2. `tests/unit/` 和 `tests/integration/` 目录下无任何 `.test.ts` 文件
+
+### 建议修复方向
+
+- `vitest.config.ts` 的 `test` 配置加 `passWithNoTests: true`（骨架阶段合理）
+- 创建占位 `tests/setup.ts` 文件（避免 setupFiles 配置悬空）
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+  typecheck.stdout.txt  (EXIT 0)
+  test.stdout.txt       (EXIT 1, "No test files found")
+  manifest.json
+```
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1`

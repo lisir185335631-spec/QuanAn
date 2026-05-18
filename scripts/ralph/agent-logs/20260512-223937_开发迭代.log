@@ -1,0 +1,17 @@
+US-009 is complete. Here's a summary of what was implemented:
+
+**Schema (AC-1/2/3):** Both `IpAccountAdminNote` and `IpAccountAnomalyFlag` models were already present in the init migration with all 5 indexes. DB is up to date — no new migration needed.
+
+**RLS (AC-4/5):** `manual_admin_rls.sql` and `scripts/audit-admin-rls-tables.sh` already had both tables. `pnpm audit:admin-rls-tables` passes 13/13 admin + 15/15 main tables.
+
+**Anomaly Detection Service (AC-6-13):** `apps/api/src/services/admin/accounts/anomaly-detection.service.ts`
+- Uses `$transaction + SET LOCAL app.role='admin'` (anti-pattern shield applied)
+- Type 1 `inactive_no_feedback`: histories in 7d + zero feedback → severity low
+- Type 2 `evolution_stalled`: has evolution profile + no new insight in 7d → severity medium
+- Type 3 `frequent_account_switch`: user active on 3+ accounts in 7d, flags each → severity medium
+- Type 4 `cost_spike`: 24h cost > 3× avg daily (30d window) → severity high
+- Dedupe: `findFirst({ detectedAt >= todayStart, resolvedAt: null })` — resolved flags allow re-detection
+
+**Cron Job (AC-11):** `apps/api/src/jobs/admin/anomaly-detection.job.ts` with `'0 5 * * *'`, `tz: 'Asia/Shanghai'`, `jobId: 'anomaly-detection-recurring'`
+
+**Tests (AC-14/15):** 10 unit tests covering all 4 anomaly types, dedupe, re-detection after resolve, and SET LOCAL verification. `pnpm typecheck` 0 errors.

@@ -1,0 +1,1 @@
+Done. The fix was a single targeted addition to `packages/schemas/src/entities/stepData.schema.ts` — exported `stepDataSchema` (with `stepKey`, `inputs`, `result`, `version`, `updatedAt`) and `StepData` type to satisfy AC-4. Both typechecks pass and all 15 unit tests still green. Committed as `3855ae6`.

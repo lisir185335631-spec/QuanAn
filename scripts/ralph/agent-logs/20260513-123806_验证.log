@@ -1,0 +1,47 @@
+Verification complete. Here's the summary:
+
+---
+
+## 验证结果: US-009 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | 6 procedure 全 adminProcedure | ✓ |
+| AC-2 | list zod filters + cross_account_query audit | ✓ |
+| AC-3 | detail queueId + autoScanResult + violation count | ✓ |
+| AC-4 | approve $transaction + deepLearningArchive.create + archiveId + audit | ✓ |
+| AC-5 | LD-A-5 grep verify 全项目仅 1 命中 | ✓ (1 hit: review-deep-learn.ts:66) |
+| AC-6 | reject + userViolationLog.upsert + security_alert ≥3 | ✓ |
+| AC-7 | banUploader Approval Gates stub (super_admin/admin) | ✓ |
+| AC-8 | userViolations + cross_account_query audit | ✓ |
+| AC-9 | approve/reject 已处理 guard → ValidationError | ✓ |
+| AC-10 | readonly_admin 403 for approve/reject/banUploader | ✓ |
+| AC-11 | admin banUploader → pending approval | ✓ |
+| AC-12 | adminRouter index.ts 挂载 reviewDeepLearn | ✓ |
+| AC-13 | audit-approval-gates 0 missing (15 checks) | ✓ |
+| AC-14 | audit-admin-rls 50 procedures 0 violations | ✓ |
+| AC-15 | 单元测试 30+ (43 tests PASS) | ✓ |
+| **AC-16** | **pnpm test 全过** | **✗ FAIL** |
+| AC-17 | Typecheck passes | ✓ |
+
+### CONFIRMED 失败 (AC-16 · 零回归门禁)
+
+**根因**: US-009 fix commit `6e23c43` 改了 `deepLearning.ts` 的 `create`/`createFromFile` 使用 `deepLearnReviewQueue.create`，但没更新 `tests/unit/api/specialists-flow.test.ts` 的 mock。
+
+- `prisma.deepLearnReviewQueue` 在 mock 中未定义 → `.create` 抛出 `Cannot read properties of undefined`
+- 全量: 11 failures (9 pre-existing auth/trace 需 dev server + **2 new** in specialists-flow.test.ts)
+
+### 产物路径
+
+`scripts/ralph/verify-artifacts/US-009/` — pytest-full.xml (11 failed), typecheck.stdout.txt (0 error)
+
+### 判决
+
+`prd.json.passes = false · retryCount = 2`
+
+**修复方向 (精确)**:
+1. `tests/unit/api/specialists-flow.test.ts` `makeCtx()` 加 `deepLearnReviewQueue: { create: vi.fn(async () => ({ id: 1, status: 'pending', autoVerdict: 'needs_review' })) }`
+2. `deepLearning.create` 测试改为 expect `deepLearnReviewQueue.create` + 断言返回 `{ ok: true, queueId, status }`（不再有 `agentId`）
+3. `deepLearning.createFromFile` 测试同理更新断言

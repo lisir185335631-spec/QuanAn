@@ -1,0 +1,12 @@
+US-007 complete. Here's what was shipped:
+
+**Backend** (`apps/api`):
+- `prompts.ts` tRPC router: 5 procedures — `getActiveVersion`, `listVersions`, `saveDraft`, `submitForReview` (draft→pending_review + LLM Judge stub + dual approval), `rollbackVersion` (super_admin only)
+- Admin router index: replaced `promptsPlaceholder` with real `promptsRouter`
+
+**Frontend** (`apps/admin`):
+- `MonacoEditor.tsx` — lazy-imported Monaco + DiffEditor with Aurelian Dark theme (SHIELD: no SSR issues)
+- `HistoryTimeline.tsx` — version list with status/score, preview modal, rollback button (super_admin only)
+- `PromptsPage.tsx` — 14-tab horizontal TabBar, URL state via `useSearchParams`, version card (version/score/canary progress bar), Monaco editor 80% + history 20%, Diff view toggle, draft debounce 1s + localStorage, save draft / submit for review, toast notifications
+
+**Verification**: 1642 tests pass (≥1625), 0 typecheck errors, ALL PASS 7 LD-A + 6 R-A redlines.

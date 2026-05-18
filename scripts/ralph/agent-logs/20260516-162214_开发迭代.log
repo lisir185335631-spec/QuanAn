@@ -1,0 +1,14 @@
+US-008 完成。实现摘要：
+
+**AC-1** — `AccountSwitcher.tsx` Button 样式改为紫色描边(`border border-primary/15 hover:border-primary/30 bg-secondary/50 rounded-lg`)，dropdown content 加 `backdrop-blur-xl rounded-xl shadow-primary/5`，内部逻辑未动。
+
+**AC-2/3/4** — `Header.tsx` 新增三个函数：
+- `UserChip` — 纯展示 div，`animate-ping-primary` 紫色跳动圆点 + 用户名，0 onClick
+- `LogoutIconButton` — `<LogOut>` icon-only，直接调 `logout`，无确认
+- `HeaderRight` — 未登录→登录按钮，已登录→AccountSwitcher + UserChip + LogoutIconButton 三件套
+
+**AC-5/6** — 浏览器验证通过：AccountSwitcher 展开显示 5 个 mock IP 账号，UserChip 显示 "Dev User" + 紫点，LogoutIcon 可见。截图 `screenshots/prd16-us008-header-right.png` 已保存（dropdown + chip + icon 同框）。
+
+**AC-7** — typecheck ✓，51 tests ✓
+
+**AC-8** — UserChip 内 0 onClick/onMouseEnter/onMouseLeave，Header.tsx 内 0 confirm/Dialog/Modal

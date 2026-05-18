@@ -1,0 +1,18 @@
+US-001 is complete. Here's a summary of what was implemented:
+
+**Files created (7 new):**
+- `packages/schemas/src/specialist-io/dailyTask.schema.ts` — TaskTypeEnum (7 types) + TaskItemSchema + DailyTaskOutputSchema + type aliases
+- `packages/schemas/src/specialist-io/voiceChat.schema.ts` — VoiceChatTurnSchema + VoiceChatBufferSchema + VOICE_CHAT_TOOLS (5 tools) + types
+- `apps/api/src/memory/l1-buffer.ts` — Redis L1 Buffer (LPUSH/LTRIM/LRANGE/EXPIRE, key `voice_chat:acc_{id}:turns`, max 20, TTL 1800s)
+- `apps/api/src/memory/l4-profile.ts` — `getLatestInsight` + `getDeepLearningSamples` helpers
+- `apps/api/src/memory/l5-trending.ts` — placeholder interface + empty return + TODO PRD-9
+- `tests/unit/api/memory/l1-buffer.test.ts` — 5 tests
+- `tests/unit/api/schemas/memory-schemas.test.ts` — 8 tests
+
+**Files modified (4):**
+- `packages/schemas/src/specialist-io/evolution.schema.ts` — added `EvolutionInsightContentSchema` + `InsightsSchema` + `TriggerTypeSchema`
+- `packages/schemas/src/specialist-io/index.ts` — barrel exports for 2 new schemas
+- `apps/api/src/services/context-assembler/types.ts` — `AssembledContext` gets `evolutionInsight?` field
+- `apps/api/src/services/context-assembler/ContextAssembler.ts` — 5th parallel fetch for L4 latest insight
+
+**Results:** pnpm typecheck 6ws 0 error · lint 0 warnings · pnpm test 740/740 (727 existing + 13 new)

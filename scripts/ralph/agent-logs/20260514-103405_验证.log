@@ -1,0 +1,38 @@
+---
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|:---:|
+| AC-1 | ≥ 4 describe block 覆盖 4 核心场景 | ✓ (4 describe: 冷启动/非冷启动/schema retry/AbortError) |
+| AC-2 | 4 场景每个至少 1 it() 用 expect() 断言 | ✓ (冷启动5个/非冷启动2个/retry2个/AbortError1个) |
+| AC-3 | fake ILLMGateway vi.fn() mock complete() | ✓ `makeGateway()` 构造 `{ complete: vi.fn().mockResolvedValue({...}) }` |
+| AC-4 | prisma mock · stepData.count + evolutionProfile.findUnique | ✓ `vi.mock('@/lib/prisma')` · 两个 mock 均已设 |
+| AC-5 | contextAssembler mock | ✓ `vi.mock('@/services/context-assembler/ContextAssembler')` |
+| AC-6 | 冷启动 5 模板任务结构验证 · ctaUrl/estimatedMinutes/difficulty | ✓ it() `冷启动 5 模板任务结构验证` 逐项断言 |
+| AC-7 | 第二次 retry 仍失败 → SchemaValidationError | ✓ `rejects.toBeInstanceOf(SchemaValidationError)` · gateway 调用 2 次 |
+| AC-8 | 输入 schema 校验 fail → ZodError | ✓ 两个 it: accountId 缺失 + taskDate 非 YYYY-MM-DD |
+| AC-9 | 不影响现有 specialists 测试 | ✓ 只新增文件，未改动任何 specialists/*.ts |
+| AC-10 | 不影响 workers/daily-task/worker.ts | ✓ 提交 diff 确认：仅 2 文件变更 |
+| AC-11 | pnpm test ≥ 1551 pass · 0 fail · 0 skip(新加 ≥ 4 it) | ✓ 1559 passed · 0 fail · 4 pre-existing skip · 新增 10 tests 全 pass |
+| AC-12 | pnpm typecheck · 0 errors | ✓ 6 packages typecheck 全通过 |
+| AC-13 | TD-056 status open → resolved | ✓ tech-debt.json `status: "resolved"` |
+| AC-14 | Typecheck passes | ✓ 同 AC-12 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+├── manifest.json          (verdict: PASS · zero_regression: PASS)
+├── pytest.xml             (10 tests · 0 failures)
+├── pytest.stdout.txt      (story 专属测试 verbose 输出)
+├── pytest-full.xml        (1563 tests · 0 failures · 0 errors)
+├── pytest-full.stdout.txt (全量测试原始输出)
+└── typecheck.stdout.txt   (6 packages · 0 errors)
+```
+
+### 判决
+
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

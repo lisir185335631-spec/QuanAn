@@ -1,0 +1,29 @@
+prd.json 已更新 `passes: true`，`notes: ""`，`retryCount: 0`。
+
+## 验证结果: US-001 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 | 说明 |
+|----|------|------|------|
+| AC-1 | index.html Google Fonts preconnect + 3 字体 link | ✅ | wght@400;500;700;900 是超集，可接受 |
+| AC-2 | tailwind.config fontFamily 5 families | ✅ | display/label/cn/sans/mono 全部存在 |
+| AC-3 | 颜色 token 不动 (D4=B 严锁) | ✅ | tokens.css 不存在，globals.css 颜色未变 |
+| AC-4 | aiipznt-motion.css 含 3 utility class | ✅ | ping-primary/glass-card/data-grid-bg 精确匹配 |
+| AC-5 | main.tsx import 顺序 globals→aiipznt-motion | ✅ | L15/L16 顺序正确 |
+| AC-6 | --primary 不变 + fonts.check('1em Orbitron')===true | ✅ | body::before 预载触发 Orbitron:400:loaded，check1em=true |
+| AC-7 | step/1 截图 layout 无回归 | ✅ | 截图已更新，布局与 PRD-15 baseline 一致 |
+| AC-8 | typecheck+test+audit:redlines+admin 全过 | ✅ | 51 tests pass，typecheck 0 error，17+11+6 rules 全过 |
+| AC-9 | gold token grep 0 命中 | ✅ | apps/web/src/ 0 命中 |
+| AC-10 | tailwind.config 无 gold color 系列 | ✅ | gold-glow-pulse 为 pre-existing animation 名，非新增颜色 token |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-001/
+已生成: manifest.json (PASS), pytest-full.stdout.txt (51 passed), typecheck.stdout.txt (0 errors)
+```
+
+### 判决
+- `prd.json.passes = true`
+- `prd.json.notes = ""`
+- `prd.json.retryCount = 0`

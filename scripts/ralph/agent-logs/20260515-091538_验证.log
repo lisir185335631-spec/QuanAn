@@ -1,0 +1,26 @@
+## 验证结果：US-006 PASS
+
+### AC 对照
+
+| AC | 描述 | 结论 |
+|---|---|---|
+| AC-1 | ConstantVersion 模型：id/constantType/constantKey/version/content @db.Text/contentHash/status/judgeScore Decimal(3,2)/judgeRunId/judgeReportUrl/createdByAdminId/createdAt/approvedByAdminId?/approvedAt? + @@unique + 2 index + @@map("constant_versions") | ✓ |
+| AC-2 | ConstantCanaryConfig 模型：所有字段 + canaryPct @default(0) + strategy @default("user_id_hash") + @@unique([constantType,constantKey]) + @@map("constant_canary_config") | ✓ |
+| AC-3 | Migration `20260515011044_prd_14_constant_versions` 存在 | ✓ |
+| AC-4 | constant-version.service.ts：1:1 fork，import ConstantVersion，5 函数加 Constant 前缀，actionType='publish_constant_version'，hash key 含 constantType | ✓ |
+| AC-5 | `_publishConstantVersionInTx`：接 tx，校验 status='pending_review' + judgeScore≥4.0，archive prev，set status='active'，upsert canary | ✓ |
+| AC-6 | `publishConstantVersion` / `rollbackConstant` 强制走 `requestApproval(requireDualApproval:true)` | ✓ |
+| AC-7 | `approvalGateService.ts` DUAL_APPROVAL_ACTION_TYPES 含 'publish_constant_version' + 'rollback_constant' | ✓ |
+| AC-8 | `getActiveConstantVersion`：md5(`${userId}:${constantType}:${constantKey}`).slice(0,8) % 100 < canaryPct → nextVersion | ✓ |
+| AC-9 | AGENTS.md §10.1 LD-A10 加入，grep 模式排除 service + .test. 文件 | ✓ |
+| AC-10 | `audit-redlines-admin.sh` §LD-A10 段：ALL PASS · 10 LD-A + 6 R-A | ✓ |
+| AC-11 | `prompt-version.service.ts` 未被 US-006 修改（最后提交 = US-003） | ✓ |
+| AC-12 | Tests 1813 passed（≥ 1782）/ 4 skipped / 0 failed；typecheck 0 errors | ✓ |
+| AC-13 | `pnpm typecheck`：6 个 package/app 全部 0 errors | ✓ |
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-006/`  
+已生成：`pytest-full.xml`（1813 passed）, `pytest-full.stdout.txt`, `typecheck.stdout.txt`, `manifest.json`
+
+### 判决
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

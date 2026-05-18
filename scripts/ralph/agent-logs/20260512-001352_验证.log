@@ -1,0 +1,33 @@
+全 5 stories passes=true。PRD-9 が完了。
+
+---
+
+## 検証結果：US-005 PASS
+
+### AC 対照（17/17 通過）
+
+| AC | 内容 | 結果 |
+|---|---|---|
+| AC-1 | test:judge 55 ≥ 54 | ✅ |
+| AC-2 | vitest 907 passed / 4 skipped / 0 failed ≥ 870 | ✅ |
+| AC-3 | typecheck 6 workspaces 0 errors | ✅ |
+| AC-4 | lint --max-warnings=0 PASS | ✅ |
+| AC-5 | playwright --list 166 ≥ 159 | ✅ |
+| AC-6 | knowledge-rag-loop.spec.ts 6/6 pass（3AC × 2 projects） | ✅ |
+| AC-7 | 7 eventType 全命中（embedding_call: 2 files） | ✅ |
+| AC-8 | queueName.*embedding\|rag=0；sync workers 確認；3 BullMQ queues | ✅ |
+| AC-9 | pgvector 0.8.0 ✓ | ✅ |
+| AC-10 | case=67 / formula=23 / element=23（3行） | ✅ |
+| AC-11 | ragChunks/[Section 6] 14 hits；ContextAssembler 1 class | ✅ |
+| AC-12 | specialists 0 self-RAG | ✅ |
+| AC-13 | knowledge-page.png 00:17:59 保存；0 ErrorBoundary | ✅ |
+| AC-14 | D-038/D-046/D-054/D-056/D-057/D-058 計 63 hits | ✅ |
+| AC-15 | progress.txt に ## Codebase Patterns - PRD-9 ✓ | ✅ |
+| AC-16 | Typecheck passes | ✅ |
+| AC-17 | Tests pass | ✅ |
+
+### 産物
+`scripts/ralph/verify-artifacts/US-005/`: pytest-full.xml（911 tests, 0 failures）・manifest.json・typecheck.stdout.txt・knowledge-page.png
+
+### 判決
+`prd.json.passes = true`・全 5 stories PASS・PRD-9 収官完了

@@ -1,0 +1,15 @@
+US-011 is complete and committed. Here's a summary of what was implemented:
+
+**Backend (`apps/api/src/trpc/routers/admin/approvals.ts`)** — 9 procedures:
+- `getKpiStats`: 4 KPI numbers (可审批数 / 平均时长 / 拒绝率 / 紧急SLA)
+- `listPending` / `listDecided`: cursor分页 + 管理员邮件批量enrichment + `displayStatus`派生（`first_approved` = dual+pending+firstApprover已设）
+- `listPostReview`: super_admin only，6h后未复核的紧急审批
+- `getHistoricalDecisions`: 同类actionType近10条历史决策
+- `approveRequest` / `rejectRequest` / `emergencyApprove` / `postReviewApprove`
+
+**Frontend** — 3个文件：
+- `ApprovalGatesPage`: 4 KPI卡片 + Tab切换(待审批/历史决策/后置复核) + DenseTable + 30s轮询
+- `ApprovalDetailDrawer`: 申请概要 + PII脱敏JSON + per-actionType影响预估 + 历史决策 + 批准/拒绝（第一审批人disabled+tooltip · SHIELD双校验）
+- `EmergencyApproveModal`: incidentId必填（客户端+服务端双校验）
+
+**验证**：1702 pass（≥1690 ✅）· 0 typecheck errors · redlines ALL PASS

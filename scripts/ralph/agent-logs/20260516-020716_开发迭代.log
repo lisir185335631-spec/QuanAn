@@ -1,0 +1,1 @@
+All tests pass (20/20 specialists-flow + 18/18 DeepLearning frontend), typecheck 0 errors. The fix updates `specialists-flow.test.ts` to match the US-003 router changes: `list` now asserts `deepLearnReviewQueue.findMany`, `delete` asserts `deepLearnReviewQueue.update` with `status: 'cancelled'`, and the mock gains the missing `findMany`/`update`/`findFirst` stubs.

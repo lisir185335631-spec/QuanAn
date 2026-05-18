@@ -1,0 +1,32 @@
+US-013 验证完成。
+
+---
+
+## 验证结果: US-013 PASS
+
+### AC 对照
+
+- AC-1: ✅ `md5(${userId}:${flagKey}).slice(0,8) % 100 < percentage` — feature-flag.service.ts:L178-181，hash 顺序正确，deterministic，缓存一致性测试通过
+- AC-2: ✅ targeted 路由 `userId in target_users OR plan in target_plans` — L185-196，3 个 it() 覆盖全路径
+- AC-3: ✅ `rolloutConfigSchema` discriminatedUnion 3 分支（boolean/percentage/targeted），z.enum(['free','pro','enterprise'])，percentage 0-100 range check
+- AC-4: ✅ `toggleFeatureFlag` 对任意 flagKey 不抛 NOT_FOUND，调 `requestApproval(requireDualApproval: true)`，`_toggleFeatureFlagInTx` 使用 upsert
+- AC-5: ✅ feature-flag-routing.test.ts 有 **17 it()**（≥8），percentage 0%/100%/50%、targeted user/plan/both-miss、boolean、未知flagKey、invalid rolloutConfig 全覆盖；36 tests passed
+- AC-6: ✅ US-012 emergency-switch.test.ts **13 tests passed**，boolean flagType 不受影响
+- AC-7: ✅ 零回归 **1947 tests**（≥1846），0 failures；typecheck exit 0
+- AC-8: ✅ typecheck 全 PASS（6 workspace projects）
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-013/
+├── pytest.xml              (36 passed — AC-spec)
+├── pytest.stdout.txt
+├── pytest-full.xml         (1947 passed — zero-regression)
+├── pytest-full.stdout.txt
+├── typecheck.stdout.txt    (exit 0)
+└── manifest.json           (verdict: PASS)
+```
+
+### 判决
+
+`prd.json.passes = true` — US-013 通过，US-014 依赖已解除，可继续执行。

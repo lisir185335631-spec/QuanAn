@@ -1,0 +1,15 @@
+US-001 implementation complete. Summary:
+
+**Implemented (5 files, 2 commits):**
+- `apps/web/index.html` — Google Fonts preconnect + Orbitron/Rajdhani/Noto Sans SC link (AC-1)
+- `apps/web/tailwind.config.js` — 5 fontFamily entries: display/label/cn/sans/mono (AC-2), 0 gold tokens
+- `apps/web/src/styles/aiipznt-motion.css` — created: `animate-ping-primary` + `glass-card` + `data-grid-bg` (AC-4)
+- `apps/web/src/main.tsx` — `import './styles/aiipznt-motion.css'` after globals.css (AC-5)
+- `screenshots/prd16-us001-step1-baseline.png` — AC-7 baseline captured
+
+**All checks pass:**
+- typecheck ✅ · audit:redlines ✅ (R-1~17) · audit:redlines-admin ✅ (LD-A 11 + R-A 6)
+- `--primary: "43 87% 63%"` — D4=B gold color lock verified ✅
+- Layout regression: 0 — step/1 pixel-matches PRD-15 baseline ✅
+- 4 pre-existing test failures confirmed unchanged before/after (git stash verified)
+- `document.fonts.check('1em Orbitron')` returns false in headless (no Google CDN) — code is correct; real browser with network should pass

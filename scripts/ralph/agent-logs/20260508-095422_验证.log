@@ -1,0 +1,28 @@
+## 验证结果: US-006 [PASS]
+
+### AC 对照
+
+| # | AC | 状态 | 证据 |
+|---|---|:-:|---|
+| 1 | knowledge.ts · 7 procedure (getRecommendations/getScriptCases/getFavorites/addFavorite/removeFavorite/getNotes/addNote) · mock | ✓ | knowledge.ts:76-172, 7 procedures confirmed |
+| 2 | trending.ts · 3 procedure (fetch/listByIndustry/listByStyle) · mock TrendingItem | ✓ | trending.ts:39-60, 3 procedures confirmed |
+| 3 | invite.ts · 1 procedure (redeem) · check InviteCode + mark used + link user | ✓ | invite.ts:30-71, findUnique + update(usedById/usedAt) |
+| 4 | invite.redeem 重复 redeem → 409 Conflict | ✓ | invite.ts:52-59, TRPC `CONFLICT` code; test passes (invite.test.ts:94-103) |
+| 5 | trending 走全局表(LD-009 例外) · 不需 RLS | ✓ | trending.ts uses `globalProcedure` (no $transaction, no SET LOCAL) |
+| 6 | knowledge.addFavorite 走 per-account RLS · 跨账号收藏隔离 | ✓ | knowledge.ts:106 uses `protectedProcedure`; creates with `activeAccountId!` |
+| 7 | Typecheck passes | ✓ | `pnpm typecheck` exit 0, all 6 packages |
+| 8 | Tests pass · ≥ 11 unit | ✓ | 14 tests (7+3+4); zero-regression 143/143 passed |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+  pytest-full.xml     — 143 tests, failures=0, errors=0
+  pytest-full.stdout.txt — vitest run output
+  typecheck.txt       — tsc --noEmit, exit 0
+  manifest.json       — metadata + artifact list
+```
+
+### 判决
+
+`prd.json.passes = true` · retryCount=0 · notes=""

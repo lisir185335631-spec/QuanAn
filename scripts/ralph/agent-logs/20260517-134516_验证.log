@@ -1,0 +1,23 @@
+## 验证结果: US-003 PASS
+
+### AC 对照
+- AC-1: 已选状态卡 ✓ — glass-card `border-primary/40 bg-primary/5`, emoji `text-3xl`, `已选择:{label}`, `关键词:{...join('、')}` (Step1.tsx:61-75)
+- AC-2: 主 CTA ✓ — `bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70`, `STEP1_CTA_LABEL` + ` →`, 无 violet/amber/gold (Step1.tsx:146)
+- AC-3: disabled 状态 ✓ — `isCtaDisabled = !selectedIndustry && !customIndustry`, `disabled={isCtaDisabled}`, `STEP1_CTA_DISABLED_HINT` 显示 (Step1.tsx:43,140,151)
+- AC-4: handleSubmit ✓ — `localStorage.setItem('acc_step1', JSON.stringify({...}))` + `navigate('/step/3')` (Step1.tsx:45-56)
+- AC-5: browser ✓ — 点 '💅 美业' 后顶部出现"已选择:美业"及"关键词:美容院、美发、美甲、美睫、纹绣"
+- AC-6: browser ✓ — CTA 可点击，点击后 URL 跳到 `http://localhost:5173/step/3`
+- AC-7: browser ✓ — `localStorage.getItem('acc_step1')` = `{"industry":"beauty","industryLabel":"美业","customIndustry":""}`
+- AC-8: Typecheck ✓ — `pnpm tsc --noEmit` exit 0
+
+### 零回归门禁
+Vitest 70 tests passed (8 test files), exit 0
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-003/`
+- `typecheck.stdout.txt` (exit 0)
+- `pytest-full.stdout.txt` (vitest 70 passed)
+- `manifest.json` (verdict: PASS)
+
+### 判决
+`prd.json.passes = true` ✓

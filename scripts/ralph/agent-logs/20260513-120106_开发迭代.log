@@ -1,0 +1,11 @@
+US-008 is complete. Here's a summary of what was implemented:
+
+**Files created (6):**
+- `apps/api/src/workers/file-parser/queue.ts` — BullMQ queue with `FileParserJobPayload` (userId, accountId, fileName, fileMime, fileSize, rawText), attempts:3
+- `apps/api/src/workers/file-parser/worker.ts` — Main worker: fileSize ≤20MB gate (AC-4), mime whitelist PDF/Word/CSV/MD/TXT (AC-5), mock-s3:// stub (AC-7), calls `computeDeepLearnAutoVerdict`, writes `deepLearnReviewQueue` (**never** `deepLearningArchive.create` — LD-A-5), audit logs for enqueue (AC-8) and final failure (AC-9)
+- `apps/api/src/workers/file-parser/index.ts` — barrel export
+- `apps/api/src/services/admin/content-review/deep-learn-auto-verdict.service.ts` — `computeDeepLearnAutoVerdict`: strong PII (idCards+bankCards ≥ 1) → `auto_rejected`; banned-word ≥ 1 → `auto_rejected`; parseFailed or 10% sampling → `needs_review`; else → `auto_approved`. Banned-word scan runs on **redacted text** to prevent PII leaking into scan logs
+- `__tests__/worker.test.ts` — 16 tests covering 5 mime types, 4 verdict branches, size limit, mime whitelist
+- `__tests__/deep-learn-auto-verdict.service.test.ts` — 10 tests
+
+**All checks pass:** 26/26 unit tests ✓ · typecheck 0 errors ✓ · `grep prisma.deepLearningArchive.create` → 0 hits (LD-A-5 compliant) ✓ · audit:redlines-admin ALL PASS ✓

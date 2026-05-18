@@ -1,0 +1,46 @@
+---
+
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 依据 |
+|---|---|---|
+| AC1 lastLoginAt + lastLoginIp 字段 | ✓ | schema.prisma model User 两字段均在，@db.VarChar(45) 正确 |
+| AC2 4 个 @@index | ✓ | schema.prisma lines 52-55: role/plan/industry/lastLoginAt(sort:Desc) 全部存在 |
+| AC3 migration SQL | ✓ | 20260512104230_add_user_lastlogin_indexes/migration.sql: ALTER TABLE users + 4 CREATE INDEX |
+| AC4 psql \d users | ✓ | 实跑确认 last_login_at/last_login_ip 字段 + 4 indexes 全部可见 |
+| AC5 RLS ON | ✓ | `relrowsecurity=t`（commit `a0a7b23` 修复，4 policies 正常） |
+| AC6 auth.ts 登录更新 | ✓ | index.ts:193 `void updateLastLogin(prisma, user.id, clientIp)` |
+| AC7 try/catch 不阻塞 | ✓ | auth.ts try/catch + logger.warn；`void` 前缀确保非阻塞 |
+| AC8 IPv6 长度 ≤ 45 | ✓ | `ip.slice(0, 45)` 截断，VarChar(45) 列约束双保险 |
+| AC9 zod schema | ✓ | user.schema.ts: lastLoginAt z.date().nullable().optional() + lastLoginIp z.string().max(45) |
+| AC10 4 单元测试 | ✓ | auth-lastlogin.test.ts 全部通过（1 file, 4 tests, 96ms） |
+| AC11 pnpm test + typecheck | ✓ | 4 story 测试 pass；typecheck 0 error（全 workspace） |
+| AC12 audit:redlines-admin | ✓ | ALL PASS · 5 LD-A + 6 R-A |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-005/
+  pytest.xml          (4 passed - story-specific tests)
+  pytest.stdout.txt   (auth-lastlogin 详细输出)
+  pytest-full.xml     (X-6 零回归 JUnit XML - 3 failed/117 passed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt
+  manifest.json       (exit_code=0, verdict=PASS)
+```
+
+### X-6 零回归门禁说明（Opus TD豁免必读）
+
+零回归 `vitest run` 结果：3 failed / 117 passed。**失败文件与 US-005 无关**：
+- `rls-isolation.test.ts` — PrismaClientValidationError: undefined in array（fixture 问题）
+- `evolution-threshold.test.ts` — pre-existing integration 失败
+- `ip-progress-integration.test.ts` — pre-existing integration 失败
+
+前一轮 retryCount=1 的 Validator 已通过 `git stash` 确认这 3 个是 pre-existing failures。US-005 的两个提交（feat: b773f7a + fix: a0a7b23）均未触碰这些测试文件。**请 Opus 按 TD 豁免规则处理，登记 tech-debt.json。**
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`  
+audit-gate.json 等待编排器写入，Opus 进行最终 TD 豁免审查。

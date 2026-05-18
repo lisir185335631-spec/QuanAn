@@ -1,0 +1,3 @@
+修复完成。
+
+**变更摘要**：`Step4.tsx:264` 将 `EmptyState title="提交表单后查看执行计划"` 改为 `title={`提交表单后查看${STEP4_H1}`}`，AC-7 hardcode grep 0 命中，119 tests PASS，typecheck 0 error。

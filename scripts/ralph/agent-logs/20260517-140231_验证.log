@@ -1,0 +1,31 @@
+**STATUS: DONE**
+
+## 验证结果: US-004 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | `<Dialog open={customModalOpen}>` + `<DialogTrigger asChild><Button variant='link'>` · click 触发 | ✅ |
+| AC-2 | `DialogContent className="glass-card"` · `DialogTitle font-display` · `Input maxLength=20` + `STEP1_CUSTOM_MODAL_PLACEHOLDER` | ✅ |
+| AC-3 | `CANCEL`/`CONFIRM` 常量 · `variant="outline"` · `disabled={!customInput.trim()}` · `bg-gradient-to-r from-primary to-primary/80` | ✅ |
+| AC-4 | `handleCustomConfirm` 三联 setters · 状态卡 `已选择:{customIndustry}(自定义)` · `✨` emoji | ✅ |
+| AC-5 | grep 命中 4 字面量（`自定义你的行业`/`请输入你的行业名称`/`确认使用`/`取消`）via 常量 | ✅ |
+| AC-6 | 浏览器 click 触发 Dialog（非 hover）· 输入 `宠物服务` · 点 `确认使用` | ✅ |
+| AC-7 | Modal 关闭 · 状态卡 `已选择:宠物服务(自定义)` · CTA `disabled:false` | ✅ |
+| AC-8 | Typecheck exit 0 | ✅ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-004/
+├── pytest-full.xml          (70 passed, 0 failed)
+├── pytest-full.stdout.txt   (zero regression PASS)
+├── typecheck.stdout.txt     (clean)
+├── manifest.json            (verdict=PASS, zero_regression=PASS)
+├── validator-us-004-step1-initial.png
+├── validator-us-004-dialog-open.png
+└── validator-us-004-after-confirm.png
+```
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

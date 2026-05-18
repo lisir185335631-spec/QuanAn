@@ -1,0 +1,36 @@
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | History.tsx 200+ 行 | ✓ `apps/web/src/pages/modules/History.tsx` 839 行 (路由 App.tsx:54 正确 lazy import) |
+| AC-2 | Timeline 按天分组 + 工具 icon/名/摘要 60字/时间/3 操作 | ✓ 代码审查 + 浏览器截图确认 |
+| AC-3 | Dashboard 4 KPI + 4 chart | ✓ 截图 validator-us-008-pass-2.png 确认 |
+| AC-4 | URL state ?view=timeline\|dashboard | ✓ 点击后 URL 变化已确认 |
+| AC-5 | 14 工具 multi-select · URL ?tools= | ✓ TOOL_DEFS 15 条目 ≥ 14，测试通过 |
+| AC-6 | 今日/本周/本月/自定义日期 | ✓ 截图可见 4 个选项 |
+| AC-7 | trpc.history.list.useQuery | ✓ 代码审查确认 |
+| AC-8 | 恢复并重跑跳转 + URL params | ✓ 浏览器确认跳 `/generate?topic=...&restored=13583` |
+| AC-9 | History.test.tsx ≥ 8 it | ✓ 27 tests pass |
+| AC-10 | 4 procedure + history.test.ts | ✓ historyRouter list/detail/delete/stats 全部存在 |
+| AC-11 | agent-browser 全流程验证 | ✓ 3 张截图证据 |
+| AC-12 | pnpm vitest pass / typecheck PASS | ✓ 2256 tests, 0 failures / ALL PASS |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+pytest.xml (27 passed), pytest.stdout.txt
+pytest-full.xml (2256 tests, 0 failures), pytest-full.stdout.txt
+typecheck.stdout.txt (ALL PASS)
+manifest.json (verdict=PASS)
+```
+
+### TD 说明
+
+`apps/web/src/test/pages.test.tsx` 中 4 个 heading 失败（Trending/Copywriting/Knowledge/MyTopics）为 US-006/US-007 遗留的 pre-existing tech debt，在 US-008 之前的 commit `d2216d8`（US-007）时已存在，US-008 未引入。Root vitest（零回归基准）0 failures。
+
+### 判决
+
+`prd.json.passes = true` — US-008 PASS，8/9 stories 全部通过，US-009（收官 E2E）待执行。

@@ -1,0 +1,24 @@
+## 验证结果: US-009 [PASS]
+
+### AC 对照
+
+- AC-1: LoadingState.tsx ✓ — interface 3 字段、默认 text='加载中...'、Loader2 + animate-spin + text-primary
+- AC-2: ErrorState.tsx ✓ — interface 4 字段、默认 title/message、onRetry 条件按钮、AlertTriangle + text-destructive + glass-card
+- AC-3: EmptyState.tsx ✓ — interface 5 字段、默认 title='暂无数据'、Inbox + text-muted-foreground/60
+- AC-4: index.ts barrel ✓ — 3 行 export * from ...
+- AC-5: README.md ✓ — 含 LoadingState/ErrorState/EmptyState 场景说明 + 跨 PRD 复用约束
+- AC-6: states.test.tsx ✓ — 3 个 describe，覆盖 text 渲染 / 重试按钮 / 默认 title
+- AC-7: 跨 step 复用 ✓ — Step1(EmptyState)、Step3(LoadingState)、Step3b(LoadingState) 全部 grep 命中
+- AC-8: vitest run ✓ — 3/3 PASS（全量 70/70 零回归亦通过）
+- AC-9: typecheck ✓ — 0 errors
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-009/
+├── manifest.json        (verdict=PASS, zero_regression=PASS)
+├── pytest-full.stdout.txt  (70 passed)
+└── typecheck.stdout.txt    (0 errors)
+```
+
+### 判决
+`prd.json.passes = true`，retryCount = 0，notes = ''

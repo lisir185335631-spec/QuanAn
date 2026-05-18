@@ -1,0 +1,50 @@
+验证完成。以下是最终报告：
+
+---
+
+## 验证结果: US-008 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | AiVideo.tsx · ToolForm + 3 字段 + submit 按钮 | ✓ 代码验证 |
+| AC-2 | AiVideoResult.tsx · 5-8 镜头卡片网格 · 头/中/底 | ✓ 代码验证 |
+| AC-3 | ToolResult.tsx switch `'ai-video'` case | ✓ 代码验证 |
+| AC-4 | polling · `refetchInterval: 3000` · `enabled: !allCompleted` | ✓ 代码验证 |
+| AC-5 | 全完成 banner + `refetchInterval=false` | ✓ 代码验证 |
+| AC-6 | 失败 scene → placeholder + 重试占位按钮 toast PRD-7+ | ✓ 代码验证 |
+| AC-7 | browser: 表单字段可见 | ✓ e2e PASS (chromium + mobile) |
+| AC-8 | browser: 填 sourceCopy + 选 scenesCount=5 + 提交 | ✓ e2e PASS |
+| AC-9 | browser: 提交后立即 5 镜头 skeleton 网格 | ✓ e2e PASS |
+| AC-10 | browser: polling → skeleton → 真 img | ✓ e2e PASS |
+| AC-11 | browser: 5 镜头全完成 → banner + polling 停止 | ✓ e2e PASS |
+| AC-12 | browser: sourceCopy 空 → zod 中文 error · 不提交 | ✓ 补充 browser test PASS (截图) |
+| AC-13 | browser: rate limit → banner + disabled 按钮 | ✓ 补充 browser test PASS (截图) |
+| AC-14 | polling 5次 0 完成 → stall hint 显示 | ✓ 代码验证 (`pollingStallCount >= 5`) |
+| AC-15 | 刷新 → LS restore polling historyId | ✓ 代码验证 (mount effect + getToolLsKey) |
+| AC-16 | browser: `?historyId=N` → form + 完成镜头 + banner | ✓ 补充 browser test PASS (截图) |
+| AC-17 | `pnpm test AiVideo.test.tsx` · 21 tests (7 groups) | ✓ 21 passed |
+| AC-18 | `pnpm test:e2e tool-ai-video.spec.ts` · 1 e2e CI mock | ✓ 2 passed (chromium + mobile) |
+| AC-19 | 5 镜头 lazy load · 总 ~5MB | ✓ `loading="lazy"` 代码验证 |
+| AC-20 | polling 每 3s · 1 query < 100ms | ✓ `refetchInterval: 3000` 代码验证 |
+| AC-21 | `pnpm typecheck` 6 ws 0 error | ✓ exit 0 |
+| AC-22 | `pnpm test AiVideo.test.tsx` exit 0 | ✓ exit 0 |
+| AC-23 | `pnpm test:e2e tool-ai-video.spec.ts` exit 0 | ✓ exit 0 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-008/
+├── manifest.json
+├── typecheck.txt        (6 ws, 0 error)
+├── vitest.stdout.txt    (21 passed)
+├── vitest.xml
+├── e2e.stdout.txt       (2 passed: chromium + mobile)
+├── e2e.xml
+├── vitest-full.stdout.txt  (72 files, 703 passed — 零回归)
+└── vitest-full.xml
+```
+截图: `screenshots/validator-us-008-pass-ac12/13/16-*.png`
+
+### 判决
+`prd.json.passes = true` · `retryCount = 0` · `notes = ""`

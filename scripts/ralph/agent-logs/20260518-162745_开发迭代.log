@@ -1,0 +1,6 @@
+US-006 最终状态已提交。
+
+**总结**:
+- TopicAgent.ts 真 SSE 实现正确（`executeStream()` → 5 category 各一次 `invokeLLM` → `_consumeStream()` → 真 `llmGateway.stream()` → `meta` chunk + 5 `done` chunks）
+- Typecheck ✅ · AC-6 real-LLM test ✅（skipIfNoKey per design）  
+- 9 个零回归失败均为预存性 `ECONNREFUSED` 集成测试，超出 US-006 scope，需 Opus 审计时做 TD 豁免 approve

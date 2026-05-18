@@ -1,0 +1,6 @@
+两处确认问题均已修复并通过全套质量检查：
+
+- **AC-2**: HNSW migration SQL 表名 `"KnowledgeChunk"` → `"knowledge_chunk"`（与 `@@map` 对齐），加 `IF NOT EXISTS` 防 dev DB 已有 index 报错，`prisma migrate deploy` 成功应用
+- **AC-7**: `openai-embedding.ts` `embed()` 开头 import + 调用 `checkEmbeddingRateLimit(accountId)`，rate limit 在 OpenAI API 调用前生效
+
+pnpm typecheck 6ws 0 errors · lint 0 warnings · 875 tests pass ✅

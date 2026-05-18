@@ -1,0 +1,9 @@
+US-001 的 AC-9 修复完成。
+
+**修改内容**：`apps/web/src/hooks/useActiveAccount.ts` — 在 `switchTo` 的 `onSuccess` 回调里，于 `clearLsNamespace` 调用之前加一行：
+
+```ts
+localStorage.setItem('aiip_active_account_id', String(newAccountId));
+```
+
+**验证**：typecheck 6 workspaces PASS，seed.test.ts 7/7，hooks.test.ts 16/16 全绿。等 Validator 跑浏览器验证 AC-9 的 localStorage 写入。

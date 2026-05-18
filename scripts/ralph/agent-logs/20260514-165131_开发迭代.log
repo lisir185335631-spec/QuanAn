@@ -1,0 +1,6 @@
+US-009 retry fix complete. Two targeted changes:
+
+- **AC-4**: Added `last_call_at` correlated subquery to `listAnomalousUsers` SQL, propagated `lastCallAt` through service interface → shadow router types → `QuotaUserRow` → DenseTable column (inserted before action column)
+- **AC-5**: Added `getExpiredAdjustments` procedure to quota router (filters `isExpired=true OR expiresAt<=now`, 20 records desc), synced shadow router types, added `getExpiredAdjustments` query + "历史调整记录（已失效）" section to `QuotaDetailDrawer`
+
+All quality gates: **1668 tests pass · 0 fail · 0 typecheck errors · 0 redline hits**.

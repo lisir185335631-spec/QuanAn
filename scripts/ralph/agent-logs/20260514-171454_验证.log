@@ -1,0 +1,48 @@
+验证完成。结果摘要：
+
+## 验证结果: US-009 FAIL
+
+### AC 对照
+
+| AC | 状态 | 说明 |
+|----|------|------|
+| AC-1 | ✅ PASS | quota route 在 `lib/admin-routes.ts` 正确注册，path/label/requiredRole 均正确 |
+| AC-2 | ✅ PASS | 4 KPI 卡片确认（截图 pass-2.png）：Free/Pro/Enterprise 套餐 + 异常用户 + 趋势箭头 |
+| AC-3 | ✅ PASS | UsageLineChart.tsx 使用 Recharts LineChart，3 plan 折线 |
+| AC-4 | ✅ PASS | DenseTable 全列（userId/plan/dailyUsed/dailyQuota/占比/lastCallAt/action）+ 筛选 + usagePctDesc 排序 |
+| **AC-5** | **❌ FAIL** | **Drawer 用户基本信息缺 `createdAt` 字段**（详见下方） |
+| AC-6 | ✅ PASS | 调整面板：adjustmentType/delta/reason ≥10字/dual approval delta>500 |
+| AC-7 | ✅ PASS | 浏览器验证：/admin/quota 加载 → 4 KPI + 折线 + 列表 + row→Drawer → 24h 时间线 + 调整面板 |
+| AC-8 | ✅ PASS | delta=300 → toast "已立即生效 24h" ✓；delta=600 → toast "已发起 Approval 申请 #435" ✓ |
+| AC-9 | ✅ PASS | `pnpm audit:redlines-admin` 0 命中（8 LD-A + 6 R-A 全通过） |
+| AC-10 | ✅ PASS | 1668 passed（≥1655）0 failed，typecheck 0 errors |
+| AC-11 | ✅ PASS | `pnpm typecheck` 全包 0 errors |
+
+### AC-5 失败详情
+
+```
+## CONFIRMED
+- 失败: QuotaDetailDrawer 用户基本信息缺少 createdAt 字段
+  · 复现命令: grep -n "createdAt" apps/admin/src/pages/quota/QuotaDetailDrawer.tsx
+  · 实际输出: (无匹配)
+  · 失败定位:
+    1) QuotaDetailDrawer.tsx — QuotaUserRow interface 无 createdAt 字段
+    2) QuotaDetailDrawer.tsx:306-309 — StatRow 只有 Email/套餐/日配额使用/白名单
+    3) quota-adjustment.service.ts L340-415 — listAnomalousUsers SQL 不返回 users.created_at
+```
+
+### 修复方向
+
+1. `quota-adjustment.service.ts` — `listAnomalousUsers` SQL 加 `u.created_at` 列
+2. `AnomalousUserRow` interface 加 `createdAt: Date | null`
+3. `QuotaDetailDrawer.tsx` — `QuotaUserRow` interface 加 `createdAt?: Date | string | null`
+4. 用户信息区加 `<StatRow label="加入时间" value={fmtDate(selected.createdAt)} />`
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-009/
+  pytest-full.xml       (1668 passed)
+  pytest-full.stdout.txt
+  typecheck.stdout.txt  (0 errors)
+  manifest.json         (verdict=FAIL, failing_ac=["AC-5"])
+```

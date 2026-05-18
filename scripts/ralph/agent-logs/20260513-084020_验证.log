@@ -1,0 +1,47 @@
+prd.json updated correctly. Here is the complete validation report:
+
+---
+
+## 验证结果: US-001 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | TrendingReviewQueue 3 model · @@unique + 4 indexes | ✓ (schema.prisma line 984–1008) |
+| AC-2 | TrendingTakedown · 2 indexes | ✓ (schema.prisma line 1012–1025) |
+| AC-3 | AutoReviewRule · @@unique([ruleType,ruleKey]) + 1 index | ✓ (schema.prisma line 1029–1041) |
+| AC-4 | **migration add_trending_review_tables 含 3 CREATE TABLE** | **✗ FAIL** |
+| AC-5 | manual_admin_rls.sql 3 行 DISABLE RLS · psql relrowsecurity=f | ✓ (all 3 tables f) |
+| AC-6 | **audit script 含 '域⑦ TrendingItem 审核' 注释** | **✗ FAIL** |
+| AC-7 | zod schema · 3 schema · enum 1:1 prisma | ✓ |
+| AC-8 | audit:admin-rls-tables 0 mismatches | ✓ (26/26 RLS=false, 0 mismatches) |
+| AC-9 | 单元测试 9+ tests | ✓ (26 tests passed) |
+| AC-10 | pnpm test 全过 · typecheck 0 error · audit-redlines-admin ALL PASS | ✓ |
+| AC-11 | Typecheck passes | ✓ |
+
+### CONFIRMED 失败
+
+**AC-4**: `pnpm prisma migrate status` → "Database schema is up to date!" — 3 个 model 在 P0 setup commit (3bf3911) 已写入 init migration，无法再创建 `add_trending_review_tables` 独立迁移。`_prisma_migrations` 查询 `'%trending%'` = 0 行。
+
+**AC-6**: `grep "域⑦" scripts/audit-admin-rls-tables.sh` → 0 匹配。3 张表列在通用 `# 9 辅助表(按业务域)` 注释下，缺少 `# 域⑦ TrendingItem 审核` 专属注释。US-001 commit (17dae09) 也未包含 audit script 修改。
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-001/
+pytest.xml         (26 passed — story tests)
+pytest-full.xml    (9 pre-existing ECONNREFUSED failures · port 3000 not running)
+typecheck.stdout.txt (0 errors)
+audit-rls.txt      (26/26 PASS)
+audit-redlines-admin.txt (ALL PASS)
+manifest.json
+```
+
+### 零回归说明
+
+9 个集成测试失败 (auth.test.ts · auth.me.test.ts · trace.test.ts) 均为 pre-existing — 需要 API server 运行在 port 3000，US-001 前即存在（git stash 验证确认）。
+
+### 判决
+
+`prd.json.passes = false` · `retryCount = 1` · 修复建议已写入 notes。

@@ -1,0 +1,6 @@
+US-011 implementation was already complete from the previous run (commit `fce96d4`). The Validator timed out before it could verify. Current state:
+
+- All 3 new files present: `FilePreviewPanel.tsx`, `UserViolationsTab.tsx`, `BanUploaderDialog.tsx`
+- `index.tsx` integrated with 4-tab nav [待审核/已批准/已驳回/用户违规累计]
+- `pnpm typecheck` → 0 errors
+- All ACs satisfied per the committed implementation

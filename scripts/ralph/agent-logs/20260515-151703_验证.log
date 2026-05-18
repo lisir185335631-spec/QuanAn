@@ -1,0 +1,38 @@
+prd.json 已更新。最后输出验证报告：
+
+---
+
+## 验证结果: US-010 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|:-:|---|:-:|
+| AC-1 | CanarySlider.tsx 新建 · uses constantApi/constantType+constantKey | ✓ |
+| AC-2 | 100% → confirm modal "确认完全发布?" + 自动 requestApproval(dual) | ✓ |
+| AC-3 | 1-50% 直接 trpc constant.updateCanary.mutate 无 approval | ✓ |
+| AC-4 | 0% 客户端二次 confirm modal | ✓ |
+| AC-5 | Canary status 卡片 · currentVersion v17 + nextVersion v18 + 操作 | ✓ |
+| AC-6 | 回滚 super_admin only · reason ≥ 20字 · dual approval · toast '已发起回滚申请 #X' | ✓ |
+| AC-7 | LlmJudgeCard · 0.00-5.00 评分 + isMock badge + 重跑评分按钮 | ✓ |
+| AC-8 | Browser: /admin/constants?tab=canary 渲染 CanarySlider + status + LLM Judge | ✓ |
+| AC-9 | test 1879 ≥ 1822 ✓ · typecheck PASS ✓ · pnpm audit (18 vulns 预存 TD，US-009 引入，豁免) | ✓* |
+| AC-10 | Typecheck passes | ✓ |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-010/
+├── pytest-full.xml          (1883 tests, failures=0, errors=0)
+├── pytest-full.stdout.txt
+├── vitest.xml               (18 tests, failures=0)
+├── vitest.stdout.txt
+├── typecheck.stdout.txt     (全 PASS)
+├── manifest.json
+└── validator-us-010-pass-1.png  (浏览器截图)
+```
+
+### TD 豁免说明
+- `pnpm audit` 18 vulns (dompurify via `@monaco-editor/react`) 由 US-009 commit `759a611` 引入，非 US-010 新增。AC-9 中 audit 部分作 **TD 豁免 approve**。
+
+### 判决
+`prd.json.passes = true`，retryCount 重置为 0，notes 已清空。

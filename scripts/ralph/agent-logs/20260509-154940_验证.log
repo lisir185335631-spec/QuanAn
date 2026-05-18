@@ -1,0 +1,54 @@
+prd.json 已更新。
+
+---
+
+## 验证结果：US-008 [FAIL]
+
+### AC 对照
+
+| # | AC | 结果 |
+|---|---|:-:|
+| AC-1 | ToolForm + copy textarea + 字符计数(react-hook-form watch) | ✓ |
+| AC-2 | submit → trpc.analysis.analyze.useMutation + onError toast.error | ✓ |
+| AC-3 | AnalysisResult 5维度 Progress bar + 颜色逻辑 + optimizations + rewriteSnippet | ✓ |
+| AC-4 | LS namespace getToolLsKey(accountId, "analysis", "input") | ✓ |
+| AC-5 | ≥5 unit tests | ✓ (26 tests) |
+| AC-6 | E2E CI mock · 粘贴文案 → submit → 5维度渲染 | ✓ |
+| **AC-7** | **copy 不足10字 → zod fail Chinese error** | **✗ FAIL** |
+| AC-8 | JSON.parse失败 → "解析失败 · 请重试" | ✓ |
+| AC-9 | scores.overall缺失 → N/A | ✓ |
+| AC-10 | FeedbackButton + Tailwind语义颜色类 | ✓ |
+| AC-11 | render < 100ms / 5个bar < 10ms | ✓ (无显式测试，整体2ms) |
+| AC-12 | 浏览器验证 5维度bar + 3+优化建议 + 无错误 | ✓ (Playwright 1/1 passed) |
+| AC-13 | Tests pass | ✓ (507/507) |
+| AC-14 | Typecheck passes | ✓ |
+
+### CONFIRMED 失败
+
+**AC-7: copy 不足10字 → zod fail Chinese error**
+
+- 复现命令：`node -e "require('zod').z.string().min(10).max(3000).safeParse({copy:'短'}).error.errors[0]?.message"`
+- 实际输出：`"String must contain at least 10 character(s)"` — 英文
+- 失败定位：`packages/schemas/src/specialist-io/analysis.schema.ts:14`
+- 项目模式：`step-inputs.schema.ts:70` 已有 `z.string().min(20, { message: '个人信息至少20字' })` 作为正例
+
+### 建议修复
+
+```typescript
+// packages/schemas/src/specialist-io/analysis.schema.ts
+copy: z.string().min(10, { message: '文案至少10字' }).max(3000, { message: '文案不超过3000字' }),
+```
+
+同步更新 `Analysis.test.tsx` 第160行：`expect(msg).toBeTruthy()` → `expect(msg).toContain('字')`
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-008/
+  pytest-full.xml    (507 passed)
+  pytest-full.stdout.txt
+  typecheck.txt      (0 errors)
+  manifest.json
+```
+
+**prd.json.passes = false · retryCount = 1**

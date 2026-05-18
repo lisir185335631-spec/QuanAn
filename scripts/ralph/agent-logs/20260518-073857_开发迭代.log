@@ -1,0 +1,13 @@
+US-006 is complete. Here's a summary of what was implemented:
+
+**US-006: Step6 + Step7 真接 stepData router**
+
+- **Step6.tsx** — Replaced direct localStorage reads with `useStepData(accountId, 'step6')` + `readOtherStep`. `save({ text })` now fires automatically to VideoAgent (shooting mode) via stepData router. Result is synced from DB (`dbQuery.refetch()` after save via `prevIsSavingRef`). Renders real `ShootingOutput` (8 selected columns from `shotList` + `equipment` + `schedule`).
+
+- **Step7.tsx** — Replaced direct localStorage reads with `useStepData(accountId, 'step7')`. `save({ topic, optimizeDir, scriptType, elements })` triggers CopywritingAgent. Cross-step prefill via `readOtherStep(accountId, 'selected_topic')` for Step5 topic. TD-76 fixed: uses `STEP7_LABEL_SCRIPT_TYPE` constant.
+
+- **Step7OutputContent.tsx** — Accepts real `CopywritingOutput` (`{ markdown, hooks, cta, structure }`). Renders markdown with `ReactMarkdown`, `cta` as 评论引导, `hooks` as 话题标签 chips.
+
+- **step7.ts** — Added `export const STEP7_LABEL_SCRIPT_TYPE = '选择脚本类型'` (TD-76 resolved).
+
+- **Tests** — Created `Step6.test.tsx` (5 tests) + `Step7.test.tsx` (6 tests). Full suite: 173 tests pass, zero regression.

@@ -1,0 +1,40 @@
+---
+
+## 验证结果: US-013 [PASS]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | IPProgressService.ts STEP_KEYS_9 + findMany(accountId+stepKey.in+status='completed') | ✓ 代码审查通过 |
+| AC-2 | stepData.progress procedure = protectedProcedure | ✓ 代码审查通过 |
+| AC-3 | StepProgress.tsx 改用 trpc.stepData.progress.useQuery() | ✓ IpPlan.tsx 做查询传 completedSteps prop，旧 hardcoded mock 已删 |
+| AC-4 | IpPlan.tsx 渲染 StepProgress + loading state skeleton | ✓ 代码审查通过 |
+| AC-5 | 无 stepData → 0/9 + 9 pending | ✓ 浏览器验证通过 |
+| AC-6 | 创建 step1 → 1/9 + step1 completed | ✓ 浏览器验证通过 |
+| AC-7 | 创建 7 步 → 7/9 + 7 highlighted | ✓ 浏览器验证通过 |
+| AC-8 | 创建全 9 → 9/9 全 highlighted | ✓ 浏览器验证通过 |
+| AC-9 | 无控制台错误 | ✓ 只有 React Router future flag warnings，无 errors |
+| AC-10 | 切账号 → reload → 拉新账号 progress | ✓ 从 1/9 切到另一账号显示 3/9 |
+| AC-11 | step2 不计入 (STEP_KEYS_9 不含 step2) | ✓ step2 completed 行存在但仍显示 1/9 |
+| AC-12 | in_progress/failed/fallback 不计入 | ✓ 三种状态均测试通过 |
+| AC-13 | 网络失败 → error skeleton 不 crash | ✓ isError=true 时显示 completedSteps=[] 不崩溃 |
+| AC-14 | protectedProcedure + activeAccountId | ✓ 代码审查通过 |
+| AC-15 | tests/unit/api/ip-progress.test.ts ≥ 4 new tests | ✓ 7 tests，全部通过 |
+| AC-16 | tests/integration/api/ip-progress-integration.test.ts ≥ 1 test | ✓ 3 tests (7/9/status/step2)，全部通过 |
+| AC-17 | getProgress < 50ms，首屏 < 1s | ✓ 2ms / 42ms |
+| AC-18 | Tests pass | ✓ 325 tests passed，0 failed |
+| AC-19 | Typecheck passes | ✓ 全 6 workspace 通过 |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-013/
+  pytest-full.stdout.txt  — 325 passed (37 test files)
+  typecheck.txt           — all 6 workspaces: Done
+  manifest.json           — exit_code: 0
+```
+
+### 判决
+
+`prd.json.passes = true`，`retryCount = 0`，`notes = ""`

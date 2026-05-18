@@ -1,0 +1,7 @@
+US-007 retry 2 complete. All 5 CONFIRMED failures addressed:
+
+- **ActivityTab** — SVG donut pie chart (positive/negative feedback ratio) + 30-day heatmap calendar (CSS grid, stepData by day)
+- **CostTab** — SVG polyline monthly trend (last 6 months from stepData) + Top-5 step bars replacing the `"待接入"` placeholder
+- **BanUserDialog** — `durationDays` optional number field added; API `banUserInput` schema updated; shadow router type synced
+
+Both API and admin typechecks pass clean. The 3 failing integration tests (`evolution-threshold`, `ip-progress-integration`, `rls-isolation`) are pre-existing failures confirmed to exist before this change.

@@ -1,0 +1,26 @@
+## 验证结果: US-003 [PASS]
+
+### AC 对照
+
+- **AC-1** ✓ `~/.claude/scripts/ralph/VALIDATOR.md` 新增 `### §5 · 产物清单 (必落)` 章节（line 238），含 4 产物（manifest.json/exit_code/zero_regression、pytest-full.xml、pytest-full.stdout.txt、typecheck.stdout.txt 收官必落）+ 字段示例（含 zero_regression 三值说明）
+- **AC-2** ✓ `check_timestamp()` 在 `zero_regression in (True, 'PASS', 'passed')` 时打印 `[INFO] timestamps check skipped: manifest.zero_regression=PASS` 后 `return True`
+- **AC-3** ✓ `pytest-full.xml` 缺失时打印 `[INFO]` 且不 append 到 results，不阻断 audit pass
+- **AC-4** ✓ 实测 `python3 audit-artifacts.py --story US-001` 输出 `[INFO] timestamps check skipped`，无 `FAKE`
+- **AC-5** ✓ 项目副本 `scripts/ralph/audit-artifacts.py` 存在（mtime 2026-05-11 01:04），关键逻辑（AC-2/AC-3）完全同步，diff 仅多一行 docstring
+- **AC-6** ✓ `--story US-001` 实测：`→ ARTIFACTS VALID (可进语义审查)`，0 false positive
+- **AC-7** ✓ `py_compile` + `importlib` 加载均无报错，syntax 合法
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-003/
+已生成: pytest-full.xml (8 passed), pytest-full.stdout.txt, manifest.json
+```
+
+### 零回归门禁 (X-6)
+
+8/8 tests passed（`test_cleanup_stale.py`），0 failures，0 errors
+
+### 判决
+
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

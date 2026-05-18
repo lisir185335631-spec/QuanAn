@@ -1,0 +1,1 @@
+US-008 VideoAgent 已完成。`VideoAgent.ts` 实现了 shooting mode 单跑（13 列分镜表 schema）、4 mode 接口预留、sourceCopy > 5000 字符 zod 拦截，stepData 路由新增 step6 分支，5 个测试全绿，typecheck 无报错，已提交。

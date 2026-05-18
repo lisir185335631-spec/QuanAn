@@ -1,0 +1,162 @@
+
+> quanqn@0.1.0 audit:redlines-admin /Users/return/Desktop/QuanQn
+> bash scripts/audit-redlines-admin.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QuanQn Admin · 8 LD-A + 6 R-A 红线检测
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【LD-A Locked Decision 检测 · 8 条】
+
+  LD-A1: admin OAuth 独立检测
+✅ LD-A1 · admin OAuth 独立 · 无 QUANQN_WEB_CLIENT 引用
+✅ LD-A1+: apps/api/.env.production 不存在(dev 环境 · skip)
+
+  LD-A2: adminRouter / appRouter 分离检测
+✅ LD-A2a · admin router 未引入 app router
+✅ LD-A2b · app router 未引入 admin router
+
+  LD-A3: admin procedure adminRLS middleware 检测(AST)
+  ✅ list [adminProcedure · adminRLS verified]
+  ✅ detail [adminProcedure · adminRLS verified]
+  ✅ flag [adminProcedure · adminRLS verified]
+  ✅ unflag [adminProcedure · adminRLS verified]
+  ✅ addNote [adminProcedure · adminRLS verified]
+  ✅ forceFreeze [adminProcedure · adminRLS verified]
+  ✅ listMine [adminProcedure · adminRLS verified]
+  ✅ byTraceId [adminProcedure · adminRLS verified]
+  ✅ byUserId [adminProcedure · adminRLS verified]
+  ✅ byAdminId [adminProcedure · adminRLS verified]
+  ✅ search [adminProcedure · adminRLS verified]
+  ✅ exportPdf [adminProcedure · adminRLS verified]
+  ✅ login [exception · publicAdminProcedure allowed]
+  ✅ logout [exception · publicAdminProcedure allowed]
+  ✅ me [exception · publicAdminProcedure allowed]
+  ✅ aggregate [adminProcedure · adminRLS verified]
+  ✅ top10 [adminProcedure · adminRLS verified]
+  ✅ specialistBreakdown [adminProcedure · adminRLS verified]
+  ✅ alerts [adminProcedure · adminRLS verified]
+  ✅ exportMonthlyPdf [adminProcedure · adminRLS verified]
+  ✅ exportCsv [adminProcedure · adminRLS verified]
+  ✅ getLDistribution [adminProcedure · adminRLS verified]
+  ✅ getFlywheelHealth [adminProcedure · adminRLS verified]
+  ✅ listAnomalies [adminProcedure · adminRLS verified]
+  ✅ getAccountTimeline [adminProcedure · adminRLS verified]
+  ✅ forceRebuildEvolution [adminProcedure · adminRLS verified]
+  ✅ markAnomalyResolved [adminProcedure · adminRLS verified]
+  ✅ getAnomalyStats [adminProcedure · adminRLS verified]
+  ✅ health [exception · publicAdminProcedure allowed]
+  ✅ list [adminProcedure · adminRLS verified]
+  ✅ create [adminProcedure · adminRLS verified]
+  ✅ batchImport [adminProcedure · adminRLS verified]
+  ✅ invalidate [adminProcedure · adminRLS verified]
+  ✅ detail [adminProcedure · adminRLS verified]
+  ✅ campaignFunnel [adminProcedure · adminRLS verified]
+  ✅ getOverview [adminProcedure · adminRLS verified]
+  ✅ getFunnel [adminProcedure · adminRLS verified]
+  ✅ getDistributions [adminProcedure · adminRLS verified]
+  ✅ getAlerts [adminProcedure · adminRLS verified]
+  ✅ triggerSnapshot [adminProcedure · adminRLS verified]
+  ✅ getActiveVersion [adminProcedure · adminRLS verified]
+  ✅ listVersions [adminProcedure · adminRLS verified]
+  ✅ saveDraft [adminProcedure · adminRLS verified]
+  ✅ submitForReview [adminProcedure · adminRLS verified]
+  ✅ rollbackVersion [adminProcedure · adminRLS verified]
+  ✅ updateCanary [adminProcedure · adminRLS verified]
+  ✅ rollback [adminProcedure · adminRLS verified]
+  ✅ runLlmJudge [adminProcedure · adminRLS verified]
+  ✅ getQuotaOverview [adminProcedure · adminRLS verified]
+  ✅ getUsageStats [adminProcedure · adminRLS verified]
+  ✅ getHourlyTrend [adminProcedure · adminRLS verified]
+  ✅ listAnomalousUsers [adminProcedure · adminRLS verified]
+  ✅ getUserHourlyTimeline [adminProcedure · adminRLS verified]
+  ✅ listUserQuotas [adminProcedure · adminRLS verified]
+  ✅ getUserDetail [adminProcedure · adminRLS verified]
+  ✅ adjustQuota [adminProcedure · adminRLS verified]
+  ✅ getExpiredAdjustments [adminProcedure · adminRLS verified]
+  ✅ listAdjustmentLog [adminProcedure · adminRLS verified]
+  ✅ getActiveAdjustments [adminProcedure · adminRLS verified]
+  ✅ list [adminProcedure · adminRLS verified]
+  ✅ detail [adminProcedure · adminRLS verified]
+  ✅ approve [adminProcedure · adminRLS verified]
+  ✅ reject [adminProcedure · adminRLS verified]
+  ✅ banUploader [adminProcedure · adminRLS verified]
+  ✅ userViolations [adminProcedure · adminRLS verified]
+  ✅ list [adminProcedure · adminRLS verified]
+  ✅ detail [adminProcedure · adminRLS verified]
+  ✅ approve [adminProcedure · adminRLS verified]
+  ✅ reject [adminProcedure · adminRLS verified]
+  ✅ batchAction [adminProcedure · adminRLS verified]
+  ✅ configRules [adminProcedure · adminRLS verified]
+  ✅ list [adminProcedure · adminRLS verified]
+  ✅ detail [adminProcedure · adminRLS verified]
+  ✅ changePlan [adminProcedure · adminRLS verified]
+  ✅ banUser [adminProcedure · adminRLS verified]
+  ✅ resetPassword [adminProcedure · adminRLS verified]
+  Checked 76 procedure(s) · 0 violations
+✅ LD-A3 · 所有 admin procedure 经过 adminRLS(例外 auth.login/logout/me/health)
+
+  LD-A4: Approval Gates 机制验证(AST stub)
+
+  Approval Gates 验证...
+  EXCEPTION 列表 (内联 approval gate): admin.users.changePlan, admin.users.banUser, admin.accounts.forceFreeze, admin.invites.invalidate, admin.reviewDeepLearn.banUploader
+  meta.requiresApproval 列表 (PRD-12~14): 12 procedures
+
+  ✅ approvalGateMiddleware-exists: approvalGateCheck.ts found
+  ✅ approvalGateMiddleware-reads-meta: checks meta?.requiresApproval
+  ✅ approvalGateMiddleware-throws: throws TRPCError when requiresApproval
+  ✅ AdminMeta-requiresApproval: AdminMeta has requiresApproval field
+  ✅ adminProcedure-chain: adminProcedure chain includes approvalGateCheck
+
+  EXCEPTION procedures 验证:
+  ✅ EXCEPTION-admin.users.changePlan-exists: procedure changePlan found in users.ts
+  ✅ EXCEPTION-admin.users.changePlan-approval-logic: admin.users.changePlan implements inline approval_requests flow
+  ✅ EXCEPTION-admin.users.banUser-exists: procedure banUser found in users.ts
+  ✅ EXCEPTION-admin.users.banUser-approval-logic: admin.users.banUser implements inline approval_requests flow
+  ✅ EXCEPTION-admin.accounts.forceFreeze-exists: procedure forceFreeze found in accounts.ts
+  ✅ EXCEPTION-admin.accounts.forceFreeze-approval-logic: admin.accounts.forceFreeze implements inline approval_requests flow
+  ✅ EXCEPTION-admin.invites.invalidate-exists: procedure invalidate found in invites.ts
+  ✅ EXCEPTION-admin.invites.invalidate-approval-logic: admin.invites.invalidate implements inline approval_requests flow
+  ✅ EXCEPTION-admin.reviewDeepLearn.banUploader-exists: procedure banUploader found in reviewDeepLearn.ts
+  ✅ EXCEPTION-admin.reviewDeepLearn.banUploader-approval-logic: admin.reviewDeepLearn.banUploader implements inline approval_requests flow
+
+  Checked 15 with approval gate · 0 missing
+  总计: 15 checks · 高风险 procedure 总数: 17
+  ✅ Approval Gates 验证通过
+✅ LD-A4 · Approval Gates 机制就位(PRD-13 将补全真实 14 高风险动作)
+
+  LD-A5: 内容审核队列守护检测
+✅ LD-A5 · TrendingScraper/FileParser 不直接写主表(workers 目录已验证)
+
+  LD-A6: prompt status='active' 单点函数守护检测
+✅ LD-A6 · prompt_versions.status='active' 仅由 _publishPromptVersionInTx 修改
+
+  LD-A7: evolution_profile/insight 清空单点函数守护检测
+✅ LD-A7 · evolution_profile/insight 仅由 _forceRebuildEvolutionInTx 修改
+
+  LD-A8: user_quota 写操作单点函数守护检测
+✅ LD-A8 · user_quota 写操作仅由 _adjustQuotaInTx / quota-expiry.job 单点修改
+
+【R-A 红线检测 · 6 条】
+
+  R-A1: web ↔ admin 跨 app import 检测
+✅ R-A1a · apps/web 无 admin import
+✅ R-A1b · apps/admin 无 web import
+
+  R-A2: 主应用无 admin 入口检测
+✅ R-A2 · apps/web 无 admin 入口
+
+  R-A3: admin SPA mock OAuth 生产防护检测
+✅ R-A3 · admin SPA 无硬编码 mock OAuth(DEV guard 正常)
+
+  R-A4: admin raw SQL bypass 检测
+✅ R-A4 · admin router 无 raw SQL bypass
+
+  R-A5: admin 无 LLMGateway/Specialist 直调检测
+✅ R-A5 · admin 无 LLMGateway/Specialist 直调
+
+  R-A6: admin approval bypass 检测
+✅ R-A6 · admin 无 mock approval bypass
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALL PASS · 8 LD-A + 6 R-A

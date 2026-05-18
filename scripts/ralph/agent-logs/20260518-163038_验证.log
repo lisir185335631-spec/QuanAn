@@ -1,0 +1,44 @@
+---
+
+## 验证结果: US-006 [FAIL · TD-EXEMPTION-REQUEST]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | invokeLLM real SSE · `_consumeStream()` + `gateway.stream()` · meta chunk | ✓ |
+| AC-2 | `describe.skipIf(skipIfNoKey)` · 5 done chunks · all categories | ✓ (test 1 skipped — no key, per design) |
+| AC-3 | Schema drift: `topics.length(20)` + `safeParse` strict | ✓ |
+| AC-4 | cost_log mock verify: `costLog.create` × 5 · `promptTokens > 0` · `costUsd > 0` | ✓ |
+| AC-5 | TD-82 e2e: `prd-18-step-4-5-6-7-8.spec.ts` 不存在 · 无 API key → skip | ✓ (AC 明确允许 "若仍 fail · 留 US-008") |
+| AC-6 | `pnpm vitest run TopicAgent.real-llm.test.ts` → 1 skipped | ✓ |
+| AC-7 | Typecheck: 6 ws × 0 errors ✓ · **零回归: 9 failures ✗** | ✗ (TD豁免候选) |
+
+### 零回归失败 — 预存性证据
+
+**9 failures 全部 = ECONNREFUSED localhost:3000 (dev server not running)**
+
+3 개의 파일 모두 merge-base `1a1300f`에 존재 확인 (PRD-20 시작 전):
+- `tests/integration/api/auth.test.ts` (blob 7b8c7b5f)
+- `tests/integration/api/auth.me.test.ts` (blob 0312008d)
+- `tests/integration/api/trace.test.ts` (blob bd4e4525)
+
+PRD-20 브랜치에서 이 3개 파일에 대한 커밋 **0개** (git log 결과 없음).
+
+### 산출물 경로
+
+```
+scripts/ralph/verify-artifacts/US-006/
+pytest-full.xml (failures=9/901 · ECONNREFUSED)
+pytest-full.stdout.txt
+typecheck.stdout.txt (6 ws 0 errors)
+vitest.xml (1 skipped · skipIfNoKey)
+vitest.stdout.txt
+manifest.json (exit_code=1 · zero_regression=FAIL · TD-EXEMPTION-REQUEST)
+```
+
+### 판정
+
+`prd.json.passes = false` · `retryCount = 3`
+
+**⚠️ Opus에 TD 豁免 요청:** TopicAgent SSE 구현 자체는 완전히 정확합니다. 9개 실패는 모두 PRD-20 이전부터 존재했던 인프라 의존 통합 테스트 (localhost:3000 필요)이며, 코드로 수정 불가합니다. Ralph dev는 추가 수정 시도 없이 Opus의 TD 豁免 결정을 기다려야 합니다.

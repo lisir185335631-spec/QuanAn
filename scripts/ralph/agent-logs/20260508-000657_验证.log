@@ -1,0 +1,52 @@
+验证完成。
+
+---
+
+## 验证结果: US-006 [FAIL]
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|---|---|---|
+| AC-1 | OAuthProvider interface + MockProvider + GoogleProvider + OAUTH_PROVIDER env | ✓ |
+| AC-2 | mock login → session cookie httpOnly + sameSite=lax + secure=false(dev) | ✓ |
+| AC-3 | 重定向首页 + Header 显示 dev@local.test + avatar | ✓ |
+| AC-4 | /trpc/auth.me 返回 `{ ok:true, user:{ id, email, name } }` | ✓ (集成测试验证) |
+| AC-5 | DB users 新增 openId=mock-dev-001 / email=dev@local.test / loginMethod=mock | ✓ (集成测试验证) |
+| AC-6 | audit_log: event=auth.login + provider=mock + traceId | ✓ |
+| AC-7 | 阶段 B Google OAuth (需真实 credentials，Phase B 预留) | ⚠️ 条件性 |
+| **AC-8** | **CSRF state 不匹配 → 401 + audit_log security_alert** | **⚠️ 代码正确，测试无效** |
+| **AC-9** | **GOOGLE_CLIENT_ID 未设 → 前端 toast '登录暂不可用'** | **❌ MISSING** |
+| AC-10 | OAUTH_PROVIDER=foo → exit(1) + log 含'unknown OAuth provider:foo' | ✓ (单元测试验证) |
+| AC-11 | session 过期 → auth.me 返 unauthenticated | ✓ (集成测试验证) |
+| AC-12 | 二次登录不重复创建 user + update last_signed_in | ✓ (upsert 逻辑) |
+| **AC-13** | **callback < 500ms / session < 100ms / DB < 50ms / 整体 < 3s** | **❌ 无测试验证** |
+| AC-14 | SESSION_SECRET < 32 chars → exit(1) | ✓ (单元测试验证) |
+| AC-15 | production 模式 cookie secure=true | ✓ |
+| AC-16 | Typecheck passes (api + web) | ✓ (0 errors) |
+| AC-17 | Tests pass: 单元4 + 集成2 + E2E2 | ✓ (19 tests passed) |
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-006/
+├── typecheck.txt        (api: EXIT 0)
+├── typecheck-web.txt    (web: EXIT 0)
+├── test-full.stdout.txt (19 passed, 0 failed)
+├── vitest-full.xml      (JUnit XML)
+└── manifest.json
+```
+
+### 失败详情
+
+**❌ AC-9 · 前端 toast 缺失**
+`useAuth.ts` 的 `login()` 直接执行 `window.location.href = ${API_BASE}/auth/login`，当 `OAUTH_PROVIDER=google` 且 `GOOGLE_CLIENT_ID` 未设时，后端返回 500 JSON，浏览器直接展示 JSON 页面，没有 toast `'登录暂不可用'`。修复方向：改为 `fetch('/auth/login', {redirect:'manual'})` + 检查 `res.status === 500` → `toast('登录暂不可用')`。
+
+**⚠️ AC-8 · CSRF 测试无实质断言**
+`auth.test.ts` 的 AC-8 测试断言 `expect([200,302,401,500]).toContain(res.status)`，接受任意状态码，等同于无效测试。mock provider 本身跳过 CSRF check，导致测试无法覆盖 401 路径。
+
+**⚠️ AC-13 · 无性能测试**
+无任何 `Date.now()` 计时断言或性能基准测试。
+
+### 判决
+`prd.json.passes = false` · `retryCount = 1`

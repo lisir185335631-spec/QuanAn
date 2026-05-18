@@ -1,0 +1,18 @@
+US-009 implementation is complete. Here's a summary of what was delivered:
+
+**US-009 · 配额管理 admin UI · 实时监控 + 客服调整 + 临时白名单**
+
+**Frontend (新建3文件):**
+- `QuotaPage.tsx` — 主页面：4 KPI卡（Free/Pro/Enterprise用户数+均使用率%，异常用户数+趋势箭头）+ 实时折线图 + DenseTable异常用户列表（筛选plan/usageThreshold/status，30s轮询）
+- `components/UsageLineChart.tsx` — Recharts LineChart，24h×3套餐折线
+- `QuotaDetailDrawer.tsx` — 用户详情 Drawer：24h小时时间线折线 + active adjustments列表 + 调整面板（delta>500→dual approval双层校验）
+
+**Backend (+4 procedures):**
+- `getUsageStats` — 各套餐平均使用率% + 异常用户数
+- `getHourlyTrend` — 24h×plan调用量（折线图数据源）
+- `listAnomalousUsers` — 异常用户列表（按阈值筛选）
+- `getUserHourlyTimeline` — 单用户24h小时分布
+
+**审计:** LD-A8 user_quota写操作单点守护 → audit脚本从7条扩展到8条，全部PASS
+
+**测试:** 1662→1668 pass，quota测试9→15个

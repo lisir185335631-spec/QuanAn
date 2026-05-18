@@ -1,0 +1,28 @@
+验证完成，现在输出最终验证报告。
+
+---
+
+## 验证结果：US-006 [PASS]
+
+### AC 对照
+
+| AC | 结果 | 证据 |
+|---|:---:|---|
+| AC1: Step6.tsx useStepData + 跨 step 预填 + save({text}) + 字符计数 disabled | ✓ | 代码逻辑验证；跨步预填用 `readOtherStep(accountId,'step7')?.topic`（LS 仅存 inputs，非 DB result）；26 字预填到 textarea |
+| AC2: Step7.tsx useStepData + 22 elements Set + 20 script types + onSubmit save(...Array.from) + step5 选题预填 | ✓ | Step7.tsx:34,39,111-116；key='selected_topic' 与 Step5TopicGrid 写入路径一致 |
+| AC3: Step7OutputContent 接受真 CopywritingOutput + markdown + 评论引导 + 话题标签 chip + TD-76 fix | ✓ | 代码：CopywritingOutput{markdown,structure,hooks,cta}；DOM eval 确认"评论区引导"段 + 2 条 #chip；STEP7_LABEL_SCRIPT_TYPE 在 Step7.tsx:148 |
+| AC4: /step/7 填主题+选元素+提交 → LoadingState → 结果渲染 → history.CopywritingAgent 非 null + markdown | ✓ | history.id=15793, agentId='CopywritingAgent', contentType='markdown' |
+| AC5: /step/6 预填 + ≥10字提交 → agentId=VideoAgent → 8列分镜 | ✓ | 26 字预填；stepData.step6.agentId='VideoAgent'；8 STORYBOARD_COLUMNS 全部渲染（#/时长/场景/景别/动作/台词/灯光/道具/地点） |
+| AC6: vitest 119+ tests zero-regression | ✓ | **173 tests** passed（23 test files） |
+| AC7: Typecheck passes | ✓ | `tsc --noEmit` exit 0 |
+
+### 产物路径
+```
+scripts/ralph/verify-artifacts/US-006/
+  manifest.json   — verdict=PASS, zero_regression=PASS
+  typecheck.stdout.txt — exit 0
+  vitest.stdout.txt    — 173 passed
+```
+
+### 判决
+`prd.json.passes = true`，`notes = ""`，`retryCount = 0`

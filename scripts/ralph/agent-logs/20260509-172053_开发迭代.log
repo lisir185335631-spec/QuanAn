@@ -1,0 +1,11 @@
+US-011 实现完成。
+
+**已完成内容：**
+- `apps/api/src/trpc/routers/history.ts` — 新建 `list`(含 5 个过滤维度 + 分页) / `detail` / `delete` 三个 procedure，全用 `protectedProcedure` + 显式 `accountId` where 防跨账号
+- `apps/api/src/trpc/routers/_app.ts` — 注册 `historyRouter`
+- `packages/clients/src/router-types.ts` — 新增 `HistoryListRow`、`HistoryListOutput`，`HistoryDetailOutput` 改为 `HistoryListRow|null`，影子路由加 `history.list` + `history.delete`
+- `apps/web/src/pages/modules/History.tsx` — 完整重写：真表格 + agentMode/dateRange 双筛选 + 点行跳转 + 删除操作
+- `BoomGenerate.tsx` / `Analysis.tsx` / `VideoAnalysis.tsx` — 加 `?historyId` useEffect 预填逻辑
+- `tests/unit/api/history-router.test.ts` — 10 个 unit 测试
+- `tests/e2e/history-flow.spec.ts` — 1 个 e2e 测试
+- **pnpm typecheck ✅ · 542/542 tests pass ✅**

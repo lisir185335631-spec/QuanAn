@@ -1,0 +1,43 @@
+US-009 is now PASSED. Let me compile the final validation report.
+
+---
+
+## 验证结果: US-009 PASS
+
+### AC 对照
+
+| AC | 描述 | 结果 |
+|----|------|------|
+| AC-1 | `whisper.ts` model='whisper-1' · response_format='text' · language='zh' | ✓ (whisper.ts:88-90) |
+| AC-2 | 25MB max size + 30s WAV duration 校验 | ✓ (whisper.ts:53-66, sttLimits.ts:6-7) |
+| AC-3 | cost_log eventType='stt_call' · provider='openai' · modelUsed='whisper-1' · $0.006/min | ✓ (whisper.ts:106-127, sttLimits.ts:8) |
+| AC-4 | STT_DAILY_LIMIT_PER_USER=50 · sliding window (Redis INCR) | ✓ (stt.ts rate-limit:19) |
+| AC-5 | stt.transcribe mutation · protectedProcedure + rate limit + Whisper + cost_log | ✓ (stt.ts router:23-57) |
+| AC-6 | 错误路径 timeout/oversize/rate-limit/API error 各 1 unit | ✓ (whisper.ts:54-98, rate-limit/stt.ts) |
+| AC-7 | 5 unit test groups (happy/oversize/timeout/rate-limit/API error) · 全 8 sub-tests 过 | ✓ 8/8 passed |
+| AC-8 | integration test · OPENAI_API_KEY 不存在时 skip | ✓ 1 passed + 1 skipped (expected) |
+| AC-9 | grep OPENAI_API_KEY apps/web = 0 命中 | ✓ exit code 1 (no matches) |
+| AC-10 | typecheck 0 + test 全过 | ✓ |
+| Typecheck passes | pnpm typecheck 6 workspaces 0 errors | ✓ |
+| Tests pass | 87 test files, 812 passed, 1 skipped | ✓ |
+
+### 零回归门禁
+
+全量 vitest: **87 files passed, 812 tests passed, 1 skipped — PASS**
+
+### 产物路径
+
+```
+scripts/ralph/verify-artifacts/US-009/
+  manifest.json       (zero_regression=PASS, verdict=PASS)
+  typecheck.stdout.txt
+  vitest.stdout.txt   (unit: 8/8)
+  vitest.xml
+  vitest-api.stdout.txt (integration: 1 passed, 1 skipped)
+  vitest-full.stdout.txt (87 files, 812 passed)
+  vitest-full.xml
+```
+
+### 判决
+
+`prd.json.passes = true` · US-009 通过验证。

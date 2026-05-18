@@ -1,0 +1,7 @@
+US-012 完成。总结：
+
+**实现内容：**
+- `packages/clients/src/router-types.ts` — 新增 `VoiceChatStreamChunk`、`SttTranscribeOutput`、`TtsSynthesizeOutput` 类型，并添加 `stt`/`tts`/`voiceChat` shadow procedures（含 subscription 类型推断）
+- `apps/web/src/pages/tools/VoiceChat.tsx` — 完整实现：按住录音按钮（MediaRecorder webm/opus，max 30s），松开后 STT 转文字，voiceChat.start subscription 流式 streaming，done 事件后 TTS 合成并 autoplay，5 工具 call cards 折叠展开，30s silence detection，挂掉按钮显示对话总结
+- `apps/web/src/test/pages.test.tsx` — 新增 3 个 VoiceChat 单元测试，mock stt/tts/voiceChat + trpcClient.voiceChat.start.subscribe
+- browser 截图确认 AC-11：页面成功渲染，录音按钮可见，turn list 区域可见，无 console error

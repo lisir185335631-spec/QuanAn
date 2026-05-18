@@ -1,0 +1,26 @@
+US-005 验证完成。
+
+---
+
+## 验证结果: US-005 [PASS]
+
+### AC 对照
+- AC1: STEP3_PLATFORMS_5 · 5 项含 emoji 前缀 ✓
+- AC2: STEP3_OUTPUT_H3_6 · 6 项 H3 字面 '1. 视频参考案例'~'6. 整体包装策略' ✓
+- AC3: STEP3_BUTTON_COPY/REGENERATE/OPTIMIZE/GEN_IMAGE + STEP3_HEADER_BUTTON_* ✓
+- AC4: STEP3_FORM 4 字段全字面 1:1 · label/required/placeholder ✓
+- AC5: STEP3_CTA_LABEL/DISABLED_HINT/STEP_TAG/H1/SUBTITLE_TEMPLATE(含{industry}) ✓
+- AC6: 字面 grep 13 条全部命中(≥1 次) ✓
+- AC7: 数字锁 platforms.length===5, H3.length===6 ✓
+- AC8: step3.test.ts 含 4 个测试用例 ✓
+- AC9: vitest run 4 tests PASS ✓
+- AC10: tsc --noEmit 通过 ✓
+
+### 产物路径
+`scripts/ralph/verify-artifacts/US-005/`
+- `pytest-full.stdout.txt` — vitest 4 passed
+- `typecheck.stdout.txt` — tsc exit 0
+- `manifest.json` — zero_regression=PASS, verdict=PASS
+
+### 判决
+`prd.json.passes = true`，retryCount=0，notes 清空

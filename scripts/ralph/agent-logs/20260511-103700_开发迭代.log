@@ -1,0 +1,9 @@
+US-004 is done. The two confirmed failures from the Validator have been resolved:
+
+1. **AC-3** — `EvolutionAgent.ts` moved to `apps/api/src/agents/evolution/EvolutionAgent.ts`. The `specialists/` stub is a thin re-export with no `evolutionInsight` (lowercase) strings. `grep 'evolutionInsight' apps/api/src/specialists/` → 0 hits ✓
+
+2. **Missing test files** — Both required files created:
+   - `tests/integration/api/insight-injection.test.ts` — 17 tests covering AC-4/5/6/2/8, properly included by vitest (`tests/integration/**/*.test.ts`)
+   - `tests/judge/insight-injection.judge.ts` — AC-8 LLM Judge following existing judge-runner pattern
+
+All 774 tests pass (82 files), typecheck clean.

@@ -1,0 +1,16 @@
+All done. Here's a summary of what was implemented for US-010:
+
+**Backend (`apps/api`):**
+- `compliance.ts` — 4 tRPC procedures querying `admin_audit_log` where `eventCategory='compliance'`:
+  - `getKpiStats`: 6 parallel `$queryRaw` for today's disclaimers by industry, 7-day banned word trend, PII hit rate, industry top 5
+  - `getIndustryBreakdown`: pie chart data (top 10 + "其他" bucket)
+  - `getTrend`: day/week/month groupBy with optional industry multi-select filter
+  - `listEvents`: paginated list with 3-mode grouping; payload redacted per LD-A-3
+- Registered in `adminRouter` index + shadow router in `packages/clients`
+
+**Frontend (`apps/admin`):**
+- `CompliancePage`: 4 KPI cards + Recharts PieChart + LineChart (日/周/月 tabs + industry multi-select) + DenseTable (3-mode grouping) + PDF download button + 配置免责模板 stub (super_admin only, toast "功能开发中 · P9.4")
+- `ComplianceReportPdf.tsx`: @react-pdf/renderer 4.5.1, 4 sections + signature page; time trend uses stub per SHIELD anti-pattern (no SVG in PDF)
+- `admin-routes.ts`: requiredRole fixed to `'readonly_admin'` (AC-1)
+
+**Quality:** 1686 tests pass · 0 fail · 0 typecheck errors · ALL PASS 8 LD-A + 6 R-A

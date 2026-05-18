@@ -1,0 +1,104 @@
+
+Running 7 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/prd-17-step1-3-3b.spec.ts:20:3 › PRD-17 Step1 → Step3 → Step3b E2E › 完整流程：行业选择 → 账号包装 → 人设定制 (7.1s)
+  ✘  2 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 (21.9s)
+  ✓  3 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:65:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 2 · Step 4b · 填产品 → 生成变现路径 → 5 H3 + 3 阶梯 (10.7s)
+  ✘  4 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:121:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 (21.9s)
+  ✓  5 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:178:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 4 · Step 6 · 粘贴文案 → 生成拍摄计划 → 3 模块 (7.2s)
+  ✘  6 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:212:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 (36.6s)
+  ✓  7 [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:255:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 6 · Step 8 · 切子功能1 → 填字段 → 生成直播方案 → 6 H3 (7.6s)
+
+
+  1) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h3').filter({ hasText: '1. 每日任务表' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('h3').filter({ hasText: '1. 每日任务表' })[22m
+
+
+      47 |
+      48 |       // 等首个 H3 出现
+    > 49 |       await expect(page.locator('h3').filter({ hasText: '1. 每日任务表' })).toBeVisible({
+         |                                                                        ^
+      50 |         timeout: 15_000,
+      51 |       });
+      52 |     }
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:49:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--18f20-tep-4-·-选平台-→-生成执行计划-→-3-H3-chromium/error-context.md
+
+  2) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:121:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('tab', { name: '变现型' })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for getByRole('tab', { name: '变现型' })[22m
+
+
+      143 |     // 等 5 类 tab — all share 15s timeout; tabs may hide briefly during SSE streaming start
+      144 |     await expect(page.getByRole('tab', { name: '流量型' })).toBeVisible({ timeout: 15_000 });
+    > 145 |     await expect(page.getByRole('tab', { name: '变现型' })).toBeVisible({ timeout: 15_000 });
+          |                                                          ^
+      146 |     await expect(page.getByRole('tab', { name: '人设型' })).toBeVisible({ timeout: 15_000 });
+      147 |     await expect(page.getByRole('tab', { name: '认知型' })).toBeVisible({ timeout: 15_000 });
+      148 |     await expect(page.getByRole('tab', { name: '案例型' })).toBeVisible({ timeout: 15_000 });
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:145:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--3f2aa-100-选题-→-点选题-→-跳-step7-主题预填-chromium/error-context.md
+
+  3) [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:212:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h4').filter({ hasText: '话题抛出' })
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 30000ms[22m
+    [2m  - waiting for locator('h4').filter({ hasText: '话题抛出' })[22m
+
+
+      237 |
+      238 |     // 等 4 H4 (debate 模式) — 30s: LLM call + DB write + React re-render
+    > 239 |     await expect(page.locator('h4').filter({ hasText: '话题抛出' })).toBeVisible({
+          |                                                                  ^
+      240 |       timeout: 30_000,
+      241 |     });
+      242 |     await expect(page.locator('h4').filter({ hasText: '正方' })).toBeVisible();
+        at /Users/return/Desktop/QuanQn/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:239:66
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd-18-step-4-5-6-7-8-PRD--2336b--→-填主题-→-生成爆款文案-→-4-H4-评论引导-chromium/error-context.md
+
+  3 failed
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:17:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 1 · Step 4 · 选平台 → 生成执行计划 → 3 H3 
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:121:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 3 · Step 5 → 5 tabs 100 选题 → 点选题 → 跳 step7 主题预填 
+    [chromium] › e2e/prd-18-step-4-5-6-7-8.spec.ts:212:3 › PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E › test 5 · Step 7 · 选 debate → 填主题 → 生成爆款文案 → 4 H4 + 评论引导 
+  4 passed (1.9m)

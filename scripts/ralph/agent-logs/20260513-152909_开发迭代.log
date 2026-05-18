@@ -1,0 +1,10 @@
+US-012 is complete. Here's a summary of what was implemented:
+
+**Files created/modified:**
+- `apps/api/src/services/admin/content-review/violation-detection.service.ts` — `detectViolationThresholds()`: queries `userViolationLog` for count≥3 + not suspended, writes `user_violation_warning` audit log, creates pending `approvalRequest` for count≥5, dedupes per userId/day
+- `apps/api/src/jobs/admin/violation-detection.job.ts` — BullMQ cron `'0 4 * * *'`, tz `Asia/Shanghai`, jobId `violation-detection-recurring`, attempts:3, failed event writes `violation_cron_failed` audit
+- `apps/api/src/index.ts` — wired `scheduleViolationDetection()` at line ~329 (grep hits ≥2 for AC-5 Diff-3 verification)
+- `__tests__/violation-detection.service.test.ts` — 14 tests (count thresholds, dedupe, suspended skip, DingTalk)
+- `__tests__/violation-detection.job.test.ts` — 7 tests (cron scheduling, worker processor, failed handler)
+
+**Results:** 21/21 tests pass · typecheck 0 errors · audit-redlines ALL PASS (5 LD-A + 6 R-A)
