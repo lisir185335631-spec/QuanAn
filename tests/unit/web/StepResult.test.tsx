@@ -133,13 +133,14 @@ describe('Step5Result', () => {
 });
 
 describe('Step6Result', () => {
-  it('render: 13-column shot table with horizontal scroll', () => {
+  // PRD-20 US-005 upgraded shooting to 8-column schema (Storyboard8ColItemSchema)
+  it('render: 8-column shot table with horizontal scroll', () => {
     const source = readComponent('Step6Result.tsx');
     expect(source).toContain('shotList');
-    // 13 column keys present
-    expect(source).toContain('cameraAngle');
-    expect(source).toContain('voiceover');
-    expect(source).toContain('location');
+    // 8 column keys present (PRD-20 US-005: duration/scene/shotType/angle/movement/emotion/dialogue/action)
+    expect(source).toContain('shotType');
+    expect(source).toContain('angle');
+    expect(source).toContain('movement');
     // horizontal scroll
     expect(source).toContain('ScrollBar');
     expect(source).toContain('horizontal');

@@ -44,6 +44,19 @@ vi.mock('@/lib/logger', () => ({
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
+// PRD-20 US-005 upgraded shooting to 8-column schema (Storyboard8ColItemSchema)
+const VALID_SHOT_8COL = {
+  duration: '3s',
+  scene: '开场镜头',
+  shotType: '近景',
+  angle: '正面',
+  movement: '固定',
+  emotion: '自然',
+  dialogue: '大家好，今天给大家分享一款护肤神器',
+  action: '博主正面对镜头微笑',
+};
+
+// Production mode still uses 13-column ShotItemSchema
 const VALID_SHOT = {
   scene: '开场镜头',
   duration: '3s',
@@ -61,7 +74,7 @@ const VALID_SHOT = {
 };
 
 const VALID_SHOOTING_CONTENT = {
-  shotList: [VALID_SHOT],
+  shotList: [VALID_SHOT_8COL],
   equipment: ['手机支架', '补光灯', '麦克风'],
   schedule: '上午10点开始，预计2小时完成拍摄',
 };
@@ -110,7 +123,7 @@ describe('VideoAgent', () => {
   it('happy path: returns valid ShootingOutput with shotList[1+], equipment[], schedule, writes cost_log', async () => {
     const multiShotContent = {
       ...VALID_SHOOTING_CONTENT,
-      shotList: [VALID_SHOT, { ...VALID_SHOT, scene: '产品特写' }],
+      shotList: [VALID_SHOT_8COL, { ...VALID_SHOT_8COL, scene: '产品特写' }],
     };
     const agent = new VideoAgent(makeGateway([multiShotContent]));
     const res = await agent.execute(BASE_REQ);
@@ -120,7 +133,7 @@ describe('VideoAgent', () => {
     expect(result.shotList[0]).toMatchObject({
       scene: expect.any(String),
       duration: expect.any(String),
-      cameraAngle: expect.any(String),
+      angle: expect.any(String),   // PRD-20 US-005: 8-col schema uses 'angle' not 'cameraAngle'
     });
     expect(Array.isArray(result.equipment)).toBe(true);
     expect(typeof result.schedule).toBe('string');
@@ -201,7 +214,7 @@ describe('VideoAgent', () => {
     const agent = new VideoAgent(makeGateway([productionContent]));
     const res = await agent.execute({ ...BASE_REQ, mode: 'production' });
     expect(ProductionOutputSchema.safeParse(res.result).success).toBe(true);
-    expect(ShootingOutputSchema.safeParse(res.result).success).toBe(true); // same shape
+    // PRD-20 US-005: ShootingOutputSchema now uses 8-col (Storyboard8ColItemSchema), different from production 13-col
   });
 
   it('production schema fail: empty shotList → fallback (US-015 AC-1)', async () => {
