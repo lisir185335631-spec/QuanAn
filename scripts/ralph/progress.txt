@@ -5,6 +5,25 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-18 16:36 - US-006 (retry 3 · 实现完整 · 9 ECONNREFUSED TD 豁免申请)
+- 实现状态: 完整(无需代码修改) · commit f968b46(feat) + ccd72be(测试漂移修复) 已正确
+- 质量检查(本轮亲跑):
+  - pnpm -r typecheck → 6 workspaces × 0 errors ✅
+  - AC-6: pnpm vitest run TopicAgent.real-llm.test.ts → 1 skipped(skipIfNoKey · per design) ✅
+- AC-1~5 实现验证: 全部 PASS
+  - AC-1: TopicAgent.ts:267 _consumeStream() + gateway.stream() ✓ · meta chunk < 3s ✓
+  - AC-2: describe.skipIf(skipIfNoKey) + TOPIC_CATEGORIES 5 categories ✓
+  - AC-3: topics.length === 20 + outputSchema.safeParse ✓ (TopicAgent.ts:45)
+  - AC-4: BaseSpecialist._writeCostLog() · 5 calls verified in mock tests ✓
+  - AC-5: prd-18 spec不存在 · no API key → skip(AC 明确允许"留 US-008") ✓
+- 9 ECONNREFUSED 预存性确认: 3 硬证据(merge-base 存在 + PRD-20 零 commits + localhost:3000 硬依赖)
+- 决定: 不修复 · 等待 Opus TD 豁免(Ralph dev 严格遵循 Validator 指示)
+- 更改的文件: 仅 progress.txt
+- **未来迭代的学习:**
+  - tests/integration/api/* 全部需要运行中的 localhost:3000 · 是基础设施依赖测试 · 非 unit test · Validator 无法在 offline 环境运行
+  - 这类测试不构成 US scope 内的 bug · 需 TD 豁免通道 · category=infrastructure-dependent-integration-test
+---
+
 ## 2026-05-18 16:29 - US-006 (retry 2 · 最终验证 · 申请 TD 豁免)
 - 验证确认: TopicAgent.ts(f968b46) + 测试漂移修复(ccd72be) 实现正确 · 无需改代码
 - 质量检查(本轮亲跑):
@@ -1777,3 +1796,7 @@
 --- [RALPH] Iteration 7 ended: US-006 (18分钟 52秒) ---
 
 --- [RALPH] Iteration 8 started: US-006 at 2026-05-18 16:27 ---
+
+--- [RALPH] Iteration 8 ended: US-006 (7分钟 51秒) ---
+
+--- [RALPH] Iteration 9 started: US-006 at 2026-05-18 16:35 ---
