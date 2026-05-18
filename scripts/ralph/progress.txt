@@ -2124,3 +2124,24 @@
 --- [RALPH] Iteration 3 ended: US-002 (1小时 30分钟 25秒) ---
 
 --- [RALPH] Iteration 4 started: US-002 at 2026-05-19 01:39 ---
+
+--- [RALPH] Iteration 4 ended: US-002 (1小时 30分钟 20秒) ---
+
+--- [RALPH] Iteration 5 started: US-002 at 2026-05-19 03:09 ---
+
+## 2026-05-19 11:00 - US-002 [PRD-21] (retry 2 · 质量验证确认)
+- 实现状态: commit 2c435a6 已包含完整实现 · 本次 retry 确认所有 AC 通过
+- 验证结果:
+  - AC-1 h-16: ✅ container flex h-16 items-center gap-2
+  - AC-2 backdrop-blur-2xl: ✅ sticky top-0 z-40 w-full border-b border-border bg-surface-container-low/90 backdrop-blur-2xl
+  - AC-3 双行 logo stack: ✅ 金色方块 div(h-8 w-8 bg-primary) + 双 span QUAN/QN(font-display font-bold text-primary text-sm)
+  - AC-4 ChevronDown rotate-180: ✅ group-data-[state=open]:rotate-180 · Button 有 group class · Radix 写 data-state=open 到 Button · 旋转生效
+  - AC-5 HEADER_NAV 保持不变: ✅ import from @/lib/constants/header-nav · 未改动
+  - AC-6 typecheck: ✅ cd apps/web && pnpm typecheck → 0 errors
+  - AC-7 e2e: ✅ 8/8 chromium pass · prd16-header-dropdown-flow.spec.ts
+  - AC-8 visual: ✅ pnpm test:visual:check → 4 passed (home / guide / ip-plan / header-crop)
+  - data-testid 全保留: ✅ header-logout-icon / app-header / account-switcher-trigger 未改动
+- 更改的文件: 无(实现已在 2c435a6 · 本次仅验证)
+- **未来迭代的学习:**
+  - 无新 pattern(本次仅重复验证)
+---
