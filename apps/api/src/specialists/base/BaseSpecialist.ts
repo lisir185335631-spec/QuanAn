@@ -17,7 +17,6 @@
 
 import { Decimal } from '@prisma/client/runtime/library';
 
-
 import { generateSpecialistTraceId } from '@/agents/base/types';
 import type { SpecialistId } from '@/agents/base/types';
 import { appendDisclaimerIfSensitive, attachDisclaimerMeta } from '@/lib/compliance/disclaimer';
@@ -37,6 +36,21 @@ import type {
   AssembledContext,
 } from './types';
 import type { z } from 'zod';
+
+// Approximate cost per 1M tokens (USD) for real costUsd calculation
+const COST_PER_M_USD: Record<string, { input: number; output: number }> = {
+  'claude-sonnet-4-6': { input: 3.0, output: 15.0 },
+  'claude-haiku-4-5':  { input: 0.25, output: 1.25 },
+  'gpt-4o':            { input: 2.5, output: 10.0 },
+  'gpt-4o-mini':       { input: 0.15, output: 0.60 },
+};
+
+function calcCostUsd(model: string, promptTokens: number, completionTokens: number): Decimal {
+  if (model === 'fallback') return new Decimal('0.000000');
+  const rates = COST_PER_M_USD[model] ?? { input: 1.0, output: 5.0 };
+  const cost = (promptTokens * rates.input + completionTokens * rates.output) / 1_000_000;
+  return new Decimal(cost.toFixed(6));
+}
 
 export abstract class BaseSpecialist<TIn, TOut> {
   /** 五层配置(AC-2) */
@@ -260,7 +274,7 @@ export abstract class BaseSpecialist<TIn, TOut> {
           promptTokens: data.promptTokens,
           completionTokens: data.completionTokens,
           totalTokens: data.totalTokens,
-          costUsd: new Decimal('0.000000'),
+          costUsd: calcCostUsd(data.modelUsed, data.promptTokens, data.completionTokens),
           durationMs: data.durationMs,
           success: true,
           isFallback: data.isFallback,
