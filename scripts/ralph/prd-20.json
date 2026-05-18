@@ -470,8 +470,8 @@
         "US-008"
       ],
       "priority": 9,
-      "passes": true,
-      "notes": "",
+      "passes": false,
+      "notes": "[TD-HINT] US-009 主任务即 TD-79/80/81/82 全 resolved + Specialist tuning baseline 文档化(为 PRD-21+ Specialist 优化留对照)",
       "retryCount": 0,
       "blocked": false,
       "files_to_create": [
