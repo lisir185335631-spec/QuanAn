@@ -5,6 +5,24 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-18 16:29 - US-006 (retry 2 · 最终验证 · 申请 TD 豁免)
+- 验证确认: TopicAgent.ts(f968b46) + 测试漂移修复(ccd72be) 实现正确 · 无需改代码
+- 质量检查(本轮亲跑):
+  - pnpm -r typecheck → 6 workspaces × 0 errors ✅
+  - AC-6: cd apps/api && pnpm vitest run TopicAgent.real-llm.test.ts → 1 skipped(skipIfNoKey · per design) ✅
+- 零回归门禁状态: 9 failures 全部为 ECONNREFUSED 127.0.0.1:3000 · 预存性基础设施依赖
+  - tests/integration/api/auth.test.ts × 6 · tests/integration/api/auth.me.test.ts × 1 · tests/integration/api/trace.test.ts × 2
+  - 预存性证据: auth.test.ts 在 commit 0fbd214(PRD-20 之前) 已存在 · US-006 commits 只改 TopicAgent + test fixtures
+  - 这些集成测试 require `fetch('http://localhost:3000/api/...')` · Validator 无法在 CI/offline 环境启动 dev server
+- 决定: 不修复 9 个 ECONNREFUSED failures · 它们超出 US-006 scope · 无法在无服务器环境中修复
+- ★ 申请 Opus TD 豁免: 9 个 ECONNREFUSED 均为预存性基础设施依赖 · 建议豁免 approve
+  - 豁免理由: 1) 在 merge-base(PRD-20 启动前)已存在 2) 需 running dev server(OAuth mock 必须跑) 3) US-006 commits 未触碰 auth/trace 集成测试 4) TopicAgent 真 SSE 实现已完整 · AC-1~5 全满足
+- 更改的文件: 无(仅 progress.txt)
+- **未来迭代的学习:**
+  - 集成测试区分两类: API 集成测试(需 running server) vs unit/specialist 集成测试(mock DB · 可 offline) · 零回归门禁对前者需 TD 豁免通道
+  - tests/integration/api/* 全部依赖 localhost:3000 · 若要自动化需 Validator 支持 dev server 启动能力 · 当前是环境约束不是代码 bug
+---
+
 ## 2026-05-18 16:14 - US-006 (retry 2)
 - 上轮 US-006 实现已正确(commit f968b46) · 本轮修复 Validator 零回归门禁
 - 根因: US-005 升级 shooting schema 为 8 列但未同步更新 2 个测试文件 → 12 pre-existing failures
@@ -1755,3 +1773,7 @@
 --- [RALPH] Iteration 6 ended: US-006 (20分钟 4秒) ---
 
 --- [RALPH] Iteration 7 started: US-006 at 2026-05-18 16:08 ---
+
+--- [RALPH] Iteration 7 ended: US-006 (18分钟 52秒) ---
+
+--- [RALPH] Iteration 8 started: US-006 at 2026-05-18 16:27 ---
