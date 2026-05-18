@@ -2267,3 +2267,37 @@
 --- [RALPH] Iteration 10 ended: US-004 (44分钟 35秒) ---
 
 --- [RALPH] Iteration 11 started: US-005 at 2026-05-19 07:02 ---
+
+--- [RALPH] Iteration 11 ended: US-005 (19分钟 5秒) ---
+
+--- [RALPH] Iteration 12 started: US-006 at 2026-05-19 07:21 ---
+
+## 2026-05-19 10:30 - US-006 [PRD-21] /guide 视觉精修
+- 实现了什么:
+  - 新建 apps/web/src/lib/constants/guide-faq.ts · export GUIDE_FAQ_5 (D-221 字面锁 · 5问5答)
+  - 重写 apps/web/src/pages/Guide.tsx:
+    - H1 className 严格 AC-1 (text-5xl md:text-6xl font-black tracking-widest text-center mb-3)
+    - 副标 font-cn text-lg text-muted-foreground text-center mb-12
+    - Input 组件(shadcn) type='search' placeholder='搜索功能说明...' · useState<string>('')
+    - RECOMMENDED_FLOW 5步 · 字面锁 D1=A · grid grid-cols-1 md:grid-cols-5 gap-4 · FadeInWrapper delay 0.05*i
+    - SYSTEM_OVERVIEW 3卡 · 字面锁 D1=A · H4+p 无 icon
+    - 13模块: FUNCTION_MATRIX.flatMap.filter(href!=='/knowledge') · Link+glass-card+cursor-pointer · FadeInWrapper 0.03*i
+    - FUNCTION_MATRIX_FOOTER 单独 max-w-md mx-auto footer 卡
+    - FAQ: <details>/<summary> accordion · GUIDE_FAQ_5 · glass-card · space-y-2
+  - 更新 tests/e2e/prd16-guide-flow.spec.ts · 适配新实现(Link卡/details-summary/GUIDE_FAQ_5)
+- 更改的文件:
+  - apps/web/src/lib/constants/guide-faq.ts (新建)
+  - apps/web/src/pages/Guide.tsx (重写)
+  - tests/e2e/prd16-guide-flow.spec.ts (更新适配新实现)
+- 验证结果:
+  - AC-8 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-9 e2e: ✅ 6/6 prd16-guide-flow.spec.ts chromium 通过
+  - AC-10 visual: ✅ test:visual 4/4 baseline updated · test:visual:check 4/4 passed (0% diff)
+  - AC-11 browser: ✅ H1+副标·search input·5步横排·系统概览3卡·13模块卡·FAQ5展开收起·search filter全部验证通过
+  - AC-12 typecheck: ✅ 通过
+- **未来迭代的学习:**
+  - FUNCTION_MATRIX.flatMap 得 14 cards · /knowledge 是第14个 · filter 掉得 13 modules 匹配 AC "13模块" 命名
+  - <details>/<summary> FAQ · e2e 改用 page.locator('details summary') · 旧 page.locator('button') 不匹配 summary 标签
+  - FUNCTION_MATRIX_FOOTER.href = '/guide' (自引用) · footer 卡点击 reload 当前页 · 正常行为
+  - prd16-guide-flow.spec.ts 已随 US-006 更新 · "module card expand shows steps" → "module card links to module page"
+---
