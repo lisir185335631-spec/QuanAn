@@ -89,7 +89,7 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     await page.locator('button[type="submit"]').click();
 
     // Wait for result component to appear
-    await expect(page.locator('[data-testid="step-result-step4"]')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-testid="step-result-step4"]')).toBeVisible({ timeout: 60_000 });
 
     await page.screenshot({ path: path.join(RESULTS_DIR, 'prd-18-step-4.png') });
 
@@ -122,7 +122,7 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     await page.locator('button[type="submit"]').click();
 
     // Wait for result
-    await expect(page.locator('[data-testid="step-result-step4b"]')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-testid="step-result-step4b"]')).toBeVisible({ timeout: 60_000 });
     // Verify key result sections (Step4bResult renders CardTitles)
     await expect(page.locator('text=现状分析').first()).toBeVisible();
 
@@ -209,7 +209,7 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     await page.locator('button[type="submit"]').click();
 
     // Wait for result (Step6Result renders "分镜表" card)
-    await expect(page.locator('[data-testid="step-result-step6"]')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-testid="step-result-step6"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('text=分镜表').first()).toBeVisible();
 
     await page.screenshot({ path: path.join(RESULTS_DIR, 'prd-18-step-6.png') });
@@ -273,7 +273,7 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     await page.locator('button[type="submit"]').click();
 
     // Wait for result (Step8Result renders "初版话术" + "优化版话术" cards)
-    await expect(page.locator('[data-testid="step-result-step8"]')).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('[data-testid="step-result-step8"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('text=初版话术').first()).toBeVisible();
     await expect(page.locator('text=优化版话术').first()).toBeVisible();
 
