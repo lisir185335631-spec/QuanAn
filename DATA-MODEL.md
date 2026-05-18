@@ -2991,14 +2991,23 @@ model ApprovalRequest {
   approverAdminId     Int?
   decisionReason      String?      @db.Text
   secondApproverAdminId Int?
+  secondApprovedAt    DateTime?    // PRD-13 US-002 加 · 第二审批人决策时间
   secondDecisionReason String?     @db.Text
+
+  /// PRD-13 US-002 dual approval + emergency + 24h postReview 扩展(8 字段)
+  emergencyMode       Boolean      @default(false)
+  emergencyIncidentId String?      // emergencyMode=true 时必填 · 关联 prod incident
+  postReviewRequired  Boolean      @default(false)  // emergencyApprove 自动设 true
+  postReviewedAt      DateTime?    // 24h 后 super_admin 复核时间
+  postReviewerAdminId Int?         // 复核人 · 必 !== firstApproverAdminId
+  postReviewResult    String?      // 'confirmed' | 'overturned' | 'partial'
 
   /// 时间
   createdAt           DateTime     @default(now())
   decidedAt           DateTime?
   expiresAt           DateTime
   executedAt          DateTime?
-  postReviewAt        DateTime?
+  postReviewAt        DateTime?    // (老字段 · 跟 postReviewedAt 区分 · postReviewAt 是触发时间 · postReviewedAt 是决策时间)
 
   auditLogs           AdminAuditLog[]
 
@@ -3007,9 +3016,24 @@ model ApprovalRequest {
   @@index([approverAdminId])
   @@index([riskLevel, status])
   @@index([expiresAt])  // cron 扫过期
+  // PRD-13 US-002 加 3 index
+  @@index([requireDualApproval, status])
+  @@index([emergencyMode, postReviewRequired])
+  @@index([postReviewRequired, postReviewedAt])  // cron 03:30 扫 overdue
   @@map("approval_requests")
 }
 ```
+
+**PRD-13 US-002 字段语义** (dual approval 工作流):
+
+| 字段 | 类型 | 用途 |
+|---|---|---|
+| `requireDualApproval` | Boolean (default false) | 由 actionType 推导(D-094 8 actionType 触发 dual · 其余 single) |
+| `secondApproverAdminId / secondApprovedAt` | Int? / DateTime? | 第二审批人 · 必 `!== firstApproverAdminId`(FORBIDDEN_SAME_APPROVER) |
+| `emergencyMode` | Boolean (default false) | super_admin 紧急快速批 · 自动 postReviewRequired=true |
+| `emergencyIncidentId` | String? | emergencyMode=true 时必填(关联 prod incident · D-095) |
+| `postReviewRequired` | Boolean (default false) | emergencyApprove 自动设 true · cron 03:30 扫 24h overdue |
+| `postReviewedAt / postReviewerAdminId / postReviewResult` | DateTime? / Int? / String? | 24h 后复核状态 · reviewer 必 `!== firstApprover` |
 
 ### §13.4 prompt_versions + prompt_canary_config · Prompt 版本管理(域 ⑩)
 
@@ -3378,17 +3402,23 @@ model UserViolationLog {
 #### F · 域 ⑨ 进化 · evolution_anomaly_flags
 
 ```prisma
-/// 进化档案异常标记(冲突反馈 / styleAdjustments 翻转)
+/// 进化档案异常标记(冲突反馈 / styleAdjustments 翻转 / 飞轮停滞)
 model EvolutionAnomalyFlag {
   id                  Int          @id @default(autoincrement())
   accountId           Int
-  anomalyType         String       // 'conflicting_insights' | 'frequent_style_flip' |
-                                   // 'avoidlist_overflow' | 'flywheel_stalled'
+  anomalyType         String       // 5 anomalyType(per D-089):
+                                   // 'conflicting_insights'      · 同 detectedFrom 主题 2+ insight 含相反 styleAdjustments
+                                   // 'frequent_style_flip'       · 7 天内 styleAdjustments 翻转 ≥ 2 次
+                                   // 'avoidlist_overflow'        · evolution_profile.avoidList > 50 元素
+                                   // 'flywheel_stalled'          · 7 天无新 evolution_insight 写入
+                                   // 'negative_feedback_dominant' · 30 天 negative_feedback > positive × 2
   severity            String       // 'low' | 'medium' | 'high'
-  evidence            Json
+                                   // D-089 推导: evidence signalCount=1 → low / 2-3 → medium / ≥4 → high
+  evidence            Json         // {insightIds:[N,M], styleFlipCount:3, avoidListSize:55, ...}
   detectedAt          DateTime     @default(now())
   resolvedAt          DateTime?
   resolution          String?      // 'auto_resolved' | 'admin_force_rebuild' | 'false_positive'
+  resolvedByAdminId   Int?         // admin markAnomalyResolved 触发 · null 表示 auto_resolved
 
   @@index([accountId])
   @@index([anomalyType, detectedAt(sort: Desc)])
@@ -3396,6 +3426,8 @@ model EvolutionAnomalyFlag {
   @@map("evolution_anomaly_flags")
 }
 ```
+
+**PRD-13 US-004 检测算法位置** · `apps/api/src/services/admin/evolution-health/anomaly-detection.service.ts` · 5 个 detect 函数 + deriveSeverity 推导 · EvolutionAgent.execute() 末尾 try/catch 调用(非阻塞)。
 
 ### §13.7 P2 后续 4 张表(占位)
 

@@ -1,5 +1,5 @@
 /**
- * DeepLearning Specialist I/O schemas — PRD-2 US-005
+ * DeepLearning Specialist I/O schemas — PRD-2 US-005, PRD-15 US-003
  * AC-5: input/output schemas in packages/schemas/src/specialist-io/
  */
 
@@ -46,7 +46,51 @@ export const deepLearningArchiveSchema = z.object({
   updatedAt: z.date(),
 });
 
+// PRD-15 US-003: parse + applyFormula schemas
+export const deepLearningParseInput = z.object({
+  sample: z.string().min(100, '文案不少于 100 字').max(10000),
+  sourcePlatform: z.string().min(1).max(32),
+});
+
+export const deepLearningParseAnalysis = z.object({
+  coreFormula: z.string(),
+  hookType: z.string(),
+  structurePattern: z.string(),
+  emotionalArc: z.string(),
+  keywords: z.array(z.string()),
+});
+
+export const deepLearningParseOutput = z.object({
+  queueId: z.number().int().positive(),
+  analysis: deepLearningParseAnalysis,
+});
+
+export const deepLearningApplyFormulaInput = z.object({
+  queueId: z.number().int().positive(),
+  newTopic: z.string().min(1).max(500),
+});
+
+export const deepLearningApplyFormulaOutput = z.object({
+  content: z.string(),
+});
+
+// Queue item returned by list (PRD-15 US-003)
+export const deepLearningQueueItemSchema = z.object({
+  id: z.number().int().positive(),
+  sample: z.string(),
+  sourcePlatform: z.string(),
+  coreFormula: z.string(),
+  status: z.string(),
+  createdAt: z.date(),
+});
+
 export type ListDeepLearningInput = z.infer<typeof listDeepLearningInput>;
 export type CreateDeepLearningInput = z.infer<typeof createDeepLearningInput>;
 export type CreateDeepLearningFromFileInput = z.infer<typeof createDeepLearningFromFileInput>;
 export type DeepLearningArchive = z.infer<typeof deepLearningArchiveSchema>;
+export type DeepLearningParseInput = z.infer<typeof deepLearningParseInput>;
+export type DeepLearningParseAnalysis = z.infer<typeof deepLearningParseAnalysis>;
+export type DeepLearningParseOutput = z.infer<typeof deepLearningParseOutput>;
+export type DeepLearningApplyFormulaInput = z.infer<typeof deepLearningApplyFormulaInput>;
+export type DeepLearningApplyFormulaOutput = z.infer<typeof deepLearningApplyFormulaOutput>;
+export type DeepLearningQueueItem = z.infer<typeof deepLearningQueueItemSchema>;

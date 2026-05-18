@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { stepConfig } from '@/lib/stepConfig';
+import IpPlan from '@/pages/IpPlan';
 import Accounts from '@/pages/modules/Accounts';
 import DailyTasks from '@/pages/modules/DailyTasks';
 import Diagnosis from '@/pages/modules/Diagnosis';
@@ -56,7 +57,21 @@ vi.mock('@/lib/trpc', () => ({
       search: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       getById: { useQuery: () => ({ data: null, isLoading: false }) },
     },
-    trending: { fetch: { useQuery: () => ({ data: [], isLoading: false }) } },
+    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
+    trending: {
+      fetch: { useQuery: () => ({ data: [], isLoading: false }) },
+      listWithFavorites: { useQuery: () => ({ data: [], isLoading: false }) },
+      kpiStats: { useQuery: () => ({ data: null, isLoading: false }) },
+      favorite: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      detail: { useQuery: () => ({ data: null, isLoading: false }) },
+    },
+    myTopics: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      countBySource: { useQuery: () => ({ data: null, isLoading: false }) },
+      add: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      update: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     copywriting: {
       freeGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
       acquisitionGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
@@ -67,7 +82,10 @@ vi.mock('@/lib/trpc', () => ({
       delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
     stepData: {
-      save: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+      get: { useQuery: () => ({ data: null, isLoading: false, isError: false, error: null, refetch: vi.fn() }) },
+      save: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }) },
+      saveStream: { useSubscription: vi.fn() },
+      progress: { useQuery: () => ({ data: { completedSteps: [], completed: 0, total: 9 }, isLoading: false, refetch: vi.fn() }) },
     },
     stt: {
       transcribe: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ transcript: '测试语音', durationSec: 2, costUsd: 0.001 }), isPending: false }) },
@@ -112,8 +130,12 @@ describe('stepConfig', () => {
 
 describe('Step pages render', () => {
   it('Step1 renders h1 with correct title', () => {
-    render(<Step1 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 定位与身份建立');
+    render(
+      <MemoryRouter>
+        <Step1 />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选择你的行业赛道');
   });
 
   it('Step2 renders h1 with correct title', () => {
@@ -122,13 +144,13 @@ describe('Step pages render', () => {
   });
 
   it('Step5 renders h1 with correct title', () => {
-    render(<Step5 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('发布与运营');
+    render(<MemoryRouter><Step5 /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款选题库');
   });
 
   it('Step8 renders h1 with correct title', () => {
     render(<Step8 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('持续迭代与升级');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('直播策划');
   });
 
   it('Step9 renders h1 with correct title', () => {
@@ -144,18 +166,18 @@ describe('Tool pages render', () => {
   });
 
   it('Trending renders h1 heading', () => {
-    render(<Trending />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款库');
+    render(<MemoryRouter><Trending /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款情报库');
   });
 
   it('Copywriting renders h1 heading', () => {
-    render(<Copywriting />);
+    render(<MemoryRouter><Copywriting /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款文案创作');
   });
 
   it('Knowledge renders h1 heading', () => {
     render(<Knowledge />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('方法论知识库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('知识库');
   });
 });
 
@@ -196,13 +218,32 @@ describe('Module pages render', () => {
   });
 
   it('MyTopics renders h1 heading', () => {
-    render(<MyTopics />);
+    render(<MemoryRouter><MyTopics /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选题库');
   });
 
   it('History renders h1 heading', () => {
     render(<MemoryRouter><History /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('历史记录');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('操作历史');
+  });
+});
+
+describe('IpPlan page (US-010)', () => {
+  it('renders ip-plan-page with h1 我的IP方案', () => {
+    render(<MemoryRouter><IpPlan /></MemoryRouter>);
+    expect(screen.getByTestId('ip-plan-page')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('我的IP方案');
+  });
+
+  it('renders 9 step cards with 查看详情 buttons', () => {
+    render(<MemoryRouter><IpPlan /></MemoryRouter>);
+    const buttons = screen.getAllByRole('button', { name: '查看详情' });
+    expect(buttons).toHaveLength(9);
+  });
+
+  it('shows 已完成 0 / 9 步 with empty completedSteps', () => {
+    render(<MemoryRouter><IpPlan /></MemoryRouter>);
+    expect(screen.getByText(/已完成/)).toBeInTheDocument();
   });
 });
 

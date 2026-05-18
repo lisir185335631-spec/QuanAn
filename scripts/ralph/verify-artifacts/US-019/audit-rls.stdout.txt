@@ -1,0 +1,36 @@
+=== admin tables (13): expect RLS DISABLED ===
+  ✓ admin_audit_log RLS DISABLED
+  ✓ approval_requests RLS DISABLED
+  ✓ prompt_versions RLS DISABLED
+  ✓ user_quota RLS DISABLED
+  ✓ kpi_snapshots RLS DISABLED
+  ✓ ip_account_admin_notes RLS DISABLED
+  ✓ ip_account_anomaly_flags RLS DISABLED
+  ✓ invite_campaigns RLS DISABLED
+  ✓ trending_review_queue RLS DISABLED
+  ✓ trending_takedown RLS DISABLED
+  ✓ auto_review_rules RLS DISABLED
+  ✓ deep_learn_review_queue RLS DISABLED
+  ✓ user_violation_log RLS DISABLED
+
+=== main-app account tables (15): expect RLS ENABLED ===
+  ✓ ip_accounts RLS ENABLED
+  ✓ step_data RLS ENABLED
+  ✓ histories RLS ENABLED
+  ✓ topics RLS ENABLED
+  ✓ assets RLS ENABLED
+  ✓ diagnosis_reports RLS ENABLED
+  ✓ feedback_logs RLS ENABLED
+  ✓ evolution_profiles RLS ENABLED
+  ✓ evolution_insights RLS ENABLED
+  ✓ deep_learning_archives RLS ENABLED
+  ✓ knowledge_favorites RLS ENABLED
+  ✓ knowledge_notes RLS ENABLED
+  ✓ daily_tasks RLS ENABLED
+  ✓ cost_log RLS ENABLED
+  ✓ trending_items RLS ENABLED
+
+=== Summary ===
+  Admin tables verified (RLS=false): 13/13
+  Main tables verified  (RLS=true):  15/15
+PASS: all RLS states verified · 0 mismatches

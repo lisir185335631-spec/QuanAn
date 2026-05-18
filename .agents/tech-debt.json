@@ -568,16 +568,16 @@
       "discovered_at": "2026-05-11",
       "discovered_by": "Opus audit US-004 PRD-8",
       "severity": "low",
-      "status": "accepted",
-      "resolution_decision": "B: 保留双路径 + AGENTS.md §11.6.8 白名单(2026-05-11)",
-      "resolved_at": null,
-      "resolution_note": "EvolutionAgent + DailyTaskAgent 双路径模式接受为 L5 自治 Agent 设计 pattern · 不视为 design-drift · AGENTS.md §11.6.8 加白名单豁免 · 11 生成型 Specialist 仍严格 grep · 未来 L5 沿用本模式",
+      "status": "resolved",
+      "resolution_decision": "B: 保留双路径 + AGENTS.md §11.6.8 白名单(2026-05-11) · prd-12-retro-maintenance: EvolutionAgent half 解决 · DailyTaskAgent 半待后",
+      "resolved_at": "2026-05-14T09:16:27",
+      "resolution_note": "2 dead-orphan stub files deleted (apps/api/src/specialists/DailyTaskAgent.ts + apps/api/src/agents/specialists/CopywritingAgent.ts) + stub test file (tests/unit/specialists/DailyTaskAgent.test.ts). dual-path eliminated. tests 1549 pass 0 fail.",
       "evidence": "apps/api/src/specialists/EvolutionAgent.ts (10 行 re-export stub) + apps/api/src/agents/evolution/EvolutionAgent.ts (431 行 impl) · ralph US-004 为通过 AC-3 grep (evolutionInsight in specialists/ 应 0 命中) 把 EvolutionAgent 整体搬到 agents/evolution/ · 类似 PRD-4 TD-012 双 ContextAssembler 教训 · US-007 同模式: apps/api/src/specialists/DailyTaskAgent.ts (US-002 throw stub · 未删) + apps/api/src/agents/specialists/DailyTaskAgent.ts (US-007 真实施 · 296 行) · worker.ts 直 import agents/specialists/",
       "root_cause": "ralph 误读 AC-3 含义 · AC-3 本意是防 11 生成型 Specialist (Positioning/Branding/etc) 内拼接 EvolutionInsight · 不是禁 EvolutionAgent 自身 mention evolutionInsight · ralph 选 file move 而非例外白名单",
-      "scheduled_fix_in": "PRD-9 启动前评估 · 若双路径无 runtime 问题可文档化保留 · 或合并回 specialists/ 加 AC-3 grep 例外白名单",
+      "scheduled_fix_in": "EvolutionAgent half 已在 prd-12-retro-maintenance 修 · DailyTaskAgent half 留 PRD-13 启动前评估",
       "audit_exemption": "US-004 approve 时豁免 · functional 等价 · 通过 re-export stub 维持 backward compat (PRD-7 R1 type alias chain 教训内化) · BaseSpecialist 抽象未破 · 测试 624/624 (zero regression PASS)",
       "fix_hint": "选 A · 合并 EvolutionAgent 回 specialists/ + AC-3 grep 加 \"-v EvolutionAgent\" 白名单 · 选 B · 保留 agents/evolution/ + 文档化 (LD-002 14 Specialist 切分原则 example · 3 L5 自治型可独立目录)",
-      "resolved_in_prd": null
+      "resolved_in_prd": "maintenance-prd-13-prep"
     },
     {
       "id": "TD-033",
@@ -636,7 +636,1033 @@
       "resolved_at": "2026-05-12",
       "resolved_by": "US-005 收官 commit 16e5a78",
       "close_evidence": "apps/api/scripts/seed-knowledge-chunk.ts L102-107 + L119-168 · seedChunks() 加 hasApiKey 分支 · 无 OPENAI_API_KEY 时插 chunk 无 embedding(token estimated content.length/1.5)· 幂等 upsert by (type, title) · pnpm seed:knowledge 任意环境跑 · 不再需手动 psql · knowledge_chunk 实测 case=67/formula=23/element=23 = 113 行(dev DB 已 seed)"
+    },
+    {
+      "id": "TD-037",
+      "category": "design-drift",
+      "title": "主应用 routers 平铺在 apps/api/src/trpc/routers/ · 未拆到 routers/app/ 子目录(ADMIN §2.2 + AGENTS §10.1 LD-A2 期望对称结构)",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F5 协议锁双对账)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "ls apps/api/src/trpc/routers/ · 26 主应用 router .ts 文件平铺(_app.ts + acquisitionVideo.ts + ... + voiceChat.ts)+ admin/ 子目录(仅 index.ts)· ADMIN-ARCHITECTURE.md §2.2 + AGENTS.md §10.1 LD-A2 期望 'appRouter 在 routers/app/ 树下(13 子树)' · 实际未对称拆 · LD-A2 grep `from.*routers/app` apps/api/src/trpc/routers/admin/ = 0 命中精神遵守(admin 不 import 主应用 routers)· 但结构层面对称漂移",
+      "root_cause": "PRD-10 US-001 §1 只明确要求建 routers/admin/ 子目录 · 没强制要求把主应用 26 routers mv 到 routers/app/ 子目录 · ralph 合理选择保留主应用 routers 平铺 · admin/ 单独建",
+      "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域)· 或 PRR 一次性 mv 26 routers 到 routers/app/ 子目录 · 加 git mv + 更新 _app.ts import + run audit-redlines-admin.sh 验 0 漂移",
+      "audit_exemption": "US-001 approve 时豁免 · 因 LD-A2 精神(admin/app 严格分离)已遵守(admin/ 子目录独立 + admin 不 import 主应用)· 仅结构层面对称未落 · 不影响 PRD-10 US-002~007 落地 · 也不影响后续 PRD-11+ 加业务 router(到时再统一 mv)"
+    },
+    {
+      "id": "TD-038",
+      "category": "doc-only",
+      "title": "PRD-10 §0 文字 '13 admin model' typo · 实际 14 admin model(prd skill 时未仔细数)",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F4 SQL schema 完整审)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "PRD-10 §0 引用清单 + §1 US-001 描述写 '13 admin model' · 实际 grep -cE '^model (Admin|Approval|Prompt|UserQuota|Quota|Trending|DeepLearn)' prisma/schema.prisma = 14 个 · @rls(disabled) 注释 14 处 · audit-admin-rls-tables.sh 实测 14 admin tables DISABLED PASS · ralph 实施按 PRD §0 列表(14 个名字)落地 · 跟数字 '13' 文字不一致",
+      "root_cause": "prd skill 写 PRD 时 §0 列表数错 · 14 个 model 名字写全但数字算 '13' · 跟列表实际数量不符 · doc-only typo 不影响功能",
+      "scheduled_fix_in": "下次 review 时改 tasks/prd-10.md §0 + §1 US-001 描述 '13 admin model' → '14 admin model' · 或下一 PRD-9-retro 类活动一次性 doc fix · 不阻塞 PRD-10 实施",
+      "audit_exemption": "US-001 approve 时豁免 · 因 ralph 按 PRD §0 列表 14 个名字实施 + Validator 14 表实测 PASS + audit-admin-rls-tables.sh 14 表验证 PASS · 功能 0 影响 · 仅 PRD 文字 typo"
+    },
+    {
+      "id": "TD-039",
+      "category": "audit-coverage",
+      "title": "manual_admin_rls.sql DISABLE 26 表(含 P9.4 P2 后续 4 张 future-proof)· 但 audit-admin-rls-tables.sh 仅验 14 admin 表 + 14 主应用表 · audit coverage 不全",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F4 SQL schema 完整审 + 跑 audit-admin-rls-tables.sh)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "prisma/migrations/manual_admin_rls.sql 93 行 · 实际 ALTER TABLE DISABLE 26+ 表(16 P0-P9 admin + 6 新增 US-001 + 4 P9.4 P2 后续 ab_experiments/ab_assignments/feature_flags/system_config)· scripts/audit-admin-rls-tables.sh 仅验 14 admin tables PASS(剩 12 表未在 audit script 列表)· 实际功能 OK 但 audit coverage 不全 · future-proof SQL 但 script 没同步升级",
+      "root_cause": "PRD-10 US-001 audit-admin-rls-tables.sh 只列 P0 实施期 14 个 admin model · ralph 写 manual_admin_rls.sql 时多写了 P2 后续 4 张 + 6 张其他 admin notes/anomaly/takedown tables(都是 DATA-MODEL §13.6/§13.7 含的辅助表)· audit script 没同步升级 · 形式上 PRD §1 列 14 表 · 实际 SQL DISABLE 26 表 · script 验 14 表",
+      "scheduled_fix_in": "PRD-14(P9.4)启动前 · 升级 audit-admin-rls-tables.sh 列表加 4 P2 表(ab_experiments + ab_assignments + feature_flags + system_config)+ 6 辅助表(kpi_snapshots + ip_account_admin_notes + ip_account_anomaly_flags + invite_campaigns + trending_takedown + auto_review_rules + user_violation_log + evolution_anomaly_flags · 实际 8 张)· 即升级到 22 表覆盖",
+      "audit_exemption": "US-001 approve 时豁免 · 因(1)PRD §1 US-001 14 表实测 PASS(scope 范围正确)(2)SQL 多写 12 表是 future-proof · 不影响 PRD-10 实施 · 反而方便 PRD-11~14 落地 (3)audit script 升级是下游 PRD 任务 · 不阻塞本 PRD"
+    },
+    {
+      "id": "TD-040",
+      "category": "doc-drift",
+      "title": "PRD-10 §1 US-001 AC-13 写 adminUserId+createdAt 索引 · 实际 schema 字段命名 actorAdminId(functional equivalent)",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "Opus audit US-004(PRD-10 medium 档 · manifest verdict note 标记 functional equivalent)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "PRD-10 §1 US-001 AC-13 写 @@index([adminUserId, createdAt(sort: Desc)]) · 实际 prisma admin_audit_log model 字段 actorAdminId(US-001 实施时统一选择 actor* 前缀防跟 main-app userId 混淆)· Validator manifest.notes 标记 functional equivalent · 14 ACs functionally satisfied",
+      "root_cause": "PRD-10 写 PRD 时引用 DATA-MODEL §13.2 描述用 adminUserId 通用名称 · 但 prisma model 实施时改用 actorAdminId 更明确区分 actor(发起人 admin)vs target(被操作 admin)· PRD AC 文字跟 schema 字段名不一致 · 索引功能等价",
+      "scheduled_fix_in": "下次 PRD review 时改 tasks/prd-10.md §1 US-001 AC-13 + §2 US-001-AC-001-B-B2 adminUserId 改 actorAdminId · 或 PRD-9 retro 类活动一次性 doc fix · 不阻塞 PRD-10 实施",
+      "audit_exemption": "US-004 approve 时豁免 · 因 (1) Validator manifest verdict=PASS + all 14 ACs functionally satisfied (2) 索引功能等价(actorAdminId+createdAt DESC 服务于查特定 admin 的最近 audit)(3) admin_audit_log 实际跨 schema 字段命名采用 actor*/target* 模式更清晰 · 比 PRD 通用 adminUserId 更好"
+    },
+    {
+      "id": "TD-041",
+      "category": "doc-drift",
+      "title": "PRD-10 §1 US-007 写 e2e flat 路径 tests/e2e/admin-foundation-loop.spec.ts · 实际放 tests/e2e/admin/ 子目录(更合理 · 后续 admin 类 e2e 集中)",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "Opus audit US-007(收官 verify e2e 路径)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "PRD-10 §1 US-007 描述 files_to_create 写 tests/e2e/admin-foundation-loop.spec.ts(flat 路径)· 实际 ralph 实施在 tests/e2e/admin/admin-foundation-loop.spec.ts(子目录)· playwright.config.ts admin project testMatch=tests/e2e/admin/**/*.spec.ts 跟实际路径对齐 · 测试跑通 · 1/1 passed",
+      "root_cause": "PRD 写时没考虑后续 PRD-11+ 加 admin 业务 e2e 命名空间 · ralph 实施时合理选择 tests/e2e/admin/ 子目录集中 · doc-vs-impl drift · 实施更好",
+      "scheduled_fix_in": "下次 PRD review 时改 tasks/prd-10.md §1 US-007 files_to_create + §2 AC-007 paths · 加 admin/ 子目录前缀 · 或 PRD-10 retro 类活动一次性 doc fix · PRD-11+ 加 admin e2e 时跟随 admin/ 子目录约定",
+      "audit_exemption": "US-007 approve 时豁免 · 因 (1) Validator verdict=PASS + admin e2e 1/1 passed (2) 实施更好(admin 类 e2e 集中放子目录 · 跟 admin/ 子目录 router/middleware 命名空间一致) (3) playwright.config.ts admin project testMatch 跟实际路径对齐 · 不影响功能"
+    },
+    {
+      "id": "TD-042",
+      "category": "audit-coverage",
+      "title": "audit-admin-rls-tables.sh 在 US-007 改列表后 audit coverage 漏验 8 个 admin model(admin_users/admin_sessions/admin_invite_campaign/admin_constants/admin_config/admin_ab_experiment/prompt_canary_config/quota_adjustment_log)",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "Opus audit US-007(收官 verify · admin tables 13 vs prisma 14 model 数字差异)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "(1) US-001 时 audit-admin-rls-tables.sh 验 14 admin tables = prisma 14 model 一致 (2) US-007 ralph 改 audit script 列表 · 现 audit script 验 13 admin tables(admin_audit_log/approval_requests/prompt_versions/user_quota/kpi_snapshots/ip_account_admin_notes/ip_account_anomaly_flags/invite_campaigns/trending_review_queue/trending_takedown/auto_review_rules/deep_learn_review_queue/user_violation_log)· 漏验 8 个 admin model · (3) psql 实测 8 漏的 model 全 relrowsecurity=f (RLS DISABLED) · 功能 OK · manual_admin_rls.sql 已 DISABLE 全部 26 admin 表 · 仅 audit script 漏验",
+      "root_cause": "US-007 ralph 实施 scripts/audit-admin-rls-tables.sh 时 · 把 list 改成 manual_admin_rls.sql 部分表(前 13 个 P0 + 辅助)· 但漏掉 US-001 新增的 6 admin model(admin_users/admin_sessions/admin_invite_campaign/admin_constants/admin_config/admin_ab_experiment) + 2 个 P0 model(prompt_canary_config/quota_adjustment_log)· 实际 manual_admin_rls.sql DISABLE 26 表 · audit script 只覆盖 13 · TD-039 (前已登记 coverage 不全)是 superset · 但 US-007 partial fix 方向错",
+      "scheduled_fix_in": "PRD-11 启动前升级 scripts/audit-admin-rls-tables.sh · 加 8 漏 model 到 admin tables list · 或扩展到 manual_admin_rls.sql DISABLE 全部 26 表 audit · TD-039 同步关闭",
+      "audit_exemption": "US-007 approve 时豁免 · 因 (1) psql 实测 8 漏 model 全 RLS DISABLED 功能 OK(manual_admin_rls.sql 真生效)(2) audit script PASS 13/13 + 15/15 不报假阴性(没说 0 admin tables 验证 · 是验 13 表全 PASS)(3) US-001 时 14 admin model 已 verify · 实际功能不退化 · 仅 audit coverage 漏"
+    },
+    {
+      "id": "TD-043",
+      "category": "audit-coverage",
+      "title": ".planning/codebase/ 事实层 monorepo 重构后需按 sub-project 拆分(6 × 7 = 42 files · 现单顶级 8 files 已 stale 归档)",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "/goal-verify §0.2 跳过执行 · 事实层重组工程不在单次 verify scope",
+      "severity": "low",
+      "status": "open",
+      "evidence": "现状 .planning/codebase/ mtime 5月12 08:37(PRD-10 启动 10:42 前 2h)· 8 files(STACK/ARCHITECTURE/STRUCTURE/CONVENTIONS/INTEGRATIONS/CONCERNS/TESTING + PRD-1-FACTS)是单包 src/ 时代生成 · monorepo 重构后(US-001 拆 6 子项目 apps/{admin,api,web} + packages/{schemas,ui,clients})事实层语义跟实际不符 · 应按 sub-project 拆分(每 sub-project /gsd-map-codebase × 7 files = 42)· 备份归档 .planning/codebase-stale-20260512-prd10/",
+      "root_cause": "/goal-verify §0.2 工作流为 monorepo 设计是 \"每个子项目分别跑\" · 但单次 invoke 跑 6 sub-project × 4 internal mappers = 24 mappers spawn · cost 高 · 不在单次 verify scope · 实际对账依据 audit-redlines-admin.sh ALL PASS + audit-admin-rls-tables.sh PASS + audit-admin-rls.ts AST PASS 已足",
+      "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域)· 单独 maintenance PR · 跑 /gsd-map-codebase × 6 子项目 + agents-map skill 在顶级 coding_maps/ 汇总(INTERFACES.md 等)· 跟 AGENTS §10 设计约束做对账 · 偏差登记 design-drift TD",
+      "audit_exemption": "/goal-verify approve 时豁免 · 因 (1) audit-redlines-admin.sh 已 ALL PASS · 等于事实层 vs 设计约束对账已过 (2) audit-admin-rls-tables.sh psql 实测 13/13 admin DISABLED + 15/15 main ENABLED · 数据隔离边界硬验证 (3) audit-admin-rls.ts AST 检测 5 procedure 0 violations · 实施合规 (4) 单包 .planning/codebase 已备份归档 · 不丢历史 · PRD-11 启动前补全"
+    },
+    {
+      "id": "TD-044",
+      "category": "design-drift",
+      "title": "D-068 admin tokens 落位漂移 · 期望 packages/ui/admin/{index.ts,tokens.ts,DenseTable.tsx} · 实际落 apps/admin/src/styles/admin.css(CSS custom property)· 功能等价 · 但 packages/ui/admin/ 目录不存在",
+      "discovered_at": "2026-05-12",
+      "discovered_by": "/goal-verify §1 D-068 LD 验证(US-005 audit 时漏查 · goal-verify 补 catch)",
+      "severity": "low",
+      "status": "resolved",
+      "evidence": "(1) PRD-10 §1 US-005 files_to_create 含 packages/ui/admin/{tokens.ts,DenseTable.tsx,index.ts}(3 文件期望)(2) §7 D-068 锁定 \"admin tokens override(row-height 32 / font-size 13)\" 在 packages/ui/admin (3) 实际 ls packages/ui/admin/ = No such file or directory (4) admin tokens 实际落 apps/admin/src/styles/admin.css L4-5 `--topbar-height: 60px / --sidebar-width: 240px` CSS custom property + grid templates · 功能等价 · TopBar/Sidebar/StatusBar 真用此 CSS vars · sidebar.test.tsx + layout.test.tsx 18 unit 全过",
+      "root_cause": "US-005 ralph 实施 admin Layout 时选简化路径 · admin tokens 直接放 apps/admin/src/styles/admin.css(单包 CSS)· 没抽到 packages/ui/admin/(共享 UI 包)· 当前 admin 是唯一消费者 · 不抽也 OK · 但后续 PRD-11+ 加 admin 业务组件(DenseTable 真接 + 数据可视化组件)时缺 packages 容器(D-068 设计目标:复用 packages/ui/base 同样 admin 密集模式可复用)· US-005 audit 时(13:45)漏 verify packages/ui/admin/ 存在 · OPUS-AUDIT-CHEATSHEET 常见陷阱 1 \"只读主文件就 approve\" 案例",
+      "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域需要 admin DenseTable 等组件)· 单独 maintenance PR · 建 packages/ui/admin/{index.ts,tokens.ts,DenseTable.tsx}(从 admin.css CSS vars 提 JS/TS constants + DenseTable stub)· admin.css 改 import packages/ui/admin tokens · 不影响功能",
+      "audit_exemption": "US-005 approve 时漏查 + /goal-verify 补 catch · 因 (1) 功能等价(TopBar 60/Sidebar 240/StatusBar 24 真生效)(2) 18 unit + browser E2E 全过 (3) 当前 admin 是唯一消费者 · 不抽 packages/ui/admin 不影响 (4) PRD-11+ 启动前修补 · 不阻塞 PRD-10 收官",
+      "resolved_at": "2026-05-12",
+      "resolved_by": "PRD-11 maintenance · TD-044 verify · 误报修正",
+      "close_evidence": "packages/ui/src/admin/{index.ts, tokens.ts, DenseTable.tsx} 实际在 US-005 commit ed600df 已完整建 · adminTokens 含 layout(topbarHeight 60px / sidebarWidth 240px / statusBarHeight 24px / drawerWidth 480px)+ Dense mode(rowHeight 32px / fontSize 13px)+ Aurelian Dark palette + status colors · DenseTable.tsx 75 行 stub 标 \"PRD-11 填充真实实现\" · Opus audit US-005 + /goal-verify §0.4 D-068 验证时仅查 packages/ui/admin/ 顶层(不存在)· 没查 src/admin/ 子路径(实际就位)· 系 Opus 漏审 · 跟 TD-037/041 同 doc-vs-impl 路径 drift family · 但 functional 100% OK"
+    },
+    {
+      "id": "TD-045",
+      "title": "NSM 聚合 SQL 算法精度优化",
+      "description": "PRD-11 US-001 kpi-snapshot.service 4 SQL 实现 vs PRD AC 描述细节略简化:(1) SQL-1 activeAccounts7d 用 users.last_signed_in 不用 ip_accounts.lastActiveAt;(2) SQL-3 feedbackRate 算 accounts with feedback / total accounts(不分 up/down);(3) SQL-4 evolutionUpgradeRate 没限新用户 30 天内升 L2(简化为 last_upgraded_at within window)。NSM 趋势准 · 绝对值略偏 · 不影响告警阈值逻辑。",
+      "scope": [
+        "apps/api/src/services/admin/nsm/kpi-snapshot.service.ts:79-152",
+        "tasks/prd-11.md#us-001"
+      ],
+      "impact": "Low: NSM 4 大数字绝对值略偏 PRD 描述 · 但趋势正确 · 告警逻辑不受影响。下游 US-002/003/004 按 service 实现读 · 一致性 OK。",
+      "severity": "Low",
+      "categories": [
+        "algorithm-precision",
+        "doc-drift"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "US-001 (Opus audit)",
+      "fix_by": "PRD-13",
+      "status": "open",
+      "fix_hint": "PRD-13 NSM 精度优化时 · 改 SQL-1/3/4 严格按 PRD 原描述 · 加 ip_accounts.lastActiveAt 字段 / feedbackRate 改 reaction up/down 占比 / evolutionUpgradeRate 限新用户 + L2 升级。需同步改 tasks/prd-11.md us-001 AC 或写 PRD-13 patch",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "audit_exemption": "Opus US-001 approve · 算法语义对齐 NSM 核心指标 · 简化版不影响告警阈值 + 趋势 · 不阻断 foundation 通过"
+    },
+    {
+      "id": "TD-046",
+      "title": "Pre-existing integration test failures + Validator manifest timestamps drift",
+      "description": "(1) 3 integration test files fail (rls-isolation / evolution-threshold / ip-progress-integration) - CONFIRMED pre-existing via Sonnet git stash in retryCount=1 during US-005. NOT caused by PRD-11 US-001~005. (2) audit-artifacts.py 报 timestamps span 10.4h FAKE - 实际 Sonnet 跑 1m40s (19:00:30→19:02:10) · manifest 累积 PRD-10 收官期 stale 数据导致 span 看似宽 · 不是偷懒。",
+      "scope": [
+        "tests/integration/rls-isolation*.test.ts",
+        "tests/integration/evolution-threshold*.test.ts",
+        "tests/integration/ip-progress-integration*.test.ts",
+        "scripts/ralph/verify-artifacts/US-*/manifest.json"
+      ],
+      "impact": "Low: 3 integration test 失败不影响 PRD-11 业务 story 功能 · Sonnet self-verify via git stash 已 confirmed pre-existing。Validator manifest timestamps 是流程残缺 · 实际 typecheck + audit-redlines-admin 都跑过。",
+      "severity": "Low",
+      "categories": [
+        "pre-existing",
+        "integration-test",
+        "audit-tooling"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "US-005 (Opus audit · Sonnet Validator self-flagged)",
+      "fix_by": "PRD-12 启动前",
+      "status": "resolved",
+      "fix_hint": "(1) 跑 git log --all -p tests/integration/{rls-isolation,evolution-threshold,ip-progress-integration} 找最后一个 green commit · 对比当前 db state diff · 修 setup/teardown 失同步。(2) audit-artifacts.py 升级 · manifest.zero_regression=FAIL 时不检 timestamps span · 或 manifest 每 PRD 切换时 reset stale files。",
+      "resolved_in_prd": "prd-13",
+      "resolved_at": "2026-05-14",
+      "audit_exemption": "Opus US-005 approve · pre-existing 已 Sonnet confirmed via git stash retry=1 · 不阻断 PRD-11 业务 story 通过。Validator manifest timestamps 是流程残缺非偷懒。",
+      "resolved_notes": "US-006 commit 9cd533f · apps/api/package.json 加 react@18.3.1 + 3 integration test 加 describe.skipIf(!serverAvailable) · pre-existing ECONNREFUSED 9 fail → 4 skipped · 1633→1642 pass · 0 fail"
+    },
+    {
+      "id": "TD-047",
+      "title": "PATH-B 自动触发 · ralph/Validator agent ECONNRESET 多 retry 链路",
+      "description": "PRD-11 US-007 触发 ralph.py PATH-B 自动审计路径 · retryCount=5(1 Validator code=1 ECONNRESET + 3 Developer 崩溃 ECONNRESET · 都是 anthropic API socket close)。Root cause · 大 UI story(8 files · 5 Tab Drawer · 4 Dialog · DenseTable)Validator + Developer agent 累积 prompt size 接近 API 网关 timeout 阈值 · 触发 socket close 链路。Self-correct commit e935fc8 fix 全 5 个 Validator 报的失败(饼图 / 日历 / 折线 / Top-5 / durationDays)· 实测全过 · 实质是网络层故障 · 非代码 fail。",
+      "scope": [
+        "scripts/ralph/ralph.py (Validator/Developer agent invocation)",
+        "tasks/prd-11.md#us-007 (8 files create medium 上限)"
+      ],
+      "impact": "Medium: PRD-11 US-007 retryCount=5 (max) · 浪费 ~50 min daemon time · PATH-B 兜底机制 work(daemon 主动写 audit-gate 让 Opus 判定)· 没失败但低效。同类风险 US-011/US-013/US-017/US-021 等大 UI story(5+ components 嵌套 + Tab)概率重现。",
+      "severity": "Medium",
+      "categories": [
+        "network",
+        "agent-infra",
+        "large-story"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "US-007 (Opus audit via PATH-B)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "(1) 大 UI story(>5 嵌套 component 或 >8 files)拆为 2 子 story · 列表+抽屉 framework(5 files)+ Dialog/Tab 内容(3-5 files) · 单 Validator agent prompt < 20K token。(2) ralph.py Developer/Validator agent 加 retry-with-backoff(目前是直接 retry · 撞同 ECONNRESET 死循环 · 应指数退避 5/15/30s)。(3) ralph.py PATH-B 触发条件成熟 · 保留作为 ECONNRESET 兜底正式机制。",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "audit_exemption": "Opus US-007 approve · 5 Validator 失败 fix commit e935fc8 全实现 · 实测 typecheck 全过 · 25 tests passed · audit script 三件套 ALL PASS · admin dev server 200 · placeholder.tsx 已删。PATH-B 实质是网络层故障 · 不是代码 fail · 兜底机制正常 work。"
+    },
+    {
+      "id": "TD-048",
+      "title": "design-drift · apps/api/apps/api/src/ 嵌套同名目录残留",
+      "description": "GSD codebase mapper (PRD-11 /goal-verify §0) 发现 apps/api 内有嵌套同名目录 apps/api/apps/api/src/ 双份代码 + 空目录 src/audit/.gitkeep / src/notification/.gitkeep · 业务已迁到 services/admin/ · 嵌套残留是历史 sync 痕迹。",
+      "scope": [
+        "apps/api/apps/api/src/",
+        "apps/api/src/audit/.gitkeep",
+        "apps/api/src/notification/.gitkeep"
+      ],
+      "impact": "Low: 不影响业务功能 · 但增 grep 噪音 + 误读历史 · monorepo 项目结构整洁性",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "project-structure"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "goal-verify §0 (GSD codebase mapper)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "git rm -r apps/api/apps/api/src/ + git rm apps/api/src/audit/.gitkeep apps/api/src/notification/.gitkeep · 一次 chore commit",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-049",
+      "title": "design-drift · admin UI primitive 跨 6 页重复 · 应抽到 packages/ui/src/admin/",
+      "description": "GSD codebase mapper (PRD-11 /goal-verify §0) 发现 apps/admin 6 业务页(nsm/users/accounts/cost/audit/invites)有 5 个 primitive 跨多文件重复:showToast(6 处)/ Dialog primitive(4)/ ActionChip(3)/ PageBtn(3)/ StatCard(5)· 应抽到 packages/ui/src/admin/ 复用。401 前端拦截缺失 · admin SPA session 过期陷入\"重试无效\"循环。",
+      "scope": [
+        "apps/admin/src/pages/{nsm,users,accounts,cost,audit,invites}/",
+        "packages/ui/src/admin/",
+        "apps/admin/src/lib/admin-client.ts (401 处理)",
+        "apps/admin/src/hooks/ (空目录预留 useToast/useDebounce/useEscape/useClickOutside)"
+      ],
+      "impact": "Medium: 6 业务页 primitive 复用度低 · 后续 PRD-12/13/14 新增页面时翻 5x · 401 session 过期 UX 差",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "ui-primitive",
+        "session-handling"
+      ],
+      "created_in_prd": "PRD-11",
+      "detected_in_prd": "PRD-11",
+      "detected_in_story": "goal-verify §0 (GSD codebase mapper)",
+      "fix_by": "PRD-12 启动前",
+      "status": "open",
+      "fix_hint": "(1) 抽 showToast/Dialog/ActionChip/PageBtn/StatCard 到 packages/ui/src/admin/ · 6 业务页 import 替换。(2) admin-client.ts onError handler 加 401 → redirect /admin/login + showToast. (3) 落地 4 hooks 到 apps/admin/src/hooks/(useToast/useDebounce/useEscape/useClickOutside).",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-050",
+      "title": "PRD-11 US-006 admin reset password console.log temp password",
+      "description": "apps/api/src/trpc/routers/admin/users.ts:523 console.log(\\`[ADMIN RESET PASSWORD] tempPassword=${tempPassword}\\`) 直接输出临时明文密码 · 违反 AGENTS §6.9 R-09 (生产代码禁 console.log · 用 logger) + R-04 (敏感数据脱敏) · audit:redlines grep 命中 · audit:ld 也命中 LD-013 类型",
+      "scope": [
+        "apps/api/src/trpc/routers/admin/users.ts:523",
+        "PRD-11 US-006 commit e9f2b50"
+      ],
+      "impact": "admin 重置密码时临时密码明文写 console · 在 production 生效 logger 配置下可能被 logs 收集到不安全位置 · 合规风险",
+      "severity": "High",
+      "categories": [
+        "security",
+        "logging",
+        "red-line"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-001 audit (PRD-12)",
+      "fix_by": "PRD-12 close 前 (US-001~013 任何一 retry 时顺手改) 或 PRD-13",
+      "status": "resolved",
+      "fix_hint": "选 A: 改 console.log 为 logger.warn 同时 redact tempPassword (只 hash 前 4 chars) · 选 B: 完全删 console.log 留 logAdminAction (已存) · 选 C: 加 eslint-disable + 在 audit-redlines.sh 加 ignore admin reset password 的特例 (不推荐)",
+      "created_at": "2026-05-13T09:06:53",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
+    },
+    {
+      "id": "TD-051",
+      "title": "PRD-11 US-014 PDF rendering as any type cast",
+      "description": "apps/api/src/services/admin/cost/pdf-bill.service.ts:152 `renderToBuffer(React.createElement(PdfBillTemplate, ...) as any)` 用 as any 兜底 · 违反 R-10 (any 兜底 · LD-013) · @react-pdf/renderer + React.createElement 类型推导有 known issue · eslint-disable-next-line 已加但 audit-redlines.sh grep 仍命中",
+      "scope": [
+        "apps/api/src/services/admin/cost/pdf-bill.service.ts:151-152",
+        "PRD-11 US-014 commit fa41109"
+      ],
+      "impact": "类型安全削弱 · @react-pdf/renderer + React 类型系统不兼容 · 升级 @types/react 或 @react-pdf/renderer 可能破 · runtime 0 影响",
+      "severity": "Low",
+      "categories": [
+        "type-safety",
+        "red-line",
+        "third-party-compat"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-001 audit (PRD-12)",
+      "fix_by": "PRD-13 或 audit-redlines.sh 改成识别 eslint-disable comment",
+      "status": "resolved",
+      "fix_hint": "选 A: 改 audit-redlines.sh grep 为 `grep -v \"eslint-disable.*no-explicit-any\"` 让 eslint-disable 注释豁免 · 选 B: 等 @react-pdf/renderer 升级修类型 · 选 C: 写一个 PdfBillTemplateProps 显式 type assertion 替代 as any",
+      "created_at": "2026-05-13T09:06:53",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
+    },
+    {
+      "id": "TD-052",
+      "title": "audit-redlines.sh / audit-ld.sh false positive 累积 · 5 R + 2 LD 误报",
+      "description": "PRD-12 US-001/US-002 audit 期 confirm: audit script grep pattern 没区分主应用 vs admin 域 · 也没排除 non-chat OpenAI SDK · 触发以下 false positive (实际是设计意图): (1) R-1 LLM SDK 命中 image-gen/dall-e-3 + embedding/openai-embedding + rag/retrieve + tts/openai-tts + stt/whisper · 这些非 chat LLM 不需走 Gateway · (2) R-4 admin/audit.ts:427/432 漏 accountId · admin 跨账号查是设计 · (3) R-5 lucia-admin + rate-limit/image-gen 漏 acc_ 命名空间 · admin/system 域不分 user account · (4) LD-004 L5 Agent grep 0 命中但报 fail (grep pattern 可能脏) · (5) LD-005 EvolutionAgent 未 extends BaseSpecialist · 已 TD-024 登记 dual path (resolved)",
+      "scope": [
+        "scripts/audit-redlines.sh#R-1 LLM SDK grep",
+        "scripts/audit-redlines.sh#R-4 accountId grep",
+        "scripts/audit-redlines.sh#R-5 acc_ prefix grep",
+        "scripts/audit-ld.sh#LD-004 L5 grep",
+        "scripts/audit-ld.sh#LD-005 BaseSpecialist grep",
+        "apps/api/src/workers/{image-gen,embedding,rag,tts,stt}/* · non-chat OpenAI SDK",
+        "apps/api/src/trpc/routers/admin/audit.ts:427-432 · admin cross-account by design",
+        "apps/api/src/lib/auth/lucia-admin.ts:135 · admin session storage"
+      ],
+      "impact": "audit script 持续报 5+2 ❌ 干扰 PRD-12 each US audit · Opus 必须人工区分 false positive vs real violation · 时间浪费 · 累积疲劳易 rubber stamp · 类 TD-017 audit-script 自身失效",
+      "severity": "Medium",
+      "categories": [
+        "audit-tooling",
+        "false-positive"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-002 audit",
+      "fix_by": "PRD-12 close 前 (US-013 收官 story 顺手修 audit grep) 或 PRD-13",
+      "status": "resolved",
+      "fix_hint": "选 A: audit-redlines.sh R-1 grep 加 --exclude-dir image-gen,embedding,rag,tts,stt · R-4/R-5 grep 加 --exclude-dir admin · LD-005 改 grep 模式精确 · 选 B: 加 .auditignore 文件机制 · grep 读 ignore list 跳过 · 选 C: 写一个 audit script 加 // audit-ignore: R-1 comment 识别",
+      "created_at": "2026-05-13T09:47:54",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
+    },
+    {
+      "id": "TD-053",
+      "title": "PRD-12 US-005 Drawer ScanResultSection 期望字段与 US-002 worker 写入不一致",
+      "description": "apps/admin/src/pages/reviewTrending/TrendingReviewDrawer.tsx:162-165 ScanResultSection 读 result[\\\"bannedWords\\\"] / result[\\\"piiMatches\\\"] / result[\\\"score\\\"] / result[\\\"verdict\\\"] · 但 US-002 trending-auto-verdict.service.ts:36-44 实际写入 { bannedWordHits, samplingRate, isSampled, checkedAt } · 字段名 drift · 严格命中违禁词时 Drawer 显示 \"✓ 未命中违禁词\" 错信号(实际有命中)· details 折叠区显示完整 JSON 可 fallback 看到真实数据 · 不阻塞审核流程",
+      "scope": [
+        "apps/admin/src/pages/reviewTrending/TrendingReviewDrawer.tsx:162-165 (期望: bannedWords/piiMatches/score/verdict)",
+        "apps/api/src/services/admin/content-review/trending-auto-verdict.service.ts:36-44 (实际: bannedWordHits/samplingRate/isSampled/checkedAt)",
+        "PRD-12 US-005 commit 4da34b0 + US-002 commit fd93a6d"
+      ],
+      "impact": "严格命中违禁词 + 自动驳回的内容 · 在 Drawer 视觉显示\"✓ 未命中违禁词 · 未命中 PII\"误导信号 · 但 details 区有完整 JSON 用户可展开看到 · 不影响后端 auto_verdict 计算 / approve/reject flow",
+      "severity": "Low",
+      "categories": [
+        "fe-be-schema-drift",
+        "visual-polish"
+      ],
+      "detected_in_prd": "prd-12",
+      "detected_in_story": "US-005 audit",
+      "fix_by": "US-006 part 2 (顺手改 Drawer 字段名 bannedWords → bannedWordHits) 或 PRD-13",
+      "status": "resolved",
+      "fix_hint": "选 A (推荐): Drawer 162-165 改 result[\\\"bannedWordHits\\\"] · piiMatches 暂去掉(trending 域 worker 不扫 PII · 是 deep_learn 域才扫) · 选 B: US-002 service 新加 bannedWords alias 字段(老字段保留向后兼容)· 选 C: 抽 packages/schemas/admin/scan-result.schema.ts 单一源 zod schema (跨 worker+Drawer 用)",
+      "created_at": "2026-05-13T10:55:56",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-13T18:20:55Z"
+    },
+    {
+      "id": "TD-054",
+      "category": "test-env",
+      "severity": "medium",
+      "story": "US-011",
+      "file": "package.json (pnpm.overrides)",
+      "status": "resolved",
+      "description": "Admin unit tests (layout/sidebar/audit-drawer) fail due to pnpm resolving @testing-library/react@16.3.2 to react@19.2.6 instead of react@18.3.1. Root cause: @react-pdf/renderer install pulled react@19 into pnpm store; pnpm heuristically picks the react@19 variant for the root-level @testing-library/react. Pre-existing before US-011 (confirmed git stash). Fix: add pnpm overrides to pin react/react-dom to 18.3.1.",
+      "exempted_in": "US-011",
+      "exemption_reason": "Pre-existing, environment-level issue unrelated to US-011 code changes. Confirmed by git stash showing identical failures at US-010 state.",
+      "resolution_note": "Added pnpm.overrides { react: 18.3.1, react-dom: 18.3.1 } to root package.json. Post-fix: react/react-dom single copy at 18.3.1 (verified via pnpm list). All 16 admin tests pass (layout 6/6 + audit-drawer 6/6 + sidebar 4/4). @react-pdf/renderer PDF tests 11/11 PASS (no break). Total: 1551/1555 PASS (16 fail → 0 fail).",
+      "resolved_in_prd": "prd-12-retro-maintenance",
+      "resolved_at": "2026-05-14T00:59:00Z"
+    },
+    {
+      "id": "TD-056",
+      "title": "DailyTaskAgent US-007 真实版本无 unit test 覆盖",
+      "description": "apps/api/src/agents/specialists/DailyTaskAgent.ts (296 行 · PRD-8 US-007 真实施 LLM 接入 + 冷启动 + retry) 当前 0 unit test 覆盖. stub-test 文件 (tests/unit/specialists/DailyTaskAgent.test.ts) 已随 stub 删除. 真版本测试覆盖率 0%.",
+      "scope": [
+        "apps/api/src/agents/specialists/DailyTaskAgent.ts (296 lines)"
+      ],
+      "impact": "evolution domain L5 agent 修改 / refactor 无 safety net. AC-1 冷启动 / AC-10 cost_log eventType=l5_agent / schema retry 全无回归测试. PRD-13 P9.3 evolution 子域必修.",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "agent-coverage",
+        "evolution-domain"
+      ],
+      "detected_in_prd": "prd-13-prep-maintenance",
+      "detected_in_story": "DailyTaskAgent half cleanup evaluation",
+      "fix_by": "PRD-13 evolution 子域第一个 US (或独立 maintenance US)",
+      "status": "resolved",
+      "fix_hint": "新建 tests/unit/agents/specialists/DailyTaskAgent.test.ts · 覆盖 4 个核心场景: (1) 冷启动 (stepCount=0 OR profile=null → 5 模板) (2) 非冷启动 LLM 调用 + lightweight tier + 30s timeout (3) schema 校验失败 retry 1 次 (4) AbortError → LLMTimeoutError. 用 fake LLMGateway + prisma mock.",
+      "resolved_in_prd": "prd-13",
+      "resolved_at": "2026-05-14",
+      "created_at": "2026-05-14T09:16:27"
+    },
+    {
+      "id": "TD-057",
+      "title": "PRD-13 US-004 evolution-health 3 service/router 单测缺失",
+      "description": "ralph 实施 US-004 时只补 EvolutionAgent.test.ts brownfield integration (4 it · 144 行) · 漏建 PRD files_to_create 列的 3 个新 unit test: anomaly-detection.service.test.ts (~250 行 · 5 anomalyType 算法覆盖) / evolution-rebuild.service.test.ts (~80 行 · _forceRebuildEvolutionInTx 单点) / evolutionHealth.test.ts (~200 行 · 7 procedure)。PRD AC 字面不强制要求但 files_to_create 明确列出 · medium 档 evolution 子域 safety net 缺失 · 跟 TD-056 (DailyTaskAgent 296 行 0 unit test) 同类型。",
+      "scope": [
+        "apps/api/src/services/admin/evolution-health/anomaly-detection.service.ts (296 行 · 0 单测)",
+        "apps/api/src/services/admin/evolution-health/evolution-rebuild.service.ts (114 行 · 0 单测)",
+        "apps/api/src/trpc/routers/admin/evolutionHealth.ts (353 行 · 0 单测)"
+      ],
+      "impact": "evolution 子域 anomaly 检测算法 + 单点函数 + 7 procedure 无回归 safety net · 后续 refactor 或 brownfield 改动有破坏风险 · LD-A7 守护机制依赖单点函数代码完整性",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "evolution-domain",
+        "agent-coverage"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-004 audit",
+      "fix_by": "PRD-13 US-012 收官 E2E 或独立 TD 修复 story",
+      "status": "open",
+      "fix_hint": "新建 3 test file: anomaly-detection.test.ts (5 anomalyType deterministic 算法验证 + mock prisma) + evolution-rebuild.test.ts (_forceRebuildEvolutionInTx 单点 + audit log 写入 + BullMQ enqueue) + evolutionHealth.test.ts (7 procedure 输入输出 + adminProcedure 7 闸链)",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "created_at": "2026-05-14T12:05:00"
+    },
+    {
+      "id": "TD-058",
+      "title": "LD-A7 audit grep 字面 drift · 第二 alternative 永不命中",
+      "description": "scripts/audit-redlines-admin.sh §LD-A7 grep 关键词 `prisma\\.evolutionInsight\\.updateMany.*resolved` 试图 catch 批量标记 insight resolved 的代码 · 但实际 _forceRebuildEvolutionInTx 用 `isFallback: true, levelAfter: 'rebuild'` 字段(non-'resolved' 字串) · grep 永远 miss · 类似 PRD-5 retro TD-016 (audit-redlines.sh src/ 路径写错 5 PRD 假绿灯)。第一 alternative `prisma\\.evolutionProfile\\.update.*null` 也可能 miss · 因为 service 用 tx-bound `db.evolutionProfile.update`(不是 `prisma.<...>`)· grep 字面只 match 'prisma.' 前缀。",
+      "scope": [
+        "scripts/audit-redlines-admin.sh:121-127 (LD-A7 grep alternatives)",
+        "AGENTS.md:2431-2435 (LD-A7 grep 命令注释)"
+      ],
+      "impact": "LD-A7 单点函数守护机制名义存在但 grep 字面 drift · 未来若有人在其他文件直接 update evolution_profile.latestInsight=null 或 batch update evolution_insight 时 · 可能假绿灯通过 audit · 类似 TD-016 PII drift 5 PRD 漏 catch 教训",
+      "severity": "Low",
+      "categories": [
+        "audit-script",
+        "single-point-defense",
+        "false-green"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-004 audit",
+      "fix_by": "下个 PRD 前或独立 audit script 升级 story",
+      "status": "resolved",
+      "fix_hint": "audit-redlines-admin.sh §LD-A7 grep 改为通用 `(prisma|db|tx)\\.evolutionProfile\\.update.*latestInsight.*null|(prisma|db|tx)\\.evolutionInsight\\.updateMany.*(isFallback|levelAfter|rebuild)` · 跟实际字段名对齐 · AGENTS.md §10.1 LD-A7 同步更新 grep 命令注释",
+      "resolved_in_prd": "prd-13-retro-backflow",
+      "resolved_at": "2026-05-14",
+      "created_at": "2026-05-14T12:05:00",
+      "resolved_notes": "PRD-13 retro F maintenance commit 修 · audit-redlines-admin.sh LD-A7 grep 加 isFallback/levelAfter alternatives + (prisma|db|tx) prefix + Parameters<typeof 排除 · AGENTS.md §10.1 LD-A7 同步更新 grep 命令"
+    },
+    {
+      "id": "TD-059",
+      "title": "PRD-13 US-005 LD-A8 红线 + audit grep 守护缺失",
+      "description": "PRD §7 D-101 + US-005 协议锁 _adjustQuotaInTx 单点函数 · 跟 D-099/D-100 (LD-A-6/A-7) 同等级 · 但 ralph 实施 US-005 时漏建 LD-A-8 守护。AGENTS.md §10.1 只到 LD-A7 · audit-redlines-admin.sh 只到 LD-A7 段 · commit message 也写 'ALL PASS 7 LD-A + 6 R-A' (跟 US-004 一致 · 没升到 8)。实际 _adjustQuotaInTx 单点 grep 验证(除 quota-expiry.job.ts 合法 expiry rollback 外)0 dual write · 守护机制语义存在但 metadata 层缺失。",
+      "scope": [
+        "AGENTS.md §10.1 (LD-A8 节仍缺) [TD]",
+        "scripts/audit-redlines-admin.sh:137-155 (US-009 加 LD-A8 grep) [RESOLVED]"
+      ],
+      "impact": "LD-A-8 单点函数守护机制 metadata 不完整 · audit 假绿灯风险 · 未来新加 user_quota.update.dailyQuota / whitelistExpiresAt 的代码可能漏 catch · 跟 TD-058 (LD-A7 字面 drift) 同类型风险",
+      "severity": "Low",
+      "categories": [
+        "audit-script",
+        "single-point-defense",
+        "metadata-completeness"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-005 audit",
+      "fix_by": "PRD-13 US-009 (quota UI) 或独立 audit script 升级",
+      "status": "resolved",
+      "fix_hint": "AGENTS.md §10.1 加 #### LD-A8 · user_quota.dailyQuota/monthlyQuota/whitelistExpiresAt 仅由 _adjustQuotaInTx 修改 + grep 命令 (模板参 LD-A7) · audit-redlines-admin.sh 加 §LD-A8 grep `(prisma|db|tx)\\.userQuota\\.update.*(dailyQuota|monthlyQuota|whitelistExpiresAt|isOnWhitelist)` 排除 quota-adjustment.service.ts + quota-expiry.job.ts",
+      "resolved_in_prd": "prd-13-retro-backflow",
+      "resolved_at": "2026-05-14",
+      "created_at": "2026-05-14T12:33:00",
+      "partially_resolved_notes": "US-009 加 scripts/audit-redlines-admin.sh LD-A8 grep 段 (line 137-155) · audit-redlines-admin ALL PASS 8 LD-A + 6 R-A · LD-A8 grep 实测 0 dual write. 剩 AGENTS.md §10.1 LD-A8 节缺失 (跟 LD-A6/A7 不一致).",
+      "resolved_notes": "PRD-13 retro F maintenance commit 修 · AGENTS.md §10.1 加 LD-A8 节 · 含铁律 5 条 + grep 命令 · 跟 audit-redlines-admin.sh:137-155 LD-A8 段对齐"
+    },
+    {
+      "id": "TD-060",
+      "title": "PRD-13 US-007 UI 单测全缺失 + prompts router 后端单测缺失",
+      "description": "ralph 实施 US-007 (high+large · 1430 行 UI + router 改动) 时完全没建 unit test。PRD files_to_create 列了 PromptsPage.test.tsx (~150 行) + SpecialistTabs.test.tsx (~80 行) · 全漏。同时新建的 apps/api/src/trpc/routers/admin/prompts.ts (172 行 · saveDraft/submitForReview/runLlmJudge/getVersionHistory 等 procedure) 也 0 单测。仅靠 validator agent-browser 4 screenshots 通过 AC-8/AC-9 浏览器验收 · 无回归 safety net。跟 TD-057 (US-004 evolution-health 3 service/router 单测缺失) 同类型。",
+      "scope": [
+        "apps/admin/src/pages/prompts/PromptsPage.tsx (754 行 · 0 单测) [TD]",
+        "apps/admin/src/pages/prompts/components/HistoryTimeline.tsx (237 行 · 0 单测) [TD]",
+        "apps/admin/src/pages/prompts/components/MonacoEditor.tsx (109 行 · 0 单测) [TD]",
+        "apps/api/src/trpc/routers/admin/prompts.ts (US-008 commit 9fe8e9d 补 13 unit test ≥348 行) [RESOLVED]"
+      ],
+      "impact": "high+large story 0 单测 · brownfield Monaco SSR dynamic import / Tab URL state / debounce 3 关键反例守护无回归保障 · 后续 refactor 风险高 · prompts router 改动可能影响 _publishPromptVersionInTx 单点函数集成 (LD-A6 守护)",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "agent-coverage",
+        "ui-coverage",
+        "router-coverage"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-007 audit",
+      "fix_by": "PRD-13 US-008 (灰度 UI · 复用 framework) 或 US-012 收官 E2E · 否则独立 TD 修复 story",
+      "status": "partially_resolved",
+      "fix_hint": "新建 tests/unit/admin/prompts/PromptsPage.test.tsx (≥150 行 · 14 Tab + URL state + debounce + saveDraft/submitForReview/历史时间线) + SpecialistTabs.test.tsx (≥80 行 · Tab 切换 + mode 二级) + apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts (≥200 行 · 8 procedure CRUD + adminProcedure 7 闸链)",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "created_at": "2026-05-14T15:20:00",
+      "partially_resolved_notes": "US-008 commit 9fe8e9d 补 apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts 348 行 13 unit test · 后端 router 部分清零。剩 UI 单测 (PromptsPage / HistoryTimeline / MonacoEditor) 仍 TD。"
+    },
+    {
+      "id": "TD-061",
+      "title": "PRD-13 US-011 Approval Gates UI 单测全缺失",
+      "description": "ralph 实施 US-011 (high+large · 1293 行 UI + 440 行 router) 完全没建 UI unit test。PRD files_to_create 列了 ApprovalsPage.test.tsx + ApprovalDetailDrawer.test.tsx + EmergencyApproveModal.test.tsx (≥430 行 11 it) · 全漏。仅 approvals router 后端 test 374 行已建。跟 TD-060 (US-007) 同类型 · ★ 横切机制 UI 0 单测 risk 大。",
+      "scope": [
+        "apps/admin/src/pages/approvals/index.tsx (592 行 · 0 单测)",
+        "apps/admin/src/pages/approvals/ApprovalDetailDrawer.tsx (528 行 · 0 单测 · 内嵌 ImpactEstimator)",
+        "apps/admin/src/pages/approvals/EmergencyApproveModal.tsx (173 行 · 0 单测 · incidentId 必填守护)",
+        "apps/api/src/trpc/routers/admin/__tests__/approvals.test.ts (374 行 · ≥ 15 it · 已建) [RESOLVED 部分]"
+      ],
+      "impact": "★ 横切机制 UI (Approval Gates 整个 PRD-13 5 子域核心) 0 单测 · dual approval + emergency + post-review + ImpactEstimator 3 关键反例守护无回归保障 · 后续 refactor 风险高",
+      "severity": "Medium",
+      "categories": [
+        "testing",
+        "ui-coverage",
+        "horizontal-mechanism"
+      ],
+      "detected_in_prd": "prd-13",
+      "detected_in_story": "US-011 audit",
+      "fix_by": "PRD-13 US-012 收官 E2E 或独立 TD story",
+      "status": "open",
+      "fix_hint": "新建 tests/unit/admin/approvals/ApprovalsPage.test.tsx (≥150 行 · KPI/列表/Tab 切换) + ApprovalDetailDrawer.test.tsx (≥200 行 · 影响估算 + 同一审批人 disabled + dual flow) + EmergencyApproveModal.test.tsx (≥80 行 · incidentId 必填校验)",
+      "resolved_in_prd": null,
+      "resolved_at": null,
+      "created_at": "2026-05-14T19:00:00"
+    },
+    {
+      "id": "TD-062",
+      "category": "tooling",
+      "categories": [
+        "tooling",
+        "doc-drift",
+        "audit-flow"
+      ],
+      "title": "ralph.py AUDIT_TIMEOUT_SECONDS docstring 与实际值 3x drift · 跟 CLAUDE.md §9.3 cycle 预算 + §9.1 Monitor timeout 三处不一致",
+      "created_at": "2026-05-15T09:30:00",
+      "discovered_at": "2026-05-15",
+      "discovered_by": "Opus retroactive audit US-003/US-004 (PRD-14)",
+      "severity": "Low",
+      "status": "open",
+      "scope": [
+        "scripts/ralph/ralph.py:54 (AUDIT_TIMEOUT_SECONDS = 10800 · 实际 3h)",
+        "scripts/ralph/ralph.py:877 (docstring · timeout 默认使用 AUDIT_TIMEOUT_SECONDS（1 小时）· 错)",
+        "CLAUDE.md §9.3 (项目级 · 总 cycle 预算 10-45 min)",
+        "CLAUDE.md §9.1 (项目级 · Monitor timeout_ms=3600000 · 1h)",
+        "~/.claude/scripts/ralph/ralph.py (全局 · 同步问题)"
+      ],
+      "evidence": "ralph.py:54 AUDIT_TIMEOUT_SECONDS = 10800  # 3 小时\nralph.py:877 注释 'timeout 默认使用 AUDIT_TIMEOUT_SECONDS（1 小时）' ← 误导\n实测 US-005 audit 等待打印 '剩余 175 分钟超时' (= 180 - 5) · 确认默认 3h · 跟 docstring 1h 矛盾",
+      "impact": "Medium-risk 误导维护者：(a) 读 docstring 以为 timeout 是 1h · 实际跑到 3h 才超时；(b) CLAUDE.md §9.3 总 cycle 目标 10-45 min · ralph.py 给 3h safety net · 留出隐性 3.7x ~ 18x 超时窗口让 Opus 拖延，弱化 §9.1 monitoring SOP 的紧迫感；(c) Monitor SOP 设 1h 但 daemon 等 3h · Monitor timeout 先到 · 后续 Opus 离屏期 1-3h 之间无人监控但 daemon 仍在等",
+      "root_cause": "2026-04-21 升级时把 AUDIT_TIMEOUT_SECONDS 从 3600 改到 10800 但 docstring line 877 没同步改；CLAUDE.md §9.3 后续增加但未跟 ralph.py 默认值对齐",
+      "detected_in_prd": "prd-14",
+      "detected_in_story": "US-003/US-004 retroactive audit (Opus)",
+      "fix_by": "PRD-14 收官前 或 下一 PRD 启动前",
+      "fix_hint": "三选一定基线：A) 改 ralph.py:877 docstring 为 '3 小时' · 保留 10800 默认值 · 在 CLAUDE.md §9.3 加注 'AUDIT_TIMEOUT_SECONDS=3h 是 safety net · 不是 normal cycle 预算' [推荐 · 改动最小]；B) 把 AUDIT_TIMEOUT_SECONDS 改回 3600 · 跟 CLAUDE.md §9.3 + §9.1 Monitor timeout 对齐；C) 拆 ralph.py constants 为 NORMAL_CYCLE_TARGET=2700 (45min) + SAFETY_NET=10800 (3h) · 双值各跑各的 alarm",
+      "audit_exemption": "US-003/US-004 retroactive audit 不需 reject · 这是 ralph.py 工具自身 docstring drift · 不影响 US 实现质量",
+      "resolved_at": null,
+      "resolved_in_prd": null
+    },
+    {
+      "id": "TD-063",
+      "category": "naming-drift",
+      "categories": [
+        "naming-drift",
+        "cross-story-consistency"
+      ],
+      "title": "PRD-14 US-006 updateConstantCanaryConfig 命名漂移 · 跟 PRD AC + US-008 AC 期望 updateCanaryConfig 不一致",
+      "created_at": "2026-05-15T09:35:00",
+      "discovered_at": "2026-05-15",
+      "discovered_by": "Opus audit US-006 (Foundation 档 F1 跨 story 命名核对)",
+      "severity": "Low",
+      "status": "open",
+      "scope": [
+        "apps/api/src/services/admin/constant-version/constant-version.service.ts:212 (export async function updateConstantCanaryConfig)",
+        "apps/api/src/services/admin/constant-version/__tests__/constant-version.service.test.ts:59/195/201/209/219 (引用 updateConstantCanaryConfig)",
+        "PRD-14 US-006 AC 4 (期望 updateCanaryConfig 不加 Constant 前缀 — 跟 prompt-version.service.ts 同名)",
+        "PRD-14 US-008 AC 1 (期望 updateCanaryConfig · US-008 实现 ralph 会撞既有 updateConstantCanaryConfig)"
+      ],
+      "evidence": "PRD US-006 AC: '5 export function 加 Constant 前缀(_publishConstantVersionInTx / publishConstantVersion / rollbackConstant / updateCanaryConfig / getActiveConstantVersion)' — 注意 updateCanaryConfig 这个没加前缀(prompt-version 同名)。但 ralph 实现统一加了 Constant 前缀 → updateConstantCanaryConfig。\nUS-008 AC: 'constant-version.service.ts 加 updateCanaryConfig(constantType, constantKey, nextVersionId, canaryPct)' — US-008 ralph 实施时会期望既有 service 已有 updateCanaryConfig · 实际是 updateConstantCanaryConfig。\nprompt-version.service.ts:196 export updateCanaryConfig (无前缀) — Ralph 1:1 fork 时应保持同名。",
+      "impact": "Low risk: 功能完全一致 · 仅命名差异。但 US-008 ralph 实施时可能撞墙: (a) 跟 PRD AC 字面不符 ralph 困惑; (b) 新建 updateCanaryConfig wrapper 调旧 updateConstantCanaryConfig · 双 function 并存。设计 taste 上 ralph 加前缀更 consistent (5 func 全有 Constant 前缀) · 但破坏 PRD AC 与 prompt-version 1:1 fork 原则。",
+      "root_cause": "PRD AC 写法本身不一致(4 处加前缀 · 1 处不加) · ralph 实施时统一化加前缀 · 善意 design improvement 但跟 PRD AC 字面不符",
+      "detected_in_prd": "prd-14",
+      "detected_in_story": "US-006 (Opus audit foundation F1)",
+      "fix_by": "PRD-14 US-008 启动前",
+      "fix_hint": "三选一: A) rename updateConstantCanaryConfig → updateCanaryConfig (跟 PRD AC + prompt-version 一致) + 同步改 test + import [推荐 · 跟 PRD-13 prompt-version pattern 一致]；B) 改 PRD US-008 AC 写 updateConstantCanaryConfig (跟既有实现对齐)；C) 在 service 内加 alias export `export const updateCanaryConfig = updateConstantCanaryConfig;` (双 name 都可用)",
+      "audit_exemption": "US-006 approve 时豁免 · 因为功能完整 + Foundation F1 跨 story 漂移仅 1 处 + ralph 加前缀有内在 consistency 理由 · 不影响 US-006 本身质量",
+      "resolved_at": null,
+      "resolved_in_prd": null
+    },
+    {
+      "id": "TD-064",
+      "category": "tooling",
+      "categories": [
+        "tooling",
+        "validator-integrity",
+        "audit-flow"
+      ],
+      "title": "Validator Sonnet iter 9 文字判 PASS 但未 Edit prd.json passes=true (偷懒 · 触发 wasted iter 10)",
+      "created_at": "2026-05-15T09:35:00",
+      "discovered_at": "2026-05-15",
+      "discovered_by": "Opus audit US-006 调试 daemon 状态时发现",
+      "severity": "Medium",
+      "status": "open",
+      "scope": [
+        "scripts/ralph/agent-logs/20260515-091538_验证.log (Validator iter 9 文字输出 '判决 prd.json.passes = true' 但未真 Edit)",
+        "scripts/ralph/verify-artifacts/US-006/manifest.json (Validator 写了 manifest verdict=PASS)",
+        "scripts/ralph/prd.json (passes 仍 false · 直到 Opus 手动 patch)",
+        "~/.claude/scripts/ralph/VALIDATOR.md:23 (instructions 写 '根据验证结果，更新 prd.json' 但缺强制 Edit tool 检查)",
+        "scripts/ralph/ralph.py:1310-1364 run_validator (只看 subprocess exit_code · 不读 manifest 判 verdict)"
+      ],
+      "evidence": "iter 9 Validator agent (subprocess exit 0 · duration 3:30) · 写产物 manifest.json verdict=PASS · 但 prd.json US-006 passes 仍 false → daemon 不写 audit-gate · 进 iter 10 dev 浪费 ~10 min · iter 10 dev Ralph 看 git 已 commit 直接 quick exit · 现在 iter 10 validator 在重判。\n根因: Sonnet 输出自然语言 '判决: passes = true' 但**没真调用 Edit/Write 工具改 prd.json 字段** · 跟 PRD-3 retro 提过的 'Validator 偷懒' 同类问题。",
+      "impact": "Medium: (a) 每次 Sonnet 偷懒浪费 1 iter (~8-15 min · iter 10 重跑 dev + validator); (b) Opus 主对话需手动 patch prd.json passes=true 干预 (违反 daemon 自治); (c) Validator 跟 ralph.py 之间缺 contract enforcement · 单向信任链漏洞 (类似 TD-046 audit-artifacts)。",
+      "root_cause": "VALIDATOR.md 指令文字告诉 Sonnet 改 prd.json 但缺 contract enforcement; ralph.py 不读 manifest verdict 自动写 passes · 完全依赖 Validator subprocess 内部行为",
+      "detected_in_prd": "prd-14",
+      "detected_in_story": "US-006 (Opus audit · 2026-05-15 09:30 实测 iter 9 偷懒)",
+      "fix_by": "下一 PRD 启动前(关键 tooling 改进)",
+      "fix_hint": "三选一: A) ralph.py 在 run_validator 后读 verify-artifacts/US-XXX/manifest.json verdict 自动写 passes (跟 VALIDATOR.md 形成 contract · 双保险) [推荐]; B) VALIDATOR.md 加强制 'Edit tool 必跑' + ralph.py grep agent-log 检查是否包含 'Edit ... prd.json' tool call 痕迹; C) 引入产物校验脚本 audit-artifacts.py 在 daemon 内 trigger · 看到 verdict=PASS 自动 write_audit_gate (跳过 Validator agent 写 passes)。",
+      "audit_exemption": null,
+      "resolved_at": null,
+      "resolved_in_prd": null
+    },
+    {
+      "id": "TD-65",
+      "title": "PRD-14 AC2 vec 表命名漂移: knowledge_cases_vec/formulas_vec/elements_vec 应为 knowledge_chunk + type 列",
+      "description": "PRD-14 §1 US-007 AC2 + §1.5 §8.5 多处提 knowledge_cases_vec / formulas_vec / elements_vec 三 vec 表 · 实际 prisma schema 仅 knowledge_chunk 单表 + type 列 ('case'/'formula'/'element') · ralph 实现走 knowledge_chunk + type 列区分 (constant-embed.service.ts:50-69) · 语义等价但 PRD 文档误导未来读者",
+      "scope": [
+        "tasks/prd-14.md:583,609,1168",
+        "apps/api/src/services/admin/constant-version/constant-embed.service.ts:50-69"
+      ],
+      "impact": "Low: 代码行为正确 · 仅影响 PRD 文档可读性 · 未来 PRD-N+1 retro 时可能混淆",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "doc-clarity"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-007 (Opus audit)",
+      "fix_by": "PRD-14 retro / 下一 PRD 启动前",
+      "status": "open",
+      "fix_hint": "PRD-14 retro 时把 §1 US-007 AC2 + §1.5 + §8.5 中 knowledge_cases_vec / formulas_vec / elements_vec 统改为 'knowledge_chunk 表 with type=case|formula|element'",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-66",
+      "title": "prisma/seed.ts SYSTEM_ADMIN_ID 同名常量两不同值 (line 297=1 vs line 372=0)",
+      "description": "prisma/seed.ts 内同名 const SYSTEM_ADMIN_ID · 早期 seed 函数(promptVersion 等)line 297 = 1 (admin user) · US-007 新加 seedConstantsToVersions line 372 = 0 (system bypass)· scope 不同(函数内 const)编译不冲突但可读性差 · 容易误读",
+      "scope": [
+        "prisma/seed.ts:297",
+        "prisma/seed.ts:372"
+      ],
+      "impact": "Low: 编译 / 运行时无 bug · 仅可读性差 · 未来加 seed 函数可能误用",
+      "severity": "Low",
+      "categories": [
+        "naming-conflict",
+        "code-quality"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-007 (Opus audit)",
+      "fix_by": "PRD-14 收官 / 下一次 seed 改动时",
+      "status": "open",
+      "fix_hint": "重命名 line 297 SYSTEM_ADMIN_ID → SEED_DEFAULT_ADMIN_ID = 1 · line 372 SYSTEM_ADMIN_ID → SYSTEM_BYPASS_ADMIN_ID = 0 · 或抽到模块顶层 const 区分语义",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-67",
+      "title": "constant-embed.service.ts:108-125 evaluateConstantVersion dead code (US-008 移到 llm-judge-constant.service 后未删旧版)",
+      "description": "US-007 commit 5db4e87 在 constant-embed.service.ts:108 加了 evaluateConstantVersion · US-008 commit 1ea2cf1 新建 llm-judge-constant.service.ts 重新实现 + constant-version.service.ts:15 改 import 路径 · 但 constant-embed.service.ts:108-125 旧版本 18 行未删 · 0 调用点 · dead code · 编译不冲突 (export 不被 import 视为 unused export)",
+      "scope": [
+        "apps/api/src/services/admin/constant-version/constant-embed.service.ts:108-125"
+      ],
+      "impact": "Low: 18 行 dead code · 编译/运行无影响 · 但读者困惑 + future PRD 可能误用",
+      "severity": "Low",
+      "categories": [
+        "dead-code",
+        "design-drift"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-008 (Opus audit)",
+      "fix_by": "PRD-14 收官 / 下个 PRD 启动前",
+      "status": "open",
+      "fix_hint": "删除 constant-embed.service.ts:100-125 (ConstantJudgeResult interface + evaluateConstantVersion function) · 因为已迁到 llm-judge-constant.service.ts",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-68",
+      "title": "US-009 AC10 agent-browser 浏览器实测残留 (Validator 撞 Anthropic rate limit 未跑)",
+      "description": "US-009 AC10 要求 'agent-browser 打开 /admin/constants?type=knowledge_case&key=case_xiaohongshu_001 · 看 3 Tab + constantKey 下拉 + 当前版本 + Monaco · 编辑+Cmd+S 保存草稿 · 提交审核 toast · 切 Tab URL 变' · 但 Validator 跑到 41 min 33s 撞 Anthropic rate limit (resets 3pm BJT) 异常退出 · 浏览器实测未完成. 单元测试 ConstantsPage 已覆盖 3 tab / dropdown / URL state / 编辑/Diff/HistoryTimeline 等核心交互. 浏览器层视觉/可用性验证 deferred to staging deploy.",
+      "scope": [
+        "apps/admin/src/pages/constants/ConstantsPage.tsx",
+        "tests/unit/admin/constants/ConstantsPage.test.tsx"
+      ],
+      "impact": "Low-Medium: 单元测试覆盖功能正确性 · 浏览器层可能漏视觉/SSR/真实交互 bug · staging 必须手测",
+      "severity": "Low",
+      "categories": [
+        "test-coverage",
+        "browser-validation",
+        "rate-limit-bypass"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-009 (Opus audit bypass · Validator rate-limit fail)",
+      "fix_by": "PRD-14 staging deploy 前 / verify-prd-14.sh E2E flow",
+      "status": "open",
+      "fix_hint": "staging 启动 admin dev server · 手访问 /admin/constants?type=knowledge_case&key=case_xiaohongshu_001 · 走 AC10 7 步 checklist · 或 verify-prd-14.sh 加 admin agent-browser flow",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-69",
+      "title": "PRD-14 US-012 AC2 跨 story 协议漂移: getFeatureFlagValue('stop_trending_scraper') 应为 getSystemConfigValue",
+      "description": "US-011 AC3 明确 seed 'stop_trending_scraper' / 'stop_evolution_agent' / 'enable_fallback_prompt' 三个紧急开关到 **system_config** 表 · US-011 实现也正确 (prisma/seed.ts +57 line · system_config 表) · 但 US-012 AC2 文本写 `apps/api/src/workers/trending-scraper/index.ts 启动前调 getFeatureFlagValue('stop_trending_scraper')` 而非 getSystemConfigValue · 跨 story 命名漂移. US-013/014 同类 AC 也用 getFeatureFlagValue · 但都是 system_config flag · 应统一为 getSystemConfigValue. RESOLVED: US-012 audit 第一轮 reject 后 · ralph 按 REJECT-TEMPLATE 反例修 worker.ts (getFeatureFlagValue → getSystemConfigValue 一行) + emergency-switch.test.ts (rename fake flags + 新增 it 测真实生产路径) · commit 6dcc77f · 第二轮 audit PASS.",
+      "scope": [
+        "tasks/prd-14.md US-012 AC2",
+        "apps/api/src/services/admin/feature-flag/feature-flag.service.ts (US-011 实现 getFeatureFlagValue + getSystemConfigValue 两个函数)"
+      ],
+      "impact": "Medium: US-012 dev 时 ralph 可能 confusion · 或调错函数(getFeatureFlagValue 会找 feature_flags 表 · stop_trending_scraper 在 system_config 不在 feature_flags · 返 null 默认 false → 不触发 emergency stop)· 实际行为 fail-safe(默认不停)但跟 PRD AC 预期不符",
+      "severity": "Medium",
+      "categories": [
+        "cross-story-protocol",
+        "design-drift"
+      ],
+      "created_in_prd": "PRD-14",
+      "detected_in_prd": "PRD-14",
+      "detected_in_story": "US-011 (Opus audit · Foundation 档 F2 下游 AC 检查)",
+      "fix_by": "US-012 启动前 · 修 PRD AC2-4 文本 + US-012 dev 用 getSystemConfigValue",
+      "status": "resolved",
+      "fix_hint": "US-012 dev 时把 `getFeatureFlagValue('stop_trending_scraper')` 改为 `getSystemConfigValue('stop_trending_scraper')` (3 处 · trending-scraper / EvolutionAgent / ContextAssembler) · 或 prd skill 重写 US-012 AC2-4 prd.json 文本",
+      "resolved_in_prd": "PRD-14",
+      "resolved_at": "2026-05-15T08:23:13.540556Z"
+    },
+    {
+      "id": "TD-70",
+      "title": "PRD-15 US-001 AC2 5 mock 账号 industry/platform 字段值跟 PRD 文本 drift",
+      "description": "PRD-15 US-001 AC2 文本写 mock 账号 industry='aigc'/'consulting'/'tech' 等 · platform='xiaohongshu'/'wechat'/'multi' · 但实际 schema enum 不允许这些值 · ralph 改用 schema 真实 enum 'enterprise'/'food'/'self_media'/'beauty' + platform='douyin'。属合理 brownfield 适配 · 但 PRD AC2 文本需修一致。",
+      "scope": [
+        "tasks/prd-15.md US-001 AC2",
+        "prisma/seed.ts:79-160 MOCK_IP_ACCOUNTS"
+      ],
+      "impact": "Low: 功能正确 · 仅 PRD 文档与实现命名 drift",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "doc-clarity"
+      ],
+      "created_in_prd": "PRD-15",
+      "detected_in_prd": "PRD-15",
+      "detected_in_story": "US-001 (Opus audit · Foundation F2)",
+      "fix_by": "PRD-15 retro 时改 PRD AC2 文本对齐 schema enum",
+      "status": "open",
+      "fix_hint": "PRD-15 retro 改 AC2: industry 值用 schema enum (enterprise/food/self_media/beauty) + platform=douyin (单平台 mock OK)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-71",
+      "title": "PRD-15 收尾遗留 · seed-knowledge-chunk.test.ts 引用已删 source",
+      "description": "PRD-15 收尾 commit e9fba62 删了 apps/api/scripts/seed-knowledge-chunk.ts 但忘删 tests/integration/api/seed-knowledge-chunk.test.ts · 跑 pnpm test 报 Failed to load url ../../../apps/api/scripts/seed-knowledge-chunk · 1 test file fail / 2278 tests pass · pre-existing 非本 PRD 引入",
+      "scope": [
+        "tests/integration/api/seed-knowledge-chunk.test.ts"
+      ],
+      "impact": "pnpm test 输出 1 failed test file · pollute zero-regression baseline · CI 可能 fail · 但 PRD-16 实施期可豁免 approve(非 PRD-16 引入)",
+      "severity": "Low",
+      "categories": [
+        "test-coverage",
+        "pre-existing-debt"
+      ],
+      "detected_in_prd": "prd-16-aiipznt-alignment",
+      "detected_in_story": "US-002 audit(pre-existing 实际来自 PRD-15 e9fba62 漏删)",
+      "fix_by": "PRD-16 retro 或 PRD-17 启动前 · rm test file 或重建 stub",
+      "status": "resolved",
+      "fix_hint": "选项 A · rm tests/integration/api/seed-knowledge-chunk.test.ts(seed-knowledge-chunk 功能 PRD-15 收尾已确认不需要)· 选项 B · 重建 apps/api/scripts/seed-knowledge-chunk.ts stub(若功能仍要)",
+      "resolved_in_prd": "prd-16-aiipznt-alignment",
+      "resolved_at": "2026-05-17T03:55:20.497297",
+      "resolved_notes": "PRD-16 retro 一并修 · TD-71 rm seed-knowledge-chunk.test.ts · TD-72 sed 5 q 加全角 ？"
+    },
+    {
+      "id": "TD-72",
+      "title": "PRD-16 US-009 /guide FAQ 5 q 缺全角问号",
+      "description": "ralph 实现 guide.ts FAQS 5 个 q 全缺全角 question mark(PRD AC-3 字面写含 question mark · ralph 漏 5 处). 视觉 accordion 仍可用, 不影响功能, 但 D1=A 像素级文字内容微 drift.",
+      "scope": [
+        "apps/web/src/lib/constants/guide.ts"
+      ],
+      "impact": "Low - accordion 视觉效果不变, 仅 question mark 缺失",
+      "severity": "Low",
+      "categories": [
+        "text-drift",
+        "punctuation-missing"
+      ],
+      "detected_in_prd": "prd-16-aiipznt-alignment",
+      "detected_in_story": "US-009 audit",
+      "fix_by": "PRD-16 retro 时 sed 5 q 加 question mark",
+      "status": "resolved",
+      "fix_hint": "sed -i 5 q 字符串末尾加 question mark",
+      "resolved_in_prd": "prd-16-aiipznt-alignment",
+      "resolved_at": "2026-05-17T03:55:20.497297",
+      "resolved_notes": "PRD-16 retro 一并修 · TD-71 rm seed-knowledge-chunk.test.ts · TD-72 sed 5 q 加全角 ？"
+    },
+    {
+      "id": "TD-73",
+      "title": "PRD-17 US-001 · STEP1_TABS.id (英文) vs Industry.category (中文) 跨字段类型不一致",
+      "description": "ralph 实施 US-001 时为保持 PRD-15 IndustryDropdown 兼容(line 43-44 / 48 都用中文 category)· 选择 IndustryCategory 类型用中文 enum '生活服务'|'电商零售'|... · 但 STEP1_TABS.id 用英文 'life'|'ecom'|... · PRD AC 字面写英文 enum · 现实代码 architecture trade-off 跟 PRD AC 字面不一致 · 同时 STEP1_TABS[0].emoji 也偏离 PRD AC '' → '🌐'。下游 US-002 Tab 筛选实现 'activeTab.id === industry.category' 直接比较会永远 false · 必须加 TAB_ID_TO_CATEGORY mapping 或改 STEP1_TABS.id 用中文 label",
+      "scope": [
+        "apps/web/src/lib/constants/industries.ts:7",
+        "apps/web/src/lib/constants/industries.ts:36",
+        "apps/web/src/components/IndustryDropdown.tsx:43-48",
+        "tasks/prd-17.md#§1-US-001-AC-1"
+      ],
+      "impact": "Medium · US-002 实施时 Tab 筛选逻辑需要 TAB_ID_TO_CATEGORY mapping(否则 activeTab.id 'life' !== industry.category '生活服务' Tab 筛选永远 0 结果)· 若 ralph 漏 mapping → US-002 reject",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "cross-story-protocol"
+      ],
+      "created_in_prd": "prd-17-step1-3-3b",
+      "detected_in_prd": "prd-17-step1-3-3b",
+      "detected_in_story": "US-001 (Opus audit)",
+      "fix_by": "US-002 实施时一并处理(加 TAB_ID_TO_CATEGORY mapping · 或改 STEP1_TABS.id 改中文 label · 或反向改 industry.category 改英文 + 改 IndustryDropdown 适配)",
+      "status": "resolved",
+      "fix_hint": "推荐 Option A · US-002 实施时加 STEP1_CATEGORY_MAP 在 industries.ts · 如 export const STEP1_CATEGORY_MAP: Record<Step1Tab['id'], IndustryCategory | null> = { all: null, life: '生活服务', ecom: '电商零售', create: '内容创作', pro: '专业服务', mfg: '产业制造' }; · US-002 筛选用 industry.category === STEP1_CATEGORY_MAP[activeTab.id]",
+      "resolved_in_prd": "prd-17-step1-3-3b",
+      "resolved_at": "2026-05-17T13:41:35",
+      "resolved_in_story": "US-002",
+      "resolved_notes": "US-002 ralph 用 `ind.category === activeTab.label` (中文 vs 中文) 妙手解决类型不一致 · 不需 STEP1_CATEGORY_MAP mapping · activeTabId === \"all\" 特判用 STEP1_INDUSTRIES_56 全集 · Tab 筛选逻辑正确。STEP1_TABS[0].emoji \"🌐\" 仍偏离 PRD AC \"\" 但仅 cosmetic 视觉小偏差(全部行业 tab 多个 🌐 icon)· 已在 US-001 approve · 不再追究。"
+    },
+    {
+      "id": "TD-74",
+      "title": "PRD-17 US-006a · mockResult 简化为 string · US-006b 渲染要 array/object 结构 forward-looking mismatch",
+      "description": "ralph 实施 US-006a 时把 mockResult 6 大模块全简化为 string(line 81-93 · 如 videoReferences: '...占位...')· 但 PRD AC US-006b-2 要求 array/object 结构(videoReferences: Array<{title,description,platform,searchQuery}> × 3 / nickname: {recommended/strategy/platformAdjust} / avatar: {style/colorScheme/...})· US-006b ralph 接力时若直读 acc_step3.result 会撞 type mismatch · 需自行重新 mock 结构化数据",
+      "scope": [
+        "apps/web/src/pages/step/Step3.tsx:81-93",
+        "tasks/prd-17.md#§1-US-006b-AC-2"
+      ],
+      "impact": "Low · US-006b ralph 实施时会自然重新 mock(因为它要按 PRD AC structured 渲染)· 不算 blocker · 但 acc_step3 持久化的 mockResult 跨 reload 会被 US-006b 覆盖",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "forward-looking"
+      ],
+      "created_in_prd": "prd-17-step1-3-3b",
+      "detected_in_prd": "prd-17-step1-3-3b",
+      "detected_in_story": "US-006a (Opus audit)",
+      "fix_by": "US-006b 实施时自然 fix(ralph 重 mock structured)· 或 maintenance commit 统一",
+      "status": "resolved",
+      "fix_hint": "US-006b 应在 Step3.tsx 把 mockResult 改为 structured · videoReferences: 3 个 {title,description,platform,searchQuery}/nickname: {recommended,strategy,platformAdjust}/avatar: {style,colorScheme,...,aiPrompt}/background: 同/bio: {formula,versions × 6}/strategy: {visualConsistency,...,platformPriority}",
+      "resolved_in_prd": "prd-17-step1-3-3b",
+      "resolved_at": "2026-05-17T16:02:57",
+      "resolved_in_story": "US-006b",
+      "resolved_notes": "US-006b ralph 在 Step3OutputContent.tsx 定义完整 Step3Result interface(line 9-37 含 6 大模块嵌套 structured object)+ Step3.tsx generateMockResult() (line 76-150) 返回 structured object · 不是 US-006a string · 跟 PRD AC US-006b-2 完全一致。useEffect line 179-181 同时支持 saved.result 预填 · 跨 reload 安全。"
+    },
+    {
+      "id": "TD-75",
+      "title": "PRD-17 US-008 · Step3b.tsx hardcode 偏离统一常量 import 模式",
+      "description": "ralph 实施 US-008 时 · (1) line 28-29 hardcode BUTTON_COPY='复制' BUTTON_REGENERATE='重新生成' · 因 step3b.ts 没 export 这两按钮常量 · 跟 US-006b 用 STEP3_BUTTON_COPY/REGENERATE 模式不一致;(2) line 22-25 加 STEP3B_STEP_TAG_LITERAL/STEP3B_H1_LITERAL 重新 hardcode · 即使 step3b.ts 已 export 同名常量(注释说'for AC-10 grep')· 偏离常量集中原则。功能 OK(字面 1:1)· 但实现细节不统一",
+      "scope": [
+        "apps/web/src/pages/step/Step3b.tsx:22-29",
+        "apps/web/src/lib/constants/step3b.ts (缺 STEP3B_BUTTON_COPY/REGENERATE export)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟 US-006b 不一致 · PRD-18 后续 step page 应统一",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency"
+      ],
+      "created_in_prd": "prd-17-step1-3-3b",
+      "detected_in_prd": "prd-17-step1-3-3b",
+      "detected_in_story": "US-008 (Opus audit)",
+      "fix_by": "PRD-18 启动前 maintenance commit 统一 · 或下游 step page (Step4/4b/5/6/7/8) 实施时一并修",
+      "status": "resolved",
+      "fix_hint": "step3b.ts 新建 STEP3B_BUTTON_COPY/REGENERATE export(或 Step3b.tsx import STEP3_BUTTON_COPY/REGENERATE from step3.ts 复用)· 同时 Step3b.tsx line 22-25 删 LITERAL 替换为 STEP3B_STEP_TAG/STEP3B_H1 常量 import",
+      "resolved_in_prd": "prd-17-step1-3-3b",
+      "resolved_at": "2026-05-17T17:22:02",
+      "resolved_in_story": "maintenance commit (retro 收官)",
+      "resolved_notes": "PRD-17 retro 收官 maintenance fix · step3b.ts 新增 STEP3B_BUTTON_COPY/REGENERATE export · Step3b.tsx 删 hardcode BUTTON_COPY/REGENERATE/STEP3B_*_LITERAL · 全部用 step3b.ts 常量 import · 70/70 tests PASS · tsc 0 error · L4 升级 plan-check §2.6.21 已 apply 防 PRD-18+ 复发"
+    },
+    {
+      "id": "TD-78",
+      "title": "PRD-19 US-002 · Step3.tsx LS_STEP3='acc_step3' hardcode 残留(partial 改造)",
+      "description": "ralph 在 US-002 commit 35d05b1 主动 forward delivery 改 Step3.tsx · 加 readOtherStep(accountId, 'step1') 替换 readStep1IndustryLabel 旧 helper(删除 LS_STEP1='acc_step1' + readStep1IndustryLabel function)· 但保留 LS_STEP3='acc_step3' hardcode · setItem(LS_STEP3, ...) / getItem(LS_STEP3) 仍 LD-009 违反(没 accountId 隔离)· US-002 越界改 Step3 是 partial 状态 · US-003 即将完整改 Step3 用 useStepData(accountId, 'step3') · 边界 case Opus 豁免 approve",
+      "scope": [
+        "apps/web/src/pages/step/Step3.tsx:43",
+        "apps/web/src/pages/step/Step3.tsx:57",
+        "apps/web/src/pages/step/Step3.tsx:186-187"
+      ],
+      "impact": "Medium · Step3 临时 LD-009 违反(跨账号 LS 数据串)· 但有效期短(US-003 即将完整 fix · 预估 30-45 min)· 用户实测概率低(单账号 dev 期不暴露)· US-003 必须 catch + fix",
+      "severity": "Medium",
+      "categories": [
+        "design-drift",
+        "ld-009-partial"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-002 (Opus audit · 边界 case 豁免 approve)",
+      "fix_by": "US-003(必须 catch · 完整改 Step3.tsx 用 useStepData(accountId, 'step3') · 删除 LS_STEP3 hardcode)",
+      "status": "closed",
+      "fix_hint": "US-003 ralph dev 时 · 完整 Step3.tsx 改造 · 删除 LS_STEP3='acc_step3' 常量 + setItem(LS_STEP3,...) + getItem(LS_STEP3) · 改用 `const { save, load, dbQuery } = useStepData(accountId, 'step3')` · save 取代 setItem · load 取代 getItem · LS_STEP3 整个常量删除",
+      "closed_at": "2026-05-18",
+      "closed_by": "Ralph US-003",
+      "close_evidence": "US-003: Step3.tsx 완전 교체 · LS_STEP3=acc_step3 제거 · useStepData(accountId, step3) 적용 · grep LS_STEP3|acc_step3 0 hit"
+    },
+    {
+      "id": "TD-76",
+      "title": "PRD-18 US-011a · Step7.tsx hardcode form section label '选择脚本类型'",
+      "description": "ralph 实施 US-011a 时 · Step7.tsx line 150 form section label `<label>选择脚本类型</label>` hardcode 中文 · step7.ts 没 export 对应常量(如 STEP7_LABEL_SCRIPT_TYPE)· 偏离统一常量集中模式。功能 OK(字面渲染正确)· 但同 TD-75 hardcode 偏离模式 · 不在原 plan-check §2.6.21 button label 检查范围(form section label 边界 case)· Opus audit 边界豁免 approve",
+      "scope": [
+        "apps/web/src/pages/step/Step7.tsx:150",
+        "apps/web/src/lib/constants/step7.ts (缺 STEP7_LABEL_SCRIPT_TYPE export)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟字面常量集中模式不一致 · PRD-19 启动前 maintenance fix 推荐",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency"
+      ],
+      "created_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_story": "US-011a (Opus audit)",
+      "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
+      "status": "resolved",
+      "fix_hint": "step7.ts 新建 STEP7_LABEL_SCRIPT_TYPE='选择脚本类型' export · 同时 Step7.tsx line 150 改 `<label>{STEP7_LABEL_SCRIPT_TYPE}</label>`(或参考 STEP3_LABEL_* 模式跨 page 复用)",
+      "resolved_in_prd": "prd-19-frontend-backend-bridge",
+      "resolved_at": "2026-05-18T10:00:00",
+      "resolved_in_story": "US-006 (commit 2790c39) + US-009 TD-76 resolve tag",
+      "resolved_notes": "US-006 ralph 主动 catch · step7.ts 新增 export const STEP7_LABEL_SCRIPT_TYPE = '选择脚本类型' · Step7.tsx line 145-148 改 {STEP7_LABEL_SCRIPT_TYPE} pattern · commit message tag [TD-76 resolved] · grep 验证 hardcode 选择脚本类型 JSX 0 hit in Step7.tsx · US-009 verify-prd-19.sh §7 检验并 tech-debt.json resolved"
+    },
+    {
+      "id": "TD-77",
+      "title": "PRD-18 US-012 · Step8OptimizeScript.tsx hardcode InfoCard label '优化后文案' / '优化说明'",
+      "description": "ralph 实施 US-012 时 · Step8OptimizeScript.tsx line 164-165 InfoCard props label hardcode 中文 `label=\"优化后文案\" / label=\"优化说明\"` · step8.ts 没 export 对应常量(如 STEP8_OPTIMIZE_OUTPUT_LABELS_2)· 偏离统一常量集中模式。功能 OK(字面渲染正确)· 但同 TD-75/TD-76 hardcode 偏离模式 · InfoCard props label 是边界 case · 不在原 plan-check §2.6.21 button 检查范围 · Opus audit 边界豁免 approve",
+      "scope": [
+        "apps/web/src/components/step8/Step8OptimizeScript.tsx:164-165",
+        "apps/web/src/lib/constants/step8.ts (缺 STEP8_OPTIMIZE_OUTPUT_LABELS_2 export)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟 Step8GeneratePlan 用 STEP8_OUTPUT_MODULES_6.h3Label 常量模式不一致 · PRD-19 启动前 maintenance fix 推荐",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency"
+      ],
+      "created_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_story": "US-012 (Opus audit)",
+      "fix_by": "PRD-19 启动前 maintenance commit 统一 · 或 plan-check §2.6.21 扩范围(§14 Diff-2 apply 后)自动 WARN 拦截",
+      "status": "resolved",
+      "fix_hint": "step8.ts 新建 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · 同时 Step8OptimizeScript.tsx 改 `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard label={label} value={result[id]} />)`",
+      "resolved_in_prd": "prd-19-frontend-backend-bridge",
+      "resolved_at": "2026-05-18T08:40:00",
+      "resolved_in_story": "US-007 (commit 22d1d79)",
+      "resolved_notes": "US-007 ralph 主动 catch · step8.ts 新增 STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{id:optimized_text,label:优化后文案},{id:optimization_notes,label:优化说明}] as const + export Step8OptimizeLabel type + step8.test.ts 9 行单测 · Step8OptimizeScript.tsx:148 改 .map(({id,label}) => <InfoCard label={label} value={result[id]} />) 模式 · commit message tag [TD-77 resolved] · grep 验证 hardcode 优化后文案/优化说明 0 hit in Step8OptimizeScript.tsx"
+    },
+    {
+      "id": "TD-79",
+      "title": "PRD-19 US-003 · STEP1_CTA_LABEL D1=A 字面锁违反('确认并进入下一步' → '生成行业洞察')",
+      "description": "ralph 在 US-003 commit fbb2f6d 主动改 industries.ts · STEP1_CTA_LABEL '确认并进入下一步' → '生成行业洞察' + 新增 STEP1_NEXT_LABEL='进入 IP 定位 →'。PRD-19 §3 明确'不动 PRD-15~18 已实施的 D1=A 字面锁' · 但 ralph 改动 functional 合理(配 stepData.save 真接 PositioningAgent · 旧 label 适用 mock 不适用真 Agent)· Opus 边界 case 豁免 approve。用户需决策 · (A) 回滚字面保留旧锁 / (B) 接受新字面 + 更新 PRD-15/17 source-of-truth + 反例库注入 · 防 PRD-19 之后类似情况复发",
+      "scope": [
+        "apps/web/src/lib/constants/industries.ts:26-27",
+        "tasks/prd-15.md(原 STEP1_CTA_LABEL spec 锁)",
+        "tasks/prd-17.md(继承字面)"
+      ],
+      "impact": "Medium · D1=A 字面锁红线违反(技术) · 但用户体验改善(label 配真 Agent · 'mock' → '生成洞察')· 跨 PRD 一致性影响小(PRD-19 是首个真接 stepData.save)",
+      "severity": "Medium",
+      "categories": [
+        "d1-a-text-content-drift",
+        "design-drift"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-003 (Opus audit · 边界 case 豁免 approve)",
+      "fix_by": "用户决策 · PRD-19 收官 retro 评估(回滚 vs 升级 source-of-truth)",
+      "status": "open",
+      "fix_hint": "(A) 回滚 · industries.ts 改 STEP1_CTA_LABEL 回 '确认并进入下一步' · 删 STEP1_NEXT_LABEL · 接受 mock label 在真 Agent 接入后的语义偏差; (B) 升级 · 保留新 label · 更新 tasks/prd-15.md + prd-17.md 字面锁记录 · 反例库注入 'mock label → 真 Agent label evolution' 反例 · 防 PRD-20+ 类似 case 复发"
+    },
+    {
+      "id": "TD-80",
+      "title": "PRD-19 US-003 · Step1/Step3/Step3b 新引入 7 hardcode 中文 h2/h3 section header + 1 Button",
+      "description": "ralph 在 US-003 commit fbb2f6d 改造 3 page · result render 区新加 7 hardcode 中文 section header + 1 Button · '行业洞察报告'/'市场分析'/'竞争程度'/'定位建议'/'账号包装方案'/'专属人设方案' + Step3 line 470 '确认优化' Button。plan-check §2.6.21 扩范围(PRD-18 retro Diff-2)定义此类 hardcode 应 WARN + 常量化 · 跟 TD-76/77 同模式 · ralph 实施时未 catch(因 PRD AC 未显式锁这些字面)",
+      "scope": [
+        "apps/web/src/pages/step/Step1.tsx:273,276,282,288",
+        "apps/web/src/pages/step/Step3.tsx:393,470",
+        "apps/web/src/pages/step/Step3b.tsx:376",
+        "apps/web/src/lib/constants/industries.ts(需新增 STEP1_RESULT_H2/H3 常量)",
+        "apps/web/src/lib/constants/step3.ts(需新增 STEP3_RESULT_H2 + STEP3_OPTIMIZE_CONFIRM_BUTTON 常量)",
+        "apps/web/src/lib/constants/step3b.ts(需新增 STEP3B_RESULT_H2 常量)"
+      ],
+      "impact": "Low · 字面正确 + UI 渲染正确 · 不阻断功能 · 但跟字面常量集中模式不一致 · plan-check §2.6.21 扩范围检查会 WARN · TD 跟 TD-76/77 同模式 · 累积",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "consistency",
+        "hardcode-label"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-003 (Opus audit)",
+      "fix_by": "US-009 verify-prd-19.sh fix 一并清(继承 TD-76/77 fix 模式)· 或 PRD-20 maintenance",
+      "status": "open",
+      "fix_hint": "industries.ts 新增 STEP1_RESULT_H2='行业洞察报告' + STEP1_RESULT_H3_3 array · step3.ts 新增 STEP3_RESULT_H2='账号包装方案' + STEP3_OPTIMIZE_CONFIRM_BUTTON='确认优化' · step3b.ts 新增 STEP3B_RESULT_H2='专属人设方案' · 3 page 各 import + 用常量"
+    },
+    {
+      "id": "TD-81",
+      "title": "PRD-19 US-005 · Step5TopicGrid.tsx LD-009 临时双写 backward compat(Step7 PRD-18 hardcode 兼容)",
+      "description": "ralph 在 US-005 commit 6a9a2a1 实施 Step5TopicGrid.tsx · handleTopicClick 双写 LS · (1) 新 namespaced key `aiip_memory_acc_${accountId}_selected_topic` 严守 LD-009(2) old `acc_step5_selected_topic` backward compat 给 Step7(PRD-18 实施 · 还在 hardcode 读老 key)· US-006(Step6+Step7 真接)必须 catch · 改 Step7 用 readOtherStep(accountId, 'selected_topic') + 删除 Step5TopicGrid:76 backward compat hardcode setItem · 跟 TD-78 partial 模式同类",
+      "scope": [
+        "apps/web/src/components/step5/Step5TopicGrid.tsx:69-77",
+        "apps/web/src/pages/step/Step7.tsx(US-006 时需改 selected_topic 读取路径)"
+      ],
+      "impact": "Low · dead code · Step7 已 migrate 不再需要 backward compat · 2 lines 浪费 < 1ms LS write · 不影响功能 · US-006 漏 catch · 留 US-009 fix",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "ld-009-partial",
+        "backward-compat-transient"
+      ],
+      "created_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-005 (Opus audit · 边界 case 豁免 approve)",
+      "fix_by": "US-009(US-006 仅 partial fix · Step7 已 migrate readOtherStep selected_topic · 但 Step5TopicGrid backward compat 双写未删 · US-009 verify-prd-19.sh 一并清)",
+      "status": "open",
+      "fix_hint": "(1) Step5TopicGrid.tsx:73-76 删除 backward compat · 改 ternary 为 `namespacedKey === null ? return : setItem(namespacedKey, ...)` · 只保留 1 次 setItem · (2) 删 comment line 75 · (3) grep apps/web/src/ 'acc_step5_selected_topic' 0 hit 验证",
+      "partial_fix_note": "US-006 commit 2790c39 · Step7.tsx:52 已 readOtherStep(accountId, \"selected_topic\") migrate · 但 Step5TopicGrid.tsx 76 backward compat 双写未删(ralph 漏 catch · over-defensive)· 改 fix_by 至 US-009 verify-prd-19.sh 一并清"
+    },
+    {
+      "id": "TD-82",
+      "title": "PRD-18 US-013 · e2e/prd-18-step-4-5-6-7-8.spec.ts test3 Step5 SSE pre-existing fail(US-008 5 retry catch · 不是 US-008 引入)",
+      "description": "PRD-18 US-013 commit f521761 创建 e2e/prd-18-step-4-5-6-7-8.spec.ts 时 test3 'Step 5 → 5 tabs 100 选题' 已 FAIL · 期望 5 类 Tab(流量型/变现型/人设型/认知型/案例型)在 30s 内全部 visible · 实际 getByRole('tab', { name: '变现型' }) timeout 30s · 根因 · test3 假设真后端 SSE 完整跑 + 5 chunks · 但 dev 环境 fallback mock(TopicAgent fallback 返回静态 100 选题 · 不真触发 5 SSE 'done' chunks)· tab 元素被 ralph SSE subscription enabled 控制 · fallback path 一次性返回 5 类 100 选题但不模拟 5 chunks 逐 tab 出现。PRD-18 我审 US-013 时 zero-regression 没 catch(可能 e2e 跑过但 result 部分 fail · 没明示)· US-008 5 retry 全同模式 FAIL · 排除 US-008 引入 · pre-existing TD 豁免 approve",
+      "scope": [
+        "apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:120-175 (test3 entire)",
+        "apps/web/src/pages/step/Step5.tsx (SSE fallback path 不 fire 5 chunks issue)",
+        "apps/api/src/specialists/TopicAgent.ts (fallback 返回静态 100 选题 vs 真 5 chunks)"
+      ],
+      "impact": "Medium · zero-regression e2e 测试假绿灯(PRD-18 收尾时 + PRD-19 US-008 5 retry 验证均 fail · 不破坏主功能 · 但暴露 fallback mode SSE 测试覆盖不全)· 5 PRD 累计 fallback path 跟真 SSE path 测试不对称 · 长期 risk",
+      "severity": "Medium",
+      "categories": [
+        "pre-existing-test-debt",
+        "e2e-fallback-coverage",
+        "test-design-flaw"
+      ],
+      "created_in_prd": "prd-18-step-4-4b-5-6-7-8",
+      "detected_in_prd": "prd-19-frontend-backend-bridge",
+      "detected_in_story": "US-008 (5 retry max + Opus audit · pre-existing TD 豁免 approve)",
+      "fix_by": "US-009 verify-prd-19.sh fix 或 PRD-20 maintenance",
+      "status": "open",
+      "fix_hint": "(A) 修 PRD-18 test3 · 加 `test.skip(!process.env.OPENAI_API_KEY, 'SSE真后端测试 · fallback mode 不模拟 5 chunks 不可测')` 或减阈值 5s; (B) 修 Step5 fallback path · 模拟 5 SSE 'done' chunks 每 1-2s · 让 5 tab 渐进 visible; (C) 修 TopicAgent fallback · 5 chunks 而非 1 次性返回 100 选题; 推荐 (A) test.skip 最快 + 留 PRD-20 真后端集成测时再 (B/C) 完整 fix",
+      "pre_existing_confirm": "scripts/ralph/verify-artifacts/US-008/prd-17-18-e2e.stdout.txt line 4 显示 US-008 第一次验证前 test3 已 ✘ · ralph 5 retry 同模式 FAIL · git log commit f521761 (PRD-18 US-013) 创建 spec 时已含此 bug · 排除 US-008 引入"
     }
   ],
-  "last_updated": "2026-05-09T23:06:52"
+  "last_updated": "2026-05-18T11:30:00",
+  "total": 81
 }

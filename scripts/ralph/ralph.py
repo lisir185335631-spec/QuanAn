@@ -51,7 +51,36 @@ TIMEOUT_SECONDS = 30 * 60          # 开发 Agent 超时：30 分钟
 VALIDATOR_TIMEOUT_SECONDS = 60 * 60  # Validator 超时：60 分钟
 MAX_BACKUPS = 10                   # prd.json 备份保留数量
 AUDIT_POLL_INTERVAL = 30           # 审计门禁轮询间隔（秒）
-AUDIT_TIMEOUT_SECONDS = 10800      # 审计门禁超时：3 小时（2026-04-21 升级: 支持 high-risk 深审 + 中途修机制）
+AUDIT_TIMEOUT_SECONDS = 10800      # 审计门禁超时：3 小时
+# RCA-006 修复(2026-05-15) · timeout 不再 silent skip · daemon 退出 · audit-gate.json 保留 pending
+# 用户介入后可 ralph-tools.py approve / reject / force-reject · 或重启 daemon 自动崩溃恢复
+# 详见 .agents/rca/RCA-006-audit-timeout-bypass.md
+
+
+class AuditTimeoutError(Exception):
+    """RCA-006(2026-05-15) · audit timeout 触发 · daemon 必须退出 · 不绕过 audit · 严格 Audit Gate 零容忍"""
+    pass
+
+
+class RateLimitDetected(Exception):
+    """PRD-14 retro M-2 (2026-05-15) · Validator 撞 Anthropic rate limit · daemon 退出 + Step 4.5 路径触发"""
+    pass
+
+
+def _detect_rate_limit_in_validator_output(stdout: str) -> bool:
+    """PRD-14 retro M-2 (2026-05-15) · 检测 Validator stdout 含 Anthropic rate limit 标记
+    避免 ralph 进 retry hell · 浪费 30-90 min 等 reset
+    用法: run_validator 异常退出后 · 检测 stdout · 若命中 → raise RateLimitDetected
+    """
+    import re
+    patterns = [
+        r"You've hit your limit",
+        r"resets \d+(am|pm)",
+        r"rate limit exceeded",
+        r"You have exceeded the rate limit",
+    ]
+    return any(re.search(p, stdout, re.IGNORECASE) for p in patterns)
+
 MAX_RETRIES = 5                    # 单个 story 最大重试次数（确定性兜底，不依赖 LLM）
 MAX_PROGRESS_BYTES = 512 * 1024    # progress.txt 最大保留 512KB（超出时截断旧内容）
 
@@ -117,10 +146,12 @@ def _get_cost_log_path() -> "Path":
     return COST_LOG_FILE
 
 
-def _check_claude_health(timeout: int = 20) -> bool:
-    """M-2 + RCA-004 (PRD-7 US-005 · 2026-05-10 · 全局 sync): 20s 内 'say OK' 测试 · 防 claude --print 系统级 hang
-    · timeout 5s 在 PRD-6 实测会误杀 (claude --print cold start ≈ 10s · Mac M3 + 健康 CLI)
-    · 20s 给 2x 余量 · 真 hang (>30 min) 仍能快速探测
+def _check_claude_health(timeout: int = 45) -> bool:
+    """M-2 + RCA-004 (PRD-7 US-005 · 2026-05-10 · 全局 sync) + PRD-15 retro M-3 (QuanQn 2026-05-16 · cold start race fix):
+    · 45s 内 'say OK' 测试 · 防 claude --print 系统级 hang
+    · timeout 5s 在 PRD-6 实测会误杀 (claude --print cold start ≈ 10-15s · Mac M3 + 健康 CLI)
+    · timeout 20s 在 QuanQn PRD-15 US-001 实测仍会偶撞边界(cold + 高负载 + Anthropic API 慢)→ retryCount 累加 5 次 BLOCKED bug
+    · 45s 给 3x cold start 余量 · 真 hang (>30 min) 仍能快速探测
     返回 True if claude CLI 健康 · False if hang/timeout/error.
     """
     if AGENT == "codex":
@@ -873,8 +904,10 @@ def _write_path_b_audit_gate(story_id: str, commit_hash: str) -> bool:
 def wait_for_audit(story_id: str, timeout: int | None = None) -> str:
     """
     轮询 audit-gate.json，等待 Opus 写入 approved 或 rejected。
-    返回 "approved"、"rejected" 或 "timeout"。
-    timeout 默认使用 AUDIT_TIMEOUT_SECONDS（1 小时）。
+    返回 "approved" 或 "rejected"。
+    timeout 默认使用 AUDIT_TIMEOUT_SECONDS（3 小时）。
+    RCA-006 修复(2026-05-15) · timeout 触发 raise AuditTimeoutError · daemon 必须退出
+    audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复
     """
     max_wait = timeout if timeout is not None else AUDIT_TIMEOUT_SECONDS
     poll_count = 0
@@ -896,10 +929,20 @@ def wait_for_audit(story_id: str, timeout: int | None = None) -> str:
             remaining_min = max(0, int((max_wait - elapsed) // 60))
             print(f"  [WAIT] 已等待 {elapsed_min} 分钟，剩余 {remaining_min} 分钟超时 | 等待 Opus 审计 {story_id}...")
 
-        # 超时保护：防止无限等待
+        # 超时保护:RCA-006(2026-05-15)修复 · 不再 silent skip · daemon 退出
         if elapsed >= max_wait:
-            print(f"  [WARN]  审计门禁等待超时 ({int(elapsed // 60)} 分钟)，{story_id} 跳过审计继续执行")
-            return "timeout"
+            elapsed_min = int(elapsed // 60)
+            print(f"  [CRITICAL] 审计门禁等待超时 ({elapsed_min} 分钟) · {story_id} 必须 manual review")
+            print(f"             audit-gate.json 保留 pending · 用户介入选项:")
+            print(f"             1. python scripts/ralph/ralph-tools.py approve · 重启 daemon 继续")
+            print(f"             2. python scripts/ralph/ralph-tools.py reject \"反馈\" · 重启 daemon · retry")
+            print(f"             3. python scripts/ralph/ralph-tools.py force-reject \"原因\" · 重启 daemon · 跳过深审")
+            print(f"             4. python scripts/ralph/ralph-tools.py block {story_id} \"原因\" · 重启 daemon · 跳此 story")
+            print(f"             详见 .agents/rca/RCA-006-audit-timeout-bypass.md")
+            raise AuditTimeoutError(
+                f"Audit timeout for {story_id} after {elapsed_min}min · "
+                f"daemon must exit (RCA-006 zero-tolerance)"
+            )
 
         time.sleep(AUDIT_POLL_INTERVAL)
 
@@ -945,19 +988,9 @@ def handle_audit_result(story_id: str) -> None:
 
         clear_audit_gate()
 
-    elif status == "pending":
-        # wait_for_audit 返回 "timeout" 时，gate 仍为 pending
-        # 记录超时事件，清除门禁，让 Ralph 继续（story 保持 passes=true）
-        print(f"  [ALARM] {story_id} 审计超时，保留当前状态继续执行")
-        prd = read_prd()
-        if prd:
-            s = get_story_by_id(prd, story_id)
-            if s:
-                existing_notes = s.get("notes", "").strip()
-                new_note = f"[审计超时] 等待超过 {AUDIT_TIMEOUT_SECONDS // 60} 分钟，自动跳过审计"
-                s["notes"] = f"{existing_notes}\n{new_note}".strip() if existing_notes else new_note
-                write_prd_safe(prd)
-        clear_audit_gate()
+    # RCA-006(2026-05-15)修复 · status='pending' branch 删除 silent skip 逻辑
+    # wait_for_audit 现在 raise AuditTimeoutError · main 流程 catch 后 sys.exit(2)
+    # audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复
 
 
 # ─────────────────────────────────────────────
@@ -1278,13 +1311,18 @@ def run_developer(iteration: int, story_id: str | None) -> tuple[bool, bool]:
         print(f"[FAIL] 错误: {CLAUDE_INSTRUCTION_FILE} 不存在")
         return False, True
 
-    # M-2 (PRD-5 RCA-003): claude CLI 健康检测 · 防 30 min 0 bytes hang
+    # M-2 (PRD-5 RCA-003) + PRD-15 retro M-3 (QuanQn 2026-05-16 · cold start race fix):
+    #   旧: 2 次 fail 即 crashed=True 累 retryCount → cold start 偶撞 5 次 BLOCKED bug
+    #   新: 3 次 retry · 累计 wait ~210s · 真 hang(>5 min)才累 retryCount · 类比 _is_network_error 路径
     if not _check_claude_health():
-        print(f"[WARN] claude CLI health check 失败 · sleep 60s 重试 1 次")
-        time.sleep(60)
+        print(f"[WARN] claude CLI health check 失败 (1/3) · sleep 90s 等 cold start cache 暖")
+        time.sleep(90)
         if not _check_claude_health():
-            print(f"[FAIL] claude CLI 2 次 health check 全失败 · 标记 crashed (避免 30 min hang)")
-            return False, True  # crashed=True · 算 retryCount 但 1 min 内 fail-fast
+            print(f"[WARN] claude CLI health check 失败 (2/3) · sleep 120s 最后重试 (cold start race 通常 2-3 min 自愈)")
+            time.sleep(120)
+            if not _check_claude_health():
+                print(f"[FAIL] claude CLI 3 次 health check 全失败 (累计 wait 210s) · 真 hang · 标记 crashed")
+                return False, True  # crashed=True · 真 hang 才累 retryCount · 不是 cold start race
 
     # TD-009 (PRD-5 retro): 网络故障不算 retryCount · exponential backoff · max 3 次内重试
     timed_out = False
@@ -1315,13 +1353,18 @@ def run_validator(iteration: int, story_id: str | None) -> None:
         print(f"[WARN]  警告: {VALIDATOR_INSTRUCTION_FILE} 不存在，跳过验证")
         return
 
-    # M-2 (PRD-5 RCA-003): claude CLI 健康检测 · 防 hang
+    # M-2 (PRD-5 RCA-003) + PRD-15 retro M-3 (QuanQn 2026-05-16 · cold start race fix):
+    #   旧: 2 次 fail skip validation · 但 main 路径 validator_failed → 累 retryCount
+    #   新: 3 次 retry · 累计 wait ~210s · 真 hang 才 skip · 类比 _is_network_error 路径
     if not _check_claude_health():
-        print(f"[WARN] claude CLI health check 失败 · sleep 60s 重试 1 次")
-        time.sleep(60)
+        print(f"[WARN] claude CLI health check 失败 (1/3) · sleep 90s 等 cold start cache 暖")
+        time.sleep(90)
         if not _check_claude_health():
-            print(f"[FAIL] claude CLI 2 次 health check 全失败 · 跳过本轮 validation (避免 hang)")
-            return
+            print(f"[WARN] claude CLI health check 失败 (2/3) · sleep 120s 最后重试")
+            time.sleep(120)
+            if not _check_claude_health():
+                print(f"[FAIL] claude CLI 3 次 health check 全失败 (累计 wait 210s) · 跳过本轮 validation")
+                return
 
     # TD-009 (PRD-5 retro): 网络故障不算 retryCount · max 3 次重试
     duration = 0.0
@@ -1340,6 +1383,27 @@ def run_validator(iteration: int, story_id: str | None) -> None:
     # 安全措施：Validator 未正常完成时（超时 / 非零退出 / 启动异常），不能信任 passes 状态
     # 同时递增 retryCount，防止 Validator 持续失败导致无限循环
     validator_failed = timed_out or exit_code is None or exit_code != 0
+
+    # PRD-14 retro M-2 (2026-05-15) · Validator 撞 Anthropic rate limit 检测
+    # 不算 ralph 错 · 是 infra block · daemon 退出 + 触发 Step 4.5 路径(Opus 直审 commit)
+    if validator_failed and exit_code == 1:
+        try:
+            output_log = SCRIPT_DIR / "ralph-output.log"
+            if output_log.exists():
+                tail = output_log.read_text(encoding='utf-8', errors='ignore')[-5000:]
+                if _detect_rate_limit_in_validator_output(tail):
+                    print(f"  [RATE-LIMIT] Validator 撞 Anthropic rate limit · 触发 Step 4.5 路径")
+                    print(f"  daemon 退出 · 不累加 retryCount(rate limit 是 infra block · 非 ralph 错)")
+                    print(f"  用户介入选项:")
+                    print(f"  1. Opus 走 OPUS-AUDIT-CHEATSHEET 5 步深审 commit · 手 patch prd.json passes=true")
+                    print(f"  2. 等 rate limit reset 后重启 daemon · ralph 重新 dev")
+                    print(f"  3. force-reject + 重启 daemon · ralph retry(等 reset 后)")
+                    raise RateLimitDetected(f"Validator hit Anthropic rate limit for {story_id}")
+        except RateLimitDetected:
+            raise
+        except Exception as e:
+            print(f"  [WARN] rate limit 检测异常: {e} · 继续 normal validator failed flow")
+
     if validator_failed:
         if timed_out:
             reason = "超时"
@@ -1611,8 +1675,22 @@ def main():
                         print(f"\n  [LOCK] 检测到未完成的审计门禁: {pending_story}，恢复等待...")
                         write_lock(i, "waiting_audit", pending_story)
                         dashboard.set_state(phase="waiting_audit")
-                        wait_for_audit(pending_story)
-                        handle_audit_result(pending_story)
+                        try:
+                            wait_for_audit(pending_story)
+                            handle_audit_result(pending_story)
+                        except AuditTimeoutError as e:
+                            # RCA-006(2026-05-15) · audit timeout · daemon 退出
+                            print(f"\n[DAEMON EXIT] {e}")
+                            print(f"  audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复")
+                            try:
+                                with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                                    from datetime import datetime as _dt
+                                    f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {pending_story} · [RCA-006 DAEMON EXIT]\n")
+                                    f.write(f"- audit timeout(崩溃恢复时触发) · daemon 已退出\n")
+                                    f.write(f"- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md\n---\n\n")
+                            except Exception:
+                                pass
+                            sys.exit(2)
                 elif gate and gate.get("status") in ("approved", "rejected"):
                     pending_story = gate.get("story_id", "?")
                     handle_audit_result(pending_story)
@@ -1677,8 +1755,22 @@ def main():
                         if not NO_AUDIT_GATE and _write_path_b_audit_gate(current_story, commit_hash):
                             write_lock(i, "waiting_audit", current_story)
                             dashboard.set_state(phase="waiting_audit")
-                            wait_for_audit(current_story)
-                            handle_audit_result(current_story)
+                            try:
+                                wait_for_audit(current_story)
+                                handle_audit_result(current_story)
+                            except AuditTimeoutError as e:
+                                # RCA-006(2026-05-15) · PATH-B audit timeout · daemon 退出
+                                print(f"\n[DAEMON EXIT] {e}")
+                                print(f"  audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复")
+                                try:
+                                    with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                                        from datetime import datetime as _dt
+                                        f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {current_story} · [RCA-006 DAEMON EXIT · PATH-B]\n")
+                                        f.write(f"- audit timeout(PATH-B 触发) · daemon 已退出\n")
+                                        f.write(f"- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md\n---\n\n")
+                                except Exception:
+                                    pass
+                                sys.exit(2)
                         continue
                     # PATH-B 未命中 (无 commit 或已尝试过 PATH-B) → 原有 BLOCKED 行为
                     s_check["blocked"] = True
@@ -1754,7 +1846,22 @@ def main():
             # ─── 第二步：验证 ───
             write_lock(i, "validating", current_story)
             dashboard.set_state(phase="validating")
-            run_validator(i, current_story)
+            try:
+                run_validator(i, current_story)
+            except RateLimitDetected as e:
+                # PRD-14 retro M-2 (2026-05-15) · Validator 撞 rate limit · daemon 退出走 Step 4.5
+                print(f"\n[DAEMON EXIT] {e}")
+                print(f"  代码已 commit(若有) · 走 Opus Step 4.5 直审路径")
+                try:
+                    with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                        from datetime import datetime as _dt
+                        f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {current_story} · [PRD-14 M-2 RATE-LIMIT DAEMON EXIT]\n")
+                        f.write(f"- Validator 撞 Anthropic rate limit · daemon 退出(不累加 retryCount)\n")
+                        f.write(f"- 触发 Step 4.5 路径 · Opus 深审 commit · 手 patch prd.json passes=true\n")
+                        f.write(f"- 详见 AGENTS.md §11.7.4 + 全局 CLAUDE.md\n---\n\n")
+                except Exception:
+                    pass
+                sys.exit(2)
 
             # H2: 强制重新读取 prd.json（Validator 可能已修改）
             # ─── 第三步：审计门禁 ───
@@ -1768,11 +1875,22 @@ def main():
                         if gate_written:
                             write_lock(i, "waiting_audit", current_story)
                             dashboard.set_state(phase="waiting_audit")
-                            result = wait_for_audit(current_story)
-                            if result == "timeout":
-                                # 审计超时，handle_audit_result 会处理 pending 状态
-                                pass
-                            handle_audit_result(current_story)
+                            try:
+                                wait_for_audit(current_story)
+                                handle_audit_result(current_story)
+                            except AuditTimeoutError as e:
+                                # RCA-006(2026-05-15) · 主审计 timeout · daemon 退出零容忍
+                                print(f"\n[DAEMON EXIT] {e}")
+                                print(f"  audit-gate.json 保留 pending · 用户介入后重启 daemon 自动崩溃恢复")
+                                try:
+                                    with open(PROGRESS_FILE, 'a', encoding='utf-8') as f:
+                                        from datetime import datetime as _dt
+                                        f.write(f"\n## {_dt.now().strftime('%Y-%m-%d %H:%M')} - {current_story} · [RCA-006 DAEMON EXIT]\n")
+                                        f.write(f"- audit timeout(主审计触发) · daemon 已退出\n")
+                                        f.write(f"- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md\n---\n\n")
+                                except Exception:
+                                    pass
+                                sys.exit(2)
 
             # H3: 结构化进度标记 — iteration 结束
             iter_elapsed = time.time() - iter_start

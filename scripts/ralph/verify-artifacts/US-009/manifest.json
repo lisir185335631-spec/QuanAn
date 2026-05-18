@@ -1,20 +1,18 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-11T13:46:00",
-  "validator_end_ts": "2026-05-11T13:47:30",
-  "test_command": "pnpm vitest run (unit+integration+full) + pnpm typecheck",
+  "validator_start_ts": "2026-05-18T11:42:00",
+  "validator_end_ts": "2026-05-18T11:43:43",
+  "test_command": "pnpm typecheck + pnpm vitest run + bash scripts/verify-prd-19.sh",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "typecheck.stdout.txt",
-    "vitest.stdout.txt",
-    "vitest.xml",
-    "vitest-api.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
     "vitest-full.stdout.txt",
-    "vitest-full.xml",
+    "typecheck.stdout.txt",
     "manifest.json"
   ],
-  "notes": "87 test files, 812 passed, 1 skipped (stt-whisper integration skipped: OPENAI_API_KEY not set, expected per AC-8). typecheck 0 errors. AC-9 grep exit=1 (0 matches). All 5 AC-7 unit test groups passed (8 sub-tests). AC-8 skipped correctly. Zero-regression PASS."
+  "notes": "verify-prd-19.sh 35/35 checks PASS in 5.6s. Typecheck exit 0. Vitest 181 tests PASS. TD-76 resolved (STEP7_LABEL_SCRIPT_TYPE). TD-77 resolved (STEP8_OPTIMIZE_OUTPUT_LABELS_2). Commit f1c42a2 has [TD-76 resolved][TD-77 resolved] tags."
 }

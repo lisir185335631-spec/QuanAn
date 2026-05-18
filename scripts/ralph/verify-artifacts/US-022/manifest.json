@@ -1,0 +1,16 @@
+{
+  "story_id": "US-022",
+  "validator_start_ts": "2026-05-13T05:31:20",
+  "validator_end_ts": "2026-05-13T05:39:00",
+  "test_command": "pnpm vitest run tests/unit/ apps/api/src/ + pnpm typecheck + bash scripts/verify-prd-11.sh SKIP_INTEGRATION=1 + agent-browser 6 pages",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "artifacts": [
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt"
+  ],
+  "notes": "Unit tests: 1259 passed / 0 failures / 0 errors (pytest-full.xml). pnpm typecheck: 0 errors. verify-prd-11.sh: 33 PASS / 0 FAIL / 1 WARN (lint pre-existing import/order + unsafe-any in test files unrelated to US-022) / 1 SKIP (SKIP_INTEGRATION=1 — live API server not running). Browser: 6 admin pages (nsm/users/accounts/cost/audit/invites) all load with DenseTable virtual rows. onSort confirmed wired via handleFiltersChange in users+accounts pages (AC-14). audit-self-test.sh: 6 PASS 0 FAIL. TD-exemption: pnpm test full-suite has 9 ECONNREFUSED failures in tests/integration/api/{auth,trace,voice-chat-flow} — pre-existing from prior PRDs, require live API server at port 3000, no relation to US-022 changes."
+}

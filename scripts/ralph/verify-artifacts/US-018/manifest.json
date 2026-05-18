@@ -1,0 +1,19 @@
+{
+  "story_id": "US-018",
+  "validator_start_ts": "2026-05-13T02:46:00",
+  "validator_end_ts": "2026-05-13T02:58:00",
+  "test_command": "pnpm vitest run audit-forensic.test.ts (9/9) + pnpm vitest run full (1273 passed) + pnpm typecheck (0 errors) + pnpm audit:redlines-admin (ALL PASS)",
+  "exit_code": 0,
+  "zero_regression": "PASS",
+  "verdict": "PASS",
+  "failing_ac": null,
+  "artifacts": [
+    "pytest.xml",
+    "pytest.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "typecheck.stdout.txt",
+    "redlines-admin.txt"
+  ],
+  "notes": "zero_regression: vitest 1273 passed | 9 failed (pre-existing TD, same 9 failures present from US-016/US-017: auth.test.ts + trace.test.ts + auth.me.test.ts integration tests need running API server, ECONNREFUSED). US-018 added 1 test file (audit-forensic.test.ts, 9 tests), all 9 pass. typecheck: 0 errors across 6 packages. redlines-admin: ALL PASS 5 LD-A + 6 R-A 0 violations. AC-15 browser: login page screenshot captured (validator-us-018-pass-1.png), PDF export button code-verified (apps/admin/src/pages/audit/index.tsx:543), PdfExportDialog with reason+caseNumber code-verified. Full E2E blocked by API server not running (same infrastructure limitation as US-017, ERR_CONNECTION_REFUSED). AC-4 detail page not implemented (AC explicitly marked '可选'). TD exemption: 9 pre-existing integration test failures, evidence: same count in US-016/US-017 artifacts."
+}

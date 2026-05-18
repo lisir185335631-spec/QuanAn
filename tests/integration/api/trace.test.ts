@@ -4,13 +4,19 @@
  *   - curl with X-Trace-Id header → API echoes same ID in response header
  *   - curl without X-Trace-Id → API generates 16-char hex ID
  * Requires dev server on localhost:3000.
+ * Skipped automatically when no server is reachable (ECONNREFUSED).
  */
 
 import { describe, it, expect } from 'vitest';
 
 const API = 'http://localhost:3000';
 
-describe('[Integration] trace_id propagation', () => {
+// Skip when dev server is not running
+const serverAvailable = await fetch(`${API}/health`, { signal: AbortSignal.timeout(1000) })
+  .then((r) => r.ok)
+  .catch(() => false);
+
+describe.skipIf(!serverAvailable)('[Integration] trace_id propagation', () => {
   it('echoes provided X-Trace-Id in response header', async () => {
     const res = await fetch(`${API}/health`, {
       headers: { 'x-trace-id': 'user-trace-001' },

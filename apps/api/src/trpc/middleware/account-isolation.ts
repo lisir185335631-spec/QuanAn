@@ -16,7 +16,7 @@ import { middleware, publicProcedure } from '@/trpc/trpc';
 
 import type { PrismaClient } from '@prisma/client';
 
-export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next }) => {
+export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next, type }) => {
   // AC-5: global procedures bypass RLS
   if (meta?.isGlobal) {
     return next();
@@ -28,6 +28,19 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next })
   if (activeAccountId === null || activeAccountId === undefined) {
     logger.warn({ traceId: ctx.traceId }, 'no_active_account');
     throw new TRPCError({ code: 'FORBIDDEN', message: 'no_active_account' });
+  }
+
+  // Subscriptions: $transaction commits as soon as the generator is returned (before it yields),
+  // so subsequent DB writes inside the generator fail with "Transaction already closed".
+  // Use connection-level SET (is_local=false) instead — safe because each SSE request is a
+  // dedicated HTTP connection that is closed when the subscription ends.
+  if (type === 'subscription') {
+    await ctx.prisma.$executeRaw`SET ROLE quanqn_app`;
+    await ctx.prisma.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, false)`;
+    if (user?.id !== null && user?.id !== undefined) {
+      await ctx.prisma.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, false)`;
+    }
+    return next();
   }
 
   // set_config(name, value, is_local=true) is transaction-scoped (equivalent to SET LOCAL).

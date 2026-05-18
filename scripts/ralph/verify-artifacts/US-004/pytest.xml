@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="31" failures="0" errors="0" time="0.108">
+    <testsuite name="tests/unit/web/pages/Monetization.test.tsx" timestamp="2026-05-15T18:28:08.285Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.000807708">
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; has 100+ lines (stub replaced)" time="0.000089583">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; uses StepForm with stepKey step4b" time="0.000051042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; imports and uses MonetizationInputSchema" time="0.000049917">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; calls trpc.monetization.generate.useMutation" time="0.000051">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx URL state + localStorage (AC-3) &gt; uses useSearchParams for URL state" time="0.000043167">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx URL state + localStorage (AC-3) &gt; uses getToolLsKey for monetization draft LS key" time="0.000059083">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx URL state + localStorage (AC-3) &gt; persists done state to URL (?done=1)" time="0.000045291">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx result display &gt; renders StepResult with stepKey step4b" time="0.000042125">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx result display &gt; StepResult step4b renders currentAnalysis ladder revenueStructure successCases" time="0.000054583">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx result display &gt; supports onRetry to clear result" time="0.000044292">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; monetization.schema.ts exports MonetizationInputSchema" time="0.000056541">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; MonetizationInputSchema re-exports Step4bInputSchema fields" time="0.000031875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; monetization router generate procedure exists" time="0.000038833">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; monetization router registered in app router" time="0.000038291">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/pages/PresentStyles.test.tsx" timestamp="2026-05-15T18:28:08.286Z" hostname="returndeMacBook-Pro.local" tests="17" failures="0" errors="0" skipped="0" time="0.002166542">
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; has 80+ lines (stub replaced)" time="0.000379042">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; has textarea for 文案内容" time="0.000109666">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; has platform select (平台)" time="0.0000815">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; calls trpc.presentStyles.recommend.useMutation" time="0.000049917">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx URL state + localStorage (AC-3) &gt; uses useSearchParams for URL state" time="0.000049209">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx URL state + localStorage (AC-3) &gt; uses getToolLsKey for presentStyles draft LS key" time="0.000064583">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx URL state + localStorage (AC-3) &gt; persists text and platform to URL params" time="0.000064541">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; shows 图文/短视频/直播口播/长图文/漫画 style types" time="0.000067541">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; shows result container after submission" time="0.000051375">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; has example text in style cards" time="0.000052125">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; supports 重新分析 retry button" time="0.000050583">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; text &lt; 10 chars → zod fail with Chinese error" time="0.000434583">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; valid input → zod pass" time="0.000046875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; invalid platform → zod fail" time="0.000137084">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; presentStyles router registered in app router" time="0.00005625">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; presentStyles router has recommend procedure" time="0.000045041">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; presentStyles.schema.ts defines PRESENT_STYLE_TYPES with 5 types" time="0.000066625">
+        </testcase>
+    </testsuite>
+</testsuites>

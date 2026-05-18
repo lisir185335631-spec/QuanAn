@@ -23,13 +23,18 @@
     "test": "vitest run",
     "test:unit": "vitest run --dir tests/unit",
     "test:integration": "vitest run --dir tests/integration",
+    "test:admin-integration": "vitest run tests/integration/admin/",
     "test:e2e": "playwright test",
     "test:llm-judge": "tsx tests/llm-judge/runner.ts",
     "test:judge": "vitest run --config vitest.judge.config.ts",
     "schema:diff": "tsx scripts/schema-diff.ts",
     "audit:redlines": "bash scripts/audit-redlines.sh",
+    "audit:redlines-admin": "bash scripts/audit-redlines-admin.sh",
     "audit:ld": "bash scripts/audit-ld.sh",
     "audit:all": "bash scripts/audit-all.sh",
+    "audit:approval-gates": "tsx scripts/audit-approval-gates.ts",
+    "audit:admin-rls-tables": "bash scripts/audit-admin-rls-tables.sh",
+    "audit:admin-rls": "bash scripts/audit-admin-rls-tables.sh",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
@@ -42,12 +47,16 @@
   "devDependencies": {
     "@playwright/test": "^1.48.0",
     "@testcontainers/postgresql": "^10.0.0",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.0",
     "@types/nock": "^11.1.0",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.3",
@@ -56,6 +65,7 @@
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "husky": "^9.1.0",
+    "jsdom": "^25.0.0",
     "lint-staged": "^15.2.0",
     "nock": "^14.0.15",
     "prettier": "^3.3.0",
@@ -74,5 +84,11 @@
     "*.{css,json,md}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "18.3.1",
+      "react-dom": "18.3.1"
+    }
   }
 }

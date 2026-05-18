@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="35" failures="0" errors="0" time="0.142">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" timestamp="2026-05-12T18:09:52.335Z" hostname="returndeMacBook-Pro.local" tests="35" failures="0" errors="0" skipped="0" time="0.0088475">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; returns empty timeline + zero summary when no records in any table" time="0.001741208">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; merges records from all 4 tables into timeline" time="0.000334916">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; returns partial timeline when only audit_log has records" time="0.000228042">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; timeline is sorted ascending by createdAt" time="0.000150375">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; summary.spanMs = last.createdAt - first.createdAt" time="0.000177333">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; writes audit logs for cross_account_query and view_trace_timeline" time="0.000679209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; uses $transaction with SET LOCAL (AC-2)" time="0.000152083">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byTraceId &gt; traceId min 8 — shorter string throws ZodError" time="0.000577333">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byUserId &gt; returns timeline and total" time="0.000291959">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byUserId &gt; applies pagination correctly" time="0.000207459">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byUserId &gt; filters by eventCategory when provided" time="0.000155708">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byUserId &gt; filters by time range when startDate/endDate provided" time="0.000160292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byUserId &gt; groups results by eventCategory" time="0.000147959">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; super_admin can call byAdminId without x-actor-mode" time="0.00018">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; readonly_admin with actorMode=legal is allowed" time="0.000204292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; regular admin is forbidden — throws FORBIDDEN" time="0.0002855">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; readonly_admin without actorMode=legal is forbidden" time="0.000116125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; readonly_admin with actorMode=cs (not legal) is forbidden" time="0.000109709">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; high-risk events are flagged with isHighRisk=true" time="0.000102917">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="byAdminId &gt; cross_account_query and security_alert are also high-risk" time="0.000106333">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; returns results matching keyword" time="0.000126292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; SQL special chars in keyword do not throw (prisma contains escapes)" time="0.000273916">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; single-quote keyword with length &gt;= 2 doesn&apos;t throw" time="0.000089459">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; keyword shorter than 2 chars throws ZodError" time="0.000124917">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; keyword longer than 100 chars throws ZodError" time="0.000134542">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; results capped at take:200" time="0.000101292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; uses prisma.contains mode:insensitive (not raw SQL)" time="0.0000875">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; filters by eventCategory when provided" time="0.000100209">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="search &gt; empty results when nothing matches" time="0.000097125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="exportPdf &gt; returns base64 string on success" time="0.000151125">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="exportPdf &gt; returns traceId and caseNumber in response" time="0.000094375">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="exportPdf &gt; calls generateForensicPdf with correct args" time="0.000427583">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="exportPdf &gt; writes export_forensic_pdf audit log" time="0.000193292">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="exportPdf &gt; still succeeds when traceId has no matching records (empty timeline)" time="0.00015825">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit.test.ts" name="exportPdf &gt; passes all 4 table results merged into timeline" time="0.000121791">
+        </testcase>
+    </testsuite>
+</testsuites>

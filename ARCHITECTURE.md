@@ -1949,12 +1949,63 @@ interface CompleteResponse {
 }
 
 // 治理(详见 11/05 LLM 网关)·
-//   · 限流 · token bucket per user
+//   · 限流 · token bucket per user(PRD-13 US-005 加 whitelistExpiresAt bypass)
 //   · 熔断 · 同模型连续 5 次 5xx 切下一档
 //   · 降级 · reasoning → lightweight 自动
 //   · 计费 · tokens × model_price → cost_log
 //   · 审计 · 每次调用全量记 trace
 ```
+
+#### §6.5.1 ContextAssembler 6 路并行 fetch(PRD-13 US-003 升级)
+
+PRD-13 US-003 在 ContextAssembler 加第 6 路 `_fetchActivePrompt` · 跟其他 5 路并行 Promise.allSettled · 实现 prompt 版本运行时切换:
+
+```typescript
+class ContextAssembler {
+  async assemble(req: ContextRequest): Promise<AssembledContext> {
+    // 6 路并行 fetch (5s timeout 各路 · 失败降级注入空段 · 不阻断主流程)
+    const [
+      stepData,       // L2 · stepData (PRD-4)
+      evolutionInsight,  // L4 · evolution_insight 最新一条 (PRD-9)
+      samples,        // L4 · 历史样本 (PRD-4)
+      ragChunks,      // L5 · knowledge_chunk 向量检索 (PRD-7)
+      constants,      // 常量 · 9 步 stepConfig (PRD-4)
+      activePromptContent,  // ★ PRD-13 US-003 新加第 6 路
+    ] = await Promise.allSettled([
+      withTimeout(this._fetchStepData(req.accountId), 5000),
+      withTimeout(getLatestInsight(req.accountId), 5000),
+      withTimeout(this._fetchSamples(req.accountId), 5000),
+      withTimeout(this._fetchRag(req), 5000),
+      withTimeout(this._fetchConstants(), 5000),
+      withTimeout(this._fetchActivePrompt(req.agentId, req.accountId), 5000),  // 新加
+    ]);
+
+    // PRD-13 US-003 AC-9/13 brownfield fallback:
+    // - getActivePromptVersion 返 null(prompt_versions 表无对应记录)→ fallback to SPECIALIST_TEMPLATES
+    // - 旧 templates/*.ts 保留 · 不破坏现有 ContextAssembler 行为
+    const persona = activePromptContent !== null
+      ? activePromptContent
+      : (SPECIALIST_TEMPLATES[req.agentId]?.persona ?? `你是 ${req.agentId}`);
+
+    return this._composeSystemPrompt(req, stepData, constants, evolutionInsight, ragChunks, persona);
+  }
+
+  /**
+   * PRD-13 US-003 · 灰度策略 deterministic hash · D-090
+   * 同 (userId × specialistId) 多次调结果一致 · 用户体验稳定
+   */
+  private async _fetchActivePrompt(agentId, accountId): Promise<string | null> {
+    const version = await getActivePromptVersion(agentId, accountId, 'default');
+    return version?.content ?? null;
+  }
+}
+```
+
+**关键设计**:
+- **6 路并行** · 5s timeout 各路 · Promise.allSettled 不阻断主流程
+- **brownfield 兼容** · prompt_versions 表无记录 → fallback to templates/*.ts(旧行为)
+- **灰度 deterministic** · `md5(userId:specialistId).slice(0,8) % 100 < canaryPct` · 不用 Math.random()
+- **LD-A6 单点写守护** · prompt_versions.status='active' 仅由 `_publishPromptVersionInTx` 修改
 
 ### §6.6 Worker 接口签名(8 个)
 

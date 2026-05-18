@@ -19,6 +19,8 @@ import { inviteRouter } from '@/trpc/routers/invite';
 import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
 import { knowledgeRouter } from '@/trpc/routers/knowledge';
 import { monetizationRouter } from '@/trpc/routers/monetization';
+import { myTopicsRouter } from '@/trpc/routers/myTopics';
+import { presentStylesRouter } from '@/trpc/routers/presentStyles';
 import { privateDomainRouter } from '@/trpc/routers/privateDomain';
 import { stepDataRouter } from '@/trpc/routers/stepData';
 import { sttRouter } from '@/trpc/routers/stt';
@@ -44,6 +46,8 @@ export const appRouter = router({
   videoProduction: videoProductionRouter,
   boomGenerate: boomGenerateRouter,
   monetization: monetizationRouter,
+  myTopics: myTopicsRouter,
+  presentStyles: presentStylesRouter,
   privateDomain: privateDomainRouter,
   diagnosis: diagnosisRouter,
   deepLearning: deepLearningRouter,

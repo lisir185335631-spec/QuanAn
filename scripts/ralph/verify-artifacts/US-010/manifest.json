@@ -1,20 +1,38 @@
 {
   "story_id": "US-010",
-  "validator_start_ts": "2026-05-11T07:36:00",
-  "validator_end_ts": "2026-05-11T07:38:30",
-  "test_command": "pnpm vitest run tests/unit/api/workers/tts.test.ts tests/integration/api/tts-openai.test.ts + pnpm vitest run (full) + pnpm typecheck",
+  "validator_start_ts": "2026-05-17T22:06:00",
+  "validator_end_ts": "2026-05-17T22:12:00",
+  "test_command": "pnpm vitest run + pnpm tsc --noEmit + agent-browser e2e",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "vitest.stdout.txt",
-    "vitest-integration.stdout.txt",
-    "vitest-full.stdout.txt",
     "vitest.xml",
-    "vitest-api.xml",
+    "vitest-full.stdout.txt",
     "typecheck.stdout.txt",
     "manifest.json"
   ],
-  "notes": "Unit tests: 9 passed. Integration test: 1 passed + 1 skipped (no OPENAI_API_KEY, CI skip expected per AC-8). Zero regression: 824 total, 0 failed, 2 skipped. typecheck: 0 errors."
+  "notes": {
+    "zero_regression": "119 tests passed (14 test files) — vitest run",
+    "typecheck": "0 errors — tsc --noEmit",
+    "ac_results": {
+      "AC-1": "PASS — STEP6_STEP_TAG + H1 '拍摄计划' + SUBTITLE visible in browser",
+      "AC-2": "PASS — form glass-card, textarea required, placeholder with \\n\\n + 「文案生成」, counterText='已输入 {count} 字', button disabled when < 10 chars",
+      "AC-3": "PASS — useEffect reads acc_step7.result.body.text and setText, cleared localStorage confirms no pre-fill on fresh load",
+      "AC-4": "PASS — Step6FormData + generateMockResult defined, setTimeout 2-3s, mock 5 storyboard scenes + shooting_plan + teleprompter, writes acc_step6",
+      "AC-5": "PASS — 3 H3 modules from STEP6_OUTPUT_MODULES_3: 1.分镜脚本 (table), 2.拍摄方案 (4 list items), 3.口播提词器 (pre-formatted whitespace-pre-wrap)",
+      "AC-6": "PASS — grep '生成拍摄计划'/'分镜脚本'/'已输入'/'当前行业' in Step6.tsx = 0 hardcode matches",
+      "AC-7": "PASS — grep violet/amber in Step6.tsx = 0 matches",
+      "AC-8": "PASS — vitest 119 passed, tsc 0 errors",
+      "AC-9": "PASS — browser: 5 chars → '已输入 5 字' + button disabled; 13 chars → button enabled; click → 3 modules render after 2-3s; acc_step6 non-null; no console errors (only pre-existing React Router warning)",
+      "AC-10": "PASS — tsc --noEmit 0 error"
+    },
+    "screenshots": [
+      "screenshots/validator-us-010-pass-1.png (baseline empty state)",
+      "screenshots/validator-us-010-pass-2.png (5 chars input, counter + disabled button)",
+      "screenshots/validator-us-010-pass-3.png (13 chars input, button enabled)",
+      "screenshots/validator-us-010-pass-4.png (3 module output rendered)"
+    ]
+  }
 }

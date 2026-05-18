@@ -15,6 +15,23 @@ datasource db {
 }
 
 // ============================================================
+// §1.1 行业常量表(56 条 · PRD-15 US-001 seed)
+// ============================================================
+
+model Industry {
+  id       Int    @id @default(autoincrement())
+  key      String @unique @db.VarChar(64)
+  label    String @db.VarChar(64)
+  category String @db.VarChar(32)
+  emoji    String @db.VarChar(8)
+  order    Int    @default(0)
+
+  @@index([category])
+  @@index([order])
+  @@map("industries")
+}
+
+// ============================================================
 // §2 全局表(3 张 · 不带 account_id · LD-009 例外)
 // ============================================================
 
@@ -29,6 +46,13 @@ model User {
   isActivated     Boolean @default(false) @map("is_activated")
   industry        String? @db.VarChar(64)
   activeAccountId Int?    @map("active_account_id")
+
+  plan         String    @default("free") @db.VarChar(32)
+  isBanned     Boolean   @default(false) @map("is_banned")
+  bannedAt     DateTime? @map("banned_at")
+  passwordHash String?   @map("password_hash") @db.VarChar(255)
+  lastLoginAt  DateTime? @map("last_login_at")
+  lastLoginIp  String?   @db.VarChar(45) @map("last_login_ip")
 
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
@@ -45,6 +69,10 @@ model User {
   @@index([email])
   @@index([openId])
   @@index([activeAccountId])
+  @@index([role])
+  @@index([plan])
+  @@index([industry])
+  @@index([lastLoginAt(sort: Desc)])
   @@map("users")
 }
 
@@ -140,6 +168,11 @@ model IpAccount {
   isActive   Boolean   @default(true) @map("is_active")
   archivedAt DateTime? @map("archived_at")
 
+  /// PRD-11 US-010: forceFreeze fields
+  frozenAt        DateTime? @map("frozen_at")
+  frozenByAdminId Int?      @map("frozen_by_admin_id")
+  freezeReason    String?   @map("freeze_reason") @db.VarChar(500)
+
   user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   stepDataList         StepData[]
   histories            History[]
@@ -152,8 +185,11 @@ model IpAccount {
   deepLearningArchives DeepLearningArchive[]
   knowledgeFavorites   KnowledgeFavorite[]
   knowledgeNotes       KnowledgeNote[]
+  trendingFavorites    TrendingFavorite[]
   dailyTasks           DailyTask[]
   costLogs             CostLog[]
+  adminNotes           IpAccountAdminNote[]
+  anomalyFlags         IpAccountAnomalyFlag[]
 
   traceId   String?  @map("trace_id") @db.VarChar(64)
   createdAt DateTime @default(now()) @map("created_at")
@@ -533,6 +569,22 @@ model KnowledgeNote {
   @@map("knowledge_notes")
 }
 
+/// US-006: 用户收藏的爆款 · per-account RLS 保护
+model TrendingFavorite {
+  id             Int @id @default(autoincrement())
+  accountId      Int @map("account_id")
+  trendingItemId Int @map("trending_item_id")
+
+  ipAccount IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([accountId, trendingItemId])
+  @@index([accountId])
+  @@index([accountId, createdAt(sort: Desc)])
+  @@map("trending_favorites")
+}
+
 // ============================================================
 // §8 运维表(3 张 · 不开 RLS)
 // ============================================================
@@ -650,6 +702,7 @@ model DailyTask {
 // ============================================================
 
 /// admin 操作审计 · 全量记录 · 跟用户 audit_log 分开
+// @rls(disabled)
 model AdminAuditLog {
   id Int @id @default(autoincrement())
 
@@ -708,6 +761,7 @@ model AdminAuditLog {
 }
 
 /// Approval Gates 高风险操作两步审批
+// @rls(disabled)
 model ApprovalRequest {
   id Int @id @default(autoincrement())
 
@@ -724,12 +778,21 @@ model ApprovalRequest {
   isEmergency         Boolean @default(false)
   requesterReason     String  @db.Text
 
+  /// PRD-13 US-002 · dual approval 扩展字段
+  emergencyMode        Boolean @default(false)
+  emergencyIncidentId  String?
+  postReviewRequired   Boolean @default(false)
+  postReviewerAdminId  Int?
+  postReviewResult     String? // 'confirmed' | 'overturned' | 'partial'
+  postReviewedAt       DateTime?
+
   /// 决策
   status                String // 'pending' | 'approved' | 'rejected' |
   // 'expired' | 'auto_executed' | 'cancelled'
   approverAdminId       Int?
   decisionReason        String? @db.Text
   secondApproverAdminId Int?
+  secondApprovedAt      DateTime?
   secondDecisionReason  String? @db.Text
 
   /// 时间
@@ -746,24 +809,28 @@ model ApprovalRequest {
   @@index([approverAdminId])
   @@index([riskLevel, status])
   @@index([expiresAt])
+  @@index([requireDualApproval, status])
+  @@index([emergencyMode, postReviewRequired])
+  @@index([postReviewRequired, postReviewedAt])
   @@map("approval_requests")
 }
 
 /// Specialist Prompt 版本(每次 admin 改动一条记录)
+// @rls(disabled)
 model PromptVersion {
   id Int @id @default(autoincrement())
 
   /// 哪个 Specialist · 哪个 mode
   specialistId String
-  mode         String?
+  mode         String @default("default")
 
   /// 版本
   version     Int
   content     String @db.Text
   contentHash String @db.VarChar(64)
 
-  /// 状态
-  status String // 'draft' | 'staged' | 'active' | 'archived' | 'rolled_back'
+  /// 状态: 'draft' | 'pending_review' | 'active' | 'archived'
+  status String
 
   /// LLM Judge 评分(对 100 金标准 · 阈值 4.0)
   judgeScore     Decimal? @db.Decimal(3, 2)
@@ -786,15 +853,16 @@ model PromptVersion {
 }
 
 /// 灰度发布配置
+// @rls(disabled)
 model PromptCanaryConfig {
-  id           Int     @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
   specialistId String
-  mode         String?
+  mode         String @default("default")
 
   currentVersionId Int
   nextVersionId    Int?
   canaryPct        Int    @default(0)
-  strategy         String // 'user_id_hash' | 'account_id_hash' | 'random'
+  strategy         String @default("user_id_hash") // 'user_id_hash' | 'random' | 'whitelist'
 
   canaryStartedAt DateTime?
   canaryEndsAt    DateTime?
@@ -810,7 +878,75 @@ model PromptCanaryConfig {
   @@map("prompt_canary_config")
 }
 
+// ============================================================
+// §P14 · 常量版本化(PRD-14 US-006 · D-091)
+// ============================================================
+
+/// 常量版本记录(67 案例 / 23 公式 / 22 元素 · fork PromptVersion)
+// @rls(disabled)
+model ConstantVersion {
+  id          Int    @id @default(autoincrement())
+
+  /// 常量类型: 'case' | 'formula' | 'element'
+  constantType String @db.VarChar(32)
+  /// 常量 key(唯一标识每条常量)
+  constantKey  String @db.VarChar(255)
+
+  /// 版本号
+  version     Int
+  content     String @db.Text
+  contentHash String @db.VarChar(64)
+
+  /// 状态: 'draft' | 'pending_review' | 'active' | 'archived'
+  status String
+
+  /// LLM Judge 评分(阈值 4.0 · D-091)
+  judgeScore     Decimal? @db.Decimal(3, 2)
+  judgeRunId     String?
+  judgeReportUrl String?
+
+  /// 操作人
+  createdByAdminId  Int
+  createdAt         DateTime  @default(now())
+  approvedByAdminId Int?
+  approvedAt        DateTime?
+
+  canaryConfigs     ConstantCanaryConfig[] @relation("constantCurrentVersion")
+  canaryConfigsNext ConstantCanaryConfig[] @relation("constantNextVersion")
+
+  @@unique([constantType, constantKey, version])
+  @@index([constantType, constantKey, status])
+  @@index([status, createdAt(sort: Desc)])
+  @@map("constant_versions")
+}
+
+/// 常量灰度发布配置
+// @rls(disabled)
+model ConstantCanaryConfig {
+  id           Int    @id @default(autoincrement())
+  constantType String @db.VarChar(32)
+  constantKey  String @db.VarChar(255)
+
+  currentVersionId Int
+  nextVersionId    Int?
+  canaryPct        Int    @default(0)
+  strategy         String @default("user_id_hash")
+
+  canaryStartedAt DateTime?
+  canaryEndsAt    DateTime?
+
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  currentVersion ConstantVersion  @relation("constantCurrentVersion", fields: [currentVersionId], references: [id])
+  nextVersion    ConstantVersion? @relation("constantNextVersion", fields: [nextVersionId], references: [id])
+
+  @@unique([constantType, constantKey])
+  @@map("constant_canary_config")
+}
+
 /// 用户配额状态(每用户 1 行 · 跟 LLMGateway Redis token bucket 对照)
+// @rls(disabled)
 model UserQuota {
   id     Int @id @default(autoincrement())
   userId Int @unique
@@ -841,6 +977,7 @@ model UserQuota {
 }
 
 /// 配额调整记录(admin 临时调整 · 24h 自动失效)
+// @rls(disabled)
 model QuotaAdjustmentLog {
   id          Int     @id @default(autoincrement())
   userQuotaId Int
@@ -905,6 +1042,8 @@ model IpAccountAdminNote {
   visibleToOtherAdmin Boolean  @default(true)
   createdAt           DateTime @default(now())
 
+  account IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
   @@index([accountId, createdAt(sort: Desc)])
   @@index([adminId])
   @@map("ip_account_admin_notes")
@@ -921,6 +1060,8 @@ model IpAccountAnomalyFlag {
   resolvedAt        DateTime?
   resolvedByAdminId Int?
   resolution        String?
+
+  account IpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@index([accountId])
   @@index([anomalyType, detectedAt(sort: Desc)])
@@ -952,6 +1093,7 @@ model InviteCampaign {
 }
 
 /// TrendingScraper 抓回的内容 → 入审核队列
+// @rls(disabled)
 model TrendingReviewQueue {
   id             Int    @id @default(autoincrement())
   sourcePlatform String // 'douyin' / 'xiaohongshu' / 'bilibili' / ...
@@ -1012,6 +1154,7 @@ model AutoReviewRule {
 }
 
 /// 用户上传 → 入审核队列
+// @rls(disabled)
 model DeepLearnReviewQueue {
   id        Int @id @default(autoincrement())
   userId    Int
@@ -1063,12 +1206,13 @@ model UserViolationLog {
 model EvolutionAnomalyFlag {
   id          Int       @id @default(autoincrement())
   accountId   Int
-  anomalyType String // 'conflicting_insights' | 'frequent_style_flip' | ...
+  anomalyType String // 'conflicting_insights' | 'frequent_style_flip' | 'avoidlist_overflow' | 'flywheel_stalled' | 'negative_feedback_dominant'
   severity    String // 'low' | 'medium' | 'high'
   evidence    Json
   detectedAt  DateTime  @default(now())
   resolvedAt  DateTime?
   resolution  String? // 'auto_resolved' | 'admin_force_rebuild' | 'false_positive'
+  resolvedByAdminId Int? @map("resolved_by_admin_id")
 
   @@index([accountId])
   @@index([anomalyType, detectedAt(sort: Desc)])
@@ -1093,6 +1237,7 @@ model AbExperiment {
   stoppedAt         DateTime?
   resultSummary     Json?
   createdByAdminId  Int
+  createdAt         DateTime  @default(now())
 
   @@index([status])
   @@map("ab_experiments")
@@ -1139,6 +1284,115 @@ model SystemConfig {
 
   @@index([isEmergency])
   @@map("system_config")
+}
+
+// ============================================================
+// §13.8 PRD-10 US-001 新增 admin 鉴权 + 配置 6 张表
+// · admin_users / admin_sessions — lucia-admin auth(LD-A1)
+// · admin_invite_campaign / admin_constants / admin_config / admin_ab_experiment — admin 配置域
+// · 全部 DISABLE RLS · 参 prisma/migrations/manual_admin_rls.sql
+// ============================================================
+
+/// admin 用户表(与主应用 users 隔离 · lucia-admin adapter · LD-A1)
+// @rls(disabled)
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  role      String   @db.VarChar(32) // 'super_admin' | 'admin' | 'readonly_admin'
+  isMock    Boolean  @default(false) // dev mock OAuth 标志
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  sessions AdminSession[]
+
+  @@index([email])
+  @@map("admin_users")
+}
+
+/// admin session 表(lucia-admin PrismaAdapter · ttl 12h · idle 30min · LD-A1)
+// @rls(disabled)
+model AdminSession {
+  id            String    @id @default(cuid())
+  adminUserId   Int
+  expiresAt     DateTime
+  isActive      Boolean   @default(true)
+  mfaVerifiedAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId, expiresAt])
+  @@map("admin_sessions")
+}
+
+/// admin 侧营销 campaign 管理(与主应用 invite_campaigns 隔离)
+// @rls(disabled)
+model AdminInviteCampaign {
+  id               Int      @id @default(autoincrement())
+  campaignKey      String   @unique @db.VarChar(64)
+  name             String   @db.VarChar(255)
+  description      String?  @db.Text
+  createdByAdminId Int
+  totalQuota       Int      @default(0)
+  usedCount        Int      @default(0)
+  startsAt         DateTime
+  endsAt           DateTime
+  status           String   @db.VarChar(32) // 'draft' | 'active' | 'paused' | 'ended'
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status, startsAt])
+  @@index([createdByAdminId])
+  @@map("admin_invite_campaign")
+}
+
+/// admin 系统常量(hard-coded 业务参数 · super_admin 可改)
+// @rls(disabled)
+model AdminConstants {
+  id               Int      @id @default(autoincrement())
+  key              String   @unique @db.VarChar(128)
+  value            Json
+  description      String?  @db.Text
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@index([key])
+  @@map("admin_constants")
+}
+
+/// admin 动态配置(feature toggle · 上线参数 · 独立于 system_config)
+// @rls(disabled)
+model AdminConfig {
+  id               Int      @id @default(autoincrement())
+  configKey        String   @unique @db.VarChar(128)
+  configValue      Json
+  description      String?  @db.Text
+  isEmergency      Boolean  @default(false)
+  updatedByAdminId Int
+  updatedAt        DateTime @updatedAt
+
+  @@index([isEmergency])
+  @@map("admin_config")
+}
+
+/// admin 管理的 A/B 实验(独立于 P2 占位 ab_experiments · admin 侧操作台)
+// @rls(disabled)
+model AdminAbExperiment {
+  id                Int       @id @default(autoincrement())
+  experimentKey     String    @unique @db.VarChar(128)
+  name              String    @db.VarChar(255)
+  description       String?   @db.Text
+  variantConfig     Json
+  trafficAllocation Json
+  status            String    @db.VarChar(32) // 'draft' | 'running' | 'stopped' | 'completed'
+  startedAt         DateTime?
+  stoppedAt         DateTime?
+  resultSummary     Json?
+  createdByAdminId  Int
+  createdAt         DateTime  @default(now())
+
+  @@index([status])
+  @@map("admin_ab_experiment")
 }
 
 // ============================================================

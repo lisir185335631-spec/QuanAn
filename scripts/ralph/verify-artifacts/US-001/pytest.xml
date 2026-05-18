@@ -1,33 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="13" failures="0" errors="0" time="0.207">
-    <testsuite name="tests/unit/api/memory/l1-buffer.test.ts" timestamp="2026-05-11T01:12:22.542Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.001466416">
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; push: stores turn and can retrieve it" time="0.000749459">
+<testsuites name="vitest tests" tests="7" failures="0" errors="0" time="0.107">
+    <testsuite name="tests/unit/api/seed.test.ts" timestamp="2026-05-15T16:21:41.147Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.003493417">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedIndustries &gt; creates 56 industries on first run" time="0.001088666">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; get: returns turns in chronological order (oldest first)" time="0.000103792">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedIndustries &gt; is idempotent: re-seed creates 0 new records" time="0.000239708">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; clear: removes all turns for account" time="0.000098042">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedMockIpAccounts &gt; creates 5 mock IP accounts on first run" time="0.00017375">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; maxLimit: trims to 20 turns max on push" time="0.000134584">
+        <testcase classname="tests/unit/api/seed.test.ts" name="seedMockIpAccounts &gt; is idempotent: re-seed creates 0 new accounts" time="0.000125542">
         </testcase>
-        <testcase classname="tests/unit/api/memory/l1-buffer.test.ts" name="L1 Buffer &gt; TTL: expire(key, 1800) is called on every push" time="0.000049542">
+        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; contains exactly 56 industries" time="0.000068792">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/unit/api/schemas/memory-schemas.test.ts" timestamp="2026-05-11T01:12:22.542Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.00241975">
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="EvolutionInsightContentSchema &gt; happy path: valid insight content parses" time="0.000776625">
+        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; contains industries in all 5 categories with correct counts" time="0.000087125">
         </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="EvolutionInsightContentSchema &gt; reject: unknown direction fails" time="0.000234917">
-        </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="EvolutionInsightContentSchema &gt; TriggerTypeSchema: valid threshold literal parses" time="0.00013675">
-        </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="DailyTaskOutputSchema &gt; happy path: valid DailyTaskOutput with 3 tasks parses" time="0.000266792">
-        </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="DailyTaskOutputSchema &gt; reject: ctaUrl not starting with / fails" time="0.000081875">
-        </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="VoiceChatTurnSchema &gt; happy path: valid user turn parses" time="0.000064583">
-        </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="VoiceChatTurnSchema &gt; reject: invalid role fails" time="0.000050333">
-        </testcase>
-        <testcase classname="tests/unit/api/schemas/memory-schemas.test.ts" name="VOICE_CHAT_TOOLS &gt; has exactly 5 tools with correct names" time="0.000435">
+        <testcase classname="tests/unit/api/seed.test.ts" name="INDUSTRIES constant (IndustryDropdown source) &gt; all industries have required key, label, emoji, and category fields" time="0.001324083">
         </testcase>
     </testsuite>
 </testsuites>

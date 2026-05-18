@@ -1,0 +1,570 @@
+{
+  "project": "QuanQn",
+  "branchName": "ralph/prd-10-admin-foundation",
+  "description": "P9.0 admin 基础设施 · monorepo workspace + 独立 lucia session + 6 闸鉴权链 + admin_audit_log + Layout 骨架(7 stories · foundation 档 · 1 周 · 派生 ADMIN-ARCHITECTURE §8.2 + AGENTS §10)",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "★ Foundation · monorepo workspace 重构 + 13 admin 模型 + RLS DISABLE migration + 6 闸 middleware 模板预埋",
+      "description": "As QuanQn 工程师, I want 把 src/ 单包骨架拆 monorepo (apps/web + apps/admin + apps/api + packages/{schemas,ui,clients}) + 加 13 admin model 到 prisma/schema.prisma + 跑 manual_admin_rls.sql DISABLE RLS for 13 admin tables + apps/admin 空 Vite 骨架 + 6 闸 stub middleware 文件预埋, So that 后续 6 个 US 都有 foundation 可 depends_on · 同时跨 4 个下游 PRD(PRD-11/12/13/14)都依赖此基础设施 · 0 业务影响要求严格(PRD-9 全套绿灯不破)",
+      "acceptanceCriteria": [
+        "pnpm-workspace.yaml 含 'apps/*' + 'packages/*' · 5 子项目存在(apps/web, apps/admin, apps/api, packages/schemas, packages/ui, packages/clients)",
+        "src/* 全部移到 apps/web/src/* + apps/api/src/* + packages/schemas/src/* + packages/ui/base/* · 旧 src/ 路径全删 · git status 0 deleted-but-not-staged",
+        "apps/admin 空 Vite SPA 骨架就绪 · vite.config.ts + package.json + tsconfig.json + index.html + src/main.tsx + src/App.tsx 6 文件存在 · build target dist-admin",
+        "prisma/schema.prisma 加 13 admin model(admin_audit_log + approval_requests + admin_users + admin_sessions + prompt_versions + prompt_canary_config + user_quota + quota_adjustment_log + trending_review_queue + deep_learn_review_queue + admin_invite_campaign + admin_constants + admin_config + admin_ab_experiment)· 主应用 18 model 不动",
+        "13 admin model 各加 RLS DISABLED 注释(`// @rls(disabled)`)· grep -B 1 '^model.*Admin\\|^model.*Approval\\|^model.*Prompt\\|^model.*Quota\\|^model.*Review\\|^model.*Compliance\\|^model.*Ab' 注释 ≥ 13 处",
+        "prisma/migrations/manual_admin_rls.sql 创建 · ALTER TABLE X DISABLE ROW LEVEL SECURITY 显式 13 表 + helper functions(enable_admin_rls / disable_admin_rls)· DATA-MODEL §13.8 对齐",
+        "psql quanqn -c '验证 13 admin 表 RLS DISABLED + 18 主应用表 RLS ENABLED' 双向 0 误关 · scripts/audit-admin-rls-tables.sh exit 0",
+        "apps/api/src/trpc/middleware/admin/{adminAuth,roleCheck,ipWhitelist,mfaCheck,adminRLS,approvalGateCheck,auditLog}.ts 7 文件 stub 创建 · 全 return next() · index.ts barrel export",
+        "apps/api/src/trpc/routers/admin/index.ts 空 adminRouter · health stub procedure 不带鉴权 · 其他 13 子树占位",
+        "apps/api/src/lib/admin/{constants,types}.ts(ADMIN_ROLES enum + AUDIT_EVENT_TYPES enum + types)",
+        "tests/unit/admin/middleware-stubs.test.ts 7 unit pass · 6 闸 stub pass-through + auditLog stub",
+        "tests/unit/admin/admin-schema.test.ts 6 unit pass · 13 admin model prisma create + RLS state 验证",
+        "PRD-9 e2e 0 回归 · pnpm test:e2e tests/e2e/knowledge-rag-loop.spec.ts 6 tests 全 pass",
+        "pnpm typecheck 7 workspace 0 errors",
+        "pnpm lint --max-warnings=0 退出码 0",
+        "pnpm test 全套 ≥ 920(PRD-9 基线 907 + 13 新 unit · 0 failures · 0 skipped)",
+        "scripts/migrate-monorepo.sh 一次性脚本就绪 · 10 步迁移协议(SCAFFOLD §A.3 对齐)· 每步可独立 commit",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[risk-upgrade] high → foundation · downstream count=6(全 6 后续 US depends_on)+ 跨下游 PRD count=4(PRD-11/12/13/14 全依赖 monorepo + 13 admin model)· 触发 §10 升档规则 'medium ≥5 → foundation'. [size-hint-warn] 实际工作量 medium-large · 严格按 SCAFFOLD §A.3 10 步迁移内部 commit · ralph 监控 dev/validator 超时 5min 无新输出 kill + 拆(全局 §9.6.5 SOP)· prompt 字节预估 8-10K(危险区边缘 · 监控). [audit-extra] foundation 档审 §F4 协议锁 vs 既有代码 + §F5 monorepo 改造前后回归 + §G LD-A 5 grep + R-A 6 grep + audit-admin-rls-tables.sh 双向验证 · ~15 min 深审.",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/vite.config.ts",
+        "apps/admin/package.json",
+        "apps/admin/tsconfig.json",
+        "apps/admin/index.html",
+        "apps/admin/src/main.tsx",
+        "apps/admin/src/App.tsx",
+        "apps/admin/.env.example",
+        "apps/admin/src/styles/admin.css",
+        "prisma/migrations/manual_admin_rls.sql",
+        "apps/api/src/trpc/middleware/admin/adminAuth.ts",
+        "apps/api/src/trpc/middleware/admin/roleCheck.ts",
+        "apps/api/src/trpc/middleware/admin/ipWhitelist.ts",
+        "apps/api/src/trpc/middleware/admin/mfaCheck.ts",
+        "apps/api/src/trpc/middleware/admin/adminRLS.ts",
+        "apps/api/src/trpc/middleware/admin/approvalGateCheck.ts",
+        "apps/api/src/trpc/middleware/admin/auditLog.ts",
+        "apps/api/src/trpc/middleware/admin/index.ts",
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "apps/api/src/lib/admin/constants.ts",
+        "apps/api/src/lib/admin/types.ts",
+        "pnpm-workspace.yaml",
+        "tsconfig.base.json",
+        "packages/ui/admin/index.ts",
+        "tests/unit/admin/middleware-stubs.test.ts",
+        "tests/unit/admin/admin-schema.test.ts",
+        "scripts/migrate-monorepo.sh",
+        "scripts/audit-admin-rls-tables.sh"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "package.json",
+        "tsconfig.json",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        ".gitignore"
+      ],
+      "test_command": "pnpm install && pnpm prisma migrate dev --name admin-init && pnpm prisma db execute --file prisma/migrations/manual_admin_rls.sql && pnpm test tests/unit/admin/middleware-stubs.test.ts tests/unit/admin/admin-schema.test.ts && pnpm typecheck && pnpm lint --max-warnings=0 && pnpm test:e2e tests/e2e/knowledge-rag-loop.spec.ts && bash scripts/audit-admin-rls-tables.sh",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-022",
+          "lesson": "主应用 src/pages/ 不能加 admin 子目录 · admin 必须独立在 apps/admin/src/pages/(R-A2)",
+          "antipattern": "❌ 在 apps/web/src/pages/admin/* 新建 admin 页面 · 或 apps/web/src/router 内加 /admin 路由",
+          "correct": "✅ admin 完全独立在 apps/admin/src/* · 主应用前端不暴露 /admin 入口(R-A2 grep apps/web/src/ /admin = 0)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-009",
+          "lesson": "业务代码 / migration 之外不允许 $executeRawUnsafe · raw SQL 仅 manual_admin_rls.sql 等 migration 文件允许",
+          "antipattern": "❌ apps/api/src/lib/admin/*.ts 用 prisma.$executeRawUnsafe('ALTER TABLE ...')",
+          "correct": "✅ ALTER TABLE 仅在 prisma/migrations/manual_admin_rls.sql · 代码用 prisma typed API"
+        },
+        {
+          "source_prd": "QuanQn-PRD-10",
+          "source_story": "LD-A3",
+          "lesson": "13 admin 表 DISABLE RLS · 但主应用 18 表 RLS 不能被误关 · manual_admin_rls.sql 必显式 13 表名 · 不用 wildcard",
+          "antipattern": "❌ ALTER TABLE * DISABLE ROW LEVEL SECURITY · 或用动态 SQL 关 RLS 影响主应用",
+          "correct": "✅ 13 表 名显式 ALTER · audit-admin-rls-tables.sh 双向验证 13 false + 18 true · 否则 R2 风险触发 rollback"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "lucia-auth admin session + mock OAuth provider + admin.auth router",
+      "description": "As admin 内部用户(super_admin), I want 通过 mock OAuth(dev only)/ Google Workspace OAuth(prod stub)登录 admin SPA · 拿到独立 admin session(跟主应用完全隔离 · 独立 Redis namespace admin:session:* · cookie admin_session_id · ttl 12h + idle 30min), So that PRD-10 后续 US-003 6 闸鉴权链 + US-005 Layout + US-006/007 集成 e2e 都有真 session 可挂",
+      "acceptanceCriteria": [
+        "apps/api/src/lib/auth/lucia-admin.ts 创建 · Lucia + PrismaAdapter(admin_sessions/admin_users)· sessionCookie name='admin_session_id' · ttl 12h absolute + idle 30min",
+        "Redis namespace 严格 'admin:session:*'(LD-A1)· 不能用 'app:session:*' · grep 'app:session:' in lucia-admin.ts + apps/admin/ = 0",
+        "apps/api/src/lib/auth/oauth-admin-mock.ts · mockOAuthCallback(email) 校验 admin_users.isMock=true + isActive=true · 不真验密码 · 返回 user",
+        "apps/api/src/lib/auth/oauth-admin-google.ts stub · throw 'PRR config required · GOOGLE_WORKSPACE_CLIENT_ID/SECRET/REDIRECT_URI/HD/WHITELIST_EMAILS'(5 env)",
+        "apps/api/src/lib/auth/oauth-admin-factory.ts · getAdminOAuthProvider() 读 env OAUTH_PROVIDER · 'mock' 返 mock / 'google' 返 google stub / 其他 throw config error · prod startup gate",
+        "apps/api/src/trpc/routers/admin/auth.ts · 3 procedure(login + logout + me)· 注册到 adminRouter.auth",
+        "apps/api/src/server/context-admin.ts · createAdminContext(req,res) 读 admin_session_id cookie + validateSession + 注入 ctx.adminSession + ctx.activeAdminUser",
+        "apps/admin/src/lib/admin-client.ts · createTRPCReact<AdminRouter>() · httpBatchLink /trpc/admin",
+        "apps/admin/src/pages/Login.tsx · email input + 'mock OAuth 登录' 按钮(import.meta.env.DEV 才显示)+ Google OAuth stub disabled",
+        "tests/unit/admin/auth-lucia.test.ts 12 unit pass · session lifecycle + factory + mock + google stub",
+        "tests/unit/admin/auth-router.test.ts 8 unit pass · login/logout/me happy + error paths",
+        "tests/integration/admin/auth-flow.test.ts 1 e2e style 集成测试 pass · seed → login → me → logout",
+        "POST /trpc/admin.auth.login mock email='super@quanqn.com' 返 200 + sessionId + Set-Cookie admin_session_id; HttpOnly; SameSite=Lax",
+        "admin_audit_log 'admin_login' event 在 success/failed 各 1 row(login 失败也写 status='failed' reason='user_not_found' / 'user_inactive')",
+        "OAUTH_PROVIDER 误进 prod 验证(grep 'OAUTH_PROVIDER.*mock' apps/api/.env.production = 0 / 文件不存在)",
+        "Typecheck passes",
+        "Use agent-browser to open /login and submit valid email super@quanqn.com",
+        "localStorage 或 cookie 'admin_session_id' 存在 after login",
+        "页面 redirect 到 /admin and AdminLayout 可见(US-005 后真接 · 本 US 暂时 redirect 到 /admin · 显示空壳)",
+        "Refresh /admin · session 恢复 · 不被自动 logout",
+        "Invalid email 显示 toast 错误 · 不破页面"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 2,
+      "passes": false,
+      "notes": "[risk-keywords] auth + credential + oauth + session · 命中 high 关键词(security-critical). [audit-extra] 必带 startup gate test(OAUTH_PROVIDER=mock + NODE_ENV=production → process.exit(1) · 防 PRD-1 US-006 OAuth CSRF mock-bypass 类型 bug 复现 · reject-examples.jsonl 2026-05-08 PRD-1 US-006 反例真案例: ?mock=true query param 不能短路 CSRF state check). [audit-grep] grep 'OAUTH_PROVIDER.*mock' .env.production = 0 / grep 'app:session:' lucia-admin = 0 / grep 'QUANQN_WEB_CLIENT' apps/admin = 0.",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/lib/auth/lucia-admin.ts",
+        "apps/api/src/lib/auth/oauth-admin-mock.ts",
+        "apps/api/src/lib/auth/oauth-admin-google.ts",
+        "apps/api/src/lib/auth/oauth-admin-factory.ts",
+        "apps/api/src/trpc/routers/admin/auth.ts",
+        "apps/api/src/server/context-admin.ts",
+        "apps/admin/src/lib/admin-client.ts",
+        "apps/admin/src/pages/Login.tsx",
+        "tests/unit/admin/auth-lucia.test.ts",
+        "tests/unit/admin/auth-router.test.ts",
+        "tests/integration/admin/auth-flow.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "apps/api/src/trpc/middleware/admin/adminAuth.ts",
+        "apps/api/src/server/index.ts",
+        "prisma/schema.prisma",
+        "apps/admin/src/App.tsx"
+      ],
+      "test_command": "pnpm test tests/unit/admin/auth-lucia.test.ts tests/unit/admin/auth-router.test.ts tests/integration/admin/auth-flow.test.ts && pnpm typecheck && pnpm lint --max-warnings=0",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-026",
+          "lesson": "admin session 不能用主应用 Redis namespace · LD-A1 强制 admin:session:* 独立",
+          "antipattern": "❌ Lucia({ sessionExpires: ... }) 不指定 Redis prefix · 默认走主应用 'app:session:*'",
+          "correct": "✅ adapter(prismaClient) + Redis 配置含 prefix 'admin:session:' · ttl 12h(短于主 30 天)· idle timeout 30min"
+        },
+        {
+          "source_prd": "QuanQn-PRD-1",
+          "source_story": "US-006-2026-05-08",
+          "lesson": "OAuth ?mock=true query param 不能短路 CSRF state check · attacker-controllable input 永远不能 bypass security · risk=high security-critical",
+          "antipattern": "❌ requiresCsrfCheck(isMockRequest, providerName) · 让 ?mock=true&code=<leaked_code> 直接 skip state validation · 攻击者从 leaked OAuth code 拿 victim session",
+          "correct": "✅ requiresCsrfCheck(providerName) 单参数 · 仅 provider='mock' 才 skip CSRF · ?mock=true 不影响 · 加 validateStartupConfig prod+OAUTH_PROVIDER=mock → process.exit(1) defense-in-depth"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-024",
+          "lesson": "super_admin 必须强制 MFA · 但本 PRD-10 mfaCheck stub(env ADMIN_MFA_REQUIRED=false 默认 dev pass · PRR 真接 TOTP/WebAuthn)· 当 env=true 时 super_admin 必走 MFA",
+          "antipattern": "❌ mfaCheck stub 写 'return next()' 不分 role · prod 时 super_admin 也只 OAuth 通过即登录",
+          "correct": "✅ mfaCheck 内分支 · ADMIN_MFA_REQUIRED=false → pass / =true + role=super_admin + mfa stale → throw PRECONDITION_REQUIRED 'MFA_REQUIRED' · 跳 MFA 流程(PRR 真接)"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "6 闸 middleware 真实现 · adminAuth → roleCheck → ipWhitelist → mfaCheck → adminRLS → approvalGateCheck · 每闸单测",
+      "description": "As admin 子系统工程师, I want 把 US-001 6 闸 stub 真接 · adminAuth(已 US-002 完成 · 本 US 不动)+ roleCheck(meta.requiredRole 检测 · super_admin > admin > readonly_admin 等级)+ ipWhitelist(stub env=false 默认 pass · =true 时 CIDR 校验)+ mfaCheck(stub env=false · =true + super_admin 30 天 reverify)+ adminRLS($transaction wrap + $executeRawUnsafe set_config('app.role','admin',true) · 类比 accountIsolation)+ approvalGateCheck(stub throw NOT_IMPLEMENTED + 写 admin_audit_log approval_request_create event)+ adminProcedure 链组合, So that 后续 admin procedure 都走 6 闸 + audit 自动 · 6 闸顺序硬约束不能调",
+      "acceptanceCriteria": [
+        "roleCheck.ts 真接 · ADMIN_ROLE_HIERARCHY = { super_admin: 3, admin: 2, readonly_admin: 1 } · meta.requiredRole 等级比较 · 不足 throw FORBIDDEN 403",
+        "ipWhitelist.ts 真接 · env ADMIN_IP_WHITELIST_ENABLED=false 默认 pass · =true 时 ipaddr.js 解析 CIDR + req.ip 校验 · 不命中 throw FORBIDDEN 403",
+        "mfaCheck.ts 真接 · env ADMIN_MFA_REQUIRED=false 默认 pass · =true + super_admin + mfa stale > 30 天 → throw PRECONDITION_REQUIRED 412 'MFA_REQUIRED'",
+        "adminRLS.ts 真接 · $transaction wrap + $executeRawUnsafe `set_config('app.role','admin',true)` LOCAL=true · 注入 ctx.adminPrisma · ctx.crossAccountAccessed=true flag(供 auditLog 读)",
+        "approvalGateCheck.ts 真接 · meta.requiresApproval=true 时 throw NOT_IMPLEMENTED 501 message 含 'PRD-13 真闭环' · cause 含 actionType + riskLevel · stub 版不创建 approval_requests row",
+        "apps/api/src/trpc/procedures/admin.ts · adminProcedure = t.procedure.use(adminAuth).use(roleCheck).use(ipWhitelist).use(mfaCheck).use(adminRLS).use(approvalGateCheck).use(auditLog) · 顺序硬约束",
+        "tests/unit/admin/roleCheck.test.ts 6 unit pass · super_admin > admin > readonly_admin 各种组合",
+        "tests/unit/admin/ipWhitelist.test.ts 6 unit pass · env false → pass / env true + CIDR 命中 / 不命中 / 多 CIDR / 解析失败",
+        "tests/unit/admin/mfaCheck.test.ts 6 unit pass · env false / env true + role 分支 / mfa fresh vs stale",
+        "tests/unit/admin/adminRLS.test.ts 8 unit pass · set_config 真生效 + $transaction + crossAccountAccessed flag + rollback",
+        "tests/unit/admin/approvalGateCheck.test.ts 5 unit pass · requiresApproval undefined/false/true",
+        "6 闸顺序硬验证 · 改顺序 unit test fail · 测试 spy 验证 6 个 middleware 都按序调用",
+        "grep '$executeRawUnsafe\\|$queryRawUnsafe' apps/api/src/trpc/routers/admin/ = 0(R-A6)· raw SQL 仅 middleware",
+        "grep 'set_config.*app.role.*admin' apps/api/src/trpc/middleware/admin/adminRLS.ts ≥ 1(LD-A3)",
+        "package.json 加 deps ipaddr.js ^2.1.0",
+        "apps/api/.env.example 加 ADMIN_IP_WHITELIST_ENABLED + ADMIN_IP_WHITELIST_CIDRS + ADMIN_MFA_REQUIRED",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-002"],
+      "priority": 3,
+      "passes": false,
+      "notes": "[risk-keywords] middleware + auth + adminRLS · high 关键词命中. [audit-extra] AST 检测 adminProcedure 链 6 闸全经过(node scripts/audit-admin-rls.ts 例外列表 ['auth.login','auth.logout','health']). [risk-warn] $transaction wrap 嵌套使用风险 · 业务 procedure 不能再开 transaction · 测试 spy 验证 transaction depth=1.",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/trpc/procedures/admin.ts",
+        "tests/unit/admin/roleCheck.test.ts",
+        "tests/unit/admin/ipWhitelist.test.ts",
+        "tests/unit/admin/mfaCheck.test.ts",
+        "tests/unit/admin/adminRLS.test.ts",
+        "tests/unit/admin/approvalGateCheck.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/middleware/admin/roleCheck.ts",
+        "apps/api/src/trpc/middleware/admin/ipWhitelist.ts",
+        "apps/api/src/trpc/middleware/admin/mfaCheck.ts",
+        "apps/api/src/trpc/middleware/admin/adminRLS.ts",
+        "apps/api/src/trpc/middleware/admin/approvalGateCheck.ts",
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "apps/api/src/trpc/routers/admin/auth.ts",
+        "package.json",
+        "apps/api/.env.example"
+      ],
+      "test_command": "pnpm test tests/unit/admin/roleCheck.test.ts tests/unit/admin/ipWhitelist.test.ts tests/unit/admin/mfaCheck.test.ts tests/unit/admin/adminRLS.test.ts tests/unit/admin/approvalGateCheck.test.ts && pnpm typecheck && pnpm lint --max-warnings=0",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-020",
+          "lesson": "admin procedure 链路里漏 adminRLS middleware · 6 闸不能漏任何一个",
+          "antipattern": "❌ adminProcedure = t.procedure.use(adminAuth).use(roleCheck) · 直接调业务 · 漏 adminRLS / mfaCheck / approvalGateCheck",
+          "correct": "✅ adminProcedure 完整 6 闸 + auditLog · 顺序 adminAuth → roleCheck → ipWhitelist → mfaCheck → adminRLS → approvalGateCheck → auditLog · AST 检测 (scripts/audit-admin-rls.ts)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-023",
+          "lesson": "admin 高风险操作(封禁/改套餐/Prompt 发布)不能硬编码 meta.requiresApproval=false · 14 类高风险必带 true",
+          "antipattern": "❌ adminProcedure.meta({ requiresApproval: false, actionType: 'ban_user' }) · 绕过 Approval Gates",
+          "correct": "✅ 14 类高风险 procedure 必带 meta.requiresApproval=true · 即使 stub mode 也 throw NOT_IMPLEMENTED + 写 admin_audit_log approval_request_create event(本 PRD stub · PRD-13 真闭环)"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-013",
+          "lesson": "tRPC procedure 必经 middleware · 不直接信任 input · 类比主应用 accountIsolation pattern",
+          "antipattern": "❌ admin 业务 procedure 直接读 ctx.prisma 跨账号查 · 不经 adminRLS middleware · 也不带 audit_log",
+          "correct": "✅ adminProcedure 统一挂 adminRLS middleware → 注入 ctx.adminPrisma + crossAccountAccessed flag · 业务 procedure 只用 ctx.adminPrisma · 自动 audit"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "admin_audit_log 自动 middleware 写入 · 4 类 eventType(admin_login + cross_account_query + approval_request_create + approval_request_resolve)",
+      "description": "As 法务 / 合规审计员, I want admin 子系统所有操作自动写 admin_audit_log · 4 类 eventType 覆盖 admin_login(由 auth.login 直接调 service)+ cross_account_query(由 adminRLS middleware 触发 ctx.crossAccountAccessed=true 时 auditLog 后置写)+ approval_request_create(由 approvalGateCheck stub throw 时写)+ approval_request_resolve(留 PRD-13 真闭环时写 · 本 PRD 占位 eventType enum), So that 取证生命线齐 · 业务 procedure 不用手写 audit · 中间件后置自动写",
+      "acceptanceCriteria": [
+        "apps/api/src/trpc/middleware/admin/auditLog.ts 真接 · wrapNext + try-catch + 写 admin_audit_log · 含 4 类 eventType 分支 + latencyMs + ipAddress + userAgent + traceId",
+        "apps/api/src/services/admin/admin-audit-service.ts · logAdminAction(input) 函数 · prisma create · idempotent(若 traceId 已存在跳过)",
+        "apps/api/src/lib/admin/audit-helpers.ts · extractCrossAccountFlag(input,ctx,result)+ extractActionType(procedurePath)+ redactSensitiveFields(payload)· redact password/token/apiKey/secret",
+        "auth.login procedure 完成后调 adminAuditService.logAdminAction · eventType='admin_login' status='success'/'failed' oauthProvider='mock'/'google'",
+        "adminRLS middleware 注入 ctx.crossAccountAccessed=true flag · auditLog 后置读此 flag 写 eventType='cross_account_query'",
+        "approvalGateCheck middleware throw 前先 await logAdminAction eventType='approval_request_create' status='stub_rejected' · 然后 throw NOT_IMPLEMENTED",
+        "audit_log 写失败时 console.error('[ADMIN AUDIT WRITE FAILED]', err) · 不阻塞 business operation",
+        "sensitive field redact · requestedPayload 含 password 时 redact 为 '[REDACTED]' · grep 'redactSensitiveFields' apps/api/src/lib/admin/audit-helpers.ts ≥ 1",
+        "audit 仅 append · grep 'prisma.adminAuditLog.update|delete|upsert' apps/api/src/ = 0(项目 CLAUDE.md §5.1 第 3 条)",
+        "tests/unit/admin/auditLog-middleware.test.ts 10 unit pass · 4 类 eventType + failure path + redact + duplicate traceId idempotent",
+        "tests/unit/admin/admin-audit-service.test.ts 6 unit pass · logAdminAction + idempotent + status enum",
+        "tests/integration/admin/audit-log-write.test.ts 1 集成测试 pass · seed → admin_login → 跑 procedure → cross_account_query → trigger approval throw → approval_request_create · 最终 admin_audit_log ≥ 3 rows",
+        "admin_audit_log 索引验证 · @@index([createdAt(sort: Desc)]) + @@index([adminUserId, createdAt(sort: Desc)]) 存在",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-003"],
+      "priority": 4,
+      "passes": false,
+      "notes": "[risk-keywords] audit_log + admin_audit_log + security · medium 关键词命中(business logic + audit). [audit-extra] grep audit 仅 append(R-A4 + 项目 CLAUDE.md §5.1)· redact sensitive(password/token/secret).",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/admin-audit-service.ts",
+        "apps/api/src/lib/admin/audit-helpers.ts",
+        "tests/unit/admin/auditLog-middleware.test.ts",
+        "tests/unit/admin/admin-audit-service.test.ts",
+        "tests/integration/admin/audit-log-write.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/middleware/admin/auditLog.ts",
+        "apps/api/src/trpc/middleware/admin/index.ts",
+        "apps/api/src/trpc/procedures/admin.ts",
+        "apps/api/src/trpc/routers/admin/auth.ts",
+        "apps/api/src/trpc/middleware/admin/adminRLS.ts",
+        "apps/api/src/trpc/middleware/admin/approvalGateCheck.ts"
+      ],
+      "test_command": "pnpm test tests/unit/admin/auditLog-middleware.test.ts tests/unit/admin/admin-audit-service.test.ts tests/integration/admin/audit-log-write.test.ts && pnpm typecheck && pnpm lint --max-warnings=0",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-021",
+          "lesson": "admin 跨账号查必写 admin_audit_log cross_account_query event · 法务取证生命线",
+          "antipattern": "❌ admin procedure 跨账号查通了 · 但 audit_log 没写 cross_account_query · 法务取证时无法溯源",
+          "correct": "✅ adminRLS middleware 设 ctx.crossAccountAccessed=true · auditLog middleware 后置自动写 eventType='cross_account_query' · accessedAccountIds 从 result/WHERE 推断"
+        },
+        {
+          "source_prd": "QuanQn-PRD-10",
+          "source_story": "Project-CLAUDE-§5.1",
+          "lesson": "admin_audit_log 是 append-only · 不允许 UPDATE / DELETE / UPSERT · 任何修改都得新 row(改 statusChange via new row)",
+          "antipattern": "❌ approval 状态从 pending 改 approved · prisma.adminAuditLog.update({ where: ... data: { status: 'approved' }})",
+          "correct": "✅ 写新 row eventType='approval_request_resolve' status='approved' · approvalRequestId 关联原 row · 原 row 不动 · grep 'adminAuditLog.update|delete|upsert' = 0"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008",
+          "lesson": "敏感字段(password/token/apiKey/secret/credential)必须 redact · 防止 audit_log 成为攻击面",
+          "antipattern": "❌ logAdminAction({ requestedPayload: input }) 直接写 input · input.password='xxx' 明文进 audit",
+          "correct": "✅ requestedPayload: redactSensitiveFields(input) · grep redactSensitiveFields ≥ 1 · 测试 redact 覆盖率(password/token/apiKey/secret/credential 关键词)"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "admin Layout 骨架 · TopBar(60px)+ Sidebar 16 域占位(240px)+ AuditDrawer + StatusBar · Aurelian Dark 密集模式",
+      "description": "As super_admin / admin 登录用户, I want 访问 /admin 看到完整 layout(TopBar 60px + Sidebar 240px 16 域分 4 组 P0/P0/P1/P2 + 主区 + AuditDrawer 右抽屉 + StatusBar 底部 24px)· 复用 packages/ui/base Aurelian Dark + 新加 packages/ui/admin 密集模式 tokens(row 32px + font 13px)· 16 域 placeholder 各显示 'PRD-XX 域 N 待落地' + 域简介, So that PRD-10 完成时 super_admin 真能 login → 进 admin → 看到完整 UX 框架 · PRD-11+ 只替换 placeholder.tsx 即可",
+      "acceptanceCriteria": [
+        "apps/admin/src/layouts/AdminLayout.tsx 主 layout · grid 模板 topbar(60px)+ sidebar(240px)+ main(自适应)+ audit-drawer(portal)+ status-bar(24px)",
+        "apps/admin/src/components/admin/TopBar.tsx · 品牌 + activeAdminUser badge + role badge + logout dropdown + 🔔 audit drawer toggle",
+        "apps/admin/src/components/admin/Sidebar.tsx · 16 域分 4 组(P0 业务核心 6 + P0 内容审核 2 + P1 健康度 5 + P2 高级 3)· NavLink + isActive highlight · ScrollArea + h-[calc(100vh-60px-48px)]",
+        "apps/admin/src/components/admin/AuditDrawer.tsx · React Portal slide-from-right · admin.audit.listMine query + 30s polling · 50 条 row + ESC/outside click 关",
+        "apps/admin/src/components/admin/StatusBar.tsx · 底部 1 行 24px · ENV / RLS / WAF / MFA / Role 5 字段显示 · stub 状态全黄",
+        "apps/admin/src/lib/admin-routes.ts · 16 域 metadata array · path/label/emoji/prd(11/12/13/14)/requiredRole/summary · sidebar + placeholder 共用",
+        "apps/admin/src/pages/admin/placeholder/{nsm,users,accounts,cost,audit,invites,reviewTrending,reviewDeepLearn,evolution,prompts,quota,compliance,approval,ab,knowledge,config}.tsx · 16 文件 · 各显示 'PRD-XX 域 N 待落地' + 域简介",
+        "ls apps/admin/src/pages/admin/placeholder/*.tsx | wc -l = 16",
+        "apps/admin/src/router.tsx · React Router · 16 域 route + /login + /admin 默认 + 404",
+        "packages/ui/admin/{index.ts,tokens.ts,DenseTable.tsx} · 密集模式 tokens + DenseTable stub",
+        "apps/admin/src/styles/admin.css · Aurelian Dark 密集模式 CSS · row hover + sidebar active + drawer slide animation",
+        "apps/api/src/trpc/routers/admin/audit.ts · audit.listMine procedure stub · 返当前 admin 最近 50 条 admin_audit_log",
+        "tests/unit/admin/layout.test.tsx 6 unit pass · AdminLayout render + topbar + sidebar 16 + logout + drawer",
+        "tests/unit/admin/sidebar.test.tsx 6 unit pass · 16 域 4 组 + isActive + folding + keyboard nav",
+        "tests/unit/admin/audit-drawer.test.tsx 6 unit pass · open/close/list/polling/empty",
+        "grep 'import.*LLMGateway|llmGateway' apps/admin/src/ = 0(R-A5)· admin 不调 LLM",
+        "grep 'process.env.OPENAI_API_KEY|process.env.ANTHROPIC_API_KEY' apps/admin/src/ = 0(R-A5)",
+        "Typecheck passes",
+        "Use agent-browser to open /admin after login",
+        "TopBar 显示 'QuanQn Admin' 品牌 + 'super_admin' role badge + email super@quanqn.com",
+        "Sidebar 16 域 4 分组 visible · click 'NSM 仪表盘' → URL /admin/nsm + placeholder 'PRD-11 · 域 ① NSM 仪表盘 · 待落地' 显示",
+        "Click 🔔 → AuditDrawer slide-in · 显示 admin_login row 1 条 · ESC 关闭",
+        "StatusBar 底部显示 ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 5,
+      "passes": false,
+      "notes": "[risk-keywords] layout + sidebar + admin · medium 关键词命中(business logic + UI complexity). [size-hint-warn] 16 placeholder + 4 layout 组件 + 3 tests · 实际工作量 medium-large · ralph 监控 dev/validator 超时.",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/layouts/AdminLayout.tsx",
+        "apps/admin/src/components/admin/TopBar.tsx",
+        "apps/admin/src/components/admin/Sidebar.tsx",
+        "apps/admin/src/components/admin/AuditDrawer.tsx",
+        "apps/admin/src/components/admin/StatusBar.tsx",
+        "apps/admin/src/lib/admin-routes.ts",
+        "apps/admin/src/router.tsx",
+        "apps/admin/src/pages/admin/placeholder/nsm.tsx",
+        "apps/admin/src/pages/admin/placeholder/users.tsx",
+        "apps/admin/src/pages/admin/placeholder/accounts.tsx",
+        "apps/admin/src/pages/admin/placeholder/cost.tsx",
+        "apps/admin/src/pages/admin/placeholder/audit.tsx",
+        "apps/admin/src/pages/admin/placeholder/invites.tsx",
+        "apps/admin/src/pages/admin/placeholder/reviewTrending.tsx",
+        "apps/admin/src/pages/admin/placeholder/reviewDeepLearn.tsx",
+        "apps/admin/src/pages/admin/placeholder/evolution.tsx",
+        "apps/admin/src/pages/admin/placeholder/prompts.tsx",
+        "apps/admin/src/pages/admin/placeholder/quota.tsx",
+        "apps/admin/src/pages/admin/placeholder/compliance.tsx",
+        "apps/admin/src/pages/admin/placeholder/approval.tsx",
+        "apps/admin/src/pages/admin/placeholder/ab.tsx",
+        "apps/admin/src/pages/admin/placeholder/knowledge.tsx",
+        "apps/admin/src/pages/admin/placeholder/config.tsx",
+        "packages/ui/admin/tokens.ts",
+        "packages/ui/admin/DenseTable.tsx",
+        "apps/api/src/trpc/routers/admin/audit.ts",
+        "tests/unit/admin/layout.test.tsx",
+        "tests/unit/admin/sidebar.test.tsx",
+        "tests/unit/admin/audit-drawer.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/App.tsx",
+        "apps/admin/src/main.tsx",
+        "apps/admin/tailwind.config.ts",
+        "apps/admin/src/styles/admin.css",
+        "packages/ui/admin/index.ts",
+        "apps/api/src/trpc/routers/admin/index.ts"
+      ],
+      "test_command": "pnpm test tests/unit/admin/layout.test.tsx tests/unit/admin/sidebar.test.tsx tests/unit/admin/audit-drawer.test.tsx && pnpm --filter @quanqn/admin typecheck && pnpm --filter @quanqn/admin lint --max-warnings=0",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-022",
+          "lesson": "主应用前端 apps/web 不能暴露 /admin 入口 · admin 独立 admin.quanqn.com 域名(本 PRD localhost:5174)· 用户必须主动访问",
+          "antipattern": "❌ apps/web/src/router 加 '/admin/*' route · 或 Header 加 'Admin' 跳转链接",
+          "correct": "✅ apps/admin 独立 SPA · admin 用户主动访问 admin 子域名 · 主应用 grep '/admin' apps/web/src/ = 0(R-A2)"
+        },
+        {
+          "source_prd": "QuanQn-PRD-10",
+          "source_story": "R-A5",
+          "lesson": "admin SPA 不调 LLM · 不持 OpenAI/Anthropic API key · 域 ⑩ Prompt 版本灰度 LLM Judge 必须走专门的 admin-llm-judge worker(留 PRD-13)",
+          "antipattern": "❌ apps/admin/src/lib/ 加 LLMGateway import · 或 .env 配 OPENAI_API_KEY",
+          "correct": "✅ apps/admin 完全不导入 LLMGateway · grep 'LLMGateway|llmGateway' apps/admin/ = 0 · grep 'OPENAI_API_KEY|ANTHROPIC_API_KEY' apps/admin/ = 0"
+        },
+        {
+          "source_prd": "QuanQn-PRD-3",
+          "source_story": "REJ-010",
+          "lesson": "LS namespace 必须按 account 隔离 · admin SPA 用 admin_acc_{adminUserId}_* · 不跟主应用 acc_{accountId} 共用",
+          "antipattern": "❌ apps/admin 用 localStorage.setItem('acc_xxx_layout_collapsed') · 跟主应用 LS namespace 冲突",
+          "correct": "✅ apps/admin 用 admin_acc_{adminUserId}_layout_* · D-031 继承 · 类比 getLsKey 函数 admin 版"
+        }
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "adminRLS bypass 跨账号查集成测试 · 真 DB 验证 set_config('app.role','admin') 真 bypass + admin_audit_log 自动写",
+      "description": "As QA / Opus auditor, I want 真 PostgreSQL 集成测试覆盖 adminRLS bypass · seed 2 account + 各 5 history(共 10 行)+ 1 admin_user(super_admin · isMock=true)· 7 test case 矩阵覆盖 · 不走 adminRLS 直接 prisma → 0 rows(主应用 RLS 默认全挡)· 走 adminRLS ctx.adminPrisma → 10 rows(bypass 成功)+ current_setting('app.role')='admin' + ctx.crossAccountAccessed=true + admin_audit_log cross_account_query 自动写 + $transaction rollback + LOCAL=true 不污染连接池 + 主应用 RLS 不被破, So that LD-A3 核心硬验证 · 数据隔离边界铁证",
+      "acceptanceCriteria": [
+        "tests/integration/admin/rls-bypass-cross-account.test.ts · 7 test case · 真 PG + 真 Redis(quanqn_test 测试库)",
+        "test 1 · ctx.prisma.history.findMany({}) 返 0 rows(主应用 RLS 默认无 activeAccountId 全挡)",
+        "test 2 · ctx.adminPrisma.history.findMany({}) 返 10 rows · bypass RLS 成功",
+        "test 3 · ctx.crossAccountAccessed === true(adminRLS middleware 注入 flag)",
+        "test 4 · 跑完 procedure 后 prisma.adminAuditLog.findMany({ where: { eventType: 'cross_account_query' }}) ≥ 1 row · adminUserId=mock admin",
+        "test 5 · adminRLS 内 throw → $transaction rollback → admin_audit_log 不写新 row",
+        "test 6 · current_setting('app.role') 在 LOCAL=true 事务外为空 · 不污染连接池",
+        "test 7 · 主应用 protectedProcedure 走 accountIsolation activeAccountId=account_a · ctx.prisma.history.findMany 返 5 rows(主应用 RLS 不被本 PRD adminRLS 污染)",
+        "tests/integration/admin/fixtures/admin-seed.ts · seedAccounts(N) + seedHistoryPerAccount(accountId, M) + seedAdminUser(role, isMock) + seedAdminSession(adminUserId, ttl)",
+        "tests/integration/admin/helpers/admin-context.ts · createMockAdminContext(adminUserId) 模拟 ctx · req/res stub",
+        "tests/integration/admin/helpers/sql-introspect.ts · getCurrentSetting + getRLSEnabled 用于 assert SQL state",
+        "test:admin-integration script in package.json · vitest run tests/integration/admin/",
+        "vitest.config.ts integration 改 testTimeout=30000 + pool=forks + singleFork=true 防 DB 并发冲突",
+        "grep 'set_config.*app.role.*admin' tests/integration/admin/rls-bypass-cross-account.test.ts ≥ 1",
+        "grep 'current_setting.*app.role' tests/integration/admin/rls-bypass-cross-account.test.ts ≥ 2",
+        "grep 'crossAccountAccessed.*true' tests/integration/admin/rls-bypass-cross-account.test.ts ≥ 1",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-003", "US-004"],
+      "priority": 6,
+      "passes": false,
+      "notes": "[risk-keywords] rls + set_config + executeRaw + 隔离 · high 关键词命中(data-isolation 核心). [audit-extra] SQL 实测必跑 · current_setting('app.role')='admin' 真生效硬验证 · 类比 PRD-2 accountIsolation 测试 pattern.",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/integration/admin/rls-bypass-cross-account.test.ts",
+        "tests/integration/admin/fixtures/admin-seed.ts",
+        "tests/integration/admin/helpers/admin-context.ts",
+        "tests/integration/admin/helpers/sql-introspect.ts"
+      ],
+      "files_to_modify": [
+        "prisma/seed.ts",
+        "package.json",
+        "vitest.config.ts"
+      ],
+      "test_command": "pnpm test:admin-integration && pnpm typecheck",
+      "size_hint": "small",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-008",
+          "lesson": "prisma findMany 必带 where 过滤(除 adminRLS bypass 例外)· 即使 RLS 兜底 · ORM 层也必显式带",
+          "antipattern": "❌ test 内 ctx.adminPrisma.history.findMany({}) 没注释 · audit reviewer 不知是 bypass 还是 bug",
+          "correct": "✅ 注释清楚 '// adminRLS bypass · 跨账号查 · 走 cross_account_query audit' + 测试用例 name 明确 'admin bypass cross-account query'"
+        },
+        {
+          "source_prd": "QuanQn-PRD-2",
+          "source_story": "REJ-013",
+          "lesson": "tRPC procedure 必经 middleware · 不直接信任 input · 测试必须模拟真 middleware 链",
+          "antipattern": "❌ test 内直接 new PrismaClient() + raw $executeRawUnsafe set_config · 跳过 middleware",
+          "correct": "✅ test 通过 adminProcedure 调 mock procedure → middleware 链真跑 → ctx.adminPrisma 真注入 · 用 createMockAdminContext helper"
+        },
+        {
+          "source_prd": "QuanQn-PRD-10",
+          "source_story": "AC-006-E-E3",
+          "lesson": "set_config LOCAL=true 必须真生效 · 否则连接池污染 · 后续非 admin query 也被 set 'app.role'='admin'",
+          "antipattern": "❌ adminRLS middleware 用 SET 'app.role'='admin'(SESSION 级)· 不用 LOCAL=true",
+          "correct": "✅ $executeRawUnsafe `set_config('app.role','admin',true)` · LOCAL=true 仅事务内 · test 6 验证事务外 current_setting 为空"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "收官 · 全套绿灯 + LD-A 5 grep + R-A 6 grep + 1 new e2e(admin login → layout 16 域 → audit drawer 显 admin_login → audit_log row)",
+      "description": "As PRD-10 收官审计 + 用户 review, I want 跑完整套 audit + verify-artifacts manifest · 验证 audit-redlines-admin.sh 5 LD-A + 6 R-A 全 PASS / vitest ≥ 987 / test:judge 55 / admin-integration 9 / e2e 165 / typecheck 7ws 0 / lint 0 / admin-foundation-loop.spec.ts 7 step 全过, So that 全局质量门禁齐 · admin foundation 真可交付 · PRD-11~14 可启动",
+      "acceptanceCriteria": [
+        "scripts/audit-redlines-admin.sh 真接 · 5 LD-A + 6 R-A 一键 grep · exit 0 必含 stdout 'ALL PASS · 5 LD-A + 6 R-A'",
+        "scripts/audit-admin-rls.ts(AST)· @typescript-eslint/parser 解析 apps/api/src/trpc/routers/admin/*.ts · 检查每个 procedure .use chain 含 adminRLS · 例外 ['auth.login','auth.logout','health']",
+        "scripts/audit-approval-gates.ts(AST)· 14 类高风险 procedure 检查 meta.requiresApproval=true(本 PRD 仅 stub 验证机制)",
+        "scripts/audit-admin-rls-tables.sh 真接 · psql 验证 13 admin 表 RLS=false + 18 主应用表 RLS=true · 双向 0 误关",
+        "tests/e2e/admin-foundation-loop.spec.ts 真接 · 7 step · seed admin_user via helper → /login → 输 email → 点 mock login → /admin → TopBar(super_admin badge)+ Sidebar(16 域)+ StatusBar(5 字段)→ click 'NSM 仪表盘' → /admin/nsm placeholder · → click 🔔 → AuditDrawer 显 1 条 admin_login → close drawer → click logout → /login + admin_audit_log ≥ 2 rows(admin_login + admin_logout)",
+        "tests/e2e/helpers/admin-mock-oauth.ts · mockAdminLogin(page, {email,role}) UI 自动化",
+        "tests/e2e/helpers/admin-db-seed.ts · seedAdminUser via admin API 或直接 prisma",
+        "playwright.config.ts · 加 admin project baseURL http://localhost:5174 · workers=1 + fullyParallel=false",
+        "scripts/ralph/verify-artifacts/US-007/manifest.json · 写入 typecheck/vitest/lint/admin-integration/e2e 全套 metric + LD-A grep 5 + R-A grep 6 + 13 admin 表 RLS false + 18 主应用 RLS true 验证",
+        "pnpm test 全套 ≥ 987(907 PRD-9 + ≥ 80 新)· 0 failures",
+        "pnpm test:judge 55(PRD-9 累计 · 本 PRD 不加 judge)",
+        "pnpm test:admin-integration ≥ 9(US-002 1 + US-004 1 + US-006 7)",
+        "pnpm test:e2e ≥ 165(164 PRD-9 + 1 admin-foundation-loop)",
+        "pnpm typecheck 7 ws 0 errors",
+        "pnpm lint --max-warnings=0 退出码 0",
+        "grep 'TODO|FIXME|XXX' apps/admin/src/ apps/api/src/trpc/routers/admin/ apps/api/src/trpc/middleware/admin/ ≤ 5",
+        "grep 'console.log' apps/admin/src/ apps/api/src/trpc/routers/admin/ apps/api/src/trpc/middleware/admin/ ≤ 2(除 auditLog 错误路径 console.error)",
+        "PRD-9 e2e 0 回归 · knowledge-rag-loop.spec.ts 6 tests 全 pass",
+        "Typecheck passes",
+        "Use agent-browser to open localhost:5174/login and run full path",
+        "mock login → redirect to /admin · TopBar + Sidebar + StatusBar 全部渲染",
+        "Click sidebar 'NSM 仪表盘' → URL /admin/nsm + placeholder 内容显示",
+        "Click 🔔 audit drawer → drawer slide-in + admin_login row 显示",
+        "Click logout → redirect to /login · admin_session_id cookie 清除",
+        "Screenshot saved to screenshots/admin-foundation-loop.png"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006"],
+      "priority": 7,
+      "passes": false,
+      "notes": "[收官 medium] 走全套门禁 + manifest 写入 + agent-browser 实测 · audit-extra 包含 §10.3 PRD-10 完成后 Audit Pattern 总和.",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/e2e/admin-foundation-loop.spec.ts",
+        "tests/e2e/helpers/admin-mock-oauth.ts",
+        "tests/e2e/helpers/admin-db-seed.ts",
+        "scripts/audit-redlines-admin.sh",
+        "scripts/audit-admin-rls.ts",
+        "scripts/audit-approval-gates.ts",
+        "scripts/ralph/verify-artifacts/US-007/manifest.json"
+      ],
+      "files_to_modify": [
+        "package.json",
+        "playwright.config.ts",
+        "tests/e2e/global-setup.ts"
+      ],
+      "test_command": "bash scripts/audit-redlines-admin.sh && bash scripts/audit-admin-rls-tables.sh && pnpm test && pnpm test:judge && pnpm test:admin-integration && pnpm test:e2e && pnpm typecheck && pnpm lint --max-warnings=0",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "QuanQn-PRD-10",
+          "source_story": "R3-D061",
+          "lesson": "mock OAuth 不可进 prod · multi-layer 防护 · audit-redlines-admin.sh 必含 prod env mock 检测",
+          "antipattern": "❌ scripts/audit-redlines-admin.sh 不检测 .env.production 是否含 OAUTH_PROVIDER=mock · 仅靠 oauth-factory startup gate 单层防御",
+          "correct": "✅ audit-redlines-admin.sh 加 grep 'OAUTH_PROVIDER.*mock' apps/api/.env.production = 0 · defense-in-depth · 即使 startup gate 被绕过 · audit 也能 catch"
+        },
+        {
+          "source_prd": "QuanQn-base",
+          "source_story": "REJ-019",
+          "lesson": "adminRouter / appRouter 严格分离 · 收官 audit 必跑 grep 检测 · 不互相 import",
+          "antipattern": "❌ ralph 某 US 误写 import { app } from '@/trpc/routers/app' in apps/api/src/trpc/routers/admin/X.ts",
+          "correct": "✅ audit-redlines-admin.sh 含 grep 'from.*routers/app' apps/api/src/trpc/routers/admin/ = 0 (LD-A2)· 反向同 · 收官硬门禁"
+        },
+        {
+          "source_prd": "QuanQn-PRD-4",
+          "source_story": "US-018",
+          "lesson": "收官 e2e 用 workers=1 + fullyParallel=false 序列化 · 防 admin SPA 共享 user state 撞 race",
+          "antipattern": "❌ playwright.config.ts admin project workers=4 + fullyParallel=true · admin login + audit drawer 并发跑 · race condition",
+          "correct": "✅ admin project workers=1 + fullyParallel=false(继承 PRD-4 US-018 教训)· dev@local.test 共享 admin user 串行测"
+        }
+      ]
+    }
+  ]
+}

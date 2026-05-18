@@ -1,0 +1,464 @@
+{
+  "project": "QuanQn 主应用前端完整化(A-Slim · P9.5)",
+  "branchName": "ralph/prd-15-frontend-completeness",
+  "description": "PRD-15 · 6 stub 工具补完 + 2 衍生页新建 + mock data seed + 集成测试 · 让 14 PRD audit 全过升级为本地 dev demo 可演示",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "industries 56 seed + 5 mock IP 账号 + dev OAuth mock",
+      "description": "作为 dev / demo 演示者 · 我需要本地数据库有完整 mock 数据 · 让所有 14 工具 + 9 step + 衍生页 demo 可演示 · 不需要真实 OAuth + 真实用户登录。",
+      "acceptanceCriteria": [
+        "prisma/seed.ts 加 seedIndustries() 函数 · 插入 56 个行业(参 ui/aiipznt_spec.md §Ⅴ 实测原版下拉数据) · 每条 {key,label,category,order} · INSERT 入 industries 表(若不存在则新建 prisma model Industry)",
+        "seedMockIpAccounts() 加 5 个 mock IP 账号 · 覆盖 4 用户路径 + 1 demo: account1(AI 创业者小张 · ip-creator) / account2(OPC 经营者老王 · opc-founder) / account3(实体店主陈姐 · traditional-transform) / account4(MCN 矩阵号 · mcn-manager) / account5(Demo 演示号 · demo)",
+        "apps/api/src/middleware/auth.ts 加 DEV_OAUTH_MOCK env flag · NODE_ENV=development && DEV_OAUTH_MOCK=true 时 auth.me 返 mock user {id:1, email:'dev@quanqn.local', role:'user'} + 自动绑定 5 mock IP 账号 · 不走真 OAuth",
+        "apps/api/src/trpc/routers/ipAccounts.ts list procedure brownfield · NODE_ENV=development 时若 user 没账号自动绑 5 mock 账号",
+        "apps/web/src/components/AccountSwitcher.tsx 头部账号切换器 · 列出 5 mock 账号 · 切换走 useActiveAccount.switchTo(accountId) 整页刷新(§11.5 PRD-3 沉淀)",
+        "apps/web/src/components/IndustryDropdown.tsx 56 行业下拉组件 · 复用到 9 step + 6 工具 page · 按 category 分组显示",
+        "pnpm db:seed 执行后 控制台输出 ✓ industries seeded · created=56 + ✓ mock_ip_accounts seeded · created=5 + 幂等(已存在 skip)",
+        "tests/unit/api/seed.test.ts ≥ 4 it · seed industries 56 + seed mock_ip_accounts 5 + 幂等 re-seed + IndustryDropdown 渲染 56 项",
+        "使用 agent-browser 打开 http://localhost:5173/ · 头部账号下拉 5 mock 账号显示 · 切换 AI 创业者小张 · Step 1 行业 dropdown 显示 56 行业(分类展示) · localStorage.aiip_active_account_id 写入 mock 账号 id",
+        "pnpm vitest 1820+ pass / pnpm typecheck 3 workspace 全 PASS / Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/AccountSwitcher.tsx",
+        "apps/web/src/components/IndustryDropdown.tsx",
+        "tests/unit/api/seed.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "prisma/seed.ts",
+        "apps/api/src/middleware/auth.ts",
+        "apps/api/src/trpc/routers/ipAccounts.ts",
+        "apps/web/src/components/Header.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/api/seed.test.ts",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-1-p0-foundation",
+          "source_story": "US-006",
+          "lesson": "🔴 BLOCKER (security-critical · risk=high) · OAUTH_PROVIDER=google + ?mock=true 旁路 CSRF state 校验 · 攻击者可用 leaked OAuth code 登录别人的账号(经典 OAuth CSRF 攻击)",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-002",
+          "lesson": "**Blocker**: TD-012 修复未执行 · 双 ContextAssembler 并存 · US-002 真实施被 BaseSpecialist bypass",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-11-business-core-domains",
+          "source_story": "US-009",
+          "lesson": "**Blocker**: scheduleAnomalyDetection() 没被任何地方调用 · cron 不会 fire · AC-H-5/H-6 实际不工作",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Copywriting 完整化(ui/ai_copywriting_studio_1)",
+      "description": "作为内容创作者 · 我需要 /tools/copywriting 文案工作室页面 · 输入主题+平台+风格 → CopywritingAgent 生成 markdown 长文案 + SSE 流式 + 历史记录。1:1 实现 ui/ai_copywriting_studio_1/screen.png 视觉设计。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/Copywriting.tsx 完整化(18 行 stub → 200+ 行) · 1:1 实现 ui/ai_copywriting_studio_1/screen.png 设计(2-column · 左 input · 右 output)",
+        "输入字段: topic textarea(≥10 字 必填) + platform select(6 平台 enum) + scriptType select(20 选 1 复用 lib/constants/scripts.ts) + elements checkbox group(22 元素 grouped) + additionalContext textarea",
+        "提交按钮 ✨ 生成爆款文案 · 调 trpc.copywriting.generate.useMutation() · SSE 流式接 PRD-4 CopywritingAgent · 流式渲染走 Streamdown(参 §11.6.4)",
+        "output preview · 流式 markdown(react-markdown · 表格+代码块+列表) · 完成后 复制全文 / 另存为模板 / 保存到历史 三按钮 · 失败明确 error(color=error)",
+        "历史 sidebar(左侧 collapse)· 列最近 10 个生成记录 · 点击恢复 input + output state · 走 trpc.copywriting.history.useQuery()",
+        "URL state useSearchParams · ?topic=xxx&platform=xxx&scriptType=xxx 持久化 · 刷新恢复(SHIELD #2)",
+        "localStorage draft copywriting_draft_${userId}_${activeAccountId} · debounce 1s 自动保存 input(SHIELD #3)",
+        "CopywritingAgent SSE meta chunk · 首 chunk {type:'meta',meta:{model:actualModel}} 显示 UI · cost_log 写入(§11.6.4)",
+        "lazy import + Suspense · const StreamdownPreview = lazy(() => import('@/components/StreamdownPreview'))",
+        "tests/unit/web/pages/Copywriting.test.tsx ≥ 8 it · 使用 agent-browser 打开 /tools/copywriting?platform=xiaohongshu · 流式渲染 + 复制全文 OK",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/components/CopywritingForm.tsx",
+        "apps/web/src/pages/tools/components/CopywritingPreview.tsx",
+        "apps/web/src/pages/tools/components/CopywritingHistory.tsx",
+        "apps/web/src/components/StreamdownPreview.tsx",
+        "tests/unit/web/pages/Copywriting.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/Copywriting.tsx",
+        "apps/web/src/router.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/Copywriting.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-007",
+          "lesson": "**Blocker**: TopicAgent 硬编码 model 'claude-sonnet-4-6' 作为 invokeLLM 返回值 · 违反 D-019 / REJ-003 + 让 cost_log.modelUsed 失准",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-6-p5-video-modules",
+          "source_story": "US-002",
+          "lesson": "**Blocker**: storyboard mode StoryboardSceneSchema 字段不符合 PRD-6 US-001 AC-4 锁定字段表 + 跨 story foundation 协议漂移",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-002",
+          "lesson": "**Blocker**: TD-012 修复未执行 · 双 ContextAssembler 并存 · US-002 真实施被 BaseSpecialist bypass",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "DeepLearning 完整化(ui/_8 · 文案深度学习中心)",
+      "description": "作为内容创作者 · 我需要 /tools/deep-learning 文案深度学习中心页面 · 上传优秀文案 → DeepLearningAgent 解析公式+模式+风格 → 保存学习库 · 后续 Copywriting 时调用。1:1 实现 ui/_8/screen.png。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/DeepLearning.tsx 完整化(18 行 stub → 150+ 行) · 1:1 实现 ui/_8/screen.png 视觉(3-tab: 学习/我的库/公式应用)",
+        "Tab 1 学习: textarea 粘文案(≥100 字) + select source platform · 提交 → trpc.deepLearning.parse.useMutation() → 显示 {coreFormula, hookType, structurePattern, emotionalArc, keywords[]} 结构化结果 · 操作 保存到我的库 / 应用到文案生成",
+        "Tab 2 我的库: DenseTable 列学的文案 · 列 截取文案 80 字 + 公式名 + 平台 + 学习时间 + 操作(应用/删除)",
+        "Tab 3 公式应用: 选公式 → 输入新主题 → 用该公式生成新文案(走 CopywritingAgent + formula prompt 注入)",
+        "URL state 3 tab · ?tab=learn|library|apply(SHIELD #2)",
+        "tRPC 调用: trpc.deepLearning.{parse,list,delete,applyFormula} 4 procedure",
+        "tests/unit/web/pages/DeepLearning.test.tsx ≥ 6 it · agent-browser 打开 /tools/deep-learning?tab=learn · 粘文案+提交 · 解析结果显示 · 保存到我的库后切 Tab 2 见新记录",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/components/DeepLearningTabs.tsx",
+        "tests/unit/web/pages/DeepLearning.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/DeepLearning.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/DeepLearning.test.tsx",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-004",
+      "title": "Monetization + PresentStyles 双 stub 补完(StepForm 抽象)",
+      "description": "作为创作者 · 我需要 /tools/monetization 变现模式生成 + /tools/present-styles 呈现风格选择 · 复用 StepForm 抽象 · 调对应 Specialist。无专门 ui/ 设计稿 · 1:1 fork ARCHITECTURE 描述 + PRD-7。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/Monetization.tsx 完整化(18 行 → 100+ 行) · 复用 <StepForm stepKey='step4b' schema={MonetizationInputSchema}/>(§11.6.3) · input productDescription + audienceProfile + ipPositioning + currentRevenue · 提交 trpc.monetization.generate.useMutation() · output <StepResult/> 渲染 {currentAnalysis,ladder[3 阶段],revenueStructure,successCases[2]}",
+        "apps/web/src/pages/tools/PresentStyles.tsx 完整化(18 行 → 80+ 行) · 输入 textarea 文案 + select platform · 提交 → PresentationAgent 推荐 3-5 种呈现风格(图文/短视频/直播口播/长图文/漫画)· 每种含示例 · trpc.presentStyles.recommend.useMutation()",
+        "URL state useSearchParams · 输入字段持久化 · localStorage draft 各自 key",
+        "tests: tests/unit/web/pages/Monetization.test.tsx ≥ 4 it + tests/unit/web/pages/PresentStyles.test.tsx ≥ 4 it",
+        "agent-browser: 访问 /tools/monetization 填表提交 3 阶段 ladder 渲染 · 访问 /tools/present-styles 输入+提交 5 风格卡片显示",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/unit/web/pages/Monetization.test.tsx",
+        "tests/unit/web/pages/PresentStyles.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/Monetization.tsx",
+        "apps/web/src/pages/tools/PresentStyles.tsx",
+        "packages/schemas/src/specialist-io/monetization.schema.ts",
+        "packages/schemas/src/specialist-io/presentStyles.schema.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/Monetization.test.tsx tests/unit/web/pages/PresentStyles.test.tsx",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-6-p5-video-modules",
+          "source_story": "US-004",
+          "lesson": "**Blocker**: VideoProductionResult.tsx header→key 错位映射 · 违反 PRD-6 AC-2 锁定 \"13 列固定列名\"",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-11-business-core-domains",
+          "source_story": "US-009",
+          "lesson": "**Blocker**: scheduleAnomalyDetection() 没被任何地方调用 · cron 不会 fire · AC-H-5/H-6 实际不工作",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-6-p5-video-modules",
+          "source_story": "US-002",
+          "lesson": "**Blocker**: storyboard mode StoryboardSceneSchema 字段不符合 PRD-6 US-001 AC-4 锁定字段表 + 跨 story foundation 协议漂移",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "PrivateDomain 完整化(ui/_1+_5+_7+_14 · 4 设计稿 · 私域 6 阶段)",
+      "description": "作为 OPC 创业者 · 我需要 /tools/private-domain 私域成交流程工具 · 6 阶段流程(引流→加微→信任→朋友圈打造→成交→复购)· 输入产品+IP 定位+受众 → PrivateDomainAgent 生成完整 6 阶段执行 SOP+话术。1:1 实现 ui/_1+_5+_7+_14 4 设计稿(4 屏 = 4 view mode + URL state)。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/PrivateDomain.tsx 完整化(18 行 → 400+ 行) · 1:1 实现 ui/_1/_5/_7/_14 设计(4 view mode)",
+        "View 1 (ui/_1 流程图) · 6 阶段卡片(引流/加微/信任/朋友圈打造/成交/复购) · 每卡片显示阶段名+描述+状态(未生成/已生成) · 点击展开详情",
+        "View 2 (ui/_5 配置参数) · 配置表单 productDescription textarea + productPrice number + targetAudience textarea + ipPositioning textarea + currentChannel select + monthlyTraffic number",
+        "View 3 (ui/_7 生成结果) · 提交后调 trpc.privateDomain.generate.useMutation() · 渲染 6 阶段完整 SOP · 每阶段 {goal,tactics[],scripts[],metrics[]} · 阶段间连线动画",
+        "View 4 (ui/_14 历史回看) · DenseTable 列历史记录 · 点击恢复 View 1-3 状态",
+        "URL state ?view=flow|config|result|history 切换(SHIELD #2)",
+        "localStorage draft private_domain_draft_${userId} debounce 1s 持久化",
+        "PrivateDomainAgent SSE 流式输出 · 每阶段独立 chunk · 复用 §11.6.4 meta chunk · cost_log 写入",
+        "tests/unit/web/pages/PrivateDomain.test.tsx ≥ 10 it · 4 view 切换 + 6 阶段卡片 + 表单验证 + 流式渲染 + 历史 view + draft localStorage",
+        "agent-browser 打开 /tools/private-domain?view=config 填表+提交 跳 view=result 6 阶段全渲染 切 view=history 见新记录",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/components/PrivateDomainFlowView.tsx",
+        "apps/web/src/pages/tools/components/PrivateDomainConfigView.tsx",
+        "apps/web/src/pages/tools/components/PrivateDomainResultView.tsx",
+        "apps/web/src/pages/tools/components/PrivateDomainHistoryView.tsx",
+        "apps/web/src/pages/tools/components/PhaseCard.tsx",
+        "tests/unit/web/pages/PrivateDomain.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/PrivateDomain.tsx",
+        "packages/schemas/src/specialist-io/privateDomain.schema.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/PrivateDomain.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-006",
+      "title": "Trending 完整化(ui/_9 · 全网爆款情报库)",
+      "description": "作为内容创作者 · 我需要 /tools/trending 全网爆款情报库 · 显示最新爆款选题 + 多维筛选(平台/行业/时间) + 一键跳 Step 7 + 我的收藏。1:1 实现 ui/_9/screen.png。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/tools/Trending.tsx 完整化(43 行 stub → 300+ 行) · 1:1 实现 ui/_9 设计",
+        "顶部 KPI 卡片: 总爆款数 + 本周新增 + 我收藏数 + 上次更新时间",
+        "多维筛选 toolbar: platform multi-select(6 平台) + industry IndustryDropdown(US-001 56 行业) + 时间范围 select(今日/本周/本月/最近 3 月) + 排序(点赞/评论/转发/收藏) + 搜索 input 关键词模糊",
+        "DenseTable 列爆款: 排名 + platform icon + title(60 字截断) + 行业 + 点赞 + 评论 + 转发 + 收藏 + 抓取时间 + 操作(查看详情 Drawer / 一键复制到 Step 7 / 收藏 ⭐ / 我的选题库 +)",
+        "分页 · 每页 20 条 · 无限滚动 + 虚拟列表 react-virtualized",
+        "URL state ?platform=xxx&industry=yyy&time=week&sort=likes&search=zzz&page=2(深链 7 字段)",
+        "收藏功能 trpc.trending.favorite.useMutation() · 收藏 trending item 同步进 /my-topics(US-007 消费)",
+        "一键跳 Step 7 · 点 → Step 7 跳 /step/7?topic=<title>&source=trending&trendingId=xxx(§7.5 协议锁)",
+        "详情 Drawer · 点查看详情 弹右侧 Drawer 显示 原文链接 + 完整内容 + 复制内容/保存到我的库/一键到 Step 7 三按钮",
+        "后端 API: trpc.trending.{list,favorite,detail} · favorite 可能新建 procedure(brownfield PRD-6 trending router)",
+        "tests/unit/web/pages/Trending.test.tsx ≥ 12 it · 4 KPI + 5 维筛选 + DenseTable + URL state(7 字段) + 收藏 + 跳 Step 7 + 详情 Drawer",
+        "agent-browser 打开 /tools/trending?platform=xiaohongshu&sort=likes 看爆款列表 收藏一条 跳 /my-topics 见收藏 一键到 Step 7 跳 /step/7?topic=...&trendingId=xxx",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/components/TrendingFilters.tsx",
+        "apps/web/src/pages/tools/components/TrendingTable.tsx",
+        "apps/web/src/pages/tools/components/TrendingDetailDrawer.tsx",
+        "tests/unit/web/pages/Trending.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/Trending.tsx",
+        "apps/api/src/trpc/routers/trending.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/Trending.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-14-advanced-domains",
+          "source_story": "US-012",
+          "lesson": "**Blocker**: trending-scraper/worker.ts:65 用错函数 · stop_trending_scraper emergency stop 永远不生效",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "/my-topics 衍生页(ui/_11+_13 · 我的选题库)",
+      "description": "作为内容创作者 · 我需要 /my-topics 我的选题库页面 · 聚合 step5(主题选择)+ trending(收藏) + 手动添加的所有选题 · 多维筛选 + 一键跳 Step 7。1:1 实现 ui/_11+_13(2 屏: 卡片视图 + 表格视图)。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/MyTopics.tsx 新建(200+ 行) · 1:1 实现 ui/_11+_13 设计(2 view: 卡片视图 + 表格视图)",
+        "View 1 (ui/_11 卡片视图 默认) · 网格布局 · 每选题卡片显示 title + source badge(step5/trending/manual) + 行业 tag + 创建时间 + 操作(跳 Step 7 / 编辑 / 删除)",
+        "View 2 (ui/_13 表格视图) · DenseTable · 列 title/source/行业/平台/创建时间/操作",
+        "View 切换 URL state ?view=card|table",
+        "数据源聚合 trpc.myTopics.list.useQuery({source,industry,page}) · 聚合 3 类: step5 输出 topic(step_data 表 stepKey='step5_topics_v2') + trending 收藏(trending_favorites 表 US-006 新建) + 手动添加(trpc.myTopics.add)",
+        "多维筛选: source All/step5/trending/manual + industry IndustryDropdown + search input title 模糊",
+        "添加新选题按钮 + Modal · 手动添加表单",
+        "一键跳 Step 7 · 点选题 → Step 7 跳 /step/7?topic=${title}&source=mytopics&topicId=xxx(§7.5 协议锁)",
+        "tests/unit/web/pages/MyTopics.test.tsx ≥ 8 it · 2 view 切换 + URL state + 3 source 聚合 + 筛选 + 添加 Modal + 跳 Step 7 + 编辑 + 删除",
+        "后端 apps/api/src/trpc/routers/myTopics.ts 新建 5 procedure(list/add/update/delete/countBySource) · 聚合 3 数据源 + tests/unit/api/myTopics.test.ts",
+        "agent-browser 打开 /my-topics?view=card&source=trending 见收藏的爆款 点 → Step 7 跳 step 7",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-006"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/MyTopics.tsx",
+        "apps/web/src/pages/components/MyTopicsCard.tsx",
+        "apps/web/src/pages/components/MyTopicsTable.tsx",
+        "apps/web/src/pages/components/AddTopicModal.tsx",
+        "apps/api/src/trpc/routers/myTopics.ts",
+        "tests/unit/web/pages/MyTopics.test.tsx",
+        "tests/unit/api/myTopics.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/_app.ts",
+        "apps/web/src/router.tsx",
+        "apps/web/src/components/Header.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/MyTopics.test.tsx tests/unit/api/myTopics.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-008",
+      "title": "/history 衍生页(ui/_12+_15 · 操作历史)",
+      "description": "作为内容创作者 · 我需要 /history 操作历史记录页面 · 聚合所有工具调用历史 · 按时间倒序 + 多工具筛选 + 一键恢复 input + 一键查看 output。1:1 实现 ui/_12+_15(2 屏: timeline + dashboard)。",
+      "acceptanceCriteria": [
+        "apps/web/src/pages/History.tsx 新建(200+ 行) · 1:1 实现 ui/_12+_15 设计(2 view: timeline + dashboard)",
+        "View 1 (ui/_12 timeline 默认) · 时间线视图 · 按天分组 · 每条 工具 icon + 工具名 + input 摘要 60 字 + output 摘要 60 字 + 时间 HH:MM + 操作(查看完整 Drawer / 恢复并重跑 / 删除)",
+        "View 2 (ui/_15 dashboard) · 工具使用统计 · 4 KPI 卡片 总调用数 + 最常用工具 Top 5 + 平均耗时 + 失败率 + 4 chart(每日调用趋势/工具分布 pie/耗时分布 histogram/模型分布 bar)",
+        "View 切换 URL state ?view=timeline|dashboard",
+        "多工具筛选 复选 14 工具 multi-select · URL state ?tools=copywriting,videoAnalysis",
+        "时间范围 今日/本周/本月/自定义日期",
+        "后端 trpc.history.list.useQuery({tools,dateRange,page}) · 聚合 cost_log 表 · 按 timestamp 倒序",
+        "恢复并重跑 跳对应工具 page · URL params 携带 input ?topic=xxx&restored=historyId · input 字段自动填充(§7.5 协议锁)",
+        "tests/unit/web/pages/History.test.tsx ≥ 8 it · 2 view 切换 + URL state + timeline 按天分组 + dashboard 4 KPI + 4 chart + 工具筛选 + 时间范围 + 恢复并重跑跳转 + 查看完整 Drawer",
+        "后端 apps/api/src/trpc/routers/history.ts 新建 4 procedure(list/detail/delete/stats) + tests/unit/api/history.test.ts",
+        "agent-browser 打开 /history?view=timeline&tools=copywriting 见时间线 切 view=dashboard 见 4 chart 点恢复并重跑 跳 /tools/copywriting?topic=xxx&restored=...",
+        "pnpm vitest pass / typecheck PASS / Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/History.tsx",
+        "apps/web/src/pages/components/HistoryTimeline.tsx",
+        "apps/web/src/pages/components/HistoryDashboard.tsx",
+        "apps/web/src/pages/components/HistoryDetailDrawer.tsx",
+        "apps/api/src/trpc/routers/history.ts",
+        "tests/unit/web/pages/History.test.tsx",
+        "tests/unit/api/history.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/api/src/trpc/routers/_app.ts",
+        "apps/web/src/router.tsx",
+        "apps/web/src/components/Header.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/web/pages/History.test.tsx tests/unit/api/history.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-009",
+      "title": "verify-prd-15.sh + 4 E2E flows(收官)",
+      "description": "作为发布工程师 · 我需要 scripts/verify-prd-15.sh 收官验收脚本 + 4 个 E2E flows · 验证 PRD-15 9 US 全部正确实施 + 跨工具流程跑得通。1:1 复用 PRD-14 US-015 verify-prd-14.sh 框架。",
+      "acceptanceCriteria": [
+        "scripts/verify-prd-15.sh 9 section ≥ 50 checks · §1 静态 audit-redlines + audit-redlines-admin 全 PASS · §2 静态 schema(industries + 5 mock IP 账号) · §3 静态 6 工具 page ≥ 100 行 · §4 静态 2 衍生页 exist · §5 静态 5 component exist · §6 后端 router exist · §7 admin router 全 PASS(继承 PRD-14) · §8 admin pages 全在(继承 PRD-14) · §9 E2E 4 flows + typecheck",
+        "E2E Flow 1: 私域成交流程 E2E(tests/e2e/prd15-private-domain-e2e.test.ts ≥ 8 step) · 登录 mock OPC 创业者 → 打开 /tools/private-domain?view=config → 填 6 字段 + 提交 → 流式 6 阶段 → 切 view=history 见新记录 → cost_log 写入",
+        "E2E Flow 2: 文案工作室 + DeepLearning E2E(tests/e2e/prd15-copywriting-flow-e2e.test.ts ≥ 8 step) · 登录个人 IP 起号者 → 打开 /tools/deep-learning 学一段文案 + 保存我的库 → 打开 /tools/copywriting 选脚本类型 + 元素 + 主题 + 提交 → 验证 SSE 流式 → 保存到历史 → 切 /history?tools=copywriting 见新记录 → cost_log 写入",
+        "E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流(tests/e2e/prd15-trending-to-step7-e2e.test.ts ≥ 7 step) · 登录 mock 账号 → 打开 /tools/trending?platform=xiaohongshu 收藏一条 → 跳 /my-topics?view=card&source=trending 见收藏 → 点 → Step 7 跳 /step/7?topic=...&trendingId=xxx → Step 7 input 自动填充 + 提交 → 验证 trending_favorites + step_data 写入",
+        "E2E Flow 4: Mock OAuth + 5 账号切换(tests/e2e/prd15-mock-auth-e2e.test.ts ≥ 6 step) · DEV_OAUTH_MOCK=true → auth.me 返 mock user → Header 显示 5 mock 账号下拉 → 切换 OPC 创业者 localStorage.aiip_active_account_id 写入 → reload 仍登录 + 账号选中 → 切换 MCN 矩阵号 KPI followers=50000",
+        "pnpm audit:redlines / audit:ld / audit:redlines-admin / audit:admin-rls-tables / audit:admin-rls 5/5 ALL PASS",
+        "pnpm test ≥ 2050 pass(基线 PRD-14 2012 + ≥38 新) 0 fail",
+        "pnpm typecheck 0 errors all 4 workspace packages",
+        "bash scripts/verify-prd-15.sh 0 failures 9 sections all PASS",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-15.sh",
+        "tests/e2e/prd15-private-domain-e2e.test.ts",
+        "tests/e2e/prd15-copywriting-flow-e2e.test.ts",
+        "tests/e2e/prd15-trending-to-step7-e2e.test.ts",
+        "tests/e2e/prd15-mock-auth-e2e.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "bash scripts/verify-prd-15.sh && pnpm vitest run tests/e2e/prd15-*.test.ts",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-002",
+          "lesson": "**Blocker**: TD-012 修复未执行 · 双 ContextAssembler 并存 · US-002 真实施被 BaseSpecialist bypass",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        },
+        {
+          "source_prd": "prd-11-business-core-domains",
+          "source_story": "US-009",
+          "lesson": "**Blocker**: scheduleAnomalyDetection() 没被任何地方调用 · cron 不会 fire · AC-H-5/H-6 实际不工作",
+          "antipattern": "(从 reject feedback 提取 · 见 source)",
+          "correct": "见 source PRD 实证修对"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="57" failures="0" errors="0" time="0.154">
+    <testsuite name="tests/unit/api/history-router.test.ts" timestamp="2026-05-15T23:33:04.687Z" hostname="returndeMacBook-Pro.local" tests="16" failures="0" errors="0" skipped="0" time="0.006864375">
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-2: list all — findMany called with accountId + orderBy createdAt desc" time="0.002668958">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-2: filter by agentMode — where includes agentMode" time="0.000486416">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-2: filter by agentId" time="0.000252583">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-2: filter by sourceType" time="0.000284875">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-2: dateRange=last_7d → createdAt gte filter added" time="0.000262208">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-2: pagination — take=limit skip=offset passed through" time="0.000199375">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list &gt; AC-12: limit &gt; 100 → zod BAD_REQUEST" time="0.000467958">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.detail &gt; AC-3: detail — findFirst with id + accountId" time="0.000236125">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.detail &gt; AC-13: detail not found → NOT_FOUND" time="0.00017025">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list US-013 &gt; US-013 AC-8 (1): list filter agentMode=production → findMany includes production filter" time="0.000243958">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.list US-013 &gt; US-013 AC-8 (2): list filter agentMode=acquisition(video) → VideoAgent rows returned" time="0.000181125">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.detail US-013 &gt; US-013 AC-8 (3): storyboard detail → scenes array returned" time="0.000233292">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.detail US-013 &gt; US-013 AC-8 (4): detail join Asset → sceneImageUrl from Asset.publicUrl" time="0.000202041">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.detail US-013 &gt; US-013 AC-8 (5): cross-account detail → NOT_FOUND (accountId double-layer guard)" time="0.000208709">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.delete &gt; AC-4: delete — deleteMany with id + accountId → { ok: true }" time="0.000239166">
+        </testcase>
+        <testcase classname="tests/unit/api/history-router.test.ts" name="history.delete &gt; AC-13: delete cross-account blocked by explicit accountId where" time="0.000108833">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/api/history.test.ts" timestamp="2026-05-15T23:33:04.688Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.007601084">
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — costLog.count called with accountId (total + fail)" time="0.000540625">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — failureRate = failCount / totalCalls" time="0.000176791">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — failureRate = 0 when totalCalls = 0" time="0.00012625">
+        </testcase>
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — topTools from groupBy agentId (5 entries)" time="0.000191583">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — dailyTrend groups createdAt by date key" time="0.004397625">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — durationHistogram buckets &lt;1s/1-3s/3-10s/10-30s/&gt;30s" time="0.000217042">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — modelDistribution from groupBy modelUsed" time="0.000185459">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — dateRange=today applies createdAt ≥ midnight filter" time="0.000545458">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.stats &gt; AC-10: stats — tools filter maps slugs to agentId IN list" time="0.000331375">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.list tools filter (AC-7) &gt; list with tools=[&quot;copywriting&quot;] → where.agentId.in includes CopywritingAgent" time="0.000257875">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.list tools filter (AC-7) &gt; list with tools=[&quot;aiVideo&quot;,&quot;videoProduction&quot;] → agentId.in includes VideoAgent" time="0.000144584">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.list tools filter (AC-7) &gt; list without tools → no agentId.in filter (backward compat)" time="0.000118417">
+        </testcase>
+        <testcase classname="tests/unit/api/history.test.ts" name="history.list tools filter (AC-7) &gt; list dateRange=today → createdAt ≥ midnight filter" time="0.000134125">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/web/pages/History.test.tsx" timestamp="2026-05-15T23:33:04.688Z" hostname="returndeMacBook-Pro.local" tests="27" failures="0" errors="0" skipped="0" time="0.002306583">
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="View switching (AC-1 + AC-2 + AC-3) &gt; History.tsx has 200+ lines" time="0.000160333">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="View switching (AC-1 + AC-2 + AC-3) &gt; timeline view: data-testid=&quot;history-timeline&quot;" time="0.000076292">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="View switching (AC-1 + AC-2 + AC-3) &gt; dashboard view: data-testid=&quot;history-dashboard&quot;" time="0.000066875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="View switching (AC-1 + AC-2 + AC-3) &gt; view toggle buttons: view-timeline-btn + view-dashboard-btn + view-toggle" time="0.000083459">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="URL state (AC-4 + AC-5 + AC-6) &gt; uses useSearchParams for URL state" time="0.000092875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="URL state (AC-4 + AC-5 + AC-6) &gt; URL ?view param determines timeline|dashboard" time="0.000080208">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="URL state (AC-4 + AC-5 + AC-6) &gt; URL ?tools param for multi-tool filter (AC-5)" time="0.000104542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="URL state (AC-4 + AC-5 + AC-6) &gt; URL ?dateRange param: today/week/month/all (AC-6)" time="0.000097625">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Timeline day grouping (AC-2) &gt; groupByDay function exists and groups by day key" time="0.000062291">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Timeline day grouping (AC-2) &gt; timeline shows tool icon + name + input summary + output summary + time + actions" time="0.000081125">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Timeline day grouping (AC-2) &gt; action buttons: view detail (eye), restore (refresh), delete (trash)" time="0.000072917">
+        </testcase>
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Dashboard KPI + charts (AC-3) &gt; 4 charts: daily-trend + tool-distribution + duration-histogram + model-distribution" time="0.000088542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Dashboard KPI + charts (AC-3) &gt; uses recharts: LineChart + PieChart + BarChart + ResponsiveContainer" time="0.000094334">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Dashboard KPI + charts (AC-3) &gt; dashboard calls trpc.history.stats.useQuery with dateRange + tools" time="0.000061542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Restore and re-run (AC-8) &gt; getToolRestoreUrl function returns URL with topic + restored params" time="0.00006875">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Restore and re-run (AC-8) &gt; restore navigates to tool page via useNavigate" time="0.000069542">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Restore and re-run (AC-8) &gt; mode mappings cover free/boom/structural/viral/production/storyboard/acquisition" time="0.000083958">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Detail Drawer (AC-9) &gt; HistoryDetailDrawer component with data-testid=&quot;history-detail-drawer&quot;" time="0.000061959">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Detail Drawer (AC-9) &gt; drawer shows full content (not truncated)" time="0.000065167">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Detail Drawer (AC-9) &gt; drawer uses Sheet component" time="0.000061916">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Backend stats procedure (AC-10) &gt; history.ts exports historyRouter with stats procedure" time="0.000053166">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Backend stats procedure (AC-10) &gt; stats queries cost_log via prisma.costLog.count/aggregate/groupBy/findMany" time="0.0000575">
+        </testcase>
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="Backend stats procedure (AC-10) &gt; toolsToAgentIds maps tool slugs to agent IDs" time="0.000059375">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="14-tool filter chips (AC-5) &gt; TOOL_DEFS has 14+ tool entries" time="0.000116791">
+        </testcase>
+        <testcase classname="tests/unit/web/pages/History.test.tsx" name="14-tool filter chips (AC-5) &gt; tool slugs include all major tools" time="0.000096875">
+        </testcase>
+    </testsuite>
+</testsuites>

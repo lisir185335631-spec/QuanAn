@@ -1,42 +1,65 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
-{"level":"info","time":"2026-05-11T04:27:30.761Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.761Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.762Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.762Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.762Z","pid":49947,"hostname":"returndeMacBook-Pro.local","accountId":10,"traceId":"tr_10_DailyTaskAgent_1778473650762_ywhc","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","accountId":11,"traceId":"tr_11_DailyTaskAgent_1778473650763_l6ti","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","accountId":12,"traceId":"tr_12_DailyTaskAgent_1778473650763_jyqb","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.763Z","pid":49947,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
- ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-9: 3 active accounts → runForAllActiveAccounts → 3 jobs enqueued
- ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-9: Worker 处理所有 3 jobs → DailyTask 表 upsert 3 行
- ✓ tests/unit/api/daily-task-integration.test.ts > DailyTask Integration — fan-out → enqueue → upsert chain > AC-5: 同日同账号 jobId 相同 → BullMQ 幂等保证
-{"level":"info","time":"2026-05-11T04:27:30.774Z","pid":49946,"hostname":"returndeMacBook-Pro.local","accountId":1,"traceId":"tr_1_DailyTaskAgent_1778473650774_k7hq","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-11T04:27:30.775Z","pid":49946,"hostname":"returndeMacBook-Pro.local","accountId":2,"traceId":"tr_2_DailyTaskAgent_1778473650775_gf05","msg":"daily_task.cold_start"}
-{"level":"warn","time":"2026-05-11T04:27:30.776Z","pid":49946,"hostname":"returndeMacBook-Pro.local","agentId":"DailyTaskAgent","traceId":"tr_4_DailyTaskAgent_1778473650776_61i5","issues":"[\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 3,\n    \"type\": \"array\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Array must contain at least 3 element(s)\",\n    \"path\": [\n      \"tasks\"\n    ]\n  }\n]","msg":"daily_task.schema_validation.retry"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-11T04:27:30.777Z","pid":49946,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T1: 冷启动 stepData=0 → 返回 5 模板 tasks · isFallback=false · modelUsed=cold-start-template
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T2: 冷启动 evolutionProfile=null (有 stepData) → 仍走模板
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T3: 非冷启动 → 调 LLMGateway.complete(lightweight) · 返回 LLM tasks
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T4: LLM 输出 schema 不合规 → retry 1 次 · 二次成功返回
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T5: buildColdStartTasks() 返回 5 条合规 TaskItem (uuid · ctaUrl 以 / 开头)
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T6: cron schedule string "0 0 * * *" 符合 5-field cron 格式
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T7: runForAllActiveAccounts — 5 活跃账号 → enqueue 5 jobs
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T8: DailyTask BullMQ Worker 创建时 concurrency=5
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T9: 同日同账号 jobId 相同 → BullMQ 保证幂等
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-8 T10: Worker 注册了 failed 事件监听器 (dead-letter 告警)
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-12 LJ1: LLM 真接输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5
- ✓ tests/unit/api/daily-task-agent.test.ts > DailyTaskAgent > AC-12 LJ2: cold-start 模板输出 — tasks 格式完整 · 质量评分 ≥ 4.0/5
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 1ms
+ ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 3ms
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step8.test.ts (9 tests) 4ms
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 25ms
+ ✓ src/pages/step/__tests__/Step4b.test.tsx (7 tests) 3ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 121ms
+stderr | src/pages/step/__tests__/Step8.test.tsx > Step8 > renders h1 with 直播策划
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- Test Files  2 passed (2)
-      Tests  15 passed (15)
-   Start at  12:27:30
-   Duration  290ms (transform 77ms, setup 7ms, collect 250ms, tests 7ms, environment 0ms, prepare 45ms)
+ ✓ src/pages/step/__tests__/Step8.test.tsx (7 tests) 143ms
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 2ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 3ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 84ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 37ms
+stderr | src/pages/step/__tests__/Step7.test.tsx > Step7 > renders h1 with 文案生成
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step7.test.tsx (6 tests) 92ms
+stderr | src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step5.test.tsx (5 tests) 133ms
+stderr | src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step6.test.tsx (5 tests) 101ms
+stderr | src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step1.test.tsx (4 tests) 94ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 1ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
+stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3b.test.tsx (4 tests) 131ms
+stderr | src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3.test.tsx (4 tests) 62ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 36ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/test/pages.test.tsx (30 tests) 190ms
+
+ Test Files  24 passed (24)
+      Tests  181 passed (181)
+   Start at  08:25:53
+   Duration  2.28s (transform 1.27s, setup 989ms, collect 4.81s, tests 1.27s, environment 6.36s, prepare 1.08s)
 

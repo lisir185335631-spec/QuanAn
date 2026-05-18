@@ -13,6 +13,7 @@ import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import './styles/globals.css';
+import './styles/aiipznt-motion.css';
 import { trpc, trpcClient, queryClient } from './lib/trpc';
 import { router } from './router';
 

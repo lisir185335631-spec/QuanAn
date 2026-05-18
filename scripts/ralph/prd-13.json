@@ -1,0 +1,771 @@
+{
+  "project": "QuanQn",
+  "branchName": "ralph/prd-13-health-domains",
+  "description": "PRD-13 · P9.3 P1 健康度域 5 子域 12 US(域 ⑨ Evolution 进化档案监控 · 域 ⑩ Prompt 版本管理 · 域 ⑪ 配额管理 · 域 ⑫ 行业合规仪表盘 · 域 ⑬ Approval Gates 完整 UI)· 派生 ADMIN §3.5 + §8.5 + DATA-MODEL §13.3-13.6 · 6 新表(approval_requests upgrade + 5 张新)+ 4 _xxxInTx 单点函数 + 2 BullMQ Worker + 5 admin pages · 继承 PRD-12 13 patterns + retro Playbook P-1~P-9 · D-089~D-101 13 LDs",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "修 TD-056 · DailyTaskAgent US-007 真版本 unit test 4 场景覆盖",
+      "description": "作为开发者,我需要为 apps/api/src/agents/specialists/DailyTaskAgent.ts(296 行 · US-007 真实施)补全 unit test,以便 evolution 域 L5 agent 修改 / refactor 有 safety net。当前 stub-test 已随 stub 文件删除(commit 04a362c)· 真版本完全 0 unit test 覆盖 · AC-1 冷启动 / AC-10 cost_log eventType=l5_agent / schema retry / AbortError 全无回归保障。",
+      "acceptanceCriteria": [
+        "tests/unit/agents/specialists/DailyTaskAgent.test.ts 新建 · ≥ 4 describe block 覆盖 4 核心场景(冷启动 stepCount=0 OR evolutionProfile=null → buildColdStartTasks 5 模板 isFallback=false modelUsed='cold-start-template' · 非冷启动 LLM 调用 llmGateway.complete({model_tier:'lightweight', timeout_ms:30000}) 实际触发 metadata eventType:'l5_agent' returns parsed DailyTaskOutput · schema 校验 retry 第一次 invalid → retry 1 次 → 第二次 OK 总 invokeLLM 2 次 · AbortError → LLMTimeoutError invokeLLM throws Error name='AbortError' 转 LLMTimeoutError 类型)",
+        "4 场景每个至少 1 it() 用 expect() 断言",
+        "fake ILLMGateway 实现 vi.fn() mock complete() 返回 DailyTaskOutput shape(content:{tasks:[3-5 valid task items]} · tokens:{prompt:100,completion:200,total:300} · model:'lightweight-mock')",
+        "prisma mock 用 vi.mock('@/lib/prisma') · stepData.count + evolutionProfile.findUnique 各 mock",
+        "contextAssembler mock 用 vi.mock('@/services/context-assembler/ContextAssembler')",
+        "冷启动 5 模板任务结构验证 · 每 task 必含 ctaUrl 以 / 开头 · estimatedMinutes ∈ [5, 30] · difficulty ∈ ['easy', 'medium', 'hard']",
+        "LLM 第二次 retry 仍失败 → throws SchemaValidationError(不再 retry · AC-1 规定 retry max 1)",
+        "输入 schema 校验 fail(accountId 缺 / taskDate 非 YYYY-MM-DD)→ inputSchema.parse() throw ZodError",
+        "不影响任何现有 specialists 测试(只新加 file · 不改动 specialists/*.ts)",
+        "不影响 workers/daily-task/worker.ts(只测 agent · 不测 worker 调用链)",
+        "pnpm test · ≥ 1551 pass(基线 1549 + 本 US ≥ 2 新 tests)· 0 fail · 0 skip(新加 ≥ 4 it)",
+        "pnpm typecheck · 0 errors",
+        "TD-056 状态 open → resolved · .agents/tech-debt.json 更新",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/unit/agents/specialists/DailyTaskAgent.test.ts"
+      ],
+      "files_to_modify": [
+        ".agents/tech-debt.json"
+      ],
+      "test_command": "pnpm vitest run tests/unit/agents/specialists/DailyTaskAgent.test.ts",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8 + REJ-001 衍生",
+          "source_story": "TD-056 evaluation",
+          "lesson": "unit test 不能真调 LLMGateway / anthropic / openai · 必须 fully mock with vi.fn()",
+          "antipattern": "test 内 import llmGateway 真 instance 跑 · 或半 mock(mock complete 但保留底层 fetch)",
+          "correct": "构造 const mockGateway: ILLMGateway = { complete: vi.fn().mockResolvedValue({...}) } · 完全替换 · 测试 it 内 vi.mocked(...).mockResolvedValueOnce / mockRejectedValueOnce"
+        },
+        {
+          "source_prd": "PRD-13 §8 + REJ-014 衍生",
+          "source_story": "evolution-agent test",
+          "lesson": "test 文件层级严格匹配 source 文件 · 不允许扁平化",
+          "antipattern": "放 tests/DailyTaskAgent.test.ts(扁)",
+          "correct": "放 tests/unit/agents/specialists/DailyTaskAgent.test.ts(对齐 apps/api/src/agents/specialists/DailyTaskAgent.ts)"
+        },
+        {
+          "source_prd": "PRD-13 §8",
+          "source_story": "TD-056",
+          "lesson": "TD-056 resolved 必同步更新 .agents/tech-debt.json status + resolved_in_prd + resolved_at 字段 · 不能只写注释",
+          "antipattern": "在 commit message 写 '// TD-056 resolved' 但 .agents/tech-debt.json 不动",
+          "correct": "Edit .agents/tech-debt.json · 找到 TD-056 entry · status='resolved' · resolved_in_prd='prd-13' · resolved_at='2026-05-14'"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "approval_requests 升级 stub→dual-approval 完整版 service + emergency + 24h 复核 cron",
+      "description": "作为 admin/super_admin,我需要 approval_requests 表跟 service 升级到完整版 dual-approval 工作流,以便后续 5 子域(⑨ forceRebuild / ⑩ publish / ⑪ adjust > 500 / ⑫ 模板修改 / ⑬ ban_uploader)所有高风险动作都走两步审批闸门。当前 PRD-10/11/12 是 stub 三态(pending/approved/rejected · 单人 approve)· 完全没有 dual approval 校验 + 紧急通道 + 24h 后置复核机制。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma ApprovalRequest 模型扩展(+ 6 字段 · requireDualApproval Boolean @default(false) · secondApproverAdminId Int? · secondApprovedAt DateTime? · emergencyMode Boolean @default(false) · emergencyIncidentId String?(必填 if emergencyMode=true) · postReviewRequired Boolean @default(false) · postReviewedAt DateTime? · postReviewerAdminId Int? · postReviewResult String?('confirmed' | 'overturned' | 'partial'))+ 3 @@index([requireDualApproval, status]) / ([emergencyMode, postReviewRequired]) / ([postReviewRequired, postReviewedAt])",
+        "migration pnpm prisma migrate dev --name prd-13-approval-dual 成功",
+        "apps/api/src/services/admin/approval/approvalGateService.ts 升级 requestApproval() 接受新参数(actionType: ApprovalActionType per D-094 触发清单 · requesterAdminId · requesterRole 'admin'|'super_admin'|'system' · actionPayload · riskLevel · requireDualApproval? 按 D-094 actionType 推导 · emergencyMode? · emergencyIncidentId? emergencyMode=true 时必填)",
+        "approveRequest(approverAdminId, requestId) 升级 dual approval 逻辑(requireDualApproval=false 单人批 status='approved'+decidedAt+approverAdminId · requireDualApproval=true 第一次批 status 保持 pending+写 approverAdminId/decidedAt 等第二人 · requireDualApproval=true 第二次批强校验 approverAdminId !== firstApproverAdminId 否则 FORBIDDEN_SAME_APPROVER → status='approved'+secondApproverAdminId/secondApprovedAt)",
+        "emergencyApprove(requestId, superAdminId, incidentId) 仅 super_admin 调 · emergencyMode=true && emergencyIncidentId 必填 · 立即 status='approved' + 自动 postReviewRequired=true · 写 admin_audit_log eventType='emergency_approval' eventCategory='security_alert' 必含 incident_id · 非 super_admin 调 throws FORBIDDEN_EMERGENCY_NOT_SUPER_ADMIN",
+        "apps/api/src/jobs/admin/emergency-post-review.job.ts BullMQ cron '0 30 3 * * *' Asia/Shanghai · jobId='emergency-post-review-recurring' · 扫 postReviewRequired=true && postReviewedAt=null && decidedAt < NOW() - 24h → 写 admin_audit_log eventType='post_review_overdue' + 钉钉(D-077 isMock 默认)",
+        "postReviewApprove(requestId, reviewerAdminId, result) 设 postReviewedAt + postReviewerAdminId + postReviewResult · 校验 reviewerAdminId !== firstApproverAdminId(不能复核自己批的)",
+        "_approveRequestInTx(tx, requestId, approverAdminId, isSecondApproval) 单点 transactional approve 函数 · 7 调用点全走它(approveRequest × 2 第一批 / 第二批 · emergencyApprove · postReviewApprove · violation-detection.service 自动 ban 继承 PRD-12 · 5 子域 admin tRPC 批准 procedure 接入 US-004/006/007/008/009/010/011)",
+        "不破坏 PRD-10/11/12 已有 approval_requests 使用(stub 三态机自动按 requireDualApproval=false 旧行为)",
+        "pnpm audit:redlines / audit:ld / audit:redlines-admin · 0 命中(尤其 LD-A-3 redacted approval_request action 不暴露密码 / token / 隐私 PII)",
+        "pnpm test · ≥ 1555 pass(基线 1551 + US-001 ≥ 2 + 本 US ≥ 8 新 tests 含 dual approval + emergency + post-review)· 0 fail",
+        "pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/jobs/admin/emergency-post-review.job.ts",
+        "tests/unit/api/admin/approval-gate-dual.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "apps/api/src/services/admin/approval/approvalGateService.ts",
+        "apps/api/src/jobs/index.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/api/admin/approval-gate-dual.test.ts",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8.2 #3",
+          "source_story": "US-002",
+          "lesson": "dual approval 第一审批人 ≠ 第二审批人 · 强校验",
+          "antipattern": "只校验 firstApprover != requester · 第二批不查 approver !== firstApprover",
+          "correct": "approveRequest 内 if (isSecondApproval && approverAdminId === firstApproverAdminId) throw FORBIDDEN_SAME_APPROVER · 同样校验 postReview"
+        },
+        {
+          "source_prd": "PRD-13 §8.2",
+          "source_story": "US-002",
+          "lesson": "approval_requests 改 schema 必须 backward compat · 旧 stub 三态机继续 work",
+          "antipattern": "把 requireDualApproval 字段 nullable 不带 default false",
+          "correct": "必 @default(false) · 旧记录自动 false 走旧行为(PRD-10/11/12 接入零破坏)"
+        },
+        {
+          "source_prd": "PRD-13 §8.2",
+          "source_story": "US-002",
+          "lesson": "cron schedule wire 严格 · ralph 自己 instance 化 BullMQ Worker/Queue 后必在 jobs/index.ts 启动时 schedule",
+          "antipattern": "// TODO: schedule in production 注释而不 wire",
+          "correct": "await scheduleEmergencyPostReview() 在 jobs/index.ts startupRegisterAllWorkers() 内调"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "prompt_versions + prompt_canary_config schema + service + publish/rollback + Approval 接入",
+      "description": "作为 super_admin,我需要把 14 Specialist 的 prompt 内容入库管理 · 支持版本化(draft/active/archived)、灰度发布(0/1/10/50/100%)、一键回滚 · 所有 publish/rollback 操作走 dual-approval(继承 US-002)。当前 14 Specialist prompts 写死在代码 apps/api/src/services/context-assembler/templates/*.ts 文件内 · 无法运行时切换 · 改 prompt 必须重新部署 · 灰度根本做不到。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma 新增 PromptVersion 模型(per DATA-MODEL §13.4 · id Int @id autoincrement · specialistId String 14 Specialist · mode String 'default'|'step5'|'free'|'boom'|'acquisition' · version Int 自增版本号 per specialistId+mode · content String @db.Text 完整 prompt 文本 LD-A-3 redacted text · judgeScore Decimal? @db.Decimal(3,2) 0.00-5.00 LLM Judge 100 金标准评分 · status 'draft'|'pending_review'|'active'|'archived' · createdByAdminId · createdAt · approvedByAdminId? · approvedAt? · @@unique([specialistId,mode,version]) + 2 index + @@map prompt_versions)",
+        "prisma/schema.prisma 新增 PromptCanaryConfig 模型(id · specialistId @unique · mode @default('default') · currentVersionId FK to prompt_versions.id status='active' 主版本 · nextVersionId? FK 灰度新版本 · canaryPct Int @default(0) 0/1/10/50/100 D-090 5 档 · strategy 'user_id_hash'|'random'|'whitelist' @default 'user_id_hash' · updatedAt · @@map prompt_canary_config)",
+        "migration pnpm prisma migrate dev --name prd-13-prompt-versions 成功 · 14 Specialist × 1 default mode 各 seed 1 row(content 拷自现有 templates/*.ts)",
+        "apps/api/src/services/admin/prompt-version/prompt-version.service.ts 新建 · 内 _publishPromptVersionInTx(tx, params:{versionId, adminId, approvalRequestId}) 单点函数 publish/rollback/canary 唯一入口",
+        "publishPromptVersion(versionId, adminId) 内部校验 status='pending_review' + judgeScore >= D-091(4.0) + 触发 requestApproval(requireDualApproval=true) · 返 approvalRequestId",
+        "rollbackPrompt(specialistId, mode, adminId) 把 current active 版本改 status='archived' + 找上一最新 status='archived' 的(按 version DESC 第一个)恢复 · 走 dual approval",
+        "updateCanaryConfig(specialistId, nextVersionId, canaryPct: 0|1|10|50|100) 校验 canaryPct ∈ enum · canaryPct=100 触发 publishPromptVersion(nextVersionId)",
+        "getActivePromptVersion(specialistId, userId) 按 D-090 hash 策略选版本(hashBucket = crypto.createHash('md5').update(${userId}:${specialistId}).digest('hex').slice(0,8) · bucketPct = parseInt(hashBucket,16) % 100 · return bucketPct < canaryPct ? nextVersion : currentVersion)",
+        "ContextAssembler 集成 apps/api/src/services/context-assembler/ContextAssembler.ts 调用 getActivePromptVersion(specialistId, accountId) 而非直接读 templates/*.ts(brownfield 改造 · fallback 必带)",
+        "apps/api/src/services/admin/prompt-version/llm-judge.service.ts 新建 evaluatePromptVersion(versionId, isMock=true) 默认 isMock=true(D-077 模式 · 真启 PRR · GitHub Actions CI)· isMock=true 返 {score: 4.2 + Math.random() * 0.6} 模拟 4.2-4.8 + 写 judgeScore 字段",
+        "publishPromptVersion + rollbackPrompt 内部强制经 requestApproval({actionType:'publish_prompt', requireDualApproval:true}) · 不绕过",
+        "AGENTS §10 加红线 LD-A-6(prompt_versions.status='active' 仅由 _publishPromptVersionInTx 改 · grep 'prompt_versions.*status.*active|prompt_versions.*update.*active' apps/api/src --include='*.ts' | grep -v '_publishPromptVersionInTx' | grep -v 'prompt-version.service.ts' · 期望 0 命中)",
+        "不破坏 ContextAssembler 现有调用(brownfield · 若 prompt_versions 表无对应记录 → fallback 到 templates/*.ts · 旧行为)",
+        "pnpm audit:redlines-admin · 0 命中(尤其 LD-A-5 类 · _publishPromptVersionInTx 单点)",
+        "pnpm test · ≥ 1565 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/prompt-version/prompt-version.service.ts",
+        "apps/api/src/services/admin/prompt-version/llm-judge.service.ts",
+        "apps/api/src/services/admin/prompt-version/__tests__/prompt-version.service.test.ts",
+        "apps/api/src/services/admin/prompt-version/__tests__/llm-judge.service.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "apps/api/src/services/context-assembler/ContextAssembler.ts",
+        "AGENTS.md"
+      ],
+      "test_command": "pnpm vitest run apps/api/src/services/admin/prompt-version/__tests__/",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8.2 #2",
+          "source_story": "US-003",
+          "lesson": "灰度策略 hash 不能用 random()(灰度策略需 deterministic)",
+          "antipattern": "Math.random() < canaryPct / 100",
+          "correct": "parseInt(hashBucket,16) % 100 < canaryPct(同一 userId × specialistId 多次调结果一致 · 用户体验稳定)"
+        },
+        {
+          "source_prd": "PRD-13 §8.2 #6",
+          "source_story": "US-003",
+          "lesson": "brownfield ContextAssembler 必 fallback templates",
+          "antipattern": "删除 templates/*.ts 改用 prompt_versions 表(若表无对应记录 → 主应用 crash)",
+          "correct": "getActivePromptVersion 返 null → fallback to templates/*.ts(旧行为)+ 写 logger.warn('prompt_version table miss · fallback to template')"
+        },
+        {
+          "source_prd": "PRD-13 §7 D-100",
+          "source_story": "US-003",
+          "lesson": "_publishPromptVersionInTx 必须接收 tx 而非自己起 prisma.$transaction",
+          "antipattern": "await prisma.$transaction([prisma.promptVersion.update(...)]) in publish",
+          "correct": "await prisma.$transaction(async (tx) => { await _publishPromptVersionInTx(tx, ...) }) · 单点函数接受 tx · 避免嵌套 tx"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "evolution_anomaly_flags schema + 主应用 evolution-agent service 异常检测 + admin tRPC",
+      "description": "作为 admin,我需要查看 L1-L5 用户分布 + 飞轮停滞数 + 异常账号列表 · 异常账号定义为(1) evolution_insight 在 7 天内 styleAdjustments 翻转 ≥ 2 次,(2) avoidList 元素数 > 50,(3) feedbackLog 30 天内 negative > positive 2 倍。evolution-agent worker(主应用)需要在每次写 evolution_insight 后跑异常检测 · 触发条件命中 → 写 evolution_anomaly_flags + 钉钉通知。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma 新增 EvolutionAnomalyFlag(per DATA-MODEL §13.6 F · id · accountId · anomalyType 'conflicting_insights'|'frequent_style_flip'|'avoidlist_overflow'|'flywheel_stalled'|'negative_feedback_dominant' · severity 'low'|'medium'|'high' · evidence Json {insightIds:[123,124],styleFlipCount:3,...} · detectedAt · resolvedAt? · resolution? 'auto_resolved'|'admin_force_rebuild'|'false_positive' · resolvedByAdminId? · 3 index + @@map evolution_anomaly_flags)",
+        "migration pnpm prisma migrate dev --name prd-13-evolution-anomaly 成功",
+        "apps/api/src/services/admin/evolution-health/anomaly-detection.service.ts 新建 detectEvolutionAnomalies(accountId) 返 EvolutionAnomalyFlag[]() · 实现 5 anomalyType 检测算法(frequent_style_flip 7 天 styleAdjustments 翻转 ≥ 2 次 · avoidlist_overflow 当前 evolutionProfile.avoidList > 50 · negative_feedback_dominant 30 天 negative > positive × 2 · flywheel_stalled 7 天无新 insight · conflicting_insights 同主题 detectedFrom 的 2+ insight 含相反 styleAdjustments)",
+        "apps/api/src/agents/evolution/EvolutionAgent.ts(US-007 真实施)在 execute() 末尾(成功写入 evolution_insight 后)调 detectEvolutionAnomalies(accountId) · 检测结果不为空 → 写 evolution_anomaly_flags + 触发钉钉(D-077 isMock 默认)",
+        "tests/unit/agents/evolution/EvolutionAgent.test.ts 加 1 describe 'detectAnomalies integration' · ≥ 2 it(命中 flip / 命中 overflow 各 1)",
+        "apps/api/src/trpc/routers/admin/evolutionHealth.ts 新建 7 procedure(getLDistribution input z.object{industryFilter:z.string().optional()} 返 {L1:N,L2:N,L3:N,L4:N,L5:N} · getFlywheelHealth 返 {stalledCount,conflictCount,healthyCount,status:'green'|'yellow'|'red'} · listAnomalies cursor-based 分页 · getAccountTimeline input accountId · forceRebuildEvolution input {accountId,reason} ★ 走 US-002 dual approval 触发 _forceRebuildEvolutionInTx 返 {approvalRequestId} · markAnomalyResolved input {flagId, resolution:'admin_action'|'false_positive'} · getAnomalyStats 返 {byType, bySeverity, last24h, last7d})",
+        "apps/api/src/services/admin/evolution-health/evolution-rebuild.service.ts 新建 _forceRebuildEvolutionInTx(tx, params:{accountId, adminId, approvalRequestId, reason}) 单点(清空当前 evolution_profile + 标记所有 evolution_insight resolved · 写 admin_audit_log eventType='evolution_force_rebuild' · 触发 EvolutionAgent batch 重跑 job BullMQ delayed 5s)",
+        "AGENTS §10 加红线 LD-A-7 · evolution_profile clear / evolution_insight resolved 仅由 _forceRebuildEvolutionInTx 改 · grep 'prisma.evolutionProfile.update.*null|prisma.evolutionInsight.updateMany.*resolved' 排除该函数本身 · 期望 0 命中",
+        "不破坏 EvolutionAgent.execute() 正常路径(只在末尾加 detectAnomalies · 不影响主流程)",
+        "pnpm audit:redlines-admin · 0 命中(尤其 LD-A-7 新加 grep)",
+        "pnpm test · ≥ 1580 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/evolution-health/anomaly-detection.service.ts",
+        "apps/api/src/services/admin/evolution-health/evolution-rebuild.service.ts",
+        "apps/api/src/trpc/routers/admin/evolutionHealth.ts",
+        "apps/api/src/services/admin/evolution-health/__tests__/anomaly-detection.test.ts",
+        "apps/api/src/services/admin/evolution-health/__tests__/evolution-rebuild.test.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/evolutionHealth.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "apps/api/src/agents/evolution/EvolutionAgent.ts",
+        "tests/unit/agents/evolution/EvolutionAgent.test.ts",
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "AGENTS.md"
+      ],
+      "test_command": "pnpm vitest run apps/api/src/services/admin/evolution-health/ apps/api/src/trpc/routers/admin/__tests__/evolutionHealth.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 US-004 #1",
+          "source_story": "US-004",
+          "lesson": "brownfield evolution-agent 改造保持 backward compat",
+          "antipattern": "把 detectAnomalies 放 execute() 起始(异常检测前主流程不能跑)",
+          "correct": "放末尾(成功写 evolution_insight 后再跑 · 失败不影响主流程 · try/catch 包住 detectAnomalies 防异常冒泡)"
+        },
+        {
+          "source_prd": "PRD-13 US-004 #2",
+          "source_story": "US-004",
+          "lesson": "_forceRebuildEvolutionInTx 必须先经 Approval · 不能直接 trigger",
+          "antipattern": "forceRebuildEvolution(accountId) 内直接 await _forceRebuildEvolutionInTx(...)",
+          "correct": "先 await requestApproval({actionType:'force_rebuild_evolution', requireDualApproval:true}) · 等批准后才在 approveRequest 末尾 callback 调"
+        },
+        {
+          "source_prd": "PRD-13 US-004 #3 + REJ-014",
+          "source_story": "US-004",
+          "lesson": "anomaly detection 算法需 deterministic",
+          "antipattern": "用 Math.random() < threshold 决定 severity",
+          "correct": "按 evidence 数量 / 时间窗口 / 历史 baseline 确定性算(1 信号=low · 2-3=medium · ≥4=high · 跟 D-089 一致)"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "user_quota + quota_adjustment_log schema + service + Redis token bucket + 24h delayed job",
+      "description": "作为客服 / super_admin,我需要管理用户配额(Free 50 / Pro 500 / Enterprise 5000 调用/天)· 实时监控用户使用率 + 临时手动放配额(单次 ≤ 500 · 24h 自动失效)+ 临时白名单(super_admin 配 · 24h 无限流)。LLMGateway 已用 Redis token bucket 限流(PRD-9 已落地)· 本 US 扩展 admin 视角 + 调整功能。",
+      "acceptanceCriteria": [
+        "prisma/schema.prisma 新增 UserQuota(id · userId @unique · plan 'free'|'pro'|'enterprise' · dailyQuota Int 50/500/5000 · dailyUsed Int @default(0) · monthlyQuota Int 1500/15000/150000 · monthlyUsed Int @default(0) · dailyResetAt DateTime 每天 00:00 Asia/Shanghai · monthlyResetAt · whitelistExpiresAt DateTime? 24h 临时白名单失效时间 null=不在白名单 · updatedAt · @@unique([userId]) + 3 index + @@map user_quota)",
+        "prisma/schema.prisma 新增 QuotaAdjustmentLog(id · userId · adminId · adjustmentType 'increase_daily'|'increase_monthly'|'whitelist_add' · delta Int 正:增加 负:回收 · reason @db.Text · expiresAt 24h 后自动失效 · createdAt · revokedAt? 失效时 cron job 标记 · approvalRequestId Int 走 Approval Gates · 2 index + @@map quota_adjustment_log)",
+        "migration pnpm prisma migrate dev --name prd-13-user-quota 成功 · seed 现有 users 各 row(default plan='free' dailyQuota=50)",
+        "apps/api/src/services/admin/quota/quota-adjustment.service.ts 新建 _adjustQuotaInTx(tx, params:{userId, adminId, adjustmentType, delta, reason, approvalRequestId}) 单点(写 user_quota 更新 dailyQuota += delta 或 whitelistExpiresAt = now() + 24h · 写 quota_adjustment_log · 写 admin_audit_log)",
+        "adjustUserQuota(params) 函数 · delta > 500 触发 requireDualApproval=true(D-093)· 否则单人 approve · 然后 callback _adjustQuotaInTx",
+        "listUserQuotas(input) + getUserQuotaTimeline(userId, days=7) 用 cost_log 聚合 24h × N 天调用时间线",
+        "apps/api/src/jobs/admin/quota-expiry.job.ts BullMQ delayed job(每次 adjustment 添加一个 delayed job · await quotaExpiryQueue.add(`quota-expiry-${adjustmentId}`, {adjustmentId}, {delay: 24*60*60*1000, jobId: `quota-expiry-${adjustmentId}`}))· worker 处理:user_quota 回滚 + quota_adjustment_log.revokedAt = now() + 写 audit",
+        "apps/api/src/jobs/index.ts 启动时 schedule cleanup cron('0 30 0 * * *' 00:30 Asia/Shanghai 兜底 sweep 未触发的 expiry · D-096)",
+        "apps/api/src/workers/llm-gateway/rate-limit.ts(已存在 · brownfield)校验 whitelistExpiresAt · const quota = await prisma.userQuota.findUnique({where:{userId}}) · if (quota?.whitelistExpiresAt && quota.whitelistExpiresAt > new Date()) return {allowed:true, reason:'whitelisted'} · 继续原有 Redis token bucket 逻辑",
+        "apps/api/src/trpc/routers/admin/quota.ts 新建 6 procedure(getQuotaOverview · listUserQuotas · getUserDetail · adjustQuota mutation 走 Approval · listAdjustmentLog · getActiveAdjustments)",
+        "不破坏 LLMGateway 现有 token bucket 限流(只在 user_quota 表存在且 whitelistExpiresAt valid 时 bypass)",
+        "pnpm audit:redlines-admin · 0 命中",
+        "pnpm test · ≥ 1595 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/api/src/services/admin/quota/quota-adjustment.service.ts",
+        "apps/api/src/jobs/admin/quota-expiry.job.ts",
+        "apps/api/src/trpc/routers/admin/quota.ts",
+        "apps/api/src/services/admin/quota/__tests__/quota-adjustment.test.ts",
+        "apps/api/src/trpc/routers/admin/__tests__/quota.test.ts"
+      ],
+      "files_to_modify": [
+        "prisma/schema.prisma",
+        "apps/api/src/workers/llm-gateway/rate-limit.ts",
+        "apps/api/src/trpc/routers/admin/index.ts",
+        "apps/api/src/jobs/index.ts",
+        "AGENTS.md"
+      ],
+      "test_command": "pnpm vitest run apps/api/src/services/admin/quota/__tests__/ apps/api/src/trpc/routers/admin/__tests__/quota.test.ts",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8.2 #5",
+          "source_story": "US-005",
+          "lesson": "BullMQ delayed job · jobId dedup 防止 adjustment 重复 expiry",
+          "antipattern": "quotaExpiryQueue.add('expire', {adjId}) 不带 jobId",
+          "correct": "jobId: 'quota-expiry-' + adjustmentId 确保单一 · 即使重复 add 也只入一个 job"
+        },
+        {
+          "source_prd": "PRD-13 US-005 #2",
+          "source_story": "US-005",
+          "lesson": "24h 失效 reset · 必须用 prisma transaction",
+          "antipattern": "await prisma.userQuota.update(...) await prisma.quotaAdjustmentLog.update(...) 两步分开(若中间 crash 数据不一致)",
+          "correct": "prisma.$transaction([userQuotaUpdate, logUpdate]) 或 _adjustQuotaInTx 内部 tx 确保原子"
+        },
+        {
+          "source_prd": "PRD-13 US-005 #3",
+          "source_story": "US-005",
+          "lesson": "brownfield rate-limit.ts 集成 backward compat",
+          "antipattern": "删除原 token bucket 逻辑改用 user_quota 表(影响所有现有用户 · 高风险)",
+          "correct": "whitelistExpiresAt 检查作为前置 bypass · 不替代原 Redis 限流"
+        }
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "⑨ admin UI · L 分布饼图 + 飞轮健康度仪表 + 异常账号列表 + 强制重跑",
+      "description": "作为 admin,我需要可视化 admin 页 /admin/evolution-health · 顶部 L 分布饼图 + 飞轮健康度仪表 + 异常账号数 · 中部异常账号列表(可筛选 / 排序)· 点详情打开 Drawer 看 evolution_insight 时间线 + 异常 flags · 操作含'强制重跑批'按钮(走 dual-approval)。",
+      "acceptanceCriteria": [
+        "apps/admin/src/admin-routes.ts 加 route entry({path:'/evolution-health', label:'进化档案监控', sidebar:true, icon:'TrendingUp', component:()=>import('./pages/evolutionHealth/EvolutionHealthPage'), requiredRole:'readonly_admin'})",
+        "apps/admin/src/pages/evolutionHealth/EvolutionHealthPage.tsx 新建 · 标准布局(继承 PRD-10 admin Layout)",
+        "顶部 4 数字卡片(继承 PRD-11 DenseStatCard 组件) · L1-L5 用户分布饼图(右边 Recharts PieChart · L1 灰 / L2 浅蓝 / L3 蓝 / L4 紫 / L5 金) · 飞轮健康度仪表(绿/黄/红 · 用 <HealthGauge /> 新组件 内圈进度 + 中心状态文案) · 异常账号数(数字 + 趋势箭头 比昨天 +5 / -3) · 平均升级周期(L1→L2 天数 + L2→L3 天数 + ...)",
+        "DenseTable 异常账号列表 · 复用 PRD-11 DenseTable 组件 · 列:account_id · anomalyType(中文 label 映射) · severity(high 红 / medium 黄 / low 灰) · detectedAt(相对时间 + tooltip 绝对时间) · resolution('未解决'/'已解决:admin_force_rebuild'/...) · action(查看详情 / 标记 false_positive)",
+        "列表支持筛选 anomalyType(5 enum) + severity(3 enum) + resolvedAt(已解决/未解决/全部) + 排序(detectedAt DESC 默认) · 分页 cursor-based 20/page 复用 PRD-11 useInfiniteList hook",
+        "点账号 row → 打开 EvolutionHealthDrawer.tsx 详情抽屉(顶部账号基本信息 + 当前 L 等级 + 评分卡片 · 中部 evolution_insight 时间线视图 用 <TimelineList /> 每 insight 含 styleAdjustments JSON 高亮 + 异常 flag tag · 操作 <Button> 强制重跑批 super_admin only 弹 ConfirmModal 需填 reason ≥ 10 字 触发 trpc evolutionHealth.forceRebuildEvolution.mutate · 弹 Approval 申请已创建 toast + 进入 Approval Gates 页查看进度)",
+        "空状态(无异常)显示 '所有账号档案健康 · 0 异常' 居中卡片 · 加载状态 skeleton row × 8 + shimmer KPI 卡片 · 错误状态 '数据加载失败' + retry 按钮 · 移动端响应式 列表收为单列卡片 KPI 卡片堆叠",
+        "使用 agent-browser 打开 http://localhost:5174/admin/evolution-health(本地 dev · super_admin 登录态) · 验证页面渲染 · 顶部 4 KPI 卡片 · 中部异常列表(若无数据 · 显示空状态)",
+        "点 row → Drawer 打开 · 含时间线 + 强制重跑按钮(super_admin 可见) · 强制重跑 ConfirmModal · 填 reason >= 10 字 · 提交 · toast '已发起 Approval 申请 #X' · 跳转 Approval Gates 页(US-011 实现)能看到该申请",
+        "pnpm audit:redlines-admin · 0 命中(尤其 LD-A-7 admin 不直写 evolution_profile)",
+        "pnpm test · ≥ 1610 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-004"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/evolutionHealth/EvolutionHealthPage.tsx",
+        "apps/admin/src/pages/evolutionHealth/EvolutionHealthDrawer.tsx",
+        "apps/admin/src/pages/evolutionHealth/components/LDistributionPie.tsx",
+        "apps/admin/src/pages/evolutionHealth/components/HealthGauge.tsx",
+        "apps/admin/src/pages/evolutionHealth/components/EvolutionTimelineList.tsx",
+        "tests/unit/admin/evolutionHealth/EvolutionHealthPage.test.tsx",
+        "tests/unit/admin/evolutionHealth/EvolutionHealthDrawer.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/admin-routes.ts",
+        "apps/admin/src/components/Sidebar.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/admin/evolutionHealth/",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 US-006 #1",
+          "source_story": "US-006",
+          "lesson": "强制重跑按钮仅 super_admin · admin/readonly_admin 不显示",
+          "antipattern": "<Button> 无条件渲染 · 客户端检查 role 拒绝(用户可绕过)",
+          "correct": "{userRole === 'super_admin' && <Button>} 前端隐藏 + 后端 adminProcedure.requireSuperAdmin 校验(7 闸链 P-1)"
+        },
+        {
+          "source_prd": "PRD-13 US-006 #2",
+          "source_story": "US-006",
+          "lesson": "Drawer 时间线分页 + 懒加载",
+          "antipattern": "一次 fetch 全部 insight 历史(可能上千条 · 内存爆)",
+          "correct": "默认 fetch 最近 50 · 滚动到底加载更多 · 用 PRD-11 useInfiniteList(cursor-based)"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Prompt 版本管理 ⑩-A · Monaco 编辑器 + Diff 视图 + 14 Specialist Tab",
+      "description": "作为 super_admin/admin,我需要在 admin /admin/prompts 页面编辑 14 Specialist 的 prompt 内容 · 横向 14 Tab 切换 · 中部 Monaco 编辑器(语法高亮 + 代码补全) · 右侧 Diff 对比上一版 · 顶部当前版本卡片(版本号 / 评分 / 灰度比例) · 历史版本时间线(右侧或下方)。保存 = 写新 PromptVersion(status='draft') · 提交审核 = status='pending_review' + 触发 LLM Judge stub 评分 + 自动 requestApproval(dual)。",
+      "acceptanceCriteria": [
+        "apps/admin/src/admin-routes.ts 加 route({path:'/prompts', label:'Prompt 版本管理', sidebar:true, icon:'FileCode', component:()=>import('./pages/prompts/PromptsPage'), requiredRole:'admin'})",
+        "pnpm add @monaco-editor/react@4 · apps/admin/package.json 新增依赖",
+        "apps/admin/src/pages/prompts/components/MonacoEditor.tsx wrap Monaco · 配置 language='handlebars' · 主题 'vs-dark'(继承 admin Aurelian Dark 视觉系统) · readOnly prop 控制只读",
+        "apps/admin/src/pages/prompts/PromptsPage.tsx 主页 · 顶部横向 <TabBar /> 14 Tab(EvolutionAgent/DailyTaskAgent/PositioningAgent/BrandingAgent/TopicAgent/CopywritingAgent/VideoAgent/AnalysisAgent/LivestreamAgent/MonetizationAgent/PrivateDomainAgent/DeepLearnAgent/DiagnosisAgent/VoiceChatAgent)",
+        "Tab URL params 持久化 · ?specialist=PositioningAgent&mode=default · CopywritingAgent 等多 mode Specialist 支持 mode 二级 Tab(default/step5/free/boom/acquisition)",
+        "顶部卡片显示当前 active 版本 · 版本号 v17 · 创建时间 / 创建人 · LLM Judge 评分(若有 0.00-5.00 · 颜色 >4.0 绿 / 3.5-4.0 黄 / <3.5 红) · 当前灰度比例(进度条 '0% / 1% / 10% / 50% / 100% (active)' 五档) · 操作 <Button> 编辑 + <Button> 灰度配置(跳 US-008)",
+        "编辑模式 <MonacoEditor> 左侧 80% · 右侧 20% 当前版本预览(readOnly) · Diff 模式按钮 <Button> 切换 Diff 视图 · 用 <DiffEditor /> from @monaco-editor/react · 左旧右新",
+        "编辑时自动 debounce 1s 保存 draft(localStorage · 防离开丢失) · <Button> 保存:写 PromptVersion(status='draft') · <Button> 提交审核:status='draft' → 'pending_review' · 触发 LLM Judge stub(US-003 service) · 触发 requestApproval(dual=true) · toast '已提交审核 + LLM Judge 跑分中 · 评分完成会通知'",
+        "右侧或下方时间线列表 <HistoryTimeline /> 复用 US-006 EvolutionTimelineList 模式 · 每版条目 版本号 + 评分 + 状态(active/draft/archived/pending_review) + 创建人/时间 · 点条目可预览(底部弹小窗 readOnly Monaco) · 操作 回滚此版本(super_admin only · 走 dual approval)",
+        "14 Tab 横向滚动(屏幕窄时) · 当前 Tab 高亮 · Monaco 主题跟 Aurelian Dark 一致 · 自定义颜色 token via createTheme · 加载状态 Tab 切换时 skeleton + spinner · 错误处理 LLM Judge 超时 toast '评分超时 · 30s 后自动重试 · 也可手动重跑评分'",
+        "使用 agent-browser 打开 /admin/prompts?specialist=PositioningAgent&mode=default(super_admin 登录) · 看到 14 Tab + 当前版本卡片 + Monaco 编辑器 + 历史时间线",
+        "点编辑 → Monaco 进入编辑模式 · 改文字 + Cmd+S 保存草稿 · 点 Diff 视图 → 左右对比变化 · 点提交审核 → toast 出 + status='pending_review' + 创建 approval_requests + LLM Judge 跑(isMock=true 默认) · 切换到 EvolutionAgent Tab · URL 变 · 内容切",
+        "不影响主应用 ContextAssembler 现有调用(US-003 已加 brownfield fallback) · pnpm audit:redlines-admin · 0 命中(LD-A-6 prompt_versions.active 单点写 grep)",
+        "pnpm test · ≥ 1625 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-003"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/prompts/PromptsPage.tsx",
+        "apps/admin/src/pages/prompts/components/MonacoEditor.tsx",
+        "apps/admin/src/pages/prompts/components/DiffEditor.tsx",
+        "apps/admin/src/pages/prompts/components/SpecialistTabs.tsx",
+        "apps/admin/src/pages/prompts/components/CurrentVersionCard.tsx",
+        "apps/admin/src/pages/prompts/components/HistoryTimeline.tsx",
+        "apps/admin/src/styles/monaco-theme.ts",
+        "tests/unit/admin/prompts/PromptsPage.test.tsx",
+        "tests/unit/admin/prompts/SpecialistTabs.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/package.json",
+        "apps/admin/src/admin-routes.ts",
+        "pnpm-lock.yaml"
+      ],
+      "test_command": "pnpm vitest run tests/unit/admin/prompts/",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8.2 #1",
+          "source_story": "US-007",
+          "lesson": "Monaco 不能 SSR · 必须 dynamic import",
+          "antipattern": "import Editor from '@monaco-editor/react' 静态 import(Vite SSR build 会撞 'window is not defined' 错)",
+          "correct": "const Editor = lazy(() => import('@monaco-editor/react')) + <Suspense fallback={<Spinner/>}> 包(admin SPA build 安全)"
+        },
+        {
+          "source_prd": "PRD-13 US-007 #2",
+          "source_story": "US-007",
+          "lesson": "Specialist Tab URL state · 不能用 useState 否则刷新丢",
+          "antipattern": "const [specialist, setSpecialist] = useState('EvolutionAgent')",
+          "correct": "useSearchParams() 或 useRouter query string · URL 持久化"
+        },
+        {
+          "source_prd": "PRD-13 US-007 #3",
+          "source_story": "US-007",
+          "lesson": "draft auto-save 必须 debounce · 不能 onChange 直接写后端",
+          "antipattern": "onChange callback await trpc.prompt.saveDraft.mutate(content) 每次输入触发请求(数据库 hammer)",
+          "correct": "debounce 1s + localStorage 临时存 · 离开页面前再 trpc.saveDraft.mutate"
+        }
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Prompt 版本管理 ⑩-B · 灰度配置 UI + canary 滑块 + LLM Judge stub",
+      "description": "作为 super_admin,我需要可视化每个 Specialist 当前的灰度配置 · 滑块调整 canaryPct(0/1/10/50/100 五档) · 一键回滚 active 到上一版本(走 dual approval) · LLM Judge 评分 isMock stub UI 显示。",
+      "acceptanceCriteria": [
+        "apps/admin/src/pages/prompts/components/CanarySlider.tsx 新建 · 5 档 stepper(0% / 1% / 10% / 50% / 100%)",
+        "选 100% 触发 confirm modal '确认完全发布?(将影响所有用户)' + 自动 requestApproval(dual=true)",
+        "选 1-50% · 直接调用 trpc prompt.updateCanary.mutate · 不走 Approval(因为是灰度调整 · 风险低)",
+        "选 0% · 等价于'暂停灰度' · 客户端二次 confirm",
+        "滑块需有 currentVersion vs nextVersion · 同行展示 · D-090 hash 策略说明 tooltip · '按用户 user_id × specialistId 哈希分流 · 同用户同 Specialist 多次结果一致'",
+        "Canary status 卡片展示 currentVersionId / nextVersionId 详情(currentVersion v17 · 评分 4.5 · 灰度 100%(active) · nextVersion v18 · 评分 4.3 · 灰度 10%(canary)) · 操作 回滚到 v16 · 升 v18 到 100% · 暂停灰度(回 v17 100%)",
+        "<Button> 一键回滚(超级危险 · super_admin only · 走 dual approval · 影响范围 = canaryPct 当前比例 = 全量切换) · 弹 ConfirmModal · 填 reason ≥ 20 字 · 调 trpc prompt.rollback.mutate · 返 approvalRequestId · toast '已发起回滚申请 #X' · 回滚 approve 后 callback _publishPromptVersionInTx(versionId = 上一版 active) + canaryPct = 100",
+        "apps/admin/src/pages/prompts/components/LlmJudgeCard.tsx 新建 显示评分 0.00-5.00 进度条 + 颜色 · 跑分时间 + 模型 + 是否 isMock · <Button> 重跑评分(super_admin · 调 trpc prompt.runLlmJudge.mutate · 默认 isMock=true)",
+        "<HistoryTimeline> US-007 增强 · 每个版本条目下显示灰度历史(canaryPct 变化记录)",
+        "使用 agent-browser 打开 /admin/prompts?specialist=PositioningAgent&tab=canary(US-007 + canary tab 切换) · 看到 CanarySlider + Canary status 卡片 + 回滚按钮 + LLM Judge 评分 · 调滑块 10% → 50% · 调 trpc · canaryPct 更新 · 后端 prompt_canary_config 表更新 · 点回滚 · 输 reason · 提交 · toast 出 + approval_requests 创建 · 点重跑 LLM Judge · 评分更新(isMock 4.0-4.8)",
+        "pnpm audit:redlines-admin · 0 命中 · pnpm test · ≥ 1640 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-007"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/prompts/components/CanarySlider.tsx",
+        "apps/admin/src/pages/prompts/components/CanaryStatusCard.tsx",
+        "apps/admin/src/pages/prompts/components/LlmJudgeCard.tsx",
+        "tests/unit/admin/prompts/CanarySlider.test.tsx",
+        "tests/unit/admin/prompts/LlmJudgeCard.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/pages/prompts/PromptsPage.tsx",
+        "apps/admin/src/pages/prompts/components/HistoryTimeline.tsx"
+      ],
+      "test_command": "pnpm vitest run tests/unit/admin/prompts/CanarySlider.test.tsx tests/unit/admin/prompts/LlmJudgeCard.test.tsx",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 US-008 #1",
+          "source_story": "US-008",
+          "lesson": "5 档灰度 stepper · 不要让用户输任意数字",
+          "antipattern": "<Input type='number' min=0 max=100> 任意数字(用户可输 13/47/99 等不规则值)",
+          "correct": "5-step Slider · 限制 enum [0, 1, 10, 50, 100] · 防意外输入"
+        },
+        {
+          "source_prd": "PRD-13 US-008 #2",
+          "source_story": "US-008",
+          "lesson": "回滚必须走 Approval · 不能直接执行",
+          "antipattern": "点回滚按钮直接 _publishPromptVersionInTx(versionId)",
+          "correct": "先 requestApproval(dual=true) + 等批准 + callback _publishPromptVersionInTx"
+        }
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "配额管理 admin UI · 实时监控 + 客服调整 + 临时白名单",
+      "description": "作为客服 / super_admin,我需要 admin /admin/quota 页 · 顶部各套餐用户数 + 实时使用率仪表盘 + 中部异常用户列表(突发流量 / 接近爆配额) + 详情看 24h 调用时间线 + 手动调整面板(临时放配额 · 24h 失效) + 临时白名单(super_admin 配)。",
+      "acceptanceCriteria": [
+        "apps/admin/src/admin-routes.ts 加({path:'/quota', label:'配额管理', sidebar:true, icon:'Activity', component:()=>import('./pages/quota/QuotaPage'), requiredRole:'readonly_admin'})",
+        "顶部 4 数字卡片 · Free 套餐用户数 + 平均使用率 % · Pro 套餐用户数 + 平均使用率 % · Enterprise 套餐用户数 + 平均使用率 % · 异常用户数(单用户 5 min > 100 调用) + 趋势箭头",
+        "apps/admin/src/pages/quota/components/UsageLineChart.tsx(用 Recharts LineChart)显示 24h × 3 套餐分组的总调用量趋势",
+        "<DenseTable> 异常用户列表 · 列 user_id / plan / dailyUsed/dailyQuota / 占比 % / lastCallAt / action · 筛选 plan + usageThreshold(default >= 80% 占比) + status('all'/'whitelisted'/'normal') · 排序 usagePctDesc 默认 · 行点开 QuotaDetailDrawer.tsx",
+        "Drawer 内容 · 用户基本信息(email · plan · createdAt) · 24h 调用时间线折线 按小时聚合 · 当前 active adjustments 列表(尚未失效的客服临时调整 · 含 expiresAt) · 历史 adjustments 列表(已失效) · 操作 <Button> 临时增加 dailyQuota(客服) + <Button> 加入白名单 24h(super_admin)",
+        "调整面板 · adjustmentType select(increase_daily / increase_monthly / whitelist_add) · delta input(数字 · max 500 客服档 · max 5000 super_admin) · reason textarea(必填 · ≥ 10 字) · 提交 · 走 trpc quota.adjustQuota.mutate · delta > 500 触发 dual approval · 否则单人批 · toast '已发起调整申请 #X(若 Approval)' 或 '已立即生效 24h'",
+        "使用 agent-browser 打开 /admin/quota(客服登录态) · 看到 4 KPI + 实时折线 + 异常用户列表 · 点 row → Drawer 打开 · 看到 24h 时间线 + 调整面板",
+        "调整 delta=300 reason='客服临时放量' · 点提交 · toast '已立即生效' · 24h 后自动失效 · 调整 delta=600 · toast '已发起 Approval 申请 #X' · 跳 Approval Gates 页查看",
+        "pnpm audit:redlines-admin · 0 命中(LD-A-8 user_quota 单点 grep)",
+        "pnpm test · ≥ 1655 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-005"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/quota/QuotaPage.tsx",
+        "apps/admin/src/pages/quota/QuotaDetailDrawer.tsx",
+        "apps/admin/src/pages/quota/components/UsageLineChart.tsx",
+        "apps/admin/src/pages/quota/components/AdjustmentPanel.tsx",
+        "tests/unit/admin/quota/QuotaPage.test.tsx",
+        "tests/unit/admin/quota/AdjustmentPanel.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/admin-routes.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/admin/quota/",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 US-009 #1",
+          "source_story": "US-009",
+          "lesson": "delta > 500 必须 dual approval · 客户端 + 服务端双校验",
+          "antipattern": "客户端 max=500 但服务端不校验(客户端可绕过 max 输入更大值)",
+          "correct": "service quota-adjustment.service.ts 内 if (delta > 500) requireDualApproval = true · 客户端 + 服务端两层"
+        },
+        {
+          "source_prd": "PRD-13 US-009 #2",
+          "source_story": "US-009",
+          "lesson": "实时折线刷新策略",
+          "antipattern": "WebSocket 实时推(架构 over-engineer · 维护成本高)",
+          "correct": "setInterval 30s polling 简单稳定(D-077 isMock 思路 · 后续优化留 PRR)"
+        }
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "合规仪表盘 admin UI · 行业触发统计 + PDF 法务导出",
+      "description": "作为法务 / super_admin,我需要 admin /admin/compliance 页 · 4 KPI(今日触发免责数 / 命中违禁词次数 / PII 命中率 / 行业 Top 5) + 56 行业分布饼图 + 时间趋势折线 + 详情列表(可分组按事件类型 / 行业) + 导出 PDF 月度合规报告(复用 PRD-11 @react-pdf/renderer)。数据源复用 admin_audit_log eventCategory='compliance' · 不新加表。",
+      "acceptanceCriteria": [
+        "admin-routes.ts 加 /compliance entry · requiredRole='readonly_admin'(法务模式)",
+        "顶部 4 KPI · 今日触发免责声明数(分行业 · 4 主行业 Tab) · 命中违禁词次数(7 天趋势 + 当前值) · PII 命中率(检测到 / 总解析 · % + 趋势) · 行业 Top 5 命中(56 行业排序)",
+        "56 行业合规事件占比饼图(分前 10 + '其他'类) · Recharts PieChart · 时间趋势折线 · 分日 / 周 / 月切换(Tab) · 行业 multi-select 筛选(用户可看特定行业的时间趋势)",
+        "<DenseTable> 复用 PRD-11 audit_log 列表设计 · 列 timestamp(相对+tooltip) · eventCategory 必含 'compliance' · eventType 'pii_redacted'/'banned_word_hit'/'industry_disclaimer_triggered' · industry(若有) · userId(redacted text 不暴露详情 · 跨 admin 链接到 Users 页) · payload(脱敏 · 见 LD-A-3)",
+        "分组 by eventType / by industry / 不分组 三档",
+        "apps/admin/src/pages/compliance/components/ComplianceReportPdf.tsx 新建 · 用 @react-pdf/renderer 4.5.1(PRD-11 已添加) · PDF 模板 4 节(封面:QuanQn 合规月度报告 + 月份 + 生成人 + 报告 ID · §1 总览 4 KPI 数字 + 比上月增减 · §2 行业分布表 56 行业 × 6 列 · §3 时间趋势(用 png snapshot 因 PDF 不支持 SVG · 后端 puppeteer 渲染留 PRR · 本 PRD 用 SimpleLine.png stub) · §4 高频事件 Top 20 列表 · 末页签名栏)",
+        "<Button> 导出 PDF · 点击触发 <PDFDownloadLink> 生成 + 浏览器下载",
+        "顶部 <Button> '配置免责模板'(super_admin only) · 弹 Modal · 56 行业 × 1 textarea(每行业可定制免责文案) · 提交走 dual approval · 此功能本 PRD 仅 UI stub · 弹 toast '功能开发中 · P9.4'",
+        "使用 agent-browser 打开 /admin/compliance(法务登录) · 看到 4 KPI + 行业饼图 + 时间趋势 + 详情列表 · 点 PDF 导出 · 浏览器下载 compliance-2026-05.pdf 文件 · 含 4 节 + 签名栏 · 切换分组 by eventType / by industry · 列表重新分组",
+        "pnpm audit:redlines-admin · 0 命中(LD-A-3 redacted text payload 不暴露详情)",
+        "pnpm test · ≥ 1670 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/compliance/CompliancePage.tsx",
+        "apps/admin/src/pages/compliance/components/IndustryPieChart.tsx",
+        "apps/admin/src/pages/compliance/components/ComplianceTrendChart.tsx",
+        "apps/admin/src/pages/compliance/components/ComplianceReportPdf.tsx",
+        "apps/api/src/trpc/routers/admin/compliance.ts",
+        "tests/unit/admin/compliance/CompliancePage.test.tsx",
+        "tests/unit/admin/compliance/ComplianceReportPdf.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/admin-routes.ts",
+        "apps/api/src/trpc/routers/admin/index.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/admin/compliance/",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8.2 #7",
+          "source_story": "US-010",
+          "lesson": "PDF 不能 inline SVG · 用 png snapshot 或 PDF native shape",
+          "antipattern": "直接把 Recharts SVG 字符串塞 PDF · 或试图用 <svg> 元素",
+          "correct": "用 @react-pdf 的 <Path> 重画 simplified line chart · 或后端 puppeteer 生 png snapshot 嵌入 <Image>"
+        },
+        {
+          "source_prd": "PRD-13 US-010 #2 + REJ-029",
+          "source_story": "US-010",
+          "lesson": "PDF compliance · payload 必脱敏",
+          "antipattern": "把 audit_log.payload 全部塞 PDF(可能含 PII · email/phone/身份证)",
+          "correct": "仅展示 eventType + industry + count · 不展示 user_id / 内容详情(LD-A-3 redacted)"
+        }
+      ]
+    },
+    {
+      "id": "US-011",
+      "title": "Approval Gates admin UI · 待审批列表 + 详情 + 二次审批 + 紧急通道",
+      "description": "作为 admin/super_admin,我需要 admin /admin/approvals 页 · 顶部 KPI(待审批数 / 平均时长 / 拒绝率 / 紧急 SLA) · 中部待审批列表(按风险等级排序) · 点开 Drawer 看详情(操作上下文 · 影响范围预估 · 申请理由 · 历史决策参考) · 批准 / 拒绝(必带理由 · 通知申请人) · 二次审批(dual approval 时) · 历史决策 Tab(已决策列表) · 紧急通道(super_admin only · 1 人快速批 · 后置 24h 复核)。",
+      "acceptanceCriteria": [
+        "admin-routes.ts 加 /approvals · sidebar='Approval Gates' · icon='Shield' · requiredRole='admin'(看自己提的) · super_admin 看全部 + 审批",
+        "4 数字卡片 · 待审批数(status='pending' · 我可审批的 = 不是申请人 + 未参与第一审批) · 平均审批时长(近 30 天 申请 → 决策) · 拒绝率(被拒 / 总申请 · 近 30 天) · 紧急 SLA 达成率(emergencyMode 且 < 1h 决策 / 总紧急申请)",
+        "<DenseTable> 待审批列表 · 列 申请 ID(行点开 Drawer) / actionType(中文标签 force_rebuild_evolution/publish_prompt/adjust_quota/ban_uploader/...) / requesterAdmin / riskLevel(high red/medium yellow/low gray) / requireDualApproval('Y'/'N' badge) / emergencyMode('EMERGENCY' badge 红色) / createdAt / expiresAt(24h 后到期 progress bar) / status('pending'/'first_approved' dual 时第一批通过/'approved'/'rejected'/'expired')",
+        "ApprovalDetailDrawer.tsx 内容 · 申请概要 actionType + requesterAdmin + riskLevel + dualApproval + emergencyMode + createdAt · actionPayload JSON 高亮显示(redacted PII) · 影响范围预估 stub(force_rebuild_evolution '将清空 accountId={X} 的 evolution_profile + insights · 重新跑 EvolutionAgent · 预计耗时 30-60s · 不可恢复' · publish_prompt '将切换 specialistId={X} mode={Y} 当前 active 版本 from v{A} to v{B} · 灰度比例 {N}% · 影响约 {预估用户数} 用户' · adjust_quota '将变更 userId={X} dailyQuota 从 50 到 350 · 24h 后自动失效' · ban_uploader '将暂停 userId={X} 的内容上传权限 · 持续 7 天 · 失败 7 天后自动恢复')",
+        "历史决策参考 · 同类 actionType 近 10 条决策(approve/reject + 理由) · 操作 <Button> 批准 + <Button> 拒绝 + <Input> 决策理由(必填 ≥ 10 字)",
+        "紧急通道按钮 super_admin only · <Button> 紧急批准(emergencyMode=true 时弹 incidentId input · 必填)",
+        "当 status='first_approved'(第一人已批 + dual=true) · Drawer 顶部显示绿条 '第一审批已通过 by {firstApproverAdmin} at {time}' + 提示 '等待第二审批人'",
+        "当前用户 = 第一审批人(firstApproverAdminId) · <Button> 批准 disabled + tooltip '您已是第一审批人 · 不能两次批' · 当前用户 != 第一审批人 · 可批 · 调 approveRequest · 系统 _approveRequestInTx 写第二人 + status='approved'",
+        "同页 Tab 切换 · 已决策列表(status='approved'/'rejected'/'expired') · 列同待审批 + 多 'decidedAt' + 'approver/rejecter' + 'decision_reason' + emergencyMode + postReviewStatus",
+        "super_admin 在 emergencyMode=true 申请 Drawer 显示醒目红条 '紧急通道 - 后置复核' · 紧急批准弹 EmergencyApproveModal 输入 incidentId + 决策理由 · 提交 emergencyApprove · 系统写 admin_audit_log eventType='emergency_approval' + postReviewRequired=true · 后置复核入口:Tab '后置复核'(super_admin only) · 列出 postReviewRequired=true 且 postReviewedAt=null 且 decidedAt > 6h ago · 当前用户 != 第一审批人时可复核",
+        "申请人在 approve/reject 后获得站内信通知(stub · 仅 console.log · 真启留 PRR) · 钉钉通知 stub(D-077 isMock=true 默认)",
+        "使用 agent-browser 打开 /admin/approvals(super_admin 登录态 · 至少 1 个 pending dual approval 申请) · 看到 KPI + 待审批列表 · 点行 → Drawer 打开 · 影响范围预估展示 · 批准按钮可用 · 填理由 · 点批准 · toast '已批准' · 列表行更新 status='first_approved'(if dual) 或 'approved'(单人) · 切换到历史决策 Tab · 看到刚批的记录",
+        "pnpm audit:redlines-admin · 0 命中 · 不破坏 PRD-10/11/12 已有 approval_requests 单人批流程(stub 三态机持续 work · 旧记录 requireDualApproval=false 走单人)",
+        "pnpm test · ≥ 1690 pass · 0 fail · pnpm typecheck · 0 errors",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/admin/src/pages/approvals/ApprovalsPage.tsx",
+        "apps/admin/src/pages/approvals/ApprovalDetailDrawer.tsx",
+        "apps/admin/src/pages/approvals/components/ApprovalKpiCards.tsx",
+        "apps/admin/src/pages/approvals/components/ApprovalsList.tsx",
+        "apps/admin/src/pages/approvals/components/HistoricalDecisions.tsx",
+        "apps/admin/src/pages/approvals/components/EmergencyApproveModal.tsx",
+        "apps/admin/src/pages/approvals/components/PostReviewTab.tsx",
+        "apps/admin/src/pages/approvals/components/ImpactEstimator.tsx",
+        "tests/unit/admin/approvals/ApprovalsPage.test.tsx",
+        "tests/unit/admin/approvals/ApprovalDetailDrawer.test.tsx",
+        "tests/unit/admin/approvals/EmergencyApproveModal.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/admin/src/admin-routes.ts",
+        "apps/api/src/trpc/routers/admin/approval.ts"
+      ],
+      "test_command": "pnpm vitest run tests/unit/admin/approvals/",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 §8.2 #3 + US-011 #1",
+          "source_story": "US-011",
+          "lesson": "第一审批人不能两次批 · 客户端 + 服务端双校验",
+          "antipattern": "仅服务端校验 · 客户端按钮还可点(用户困惑 · 反复点击)",
+          "correct": "客户端 disabled <Button> + tooltip '您已是第一审批人' + 服务端 throw FORBIDDEN_SAME_APPROVER 兜底"
+        },
+        {
+          "source_prd": "PRD-13 §8.2 #4 + US-011 #2",
+          "source_story": "US-011",
+          "lesson": "紧急通道 incidentId 必填",
+          "antipattern": "<Button> 紧急批准 </Button> 直接调 emergencyApprove(incidentId 默认空 string)",
+          "correct": "必填 <Input value={incidentId} required> + 客户端校验 incidentId.length > 0 + 服务端校验 emergencyIncidentId != null"
+        },
+        {
+          "source_prd": "PRD-13 US-011 #3",
+          "source_story": "US-011",
+          "lesson": "影响范围预估按 actionType 路由",
+          "antipattern": "单一通用文案 '将批准此操作'(不告诉用户实际影响)",
+          "correct": "<ImpactEstimator actionType={...} payload={...} /> 组件 per actionType 显示具体影响(用户数 / 数据范围 / 不可恢复警告)"
+        }
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "verify-prd-13.sh 闭环验证 + E2E 完整 dual approval 走通",
+      "description": "作为 PRD 验证者,我需要 scripts/verify-prd-13.sh 可重复执行的脚本验收 + E2E 完整 dual approval 流程走通(从 US-007 提交审核 → US-011 第一人批 → US-011 第二人批 → US-003 publishPromptVersionInTx callback 完成 → ContextAssembler 实际使用新版本)。",
+      "acceptanceCriteria": [
+        "scripts/verify-prd-13.sh 新建 · ≥ 8 section · §1 静态 audit-redlines-admin grep 5 LD-A + 3 新 LD-A-6/7/8 全过 · §2 静态 6 张新表 schema 存在(prisma generate · grep prisma/schema.prisma) · §3 静态 _publishPromptVersionInTx + _forceRebuildEvolutionInTx + _adjustQuotaInTx + _approveRequestInTx 4 单点函数存在 + grep 0 dual write · §4 静态 BullMQ cron emergencyPostReview + quotaExpiry workers wire 完整 · §5 静态 14 Specialist Tab + 4 actionType impact estimator + 5 anomalyType detect 完整 · §6 静态 Monaco editor + @react-pdf/renderer 依赖完整 · §7 运行时 trpc evolutionHealth/quota/compliance/prompt/approval/approvalGate 5 procedure list 各 1 调用 · §8 E2E 完整 dual approval 流程 stub(实际 fixture · 不真启 dev server)",
+        "tests/e2e/admin/prd13-dual-approval-e2e.test.ts 新建 · 用 vitest + supertest + 真 Prisma · Setup seed 1 super_admin + 1 admin + 1 readonly_admin · seed 1 PromptVersion(specialistId='PositioningAgent' mode='default' version=18 status='draft')",
+        "Step 1 admin submitForReview(versionId=18) → status='pending_review' + requestApproval(dualApproval=true) + assert approval_request 创建 · Step 2 super_admin#1 approveRequest(requestId) → status='first_approved'(dual) + firstApproverAdminId 写 · Step 3 super_admin#1 同一人尝试再批 → throw FORBIDDEN_SAME_APPROVER · expect rejects · Step 4 super_admin#2 approveRequest(requestId) → status='approved' + _publishPromptVersionInTx callback → PromptVersion status='active' · PromptCanaryConfig.currentVersionId=18 · Step 5 模拟一个用户调 LLM Gateway · ContextAssembler.assemble({accountId}) → getActivePromptVersion 返 v18 content(而不是旧 v17) · assert · Step 6 assert admin_audit_log 含 'prompt_version_publish' + 'dual_approval_complete' 各 1",
+        "tests/e2e/admin/prd13-emergency-flow.test.ts 新建 · super_admin emergencyApprove(requestId, incidentId='INCIDENT-2026-05-14-001') → status='approved' + emergencyMode=true + postReviewRequired=true · 12h 后 cron 跑 → check postReviewRequired=true 但 < 24h · 不告警 · 24h+ 后 cron 跑 → 告警 + admin_audit_log eventType='post_review_overdue' · 另一 super_admin postReviewApprove(reviewerAdminId, result='confirmed') → postReviewedAt + postReviewerAdminId 写",
+        "tests/e2e/admin/prd13-quota-expiry-e2e.test.ts 新建 · admin adjustQuota(delta=300, reason='临时放量') → 调整生效 + quotaAdjustmentLog 创建 + delayed job 添加 · 模拟 24h(可用 fake-timers) · Worker 处理 expiry job → user_quota.dailyQuota 回滚 + quotaAdjustmentLog.revokedAt 写 · assert audit log",
+        "tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts 新建 · admin forceRebuildEvolution(accountId, reason) → requestApproval(dual=true) · 2 super_admin 各批 → status='approved' + callback _forceRebuildEvolutionInTx · assert evolution_profile cleared · evolution_insight all resolved · EvolutionAgent batch job 入队",
+        "pnpm audit:redlines / audit:ld / audit:redlines-admin / audit:admin-rls-tables / audit:admin-rls 5/5 全过 · 0 命中",
+        "pnpm test · ≥ 1720 pass · 0 fail(基线 1551 + US-001~011 累计 + 本 US E2E ≥ 25 新 tests)",
+        "pnpm typecheck · 0 errors",
+        "bash scripts/verify-prd-13.sh · 0 failures · 8 sections all PASS",
+        "Typecheck passes"
+      ],
+      "depends_on": [
+        "US-001",
+        "US-002",
+        "US-003",
+        "US-004",
+        "US-005",
+        "US-006",
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-13.sh",
+        "tests/e2e/admin/prd13-dual-approval-e2e.test.ts",
+        "tests/e2e/admin/prd13-emergency-flow.test.ts",
+        "tests/e2e/admin/prd13-quota-expiry-e2e.test.ts",
+        "tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "bash scripts/verify-prd-13.sh && pnpm vitest run tests/e2e/admin/prd13-*.test.ts",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "PRD-13 US-012 #1",
+          "source_story": "US-012",
+          "lesson": "E2E 必须用真 Prisma + 真 DB(D-080 isMock 模式仅 service 层)",
+          "antipattern": "E2E mock prisma 全部 · 没真验证写入(test 跑通但实际数据库没动)",
+          "correct": "用 quanqn_test DB(DATABASE_URL_TEST) + beforeEach truncate tables · 真 prisma instance + 真 transaction"
+        },
+        {
+          "source_prd": "PRD-13 US-012 #2",
+          "source_story": "US-012",
+          "lesson": "fake-timers 模拟 24h 推进 · 用 vitest useFakeTimers",
+          "antipattern": "await new Promise(r => setTimeout(r, 24*60*60*1000)) 真等(测试卡 24h · CI 超时)",
+          "correct": "vi.useFakeTimers() + vi.advanceTimersByTime(24*60*60*1000) + vi.useRealTimers() · 1s 完成"
+        }
+      ]
+    }
+  ]
+}

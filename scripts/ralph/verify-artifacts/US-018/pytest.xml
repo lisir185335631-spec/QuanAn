@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="9" failures="0" errors="0" time="0.111">
+    <testsuite name="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" timestamp="2026-05-12T18:48:36.953Z" hostname="returndeMacBook-Pro.local" tests="9" failures="0" errors="0" skipped="0" time="0.00761325">
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; returns Buffer for a regular timeline (AC-1)" time="0.0010785">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; generates PDF for empty timeline — isEmpty=true cover page (AC-10)" time="0.000102083">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; handles 1000 timeline entries without OOM (AC-9 pagination)" time="0.00243">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; contentHash is SHA-256 of redacted timeline entries — deterministic (AC-6)" time="0.000112208">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; requesterEmail and requesterRole appear in template data (AC-2/SHIELD)" time="0.000057541">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; redacts sensitive fields in payload before computing payloadHash (AC-14)" time="0.000269167">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; rejects PDF &gt; 50 MB with descriptive error (AC-12)" time="0.002967792">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; payloadHash for each entry is stable SHA-256 of redacted payload" time="0.000102166">
+        </testcase>
+        <testcase classname="apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts" name="generateForensicPdf &gt; infers source correctly from record shape" time="0.000157458">
+        </testcase>
+    </testsuite>
+</testsuites>

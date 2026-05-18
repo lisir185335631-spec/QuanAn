@@ -67,7 +67,7 @@ export function ToolForm({ toolKey, schema, onSubmit, onSuccess, defaultValues, 
       const stored = localStorage.getItem(getToolLsKey(accountId, toolKey, 'input'));
       if (stored) {
         const parsed = JSON.parse(stored) as Record<string, unknown>;
-        return { ...resolvedDefaults, ...parsed };
+        return { ...resolvedDefaults, ...parsed, ...(resolvedDefaults.topic ? { topic: resolvedDefaults.topic } : {}) };
       }
     } catch {
       // ignore malformed LS

@@ -1,0 +1,21 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/admin/admin-schema.test.ts > admin schema models exist and are writable > admin_audit_log: can create record
+ ✓ tests/unit/admin/admin-schema.test.ts > admin schema models exist and are writable > approval_requests: can create record
+ ✓ tests/unit/admin/admin-schema.test.ts > admin schema models exist and are writable > admin_users: can create record
+ ✓ tests/unit/admin/admin-schema.test.ts > admin schema models exist and are writable > admin_sessions: can create record (linked to admin_users)
+ ✓ tests/unit/admin/admin-schema.test.ts > admin schema models exist and are writable > user_quota: can create record
+ ✓ tests/unit/admin/admin-schema.test.ts > admin schema models exist and are writable > trending_review_queue: can create record
+ ✓ tests/unit/admin/admin-schema.test.ts > admin tables RLS DISABLED verification > admin_audit_log: relrowsecurity = false (RLS DISABLED)
+ ✓ tests/unit/admin/admin-schema.test.ts > admin tables RLS DISABLED verification > approval_requests: relrowsecurity = false (RLS DISABLED)
+ ✓ tests/unit/admin/admin-schema.test.ts > admin tables RLS DISABLED verification > admin_users: relrowsecurity = false (RLS DISABLED)
+ ✓ tests/unit/admin/admin-schema.test.ts > admin tables RLS DISABLED verification > admin_sessions: relrowsecurity = false (RLS DISABLED)
+ ✓ tests/unit/admin/admin-schema.test.ts > admin tables RLS DISABLED verification > user_quota: relrowsecurity = false (RLS DISABLED)
+ ✓ tests/unit/admin/admin-schema.test.ts > admin tables RLS DISABLED verification > trending_review_queue: relrowsecurity = false (RLS DISABLED)
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  11:07:21
+   Duration  184ms (transform 14ms, setup 4ms, collect 20ms, tests 38ms, environment 0ms, prepare 24ms)
+

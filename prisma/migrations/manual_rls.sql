@@ -11,9 +11,10 @@
 --   4. TrendingItem 写权限策略
 
 -- ============================================================
--- 1. 启用 RLS(12 张账号表 · 严禁全局表 + 运维表)
+-- 1. 启用 RLS(主应用 18 表 · LD-A-2 · users 包含在内)
 -- ============================================================
 
+ALTER TABLE users                   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ip_accounts             ENABLE ROW LEVEL SECURITY;
 ALTER TABLE step_data               ENABLE ROW LEVEL SECURITY;
 ALTER TABLE histories               ENABLE ROW LEVEL SECURITY;
@@ -29,7 +30,8 @@ ALTER TABLE knowledge_notes         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE daily_tasks             ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cost_log                ENABLE ROW LEVEL SECURITY;
 
--- 全局表 + 运维表显式不启用(users / invite_codes / trending_items / audit_log)
+-- 全局表 + 运维表显式不启用(invite_codes / trending_items / audit_log)
+-- users は主应用 18 表の一部として RLS 有効化済み(US-005)
 
 -- ============================================================
 -- 2. IpAccount · 按 user_id 隔离
@@ -97,7 +99,28 @@ CREATE POLICY cost_log_account_isolation ON cost_log
   WITH CHECK (account_id = NULLIF(current_setting('app.current_account_id', true), '')::int);
 
 -- ============================================================
--- 4. admin role · 跨账号查询(白名单 bypass)
+-- 4. users 表策略(全局身份表 · auth lookup 需 SELECT open · US-005)
+-- ============================================================
+
+-- auth 需要按 email SELECT · current_user_id 尚未设置时也须可查
+CREATE POLICY users_select_open ON users
+  FOR SELECT USING (true);
+
+-- 用户可更新自己的记录(lastLoginAt / lastLoginIp 等)
+CREATE POLICY users_update_own ON users
+  FOR UPDATE
+  USING (id = NULLIF(current_setting('app.current_user_id', true), '')::int);
+
+-- 注册时 INSERT(无 user_id 上下文)
+CREATE POLICY users_insert_open ON users
+  FOR INSERT WITH CHECK (true);
+
+-- admin 全量访问(跨用户 · US-006/007/008)
+CREATE POLICY admin_full_access_users ON users
+  FOR ALL USING (current_setting('app.role', true) = 'admin');
+
+-- ============================================================
+-- 5. admin role · 跨账号查询(白名单 bypass)
 -- ============================================================
 
 CREATE POLICY admin_full_access_ip_accounts ON ip_accounts

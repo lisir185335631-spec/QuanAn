@@ -8,7 +8,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@quanqn/schemas": ["../../packages/schemas/src"],
-      "@quanqn/schemas/*": ["../../packages/schemas/src/*"]
+      "@quanqn/schemas/*": ["../../packages/schemas/src/*"],
+      "@quanqn/ui/admin/pdf": ["../../packages/ui/src/admin/PdfBillTemplate.tsx"]
     }
   },
   "include": ["src", "scripts"],

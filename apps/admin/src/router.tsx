@@ -1,0 +1,67 @@
+// PRD-10 US-005 · React Router · 16 域 route + /login + /admin 默认 + 404
+// AC-9: BrowserRouter already in App.tsx · this exports the route tree
+
+import { Navigate, Route, Routes } from 'react-router-dom';
+
+import { AdminLayout } from './layouts/AdminLayout';
+import AbExperimentsPage from './pages/abExperiments/AbExperimentsPage';
+import ExperimentDetailPage from './pages/abExperiments/ExperimentDetailPage';
+import ConstantsPage from './pages/constants/ConstantsPage';
+import AccountsPage from './pages/accounts/index';
+import ApprovalGatesPage from './pages/approvals/index';
+import AuditPage from './pages/audit/index';
+import CompliancePage from './pages/compliance/index';
+import FeatureFlagsPage from './pages/featureFlags/FeatureFlagsPage';
+import CostPage from './pages/cost/index';
+import EvolutionHealthPage from './pages/evolutionHealth/EvolutionHealthPage';
+import InvitesPage from './pages/invites/index';
+import KnowledgePlaceholder from './pages/admin/placeholder/knowledge';
+import NsmDashboard from './pages/nsm/index';
+import PromptsPage from './pages/prompts/PromptsPage';
+import QuotaPage from './pages/quota/QuotaPage';
+import ReviewDeepLearnPage from './pages/reviewDeepLearn/index';
+import ReviewTrendingPage from './pages/reviewTrending/index';
+import UsersPage from './pages/users/index';
+import Login from './pages/Login';
+
+export function AdminRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/admin" element={<AdminLayout />}>
+        {/* default → nsm */}
+        <Route index element={<Navigate to="/admin/nsm" replace />} />
+
+        {/* P0 核心 */}
+        <Route path="nsm" element={<NsmDashboard />} />
+        <Route path="users" element={<UsersPage />} />
+        <Route path="accounts" element={<AccountsPage />} />
+        <Route path="cost" element={<CostPage />} />
+        <Route path="audit" element={<AuditPage />} />
+        <Route path="invites" element={<InvitesPage />} />
+
+        {/* P0 内容审核 */}
+        <Route path="reviewTrending" element={<ReviewTrendingPage />} />
+        <Route path="reviewDeepLearn" element={<ReviewDeepLearnPage />} />
+
+        {/* P1 健康度 */}
+        <Route path="evolution-health" element={<EvolutionHealthPage />} />
+        <Route path="prompts" element={<PromptsPage />} />
+        <Route path="quota" element={<QuotaPage />} />
+        <Route path="compliance" element={<CompliancePage />} />
+        <Route path="approvals" element={<ApprovalGatesPage />} />
+
+        {/* P2 高级 */}
+        <Route path="ab-experiments" element={<AbExperimentsPage />} />
+        <Route path="ab-experiments/:experimentKey" element={<ExperimentDetailPage />} />
+        <Route path="constants" element={<ConstantsPage />} />
+        <Route path="knowledge" element={<KnowledgePlaceholder />} />
+        <Route path="feature-flags" element={<FeatureFlagsPage />} />
+      </Route>
+
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+}

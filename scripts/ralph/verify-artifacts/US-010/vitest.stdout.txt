@@ -1,18 +1,1 @@
-
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
-
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.1: happy path — synthesizes text, writes asset + cost_log > 1000-char text → TTS mock → publicUrl returned + asset written + cost_log written
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.2: oversize — > 4000 chars rejects before OpenAI call > text.length > 4000 → BAD_REQUEST thrown · no OpenAI HTTP call
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.2: oversize — > 4000 chars rejects before OpenAI call > exactly 4000 chars passes
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.3: timeout — TTS API timeout → INTERNAL_SERVER_ERROR > nock delays 500ms · worker timeout=100ms → INTERNAL_SERVER_ERROR 1389ms
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS > Redis incr > 100 → TOO_MANY_REQUESTS with correct message
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS > 100th call (boundary) passes
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.4: rate-limit — 101st call per day → TOO_MANY_REQUESTS > _todayKey format is correct
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR > OpenAI 500 error → INTERNAL_SERVER_ERROR thrown · no cost_log · no asset
- ✓ tests/unit/api/workers/tts.test.ts > US-010 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR > OpenAI 429 rate limit error → INTERNAL_SERVER_ERROR thrown
-
- Test Files  1 passed (1)
-      Tests  9 passed (9)
-   Start at  15:36:16
-   Duration  1.64s (transform 26ms, setup 5ms, collect 56ms, tests 1.42s, environment 0ms, prepare 26ms)
-
+JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-010/vitest.xml

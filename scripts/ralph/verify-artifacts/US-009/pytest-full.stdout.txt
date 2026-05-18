@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 29ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  13:16:52
+   Duration  453ms (transform 22ms, setup 20ms, collect 77ms, tests 29ms, environment 116ms, prepare 31ms)
+

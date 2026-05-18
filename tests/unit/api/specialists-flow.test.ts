@@ -92,6 +92,26 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     update: vi.fn(async () => ({})),
   };
 
+  const deepLearnReviewQueue = {
+    create: vi.fn(async () => ({ id: 1, status: 'pending', autoVerdict: 'needs_review' })),
+    findMany: vi.fn(async () => [
+      {
+        id: 1,
+        fileName: 'sample.txt',
+        fileMime: 'text/plain',
+        autoScanResult: { redactedTextPreview: 'sample text', sourcePlatform: '微博', analysis: { coreFormula: '3段式' } },
+        status: 'pending',
+        uploadedAt: new Date('2026-01-01'),
+      },
+    ]),
+    update: vi.fn(async () => ({})),
+    findFirst: vi.fn(async () => null),
+  };
+
+  const costLog = {
+    create: vi.fn(async () => ({})),
+  };
+
   const tx = {
     history,
     diagnosisReport,
@@ -99,6 +119,8 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     evolutionProfile,
     evolutionInsight,
     deepLearningArchive,
+    deepLearnReviewQueue,
+    costLog,
     $executeRaw: vi.fn(async () => 0),
   };
 
@@ -109,6 +131,8 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
     evolutionProfile,
     evolutionInsight,
     deepLearningArchive,
+    deepLearnReviewQueue,
+    costLog,
     $transaction: vi.fn(async (fn: (tx: typeof tx) => Promise<unknown>) => fn(tx)),
     _tx: tx,
   };
@@ -138,14 +162,23 @@ describe('privateDomain.generate', () => {
   it('AC-7: creates History row with agentId=PrivateDomainAgent and traceId', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = privateDomainRouter.createCaller(ctx);
-    const result = await caller.generate({ stepKey: 'step_pd' });
+    const result = await caller.generate({
+      productDescription: '1对1职业规划咨询',
+      productPrice: 2980,
+      targetAudience: '25-35岁职场女性',
+      ipPositioning: '10年HR经验职场导师',
+      currentChannel: 'douyin',
+      monthlyTraffic: 50000,
+    });
     expect(prisma.history.create).toHaveBeenCalledOnce();
     const createArgs = prisma.history.create.mock.calls[0]?.[0] as {
       data: { agentId: string; traceId: string; content: string };
     };
     expect(createArgs.data.agentId).toBe('PrivateDomainAgent');
     expect(createArgs.data.traceId).toBe('test-trace-005');
-    expect(result.content).toBe('[mock]');
+    // content should be JSON SOP (not '[mock]' anymore)
+    expect(typeof result.content).toBe('string');
+    expect(result.content.length).toBeGreaterThan(0);
   });
 });
 
@@ -329,15 +362,15 @@ describe('evolution.moduleRanking', () => {
 // ─── deepLearning.list ───────────────────────────────────────────────────────
 
 describe('deepLearning.list', () => {
-  it('calls deepLearningArchive.findMany with isActive filter by default', async () => {
+  it('calls deepLearnReviewQueue.findMany with accountId filter by default', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
     const result = await caller.list({});
-    expect(prisma.deepLearningArchive.findMany).toHaveBeenCalledOnce();
-    const args = prisma.deepLearningArchive.findMany.mock.calls[0]?.[0] as {
-      where?: { isActive: boolean };
+    expect(prisma.deepLearnReviewQueue.findMany).toHaveBeenCalledOnce();
+    const args = prisma.deepLearnReviewQueue.findMany.mock.calls[0]?.[0] as {
+      where?: { accountId: number };
     };
-    expect(args.where?.isActive).toBe(true);
+    expect(args.where?.accountId).toBe(1);
     expect(Array.isArray(result)).toBe(true);
   });
 });
@@ -345,32 +378,33 @@ describe('deepLearning.list', () => {
 // ─── deepLearning.create ─────────────────────────────────────────────────────
 
 describe('deepLearning.create', () => {
-  it('creates DeepLearningArchive with sourceType=text', async () => {
+  it('enqueues to deepLearnReviewQueue (LD-A-5: no direct archive.create)', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
     const result = await caller.create({ sample: 'this is my sample text' });
-    expect(prisma.deepLearningArchive.create).toHaveBeenCalledOnce();
-    const createArgs = prisma.deepLearningArchive.create.mock.calls[0]?.[0] as {
-      data: { sourceType: string; learningStatus: string };
-    };
-    expect(createArgs.data.sourceType).toBe('text');
-    expect(createArgs.data.learningStatus).toBe('pending');
-    expect(result.agentId).toBe('DeepLearnAgent');
+    expect(prisma.deepLearnReviewQueue.create).toHaveBeenCalledOnce();
+    expect(prisma.deepLearningArchive.create).not.toHaveBeenCalled();
+    expect(result.ok).toBe(true);
+    expect(result.queueId).toBe(1);
+    expect(result.status).toBe('pending');
   });
 });
 
 // ─── deepLearning.createFromFile ─────────────────────────────────────────────
 
 describe('deepLearning.createFromFile', () => {
-  it('creates archive with sourceType=file and placeholder sample', async () => {
+  it('enqueues to deepLearnReviewQueue with fileUrl (LD-A-5: no direct archive.create)', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
-    await caller.createFromFile({ fileUrl: 'https://example.com/doc.pdf' });
-    const createArgs = prisma.deepLearningArchive.create.mock.calls[0]?.[0] as {
-      data: { sourceType: string; sample: string };
+    const result = await caller.createFromFile({ fileUrl: 'https://example.com/doc.pdf' });
+    expect(prisma.deepLearnReviewQueue.create).toHaveBeenCalledOnce();
+    expect(prisma.deepLearningArchive.create).not.toHaveBeenCalled();
+    const createArgs = prisma.deepLearnReviewQueue.create.mock.calls[0]?.[0] as {
+      data: { fileUrl: string };
     };
-    expect(createArgs.data.sourceType).toBe('file');
-    expect(createArgs.data.sample).toBe('[file-content-pending]');
+    expect(createArgs.data.fileUrl).toBe('https://example.com/doc.pdf');
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe('pending');
   });
 });
 
@@ -391,13 +425,13 @@ describe('deepLearning.learn', () => {
 // ─── deepLearning.delete ─────────────────────────────────────────────────────
 
 describe('deepLearning.delete', () => {
-  it('soft-deletes archive by setting isActive=false', async () => {
+  it('soft-cancels queue entry by setting status=cancelled', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
     const result = await caller.delete({ archiveId: 30 });
     expect(result).toEqual({ ok: true });
-    expect(prisma.deepLearningArchive.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 30 }, data: { isActive: false } }),
+    expect(prisma.deepLearnReviewQueue.update).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ id: 30 }), data: { status: 'cancelled' } }),
     );
   });
 });

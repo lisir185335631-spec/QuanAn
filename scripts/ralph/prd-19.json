@@ -1,0 +1,451 @@
+{
+  "project": "QuanQn 主应用 · frontend ↔ backend 真接入",
+  "branchName": "ralph/prd-19-frontend-backend-bridge",
+  "description": "PRD-19 frontend ↔ backend 真接入 · 11 step page 接 useStepData + trpc.stepData.save · 8 Specialist 真 LLM(或 fallback)· LS↔DB 双写桥接 · LD-009 严守 · brownfield 99% 已实施(prisma + 8 Specialist + stepData router + useStepData hook 全 ready)· scope 9 US",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "stepKey 命名规范化 + 老 LS 数据迁移 helper(migrateLegacyLs)",
+      "description": "作为 QuanQn frontend 开发者 · 在 11 step page 接 useStepData 之前 · 需要统一 stepKey 命名(step1/step3/step3b/step4/step4b/step5/step6/step7/step8)+ 一次性迁移 PRD-15~18 老 `acc_step{N}` LS 数据到 LD-009 规范命名(`aiip_memory_acc_{accountId}_step{N}`)· 防数据丢失 + 跨账号隔离立即生效 · App.tsx mount 时 1 次 call · 用 MIGRATION_FLAG_KEY 防重复跑",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/migration/legacy-ls.ts · export migrateLegacyLs(store, accountId): { migrated, skipped } · 内部遍历 LEGACY_KEYS = ['acc_step1', 'acc_step3', 'acc_step3b', 'acc_step4', 'acc_step4b', 'acc_step5', 'acc_step5_selected_topic', 'acc_step6', 'acc_step7', 'acc_step8'] · 读老 key 数据 → 写新 stepLsKey(accountId, stepKey) 或 aiip_memory_acc_{accountId}_selected_topic(跨 step 桥)· 删老 key · 用 MIGRATION_FLAG_KEY = 'aiip_legacy_migration_v1_done' 防重跑(再次 call 返回 { migrated: 0, skipped: 10 })",
+        "新增 apps/web/src/lib/migration/__tests__/legacy-ls.test.ts · 单测覆盖 4 类 edge · (a) 0 legacy keys 存在 → migrated=0, skipped=10, FLAG 写 '1'; (b) 全 10 keys 都有数据 → migrated=10; (c) 部分迁 + 部分新 key 已存在 → 不覆盖新 + 删老; (d) QuotaExceededError 时 console.warn + continue 不中断; (e) accountId === null → return { migrated: 0, skipped: 0 } 不跑",
+        "修改 apps/web/src/App.tsx(或 main.tsx)· mount 时 useEffect 1 次 call migrateLegacyLs(localStorage, activeAccountId) · accountId 通过 useActiveAccount hook 拿(已实施)· 不在 SSR 跑 · 不在 activeAccount 未 ready 跑",
+        "performance · 10 keys 迁移 < 50ms(LS 同步 read/write)· 启动时 1 次 call 不影响 FCP > 100ms",
+        "test_command · cd apps/web && pnpm vitest run src/lib/migration/legacy-ls.test.ts",
+        "Typecheck passes(cd apps/web && pnpm typecheck → 0 error)"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/lib/migration/, apps/web/src/App.tsx) 涉及的 TD · 主动 fix · 不等专项 story · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/migration/legacy-ls.ts",
+        "apps/web/src/lib/migration/__tests__/legacy-ls.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/App.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/migration/legacy-ls.test.ts",
+      "size_hint": "small",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-002",
+          "lesson": "LD-009 红线 · localStorage key 必须 'acc_' namespace 前缀 · 但 PRD-19 升级到 'aiip_memory_acc_{accountId}_*' 真规范(stepLsKey 现有 helper)· 严禁旧 acc_step{N} 简化命名残留",
+          "antipattern": "localStorage.setItem('acc_step1', JSON.stringify(data))  // 反例 · 缺 accountId · 跨账号串数据",
+          "correct": "import { stepLsKey } from '@/lib/ls-namespace'; localStorage.setItem(stepLsKey(accountId, 'step1'), JSON.stringify(data))  // 正确 · accountId 隔离 LD-009 严守"
+        },
+        {
+          "source_prd": "prd-19-frontend-backend-bridge",
+          "source_story": "US-001 (self-injected · LS migration 通用风险)",
+          "lesson": "一次性 migration 必有防重跑标记 · 否则用户每次刷新都跑 · 性能差 + 老 key 已删后重新读返回 null · 误判数据丢失",
+          "antipattern": "export function migrateLegacyLs(store, accountId) { for (const k of LEGACY_KEYS) { ... } }  // 反例 · 无 FLAG 防重跑",
+          "correct": "if (store.getItem(MIGRATION_FLAG_KEY) === '1') return { migrated: 0, skipped: LEGACY_KEYS.length };  // 正确 · 首次跑后 set FLAG · 再次跑 skip"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "useStepData hook 增强 · dbQuery + readOtherStep 跨 step 预填 helper",
+      "description": "作为 QuanQn 11 step page · 需要在 form mount 时读上游 step 数据(如 Step3 读 acc_step1.industry · Step6 读 acc_step7.body.text)· 当前 useStepData 仅 save/load · 不暴露跨 step 读 + DB 预读。新增 dbQuery(useQuery 包装 trpc.stepData.get)+ 静态 readOtherStep helper(纯 LS 读 · 兜底)",
+      "acceptanceCriteria": [
+        "修改 apps/web/src/hooks/useStepData.ts · 在原有 save/load/isSaving 基础上 · 新增 `dbQuery = trpc.stepData.get.useQuery({ stepKey }, { enabled: accountId !== null, staleTime: 30_000, retry: false })` · 返回 { save, load, isSaving, dbQuery }",
+        "在 apps/web/src/hooks/useStepData.ts 文件级 · 新增 `export function readOtherStep<T = Record<string, unknown>>(accountId, otherStepKey): T | null` · 内部 stepLsKey 拼 key + localStorage.getItem + JSON.parse(catch null)· accountId === null 返回 null",
+        "新增 apps/web/src/hooks/__tests__/useStepData.test.tsx · 单测 (a) save → 触发 trpc mutation; (b) load → 同步 LS 读; (c) dbQuery enabled 仅 accountId !== null; (d) readOtherStep null safety; (e) JSON.parse 失败 catch + console.warn + return null",
+        "Verify in browser using agent-browser · 打开 http://localhost:5173/step/3 · 检查 localStorage.getItem(`aiip_memory_acc_${activeAccountId}_step1`) 存在时 · Step3 form 自动预填 industry · 0 console error",
+        "test_command · cd apps/web && pnpm vitest run src/hooks/useStepData.test.tsx",
+        "Typecheck passes(cd apps/web && pnpm typecheck → 0 error)"
+      ],
+      "depends_on": [],
+      "priority": 2,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/hooks/) 涉及的 TD · 主动 fix · 不等专项 story · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/hooks/__tests__/useStepData.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/hooks/useStepData.ts"
+      ],
+      "test_command": "cd apps/web && pnpm vitest run src/hooks/useStepData.test.tsx",
+      "size_hint": "small",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-19-frontend-backend-bridge",
+          "source_story": "US-002 (self-injected · 跨 step 数据 hook 通用风险)",
+          "lesson": "readOtherStep 是静态 helper 不是 hook · 不能用 useState/useEffect/useQuery · 直接 LS 同步读 · 否则 React 渲染期调违反 hook rules",
+          "antipattern": "export function readOtherStep(accountId, key) { const [data, setData] = useState(null); useEffect(...) }  // 反例 · 静态 helper 用 hook",
+          "correct": "export function readOtherStep<T>(accountId, key): T | null { if (accountId === null) return null; const raw = localStorage.getItem(stepLsKey(accountId, key)); return raw ? JSON.parse(raw) as T : null; }  // 正确 · 纯同步函数"
+        },
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-005",
+          "lesson": "LS 操作必走 namespace helper(stepLsKey / accountLsPrefix) · 严禁 page / hook 内直接拼字符串 · 否则 LD-009 违反 + 跨账号串",
+          "antipattern": "localStorage.getItem(`aiip_memory_acc_${accountId}_${stepKey}`)  // 反例 · hardcode 命名模板",
+          "correct": "import { stepLsKey } from '@/lib/ls-namespace'; localStorage.getItem(stepLsKey(accountId, stepKey))  // 正确 · 用 helper"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Step1 + Step3 + Step3b 真接 stepData router(Positioning industry + Branding packaging/persona)",
+      "description": "作为 QuanQn 用户 · 在 Step1 选行业 / Step3 填 IP 定位 / Step3b 填人设 · form 提交后真接 trpc.stepData.save · backend 自动 wire PositioningAgent(industry mode for step1)或 BrandingAgent(packaging mode for step3 / persona mode for step3b)· result 真 LLM 输出(或 fallback mock 若无 OPENAI_KEY)· UI 用 LoadingState + ErrorState 复用(PRD-17 §11.10.2)· EmptyState 必用 template literal pattern(PRD-18 §11.11.1 红线级)",
+      "acceptanceCriteria": [
+        "修改 apps/web/src/pages/step/Step1.tsx · 删除 hardcode `localStorage.setItem('acc_step1', ...)` · 改用 `const { save, dbQuery, isSaving } = useStepData(accountId, 'step1')` · form submit 调 save({ industry, industryLabel, customIndustry? })· accountId 来自 useActiveAccount",
+        "修改 apps/web/src/pages/step/Step3.tsx + Step3b.tsx · 同模式 · useStepData(accountId, 'step3') / useStepData(accountId, 'step3b') · save 调用替换原 mockResult setTimeout · 跨 step 预填 · const acc_step1 = readOtherStep(accountId, 'step1') · 取 industryLabel 显示 SUBTITLE",
+        "3 page 全用 LoadingState(text='正在分析行业 / IP 定位 / 人设方案 · 请稍候 ...')+ ErrorState(message + onRetry={dbQuery.refetch})复用 · EmptyState title 必用 template literal · `<EmptyState title={\\`提交表单后查看${STEP{N}_H1}\\`} />` · 严禁 hardcode 含 STEP{N}_H1 字面常量",
+        "Use agent-browser open http://localhost:5173/step/1 · 登录 + 选行业 '美食' + 点 [生成行业洞察] · 等待 LoadingState '正在分析行业' · 出现 result 渲染 · localStorage.getItem(`aiip_memory_acc_${activeAccountId}_step1`) 非 null · 0 hardcode 'acc_step1' key in localStorage(grep apps/web/src/pages/step/Step1.tsx · 'localStorage.setItem.*acc_step' 0 hit)",
+        "Verify 真后端集成 · 启 `pnpm dev:api` + `pnpm dev:web` · Step1 提交后 prisma 真有 row: `await prisma.stepData.findFirst({ where: { stepKey: 'step1', accountId: activeAccountId } })` · row.inputs.industryLabel === '美食' · row.status in ['completed', 'fallback']",
+        "vitest 119+ tests zero-regression(全 PASS · tsc 0 error)· 旧 e2e PRD-15~17 spec 全 PASS",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 3,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/pages/step/Step1,Step3,Step3b) 涉及的 TD · 主动 fix",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step1.tsx",
+        "apps/web/src/pages/step/Step3.tsx",
+        "apps/web/src/pages/step/Step3b.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm vitest run src/pages/step/__tests__/Step1.test.tsx src/pages/step/__tests__/Step3.test.tsx src/pages/step/__tests__/Step3b.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-007",
+          "lesson": "EmptyState title 严禁 hardcode 含 STEP{N}_H1 字面常量 · 必用 template literal 嵌 STEP{N}_H1 · 否则 AC 字面 grep 命中 reject",
+          "antipattern": "<EmptyState title='提交表单后查看个人 IP 起号' />  // 反例 · hardcode 含 STEP1_H1 字面",
+          "correct": "<EmptyState title={`提交表单后查看${STEP1_H1}`} />  // 正确 · template literal · grep 0 hit"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007",
+          "lesson": "form label / placeholder / button label 严禁 ralph 改字面 · D1=A 严守 · PRD-17/18 已锁字面 STEP_X_LABEL/PLACEHOLDER 常量 · 直接 import 用 · 不允许重写字符串",
+          "antipattern": "<label>选择您的行业</label>  // 反例 · hardcode 含 spec 字面",
+          "correct": "<label>{STEP1_INDUSTRY_LABEL}</label>  // 正确 · 用 step1.ts 已 export 的常量"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003",
+          "lesson": "LoadingState / ErrorState / 主 CTA gradient 严禁用 Tailwind 真紫色 utility · D4=B 严守 · 必用 var(--primary) 金色 token · QuanQn primary HSL(43, 87%, 63%)",
+          "antipattern": "<div className='bg-gradient-to-r from-violet-600 to-violet-400'>  // 反例 · Tailwind 真紫色",
+          "correct": "<div className='bg-gradient-to-r from-primary to-primary/80'>  // 正确 · 用 token · D4=B"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "Step4 + Step4b 真接 stepData router(Positioning execution + Monetization)",
+      "description": "作为 QuanQn 用户 · 在 Step4 填粉丝/目标/情况 / Step4b 填产品/受众/IP定位/收入水平 · form 提交后真接 trpc.stepData.save · backend 自动 wire PositioningAgent(execution mode for step4)或 MonetizationAgent(for step4b)· result 真 LLM 输出(3 H3 执行计划 / 3 阶梯 + 收入结构 + 案例)· Step4b 收入结构 simple progress bar 严守(LD-174 · 0 import recharts)",
+      "acceptanceCriteria": [
+        "修改 apps/web/src/pages/step/Step4.tsx + Step4b.tsx · useStepData(accountId, 'step4') / useStepData(accountId, 'step4b') · save 调用替换原 mockResult · 跨 step 预填 · readOtherStep(accountId, 'step1') 取 industryLabel 显示 SUBTITLE",
+        "修改 apps/web/src/components/step4b/Step4bOutputContent.tsx · 接受 Step4bResult 真数据(从 dbQuery.data?.result 来)· 替换 mockResult 渲染逻辑 · 保持 3 阶梯 schema 渲染 + StageCard 折叠 + animate-in 入场 + simple progress bar(0 import recharts · LD-174 严守)",
+        "LoadingState text · 'AI 正在制定执行计划 ...' / 'AI 正在制定变现规划 ...' · ErrorState onRetry={dbQuery.refetch} · EmptyState template literal · `<EmptyState title={\\`提交表单后查看${STEP4_H1}\\`} />` · 严禁 hardcode '执行计划' / '变现规划' 字面",
+        "Use agent-browser · 打开 /step/4 + 填 form + 提交 · 检查 LoadingState 出现 · 等待 result 渲染 · 检查 row.inputs / row.result 真存 DB(prisma findFirst)· grep apps/web/src/pages/step/Step4.tsx + Step4b.tsx · `localStorage.setItem.*acc_step` 0 hit",
+        "Verify 真后端 · pnpm dev:api + dev:web 同时跑 · Step4 提交触发 PositioningAgent execution mode · Step4b 触发 MonetizationAgent · row.agentId 分别为 'PositioningAgent' / 'MonetizationAgent'",
+        "vitest 119+ tests zero-regression + Step4b 子组件单测 · 0 recharts import · grep `from 'recharts'` apps/web/src/components/step4b/ → 0 hit",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 4,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 Step4b 子组件相关 TD",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step4.tsx",
+        "apps/web/src/pages/step/Step4b.tsx",
+        "apps/web/src/components/step4b/Step4bOutputContent.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm vitest run src/pages/step/__tests__/Step4.test.tsx src/pages/step/__tests__/Step4b.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-007",
+          "lesson": "EmptyState title 严禁 hardcode 含 STEP{N}_H1 字面常量 · 必用 template literal 嵌",
+          "antipattern": "<EmptyState title='提交表单后查看执行计划' />  // 反例 · hardcode 含 STEP4_H1='执行计划' 字面",
+          "correct": "<EmptyState title={`提交表单后查看${STEP4_H1}`} />  // 正确 · template literal · grep 0 hit"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-008/US-013 (LD-174 实证)",
+          "lesson": "Step4b 收入结构必用 simple progress bar 替代饼图 · 严禁 import recharts · LD-174 严守 · 1.0 不用 chart 库",
+          "antipattern": "import { PieChart, Pie } from 'recharts'; <PieChart data={...} />  // 反例 · 引 chart 库",
+          "correct": "<div className='h-2 rounded-full bg-primary/10'><div className='bg-gradient-to-r from-primary to-primary/80' style={{ width: '45%' }} /></div>  // 正确 · simple progress bar"
+        },
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-002",
+          "lesson": "page 替换 hardcode localStorage 为 useStepData · 必删除原 setItem('acc_step{N}') · 否则 LD-009 audit grep 命中 reject",
+          "antipattern": "// 改造后保留旧 localStorage.setItem('acc_step4', ...) 作 backward compat  // 反例 · LD-009 grep 命中",
+          "correct": "// 完全删除 hardcode · 全走 useStepData · migrateLegacyLs 一次性迁老数据"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "Step5 SSE 真接 saveStream subscription(TopicAgent 5 类爆款选题 100 选题)",
+      "description": "作为 QuanQn 用户 · 在 Step5 填行业/产品 + 上传 file metadata stub(LD-170 严守)· 5 类 Tab(traffic/monetize/persona/cognition/case)切换时 · 每 Tab 各自 trpc.stepData.saveStream subscription 真接 TopicAgent · 进度 UI · first chunk < 3s · 100 选题真 LLM 输出(20/Tab × 5)· LS↔DB 双写镜像保留",
+      "acceptanceCriteria": [
+        "修改 apps/web/src/pages/step/Step5.tsx · 删除 hardcode `localStorage.setItem('acc_step5', ...)` · 改用 useStepData(accountId, 'step5') 持久化 form state · 5 Tab 切换时调 trpc.stepData.saveStream.useSubscription({ stepKey: 'step5', category, inputs }) · enabled=hasSubmitted · onData 处理 { type: 'started' } 显示 streamStatus + { type: 'done' } 渲染 topics",
+        "5 Tab 各自独立 subscription · 切换 Tab 时老 subscription unsubscribe + 新 enable · 防 stream 串 + memory leak · 各 Tab 数据隔离 acc_step5.{traffic|monetize|...}(per useStepData LS 镜像)",
+        "保持 apps/web/src/components/step5/Step5FileUpload.tsx 不变 · LD-170 严守 · FileReader.readAsText + 仅 metadata · 0 真上传 · 0 backend fetch",
+        "修改 apps/web/src/components/step5/Step5TopicGrid.tsx · 接受真 SSE result 替换 mockResult · 用户点选题仍走 setItem(`aiip_memory_acc_${accountId}_selected_topic`, ...) + navigate('/step/7') · selected_topic 跨 step 桥保留",
+        "Use agent-browser · 打开 /step/5 + 填行业 + 提交 + 等待 LoadingState '生成中 ...' 出现 < 3s · 等 20 traffic 选题渲染(SSE done)· 切到 monetize Tab · 触发新 subscription · 老 traffic 数据 LS 保留(切回 traffic Tab 仍可见)",
+        "Verify 真后端 · pnpm dev:api 跑 saveStream subscription endpoint · row.agentId === 'TopicAgent' · row.result 含 5 类 100 选题",
+        "vitest 119+ tests zero-regression",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 5,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 SSE / Step5 相关 TD",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step5.tsx",
+        "apps/web/src/components/step5/Step5TopicGrid.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm vitest run src/pages/step/__tests__/Step5.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-007",
+          "lesson": "SSE Specialist 模式 · subscription 切换时必显式 unsubscribe 老 stream · enabled 必跟 state · 否则 React 18 StrictMode 双调 + memory leak",
+          "antipattern": "useEffect(() => { const sub = trpc...; }, [])  // 反例 · 0 cleanup · 切换时双订阅",
+          "correct": "const sub = trpc.stepData.saveStream.useSubscription({ ... }, { enabled: hasSubmitted, onData(data) {...} })  // 正确 · useSubscription 自动管理生命周期"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-009 (LD-170 严守)",
+          "lesson": "Step5 file upload 严禁真上传 · LD-170 严守 · FileReader.readAsText 仅取 metadata(name/size/type)· 0 fetch backend · 1.0 不实现文件知识库 backend",
+          "antipattern": "<input type='file' onChange={(e) => fetch('/api/upload', { body: formData })} />  // 反例 · 真上传",
+          "correct": "<input type='file' onChange={(e) => { const reader = new FileReader(); reader.onload = () => console.log('file metadata:', e.target.files[0].name); reader.readAsText(e.target.files[0]); }} />  // 正确 · stub"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-007",
+          "lesson": "EmptyState template literal pattern 跨 6 page 防御 · Step5 五 Tab 各自 EmptyState 全用 template literal",
+          "antipattern": "<EmptyState title='提交表单后查看爆款选题' />  // 反例 · hardcode 含 STEP5_H1 字面",
+          "correct": "<EmptyState title={`提交表单后查看${STEP5_H1}`} />  // 正确"
+        }
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "Step6 + Step7 真接 stepData router(Video shooting + Copywriting + history 自动写)",
+      "description": "作为 QuanQn 用户 · 在 Step6 填 textarea ≥10 字 / Step7 填主题 + 22 元素多选 · form 提交后真接 trpc.stepData.save · backend 自动 wire VideoAgent(shooting mode for step6)/ CopywritingAgent(step7 mode for step7)· 输出 8 列分镜表 + 4 H4 辩论模板 · CopywritingAgent 在 stepData router 内自动 prisma.history.create(已实施)· 跨 step 预填 · Step6 自动读 Step7 result.body.text 预填 textarea",
+      "acceptanceCriteria": [
+        "修改 apps/web/src/pages/step/Step6.tsx · useStepData(accountId, 'step6') · 跨 step 预填 · readOtherStep(accountId, 'step7') 取 result.body.text 自动填 textarea(若 acc_step7 有数据)· save({ text }) 触发 VideoAgent · 字符计数 template + < 10 字 disabled 保留",
+        "修改 apps/web/src/pages/step/Step7.tsx · useStepData(accountId, 'step7') · 22 elements Set + 20 script types 搜索保留 · onSubmit 改 save({ topic, optimizeDir, scriptType, elements: Array.from(elementsSet) })· 跨 step 预填 · readOtherStep(accountId, 'step5_selected_topic') 取选题预填 topic textarea",
+        "修改 apps/web/src/components/step7/Step7OutputContent.tsx · 接受真 CopywritingAgent result 替换 mockResult · 4 H4 辩论模板 + 评论引导 + 话题标签 chip 渲染 · TD-76 fix · STEP7_LABEL_SCRIPT_TYPE 常量化(若 plan-check §2.6.21 扩范围 apply 后 grep 命中 · 一并 fix)",
+        "Use agent-browser · 打开 /step/7 + 填主题 + 选 5 元素 + 提交 · 等待 LoadingState '正在生成文案 ...' · 等 result 渲染 · 验证 prisma.history.findFirst({ where: { agentId: 'CopywritingAgent', accountId: activeAccountId } }) 非 null · history.content 含 markdown",
+        "打开 /step/6 + 检查 textarea 自动预填 Step7 result.body.text(若存在)· 填 ≥10 字 + 提交 · row.agentId === 'VideoAgent' · row.result 含 8 列分镜",
+        "vitest 119+ tests zero-regression",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 6,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 TD-76 (Step7.tsx:150 hardcode '选择脚本类型') · 若 plan-check §2.6.21 扩范围 apply 后 audit grep 命中 · 一并 fix · commit message 加 [TD-76 resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step6.tsx",
+        "apps/web/src/pages/step/Step7.tsx",
+        "apps/web/src/components/step7/Step7OutputContent.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm vitest run src/pages/step/__tests__/Step6.test.tsx src/pages/step/__tests__/Step7.test.tsx",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-011a",
+          "lesson": "Step7 form section label 严禁 hardcode · 必 import 常量(TD-76 教训)· STEP7_LABEL_SCRIPT_TYPE = '选择脚本类型' 需 export from step7.ts",
+          "antipattern": "<label>选择脚本类型</label>  // 反例 · hardcode 中文(TD-76)",
+          "correct": "import { STEP7_LABEL_SCRIPT_TYPE } from '@/lib/constants/step7'; <label>{STEP7_LABEL_SCRIPT_TYPE}</label>  // 正确"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-007",
+          "lesson": "EmptyState template literal pattern 严守 · Step6/Step7 跟 PRD-18 一致",
+          "antipattern": "<EmptyState title='提交表单后查看拍摄计划' />  // 反例",
+          "correct": "<EmptyState title={`提交表单后查看${STEP6_H1}`} />  // 正确"
+        },
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-002",
+          "lesson": "替换 hardcode acc_step{N} 为 useStepData · 必删除所有 localStorage.setItem('acc_step{N}') 旧调用 · LD-009 严守",
+          "antipattern": "useEffect(() => { const old = localStorage.getItem('acc_step7'); ... })  // 反例 · 残留旧 key 读",
+          "correct": "const { load } = useStepData(accountId, 'step7'); const data = load();  // 正确"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Step8 真接 stepData router(Livestream 2 子功能 generate_plan + optimize_script)",
+      "description": "作为 QuanQn 用户 · 在 Step8 切换 2 子功能 · 各自独立 form 提交 · trpc.stepData.save · backend 自动 wire LivestreamAgent · result 真 LLM 输出 6 模块(generate_plan)或 2 InfoCard(optimize_script)· sub_function discriminator 严守隔离防交叉污染(PRD-18 §11.11.4)· TD-77 一并 fix(STEP8_OPTIMIZE_OUTPUT_LABELS_2 常量化)",
+      "acceptanceCriteria": [
+        "修改 apps/web/src/pages/step/Step8.tsx · 2 子功能 H3 tab 切换保留 · sub_function discriminator 严守 · LS 数据 sub_function 不匹配时 return(防交叉污染)",
+        "修改 apps/web/src/components/step8/Step8GeneratePlan.tsx + Step8OptimizeScript.tsx · 各自 useStepData(accountId, 'step8') · save({ sub_function: 'generate_plan' | 'optimize_script', ...formData })· 替换 mockResult 为真 LivestreamAgent result · userInput.experience enum 验证(新手 | 有经验 | 资深 · LivestreamAgent default '有经验')",
+        "TD-77 fix · step8.ts 新增 export const STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · Step8OptimizeScript.tsx line 164-165 改 `STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard label={label} value={result[id]} />)`",
+        "Use agent-browser · 打开 /step/8 + 切到 'generate_plan' Tab + 填 form + 提交 · 等待 LoadingState · 出现 6 模块 InfoCard render · 切到 'optimize_script' Tab · 填 textarea ≥10 字 + optimizeGoal + 提交 · 出现 2 InfoCard render · 2 子功能 LS 各自独立(切回 generate_plan 数据保留)",
+        "Verify 真后端 · row.agentId === 'LivestreamAgent' · row.inputs.sub_function in ['generate_plan', 'optimize_script']",
+        "vitest 119+ tests zero-regression · TD-77 fix 单测覆盖(STEP8_OPTIMIZE_OUTPUT_LABELS_2.length === 2)",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 7,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · 检查 TD-77 (Step8OptimizeScript.tsx:164-165 hardcode '优化后文案' / '优化说明')· 一并 fix · commit message 加 [TD-77 resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step8.tsx",
+        "apps/web/src/components/step8/Step8GeneratePlan.tsx",
+        "apps/web/src/components/step8/Step8OptimizeScript.tsx",
+        "apps/web/src/lib/constants/step8.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm vitest run src/pages/step/__tests__/Step8.test.tsx",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-012 (TD-77)",
+          "lesson": "InfoCard label / 任何 props 字符串 label 严禁 hardcode 中文 · 必 import 常量 map(TD-77 教训)",
+          "antipattern": "<InfoCard label='优化后文案' value={result.optimized_text} /> <InfoCard label='优化说明' value={result.optimization_notes} />  // 反例 · hardcode",
+          "correct": "STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => <InfoCard key={id} label={label} value={result[id]} />)  // 正确 · 常量 map"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-012",
+          "lesson": "Step8 2 子功能用 sub_function discriminator 严守 · LS 数据不匹配时 return · 防交叉污染",
+          "antipattern": "useEffect(() => { const parsed = JSON.parse(raw); if (parsed.formData) setFormData(parsed.formData); }, [])  // 反例 · 不检 sub_function · 切换 Tab 时串数据",
+          "correct": "if (parsed.sub_function !== subfunctionKey) return;  // 正确 · 严守 discriminator(PRD-18 §11.11.4)"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-007",
+          "lesson": "EmptyState template literal pattern 严守 · Step8 跟 PRD-18 一致",
+          "antipattern": "<EmptyState title='提交表单后查看直播策划' />  // 反例",
+          "correct": "<EmptyState title={`提交表单后查看${STEP8_H1}`} />  // 正确"
+        }
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "E2E playwright 跨 9 step + acc 切换数据隔离 + zero-regression 硬门禁",
+      "description": "作为 QuanQn 维护者 · 需要 E2E 验证 PRD-19 9 step page 真接 backend 闭环跑通 · 含 acc 切换数据隔离 · zero-regression PRD-15~18 旧测试 全 PASS · Specialist 真 LLM call 或 fallback mock(默认 fallback · 无 OPENAI_KEY 时)· 真后端 stack 启动(pnpm dev:api + dev:web + PG + Redis)",
+      "acceptanceCriteria": [
+        "新建 apps/web/e2e/prd-19-frontend-backend.spec.ts · test.describe('PRD-19 · frontend ↔ backend 真接入') · 4 tests · (a) Step1 真接 PositioningAgent · LS↔DB 双写; (b) acc 切换 · 数据隔离 · Step1 industry 不串(account A 美食 vs B 美妆 互不见); (c) 9 step 完整流程 · 数据真存 DB · 0 hardcode acc_step{N} LS; (d) zero-regression · 119+ vitest tests + tsc 0 error + 旧 e2e PRD-15~18 全 PASS",
+        "test (a) · agent-browser 打开 http://localhost:5173/step/1 · 登录 + 选行业 '美食' + 等 LoadingState · prisma.stepData.findFirst({ where: { stepKey: 'step1', accountId } }) 非 null · row.inputs.industryLabel === '美食' · row.status in ['completed', 'fallback'] · LS 镜像 `aiip_memory_acc_${accountId}_step1` 非 null",
+        "test (b) · agent-browser 切换 account A → B · 在 B 选行业 '美妆' · 切回 A · Step1 仍显示 '美食' · 切到 B · Step1 显示 '美妆' · 跨账号 0 数据串",
+        "test (c) · 跑 Step1 → Step3 → Step3b → Step4 → Step4b → Step5(saveStream 任一 Tab)→ Step6 → Step7 → Step8 · 每 step 提交后 verify DB row + LS 镜像 + 0 hardcode `localStorage.setItem('acc_step{N}')` in source(grep apps/web/src/pages/step/ 0 hit)",
+        "test (d) · execSync `pnpm typecheck && pnpm vitest run && pnpm playwright test e2e/prd-{15,16,17,18}-*.spec.ts` · 全 PASS · 0 regression",
+        "真后端启动 dev script · 若 PG 未启 fail with msg `brew services start postgresql@16` · 若 OPENAI_KEY 缺 · fallback mock · status='fallback' · 验证 fallback path 跑通",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-003", "US-004", "US-005", "US-006", "US-007"],
+      "priority": 8,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json · E2E spec 可清旧 e2e 中已 resolved TD 残留",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/e2e/prd-19-frontend-backend.spec.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm playwright test e2e/prd-19-frontend-backend.spec.ts",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-013",
+          "lesson": "E2E spec 测试结果产物(screenshots / videos)放 test-results/ · 此目录 .gitignored · 不提交 git · 截图是运行时产物",
+          "antipattern": "git add apps/web/test-results/  // 反例 · 提交 binary",
+          "correct": "test-results/ 在 .gitignore · screenshot 仅本地 debug 用 · 不进 commit"
+        },
+        {
+          "source_prd": "prd-14-advanced-domains",
+          "source_story": "US-012",
+          "lesson": "E2E 真后端 spec 必须 zero-regression 硬门禁 · 跑旧 PRD-15~18 spec 全 PASS · 0 break",
+          "antipattern": "// 仅测新 PRD-19 spec · 旧 spec 假设不影响 · 不跑  // 反例 · 可能 break PRD-15~18",
+          "correct": "execSync('pnpm playwright test e2e/prd-{15..19}-*.spec.ts')  // 正确 · zero-regression 硬门禁"
+        },
+        {
+          "source_prd": "prd-4-p3-ip-flow-9-steps",
+          "source_story": "US-007",
+          "lesson": "Specialist fallback path 必验证 · OPENAI_KEY 缺时 status='fallback' · UI 显示 [降级] badge · 不允许 silent 失败",
+          "antipattern": "if (no key) throw new Error('OPENAI_KEY missing')  // 反例 · 真失败用户看不到",
+          "correct": "if (no key) return { result: mockData, isFallback: true, status: 'fallback' }  // 正确 · fallback mock + 明示 status"
+        }
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "verify-prd-19.sh 35+ 检查项 + TD-76/77 fix 收官",
+      "description": "作为 QuanQn 维护者 · 需要重复执行的 bash script 验证 PRD-19 全部交付物 · 35+ 检查项 · 含 LD-009 严守 / aiip_memory_acc_ 命名 / trpc.stepData.save 真接 / zero-regression / TD-76/77 fix · 一并 commit step7.ts + step8.ts 常量 export + Step7.tsx + Step8OptimizeScript.tsx 用常量",
+      "acceptanceCriteria": [
+        "新建 scripts/verify-prd-19.sh(chmod +x)· bash + grep + 真 typecheck/vitest 跑 · 35+ 检查项分 10 §·",
+        "§1 · grep apps/web/src/pages/step/ 'localStorage.setItem.*acc_step' → 0 hit(LD-009 严守 · 11 page 0 hardcode); §2 · grep apps/web/src/pages/step/ 'from .@/hooks/useStepData' or 'useStepData(' → ≥ 9 命中(9 step page 全 import); §3 · grep 'trpc.stepData.save.useMutation\\|useStepData.*save' → ≥ 9 命中",
+        "§4 · grep 'aiip_memory_acc_' apps/web/src/lib/ls-namespace.ts apps/web/src/hooks/useStepData.ts → ≥ 5 命中; §5 · grep 'from-(violet|amber|gold|purple)' apps/web/src/pages/step/ apps/web/src/components/step{4b,5,6,7,8}/ → 0 命中(D4=B 严守); §6 · git diff main..HEAD --name-only · 排除 packages/clients/ · apps/(admin|api)/ 文件数 = 0(D3=A 严守)",
+        "§7 · grep 'export const STEP7_LABEL_SCRIPT_TYPE' apps/web/src/lib/constants/step7.ts → 1 命中(TD-76 fix); §8 · grep 'export const STEP8_OPTIMIZE_OUTPUT_LABELS_2' apps/web/src/lib/constants/step8.ts → 1 命中(TD-77 fix); §9 · `cd apps/web && pnpm typecheck` → exit 0; `cd apps/web && pnpm vitest run` → exit 0 · 119+ tests PASS; §10 · 检查 apps/web/src/lib/migration/legacy-ls.ts 存在 + grep 'migrateLegacyLs\\|MIGRATION_FLAG_KEY' → ≥ 2 命中",
+        "TD-76 fix · 修改 apps/web/src/lib/constants/step7.ts · 新增 export STEP7_LABEL_SCRIPT_TYPE = '选择脚本类型' · 修改 Step7.tsx line ~150 · 改 `<label>{STEP7_LABEL_SCRIPT_TYPE}</label>` · .agents/tech-debt.json TD-76 status=resolved + resolved_in_prd='prd-19-frontend-backend-bridge' + resolved_at + resolved_notes",
+        "TD-77 fix · 修改 apps/web/src/lib/constants/step8.ts · 新增 export STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [{ id: 'optimized_text', label: '优化后文案' }, { id: 'optimization_notes', label: '优化说明' }] as const · 修改 Step8OptimizeScript.tsx line 164-165 · 改 .map 模式 · .agents/tech-debt.json TD-77 同模式 resolved",
+        "脚本执行 < 60s(typecheck ~20s + vitest ~30s + 各 grep < 5s)· 任一 § 失败 exit non-zero",
+        "commit message 加 `[TD-76 resolved] + [TD-77 resolved]` tag",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-008"],
+      "priority": 9,
+      "passes": false,
+      "notes": "[TD-HINT] US-009 主任务即是 TD-76 + TD-77 fix · 在 verify-prd-19.sh 用 grep 验证 + tech-debt.json 标 resolved",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-19.sh"
+      ],
+      "files_to_modify": [
+        "apps/web/src/lib/constants/step7.ts",
+        "apps/web/src/lib/constants/step8.ts",
+        "apps/web/src/pages/step/Step7.tsx",
+        "apps/web/src/components/step8/Step8OptimizeScript.tsx",
+        ".agents/tech-debt.json"
+      ],
+      "test_command": "bash scripts/verify-prd-19.sh",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "US-013",
+          "lesson": "verify script 必 chmod +x · 35+ 检查项分多 § · 任一失败 exit non-zero · 不允许 silent skip",
+          "antipattern": "echo '[WARN] 跳过检查 X · 待修复'  // 反例 · silent skip",
+          "correct": "[ \"$HIT\" = \"0\" ] && ok '...' || fail '...'; exit $FAIL  // 正确 · 严格 exit code"
+        }
+      ]
+    }
+  ]
+}

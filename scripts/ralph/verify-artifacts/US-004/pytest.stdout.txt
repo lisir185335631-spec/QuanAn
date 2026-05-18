@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/pages/PresentStyles.test.tsx (17 tests) 2ms
+ ✓ tests/unit/web/pages/Monetization.test.tsx (14 tests) 1ms
+
+ Test Files  2 passed (2)
+      Tests  31 passed (31)
+   Start at  02:28:18
+   Duration  109ms (transform 18ms, setup 5ms, collect 18ms, tests 3ms, environment 0ms, prepare 20ms)
+

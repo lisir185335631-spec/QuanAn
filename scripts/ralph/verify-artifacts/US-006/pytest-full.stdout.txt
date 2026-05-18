@@ -1,115 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="119" failures="0" errors="0" time="1.561">
+    <testsuite name="src/components/StepProgress.test.tsx" timestamp="2026-05-17T11:18:26.729Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.031185541">
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders loading skeleton when isLoading=true" time="0.014911833">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; renders 9 step items when loaded" time="0.007762041">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks completed steps with status=completed" time="0.002823667">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; marks first incomplete step as current, rest as pending" time="0.001415625">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; shows 0/9 progress text when no steps completed" time="0.00324575">
+        </testcase>
+        <testcase classname="src/components/StepProgress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS contains 9 keys" time="0.000121875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/feedback-button.test.tsx" timestamp="2026-05-17T11:18:26.730Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.117469959">
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders thumbs-up and thumbs-down buttons" time="0.014529542">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; renders helper text" time="0.008707958">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with good type and agentId on thumbs-up click" time="0.053038125">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; calls mutate with bad type and agentId on thumbs-down click" time="0.018426">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; passes stepKey and agentId correctly for ip-plan" time="0.013317084">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-buttons wrapper" time="0.002741708">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-good on thumbs-up button" time="0.003156375">
+        </testcase>
+        <testcase classname="src/test/feedback-button.test.tsx" name="FeedbackButton &gt; has data-testid feedback-bad on thumbs-down button" time="0.002603291">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/pages.test.tsx" timestamp="2026-05-17T11:18:26.730Z" hostname="returndeMacBook-Pro.local" tests="30" failures="0" errors="0" skipped="0" time="0.168754667">
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; has all 9 step keys" time="0.000422083">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="stepConfig &gt; step1 has non-empty title and description" time="0.00009375">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step1 renders h1 with correct title" time="0.032533792">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
-> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
-> vitest run
-
-
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
-
- ✓ tests/unit/api/history-router.test.ts (16 tests) 8ms
- ✓ tests/unit/api/specialists-flow.test.ts (20 tests) 9ms
- ✓ tests/unit/specialists/__tests__/VideoAgent.test.ts (14 tests) 5ms
- ✓ tests/unit/specialists/__tests__/CopywritingAgent.test.ts (17 tests) 9ms
- ✓ tests/unit/api/ai-video-router.test.ts (10 tests) 12ms
- ✓ tests/unit/specialists/fallback.test.ts (10 tests) 7ms
- ✓ tests/unit/api/specialists-creation.test.ts (10 tests) 7ms
- ✓ tests/unit/lib/compliance.test.ts (21 tests) 4ms
- ✓ tests/unit/api/acquisition-video-router.test.ts (7 tests) 5ms
- ✓ tests/unit/specialists/base.test.ts (16 tests) 11ms
- ✓ tests/unit/api/ipAccounts-stepData.test.ts (15 tests) 7ms
- ✓ tests/unit/schemas/specialist-io.test.ts (26 tests) 4ms
- ✓ tests/unit/api/schemas/video-schemas.test.ts (24 tests) 6ms
- ✓ tests/integration/api/boom-generate-llm.test.ts (1 test) 82ms
- ✓ tests/integration/api/copywriting-free-llm.test.ts (1 test) 53ms
- ✓ tests/unit/api/image-gen-queue.test.ts (8 tests) 3ms
- ✓ tests/unit/api/copywriting-acquisition.test.ts (4 tests) 5ms
- ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts (8 tests) 7ms
- ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts (8 tests) 4ms
- ✓ tests/integration/api/video-analysis-viral-llm.test.ts (1 test) 71ms
- ✓ tests/unit/web/pages/AiVideo.test.tsx (21 tests) 8ms
- ✓ tests/unit/api/account-step-auth.test.ts (15 tests) 25ms
- ✓ tests/unit/api/video-analysis-router.test.ts (4 tests) 4ms
- ✓ tests/unit/api/boom-generate-router.test.ts (4 tests) 12ms
- ✓ tests/unit/api/rate-limit-image-gen.test.ts (9 tests) 18ms
- ✓ tests/unit/web/pages/VideoProduction.test.tsx (23 tests) 3ms
- ✓ tests/integration/api/copywriting-acquisition-llm.test.ts (1 test) 63ms
- ✓ tests/unit/api/video-production-router.test.ts (6 tests) 5ms
- ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts (5 tests) 5ms
- ✓ tests/integration/api/analysis-structural-llm.test.ts (1 test) 43ms
- ✓ tests/integration/api/ai-video-flow.test.ts (2 tests) 43ms
-{"level":"error","time":"2026-05-10T17:29:47.582Z","pid":8404,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/video-agent-llm.test.ts:186:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_video_agent_int_1778434187554","msg":"cost_log.write_failed"}
- ✓ tests/integration/api/video-agent-llm.test.ts (1 test) 71ms
-{"level":"error","time":"2026-05-10T17:29:47.638Z","pid":8396,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1778434187606","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/videoProduction.ts:77:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
- ✓ tests/unit/web/pages/AcquisitionVideo.test.tsx (22 tests) 4ms
- ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts (8 tests) 6ms
- ✓ tests/integration/api/video-production-llm.test.ts (1 test) 91ms
- ✓ tests/integration/api/image-gen-bullmq.test.ts (1 test) 68ms
- ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts (11 tests) 8ms
- ✓ tests/unit/web/pages/Analysis.test.tsx (26 tests) 7ms
- ✓ tests/unit/web/StepForm.test.tsx (19 tests) 4ms
-{"level":"error","time":"2026-05-10T17:29:47.803Z","pid":8418,"hostname":"returndeMacBook-Pro.local","traceId":"tr_acq_video_int_1778434187764","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/acquisitionVideo.ts:49:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
- ✓ tests/unit/specialists/base.llm.test.ts (8 tests) 4ms
- ✓ tests/integration/api/acquisition-video-llm.test.ts (1 test) 85ms
- ✓ tests/unit/web/pages/BoomGenerate.test.tsx (28 tests) 4ms
- ✓ tests/unit/web/hooks.test.ts (16 tests) 2ms
- ✓ tests/unit/specialists/__tests__/LivestreamAgent.test.ts (5 tests) 5ms
- ✓ tests/unit/api/analysis-router.test.ts (4 tests) 4ms
- ✓ tests/unit/api/knowledge.test.ts (7 tests) 5ms
- ✓ tests/unit/api/copywriting-router.test.ts (4 tests) 5ms
- ✓ tests/unit/web/StepResult.test.tsx (10 tests) 2ms
-{"level":"warn","time":"2026-05-10T17:29:47.995Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.996Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-10T17:29:47.997Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-10T17:29:47.998Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.998Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-10T17:29:47.999Z","pid":8444,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-10T17:29:47.999Z","pid":8444,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
- ✓ tests/unit/api/llm-gateway-fallback.test.ts (9 tests) 6ms
- ✓ tests/unit/web/pages/Generate.test.tsx (22 tests) 6ms
- ✓ tests/unit/web/pages/VideoAnalysis.test.tsx (20 tests) 3ms
-{"level":"error","time":"2026-05-10T17:29:48.141Z","pid":8456,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanQn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
- ✓ tests/unit/web/ToolForm.test.tsx (20 tests) 4ms
-{"level":"error","time":"2026-05-10T17:29:48.142Z","pid":8449,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:26\n\n  52 const costUsd = estimateCostUsd(res.model, res.tokens);\n  53 \n  54 try {\n→ 55   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:55:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:92:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1778434188120","msg":"cost_log.write_failed"}
- ✓ tests/unit/api/feedback-log.test.ts (8 tests) 7ms
- ✓ tests/integration/api/image-gen-flow.test.ts (1 test) 34ms
- ✓ tests/integration/api/specialist-llm.test.ts (1 test) 53ms
- ✓ tests/integration/api/rls-isolation.test.ts (4 tests) 47ms
- ✓ tests/unit/web/ls-namespace.test.ts (18 tests) 2ms
-{"level":"warn","time":"2026-05-10T17:29:48.276Z","pid":8469,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
-{"level":"warn","time":"2026-05-10T17:29:48.278Z","pid":8469,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
- ✓ tests/unit/api/account-isolation.test.ts (9 tests) 5ms
- ✓ tests/unit/web/router.test.ts (12 tests) 2ms
- ✓ tests/unit/api/invite.test.ts (4 tests) 5ms
- ✓ tests/unit/parseDesignTokens.test.ts (10 tests) 4ms
- ✓ tests/unit/api/llm-gateway-rate.test.ts (6 tests) 2ms
- ✓ tests/integration/api/auth.test.ts (6 tests) 89ms
- ✓ tests/unit/web/ToolResult.test.tsx (13 tests) 3ms
-{"level":"error","time":"2026-05-10T17:29:48.435Z","pid":8483,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
-{"level":"error","time":"2026-05-10T17:29:48.437Z","pid":8483,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
-{"level":"error","time":"2026-05-10T17:29:48.438Z","pid":8483,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
- ✓ tests/unit/auth/providers.test.ts (9 tests) 7ms
- ✓ tests/unit/api/ip-progress.test.ts (7 tests) 3ms
- ✓ tests/unit/api/trending.test.ts (3 tests) 4ms
- ✓ tests/integration/api/ip-progress-integration.test.ts (3 tests) 51ms
-{"level":"info","time":"2026-05-10T17:29:48.529Z","pid":8486,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778434188529_mhzv","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
- ✓ tests/unit/web/step-config.test.ts (9 tests) 2ms
-{"level":"error","time":"2026-05-10T17:29:48.529Z","pid":8486,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1778434188529_mhzv","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:68:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:37:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":0,"msg":"specialist.failed"}
- ✓ tests/unit/agents/base.test.ts (7 tests) 8ms
- ✓ tests/integration/api/llm-gateway-real.test.ts (1 test) 18ms
- ✓ tests/integration/api/trace.test.ts (2 tests) 20ms
- ✓ tests/integration/api/auth.me.test.ts (1 test) 21ms
- ✓ tests/unit/api/image-gen-dall-e-3.test.ts (6 tests) 3011ms
-   ✓ US-009 AC-12-3: network failure retry 3 times → failed result > retries 3 times on network error, returns { error: image_gen_failed, sceneImageUrl: placeholder } 3004ms
- ✓ tests/unit/services/context-assembler.test.ts (16 tests) 5015ms
-   ✓ ContextAssembler > L2 stepData fetch timeout → 占位注入 · constants 层不受影响 5001ms
-
- Test Files  75 passed (75)
-      Tests  727 passed (727)
-   Start at  01:29:46
-   Duration  6.02s (transform 1.01s, setup 150ms, collect 5.17s, tests 9.36s, environment 6ms, prepare 2.31s)
-
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step2 renders h1 with correct title" time="0.002192084">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step5 renders h1 with correct title" time="0.012949958">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step8 renders h1 with correct title" time="0.007962667">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Step pages render &gt; Step9 renders h1 with correct title" time="0.0012155">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Generate renders h1 heading" time="0.01133275">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Trending renders h1 heading" time="0.031657333">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Copywriting renders h1 heading" time="0.005683167">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Tool pages render &gt; Knowledge renders h1 heading" time="0.003419958">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis renders h1 heading" time="0.00092375">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Diagnosis shows empty state when no data" time="0.000695917">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution renders h1 heading" time="0.001384084">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Evolution shows cold-start state when no data" time="0.000755208">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts renders h1 heading" time="0.000710083">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; Accounts shows empty state when no data" time="0.000250417">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; DailyTasks renders h1 heading" time="0.001220917">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; MyTopics renders h1 heading" time="0.011295166">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="Module pages render &gt; History renders h1 heading" time="0.002053167">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders ip-plan-page with h1 我的IP方案" time="0.003394625">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; renders 9 step cards with 查看详情 buttons" time="0.008785958">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="IpPlan page (US-010) &gt; shows 已完成 0 / 9 步 with empty completedSteps" time="0.001983708">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; renders record button and turn list area" time="0.001785792">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows idle status bar" time="0.0011485">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="VoiceChat page (US-012) &gt; shows hang up button" time="0.00190775">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders children when no error" time="0.000738625">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders fallback UI when child throws" time="0.00510675">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; renders custom fallback when provided" time="0.002417125">
+        </testcase>
+        <testcase classname="src/test/pages.test.tsx" name="ErrorBoundary &gt; resets error state on button click" time="0.012037792">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/step-progress.test.tsx" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.099575541">
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 0/9 when completedSteps is empty" time="0.032755167">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 9/9 when all steps completed" time="0.002615166">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders 3/9 when 3 steps completed" time="0.014587375">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; shows loading skeleton when isLoading=true" time="0.02263475">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; renders all 9 step items" time="0.001897916">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks completed step with data-status=completed" time="0.001228">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks first incomplete step with data-status=current" time="0.006836125">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; marks later steps as pending" time="0.001640833">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; STEP_ORDER_KEYS has exactly 9 entries" time="0.000122">
+        </testcase>
+        <testcase classname="src/test/step-progress.test.tsx" name="StepProgress &gt; accepts optional className prop without error" time="0.014356958">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/states/__tests__/states.test.tsx" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="3" failures="0" errors="0" skipped="0" time="0.033881667">
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="LoadingState &gt; renders custom text" time="0.011584667">
+        </testcase>
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="ErrorState &gt; shows 重试 button when onRetry is provided" time="0.02061275">
+        </testcase>
+        <testcase classname="src/components/states/__tests__/states.test.tsx" name="EmptyState &gt; renders default title &apos;暂无数据&apos;" time="0.001230625">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/industries.test.ts" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.001514958">
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; total count is 56" time="0.00064425">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 生活服务 count is 18" time="0.000073042">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_INDUSTRIES_56 &gt; 电商零售 count is 13" time="0.00005225">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/industries.test.ts" name="STEP1_TABS &gt; non-all tab counts sum to 56" time="0.000054792">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step3.test.ts" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.00231075">
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 5 platforms" time="0.000863333">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; 6 H3 output blocks" time="0.000144459">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; all platforms have emoji prefix" time="0.000288375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3.test.ts" name="STEP3 constants &gt; output H3 labels start with number 1-6" time="0.000182708">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step3b.test.ts" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.002371167">
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 3 textareas" time="0.000786792">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; 5 H3 output blocks" time="0.000167667">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; first textarea (personalInfo) is required" time="0.000185708">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; advantages and story are not required" time="0.000155542">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step3b.test.ts" name="STEP3B constants &gt; H3 labels start with number 1-5" time="0.000181291">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step4.test.ts" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.002005709">
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; SUBTITLE 字面严格 1:1 spec §7.4 line 1492" time="0.001046584">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; INPUTS_3 数量锁 · length === 3" time="0.000069333">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; OUTPUT_H3_3 数量锁 · length === 3" time="0.000046667">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; PLATFORMS_5 re-export · length === 5" time="0.00004375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4.test.ts" name="STEP4 constants &gt; Step4Result interface 字段结构" time="0.000134541">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step4b.test.ts" timestamp="2026-05-17T11:18:26.731Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.001296083">
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; 三阶梯 range 字面 1:1 spec §7.5 line 1546-1564" time="0.000386291">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; 4 产品类型字面 1:1 spec §7.5 line 1551" time="0.000251375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; SUBTITLE 字面严格 1:1 spec §7.5 line 1521" time="0.000053625">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; OUTPUT_H3_5 数量锁 · length === 5" time="0.000037792">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; INPUTS_3 数量锁 · length === 3" time="0.000032209">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; TEXTAREA required === true · id === product_description" time="0.000047833">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; BUTTONS 3 字面 1:1 spec §7.5 line 1532" time="0.000062333">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step4b.test.ts" name="STEP4B constants &gt; Step4bResult interface 字段结构" time="0.000084375">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step5.test.ts" timestamp="2026-05-17T11:18:26.732Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.002924208">
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; SUBTITLE 字面严格 1:1 spec §7.6 line 1595" time="0.000866666">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630" time="0.000595375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; INPUTS_2 数量锁 · length === 2" time="0.00012725">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_UPLOADS_2 数量锁 · length === 2" time="0.000086917">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; FILE_MAX_MB === 20" time="0.000079458">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606" time="0.000092875">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; TOTAL_TOPICS === 100" time="0.000078375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step5.test.ts" name="STEP5 constants &gt; Step5Topic interface 字段结构" time="0.000212459">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step6.test.ts" timestamp="2026-05-17T11:18:26.732Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.002430459">
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; SUBTITLE 字面严格 1:1 spec §7.7 line 1639" time="0.000768791">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号" time="0.000336708">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; TEXTAREA_MIN_CHARS === 10" time="0.000108333">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647" time="0.000078166">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1" time="0.000128416">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step6.test.ts" name="STEP6 constants &gt; Step6Result interface 字段结构" time="0.000156666">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step7.test.ts" timestamp="2026-05-17T11:18:26.732Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.002843833">
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SCRIPT_TYPES_20 长度 === 20" time="0.000831375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SCRIPT_TYPES_20 第 1 = debate · 字面 1:1" time="0.000228834">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; ELEMENTS_22 长度 === 22" time="0.000111833">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; 4 分组累加严格 6+5+6+5 = 22" time="0.000209708">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; DEBATE_H4_4 4 个 h4Label 字面 1:1 · 严禁 H4. 前缀 · 严禁英文" time="0.000090083">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SEARCH_PLACEHOLDER 字面 1:1 spec line 1679" time="0.000047042">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; ELEMENT_COUNTER_TEMPLATE 含全角括号 · 字面 1:1 spec line 1693" time="0.000036">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SCRIPT_DISPLAY_TEMPLATE 含全角冒号 + 半角 hyphen · 字面 1:1 spec line 1701" time="0.0000285">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; BUTTONS 4 字面 1:1 spec §7.8 line 1710-1712" time="0.000063792">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; SUBTITLE 字面 1:1 spec §7.8 line 1671" time="0.000039042">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; Step7DebateResult interface 字段结构" time="0.000123208">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; Step7Result interface 字段结构 · body 默认为 Step7DebateResult" time="0.000210042">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; TEXTAREA id/label/placeholder 字面 1:1 spec §7.8 line 1699" time="0.0000445">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step7.test.ts" name="STEP7 constants &gt; ELEMENT_GROUPS_4 length === 4 · 4 个 label 字面 1:1" time="0.000048875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/constants/__tests__/step8.test.ts" timestamp="2026-05-17T11:18:26.732Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.001345167">
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号" time="0.000382333">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; SUBFUNCTIONS_2 · 2 个 h3Label 字面 1:1 · 含全角冒号" time="0.000105209">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; EXPERIENCE_3 · 3 个 label 含中点 · · 严禁 hyphen 或逗号" time="0.000174125">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; OUTPUT_MODULES_6 · 6 个 h3Label 字面 1:1 spec §7.9 line 1782" time="0.000082083">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; PLATFORMS_5 re-export from step3 · length === 5" time="0.000059375">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; BUTTON_GENERATE_PLAN + BUTTON_OPTIMIZE_SCRIPT 字面 1:1" time="0.00005275">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; OPTIMIZE_MIN_CHARS === 10" time="0.000037417">
+        </testcase>
+        <testcase classname="src/lib/constants/__tests__/step8.test.ts" name="STEP8 constants &gt; Step8Result interface · generate_plan + optimize_script 两分支" time="0.000071958">
+        </testcase>
+    </testsuite>
+</testsuites>

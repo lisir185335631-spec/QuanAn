@@ -12,7 +12,7 @@ import { Worker } from 'bullmq';
 
 import { logger } from '@/lib/logger';
 import { redis } from '@/lib/redis';
-import { evolutionAgent } from '@/specialists/EvolutionAgent';
+import { evolutionAgent } from '@/agents/evolution/EvolutionAgent';
 
 import { EVOLUTION_QUEUE_NAME } from './queue';
 

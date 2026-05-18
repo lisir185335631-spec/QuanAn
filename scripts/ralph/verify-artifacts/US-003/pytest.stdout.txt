@@ -1,0 +1,27 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > has 150+ lines (stub replaced)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > uses useSearchParams for URL state (AC-5 SHIELD #2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > supports ?tab=learn|library|apply URL values
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > renders 3 Tabs (学习/我的库/公式应用)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > imports LearnTab, LibraryTab, ApplyFormulaTab from components
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearning.tsx page structure > passes onSaved callback to LearnTab for library navigation
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LearnTab calls trpc.deepLearning.parse.useMutation (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LearnTab textarea has ≥100 char validation (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > parse result shows coreFormula, hookType, structurePattern, emotionalArc, keywords (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LibraryTab calls trpc.deepLearning.list.useQuery (AC-3)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LibraryTab shows 截取文案 80字 truncation logic (AC-3)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > LibraryTab has delete button calling trpc.deepLearning.delete (AC-3)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > DeepLearningTabs.tsx structure > ApplyFormulaTab calls trpc.deepLearning.applyFormula.useMutation (AC-4)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > exports deepLearningRouter with parse procedure (AC-6)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > exports deepLearningRouter with applyFormula procedure (AC-6)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > parse input requires sample ≥100 chars (AC-2)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > does NOT call deepLearningArchive.create (LD-A-5)
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx > deepLearning router > parse uses mockAnalysis for P1 (DeepLearnAgent留PRD-7+)
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  02:10:05
+   Duration  97ms (transform 13ms, setup 5ms, collect 8ms, tests 2ms, environment 0ms, prepare 20ms)
+

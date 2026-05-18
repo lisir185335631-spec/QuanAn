@@ -1,0 +1,493 @@
+{
+  "project": "QuanQn 主应用前端对齐 aiipznt(Phase 2 · Step 1/3/3b 完整化)",
+  "branchName": "ralph/prd-17-step1-3-3b",
+  "description": "续 PRD-16 aiipznt 复刻 · 重写 Step 1 行业选择 + Step 3 账号包装方案 + Step 3b 人设定制方案 三个 step page · 1:1 对齐 aiipznt layout + 文字字面(D1=A 严锁)· 颜色保留 QuanQn 金色 var(--primary)(D4=B 严锁)· 11 US · 4 foundation(常量+三态)+ 3 high(Step 3/3b 完整)+ 4 medium(Step1 page + E2E)· seed 1514 行 · 详细度高 · 反例累加机制延续 PRD-16(+36% 一轮通过率)",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "★ foundation · industries.ts 56 行业 5 大类常量(字面锁 · 数字锁)",
+      "description": "作为开发者,我需要把 aiipznt 实测 56 行业 + 5 大类 + 6 tab 常量化为 apps/web/src/lib/constants/industries.ts,以便 US-002~US-004 Step 1 page 直接读 · 顺序/数字/字面 1:1 严锁(D1=A 红线 · 防 ralph 改字面)· 跨 Story 协议锁定义站点 · 命名锁 STEP1_TABS / STEP1_INDUSTRIES_56 / STEP1_SEARCH_PLACEHOLDER / STEP1_CTA_LABEL / STEP1_CUSTOM_*",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/industries.ts · 含 STEP1_TABS 6 项(全部行业 56 / 生活服务 18 / 电商零售 13 / 内容创作 7 / 专业服务 14 / 产业制造 4)· interface Step1Tab(id/label/count/emoji)· 严格 as const + readonly",
+        "STEP1_INDUSTRIES_56: readonly Industry[] · 56 项完整列出(life=18, ecom=13, create=7, pro=14, mfg=4 = 56)· 每项含 id/label/emoji/category/keywords · 字面 1:1 来源 aiipznt-spec.md §7.1 + aiipznt-deep-dom-dump.md §2.2",
+        "STEP1_SEARCH_PLACEHOLDER = '搜索行业名称或关键词（如：美容院、餐饮、教育...）' · 字面 1:1",
+        "STEP1_CTA_LABEL = '确认并进入下一步' + STEP1_CTA_DISABLED_HINT = '请先选择一个行业'",
+        "STEP1_CUSTOM_TRIGGER_LABEL = '自定义输入行业' + STEP1_CUSTOM_MODAL_TITLE = '自定义你的行业' + STEP1_CUSTOM_MODAL_PLACEHOLDER = '请输入你的行业名称' + STEP1_CUSTOM_MODAL_CONFIRM = '确认使用' + STEP1_CUSTOM_MODAL_CANCEL = '取消'",
+        "字面 grep 验证 · grep -F '全部行业'/'生活服务'/'搜索行业名称或关键词'/'确认并进入下一步'/'自定义输入行业' apps/web/src/lib/constants/industries.ts 每条命中 ≥1 次",
+        "数字锁 · STEP1_INDUSTRIES_56.length === 56 + STEP1_TABS.filter(t=>t.id!=='all').reduce((s,t)=>s+t.count,0) === 56",
+        "新建 apps/web/src/lib/constants/__tests__/industries.test.ts · 4 assertions(total 56 / life 18 / ecom 13 / tab sum 56)+ all category count match",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/industries.test.ts 全 PASS",
+        "Typecheck 通过 · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/lib/constants/) 涉及的 TD · 主动 fix · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/industries.ts",
+        "apps/web/src/lib/constants/__tests__/industries.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/industries.test.ts && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (constants pattern)",
+          "lesson": "导出的常量必须用 readonly Type[] + as const 双重锁 · 防 page 使用方变异常量数组 · 同时让 TypeScript 静态校验字面 union",
+          "antipattern": "export const STEP1_TABS: Step1Tab[] = [...];  // 缺 readonly + 缺 as const",
+          "correct": "export const STEP1_TABS: readonly Step1Tab[] = [...] as const;  // readonly + as const 双锁"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004",
+          "lesson": "D1=A 字面锁红线 · PRD AC 中的 label/placeholder/CTA 字面是 layout 严格一部分 · 不允许 ralph 创意改写成'更专业'或'更口语化'的措辞 · 必须 grep 严格命中 PRD AC 原文",
+          "antipattern": "改写 STEP1_SEARCH_PLACEHOLDER 为 '智能搜索行业名称...' 之类'更专业'的措辞 · 或省略括号示例",
+          "correct": "STEP1_SEARCH_PLACEHOLDER = '搜索行业名称或关键词（如：美容院、餐饮、教育...）' (严格 1:1 来源 spec §7.1)"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "★ foundation · step3.ts 常量(5 platform + 6 H3 + form + 字面锁)",
+      "description": "作为开发者,我需要把 Step 3 的 5 platform radio + 6 H3 输出区 + 4 input/textarea placeholder 字面常量化为 apps/web/src/lib/constants/step3.ts,以便 US-006a/006b 直接读 · 字面 1:1 严锁(D1=A 红线)· 命名锁 STEP3_PLATFORMS_5 / STEP3_OUTPUT_H3_6 / STEP3_FORM / STEP3_CTA_LABEL / STEP3_BUTTON_*",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step3.ts · STEP3_PLATFORMS_5: readonly Step3Platform[] · 5 项严格含 emoji 前缀('📱 抖音'/'📕 小红书'/'📺 视频号'/'🎬 快手'/'📺 B站')· 严禁去 emoji",
+        "STEP3_OUTPUT_H3_6: readonly Step3OutputBlock[] · 6 项 H3 字面 '1. 视频参考案例' '2. 昵称推荐' '3. 头像设计方案' '4. 背景图设计方案' '5. 简介文案方案' '6. 整体包装策略' · 字面 1:1 来源 spec §7.2 6 大模块 · 严禁加 H3 '账号包装方案' 作为第 7(那是 H1 不是 H3)",
+        "STEP3_BUTTON_COPY = '复制' + STEP3_BUTTON_REGENERATE = '重新生成' + STEP3_BUTTON_OPTIMIZE = '智能优化' + STEP3_BUTTON_GEN_IMAGE = '生成参考图' · STEP3_HEADER_BUTTON_REGEN_ALL = '一键重新生成' + STEP3_HEADER_BUTTON_COPY_ALL = '复制全部'",
+        "STEP3_FORM 对象含 personalInfo(label='你的个人信息', required=true, placeholder 长文)/ platform(label='目标平台', required=true)/ audience(label='目标受众', required=false, placeholder='你想吸引什么样的粉丝？')/ accountStatus(label='现有账号情况', required=false, placeholder='新账号/已有账号的粉丝量等')· 全字面 1:1",
+        "STEP3_CTA_LABEL = '生成账号包装方案' + STEP3_CTA_DISABLED_HINT = '请填写\"你的个人信息\"并选择目标平台' + STEP3_STEP_TAG = 'STEP 03 · 账号包装方案' + STEP3_H1 = '账号包装方案' + STEP3_SUBTITLE_TEMPLATE 含 '{industry}' 占位",
+        "字面 grep · grep -F '📱 抖音'/'📕 小红书'/'📺 视频号'/'🎬 快手'/'📺 B站'/'视频参考案例'/'昵称推荐'/'头像设计方案'/'背景图设计方案'/'简介文案方案'/'整体包装策略'/'生成账号包装方案'/'STEP 03 · 账号包装方案' apps/web/src/lib/constants/step3.ts 每条命中 ≥1 次",
+        "数字锁 · STEP3_PLATFORMS_5.length === 5 + STEP3_OUTPUT_H3_6.length === 6",
+        "新建 apps/web/src/lib/constants/__tests__/step3.test.ts · 5 platforms / 6 H3 / 平台 emoji 前缀正则 / H3 编号 '1. ' ~ '6. ' 起始",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step3.test.ts 全 PASS",
+        "Typecheck 通过"
+      ],
+      "depends_on": [],
+      "priority": 2,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step3.ts",
+        "apps/web/src/lib/constants/__tests__/step3.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step3.test.ts && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004",
+          "lesson": "★ HIGH PRIORITY · D1=A 字面锁红线 · function-matrix.ts 15 卡 desc 全 15 条被 ralph 创意改写 → 1 reject + 1 iter 修对 · 本 US 6 H3 label + hint 同模式 · 严禁改写",
+          "antipattern": "STEP3_OUTPUT_H3_6 中把 '1. 视频参考案例' 改写为 '视频参考' 或 '推荐视频参考案例' 等'更简洁'/'更口语'措辞 · hint 字段同样不允许创意发挥",
+          "correct": "字面严格 1:1 来源 spec §7.2 · '1. 视频参考案例' / '2. 昵称推荐' / '3. 头像设计方案' / '4. 背景图设计方案' / '5. 简介文案方案' / '6. 整体包装策略'(6 模块 · 不是 7)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (cross-story protocol lock)",
+          "lesson": "跨 Story 协议锁红线 · 本 US 定义 STEP3_PLATFORMS_5 + STEP3_OUTPUT_H3_6 等命名 · US-006a/006b 必须严格 import 不允许重命名 · ralph 容易在消费 story 里写 PLATFORMS_5 或 OUTPUT_H3 等简称变体",
+          "antipattern": "US-006a 里写 'import { PLATFORMS } from \"@/lib/constants/step3\"' (简称) · 或 US-006b 里改名 STEP3_OUTPUT_H3_6 → STEP3_OUTPUTS",
+          "correct": "严格用 PRD-17 §5 协议锁字面 · 消费方 import 原名 · 不简称 · 不重命名"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (emoji 字面)",
+          "lesson": "5 platform label 字面含 emoji 前缀('📱 抖音' 等) · D1=A 锁 · 严禁去掉 emoji 写成裸 name · 同时严禁颠倒空格(emoji+空格+name 顺序 · 不是 name+emoji)",
+          "antipattern": "{ id: 'douyin', label: '抖音', name: '抖音' } 或 { label: '抖音 📱' }",
+          "correct": "{ id: 'douyin', label: '📱 抖音', name: '抖音' } (emoji 前置 + 空格 + name)"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "★ foundation · step3b.ts 常量(3 textarea + 5 H3 + 字面锁)",
+      "description": "作为开发者,我需要把 Step 3b 的 3 textarea + 1 input + 5 H3 输出区字面常量化为 apps/web/src/lib/constants/step3b.ts,以便 US-008 直接读 · 字面 1:1 严锁(D1=A 红线 · 数字锁 5 H3 不是 6)· 命名锁 STEP3B_TEXTAREAS_3 / STEP3B_OUTPUT_H3_5 / STEP3B_AUDIENCE / STEP3B_CTA_LABEL",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step3b.ts · STEP3B_TEXTAREAS_3: readonly Step3bTextarea[] · 3 项严格 · personalInfo(label='你的个人信息', required=true, placeholder 含'10年经验的美容师'示例)/ advantages(label='个人优势/特长', required=false, placeholder='你有什么独特的优势？比如：独特的经历、专业证书、成功案例、个人特质...')/ story(label='个人故事/经历', required=false, placeholder='分享你的个人故事：为什么做这个行业？有什么转折点？什么经历让你与众不同？')",
+        "STEP3B_AUDIENCE = { label: '目标受众', required: false, placeholder: '你想吸引什么样的粉丝？' }",
+        "STEP3B_OUTPUT_H3_5: readonly Step3bOutputBlock[] · 5 项 H3 字面 '1. 核心身份定位' '2. 思想体系' '3. 内容人设' '4. 信任构建体系' '5. 人设打造路线图' · 字面 1:1 来源 spec §7.3 5 大模块 · 严禁加 H3 '专属人设方案' 作为第 6(那是 H1 不是 H3)",
+        "STEP3B_CTA_LABEL = '生成专属人设方案' + STEP3B_BUTTON_OPTIMIZE = '智能优化' + STEP3B_BUTTON_COPY_ALL = '复制全部' + STEP3B_STEP_TAG = 'STEP 03b · 人设定制方案' + STEP3B_H1 = '人设定制方案' + STEP3B_SUBTITLE_TEMPLATE 含 '{industry}'",
+        "字面 grep · grep -F '你的个人信息'/'个人优势/特长'/'个人故事/经历'/'目标受众'/'核心身份定位'/'思想体系'/'内容人设'/'信任构建体系'/'人设打造路线图'/'生成专属人设方案'/'STEP 03b · 人设定制方案' apps/web/src/lib/constants/step3b.ts 每条命中 ≥1 次",
+        "数字锁 · STEP3B_TEXTAREAS_3.length === 3 + STEP3B_OUTPUT_H3_5.length === 5",
+        "新建 apps/web/src/lib/constants/__tests__/step3b.test.ts · 3 textareas / 5 H3 / first textarea required=true / advantages+story required=false / H3 编号 '1. ' ~ '5. '",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step3b.test.ts 全 PASS",
+        "Typecheck 通过"
+      ],
+      "depends_on": [],
+      "priority": 3,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step3b.ts",
+        "apps/web/src/lib/constants/__tests__/step3b.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step3b.test.ts && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004",
+          "lesson": "D1=A 字面锁 · 5 H3 文字必须严格 1:1 · 同 US-005 反例 · 不允许把 '4. 信任构建体系' 改成 '4. 信任构建' 或 '4. 信任体系'",
+          "antipattern": "改写 H3 文字为'更简洁'版本 · 或重排 5 项顺序",
+          "correct": "字面 1:1 来源 spec §7.3 · '1. 核心身份定位' / '2. 思想体系' / '3. 内容人设' / '4. 信任构建体系' / '5. 人设打造路线图'(5 模块 · 不是 6)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (cross-step textarea field name)",
+          "lesson": "Step 3b 的 personalInfo textarea 字段名必须跟 Step 3 同名(都是 'personalInfo')· 因为 Step 3b 进入页面要从 stepData.step3.input.personalInfo 预填 · 字段名不一致会断链",
+          "antipattern": "Step 3 用 'personalInfo' · Step 3b 用 'userInfo' / 'personalIntro' 等不同字段名 · 预填断链",
+          "correct": "Step 3 + Step 3b 第 1 textarea 字段 id 严格一致 · 都是 'personalInfo' · stepData 跨 step 安全预填"
+        }
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "★ foundation · 三态组件 LoadingState/ErrorState/EmptyState + 跨 step 复用规范",
+      "description": "作为开发者,我需要把 Step 1/3/3b 三个 page 共用的 Loading/Error/Empty 三态抽象为 3 个组件 + 复用规范,以便 PRD-18(Step 4-8)+ PRD-19(工具页)同款复用 · 不重复造轮子 · 命名锁 LoadingState / ErrorState / EmptyState · barrel export · 跨 PRD 复用基石",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/components/states/LoadingState.tsx · interface LoadingStateProps { text?: string; className?: string; size?: 'sm'|'md'|'lg' } · 默认 text='加载中...' · 用 lucide-react Loader2 + animate-spin + text-primary",
+        "新建 apps/web/src/components/states/ErrorState.tsx · interface ErrorStateProps { title?: string; message?: string; onRetry?: ()=>void; className?: string } · 默认 title='出错了' / message='请稍后重试或联系客服' · onRetry 非 undefined 时显示 [重试] 按钮 · 用 lucide-react AlertTriangle + text-destructive + glass-card 包裹",
+        "新建 apps/web/src/components/states/EmptyState.tsx · interface EmptyStateProps { title?: string; description?: string; action?: ReactNode; icon?: ReactNode; className?: string } · 默认 title='暂无数据' · 默认 icon=Inbox(lucide-react)+ text-muted-foreground/60",
+        "新建 apps/web/src/components/states/index.ts barrel · export * from './LoadingState' / './ErrorState' / './EmptyState' 三行",
+        "新建 apps/web/src/components/states/README.md · 简要规范 5 行 · 说明 LoadingState/ErrorState/EmptyState 复用场景 + 跨 PRD 复用约束",
+        "新建 apps/web/src/components/states/__tests__/states.test.tsx · 3 测试 · LoadingState 渲染 text · ErrorState onRetry 时显示 [重试] · EmptyState 默认 title='暂无数据'",
+        "Step1/Step3/Step3b 至少各 import 1 处 · grep -F \"from '@/components/states'\" apps/web/src/pages/Step1.tsx 命中 · 同 Step3.tsx / Step3b.tsx · 验证跨 step 复用",
+        "cd apps/web && pnpm vitest run src/components/states/__tests__/states.test.tsx 全 PASS",
+        "Typecheck 通过"
+      ],
+      "depends_on": [],
+      "priority": 4,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/states/LoadingState.tsx",
+        "apps/web/src/components/states/ErrorState.tsx",
+        "apps/web/src/components/states/EmptyState.tsx",
+        "apps/web/src/components/states/index.ts",
+        "apps/web/src/components/states/README.md",
+        "apps/web/src/components/states/__tests__/states.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Step1.tsx",
+        "apps/web/src/pages/Step3.tsx",
+        "apps/web/src/pages/Step3b.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm vitest run src/components/states/__tests__/states.test.tsx && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (component naming lock)",
+          "lesson": "组件命名锁 · LoadingState/ErrorState/EmptyState 是跨 PRD 复用基石 · 不允许改名为 Spinner/Alert/Empty 等 · 不允许默认 export 替换 named export · 严禁加 'Component' 后缀",
+          "antipattern": "export default function Loading(){...} 或 export function SpinnerState 或 export function LoadingStateComponent",
+          "correct": "export function LoadingState({ text, className, size }: LoadingStateProps) {...} · 严格命名 · named export · barrel 导出 · 跨 PRD 复用"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (modify Step1/3/3b import 副作用)",
+          "lesson": "本 US foundation · 但 files_to_modify 含 Step1/3/3b 3 个 page 文件 · ralph 容易'只创建组件不动 page' · 必须在 3 个 page 各加 1 处实际使用(不只 import 不用)· 否则 grep 验证 fail",
+          "antipattern": "只 import { LoadingState } from '@/components/states' 但实际没在 JSX 渲染 · 死代码",
+          "correct": "Step1 在 56 行业 filter empty 处渲染 <EmptyState> · Step3 在 CTA loading 时渲染 <LoadingState text={STEP3_LOADING_TEXT}> · Step3b 同 Step3"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Step 1 page · Tab 切换 + 搜索 + 56 行业 emoji 双行卡 grid",
+      "description": "作为用户,我想进入 /step/1 看到 1:1 复刻 aiipznt 的行业选择 page:顶部 step 标签 + H1 + 副标 + 搜索框 + 6 tab + 56 emoji 双行卡 grid · 能按 tab 筛选 + 搜索框实时过滤(by name + keywords)",
+      "acceptanceCriteria": [
+        "重写 apps/web/src/pages/Step1.tsx · 删除 StepForm 通用方案 · 顶部 step 标签 'STEP 01 · 选择行业赛道'(字面)+ H1 '选择你的行业赛道'(font-display)+ 副标 '覆盖抖音、视频号等主流平台的 56+ 个细分行业。你也可以自定义输入行业。'(字面)",
+        "搜索框用 STEP1_SEARCH_PLACEHOLDER 常量 · 不允许 hardcode placeholder",
+        "6 tab 横向 grid-cols-6 用 STEP1_TABS 渲染 · 显示 emoji + label + count · 如 '🏠 生活服务 (18)' · 严禁 hardcode tab 字面",
+        "56 行业卡 grid(grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3)· 用 STEP1_INDUSTRIES_56 渲染 · 卡片 glass-card + emoji 双行(text-3xl + mb-2)+ font-cn label",
+        "Tab 筛选逻辑 · activeTab !== 'all' 时只显示 category === activeTab 的行业 · activeTab === 'all' 显示全 56",
+        "搜索过滤逻辑 · searchQuery 非空时 fuzzy match industry.label + industry.keywords · 与 Tab 筛选叠加(先 tab 过滤 · 再 search 过滤)",
+        "空状态 · filteredIndustries.length === 0 时渲染 <EmptyState title='未找到匹配的行业' description='尝试自定义输入'> · 复用 US-009 组件",
+        "使用 agent-browser 打开 http://localhost:5173/step/1 · 验证 6 tab 横向显示(含 '全部行业 (56)' '🏠 生活服务 (18)' '🛒 电商零售 (13)' '✍️ 内容创作 (7)' '💼 专业服务 (14)' '🏭 产业制造 (4)')",
+        "使用 agent-browser 验证 · 56 行业 emoji 双行卡 grid 渲染 + 搜索框 placeholder 显示 '搜索行业名称或关键词（如：美容院、餐饮、教育...）' + 控制台 0 error",
+        "Typecheck 通过"
+      ],
+      "depends_on": ["US-001", "US-009"],
+      "priority": 5,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 Step1.tsx scope",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": ["apps/web/src/pages/Step1.tsx"],
+      "test_command": "cd apps/web && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-003",
+      "title": "Step 1 已选状态卡 + 主 CTA 跳转",
+      "description": "作为用户,我选了一个行业后,想看到顶部'已选状态卡'显示我的选择 + 底部'主 CTA'按钮变可点击 · 点击跳转 /step/3 · 选择状态保存到 localStorage 'acc_step1' key",
+      "acceptanceCriteria": [
+        "Step1.tsx 顶部加'已选状态卡'(selectedIndustry 非空时显示)· glass-card border-primary/40 bg-primary/5 + emoji text-3xl + label '已选择:{industry.label}' + 关键词列表 '关键词:{keywords.join('、')}'",
+        "底部主 CTA 用 STEP1_CTA_LABEL 字面 + bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 · 严禁 from-violet/from-amber/from-gold(D4=B 红线)· 跟 '→' arrow",
+        "disabled 状态 · !selectedIndustry && !customIndustry 时 button disabled + 下方显示 STEP1_CTA_DISABLED_HINT 字面",
+        "handleSubmit 逻辑 · localStorage.setItem('acc_step1', JSON.stringify({ industry: selectedIndustry?.id ?? 'other', industryLabel: selectedIndustry?.label ?? customIndustry, customIndustry: customIndustry ?? undefined }))· 然后 navigate('/step/3')",
+        "使用 agent-browser · 打开 /step/1 · 点 '💅 美业' 卡片 · 顶部出现 '已选择:美业' 状态卡 · 关键词显示 '美容院、美发、美甲、美睫、纹绣'",
+        "使用 agent-browser · 底部 CTA '确认并进入下一步 →' 变可点击 · 点 CTA · URL 跳到 /step/3",
+        "使用 agent-browser · 验证 localStorage 存在 'acc_step1' key · 值含 industry: 'beauty'",
+        "Typecheck 通过"
+      ],
+      "depends_on": ["US-002"],
+      "priority": 6,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": ["apps/web/src/pages/Step1.tsx"],
+      "test_command": "cd apps/web && pnpm tsc --noEmit",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": []
+    },
+    {
+      "id": "US-004",
+      "title": "Step 1 自定义输入行业 modal(shadcn Dialog · click 触发)",
+      "description": "作为用户,如果 56 个行业里没有我的行业,我想点 '自定义输入行业' 弹出 modal 输入自定义行业名 · 保存为 customIndustry · 同样能进入下一步 · 用 shadcn Dialog 严格 click 触发(不允许 hover)",
+      "acceptanceCriteria": [
+        "Step1.tsx 加 <Dialog open={customModalOpen} onOpenChange={setCustomModalOpen}> · <DialogTrigger asChild><Button variant='link'>{STEP1_CUSTOM_TRIGGER_LABEL}</Button></DialogTrigger> · 关键 · 必须 asChild click 触发 · 严禁默认 hover",
+        "DialogContent 用 glass-card · DialogHeader 含 DialogTitle font-display · Input maxLength=20 用 STEP1_CUSTOM_MODAL_PLACEHOLDER 字面",
+        "DialogFooter 含 [取消] 按钮(variant='outline')+ [确认使用] 按钮(disabled if !customInput.trim() · bg-gradient-to-r from-primary to-primary/80)· 严禁 hardcode '确认' '取消' · 必须用 STEP1_CUSTOM_MODAL_CONFIRM/CANCEL 常量",
+        "handleCustomConfirm · setCustomIndustry(customInput.trim()) + setSelectedIndustry(null)(custom 与 selected 互斥) + setCustomModalOpen(false) · 顶部状态卡显示 '已选择:{customIndustry}(自定义)' · emoji '✨' 占位",
+        "字面 grep · grep -F '自定义你的行业'/'请输入你的行业名称'/'确认使用'/'取消' apps/web/src/pages/Step1.tsx 每条命中(via 常量 import 间接)",
+        "使用 agent-browser · 打开 /step/1 · 点 '自定义输入行业' link · Dialog modal 弹出(不是 hover · 是 click)· 输入 '宠物服务' · 点 '确认使用'",
+        "使用 agent-browser · Modal 关闭 · 顶部状态卡显示 '已选择:宠物服务(自定义)' · 底部 CTA 变可点击",
+        "Typecheck 通过"
+      ],
+      "depends_on": ["US-002"],
+      "priority": 7,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 shadcn Dialog 默认行为",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": ["apps/web/src/pages/Step1.tsx"],
+      "test_command": "cd apps/web && pnpm tsc --noEmit",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-007",
+          "lesson": "★ PRD-16 US-007 reject 教训 · shadcn DropdownMenu/Dialog 默认 hover 触发 · 用户期望 click 触发 · 必须 <DropdownMenuTrigger asChild> 或 <DialogTrigger asChild> 包裹 button 才能 click 触发",
+          "antipattern": "<DialogTrigger>{children}</DialogTrigger> (默认 hover) · 或 onMouseEnter={() => setOpen(true)}",
+          "correct": "<DialogTrigger asChild><Button>{label}</Button></DialogTrigger> (asChild + click 触发)"
+        }
+      ]
+    },
+    {
+      "id": "US-006a",
+      "title": "Step 3 page · 表单组件(textarea + 5 platform radio + 2 input + 主 CTA)",
+      "description": "作为用户,我进入 /step/3 想看到完整的账号包装方案表单:顶部 step 标签 + H1 + 副标 + 1 textarea(必填)+ 5 platform radio + 2 input + 主 CTA '生成账号包装方案' · 提交触发 mock 生成(此 US 不渲染输出区 · 输出区由 US-006b 实现)· 字段读 stepData 预填",
+      "acceptanceCriteria": [
+        "重写 apps/web/src/pages/Step3.tsx 表单部分 · 顶部 step 标签 STEP3_STEP_TAG · H1 STEP3_H1 · 副标 STEP3_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel) · industryLabel 从 localStorage('acc_step1').industryLabel 读 · fallback '(未选择)'",
+        "form 含 4 字段 · personalInfo Textarea(required, min-h-[160px], font-cn)+ platform RadioGroup(5 platform 用 STEP3_PLATFORMS_5 渲染 + grid-cols-2 md:grid-cols-5 + glass-card + hover:border-primary/40)+ audience Input + accountStatus Input · 每字段 label 含 STEP3_FORM.X.label 字面 · 必填字段加 <span className='text-destructive'>*</span>",
+        "主 CTA Button · type='submit' · disabled={!personalInfo.trim() || !platform || isLoading} · isLoading 时显示 STEP3_LOADING_TEXT · 否则 STEP3_CTA_LABEL · bg-gradient-to-r from-primary to-primary/80(D4=B 锁 · 严禁 from-violet/from-amber)",
+        "disabled 状态显示 STEP3_CTA_DISABLED_HINT 提示",
+        "handleSubmit mock · setIsLoading(true) → await new Promise(r => setTimeout(r, 1500)) → 生成 mock result(参 spec §7.2 6 大模块字段 + placeholder 文本) → localStorage.setItem('acc_step3', JSON.stringify({ input: {personalInfo, platform, audience, accountStatus}, result: mockResult })) → setIsLoading(false) → scrollIntoView 到 #step3-output(US-006b 实现)",
+        "进入 page 预填 · 若 localStorage('acc_step3') 存在 · 表单字段从上次值预填",
+        "字面 grep · grep -F '你的个人信息'/'目标平台'/'目标受众'/'现有账号情况' apps/web/src/pages/Step3.tsx 每条命中(via 常量 import 间接)",
+        "import 三态组件 · grep -F \"from '@/components/states'\" apps/web/src/pages/Step3.tsx 命中(US-009 复用)",
+        "使用 agent-browser · 打开 /step/1 选 '💅 美业' · 跳到 /step/3 · 验证顶部 'STEP 03 · 账号包装方案' + H1 '账号包装方案' + 副标含 '当前行业：美业'",
+        "使用 agent-browser · 验证 5 platform radio 显示完整 5 项 '📱 抖音' '📕 小红书' '📺 视频号' '🎬 快手' '📺 B站' · textarea placeholder 显示 '详细描述你的个人背景...示例：我是一名有10年经验的美容师...'",
+        "使用 agent-browser · 填 textarea + 选 '📱 抖音' · CTA 变可点击 · 点击进入 loading · 控制台 0 error",
+        "Typecheck 通过"
+      ],
+      "depends_on": ["US-005", "US-009"],
+      "priority": 8,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 Step3.tsx + form 模式",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": ["apps/web/src/pages/Step3.tsx"],
+      "test_command": "cd apps/web && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (form validation 原生 vs 库)",
+          "lesson": "form 必填字段必须用 textarea/input 原生 required 属性 + JSX <span className='text-destructive'>*</span> 视觉 · 不引入 react-hook-form / zod 库 · 不要 useFormState 复杂 hook · 简单 useState 即可",
+          "antipattern": "import { useForm } from 'react-hook-form' + zodResolver(schema) · 或 useReducer 复杂 form state",
+          "correct": "const [personalInfo, setPersonalInfo] = useState('') + <Textarea required value={personalInfo} onChange={...}/> + disabled={!personalInfo.trim()}"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (5 platform radio emoji 字面)",
+          "lesson": "5 platform radio label 必须严格用 STEP3_PLATFORMS_5[i].label 字面('📱 抖音' 等)· 不允许 ralph 写 {p.name} (会丢 emoji) 或 hardcode '📱抖音'(无空格)",
+          "antipattern": "<label htmlFor={p.id}>{p.name}</label> (丢 emoji) · 或 <label>📱抖音</label> (无空格 + hardcode)",
+          "correct": "<label htmlFor={p.id}>{p.label}</label> (严格 emoji + 空格 + name)"
+        },
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-002",
+          "lesson": "★ LD-009 红线 · localStorage key 必须 'acc_' namespace 前缀 · 防 portal/admin/marketing 跨 SPA 串扰 · PRD-15 US-002 reject 教训 · ralph 容易写裸 key 'step3' 而不是 'acc_step3'",
+          "antipattern": "localStorage.setItem('step3', ...) · 或 localStorage.setItem('quanqn_step3', ...)",
+          "correct": "localStorage.setItem('acc_step3', JSON.stringify(...)) · 严格 'acc_' 前缀 · 继承 PRD-15 ls-namespace 规则"
+        }
+      ]
+    },
+    {
+      "id": "US-006b",
+      "title": "Step 3 page · 6 H3 输出区 + 每 H3 三按钮 + 顶部右侧 2 按钮",
+      "description": "作为用户,提交表单后 mock 生成完成,我想在表单下方看到 6 H3 输出区(视频参考 / 昵称推荐 / 头像设计 / 背景图设计 / 简介文案 / 整体策略)· 每个 H3 右侧 [复制] [重新生成] [智能优化] 三按钮 · 头像/背景图额外 [生成参考图] · 顶部右侧 [一键重新生成] [复制全部] 两按钮",
+      "acceptanceCriteria": [
+        "Step3.tsx 表单下方加 <section id='step3-output'>(stepData.step3.result 非空时显示)· 顶部右侧 2 按钮 · 用 STEP3_HEADER_BUTTON_REGEN_ALL / STEP3_HEADER_BUTTON_COPY_ALL 字面 + lucide-react RefreshCw / Copy icon",
+        "6 H3 输出区 · 用 STEP3_OUTPUT_H3_6.map(block => ...) 渲染 · 每 block glass-card rounded-xl p-6 · h3 用 font-display text-2xl + block.h3Label 字面 · p 副标用 text-sm text-muted-foreground + block.hint",
+        "每 H3 右侧 3 按钮 · [复制] [重新生成] [智能优化] · 严格用 STEP3_BUTTON_COPY/REGENERATE/OPTIMIZE 常量字面 · 严禁 hardcode '复制' '重新生成'",
+        "头像 H3(block.id === 'avatar')和背景图 H3(block.id === 'background')额外加 [生成参考图] 按钮 · 用 STEP3_BUTTON_GEN_IMAGE 字面 + lucide ImagePlus icon",
+        "新建 apps/web/src/components/step3/Step3OutputContent.tsx · 按 block.id 渲染不同结构 · videoReferences (3 卡)/nickname (5 推荐 + strategy + platformAdjust)/avatar (style+colorScheme+expression+references+mustHave+avoid+aiPrompt)/background (style+layout+colorTone+copyContent+mustHave+platformSizes 3 平台+aiPrompt)/bio (formula+versions 6)/strategy (visualConsistency+firstImpression+conversionPath+platformPriority)",
+        "三按钮交互 · handleCopy(blockId) · navigator.clipboard.writeText(...) + toast '已复制' · handleRegen(blockId) · toast '重新生成中...' + mock 1.5s 后更新 · handleOptimize(blockId) · 弹小 modal 让用户输入'优化方向' + toast '智能优化中...'",
+        "handleRegenAll · 顶部 [一键重新生成] · 重新跑 mock 6 block · toast '全部模块重新生成中...' · handleCopyAll · 顶部 [复制全部] · 拼接 6 block content copy · toast '已复制全部 6 个模块'",
+        "字面 grep · 6 H3 label 通过 STEP3_OUTPUT_H3_6 import 间接命中 · 三按钮字面 '复制' '重新生成' '智能优化' '生成参考图' 严格从 step3.ts 常量读 · 不允许 hardcode",
+        "使用 agent-browser · 走 US-006a 流程完成 loading · 输出区 6 H3 渲染 · 验证 '1. 视频参考案例' '2. 昵称推荐' '3. 头像设计方案' '4. 背景图设计方案' '5. 简介文案方案' '6. 整体包装策略' 都出现",
+        "使用 agent-browser · 每 H3 右侧三按钮可见 · 头像/背景图 H3 额外显示 [生成参考图] · 顶部右侧 [一键重新生成] [复制全部] 可见 · 点 H3 第 1 的 [复制] toast '已复制' · 控制台 0 error",
+        "Typecheck 通过"
+      ],
+      "depends_on": ["US-006a", "US-005"],
+      "priority": 9,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": ["apps/web/src/components/step3/Step3OutputContent.tsx"],
+      "files_to_modify": ["apps/web/src/pages/Step3.tsx"],
+      "test_command": "cd apps/web && pnpm tsc --noEmit",
+      "size_hint": "medium-large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004",
+          "lesson": "★ HIGH PRIORITY · D1=A 字面锁红线 · PRD-16 US-004 reject 教训 · function-matrix.ts 15 卡 desc 全 15 条被 ralph 创意改写 → 1 reject + 1 iter 修对 · 本 US 6 H3 输出区文字 + hint 同模式 · 严禁改写 · 必须严格从 STEP3_OUTPUT_H3_6 常量读 · 不允许 hardcode 或改写",
+          "antipattern": "<h3>视频参考</h3> 或 <h3>{block.h3Label.replace(/^\\d+\\.\\s*/, '')}</h3> (去掉编号 '1. ')",
+          "correct": "<h3 className='font-display text-2xl'>{block.h3Label}</h3> (严格用常量 · 含编号 + 完整字面)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (6 H3 数字锁)",
+          "lesson": "Step 3 输出区严格 6 H3 模块(不是 7)· '账号包装方案' 是 H1 不是 H3 · ralph 容易把 H1 当 H3 加成第 0 个或第 7 个 · 必须严格 STEP3_OUTPUT_H3_6.length === 6 · map 完就停",
+          "antipattern": "STEP3_OUTPUT_H3_6 加 { id: 'cover', h3Label: '0. 账号包装方案', hint: '...' } 或末尾加第 7 项",
+          "correct": "STEP3_OUTPUT_H3_6 严格 6 项 · 1~6 编号 · '账号包装方案' 是 H1(用 STEP3_H1)· 不进 H3 数组"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (button literal lock)",
+          "lesson": "三按钮字面必须严格用 STEP3_BUTTON_COPY/REGENERATE/OPTIMIZE/GEN_IMAGE 常量 · 严禁 hardcode '复制' '重新生成' · ralph 容易直接写中文 hardcode 而忘了 import 常量",
+          "antipattern": "<Button>复制</Button> 或 <Button>重新生成</Button> · hardcode 中文",
+          "correct": "<Button>{STEP3_BUTTON_COPY}</Button> · 严格 import + 用常量 · 字面 1:1 锁定"
+        }
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Step 3b page · 3 textarea + 5 platform radio + 1 input + 5 H3 输出区",
+      "description": "作为用户,我进入 /step/3b 想看到 1:1 复刻 aiipznt 的人设定制方案 page:顶部 step 标签 + H1 + 副标 + 3 textarea(第 1 必填)+ 5 platform radio + 1 input + 主 CTA '生成专属人设方案' + 5 H3 输出区(核心身份定位 / 思想体系 / 内容人设 / 信任构建体系 / 人设打造路线图)· personalInfo 自动从 stepData.step3 预填",
+      "acceptanceCriteria": [
+        "重写 apps/web/src/pages/Step3b.tsx · 顶部 STEP3B_STEP_TAG + H1 STEP3B_H1 + 副标 STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel)",
+        "form 含 3 textarea 用 STEP3B_TEXTAREAS_3.map 渲染 · 第 1 personalInfo required · 后 2 advantages/story 可选 · 各 textarea label + placeholder + minHeight 严格从常量读 · 必填字段加 <span className='text-destructive'>*</span>",
+        "5 platform radio 复用 STEP3_PLATFORMS_5(from step3.ts)· grid-cols-2 md:grid-cols-5 + glass-card · radio id 用 'step3b-{p.id}' 防跟 Step3 冲突",
+        "1 input 目标受众 · 用 STEP3B_AUDIENCE.label + placeholder",
+        "主 CTA · disabled={!formData.personalInfo.trim() || !platform || isLoading} · STEP3B_CTA_LABEL '生成专属人设方案' · isLoading 时 STEP3B_LOADING_TEXT · bg-gradient-to-r from-primary to-primary/80(D4=B 锁)",
+        "自动从 stepData.step3.input.personalInfo 预填(spec §7.3 要求)· 进入 page 时若 localStorage('acc_step3') 存在 · formData.personalInfo 预填同字段值 · 用户可继续编辑覆盖",
+        "handleSubmit mock(同 US-006a 风格)· 生成 5 大模块 mock 结果 · localStorage.setItem('acc_step3b', JSON.stringify({input, result}))",
+        "5 H3 输出区 · STEP3B_OUTPUT_H3_5.map 渲染 · 结构同 US-006b 但只 5 个 H3 · 每 H3 右侧 [复制] [重新生成] [智能优化] 三按钮(无 [生成参考图])",
+        "新建 apps/web/src/components/step3b/Step3bOutputContent.tsx · 按 block.id 渲染 5 大模块 · coreIdentity(persona/slogan/differentiation/memoryPoints/personality)/thoughtSystem(coreIdeas/uniqueViews/catchphrases)/contentPersona(speakingStyle/sampleScript/visualStyle/contentPillars)/trustSystem(endorsements/socialProof/personalStory)/roadmap(3 阶段 '0-1个月'/'1-3个月'/'3-6个月' + goal + keyResults)",
+        "字面 grep · grep -F 'STEP 03b · 人设定制方案'/'人设定制方案' apps/web/src/pages/Step3b.tsx 命中 · 5 H3 文字通过 STEP3B_OUTPUT_H3_5 import 间接命中",
+        "import 三态组件 · grep -F \"from '@/components/states'\" apps/web/src/pages/Step3b.tsx 命中(US-009 复用)",
+        "使用 agent-browser · 走 US-003 选 '美业' → 走 US-006a 提 Step3 form (personalInfo='我是 X') → 跳到 /step/3b · 验证 '你的个人信息' textarea 预填 '我是 X'",
+        "使用 agent-browser · 填 advantages / story · 选 '📱 抖音' · 点 CTA · loading 后输出区 5 H3 渲染 '1. 核心身份定位' '2. 思想体系' '3. 内容人设' '4. 信任构建体系' '5. 人设打造路线图'",
+        "使用 agent-browser · 每 H3 右侧三按钮 '复制' '重新生成' '智能优化' (无 [生成参考图])· 控制台 0 error",
+        "Typecheck 通过"
+      ],
+      "depends_on": ["US-007", "US-005", "US-009"],
+      "priority": 10,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 Step3b.tsx + 跨 step 预填 · large page 但复用 US-006 模式 · 不必拆",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": ["apps/web/src/components/step3b/Step3bOutputContent.tsx"],
+      "files_to_modify": ["apps/web/src/pages/Step3b.tsx"],
+      "test_command": "cd apps/web && pnpm tsc --noEmit",
+      "size_hint": "medium-large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-009",
+          "lesson": "★ Large story 拆分参考 · PRD-16 US-009 /guide page 13 模块也是 large · 1 iter 一次过 · 关键复用 US-006 form/output 模式 · 不必拆为更小子 US · 但 ralph 容易'求稳'多拆 → 浪费 · 本 US 复用 US-006a/006b 模式即可",
+          "antipattern": "把 US-008 拆为 US-008a Step3b form + US-008b Step3b 5 H3 输出 (多余拆分 · 增加 cross-US 联通验证压力)",
+          "correct": "保持单 US · 复用 US-006a 的 form pattern + US-006b 的输出区 pattern · prompt < 12K 安全区"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (cross-step prefill)",
+          "lesson": "Step 3b personalInfo textarea 必须从 localStorage('acc_step3').input.personalInfo 预填 · 字段名严格一致 'personalInfo' · ralph 容易写 'userInfo' / 'personalIntro' 等不同字段名 · 断链",
+          "antipattern": "字段名 step3 用 personalInfo · step3b 用 userBio / personalIntro · 跨 step 预填 undefined",
+          "correct": "字段名严格一致 · const step3Data = JSON.parse(localStorage.getItem('acc_step3') ?? '{}') · formData.personalInfo = step3Data?.input?.personalInfo ?? ''"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004",
+          "lesson": "D1=A 字面锁 · 5 H3 文字 + 3 textarea label + placeholder + CTA + step tag 全部字面 1:1 · 不允许 ralph 改写 · 同 US-005/006b 反例",
+          "antipattern": "改写 H3 '4. 信任构建体系' 为 '4. 信任体系' 或改 textarea label '个人优势/特长' 为 '你的优势' 等'更简洁'版",
+          "correct": "字面严格 1:1 来源 spec §7.3 · 严禁'更专业/简洁/口语'改写"
+        }
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "收官 · E2E 集成验收 · Step 1 → Step 3 → Step 3b 完整流程 + verify-prd-17.sh",
+      "description": "作为质量保障,我需要跨 Step 1 → Step 3 → Step 3b 完整流程的 E2E 自动化测试 + 3 张截图,验证 stepData 跨 step 传递正确 + 字面 1:1 渲染 + 无控制台 error · 同时产出可重复 verify-prd-17.sh 跑全 PASS · zero-regression 硬门禁",
+      "acceptanceCriteria": [
+        "新建 apps/web/e2e/prd-17-step1-3-3b.spec.ts(playwright)· 完整 flow · Step 1 选 '美业' → Step 3 填 form + 验 6 H3 输出渲染 → Step 3b 验 personalInfo 预填 + 填 advantages/story + 验 5 H3 输出渲染 · 全程 consoleErrors === [] 硬门禁",
+        "Step 1 验证 · h1 含 '选择你的行业赛道' + step tag 'STEP 01 · 选择行业赛道' + 6 tab '全部行业 (56)' '生活服务 (18)' 等可见 · 截图 apps/web/e2e/screenshots/prd-17-step1.png",
+        "Step 3 验证 · h1 含 '账号包装方案' + step tag 'STEP 03 · 账号包装方案' + 副标 '当前行业：美业' + 5 platform '📱 抖音' '📕 小红书' '📺 视频号' '🎬 快手' '📺 B站' 可见 · 提 form 后 6 H3 输出 '1. 视频参考案例' ~ '6. 整体包装策略' 可见 · 截图 prd-17-step3.png",
+        "Step 3b 验证 · h1 含 '人设定制方案' + step tag 'STEP 03b · 人设定制方案' + 副标 '当前行业：美业' + personalInfo textarea 自动预填(toHaveValue /美容师/) · 5 H3 输出 '1. 核心身份定位' ~ '5. 人设打造路线图' 可见 · 截图 prd-17-step3b.png",
+        "新建 apps/web/e2e/screenshots/.gitkeep · 3 截图 PNG 生成在该目录",
+        "运行 · cd apps/web && pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts 全 PASS",
+        "新建 scripts/verify-prd-17.sh · 可重复验收 · 含 ≥12 项检查 · §1 industries.ts 字面('全部行业'/'确认并进入下一步')+ §2 step3.ts 字面('📱 抖音'/'生成账号包装方案')+ §3 step3b.ts 字面('生成专属人设方案'/'核心身份定位')+ §4 三态组件 3 文件存在 + §5 page 重写(grep STEP1_INDUSTRIES_56/STEP3_PLATFORMS_5/STEP3B_TEXTAREAS_3 import)",
+        "chmod +x scripts/verify-prd-17.sh · 运行全 PASS · 0 fail · exit 0",
+        "★ 零回归硬门禁 · 跑全工程已有测试 · cd apps/web && pnpm test 全 PASS · 0 fail · 不允许引入 fail",
+        "Typecheck 全工程 · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": ["US-003", "US-004", "US-006b", "US-008"],
+      "priority": 11,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 关注 e2e 类 TD",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/e2e/prd-17-step1-3-3b.spec.ts",
+        "apps/web/e2e/screenshots/.gitkeep",
+        "scripts/verify-prd-17.sh"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm playwright test e2e/prd-17-step1-3-3b.spec.ts && cd ../.. && bash scripts/verify-prd-17.sh && cd apps/web && pnpm test && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": []
+    }
+  ]
+}

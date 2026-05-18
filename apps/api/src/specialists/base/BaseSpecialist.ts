@@ -152,7 +152,8 @@ export abstract class BaseSpecialist<TIn, TOut> {
       const isFallbackable =
         err instanceof SchemaValidationError ||
         err instanceof LLMTimeoutError ||
-        (err instanceof Error && err.message?.includes('5xx'));
+        (err instanceof Error && err.message?.includes('5xx')) ||
+        (err instanceof Error && err.message?.includes('API_KEY missing'));
 
       if (!isFallbackable) throw err;
 

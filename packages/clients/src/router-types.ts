@@ -137,6 +137,39 @@ export type TrendingItem = {
   crawledAt: Date;
 };
 
+export type TrendingListItem = TrendingItem & {
+  sourceUrl: string | null;
+  collectCount: number;
+  isFavorited: boolean;
+  rank: number;
+};
+
+export type TrendingDetailItem = TrendingItem & {
+  sourceUrl: string | null;
+  contentText: string | null;
+  authorName: string | null;
+};
+
+export type TrendingKpiStats = {
+  total: number;
+  weekNew: number;
+  myFavorites: number;
+  lastUpdatedAt: Date | null;
+};
+
+export type MyTopicSource = 'step5' | 'trending' | 'manual';
+
+export type MyTopicItem = {
+  id: string;
+  title: string;
+  source: MyTopicSource;
+  industry: string | null;
+  platform: string | null;
+  createdAt: Date | string;
+  topicId?: number;
+  trendingItemId?: number;
+};
+
 export type FreeGenerateHistoryRow = {
   id: number;
   content: string;
@@ -271,6 +304,28 @@ export type JobStatusOutput = {
   }>;
 };
 
+export type DeepLearningQueueItem = {
+  id: number;
+  sample: string;
+  sourcePlatform: string;
+  coreFormula: string;
+  status: string;
+  createdAt: Date;
+};
+
+export type DeepLearningParseAnalysis = {
+  coreFormula: string;
+  hookType: string;
+  structurePattern: string;
+  emotionalArc: string;
+  keywords: string[];
+};
+
+export type DeepLearningParseResult = {
+  queueId: number;
+  analysis: DeepLearningParseAnalysis;
+};
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -314,6 +369,20 @@ const _shadowRouter = _t.router({
     fetch: _t.procedure
       .input((x: unknown) => x as { platform?: string; limit?: number } | undefined)
       .query((): TrendingItem[] => []),
+    list: _t.procedure
+      .input((x: unknown) => x as { platforms?: string[]; industry?: string; timeRange?: string; sort?: string; search?: string; page?: number; pageSize?: number } | undefined)
+      .query((): { items: TrendingListItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({ items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 })),
+    listWithFavorites: _t.procedure
+      .input((x: unknown) => x as { platforms?: string[]; industry?: string; timeRange?: string; sort?: string; search?: string; page?: number; pageSize?: number } | undefined)
+      .query((): { items: TrendingListItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({ items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 })),
+    favorite: _t.procedure
+      .input((x: unknown) => x as { trendingItemId: number; action: 'add' | 'remove' })
+      .mutation((): { favorited: boolean } => ({ favorited: false })),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query((): TrendingDetailItem | null => null),
+    kpiStats: _t.procedure
+      .query((): TrendingKpiStats => ({ total: 0, weekNew: 0, myFavorites: 0, lastUpdatedAt: null })),
   }),
   ipAccounts: _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),
@@ -358,6 +427,20 @@ const _shadowRouter = _t.router({
         ok: true,
         data: { stepKey: '', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
       })),
+    saveStream: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as
+            | { stepKey: 'step5'; category: 'traffic' | 'monetize' | 'persona' | 'cognition' | 'case'; inputs: Record<string, unknown> }
+            | { stepKey: 'step7'; inputs: Record<string, unknown> },
+      )
+      // eslint-disable-next-line require-yield
+      .subscription(async function* () {
+        yield {} as
+          | { type: 'started'; traceId: string }
+          | { type: 'done'; result: Record<string, unknown> }
+          | { type: 'error'; message: string };
+      }),
     progress: _t.procedure.query((): StepProgressOutput => ({
       completed: 0,
       total: 9,
@@ -444,7 +527,10 @@ const _shadowRouter = _t.router({
             agentId?: string;
             agentMode?: string;
             sourceType?: string;
-            dateRange?: 'last_7d' | 'last_30d' | 'all';
+            tools?: string[];
+            dateRange?: 'last_7d' | 'last_30d' | 'all' | 'today' | 'week' | 'month' | 'custom';
+            dateFrom?: string;
+            dateTo?: string;
             limit?: number;
             offset?: number;
           },
@@ -456,6 +542,35 @@ const _shadowRouter = _t.router({
     delete: _t.procedure
       .input((x: unknown) => x as { id: number })
       .mutation((): { ok: true } => ({ ok: true })),
+    stats: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            dateRange?: 'today' | 'week' | 'month' | 'all' | 'custom';
+            tools?: string[];
+            dateFrom?: string;
+            dateTo?: string;
+          },
+      )
+      .query(
+        (): {
+          totalCalls: number;
+          failureRate: number;
+          avgDurationMs: number;
+          topTools: Array<{ agentId: string; count: number }>;
+          dailyTrend: Array<{ date: string; count: number }>;
+          durationHistogram: Array<{ label: string; count: number }>;
+          modelDistribution: Array<{ model: string; count: number }>;
+        } => ({
+          totalCalls: 0,
+          failureRate: 0,
+          avgDurationMs: 0,
+          topTools: [],
+          dailyTrend: [],
+          durationHistogram: [],
+          modelDistribution: [],
+        }),
+      ),
   }),
   analysis: _t.router({
     analyze: _t.procedure
@@ -608,6 +723,124 @@ const _shadowRouter = _t.router({
         yield {} as VoiceChatStreamChunk;
       }),
     clearSession: _t.procedure.mutation((): { ok: boolean } => ({ ok: true })),
+  }),
+  privateDomain: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            productDescription: string;
+            productPrice: number;
+            targetAudience: string;
+            ipPositioning: string;
+            currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
+            monthlyTraffic: number;
+          },
+      )
+      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+        id: 0,
+        content: '',
+        agentId: 'PrivateDomainAgent',
+        traceId: null,
+        createdAt: new Date(),
+      })),
+    generateStream: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            productDescription: string;
+            productPrice: number;
+            targetAudience: string;
+            ipPositioning: string;
+            currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
+            monthlyTraffic: number;
+          },
+      )
+      // eslint-disable-next-line require-yield
+      .subscription(async function* () {
+        yield {} as
+          | { type: 'phase'; data: { key: string; name: string; goal: string; tactics: string[]; scripts: string[]; metrics: string[] } }
+          | { type: 'done'; summary: string };
+      }),
+  }),
+  monetization: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { stepKey?: string; industryContext?: Record<string, unknown>; audienceProfile?: Record<string, unknown> },
+      )
+      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+        id: 0,
+        content: '',
+        agentId: 'MonetizationAgent',
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
+  presentStyles: _t.router({
+    recommend: _t.procedure
+      .input((x: unknown) => x as { text: string; platform: string })
+      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+        id: 0,
+        content: '',
+        agentId: 'PresentationAgent',
+        traceId: null,
+        createdAt: new Date(),
+      })),
+  }),
+  myTopics: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { source?: 'all' | 'step5' | 'trending' | 'manual'; industry?: string; search?: string; page?: number; pageSize?: number } | undefined,
+      )
+      .query((): { items: MyTopicItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({
+        items: [], total: 0, page: 1, pageSize: 20, totalPages: 1,
+      })),
+    add: _t.procedure
+      .input((x: unknown) => x as { title: string; industry?: string; platform?: string })
+      .mutation((): MyTopicItem => ({ id: '', title: '', source: 'manual', industry: null, platform: null, createdAt: new Date() })),
+    update: _t.procedure
+      .input((x: unknown) => x as { topicId: number; title?: string; industry?: string; platform?: string })
+      .mutation((): MyTopicItem | null => null),
+    delete: _t.procedure
+      .input((x: unknown) => x as { id: string })
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    countBySource: _t.procedure
+      .query((): { step5: number; trending: number; manual: number } => ({ step5: 0, trending: 0, manual: 0 })),
+  }),
+  deepLearning: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { limit?: number; offset?: number; onlyActive?: boolean },
+      )
+      .query((): DeepLearningQueueItem[] => []),
+    create: _t.procedure
+      .input((x: unknown) => x as { sample: string; userTitle?: string; userTags?: string[] })
+      .mutation((): { ok: true; queueId: number; status: string } => ({
+        ok: true,
+        queueId: 0,
+        status: 'pending',
+      })),
+    delete: _t.procedure
+      .input((x: unknown) => x as { archiveId: number })
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    parse: _t.procedure
+      .input((x: unknown) => x as { sample: string; sourcePlatform: string })
+      .mutation((): DeepLearningParseResult => ({
+        queueId: 0,
+        analysis: {
+          coreFormula: '',
+          hookType: '',
+          structurePattern: '',
+          emotionalArc: '',
+          keywords: [],
+        },
+      })),
+    applyFormula: _t.procedure
+      .input((x: unknown) => x as { queueId: number; newTopic: string })
+      .mutation((): { content: string } => ({ content: '' })),
   }),
 });
 

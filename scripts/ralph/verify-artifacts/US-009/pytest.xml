@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="29" failures="0" errors="0" time="0.324">
+    <testsuite name="tests/e2e/prd15-copywriting-flow-e2e.test.ts" timestamp="2026-05-16T00:15:05.952Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.043162292">
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 1: 个人 IP 起号者账号已创建" time="0.000340084">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 2: /tools/deep-learning — 学一段文案 → DeepLearnReviewQueue 写入 (保存我的库)" time="0.001166125">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 3: /tools/deep-learning 列表 — 见新加入的 pending 条目" time="0.001497459">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 4: /tools/copywriting — 选脚本类型 + 元素 + 主题 → freeGenerate 提交" time="0.000289334">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 5: SSE 流式输出 — mock markdown ≥200 chars (AC-5: freeGenerate 调 CopywritingAgent)" time="0.00008475">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 6: 保存到历史 — history.create (agentMode=free, scriptType=tutorial)" time="0.001940375">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 7: /history?tools=copywriting — 见新记录 (agentId=CopywritingAgent)" time="0.001760459">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-copywriting-flow-e2e.test.ts" name="E2E Flow 2: 文案工作室 + DeepLearning (PRD-15 US-009 AC-3) &gt; Step 8: cost_log 写入 (CopywritingAgent · tokensUsed=850 · 0 失败)" time="0.0017595">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/e2e/prd15-mock-auth-e2e.test.ts" timestamp="2026-05-16T00:15:05.953Z" hostname="returndeMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.0384305">
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 1: DEV_OAUTH_MOCK=true → isDevOAuthMock() returns true (auth middleware AC-3)" time="0.000083542">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 2: auth.me 返 mock user — getDevMockUserAttrs 可查到 dev 用户" time="0.000550917">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 3: Header 显示 5 mock 账号下拉 — ipAccounts.list 返回 5 账号" time="0.001434084">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 4: 切换 OPC 创业者 → localStorage.aiip_active_account_id 写入 (user.activeAccountId update)" time="0.002450583">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 5: reload 仍登录 + 账号选中 — activeAccountId 持久化" time="0.000297875">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-mock-auth-e2e.test.ts" name="E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5) &gt; Step 6: 切换 MCN 矩阵号 — followers KPI = 1000-10000 · mcn-manager ipPositioning" time="0.001253459">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/e2e/prd15-private-domain-e2e.test.ts" timestamp="2026-05-16T00:15:05.953Z" hostname="returndeMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.035149334">
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 1: 测试用户 + OPC 账号已创建" time="0.000089833">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 2: /tools/private-domain?view=config — 提交 6 字段 → history 写入 (AC-3/AC-4)" time="0.001596834">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 3: history 内容包含 6 阶段 key (attract → repurchase)" time="0.001426209">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 4: 流式 6 阶段 — 验证阶段顺序符合 PRIVATE_DOMAIN_STAGES 定义" time="0.000071584">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 5: cost_log 写入 (AC-8: mock 账单记录 provider=mock)" time="0.001780416">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 6: 第 2 次生成 (不同参数) → 再写 1 条 history" time="0.00070325">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 7: view=history — 列表含 2 条 PrivateDomainAgent 记录 (倒序)" time="0.001227291">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-private-domain-e2e.test.ts" name="E2E Flow 1: 私域成交流程 (PRD-15 US-009 AC-2) &gt; Step 8: cost_log 聚合 — 本账号 PrivateDomainAgent 调用计数 ≥1" time="0.001043333">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/e2e/prd15-trending-to-step7-e2e.test.ts" timestamp="2026-05-16T00:15:05.954Z" hostname="returndeMacBook-Pro.local" tests="7" failures="0" errors="0" skipped="0" time="0.04618175">
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 1: 用户 + 账号 + Trending 条目已创建" time="0.000085583">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 2: /tools/trending?platform=xiaohongshu — 收藏一条 (trending.favorite add)" time="0.003088542">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 3: trending_favorites 表 — 记录已写入 + trendingItem 可查" time="0.00137425">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 4: /my-topics?view=card&amp;source=trending — 收藏可见 (trending JOIN favorites)" time="0.001197958">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 5: 点击收藏 → Step 7 跳转 /step/7?topic=...&amp;trendingId=xxx (URL 参数构建)" time="0.000060584">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 6: Step 7 input 自动填充 + 提交 → step_data 写入 (含 trendingId)" time="0.002547959">
+        </testcase>
+        <testcase classname="tests/e2e/prd15-trending-to-step7-e2e.test.ts" name="E2E Flow 3: Trending 收藏 → MyTopics → Step 7 跨工具流 (PRD-15 US-009 AC-4) &gt; Step 7: 双写验证 — trending_favorites + step_data 均已写入" time="0.005514958">
+        </testcase>
+    </testsuite>
+</testsuites>

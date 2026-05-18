@@ -37,10 +37,32 @@ const updateIpAccountInput = createIpAccountInput.partial();
 export const ipAccountsRouter = router({
   /** AC-5: returns all user-owned ip_accounts; ip_accounts RLS filters by current_user_id */
   list: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.ipAccount.findMany({
+    const accounts = await ctx.prisma.ipAccount.findMany({
       select: ACCOUNT_SELECT,
       orderBy: { createdAt: 'asc' },
     });
+
+    // PRD-15 US-001 AC-4: in dev mode, auto-bind 5 mock accounts if user has none
+    if (process.env.NODE_ENV === 'development' && accounts.length === 0 && ctx.user) {
+      const mockNames = [
+        { name: 'AI 创业者小张', industry: 'enterprise', platform: 'douyin', stage: 'starter', followersRange: '0-1000', ipPositioning: 'ip-creator' },
+        { name: 'OPC 经营者老王', industry: 'enterprise', platform: 'douyin', stage: 'growth', followersRange: '1000-10000', ipPositioning: 'opc-founder' },
+        { name: '实体店主陈姐', industry: 'food', platform: 'douyin', stage: 'starter', followersRange: '0-1000', ipPositioning: 'traditional-transform' },
+        { name: 'MCN 矩阵号', industry: 'self_media', platform: 'douyin', stage: 'growth', followersRange: '1000-10000', ipPositioning: 'mcn-manager' },
+        { name: 'Demo 演示号', industry: 'beauty', platform: 'douyin', stage: 'starter', followersRange: '0-1000', ipPositioning: 'demo' },
+      ];
+      const created = await Promise.all(
+        mockNames.map((acc) =>
+          ctx.prisma.ipAccount.create({
+            data: { ...acc, userId: ctx.user!.id },
+            select: ACCOUNT_SELECT,
+          }),
+        ),
+      );
+      return created;
+    }
+
+    return accounts;
   }),
 
   /** Returns the currently active ip_account */

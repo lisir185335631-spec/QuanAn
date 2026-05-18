@@ -1,1 +1,10 @@
-JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-001/pytest.xml
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 1ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  18:38:31
+   Duration  351ms (transform 17ms, setup 20ms, collect 10ms, tests 1ms, environment 115ms, prepare 32ms)
+

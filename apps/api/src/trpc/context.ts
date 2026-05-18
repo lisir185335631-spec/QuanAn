@@ -10,6 +10,7 @@ import { randomBytes } from 'node:crypto';
 
 import { lucia } from '@/lib/auth/lucia';
 import { prisma } from '@/lib/prisma';
+import { isDevOAuthMock, getDevMockUserAttrs } from '@/middleware/auth';
 
 import type { PrismaClient } from '@prisma/client';
 import type { Context as HonoCtx } from 'hono';
@@ -32,7 +33,24 @@ export async function createContext(c: HonoCtx): Promise<TRPCContext> {
   let user: User | null = null;
   let resolvedSessionId: string | null = null;
 
-  if (sessionId) {
+  if (isDevOAuthMock()) {
+    // When a session cookie is present, validate it first so integration tests that
+    // explicitly log in get the expected session user rather than the global mock.
+    // Fall back to the mock user only when no valid session exists (dev convenience).
+    if (sessionId) {
+      const { session, user: sessionUser } = await lucia.validateSession(sessionId);
+      if (session) {
+        user = sessionUser;
+        resolvedSessionId = session.id;
+      }
+    }
+    if (!user) {
+      const devAttrs = await getDevMockUserAttrs(prisma);
+      if (devAttrs) {
+        user = devAttrs as unknown as User;
+      }
+    }
+  } else if (sessionId) {
     const { session, user: sessionUser } = await lucia.validateSession(sessionId);
     if (session) {
       user = sessionUser;

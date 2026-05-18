@@ -1,33 +1,48 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
-
- ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > 5 parallel enqueueIfThresholdMet calls → queue.add called exactly once (threshold:5)
- ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > counts 1-4 and 6-10 do NOT trigger enqueue
- ✓ tests/integration/api/evolution-threshold.test.ts > AC-10: 5 concurrent same-account feedback → exactly 1 enqueue > jobId deduplication: concurrent rush at threshold uses same jobId
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > happy path: LLM 成功 → insight 写入原子事务 · isFallback=false
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > fallback path: schema 无效 · previousInsight 可用 → isFallback=true · 不写 insight
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > EvolutionAgent (US-003) > cumulative merge: (fresh ∪ prev) 去重 · avoidList 同理 · 不超 top 10
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=5 → 触发 enqueue (threshold:5)
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=19 → 不触发 enqueue
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=20 → 触发 enqueue (threshold:20)
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=49 → 不触发 enqueue
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=50 → 触发 enqueue (threshold:50)
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=99 → 不触发 enqueue
- ✓ tests/unit/specialists/EvolutionAgent.test.ts > enqueueIfThresholdMet threshold boundaries > count=100 → 触发 enqueue (threshold:100)
-
- Test Files  2 passed (2)
-      Tests  13 passed (13)
-   Start at  10:13:44
-   Duration  279ms (transform 72ms, setup 9ms, collect 149ms, tests 45ms, environment 0ms, prepare 60ms)
+> @quanqn/web@0.1.0 test /Users/return/Desktop/QuanQn/apps/web
+> vitest run --config vitest.config.ts
 
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
 
- ✓ tests/judge/evolution-agent.judge.ts > EvolutionAgent LLM Judge — threshold:50 golden case > AC-13: golden case passes judge with score ≥ 8/10 (≥ 4.0/5)
- ✓ tests/judge/evolution-agent.judge.ts > EvolutionAgent LLM Judge — threshold:50 golden case > runJudge calls llmGateway with lightweight tier and judge_call eventType
+ ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 2ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 4ms
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 3ms
+ ✓ src/lib/constants/__tests__/step8.test.ts (8 tests) 4ms
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 6ms
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 25ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 147ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 3ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 2ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 44ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 71ms
+stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- Test Files  1 passed (1)
-      Tests  2 passed (2)
-   Start at  10:13:57
-   Duration  170ms (transform 19ms, setup 0ms, collect 22ms, tests 2ms, environment 0ms, prepare 33ms)
+ ✓ src/pages/step/__tests__/Step3b.test.tsx (4 tests) 59ms
+stderr | src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step1.test.tsx (4 tests) 83ms
+stderr | src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3.test.tsx (4 tests) 72ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 50ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/test/pages.test.tsx (30 tests) 172ms
+
+ Test Files  19 passed (19)
+      Tests  150 passed (150)
+   Start at  05:03:19
+   Duration  2.11s (transform 889ms, setup 814ms, collect 3.26s, tests 751ms, environment 5.68s, prepare 969ms)
 

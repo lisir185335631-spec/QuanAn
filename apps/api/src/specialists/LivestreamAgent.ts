@@ -43,7 +43,7 @@ export type LivestreamOutput = z.infer<typeof LivestreamOutputSchema>;
 
 // ── AC-5: input schema — experience 枚举校验 ──────────────────────────────────
 
-const EXPERIENCE_VALUES = ['新手', '中级', '高级'] as const;
+const EXPERIENCE_VALUES = ['新手', '有经验', '资深'] as const;
 export type ExperienceLevel = (typeof EXPERIENCE_VALUES)[number];
 
 const LivestreamInputSchema = z

@@ -1,0 +1,17 @@
+{"timestamp": "2026-05-12T11:04:57.779374", "iteration": 1, "story_id": "US-001", "phase": "developing", "duration_seconds": 1371.8}
+{"timestamp": "2026-05-12T11:11:25.516904", "iteration": 1, "story_id": "US-001", "phase": "validating", "duration_seconds": 380.6}
+{"timestamp": "2026-05-12T11:46:35.564452", "iteration": 2, "story_id": "US-002", "phase": "developing", "duration_seconds": 1802.4}
+{"timestamp": "2026-05-12T11:51:15.139771", "iteration": 3, "story_id": "US-002", "phase": "developing", "duration_seconds": 270.4}
+{"timestamp": "2026-05-12T12:04:58.804624", "iteration": 3, "story_id": "US-002", "phase": "validating", "duration_seconds": 811.3}
+{"timestamp": "2026-05-12T12:14:26.384277", "iteration": 4, "story_id": "US-002", "phase": "developing", "duration_seconds": 560.8}
+{"timestamp": "2026-05-12T12:24:54.210992", "iteration": 4, "story_id": "US-002", "phase": "validating", "duration_seconds": 620.7}
+{"timestamp": "2026-05-12T12:43:22.387382", "iteration": 5, "story_id": "US-003", "phase": "developing", "duration_seconds": 891.3}
+{"timestamp": "2026-05-12T12:46:10.094164", "iteration": 5, "story_id": "US-003", "phase": "validating", "duration_seconds": 160.2}
+{"timestamp": "2026-05-12T13:02:26.978100", "iteration": 6, "story_id": "US-004", "phase": "developing", "duration_seconds": 846.4}
+{"timestamp": "2026-05-12T13:09:02.462691", "iteration": 6, "story_id": "US-004", "phase": "validating", "duration_seconds": 385.6}
+{"timestamp": "2026-05-12T13:31:37.995192", "iteration": 7, "story_id": "US-005", "phase": "developing", "duration_seconds": 1226.9}
+{"timestamp": "2026-05-12T13:41:15.413434", "iteration": 7, "story_id": "US-005", "phase": "validating", "duration_seconds": 570.9}
+{"timestamp": "2026-05-12T14:03:37.231968", "iteration": 8, "story_id": "US-006", "phase": "developing", "duration_seconds": 1241.9}
+{"timestamp": "2026-05-12T14:19:41.503524", "iteration": 8, "story_id": "US-006", "phase": "validating", "duration_seconds": 876.4}
+{"timestamp": "2026-05-12T14:47:27.783898", "iteration": 9, "story_id": "US-007", "phase": "developing", "duration_seconds": 1407.3}
+{"timestamp": "2026-05-12T14:59:39.357912", "iteration": 9, "story_id": "US-007", "phase": "validating", "duration_seconds": 721.1}

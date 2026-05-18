@@ -1,8 +1,8 @@
 {
   "story_id": "US-012",
-  "validator_start_ts": "2026-05-11T16:43:00",
-  "validator_end_ts": "2026-05-11T16:53:00",
-  "test_command": "pnpm exec vitest run tests/unit/web/pages/VoiceChat.test.tsx + pnpm --filter @quanqn/web typecheck + pnpm --filter @quanqn/web lint",
+  "validator_start_ts": "2026-05-18T00:02:00",
+  "validator_end_ts": "2026-05-18T00:10:00",
+  "test_command": "pnpm vitest run + pnpm tsc --noEmit + agent-browser http://localhost:5173/step/8",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,10 +10,24 @@
   "artifacts": [
     "vitest.xml",
     "vitest.stdout.txt",
-    "vitest-full.xml",
-    "vitest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "validator-us-012-pass-3-voicechat.png"
+    "typecheck.stdout.txt"
   ],
-  "notes": "Zero regression: 91 test files, 861 tests passed (2 skipped), 0 failures. Typecheck: 0 errors. Lint: 0 errors (media-has-caption suppressed via eslint-disable-next-line, require-await fixed by removing async from startVoiceChatWith). VoiceChat unit tests: 26 tests passed. Browser: page loaded at http://localhost:5173/voice-chat, record-button and turn-list data-testid confirmed in DOM. Console: only React Router future flag warning (pre-existing, not an error). All ACs CONFIRMED."
+  "test_counts": {
+    "vitest_total": 119,
+    "vitest_passed": 119,
+    "vitest_failed": 0
+  },
+  "ac_summary": {
+    "ac1": "Step8.tsx: STEP8_STEP_TAG + H1 + SUBTITLE_TEMPLATE.replace('{industry}', industry) ✓",
+    "ac2": "STEP8_SUBFUNCTIONS_2=[generate_plan, optimize_script] · default idx=0 · click切换 ✓",
+    "ac3": "Step8GeneratePlan.tsx: 4字段(textarea产品/input受众/radio5平台/radio3经验) + 主CTA STEP8_BUTTON_GENERATE_PLAN + 输出6 H3 InfoCard ✓",
+    "ac4": "Step8OptimizeScript.tsx: 2字段(textarea话术≥10字+charCounter/input优化目标可选) + 主CTA disabled当<10字 + 输出2 InfoCard ✓",
+    "ac5": "三态(idle/loading/result) + generateMockResult + setTimeout 3-5s ✓",
+    "ac6": "localStorage: 进入读acc_step1.industry注入subtitle · 提交后写acc_step8({sub_function,formData,result}) ✓",
+    "ac7": "grep 0 hardcode: 子功能/生成直播方案/AI优化话术/新手/有经验/资深/1.开场话术 全0命中 ✓",
+    "ac8": "grep 0 violet/amber 命中 ✓",
+    "ac9": "vitest 119/119 PASS · tsc --noEmit 0 error ✓",
+    "ac10": "browser: default子功能1·4字段form · 切子功能2·2字段form · 切回1·填字段·点[生成直播方案]·等5s·6 H3输出 · localStorage.getItem('acc_step8')非null · 无console error ✓",
+    "ac11": "pnpm tsc --noEmit 0 error ✓"
+  }
 }

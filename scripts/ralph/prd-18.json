@@ -1,0 +1,851 @@
+{
+  "project": "QuanQn 主应用前端对齐 aiipznt(Phase 3 · Step 4/4b/5/6/7/8 完整化)",
+  "branchName": "ralph/prd-18-step-4-4b-5-6-7-8",
+  "description": "续 PRD-17 aiipznt 复刻 · 一次性 6 step page(Step 4 执行计划 / Step 4b 变现路径 / Step 5 爆款选题库 / Step 6 拍摄计划 / Step 7 文案生成 / Step 8 直播策划)+ 6 字面常量文件 + E2E 收官 · 14 US · 6 foundation + 7 page(Step 7 拆 form/output)+ 1 收官 · D1=A 像素级 layout + 字面严锁 · D4=B 颜色保留 var(--primary) 金色 token · D3=A 仅 apps/web · 反例累加机制延续 PRD-16/17(+8% 一轮通过率)",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "★ foundation · step4.ts 常量(5 platform 复用 + 3 input + SUBTITLE 字面锁)",
+      "description": "作为开发者,我需要把 Step 4 执行计划 page 字面字符串集中到 apps/web/src/lib/constants/step4.ts · 含 5 platform radio(re-export from step3)+ 3 input/textarea + STEP4_SUBTITLE_TEMPLATE 含 {industry} + STEP4_OUTPUT_H3_3(每日任务/每周里程碑/阶段 KPI)+ Step4Result interface · 字面 1:1 来源 aiipznt-spec.md §7.4 line 1487-1513",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step4.ts · re-export STEP3_PLATFORMS_5 as STEP4_PLATFORMS_5 · 严禁重复定义",
+        "STEP4_INPUTS_3: readonly Step4Input[] · 3 项严格 · follower_count(label='当前粉丝量', required=false, type='input', placeholder='如：0 / 500 / 1万 / 10万')/ goal(label='目标', required=false, type='input', placeholder='如：3个月涨粉1万、月入5万')/ personal_info(label='个人信息', required=false, type='textarea', placeholder='描述你的情况，比如：\\n- 每天可投入2小时\\n- 有实体店/线上课程\\n- 擅长口播/拍摄')",
+        "STEP4_STEP_TAG = 'STEP 04 · 制定执行计划' + STEP4_H1 = '执行计划' + STEP4_BUTTON_GENERATE = '生成执行计划' + STEP4_RADIO_LABEL = '选择平台' + STEP4_RADIO_REQUIRED = true + STEP4_LOADING_TEXT = 'AI 正在生成你的执行计划，预计 30-60 秒...'",
+        "STEP4_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将为你制定每天具体做什么、每周里程碑、每个阶段 KPI 的可执行运营计划。' · 字面严格 1:1 来源 spec §7.4 line 1492 · 含全角中文冒号 · 末尾全角句号",
+        "STEP4_OUTPUT_H3_3 = [{ id: 'daily_tasks', h3Label: '1. 每日任务表' }, { id: 'weekly_milestones', h3Label: '2. 每周里程碑' }, { id: 'phase_kpis', h3Label: '3. 阶段 KPI' }] as const",
+        "Step4Result interface · structured · { daily_tasks: string[], weekly_milestones: string[], phase_kpis: Array<{phase, kpi, target}> }",
+        "字面 grep · grep -F '当前行业：{industry}。AI 将为你制定每天具体做什么、每周里程碑、每个阶段 KPI 的可执行运营计划。' apps/web/src/lib/constants/step4.ts 必须命中 1 次(SUBTITLE 完整字面双锁)",
+        "数字锁 · STEP4_INPUTS_3.length === 3 + STEP4_OUTPUT_H3_3.length === 3",
+        "新建 apps/web/src/lib/constants/__tests__/step4.test.ts · 5 assertions(SUBTITLE 字面 / INPUTS 3 个 / OUTPUT H3 3 个 / re-export STEP4_PLATFORMS_5 长度 5 / Step4Result interface 字段)",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step4.test.ts 全 PASS",
+        "Typecheck 通过 · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/lib/constants/) 涉及的 TD · 主动 fix · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step4.ts",
+        "apps/web/src/lib/constants/__tests__/step4.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step4.test.ts && pnpm tsc --noEmit",
+      "size_hint": "small",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007 (SUBTITLE 字面改写 reject)",
+          "lesson": "★ HIGH PRIORITY · D1=A 字面锁红线 · STEP3B_SUBTITLE_TEMPLATE 被 ralph 创意改写为完全不同表述 → 1 reject + 1 iter 修对 · STEP4_SUBTITLE_TEMPLATE 同模式 · 严禁改写",
+          "antipattern": "STEP4_SUBTITLE_TEMPLATE = '当前行业：X。AI 制定执行计划' (简化创意改写 · 漏 '每天具体做什么、每周里程碑、每个阶段 KPI')",
+          "correct": "STEP4_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将为你制定每天具体做什么、每周里程碑、每个阶段 KPI 的可执行运营计划。' (spec §7.4 line 1492 完整字面 1:1 含全角中文冒号 末尾全角句号)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (15 卡 desc 全 15 条创意改写 reject)",
+          "lesson": "D1=A 字面锁 · placeholder 字段是 layout 严格一部分 · 不允许'更专业'或'更简洁'的创意改写 · 必须 grep 严格命中 spec 原文",
+          "antipattern": "STEP4_INPUTS_3[0].placeholder = '如：当前粉丝数（万）' (改写)",
+          "correct": "STEP4_INPUTS_3[0].placeholder = '如：0 / 500 / 1万 / 10万' (spec §7.4 line 1499 完整字面)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (re-export pattern)",
+          "lesson": "复用 STEP3_PLATFORMS_5 必须用 re-export · 严禁重复定义 5 platform 数组(命名冲突 + 维护风险)",
+          "antipattern": "export const STEP4_PLATFORMS_5: Platform5[] = [{emoji: '📱', name: '抖音'}, ...] (重复定义)",
+          "correct": "export { STEP3_PLATFORMS_5 as STEP4_PLATFORMS_5 } from './step3' (re-export · 单一真源)"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "★ foundation · step4b.ts 常量(1 textarea + 3 input + 3 阶梯 schema + 收入结构 + 案例)",
+      "description": "作为开发者,我需要把 Step 4b 变现路径 page 字面字符串集中到 apps/web/src/lib/constants/step4b.ts · 含 1 textarea(产品 必填)+ 3 input(受众/IP 定位/收入)+ 3 阶梯 schema(0→90万/100万→1000万/1000万→1亿 · range/title/duration 字面锁)+ 收入结构 + 成功案例 schema + 3 button(生成/智能优化/重新生成)· 字面 1:1 来源 spec §7.5 line 1516-1585",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step4b.ts · STEP4B_STEP_TAG = 'STEP 04b · 变现路径规划' + STEP4B_H1 = '变现路径'",
+        "STEP4B_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将为你规划三阶梯变现路径：0→90 万、100 万→1000 万、1000 万→1 亿，每个阶梯有具体的产品设计、定价策略和成交流程。' · 字面严格 1:1 来源 spec §7.5 line 1521 · 含全角箭头 → · 全角中文冒号",
+        "STEP4B_TEXTAREA: Step4bTextarea = { id: 'product_description', label: '产品/服务描述', required: true, placeholder: '描述你的产品或服务，比如：美容院皮肤管理项目，客单价500-3000元 / 线上知识付费课程，定价199-999元 / 实体店+线上双渠道' }",
+        "STEP4B_INPUTS_3: readonly Step4bInput[] · 3 项严格 · target_audience(label='目标受众', required=false, placeholder='如：25-40岁女性')/ ip_positioning(label='IP 定位', required=false, placeholder='如：专业皮肤管理师')/ current_income(label='当前收入水平', required=false, placeholder='如：月入3万 / 年收入50万')",
+        "STEP4B_BUTTON_GENERATE = '生成变现路径' + STEP4B_BUTTON_OPTIMIZE = '智能优化' + STEP4B_BUTTON_REGENERATE = '重新生成' + STEP4B_LOADING_TEXT = 'AI 正在规划你的变现路径，预计 60-120 秒...'",
+        "STEP4B_THREE_STAGES: readonly Step4bStage[] · 3 项严格(spec §7.5 line 1546-1564 字面 1:1)· { range: '0→90万', title: '积累案例与私域流量，验证培训模型', duration: '6-12个月' } / { range: '100万→1000万', title: '扩张团队 + 标准化产品 + 多渠道引流', duration: '12-24个月' } / { range: '1000万→1亿', title: '品牌化运营 + 资源整合 + 跨界合作', duration: '24-60个月' } · range 严禁改写为 '0万→90万' 或 '0-90万' · 全角箭头 → 必保留",
+        "STEP4B_PRODUCT_TYPES_4 = ['引流品', '信任品', '利润品', '后端产品'] as const · 字面 1:1 来源 spec §7.5 line 1551",
+        "STEP4B_OUTPUT_H3_5 = [{ id: 'market_analysis', h3Label: '1. 市场分析' }, { id: 'three_stages', h3Label: '2. 三阶梯变现路径' }, { id: 'revenue_structure', h3Label: '3. 收入结构' }, { id: 'success_cases', h3Label: '4. 成功案例参考' }, { id: 'feedback', h3Label: '5. 这个结果对你有帮助吗？' }] as const",
+        "Step4bResult interface · structured · { market_analysis: {...}, three_stages: Step4bStage[3] + product_matrix + strategy + actions + risks, revenue_structure: Array<{category, percent, description}>, success_cases: Array<{name, type, journey, result, insight}> }",
+        "字面 grep · grep -F '0→90万' / '100万→1000万' / '1000万→1亿' / '引流品' / '信任品' / '利润品' / '后端产品' apps/web/src/lib/constants/step4b.ts 每条命中 ≥1 次",
+        "数字锁 · STEP4B_INPUTS_3.length === 3 + STEP4B_THREE_STAGES.length === 3 + STEP4B_PRODUCT_TYPES_4.length === 4 + STEP4B_OUTPUT_H3_5.length === 5",
+        "新建 apps/web/src/lib/constants/__tests__/step4b.test.ts · 8 assertions(3 阶梯 range 字面 / 4 产品类型字面 / SUBTITLE 字面 / 5 H3 / INPUTS 3 / TEXTAREA required / BUTTONS 3 / Step4bResult interface)",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step4b.test.ts 全 PASS · Typecheck 0 error"
+      ],
+      "depends_on": [],
+      "priority": 2,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step4b.ts",
+        "apps/web/src/lib/constants/__tests__/step4b.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step4b.test.ts && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007 (SUBTITLE 字面改写 reject)",
+          "lesson": "★ HIGH PRIORITY · STEP4B_SUBTITLE_TEMPLATE 含 60+ 字 · 同 PRD-17 US-007 模式 · 严禁创意改写 · 必须完整 1:1 spec line 1521",
+          "antipattern": "STEP4B_SUBTITLE_TEMPLATE = '当前行业:X。AI 规划三阶梯变现' (简化 · 漏 '具体的产品设计、定价策略和成交流程')",
+          "correct": "STEP4B_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将为你规划三阶梯变现路径：0→90 万、100 万→1000 万、1000 万→1 亿，每个阶梯有具体的产品设计、定价策略和成交流程。' (完整字面 · 含全角箭头 → · 全角中文冒号)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (15 卡 desc 全 15 条改写 reject)",
+          "lesson": "★ D1=A 字面锁 · 3 阶梯 range 严格 1:1 = ['0→90万', '100万→1000万', '1000万→1亿'] · 严禁 '0万→90万' 或 '0-90万' 或英文翻译",
+          "antipattern": "STEP4B_THREE_STAGES[0].range = '0万→90万' (加 '0 万') OR '0-90万' (半角 hyphen)",
+          "correct": "STEP4B_THREE_STAGES[0].range = '0→90万' (spec §7.5 line 1546 严格 1:1 · 全角箭头 →)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A schema 锁)",
+          "lesson": "产品矩阵 4 类型 schema 字段名严格中文 · 不允许翻译为英文 enum",
+          "antipattern": "type: 'lead' | 'trust' | 'profit' | 'backend' (英文)",
+          "correct": "type: '引流品' | '信任品' | '利润品' | '后端产品' (spec §7.5 line 1551 中文字面 1:1)"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "★ foundation · step5.ts 常量(2 input + 2 file upload + 5 类 schema + 100 选题 schema)",
+      "description": "作为开发者,我需要把 Step 5 爆款选题库 page 字面字符串集中到 apps/web/src/lib/constants/step5.ts · 含 2 input(行业/产品 必填)+ 2 file upload(stub · 20MB)+ 5 类 schema(traffic/monetize/persona/cognition/case 各 20)+ STEP5_TOTAL_TOPICS=100 + Step5Topic interface + Step5Result interface · 字面 1:1 来源 spec §7.6 line 1589-1631",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step5.ts · STEP5_STEP_TAG = 'STEP 05 · 爆款选题库' + STEP5_H1 = '爆款选题库'",
+        "STEP5_SUBTITLE = '输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI 将结合这些素材一次性生成 5 大类爆款选题（流量型/变现型/人设型/认知型/案例型），每类 20 个选题，共 100 个。' · 字面严格 1:1 spec §7.6 line 1595 · 含全角括号（） · 全角逗号",
+        "STEP5_INPUTS_2: readonly Step5Input[] · 2 项严格 · industry(label='你的行业', required=true, placeholder='例如：美业、餐饮、教育培训、服装...')/ product(label='你的产品/服务', required=true, placeholder='例如：皮肤管理项目、火锅加盟、英语培训课...')",
+        "STEP5_FILE_UPLOADS_2: readonly Step5FileUpload[] · 2 项严格 · product_doc(label='上传产品资料', required=false, placeholder='产品介绍、卖点、价格体系、客户案例等。支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）')/ persona_doc(label='上传人物介绍与行业', required=false, placeholder='个人经历、行业背景、专业资质、从业故事等。支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）')",
+        "STEP5_FILE_MAX_MB = 20 + STEP5_FILE_ACCEPT = '.pdf,.doc,.docx,.txt,.md,.csv' + STEP5_FILE_ACCEPT_LABEL = 'PDF、Word、TXT、Markdown、CSV'",
+        "STEP5_BUTTON_GENERATE = '一键生成 5大类 爆款选题' · 字面严格 1:1 spec §7.6 line 1606 · 含 '一键' + '5大类' + 半角空格 + STEP5_BUTTON_GO_STEP7 = '生成爆款文案' + STEP5_LOADING_TEXT = 'AI 正在生成 100 个爆款选题，预计 60-120 秒...'",
+        "STEP5_CATEGORIES_5: readonly Step5Category[] · 5 项严格(spec §7.6 line 1626-1630 字面 1:1)· { key: 'traffic', label: '流量型', description: '快速获取大量流量' } / { key: 'monetize', label: '变现型', description: '直接转化下单' } / { key: 'persona', label: '人设型', description: '塑造个人 IP' } / { key: 'cognition', label: '认知型', description: '提升用户认知' } / { key: 'case', label: '案例型', description: '真实成功故事' }",
+        "STEP5_TOPICS_PER_CAT = 20 + STEP5_TOTAL_TOPICS = 100 · const",
+        "Step5Topic interface · { id: string, category: 'traffic'|'monetize'|'persona'|'cognition'|'case', title: string, hook: string, structure: string, formula: string, platform: '抖音'|'小红书'|'视频号'|'快手'|'B站', difficulty: '简单'|'中等'|'困难', potential_stars: 1|2|3|4|5 }",
+        "Step5Result interface · { topics: Step5Topic[], generated_at: string }",
+        "字面 grep · grep -F '流量型' / '变现型' / '人设型' / '认知型' / '案例型' / '一键生成 5大类 爆款选题' / 'PDF、Word、TXT、Markdown、CSV' apps/web/src/lib/constants/step5.ts 每条命中 ≥1 次",
+        "数字锁 · STEP5_INPUTS_2.length === 2 + STEP5_FILE_UPLOADS_2.length === 2 + STEP5_CATEGORIES_5.length === 5 + STEP5_TOPICS_PER_CAT === 20 + STEP5_TOTAL_TOPICS === 100",
+        "新建 apps/web/src/lib/constants/__tests__/step5.test.ts · 8 assertions(SUBTITLE 字面 / 5 类 label 数组 / INPUTS 2 / FILE_UPLOADS 2 / MAX_MB 20 / BUTTON_GENERATE 字面 / TOTAL 100 / Step5Topic interface 字段)",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step5.test.ts 全 PASS · Typecheck 0 error"
+      ],
+      "depends_on": [],
+      "priority": 3,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step5.ts",
+        "apps/web/src/lib/constants/__tests__/step5.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step5.test.ts && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007 (SUBTITLE 字面改写)",
+          "lesson": "★ STEP5_SUBTITLE 含 80+ 字 + 5 类列表 · 严禁简化 · 必须完整 1:1 spec line 1595",
+          "antipattern": "STEP5_SUBTITLE = 'AI 生成爆款选题' (简化 · 漏 5 类列表 + file upload 提示)",
+          "correct": "STEP5_SUBTITLE = '输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI 将结合这些素材一次性生成 5 大类爆款选题（流量型/变现型/人设型/认知型/案例型），每类 20 个选题，共 100 个。' (完整 80+ 字 · 含全角括号 + 全角逗号)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A schema 锁)",
+          "lesson": "5 类 schema label 字面严格中文 · 不允许翻译为英文",
+          "antipattern": "STEP5_CATEGORIES_5[0].label = 'Traffic' (英文)",
+          "correct": "STEP5_CATEGORIES_5[0].label = '流量型' (spec §7.6 line 1626 中文字面)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (button 字面锁)",
+          "lesson": "STEP5_BUTTON_GENERATE = '一键生成 5大类 爆款选题' 含 '一键' + '5大类' + 半角空格 · 严禁改为 '生成 100 个爆款选题' 或 '生成 5 类爆款选题'",
+          "antipattern": "STEP5_BUTTON_GENERATE = '生成 100 个爆款选题' (简化)",
+          "correct": "STEP5_BUTTON_GENERATE = '一键生成 5大类 爆款选题' (spec §7.6 line 1606 完整字面 含 '一键' 前缀 + '5大类' 中间词 + 半角空格)"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "★ foundation · step6.ts 常量(1 textarea ≥10 字 + 字符计数 + 输出 3 模块 schema)",
+      "description": "作为开发者,我需要把 Step 6 拍摄计划 page 字面字符串集中到 apps/web/src/lib/constants/step6.ts · 含 1 textarea(文案 ≥10 字 必填 含两段换行 \\n\\n placeholder)+ STEP6_CHAR_COUNTER_TEMPLATE = '已输入 {count} 字' + 输出 3 模块 schema(分镜脚本/拍摄方案/口播提词器)+ Step6StoryboardScene interface + Step6Result interface · 字面 1:1 来源 spec §7.7 line 1634-1661",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step6.ts · STEP6_STEP_TAG = 'STEP 06 · 生成拍摄计划' + STEP6_H1 = '拍摄计划'",
+        "STEP6_SUBTITLE = '输入你的文案内容，AI 将自动生成完整的分镜脚本、拍摄方案和口播提词器。' · 字面严格 1:1 spec §7.7 line 1639",
+        "STEP6_TEXTAREA: Step6Textarea = { id: 'copywriting_text', label: '文案内容', required: true, placeholder: '粘贴你的短视频文案（至少 10 个字），AI 将基于文案生成完整的拍摄计划。\\n\\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。' } · placeholder 字面严格 1:1 spec line 1645 · 含 \\n\\n 两段换行 · 含「」全角引号 · 含全角括号（）· 末尾全角句号",
+        "STEP6_TEXTAREA_MIN_CHARS = 10 + STEP6_CHAR_COUNTER_TEMPLATE = '已输入 {count} 字' · 字面 1:1 spec line 1647",
+        "STEP6_BUTTON_GENERATE = '生成拍摄计划' + STEP6_LOADING_TEXT = 'AI 正在生成拍摄计划，预计 30-60 秒...'",
+        "STEP6_OUTPUT_MODULES_3: readonly Step6OutputModule[] · 3 项严格 · { id: 'storyboard', h3Label: '1. 分镜脚本' } / { id: 'shooting_plan', h3Label: '2. 拍摄方案' } / { id: 'teleprompter', h3Label: '3. 口播提词器' } · 字面 1:1 spec line 1658-1660",
+        "Step6StoryboardScene interface · { shot_number: number, duration, scene, framing, angle, movement, emotion, dialogue, action }(spec §7.7 line 1658 分镜字段)",
+        "Step6Result interface · { storyboard: Step6StoryboardScene[], shooting_plan: { props, lighting, costume, location }, teleprompter: string }",
+        "字面 grep · grep -F '已输入 {count} 字' / '分镜脚本' / '拍摄方案' / '口播提词器' / '粘贴你的短视频文案（至少 10 个字）' apps/web/src/lib/constants/step6.ts 每条命中 ≥1 次",
+        "数字锁 · STEP6_TEXTAREA_MIN_CHARS === 10 + STEP6_OUTPUT_MODULES_3.length === 3",
+        "新建 apps/web/src/lib/constants/__tests__/step6.test.ts · 6 assertions(SUBTITLE 字面 / TEXTAREA placeholder 含 \\n\\n / MIN_CHARS 10 / CHAR_COUNTER template / 3 模块 H3 / Step6Result interface 字段)",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step6.test.ts 全 PASS · Typecheck 0 error"
+      ],
+      "depends_on": [],
+      "priority": 4,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step6.ts",
+        "apps/web/src/lib/constants/__tests__/step6.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step6.test.ts && pnpm tsc --noEmit",
+      "size_hint": "small",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007 (SUBTITLE 字面改写)",
+          "lesson": "STEP6_TEXTAREA.placeholder 含 50+ 字 + 两段换行 \\n\\n + 「文案生成」全角引号 + 全角括号 · 严禁缩短或去换行",
+          "antipattern": "placeholder = '粘贴文案(至少10字)' (简化 · 漏「文案生成」+ 两段换行)",
+          "correct": "placeholder = '粘贴你的短视频文案（至少 10 个字），AI 将基于文案生成完整的拍摄计划。\\n\\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。' (完整字面 · 含 \\n\\n + 「」全角 + 全角括号)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A 字面锁)",
+          "lesson": "字符计数 template 严格 1:1 = '已输入 {count} 字' · 严禁改写为 '当前 N 字' 或 '已输入 N 个字'",
+          "antipattern": "STEP6_CHAR_COUNTER_TEMPLATE = '当前 {count} 字' OR '已输入 {count} 个字' (改写)",
+          "correct": "STEP6_CHAR_COUNTER_TEMPLATE = '已输入 {count} 字' (spec §7.7 line 1647 严格 1:1)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (3 模块 H3 锁)",
+          "lesson": "STEP6_OUTPUT_MODULES_3 3 个 h3Label 严格 1:1 = ['1. 分镜脚本', '2. 拍摄方案', '3. 口播提词器'] · 严禁 '分镜表' 或 '拍摄计划' 等同义改写",
+          "antipattern": "STEP6_OUTPUT_MODULES_3[0].h3Label = '1. 分镜表' (改写)",
+          "correct": "STEP6_OUTPUT_MODULES_3[0].h3Label = '1. 分镜脚本' (spec §7.7 line 1658 严格 1:1)"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "★ foundation · step7.ts 常量(20 脚本类型 + 22 爆款元素 4 分组 + 4 H4 输出 schema)",
+      "description": "作为开发者,我需要把 Step 7 文案生成 page 字面字符串集中到 apps/web/src/lib/constants/step7.ts · 含 20 脚本类型(name + positioning 各异)+ 22 爆款元素(4 分组:内容钩子 6 + 情绪触发 5 + 结构强化 6 + 互动引导 5)+ 4 H4 输出 schema(辩论模板:话题抛出/正方/反方/我的立场)+ 各 button + 各 placeholder + Step7DebateResult interface + Step7Result interface · 字面 1:1 来源 spec §7.8 line 1665-1744",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step7.ts · STEP7_STEP_TAG = 'STEP 07 · AI 智能文案生成' + STEP7_H1 = '文案生成'",
+        "STEP7_SUBTITLE = '选择脚本类型和爆款元素，输入主题，AI 将基于方法论生成深度爆款文案，支持 AI 智能修改优化。' · 字面严格 1:1 spec §7.8 line 1671",
+        "STEP7_SCRIPT_TYPES_20: readonly Step7ScriptType[] · 20 项严格 · 第 1 个 = { id: 'debate', name: '搞辩论', positioning: '正反方激烈对撞，引发评论区站队，适合争议性话题' }(spec line 1730 示例的辩论 + line 1687 '聊观点' 示例参考)· 其余 19 项推断业界主流(opinion/story/case_study/tutorial/review/industry_insight/personal_growth/product_intro/live_promotion/fact_check/pain_point/data_driven/list/before_after/qa/industry_secret/milestone/behind_scenes/controversy)",
+        "STEP7_ELEMENT_GROUPS_4: readonly Step7ElementGroup[] · 4 项严格 · { key: 'hook', label: '内容钩子' } / { key: 'emotion', label: '情绪触发' } / { key: 'structure', label: '结构强化' } / { key: 'interaction', label: '互动引导' }",
+        "STEP7_ELEMENTS_22: readonly Step7Element[] · 22 项严格(4 分组累加 = 6+5+6+5 = 22)· 内容钩子 6(提问开头/震惊事实/反差对比/人物金句/数据冲击/场景代入)· 情绪触发 5(愤怒共鸣/焦虑唤起/希望激励/意外惊喜/怀旧共鸣)· 结构强化 6(清单结构/故事弧线/问题-方案/前后对比/步骤分解/案例方法)· 互动引导 5(评论提问/选择投票/经验分享/观点邀请/行动召唤)",
+        "STEP7_BUTTON_GENERATE = '生成爆款文案' + STEP7_BUTTON_OPTIMIZE = 'AI 优化文案' + STEP7_BUTTON_GO_MY_TOPICS = '我的选题库' + STEP7_BUTTON_GO_STEP5 = '爆款选题' · 字面 1:1 spec §7.8 line 1710-1712",
+        "STEP7_SEARCH_PLACEHOLDER = '搜索脚本...' · 字面 1:1 spec line 1679",
+        "STEP7_TEXTAREA: Step7Textarea = { id: 'topic', label: '文案主题', required: true, placeholder: '输入你的文案主题，如：美容院如何用抖音获客100个精准客户...' } · placeholder 字面 1:1 spec line 1699",
+        "STEP7_OPTIMIZE_LABEL = '优化方向' + STEP7_OPTIMIZE_PLACEHOLDER = '输入优化方向（可选），如：更有吸引力、增加互动感、更口语化...' · 字面 1:1 spec line 1707",
+        "STEP7_ELEMENT_COUNTER_TEMPLATE = '选择爆款元素（已选 {count} 个）' · 字面 1:1 spec line 1693 · 含全角括号（）+ STEP7_SCRIPT_DISPLAY_TEMPLATE = '当前脚本：{name} - {positioning}' · 字面 1:1 spec line 1701 · 含全角中文冒号 + 半角 hyphen -",
+        "STEP7_DEBATE_H4_4: const · 4 项严格(spec §7.8 line 1738-1740 字面 1:1)· { id: 'topic_hook', h4Label: '话题抛出' } / { id: 'pros_arguments', h4Label: '正方' } / { id: 'cons_arguments', h4Label: '反方' } / { id: 'my_stance', h4Label: '我的立场' } · 严禁加 'H4. ' 前缀 · 严禁翻译为英文",
+        "Step7DebateResult interface · { title, topic_hook, pros_arguments, cons_arguments, my_stance, comment_guide, topic_tags: string[] }(spec §7.8 line 1733-1741 全字段)",
+        "Step7Result interface · { script_type: string, title: string, body: Step7DebateResult | object } · default body schema = Step7DebateResult",
+        "STEP7_LOADING_TEXT = 'AI 正在生成爆款文案，预计 30-60 秒...' + STEP7_OPTIMIZE_LOADING_TEXT = 'AI 正在优化文案，预计 20-40 秒...'",
+        "字面 grep · grep -F '话题抛出' / '正方' / '反方' / '我的立场' / '搜索脚本...' / '选择爆款元素（已选 {count} 个）' / 'AI 优化文案' apps/web/src/lib/constants/step7.ts 每条命中 ≥1 次",
+        "数字锁 · STEP7_SCRIPT_TYPES_20.length === 20 + STEP7_ELEMENT_GROUPS_4.length === 4 + STEP7_ELEMENTS_22.length === 22 + STEP7_DEBATE_H4_4.length === 4 + 22 元素 4 分组累加严格 6+5+6+5 = 22",
+        "新建 apps/web/src/lib/constants/__tests__/step7.test.ts · 12 assertions(SCRIPT_TYPES_20 长度 / 第 1 = debate / ELEMENTS_22 长度 / 4 分组累加 22 / DEBATE_H4_4 4 个 h4Label 字面 / SEARCH placeholder / ELEMENT counter template / SCRIPT display template / BUTTONS 4 字面 / SUBTITLE 字面 / Step7DebateResult interface / Step7Result interface)",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step7.test.ts 全 PASS · Typecheck 0 error"
+      ],
+      "depends_on": [],
+      "priority": 5,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照 · ★ NOTE size=large 是因为常量数据密度高(20+22+4+H4) · 但单文件无逻辑 ralph dev 1 iter 可完成(估 250 行) · prompt 字节 ~ 8K 安全 < 12K 红线",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step7.ts",
+        "apps/web/src/lib/constants/__tests__/step7.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step7.test.ts && pnpm tsc --noEmit",
+      "size_hint": "large",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A 字面锁)",
+          "lesson": "★ HIGH PRIORITY · STEP7_DEBATE_H4_4 4 个 h4Label 严格 1:1 = ['话题抛出', '正方', '反方', '我的立场'] · 严禁加 'H4. ' 前缀 · 严禁翻译",
+          "antipattern": "STEP7_DEBATE_H4_4[0].h4Label = 'H4. 话题抛出' (加 'H4. ' 前缀) OR 'Topic Hook' (英文翻译)",
+          "correct": "STEP7_DEBATE_H4_4[0].h4Label = '话题抛出' (spec §7.8 line 1738 严格 1:1)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007 (字面双锁)",
+          "lesson": "STEP7_ELEMENT_COUNTER_TEMPLATE 严格 1:1 = '选择爆款元素（已选 {count} 个）' · 含全角括号 · 严禁简化",
+          "antipattern": "STEP7_ELEMENT_COUNTER_TEMPLATE = '已选 N 个元素' (改写)",
+          "correct": "STEP7_ELEMENT_COUNTER_TEMPLATE = '选择爆款元素（已选 {count} 个）' (spec §7.8 line 1693 完整字面 · 全角括号)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (数字锁)",
+          "lesson": "STEP7_SCRIPT_TYPES_20 必须 20 个 · 严禁简化为 10 或 15 · spec line 1675 明确 '20 选 1'",
+          "antipattern": "STEP7_SCRIPT_TYPES_20 仅 10 项(简化)",
+          "correct": "STEP7_SCRIPT_TYPES_20 严格 20 项(spec line 1675 '20 选 1' · 第 1 = debate · 其余 19 推断业界主流)"
+        }
+      ]
+    },
+    {
+      "id": "US-006",
+      "title": "★ foundation · step8.ts 常量(2 子功能 schema + 5 平台 + 3 经验 + 6 输出模块 schema)",
+      "description": "作为开发者,我需要把 Step 8 直播策划 page 字面字符串集中到 apps/web/src/lib/constants/step8.ts · 含 2 子功能 H3(生成方案/AI 优化话术)+ 5 平台(复用 STEP3)+ 3 经验(新手/有经验/资深 · 含中点 · )+ 6 输出模块(开场/中场/成交/收尾/引流/互动)+ 各 form 字段 + Step8Result interface · 字面 1:1 来源 spec §7.9 line 1748-1786",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/lib/constants/step8.ts · STEP8_STEP_TAG = 'STEP 08 · 直播策划' + STEP8_H1 = '直播策划'",
+        "STEP8_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将生成完整的直播方案，包含详细话术、引流策略、互动设计，并支持 AI 优化直播脚本。' · 字面严格 1:1 spec §7.9 line 1753 · 含全角中文冒号",
+        "STEP8_SUBFUNCTIONS_2: readonly Step8SubFunction[] · 2 项严格 · { key: 'generate_plan', h3Label: '子功能 1：生成直播方案' } / { key: 'optimize_script', h3Label: '子功能 2：AI 优化直播话术' } · h3Label 严格 1:1 spec line 1755 + 1766 · 含全角中文冒号",
+        "STEP8_GENERATE_PLAN_TEXTAREA: Step8GeneratePlanInput = { id: 'product_info', label: '产品/服务信息', required: false, type: 'textarea', placeholder: '描述你要在直播中推广的产品或服务...' } · spec line 1759",
+        "STEP8_GENERATE_PLAN_INPUT: Step8GeneratePlanInput = { id: 'target_audience', label: '目标受众', required: false, type: 'input', placeholder: '如：25-40岁女性...' } · spec line 1760",
+        "STEP8_PLATFORMS_5 = re-export STEP3_PLATFORMS_5 + STEP8_PLATFORM_RADIO_LABEL = '直播平台'",
+        "STEP8_EXPERIENCE_3: readonly Step8Experience[] · 3 项严格(spec §7.9 line 1762 字面 1:1)· { key: 'novice', label: '新手 · 刚开始做直播' } / { key: 'experienced', label: '有经验 · 有一定直播经验' } / { key: 'expert', label: '资深 · 直播经验丰富' } · 含中点 · + 半角空格 · 严禁改为 ' - ' 或 ', '",
+        "STEP8_EXPERIENCE_RADIO_LABEL = '直播经验' + STEP8_BUTTON_GENERATE_PLAN = '生成直播方案'",
+        "STEP8_OPTIMIZE_TEXTAREA: Step8GeneratePlanInput = { id: 'product_info', label: '直播话术脚本', required: true, type: 'textarea', placeholder: '粘贴你的直播话术脚本（至少 10 个字），AI 将深度优化话术表达、互动设计和转化逻辑...' } · spec line 1770 · 含全角括号",
+        "STEP8_OPTIMIZE_INPUT: Step8GeneratePlanInput = { id: 'target_audience', label: '优化目标', required: false, type: 'input', placeholder: '优化目标（可选），如：提升互动率、增强转化、更有感染力...' } · spec line 1771",
+        "STEP8_BUTTON_OPTIMIZE_SCRIPT = 'AI 优化话术' + STEP8_OPTIMIZE_MIN_CHARS = 10 + STEP8_OPTIMIZE_CHAR_COUNTER_TEMPLATE = '已输入 {count} 字'",
+        "STEP8_GENERATE_LOADING_TEXT = 'AI 正在生成直播方案，预计 60-120 秒...' + STEP8_OPTIMIZE_LOADING_TEXT = 'AI 正在优化话术，预计 30-60 秒...'",
+        "STEP8_OUTPUT_MODULES_6: readonly Step8OutputModule[] · 6 项严格(spec §7.9 line 1782 字面 1:1)· { id: 'opening', h3Label: '1. 开场话术' } / { id: 'interaction', h3Label: '2. 中场互动' } / { id: 'deal', h3Label: '3. 成交话术' } / { id: 'closing', h3Label: '4. 收尾' } / { id: 'traffic', h3Label: '5. 引流策略' } / { id: 'engagement', h3Label: '6. 互动设计' }",
+        "Step8Result interface · { sub_function: 'generate_plan' | 'optimize_script', generate_plan?: { opening, interaction, deal, closing, traffic, engagement }, optimize_script?: { optimized_text, optimization_notes } }",
+        "字面 grep · grep -F '子功能 1：生成直播方案' / '子功能 2：AI 优化直播话术' / '新手 · 刚开始做直播' / '有经验 · 有一定直播经验' / '资深 · 直播经验丰富' / '1. 开场话术' / '2. 中场互动' / '3. 成交话术' / 'AI 优化话术' apps/web/src/lib/constants/step8.ts 每条命中 ≥1 次",
+        "数字锁 · STEP8_SUBFUNCTIONS_2.length === 2 + STEP8_EXPERIENCE_3.length === 3 + STEP8_OUTPUT_MODULES_6.length === 6",
+        "新建 apps/web/src/lib/constants/__tests__/step8.test.ts · 8 assertions(SUBTITLE 字面 / 2 子功能 h3Label 字面 / 3 经验 label 含中点 · / 6 输出模块 h3Label 字面 / re-export PLATFORMS_5 长度 5 / 2 button 字面 / OPTIMIZE MIN_CHARS 10 / Step8Result interface)",
+        "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step8.test.ts 全 PASS · Typecheck 0 error"
+      ],
+      "depends_on": [],
+      "priority": 6,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step8.ts",
+        "apps/web/src/lib/constants/__tests__/step8.test.ts"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/lib/constants/__tests__/step8.test.ts && pnpm tsc --noEmit",
+      "size_hint": "small",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007 (SUBTITLE 字面改写)",
+          "lesson": "★ STEP8_SUBTITLE_TEMPLATE 60+ 字 · 严禁简化 · 必须完整 1:1 spec line 1753",
+          "antipattern": "STEP8_SUBTITLE_TEMPLATE = '当前行业:X。AI 生成直播方案' (简化)",
+          "correct": "STEP8_SUBTITLE_TEMPLATE = '当前行业：{industry}。AI 将生成完整的直播方案，包含详细话术、引流策略、互动设计，并支持 AI 优化直播脚本。' (完整字面 · 含全角中文冒号)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A 字面锁 · 标点也是 layout)",
+          "lesson": "STEP8_EXPERIENCE_3 3 个 label 含中点 · + 半角空格 · 严禁改为 ' - '(半角 hyphen)或 ', '(逗号)",
+          "antipattern": "STEP8_EXPERIENCE_3[0].label = '新手 - 刚开始做直播' (半角 hyphen) OR '新手, 刚开始做直播' (逗号)",
+          "correct": "STEP8_EXPERIENCE_3[0].label = '新手 · 刚开始做直播' (spec §7.9 line 1762 严格 1:1 · 中点 · + 两侧半角空格)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (H3 字面锁)",
+          "lesson": "STEP8_OUTPUT_MODULES_6 6 个 h3Label 严格 1:1 · 严禁同义改写",
+          "antipattern": "STEP8_OUTPUT_MODULES_6[0].h3Label = '1. 开场白' (改写 '话术'→'白')",
+          "correct": "STEP8_OUTPUT_MODULES_6[0].h3Label = '1. 开场话术' (spec §7.9 line 1782 严格 1:1)"
+        }
+      ]
+    },
+    {
+      "id": "US-007",
+      "title": "Step 4 page · form(radio 5 平台 + 3 input/textarea)+ 输出(3 H3 每日/每周/阶段 KPI)",
+      "description": "作为 IP 起号用户,我需要在 /step/4 选平台 + 填粉丝量/目标/情况 + 点 [生成执行计划] · 输出 3 H3(每日任务表 + 每周里程碑 + 阶段 KPI)· 让我清楚每天该做什么 · 数据从 acc_step1 读 industry · 写到 acc_step4",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/pages/step/Step4.tsx(重写当前 stub)· 顶部 STEP4_STEP_TAG step 标签 + H1 STEP4_H1 + SUBTITLE 替换 {industry} 为 acc_step1 industry(fallback '你的行业')",
+        "form glass-card · radio 5 选 1 必填(STEP4_RADIO_LABEL + STEP4_PLATFORMS_5)· 2 input(粉丝量/目标 · STEP4_INPUTS_3 前 2)+ 1 textarea(情况 · 第 3)· 主 CTA STEP4_BUTTON_GENERATE disabled 当 radio 未选",
+        "三态组件复用 · LoadingState(message=STEP4_LOADING_TEXT)+ ErrorState(message='生成失败 · 请重试' + onRetry)+ EmptyState(form 未提交时)",
+        "structured mockResult · 定义本地 Step4FormData type + generateMockResult(formData): Step4Result 函数 · setTimeout 2-3 秒 · mock 数据 = 每日任务 8 条 + 每周里程碑 4 周 + 阶段 KPI 3 阶段",
+        "跨 step localStorage · 进入 page 时 const acc1 = JSON.parse(localStorage.getItem('acc_step1') ?? '{}') 读 industry · 提交 form 后 localStorage.setItem('acc_step4', JSON.stringify({formData, result}))",
+        "输出区 3 H3 = STEP4_OUTPUT_H3_3 · 每 H3 InfoCard 渲染对应数据 + 右侧 [复制] button",
+        "零 hardcode · grep apps/web/src/pages/step/Step4.tsx 中 '生成执行计划' / '执行计划' / '选择平台' / 'STEP 04' / '当前行业' 等字面 0 hardcode · 全用 {STEP4_*} import · 通过 plan-check §2.6.21 检查",
+        "零 D4=B 违反 · grep -E 'from-violet|text-violet|bg-violet|from-amber|bg-amber' apps/web/src/pages/step/Step4.tsx 0 命中 · 仅用 var(--primary) / from-primary 等 token",
+        "vitest 全 PASS(70+ tests 含 PRD-17 已建)· cd apps/web && pnpm test PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/4 · 选平台抖音 + 填粉丝量 '1万' + 填目标 '3个月涨粉1万' + 点 [生成执行计划] · 等 2-3 秒看到 3 H3 输出区 · localStorage.getItem('acc_step4') 非 null · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-001"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/step/Step4.tsx"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/pages/step/ && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (violet 字面读 reject · 80 min 损失)",
+          "lesson": "★ HIGH PRIORITY · D4=B 颜色锁 · 严禁引入 Tailwind 默认 violet/amber utility · 仅用 var(--primary) token",
+          "antipattern": "<Button className=\"bg-gradient-to-r from-violet-600 to-violet-400\">{STEP4_BUTTON_GENERATE}</Button>",
+          "correct": "<Button className=\"bg-gradient-to-r from-primary to-primary/80\">{STEP4_BUTTON_GENERATE}</Button>"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (TD-75 hardcode 复制 button reject)",
+          "lesson": "★ HIGH PRIORITY · page 文件 hardcode 中文 button label · 偏离统一常量 import 模式 · 跨 step 不一致",
+          "antipattern": "<Button>生成执行计划</Button> (hardcode 中文)",
+          "correct": "import { STEP4_BUTTON_GENERATE } from '@/lib/constants/step4'; <Button>{STEP4_BUTTON_GENERATE}</Button> (常量 import)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (LD-009 acc_ namespace)",
+          "lesson": "跨 step localStorage 必须 acc_ 前缀 · 严禁无前缀 key('step4' 等)防 namespace 冲突",
+          "antipattern": "localStorage.setItem('step4', JSON.stringify(data))",
+          "correct": "localStorage.setItem('acc_step4', JSON.stringify({formData, result})) (LD-009 acc_ 前缀严守)"
+        }
+      ]
+    },
+    {
+      "id": "US-008",
+      "title": "Step 4b page · form(1 textarea 必填 + 3 input)+ 3 阶梯输出 + 收入结构 + 案例 + 三按钮",
+      "description": "作为 IP 起号用户,我需要在 /step/4b 填产品描述(必填)+ 受众/IP 定位/收入 + 点 [生成变现路径] · 输出 5 H3:市场分析 / 三阶梯变现路径(0→90万/100万→1000万/1000万→1亿 折叠卡)/ 收入结构(list)/ 成功案例 / 反馈区 · 支持 [生成]/[智能优化]/[重新生成] 三按钮",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/pages/step/Step4b.tsx(重写当前 stub)· 顶部 STEP4B_STEP_TAG + H1 + SUBTITLE 替换 {industry}",
+        "form glass-card · textarea STEP4B_TEXTAREA 必填(产品描述)+ 3 input STEP4B_INPUTS_3(受众/IP 定位/收入)+ 3 按钮 STEP4B_BUTTON_GENERATE/STEP4B_BUTTON_OPTIMIZE/STEP4B_BUTTON_REGENERATE",
+        "新建 apps/web/src/components/step4b/Step4bOutputContent.tsx · 5 H3 = STEP4B_OUTPUT_H3_5 · 渲染顺序:1. 市场分析(InfoCard 4 字段)/ 2. 三阶梯变现路径(3 Collapsible 折叠卡 · framer-motion 入场 transition delay i*0.1)/ 3. 收入结构(list + percent + simple progress bar · 严禁引 chart 库)/ 4. 成功案例(list)/ 5. 反馈区('这个结果对你有帮助吗？' + 👍 👎 button 仅 UI)",
+        "三阶梯卡每张含 product_matrix(4 类型 引流品/信任品/利润品/后端产品)+ traffic_strategy + conversion_flow(箭头连接)+ key_actions(✓ 列表)+ risks(警告色)",
+        "三态组件复用 + structured mockResult · 定义 Step4bFormData + generateMockResult(formData): Step4bResult · setTimeout 3-5 秒 · mock 3 阶梯各完整字段 + 5 案例 + 4 收入结构",
+        "3 按钮交互 · STEP4B_BUTTON_GENERATE 仅未生成时 enabled · STEP4B_BUTTON_OPTIMIZE 仅已生成时 enabled · click 触发 mock 优化(setTimeout 2-3 秒 修改 mock 数据)· STEP4B_BUTTON_REGENERATE 仅已生成时 enabled · click 触发 mock 重新生成",
+        "跨 step localStorage · 进入读 acc_step1 industry · 提交后 localStorage.setItem('acc_step4b', JSON.stringify({formData, result}))",
+        "零 hardcode · grep apps/web/src/pages/step/Step4b.tsx + apps/web/src/components/step4b/ 中 '生成变现路径' / '智能优化' / '重新生成' / '0→90万' / '引流品' / '信任品' 等字面 0 hardcode · 全用 {STEP4B_*} 或 {STEP4B_THREE_STAGES[i].range}",
+        "零 D4=B 违反 · grep -E 'from-violet|text-violet|bg-amber' apps/web/src/pages/step/Step4b.tsx + components/step4b/ 0 命中",
+        "零 chart 库引入 · grep -E 'recharts|visx|chart\\.js|nivo' package.json + apps/web/src/components/step4b/ 0 命中(LD-174 锁 · 用 list + percent + simple progress bar)",
+        "vitest 全 PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/4b · 填产品 '美容院皮肤管理项目，客单价500-3000元' + 点 [生成变现路径] · 等 3-5 秒看到 5 H3 输出区 + 3 阶梯卡可折叠展开 · 点 [智能优化] 看到 mock 优化效果 · localStorage.getItem('acc_step4b') 非 null · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-002"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/step/Step4b.tsx",
+        "apps/web/src/components/step4b/Step4bOutputContent.tsx"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/pages/step/ src/components/step4b/ && pnpm tsc --noEmit",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (D4=B violet reject)",
+          "lesson": "★ D4=B 严锁 · 严禁 violet/amber Tailwind utility",
+          "antipattern": "<div className=\"bg-gradient-to-r from-violet-600 to-violet-400\">",
+          "correct": "<div className=\"bg-gradient-to-r from-primary to-primary/80\">"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (TD-75 hardcode)",
+          "lesson": "★ 严禁 hardcode 中文 button label · 必须常量 import",
+          "antipattern": "<Button>生成变现路径</Button>",
+          "correct": "<Button>{STEP4B_BUTTON_GENERATE}</Button>"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (15 desc 改写)",
+          "lesson": "三阶梯 range 严禁改写 · 必须用 STEP4B_THREE_STAGES[i].range 常量",
+          "antipattern": "<h4>0万→90万</h4> (加 '0 万' hardcode)",
+          "correct": "<h4>{STEP4B_THREE_STAGES[0].range}</h4> (常量 = '0→90万' 严格 1:1)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "PRD-17 self-injected (scope creep)",
+          "lesson": "Step 4b 收入结构 严禁引入 chart 库 · 用 list + percent + simple progress bar(LD-174 锁 · 防 bundle 膨胀)",
+          "antipattern": "import { PieChart, Pie } from 'recharts'",
+          "correct": "<ul>{revenue_structure.map(r => <li>{r.category}: {r.percent}%</li>)}</ul> + 简单 div progress bar"
+        }
+      ]
+    },
+    {
+      "id": "US-009",
+      "title": "Step 5 page · form(2 input 必填 + 2 file upload stub)+ 5 类 tab × 20 选题 grid + 跳 step7 自动预填",
+      "description": "作为 IP 起号用户,我需要在 /step/5 填行业 + 产品 + 可选上传 2 个文档(stub 不真上传)+ 点 [一键生成 5大类 爆款选题] · 输出 5 类 tab(流量型/变现型/人设型/认知型/案例型 各 20 = 100)· 每选题卡显示标题/钩子/结构/公式/平台/难度/星级 · 点击某选题 → 写 acc_step5_selected_topic + 跳 /step/7 自动预填",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/pages/step/Step5.tsx(重写当前 stub)· 顶部 STEP5_STEP_TAG + H1 + SUBTITLE",
+        "form glass-card · 2 input STEP5_INPUTS_2 必填(行业/产品)+ 2 file upload STEP5_FILE_UPLOADS_2 可选 · 主 CTA STEP5_BUTTON_GENERATE",
+        "新建 apps/web/src/components/step5/Step5FileUpload.tsx · <Input type='file' accept={STEP5_FILE_ACCEPT}> · 用户选文件后 const reader = new FileReader(); reader.readAsText(file) 拿 metadata(name/size/type)· 显示 '已选文件:{name} ({sizeKB}KB)' · file.size > 20*1024*1024 显示错误 + reject · metadata 仅 component state · 不上传 · 不持久化",
+        "新建 apps/web/src/components/step5/Step5TopicGrid.tsx · 5 类 Tab(<Tabs> shadcn · STEP5_CATEGORIES_5 · label = '流量型'/'变现型'/'人设型'/'认知型'/'案例型')· 每 tab 内 grid 2-4 列渲染 20 选题卡 · 每卡显示 title + hook + structure + formula + platform emoji + difficulty + 星级(⭐ repeat potential_stars 次)· 点击某卡 · localStorage.setItem('acc_step5_selected_topic', JSON.stringify(topic)) + useNavigate()('/step/7')",
+        "三态组件复用 + structured mockResult · 定义 Step5FormData + generateMockResult(formData): Step5Result · setTimeout 3-5 秒 · mock 100 选题(5 类 × 20 各异 · title 包含行业关键词)",
+        "跨 step localStorage · 进入读 acc_step1 industry 预填 input '你的行业' · 提交后写 acc_step5({formData, result}) · 点选题时写 acc_step5_selected_topic(Step5Topic)",
+        "零 hardcode · grep apps/web/src/pages/step/Step5.tsx + apps/web/src/components/step5/ 中 '一键生成' / '流量型' / '变现型' / 'PDF、Word' 等字面 0 hardcode · 全用 STEP5_* 常量",
+        "零 D4=B 违反 · grep 0 violet/amber 命中",
+        "零真上传 · grep -E 'fetch\\(.*upload|axios\\.post.*upload|XMLHttpRequest' apps/web/src/components/step5/ 0 命中(LD-170 锁 · 严格 FileReader stub)",
+        "跨 step 链路 · grep -F 'acc_step5_selected_topic' apps/web/src/components/step5/Step5TopicGrid.tsx 必须命中(点选题写入 localStorage + 跳转 step7)",
+        "vitest 全 PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/5 · 填行业 '美业' + 产品 '皮肤管理项目' + 点 [一键生成 5大类 爆款选题] · 等 3-5 秒看到 5 tab + 20 选题/tab · 点击 '流量型' tab 第 1 个选题 · 跳转 /step/7 · localStorage.getItem('acc_step5_selected_topic') 非 null · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-003"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/step/Step5.tsx",
+        "apps/web/src/components/step5/Step5TopicGrid.tsx",
+        "apps/web/src/components/step5/Step5FileUpload.tsx"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/pages/step/ src/components/step5/ && pnpm tsc --noEmit",
+      "size_hint": "large",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (D4=B violet reject)",
+          "lesson": "★ D4=B 严锁 · 严禁 violet/amber utility · 用 var(--primary)",
+          "antipattern": "<Tab className=\"data-[state=active]:bg-violet-600\">",
+          "correct": "<Tab className=\"data-[state=active]:bg-primary\">"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (LD-170 file upload stub)",
+          "lesson": "★ HIGH PRIORITY · LD-170 锁 · file upload 严禁真上传后端(1.0 不接后端 LLM)· 必须 FileReader stub · 严禁 fetch / axios / XMLHttpRequest",
+          "antipattern": "const formData = new FormData(); formData.append('file', file); fetch('/api/upload', { method: 'POST', body: formData })",
+          "correct": "const reader = new FileReader(); reader.onload = (e) => setFileMetadata({ name: file.name, size: file.size, type: file.type, content: e.target?.result }); reader.readAsText(file) (仅 component state · 不上传)"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (跨 step 链路)",
+          "lesson": "★ Step 5 → Step 7 跨 step 数据链路关键 · 严禁直接 navigate('/step/7') 不写 acc_step5_selected_topic",
+          "antipattern": "<TopicCard onClick={() => navigate('/step/7')}>",
+          "correct": "<TopicCard onClick={() => { localStorage.setItem('acc_step5_selected_topic', JSON.stringify(topic)); navigate('/step/7'); }}> (spec §7.6 line 1619 链路)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (hardcode 中文 button)",
+          "lesson": "page 文件严禁 hardcode 中文 button label · 必须常量 import",
+          "antipattern": "<Button>一键生成 5大类 爆款选题</Button>",
+          "correct": "<Button>{STEP5_BUTTON_GENERATE}</Button>"
+        }
+      ]
+    },
+    {
+      "id": "US-010",
+      "title": "Step 6 page · textarea(≥10 字 + 字符计数)+ 输出 3 模块(分镜/拍摄/口播)",
+      "description": "作为 IP 起号用户,我需要在 /step/6 粘贴文案(≥10 字 · 显示字符计数 '已输入 N 字')+ 点 [生成拍摄计划] · 输出 3 H3(分镜脚本 / 拍摄方案 / 口播提词器)· 让我可以直接按计划拍摄 · 可选从 acc_step7_result 自动预填 textarea",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/pages/step/Step6.tsx(重写当前 stub)· 顶部 STEP6_STEP_TAG + H1 + SUBTITLE",
+        "form glass-card · textarea STEP6_TEXTAREA 必填(placeholder 含 \\n\\n 两段换行 + 「文案生成」全角引号)· 字符计数 const counterText = STEP6_CHAR_COUNTER_TEMPLATE.replace('{count}', String(text.length)) text-secondary · 主 CTA STEP6_BUTTON_GENERATE disabled={text.length < STEP6_TEXTAREA_MIN_CHARS}",
+        "可选预填 · useEffect 进入时 const acc7 = JSON.parse(localStorage.getItem('acc_step7') ?? '{}'); if (acc7?.result?.body?.text) setText(acc7.result.body.text) · 用户可手动改",
+        "三态组件复用 + structured mockResult · 定义 Step6FormData + generateMockResult(text): Step6Result · setTimeout 2-3 秒 · mock 5 镜头 + 拍摄方案 + 口播 · 写 acc_step6",
+        "输出区 3 H3 = STEP6_OUTPUT_MODULES_3 · 1. 分镜脚本(table 渲染 Step6StoryboardScene · 时长/场景/景别/角度/运镜/情绪/台词/动作)· 2. 拍摄方案(4 list 道具/灯光/服装/场景)· 3. 口播提词器(预格式化 text · whitespace-pre-wrap)",
+        "零 hardcode · grep apps/web/src/pages/step/Step6.tsx 中 '生成拍摄计划' / '分镜脚本' / '已输入' / '当前行业' 等字面 0 hardcode · 全用 STEP6_* 常量 / .replace('{count}', ...)",
+        "零 D4=B 违反 · grep 0 violet/amber 命中",
+        "vitest 全 PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/6 · textarea 输入 5 字 · 看到字符计数 '已输入 5 字' + button disabled · 输入到 15 字 · button enabled · 点击 [生成拍摄计划] · 等 2-3 秒看到 3 模块输出 · localStorage.getItem('acc_step6') 非 null · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-004"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/step/Step6.tsx"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/pages/step/ && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (D4=B violet reject)",
+          "lesson": "★ D4=B 严锁 · 严禁 violet/amber utility",
+          "antipattern": "<Progress className=\"bg-violet-600\" />",
+          "correct": "<Progress className=\"bg-primary\" />"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (hardcode 中文 button)",
+          "lesson": "严禁 hardcode 中文 · 字符计数 template 必须 .replace() 不能 hardcode '已输入 5 字'",
+          "antipattern": "<span>已输入 {text.length} 字</span> (hardcode 中文 template)",
+          "correct": "<span>{STEP6_CHAR_COUNTER_TEMPLATE.replace('{count}', String(text.length))}</span> (常量 template)"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (MIN_CHARS 锁)",
+          "lesson": "disabled 条件必须用 STEP6_TEXTAREA_MIN_CHARS 常量 · 严禁 hardcode 10",
+          "antipattern": "<Button disabled={text.length < 10}>",
+          "correct": "<Button disabled={text.length < STEP6_TEXTAREA_MIN_CHARS}> (常量 = 10)"
+        }
+      ]
+    },
+    {
+      "id": "US-011a",
+      "title": "Step 7 page form · 20 脚本类型搜索 + 22 元素 4 分组多选 + 主题 textarea + 优化 input + 4 button",
+      "description": "作为 IP 起号用户,我需要在 /step/7 page 选脚本类型(20 选 1 含搜索)+ 选爆款元素(22 选 N 含 4 分组多选)+ 输入主题(可从 acc_step5_selected_topic 预填)+ 选优化方向 + 4 button(主/优化/我的选题/爆款选题)· 这是 form 部分 · output 留 US-011b",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/pages/step/Step7.tsx(重写当前 stub)· 顶部 STEP7_STEP_TAG + H1 + SUBTITLE",
+        "form glass-card 4 主区按 spec §7.8 顺序 · 1. 选择脚本类型(20 选 1)· 2. 选择爆款元素(22 选 N · 4 分组)· 3. 文案主题输入(textarea)· 4. AI 智能优化(input)",
+        "新建 apps/web/src/components/step7/Step7ScriptTypeSearch.tsx · 上方 search input(placeholder=STEP7_SEARCH_PLACEHOLDER)· 下方 grid 2-4 列渲染 STEP7_SCRIPT_TYPES_20 · 实时 filter by name + positioning(case-insensitive)· 选中卡 +border-primary +shadow · 全局状态 selected_script_id · default = STEP7_SCRIPT_TYPES_20[0].id(debate)· 上方显示 STEP7_SCRIPT_DISPLAY_TEMPLATE.replace('{name}', sel.name).replace('{positioning}', sel.positioning)",
+        "新建 apps/web/src/components/step7/Step7ElementMultiSelect.tsx · 按 STEP7_ELEMENT_GROUPS_4 4 组渲染 H4(group.label) + 每组下方 chip grid(STEP7_ELEMENTS_22.filter(e => e.group === group.key))· 每 chip click 切换 selected/unselected(用 Set 数据结构 + React.memo)· 顶部 sticky 计数 = STEP7_ELEMENT_COUNTER_TEMPLATE.replace('{count}', String(selected.size))",
+        "主题 textarea = STEP7_TEXTAREA(placeholder spec §7.8 line 1699 完整字面 必填)· 优化方向 input · label = STEP7_OPTIMIZE_LABEL + placeholder = STEP7_OPTIMIZE_PLACEHOLDER",
+        "4 button · 主 STEP7_BUTTON_GENERATE(主色 · disabled 当主题未填)+ 优化 STEP7_BUTTON_OPTIMIZE(次色 · disabled 当未生成)+ 跳 STEP7_BUTTON_GO_MY_TOPICS / STEP7_BUTTON_GO_STEP5(text-only)",
+        "跨 step 预填 · 进入 page 时 const acc5 = JSON.parse(localStorage.getItem('acc_step5_selected_topic') ?? '{}'); if (acc5?.title) setTopic(acc5.title) · 同时 const acc7 = JSON.parse(localStorage.getItem('acc_step7') ?? '{}'); 若 acc7 有 formData 预填脚本/元素/主题",
+        "form 提交 → mockResult 占位 · 主 CTA click 触发 setIsGenerating(true) + 调 generateMockResult(formData) · setTimeout 3-5 秒 · 输出区由 US-011b 实现(本 US 只 form 部分 + 占位 button click handler 写 state)",
+        "零 hardcode · grep apps/web/src/pages/step/Step7.tsx + apps/web/src/components/step7/ 中 '生成爆款文案' / 'AI 优化文案' / '搜索脚本' / '内容钩子' 等字面 0 hardcode · 全用 STEP7_* 常量",
+        "零 D4=B 违反 · grep 0 violet/amber 命中",
+        "vitest 全 PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/7 · 看到 default 选中第 1 个脚本 'debate' + 当前脚本显示 '当前脚本：搞辩论 - 正反方激烈对撞...' · 搜索 '剖' · 看到只剩 1 个 '剖案例' · 选中 · 多选 5 个元素 · 看到顶部计数 '选择爆款元素（已选 5 个）' · 填主题 · 看到 button enabled · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-005"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/step/Step7.tsx",
+        "apps/web/src/components/step7/Step7ScriptTypeSearch.tsx",
+        "apps/web/src/components/step7/Step7ElementMultiSelect.tsx"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/pages/step/ src/components/step7/ && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (D4=B violet reject)",
+          "lesson": "★ D4=B 严锁 · 严禁 violet/amber",
+          "antipattern": "<Chip className=\"data-[selected]:bg-violet-600\">",
+          "correct": "<Chip className=\"data-[selected]:bg-primary\">"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (hardcode 中文)",
+          "lesson": "★ 严禁 hardcode 中文 button label / 搜索 placeholder / 元素计数 template · 必须 STEP7_* 常量",
+          "antipattern": "<Input placeholder=\"搜索脚本...\" /> (hardcode placeholder)",
+          "correct": "<Input placeholder={STEP7_SEARCH_PLACEHOLDER} /> (常量 import)"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (multi-select)",
+          "lesson": "★ 22 元素 4 分组必须多选(chip click toggle)· 严禁 radio(只能单选)",
+          "antipattern": "<RadioGroup>{STEP7_ELEMENTS_22.map(e => <RadioGroupItem value={e.id}>{e.label}</RadioGroupItem>)}</RadioGroup>",
+          "correct": "{STEP7_ELEMENTS_22.map(e => <Chip selected={selected.has(e.id)} onClick={() => toggleSelected(e.id)}>{e.label}</Chip>)} (multi-select Set)"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (跨 step 链路)",
+          "lesson": "Step 7 进入时必须读 acc_step5_selected_topic 预填主题 · 严禁忽略",
+          "antipattern": "useEffect(() => { /* 无预填 */ }, [])",
+          "correct": "useEffect(() => { const acc5 = JSON.parse(localStorage.getItem('acc_step5_selected_topic') ?? '{}'); if (acc5?.title) setTopic(acc5.title); }, [])"
+        }
+      ]
+    },
+    {
+      "id": "US-011b",
+      "title": "Step 7 输出 · 4 H4(辩论模板:话题抛出/正方/反方/我的立场)+ 评论引导 + 话题标签 + 三按钮",
+      "description": "作为 IP 起号用户,我需要在 /step/7 page 看到生成的爆款文案 · default 辩论模板 4 H4(话题抛出/正方/反方/我的立场)+ 评论区引导 + 话题标签 #xxx chip + 每 H4 [复制] button + 顶部 [重新生成] [复制全部] · 各脚本类型独立 schema 渲染(default debate · 其他类型简化通用 3 字段占位)",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/components/step7/Step7OutputContent.tsx · 顶部 title(若存在 居中 font-bold)· 当 result.script_type === 'debate' 时按 STEP7_DEBATE_H4_4 渲染 4 H4 区 · 4 H4 字面 1:1 = ['话题抛出', '正方', '反方', '我的立场']",
+        "每 H4 区显示 content + 右上角 [复制] button(label = STEP3_BUTTON_COPY 复用 PRD-17 step3.ts '复制')· 评论引导(comment_guide)+ 话题标签 list(topic_tags map 渲染 #{tag} chip · 每 chip 加 # 前缀 + 全角 emoji 或 chip 样式)",
+        "顶部右侧 [重新生成](label = STEP3_BUTTON_REGENERATE 复用)+ [复制全部](label = STEP3_BUTTON_COPY_ALL = '复制全部')· 主 CTA 同 PRD-17 Step 3 pattern",
+        "各脚本类型 schema 兼容 · 当 result.script_type !== 'debate' · 简化为通用 [hook / body / cta] 3 段渲染 · 注释标注 '// TODO: PRD-19 扩展 20 类独立 schema'",
+        "复制功能 · onClick={() => { navigator.clipboard.writeText(getBlockText(blockId)); toast('已复制'); }} · 复用 PRD-17 US-006b getBlockText 函数模式",
+        "structured mockResult · generateMockResult(formData): Step7Result default 生成 debate 模板(美容院如何选购仪器示例 · 4 H4 各 100-200 字 + 评论引导 + 3 话题标签)· setTimeout 3-5 秒",
+        "Step7.tsx import Step7OutputContent + 渲染 · 提交 form 后 setResult(generateMockResult(formData)) + setIsGenerating(false) · 跨 step localStorage · 写 acc_step7({formData, result})",
+        "零 hardcode · grep apps/web/src/components/step7/Step7OutputContent.tsx 中 '话题抛出' / '正方' / '反方' / '我的立场' / '复制' 字面 0 hardcode · 全用 STEP7_DEBATE_H4_4[i].h4Label / STEP3_BUTTON_COPY 常量",
+        "零 D4=B 违反 · grep 0 violet/amber 命中",
+        "vitest 全 PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/7 · 完成 US-011a flow · 点击 [生成爆款文案] · 等 3-5 秒看到 4 H4 输出 + 评论引导 + 话题标签 chip · 点击某 H4 [复制] 看到 toast '已复制' · localStorage.getItem('acc_step7') 非 null · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-011a"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/step7/Step7OutputContent.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step7.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm vitest run src/components/step7/ src/pages/step/ && pnpm tsc --noEmit",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A 字面锁)",
+          "lesson": "★ HIGH · STEP7_DEBATE_H4_4 4 个 h4Label 严格 1:1 · 严禁加 'H4. ' 前缀 · 严禁翻译",
+          "antipattern": "<h4>H4. 话题抛出</h4> (加 'H4. ' 前缀)",
+          "correct": "<h4>{STEP7_DEBATE_H4_4[0].h4Label}</h4> (常量 = '话题抛出' · spec §7.8 line 1738 严格 1:1)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (TD-75 hardcode)",
+          "lesson": "★ [复制] button 严禁 hardcode 中文 · 必须 import STEP3_BUTTON_COPY 复用",
+          "antipattern": "<Button>复制</Button> (hardcode)",
+          "correct": "import { STEP3_BUTTON_COPY } from '@/lib/constants/step3'; <Button>{STEP3_BUTTON_COPY}</Button>"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (话题标签 # 前缀)",
+          "lesson": "话题标签必须 # 前缀显示(spec §7.8 line 1740 '话题标签 #xxx')· 严禁 raw tag",
+          "antipattern": "<span>{tag}</span> (raw tag · 无 #)",
+          "correct": "<span>#{tag}</span> (含 # 前缀 · spec 字面)"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (D4=B violet)",
+          "lesson": "★ D4=B 严锁",
+          "antipattern": "<Chip className=\"bg-violet-600\">",
+          "correct": "<Chip className=\"bg-primary\">"
+        }
+      ]
+    },
+    {
+      "id": "US-012",
+      "title": "Step 8 page · 2 子功能 H3 切换(生成方案 / AI 优化话术)各自独立 form + 输出 6 模块",
+      "description": "作为 IP 起号用户,我需要在 /step/8 看到 2 子功能 H3(子功能 1:生成直播方案 / 子功能 2:AI 优化直播话术)· 各自独立 form · 子功能 1 含 4 字段 + 6 模块输出(开场/中场/成交/收尾/引流/互动)· 子功能 2 含 2 字段 + 优化后文案输出 · 让我可以 0 到 1 生成直播方案 · 或优化已有话术",
+      "acceptanceCriteria": [
+        "新建 apps/web/src/pages/step/Step8.tsx(重写当前 stub)· 顶部 STEP8_STEP_TAG + H1 + SUBTITLE 替换 {industry}",
+        "2 子功能 H3 切换 · STEP8_SUBFUNCTIONS_2 = ['子功能 1：生成直播方案', '子功能 2：AI 优化直播话术'] · default 显示 子功能 1 · click 切换",
+        "新建 apps/web/src/components/step8/Step8GeneratePlan.tsx · 4 字段 · textarea STEP8_GENERATE_PLAN_TEXTAREA(产品)+ input STEP8_GENERATE_PLAN_INPUT(受众)+ radio 5 平台(STEP8_PLATFORMS_5 + STEP8_PLATFORM_RADIO_LABEL '直播平台')+ radio 3 经验(STEP8_EXPERIENCE_3 + STEP8_EXPERIENCE_RADIO_LABEL '直播经验')· 主 CTA STEP8_BUTTON_GENERATE_PLAN '生成直播方案' · 输出区 6 H3 = STEP8_OUTPUT_MODULES_6 · 每模块 InfoCard 渲染",
+        "新建 apps/web/src/components/step8/Step8OptimizeScript.tsx · 2 字段 · textarea STEP8_OPTIMIZE_TEXTAREA(话术 ≥10 字 + 字符计数 STEP8_OPTIMIZE_CHAR_COUNTER_TEMPLATE)+ input STEP8_OPTIMIZE_INPUT(优化目标 可选)· 主 CTA STEP8_BUTTON_OPTIMIZE_SCRIPT 'AI 优化话术' disabled 当字数 < STEP8_OPTIMIZE_MIN_CHARS · 输出 · 优化后文案 + 优化说明 2 块 InfoCard",
+        "三态组件复用 + structured mockResult · 定义 Step8FormData + generateMockResult(subfunction, formData): Step8Result · setTimeout 3-5 秒",
+        "跨 step localStorage · 进入读 acc_step1 industry 注入 SUBTITLE · 提交后写 acc_step8({subfunction, formData, result})",
+        "零 hardcode · grep apps/web/src/pages/step/Step8.tsx + apps/web/src/components/step8/ 中 '子功能' / '生成直播方案' / 'AI 优化话术' / '新手' / '有经验' / '资深' / '1. 开场话术' 等字面 0 hardcode · 全用 STEP8_* 常量",
+        "零 D4=B 违反 · grep 0 violet/amber 命中",
+        "vitest 全 PASS · tsc --noEmit 0 error",
+        "使用 agent-browser 打开 http://localhost:5173/step/8 · default 显示 子功能 1 · 看到 4 字段 form · 切换到 子功能 2 · 看到 2 字段 form · 切回 子功能 1 · 填字段 + 点 [生成直播方案] · 等 3-5 秒看到 6 H3 输出 · localStorage.getItem('acc_step8') 非 null · 无 console error",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-006"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/step/Step8.tsx",
+        "apps/web/src/components/step8/Step8GeneratePlan.tsx",
+        "apps/web/src/components/step8/Step8OptimizeScript.tsx"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm vitest run src/pages/step/ src/components/step8/ && pnpm tsc --noEmit",
+      "size_hint": "large",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-003 (D4=B violet)",
+          "lesson": "★ D4=B 严锁",
+          "antipattern": "<RadioGroupItem className=\"data-[state=checked]:bg-violet-600\">",
+          "correct": "<RadioGroupItem className=\"data-[state=checked]:bg-primary\">"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004 (D1=A 字面锁 · 标点也是 layout)",
+          "lesson": "★ STEP8_EXPERIENCE_3 3 经验 label 含中点 · 严禁 ' - ' 半角 hyphen 或 ', ' 逗号",
+          "antipattern": "<RadioLabel>新手 - 刚开始做直播</RadioLabel> (hardcode 半角 hyphen)",
+          "correct": "<RadioLabel>{STEP8_EXPERIENCE_3[0].label}</RadioLabel> (常量 = '新手 · 刚开始做直播' 含中点 ·)"
+        },
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-008 (hardcode 中文)",
+          "lesson": "★ 2 子功能 H3 严禁 hardcode · 必须 STEP8_SUBFUNCTIONS_2[i].h3Label 常量",
+          "antipattern": "<h3>子功能 1: 生成直播方案</h3> (hardcode + 半角冒号)",
+          "correct": "<h3>{STEP8_SUBFUNCTIONS_2[0].h3Label}</h3> (常量 = '子功能 1：生成直播方案' 含全角冒号)"
+        }
+      ]
+    },
+    {
+      "id": "US-013",
+      "title": "E2E playwright + verify-prd-18.sh 收官 · 6 step 完整流程 + 6 截图 + 12+ 静态检查",
+      "description": "作为 QA 工程师,我需要写 playwright e2e 覆盖 PRD-18 全部 6 step 流程(Step 4 → 4b → 5 → 6 → 7 → 8)+ verify-prd-18.sh 静态检查脚本(字面常量 grep + D4=B grep + D3=A grep + 跨 step localStorage grep)· 确保完整流程跑通 + 字面常量未被破坏 · 12+ 检查项 ALL PASS",
+      "acceptanceCriteria": [
+        "新建 apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts · 6 个 test · test 1 进入 /step/4 → 选平台 → 填字段 → 点 [生成执行计划] → 看到 3 H3 输出 → screenshot · test 2 /step/4b 填产品 → 点 [生成变现路径] → 看到 5 H3 + 3 阶梯 → screenshot · test 3 /step/5 填行业产品 → 点 [一键生成 5大类 爆款选题] → 看到 5 类 tab + 100 选题 → 点某选题 → 跳 /step/7 自动预填 → screenshot · test 4 /step/6 粘贴文案(≥10 字)→ 点 [生成拍摄计划] → 看到 3 模块 → screenshot · test 5 /step/7 选脚本 debate → 选元素 → 填主题 → 点 [生成爆款文案] → 看到 4 H4 + 评论引导 → screenshot · test 6 /step/8 切子功能 1 → 填字段 → 点 [生成直播方案] → 看到 6 H3 → screenshot",
+        "全 6 test 硬门禁 · expect(consoleErrors).toEqual([]) · 0 console error / warning",
+        "6 截图保存 apps/web/test-results/prd-18-step-4.png / prd-18-step-4b.png / prd-18-step-5.png / prd-18-step-6.png / prd-18-step-7.png / prd-18-step-8.png",
+        "新建 scripts/verify-prd-18.sh · 12+ 检查项 · #1-6 · 6 个 step{N}.ts 文件存在(test -f apps/web/src/lib/constants/step{4,4b,5,6,7,8}.ts)· #7-12 · 6 个 Step{N}.tsx 文件存在(test -f apps/web/src/pages/step/Step{4,4b,5,6,7,8}.tsx)· #13 · 字面常量 grep · grep -F 'STEP4_SUBTITLE_TEMPLATE' / 'STEP4B_THREE_STAGES' / 'STEP5_CATEGORIES_5' / 'STEP7_SCRIPT_TYPES_20' / 'STEP8_SUBFUNCTIONS_2' apps/web/src/lib/constants/ 各 ≥1 命中 · #14 · D4=B grep · grep -rE 'from-violet|from-amber|text-violet|bg-amber' apps/web/src/pages/step/ apps/web/src/components/step{4b,5,7,8}/ 必须 0 命中 · #15 · D3=A grep · git diff main..HEAD --name-only apps/admin/ apps/api/ packages/ 必须 empty · #16 · 跨 step localStorage grep · grep -lF 'acc_step4' apps/web/src/pages/step/Step4.tsx + grep -lF 'acc_step4b' Step4b.tsx + grep -lF 'acc_step5' Step5.tsx + grep -lF 'acc_step5_selected_topic' apps/web/src/components/step5/ + grep -lF 'acc_step6' Step6.tsx + grep -lF 'acc_step7' Step7.tsx + grep -lF 'acc_step8' Step8.tsx 各 ≥1 命中",
+        "verify-prd-18.sh 输出 · '✅ N/N ALL PASS' 或 '❌ X/N FAIL: <具体失败项>' · chmod +x · exit 0 PASS · exit 1 FAIL",
+        "跑全套 · cd apps/web && pnpm test PASS · pnpm tsc --noEmit 0 error · pnpm playwright test prd-18 PASS · bash scripts/verify-prd-18.sh 12+/12+ ALL PASS",
+        "0 console error · 6 截图 + console log 全部 silent · 无 warning · 无 React key warning · 无网络 404",
+        "Typecheck passes · cd apps/web && pnpm tsc --noEmit 0 error"
+      ],
+      "depends_on": [
+        "US-007",
+        "US-008",
+        "US-009",
+        "US-010",
+        "US-011b",
+        "US-012"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope 对照 · 主要 verify TD: 跨 PRD 累积 fetch-failed test 等",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts",
+        "scripts/verify-prd-18.sh"
+      ],
+      "files_to_modify": [],
+      "test_command": "cd apps/web && pnpm playwright test prd-18 && bash ../../scripts/verify-prd-18.sh",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-010 (E2E 收官 12/12 ALL PASS)",
+          "lesson": "★ verify-prd-N.sh 严禁简化(仅 grep 文件存在)· 必须 12+ 检查项 · 含字面常量 grep + D4=B grep + D3=A grep + 跨 step localStorage grep",
+          "antipattern": "verify-prd-18.sh 仅 6 行 'test -f file && echo PASS' (简化版)",
+          "correct": "verify-prd-18.sh 12+ 行检查项(继 PRD-17 verify-prd-17.sh 81 行模式)"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (跨 step 链路 E2E)",
+          "lesson": "★ test 3 必须含 Step 5 → Step 7 完整链路(点选题 + 跳 step7 + 验证主题预填)· 严禁跳过",
+          "antipattern": "test 3 仅验证 Step 5 100 选题渲染(不跳 step7)",
+          "correct": "test 3 含 Step 5 → 点选题 → 跳 step7 → 验证 input 主题已预填 = acc_step5_selected_topic.title"
+        },
+        {
+          "source_prd": "prd-18-step-4-4b-5-6-7-8",
+          "source_story": "PRD-18 self-injected (6 截图完整)",
+          "lesson": "6 截图必须 6 完整 · 严禁 5 个(scope creep · 漏 step)",
+          "antipattern": "test-results/ 仅 5 个 screenshot(漏 step 6 或 8)",
+          "correct": "test-results/ 6 个完整 screenshot · prd-18-step-{4,4b,5,6,7,8}.png 各 1 个"
+        }
+      ]
+    }
+  ]
+}

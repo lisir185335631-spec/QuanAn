@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { EvolutionAgent, EvolutionInsightContentSchema } from '@/specialists/EvolutionAgent';
+import { EvolutionAgent, EvolutionInsightContentSchema } from '@/agents/evolution/EvolutionAgent';
 
 import type { ILLMGateway, InvokeLLMResult } from '@/specialists/base/types';
 
@@ -63,6 +63,14 @@ vi.mock('@/lib/prisma', () => ({
 vi.mock('@/memory/l4-profile', () => ({
   getLatestInsight: vi.fn().mockResolvedValue(null),
   getDeepLearningSamples: vi.fn().mockResolvedValue([]),
+}));
+
+// PRD-14 US-012: mock feature-flag service so kill switch defaults to OFF in existing tests
+vi.mock('@/services/admin/feature-flag/feature-flag.service', () => ({
+  getFeatureFlagValue: vi.fn().mockResolvedValue(false),
+  getSystemConfigValue: vi.fn().mockResolvedValue(false),
+  invalidateFeatureFlagCache: vi.fn(),
+  invalidateSystemConfigCache: vi.fn(),
 }));
 
 vi.mock('@/lib/logger', () => ({

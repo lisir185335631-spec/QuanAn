@@ -1,0 +1,40 @@
+
+> quanqn@0.1.0 test /Users/return/Desktop/QuanQn
+> vitest run --reporter\=verbose --run apps/api/src/trpc/routers/admin/__tests__/invites.test.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanQn
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > list > returns paginated invite codes with count
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > list > filters by statusFilter=active
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > list > filters by campaignFilter
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > list > writes audit log on list
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > create > creates invite with explicit code
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > create > auto-generates code when not provided
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > create > sets campaign and expiresAt
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > create > throws FORBIDDEN for readonly_admin
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > create > writes audit on create
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > batchImport > imports valid CSV rows
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > batchImport > skips duplicate codes and returns row errors
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > batchImport > throws ValidationError when rows > 10000
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > batchImport > skips rows with missing code and records error
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > batchImport > throws FORBIDDEN for readonly_admin
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > invalidate > super_admin invalidates — creates auto_executed approval + deactivates code
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > invalidate > admin creates pending approval_request — does NOT deactivate code
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > invalidate > throws BAD_REQUEST when code already invalidated
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > invalidate > throws NOT_FOUND when code does not exist
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > invalidate > writes high_risk_action audit for super_admin
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > invalidate > throws FORBIDDEN for readonly_admin
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > detail > returns invite detail with activation history and step9 progress
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > detail > throws NOT_FOUND when code does not exist
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > detail > returns empty step9Progress when code not used
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > campaignFunnel > returns funnel as [{stage, count}] array
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > campaignFunnel > calls getCampaignFunnel with correct campaignKey
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > campaignFunnel > propagates CampaignNotFoundError when campaign not found
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts > invitesRouter > campaignFunnel > writes audit log on campaignFunnel
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  04:08:07
+   Duration  150ms (transform 40ms, setup 4ms, collect 51ms, tests 13ms, environment 0ms, prepare 20ms)
+

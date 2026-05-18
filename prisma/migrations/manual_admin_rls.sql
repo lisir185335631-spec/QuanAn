@@ -42,23 +42,52 @@ ALTER TABLE user_violation_log       DISABLE ROW LEVEL SECURITY;
 ALTER TABLE evolution_anomaly_flags  DISABLE ROW LEVEL SECURITY;
 
 -- ========================================================================
--- P2 后续 4 张表(P9.4 实施)· 此处占位 · 实际 ALTER 等表创建后再跑
+-- PRD-10 US-001 新增 6 张 admin 鉴权 + 配置表
 -- ========================================================================
 
--- 注 · ab_experiments / ab_assignments / feature_flags / system_config 在 P9.4
--- 实施时通过 prisma migration 创建后,再单独追加 DISABLE 语句到本文件 + 重跑。
--- 当前 P0 阶段 · 注释占位:
+ALTER TABLE admin_users              DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_sessions           DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_invite_campaign    DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_constants          DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_config             DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_ab_experiment      DISABLE ROW LEVEL SECURITY;
 
--- ALTER TABLE ab_experiments           DISABLE ROW LEVEL SECURITY;
--- ALTER TABLE ab_assignments           DISABLE ROW LEVEL SECURITY;
--- ALTER TABLE feature_flags            DISABLE ROW LEVEL SECURITY;
--- ALTER TABLE system_config            DISABLE ROW LEVEL SECURITY;
+-- ========================================================================
+-- P2 后续 4 张表(P9.4 实施)
+-- ========================================================================
+
+ALTER TABLE ab_experiments           DISABLE ROW LEVEL SECURITY;
+ALTER TABLE ab_assignments           DISABLE ROW LEVEL SECURITY;
+ALTER TABLE feature_flags            DISABLE ROW LEVEL SECURITY;
+ALTER TABLE system_config            DISABLE ROW LEVEL SECURITY;
+
+-- ========================================================================
+-- Helper functions(调试用 · super_admin only)
+-- ========================================================================
+
+CREATE OR REPLACE FUNCTION enable_admin_rls(tablename TEXT)
+RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', tablename);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION disable_admin_rls(tablename TEXT)
+RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  EXECUTE format('ALTER TABLE %I DISABLE ROW LEVEL SECURITY', tablename);
+END;
+$$;
 
 -- ========================================================================
 -- 验证 · 跑完后查 RLS 状态
 -- ========================================================================
 
 -- SELECT tablename, rowsecurity FROM pg_tables
---   WHERE tablename IN ('admin_audit_log', 'approval_requests', ...)
---   ORDER BY tablename;
+--   WHERE tablename IN (
+--     'admin_audit_log','approval_requests','admin_users','admin_sessions',
+--     'prompt_versions','prompt_canary_config','user_quota','quota_adjustment_log',
+--     'trending_review_queue','deep_learn_review_queue',
+--     'admin_invite_campaign','admin_constants','admin_config','admin_ab_experiment'
+--   ) ORDER BY tablename;
 -- 期望 · 全部 rowsecurity = false
