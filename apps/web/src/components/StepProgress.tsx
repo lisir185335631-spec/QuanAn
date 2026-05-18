@@ -30,7 +30,7 @@ function StepSkeleton() {
   return (
     <div className="space-y-3" aria-busy="true" aria-label="加载中">
       <div className="h-4 w-20 rounded bg-surface-container animate-pulse" />
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-9">
+      <div className="grid grid-cols-9 gap-2">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} className="h-16 rounded-lg bg-surface-container animate-pulse" />
         ))}
@@ -52,7 +52,7 @@ export function StepProgress({ completedSteps, isLoading, className }: StepProgr
         进度 <span className="font-semibold text-on-surface">{completedCount}/9</span>
       </p>
 
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-9">
+      <div className="grid grid-cols-9 gap-2">
         {STEP_ORDER.map((step, idx) => {
           const isCompleted = completedSet.has(step.key);
           const isCurrent = idx === currentIndex;
