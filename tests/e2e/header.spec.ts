@@ -62,10 +62,10 @@ test.describe('Header 三 dropdown', () => {
     await expect(page.getByTestId('header-hamburger')).toBeVisible();
   });
 
-  test('移动端 hamburger 点开 Sheet', async ({ page }) => {
+  test('移动端 hamburger 点开 panel', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.getByTestId('header-hamburger').click();
-    await expect(page.getByTestId('header-mobile-sheet')).toBeVisible();
-    await expect(page.getByTestId('header-mobile-sheet').getByText('全网爆款库')).toBeVisible();
+    await expect(page.getByTestId('header-mobile-panel')).toBeVisible();
+    await expect(page.getByTestId('header-mobile-panel').getByText('爆款选题')).toBeVisible();
   });
 });
