@@ -5,6 +5,20 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-19 05:00 - US-002 [PRD-21] (retry 3 · 第四次确认 · 全部 AC fresh 验证通过)
+- 实现状态: 代码未变(commit 2c435a6 已含全部实现) · 本次 retry 仅重新跑全套检查确认
+- 验证结果(全部 ✅, fresh run):
+  - AC-6 typecheck: ✅ tsc --noEmit → 0 errors
+  - AC-7 e2e chromium: ✅ 8/8 passed (prd16-header-dropdown-flow.spec.ts)
+  - AC-8 visual test: ✅ 4/4 prd21-visual-baseline passed (含 header desktop 00-home-header crop)
+  - manifest.json PASS: all 11 AC verified by prior Validator session
+- 更改的文件: scripts/ralph/progress.txt (日志追加)
+- **未来迭代的学习:**
+  - Validator 可能写完 manifest.json PASS 后超时退出 · passes 未更新 → 造成 retry · 不代表实现有问题
+  - 重复 retry 时优先查 verify-artifacts/US-NNN/manifest.json verdict · 避免重复大规模测试
+  - group-data-[state=open]:rotate-180 是正确写法(读父元素 group 的 data-state) · 非 data-[state=open]:rotate-180
+---
+
 ## 2026-05-19 04:30 - US-002 [PRD-21] (retry 2 · 第三次质量检查确认)
 - 实现状态: commit 2c435a6 已包含完整实现 · manifest.json PASS 已在 verify-artifacts/US-002/ · 本次 retry 再次确认
 - 验证结果(全部 ✅):
@@ -2162,3 +2176,5 @@
 --- [RALPH] Iteration 5 ended: US-002 (1小时 30分钟 23秒) ---
 
 --- [RALPH] Iteration 6 started: US-002 at 2026-05-19 04:39 ---
+
+--- [RALPH] Iteration 7 started: US-002 at 2026-05-19 05:09 ---
