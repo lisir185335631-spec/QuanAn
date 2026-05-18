@@ -140,12 +140,12 @@ test.describe('PRD-18 Step 4 → 4b → 5 → 6 → 7 → 8 E2E', () => {
     // 提交生成
     await page.locator('button', { hasText: '一键生成 5大类 爆款选题' }).click();
 
-    // 等 5 类 tab — all share 15s timeout; tabs may hide briefly during SSE streaming start
+    // 等 5 类 tab — 流量型 先出；后续 4 类等 SSE 流续出，给足 30s
     await expect(page.getByRole('tab', { name: '流量型' })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('tab', { name: '变现型' })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('tab', { name: '人设型' })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('tab', { name: '认知型' })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('tab', { name: '案例型' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('tab', { name: '变现型' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: '人设型' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: '认知型' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tab', { name: '案例型' })).toBeVisible({ timeout: 30_000 });
 
     // 当前 tab(流量型) 下应有 20 个选题 card
     const topicCards = page.locator('[role="tabpanel"] button');

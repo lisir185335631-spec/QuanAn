@@ -171,16 +171,22 @@ test.describe('PRD-19 · frontend ↔ backend 真接入', () => {
     await page.goto(`${BASE_URL}/step/1`);
     await expect(page.locator('h1').first()).toContainText('选择你的行业赛道', { timeout: 15_000 });
 
-    // Collect account A and B IDs from AccountSwitcher dropdown
+    // Get active account A ID via tRPC/LS (reliable — not affected by switcher item order)
+    const accAId = await getActiveAccountId(page);
+    expect(accAId, 'DEV_OAUTH_MOCK should provide active account A').not.toBeNull();
+
+    // Find account B ID: open switcher, pick first item that is NOT accAId
     await page.locator('[data-testid="account-switcher-trigger"]').click();
     await page.locator('[data-testid^="account-switcher-item-"]').first().waitFor({ timeout: 5_000 });
     const items = page.locator('[data-testid^="account-switcher-item-"]');
-    const accATestId = await items.nth(0).getAttribute('data-testid');
-    const accBTestId = await items.nth(1).getAttribute('data-testid');
-    const accAId = parseInt(accATestId!.replace('account-switcher-item-', ''), 10);
-    const accBId = parseInt(accBTestId!.replace('account-switcher-item-', ''), 10);
-    // Close dropdown — already on accA (items.nth(0) == active account, switchTo is idempotent)
-    // Do NOT re-open + re-click accAId: Radix close animation detaches DOM elements on immediate reopen
+    const itemCount = await items.count();
+    let accBId: number | null = null;
+    for (let i = 0; i < itemCount; i++) {
+      const tid = await items.nth(i).getAttribute('data-testid');
+      const cid = parseInt(tid!.replace('account-switcher-item-', ''), 10);
+      if (cid !== accAId) { accBId = cid; break; }
+    }
+    expect(accBId, 'Should find a second account B in AccountSwitcher').not.toBeNull();
     await page.keyboard.press('Escape');
 
     // ── Account A: select '美食' (beforeEach already cleared accA's step1) ──
