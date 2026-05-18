@@ -675,7 +675,7 @@
       "fix_hint": "决策 B: 保留新 label '生成行业洞察' + 更新 source-of-truth",
       "resolved_in_prd": "prd-20-real-llm-integration",
       "resolved_at": "2026-05-18",
-      "resolved_notes": "industries.ts STEP1_CTA_LABEL='生成行业洞察' + StepForm step1 button 改用常量 · grep 验证 ≥1 hit"
+      "resolved_notes": "industries.ts STEP1_CTA_LABEL='生成行业洞察' + StepForm step1 button 改用常量 · commit f59a02f [TD-79 resolved] · verify §5.1 PASS"
     },
     {
       "id": "TD-80",
@@ -690,7 +690,7 @@
       "fix_hint": "industries.ts 新增 STEP1_RESULT_H2/STEP1_RESULT_H3_3 · step3.ts/step3b.ts 新增对应常量 · Result 组件改用常量",
       "resolved_in_prd": "prd-20-real-llm-integration",
       "resolved_at": "2026-05-18",
-      "resolved_notes": "Step1Result/Step3Result/Step3bResult 改用常量 · grep 验证 hardcode 0 hit"
+      "resolved_notes": "Step1Result/Step3Result/Step3bResult 改用常量 · grep 验证 hardcode 0 hit · commit f59a02f [TD-80 resolved] · verify §5.2 PASS"
     },
     {
       "id": "TD-81",
@@ -705,7 +705,7 @@
       "fix_hint": "删除 backward compat localStorage.setItem('acc_step5_selected_topic', ...) 行 · 只保留 namespaced key",
       "resolved_in_prd": "prd-20-real-llm-integration",
       "resolved_at": "2026-05-18",
-      "resolved_notes": "Step5TopicGrid.tsx 只保留 namespaced key · grep 'acc_step5_selected_topic' = 0 hit"
+      "resolved_notes": "Step5TopicGrid.tsx 只保留 namespaced key · grep 'acc_step5_selected_topic' = 0 hit · commit f59a02f [TD-81 resolved] · verify §5.3 PASS"
     },
     {
       "id": "TD-82",
@@ -720,8 +720,30 @@
       "fix_hint": "选项 A: test3 加 test.skip(!OPENAI_API_KEY) 标记 manual only",
       "resolved_in_prd": "prd-20-real-llm-integration",
       "resolved_at": "2026-05-18",
-      "resolved_notes": "prd-18 test3 加 skip(!HAS_OPENAI_KEY) · prd-20 test(a) fallback/real LLM 双路径覆盖"
+      "resolved_notes": "prd-18 test3 加 skip(!HAS_OPENAI_KEY) · prd-20 test(a) fallback/real LLM 双路径覆盖 · commit f59a02f [TD-82 resolved] · verify §5.4 PASS"
+    },
+    {
+      "id": "TD-84",
+      "title": "PRD-18 e2e step4/4b/6/8 toBeVisible timeout 30s 太短 · 触发 US-008 cascade BLOCK",
+      "description": "apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts line 92/125/212/276 4 处 toBeVisible({ timeout: 30_000 }) · step4/4b/6/8 Specialist LLM 调用 > 30s · step7 < 30s · timeout 太严 trigger ralph US-008 5 retry BLOCKED",
+      "scope": [
+        "apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts:92,125,212,276"
+      ],
+      "impact": "US-008 cascade BLOCK · US-009 cascade BLOCK · daemon 退出. Opus 介入手工 fix 4 处 30s → 60s 并 unblock",
+      "severity": "Low",
+      "categories": [
+        "test-timing",
+        "e2e-flake"
+      ],
+      "detected_in_prd": "prd-20",
+      "detected_in_story": "US-008",
+      "fix_by": "PRD-20 US-008 unblock (Opus 介入 commit)",
+      "status": "resolved",
+      "fix_hint": "已 fix · 4 处 timeout 30_000 → 60_000 跟 playwright.config.ts default 一致",
+      "resolved_in_prd": "prd-20",
+      "resolved_at": "2026-05-18T20:10:00",
+      "notes": "Opus audit 介入 US-008 BLOCKED unblock. ralph SUSPECTED 推测正确(specialist LLM 调用 > 30s · 但只 step4/4b/6/8 命中)· Opus trust 推测无回归代码"
     }
   ],
-  "last_updated": "2026-05-18T16:50:00"
+  "last_updated": "2026-05-18T20:10:00"
 }
