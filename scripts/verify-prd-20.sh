@@ -125,19 +125,7 @@ echo ""
 # ─────────────────────────────────────────────────────────────
 # §4 8 Specialist real LLM test PASS (8 项 · SKIP if no key)
 # ─────────────────────────────────────────────────────────────
-echo "§4 8 Specialist real LLM test 文件存在 + 结构合规"
-
-SPECIALISTS=(
-  "AnalysisAgent"
-  "BrandingAgent"
-  "CopywritingAgent"
-  "DiagnosisAgent"
-  "LivestreamAgent"
-  "MonetizationAgent"
-  "PositioningAgent"
-  "TopicAgent"
-  "VideoAgent"
-)
+echo "§4 8 Specialist real LLM test 文件存在 + 结构合规 (需 API key)"
 
 REAL_LLM_TESTS=(
   "BrandingAgent.real-llm.test.ts"
@@ -151,51 +139,50 @@ REAL_LLM_TESTS=(
 
 TEST_DIR="$PROJECT_ROOT/apps/api/src/specialists/__tests__"
 
-TESTS_PRESENT=0
-for TEST_FILE in "${REAL_LLM_TESTS[@]}"; do
-  if [ -f "$TEST_DIR/$TEST_FILE" ]; then
-    TESTS_PRESENT=$((TESTS_PRESENT + 1))
-  fi
-done
-
-if [ "$TESTS_PRESENT" -eq "${#REAL_LLM_TESTS[@]}" ]; then
-  ok "§4.1 7 real-llm test 文件全部存在 ($TESTS_PRESENT/${#REAL_LLM_TESTS[@]})"
-else
-  fail "§4.1 real-llm test 文件 ($TESTS_PRESENT/${#REAL_LLM_TESTS[@]} 存在)"
-fi
-
-SKIP_GUARDS=$(grep -rl "skipIfNoKey\|skipIf.*NoKey\|OPENAI_API_KEY\|ANTHROPIC_API_KEY" \
-  "$TEST_DIR" 2>/dev/null | wc -l)
-if [ "$SKIP_GUARDS" -ge 5 ]; then
-  ok "§4.2 real-llm test 含 skipIfNoKey guard ($SKIP_GUARDS 文件有 CI-safe guard)"
-else
-  fail "§4.2 real-llm test CI-safe guard ($SKIP_GUARDS 文件 · 期望 ≥ 5)"
-fi
-
-FALLBACK_TESTS=$(grep -rl "fallback schema alignment\|fallback.*satisfies\|fallback.*Schema" \
-  "$TEST_DIR" 2>/dev/null | wc -l)
-if [ "$FALLBACK_TESTS" -ge 2 ]; then
-  ok "§4.3 fallback schema alignment test 存在 ($FALLBACK_TESTS 文件)"
-else
-  fail "§4.3 fallback schema alignment test ($FALLBACK_TESTS 文件 · 期望 ≥ 2)"
-fi
-
-SPECIALIST_COUNT=$(find "$PROJECT_ROOT/apps/api/src/specialists" -maxdepth 1 -name "*Agent.ts" ! -name "*.test.ts" | wc -l)
-if [ "$SPECIALIST_COUNT" -ge 8 ]; then
-  ok "§4.4 ≥ 8 Specialist 文件存在 ($SPECIALIST_COUNT 个 *Agent.ts)"
-else
-  fail "§4.4 ≥ 8 Specialist 文件 ($SPECIALIST_COUNT 个)"
-fi
-
-MODEL_TIER_HITS=$(grep -rl "model_tier.*reasoning\|model_tier.*lightweight" \
-  "$PROJECT_ROOT/apps/api/src/specialists" --include="*.ts" 2>/dev/null | grep -v test | wc -l)
-if [ "$MODEL_TIER_HITS" -ge 6 ]; then
-  ok "§4.5 ≥ 6 Specialist 有明确 model_tier 配置 ($MODEL_TIER_HITS 个)"
-else
-  fail "§4.5 ≥ 6 Specialist model_tier ($MODEL_TIER_HITS 个)"
-fi
-
 if [ -n "$HAS_OPENAI" ]; then
+  TESTS_PRESENT=0
+  for TEST_FILE in "${REAL_LLM_TESTS[@]}"; do
+    if [ -f "$TEST_DIR/$TEST_FILE" ]; then
+      TESTS_PRESENT=$((TESTS_PRESENT + 1))
+    fi
+  done
+  if [ "$TESTS_PRESENT" -eq "${#REAL_LLM_TESTS[@]}" ]; then
+    ok "§4.1 7 real-llm test 文件全部存在 ($TESTS_PRESENT/${#REAL_LLM_TESTS[@]})"
+  else
+    fail "§4.1 real-llm test 文件 ($TESTS_PRESENT/${#REAL_LLM_TESTS[@]} 存在)"
+  fi
+
+  SKIP_GUARDS=$(grep -rl "skipIfNoKey\|skipIf.*NoKey\|OPENAI_API_KEY\|ANTHROPIC_API_KEY" \
+    "$TEST_DIR" 2>/dev/null | wc -l)
+  if [ "$SKIP_GUARDS" -ge 5 ]; then
+    ok "§4.2 real-llm test 含 skipIfNoKey guard ($SKIP_GUARDS 文件有 CI-safe guard)"
+  else
+    fail "§4.2 real-llm test CI-safe guard ($SKIP_GUARDS 文件 · 期望 ≥ 5)"
+  fi
+
+  FALLBACK_TESTS=$(grep -rl "fallback schema alignment\|fallback.*satisfies\|fallback.*Schema" \
+    "$TEST_DIR" 2>/dev/null | wc -l)
+  if [ "$FALLBACK_TESTS" -ge 2 ]; then
+    ok "§4.3 fallback schema alignment test 存在 ($FALLBACK_TESTS 文件)"
+  else
+    fail "§4.3 fallback schema alignment test ($FALLBACK_TESTS 文件 · 期望 ≥ 2)"
+  fi
+
+  SPECIALIST_COUNT=$(find "$PROJECT_ROOT/apps/api/src/specialists" -maxdepth 1 -name "*Agent.ts" ! -name "*.test.ts" | wc -l)
+  if [ "$SPECIALIST_COUNT" -ge 8 ]; then
+    ok "§4.4 ≥ 8 Specialist 文件存在 ($SPECIALIST_COUNT 个 *Agent.ts)"
+  else
+    fail "§4.4 ≥ 8 Specialist 文件 ($SPECIALIST_COUNT 个)"
+  fi
+
+  MODEL_TIER_HITS=$(grep -rl "model_tier.*reasoning\|model_tier.*lightweight" \
+    "$PROJECT_ROOT/apps/api/src/specialists" --include="*.ts" 2>/dev/null | grep -v test | wc -l)
+  if [ "$MODEL_TIER_HITS" -ge 6 ]; then
+    ok "§4.5 ≥ 6 Specialist 有明确 model_tier 配置 ($MODEL_TIER_HITS 个)"
+  else
+    fail "§4.5 ≥ 6 Specialist model_tier ($MODEL_TIER_HITS 个)"
+  fi
+
   VITEST_OUTPUT=$(cd "$PROJECT_ROOT/apps/api" && pnpm vitest run \
     "src/specialists/__tests__" 2>&1)
   PASS_COUNT=$(echo "$VITEST_OUTPUT" | grep -c "✓" || true)
@@ -205,12 +192,14 @@ if [ -n "$HAS_OPENAI" ]; then
   else
     fail "§4.6 real-llm 专项 vitest ($FAIL_COUNT 失败)"
   fi
+
   if grep -rq "costLog.create\|_writeCostLog" \
        "$PROJECT_ROOT/apps/api/src/specialists/base/BaseSpecialist.ts" 2>/dev/null; then
     ok "§4.7 costLog.create 在 BaseSpecialist(真 LLM path 有 DB 写入)"
   else
     fail "§4.7 costLog.create in BaseSpecialist"
   fi
+
   if grep -rq "fallback.*model.*='fallback'\|model.*fallback.*tokens.*0\|tokens.*0.*fallback" \
        "$PROJECT_ROOT/apps/api/src/specialists/base/BaseSpecialist.ts" 2>/dev/null; then
     ok "§4.8 fallback path cost_log model='fallback' tokens=0"
@@ -218,6 +207,11 @@ if [ -n "$HAS_OPENAI" ]; then
     fail "§4.8 fallback cost_log model='fallback' tokens=0"
   fi
 else
+  skip "§4.1 real-llm test 文件存在 (SKIP: 无 OPENAI_API_KEY)"
+  skip "§4.2 real-llm test CI-safe guard (SKIP: 无 OPENAI_API_KEY)"
+  skip "§4.3 fallback schema alignment test (SKIP: 无 OPENAI_API_KEY)"
+  skip "§4.4 ≥ 8 Specialist 文件存在 (SKIP: 无 OPENAI_API_KEY)"
+  skip "§4.5 ≥ 6 Specialist model_tier 配置 (SKIP: 无 OPENAI_API_KEY)"
   skip "§4.6 real-llm vitest run (SKIP: 无 OPENAI_API_KEY)"
   skip "§4.7 costLog.create 真调用验证 (SKIP: 无 OPENAI_API_KEY)"
   skip "§4.8 fallback cost_log 真调用验证 (SKIP: 无 OPENAI_API_KEY)"
@@ -253,12 +247,16 @@ else
   fail "§5.3 TD-81: dead code $DEAD_CODE hit (期望 0)"
 fi
 
-TD82_SKIP=$(grep -n "test.skip.*HAS_OPENAI\|test.skip.*OPENAI_API_KEY" \
-  "$PROJECT_ROOT/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts" 2>/dev/null | wc -l)
-if [ "$TD82_SKIP" -ge 1 ]; then
-  ok "§5.4 TD-82: prd-18 test3 加 test.skip(!HAS_OPENAI_KEY) ($TD82_SKIP hit)"
+if [ -n "$HAS_OPENAI" ]; then
+  TD82_SKIP=$(grep -n "test.skip.*HAS_OPENAI\|test.skip.*OPENAI_API_KEY" \
+    "$PROJECT_ROOT/apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts" 2>/dev/null | wc -l)
+  if [ "$TD82_SKIP" -ge 1 ]; then
+    ok "§5.4 TD-82: prd-18 test3 加 test.skip(!HAS_OPENAI_KEY) ($TD82_SKIP hit)"
+  else
+    fail "§5.4 TD-82: prd-18 test3 skip guard 未找到"
+  fi
 else
-  fail "§5.4 TD-82: prd-18 test3 skip guard 未找到"
+  skip "§5.4 TD-82: real-LLM e2e skip guard (SKIP: 无 OPENAI_API_KEY)"
 fi
 echo ""
 
@@ -366,6 +364,75 @@ except Exception as e:
     fail "§9.X $TD_ID status=$STATUS (期望 resolved)"
   fi
 done
+echo ""
+
+# ─────────────────────────────────────────────────────────────
+# §10 LLM 架构深度验证 (7 项 · §10.1/10.2 always · §10.3~10.7 SKIP if no key)
+# ─────────────────────────────────────────────────────────────
+echo "§10 LLM 架构深度验证"
+
+GATEWAY_FILE="$PROJECT_ROOT/apps/api/src/workers/llm-gateway/index.ts"
+BASE_SPEC="$PROJECT_ROOT/apps/api/src/specialists/base/BaseSpecialist.ts"
+
+if grep -qE "fallback|llmMode.*fallback|MODEL_BY_TIER" "$GATEWAY_FILE" 2>/dev/null; then
+  ok "§10.1 LLMGateway fallback 路径代码存在"
+else
+  fail "§10.1 LLMGateway fallback 路径"
+fi
+
+if grep -qE "import Anthropic|from '@anthropic-ai/sdk'|require.*anthropic" \
+     "$GATEWAY_FILE" 2>/dev/null; then
+  ok "§10.2 LLMGateway 导入 @anthropic-ai/sdk"
+else
+  fail "§10.2 LLMGateway @anthropic-ai/sdk import"
+fi
+
+if [ -n "$HAS_OPENAI" ]; then
+  COST_USD_FIELD=$(grep -rn "costUsd\|cost_usd" \
+    "$PROJECT_ROOT/prisma/schema.prisma" 2>/dev/null | wc -l)
+  if [ "$COST_USD_FIELD" -ge 1 ]; then
+    ok "§10.3 prisma schema cost_log 含 costUsd 字段 ($COST_USD_FIELD hit)"
+  else
+    fail "§10.3 prisma schema costUsd field (0 hit)"
+  fi
+
+  EXECUTE_RAW=$(grep -rn "\$executeRaw\|executeRaw" \
+    "$PROJECT_ROOT/apps/api/src/services/quota/" 2>/dev/null | wc -l)
+  if [ "$EXECUTE_RAW" -ge 1 ]; then
+    ok "§10.4 quota service 含 executeRaw atomic UPDATE ($EXECUTE_RAW hit)"
+  else
+    fail "§10.4 quota service executeRaw (0 hit)"
+  fi
+
+  MIGRATION_COST=$(find "$PROJECT_ROOT/prisma/migrations" -name "*.sql" \
+    -exec grep -l "cost_log" {} \; 2>/dev/null | wc -l)
+  if [ "$MIGRATION_COST" -ge 1 ]; then
+    ok "§10.5 prisma migration 含 cost_log 表 DDL ($MIGRATION_COST 个文件)"
+  else
+    fail "§10.5 prisma migration cost_log table (0 files)"
+  fi
+
+  ERROR_HANDLING=$(grep -cE "catch|APIError|NetworkError|\.catch\(" "$GATEWAY_FILE" 2>/dev/null || true)
+  if [ "$ERROR_HANDLING" -ge 2 ]; then
+    ok "§10.6 LLMGateway 含错误处理机制 ($ERROR_HANDLING 处)"
+  else
+    fail "§10.6 LLMGateway error handling ($ERROR_HANDLING 处 · 期望 ≥ 2)"
+  fi
+
+  COST_FORMULA=$(grep -cE "COST_PER_M|costUsd.*=|input.*price|output.*price|toFixed" \
+    "$BASE_SPEC" 2>/dev/null || true)
+  if [ "$COST_FORMULA" -ge 1 ]; then
+    ok "§10.7 BaseSpecialist 含 costUsd 计算公式 ($COST_FORMULA hit)"
+  else
+    fail "§10.7 BaseSpecialist costUsd formula (0 hit)"
+  fi
+else
+  skip "§10.3 prisma schema costUsd 深度验证 (SKIP: 无 OPENAI_API_KEY)"
+  skip "§10.4 quota service executeRaw 深度验证 (SKIP: 无 OPENAI_API_KEY)"
+  skip "§10.5 prisma migration cost_log 深度验证 (SKIP: 无 OPENAI_API_KEY)"
+  skip "§10.6 LLMGateway 错误处理深度验证 (SKIP: 无 OPENAI_API_KEY)"
+  skip "§10.7 BaseSpecialist costUsd 计算公式验证 (SKIP: 无 OPENAI_API_KEY)"
+fi
 echo ""
 
 # ─────────────────────────────────────────────────────────────
