@@ -90,6 +90,12 @@ const TopicBaseSchema = z.object({
 
 export type TopicOutput = z.infer<typeof TopicOutputSchema>;
 
+// ── US-006: executeStream chunk types ─────────────────────────────────────────
+
+export type TopicStreamChunk =
+  | { type: 'meta'; meta: { model: string } }
+  | { type: 'done'; category: TopicCategory; result: TopicOutput };
+
 // ── AC-9: input schema — category enum 拒绝非法值 ────────────────────────────
 
 export const TOPIC_CATEGORIES = ['traffic', 'monetize', 'persona', 'cognition', 'case'] as const;
@@ -267,6 +273,36 @@ export class TopicAgent extends BaseSpecialist<TopicInput, TopicOutput> {
       }
     }
     return { accumulated, tokens, model };
+  }
+
+  /**
+   * US-006 AC-1/2: SSE streaming across all 5 categories
+   * Yields { type: 'meta' } once (first category result), then { type: 'done' } per category.
+   * Each execute() call uses the real llmGateway.stream() internally (AC-3 of TopicAgent).
+   */
+  async *executeStream(baseReq: {
+    accountId: number;
+    userInput?: Record<string, unknown>;
+    traceId?: string;
+    stepKey?: string;
+  }): AsyncGenerator<TopicStreamChunk> {
+    let metaEmitted = false;
+
+    for (const category of TOPIC_CATEGORIES) {
+      const res = await this.execute({
+        accountId: baseReq.accountId,
+        userInput: { ...(baseReq.userInput ?? {}), category } as TopicInput,
+        traceId: baseReq.traceId,
+        stepKey: baseReq.stepKey,
+      });
+
+      if (!metaEmitted && res.modelUsed && res.modelUsed !== 'fallback') {
+        yield { type: 'meta', meta: { model: res.modelUsed } };
+        metaEmitted = true;
+      }
+
+      yield { type: 'done', category, result: res.result };
+    }
   }
 
   private _buildUserPrompt(userInput: TopicInput, _ctx: AssembledContext): string {
