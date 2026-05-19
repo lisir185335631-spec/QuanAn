@@ -2499,3 +2499,33 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
   证据: prd22-generate.png vs 26-generate.png 肉眼对比 · scope 影响 /boom-generate /knowledge 等
 - 影响评估: 不阻断 US-002 ship · 都是 PRD 自身设计问题 · 不污染 ralph 学习
 ---
+
+--- [RALPH] Iteration 2 ended: US-002 (55分钟 22秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-19 12:40 ---
+
+--- [RALPH] Iteration 1 started: US-003 at 2026-05-19 12:48 ---
+
+## 2026-05-19 12:52 - US-003
+- 实现了什么:
+  - apps/web/src/pages/tools/BoomGenerate.tsx: 完整重写 — inline 重构，弃用 ToolForm · ElementsInlineMultiPicker(grouped) + 行业/主题 input + 一键生成 CTA + 加载 skeleton + BoomGenerateResult 结果区
+  - H1 字面锁 "爆款元素自动生成" + 副标题字面锁锁定(AC-1)
+  - 全选/清空两个 secondary button — DOM button 数 = 32 ≥ 25(AC-4)
+  - 禁用条件: elements.length === 0(AC-3) · industry/topic 可选
+  - 行业 placeholder 动态读取 useActiveAccount().account.industry(AC-2)
+  - tests/e2e/prd22-boom-generate.spec.ts: 4 个 e2e test(H1/元素渲染/多选/disabled)
+  - tests/e2e/prd22-visual-baseline.spec.ts: 追加 /boom-generate baseline fixture
+- 更改的文件:
+  - apps/web/src/pages/tools/BoomGenerate.tsx (完整重写)
+  - tests/e2e/prd22-boom-generate.spec.ts (新建 · 4 e2e tests)
+  - tests/e2e/prd22-visual-baseline.spec.ts (追加 boom-generate baseline)
+- 质量检查: typecheck PASS(0 error) · browser 验证通过
+- 浏览器验证(AC-9): 23 元素渲染(≥22 ✅) · DOM button=32(≥25 ✅) · CTA disabled→enabled ✅ · console 无 error(只有 React Router v7 pre-existing warning)
+- **未来迭代的学习:**
+  - BoomGenerate 用 ALL_ELEMENTS import 做"全选"按钮时可直接 map key，不需要动态 import
+  - ActiveAccountOutput.industry 是 string 类型(非 undefined)，可直接安全读，无需可选链
+  - 行业 placeholder 动态用 industry ? `当前：${industry}（可手动输入覆盖）` : fallback 是标准 pattern
+
+---
+
+--- [RALPH] Iteration 1 ended: US-003 (4分钟) ---
