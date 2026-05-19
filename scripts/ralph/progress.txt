@@ -5,6 +5,29 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 03:05 - US-004 [PRD-23] · /video-analysis 真表单 + 5 H3 stub 输出
+- 实现了什么:
+  - apps/web/src/pages/tools/VideoAnalysis.tsx: 完整重写 · 去除 tRPC 依赖 · 本地 state(title/copy/submitted) · 表单 disabled(copy<10) · 提交→5 H3 stub 输出 · 一键仿写 button → navigate('/generate')
+  - apps/web/src/pages/tools/__tests__/VideoAnalysis.test.tsx: 新建 · 5 tests · H1字面/副标题/disabled/enabled/5H3
+  - tests/e2e/prd23-video-analysis-flow.spec.ts: 新建 · 3 tests · 6/6 pass(chromium+mobile)
+  - tests/e2e/prd23-visual-baseline.spec.ts: 追加 /video-analysis baseline 'prd23-video-analysis.png'
+- 验证结果:
+  - AC-7 typecheck: ✅ 0 errors
+  - AC-7 vitest: ✅ 269 tests pass (≥247 ✓)
+  - AC-8 e2e: ✅ 6/6 pass (3 chromium + 3 mobile)
+  - AC-9 visual: ✅ prd23-video-analysis.png baseline written
+  - AC-10 browser: ✅ H1/infobox/表单disabled→enabled/5H3/一键仿写→/generate all verified via e2e
+- 更改的文件:
+  - apps/web/src/pages/tools/VideoAnalysis.tsx (重写)
+  - apps/web/src/pages/tools/__tests__/VideoAnalysis.test.tsx (新建)
+  - tests/e2e/prd23-video-analysis-flow.spec.ts (新建)
+  - tests/e2e/prd23-visual-baseline.spec.ts (追加)
+- **未来迭代的学习:**
+  - PRD-23 stub 页范式: 本地 state(submitted) 替代 tRPC mutation · 表单校验用 copy.length < 10 直接判 disabled · 不引入 react-hook-form
+  - stub 工具页的 unit test 无需 mock tRPC · VideoAnalysis 不依赖 trpc · MemoryRouter 包裹即可
+  - 一键仿写 → `/generate` 用 useNavigate · e2e 验证 waitForURL 可靠
+---
+
 ## 2026-05-20 02:15 - US-003 [PRD-23] retry · inactive tab content visible fix
 - 实现了什么:
   - apps/web/src/pages/step/Step8.tsx:46-51 · 2 个 TabsContent forceMount 加 `className="data-[state=inactive]:hidden"`
@@ -3342,4 +3365,13 @@ PRD-23 范围:
 
 ### 关键修复(ralph 自主)
 - ralph 自 fix shadcn Tabs forceMount issue · data-[state=inactive]:hidden 让 inactive tab content 真隐藏(否则双 tab 内容同时显示)· 反例库价值
+---
+
+--- [RALPH] Iteration 7 ended: US-003 (49分钟 23秒) ---
+
+--- [RALPH] Iteration 8 started: US-004 at 2026-05-20 02:57 ---
+
+## 2026-05-20 03:44 - US-004 [PRD-23] Opus audit approve · medium 快审
+- AC 10/10 PASS · vitest 269/269 · 1st pass · D-233 unit test 同步
+- 字面锁 9/9 · 爆款文案解析 H1 + 副标 + 5 H3 输出 + 使用方法 infobox
 ---
