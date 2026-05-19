@@ -3081,3 +3081,39 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
 --- [RALPH] Iteration 17 ended: US-011 (51分钟 52秒) ---
 
 --- [RALPH] Iteration 18 started: US-012 at 2026-05-19 20:00 ---
+
+## 2026-05-19 20:32 - US-012 [PRD-22] Opus audit approve · 收官 deep audit
+
+### audit 5 步
+- Step 1 ARTIFACTS VALID · Step 1.5 vitest 206/206 passed · 零回归
+- Step 1.b retryCount=0(1st pass)
+
+### AC 通过(全 10/10)
+- **AC-1 verify-prd-22.sh: 52/52 checks PASSED · 0 失败 · 10 sections 全覆盖**
+- AC-2 13 visual baseline image 全建立(prd22-*.png × 13)
+- AC-3 /goal-verify §0 · apps/web/.planning/codebase/ 5 文件 + .agents/goal-verify/prd-22-goal-verify.md 125 行
+- AC-4 /goal-verify §1+ · 11 目标 vs 12 US 交付 11/11 ✓
+- AC-5 /prd-retro · .agents/retros/prd-22-vs-prd-21-retrospective.md 168 行(含 PRD-15→22 严格通过率趋势 + 2 reject 根因)
+- AC-6/7 AGENTS.md §11.13 PRD-22 沉淀 +30 行 · tech-debt.json 维护
+- AC-8 progress.txt ship summary 完整
+- AC-9 typecheck 0 errors · AC-10 verify-prd-22.sh 退出码 0
+
+### PRD-22 ship 总结
+- 12 US 全 audit approved · 严格一轮通过率 82%(9/11 dev US 1iter PASS · 2 reject US-006/US-009 同模式 unit test 同步)
+- 13 visual baseline 跃迁(从 PRD-21 4 → PRD-22 13 · +9)
+- 52 verify checks(从 PRD-21 45 → PRD-22 52 · +7)
+- 5 TD 净增长(TD-089/090/091/092/093)· 已登记 + 留 PRD-23+ 修
+- 3 inline picker utility 跨 page 复用基础设施(可复用 PRD-23+ 5 inline page 重构)
+- D-214~D-225 12 Locked Decisions 全落实
+
+### PRD-22 → PRD-23 Handoff
+PRD-23 范围:
+- 3 stub 完整化(/diagnosis · /accounts · /step/8)
+- 14 工具视觉精修(已 PRD-15 完成 8 + PRD-22 新 5 + /trending 验证)
+- 修复 TD-090(baseline 命名 prd22-XXX → aiipznt 实拍编号 25-/26-/30-/33- 等)
+- 修复 TD-091(/generate 单列 vs aiipznt 双栏 layout)
+- 修复 TD-092(PRD AC-3 误算 H3)
+- 修复 TD-093(PRD AC 模板加 unit test 同步)
+- 继承 PRD-22 inline picker utility(3 件套)
+- 继承 PRD-22 visual baseline infra(13 page)
+---
