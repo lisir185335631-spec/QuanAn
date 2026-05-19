@@ -1,101 +1,72 @@
 /**
- * VideoProduction.tsx — /video-production 工具页 · PRD-6 US-004 · US-013
- * 真表单: ToolForm(toolKey=video-production) + sourceCopy textarea min 10 + videoType select + duration select + additionalContext textarea
- * LS-first dual-write: getToolLsKey(accountId, "video-production", "input") — handled by ToolForm (D-031 · AC-4)
- * submit → trpc.videoProduction.generate.mutate → onSuccess setResult → <VideoProductionResult>
- * FeedbackButton: agentId=VideoAgent
- * AbortController on unmount
- * US-011 pattern: ?historyId → trpc.history.detail.useQuery → 预填 sourceCopy(inputSummary) + setResult(历史 content)
- * US-013 SHIELD REJ-010: ?historyId pre-fill → write defaults to LS namespace for persistence
+ * VideoProduction.tsx — /video-production · PRD-23 US-006
+ * Stub: local state form + 4 H3 output sections (no tRPC)
+ * AC-1: H1 '短视频一键制作' + subtitle 字面锁
+ * AC-2: textarea '文案' placeholder 字面锁 · ≥ 10 字
+ * AC-3: CTA '生成制作方案' disabled if text.length < 10
+ * AC-4: stub 4 H3 区块 · 分镜脚本/拍摄方案/口播提词器/剪辑指导
  */
+import { useState } from 'react';
 
-import { videoProductionInput } from '@quanan/schemas/specialist-io';
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+const SUBTITLE = '输入文案，AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导';
 
-import { FeedbackButton } from '@/components/FeedbackButton';
-import { ToolForm } from '@/components/ToolForm/ToolForm';
-import { VideoProductionResult } from '@/components/ToolResult/VideoProductionResult';
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { getToolLsKey } from '@/lib/ls-namespace';
-import { trpc } from '@/lib/trpc';
-
-import type { VideoProductionHistoryRow } from '@quanan/clients/router-types';
+const OUTPUT_SECTIONS = [
+  { h3: '分镜脚本', desc: '同 step/6' },
+  { h3: '拍摄方案', desc: '设备 / 灯光 / 服装' },
+  { h3: '口播提词器', desc: '断句 / 重音' },
+  { h3: '剪辑指导', desc: '卡点 / 特效 / 字幕样式' },
+] as const;
 
 export default function VideoProduction() {
-  const { account } = useActiveAccount();
-  const accountId = (account as { id: number } | null)?.id ?? null;
+  const [text, setText] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
-  const [result, setResult] = useState<VideoProductionHistoryRow | null>(null);
-  const [searchParams] = useSearchParams();
-  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
-
-  const abortRef = useRef<AbortController>(null!);
-  useEffect(() => {
-    abortRef.current = new AbortController();
-    return () => { abortRef.current.abort(); };
-  }, []);
-
-  // ?historyId pre-fill (US-011 pattern)
-  const { data: historyDetail } = trpc.history.detail.useQuery(
-    { id: historyId! },
-    { enabled: !!historyId },
-  );
-
-  useEffect(() => {
-    if (!historyDetail || accountId === null) return;
-    setResult(historyDetail as unknown as VideoProductionHistoryRow);
-    // US-013 SHIELD REJ-010: write pre-filled input to LS so user doesn't lose state on navigation
-    try {
-      localStorage.setItem(
-        getToolLsKey(accountId, 'video-production', 'input'),
-        JSON.stringify({ sourceCopy: historyDetail.inputSummary, videoType: '', duration: '', additionalContext: '' }),
-      );
-    } catch { /* storage full */ }
-  }, [historyDetail, accountId]);
-
-  const historyDefaults = historyDetail
-    ? { sourceCopy: historyDetail.inputSummary, videoType: '', duration: '', additionalContext: '' }
-    : undefined;
-
-  const mutation = trpc.videoProduction.generate.useMutation();
-
-  async function handleSubmit(data: Record<string, unknown>) {
-    if (abortRef.current.signal.aborted) throw new Error('aborted');
-
-    const row = await mutation.mutateAsync(
-      data as { sourceCopy: string; videoType?: 'short_form' | 'long_form'; duration?: '15s' | '30s' | '60s' | '180s'; additionalContext?: string },
-    );
-
-    if (abortRef.current.signal.aborted) throw new Error('aborted');
-    return row;
-  }
-
-  function handleSuccess(row: unknown) {
-    setResult(row as VideoProductionHistoryRow);
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (text.length < 10) return;
+    setSubmitted(true);
   }
 
   return (
     <main className="flex-1 container py-8 space-y-8">
+      {/* Header — AC-1 */}
       <div>
         <span className="text-label-sm font-label text-primary uppercase tracking-wide">内容创作</span>
-        <h1 className="mt-1 text-h1 font-display text-on-surface">短视频制作</h1>
-        <p className="mt-2 text-body-md text-muted-foreground">从原始文案生成完整制作方案：分镜脚本 + 设备清单 + 拍摄排期</p>
+        <h1 className="mt-1 text-h1 font-display text-on-surface">短视频一键制作</h1>
+        <p className="mt-2 text-body-md text-muted-foreground">{SUBTITLE}</p>
       </div>
 
-      <ToolForm
-        toolKey="video-production"
-        schema={videoProductionInput}
-        onSubmit={handleSubmit}
-        onSuccess={handleSuccess}
-        submitLabel="生成方案"
-        defaultValues={historyDefaults}
-      />
+      {/* Form — AC-2/3 */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-1.5">
+          <label className="text-label-sm font-label text-on-surface">文案</label>
+          <textarea
+            placeholder="粘贴你的短视频文案（至少 10 个字），AI 将为你生成完整的制作方案..."
+            value={text}
+            onChange={e => setText(e.target.value)}
+            rows={8}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-body-md placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={text.length < 10}
+          className="w-full rounded-md bg-primary text-primary-foreground py-2.5 text-label-md font-label disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+        >
+          生成制作方案
+        </button>
+      </form>
 
-      {result && (
-        <div className="space-y-4">
-          <VideoProductionResult data={result} />
-          <FeedbackButton stepKey="video-production" agentId="VideoAgent" />
+      {/* Stub output — AC-4 */}
+      {submitted && (
+        <div className="space-y-4" data-testid="video-production-output">
+          {OUTPUT_SECTIONS.map(({ h3, desc }) => (
+            <div key={h3} className="rounded-lg border border-border p-4 space-y-2">
+              <h3 className="text-h3 font-display text-on-surface">{h3}</h3>
+              {desc && <p className="text-body-sm text-muted-foreground">{desc}</p>}
+              <p className="text-body-md text-muted-foreground italic">AI 生成中…</p>
+            </div>
+          ))}
         </div>
       )}
     </main>

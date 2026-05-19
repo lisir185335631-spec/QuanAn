@@ -119,4 +119,21 @@ test.describe('PRD-23 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-8 (US-006) · /video-production visual baseline
+  test('/video-production fullPage matches prd23-video-production.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/video-production');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-video-production.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });
