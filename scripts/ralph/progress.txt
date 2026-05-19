@@ -2301,3 +2301,24 @@
   - FUNCTION_MATRIX_FOOTER.href = '/guide' (自引用) · footer 卡点击 reload 当前页 · 正常行为
   - prd16-guide-flow.spec.ts 已随 US-006 更新 · "module card expand shows steps" → "module card links to module page"
 ---
+
+--- [RALPH] Iteration 12 ended: US-006 (34分钟 55秒) ---
+
+--- [RALPH] Iteration 13 started: US-007 at 2026-05-19 07:56 ---
+
+## 2026-05-19 10:30 - US-007 [PRD-21] /ip-plan 视觉精修
+- 实现了什么: IpPlan.tsx 完整重写为 5 区块结构(顶部导航 + H1+副标 + glass-card 进度条 + IpPlanStepGrid) · 新建 IpPlanStepGrid 组件(9步字面锁 + FadeInWrapper stagger + loading skeleton) · handleRefresh useState 控制 animate-spin · data-grid-bg 属性写法修正
+- 更改的文件:
+  - apps/web/src/pages/IpPlan.tsx (完整重写 · 5 区块结构)
+  - apps/web/src/components/ip-plan/IpPlanStepGrid.tsx (新建 · 9步卡片 + loading skeleton)
+  - screenshots/prd21-us007-ip-plan-01.png (新增截图)
+- 验证结果:
+  - AC-7 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-8 e2e: ✅ 6/6 prd16-ip-plan-flow.spec.ts passed
+  - AC-9 visual: ✅ prd21-visual-baseline ip-plan test passed
+  - AC-10 browser: ✅ playwright screenshot 确认5列网格 + 返回首页 + 刷新 + 进度条 + 9卡
+- **未来迭代的学习:**
+  - data-grid-bg 要写成 HTML attribute 形式 (data-grid-bg 属性) 而非 className 字符串中的占位词
+  - completedSteps 由 IPProgressService 返回 StepKey9[] (step1/step3/step3b/step4/step4b/step5/step6/step7/step8) · IpPlanStepGrid 的 stepKey 字段要匹配这些值
+  - IP_PLAN_STEPS 9项 emoji+title 是 D1=A 锁死内容 · 任何"看起来合理"的改写都违反约束
+---
