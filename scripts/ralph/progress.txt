@@ -555,6 +555,7 @@
 - cold start race condition · _check_claude_health timeout 20s 偶撞边界 · ralph.py 已修 timeout 20→45 + 3 retry
 - tRPC subscription + Prisma $transaction 不兼容 · SSE generator yield 前 $transaction 已 commit → 后续 DB 写"Transaction already closed" · 解决: account-isolation.ts 检测 type==='subscription' + 改 set_config(is_local=false) connection-level SET
 - tRPC splitLink 必须和 httpSubscriptionLink 配合 · splitLink 按 op.type==='subscription' 路由 · 仅 httpBatchStreamLink 不支持 subscription(报错: "Subscriptions are unsupported by httpBatchStreamLink")
+- dev e2e + browser auth bypass: GET /auth/dev-login (NODE_ENV=development guard) · upsert dev user + Lucia session cookie + 自动绑定 activeAccountId · e2e beforeEach 先 goto dev-login 再 goto 目标页 · tRPC 受保护页用 globalProcedure + explicit where: { userId } 替代依赖 RLS 的 protectedProcedure
 
 ## PRD-16 Coding 3.0 设计定调(D1=A · D2=A · D3=A · D4=B)
 - D1=A 像素级 layout 1:1 对齐 aiipznt
