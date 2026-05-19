@@ -162,4 +162,18 @@ test.describe('PRD-22 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-10 US-010: /step/7 baseline · prd22-step7
+  test('/step/7 fullPage inline matches prd22-step7.png', async ({ page }) => {
+    await page.goto('/step/7');
+    await page.waitForLoadState('networkidle');
+    // Wait for script type cards to be rendered
+    await page.waitForFunction(() => document.querySelectorAll('button').length >= 20);
+    await expectVisualMatch(page, {
+      baseline: 'prd22-step7.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });
