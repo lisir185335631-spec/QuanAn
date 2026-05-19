@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-19T12:50:00",
+  "last_updated": "2026-05-19T16:08:00",
   "items": [
     {
       "id": "TD-001",
@@ -1891,6 +1891,32 @@
       ],
       "detected_in_prd": "PRD-22",
       "detected_in_story": "US-002 (Opus audit · high 深审 · 肉眼对比 baseline)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-092",
+      "category": "prd-spec-mismatch",
+      "title": "PRD-22 AC-3/AC-8 /step/3 误把 H1 算 H3 顶部总览 · 8 H 标签预期 vs spec §7.2 6 模块",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-007 (PRD-22)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "PRD-22 §3 US-007 AC-3 写 '/step/3 输出区 7 H3 块(D-220 字面锁) · (1) H3 \"账号包装方案\"(顶部总览) + 6 子模块' · AC-8 写 'DOM H 标签数(/step/3) = 8(H1 + 7 H3)' · 但 spec §7.2 line 1326 写 '生成结果结构(6 大模块)' · ralph 严守 spec 6 H3 + 顶部 H1 \"账号包装方案\" = 7 H 标签",
+      "root_cause": "PRD AC-3 把 dump §2.2 写的 '/step/3 8 H 标签(H1 + 7 H3)' 字面理解错了 · dump 实测 8 H 可能含表单 section H3 · 但我 PRD 解读为'账号包装方案'被算两次(H1 + 顶部总览 H3)· spec §7.2 明确 6 大模块 · ralph 对齐 spec 正确",
+      "scheduled_fix_in": "US-012 收官 · 修 PRD AC-3 + AC-8 字面 · 改 '7 H3' → '6 H3'(对齐 spec §7.2 + ralph 实际实现)· 不重做代码",
+      "audit_exemption": "US-007 approve 时豁免 · ralph 严守 spec §7.2 6 大模块 + STEP3_OUTPUT_H3_6 常量化模式 · 是优于 PRD AC 的实现",
+      "scope": [
+        "tasks/prd-22.md §3 US-007 AC-3/AC-8",
+        "scripts/ralph/prd-22.json US-007 AC-3/AC-8",
+        "apps/web/src/lib/constants/step3.ts STEP3_OUTPUT_H3_6"
+      ],
+      "impact": "Low · 不影响功能 · 不影响视觉(6 H3 子模块跟 aiipznt 一致) · 只影响 PRD AC 文本数字描述",
+      "categories": [
+        "prd-design-flaw"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-007 (Opus audit)",
       "resolved_in_prd": null,
       "resolved_at": null
     }
