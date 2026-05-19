@@ -3331,6 +3331,31 @@ E2E 默认走 fallback 路径(D-187)· 但**必须**考虑 SSE chunks 模拟(参
 
 ---
 
+### §11.13 PRD-22 inline-refactor + step-pages 沉淀(PRD-22 retro 2026-05-19 文档回流 · 34 commits 事实驱动)
+
+> **派生** · `.agents/retros/prd-22-vs-prd-21-retrospective.md` · 11/11 dev US ALL PASSED · 82% 严格一轮通过率 · 2 Opus reject(US-006 D-218 tab + US-009 TD-093 unit test 漏) · inline picker utility 3 件套首次建立跨 page 复用基础设施 · 13 page visual diff 基线扩展(4→13) · 206 vitest tests · 0 typecheck errors。
+
+#### §11.13.1 Inline Picker Utility 3 件套跨 page 复用模式(apps/web/src/components/inline-pickers/)
+
+`ScriptTypeInlineCards` / `ElementsInlineMultiPicker` / `PlatformInlineRadio` — controlled component API(`value`/`onChange`/`disabled`) · barrel export `index.ts` · 单元测试各 ≥5 case。PRD-22 中 11 个 dev US 有 8 个直接 import · 0 重复实现。PRD-23+ 新选项 UI 先检查此目录有无匹配 · 无则新建 + barrel + 单测。
+
+#### §11.13.2 Step Page 重写 AC 模板必含 unit test 要求(TD-093 根因 · 红线级)
+
+任何 step page 完整重写 US(Step{N}.tsx + OutputContent + constants)的 AC 中**必须**明确写 unit test 要求，特别是新建 component 名称。PRD-22 US-009 因 AC 未写 FileUpload 单测 → Opus reject → 补写后 PASS。模板：
+- `AC-x: TypeScript typecheck → 0 errors`
+- `AC-y: e2e tests · N tests PASS`
+- `AC-z: unit tests for [具体 component 名] → N tests PASS`
+
+#### §11.13.3 Visual Diff Baseline 扩展模式(13 page · 继续扩展到 32)
+
+`tests/e2e/prd{N}-visual-baseline.spec.ts` 追加 `expectVisualMatch` · 首跑 `--update-snapshots` · 命名 `prd{N}-{page-slug}.png` · CI 用 `pnpm test:visual:prd{N}:check`。PRD-21 4 baselines → PRD-22 13 baselines → PRD-24 目标 32 全覆盖。每个改变 UI 的 step/工具 page 完成后当轮追加 baseline · 不推迟到收官。
+
+#### §11.13.4 D-220 H3/H4 字面锁 + D-221 13 列分镜表(强制 constants 文件 · 继承全 PRD)
+
+step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `readonly Block[]` · h3Label/h4Label 1:1 来源 spec · 禁止在 JSX 直接写字面。`STORYBOARD_COLUMNS` 13 列同理。PRD-22 全 11 dev US 严守 · 0 字面漂移。
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充
@@ -3364,6 +3389,11 @@ E2E 默认走 fallback 路径(D-187)· 但**必须**考虑 SSE chunks 模拟(参
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
   - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
+- **2026-05-19 v0.6** · 加 §11.13 PRD-22 inline-refactor + step-pages 沉淀(34 commits · 13 page visual diff · 3 inline picker utility)
+  - §11.13.1 · Inline Picker Utility 3 件套跨 page 复用(components/inline-pickers/ · barrel export · 8 page 复用 · 0 重复实现)
+  - §11.13.2 · Step Page 重写 AC 模板必含 unit test 要求(TD-093 红线 · 具体 component 名称写入 AC · 防 Opus reject)
+  - §11.13.3 · Visual Diff Baseline 扩展模式(4→13 page · prd{N}-visual-baseline.spec.ts · --update-snapshots 首跑 · 目标 PRD-24 32 全覆盖)
+  - §11.13.4 · D-220 H3/H4 字面锁 + D-221 13 列分镜表(constants/step{N}.ts readonly Block[] · JSX 禁直接写字面 · PRD-22 0 字面漂移)
 - **2026-05-18 v0.5** · 加 §11.7 真 LLM 接入沉淀(PRD-20 retro 文档回流 · 5 子节 commit 事实驱动)
   - §11.7.1 · ENV validation + LLM client init(`apps/api/src/lib/env.ts` · zod safeParse + `.optional()` 双 SDK API_KEY · 缺一者 warning + 启动 log 模式 · 不 throw graceful fallback · D-191/192/193)
   - §11.7.2 · money-critical cost_log + userQuota atomic(`Prisma.raw` `UPDATE userQuota SET consumedTokens = consumedTokens + N WHERE accountId = X AND consumedTokens <= dailyBudgetTokens - N` 乐观锁 + Decimal(10,6) costUsd + Integer promptTokens/completionTokens · 并发 100 race test · 严守 D-194/195)
