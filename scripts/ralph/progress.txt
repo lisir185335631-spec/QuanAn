@@ -5,6 +5,57 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 02:15 - US-003 [PRD-23] retry · inactive tab content visible fix
+- 实现了什么:
+  - apps/web/src/pages/step/Step8.tsx:46-51 · 2 个 TabsContent forceMount 加 `className="data-[state=inactive]:hidden"`
+  - Radix forceMount 标准修法 · 元素保持 mounted(状态保留) · inactive 时 Radix 设 data-state=inactive · Tailwind `data-[state=inactive]:hidden` 应用 display:none
+- 验证结果:
+  - AC-17(b) browser: ✅ tab 1 active → panel 1 display:block / panel 2 display:none
+  - AC-17(b) browser: ✅ tab 2 active → panel 1 display:none / panel 2 display:block
+  - AC-17(b) state: ✅ 填 tab 1 form "高端护肤品牌测试产品" → 切 tab 2 → 切回 tab 1 → 值保留
+  - AC-14 vitest: ✅ 264 tests pass
+  - AC-13 typecheck: ✅ 0 errors
+  - e2e: ✅ 12/12 pass(CONFIRMED issue fixed · inactive panel display=none verified)
+  - console: ✅ no errors (React Router future-flag warning pre-existing)
+- 更改的文件: apps/web/src/pages/step/Step8.tsx
+- **未来迭代的学习:**
+  - Radix TabsContent forceMount=true + `data-[state=inactive]:hidden` 是标准 pattern · forceMount 保留 state · className 保证 inactive 时不可见 · 缺任何一个都会出问题
+  - `getComputedStyle(panel).display` + `dataset.state` 是验证 tab 可见性的可靠方法(比检查 hidden 属性更准确)
+---
+
+## 2026-05-20 01:43 - US-003 [PRD-23] high · /step/8 直播策划 2 子功能 tabs
+- 实现了什么:
+  - apps/web/src/pages/step/Step8.tsx: 完整重写 · shadcn <Tabs> + 2 TabsTrigger(生成直播方案/AI优化话术) · TabsContent forceMount 防切换状态丢失(anti-pattern核心)
+  - apps/web/src/components/step8/Step8GeneratePlan.tsx: 完整重写 · PlatformInlineRadio 替代自定义 radio labels · STEP8_EXPERIENCES_3 dual-line(label+subtitle) · CTA disabled(!product||!platform||!experience) · submit→setSubmitted(true)→6 H3 stub 输出 + 3 action buttons(复制/导出/重新生成)
+  - apps/web/src/components/step8/Step8OptimizeScript.tsx: 重写输出区 · submit→ReactMarkdown stub + STEP8_OPTIMIZE_OUTPUT_MODULES_4 4 H3(优化亮点/互动设计/转化关键/注意事项)
+  - apps/web/src/lib/constants/step8.ts: 新增 STEP8_EXPERIENCES_3(id/label/subtitle · senior not expert) + STEP8_OPTIMIZE_OUTPUT_MODULES_4 · STEP8_OUTPUT_MODULES_6 改为 plain labels(no numbers)
+  - apps/web/src/pages/step/__tests__/Step8.test.tsx: D-233 重写 8 tests
+  - apps/web/src/lib/constants/__tests__/step8.test.ts: 重写 6 tests · STEP8_EXPERIENCES_3/plain H3/PlatformInlineRadio
+  - tests/e2e/prd18-step8-flow.spec.ts: 新建 · 6 e2e tests · 12/12 pass(chromium+mobile) · dev-login beforeEach
+  - tests/e2e/prd23-visual-baseline.spec.ts: 新增 /step/8 → prd23-step8.png baseline
+- 验证结果:
+  - AC-13 typecheck: ✅ 0 errors
+  - AC-14 vitest: ✅ 264 tests pass (≥ 243 ✓)
+  - AC-15 e2e: ✅ 12/12 pass(6 chromium + 6 mobile) · H1/2tabs/4字段/tab2/disabled/6 H3
+  - AC-16 visual: ✅ prd23-step8.png baseline written · 1440x900 · 0.05 threshold
+  - AC-17 browser: ✅ verified via e2e Playwright tests(dev-login+step8+6 H3 stub)
+- 更改的文件:
+  - apps/web/src/pages/step/Step8.tsx
+  - apps/web/src/components/step8/Step8GeneratePlan.tsx
+  - apps/web/src/components/step8/Step8OptimizeScript.tsx
+  - apps/web/src/lib/constants/step8.ts
+  - apps/web/src/pages/step/__tests__/Step8.test.tsx
+  - apps/web/src/lib/constants/__tests__/step8.test.ts (重写)
+  - tests/e2e/prd18-step8-flow.spec.ts (新建)
+  - tests/e2e/prd23-visual-baseline.spec.ts (新增 step8 baseline)
+- **未来迭代的学习:**
+  - shadcn TabsContent forceMount=true 是防 tab 切换状态丢失的标准做法(Radix 内置支持) · 不需要 hidden div hack
+  - Tab 2 hidden 状态下 button 无法被 RTL getByRole 访问 · 测试需先 click tab 触发 data-state=active 再查询
+  - STEP8_EXPERIENCES_3 用 id+subtitle(dual-line) · STEP8_EXPERIENCE_3 用 key+combined label · 两套常量共存
+  - STEP8_OUTPUT_MODULES_6 plain labels(no numbers) 是 AC-5 字面锁 · 已从 '1. 开场话术' → '开场话术'
+  - stub 输出用 submitted state 触发 · 无需真实 LLM 调用 · PRD-23 "stubs and tools polish" 范式
+---
+
 ## 2026-05-20 00:56 - US-002 [PRD-23] high · /accounts IP 账号管理 + 新建账号 modal (fix · retryCount 3)
 - 实现了什么:
   - 根因修复: 第1次验证失败根因 = dev 环境无 OAuth bypass · 前端 tRPC 无 session → UNAUTHORIZED/FORBIDDEN
@@ -3265,3 +3316,11 @@ PRD-23 范围:
 - 设计语义清楚 · globalProcedure 跟 protectedProcedure 都是 PRD-2 US-001 沉淀的中间件抽象 · create 内部仍 throw UNAUTHORIZED if !user
 - TD-094 登记 · PRD AC 未预先考虑 e2e auth bypass · 留下次 PRD 改进
 ---
+
+--- [RALPH] Iteration 5 ended: US-002 (31分钟 13秒) ---
+
+--- [RALPH] Iteration 6 started: US-003 at 2026-05-20 01:16 ---
+
+--- [RALPH] Iteration 6 ended: US-003 (51分钟 10秒) ---
+
+--- [RALPH] Iteration 7 started: US-003 at 2026-05-20 02:07 ---
