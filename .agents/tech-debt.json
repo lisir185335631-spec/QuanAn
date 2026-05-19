@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-19T11:42:00",
+  "last_updated": "2026-05-19T12:50:00",
   "items": [
     {
       "id": "TD-001",
@@ -1834,6 +1834,63 @@
       ],
       "detected_in_prd": "PRD-22",
       "detected_in_story": "US-001 (Opus audit · foundation 深审)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-090",
+      "category": "visual-diff-fidelity",
+      "title": "visual baseline 命名应用 aiipznt 实拍编号 · 不是 prd22-XXX 自截图",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-002 (PRD-22)",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "tests/e2e/prd22-visual-baseline.spec.ts line 27 · baseline 'prd22-generate.png' 是 ralph --update-snapshots 时自截图(1440x1619 fullPage QuanAn 实现)· 而 aiipznt 实拍 baseline 26-generate.png 早已存在 /tmp/aiipznt-clone-research/screenshots/(同目录)· ralph 用自截图作为 baseline 后续永远 PASS · 失去 visual diff 跟 aiipznt 对比的真意义",
+      "root_cause": "PRD-22 §3 US-002 AC-10 + US-003 AC-8 + US-004 AC-9 + US-005 AC-9 全自己写 baseline 命名 'prd22-XXX' · 应改为对应 aiipznt 实拍编号(25-boom-generate / 26-generate / 30-ai-video / 33-knowledge / 10-step-1-industry / 11-step-3-account / 12-step-3b-persona / 13-step-4-execution / 14-step-4b-monetization / 15-step-5-topics / 16-step-6-shooting / 17-step-7-copywriting / 33-knowledge mobile crop)· 我的 PRD 设计 bug · 不是 ralph 实现错",
+      "scheduled_fix_in": "US-012 收官 · verify-prd-22.sh 跑前统一修 spec.ts baseline 引用为 aiipznt 编号 + 删 prd22-XXX 自截图 + 跑 pnpm test:visual:check 看实际 pixel diff",
+      "audit_exemption": "US-002 approve 时豁免 · ralph 严格按 PRD AC 实现 + visual fixture 框架本身正确(expectVisualMatch / viewport 1440x900 / fullPage / 5% threshold 全对) · 仅 baseline 名称引用错 · 1 行修",
+      "scope": [
+        "tests/e2e/prd22-visual-baseline.spec.ts",
+        "tasks/prd-22.md §3 AC-10/AC-8/AC-9",
+        "scripts/ralph/prd-22.json US-002~005 AC",
+        "/tmp/aiipznt-clone-research/screenshots/prd22-XXX.png(待删)"
+      ],
+      "impact": "Medium · 不影响 PRD-22 内 ship · 但失去 visual diff 跟 aiipznt 对比的核心价值 · 后续 PRD-23/24 复用 visual infra 时需修正",
+      "categories": [
+        "prd-design-flaw",
+        "visual-fidelity"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-002 (Opus audit · high 深审)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-091",
+      "category": "layout-fidelity",
+      "title": "/generate 单列 layout vs aiipznt 双栏 · D1=A 严守度不足",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-002 (PRD-22)",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "对比 /tmp/aiipznt-clone-research/screenshots/26-generate.png(aiipznt 实拍 · 主区分左右两栏 · 左输入 + 右实时结果区) vs /tmp/aiipznt-clone-research/screenshots/prd22-generate.png(QuanAn 实现 · 单列纵向 6 区块) · layout 根本结构不同 · pixel diff 估计 30-50%",
+      "root_cause": "PRD-22 §3 US-002 AC-2 自己写'主区结构(从上到下)'单列结构 · 没要求双栏 · ralph 严格按 PRD 实现 · 我的 PRD 设计 bug · 不是 ralph 实现错",
+      "scheduled_fix_in": "US-011 跨 page polish 阶段 · 评估是否重做 5 inline page 为双栏 layout(影响 /generate /boom-generate /knowledge 等) · 或 PRD-23+ 设计阶段决策",
+      "audit_exemption": "US-002 approve 时豁免 · ralph 严格按 PRD AC-2 单列结构实现 + 所有 AC 12/12 PASS · inline picker 复用 / 字符计数 / 主 CTA disabled 条件 / ToolForm import 保留 D-216 等全对",
+      "scope": [
+        "apps/web/src/pages/tools/Generate.tsx",
+        "apps/web/src/pages/BoomGenerate.tsx(US-003 待实现)",
+        "apps/web/src/pages/Knowledge.tsx(US-005 待实现)",
+        "tasks/prd-22.md §3 US-002 AC-2 / US-003 AC-2 / US-005 AC-3"
+      ],
+      "impact": "Medium · 影响 visual diff < 5% 目标(可能 fail) · 但用户功能不受影响(inline 选择 + 字符计数 + 主 CTA 都正确) · 5 inline page 跟 aiipznt 双栏差距是 D1=A 严守度问题",
+      "categories": [
+        "prd-design-flaw",
+        "layout-fidelity",
+        "d1a-severity"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-002 (Opus audit · high 深审 · 肉眼对比 baseline)",
       "resolved_in_prd": null,
       "resolved_at": null
     }

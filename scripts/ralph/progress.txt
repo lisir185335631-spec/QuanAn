@@ -2473,3 +2473,29 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
   - void (ToolForm as unknown) 是消除 TS unused-import 报错同时保留 import 的惯用法(D-216 锁场景)
   - ScriptTypeInlineCards 不需要改动 · 已有足够 test 兼容性(card 用 role=button + label 文字即可定位)
 ---
+
+## 2026-05-19 12:50 - US-002 [PRD-22] Opus audit approve · high 深审
+
+### audit 5 步
+- Step 1 audit-artifacts: ARTIFACTS VALID(zero_regression=PASS · pytest-full 202/202 passed)
+- Step 1.b retryCount=0(1st pass)
+- Step 2 risk_level=high · size_hint=medium
+- Step 3 high 档 grep: 安全(无 dangerouslySetInnerHTML/eval) · D-216 ToolForm import 保留 + void suppress · D-219 不读 stepData 字面注释 0 命中
+- Step 4 通用 4 维度 · D1A 3 关键字面(H1/副标/placeholder)全字面 1:1 · 字符计数 0/500 + maxLength={500} 正确
+
+### AC 通过
+- AC 12/12 PASS · isDisabled 三联条件 · inline picker 完整复用 · acquisitionGenerate 子模式 PRD-15 兼容保留
+- D-214/215/216/219 4 LD 全落实
+
+### Visual baseline 对比(lookat /tmp/aiipznt-clone-research/screenshots/)
+- 26-generate.png(aiipznt 实拍): 双栏 layout · 左输入 + 右实时结果区 · 4 列 × 5 行 20 卡
+- prd22-generate.png(QuanAn ralph 自截图): 单列 layout · 纵向 6 区块 · 5 列 × 4 行 20 卡
+- 差距大概率 30-50% pixel diff(layout 根本结构不同)
+
+### TD 豁免 · 2 件 PRD 自身设计 bug(不是 ralph 实现错)
+- **TD-090** 豁免 approve: visual baseline 命名 'prd22-XXX' vs 应用 aiipznt 实拍编号 25-/26-/30-/33- 等 · PRD AC 自身写错命名 · ralph 严格按 PRD 实现 · 1 行 baseline 引用修 · 留 US-012 收官统一修
+  证据: tests/e2e/prd22-visual-baseline.spec.ts:27
+- **TD-091** 豁免 approve: /generate 单列 layout vs aiipznt 双栏 · D1=A 严守度不足 · PRD AC-2 写'从上到下'单列结构 · ralph 严格按 PRD · 留 US-011 polish 阶段评估
+  证据: prd22-generate.png vs 26-generate.png 肉眼对比 · scope 影响 /boom-generate /knowledge 等
+- 影响评估: 不阻断 US-002 ship · 都是 PRD 自身设计问题 · 不污染 ralph 学习
+---
