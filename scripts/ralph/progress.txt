@@ -2443,3 +2443,33 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
   证据: apps/web/src/lib/constants/elements.ts:18-50
   影响评估: Low · 视觉密度 23 vs 22 button 差距 1 · pixel diff 5% threshold 内
 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (25分钟 25秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-19 11:44 ---
+
+## 2026-05-19 11:55 - US-002 [PRD-22] high · /generate 重构 inline
+- 实现了什么:
+  - Generate.tsx 完整重写: H1 "生成爆款文案" + 副标字面锁 + 模式 tab(自由/获客 2 button)
+  - ScriptTypeInlineCards showSearch 渲染 20 脚本卡(grid grid-cols-2/4/5)
+  - ElementsInlineMultiPicker layout="grouped" showCount 渲染 22 元素 4 组 + "已选 N 个" 计数
+  - textarea 文案主题 maxLength=500 + 字符计数 "{topic.length}/500" + text-destructive > 500
+  - 主 CTA "生成文案" bg-gradient-to-r from-primary to-primary/60 · disabled 条件 AC-4
+  - ToolForm import 保留但 void 消除 lint 警告(D-216 锁)
+  - ElementsInlineMultiPicker: 两个 layout 变体都加 data-element={el.key} 属性(e2e 兼容)
+  - tool-generate.spec.ts 更新: ToolForm selectors → inline card + data-element + /生成文案/ regex
+  - prd22-visual-baseline.spec.ts 新建: /generate fullPage · baseline 'prd22-generate' · 阈值 5%
+  - apps/web/package.json: 加 test:visual:prd22 + test:visual:prd22:check 脚本
+  - pages.test.tsx: H1 断言从 'AI 智能生成' → '生成爆款文案'
+- 验证结果:
+  - AC-8 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-6 button count: ✅ 52 buttons(≥45 · 20 脚本 + 22 元素 + 1 CTA + 2 mode tab + 7 其他)
+  - unit tests: ✅ 202/202 passed
+  - AC-10 visual: ✅ prd22-generate.png baseline 创建 + check pass(0% diff)
+  - AC-11 browser: ✅ 10/10 checks PASS(H1/20卡/click选中/22元素/已选N个/textarea/0/500/CTA/无error)
+- **未来迭代的学习:**
+  - ui/skeleton 组件不在本项目 shadcn 安装列表中 · 用 animate-pulse + div.bg-muted 代替
+  - trpc mutation 返回类型和 FreeGenerateHistoryRow 有 Date vs string 不兼容 · 必须 as unknown as FreeGenerateHistoryRow
+  - void (ToolForm as unknown) 是消除 TS unused-import 报错同时保留 import 的惯用法(D-216 锁场景)
+  - ScriptTypeInlineCards 不需要改动 · 已有足够 test 兼容性(card 用 role=button + label 文字即可定位)
+---
