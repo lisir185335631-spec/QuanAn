@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-20T01:18:00",
+  "last_updated": "2026-05-20T07:40:00",
   "items": [
     {
       "id": "TD-001",
@@ -1903,7 +1903,7 @@
       "discovered_at": "2026-05-19",
       "discovered_by": "Opus audit US-007 (PRD-22)",
       "severity": "low",
-      "status": "open",
+      "status": "closed",
       "evidence": "PRD-22 §3 US-007 AC-3 写 '/step/3 输出区 7 H3 块(D-220 字面锁) · (1) H3 \"账号包装方案\"(顶部总览) + 6 子模块' · AC-8 写 'DOM H 标签数(/step/3) = 8(H1 + 7 H3)' · 但 spec §7.2 line 1326 写 '生成结果结构(6 大模块)' · ralph 严守 spec 6 H3 + 顶部 H1 \"账号包装方案\" = 7 H 标签",
       "root_cause": "PRD AC-3 把 dump §2.2 写的 '/step/3 8 H 标签(H1 + 7 H3)' 字面理解错了 · dump 实测 8 H 可能含表单 section H3 · 但我 PRD 解读为'账号包装方案'被算两次(H1 + 顶部总览 H3)· spec §7.2 明确 6 大模块 · ralph 对齐 spec 正确",
       "scheduled_fix_in": "US-012 收官 · 修 PRD AC-3 + AC-8 字面 · 改 '7 H3' → '6 H3'(对齐 spec §7.2 + ralph 实际实现)· 不重做代码",
@@ -1919,8 +1919,9 @@
       ],
       "detected_in_prd": "PRD-22",
       "detected_in_story": "US-007 (Opus audit)",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-23",
+      "resolved_at": "2026-05-20",
+      "resolution_note": "PRD-23 US-010 收官: PRD AC 字面不修改(spec §7.2 6 H3 正确 · ralph 实现对) · 登记为 PRD-22 AC 文档性错误 · 不重做代码 · 完整记录在 TD 正文"
     },
     {
       "id": "TD-093",
@@ -1929,7 +1930,7 @@
       "discovered_at": "2026-05-19",
       "discovered_by": "Opus audit US-009 (PRD-22)",
       "severity": "medium",
-      "status": "open",
+      "status": "closed",
       "evidence": "PRD-22 §3 US-006/007/008/009 AC-11 全写 '已有 e2e 更新断言' · 都没写 '同步更新对应 __tests__/Page.test.tsx unit test 期望' · US-006 + US-009 连续 2 次 reject 同模式 · ralph 严格按 PRD-22 D1A 字面锁改 page/常量 · 但 PRD-17/18 沉淀 unit test 期望旧字面 · zero_regression FAIL · 浪费 ~40 min retry",
       "root_cause": "PRD-22 AC template 设计漏项 · 重写 page/常量必须同步更新 unit test 期望 · 但 PRD AC 只列 e2e 更新 · ralph 不主动延伸到 unit test",
       "scheduled_fix_in": "下一次写 PRD(PRD-23/24+)时 · 任何 page/常量重写的 AC 必须加 '同步更新 apps/web/src/pages/step/__tests__/StepN.test.tsx + lib/constants/__tests__/stepN.test.ts unit test 期望对齐新字面 · vitest 全 pass' · 或在 plan-check 加规则自动检测 page 重写 + unit test 同步",
@@ -1946,8 +1947,9 @@
       ],
       "detected_in_prd": "PRD-22",
       "detected_in_story": "US-009 (Opus audit · 第 2 次同模式 reject)",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-23",
+      "resolved_at": "2026-05-20",
+      "resolution_note": "PRD-23 US-010 收官: 1) ~/.claude/playbooks/prd-template-unit-test-sync.md 新建; 2) ~/.claude/skills/prd/SKILL.md 加 unit test 同步 AC 章节; 3) ~/.claude/commands/plan-check.md 加 §2.6.25 unit test 同步检测规则; 4) PRD-23 所有 9 dev US 严格执行 unit test 同步 · 0 reject 验证有效"
     },
     {
       "id": "TD-094",

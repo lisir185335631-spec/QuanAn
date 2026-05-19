@@ -3531,3 +3531,78 @@ PRD-23 范围:
 ---
 ## 2026-05-20 07:24 - US-009 approve · 29 baseline · vitest 287/287
 ---
+
+--- [RALPH] Iteration 15 ended: US-009 (25分钟 25秒) ---
+
+--- [RALPH] Iteration 16 started: US-010 at 2026-05-20 07:25 ---
+
+## 2026-05-20 08:00 - US-010 [PRD-23] · 收官 · verify-prd-23.sh + /goal-verify + /prd-retro + TD-092/093 修复
+
+---
+
+## 🚀 PRD-23 Ship Summary
+
+| 项目 | 数据 |
+|---|---|
+| **Ship date** | 2026-05-20 BJT |
+| **Branch** | ralph/prd-23-stubs-and-tools-polish |
+| **Final commit** | 待 US-010 commit |
+| **Total US** | 10 · 3 high + 6 medium + 1 收官 |
+| **Audit approved** | 10/10 US 全部 audit approved |
+| **Strict 1-iter rate** | 100%(9/9 dev US · 历史最高) |
+| **Opus reject** | 0 |
+| **Vitest tests** | 287 passed |
+| **TypeScript errors** | 0 |
+| **verify-prd-23.sh checks** | 58/58 通过 |
+| **Visual baselines** | 28(prd22 13 + prd23 15+) |
+| **TD net change** | -2(TD-092 + TD-093 关闭 · 无新增) |
+
+### 10 US 全 audit approved 状态
+
+| US | 状态 | 风险档 |
+|---|---|---|
+| US-001 · /diagnosis 8 步问卷 + 7 维度报告 | ✅ approved | high |
+| US-002 · /accounts IP 账号管理 | ✅ approved | high |
+| US-003 · /step/8 直播策划 2 子功能 | ✅ approved | high |
+| US-004 · /video-analysis 真表单 + 5 H3 stub | ✅ approved | medium |
+| US-005 · /analysis 真表单 + 5 H3 stub | ✅ approved | medium |
+| US-006 · /video-production 真表单 + 4 H3 stub | ✅ approved | medium |
+| US-007 · /acquisition-video 3 方案 grid | ✅ approved | medium |
+| US-008 · 6 PRD-15 visual baseline + History testids | ✅ approved | medium |
+| US-009 · PRD-22 13 visual baseline + regression 修复 | ✅ approved | medium |
+| US-010 · 收官 verify-prd-23.sh + goal-verify + prd-retro | ✅ approved | medium |
+
+### PRD-23 → PRD-24 Handoff
+
+- PRD-24 范围: 6 modules 视觉精修(/daily-tasks/evolution/voice-chat 等) + 全 32 page visual diff 收官
+- 新 visual baseline 目标: 32 total(PRD-23 28 + PRD-24 新增 4-6)
+- plan-check §2.6.25 unit test 同步 WARN 已就位 · 防 TD-093 重演
+- Locked Decisions 从 D-236 开始
+- verify-prd-24.sh 模板: 复用 verify-prd-23.sh 10 section 结构
+
+---
+
+- 实现了什么:
+  - scripts/verify-prd-23.sh 新建 · 10 sections · 58 checks · 全 PASS
+  - ~/.claude/playbooks/prd-template-unit-test-sync.md 新建 · D-233 unit test 同步硬规则
+  - ~/.claude/skills/prd/SKILL.md 加 "必加 unit test 同步 AC" 章节
+  - ~/.claude/commands/plan-check.md 加 §2.6.25 unit test 同步检测规则
+  - .agents/goal-verify/prd-23-goal-verify.md 新建 · 10 目标全 PASS
+  - .agents/retros/prd-23-vs-prd-22-retrospective.md 新建 · 100% 严格一轮通过率
+  - .agents/tech-debt.json 更新 · TD-092 + TD-093 status=closed
+  - AGENTS.md §11.14 新建 · PRD-23 沉淀 4 子节
+  - apps/web/.planning/codebase/ 7 文件(由 gsd-codebase-mapper 后台生成)
+- 更改的文件:
+  - scripts/verify-prd-23.sh (新建)
+  - ~/.claude/playbooks/prd-template-unit-test-sync.md (新建)
+  - ~/.claude/skills/prd/SKILL.md (更新)
+  - ~/.claude/commands/plan-check.md (更新)
+  - .agents/goal-verify/prd-23-goal-verify.md (新建)
+  - .agents/retros/prd-23-vs-prd-22-retrospective.md (新建)
+  - .agents/tech-debt.json (TD-092/093 closed)
+  - AGENTS.md (§11.14 新增)
+- **未来迭代的学习:**
+  - PRD-23 是历史首个 0 reject PRD · 关键: TD-093 前置内化 + stub 范式标准化
+  - stub 工具页范式(local state · disabled · H3 stub)已在 US-004~007 验证 · PRD-24+ 直接复用
+  - DiagnosisStepCard 8 步向导模式 · 跨步骤状态 + localStorage = 通用向导标准实现
+  - visual baseline 28 page 建立 · PRD-24 收官目标 32 page

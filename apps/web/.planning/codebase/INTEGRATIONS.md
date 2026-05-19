@@ -1,59 +1,61 @@
 # External Integrations
 
-**Analysis Date:** 2026-05-19
+**Analysis Date:** 2026-05-20
 
 ## APIs & External Services
 
 **Backend (tRPC):**
 - QuanAn API server — all data fetching and mutations via tRPC
-  - SDK/Client: `@trpc/react-query` + `@trpc/client` (see `src/lib/trpc.ts`)
-  - Transport: `httpBatchStreamLink` for queries/mutations; `httpSubscriptionLink` for SSE subscriptions
+  - SDK/Client: `@trpc/react-query` + `@trpc/client` (`src/lib/trpc.ts`)
+  - Transport: `httpBatchStreamLink` for queries/mutations; `httpSubscriptionLink` for SSE
   - URL: `${VITE_API_BASE_URL}/trpc` (default `http://localhost:3000/trpc`)
   - Dev proxy: Vite proxies `/api/trpc` → `http://localhost:3000` (`vite.config.ts`)
+  - Headers: `x-trace-id` (16-char hex) injected on every fetch for end-to-end tracing
 
 **Auth:**
-- Session cookie auth via backend (`/auth/login`, `/auth/logout` redirects)
-  - Client uses `credentials: 'include'` on all fetch calls (`src/lib/trpc.ts`)
-  - `useAuth` hook navigates to `${API_BASE}/auth/login` for OAuth redirect (`src/hooks/useAuth.ts`)
-  - Auth state read via `trpc.auth.me.useQuery` (returns `AuthMeOutput`)
+- Backend session cookie auth — OAuth redirect flow
+  - Login redirect: `GET ${API_BASE}/auth/login`
+  - Logout redirect: `GET ${API_BASE}/auth/logout`
+  - All tRPC fetches use `credentials: 'include'` (`src/lib/trpc.ts:52`)
+  - Auth state: `trpc.auth.me.useQuery` → `AuthMeOutput` (`src/hooks/useAuth.ts`)
 
 ## Data Storage
 
 **Databases:**
 - PostgreSQL (backend-managed; frontend does not connect directly)
-  - All DB reads/writes go through tRPC procedures
+  - All DB access through tRPC procedures
 
 **Local Storage (browser):**
-- Pattern: `aiip_memory_acc_{accountId}_{suffix}` — per-account namespaced keys
+- Pattern: `aiip_memory_acc_{accountId}_{suffix}` — per-account namespaced
 - Managed by `src/lib/ls-namespace.ts`
-- Used for:
-  - Step data dual-write: `aiip_memory_acc_{accountId}_{stepKey}` (via `useStepData`)
+- Key families:
+  - Step data: `aiip_memory_acc_{accountId}_{stepKey}` (via `useStepData`)
   - Tool data: `aiip_memory_acc_{accountId}_tool_{toolKey}_{suffix}`
-  - Evolution profile cache: `aiip_memory_acc_{accountId}_evolution`
-  - Active account ID: `aiip_active_account_id` (plain key, not namespaced)
+  - Evolution cache: `aiip_memory_acc_{accountId}_evolution`
+  - Diagnosis progress: `aiip_memory_acc_{accountId}_diagnosis_progress`
+  - Active account: `aiip_active_account_id` (plain key, intentionally not namespaced)
   - Legacy migration flag: `aiip_legacy_migration_v1_done`
-- 5 MB limit enforced; non-active namespaces pruned automatically (`pruneLsNamespaces`)
+- 5 MB limit enforced; `pruneLsNamespaces()` removes non-active account namespaces automatically
 
 **File Storage:**
-- Not integrated on frontend (uploads go to backend via tRPC)
+- Not integrated on frontend (uploads handled by backend via tRPC)
 
 **Caching:**
-- React Query in-memory cache: `staleTime: 30_000` default, `60_000` for auth/evolution
-- LS cache for evolution profile (instant read before DB response)
+- React Query in-memory: `staleTime: 30_000` default, `60_000` for auth/evolution queries
+- LS cache for evolution profile — instant read on mount before DB response
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Backend-managed (OAuth redirect flow, likely Google OAuth — PRR item per CLAUDE.md)
-  - Login: `GET ${API_BASE}/auth/login` (backend redirects to OAuth provider)
-  - Logout: `GET ${API_BASE}/auth/logout`
-  - Session: cookie-based (`credentials: 'include'`)
-  - Current user: `trpc.auth.me` → `AuthMeOutput` (`src/hooks/useAuth.ts`)
+- Backend-managed OAuth redirect (Google OAuth planned — PRR item per CLAUDE.md §7)
+  - `useAuth.ts` probes `/auth/login`, handles `opaqueredirect` and 3xx responses
+  - No frontend route guards — pages degrade gracefully when unauthenticated
 
-**IP Account Management:**
-- `trpc.ipAccounts.active` — fetch active account
-- `trpc.ipAccounts.switchActive` — switch active account (triggers LS namespace clear + full page reload)
-- `trpc.ipAccounts.list` — list all accounts for switcher dropdown
+**IP Account Management (multi-account):**
+- `trpc.ipAccounts.active` — fetch current active account
+- `trpc.ipAccounts.switchActive` — switch + clear old LS namespace + `window.location.reload()`
+- `trpc.ipAccounts.list` — list all accounts for dropdown
+- `trpc.ipAccounts.create` — create new account via `CreateAccountModal` (`src/components/accounts/CreateAccountModal.tsx`)
 
 ## Monitoring & Observability
 
@@ -61,18 +63,17 @@
 - Not integrated (Sentry listed as PRR item in CLAUDE.md §7)
 
 **Logs:**
-- `console.error` for ErrorBoundary (`src/components/ErrorBoundary.tsx`)
-- `console.error`/`console.warn` with `[module]` prefixes in hooks and migration utilities
+- `console.error('[ModuleName]', ...)` convention in hooks and boundary components
 - No structured logging or remote log shipping
 
 **Tracing:**
-- `x-trace-id` header injected on every tRPC fetch (16-char random hex, generated in `src/lib/trpc.ts`)
-- Trace ID also written to `console.error` on DB write failures for debugging
+- `x-trace-id` header on every tRPC fetch, generated in `src/lib/trpc.ts:24`
+- Trace ID written to `console.error` on DB write failures for debugging correlation
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Vercel (listed as future deployment target in CLAUDE.md §7; not yet configured)
+- Vercel (future; not yet configured — PRR item per CLAUDE.md §7)
 
 **CI Pipeline:**
 - Not yet configured (PRR item)
@@ -83,31 +84,29 @@
 - `VITE_API_BASE_URL` — backend base URL (default: `http://localhost:3000`)
 
 **Secrets location:**
-- No secrets committed; `.env` existence noted
+- No secrets in source; no `.env` file committed at `apps/web/` level
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None (frontend only)
+- None (frontend SPA only)
 
-**Outgoing:**
-- SSE subscriptions via `httpSubscriptionLink` for:
-  - `voiceChat.start` — streaming voice chat chunks (`VoiceChatStreamChunk`)
-  - `stepData.saveStream` — step save streaming (subscribed in mock; implementation in `src/components/StepForm/StepForm.tsx`)
+**Outgoing SSE Subscriptions (via `httpSubscriptionLink`):**
+- `voiceChat.start` — streaming voice chat chunks in `src/pages/tools/VoiceChat.tsx`
 
 ## Workspace Package Integrations
 
-**@quanan/clients (`packages/clients/src`):**
-- Provides `AppRouter` type (imported as `import type`) — keeps `@trpc/server` out of browser bundle
-- Provides output types: `AuthMeOutput`, `ActiveAccountOutput`, `EvolutionProfileOutput`, `TrendingListItem`, `VoiceChatStreamChunk`
+**`@quanan/clients` (`packages/clients/src`):**
+- `import type { AppRouter }` — keeps `@trpc/server` out of browser bundle
+- Output types: `AuthMeOutput`, `ActiveAccountOutput`, `EvolutionProfileOutput`, `TrendingListItem`, `VoiceChatStreamChunk`
 
-**@quanan/schemas (`packages/schemas/src`):**
-- Shared zod validation schemas (imported in `src/lib/schemas/` and form components)
+**`@quanan/schemas` (`packages/schemas/src`):**
+- Shared Zod validation schemas
 
-**@quanan/ui (`packages/ui/src`):**
-- Shared UI components (available but most UI is implemented locally in `src/components/ui/`)
-- Design token source: `../../ui/aurelian_dark/DESIGN.md` parsed by `src/lib/parseDesignTokens.js`
+**`@quanan/ui` (`packages/ui/src`):**
+- Shared UI components
+- Design token source: `../../ui/aurelian_dark/DESIGN.md` parsed at build time by `src/lib/parseDesignTokens.js`
 
 ---
 
-*Integration audit: 2026-05-19*
+*Integration audit: 2026-05-20*
