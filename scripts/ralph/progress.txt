@@ -3546,7 +3546,7 @@ PRD-23 范围:
 |---|---|
 | **Ship date** | 2026-05-20 BJT |
 | **Branch** | ralph/prd-23-stubs-and-tools-polish |
-| **Final commit** | 待 US-010 commit |
+| **Final commit** | 1eee1bc |
 | **Total US** | 10 · 3 high + 6 medium + 1 收官 |
 | **Audit approved** | 10/10 US 全部 audit approved |
 | **Strict 1-iter rate** | 100%(9/9 dev US · 历史最高) |
