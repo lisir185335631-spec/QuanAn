@@ -153,4 +153,154 @@ test.describe('PRD-23 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // ── PRD-15 tool pages (US-008) ────────────────────────────────────────────
+
+  // AC-1 (US-008) · /trending visual baseline
+  test('/trending fullPage matches prd23-trending.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/trending');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-trending.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /present-styles visual baseline
+  test('/present-styles fullPage matches prd23-present-styles.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/present-styles');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-present-styles.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /monetization visual baseline
+  test('/monetization fullPage matches prd23-monetization.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/monetization');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-monetization.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /private-domain visual baseline
+  test('/private-domain fullPage matches prd23-private-domain.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/private-domain');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-private-domain.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /deep-learning visual baseline
+  test('/deep-learning fullPage matches prd23-deep-learning.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/deep-learning');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-deep-learning.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /copywriting visual baseline
+  test('/copywriting fullPage matches prd23-copywriting.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/copywriting');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-copywriting.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /my-topics visual baseline
+  test('/my-topics fullPage matches prd23-my-topics.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/my-topics');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    // Wait for tRPC query to settle: either empty-state or card-grid must appear
+    await Promise.race([
+      page.locator('[data-testid="empty-state"]').waitFor({ state: 'visible', timeout: 10000 }),
+      page.locator('[data-testid="card-grid"]').waitFor({ state: 'visible', timeout: 10000 }),
+      page.locator('[data-testid="topic-table"]').waitFor({ state: 'visible', timeout: 10000 }),
+    ]).catch(() => {});
+    await expectVisualMatch(page, {
+      baseline: 'prd23-my-topics.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-1 (US-008) · /history visual baseline
+  test('/history fullPage matches prd23-history.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/history');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    // Wait for tRPC query to settle: empty, data, or error state — not loading
+    await Promise.race([
+      page.locator('[data-testid="history-empty"]').waitFor({ state: 'visible', timeout: 10000 }),
+      page.locator('[data-testid="history-timeline"]').waitFor({ state: 'visible', timeout: 10000 }),
+      page.locator('[data-testid="history-error"]').waitFor({ state: 'visible', timeout: 10000 }),
+    ]).catch(() => {});
+    await expectVisualMatch(page, {
+      baseline: 'prd23-history.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });

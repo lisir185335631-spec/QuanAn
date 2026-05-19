@@ -271,17 +271,30 @@ if (process.env.NODE_ENV === 'development') {
     });
     // Ensure dev user has an activeAccountId so protectedProcedure works
     if (!devUser.activeAccountId) {
-      const firstAccount = await prisma.ipAccount.findFirst({
+      let firstAccount = await prisma.ipAccount.findFirst({
         where: { userId: devUser.id },
         orderBy: { createdAt: 'asc' },
         select: { id: true },
       });
-      if (firstAccount) {
-        devUser = await prisma.user.update({
-          where: { id: devUser.id },
-          data: { activeAccountId: firstAccount.id },
+      // Create a default mock account if user has none (e2e bootstrap)
+      if (!firstAccount) {
+        firstAccount = await prisma.ipAccount.create({
+          data: {
+            userId: devUser.id,
+            name: 'AI 创业者小张',
+            industry: 'enterprise',
+            platform: 'douyin',
+            stage: 'starter',
+            followersRange: '0-1000',
+            ipPositioning: 'ip-creator',
+          },
+          select: { id: true },
         });
       }
+      devUser = await prisma.user.update({
+        where: { id: devUser.id },
+        data: { activeAccountId: firstAccount.id },
+      });
     }
     const session = await lucia.createSession(devUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
