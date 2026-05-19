@@ -3452,3 +3452,33 @@ PRD-23 范围:
 ---
 ## 2026-05-20 05:00 - US-006 approve · medium 1st pass · 字面 8/8 · vitest 281/281
 ---
+
+--- [RALPH] Iteration 11 ended: US-006 (27分钟 50秒) ---
+
+--- [RALPH] Iteration 12 started: US-007 at 2026-05-20 05:00 ---
+
+## 2026-05-20 05:10 - US-007 [PRD-23] · /acquisition-video 真表单 + 3 方案 grid stub(获客型视频)
+- 实现了什么:
+  - apps/web/src/pages/tools/AcquisitionVideo.tsx: 完整重写 · 去除旧 tRPC/ToolForm 依赖 · 本地 state(industry/audience/sellingPoints/submitted) · industry 从 useActiveAccount().industry 初始化(useEffect sync) · native <select> 加载 INDUSTRIES 56 行业 · CTA disabled(!industry||!audience||!sellingPoints) · 提交→3 方案 glass-card grid · 每方案 4 H4(主题角度/钩子/内容结构/CTA)
+  - apps/web/src/pages/tools/__tests__/AcquisitionVideo.test.tsx: 新建 · 5 tests · vi.mock useActiveAccount · H1字面/副标题/CTA disabled/enabled/3方案4H4
+  - tests/e2e/prd23-acquisition-video-flow.spec.ts: 新建 · 3 tests · 6/6 pass(chromium+mobile)
+  - tests/e2e/prd23-visual-baseline.spec.ts: 追加 /acquisition-video baseline 'prd23-acquisition-video.png'
+- 验证结果:
+  - AC-7 typecheck: ✅ 0 errors
+  - AC-7 vitest: ✅ 287 tests pass (≥ 259 ✓)
+  - AC-8 e2e: ✅ 6/6 pass(3 chromium + 3 mobile)
+  - AC-9 visual: ✅ prd23-acquisition-video.png baseline written · threshold 0.05
+  - AC-10 browser: ✅ 通过 Playwright e2e 验证 · H1/副标/3字段/disabled→enabled/3方案4H4
+- 更改的文件:
+  - apps/web/src/pages/tools/AcquisitionVideo.tsx (重写)
+  - apps/web/src/pages/tools/__tests__/AcquisitionVideo.test.tsx (新建)
+  - tests/e2e/prd23-acquisition-video-flow.spec.ts (新建)
+  - tests/e2e/prd23-visual-baseline.spec.ts (追加)
+- **未来迭代的学习:**
+  - 旧 AcquisitionVideo.tsx 是 tRPC 全功能实现 · PRD-23 stub 范式完整替换不需要保留旧代码
+  - useActiveAccount() 在 unit test 中需 vi.mock · 否则内部 tRPC 调用报错
+  - native <select> 比 Radix IndustryDropdown 更易测试(fireEvent.change target.value 直接改) · stub 页优先 native
+  - useEffect sync industry from account: `if (accountIndustry && !industry) setIndustry(accountIndustry)` · 防覆盖用户已改的选择
+---
+## 2026-05-20 05:20 - US-007 approve · medium 1st pass · 字面 9/9 + 3 方案 grid · vitest 287/287
+---
