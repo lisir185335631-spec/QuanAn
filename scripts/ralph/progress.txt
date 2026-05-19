@@ -5,6 +5,32 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-19 11:35 - US-001 [PRD-22] ★ foundation · 3 inline picker utility 抽象
+- 实现了什么:
+  - constants: scripts.ts 补全 SCRIPT_TYPES(20 项 · key+emoji+label+desc+methodology · spec §Ⅹ.3 完整字面)
+  - constants: platforms.ts 新建 PLATFORMS(5 项 · D1A 字面锁 · douyin/xiaohongshu/shipinhao/kuaishou/bilibili)
+  - constants: elements.ts 新建 HOT_ELEMENTS + HOT_ELEMENT_GROUPS + ALL_ELEMENTS(4 组 spec §Ⅹ.2 字面)
+  - ScriptTypeInlineCards.tsx: 20 脚本 grid-cols-2/4/5 · controlled value/onChange · showSearch filter · showMethodology data-testid
+  - ElementsInlineMultiPicker.tsx: 4 组 toggle multi-select · showCount 计数 · compact/grouped layout
+  - PlatformInlineRadio.tsx: 5 平台 horizontal flex · 3 size variants(sm/md/lg)
+  - barrel export: index.ts 导出 3 component + 3 props interface
+  - tests: 3 文件 21 tests · typecheck 0 errors · 全套 202/202 pass (↑ from 181)
+- 更改的文件:
+  - apps/web/src/lib/constants/scripts.ts (补全 SCRIPT_TYPES 20 项)
+  - apps/web/src/lib/constants/platforms.ts (新建)
+  - apps/web/src/lib/constants/elements.ts (新建)
+  - apps/web/src/components/inline-pickers/ScriptTypeInlineCards.tsx (新建)
+  - apps/web/src/components/inline-pickers/ElementsInlineMultiPicker.tsx (新建)
+  - apps/web/src/components/inline-pickers/PlatformInlineRadio.tsx (新建)
+  - apps/web/src/components/inline-pickers/index.ts (新建 barrel)
+  - apps/web/src/components/inline-pickers/__tests__/*.test.tsx (3 文件)
+- **未来迭代的学习:**
+  - elements.ts 中 conversion 有 4 项(包含 "benefit" spec §Ⅹ.2 字面)· 总 23 items(非 22) · 因 spec comment "实际去重后约 22"
+  - 2 平台共享 '📺' emoji(shipinhao + bilibili) · 测试用 getAllByText('📺') 而非 getByText
+  - ScriptTypeInlineCards showMethodology 用 data-testid 暴露以便单元测试 DOM 检验 · CSS hover 在 jsdom 测不到
+  - constants 文件保持纯数据导出 · component 仅 import 不 hardcode · D-215 控制组件锁 + D-214 数据源锁
+---
+
 ## 2026-05-19 08:00 - US-005 [PRD-21] Home 视觉精修
 - 实现了什么: Hero H1 字号升级(text-8xl md:text-9xl) + mb-8 · StepProgress gap-2 grid-cols-9 紧凑横排 · FunctionMatrix stagger FadeInWrapper(0.05*cIdx) + transition-all duration-200 · WorkflowSection stagger FadeInWrapper(0.1*i) · 所有 D1=A 文字内容严锁保留不改
 - 更改的文件:
@@ -2395,3 +2421,5 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
   - /goal-verify §0 codebase-mapper 扫出的 pre-existing 漂移要及时 TD 登记 · 否则在新 audit 时误报为当前 story 引入
   - prd21 所有 US 通过的关键:每个 US 独立 commit + typecheck + vitest 守门 · 没有一个 US 靠口头 approve
 ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-19 11:19 ---
