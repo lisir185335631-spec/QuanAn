@@ -3405,3 +3405,50 @@ PRD-23 范围:
 
 ## 2026-05-20 04:02 - US-005 [PRD-23] Opus audit approve · medium 快审 · 1st pass · 字面 9/9 + 字符计数
 ---
+
+--- [RALPH] Iteration 9 ended: US-005 (18分钟 38秒) ---
+
+--- [RALPH] Iteration 10 started: US-006 at 2026-05-20 04:02 ---
+
+--- [RALPH] Iteration 1 started: US-006 at 2026-05-20 04:07 ---
+
+## 2026-05-20 04:07 - US-006
+- 实现了 /video-production 真表单 + 4 H3 stub 输出(PRD-23 US-006)
+- 重写 VideoProduction.tsx: 从全功能 tRPC 版本降级为 stub 表单版本 · 与 VideoAnalysis/Analysis pattern 对齐
+- H1 字面锁 '短视频一键制作' · 副标锁 '输入文案，AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导'
+- 表单: textarea label='文案' + placeholder 字面锁 · CTA '生成制作方案' disabled if text.length<10
+- stub 4 H3: 分镜脚本(同 step/6) / 拍摄方案(设备/灯光/服装) / 口播提词器(断句/重音) / 剪辑指导(卡点/特效/字幕样式)
+- 更改的文件:
+  - apps/web/src/pages/tools/VideoProduction.tsx: stub 表单重写 · 去掉 tRPC/ToolForm/FeedbackButton 依赖
+  - apps/web/src/pages/tools/__tests__/VideoProduction.test.tsx: 新建 · 5 tests(AC-1 H1/副标/AC-3 disabled/enabled/AC-4 4 H3)
+  - tests/e2e/prd23-video-production-flow.spec.ts: 新建 · 3 e2e tests(H1+副标/CTA disabled→enabled/4 H3 stubs)
+  - tests/e2e/prd23-visual-baseline.spec.ts: 追加 /video-production baseline test(prd23-video-production.png · 阈值 0.05)
+- 质量检查: typecheck PASS · vitest 281/281 pass(+5 new) · browse binary 环境未 build · AC-9 需手动验证
+- **未来迭代的学习:**
+  - VideoProduction.tsx 从 PRD-6 全功能版重写时要注意: 旧代码依赖 ToolForm/VideoProductionResult/trpc.videoProduction/FeedbackButton · 全部替换成 local state form
+  - stub 表单页遵循 Analysis.tsx pattern: React.FormEvent + useState(submitted) + disabled={text.length<10}
+  - AC-4 desc '同 step/6' 是字面描述文本 · 作为 H3 下方 subtitle 渲染 · 不是代码引用
+---
+
+--- [RALPH] Iteration 1 ended: US-006 ---
+
+--- [RALPH] Iteration 11 started: US-006 at 2026-05-20 04:33 ---
+
+## 2026-05-20 04:35 - US-006 (Iteration 2 · 验证确认)
+- 上次 iteration 已完整实现，本次确认全部 AC 通过
+- 质量检查: typecheck PASS(0 error) · vitest 281 tests PASS(≥255) · AC-9 agent-browser PASS
+- AC-1: H1 '短视频一键制作' + 副标题字面锁 ✅
+- AC-2: textarea placeholder '至少 10 个字' ✅
+- AC-3: CTA disabled→enabled ≥10 字 ✅
+- AC-4: 4 H3 stub 区块(分镜脚本/拍摄方案/口播提词器/剪辑指导) ✅
+- AC-5: VideoProduction.test.tsx 5 tests ✅
+- AC-6: typecheck 0 error + vitest 281 ≥ 255 ✅
+- AC-7: prd23-video-production-flow.spec.ts 3 e2e tests ✅
+- AC-8: visual baseline 加入 prd23-visual-baseline.spec.ts ✅
+- AC-9: agent-browser 全 5 项 PASS(a H1+副标 b textarea c disabled→enabled d 4H3 e no error) ✅
+- **未来迭代的学习:**
+  - VideoProduction stub 页无 tRPC 依赖 · 无需 trpc mock · 最简 test setup
+  - 4 H3 区块用 submitted state 控制显示 · form onSubmit 仅改 state 不调 API · validator 直接 render test 通过
+---
+## 2026-05-20 05:00 - US-006 approve · medium 1st pass · 字面 8/8 · vitest 281/281
+---
