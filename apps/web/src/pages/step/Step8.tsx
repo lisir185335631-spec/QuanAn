@@ -42,11 +42,11 @@ export default function Step8() {
           <TabsTrigger value="optimize">AI 优化话术</TabsTrigger>
         </TabsList>
 
-        {/* forceMount keeps both tabs mounted — state persists on tab switch (anti-pattern避免) */}
-        <TabsContent value="generate" forceMount>
+        {/* forceMount keeps both tabs mounted — state persists on tab switch */}
+        <TabsContent value="generate" forceMount className="data-[state=inactive]:hidden">
           <Step8GeneratePlan accountId={accountId} />
         </TabsContent>
-        <TabsContent value="optimize" forceMount>
+        <TabsContent value="optimize" forceMount className="data-[state=inactive]:hidden">
           <Step8OptimizeScript accountId={accountId} />
         </TabsContent>
       </Tabs>
