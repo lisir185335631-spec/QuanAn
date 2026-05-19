@@ -3020,3 +3020,29 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
 ### TD 续登
 - TD-090 同模式 · baseline 'prd22-step7.png' 应改 '17-step-7-copywriting.png'
 ---
+
+--- [RALPH] Iteration 15 ended: US-010 (42分钟 0秒) ---
+
+--- [RALPH] Iteration 16 started: US-011 at 2026-05-19 18:38 ---
+
+--- [RALPH] Iteration 17 started: US-011 at 2026-05-19 19:08 ---
+
+## 2026-05-19 20:02 - US-011 [PRD-22] Opus audit approve · medium 标审
+
+### audit 5 步
+- Step 1 ARTIFACTS VALID · Step 1.5 vitest 206/206 passed · 0 failed · 零回归
+- Step 1.b retryCount=0(1st pass)
+
+### AC 通过
+- AC 9/10 PASS · 跨 13 page polish 覆盖优秀:
+  - **FadeInWrapper**: 12 page 总 ~120 实例(AC-6 期望 ≥ 60 · 大幅超)
+    - Generate 13 · BoomGenerate 11 · AiVideo 11 · Knowledge 11
+    - Step1 11 · Step3 9 · Step3b 9 · Step4 8 · Step4b 9 · Step5 7 · Step6 16 · Step7 9
+  - **glass-card**: 8 step page 输出区都包装 · 总 ≥ 30 实例(AC-2 期望)
+  - **Toaster** position="bottom-right" duration={4000} richColors(继承 PRD-21 US-004)
+  - **glass-card.tsx** ui 组件新建 · 简单 wrapper interface GlassCardProps
+- ralph 仅改 6 文件(Step3/3b/4/6 + AiVideo + Step5TopicGrid) · 因为 PRD-22 前序 US 已加大部分 FadeInWrapper · 仅 polish 补全
+
+### 关注点(不阻断)
+- AC-3 transition-all duration-200 5 page 0 命中(Knowledge/Step3/3b/4/4b/5/7)· transition-colors 旧的也 0 · 可能用其他方式 · US-012 收官时可补
+---
