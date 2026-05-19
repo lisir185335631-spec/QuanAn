@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import Step3bOutputContent, {
   type Step3bResult,
 } from '@/components/step3b/Step3bOutputContent';
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,138 +15,60 @@ import {
   STEP3B_BUTTON_COPY,
   STEP3B_BUTTON_COPY_ALL,
   STEP3B_BUTTON_OPTIMIZE,
+  STEP3B_BUTTON_REGEN_ALL,
   STEP3B_BUTTON_REGENERATE,
   STEP3B_CTA_LABEL,
   STEP3B_H1,
   STEP3B_LOADING_TEXT,
-  STEP3B_OUTPUT_H3_5,
+  STEP3B_OUTPUT_H3_6,
   STEP3B_STEP_TAG,
   STEP3B_SUBTITLE_TEMPLATE,
   STEP3B_TEXTAREAS_3,
   type Step3bOutputBlock,
 } from '@/lib/constants/step3b';
-import { STEP3_PLATFORMS_5 } from '@/lib/constants/step3';
-import { cn } from '@/lib/utils';
 
 // ── Backend Step3bOutput → frontend Step3bResult adapter ──────────────────────
 function adaptStep3bResult(raw: Record<string, unknown>): Step3bResult {
-  const ts = (raw.thoughtSystem as { coreBeliefs?: string[]; uniqueViews?: string[]; catchphrases?: string[] } | null) ?? {};
-  const cp = (raw.contentPersona as { contentPillars?: string[] } | null) ?? {};
-  const pr = (raw.personaRoadmap as { phase1?: string; phase2?: string; phase3?: string } | null) ?? {};
   return {
-    coreIdentity: {
-      persona: typeof raw.coreIdentity === 'string' ? raw.coreIdentity : undefined,
-    },
-    thoughtSystem: {
-      coreIdeas: ts.coreBeliefs ?? [],
-      uniqueViews: ts.uniqueViews ?? [],
-      catchphrases: ts.catchphrases ?? [],
-    },
-    contentPersona: {
-      contentPillars: cp.contentPillars ?? [],
-    },
-    trustSystem: {
-      socialProof: typeof raw.trustBuilding === 'string' ? raw.trustBuilding : undefined,
-    },
-    roadmap: {
-      phases: [
-        pr.phase1 ? { label: '第一阶段', goal: pr.phase1, keyResults: [] } : null,
-        pr.phase2 ? { label: '第二阶段', goal: pr.phase2, keyResults: [] } : null,
-        pr.phase3 ? { label: '第三阶段', goal: pr.phase3, keyResults: [] } : null,
-      ].filter(Boolean) as { label: string; goal: string; keyResults: string[] }[],
-    },
+    personaPosition: typeof raw.personaPosition === 'string' ? raw.personaPosition
+      : typeof raw.coreIdentity === 'string' ? raw.coreIdentity : undefined,
+    personaTags: Array.isArray(raw.personaTags) ? (raw.personaTags as string[])
+      : Array.isArray(raw.tags) ? (raw.tags as string[]) : [],
+    contentDirection: Array.isArray(raw.contentDirection) ? (raw.contentDirection as string[])
+      : Array.isArray(raw.contentPillars) ? (raw.contentPillars as string[]) : [],
+    differentiationStrategy: typeof raw.differentiationStrategy === 'string' ? raw.differentiationStrategy : undefined,
+    contentDirectionAdvice: Array.isArray(raw.contentDirectionAdvice) ? (raw.contentDirectionAdvice as string[]) : [],
+    ipStoryFramework: typeof raw.ipStoryFramework === 'string' ? raw.ipStoryFramework : undefined,
   };
 }
 
 function generateMockResult(): Step3bResult {
   return {
-    coreIdentity: {
-      persona: '深耕行业 10 年、专注客户结果的专业实践者',
-      slogan: '真实经历 · 专业指引 · 结果为先',
-      differentiation: '不卖课不带货，只分享真实落地经验与成果案例',
-      memoryPoints: ['每次必说"我亲测过"', '擅用数字量化成果', '直接说反面案例'],
-      personality: '真实 · 直率 · 专业 · 有温度',
-    },
-    thoughtSystem: {
-      coreIdeas: ['结果比方法重要', '真实案例胜过理论', '持续迭代，拒绝完美主义'],
-      uniqueViews: ['90% 的失败源于行动太晚', '爆款内容 = 真实痛点 × 解决方案'],
-      catchphrases: ['先做一件事，做到极致', '你的经历就是你最大的流量资产'],
-    },
-    contentPersona: {
-      speakingStyle: '口语化、有节奏感、善用停顿和反问，贴近对话感',
-      sampleScript: '很多人告诉我 XXX，但我亲身测试之后发现，真实情况是这样的……',
-      visualStyle: '简洁白底或渐变暖色调，字幕清晰，避免过度花哨',
-      contentPillars: ['行业干货拆解', '真实案例复盘', '避坑指南', '工具/方法推荐'],
-    },
-    trustSystem: {
-      endorsements: ['10 年行业从业背景', '500+ 实战案例沉淀', '业内媒体采访背书'],
-      socialProof: '帮助 300+ 同行实现收入翻倍，好评截图每周更新',
-      personalStory: '从零开始、踩坑无数，最终找到适合普通人的可复制路径',
-    },
-    roadmap: {
-      phases: [
-        {
-          label: '0-1个月',
-          goal: '人设定调 + 基础内容体系搭建',
-          keyResults: ['确定核心人设标签', '产出 12 条测试视频', '完成账号基础包装'],
-        },
-        {
-          label: '1-3个月',
-          goal: '内容放量 + 粉丝积累',
-          keyResults: ['周更 3-5 条', '粉丝突破 1000', '找到爆款内容公式'],
-        },
-        {
-          label: '3-6个月',
-          goal: '变现路径验证',
-          keyResults: ['私域引流 200+', '完成首次变现', '建立内容 SOP'],
-        },
-      ],
-    },
+    personaPosition: '深耕行业 10 年、专注客户结果的专业实践者，「亲测派」IP 标签',
+    personaTags: ['结果导向', '真实案例', '专业讲师', '抗衰达人', '皮肤管理师'],
+    contentDirection: ['行业干货拆解', '真实案例复盘', '避坑指南', '工具/方法推荐'],
+    differentiationStrategy: '不卖课不带货，只分享真实落地经验与成果案例，形成与同行的鲜明区隔',
+    contentDirectionAdvice: [
+      '深度干货 + 案例拆解（每周 2 条）',
+      '互动问答 + 粉丝故事（每周 1 条）',
+      '避坑指南 + 工具推荐（每两周 1 条）',
+    ],
+    ipStoryFramework: '从零开始 → 踩坑无数 → 找到方法 → 帮助他人 → 成为标杆的"逆袭故事"框架',
   };
 }
 
 function getBlockText(blockId: Step3bOutputBlock['id'], result: Step3bResult): string {
-  if (blockId === 'coreIdentity') {
-    const ci = result.coreIdentity;
-    return [
-      `人设定位：${ci?.persona ?? '—'}`,
-      `Slogan：${ci?.slogan ?? '—'}`,
-      `差异化：${ci?.differentiation ?? '—'}`,
-      `记忆点：${(ci?.memoryPoints ?? []).join('、')}`,
-      `性格标签：${ci?.personality ?? '—'}`,
-    ].join('\n');
-  }
-  if (blockId === 'ideologySystem') {
-    const ts = result.thoughtSystem;
-    return [
-      `核心理念：${(ts?.coreIdeas ?? []).join('、')}`,
-      `独特观点：${(ts?.uniqueViews ?? []).join('、')}`,
-      `口头禅：${(ts?.catchphrases ?? []).join('、')}`,
-    ].join('\n');
-  }
-  if (blockId === 'contentPersona') {
-    const cp = result.contentPersona;
-    return [
-      `表达风格：${cp?.speakingStyle ?? '—'}`,
-      `示例脚本：${cp?.sampleScript ?? '—'}`,
-      `视觉风格：${cp?.visualStyle ?? '—'}`,
-      `内容支柱：${(cp?.contentPillars ?? []).join('、')}`,
-    ].join('\n');
-  }
-  if (blockId === 'trustSystem') {
-    const tr = result.trustSystem;
-    return [
-      `背书资源：${(tr?.endorsements ?? []).join('、')}`,
-      `社会证明：${tr?.socialProof ?? '—'}`,
-      `个人故事：${tr?.personalStory ?? '—'}`,
-    ].join('\n');
-  }
-  if (blockId === 'personaRoadmap') {
-    return (result.roadmap?.phases ?? [])
-      .map((p) => `${p.label} - ${p.goal}：${p.keyResults.join('、')}`)
-      .join('\n');
-  }
+  if (blockId === 'personaPosition') return result.personaPosition ?? '—';
+  if (blockId === 'personaTags') return (result.personaTags ?? []).join('、');
+  if (blockId === 'contentDirection') return (result.contentDirection ?? []).join('\n');
+  if (blockId === 'differentiationStrategy') return result.differentiationStrategy ?? '—';
+  if (blockId === 'contentDirectionAdvice') return (result.contentDirectionAdvice ?? []).join('\n');
+  if (blockId === 'ipStoryFramework') return result.ipStoryFramework ?? '—';
   return '';
+}
+
+function mergeBlockResult(prev: Step3bResult, blockId: Step3bOutputBlock['id'], fresh: Step3bResult): Step3bResult {
+  return { ...prev, [blockId]: fresh[blockId as keyof Step3bResult] };
 }
 
 interface FormData {
@@ -166,9 +89,9 @@ export default function Step3b() {
     story: '',
     audience: '',
   });
-  const [platform, setPlatform] = useState('');
   const [result, setResult] = useState<Step3bResult | null>(null);
   const [regenLoadingBlocks, setRegenLoadingBlocks] = useState<string[]>([]);
+  const [regenAllLoading, setRegenAllLoading] = useState(false);
 
   const prevIsSavingRef = useRef(false);
 
@@ -176,14 +99,13 @@ export default function Step3b() {
   const step1Data = readOtherStep<{ industryLabel?: string }>(accountId, 'step1');
   const industryLabel = step1Data?.industryLabel ?? '(未选择)';
   const subtitle = STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel);
-  const isCtaDisabled = !formData.personalInfo.trim() || !platform || isSaving;
+  const isCtaDisabled = !formData.personalInfo.trim() || isSaving;
 
   // Prefill from new namespaced LS on accountId change
   useEffect(() => {
     if (accountId === null) return;
-    // Prefill personalInfo from step3 if step3b not yet saved
     const step3Data = readOtherStep<{ personalInfo?: string }>(accountId, 'step3');
-    const step3bData = readOtherStep<FormData & { platform?: string }>(accountId, 'step3b');
+    const step3bData = readOtherStep<FormData>(accountId, 'step3b');
     if (step3bData?.personalInfo) {
       setFormData({
         personalInfo: step3bData.personalInfo,
@@ -191,7 +113,6 @@ export default function Step3b() {
         story: step3bData.story ?? '',
         audience: step3bData.audience ?? '',
       });
-      if (step3bData.platform) setPlatform(step3bData.platform);
     } else if (step3Data?.personalInfo) {
       setFormData((prev) => ({ ...prev, personalInfo: step3Data.personalInfo ?? '' }));
     }
@@ -221,7 +142,9 @@ export default function Step3b() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isCtaDisabled) return;
-    save({ ...formData, platform });
+    save(formData as unknown as Record<string, unknown>);
+    // Stub mode: show mock result immediately (本 PRD 不接 LLM)
+    setResult(generateMockResult());
     document.getElementById('step3b-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -234,15 +157,6 @@ export default function Step3b() {
     } catch {
       toast.error('复制失败 · 请手动');
     }
-  }
-
-  function mergeBlockResult(prev: Step3bResult, blockId: Step3bOutputBlock['id'], fresh: Step3bResult): Step3bResult {
-    if (blockId === 'coreIdentity') return { ...prev, coreIdentity: fresh.coreIdentity };
-    if (blockId === 'ideologySystem') return { ...prev, thoughtSystem: fresh.thoughtSystem };
-    if (blockId === 'contentPersona') return { ...prev, contentPersona: fresh.contentPersona };
-    if (blockId === 'trustSystem') return { ...prev, trustSystem: fresh.trustSystem };
-    if (blockId === 'personaRoadmap') return { ...prev, roadmap: fresh.roadmap };
-    return prev;
   }
 
   async function handleRegen(blockId: Step3bOutputBlock['id']) {
@@ -262,16 +176,24 @@ export default function Step3b() {
     });
   }
 
+  async function handleRegenAll() {
+    setRegenAllLoading(true);
+    toast.info('全部模块重新生成中...');
+    await new Promise<void>((r) => setTimeout(r, 1500));
+    setResult(generateMockResult());
+    setRegenAllLoading(false);
+  }
+
   async function handleCopyAll() {
     if (!result) return;
-    const allText = STEP3B_OUTPUT_H3_5.map((block) => {
+    const allText = STEP3B_OUTPUT_H3_6.map((block) => {
       const label = block.h3Label;
       const content = getBlockText(block.id, result);
       return `${label}\n${content}`;
     }).join('\n\n---\n\n');
     try {
       await navigator.clipboard.writeText(allText);
-      toast.success(`已复制全部 5 个模块`);
+      toast.success('已复制全部 6 个模块');
     } catch {
       toast.error('复制失败 · 请手动');
     }
@@ -286,7 +208,7 @@ export default function Step3b() {
       <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        {/* 3 textarea from STEP3B_TEXTAREAS_3 */}
+        {/* 3 textarea from STEP3B_TEXTAREAS_3 (AC-4) */}
         {STEP3B_TEXTAREAS_3.map((ta) => (
           <div key={ta.id}>
             <label className="block text-body-sm font-label text-on-surface mb-2">
@@ -304,40 +226,7 @@ export default function Step3b() {
           </div>
         ))}
 
-        {/* 5 platform radio */}
-        <div>
-          <label className="block text-body-sm font-label text-on-surface mb-2">
-            目标平台
-            <span className="text-destructive ml-1">*</span>
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            {STEP3_PLATFORMS_5.map((p) => (
-              <label
-                key={p.id}
-                htmlFor={`step3b-${p.id}`}
-                className={cn(
-                  'glass-card rounded-lg p-3 flex flex-col items-center text-center cursor-pointer transition-colors',
-                  platform === p.id
-                    ? 'border-primary/60 bg-primary/10'
-                    : 'hover:border-primary/40',
-                )}
-              >
-                <input
-                  type="radio"
-                  id={`step3b-${p.id}`}
-                  name="step3b-platform"
-                  value={p.id}
-                  checked={platform === p.id}
-                  onChange={() => setPlatform(p.id)}
-                  className="sr-only"
-                />
-                <span className="text-body-sm font-cn text-on-surface">{p.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* 目标受众 input */}
+        {/* 目标受众 input (AC-4) */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP3B_AUDIENCE.label}
@@ -354,7 +243,7 @@ export default function Step3b() {
           <Button
             type="submit"
             disabled={isCtaDisabled}
-            className={cn('w-full', !isCtaDisabled && 'bg-gradient-to-r from-primary to-primary/80')}
+            className={`w-full${!isCtaDisabled ? ' bg-gradient-to-r from-primary to-primary/80' : ''}`}
           >
             {STEP3B_CTA_LABEL}
           </Button>
@@ -372,39 +261,46 @@ export default function Step3b() {
           />
         ) : result ? (
           <section id="step3b-output" className="mt-2 max-w-4xl">
+            {/* AC-5: H3 "人设定制方案"(顶部总览) with [一键重新生成] + [复制全部] */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-display text-on-surface">专属人设方案</h2>
+              <h3 className="text-2xl font-display text-on-surface">人设定制方案</h3>
               <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={handleRegenAll} disabled={regenAllLoading}>
+                  {STEP3B_BUTTON_REGEN_ALL}
+                </Button>
                 <Button variant="outline" size="sm" onClick={handleCopyAll}>
                   {STEP3B_BUTTON_COPY_ALL}
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-6">
-              {STEP3B_OUTPUT_H3_5.map((block) => (
-                <div key={block.id} className="glass-card rounded-xl p-6">
-                  <div className="flex items-start justify-between mb-4 gap-4">
-                    <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
-                    <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
-                      <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
-                        {STEP3B_BUTTON_COPY}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRegen(block.id)}
-                        disabled={regenLoadingBlocks.includes(block.id)}
-                      >
-                        {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3B_BUTTON_REGENERATE}
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleOptimize(block.id)}>
-                        {STEP3B_BUTTON_OPTIMIZE}
-                      </Button>
+            {/* AC-7: 6 H3 content blocks with glass-card + FadeInWrapper */}
+            <div className="space-y-4">
+              {STEP3B_OUTPUT_H3_6.map((block, idx) => (
+                <FadeInWrapper key={block.id} delay={0.05 * idx} from="up">
+                  <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-6 mb-4">
+                    <div className="flex items-start justify-between mb-4 gap-4">
+                      <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
+                      <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                        <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
+                          {STEP3B_BUTTON_COPY}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRegen(block.id)}
+                          disabled={regenLoadingBlocks.includes(block.id)}
+                        >
+                          {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3B_BUTTON_REGENERATE}
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleOptimize(block.id)}>
+                          {STEP3B_BUTTON_OPTIMIZE}
+                        </Button>
+                      </div>
                     </div>
+                    <Step3bOutputContent blockId={block.id} result={result} />
                   </div>
-                  <Step3bOutputContent blockId={block.id} result={result} />
-                </div>
+                </FadeInWrapper>
               ))}
             </div>
           </section>

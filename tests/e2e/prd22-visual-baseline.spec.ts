@@ -90,4 +90,28 @@ test.describe('PRD-22 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-12 US-007: /step/3 baseline · prd22-step3
+  test('/step/3 fullPage inline matches prd22-step3.png', async ({ page }) => {
+    await page.goto('/step/3');
+    await page.waitForLoadState('networkidle');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-step3.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-12 US-007: /step/3b baseline · prd22-step3b
+  test('/step/3b fullPage inline matches prd22-step3b.png', async ({ page }) => {
+    await page.goto('/step/3b');
+    await page.waitForLoadState('networkidle');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-step3b.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });

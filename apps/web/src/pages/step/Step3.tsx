@@ -9,6 +9,8 @@ import Step3OutputContent, {
   getBlockText,
   type Step3Result,
 } from '@/components/step3/Step3OutputContent';
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { PlatformInlineRadio } from '@/components/inline-pickers';
 import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,7 +35,6 @@ import {
   STEP3_HEADER_BUTTON_REGEN_ALL,
   STEP3_LOADING_TEXT,
   STEP3_OUTPUT_H3_6,
-  STEP3_PLATFORMS_5,
   STEP3_STEP_TAG,
   STEP3_SUBTITLE_TEMPLATE,
   type Step3OutputBlock,
@@ -217,6 +218,8 @@ export default function Step3() {
     e.preventDefault();
     if (isCtaDisabled) return;
     save({ personalInfo, platform, audience, accountStatus });
+    // Stub mode: show mock result immediately (本 PRD 不接 LLM)
+    setResult(generateMockResult());
     document.getElementById('step3-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -306,35 +309,13 @@ export default function Step3() {
           />
         </div>
 
-        {/* platform */}
+        {/* platform — PlatformInlineRadio (AC-2) */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP3_FORM.platform.label}
             <span className="text-destructive ml-1">*</span>
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            {STEP3_PLATFORMS_5.map((p) => (
-              <label
-                key={p.id}
-                htmlFor={p.id}
-                className={cn(
-                  'glass-card rounded-lg p-3 flex flex-col items-center text-center cursor-pointer transition-colors',
-                  platform === p.id ? 'border-primary/60 bg-primary/10' : 'hover:border-primary/40',
-                )}
-              >
-                <input
-                  type="radio"
-                  id={p.id}
-                  name="platform"
-                  value={p.id}
-                  checked={platform === p.id}
-                  onChange={() => setPlatform(p.id)}
-                  className="sr-only"
-                />
-                <span className="text-body-sm font-cn text-on-surface">{p.label}</span>
-              </label>
-            ))}
-          </div>
+          <PlatformInlineRadio value={platform} onChange={setPlatform} />
         </div>
 
         {/* audience */}
@@ -389,8 +370,9 @@ export default function Step3() {
           />
         ) : result ? (
           <section id="step3-output" className="mt-2 max-w-4xl">
+            {/* AC-3: H3 "账号包装方案"(顶部总览) with [一键重新生成] + [复制全部] */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-display text-on-surface">账号包装方案</h2>
+              <h3 className="text-2xl font-display text-on-surface">账号包装方案</h3>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -408,39 +390,42 @@ export default function Step3() {
               </div>
             </div>
 
-            <div className="space-y-6">
-              {STEP3_OUTPUT_H3_6.map((block) => (
-                <div key={block.id} className="glass-card rounded-xl p-6">
-                  <div className="flex items-start justify-between mb-4 gap-4">
-                    <div className="min-w-0">
-                      <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{block.hint}</p>
-                    </div>
-                    <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
-                      <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
-                        {STEP3_BUTTON_COPY}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRegen(block.id)}
-                        disabled={regenLoadingBlocks.includes(block.id)}
-                      >
-                        {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3_BUTTON_REGENERATE}
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleOptimize(block.id)}>
-                        {STEP3_BUTTON_OPTIMIZE}
-                      </Button>
-                      {(block.id === 'avatar' || block.id === 'background') && (
-                        <Button variant="outline" size="sm">
-                          <ImagePlus className="h-4 w-4" />
-                          {STEP3_BUTTON_GEN_IMAGE}
+            {/* AC-7: 6 H3 content blocks with glass-card + FadeInWrapper */}
+            <div className="space-y-4">
+              {STEP3_OUTPUT_H3_6.map((block, idx) => (
+                <FadeInWrapper key={block.id} delay={0.05 * idx} from="up">
+                  <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-6 mb-4">
+                    <div className="flex items-start justify-between mb-4 gap-4">
+                      <div className="min-w-0">
+                        <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">{block.hint}</p>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                        <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
+                          {STEP3_BUTTON_COPY}
                         </Button>
-                      )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRegen(block.id)}
+                          disabled={regenLoadingBlocks.includes(block.id)}
+                        >
+                          {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3_BUTTON_REGENERATE}
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleOptimize(block.id)}>
+                          {STEP3_BUTTON_OPTIMIZE}
+                        </Button>
+                        {(block.id === 'avatar' || block.id === 'background') && (
+                          <Button variant="outline" size="sm">
+                            <ImagePlus className="h-4 w-4" />
+                            {STEP3_BUTTON_GEN_IMAGE}
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                    <Step3OutputContent blockId={block.id} result={result} />
                   </div>
-                  <Step3OutputContent blockId={block.id} result={result} />
-                </div>
+                </FadeInWrapper>
               ))}
             </div>
           </section>
