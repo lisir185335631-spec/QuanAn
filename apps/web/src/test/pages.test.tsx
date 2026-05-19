@@ -237,7 +237,7 @@ describe('IpPlan page (US-010)', () => {
 
   it('renders 9 step cards with 查看详情 buttons', () => {
     render(<MemoryRouter><IpPlan /></MemoryRouter>);
-    const buttons = screen.getAllByRole('button', { name: '查看详情' });
+    const buttons = screen.getAllByRole('button', { name: /查看详情/ });
     expect(buttons).toHaveLength(9);
   });
 
