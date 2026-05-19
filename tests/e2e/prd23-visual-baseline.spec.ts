@@ -50,6 +50,23 @@ test.describe('PRD-23 Visual Baseline', () => {
     });
   });
 
+  // AC-16 · /step/8 直播策划 visual baseline
+  test('/step/8 fullPage matches prd23-step8.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/step/8');
+    await page.waitForLoadState('networkidle');
+    await page.getByRole('tab', { name: '生成直播方案' }).waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-step8.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
   // /diagnosis Step 8 报告页 baseline
   test('/diagnosis Step 8 report matches prd23-diagnosis-report.png', async ({ page }) => {
     await page.goto('/diagnosis');

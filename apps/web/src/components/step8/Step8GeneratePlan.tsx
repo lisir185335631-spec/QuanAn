@@ -1,118 +1,62 @@
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
-import { EmptyState, LoadingState } from '@/components/states';
+import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useStepData } from '@/hooks/useStepData';
 import {
   STEP8_BUTTON_GENERATE_PLAN,
-  STEP8_EXPERIENCE_3,
   STEP8_EXPERIENCE_RADIO_LABEL,
-  STEP8_GENERATE_LOADING_TEXT,
+  STEP8_EXPERIENCES_3,
   STEP8_GENERATE_PLAN_INPUT,
   STEP8_GENERATE_PLAN_TEXTAREA,
-  STEP8_H1,
   STEP8_OUTPUT_MODULES_6,
   STEP8_PLATFORM_RADIO_LABEL,
-  STEP8_PLATFORMS_5,
-  type Step8GeneratePlanResult,
 } from '@/lib/constants/step8';
 import { cn } from '@/lib/utils';
 
-// experience key → Chinese value sent to LivestreamAgent (AC-2 · 新手|有经验|资深)
-const EXPERIENCE_VALUE_MAP: Record<string, string> = {
-  novice: '新手',
-  experienced: '有经验',
-  expert: '资深',
+// Static stub content for 6 output modules (AC-5)
+const STUB_PLAN: Record<string, string> = {
+  opening:
+    '大家好！欢迎来到今天的直播间，我是你们的主播小Q，今天将为大家带来超值分享，记得点关注不迷路！',
+  interaction:
+    '现在来个小互动！评论区扣 1 告诉我你最想了解哪个方面，我会在直播中逐一为大家解答，最积极的朋友会有惊喜～',
+  deal: '现在下单享受直播间专属价格，比日常价优惠 30%，今天仅限直播间！手速快的朋友赶紧下单，库存有限哦！',
+  closing:
+    '感谢大家今天的陪伴，你们的支持是我最大的动力！记得关注主页，明天同一时间我们继续，爱你们！',
+  traffic:
+    '点击主页置顶链接获取完整资料包，扫码加入粉丝专属群，第一时间获取优惠信息和福利活动通知！',
+  engagement:
+    '每 15 分钟进行一次抽奖互动，参与方式：评论区留言 + 转发直播，获奖名单将在直播结束后公布！',
 };
 
-function InfoCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface-container p-4">
-      <p className="text-body-xs font-label text-primary uppercase tracking-wide mb-2">{label}</p>
-      <p className="text-body-sm text-on-surface whitespace-pre-wrap">{value}</p>
-    </div>
-  );
-}
-
 interface Props {
-  subfunctionKey: string;
   accountId: number | null;
 }
 
-export function Step8GeneratePlan({ subfunctionKey, accountId }: Props) {
+export function Step8GeneratePlan({ accountId }: Props) {
   const [productInfo, setProductInfo] = useState('');
   const [targetAudience, setTargetAudience] = useState('');
-  const [platform, setPlatform] = useState<string>(STEP8_PLATFORMS_5[0]!.id);
-  const [experience, setExperience] = useState<string>(STEP8_EXPERIENCE_3[0]!.key);
-  const [result, setResult] = useState<Step8GeneratePlanResult | null>(null);
+  const [platform, setPlatform] = useState<string | null>(null);
+  const [experience, setExperience] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
-  const { save, load, isSaving, dbQuery } = useStepData(accountId, 'step8');
-  const prevIsSavingRef = useRef(false);
+  const { save, isSaving } = useStepData(accountId, 'step8');
 
-  // Restore form data from LS on mount (sub_function discriminator: prevents cross-contamination)
-  useEffect(() => {
-    if (accountId === null) return;
-    const raw = load();
-    if (!raw) return;
-    if (raw['sub_function'] !== subfunctionKey) return;
-    if (typeof raw['productInfo'] === 'string') setProductInfo(raw['productInfo']);
-    if (typeof raw['targetAudience'] === 'string') setTargetAudience(raw['targetAudience']);
-    if (typeof raw['platform'] === 'string') setPlatform(raw['platform']);
-    if (typeof raw['experience'] === 'string') {
-      // Stored as Chinese value ('有经验') — find matching key for radio state
-      const expEntry = STEP8_EXPERIENCE_3.find(
-        (e) => EXPERIENCE_VALUE_MAP[e.key] === raw['experience'],
-      );
-      if (expEntry) setExperience(expEntry.key);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, subfunctionKey]);
-
-  // Refetch after save completes (isSaving: true → false)
-  useEffect(() => {
-    if (prevIsSavingRef.current && !isSaving) {
-      void dbQuery.refetch();
-    }
-    prevIsSavingRef.current = isSaving;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSaving]);
-
-  // Sync result from DB — check sub_function discriminator to prevent cross-contamination
-  useEffect(() => {
-    if (!dbQuery.data?.result) return;
-    const inputs = dbQuery.data.inputs as Record<string, unknown>;
-    if (inputs?.['sub_function'] !== 'generate_plan') return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
-    if (
-      typeof raw['opening'] === 'string' &&
-      typeof raw['interaction'] === 'string' &&
-      typeof raw['deal'] === 'string' &&
-      typeof raw['closing'] === 'string' &&
-      typeof raw['traffic'] === 'string' &&
-      typeof raw['engagement'] === 'string'
-    ) {
-      setResult({
-        opening: raw['opening'],
-        interaction: raw['interaction'],
-        deal: raw['deal'],
-        closing: raw['closing'],
-        traffic: raw['traffic'],
-        engagement: raw['engagement'],
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dbQuery.data]);
+  // AC-4 · disabled if !product || !platform || !experience
+  const submitDisabled = !productInfo || !platform || !experience || isSaving;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (submitDisabled) return;
     save({
       sub_function: 'generate_plan',
       productInfo,
       targetAudience,
       platform,
-      experience: EXPERIENCE_VALUE_MAP[experience] ?? '有经验',
+      experience,
     });
+    setSubmitted(true);
     document.getElementById('step8-generate-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -120,10 +64,10 @@ export function Step8GeneratePlan({ subfunctionKey, accountId }: Props) {
     <div className="space-y-8">
       {/* Form */}
       <form
-        onSubmit={(e) => { handleSubmit(e); }}
+        onSubmit={handleSubmit}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
-        {/* Product textarea */}
+        {/* (1) Product textarea — AC-4 required */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_GENERATE_PLAN_TEXTAREA.label}
@@ -136,7 +80,7 @@ export function Step8GeneratePlan({ subfunctionKey, accountId }: Props) {
           />
         </div>
 
-        {/* Audience input */}
+        {/* (2) Audience input */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_GENERATE_PLAN_INPUT.label}
@@ -148,93 +92,68 @@ export function Step8GeneratePlan({ subfunctionKey, accountId }: Props) {
           />
         </div>
 
-        {/* Platform radio */}
+        {/* (3) Platform radio — AC-4 use <PlatformInlineRadio> */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_PLATFORM_RADIO_LABEL}
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            {STEP8_PLATFORMS_5.map((p) => (
-              <label
-                key={p.id}
-                htmlFor={`step8-platform-${p.id}`}
-                className={cn(
-                  'glass-card rounded-lg p-3 flex flex-col items-center text-center cursor-pointer transition-colors',
-                  platform === p.id
-                    ? 'border-primary/60 bg-primary/10'
-                    : 'hover:border-primary/40',
-                )}
-              >
-                <input
-                  type="radio"
-                  id={`step8-platform-${p.id}`}
-                  name="step8-platform"
-                  value={p.id}
-                  checked={platform === p.id}
-                  onChange={() => setPlatform(p.id)}
-                  className="sr-only"
-                />
-                <span className="text-body-sm font-cn text-on-surface">{p.label}</span>
-              </label>
-            ))}
-          </div>
+          <PlatformInlineRadio value={platform} onChange={setPlatform} />
         </div>
 
-        {/* Experience radio */}
+        {/* (4) Experience radio — AC-4 3 buttons dual-line label+subtitle */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_EXPERIENCE_RADIO_LABEL}
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {STEP8_EXPERIENCE_3.map((exp) => (
-              <label
-                key={exp.key}
-                htmlFor={`step8-experience-${exp.key}`}
+            {STEP8_EXPERIENCES_3.map((exp) => (
+              <button
+                key={exp.id}
+                type="button"
+                onClick={() => setExperience(exp.id)}
                 className={cn(
-                  'glass-card rounded-lg p-3 flex items-center cursor-pointer transition-colors',
-                  experience === exp.key
-                    ? 'border-primary/60 bg-primary/10'
+                  'glass-card rounded-lg p-3 flex flex-col items-start text-left transition-colors',
+                  experience === exp.id
+                    ? 'border-primary bg-primary/10'
                     : 'hover:border-primary/40',
                 )}
               >
-                <input
-                  type="radio"
-                  id={`step8-experience-${exp.key}`}
-                  name="step8-experience"
-                  value={exp.key}
-                  checked={experience === exp.key}
-                  onChange={() => setExperience(exp.key)}
-                  className="sr-only"
-                />
-                <span className="text-body-sm font-cn text-on-surface">{exp.label}</span>
-              </label>
+                <span className="text-body-sm font-label text-on-surface">{exp.label}</span>
+                <span className="text-body-xs text-muted-foreground">{exp.subtitle}</span>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* CTA */}
-        <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
+        {/* CTA · AC-4 disabled if !product || !platform || !experience */}
+        <Button type="submit" disabled={submitDisabled} className="w-full sm:w-auto">
           {STEP8_BUTTON_GENERATE_PLAN}
         </Button>
       </form>
 
-      {/* Three-state feedback */}
-      <div className="max-w-2xl">
-        {isSaving && <LoadingState text={STEP8_GENERATE_LOADING_TEXT} size="lg" />}
-        {!isSaving && !result && (
-          <EmptyState title={`提交表单后查看${STEP8_H1}`} />
-        )}
-      </div>
-
-      {/* Output: 6 modules */}
-      {result && !isSaving && (
+      {/* AC-5 · stub 6 H3 output after form submit */}
+      {submitted && (
         <div id="step8-generate-output" className="space-y-6">
           {STEP8_OUTPUT_MODULES_6.map((module) => (
-            <div key={module.id}>
+            <div key={module.id} className="glass-card rounded-xl p-6">
               <h3 className="text-h3 font-display text-on-surface mb-3">{module.h3Label}</h3>
-              <InfoCard label={module.h3Label} value={result[module.id]} />
+              <p className="text-body-sm text-muted-foreground whitespace-pre-wrap">
+                {STUB_PLAN[module.id] ?? ''}
+              </p>
             </div>
           ))}
+          {/* AC-9 · 3 stub action buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" type="button">
+              复制全部
+            </Button>
+            <Button variant="outline" type="button">
+              导出 PDF
+            </Button>
+            <Button variant="outline" type="button" onClick={() => setSubmitted(false)}>
+              重新生成
+            </Button>
+          </div>
         </div>
       )}
     </div>

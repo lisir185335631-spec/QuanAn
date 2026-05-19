@@ -1,95 +1,53 @@
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import { EmptyState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useStepData } from '@/hooks/useStepData';
 import {
   STEP8_BUTTON_OPTIMIZE_SCRIPT,
-  STEP8_H1,
-  STEP8_OPTIMIZE_CHAR_COUNTER_TEMPLATE,
   STEP8_OPTIMIZE_INPUT,
-  STEP8_OPTIMIZE_LOADING_TEXT,
   STEP8_OPTIMIZE_MIN_CHARS,
-  STEP8_OPTIMIZE_OUTPUT_LABELS_2,
+  STEP8_OPTIMIZE_OUTPUT_MODULES_4,
   STEP8_OPTIMIZE_TEXTAREA,
-  type Step8OptimizeScriptResult,
 } from '@/lib/constants/step8';
 
-function InfoCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface-container p-4">
-      <p className="text-body-xs font-label text-primary uppercase tracking-wide mb-2">{label}</p>
-      <p className="text-body-sm text-on-surface whitespace-pre-wrap">{value}</p>
-    </div>
-  );
-}
+const STUB_OPTIMIZED_SCRIPT = `## 优化后话术示例
+
+欢迎来到直播间，我是你们的老朋友！今天带来了一个超级实用的分享，很多朋友都在问这个问题，
+今天我们好好聊聊。大家先点个关注，这样就不会错过我们的精彩内容了！
+
+先来个小互动，评论区告诉我你目前最大的困惑是什么？我来一一解答！
+
+好了，话不多说，我们直接进入今天的主题...`;
+
+const STUB_OPTIMIZE_DETAILS: Record<string, string> = {
+  highlight: '话术表达更自然流畅，口语化程度提升，去掉了生硬的书面语，更贴近观众日常交流习惯。',
+  interaction: '在开场和中场各增加了 2 处高互动节点，引导评论区互动，预计提升互动率 25%。',
+  conversion: '加强了价值主张表达，增加了稀缺性和紧迫感钩子，成交话术更清晰直接。',
+  notes: '保持真实自然的表达风格，避免过度销售感；互动频率控制在每 10-15 分钟一次为宜。',
+};
 
 interface Props {
-  subfunctionKey: string;
   accountId: number | null;
 }
 
-export function Step8OptimizeScript({ subfunctionKey, accountId }: Props) {
+export function Step8OptimizeScript({ accountId }: Props) {
   const [scriptText, setScriptText] = useState('');
   const [optimizeGoal, setOptimizeGoal] = useState('');
-  const [result, setResult] = useState<Step8OptimizeScriptResult | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
-  const { save, load, isSaving, dbQuery } = useStepData(accountId, 'step8');
-  const prevIsSavingRef = useRef(false);
+  const { save, isSaving } = useStepData(accountId, 'step8');
 
-  // Restore form data from LS on mount (sub_function discriminator: prevents cross-contamination)
-  useEffect(() => {
-    if (accountId === null) return;
-    const raw = load();
-    if (!raw) return;
-    if (raw['sub_function'] !== subfunctionKey) return;
-    if (typeof raw['scriptText'] === 'string') setScriptText(raw['scriptText']);
-    if (typeof raw['optimizeGoal'] === 'string') setOptimizeGoal(raw['optimizeGoal']);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId, subfunctionKey]);
-
-  // Refetch after save completes (isSaving: true → false)
-  useEffect(() => {
-    if (prevIsSavingRef.current && !isSaving) {
-      void dbQuery.refetch();
-    }
-    prevIsSavingRef.current = isSaving;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSaving]);
-
-  // Sync result from DB — check sub_function discriminator to prevent cross-contamination
-  useEffect(() => {
-    if (!dbQuery.data?.result) return;
-    const inputs = dbQuery.data.inputs as Record<string, unknown>;
-    if (inputs?.['sub_function'] !== 'optimize_script') return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
-    if (
-      typeof raw['optimized_text'] === 'string' &&
-      typeof raw['optimization_notes'] === 'string'
-    ) {
-      setResult({
-        optimized_text: raw['optimized_text'],
-        optimization_notes: raw['optimization_notes'],
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dbQuery.data]);
-
-  const charCounterText = STEP8_OPTIMIZE_CHAR_COUNTER_TEMPLATE.replace(
-    '{count}',
-    String(scriptText.length),
-  );
-  const submitDisabled = isSaving || scriptText.length < STEP8_OPTIMIZE_MIN_CHARS;
+  const charCount = scriptText.length;
+  // AC-6 · disabled if text.length < 10
+  const submitDisabled = isSaving || charCount < STEP8_OPTIMIZE_MIN_CHARS;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (submitDisabled) return;
-    save({
-      sub_function: 'optimize_script',
-      scriptText,
-      optimizeGoal,
-    });
+    save({ sub_function: 'optimize_script', scriptText, optimizeGoal });
+    setSubmitted(true);
     document.getElementById('step8-optimize-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -97,26 +55,25 @@ export function Step8OptimizeScript({ subfunctionKey, accountId }: Props) {
     <div className="space-y-8">
       {/* Form */}
       <form
-        onSubmit={(e) => { handleSubmit(e); }}
+        onSubmit={handleSubmit}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
-        {/* Script textarea */}
+        {/* Script textarea · AC-6 required ≥ 10 chars */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_OPTIMIZE_TEXTAREA.label}
             <span className="text-destructive ml-1">*</span>
           </label>
           <textarea
-            required
             value={scriptText}
             onChange={(e) => setScriptText(e.target.value)}
             placeholder={STEP8_OPTIMIZE_TEXTAREA.placeholder}
             className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[160px] font-cn resize-y"
           />
-          <p className="text-body-xs text-muted-foreground mt-1">{charCounterText}</p>
+          <p className="text-body-xs text-muted-foreground mt-1">已输入 {charCount} 字</p>
         </div>
 
-        {/* Optimize goal input */}
+        {/* Optimize goal input · AC-6 optional */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_OPTIMIZE_INPUT.label}
@@ -128,25 +85,30 @@ export function Step8OptimizeScript({ subfunctionKey, accountId }: Props) {
           />
         </div>
 
-        {/* CTA */}
+        {/* CTA · AC-6 disabled if text.length < 10 */}
         <Button type="submit" disabled={submitDisabled} className="w-full sm:w-auto">
           {STEP8_BUTTON_OPTIMIZE_SCRIPT}
         </Button>
       </form>
 
-      {/* Three-state feedback */}
-      <div className="max-w-2xl">
-        {isSaving && <LoadingState text={STEP8_OPTIMIZE_LOADING_TEXT} size="lg" />}
-        {!isSaving && !result && (
-          <EmptyState title={`提交表单后查看${STEP8_H1}`} />
-        )}
-      </div>
+      {/* AC-7 · stub output: ReactMarkdown + 4 H3 blocks */}
+      {submitted && (
+        <div id="step8-optimize-output" className="space-y-6">
+          {/* ReactMarkdown stub optimized script */}
+          <div className="glass-card rounded-xl p-6">
+            <ReactMarkdown className="prose prose-sm text-on-surface max-w-none">
+              {STUB_OPTIMIZED_SCRIPT}
+            </ReactMarkdown>
+          </div>
 
-      {/* Output: 2 InfoCards — TD-77 fix: 使用常量 map 禁止 hardcode */}
-      {result && !isSaving && (
-        <div id="step8-optimize-output" className="space-y-4">
-          {STEP8_OPTIMIZE_OUTPUT_LABELS_2.map(({ id, label }) => (
-            <InfoCard key={id} label={label} value={result[id]} />
+          {/* 4 H3 analysis blocks */}
+          {STEP8_OPTIMIZE_OUTPUT_MODULES_4.map((module) => (
+            <div key={module.id} className="glass-card rounded-xl p-6">
+              <h3 className="text-h3 font-display text-on-surface mb-3">{module.h3Label}</h3>
+              <p className="text-body-sm text-muted-foreground">
+                {STUB_OPTIMIZE_DETAILS[module.id] ?? ''}
+              </p>
+            </div>
           ))}
         </div>
       )}
