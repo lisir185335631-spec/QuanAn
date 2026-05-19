@@ -86,6 +86,23 @@ test.describe('PRD-23 Visual Baseline', () => {
     });
   });
 
+  // AC-8 (US-005) · /analysis visual baseline
+  test('/analysis fullPage matches prd23-analysis.png', async ({ page }) => {
+    const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
+    const API_BASE = process.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto('/analysis');
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await expectVisualMatch(page, {
+      baseline: 'prd23-analysis.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
   // AC-9 · /video-analysis visual baseline
   test('/video-analysis fullPage matches prd23-video-analysis.png', async ({ page }) => {
     const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
