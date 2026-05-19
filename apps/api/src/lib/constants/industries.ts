@@ -1,5 +1,5 @@
 /**
- * QuanQn · 56 行业常量(5 大类)
+ * QuanAn · 56 行业常量(5 大类)
  * 派生自 ARCHITECTURE.md §3.6 + spec.md §Ⅹ.4 实测
  */
 

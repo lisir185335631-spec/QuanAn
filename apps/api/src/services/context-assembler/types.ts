@@ -6,7 +6,7 @@
 
 import type { SpecialistId } from '@/agents/base/types';
 
-import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
+import type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 
 export type { SpecialistId };
 

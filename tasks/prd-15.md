@@ -101,7 +101,7 @@ PRD-15 强制继承(从 `scripts/ralph/progress.txt` 累积):
    - account 4: `{name: 'MCN 矩阵号', primaryIdentity: 'mcn-manager', industry: 'food', platform: 'multi', followers: 50000}` (MCN / 品牌方)
    - account 5: `{name: 'Demo 演示号', primaryIdentity: 'demo', industry: 'tech', platform: 'xiaohongshu', followers: 0}` (默认 demo)
 
-3. `apps/api/src/middleware/auth.ts` 加 `DEV_OAUTH_MOCK` env flag · 若 `NODE_ENV=development && DEV_OAUTH_MOCK=true` · `auth.me` 返默认 mock user `{id: 1, email: 'dev@quanqn.local', role: 'user'}` + 自动绑定 5 mock IP 账号 · 不走真 OAuth
+3. `apps/api/src/middleware/auth.ts` 加 `DEV_OAUTH_MOCK` env flag · 若 `NODE_ENV=development && DEV_OAUTH_MOCK=true` · `auth.me` 返默认 mock user `{id: 1, email: 'dev@quanan.local', role: 'user'}` + 自动绑定 5 mock IP 账号 · 不走真 OAuth
 
 4. `apps/api/src/trpc/routers/ipAccounts.ts` `list` procedure brownfield · NODE_ENV=development 时若 user 没账号 自动绑 5 mock 账号(seedMockIpAccounts 入库后)
 

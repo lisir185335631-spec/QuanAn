@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-9+ (留 PRR)
+ * QuanAn · PRD-9+ (留 PRR)
  * DiagnosisAgent — /diagnosis IP 账号诊断
  * 本期骨架 · 真实 LLM 接入留 PRD-9
  */

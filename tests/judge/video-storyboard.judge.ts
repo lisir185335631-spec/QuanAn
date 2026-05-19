@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-014 · VideoAgent storyboard mode LLM Judge
+ * QuanAn · US-014 · VideoAgent storyboard mode LLM Judge
  * AC-3: 2 golden cases — 美食探店(5-8 scenes) + 旅游 vlog
  * criteria: 5-8 scenes + imagePromptEn 全 ASCII 英文 regex /^[\x20-\x7E\t\n\r]+$/
  */

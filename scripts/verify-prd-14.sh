@@ -27,7 +27,7 @@ section() { echo ""; echo "━━━ $1 ━━━"; }
 cd "$(dirname "$0")/.."
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn PRD-14 P9.4 advanced-domains · 可重复验收"
+echo "  QuanAn PRD-14 P9.4 advanced-domains · 可重复验收"
 echo "  起点: $(pwd) · 时间: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

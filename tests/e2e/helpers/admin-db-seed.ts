@@ -6,7 +6,7 @@
 
 import { PrismaClient } from '@prisma/client';
 
-const DB_URL = process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanqn';
+const DB_URL = process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanan';
 
 let prisma: PrismaClient | null = null;
 

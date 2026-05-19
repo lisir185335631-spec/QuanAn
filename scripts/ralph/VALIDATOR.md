@@ -269,7 +269,7 @@ cd backend && .venv/Scripts/pytest -q \
 
 ---
 
-## Router cross-cut coverage 验证(2026-05-09 · QuanQn PRD-4 US-017 经验)
+## Router cross-cut coverage 验证(2026-05-09 · QuanAn PRD-4 US-017 经验)
 
 > **背景**: PRD-4 US-017 9 步 e2e 才发现 stepData.save handler 漏 step5/7 → UI skeleton 永挂 → 浪费 1 次 e2e 跑(~30 min)。Validator 当时只验当前 story scope · 没 catch cross-cut 漏。
 

@@ -3,7 +3,7 @@
  * AC-1: 6 procedures (list/active/create/update/delete/switchActive) · all pass RLS middleware
  * AC-5: list returns all user-owned accounts (ip_accounts RLS uses user_id isolation)
  * AC-6: switchActive writes audit_log 'account.switch' + updates user.activeAccountId
- * Note: Zod schemas inlined — @quanqn/schemas/entities has the canonical definition for client use
+ * Note: Zod schemas inlined — @quanan/schemas/entities has the canonical definition for client use
  */
 
 import { TRPCError } from '@trpc/server';

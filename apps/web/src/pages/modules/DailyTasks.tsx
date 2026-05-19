@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { trpc } from '@/lib/trpc';
 
-import type { DailyTaskHistoryRow, DailyTaskItem } from '@quanqn/clients/router-types';
+import type { DailyTaskHistoryRow, DailyTaskItem } from '@quanan/clients/router-types';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 

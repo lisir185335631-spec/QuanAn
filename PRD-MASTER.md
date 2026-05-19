@@ -1,4 +1,4 @@
-# QuanQn · PRD 总纲(PRD-MASTER.md)
+# QuanAn · PRD 总纲(PRD-MASTER.md)
 
 > **版本** · v0.2(2026-05-07 创建 · 2026-05-07 v0.2 修订:全链路 11 项修 — 35 反例 / 4 类 AC / 失败回滚 / 状态协议 / ownership 等)· 跟 ARCHITECTURE.md / ADMIN-ARCHITECTURE.md 平级
 > **角色** · ARCHITECTURE-driven PRD 模式的"事实来源 + 写作总纲 + 缺口清单"
@@ -61,7 +61,7 @@
 | §3 | **ARCHITECTURE-driven 工作流详细协议** | prd / ralph / ralph.py / Opus audit 4 阶段在本模式下的具体协议 |
 | §4 | **5 大支撑规范** | risk_level 打分 / depends_on 拓扑 / anti_patterns 注入 / LLM Judge / 测试配额 |
 | §5 | **缺口清单 + 修复路径(10 项)** | §0 诊断的 10 缺口 · 每个 P0/P1/P2/P3 + 修复 |
-| §6 | **PRD-anti-patterns 预填**(★ 反例库空 · 必须手动准备)| ≥ 30 条 QuanQn 通用反例 + 写入 reject-examples.jsonl 脚本 |
+| §6 | **PRD-anti-patterns 预填**(★ 反例库空 · 必须手动准备)| ≥ 30 条 QuanAn 通用反例 + 写入 reject-examples.jsonl 脚本 |
 | §7 | **14 PRD 启动顺序 + 并行机会** | depends_on 全图 + 主/admin 双 daemon 协同时间轴 |
 | §8 | 修订记录 + 引用源 | 收尾 |
 
@@ -703,7 +703,7 @@ prd.json 关键字段(每 story):
 #### A · 真实启动命令(单 daemon · 14 PRD 串行)
 
 ```bash
-# 在项目根 /Users/return/Desktop/QuanQn 跑 ralph.py
+# 在项目根 /Users/return/Desktop/QuanAn 跑 ralph.py
 # 当前要跑哪份 PRD 就把对应 prd-N.json 复制为 scripts/ralph/prd.json
 cp scripts/ralph/prd-1.json scripts/ralph/prd.json
 
@@ -796,7 +796,7 @@ python scripts/ralph/ralph.py --model sonnet --daemon
   ③ 提取 playbook · 写到 progress.txt
   ④ 不删反例(反例库 append-only)
 
-效果 · 14 PRD 跑完后 · reject-examples.jsonl 有 100+ 条 QuanQn 专属反例
+效果 · 14 PRD 跑完后 · reject-examples.jsonl 有 100+ 条 QuanAn 专属反例
        下次开新项目时 · 这个反例库可以全局共享(参全局 CLAUDE.md "反例库跨项目积累")
 ```
 
@@ -948,7 +948,7 @@ US-001 (foundation) · BaseSpecialist 抽象类
 ```json
 {
   "id": "REJ-001",
-  "source_prd": "QuanQn-PRD-4",
+  "source_prd": "QuanAn-PRD-4",
   "source_story": "US-005",
   "domain": "Specialist",
   "keywords": ["Specialist", "LLM", "Gateway"],
@@ -1348,7 +1348,7 @@ prd skill refresh 流程 ·
 
 > 本章是 ARCHITECTURE-driven PRD 模式启动前的**最关键准备工作** — reject-examples.jsonl 当前 0 字节 · 必须**手动预填首批反例** · 让 prd skill 在 PRD-1 启动时有可注入的内容。
 >
-> **预填来源** · 从 [`AGENTS.md`](AGENTS.md) §3-§5(主应用 18 LD + 17 R)+ §10(admin 5 LD-A + 6 R-A)+ ARCHITECTURE.md 风险章节 派生 · 总 35+ 条 QuanQn 通用反例。
+> **预填来源** · 从 [`AGENTS.md`](AGENTS.md) §3-§5(主应用 18 LD + 17 R)+ §10(admin 5 LD-A + 6 R-A)+ ARCHITECTURE.md 风险章节 派生 · 总 35+ 条 QuanAn 通用反例。
 
 ### §6.1 反例分类(6 大领域 · 35+ 条)
 
@@ -1367,66 +1367,66 @@ prd skill refresh 流程 ·
 #### A · Specialist + LLM Gateway(7 条)
 
 ```json
-{"id":"REJ-001","source_prd":"QuanQn-base","domain":"Specialist","keywords":["Specialist","LLM","Gateway","execute"],"anti_pattern":"❌ Specialist execute() 内直接调 anthropic.messages.create / openai.chat.completions","fix_pattern":"✅ 必须通过 LLMGateway.complete() · 由 Gateway 统一限流/降级/计费/审计","evidence":"AGENTS §3 LD-012 + ARCHITECTURE §6.5 + 11/05 LLM 网关","rejected_at":"2026-05-07"}
-{"id":"REJ-002","source_prd":"QuanQn-base","domain":"Specialist","keywords":["Specialist","execute","循环","while"],"anti_pattern":"❌ Specialist execute() 内 while/for 循环调 LLM(伪 Agent 行为)","fix_pattern":"✅ Specialist 是 95% Workflow · 单次 LLM 调用 + 单次 zod 校验 + 单次返回 · 多轮 Agent 必须独立成 L5(VoiceChat/Evolution/DailyTask)","evidence":"AGENTS §3 LD-001 + ARCHITECTURE §4.1 + reference/PI/03","rejected_at":"2026-05-07"}
-{"id":"REJ-003","source_prd":"QuanQn-base","domain":"Specialist","keywords":["model","claude","gpt"],"anti_pattern":"❌ 应用代码硬编码 model 名(如 'claude-sonnet-4-6' / 'gpt-4o')","fix_pattern":"✅ 用 model_tier: 'reasoning' | 'lightweight' · 由 LLMGateway 决定具体 model · 降级策略集中处理","evidence":"AGENTS §2.4 + ARCHITECTURE §6.5","rejected_at":"2026-05-07"}
-{"id":"REJ-004","source_prd":"QuanQn-base","domain":"Specialist","keywords":["Specialist","invoke","call","直接"],"anti_pattern":"❌ tRPC procedure 内直接 new Specialist().execute()","fix_pattern":"✅ 通过 BaseSpecialist.run() 模板方法(自动跑 ContextAssembler.assemble + writeAuditLog)","evidence":"AGENTS §3 LD-005 + ARCHITECTURE §6.3","rejected_at":"2026-05-07"}
-{"id":"REJ-005","source_prd":"QuanQn-base","domain":"Specialist","keywords":["systemPrompt","prompt","manual"],"anti_pattern":"❌ Specialist 自己拼 systemPrompt(读 stepData / EvolutionProfile / 常量)","fix_pattern":"✅ 必须通过 ContextAssembler.assemble() · ContextAssembler 是 prompt 注入唯一入口","evidence":"AGENTS §3 LD-007 + ADR-007 + ARCHITECTURE §4.6","rejected_at":"2026-05-07"}
-{"id":"REJ-006","source_prd":"QuanQn-base","domain":"Specialist","keywords":["Specialist","timeout"],"anti_pattern":"❌ Specialist 不设 timeout · 让 LLM 卡死任意时间","fix_pattern":"✅ LLMGateway 内置 timeout(reasoning 60s / lightweight 30s)· 失败重试 1 次 + 降级 · 仍失败返回 fallback 模板","evidence":"ARCHITECTURE §6.5 + §6.8","rejected_at":"2026-05-07"}
-{"id":"REJ-007","source_prd":"QuanQn-base","domain":"Specialist","keywords":["Specialist","output","mode"],"anti_pattern":"❌ 同一 Specialist 多 mode 共用一个输出 zod schema(如 CopywritingAgent step7+free+boom 共用)","fix_pattern":"✅ 每个 mode 一个 zod schema · CopywritingAgent.run({mode:'step7'}) 跑 stepResultSchema.step7 / mode='boom' 跑 boomResultSchema","evidence":"PROMPTS.md 14 模板规范 + AGENTS §3 LD-013","rejected_at":"2026-05-07"}
+{"id":"REJ-001","source_prd":"QuanAn-base","domain":"Specialist","keywords":["Specialist","LLM","Gateway","execute"],"anti_pattern":"❌ Specialist execute() 内直接调 anthropic.messages.create / openai.chat.completions","fix_pattern":"✅ 必须通过 LLMGateway.complete() · 由 Gateway 统一限流/降级/计费/审计","evidence":"AGENTS §3 LD-012 + ARCHITECTURE §6.5 + 11/05 LLM 网关","rejected_at":"2026-05-07"}
+{"id":"REJ-002","source_prd":"QuanAn-base","domain":"Specialist","keywords":["Specialist","execute","循环","while"],"anti_pattern":"❌ Specialist execute() 内 while/for 循环调 LLM(伪 Agent 行为)","fix_pattern":"✅ Specialist 是 95% Workflow · 单次 LLM 调用 + 单次 zod 校验 + 单次返回 · 多轮 Agent 必须独立成 L5(VoiceChat/Evolution/DailyTask)","evidence":"AGENTS §3 LD-001 + ARCHITECTURE §4.1 + reference/PI/03","rejected_at":"2026-05-07"}
+{"id":"REJ-003","source_prd":"QuanAn-base","domain":"Specialist","keywords":["model","claude","gpt"],"anti_pattern":"❌ 应用代码硬编码 model 名(如 'claude-sonnet-4-6' / 'gpt-4o')","fix_pattern":"✅ 用 model_tier: 'reasoning' | 'lightweight' · 由 LLMGateway 决定具体 model · 降级策略集中处理","evidence":"AGENTS §2.4 + ARCHITECTURE §6.5","rejected_at":"2026-05-07"}
+{"id":"REJ-004","source_prd":"QuanAn-base","domain":"Specialist","keywords":["Specialist","invoke","call","直接"],"anti_pattern":"❌ tRPC procedure 内直接 new Specialist().execute()","fix_pattern":"✅ 通过 BaseSpecialist.run() 模板方法(自动跑 ContextAssembler.assemble + writeAuditLog)","evidence":"AGENTS §3 LD-005 + ARCHITECTURE §6.3","rejected_at":"2026-05-07"}
+{"id":"REJ-005","source_prd":"QuanAn-base","domain":"Specialist","keywords":["systemPrompt","prompt","manual"],"anti_pattern":"❌ Specialist 自己拼 systemPrompt(读 stepData / EvolutionProfile / 常量)","fix_pattern":"✅ 必须通过 ContextAssembler.assemble() · ContextAssembler 是 prompt 注入唯一入口","evidence":"AGENTS §3 LD-007 + ADR-007 + ARCHITECTURE §4.6","rejected_at":"2026-05-07"}
+{"id":"REJ-006","source_prd":"QuanAn-base","domain":"Specialist","keywords":["Specialist","timeout"],"anti_pattern":"❌ Specialist 不设 timeout · 让 LLM 卡死任意时间","fix_pattern":"✅ LLMGateway 内置 timeout(reasoning 60s / lightweight 30s)· 失败重试 1 次 + 降级 · 仍失败返回 fallback 模板","evidence":"ARCHITECTURE §6.5 + §6.8","rejected_at":"2026-05-07"}
+{"id":"REJ-007","source_prd":"QuanAn-base","domain":"Specialist","keywords":["Specialist","output","mode"],"anti_pattern":"❌ 同一 Specialist 多 mode 共用一个输出 zod schema(如 CopywritingAgent step7+free+boom 共用)","fix_pattern":"✅ 每个 mode 一个 zod schema · CopywritingAgent.run({mode:'step7'}) 跑 stepResultSchema.step7 / mode='boom' 跑 boomResultSchema","evidence":"PROMPTS.md 14 模板规范 + AGENTS §3 LD-013","rejected_at":"2026-05-07"}
 ```
 
 #### B · 数据隔离 + RLS(6 条)
 
 ```json
-{"id":"REJ-008","source_prd":"QuanQn-base","domain":"data-isolation","keywords":["account_id","WHERE","prisma","隔离"],"anti_pattern":"❌ prisma.histories.findMany() 不带 account_id WHERE","fix_pattern":"✅ 必带 where: { accountId: ctx.activeAccountId } · 即使 RLS 兜底 · ORM 层也必显式带","evidence":"AGENTS §3 LD-009 + DATA-MODEL §9 + ARCHITECTURE §3.8 3 道闸","rejected_at":"2026-05-07"}
-{"id":"REJ-009","source_prd":"QuanQn-base","domain":"data-isolation","keywords":["RLS","DISABLE","raw","executeRaw"],"anti_pattern":"❌ 业务代码用 prisma.$executeRawUnsafe / $queryRawUnsafe 绕过 RLS","fix_pattern":"✅ 业务代码必须走 prisma 类型安全 API · raw SQL 仅 admin migration 文件允许","evidence":"AGENTS §10.2 R-A6 + DATA-MODEL §9","rejected_at":"2026-05-07"}
-{"id":"REJ-010","source_prd":"QuanQn-base","domain":"data-isolation","keywords":["LS","localStorage","aiip_memory_acc"],"anti_pattern":"❌ localStorage key 不带 acc_{id} 前缀(如直接写 'step3_account_v3')","fix_pattern":"✅ 必带 'aiip_memory_acc_{accountId}_{stepKey}' 命名空间 · 切账号时不污染","evidence":"ARCHITECTURE §3.3 18 LS keys + ADR-011","rejected_at":"2026-05-07"}
-{"id":"REJ-011","source_prd":"QuanQn-base","domain":"data-isolation","keywords":["Redis","cache","key"],"anti_pattern":"❌ Redis key 不带 acc_{id} 前缀(如 'evolution:profile:123')","fix_pattern":"✅ 必带 acc_{id} · 'evolution:profile:acc_{accountId}' · 防止跨账号缓存污染","evidence":"ARCHITECTURE §3.8 闸 3 命名空间","rejected_at":"2026-05-07"}
-{"id":"REJ-012","source_prd":"QuanQn-base","domain":"data-isolation","keywords":["pgvector","namespace","embedding"],"anti_pattern":"❌ pgvector 查询不带 namespace = 'account_{id}'","fix_pattern":"✅ user_samples_vec / user_history_vec 必带 namespace · 防止用户 A 的样本被 B 的 prompt 检索到","evidence":"ARCHITECTURE §3.6 B 向量库 namespace 策略","rejected_at":"2026-05-07"}
-{"id":"REJ-013","source_prd":"QuanQn-base","domain":"data-isolation","keywords":["activeAccountId","middleware","switchActive"],"anti_pattern":"❌ tRPC procedure 不经 accountIsolation middleware · 直接信任 input.accountId","fix_pattern":"✅ 必经 accountIsolation middleware(参 DATA-MODEL §9.5)· assert(user owns activeAccountId)+ 设 RLS context","evidence":"AGENTS §3 LD-009 闸 1 + DATA-MODEL §9.5","rejected_at":"2026-05-07"}
+{"id":"REJ-008","source_prd":"QuanAn-base","domain":"data-isolation","keywords":["account_id","WHERE","prisma","隔离"],"anti_pattern":"❌ prisma.histories.findMany() 不带 account_id WHERE","fix_pattern":"✅ 必带 where: { accountId: ctx.activeAccountId } · 即使 RLS 兜底 · ORM 层也必显式带","evidence":"AGENTS §3 LD-009 + DATA-MODEL §9 + ARCHITECTURE §3.8 3 道闸","rejected_at":"2026-05-07"}
+{"id":"REJ-009","source_prd":"QuanAn-base","domain":"data-isolation","keywords":["RLS","DISABLE","raw","executeRaw"],"anti_pattern":"❌ 业务代码用 prisma.$executeRawUnsafe / $queryRawUnsafe 绕过 RLS","fix_pattern":"✅ 业务代码必须走 prisma 类型安全 API · raw SQL 仅 admin migration 文件允许","evidence":"AGENTS §10.2 R-A6 + DATA-MODEL §9","rejected_at":"2026-05-07"}
+{"id":"REJ-010","source_prd":"QuanAn-base","domain":"data-isolation","keywords":["LS","localStorage","aiip_memory_acc"],"anti_pattern":"❌ localStorage key 不带 acc_{id} 前缀(如直接写 'step3_account_v3')","fix_pattern":"✅ 必带 'aiip_memory_acc_{accountId}_{stepKey}' 命名空间 · 切账号时不污染","evidence":"ARCHITECTURE §3.3 18 LS keys + ADR-011","rejected_at":"2026-05-07"}
+{"id":"REJ-011","source_prd":"QuanAn-base","domain":"data-isolation","keywords":["Redis","cache","key"],"anti_pattern":"❌ Redis key 不带 acc_{id} 前缀(如 'evolution:profile:123')","fix_pattern":"✅ 必带 acc_{id} · 'evolution:profile:acc_{accountId}' · 防止跨账号缓存污染","evidence":"ARCHITECTURE §3.8 闸 3 命名空间","rejected_at":"2026-05-07"}
+{"id":"REJ-012","source_prd":"QuanAn-base","domain":"data-isolation","keywords":["pgvector","namespace","embedding"],"anti_pattern":"❌ pgvector 查询不带 namespace = 'account_{id}'","fix_pattern":"✅ user_samples_vec / user_history_vec 必带 namespace · 防止用户 A 的样本被 B 的 prompt 检索到","evidence":"ARCHITECTURE §3.6 B 向量库 namespace 策略","rejected_at":"2026-05-07"}
+{"id":"REJ-013","source_prd":"QuanAn-base","domain":"data-isolation","keywords":["activeAccountId","middleware","switchActive"],"anti_pattern":"❌ tRPC procedure 不经 accountIsolation middleware · 直接信任 input.accountId","fix_pattern":"✅ 必经 accountIsolation middleware(参 DATA-MODEL §9.5)· assert(user owns activeAccountId)+ 设 RLS context","evidence":"AGENTS §3 LD-009 闸 1 + DATA-MODEL §9.5","rejected_at":"2026-05-07"}
 ```
 
 #### C · 进化飞轮 + 记忆系统(5 条)
 
 ```json
-{"id":"REJ-014","source_prd":"QuanQn-base","domain":"evolution","keywords":["EvolutionAgent","feedback","trigger"],"anti_pattern":"❌ EvolutionAgent 在主调用栈同步跑批(阻塞用户)","fix_pattern":"✅ 必须异步队列(bullmq)· 用户点 👍/👎 后写 feedback_log 立即返回 · EvolutionAgent 后台跑批","evidence":"AGENTS §3 LD-008 + ADR-018 外部 orchestrator + ARCHITECTURE §5.5","rejected_at":"2026-05-07"}
-{"id":"REJ-015","source_prd":"QuanQn-base","domain":"evolution","keywords":["EvolutionInsight","write","atomic"],"anti_pattern":"❌ EvolutionAgent 升级 level 跟写 insight 不在同一 transaction","fix_pattern":"✅ 必须原子事务 · 任一失败全部回滚 · 防止'已升级 L2 但 insight 为空'","evidence":"ARCHITECTURE §6.8 错误处理 · DATA-MODEL §6.5 飞轮 SQL 链路","rejected_at":"2026-05-07"}
-{"id":"REJ-016","source_prd":"QuanQn-base","domain":"evolution","keywords":["EvolutionProfile","userId","accountId"],"anti_pattern":"❌ EvolutionProfile 用 userId 关联(应该是 accountId)","fix_pattern":"✅ 进化档案是「账号级」非「用户级」· 同一用户的企业号 vs 个人号有不同进化方向","evidence":"AGENTS §3 LD-008 + ADR-009 + ARCHITECTURE §5.6","rejected_at":"2026-05-07"}
-{"id":"REJ-017","source_prd":"QuanQn-base","domain":"evolution","keywords":["trace_id","history","feedback"],"anti_pattern":"❌ history.create / feedback_log.create 不带 trace_id","fix_pattern":"✅ 全栈 trace_id 贯穿 · history.trace_id / feedback_log.trace_id / audit_log.trace_id 都同一个","evidence":"AGENTS §3 LD-013 + ARCHITECTURE §6.9","rejected_at":"2026-05-07"}
-{"id":"REJ-018","source_prd":"QuanQn-base","domain":"evolution","keywords":["L1","Buffer","Redis","TTL"],"anti_pattern":"❌ VoiceChat L1 Buffer 不设 TTL · 用户长时间不挂断造成 Redis 内存爆","fix_pattern":"✅ L1 Buffer key 必设 TTL 30min(参 ARCHITECTURE §5.2)· 5 分钟无声自动结束","evidence":"ARCHITECTURE §4.4-A + §5.2 L1","rejected_at":"2026-05-07"}
+{"id":"REJ-014","source_prd":"QuanAn-base","domain":"evolution","keywords":["EvolutionAgent","feedback","trigger"],"anti_pattern":"❌ EvolutionAgent 在主调用栈同步跑批(阻塞用户)","fix_pattern":"✅ 必须异步队列(bullmq)· 用户点 👍/👎 后写 feedback_log 立即返回 · EvolutionAgent 后台跑批","evidence":"AGENTS §3 LD-008 + ADR-018 外部 orchestrator + ARCHITECTURE §5.5","rejected_at":"2026-05-07"}
+{"id":"REJ-015","source_prd":"QuanAn-base","domain":"evolution","keywords":["EvolutionInsight","write","atomic"],"anti_pattern":"❌ EvolutionAgent 升级 level 跟写 insight 不在同一 transaction","fix_pattern":"✅ 必须原子事务 · 任一失败全部回滚 · 防止'已升级 L2 但 insight 为空'","evidence":"ARCHITECTURE §6.8 错误处理 · DATA-MODEL §6.5 飞轮 SQL 链路","rejected_at":"2026-05-07"}
+{"id":"REJ-016","source_prd":"QuanAn-base","domain":"evolution","keywords":["EvolutionProfile","userId","accountId"],"anti_pattern":"❌ EvolutionProfile 用 userId 关联(应该是 accountId)","fix_pattern":"✅ 进化档案是「账号级」非「用户级」· 同一用户的企业号 vs 个人号有不同进化方向","evidence":"AGENTS §3 LD-008 + ADR-009 + ARCHITECTURE §5.6","rejected_at":"2026-05-07"}
+{"id":"REJ-017","source_prd":"QuanAn-base","domain":"evolution","keywords":["trace_id","history","feedback"],"anti_pattern":"❌ history.create / feedback_log.create 不带 trace_id","fix_pattern":"✅ 全栈 trace_id 贯穿 · history.trace_id / feedback_log.trace_id / audit_log.trace_id 都同一个","evidence":"AGENTS §3 LD-013 + ARCHITECTURE §6.9","rejected_at":"2026-05-07"}
+{"id":"REJ-018","source_prd":"QuanAn-base","domain":"evolution","keywords":["L1","Buffer","Redis","TTL"],"anti_pattern":"❌ VoiceChat L1 Buffer 不设 TTL · 用户长时间不挂断造成 Redis 内存爆","fix_pattern":"✅ L1 Buffer key 必设 TTL 30min(参 ARCHITECTURE §5.2)· 5 分钟无声自动结束","evidence":"ARCHITECTURE §4.4-A + §5.2 L1","rejected_at":"2026-05-07"}
 ```
 
 #### D · admin 子系统(8 条)
 
 ```json
-{"id":"REJ-019","source_prd":"QuanQn-base","domain":"admin","keywords":["adminRouter","appRouter","import"],"anti_pattern":"❌ adminRouter 内 import 调 appRouter 的 procedure(反之亦然)","fix_pattern":"✅ adminRouter 跟 appRouter 严格分离(对应 LD-A2)· 共享数据通过 adminPrisma 直接查 · 不调彼此 procedure","evidence":"AGENTS §10.1 LD-A2 + ADMIN §5.4","rejected_at":"2026-05-07"}
-{"id":"REJ-020","source_prd":"QuanQn-base","domain":"admin","keywords":["admin","procedure","adminRLS"],"anti_pattern":"❌ admin procedure 链路里漏 adminRLS middleware","fix_pattern":"✅ 6 闸鉴权链每条都不能漏 · adminAuth → roleCheck → ipWhitelist → mfaCheck → adminRLS → approvalGateCheck","evidence":"AGENTS §10.1 LD-A2 + ADMIN §5.3","rejected_at":"2026-05-07"}
-{"id":"REJ-021","source_prd":"QuanQn-base","domain":"admin","keywords":["cross_account_query","admin_audit_log"],"anti_pattern":"❌ admin 跨账号查不写 cross_account_query 事件","fix_pattern":"✅ 由 adminRLS middleware 自动写 admin_audit_log eventType='cross_account_query' · 法务取证生命线","evidence":"AGENTS §10.1 LD-A3 + ADMIN §4.1","rejected_at":"2026-05-07"}
-{"id":"REJ-022","source_prd":"QuanQn-base","domain":"admin","keywords":["admin","page","主应用"],"anti_pattern":"❌ 主应用 src/pages/ 加 admin 子目录","fix_pattern":"✅ admin 在 apps/admin/src/pages/ · 主应用前端不暴露任何 admin 入口(对应 R-A2)","evidence":"AGENTS §10.2 R-A1 + R-A2 + ARCHITECTURE §1.4b D","rejected_at":"2026-05-07"}
-{"id":"REJ-023","source_prd":"QuanQn-base","domain":"admin","keywords":["high-risk","Approval","封禁"],"anti_pattern":"❌ admin 高风险操作(封禁 / 改套餐 / Prompt 发布)硬编码 meta.requiresApproval=false","fix_pattern":"✅ 14 类高风险动作必带 requiresApproval=true · 走 Approval Gates(对应 LD-A4)","evidence":"AGENTS §10.1 LD-A4 + §10.3 + ADR-020","rejected_at":"2026-05-07"}
-{"id":"REJ-024","source_prd":"QuanQn-base","domain":"admin","keywords":["MFA","super_admin"],"anti_pattern":"❌ super_admin 不强制 MFA(允许仅 OAuth 通过即登录)","fix_pattern":"✅ super_admin 强制 TOTP/WebAuthn(决策 4=B)· 30 天强制 reverify · 失败 3 次锁账号","evidence":"ADMIN §7.3 + ADR-021","rejected_at":"2026-05-07"}
-{"id":"REJ-025","source_prd":"QuanQn-base","domain":"admin","keywords":["IP","白名单","WAF"],"anti_pattern":"❌ admin SPA 不配 WAF IP 白名单 直接公网访问","fix_pattern":"✅ admin.quanqn.com 必经 Cloudflare/Vercel WAF IP 白名单(office + VPN)· 部署前 CI 必检(对应 R-A3)","evidence":"AGENTS §10.2 R-A3 + ADMIN §7.2","rejected_at":"2026-05-07"}
-{"id":"REJ-026","source_prd":"QuanQn-base","domain":"admin","keywords":["app:session","admin:session","Redis"],"anti_pattern":"❌ admin session 用主应用 Redis namespace(app:session:*)","fix_pattern":"✅ admin 独立 namespace(admin:session:*)· session ttl 12h(短于主应用 30 天)· idle timeout 30min","evidence":"AGENTS §10.1 LD-A1 + ADMIN §7.1","rejected_at":"2026-05-07"}
+{"id":"REJ-019","source_prd":"QuanAn-base","domain":"admin","keywords":["adminRouter","appRouter","import"],"anti_pattern":"❌ adminRouter 内 import 调 appRouter 的 procedure(反之亦然)","fix_pattern":"✅ adminRouter 跟 appRouter 严格分离(对应 LD-A2)· 共享数据通过 adminPrisma 直接查 · 不调彼此 procedure","evidence":"AGENTS §10.1 LD-A2 + ADMIN §5.4","rejected_at":"2026-05-07"}
+{"id":"REJ-020","source_prd":"QuanAn-base","domain":"admin","keywords":["admin","procedure","adminRLS"],"anti_pattern":"❌ admin procedure 链路里漏 adminRLS middleware","fix_pattern":"✅ 6 闸鉴权链每条都不能漏 · adminAuth → roleCheck → ipWhitelist → mfaCheck → adminRLS → approvalGateCheck","evidence":"AGENTS §10.1 LD-A2 + ADMIN §5.3","rejected_at":"2026-05-07"}
+{"id":"REJ-021","source_prd":"QuanAn-base","domain":"admin","keywords":["cross_account_query","admin_audit_log"],"anti_pattern":"❌ admin 跨账号查不写 cross_account_query 事件","fix_pattern":"✅ 由 adminRLS middleware 自动写 admin_audit_log eventType='cross_account_query' · 法务取证生命线","evidence":"AGENTS §10.1 LD-A3 + ADMIN §4.1","rejected_at":"2026-05-07"}
+{"id":"REJ-022","source_prd":"QuanAn-base","domain":"admin","keywords":["admin","page","主应用"],"anti_pattern":"❌ 主应用 src/pages/ 加 admin 子目录","fix_pattern":"✅ admin 在 apps/admin/src/pages/ · 主应用前端不暴露任何 admin 入口(对应 R-A2)","evidence":"AGENTS §10.2 R-A1 + R-A2 + ARCHITECTURE §1.4b D","rejected_at":"2026-05-07"}
+{"id":"REJ-023","source_prd":"QuanAn-base","domain":"admin","keywords":["high-risk","Approval","封禁"],"anti_pattern":"❌ admin 高风险操作(封禁 / 改套餐 / Prompt 发布)硬编码 meta.requiresApproval=false","fix_pattern":"✅ 14 类高风险动作必带 requiresApproval=true · 走 Approval Gates(对应 LD-A4)","evidence":"AGENTS §10.1 LD-A4 + §10.3 + ADR-020","rejected_at":"2026-05-07"}
+{"id":"REJ-024","source_prd":"QuanAn-base","domain":"admin","keywords":["MFA","super_admin"],"anti_pattern":"❌ super_admin 不强制 MFA(允许仅 OAuth 通过即登录)","fix_pattern":"✅ super_admin 强制 TOTP/WebAuthn(决策 4=B)· 30 天强制 reverify · 失败 3 次锁账号","evidence":"ADMIN §7.3 + ADR-021","rejected_at":"2026-05-07"}
+{"id":"REJ-025","source_prd":"QuanAn-base","domain":"admin","keywords":["IP","白名单","WAF"],"anti_pattern":"❌ admin SPA 不配 WAF IP 白名单 直接公网访问","fix_pattern":"✅ admin.quanan.com 必经 Cloudflare/Vercel WAF IP 白名单(office + VPN)· 部署前 CI 必检(对应 R-A3)","evidence":"AGENTS §10.2 R-A3 + ADMIN §7.2","rejected_at":"2026-05-07"}
+{"id":"REJ-026","source_prd":"QuanAn-base","domain":"admin","keywords":["app:session","admin:session","Redis"],"anti_pattern":"❌ admin session 用主应用 Redis namespace(app:session:*)","fix_pattern":"✅ admin 独立 namespace(admin:session:*)· session ttl 12h(短于主应用 30 天)· idle timeout 30min","evidence":"AGENTS §10.1 LD-A1 + ADMIN §7.1","rejected_at":"2026-05-07"}
 ```
 
 #### E · 内容审核(5 条)
 
 ```json
-{"id":"REJ-027","source_prd":"QuanQn-base","domain":"content-review","keywords":["TrendingScraper","trendingItem","create"],"anti_pattern":"❌ TrendingScraper Worker 直接 prisma.trendingItem.create({...})","fix_pattern":"✅ 必须先进 trending_review_queue(status='pending')· 通过 admin 审核后才入主表 + embed 入向量库(对应 LD-A5)","evidence":"AGENTS §10.1 LD-A5 + ADMIN §3.4 域 ⑦","rejected_at":"2026-05-07"}
-{"id":"REJ-028","source_prd":"QuanQn-base","domain":"content-review","keywords":["FileParser","deepLearningArchive","upload"],"anti_pattern":"❌ FileParser Worker 直接写 deep_learning_archives + 入 vector store","fix_pattern":"✅ 必须先进 deep_learn_review_queue · 自动 PII 扫描 + 违禁词扫描 + 抽样人审 · 通过才入向量库","evidence":"AGENTS §10.1 LD-A5 + ADMIN §3.4 域 ⑧","rejected_at":"2026-05-07"}
-{"id":"REJ-029","source_prd":"QuanQn-base","domain":"content-review","keywords":["PII","email","phone","身份证"],"anti_pattern":"❌ 用户上传内容不扫 PII 直接进 prompt","fix_pattern":"✅ 必跑 PII 扫描(邮箱/手机/身份证/银行卡正则)· 命中阻断 + 用户提示 · 不允许 PII 进 LLM Gateway","evidence":"AGENTS §1.4 + §9.11-D + ADMIN §3.4 域 ⑧","rejected_at":"2026-05-07"}
-{"id":"REJ-030","source_prd":"QuanQn-base","domain":"content-review","keywords":["robots.txt","scraper","crawl"],"anti_pattern":"❌ TrendingScraper 用爬虫直接抓 5 平台(违反 robots.txt + 平台风控)","fix_pattern":"✅ 走第三方授权(新榜/蝉妈妈/飞瓜)· 月费换 0 法律风险 · 长期申请官方 API · 严禁自建爬虫","evidence":"ADR-017 trending 合规 + ARCHITECTURE §9.13b","rejected_at":"2026-05-07"}
-{"id":"REJ-031","source_prd":"QuanQn-base","domain":"content-review","keywords":["disclaimer","医疗","法律","金融"],"anti_pattern":"❌ 医疗/法律/金融行业输出不加免责声明","fix_pattern":"✅ 必自动加免责 · 命中行业关键词 → 输出末尾追加'本内容仅供参考 · 不构成 X 建议' · 写 audit_log eventCategory='compliance'","evidence":"AGENTS §9.11-D + ARCHITECTURE §9.11-D","rejected_at":"2026-05-07"}
+{"id":"REJ-027","source_prd":"QuanAn-base","domain":"content-review","keywords":["TrendingScraper","trendingItem","create"],"anti_pattern":"❌ TrendingScraper Worker 直接 prisma.trendingItem.create({...})","fix_pattern":"✅ 必须先进 trending_review_queue(status='pending')· 通过 admin 审核后才入主表 + embed 入向量库(对应 LD-A5)","evidence":"AGENTS §10.1 LD-A5 + ADMIN §3.4 域 ⑦","rejected_at":"2026-05-07"}
+{"id":"REJ-028","source_prd":"QuanAn-base","domain":"content-review","keywords":["FileParser","deepLearningArchive","upload"],"anti_pattern":"❌ FileParser Worker 直接写 deep_learning_archives + 入 vector store","fix_pattern":"✅ 必须先进 deep_learn_review_queue · 自动 PII 扫描 + 违禁词扫描 + 抽样人审 · 通过才入向量库","evidence":"AGENTS §10.1 LD-A5 + ADMIN §3.4 域 ⑧","rejected_at":"2026-05-07"}
+{"id":"REJ-029","source_prd":"QuanAn-base","domain":"content-review","keywords":["PII","email","phone","身份证"],"anti_pattern":"❌ 用户上传内容不扫 PII 直接进 prompt","fix_pattern":"✅ 必跑 PII 扫描(邮箱/手机/身份证/银行卡正则)· 命中阻断 + 用户提示 · 不允许 PII 进 LLM Gateway","evidence":"AGENTS §1.4 + §9.11-D + ADMIN §3.4 域 ⑧","rejected_at":"2026-05-07"}
+{"id":"REJ-030","source_prd":"QuanAn-base","domain":"content-review","keywords":["robots.txt","scraper","crawl"],"anti_pattern":"❌ TrendingScraper 用爬虫直接抓 5 平台(违反 robots.txt + 平台风控)","fix_pattern":"✅ 走第三方授权(新榜/蝉妈妈/飞瓜)· 月费换 0 法律风险 · 长期申请官方 API · 严禁自建爬虫","evidence":"ADR-017 trending 合规 + ARCHITECTURE §9.13b","rejected_at":"2026-05-07"}
+{"id":"REJ-031","source_prd":"QuanAn-base","domain":"content-review","keywords":["disclaimer","医疗","法律","金融"],"anti_pattern":"❌ 医疗/法律/金融行业输出不加免责声明","fix_pattern":"✅ 必自动加免责 · 命中行业关键词 → 输出末尾追加'本内容仅供参考 · 不构成 X 建议' · 写 audit_log eventCategory='compliance'","evidence":"AGENTS §9.11-D + ARCHITECTURE §9.11-D","rejected_at":"2026-05-07"}
 ```
 
 #### F · 类型 + 错误恢复(4 条)
 
 ```json
-{"id":"REJ-032","source_prd":"QuanQn-base","domain":"type-safety","keywords":["any","zod","schema"],"anti_pattern":"❌ Specialist 输出用 any 兜底(如 result: any)","fix_pattern":"✅ 必过 zod schema 校验 · 失败重试 1 次 · 仍失败标 is_fallback=true 返回简版 · 不允许 any","evidence":"AGENTS §3 LD-013 + ARCHITECTURE §6.8","rejected_at":"2026-05-07"}
-{"id":"REJ-033","source_prd":"QuanQn-base","domain":"type-safety","keywords":["zod","safeParse","throw"],"anti_pattern":"❌ zod 校验失败 throw Error 不重试","fix_pattern":"✅ 失败重试 1 次 · 仍失败走降级路径(fallback 模板)· 不阻断用户主流程","evidence":"ARCHITECTURE §6.8 错误处理与降级契约","rejected_at":"2026-05-07"}
-{"id":"REJ-034","source_prd":"QuanQn-base","domain":"type-safety","keywords":["concurrent","version","optimistic"],"anti_pattern":"❌ stepData.save 没乐观锁 · 多 tab 同时改 step3 后写覆盖前写","fix_pattern":"✅ 加 version 字段 · 第二次 save 报错 → toast '已被另一处修改 · 请刷新' · 用户决定","evidence":"ARCHITECTURE §6.8 stepData 并发冲突 ★","rejected_at":"2026-05-07"}
-{"id":"REJ-035","source_prd":"QuanQn-base","domain":"type-safety","keywords":["LS","fail","rollback"],"anti_pattern":"❌ stepData.save mutation 失败不回滚 LS · LS 有数据但 DB 没","fix_pattern":"✅ 客户端 hook 必带 onError 回滚 LS · toast '同步失败' · 30s 后自动重试","evidence":"ARCHITECTURE §3.4 规则 1 + §6.8","rejected_at":"2026-05-07"}
+{"id":"REJ-032","source_prd":"QuanAn-base","domain":"type-safety","keywords":["any","zod","schema"],"anti_pattern":"❌ Specialist 输出用 any 兜底(如 result: any)","fix_pattern":"✅ 必过 zod schema 校验 · 失败重试 1 次 · 仍失败标 is_fallback=true 返回简版 · 不允许 any","evidence":"AGENTS §3 LD-013 + ARCHITECTURE §6.8","rejected_at":"2026-05-07"}
+{"id":"REJ-033","source_prd":"QuanAn-base","domain":"type-safety","keywords":["zod","safeParse","throw"],"anti_pattern":"❌ zod 校验失败 throw Error 不重试","fix_pattern":"✅ 失败重试 1 次 · 仍失败走降级路径(fallback 模板)· 不阻断用户主流程","evidence":"ARCHITECTURE §6.8 错误处理与降级契约","rejected_at":"2026-05-07"}
+{"id":"REJ-034","source_prd":"QuanAn-base","domain":"type-safety","keywords":["concurrent","version","optimistic"],"anti_pattern":"❌ stepData.save 没乐观锁 · 多 tab 同时改 step3 后写覆盖前写","fix_pattern":"✅ 加 version 字段 · 第二次 save 报错 → toast '已被另一处修改 · 请刷新' · 用户决定","evidence":"ARCHITECTURE §6.8 stepData 并发冲突 ★","rejected_at":"2026-05-07"}
+{"id":"REJ-035","source_prd":"QuanAn-base","domain":"type-safety","keywords":["LS","fail","rollback"],"anti_pattern":"❌ stepData.save mutation 失败不回滚 LS · LS 有数据但 DB 没","fix_pattern":"✅ 客户端 hook 必带 onError 回滚 LS · toast '同步失败' · 30s 后自动重试","evidence":"ARCHITECTURE §3.4 规则 1 + §6.8","rejected_at":"2026-05-07"}
 ```
 
 ### §6.3 写入 reject-examples.jsonl 的脚本
@@ -1436,7 +1436,7 @@ prd skill refresh 流程 ·
 ```bash
 #!/bin/bash
 # scripts/seed-reject-examples.sh
-# 用途 · 把 PRD-MASTER.md §6.2 的 35 条 QuanQn 通用反例预填到 reject-examples.jsonl
+# 用途 · 把 PRD-MASTER.md §6.2 的 35 条 QuanAn 通用反例预填到 reject-examples.jsonl
 
 set -e
 TARGET=~/.claude/playbooks/reject-examples.jsonl
@@ -1467,13 +1467,13 @@ echo "✅ §6.1 anti_patterns 预填完成 · prd skill 现在可正常注入"
 
 **使用方法**:
 ```bash
-mkdir -p /Users/return/Desktop/QuanQn/scripts
+mkdir -p /Users/return/Desktop/QuanAn/scripts
 # 把上面脚本保存到 scripts/seed-reject-examples.sh
 chmod +x scripts/seed-reject-examples.sh
 bash scripts/seed-reject-examples.sh
 
 # 或者直接 ·
-grep -E '^\{"id":"REJ-' /Users/return/Desktop/QuanQn/PRD-MASTER.md \
+grep -E '^\{"id":"REJ-' /Users/return/Desktop/QuanAn/PRD-MASTER.md \
   >> ~/.claude/playbooks/reject-examples.jsonl
 wc -l ~/.claude/playbooks/reject-examples.jsonl
 # 应输出 35
@@ -1584,7 +1584,7 @@ foundation foundation high      high          high
 #### A · 14 PRD 串行执行的标准流程
 
 ```bash
-# 项目根 · /Users/return/Desktop/QuanQn
+# 项目根 · /Users/return/Desktop/QuanAn
 # 14 PRD 严格串行 · 一次只跑 1 份
 
 # Step 1 · 把当前要跑的 PRD 复制为 prd.json
@@ -1658,11 +1658,11 @@ echo "   下一步 · python scripts/ralph/ralph.py --model sonnet --daemon"
 
 ```
 Week 1-16 · 主应用 PRD-1 ~ PRD-9 · 单 daemon 跑
-  └─ 在项目根 /Users/return/Desktop/QuanQn 跑
+  └─ 在项目根 /Users/return/Desktop/QuanAn 跑
   └─ 每跑完 1 PRD · bash scripts/ralph/switch-prd.sh prd-N+1
 
 Week 17 起 · 主应用 P8 上线 · 切 admin PRD
-  └─ 仍在项目根 /Users/return/Desktop/QuanQn 跑(同一 PROJECT_ROOT)
+  └─ 仍在项目根 /Users/return/Desktop/QuanAn 跑(同一 PROJECT_ROOT)
   └─ ralph daemon 不变 · 只是 prd.json 切到 prd-10.json
   └─ bash scripts/ralph/switch-prd.sh prd-10
 ```
@@ -1797,7 +1797,7 @@ Week 17 起 · 主应用 P8 上线 · 切 admin PRD
 
 #### 实测命令(诊断时跑过)
 - `wc -l ~/.claude/playbooks/reject-examples.jsonl` → 0(§5.1 证据)
-- `ls /Users/return/Desktop/QuanQn/ui/ \| wc -l` → 66 子目录(§5.3 证据)
+- `ls /Users/return/Desktop/QuanAn/ui/ \| wc -l` → 66 子目录(§5.3 证据)
 - `grep "schema 推断" ARCHITECTURE.md` → L761 + L763(§5.4 证据)
 - `grep "退出条件" ARCHITECTURE.md` → 9 行(§5.2 证据)+ ADMIN.md → 5 行(同)
 - `grep "可选" ARCHITECTURE.md` → 13 处(§5.10 证据)

@@ -4,9 +4,9 @@ import type { PrismaClient } from '@prisma/client';
 
 // ── DEV OAuth mock helpers (PRD-15 US-001 AC-3) ────────────────────────────
 // When NODE_ENV=development && DEV_OAUTH_MOCK=true the API skips real OAuth
-// and returns a synthetic user bound to the seeded dev@quanqn.local account.
+// and returns a synthetic user bound to the seeded dev@quanan.local account.
 
-export const DEV_MOCK_USER_EMAIL = 'dev@quanqn.local';
+export const DEV_MOCK_USER_EMAIL = 'dev@quanan.local';
 
 export function isDevOAuthMock(): boolean {
   return process.env.NODE_ENV === 'development' && process.env.DEV_OAUTH_MOCK === 'true';

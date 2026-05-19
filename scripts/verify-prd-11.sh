@@ -30,7 +30,7 @@ section() { echo ""; echo "━━━ $1 ━━━"; }
 cd "$(dirname "$0")/.."
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn PRD-11 P9.1 business core domains · 可重复验收"
+echo "  QuanAn PRD-11 P9.1 business core domains · 可重复验收"
 echo "  起点: $(pwd) · 时间: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -41,11 +41,11 @@ section "§1 monorepo workspace 结构(US-001 基础)"
 
 for sub in apps/admin apps/api apps/web packages/clients packages/schemas packages/ui; do
   if [[ -f "$sub/package.json" ]]; then
-    name=$(grep -oE '"@quanqn/[a-z]+"' "$sub/package.json" 2>/dev/null | head -1)
+    name=$(grep -oE '"@quanan/[a-z]+"' "$sub/package.json" 2>/dev/null | head -1)
     if [[ -n "$name" ]]; then
       ok "$sub 子项目 $name"
     else
-      warn "$sub 存在但无 @quanqn/* name"
+      warn "$sub 存在但无 @quanan/* name"
     fi
   else
     fail "$sub/package.json 缺失"

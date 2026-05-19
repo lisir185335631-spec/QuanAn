@@ -9,8 +9,8 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import type { PrismaClient } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
-import { PdfBillTemplate } from '@quanqn/ui/admin/pdf';
-import type { PdfBillData, PdfBillLineItem } from '@quanqn/ui/admin/pdf';
+import { PdfBillTemplate } from '@quanan/ui/admin/pdf';
+import type { PdfBillData, PdfBillLineItem } from '@quanan/ui/admin/pdf';
 
 // Fields to redact when computing payloadHash (SHIELD: anti_pattern PRD-9+LD-A-3)
 const REDACT_KEYS = new Set(['password', 'token', 'apiKey', 'secret', 'cookie', 'authorization']);

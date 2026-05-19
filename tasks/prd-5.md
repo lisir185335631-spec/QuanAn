@@ -348,7 +348,7 @@
 **描述** · PRD-5 收官 · 4 项 ·
 1. **LLM Judge 套件扩展** · 新增 4 文件 · `tests/judge/copywriting-free.judge.ts`(医美自媒体 · 健身教练 2 golden)· `copywriting-boom.judge.ts`(育儿博主 · 理财博主 2 golden 5 篇候选)· `analysis-viral.judge.ts`(美妆 · 美食 2 golden 22 元素拆解)· `analysis-structural.judge.ts`(减肥 · 育儿 2 golden 5 维度评分)· 各调 `runJudge(case_)` · model_tier='lightweight' · cost_log eventType='judge_call'(D-034)· **累计 22 judge tests**(14 PRD-4 + 8 新)
 2. **4 工具页 e2e 集成** · 复用 PRD-4 9 步 e2e 模式 · `tests/e2e/tools-integration.spec.ts`(test.describe.serial · 创建账号 → 跑通 4 工具 generate/boom/analysis/videoAnalysis → 看 history 4 条 → 点 row 预填验证 · CI 用 mock LLM)
-3. **lint clean** · `pnpm --filter @quanqn/web lint --max-warnings=0` 退出码 0(防 PRD-1 lint debt 重现)· `pnpm --filter @quanqn/api lint --max-warnings=0` 退出码 0
+3. **lint clean** · `pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0(防 PRD-1 lint debt 重现)· `pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0
 4. **全套绿灯门禁** · vitest ≥ 393 / 393(343 PRD-4 累计 + ≥ 50 新)· typecheck 6 ws 0 error · playwright ≥ 111 / 111(106 PRD-4 + 5 新)· judge 22 / 22
 
 **触发场景** · ralph 完成 US-001~011 后跑收官 · 全套绿灯才 PASSED。
@@ -365,7 +365,7 @@
 - `apps/api/eslint.config.js` 或修边缘 lint warnings(若 US-003/005/007/009/011 引入)
 - `scripts/ralph/verify-artifacts/US-012/manifest.json`(产物 · 同 PRD-4 US-018 模式)
 
-**test_command** · `pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanqn/web lint --max-warnings=0 && pnpm --filter @quanqn/api lint --max-warnings=0`
+**test_command** · `pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanan/web lint --max-warnings=0 && pnpm --filter @quanan/api lint --max-warnings=0`
 
 ---
 
@@ -634,7 +634,7 @@
 - [ ] `apps/api/src/specialists/AnalysisAgent.ts` 新建 · 继承 BaseSpecialist ·
   ```typescript
   import { BaseSpecialist } from './base/BaseSpecialist';
-  import { analysisStructuralOutput, analysisViralOutput, analysisStructuralInput, analysisViralInput } from '@quanqn/schemas/specialist-io';
+  import { analysisStructuralOutput, analysisViralOutput, analysisStructuralInput, analysisViralInput } from '@quanan/schemas/specialist-io';
   
   export type AnalysisMode = 'viral' | 'structural';
   
@@ -806,7 +806,7 @@
   ```tsx
   import { ToolForm } from '@/components/ToolForm/ToolForm';
   import { ToolResult } from '@/components/ToolResult/ToolResult';
-  import { copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
+  import { copywritingFreeGenerateInput } from '@quanan/schemas/specialist-io';
   import { useState, useEffect } from 'react';
   import { useSearchParams } from 'react-router-dom';
   import { trpc } from '@/lib/trpc';
@@ -998,7 +998,7 @@
   import { router } from '@/trpc/trpc';
   import { protectedProcedure } from '@/trpc/middleware/account-isolation';
   import { analysisAgent } from '@/specialists/AnalysisAgent';
-  import { analysisStructuralInput } from '@quanqn/schemas/specialist-io';
+  import { analysisStructuralInput } from '@quanan/schemas/specialist-io';
   
   const HISTORY_SELECT = { id: true, content: true, agentId: true, traceId: true, createdAt: true } satisfies Prisma.HistorySelect;
   
@@ -1308,8 +1308,8 @@
 - [ ] `tests/judge/analysis-structural.judge.ts` 新建 · 2 golden case(减肥 + 育儿 · 5 维度评分 · 检查 overall = 5 维度均分附近)
 - [ ] `pnpm test:judge` 退出码 0 · 22 / 22 pass
 - [ ] `tests/e2e/tools-integration.spec.ts` 新建 · 收官 e2e · test.describe.serial · 创建账号 → 跑通 4 工具 → 看 history 4 条 → 点 row 预填验证 · CI 用 mock LLM
-- [ ] `pnpm --filter @quanqn/web lint --max-warnings=0` 退出码 0
-- [ ] `pnpm --filter @quanqn/api lint --max-warnings=0` 退出码 0
+- [ ] `pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0
+- [ ] `pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0
 - [ ] `pnpm typecheck` 6 ws 0 error
 - [ ] `pnpm test` ≥ 393 / ≥ 393(343 PRD-4 + ≥ 50 新)
 - [ ] `pnpm test:e2e` ≥ 111 / ≥ 111(106 PRD-4 + 5 新)
@@ -1507,10 +1507,10 @@ lint:          0 warnings (--max-warnings=0) ✓ (防 PRD-1 lint debt 重现)
 {
   "id": "US-002",
   "anti_patterns": [
-    { "source_prd": "QuanQn-base", "source_story": "REJ-001", "lesson": "Specialist execute() 不允许直接调 anthropic / openai SDK", "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 直接在 AnalysisAgent.ts 内", "correct": "✅ 通过 this.llmGateway · grep '@anthropic-ai/sdk' 在 specialists/ 0 命中" },
-    { "source_prd": "QuanQn-base", "source_story": "REJ-007", "lesson": "多 mode 共用一个 outputSchema", "antipattern": "❌ outputSchema 不区分 viral vs structural · 用同一个 schema", "correct": "✅ outputSchema getter · 按 this._mode 返回 ViralOutputSchema 或 StructuralOutputSchema" },
-    { "source_prd": "QuanQn-base", "source_story": "REJ-003-D019", "lesson": "Specialist 不硬编码 model 名", "antipattern": "❌ const model = 'claude-sonnet-4-6'; this.llmGateway.complete({ model });", "correct": "✅ this.llmGateway.complete({ model_tier: 'lightweight' }) · LLMGateway 决定具体 model · cost_log.modelUsed 反映真选 model" },
-    { "source_prd": "QuanQn-PRD-4", "source_story": "TD-014", "lesson": "Multi-mode Specialist _mode race window", "antipattern": "❌ 不文档化 race window · 高并发场景未来撞 race", "correct": "✅ AGENTS §11.6.3 文档化 · P3 单 user 串行安全 · 高并发治理留 PRD-7+" }
+    { "source_prd": "QuanAn-base", "source_story": "REJ-001", "lesson": "Specialist execute() 不允许直接调 anthropic / openai SDK", "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 直接在 AnalysisAgent.ts 内", "correct": "✅ 通过 this.llmGateway · grep '@anthropic-ai/sdk' 在 specialists/ 0 命中" },
+    { "source_prd": "QuanAn-base", "source_story": "REJ-007", "lesson": "多 mode 共用一个 outputSchema", "antipattern": "❌ outputSchema 不区分 viral vs structural · 用同一个 schema", "correct": "✅ outputSchema getter · 按 this._mode 返回 ViralOutputSchema 或 StructuralOutputSchema" },
+    { "source_prd": "QuanAn-base", "source_story": "REJ-003-D019", "lesson": "Specialist 不硬编码 model 名", "antipattern": "❌ const model = 'claude-sonnet-4-6'; this.llmGateway.complete({ model });", "correct": "✅ this.llmGateway.complete({ model_tier: 'lightweight' }) · LLMGateway 决定具体 model · cost_log.modelUsed 反映真选 model" },
+    { "source_prd": "QuanAn-PRD-4", "source_story": "TD-014", "lesson": "Multi-mode Specialist _mode race window", "antipattern": "❌ 不文档化 race window · 高并发场景未来撞 race", "correct": "✅ AGENTS §11.6.3 文档化 · P3 单 user 串行安全 · 高并发治理留 PRD-7+" }
   ]
 }
 ```

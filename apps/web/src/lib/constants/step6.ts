@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 6 拍摄计划常量 — 字面锁
+ * QuanAn · Step 6 拍摄计划常量 — 字面锁
  * 命名锁: STEP6_TEXTAREA / STEP6_OUTPUT_MODULES_3 / STEP6_TEXTAREA_MIN_CHARS
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.7 line 1634-1661, 禁止改写
  * 数字锁: STEP6_TEXTAREA_MIN_CHARS === 10 · STEP6_OUTPUT_MODULES_3.length === 3

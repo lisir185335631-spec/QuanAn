@@ -336,11 +336,11 @@ PRD-20 9/9 PASSED 100% daemon cycle · 严格一轮通过率 78% 比 PRD-19 89% 
 - **建议 diff** ·
 
 ```diff
-+ ##### 2.6.24 size_hint=large 硬阻断检查(QuanQn PRD-20 retro M-1 固化 · 2026-05-18 新增)
++ ##### 2.6.24 size_hint=large 硬阻断检查(QuanAn PRD-20 retro M-1 固化 · 2026-05-18 新增)
 + 
 + **目的** · 防 size_hint=large story 进 ralph daemon · 90% 概率 BLOCKED(继承 PRD-2 RCA-002 红线)
 + 
-+ **背景** · QuanQn PRD-20 US-008 实证 · size_hint=large(scope = e2e spec + 4 TD fix + workflows + playwright config)· 5 retry BLOCKED · 需 Opus 介入 unblock 耗时 30 min + atomic mutate 误用 source 二次抢救。Coding 3.0 第一规则"Story 必须能在一次 Ralph 迭代完成"在 large 时极易违反。
++ **背景** · QuanAn PRD-20 US-008 实证 · size_hint=large(scope = e2e spec + 4 TD fix + workflows + playwright config)· 5 retry BLOCKED · 需 Opus 介入 unblock 耗时 30 min + atomic mutate 误用 source 二次抢救。Coding 3.0 第一规则"Story 必须能在一次 Ralph 迭代完成"在 large 时极易违反。
 + 
 + **检查规则**:
 + 
@@ -352,7 +352,7 @@ PRD-20 9/9 PASSED 100% daemon cycle · 严格一轮通过率 78% 比 PRD-19 89% 
 + 
 + ```
 + ERROR [plan-check-size-large] US-008 size_hint=large · 违反 Story 大小第一规则
-+   原因: large story BLOCK 概率 90% (RCA-002 实证 + QuanQn PRD-20 US-008 实证)
++   原因: large story BLOCK 概率 90% (RCA-002 实证 + QuanAn PRD-20 US-008 实证)
 +   建议补丁: 拆为 ≥3 子 US:
 +     - US-008a · e2e spec 新建 prd-20-real-llm.spec.ts (medium)
 +     - US-008b · TD-79/80/81/82 maintenance fix (medium)
@@ -362,7 +362,7 @@ PRD-20 9/9 PASSED 100% daemon cycle · 严格一轮通过率 78% 比 PRD-19 89% 
 + 
 + **判定**: 任一 size_hint=large → 阻断 plan-check · 强制 prd skill 重新拆分 · 0 ERROR 才放行
 + 
-+ **ROI 估算**(基于 QuanQn PRD-20 US-008 实证): 单 BLOCKED 损失 30 min(retry + Opus 介入 overhead)· 5 PRD 累计避免 5 BLOCKED · ~2.5h 节省
++ **ROI 估算**(基于 QuanAn PRD-20 US-008 实证): 单 BLOCKED 损失 30 min(retry + Opus 介入 overhead)· 5 PRD 累计避免 5 BLOCKED · ~2.5h 节省
 ```
 
 - **人工 apply 流程** · 用户 review → 同意 → Opus Edit 工具 apply 到 plan-check.md
@@ -380,7 +380,7 @@ PRD-20 9/9 PASSED 100% daemon cycle · 严格一轮通过率 78% 比 PRD-19 89% 
 +     
 +     用法: ralph-tools.py mutate-prd US-008 passes=true blocked=false notes="..."
 +     
-+     QuanQn PRD-20 retro M-2 固化 · 2026-05-18 新增
++     QuanAn PRD-20 retro M-2 固化 · 2026-05-18 新增
 +     """
 +     import json
 +     story_id = args.story_id
@@ -428,7 +428,7 @@ PRD-20 9/9 PASSED 100% daemon cycle · 严格一轮通过率 78% 比 PRD-19 89% 
 - **建议 diff** ·
 
 ```diff
-+ ## §0.5 · TD 豁免必填证据模板(QuanQn PRD-20 retro M-3 固化 · 2026-05-18 新增)
++ ## §0.5 · TD 豁免必填证据模板(QuanAn PRD-20 retro M-3 固化 · 2026-05-18 新增)
 + 
 + ralph 申请 TD-XX 豁免时 · 在 progress.txt 必须按以下模板填证据 · 缺一项 Opus reject 豁免:
 + 
@@ -445,7 +445,7 @@ PRD-20 9/9 PASSED 100% daemon cycle · 严格一轮通过率 78% 比 PRD-19 89% 
 + 
 + **Opus verify 流程** · 看 progress.txt 该段 · 逐条 verify(实跑 commit + grep + git log)· 缺一项 reject 豁免 · ralph 必须补全证据。
 + 
-+ **ROI 估算**(基于 QuanQn PRD-20 US-006 实证): 防 ralph 把新引入 bug 错归因 pre-existing · 5 PRD 累积避免 1-2 次错豁免
++ **ROI 估算**(基于 QuanAn PRD-20 US-006 实证): 防 ralph 把新引入 bug 错归因 pre-existing · 5 PRD 累积避免 1-2 次错豁免
 ```
 
 - **人工 apply 流程** · 同上

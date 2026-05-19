@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 US-009 + PRD-5 US-002
+ * QuanAn · PRD-4 US-009 + PRD-5 US-002
  * CopywritingAgent — step7(爆款文案·SSE·markdown) + free(/generate) + boom(/boom-generate)
  *
  * AC-1:  继承 BaseSpecialist · 五层配置完整
@@ -25,7 +25,7 @@ import type {
   ILLMGateway,
   LLMCompleteRequest,
 } from './base/types';
-import type { AcquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io';
+import type { AcquisitionCopywritingOutput } from '@quanan/schemas/specialist-io';
 
 // ── Mode type ─────────────────────────────────────────────────────────────────
 
@@ -70,8 +70,8 @@ const BoomBaseSchema = z.object({
   }),
 });
 
-// free mode output schema (inline equiv of @quanqn/schemas copywritingFreeOutput)
-// Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
+// free mode output schema (inline equiv of @quanan/schemas copywritingFreeOutput)
+// Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use
 export const CopywritingFreeOutputSchema = z.object({
   markdown: z.string().min(400).max(1500),
   metadata: z.object({
@@ -82,7 +82,7 @@ export const CopywritingFreeOutputSchema = z.object({
   }),
 });
 
-// boom mode output schema (inline equiv of @quanqn/schemas boomOutput)
+// boom mode output schema (inline equiv of @quanan/schemas boomOutput)
 export const BoomOutputSchema = z.object({
   candidates: z.array(z.string().min(200).max(500)).length(5),
   metadata: z.object({

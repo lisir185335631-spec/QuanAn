@@ -1,5 +1,5 @@
 /**
- * QuanQn · LLMGateway · 唯一 LLM 调用入口
+ * QuanAn · LLMGateway · 唯一 LLM 调用入口
  * 派生自 ARCHITECTURE.md §6.5 + ADR-013 + LD-012 + R-1
  *
  * 5 大职责 ·

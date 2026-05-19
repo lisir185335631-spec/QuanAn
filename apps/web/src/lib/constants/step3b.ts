@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 3b 人设定制方案常量 — 字面锁
+ * QuanAn · Step 3b 人设定制方案常量 — 字面锁
  * 命名锁: STEP3B_TEXTAREAS_3 / STEP3B_OUTPUT_H3_5 / STEP3B_AUDIENCE / STEP3B_CTA_LABEL / STEP3B_BUTTON_*
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.3, 禁止改写
  * 数字锁: STEP3B_TEXTAREAS_3.length === 3 · STEP3B_OUTPUT_H3_5.length === 5(不是 6)

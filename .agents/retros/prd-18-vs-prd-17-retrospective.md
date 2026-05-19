@@ -399,7 +399,7 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(全部用 plan-check 前置
 
 - **N-1** · 不引入新 framework(react-hook-form / zod / mobx / chart 库 等)· 用 useState + simple progress bar
 - **N-2** · 不动 apps/admin / apps/api / packages/(D3=A 严守)
-- **N-3** · 不切 QuanQn `--primary: 43 87% 63%` 金色 token
+- **N-3** · 不切 QuanAn `--primary: 43 87% 63%` 金色 token
 - **N-4** · 不允许 PRD AC 写"建议性表述" · 必须字面 1:1 锁定(D1=A 严守 · 含 SUBTITLE/H1/STEP_TAG 完整字面双锁)
 - **N-5** · 不真上传文件 / 不接后端 API(若 PRD-19 仍前端 · LD-170 严守)
 - **N-6** · 不用 chart 库(继续 simple progress bar / data-grid-bg 模式 · LD-174 严守)
@@ -500,11 +500,11 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(全部用 plan-check 前置
 - **建议 diff** ·
 
 ```diff
-+##### 2.6.22 EmptyState title spec 字面常量检测(QuanQn PRD-18 retro M-1 固化 · 2026-05-18 新增)
++##### 2.6.22 EmptyState title spec 字面常量检测(QuanAn PRD-18 retro M-1 固化 · 2026-05-18 新增)
 +
 +**目的** · 防 page 的 EmptyState title 直接 hardcode 含 spec 字面常量(如 STEP4_H1='执行计划')· 跟 D1=A 字面锁(AC-N 字面 grep)冲突
 +
-+**背景** · QuanQn PRD-18 实证 · US-007 Step4.tsx EmptyState title="提交表单后查看执行计划" hardcode · '执行计划' = STEP4_H1 字面 · AC-7 grep 命中 · reject + 1 iter 修对(用 template literal `title={\`提交表单后查看${STEP4_H1}\`}` 修复)· 反例入 reject-examples.jsonl 第 49 条 · 后续 6 page 全用同模式 0 复发
++**背景** · QuanAn PRD-18 实证 · US-007 Step4.tsx EmptyState title="提交表单后查看执行计划" hardcode · '执行计划' = STEP4_H1 字面 · AC-7 grep 命中 · reject + 1 iter 修对(用 template literal `title={\`提交表单后查看${STEP4_H1}\`}` 修复)· 反例入 reject-examples.jsonl 第 49 条 · 后续 6 page 全用同模式 0 复发
 +
 +**触发条件**(全部满足):
 +- prd.json 中 story files_to_modify 或 files_to_create 含 `*.tsx`
@@ -550,11 +550,11 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(全部用 plan-check 前置
 - **建议 diff** ·
 
 ```diff
-+#### 2.6.21 扩展检查范围(QuanQn PRD-18 retro M-2 固化 · 2026-05-18 加)
++#### 2.6.21 扩展检查范围(QuanAn PRD-18 retro M-2 固化 · 2026-05-18 加)
 +
 +**目的** · 把 hardcode 中文 button label 检查扩到 form label / section header / InfoCard label / chip label 等 4 类同模式
 +
-+**背景** · QuanQn PRD-18 实证 · TD-76 (Step7.tsx:150 `<label>选择脚本类型</label>`) + TD-77 (Step8OptimizeScript.tsx:164-165 `<InfoCard label="优化后文案" /> <InfoCard label="优化说明" />`) hardcode 中文 · 不在原 §2.6.21 `<Button>` 范围 · 但同模式 · 跨 PRD 可能反复
++**背景** · QuanAn PRD-18 实证 · TD-76 (Step7.tsx:150 `<label>选择脚本类型</label>`) + TD-77 (Step8OptimizeScript.tsx:164-165 `<InfoCard label="优化后文案" /> <InfoCard label="优化说明" />`) hardcode 中文 · 不在原 §2.6.21 `<Button>` 范围 · 但同模式 · 跨 PRD 可能反复
 +
 +**新增触发模式**(在原 button 模式基础上扩 4 类):
 +
@@ -594,7 +594,7 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(全部用 plan-check 前置
 - **建议 diff** ·
 
 ```diff
-+#### PRD-18 §11.11 EmptyState template literal 必用模式(QuanQn PRD-18 retro Diff-3 · 2026-05-18 新增)
++#### PRD-18 §11.11 EmptyState template literal 必用模式(QuanAn PRD-18 retro Diff-3 · 2026-05-18 新增)
 +
 +> **背景** · PRD-18 US-007 实证 · EmptyState title hardcode 含 STEP{N}_H1 字面常量(`'执行计划'`)· 触发 AC 字面 grep · reject + 1 iter 修对 · 反例入库后续 6 page 全用 template literal pattern 0 复发 · 节省 75 min
 +

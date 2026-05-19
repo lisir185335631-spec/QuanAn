@@ -85,12 +85,12 @@
 | `/evolution` | 智能体进化中心 | 370 stub | **5 H3**(等级/洞察/反馈/学习档案/设置) | ★ 完整化 | 370→~480 | **19** |
 | `/accounts` | IP 账号管理 | 38 stub | 当前账号卡 + 新建账号 modal | ★ 完整化 | 38→~280 | **19** |
 
-### §1.5 辅助(非 aiipznt 32 路由 · QuanQn 工程需要保留)
+### §1.5 辅助(非 aiipznt 32 路由 · QuanAn 工程需要保留)
 
 | Route | 用途 | 行动 |
 |---|---|:-:|
 | `/login` | OAuth 入口 | 🟡 视觉对齐(aiipznt 也有但 dump 没专门列) |
-| `/settings` | QuanQn 自有 | ✅ 保留 |
+| `/settings` | QuanAn 自有 | ✅ 保留 |
 | `/*` 404 | catch-all | ✅ 保留 |
 
 ### §1.6 工作量总览(单位 LOC)
@@ -217,7 +217,7 @@ M6 visual diff                                                              ▲ 
 5. ❌ **不绕过 Audit Gate** → PRD-16~19 严格走 ralph daemon + Opus 4 维度 audit + risk_level 分档
 
 **额外两条(本文加锁)**:
-- 6. ❌ **不直接拷贝 aiipznt 的版权素材** → logo svg / 品牌名「aiipznt」/ slogan「善用 AI 你一个人就是千军万马」/ 产品截图 · 全部用 QuanQn 占位
+- 6. ❌ **不直接拷贝 aiipznt 的版权素材** → logo svg / 品牌名「aiipznt」/ slogan「善用 AI 你一个人就是千军万马」/ 产品截图 · 全部用 QuanAn 占位
 - 7. ❌ **不依赖 Manus 平台** → 去掉 `<MANUS-CONTENT-ROOT>` `manus-runtime` 等所有 manus 标记 · 用纯 React + Vite 渲染
 
 ---
@@ -319,4 +319,4 @@ Step 8 · PRD-17 同节奏继续
 
 ---
 
-> **本文由 Opus 4.7 在 2026-05-18 BJT 写 · QuanQn 项目内 aiipznt 复刻总览高层 plan · 跟 dump.md §4 + §6 互补 · 等用户 review C1-C4 后开干 PRD-16**
+> **本文由 Opus 4.7 在 2026-05-18 BJT 写 · QuanAn 项目内 aiipznt 复刻总览高层 plan · 跟 dump.md §4 + §6 互补 · 等用户 review C1-C4 后开干 PRD-16**

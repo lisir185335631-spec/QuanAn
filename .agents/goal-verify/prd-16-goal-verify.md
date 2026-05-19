@@ -4,7 +4,7 @@
 > **PRD 范围** · PRD-16 主应用前端对齐 aiipznt(Phase 1)· 11 US · 设计系统 + 首页 5 区 + Header 4 dropdown + /guide + /ip-plan
 > **branch** · `ralph/prd-16-aiipznt-alignment`
 > **总耗时** · ~9h wall(2026-05-16 11:48 daemon 启动 → 19:42 US-011 approve)
-> **复刻定调** · D1=A 像素级 layout · D2=A cookies 实测访问 · D3=A 仅主应用 · D4=B 颜色保留 QuanQn globals.css 金色
+> **复刻定调** · D1=A 像素级 layout · D2=A cookies 实测访问 · D3=A 仅主应用 · D4=B 颜色保留 QuanAn globals.css 金色
 
 ---
 
@@ -121,7 +121,7 @@
 - **status** · open
 
 **额外观察**(留 retro 提议固化为机制) ·
-- **D4=B 颜色锁文档措辞误**(US-003 reject 根因)· PRD seed 写"紫色 gradient"但实际 QuanQn 是金色 · ralph 字面理解引入 violet · 应固化 plan-check 2.6.7 升级 · 检测 PRD AC 中文颜色词 vs 实际 `var(--primary)` 一致性 · 输出 WARN
+- **D4=B 颜色锁文档措辞误**(US-003 reject 根因)· PRD seed 写"紫色 gradient"但实际 QuanAn 是金色 · ralph 字面理解引入 violet · 应固化 plan-check 2.6.7 升级 · 检测 PRD AC 中文颜色词 vs 实际 `var(--primary)` 一致性 · 输出 WARN
 - **D1=A 像素级文字内容锁**(US-004 reject 根因)· ralph 把 PRD AC desc 字段当"建议"创意改写 · 应固化 plan-check 新检查 · D1=A 锁定的 desc/title/文案字面 grep 验证
 
 ---
@@ -167,7 +167,7 @@
 ### 颜色 token 保留(D4=B 实证)
 
 - `globals.css --primary: 43 87% 63%` 完全不动 · 0 OKLCH 漂移 · 0 violet/amber 入侵
-- ralph 自动用 `var(--primary)` / `text-primary` / `bg-primary` 等 token · 视觉效果 = QuanQn 金色 = 跟 aiipznt 金色天然 90% 对齐
+- ralph 自动用 `var(--primary)` / `text-primary` / `bg-primary` 等 token · 视觉效果 = QuanAn 金色 = 跟 aiipznt 金色天然 90% 对齐
 
 ### §7 verify-prd-16.sh 已产出
 

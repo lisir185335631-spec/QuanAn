@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · Shared LLM Judge Runner
+ * QuanAn · US-016 · Shared LLM Judge Runner
  * AC-1: runJudge(case_) → llmGateway.complete({ model_tier:'lightweight', responseFormat:json_schema, retry:1 })
  * AC-5: cost_log event_type='judge_call' (D-023)
  * AC-6: judge-runner 内置 retry 1 (flaky防止)

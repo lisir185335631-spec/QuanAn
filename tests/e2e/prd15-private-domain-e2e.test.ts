@@ -3,7 +3,7 @@
 //   setup user+account → generate 6 fields → history created →
 //   6 phases in content → cost_log written → history list →
 //   view=history record → phase stage keys verified
-// SHIELD: real DB (quanqn_test) · no mock prisma
+// SHIELD: real DB (quanan_test) · no mock prisma
 
 import { Decimal } from '@prisma/client/runtime/library';
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
@@ -14,7 +14,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

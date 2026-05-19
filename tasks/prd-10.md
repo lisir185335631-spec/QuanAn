@@ -13,7 +13,7 @@
 | 维度 | 来源(只引用 · 不复制) |
 |---|---|
 | **业务架构(总览)** | [`ADMIN-ARCHITECTURE.md`](../ADMIN-ARCHITECTURE.md) §1 系统总览(line 43-191)· §1.4 admin 9 层架构图(line 119-160)· §1.6 5 项默认决策落地(line 176-185) |
-| **部署形态** | [`ADMIN-ARCHITECTURE.md`](../ADMIN-ARCHITECTURE.md) §2.1 子域名 admin.quanqn.com(line 194-209 · **PRD-10 stub 不配真域名**)· §2.2 apps/admin SPA(line 211-243)· §2.3 同进程双 router 树隔离(line 244-307) |
+| **部署形态** | [`ADMIN-ARCHITECTURE.md`](../ADMIN-ARCHITECTURE.md) §2.1 子域名 admin.quanan.com(line 194-209 · **PRD-10 stub 不配真域名**)· §2.2 apps/admin SPA(line 211-243)· §2.3 同进程双 router 树隔离(line 244-307) |
 | **数据访问与隔离** | [`ADMIN-ARCHITECTURE.md`](../ADMIN-ARCHITECTURE.md) §4.2 admin_audit_log schema(line 700-810)· §4.3 权限矩阵 6 类用户(line 811-870)· §4.4 14 类高风险 + Approval(line 871-916) |
 | **adminRouter 接口契约** | [`ADMIN-ARCHITECTURE.md`](../ADMIN-ARCHITECTURE.md) §5.1 adminRouter 14 子树(line 925-985 · **PRD-10 仅落 1 子树 auth · 其他 13 PRD-11+**)· §5.2 6 闸鉴权链 middleware 链 |
 | **鉴权审计安全** | [`ADMIN-ARCHITECTURE.md`](../ADMIN-ARCHITECTURE.md) §7.1 lucia-auth admin session(line 1271-1292)· §7.2 IP 白名单(line 1294-1311 · **PRD-10 stub · PRR 配真 Cloudflare WAF**)· §7.3 MFA(line 1313-1334 · **PRD-10 stub · PRR 真 TOTP**)· §7.5 audit_log 全量记录(line 1355-1372)· §7.6 approvalGateCheck middleware 完整代码(line 1373-1443 · **PRD-10 stub 版 throw 'PRD-13 真闭环'**) |
@@ -24,7 +24,7 @@
 | **关联 ADR** | [`ADR.md`](../ADR.md) ADR-019 前后端分离 + monorepo workspace(line 1559-1622)· ADR-020 Approval Gates 两步审批(line 1623-1712 · **PRD-10 stub · 真闭环 PRD-13**)· ADR-021 管理后台独立 first-class 子系统(line 1713-1779) |
 | **既有代码模式继承** | `apps/api/src/trpc/middleware/account-isolation.ts`(主应用 RLS · `$transaction wrap + $executeRawUnsafe set_config('app.activeAccountId', ...)` · adminRLS pattern 类比此模式 · C7 假设)· `apps/api/src/lib/auth/lucia.ts`(主应用 lucia-auth · admin 复用 lib 不重写)· `apps/web/src/layouts/`(主应用 Layout · admin Layout 参考但密度更高) |
 | **设计系统** | `packages/ui/base/`(主应用 Aurelian Dark 复用)+ `packages/ui/admin/`(★ 本 PRD 新建 · 密集表格 + 数据可视化专属)· ADMIN §6.1 设计系统(line 1020-1080 · admin 密度模式 + topbar 60px / sidebar 240px / row-height 32px)· ARCHITECTURE §11.4 ScrollArea + h-N 沉淀 |
-| **不做的事** | [`AGENTS.md`](../AGENTS.md) §1.4 全局不做(主应用部分)· 本 PRD §3 范围排除(B5 假设落地:WAF 真配置 / MFA 真启用 / 钉钉 webhook / Google Workspace 真 OAuth / admin.quanqn.com 真域名 · 全留 PRR) |
+| **不做的事** | [`AGENTS.md`](../AGENTS.md) §1.4 全局不做(主应用部分)· 本 PRD §3 范围排除(B5 假设落地:WAF 真配置 / MFA 真启用 / 钉钉 webhook / Google Workspace 真 OAuth / admin.quanan.com 真域名 · 全留 PRR) |
 | **反例库** | `~/.claude/playbooks/reject-examples.jsonl`(35+ 条 PRD-1~9 累计)· 关键 REJ-008(prisma 必带 accountId · adminRLS bypass 例外)/ REJ-009($executeRawUnsafe 仅 middleware 允许)/ REJ-013(protectedProcedure 必经)/ REJ-017(traceId 命名分层)/ REJ-035(LS-first dual-write)· 本 PRD 8 反例命中(详 §8) |
 | **沉淀** | `.planning/retros/PRD-9-RETRO.md`(2026-05-12 · 4 Diff L4 升级建议 · Diff-2 daemon timeout robust handling · Diff-3 cleanup 自动化)· `scripts/ralph/progress.txt`(PRD-9 收官段 · "Codebase Patterns - PRD-9" 2 patterns 已沉淀:seed no-key mode + debugAssembleSystemPrompt 中文关键词) |
 | **全局规则** | 全局 CLAUDE.md §5 质量第一不简化 + §5.4 升档(downstream count ≥ 3 → foundation)+ §9.1 5 步启 daemon SOP + §9.6 size 拆分硬规则 + 项目 CLAUDE.md §5.1 工程红线(R-001 BASE_LLM_URL 不暴露)+ §5.2 前后端边界(ADR-019) |
@@ -47,7 +47,7 @@
 - **MFA TOTP 真启用** · mfaCheck middleware stub(env ADMIN_MFA_REQUIRED=false 永远 pass)· PRR 阶段接 speakeasy / WebAuthn
 - **钉钉 webhook 异常告警** · 异常事件仅写 admin_audit_log eventCategory='security_alert' · 不真推钉钉
 - **Google Workspace 真 OAuth** · oauth-admin-google.ts stub(throw 'PRR config required')· OAUTH_PROVIDER=mock 时走 mock(开发期默认)· prod 必须 OAUTH_PROVIDER=google 否则启动 fail
-- **admin.quanqn.com 真域名** · 本 PRD 用 localhost:5174(apps/admin Vite dev)+ localhost:3000/admin 静态部署占位 · 域名 / DNS / CDN 留 PRR
+- **admin.quanan.com 真域名** · 本 PRD 用 localhost:5174(apps/admin Vite dev)+ localhost:3000/admin 静态部署占位 · 域名 / DNS / CDN 留 PRR
 - **真 Approval 闭环** · approvalGateCheck stub(meta.requiresApproval=true 时 throw 'PRD-13 真闭环 stub' · 不创建 approval_requests row)· 但 admin_audit_log 仍写 approval_request_create event 检测点
 - **adminRouter 14 子树业务** · 仅落 1 子树 admin.auth(login/logout/me)+ 1 stub 子树 admin.health(GET /health · 返回 ok · 不需鉴权)· 其他 13 子树(users/accounts/cost/audit/invites/reviewTrending/reviewDeepLearn/evolution/prompts/quota/compliance/approval/ab/knowledge/config)留 PRD-11~14
 - **16 sidebar 域真业务** · US-005 仅 16 域 placeholder route + 占位页 · 真业务在 PRD-11(6 域 P0)+ PRD-12(2 域 P0)+ PRD-13(5 域 P1)+ PRD-14(3 域 P2)
@@ -76,8 +76,8 @@
 **files_to_create** ·
 - `apps/admin/`(完整 Vite SPA 骨架)
   - `apps/admin/vite.config.ts`(build target dist-admin · port 5174 · plugins react + tailwind · alias `@/admin` → `src/`)
-  - `apps/admin/package.json`(`@quanqn/admin` · deps: react 18 / react-router-dom 6 / @trpc/client + @trpc/react-query / zustand / packages/ui + packages/clients + packages/schemas workspace ref · scripts: dev / build / preview / typecheck / test)
-  - `apps/admin/tsconfig.json`(extends ../../tsconfig.base.json · paths `@/admin/*` `@quanqn/ui/admin` `@quanqn/schemas`)
+  - `apps/admin/package.json`(`@quanan/admin` · deps: react 18 / react-router-dom 6 / @trpc/client + @trpc/react-query / zustand / packages/ui + packages/clients + packages/schemas workspace ref · scripts: dev / build / preview / typecheck / test)
+  - `apps/admin/tsconfig.json`(extends ../../tsconfig.base.json · paths `@/admin/*` `@quanan/ui/admin` `@quanan/schemas`)
   - `apps/admin/index.html`(SPA shell · meta noindex · Aurelian Dark CSS var preload)
   - `apps/admin/src/main.tsx`(React root · BrowserRouter · QueryClient · admin tRPC provider)
   - `apps/admin/src/App.tsx`(空壳 · 路由占位 · loading state)
@@ -119,8 +119,8 @@
 - `grep -rn "from '\.\./web\|from '\.\./admin'" apps/web/src/ apps/admin/src/` 应 0(R-A1 · apps/web 不 import apps/admin · 反之亦然)
 - `grep -rn "/admin" apps/web/src/` 应 0(R-A2 · 主应用前端不暴露 admin 入口)
 - `grep -rn "import.*LLMGateway\|import.*Specialist" apps/admin/src/` 应 0(R-A5 · admin 不调 LLM)
-- `psql quanqn -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('admin_audit_log','approval_requests','admin_users','admin_sessions','prompt_versions','prompt_canary_config','user_quota','quota_adjustment_log','trending_review_queue','deep_learn_review_queue','admin_invite_campaign','admin_constants','admin_config','admin_ab_experiment') AND relrowsecurity = true;"` 应 0 rows(LD-A3 · 13 admin 表 RLS DISABLED)
-- `psql quanqn -c "SELECT relname FROM pg_class WHERE relname IN (... 主应用 18 表 ...) AND relrowsecurity = false;"` 应 0 rows(主应用 18 表 RLS 仍 ENABLED · 0 副作用)
+- `psql quanan -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('admin_audit_log','approval_requests','admin_users','admin_sessions','prompt_versions','prompt_canary_config','user_quota','quota_adjustment_log','trending_review_queue','deep_learn_review_queue','admin_invite_campaign','admin_constants','admin_config','admin_ab_experiment') AND relrowsecurity = true;"` 应 0 rows(LD-A3 · 13 admin 表 RLS DISABLED)
+- `psql quanan -c "SELECT relname FROM pg_class WHERE relname IN (... 主应用 18 表 ...) AND relrowsecurity = false;"` 应 0 rows(主应用 18 表 RLS 仍 ENABLED · 0 副作用)
 
 **test_command** · `pnpm install && pnpm prisma migrate dev && pnpm prisma db execute --file prisma/migrations/manual_admin_rls.sql && pnpm test tests/unit/admin/middleware-stubs.test.ts tests/unit/admin/admin-schema.test.ts && pnpm typecheck && pnpm lint && pnpm test:e2e tests/e2e/knowledge-rag-loop.spec.ts`(★ 末尾跑 PRD-9 收官 e2e · 验证 0 回归)
 
@@ -132,12 +132,12 @@
 > **priority** · 2
 > **depends_on** · [US-001]
 
-**描述** · 新建 `apps/api/src/lib/auth/lucia-admin.ts`(类比主应用 `apps/api/src/lib/auth/lucia.ts` · 复用 lucia-auth lib 不重写)· 独立 Redis namespace `admin:session:*`(LD-A1 · 跟主应用 `app:session:*` 完全隔离)· session ttl 12h(短于主应用 30 天 · ADMIN §7.1)· idle timeout 30min(无操作自动登出)· session table `admin_sessions`(US-001 已加)· 引入 mock OAuth provider(`apps/api/src/lib/auth/oauth-admin-mock.ts` · OAUTH_PROVIDER=mock 时读 admin_users.email + isMock=true 自动通过 · prod 必须 OAUTH_PROVIDER=google 否则 startup throw config error)· 留 `apps/api/src/lib/auth/oauth-admin-google.ts` 真 Google Workspace stub(throw 'PRR config required: GOOGLE_WORKSPACE_CLIENT_ID / CLIENT_SECRET · hd=quanqn.com · 邮箱白名单二次过滤')· 新建 `apps/api/src/trpc/routers/admin/auth.ts`(adminRouter.auth 子树 · 3 procedure:`auth.login`(input: email · output: { sessionId, expiresAt, user })· `auth.logout`(session 注销)· `auth.me`(返回 ctx.activeAdminUser · 用于 admin SPA 启动 fetch))· 前端 `apps/admin/src/lib/admin-client.ts`(tRPC client 连 `/trpc/admin` · 带 admin session cookie `admin_session_id` · cookie httpOnly + secure(prod)+ sameSite=lax + domain `admin.quanqn.com`(prod)/ `localhost`(dev))。
+**描述** · 新建 `apps/api/src/lib/auth/lucia-admin.ts`(类比主应用 `apps/api/src/lib/auth/lucia.ts` · 复用 lucia-auth lib 不重写)· 独立 Redis namespace `admin:session:*`(LD-A1 · 跟主应用 `app:session:*` 完全隔离)· session ttl 12h(短于主应用 30 天 · ADMIN §7.1)· idle timeout 30min(无操作自动登出)· session table `admin_sessions`(US-001 已加)· 引入 mock OAuth provider(`apps/api/src/lib/auth/oauth-admin-mock.ts` · OAUTH_PROVIDER=mock 时读 admin_users.email + isMock=true 自动通过 · prod 必须 OAUTH_PROVIDER=google 否则 startup throw config error)· 留 `apps/api/src/lib/auth/oauth-admin-google.ts` 真 Google Workspace stub(throw 'PRR config required: GOOGLE_WORKSPACE_CLIENT_ID / CLIENT_SECRET · hd=quanan.com · 邮箱白名单二次过滤')· 新建 `apps/api/src/trpc/routers/admin/auth.ts`(adminRouter.auth 子树 · 3 procedure:`auth.login`(input: email · output: { sessionId, expiresAt, user })· `auth.logout`(session 注销)· `auth.me`(返回 ctx.activeAdminUser · 用于 admin SPA 启动 fetch))· 前端 `apps/admin/src/lib/admin-client.ts`(tRPC client 连 `/trpc/admin` · 带 admin session cookie `admin_session_id` · cookie httpOnly + secure(prod)+ sameSite=lax + domain `admin.quanan.com`(prod)/ `localhost`(dev))。
 
 **触发场景** ·
-- super_admin 访问 `admin.quanqn.com/login`(stub 阶段 `localhost:5174/login`)
+- super_admin 访问 `admin.quanan.com/login`(stub 阶段 `localhost:5174/login`)
 - 输入 email(white-listed admin_users 表已存在 · isMock=true)→ 点"用 mock OAuth 登录"(dev only · prod 隐藏 + 必经 Google OAuth flow)
-- POST `/trpc/admin.auth.login` `{ email: 'super@quanqn.com' }`
+- POST `/trpc/admin.auth.login` `{ email: 'super@quanan.com' }`
 - mock provider 跳过真 OAuth · 直接读 admin_users + 校验 isMock=true + isActive=true
 - lucia-admin.createSession 写 Redis `admin:session:{sessionId}` + admin_sessions table row
 - 返回 sessionId + 写 cookie `admin_session_id`
@@ -148,7 +148,7 @@
 **files_to_create** ·
 - `apps/api/src/lib/auth/lucia-admin.ts`(~120 行 · `import { Lucia } from 'lucia'` · adapter PrismaAdapter(admin_sessions / admin_users 表)· sessionCookie name='admin_session_id' · expires false(滚动 idle 30min)+ session table absoluteExpiration ttl 12h · `validateSession` + `invalidateSession` 函数)
 - `apps/api/src/lib/auth/oauth-admin-mock.ts`(~60 行 · `mockOAuthCallback(email): Promise<AdminUser>` · 校验 isMock + isActive · 不真验 password · 返回 user)
-- `apps/api/src/lib/auth/oauth-admin-google.ts`(~80 行 stub · `googleOAuthCallback(code, state): Promise<AdminUser>` · throw 'PRR config required · 5 env: GOOGLE_WORKSPACE_CLIENT_ID / SECRET / REDIRECT_URI / HD(=quanqn.com) / WHITELIST_EMAILS')
+- `apps/api/src/lib/auth/oauth-admin-google.ts`(~80 行 stub · `googleOAuthCallback(code, state): Promise<AdminUser>` · throw 'PRR config required · 5 env: GOOGLE_WORKSPACE_CLIENT_ID / SECRET / REDIRECT_URI / HD(=quanan.com) / WHITELIST_EMAILS')
 - `apps/api/src/lib/auth/oauth-admin-factory.ts`(~30 行 · `getAdminOAuthProvider()` · 读 env OAUTH_PROVIDER · 'mock' 返 mock · 'google' 返 google · 其他 throw config error · prod startup gate)
 - `apps/api/src/trpc/routers/admin/auth.ts`(~150 行 · 3 procedure:login(input email · 调 mock/google factory · createSession · 返 { sessionId, expiresAt, user, role })· logout(ctx.adminSession.id · invalidateSession · 清 cookie)· me(返 ctx.activeAdminUser · 不带 sensitive fields))
 - `apps/api/src/server/context-admin.ts`(~80 行 · `createAdminContext(req, res)` · 读 admin_session_id cookie · validateSession · 注入 ctx.adminSession + ctx.activeAdminUser · null 表 未登录 · 跟 createContext 主应用版严格隔离)
@@ -281,7 +281,7 @@
 > **priority** · 5
 > **depends_on** · [US-001, US-002]
 
-**描述** · 实现 admin SPA 主 Layout · 复用 packages/ui/base/(Aurelian Dark base tokens · 由 PRD-3 落地)+ 新建 packages/ui/admin/(★ 本 US 加 · 密集模式 · row-height 32px(vs main 48px)/ table dense 模式 / topbar 60px(vs main 72px)/ sidebar 240px(vs main collapsed 56/expanded 280))· 4 主组件:**TopBar**(品牌色 +"QuanQn Admin"标识 + activeAdminUser 头像 / role badge / logout)· **Sidebar**(16 域分类: P0 业务核心 6 项 / P0 内容审核 2 项 / P1 健康度 5 项 / P2 高级 3 项 · 每域 emoji + 名字 + 路由 path · 折叠 / 展开 / 当前 highlight)· **AuditDrawer**(右侧抽屉 · 默认隐藏 · topbar 点🔔图标展开 · 显示当前 admin 最近 50 条 audit_log · 实时 polling 30s)· **StatusBar**(底部 1 行 · ENV mode / RLS state / WAF state / MFA state / current admin role)· 16 域 placeholder route 各一 page(渲染 "PRD-XX · 域 ⑨ 进化档案监控 · 待落地" · 含 PRD 编号映射)
+**描述** · 实现 admin SPA 主 Layout · 复用 packages/ui/base/(Aurelian Dark base tokens · 由 PRD-3 落地)+ 新建 packages/ui/admin/(★ 本 US 加 · 密集模式 · row-height 32px(vs main 48px)/ table dense 模式 / topbar 60px(vs main 72px)/ sidebar 240px(vs main collapsed 56/expanded 280))· 4 主组件:**TopBar**(品牌色 +"QuanAn Admin"标识 + activeAdminUser 头像 / role badge / logout)· **Sidebar**(16 域分类: P0 业务核心 6 项 / P0 内容审核 2 项 / P1 健康度 5 项 / P2 高级 3 项 · 每域 emoji + 名字 + 路由 path · 折叠 / 展开 / 当前 highlight)· **AuditDrawer**(右侧抽屉 · 默认隐藏 · topbar 点🔔图标展开 · 显示当前 admin 最近 50 条 audit_log · 实时 polling 30s)· **StatusBar**(底部 1 行 · ENV mode / RLS state / WAF state / MFA state / current admin role)· 16 域 placeholder route 各一 page(渲染 "PRD-XX · 域 ⑨ 进化档案监控 · 待落地" · 含 PRD 编号映射)
 
 **16 域分类**(ADMIN §3 业务管理域全景 + §8 P9 路线图):
 - **P0 业务核心 6 项**(PRD-11)· ① NSM 仪表盘 · ② 用户管理 · ③ IP 账号管理 · ④ 成本仪表盘 · ⑤ 审计日志查询 · ⑥ 邀请码管理
@@ -322,7 +322,7 @@
 - `grep -rn "useAdminRoutes\|admin-routes" apps/admin/src/pages/admin/` 应 ≥ 1(16 placeholder 用 admin-routes metadata)
 - 16 placeholder 文件 must exist · `ls apps/admin/src/pages/admin/placeholder/*.tsx | wc -l` 应 = 16
 
-**test_command** · `pnpm test tests/unit/admin/{layout,sidebar,audit-drawer}.test.tsx && pnpm --filter @quanqn/admin typecheck && pnpm --filter @quanqn/admin lint`
+**test_command** · `pnpm test tests/unit/admin/{layout,sidebar,audit-drawer}.test.tsx && pnpm --filter @quanan/admin typecheck && pnpm --filter @quanan/admin lint`
 
 ---
 
@@ -332,7 +332,7 @@
 > **priority** · 6
 > **depends_on** · [US-003, US-004]
 
-**描述** · 跨账号查集成测试 · 真 PostgreSQL DB + 真 Redis(quanqn_test 测试库)· seed 2 个 account(account_a / account_b)+ 每账号加 5 条 history row(共 10 条)· seed 1 admin_user(super_admin · isMock=true)· 测试矩阵:
+**描述** · 跨账号查集成测试 · 真 PostgreSQL DB + 真 Redis(quanan_test 测试库)· seed 2 个 account(account_a / account_b)+ 每账号加 5 条 history row(共 10 条)· seed 1 admin_user(super_admin · isMock=true)· 测试矩阵:
 
 1. **不走 adminRLS 直接调主应用 ctx.prisma**(对照组)· `await ctx.prisma.history.findMany({})` · 因主应用 RLS ENABLED + 无 activeAccountId → 应**返回 0 rows**(RLS 全挡)
 2. **走 adminRLS 调 ctx.adminPrisma**(主测试)· 6 闸鉴权链通过(env stub mode)→ adminRLS set_config 真生效 → `await ctx.adminPrisma.history.findMany({})` → **返回 10 rows**(bypass RLS 成功)
@@ -359,7 +359,7 @@
 - `tests/integration/admin/helpers/sql-introspect.ts`(~60 行 · `getCurrentSetting(connection, key)` · `getRLSEnabled(table)` · 用于断言 SQL state)
 
 **files_to_modify** ·
-- `prisma/seed.ts`(若不存在新建 · 加 admin 子项目 dev seed · `seedDevAdminUser({ email: 'dev-admin@quanqn.com', isMock: true, role: 'super_admin' })`)
+- `prisma/seed.ts`(若不存在新建 · 加 admin 子项目 dev seed · `seedDevAdminUser({ email: 'dev-admin@quanan.com', isMock: true, role: 'super_admin' })`)
 - `package.json`(加 script `test:admin-integration` · 跑 `vitest run tests/integration/admin/`)
 - `vitest.config.ts`(integration test 用 testTimeout=30000 · pool='forks' singleFork=true · DB 串行避免冲突)
 
@@ -398,7 +398,7 @@
 - LD-A5 · `grep -rn "prisma.trendingItem.create" apps/api/src/workers/trending-scraper/` = 0(PRD-9 已为 0 · 仅核对 PRD-12 落地前未引入)+ `grep -rn "prisma.deepLearningArchive.create" apps/api/src/workers/file-parser/` = 0(同上)
 
 **Part 3 · R-A 6 grep**:
-- R-A1 · `grep -rn "from '@quanqn/admin\|from '\.\./admin'" apps/web/src/` = 0 · 反向 = 0
+- R-A1 · `grep -rn "from '@quanan/admin\|from '\.\./admin'" apps/web/src/` = 0 · 反向 = 0
 - R-A2 · `grep -rn "/admin" apps/web/src/` = 0(主应用 route 不指 /admin)
 - R-A3 · 部署前 gate 跳过(本 PRD 不部署到 prod · 仅 CI gate 占位:`test -f infra/cloudflare-waf-admin.yaml.template` ≥ 0 文件占位)
 - R-A4 · 每个 admin procedure 必含 audit · 本 PRD adminProcedure 已统一挂 auditLog · 业务 procedure 体内不再重复挂 · grep `adminProcedure.*\\.use(auditLog)` in routers/admin/ = 0
@@ -406,9 +406,9 @@
 - R-A6 · admin 不用 raw SQL 绕过 · `grep -rn "\\\$executeRawUnsafe\|\\\$queryRawUnsafe" apps/api/src/trpc/routers/admin/` = 0(adminRLS middleware 内部例外 · 不在 routers/admin/)
 
 **Part 4 · 1 new e2e 闭环**(`tests/e2e/admin-foundation-loop.spec.ts`)·
-- playwright project `quanqn-admin` baseURL `http://localhost:5174`
+- playwright project `quanan-admin` baseURL `http://localhost:5174`
 - workers=1 + fullyParallel=false(继承 PRD-4 US-018 教训)
-- 路径 · seed admin_user via API helper → goto `/login` → 输 email super@quanqn.com → 点 "mock OAuth 登录" → 跳 `/admin` → 看到 TopBar(super_admin badge)+ Sidebar(16 域 4 分组)+ StatusBar(ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin)→ 点 sidebar "NSM 仪表盘" → 跳 `/admin/nsm` → 看到 placeholder "PRD-11 · 域 ① NSM 仪表盘 · 待落地" → 点 topbar 🔔 audit drawer 展开 → 看到 1 条 audit_log "admin_login · 2026-MM-DD HH:MM" → drawer 关闭 → 点 logout → 跳 `/login` → expect API admin_audit_log 表有 ≥ 2 rows(admin_login + admin_logout)+ admin_sessions 表 isActive=false
+- 路径 · seed admin_user via API helper → goto `/login` → 输 email super@quanan.com → 点 "mock OAuth 登录" → 跳 `/admin` → 看到 TopBar(super_admin badge)+ Sidebar(16 域 4 分组)+ StatusBar(ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin)→ 点 sidebar "NSM 仪表盘" → 跳 `/admin/nsm` → 看到 placeholder "PRD-11 · 域 ① NSM 仪表盘 · 待落地" → 点 topbar 🔔 audit drawer 展开 → 看到 1 条 audit_log "admin_login · 2026-MM-DD HH:MM" → drawer 关闭 → 点 logout → 跳 `/login` → expect API admin_audit_log 表有 ≥ 2 rows(admin_login + admin_logout)+ admin_sessions 表 isActive=false
 
 **Part 5 · verify-artifacts manifest**(US-007 收官 manifest · 继承 PRD-4 US-018 / PRD-5 US-012 模式) ·
 - `scripts/ralph/verify-artifacts/US-007/manifest.json` 写入:
@@ -434,15 +434,15 @@
 
 **files_to_modify** ·
 - `package.json`(加 scripts:`audit:redlines-admin` `audit:admin-rls` `audit:approval-gates` `audit:admin-rls-tables` · 一键跑全套)
-- `playwright.config.ts`(加 admin project · baseURL · workers=1 for admin · projects = ['quanqn-web', 'quanqn-admin'] · 改 default project)
+- `playwright.config.ts`(加 admin project · baseURL · workers=1 for admin · projects = ['quanan-web', 'quanan-admin'] · 改 default project)
 - `tests/e2e/global-setup.ts`(若存在则改 · 加 admin DB seed step · 复用 helpers/admin-db-seed.ts)
 
 **反例 grep**(US-007 audit 必跑 · 上述 LD-A 5 + R-A 6 + 以下补充) ·
 - `grep -rn "TODO\|FIXME\|XXX" apps/admin/src/ apps/api/src/trpc/routers/admin/ apps/api/src/trpc/middleware/admin/` 应 ≤ 5(允许少量 stub TODO 注解 · 但不超 5 · 防滥用)
 - `grep -rEn "console\\.log" apps/admin/src/ apps/api/src/trpc/routers/admin/ apps/api/src/trpc/middleware/admin/` 应 ≤ 2(除 auditLog 错误路径 console.error 外 · 其他生产代码不 console.log)
 - 跑 `bash scripts/audit-redlines-admin.sh` 必 exit 0 · stdout 含 "ALL PASS · 5 LD-A + 6 R-A"
-- 跑 `psql quanqn -c "SELECT relname FROM pg_class WHERE relname IN (... 13 admin 表 ...) AND relrowsecurity=true;"` 应 0 rows
-- 跑 `psql quanqn -c "SELECT relname FROM pg_class WHERE relname IN (... 主应用 18 表 ...) AND relrowsecurity=false;"` 应 0 rows
+- 跑 `psql quanan -c "SELECT relname FROM pg_class WHERE relname IN (... 13 admin 表 ...) AND relrowsecurity=true;"` 应 0 rows
+- 跑 `psql quanan -c "SELECT relname FROM pg_class WHERE relname IN (... 主应用 18 表 ...) AND relrowsecurity=false;"` 应 0 rows
 - 跑 `pnpm typecheck` exit 0 · 7 workspace 全扫
 - 跑 `pnpm test` exit 0 · 全套 ≥ 987 + judge 55 + integration 8 + e2e 165(verify-artifacts manifest 写入)
 
@@ -459,13 +459,13 @@
 ### **US-001 · monorepo workspace 重构 + 13 admin 模型**
 
 #### AC-001-H(happy)
-- **Given** · 跑 prerequisites · `pnpm install` 成功 + PostgreSQL quanqn DB up + Redis up
+- **Given** · 跑 prerequisites · `pnpm install` 成功 + PostgreSQL quanan DB up + Redis up
 - **When** · 顺序跑 `bash scripts/migrate-monorepo.sh` + `pnpm prisma migrate dev --name admin-init` + `pnpm prisma db execute --file prisma/migrations/manual_admin_rls.sql`
 - **Then** ·
   - apps/web / apps/admin / apps/api / packages/{schemas,ui,clients} 5 子项目存在(`ls apps packages` 应有 7 项)
   - pnpm-workspace.yaml 含 `apps/*` + `packages/*`
   - prisma schema 13 admin model 全列出(`grep -c "^model.*Admin\\|^model.*Approval\\|^model.*Prompt\\|^model.*Quota\\|^model.*Review\\|^model.*Compliance\\|^model.*Ab" prisma/schema.prisma` ≥ 13)
-  - `psql quanqn -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('admin_audit_log', ...)"` 13 行 · 全 relrowsecurity=false
+  - `psql quanan -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname IN ('admin_audit_log', ...)"` 13 行 · 全 relrowsecurity=false
   - `pnpm typecheck` 7 ws 0 errors
   - `pnpm test tests/unit/admin/{middleware-stubs,admin-schema}.test.ts` 13 unit 全 pass
   - **零回归** · `pnpm test` 全套 ≥ 907(PRD-9 基线)+ 13 新 = ≥ 920
@@ -504,22 +504,22 @@
 ### **US-002 · lucia-auth admin session + mock OAuth**
 
 #### AC-002-H(happy)
-- **Given** · US-001 完成 · admin_users 表有 row(email='super@quanqn.com', isMock=true, isActive=true, role='super_admin')· OAUTH_PROVIDER=mock
-- **When** · POST `/trpc/admin.auth.login` · input=`{ email: 'super@quanqn.com' }`
+- **Given** · US-001 完成 · admin_users 表有 row(email='super@quanan.com', isMock=true, isActive=true, role='super_admin')· OAUTH_PROVIDER=mock
+- **When** · POST `/trpc/admin.auth.login` · input=`{ email: 'super@quanan.com' }`
 - **Then** ·
   - 响应含 sessionId(uuid v4) · expiresAt(now + 12h) · user(id, email, role)
-  - `psql quanqn -c "SELECT count(*) FROM admin_sessions WHERE adminUserId='...' AND isActive=true"` = 1
+  - `psql quanan -c "SELECT count(*) FROM admin_sessions WHERE adminUserId='...' AND isActive=true"` = 1
   - `redis-cli KEYS 'admin:session:*'` ≥ 1 hit
   - 响应 Set-Cookie header 含 `admin_session_id=...; HttpOnly; SameSite=Lax`(dev · 无 Secure)
   - 响应时间 < 200ms
 
 #### AC-002-E(error)
 - **场景 E1** · admin_users 表无对应 email
-  - Given · email='ghost@quanqn.com' 不在表
+  - Given · email='ghost@quanan.com' 不在表
   - When · POST login
   - Then · throw NOT_FOUND 404 'Admin user not found' · admin_audit_log eventType='admin_login' status='failed' reason='user_not_found' 写入 1 row
 - **场景 E2** · admin_user isActive=false
-  - Given · email='dormant@quanqn.com' 存在但 isActive=false
+  - Given · email='dormant@quanan.com' 存在但 isActive=false
   - When · POST login
   - Then · throw FORBIDDEN 403 'Admin user inactive' · admin_audit_log eventType='admin_login' status='failed' reason='user_inactive' 写入
 - **场景 E3** · OAUTH_PROVIDER=google + stub
@@ -563,7 +563,7 @@
 
 #### AC-003-E(error)
 - **场景 E1** · readonly_admin 调 admin 角色 procedure
-  - Given · email='readonly@quanqn.com' role='readonly_admin' 已登录
+  - Given · email='readonly@quanan.com' role='readonly_admin' 已登录
   - When · 调 `adminProcedure` with `meta.requiredRole='admin'`
   - Then · roleCheck throw FORBIDDEN 403 · code='FORBIDDEN' message includes 'insufficient role'
 - **场景 E2** · super_admin 调 requiresApproval=true 的 procedure(stub)
@@ -617,9 +617,9 @@
   - When · adminProcedure 完成 · auditLog middleware 试写
   - Then · `console.error('[ADMIN AUDIT WRITE FAILED]', err)` · 但 procedure result 仍返回(audit 失败不阻塞 business)
 - **场景 E2** · login failed event(用户不存在)
-  - Given · email='ghost@quanqn.com'
+  - Given · email='ghost@quanan.com'
   - When · POST login
-  - Then · admin_audit_log eventType='admin_login' status='failed' adminUserId=null reason='user_not_found' email_attempted='ghost@quanqn.com'(redact 不 redact email · 但 redact 任何 password / token)1 row 写入
+  - Then · admin_audit_log eventType='admin_login' status='failed' adminUserId=null reason='user_not_found' email_attempted='ghost@quanan.com'(redact 不 redact email · 但 redact 任何 password / token)1 row 写入
 
 #### AC-004-B(boundary)
 - **场景 B1** · cross_account_query 检测点
@@ -649,7 +649,7 @@
 - **Given** · super_admin 已登录(US-002)· 浏览器访问 `http://localhost:5174/admin`
 - **When** · AdminLayout 渲染
 - **Then** ·
-  - TopBar 显示 "QuanQn Admin" 品牌 + super_admin badge + email + logout dropdown
+  - TopBar 显示 "QuanAn Admin" 品牌 + super_admin badge + email + logout dropdown
   - Sidebar 显示 16 域分 4 组(P0 业务核心 6 + P0 内容审核 2 + P1 健康度 5 + P2 高级 3)· 每域 emoji + label + 灰色 "待落地 PRD-XX" tag
   - 主区显示空 placeholder "选择左侧域进入"
   - StatusBar 底部 1 行 · ENV=dev / RLS=ON(13 admin 表 DISABLED · 主应用 18 表 ENABLED · 双重显示)/ WAF=stub / MFA=stub / Role=super_admin · 5 字段都显示
@@ -692,7 +692,7 @@
 ### **US-006 · adminRLS bypass 跨账号查集成测试**
 
 #### AC-006-H(happy)
-- **Given** · 测试库 quanqn_test seed 2 account(account_a / account_b)+ 每账号 5 history rows + 1 admin_user(super_admin · isMock=true)
+- **Given** · 测试库 quanan_test seed 2 account(account_a / account_b)+ 每账号 5 history rows + 1 admin_user(super_admin · isMock=true)
 - **When** · 通过 adminProcedure 调 mock procedure · 内部 `ctx.adminPrisma.history.findMany({})`
 - **Then** ·
   - 返回 10 rows(5 + 5 · bypass RLS 成功)
@@ -786,7 +786,7 @@
 
 #### Common-B · AGENTS §10 红线 grep(US-003+ 起每 US 必跑相关项 · US-007 跑全套)
 
-- [ ] **R-A1 web/admin 不互相 import** · `grep -rn "from '@quanqn/admin\|from '\.\./admin'" apps/web/src/` 应 0 · 反向同
+- [ ] **R-A1 web/admin 不互相 import** · `grep -rn "from '@quanan/admin\|from '\.\./admin'" apps/web/src/` 应 0 · 反向同
 - [ ] **R-A2 主应用前端不暴露 admin 入口** · `grep -rn "/admin" apps/web/src/` 应 0
 - [ ] **R-A3 admin 部署前 gate** · 本 PRD stub · CI 占位 `test -f infra/cloudflare-waf-admin.yaml.template`(不必真生效)
 - [ ] **R-A4 admin procedure 必有 audit** · adminProcedure 已统一挂 auditLog · 业务 procedure 不再手挂 · `grep -rEn "\.use\(auditLog\)" apps/api/src/trpc/routers/admin/` 应 0
@@ -809,7 +809,7 @@
 
 - [ ] **mock OAuth 不进 prod** · `grep -rn "OAUTH_PROVIDER.*mock" apps/api/.env.production` 应 0 / 文件不存在(prod env 不能含 mock 配置 · R3 致命级缓解)
 - [ ] **mock UI 仅 dev 显** · `grep "import.meta.env.DEV" apps/admin/src/pages/Login.tsx` 应 ≥ 1(R3)
-- [ ] **测试库隔离** · 跑 admin-integration 必用 quanqn_test 库 · `grep -n "DATABASE_URL_TEST" tests/integration/admin/` 应 ≥ 1(防误污染 dev 库)
+- [ ] **测试库隔离** · 跑 admin-integration 必用 quanan_test 库 · `grep -n "DATABASE_URL_TEST" tests/integration/admin/` 应 ≥ 1(防误污染 dev 库)
 
 #### Common-E · verify-artifacts + commit / cleanup
 
@@ -830,8 +830,8 @@
 | 1 | WAF Cloudflare 真配置 + yaml 部署 + IP 白名单真生效 | PRR | ADMIN §7.2 + B5 假设 · 上线前法务 + IT 协调 · 本地 dev 不需 |
 | 2 | MFA TOTP / WebAuthn 真启用 | PRR | ADMIN §7.3 + B5 假设 · super_admin 强制 · 涉及 speakeasy / @simplewebauthn 第三方库 + secret 存储设计 · 留 PRR |
 | 3 | 钉钉 / Slack webhook 异常告警真接 | PRR | ADMIN §7.4 + B5 假设 · 涉及钉钉 bot 注册 + 签名校验 · 留 PRR |
-| 4 | Google Workspace OAuth 真接(hd=quanqn.com + 邮箱白名单) | PRR | ADMIN §7.1 + B5 假设 · 涉及 Google Workspace Admin SDK + client_id/secret 申请 · 留 PRR |
-| 5 | admin.quanqn.com 真域名 · DNS / Cloudflare Pages / 子域名隔离 | PRR | ADMIN §2.1 + B5 假设 · 涉及 ICP 备案 / DNS / CDN 配置 · 留 PRR |
+| 4 | Google Workspace OAuth 真接(hd=quanan.com + 邮箱白名单) | PRR | ADMIN §7.1 + B5 假设 · 涉及 Google Workspace Admin SDK + client_id/secret 申请 · 留 PRR |
+| 5 | admin.quanan.com 真域名 · DNS / Cloudflare Pages / 子域名隔离 | PRR | ADMIN §2.1 + B5 假设 · 涉及 ICP 备案 / DNS / CDN 配置 · 留 PRR |
 | 6 | 真 Approval Gates 闭环 · approval_requests CRUD + 通知 + 二次审批 + 紧急通道 + 24h 复核 cron | PRD-13(P9.3 域 ⑬) | ADMIN §7.6 完整 middleware + 通知逻辑 · 本 PRD stub middleware 仅 throw NOT_IMPLEMENTED + audit 写入 |
 | 7 | adminRouter 14 子树业务逻辑(13 子树 · 仅 auth 本 PRD 落地)· users / accounts / cost / audit / invites / reviewTrending / reviewDeepLearn / evolution / prompts / quota / compliance / approval / ab / knowledge / config | PRD-11(6 P0 业务)+ PRD-12(2 内容审核)+ PRD-13(5 P1 健康度)+ PRD-14(3 P2 高级) | ADMIN §5.1 + §8.3-§8.6 路线图 · 本 PRD 仅基础设施 + Layout 占位 |
 | 8 | 16 sidebar 域真业务页面 · NSM 仪表盘 / 用户管理 / 成本仪表盘 / 等 | PRD-11~14 | 本 PRD 仅 16 placeholder.tsx 占位页 · 真业务页面跟 procedure 一一对应 |
@@ -913,7 +913,7 @@ audit-admin-rls-tables.sh: exit 0 · 13 表 RLS=false + 18 表 RLS=true
 
 ## §6 退出条件(7 项 · 对齐 ADMIN §8.2 退出条件 + AC 总和)
 
-> **ADMIN §8.2 P9.0 退出条件原文** · super_admin 用 admin@quanqn.com 登录 admin.quanqn.com · 必经 OAuth + MFA · 看到空 layout · admin_audit_log 有 admin_login 记录 · WAF 拒绝非白名单 IP
+> **ADMIN §8.2 P9.0 退出条件原文** · super_admin 用 admin@quanan.com 登录 admin.quanan.com · 必经 OAuth + MFA · 看到空 layout · admin_audit_log 有 admin_login 记录 · WAF 拒绝非白名单 IP
 
 | # | 退出条件 | 验证 |
 |:-:|---|---|
@@ -993,9 +993,9 @@ audit-admin-rls-tables.sh: exit 0 · 13 表 RLS=false + 18 表 RLS=true
 {
   "id": "US-001",
   "anti_patterns": [
-    { "source_prd": "QuanQn-base", "source_story": "REJ-008", "lesson": "prisma 查询必带 accountId 过滤(除 adminRLS bypass 例外)", "antipattern": "❌ ctx.prisma.history.findMany({})  // 主应用 RLS 默认全挡 + admin 应走 adminPrisma", "correct": "✅ admin 跨账号查必走 ctx.adminPrisma + adminRLS middleware · 主应用查必带 where: { accountId: ctx.activeAccountId }" },
-    { "source_prd": "QuanQn-base", "source_story": "REJ-009", "lesson": "$executeRawUnsafe / $queryRawUnsafe 仅 middleware 允许 · 业务代码禁用", "antipattern": "❌ adminProcedure.mutation 内直接 ctx.prisma.$executeRawUnsafe('UPDATE ... WHERE ...')", "correct": "✅ raw SQL 仅在 adminRLS / accountIsolation middleware · 业务用 prisma client typesafe API" },
-    { "source_prd": "QuanQn-PRD-10", "source_story": "LD-A1", "lesson": "admin OAuth / session 跟主应用完全隔离", "antipattern": "❌ apps/admin 复用 QUANQN_WEB_CLIENT_ID OAuth · 或共享 app:session: Redis namespace", "correct": "✅ apps/admin 用 QUANQN_ADMIN_CLIENT_ID + admin:session: namespace · 独立 Redis key + 独立 admin_users / admin_sessions 表" }
+    { "source_prd": "QuanAn-base", "source_story": "REJ-008", "lesson": "prisma 查询必带 accountId 过滤(除 adminRLS bypass 例外)", "antipattern": "❌ ctx.prisma.history.findMany({})  // 主应用 RLS 默认全挡 + admin 应走 adminPrisma", "correct": "✅ admin 跨账号查必走 ctx.adminPrisma + adminRLS middleware · 主应用查必带 where: { accountId: ctx.activeAccountId }" },
+    { "source_prd": "QuanAn-base", "source_story": "REJ-009", "lesson": "$executeRawUnsafe / $queryRawUnsafe 仅 middleware 允许 · 业务代码禁用", "antipattern": "❌ adminProcedure.mutation 内直接 ctx.prisma.$executeRawUnsafe('UPDATE ... WHERE ...')", "correct": "✅ raw SQL 仅在 adminRLS / accountIsolation middleware · 业务用 prisma client typesafe API" },
+    { "source_prd": "QuanAn-PRD-10", "source_story": "LD-A1", "lesson": "admin OAuth / session 跟主应用完全隔离", "antipattern": "❌ apps/admin 复用 QUANQN_WEB_CLIENT_ID OAuth · 或共享 app:session: Redis namespace", "correct": "✅ apps/admin 用 QUANQN_ADMIN_CLIENT_ID + admin:session: namespace · 独立 Redis key + 独立 admin_users / admin_sessions 表" }
   ]
 }
 ```
@@ -1004,8 +1004,8 @@ audit-admin-rls-tables.sh: exit 0 · 13 表 RLS=false + 18 表 RLS=true
 {
   "id": "US-003",
   "anti_patterns": [
-    { "source_prd": "QuanQn-PRD-10", "source_story": "LD-A2", "lesson": "adminRouter 跟 appRouter 严格分离 · 不互相 import", "antipattern": "❌ apps/api/src/trpc/routers/admin/users.ts import { history } from '@/trpc/routers/app/history.ts'", "correct": "✅ admin 跨表查统一走 prisma client + adminRLS middleware · 不调主应用 router procedure" },
-    { "source_prd": "QuanQn-PRD-10", "source_story": "LD-A3", "lesson": "admin 跨账号查必走 adminRLS bypass + 必写 admin_audit_log cross_account_query", "antipattern": "❌ adminProcedure 内 ctx.prisma.findMany({}) 直接绕过 RLS · 或不写 audit", "correct": "✅ ctx.adminPrisma.findMany({}) 由 adminRLS middleware 注入 + auditLog 后置自动写 cross_account_query event" }
+    { "source_prd": "QuanAn-PRD-10", "source_story": "LD-A2", "lesson": "adminRouter 跟 appRouter 严格分离 · 不互相 import", "antipattern": "❌ apps/api/src/trpc/routers/admin/users.ts import { history } from '@/trpc/routers/app/history.ts'", "correct": "✅ admin 跨表查统一走 prisma client + adminRLS middleware · 不调主应用 router procedure" },
+    { "source_prd": "QuanAn-PRD-10", "source_story": "LD-A3", "lesson": "admin 跨账号查必走 adminRLS bypass + 必写 admin_audit_log cross_account_query", "antipattern": "❌ adminProcedure 内 ctx.prisma.findMany({}) 直接绕过 RLS · 或不写 audit", "correct": "✅ ctx.adminPrisma.findMany({}) 由 adminRLS middleware 注入 + auditLog 后置自动写 cross_account_query event" }
   ]
 }
 ```
@@ -1014,8 +1014,8 @@ audit-admin-rls-tables.sh: exit 0 · 13 表 RLS=false + 18 表 RLS=true
 {
   "id": "US-007",
   "anti_patterns": [
-    { "source_prd": "QuanQn-PRD-10", "source_story": "R3-D061", "lesson": "mock OAuth 不可进 prod · multi-layer 防护", "antipattern": "❌ 改 oauth-admin-factory.ts 让 prod OAUTH_PROVIDER=mock 也走 · 或 Login.tsx mock 按钮 prod 仍显示", "correct": "✅ factory startup throw 'mock not allowed in prod' + Login.tsx import.meta.env.DEV 才显示 mock 按钮 + grep 验证 .env.production 不含 mock" },
-    { "source_prd": "QuanQn-PRD-1", "source_story": "REJ-013", "lesson": "protectedProcedure / adminProcedure 必经 · 不能用 t.procedure 直接挂业务", "antipattern": "❌ apps/api/src/trpc/routers/admin/users.ts: list = t.procedure.query(...)  // 没经 adminProcedure", "correct": "✅ list = adminProcedure.query(...) · 6 闸鉴权 + auditLog 全经过" }
+    { "source_prd": "QuanAn-PRD-10", "source_story": "R3-D061", "lesson": "mock OAuth 不可进 prod · multi-layer 防护", "antipattern": "❌ 改 oauth-admin-factory.ts 让 prod OAUTH_PROVIDER=mock 也走 · 或 Login.tsx mock 按钮 prod 仍显示", "correct": "✅ factory startup throw 'mock not allowed in prod' + Login.tsx import.meta.env.DEV 才显示 mock 按钮 + grep 验证 .env.production 不含 mock" },
+    { "source_prd": "QuanAn-PRD-1", "source_story": "REJ-013", "lesson": "protectedProcedure / adminProcedure 必经 · 不能用 t.procedure 直接挂业务", "antipattern": "❌ apps/api/src/trpc/routers/admin/users.ts: list = t.procedure.query(...)  // 没经 adminProcedure", "correct": "✅ list = adminProcedure.query(...) · 6 闸鉴权 + auditLog 全经过" }
   ]
 }
 ```
@@ -1085,7 +1085,7 @@ bash scripts/audit-redlines-admin.sh && echo "ALL PASS · 6 R-A"
 
 **§10.4.3 admin 集成测试**(US-006 主跑 · US-007 收官重跑):
 ```bash
-pnpm --filter @quanqn/api test:admin-integration  # rls-bypass-cross-account.test.ts 7 case
+pnpm --filter @quanan/api test:admin-integration  # rls-bypass-cross-account.test.ts 7 case
 pnpm test:e2e tests/e2e/admin-foundation-loop.spec.ts  # US-007 收官 e2e
 ```
 

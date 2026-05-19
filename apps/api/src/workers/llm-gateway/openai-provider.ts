@@ -1,5 +1,5 @@
 /**
- * QuanQn · OpenAI request/response helpers (no SDK import — AC-8 R-1)
+ * QuanAn · OpenAI request/response helpers (no SDK import — AC-8 R-1)
  * SDK import lives only in index.ts; these helpers work with raw typed data.
  *
  * US-003 AC-2: responseFormat.type='json_schema' → response_format.type='json_object'

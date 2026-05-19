@@ -368,7 +368,7 @@ Audit 专项贡献 严格通过率约 **+0% 增量**(全部用 plan-check 前置
 - **N-3** · 不实现 [生成参考图] / [生成图片] 真实图像生成
 - **N-4** · 不复用 PRD-3 StepForm(太通用 · 跟 1:1 spec layout 冲突)
 - **N-5** · 不动 apps/admin / apps/api / packages/(D3=A 严守)
-- **N-6** · 不切 QuanQn `--primary: 43 87% 63%` 金色 token
+- **N-6** · 不切 QuanAn `--primary: 43 87% 63%` 金色 token
 - **N-7** · 不允许 PRD AC 写"建议性表述" · 必须字面 1:1 锁定(D1=A 严守 · 含 SUBTITLE/H1/STEP_TAG 完整字面)
 
 ### §11.3 E-1~E-N 实验项
@@ -448,11 +448,11 @@ Audit 专项贡献 严格通过率约 **+0% 增量**(全部用 plan-check 前置
 - **建议 diff** ·
 
 ```diff
-+##### 2.6.21 hardcode 中文按钮 label vs 常量 import 检测(QuanQn PRD-17 retro M-1 固化 · 2026-05-17 新增)
++##### 2.6.21 hardcode 中文按钮 label vs 常量 import 检测(QuanAn PRD-17 retro M-1 固化 · 2026-05-17 新增)
 +
 +**目的** · 防 ralph 在 page 文件 hardcode 中文按钮 label(如 `<Button>复制</Button>`)而不 import 已 export 的常量(如 `STEP{N}_BUTTON_COPY`)· 跨 step 不统一
 +
-+**背景** · QuanQn PRD-17 实证 · US-008 Step3b.tsx hardcode '复制' '重新生成'(line 28-29) + STEP3B_STEP_TAG_LITERAL 重复 hardcode(line 22-25)· 偏离 US-006b 用 STEP3_BUTTON_COPY 常量模式 · 跨 step 不统一 · 留 TD-75 (Low)
++**背景** · QuanAn PRD-17 实证 · US-008 Step3b.tsx hardcode '复制' '重新生成'(line 28-29) + STEP3B_STEP_TAG_LITERAL 重复 hardcode(line 22-25)· 偏离 US-006b 用 STEP3_BUTTON_COPY 常量模式 · 跨 step 不统一 · 留 TD-75 (Low)
 +
 +**触发条件**(任一满足):
 +- prd.json 中 story files_to_modify 含 `*.tsx` 文件
@@ -498,7 +498,7 @@ Audit 专项贡献 严格通过率约 **+0% 增量**(全部用 plan-check 前置
 - **建议 diff** ·
 
 ```diff
-+#### D1=A 长文本字面双锁规则(QuanQn PRD-17 retro M-2 固化 · 2026-05-17 新增)
++#### D1=A 长文本字面双锁规则(QuanAn PRD-17 retro M-2 固化 · 2026-05-17 新增)
 +
 +> **背景** · PRD-17 US-007 实证 · STEP3B_SUBTITLE_TEMPLATE 在 PRD AC-1 完整代码块字面锁定(line 784)· 但 AC-5 仅简化为"含 '{industry}'"· ralph 漏看 AC-1 完整字面 · 创意改写 subtitle → reject + 1 iter 修对
 +
@@ -537,7 +537,7 @@ Audit 专项贡献 严格通过率约 **+0% 增量**(全部用 plan-check 前置
 - **建议 diff** ·
 
 ```diff
-+#### 常用 UI button label 关键词组(QuanQn PRD-17 retro Diff-3 · 2026-05-17 新增)
++#### 常用 UI button label 关键词组(QuanAn PRD-17 retro Diff-3 · 2026-05-17 新增)
 +
 +> **背景** · TD-75 + PRD-15 TD-70 实证 · ralph 在 page 文件 hardcode 中文按钮 label 而不复用 page 间常量 · 同模式跨 PRD 反复
 +

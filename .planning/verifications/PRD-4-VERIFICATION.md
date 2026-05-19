@@ -144,7 +144,7 @@ $ grep -rn "console\.log\|console\.error\|console\.warn" apps/api/src \
 | **US-011** 9 步前端表单组件 | medium | 2/1 | b73f991+8c8860a | packages/schemas/src/specialist-io/step-inputs.schema.ts(9 step InputSchema + 5 KEYS 常量)· StepForm.tsx(595 行 useForm + zodResolver + LS-first dual-write REJ-010/035 + acc_{id} 前缀 + AbortController on unmount)· IndustrySelect(56 行业 ScrollArea h-72)+ PlatformSelect + CategorySelect + TextareaField · 9 step 页全替换占位 · 19 unit tests · ★ **retry 1 配置修复**(vitest config include `*.test.{ts,tsx}` + vite resolve.dedupe:['react','react-dom'] 防 Invalid hook call · commit 8c8860a)· TD-015 登记(specialist-io 子目录 vs 协议锁单一文件 · accepted) | ✅ |
 | **US-012** 9 步 result 渲染 structured + markdown 双模式 | medium | 1/0 | c632480 | StepResult/ 11 文件(StepResult wrapper + Step1/3/3b/4/4b/5/6/7/8Result + FallbackBanner)· react-markdown + remark-gfm(无 dangerouslySetInnerHTML)· Step5Result ScrollArea h-96 防 viewport overflow(AGENTS §11.4)· Step6Result ScrollBar horizontal 13 列分镜表 · 10 unit tests · render 性能 structured 8.8ms < 16ms / markdown 12.3ms < 100ms | ✅ |
 | **US-013** /ip-plan 接 stepData.progress 真数据 | medium | 1/0 | ebab129 | apps/api/src/services/ip-progress/IPProgressService.ts · STEP_KEYS_9 常量(9 key 不含 step2)· getProgress(prisma, accountId) · 过滤 status='completed' · IpPlan.tsx 替换 PRD-3 hardcode 0/9 → 真 query · 7 unit + 3 integration tests · 替代 D-022 兼容 fallback 不计 completed | ✅ |
-| **US-014** FeedbackButton 真接 feedback_log | medium | 1/0 | a668296 | prisma/schema.prisma CostLog 加 eventType + agentMode + target Json + migration 20260509120000 applied (quanqn + quanqn_test)· FeedbackLog 模型 (D-024 落地 · accountId/userId/historyId/rateableType/rateableId/rating/agentId/scriptType/elements/consumedByEvolution/consumedAt)· logFeedback protectedProcedure(REJ-013 ✓)· FeedbackButton agentId prop · STEP_AGENT_MAP 单点维护 · 8 unit + 1 e2e tests | ✅ |
+| **US-014** FeedbackButton 真接 feedback_log | medium | 1/0 | a668296 | prisma/schema.prisma CostLog 加 eventType + agentMode + target Json + migration 20260509120000 applied (quanan + quanan_test)· FeedbackLog 模型 (D-024 落地 · accountId/userId/historyId/rateableType/rateableId/rating/agentId/scriptType/elements/consumedByEvolution/consumedAt)· logFeedback protectedProcedure(REJ-013 ✓)· FeedbackButton agentId prop · STEP_AGENT_MAP 单点维护 · 8 unit + 1 e2e tests | ✅ |
 
 ★ **Wave 3 4/4 全过 · 1 retry (US-011 vitest config)**。
 
@@ -185,7 +185,7 @@ $ grep -rn "console\.log\|console\.error\|console\.warn" apps/api/src \
 | isFallback 降级路径(LLM fail / zod fail / 5xx → 模板返回) | ✅ | BaseSpecialist line 151-175 catch (SchemaValidationError/LLMTimeoutError/5xx) → fallbackTemplate?[mode] → status='fallback' + isFallback=true · 7 Specialist 全加 static readonly fallbackTemplate · FallbackBanner.tsx · 7 unit + 1 e2e tests · cost_log 写 model='fallback' tokens=0 |
 | LLM Judge 测试套件(7 Specialist 各 1 golden case) | ✅ | tests/judge/{7}.judge.ts + judge-runner.ts · model_tier='lightweight' · 14 judge tests pass · cost_log eventType='judge_call' 区分(D-023)|
 | 9 步 e2e 集成 · /ip-plan 显示真 9/9 | ✅ | tests/e2e/ip-flow-9-steps.spec.ts(真 LLM e2e · manual 跑)+ ip-flow-account-isolation.spec.ts(acc2 RLS 隔离)+ /ip-plan 接 stepData.progress 真数据(US-013 替换 PRD-3 hardcode 0/9)· STEP_KEYS_9 常量 · status='completed' 才计入 |
-| lint clean(--max-warnings=0)+ typecheck 0 + 防 PRD-1 lint debt 重现 | ✅ | US-018 verify-artifacts: pnpm typecheck 6 ws 0 errors · pnpm --filter @quanqn/web lint --max-warnings=0 EXIT:0 · TD-007(PRD-1 残留)隐式 closed |
+| lint clean(--max-warnings=0)+ typecheck 0 + 防 PRD-1 lint debt 重现 | ✅ | US-018 verify-artifacts: pnpm typecheck 6 ws 0 errors · pnpm --filter @quanan/web lint --max-warnings=0 EXIT:0 · TD-007(PRD-1 残留)隐式 closed |
 
 ---
 
@@ -430,7 +430,7 @@ lint:          0 warnings (--max-warnings=0) ✓ (3.68s)  ← 防 PRD-1 lint deb
 
 ### Prisma + monorepo
 - pnpm prisma generate 必须在 pnpm typecheck **前**跑(schema 变更才被 tRPC 识别)
-- 新 migration apply 同时跑 quanqn + quanqn_test 两个库
+- 新 migration apply 同时跑 quanan + quanan_test 两个库
 
 ### isFallback 降级路径
 - BaseSpecialist try-catch fallback(SchemaValidationError/LLMTimeoutError/5xx → fallbackTemplate?[mode])

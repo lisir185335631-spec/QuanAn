@@ -13,7 +13,7 @@ import type { ILLMGateway, LLMStreamChunk } from '@/specialists/base/types';
 
 const prisma = new PrismaClient({
   datasources: {
-    db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanqn' },
+    db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanan' },
   },
 });
 

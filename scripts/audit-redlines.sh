@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# QuanQn · 17 条红线 grep 检测 (TD-017 修 · 2026-05-09 monorepo 路径适配)
+# QuanAn · 17 条红线 grep 检测 (TD-017 修 · 2026-05-09 monorepo 路径适配)
 # 派生自 AGENTS.md §5.6 + §8.5
 # 任一命中 reject
 
@@ -13,7 +13,7 @@ fail() { echo "❌ $1"; FAIL=1; }
 pass() { echo "✅ $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn · 17 红线检测"
+echo "  QuanAn · 17 红线检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 echo "本脚本覆盖 12 条 grep 红线 ·"

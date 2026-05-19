@@ -5,7 +5,7 @@
 ## APIs & External Services
 
 **Backend (tRPC):**
-- QuanQn API server — all data fetching and mutations via tRPC
+- QuanAn API server — all data fetching and mutations via tRPC
   - SDK/Client: `@trpc/react-query` + `@trpc/client` (see `src/lib/trpc.ts`)
   - Transport: `httpBatchStreamLink` for queries/mutations; `httpSubscriptionLink` for SSE subscriptions
   - URL: `${VITE_API_BASE_URL}/trpc` (default `http://localhost:3000/trpc`)
@@ -97,14 +97,14 @@
 
 ## Workspace Package Integrations
 
-**@quanqn/clients (`packages/clients/src`):**
+**@quanan/clients (`packages/clients/src`):**
 - Provides `AppRouter` type (imported as `import type`) — keeps `@trpc/server` out of browser bundle
 - Provides output types: `AuthMeOutput`, `ActiveAccountOutput`, `EvolutionProfileOutput`, `TrendingListItem`, `VoiceChatStreamChunk`
 
-**@quanqn/schemas (`packages/schemas/src`):**
+**@quanan/schemas (`packages/schemas/src`):**
 - Shared zod validation schemas (imported in `src/lib/schemas/` and form components)
 
-**@quanqn/ui (`packages/ui/src`):**
+**@quanan/ui (`packages/ui/src`):**
 - Shared UI components (available but most UI is implemented locally in `src/components/ui/`)
 - Design token source: `../../ui/aurelian_dark/DESIGN.md` parsed by `src/lib/parseDesignTokens.js`
 

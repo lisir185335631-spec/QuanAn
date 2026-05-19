@@ -1,14 +1,14 @@
 /**
  * admin schema unit tests — PRD-10 US-001 AC-12
  * Verifies 6 admin models exist in prisma schema and RLS is DISABLED
- * Uses main dev DB (quanqn) — tables created by migration
+ * Uses main dev DB (quanan) — tables created by migration
  */
 
 import { describe, it, expect, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({
-  datasources: { db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanqn' } },
+  datasources: { db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanan' } },
 });
 
 const RUN_ID = Date.now();
@@ -61,7 +61,7 @@ describe('admin schema models exist and are writable', () => {
   it('admin_users: can create record', async () => {
     const rec = await prisma.adminUser.create({
       data: {
-        email: `schema-test-${RUN_ID}@quanqn.test`,
+        email: `schema-test-${RUN_ID}@quanan.test`,
         role: 'super_admin',
         isMock: true,
         isActive: true,

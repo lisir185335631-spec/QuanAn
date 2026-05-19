@@ -1,4 +1,4 @@
-# QuanQn · src/ 脚手架完成报告 + 剩余 TODO 清单
+# QuanAn · src/ 脚手架完成报告 + 剩余 TODO 清单
 
 > **版本** · v0.1(2026-05-06)
 > **状态** · 关键骨架已就位 · 剩余文件按 Coding 3.0 P0-P8 各阶段填充
@@ -244,7 +244,7 @@
 ## 🚀 Ralph P0 立即可做(0.5 天)
 
 ```bash
-cd /Users/return/Desktop/QuanQn
+cd /Users/return/Desktop/QuanAn
 
 # 1. 安装依赖(已锁定 · 不需选)
 pnpm install

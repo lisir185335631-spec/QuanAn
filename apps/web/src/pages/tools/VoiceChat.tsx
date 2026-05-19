@@ -18,7 +18,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { trpc, trpcClient } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 
-import type { VoiceChatStreamChunk } from '@quanqn/clients/router-types';
+import type { VoiceChatStreamChunk } from '@quanan/clients/router-types';
 import type { Unsubscribable } from '@trpc/server/observable';
 
 // ── Types ─────────────────────────────────────────────────────────────────────

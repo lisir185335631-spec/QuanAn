@@ -7,7 +7,7 @@
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                  Browser (admin.quanqn.com)                  │
+│                  Browser (admin.quanan.com)                  │
 │                  Vite SPA · port 5174 dev                    │
 ├──────────────────────────────────────────────────────────────┤
 │  App (BrowserRouter + tRPC Provider + QueryClient)          │
@@ -101,20 +101,20 @@
 - Purpose: 业务页主控 · 状态 (URL params + useState) + tRPC 查询 + 子组件协调
 - Location: `apps/admin/src/pages/{nsm,users,accounts,cost,audit,invites}/index.tsx`
 - Contains: 主页面 (300~600 行) · buildColumns / 子组件聚合 / Drawer/Dialog state
-- Depends on: lib/admin-client + 同目录 sub-components + @quanqn/ui/admin (DenseTable)
+- Depends on: lib/admin-client + 同目录 sub-components + @quanan/ui/admin (DenseTable)
 - Used by: AdminRoutes Route element
 
 **Sub-component Layer (同目录):**
 - Purpose: 主页面拆分 · *OverviewCards / *Filters / *DetailDrawer / *Dialog / *Chart
 - Location: `apps/admin/src/pages/<domain>/*.tsx` (同 domain 平铺 · 不嵌套深目录)
 - Contains: 单职责组件 · 自含 trpc useQuery / useMutation
-- Depends on: lib/admin-client + recharts (chart only) + @quanqn/ui/admin
+- Depends on: lib/admin-client + recharts (chart only) + @quanan/ui/admin
 - Used by: 同目录 `index.tsx`
 
 **Shared / External:**
-- `@quanqn/ui/admin` · DenseTable + tokens + PdfBillTemplate (`packages/ui/src/admin/`)
-- `@quanqn/clients/admin-router-types` · AdminRouter 类型 (`packages/clients/src/admin-router-types.ts`)
-- `@quanqn/schemas` · zod schemas (admin app 当前未直接 import 但在 path alias 中可用)
+- `@quanan/ui/admin` · DenseTable + tokens + PdfBillTemplate (`packages/ui/src/admin/`)
+- `@quanan/clients/admin-router-types` · AdminRouter 类型 (`packages/clients/src/admin-router-types.ts`)
+- `@quanan/schemas` · zod schemas (admin app 当前未直接 import 但在 path alias 中可用)
 
 ## Data Flow
 
@@ -160,7 +160,7 @@
 
 **DenseTable (统一虚拟滚动表格):**
 - Purpose: 32px row · 13px font · @tanstack/react-virtual · 100k+ row 平滑滚动
-- Examples: 6 P0 业务页全部直接 `import { DenseTable } from '@quanqn/ui/admin'`
+- Examples: 6 P0 业务页全部直接 `import { DenseTable } from '@quanan/ui/admin'`
 - Pattern: `columns: DenseTableColumn<T>[] { key, label, width, sortable?, render }` · `data: T[]` · `onRowClick` · `onSort` · `selectedKey`
 
 **Detail Drawer (右侧 Tab 抽屉):**
@@ -194,7 +194,7 @@
 
 - **Threading:** 单一 browser main thread · React 18 concurrent mode 默认开 · 无 Web Worker
 - **Global state:** 无 Redux/Zustand · React-Query cache 为唯一共享状态层 (`apps/admin/src/lib/admin-client.ts:12`)
-- **Circular imports:** 未发现 · 单向依赖 router → layouts → pages → components+lib → @quanqn/ui+clients
+- **Circular imports:** 未发现 · 单向依赖 router → layouts → pages → components+lib → @quanan/ui+clients
 - **CSS vars 锁定:** Aurelian Dark token (`--gold #d4af37` / `--bg-panel #111111` / `--text #e0e0e0` 等) 在 `apps/admin/src/styles/admin.css:3-36` 集中定义 · 所有 inline style 引用 `var(--*)`
 - **密集模式锁定 (AGENTS §10):** row 32px / font 13px / topbar 60px / sidebar 240px / statusbar 24px · CSS `:root` 变量 (`apps/admin/src/styles/admin.css:4-10`)
 - **路由权限元数据:** `requiredRole` 在 `apps/admin/src/lib/admin-routes.ts` 仅作元数据 · 实际权限拦截由后端 6 闸 + sidebar 隐藏 (当前未启用前端隐藏 · 后续 PRD-13 接入)

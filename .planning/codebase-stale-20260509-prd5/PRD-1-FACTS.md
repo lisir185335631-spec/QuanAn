@@ -9,15 +9,15 @@
 ## §1 ARCHITECTURE(实际拓扑)
 
 ```
-QuanQn/  (monorepo · pnpm workspace)
+QuanAn/  (monorepo · pnpm workspace)
 ├── apps/
-│   ├── web/        @quanqn/web    · React 18 + Vite + tRPC client + shadcn 12 + Header
-│   ├── api/        @quanqn/api    · Hono + tRPC v11 + Prisma + Lucia v3 + arctic OAuth
-│   └── admin/      @quanqn/admin  · 占位(P9.0 启动 · README + .gitkeep)
+│   ├── web/        @quanan/web    · React 18 + Vite + tRPC client + shadcn 12 + Header
+│   ├── api/        @quanan/api    · Hono + tRPC v11 + Prisma + Lucia v3 + arctic OAuth
+│   └── admin/      @quanan/admin  · 占位(P9.0 启动 · README + .gitkeep)
 ├── packages/
-│   ├── schemas/    @quanqn/schemas · zod 真理来源(占位 · index.ts barrel)
-│   ├── ui/         @quanqn/ui      · 占位(★ 偏差 · TD-005 · 12 shadcn 写在 apps/web/src/components/ui/)
-│   └── clients/    @quanqn/clients · tRPC client + AppRouter type re-export
+│   ├── schemas/    @quanan/schemas · zod 真理来源(占位 · index.ts barrel)
+│   ├── ui/         @quanan/ui      · 占位(★ 偏差 · TD-005 · 12 shadcn 写在 apps/web/src/components/ui/)
+│   └── clients/    @quanan/clients · tRPC client + AppRouter type re-export
 ├── prisma/
 │   ├── schema.prisma           · 38 model(主 18 + admin 16 + P2 4)
 │   ├── migrations/
@@ -53,12 +53,12 @@ QuanQn/  (monorepo · pnpm workspace)
 
 | Package | 关键 deps |
 |---|---|
-| **apps/web** | React 18 / @tanstack/react-query / @trpc/client+react-query / 10 @radix-ui / @fontsource/{manrope,inter,plus-jakarta-sans} / lucide-react / cva+clsx+twMerge / sonner / react-hook-form / zod / zustand / @quanqn/* workspace |
-| **apps/api** | hono / @hono/node-server / @trpc/server / @prisma/client / lucia + arctic / @upstash/{ratelimit,redis} / bullmq / pino+pino-pretty / @anthropic-ai/sdk / openai / handlebars / node-cron / @quanqn/schemas |
+| **apps/web** | React 18 / @tanstack/react-query / @trpc/client+react-query / 10 @radix-ui / @fontsource/{manrope,inter,plus-jakarta-sans} / lucide-react / cva+clsx+twMerge / sonner / react-hook-form / zod / zustand / @quanan/* workspace |
+| **apps/api** | hono / @hono/node-server / @trpc/server / @prisma/client / lucia + arctic / @upstash/{ratelimit,redis} / bullmq / pino+pino-pretty / @anthropic-ai/sdk / openai / handlebars / node-cron / @quanan/schemas |
 | **apps/admin** | (空 · P9.0 起填) |
 | **packages/schemas** | zod |
 | **packages/ui** | React + lucide + cva+clsx+twMerge + tailwindcss-animate(★ 实际占位 · 12 shadcn 在 apps/web · TD-005) |
-| **packages/clients** | @trpc/{client,server,react-query} + @tanstack/react-query + @quanqn/schemas |
+| **packages/clients** | @trpc/{client,server,react-query} + @tanstack/react-query + @quanan/schemas |
 | **root devDeps** | typescript / vitest / playwright / prisma / tsx / eslint / prettier / husky / lint-staged / turbo |
 
 **Prisma 38 model 分类 ·**
@@ -83,9 +83,9 @@ noUnusedParameters / useUnknownInCatchVariables
 
 **Path aliases ·**
 - `@/*` → 各 app 自己的 `./src/*`(apps/web · apps/api · apps/admin · vitest config 跑 unit 测 api 时映 apps/api/src)
-- `@quanqn/schemas` → `./packages/schemas/src`
-- `@quanqn/ui` → `./packages/ui/src`
-- `@quanqn/clients` → `./packages/clients/src`
+- `@quanan/schemas` → `./packages/schemas/src`
+- `@quanan/ui` → `./packages/ui/src`
+- `@quanan/clients` → `./packages/clients/src`
 
 **Module/Build ·**
 - ESM 全栈("type":"module")

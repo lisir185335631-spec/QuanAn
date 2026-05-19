@@ -25,7 +25,7 @@ status=blocked_needs_attention → daemon 自然 exit。
 
 **Opus 审计实测** · 实现 9/10 AC OK · 1 个 lint+typecheck 错(因 scripts/ 不在 include 静默漏)+
 1 个 doc-only drift(22→23 元素 · 数据源 SoT 是 23)。Opus 直 fix lint + 手动 approve · 详
-audit-log-QuanQn.jsonl + progress.txt。
+audit-log-QuanAn.jsonl + progress.txt。
 
 ---
 
@@ -154,5 +154,5 @@ update + audit log + clear audit-gate · 给 Opus 用。
 [OK] SQL 实测            → knowledge_chunk_type_title_key UNIQUE + HNSW + vector(1536)
 [OK] AC 10/10 PASS       → 详 progress.txt 2026-05-11 22:14 entry
 [OK] TD 登记             → TD-033 (doc-drift) + TD-034 (env-gap)
-[OK] Audit log           → ~/.claude/audit-log-QuanQn.jsonl 第 2 行 US-002 approved
+[OK] Audit log           → ~/.claude/audit-log-QuanAn.jsonl 第 2 行 US-002 approved
 ```

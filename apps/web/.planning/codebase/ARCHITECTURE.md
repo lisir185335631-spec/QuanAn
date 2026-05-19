@@ -198,7 +198,7 @@
 
 - **Threading:** Single-threaded browser event loop; SSE subscription handled via `@trpc/client` observable
 - **Global state:** Single `queryClient` and `trpcClient` instances in `src/lib/trpc.ts`; no module-level mutable state elsewhere
-- **Circular imports:** None detected; `@quanqn/clients` package uses `import type` to avoid circular dependency (`@trpc/server` excluded from browser bundle)
+- **Circular imports:** None detected; `@quanan/clients` package uses `import type` to avoid circular dependency (`@trpc/server` excluded from browser bundle)
 - **LS-first:** Step data is always written to LS before DB; DB failure must not roll back LS (ADR-010)
 - **No SSR:** Pure SPA; `#root` must exist in `index.html`
 - **Font loading:** Fonts loaded via `@fontsource` in `src/main.tsx` before React tree renders

@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 Specialist 错误类
+ * QuanAn · PRD-4 Specialist 错误类
  * SchemaValidationError + LLMTimeoutError + FallbackTriggeredError
  * AC-3(US-001) · AC-3(US-003 retry: ZodError + llmRawOutput)
  */

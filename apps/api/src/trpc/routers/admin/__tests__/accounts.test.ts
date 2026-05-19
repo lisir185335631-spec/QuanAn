@@ -105,13 +105,13 @@ import { prisma } from '@/lib/prisma';
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
 const SUPER_ADMIN: AdminLuciaUser = {
-  id: 1, email: 'super@quanqn.com', role: 'super_admin', isMock: true, isActive: true,
+  id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true,
 };
 const ADMIN_USER: AdminLuciaUser = {
-  id: 2, email: 'admin@quanqn.com', role: 'admin', isMock: true, isActive: true,
+  id: 2, email: 'admin@quanan.com', role: 'admin', isMock: true, isActive: true,
 };
 const READONLY_ADMIN: AdminLuciaUser = {
-  id: 3, email: 'ro@quanqn.com', role: 'readonly_admin', isMock: true, isActive: true,
+  id: 3, email: 'ro@quanan.com', role: 'readonly_admin', isMock: true, isActive: true,
 };
 
 const MOCK_SESSION: AdminLuciaSession = {

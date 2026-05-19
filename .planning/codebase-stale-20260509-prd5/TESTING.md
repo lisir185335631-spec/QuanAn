@@ -1,7 +1,7 @@
 # Testing Patterns
 
 **Analysis Date:** 2026-05-09
-**Project:** QuanQn · IP 起号 / 内容创作 SaaS · TypeScript monorepo
+**Project:** QuanAn · IP 起号 / 内容创作 SaaS · TypeScript monorepo
 **Status (post PRD-5):**
 - `pnpm test` (vitest) · **542 passed / 56 files**
 - `pnpm test:judge` (LLM judge) · **22 passed / 11 files**
@@ -190,9 +190,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),                                // ★ web 自己的 @ → src
-      '@quanqn/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
-      '@quanqn/ui':      path.resolve(__dirname, '../../packages/ui/src'),
-      '@quanqn/clients': path.resolve(__dirname, '../../packages/clients/src'),
+      '@quanan/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
+      '@quanan/ui':      path.resolve(__dirname, '../../packages/ui/src'),
+      '@quanan/clients': path.resolve(__dirname, '../../packages/clients/src'),
     },
   },
   test: {
@@ -210,7 +210,7 @@ export default defineConfig({
 - `@/` 指向 `apps/web/src` (vs apps/api/src)
 - include 范围在 `apps/web/src/**` — 跟根 vitest `tests/unit/**` 互不重叠
 - web 单元测试 4 文件 (`apps/web/src/test/feedback-button.test.tsx` · `pages.test.tsx` · `step-progress.test.tsx` · `apps/web/src/components/StepProgress.test.tsx`)
-- 调用 · `pnpm --filter @quanqn/web test`
+- 调用 · `pnpm --filter @quanan/web test`
 
 ### 3.4 `playwright.config.ts`
 
@@ -966,7 +966,7 @@ describe('copywriting.freeGenerate — agentMode field', () => {
 **范围** · `tests/integration/api/**/*.test.ts`
 
 **关键差异 vs unit** ·
-- 用真 prisma (实测 DB · `quanqn` or `quanqn_test`)
+- 用真 prisma (实测 DB · `quanan` or `quanan_test`)
 - 用 nock 拦截 SDK HTTP (兜底 · 防真调 LLM)
 - vi.mock LLM gateway 提供 mock stream
 - 测完必 cleanup (deleteMany by traceId)
@@ -1332,7 +1332,7 @@ pnpm test -- copywriting            # 跑名字含 copywriting 的
 pnpm test:e2e -- tools-integration  # 跑指定 spec
 
 # Web workspace
-pnpm --filter @quanqn/web test      # 仅 web jsdom unit (4 tests)
+pnpm --filter @quanan/web test      # 仅 web jsdom unit (4 tests)
 
 # Watch mode
 pnpm test --watch                   # vitest watch

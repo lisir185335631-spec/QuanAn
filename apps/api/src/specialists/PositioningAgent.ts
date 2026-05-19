@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 US-004
+ * QuanAn · PRD-4 US-004
  * PositioningAgent — step1(industry mode) + step4(execution mode)
  * 两个 mode 共用一个 Specialist · outputSchema getter 按 mode 返回对应 schema(REJ-007)
  * US-015: fallbackTemplate static property for each mode

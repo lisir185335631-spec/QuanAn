@@ -3,7 +3,7 @@
  * 5 同 account feedback 并发 → 仅 1 次 enqueue (prisma update 原子保证)
  *
  * 测试策略:
- * - 真实 DB (quanqn_test) — 验证 INSERT ON CONFLICT 原子递增
+ * - 真实 DB (quanan_test) — 验证 INSERT ON CONFLICT 原子递增
  * - mock evolutionQueue.add — 计数 enqueue 次数, 不需要真实 Redis
  * - 5 并发 Promise.all 同 accountId → feedbackCountTotal 0→5 → threshold:5 触发
  * - 期望: queue.add 恰好调用 1 次 (count=5 唯一命中阈值)
@@ -19,7 +19,7 @@ const { mockQueueAdd, testPrisma } = vi.hoisted(() => {
     PrismaClient: typeof import('@prisma/client').PrismaClient;
   };
   const TEST_DB =
-    process.env['DATABASE_URL_TEST'] ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env['DATABASE_URL_TEST'] ?? 'postgresql://return@localhost:5432/quanan_test';
   return {
     mockQueueAdd: vi.fn().mockResolvedValue({ id: 'evo-mock-job-1' }),
     testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }),

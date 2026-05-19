@@ -3,7 +3,7 @@
 //       12h cron → no alert · 24h+ cron → post_review_overdue alert
 //       postReviewApprove → postReviewedAt + postReviewerAdminId
 // SHIELD: vi.useFakeTimers() to simulate 12h/24h passage
-// SHIELD: real DB (quanqn_test) · mock Redis + BullMQ + DingtalkService
+// SHIELD: real DB (quanan_test) · mock Redis + BullMQ + DingtalkService
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
@@ -13,7 +13,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

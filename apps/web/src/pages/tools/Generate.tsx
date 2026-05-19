@@ -9,7 +9,7 @@
  * US-013 AC-6: ?mode=acquisition → switch to acquisition mode + write LS namespace (SHIELD REJ-010)
  */
 
-import { acquisitionCopywritingInputSchema, copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
+import { acquisitionCopywritingInputSchema, copywritingFreeGenerateInput } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 
-import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
+import type { FreeGenerateHistoryRow } from '@quanan/clients/router-types';
 
 type GenerateMode = 'free' | 'acquisition';
 

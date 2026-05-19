@@ -1,5 +1,5 @@
 /**
- * QuanQn · 结构化日志(LD-013 · trace_id 贯穿)
+ * QuanAn · 结构化日志(LD-013 · trace_id 贯穿)
  * AGENTS §6.9 · 严禁 console.log · 必须用 logger
  * US-007: AsyncLocalStorage traceStore + pino mixin 自动注入 traceId
  */

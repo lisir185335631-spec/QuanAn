@@ -31,12 +31,12 @@
     /* === Path aliases · workspace 共享 === */
     "baseUrl": ".",
     "paths": {
-      "@quanqn/schemas": ["./packages/schemas/src"],
-      "@quanqn/schemas/*": ["./packages/schemas/src/*"],
-      "@quanqn/ui": ["./packages/ui/src"],
-      "@quanqn/ui/*": ["./packages/ui/src/*"],
-      "@quanqn/clients": ["./packages/clients/src"],
-      "@quanqn/clients/*": ["./packages/clients/src/*"]
+      "@quanan/schemas": ["./packages/schemas/src"],
+      "@quanan/schemas/*": ["./packages/schemas/src/*"],
+      "@quanan/ui": ["./packages/ui/src"],
+      "@quanan/ui/*": ["./packages/ui/src/*"],
+      "@quanan/clients": ["./packages/clients/src"],
+      "@quanan/clients/*": ["./packages/clients/src/*"]
     }
   }
 }

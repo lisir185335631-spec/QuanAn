@@ -9,7 +9,7 @@
  * US-011: ?historyId → trpc.history.detail.useQuery → 预填 elements/industry/theme + setResult(历史 content)
  */
 
-import { generateBoomInput } from '@quanqn/schemas/specialist-io';
+import { generateBoomInput } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
-import type { BoomGenerateHistoryRow } from '@quanqn/clients/router-types';
+import type { BoomGenerateHistoryRow } from '@quanan/clients/router-types';
 
 export default function BoomGenerate() {
   const { account } = useActiveAccount();

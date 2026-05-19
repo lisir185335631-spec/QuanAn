@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-11-business-core-domains",
   "description": "PRD-11 · P9.1 6 P0 业务核心域 · 22 stories(域① NSM × 4 + 域② 用户 × 4 + 域③ IP 账号 × 3 + 域④ 成本 × 4 + 域⑤ 审计 × 3 + 域⑥ 邀请码 × 3 + 收官 × 1)· 派生 ADMIN §3.2/3.3/4/5/6/7.6/8.3 + DATA-MODEL §13 + AGENTS §10 · D-069~078 10 LD · 21+ anti_patterns 6 类 · seed 详细度 2752 行 tasks/prd-11.md",
   "userStories": [
@@ -189,7 +189,7 @@
     {
       "id": "US-004",
       "title": "NSM UI page · 4 数字 + 漏斗 + 折线 + 3 饼图 + 告警栏 · Recharts",
-      "description": "作为运营/财务 · 打开 admin.quanqn.com/nsm 看 4 大数字(NSM/完成率/反馈率/升级率)+ 漏斗 + 折线 + 3 饼图 + 右侧告警栏 · 数据从 adminRouter.nsm 5 procedure。",
+      "description": "作为运营/财务 · 打开 admin.quanan.com/nsm 看 4 大数字(NSM/完成率/反馈率/升级率)+ 漏斗 + 折线 + 3 饼图 + 右侧告警栏 · 数据从 adminRouter.nsm 5 procedure。",
       "acceptanceCriteria": [
         "apps/admin/src/pages/nsm/index.tsx 替换 PRD-10 US-007 建的 placeholder.tsx · 实现完整 NSM 仪表盘",
         "页面布局 grid-cols-[1fr_320px] · 左侧 [NsmOverviewCards + NsmFunnel + NsmDistributions] 主区 · 右侧 NsmAlerts",
@@ -374,7 +374,7 @@
     {
       "id": "US-007",
       "title": "用户管理 UI page · 列表 + 5 Tab 详情抽屉 + Approval trigger UI",
-      "description": "作为运营/客服 · 打开 admin.quanqn.com/users 看用户列表(分页+搜索+多维筛选)+ 点用户行打开右侧抽屉看 5 Tab 详情 + 改套餐/封禁/重置密码按钮(走 Approval stub UI)· 用 DenseTable from packages/ui/admin。",
+      "description": "作为运营/客服 · 打开 admin.quanan.com/users 看用户列表(分页+搜索+多维筛选)+ 点用户行打开右侧抽屉看 5 Tab 详情 + 改套餐/封禁/重置密码按钮(走 Approval stub UI)· 用 DenseTable from packages/ui/admin。",
       "acceptanceCriteria": [
         "apps/admin/src/pages/users/index.tsx 替换 placeholder · 主页面 + DenseTable 列表 + 抽屉 state · 删 placeholder.tsx",
         "UsersOverviewCards.tsx · 顶部 4 数字 [总用户/活跃 7d/付费/风险用户]",
@@ -385,7 +385,7 @@
         "BanUserDialog.tsx · reason + durationDays(可选)+ 提交调 banUser",
         "ResetPasswordDialog.tsx · reason + 提交后显示新临时密码(可复制)",
         "PlanBadge.tsx · plan 颜色 badge(free/pro/enterprise/banned)",
-        "DenseTable · 用 @quanqn/ui-admin · virtualScroll · 列(id/email/plan/industry/lastLoginAt/actions)· onRowClick 触发抽屉",
+        "DenseTable · 用 @quanan/ui-admin · virtualScroll · 列(id/email/plan/industry/lastLoginAt/actions)· onRowClick 触发抽屉",
         "admin-routes.ts users metadata.prd 'PRD-10 placeholder' → 'PRD-11'",
         "5 Tab 数据 React Query parallel useQuery · auto-dedupe · 抽屉打开就发 5 请求",
         "admin (非 super_admin) 改套餐 · toast 显示 '已提交 · 等审批' + 跳转 Approval 申请列表",
@@ -638,7 +638,7 @@
     {
       "id": "US-011",
       "title": "IP 账号管理 UI page · 大表格 + 详情抽屉 + 异常 Tab",
-      "description": "作为运营/客服 · 打开 admin.quanqn.com/accounts 看跨账号列表 + 行业/平台/阶段分布 + 异常账号专属 Tab + 详情抽屉(9 步进度+进化档案+历史时间线+备注+异常 flag 列表)+ 强制冻结按钮。",
+      "description": "作为运营/客服 · 打开 admin.quanan.com/accounts 看跨账号列表 + 行业/平台/阶段分布 + 异常账号专属 Tab + 详情抽屉(9 步进度+进化档案+历史时间线+备注+异常 flag 列表)+ 强制冻结按钮。",
       "acceptanceCriteria": [
         "apps/admin/src/pages/accounts/index.tsx 替换 placeholder · 主页面 + DenseTable + Tab 切换(全部 / 异常)+ 抽屉 state",
         "顶部 [总账号 / 活跃 7d / 异常 / Top 3 行业] 数字卡片 + 行业/平台 2 饼图(Recharts · fill var(--accent-X))",
@@ -768,7 +768,7 @@
     {
       "id": "US-013",
       "title": "成本仪表盘 UI page · 月度 + Top 10 + 多维切换 + Recharts",
-      "description": "作为运营/财务 · 打开 admin.quanqn.com/cost 看月度总成本(同比/环比)+ Top 10 用户横向 bar + 多线折线(模型/Specialist 切换)+ 饼图分项 + 异常告警栏 + CSV 导出按钮。",
+      "description": "作为运营/财务 · 打开 admin.quanan.com/cost 看月度总成本(同比/环比)+ Top 10 用户横向 bar + 多线折线(模型/Specialist 切换)+ 饼图分项 + 异常告警栏 + CSV 导出按钮。",
       "acceptanceCriteria": [
         "apps/admin/src/pages/cost/index.tsx 替换 placeholder · 主页面 + 5 sub-component",
         "CostOverviewCards.tsx · 顶部 月度总成本 + 同比 + 环比 + Top 10 用户横向 bar(Recharts BarChart)",
@@ -1026,7 +1026,7 @@
     {
       "id": "US-017",
       "title": "审计日志 UI page · trace 反查 + 时间线 + 详情抽屉",
-      "description": "作为法务 / super_admin · 打开 admin.quanqn.com/audit · 输入 trace_id 反查 + 用户/admin 时间线切换 + 详情抽屉(prompt + response + payloadHash)+ PDF 取证导出按钮。",
+      "description": "作为法务 / super_admin · 打开 admin.quanan.com/audit · 输入 trace_id 反查 + 用户/admin 时间线切换 + 详情抽屉(prompt + response + payloadHash)+ PDF 取证导出按钮。",
       "acceptanceCriteria": [
         "apps/admin/src/pages/audit/index.tsx 替换 placeholder · 主页面",
         "顶部 [日操作量 / cross_account_query / 异常事件] 3 数字卡片",
@@ -1279,7 +1279,7 @@
     {
       "id": "US-021",
       "title": "邀请码管理 UI page · 列表 + 创建模态 + campaign Tab + 漏斗图",
-      "description": "作为运营 · 打开 admin.quanqn.com/invites 看邀请码列表 + 创建/批量导入按钮 + campaign 分组 Tab + 转化漏斗图 + 详情抽屉。",
+      "description": "作为运营 · 打开 admin.quanan.com/invites 看邀请码列表 + 创建/批量导入按钮 + campaign 分组 Tab + 转化漏斗图 + 详情抽屉。",
       "acceptanceCriteria": [
         "apps/admin/src/pages/invites/index.tsx 替换 placeholder · 主页面",
         "顶部 [待激活 / 转化率 / 各 campaign] 数字卡片",

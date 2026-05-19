@@ -21,7 +21,7 @@ import { getToolLsKey } from '@/lib/ls-namespace';
 import { aiVideoFrontendInput } from '@/lib/schemas/aiVideoFrontend';
 import { trpc } from '@/lib/trpc';
 
-import type { GenerateStoryboardOutput } from '@quanqn/clients/router-types';
+import type { GenerateStoryboardOutput } from '@quanan/clients/router-types';
 
 // ── LS types ──────────────────────────────────────────────────────────────────
 

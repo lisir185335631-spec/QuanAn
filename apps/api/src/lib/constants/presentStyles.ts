@@ -1,5 +1,5 @@
 /**
- * QuanQn · 14 呈现形式
+ * QuanAn · 14 呈现形式
  * 派生自 ARCHITECTURE.md §3.6 + spec.md §Ⅹ.6 实测
  */
 

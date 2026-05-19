@@ -219,7 +219,7 @@ cat backend/app/<本 story 改动的 __init__.py>
 sqlite3 backend/data/test.db ".schema <table_name>"
 # 对照 prd 定义, 字段类型 / NOT NULL / FK ondelete / 索引 全部核对
 
-# F5. 协议锁与既有代码现状双对账 (2026-05-09 · QuanQn PRD-4 TD-012 经验)
+# F5. 协议锁与既有代码现状双对账 (2026-05-09 · QuanAn PRD-4 TD-012 经验)
 # 防止 PRD 协议锁锁定新路径 · 但既有代码已有 stub 在旧路径 · 双路径并存
 # 提取 PRD §1.5 / §7.5 协议锁锁定的所有新文件路径
 grep -E "^\| .*\.(ts|tsx|py|sql|prisma|json)" tasks/prd-N.md | head -20
@@ -238,7 +238,7 @@ done
 - **F5 命中既有 stub** (协议锁路径与既有代码冲突) → **reject 给 prd skill 修锁**, feedback 模板:
   > "PRD §1.5 协议锁路径 `<新锁定路径>` 与既有代码 `<既有 stub 路径>` 冲突 · 选 A 复用既有 / B 改协议锁文件名 / C 删旧 stub · 修后重提"
   >
-  > **实证** (QuanQn PRD-4 US-001) · 协议锁锁 `apps/api/src/specialists/base/BaseSpecialist.ts` · 但 PRD-2 stub 在 `apps/api/src/agents/base/BaseSpecialist.ts` · ralph 选 import 既有 stub 产生 TD-012 · US-002 retry 1 才闭环。**F5 在 audit US-001 时跑会一次拦下,省 1 retry (~30 min)**。
+  > **实证** (QuanAn PRD-4 US-001) · 协议锁锁 `apps/api/src/specialists/base/BaseSpecialist.ts` · 但 PRD-2 stub 在 `apps/api/src/agents/base/BaseSpecialist.ts` · ralph 选 import 既有 stub 产生 TD-012 · US-002 retry 1 才闭环。**F5 在 audit US-001 时跑会一次拦下,省 1 retry (~30 min)**。
 
 ---
 
@@ -262,9 +262,9 @@ done
 
 ---
 
-## Step 4.5 — Opus 直 fix mechanical 错路径(2026-05-12 · QuanQn PRD-9 US-002 新增)
+## Step 4.5 — Opus 直 fix mechanical 错路径(2026-05-12 · QuanAn PRD-9 US-002 新增)
 
-> **来源** · QuanQn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错全 mechanical · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min vs reject 让 ralph 又一轮 30 min retry hell
+> **来源** · QuanAn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错全 mechanical · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min vs reject 让 ralph 又一轮 30 min retry hell
 > **哲学** · 当错误是 mechanical 且 ralph 已陷入 infrastructure 死锁 · Opus 直 fix 比 reject 更经济 · 但**必须严守边界**防越界
 
 ### 触发条件(必须全部满足)
@@ -317,13 +317,13 @@ python3 scripts/ralph/ralph-tools.py approve
 
 ### 实证案例
 
-**QuanQn PRD-9 US-002 (2026-05-11 commit 3d26b92)**:
+**QuanAn PRD-9 US-002 (2026-05-11 commit 3d26b92)**:
 - 触发 · scripts/ 目录不在 apps/api/tsconfig.json include · seed-knowledge-chunk.ts 静默漏审
 - Fix · 改 include 加 "scripts" + 删未用 Decimal import + import order 重排 + 顶部加 `/* eslint-disable no-console */`
 - 体量 · 2 files · +7/-6 lines · 0 逻辑改
 - ralph 状态 · 5 retry + 3 ECONNRESET 死锁 · audit-gate blocked_needs_attention
 - ROI · 5 min Opus 直 fix vs 预估 30+ min reject + 又一轮 retry(撞 ECONNRESET 概率高)
-- 结果 · approve · 详 audit-log-QuanQn.jsonl US-002
+- 结果 · approve · 详 audit-log-QuanAn.jsonl US-002
 
 ---
 

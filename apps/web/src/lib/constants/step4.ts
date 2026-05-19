@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 4 执行计划常量 — 字面锁
+ * QuanAn · Step 4 执行计划常量 — 字面锁
  * 命名锁: STEP4_PLATFORMS_5 / STEP4_INPUTS_3 / STEP4_OUTPUT_H3_3 / STEP4_SUBTITLE_TEMPLATE
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.4 line 1487-1513, 禁止改写
  */

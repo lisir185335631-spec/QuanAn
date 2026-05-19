@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 US-007
+ * QuanAn · PRD-4 US-007
  * TopicAgent — step5(爆款选题 · 单 mode · 5 category · SSE 流式)
  *
  * AC-1: 继承 BaseSpecialist · 五层配置 · outputSchema = z.discriminatedUnion('category', ...) 5 路

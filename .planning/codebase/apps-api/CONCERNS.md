@@ -66,7 +66,7 @@
 - Fix approach: PRD-未指定 · 接邮件服务发 reset link(而非 plaintext 密码)· 或 redact + 仅写 audit hash
 
 **嵌套同名目录 `apps/api/apps/api/`:**
-- Issue: 检索出 `/Users/return/Desktop/QuanQn/apps/api/apps/api/src/trpc/routers/`(嵌套)
+- Issue: 检索出 `/Users/return/Desktop/QuanAn/apps/api/apps/api/src/trpc/routers/`(嵌套)
 - Files: `apps/api/apps/api/src/`(完整 src 拷贝 · 残留)
 - Impact: 双份代码 · IDE/grep 可能扫到旧版 · build / typecheck 可能 include 错误
 - Fix approach: 直接 `rm -rf apps/api/apps/` · 确认无遗失文件后提交清理
@@ -86,7 +86,7 @@
 **主应用 vs admin RLS 实现不一致:**
 - Issue: 两种 RLS bypass 写法并存
   - admin: `tx.$executeRawUnsafe("SELECT set_config('app.role', 'admin', true)")`(`apps/api/src/trpc/middleware/admin/adminRLS.ts:11`)
-  - 主应用: `tx.$executeRaw\`SET LOCAL ROLE quanqn_app\`` + `tx.$executeRaw\`SELECT set_config('app.current_account_id', ${...}, true)\``(`apps/api/src/trpc/middleware/account-isolation.ts:38-40`)
+  - 主应用: `tx.$executeRaw\`SET LOCAL ROLE quanan_app\`` + `tx.$executeRaw\`SELECT set_config('app.current_account_id', ${...}, true)\``(`apps/api/src/trpc/middleware/account-isolation.ts:38-40`)
   - 部分 service 用 `await tx.$executeRawUnsafe("SET LOCAL app.role = 'admin'")`(`apps/api/src/services/admin/cost/detect-anomalies.service.ts:40`)
 - Impact: 新人不知该用哪个 · 不一致影响 audit grep(R-A6 grep `$executeRawUnsafe` 红线触发)
 - Fix approach: 统一为 `tx.$executeRaw\`SELECT set_config('app.role', 'admin', true)\``(无字符串拼接 · 避 R-A6 grep)

@@ -1,5 +1,5 @@
 /**
- * QuanQn · 67 文案实战案例 — PRD-9 US-002
+ * QuanAn · 67 文案实战案例 — PRD-9 US-002
  * CopywritingAgent few-shot · 按 scriptType + industry 检索相似案例
  * metadata: { scriptType, industry }
  */

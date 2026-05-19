@@ -68,7 +68,7 @@
 - Risk: 任何能接到 dev server 的人输 email 即可登录 · 0 鉴权
 - Files: `apps/admin/src/pages/Login.tsx:90-108` (mock OAuth button + `import.meta.env.DEV` 限制)
 - Current mitigation: button 仅 `import.meta.env.DEV === true` 时渲染 · production build 不显示
-- Recommendations: PRR 阶段接入 Google Workspace Internal OAuth (button 已就位 disabled · `pages/Login.tsx:111`) · 后端走 `apps/api/admin/auth/oauth/google` 流程 · @quanqn.com 限定
+- Recommendations: PRR 阶段接入 Google Workspace Internal OAuth (button 已就位 disabled · `pages/Login.tsx:111`) · 后端走 `apps/api/admin/auth/oauth/google` 流程 · @quanan.com 限定
 
 **CSV 导出无前端 rate limit / size cap:**
 - Risk: 恶意 admin 可触发大表 CSV 导出 · DOS 后端 / 浪费带宽 / 泄露大量个人信息
@@ -89,8 +89,8 @@
 **credentials: 'include' 跨域请求暴露 cookie:**
 - Risk: 如果 VITE_API_BASE_URL 配错域名 · cookie 可能跨域泄露
 - Files: `apps/admin/src/lib/admin-client.ts:25`
-- Current mitigation: dev 默认 localhost:3000 + production 应通过 admin.quanqn.com 同源
-- Recommendations: 后端 CORS 严格白名单 admin.quanqn.com (不开 *)
+- Current mitigation: dev 默认 localhost:3000 + production 应通过 admin.quanan.com 同源
+- Recommendations: 后端 CORS 严格白名单 admin.quanan.com (不开 *)
 
 ## Performance Bottlenecks
 

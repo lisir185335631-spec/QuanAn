@@ -1,4 +1,4 @@
-// @quanqn/schemas · zod schema 真理来源
+// @quanan/schemas · zod schema 真理来源
 // · entities/        · 15 业务实体(主应用)
 // · step-results/    · 9 step result schema
 // · specialist-io/   · 14 Specialist 输入输出

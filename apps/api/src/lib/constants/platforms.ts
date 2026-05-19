@@ -1,5 +1,5 @@
 /**
- * QuanQn · 5 平台常量
+ * QuanAn · 5 平台常量
  * 派生自 ARCHITECTURE.md §3.6 + spec.md §Ⅹ.1 实测
  */
 

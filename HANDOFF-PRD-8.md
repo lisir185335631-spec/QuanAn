@@ -23,7 +23,7 @@
 ## 2 · 新 session 启动指令(★ 直接粘贴给 Claude)
 
 ```
-我是 QuanQn 项目 · /Users/return/Desktop/QuanQn · 用户名 return。
+我是 QuanAn 项目 · /Users/return/Desktop/QuanAn · 用户名 return。
 
 PRD-8 P7 智能模块已 spec 就位(commit 4aaf235 · branch ralph/prd-8-p7-intelligent-modules)·
 13 stories · 4 wave · 预估 10-14 days · 一轮通过率 75-85%(per PRD-7 retro §7 prediction)。
@@ -40,7 +40,7 @@ PRD-8 P7 智能模块已 spec 就位(commit 4aaf235 · branch ralph/prd-8-p7-int
 
 第 3 步 · 启 Monitor(★ 必先于 daemon · 项目 §9.1 SOP 红线):
 用 Monitor 工具 · persistent=true · timeout_ms=3600000 · command:
-  tail -n 0 -F /Users/return/Desktop/QuanQn/scripts/ralph/ralph-output.log 2>/dev/null \
+  tail -n 0 -F /Users/return/Desktop/QuanAn/scripts/ralph/ralph-output.log 2>/dev/null \
   | grep -E --line-buffered "PENDING_DETECTED|审计门禁已激活|APPROVED|REJECTED|所有任务已完成|All stories resolved|非零退出码|最大重试次数|级联阻断|通过 Opus 质量审查|⛔|Traceback|Error:|Coding 3.0 下一步建议|claude CLI 2 次 health|crashed|exit code [^0]"
 
 第 4 步 · 启 ralph daemon(per PRD-7 retro P-2 健康检查 + P-7 双联动):

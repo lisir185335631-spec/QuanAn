@@ -546,11 +546,11 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(verify-prd-19.sh 35 项 ALL
 - **建议 diff** ·
 
 ```diff
-+##### 2.6.23 e2e zero-regression baseline check(QuanQn PRD-19 retro M-2 固化 · 2026-05-18 新增)
++##### 2.6.23 e2e zero-regression baseline check(QuanAn PRD-19 retro M-2 固化 · 2026-05-18 新增)
 +
 +**目的** · 防 pre-existing e2e fail 在 PRD-N+1 zero-regression 硬门禁触发新 retry hell
 +
-+**背景** · QuanQn PRD-19 实证 · US-008 5 retry 浪费 ~5h daemon time · 根因 PRD-18 收尾时 US-013 audit 漏 catch e2e/prd-18-step-4-5-6-7-8.spec.ts test3 已 fail · plan-check 不跑 e2e 没法前置 catch · 长期累积 risk
++**背景** · QuanAn PRD-19 实证 · US-008 5 retry 浪费 ~5h daemon time · 根因 PRD-18 收尾时 US-013 audit 漏 catch e2e/prd-18-step-4-5-6-7-8.spec.ts test3 已 fail · plan-check 不跑 e2e 没法前置 catch · 长期累积 risk
 +
 +**触发条件** · 项目含 `apps/web/e2e/*.spec.ts` 或 `apps/api/tests/e2e/*.spec.ts`
 +
@@ -591,7 +591,7 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(verify-prd-19.sh 35 项 ALL
 +  C. 启 daemon 但 zero-regression 硬门禁会 retry hell(不推荐)
 +```
 +
-+**ROI 估算**(基于 QuanQn PRD-19 US-008 实证): 预计避免每 PRD 1 次 pre-existing e2e 漏 catch · ~3-5h retry hell 浪费 · 5 PRD 累计 ~15-25h
++**ROI 估算**(基于 QuanAn PRD-19 US-008 实证): 预计避免每 PRD 1 次 pre-existing e2e 漏 catch · ~3-5h retry hell 浪费 · 5 PRD 累计 ~15-25h
 ```
 
 ### Diff-3 · prd-retro SKILL.md §17 自动汇总边界 case TD 到 reject-examples.jsonl(PRD-19 retro M-3 固化)
@@ -602,7 +602,7 @@ Audit 专项贡献 严格通过率约 **+1% 增量**(verify-prd-19.sh 35 项 ALL
 - **建议 diff** ·
 
 ```diff
-+## §17 自动汇总边界 case TD 到 reject-examples.jsonl(QuanQn PRD-19 retro M-3 固化 · 2026-05-18 新增)
++## §17 自动汇总边界 case TD 到 reject-examples.jsonl(QuanAn PRD-19 retro M-3 固化 · 2026-05-18 新增)
 +
 +> **背景** · PRD-19 0 真 reject · reject-examples 0 增长 · 但 TD-79/80/81/82 都有教学价值 · 反例库 49 条饱和 · 跨 PRD 反例累加 ROI 趋于平台期 · 需自动汇总边界 case TD 持续填库
 +

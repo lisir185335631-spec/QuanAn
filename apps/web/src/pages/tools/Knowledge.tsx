@@ -16,7 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { trpc } from '@/lib/trpc';
 
-import type { KnowledgeChunkContent } from '@quanqn/clients/router-types';
+import type { KnowledgeChunkContent } from '@quanan/clients/router-types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

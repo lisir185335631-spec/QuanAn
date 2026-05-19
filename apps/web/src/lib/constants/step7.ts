@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 7 文案生成常量 — 字面锁
+ * QuanAn · Step 7 文案生成常量 — 字面锁
  * 命名锁: STEP7_SCRIPT_TYPES_20 / STEP7_ELEMENT_GROUPS_4 / STEP7_ELEMENTS_22 / STEP7_DEBATE_H4_4
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.8 line 1665-1744, 禁止改写
  * 数字锁: STEP7_SCRIPT_TYPES_20.length === 20 · STEP7_ELEMENT_GROUPS_4.length === 4

@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 5 爆款选题库常量 — 字面锁
+ * QuanAn · Step 5 爆款选题库常量 — 字面锁
  * 命名锁: STEP5_INPUTS_2 / STEP5_FILE_UPLOADS_2 / STEP5_CATEGORIES_5 / STEP5_TOTAL_TOPICS
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.6 line 1589-1631, 禁止改写
  * 数字锁: STEP5_INPUTS_2.length === 2 · STEP5_FILE_UPLOADS_2.length === 2 · STEP5_CATEGORIES_5.length === 5

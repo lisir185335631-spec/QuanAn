@@ -1,5 +1,5 @@
 /**
- * QuanQn · 视频类型枚举 — PRD-6 US-001
+ * QuanAn · 视频类型枚举 — PRD-6 US-001
  * 派生自 ARCHITECTURE.md §6.6 VideoAgent 4 mode + PROMPTS.md §6.4
  * LD-013: as const satisfies ReadonlyArray pattern
  */

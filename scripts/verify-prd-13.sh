@@ -26,7 +26,7 @@ section() { echo ""; echo "━━━ $1 ━━━"; }
 cd "$(dirname "$0")/.."
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn PRD-13 P9.3 health-domains · 可重复验收"
+echo "  QuanAn PRD-13 P9.3 health-domains · 可重复验收"
 echo "  起点: $(pwd) · 时间: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
@@ -277,7 +277,7 @@ else
     done
 
     # Run E2E tests
-    if DATABASE_URL_TEST="postgresql://return@localhost:5432/quanqn_test" \
+    if DATABASE_URL_TEST="postgresql://return@localhost:5432/quanan_test" \
        pnpm vitest run tests/e2e/admin/prd13-dual-approval-e2e.test.ts \
                         tests/e2e/admin/prd13-emergency-flow.test.ts \
                         tests/e2e/admin/prd13-quota-expiry-e2e.test.ts \

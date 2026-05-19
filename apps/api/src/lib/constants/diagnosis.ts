@@ -1,5 +1,5 @@
 /**
- * QuanQn · 8 步问卷 → 7 维度诊断
+ * QuanAn · 8 步问卷 → 7 维度诊断
  * 派生自 ARCHITECTURE.md §2.5 + spec.md §8.5.1 + PROMPTS §10.2
  */
 

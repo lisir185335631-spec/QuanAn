@@ -114,7 +114,7 @@ export type KnowledgeRecommendationItem = {
   title: string;
 };
 
-/** PRD-9 US-004: public knowledge chunk shape (mirrors KnowledgeChunkContent from @quanqn/schemas) */
+/** PRD-9 US-004: public knowledge chunk shape (mirrors KnowledgeChunkContent from @quanan/schemas) */
 export type KnowledgeChunkContent = {
   id: number;
   type: 'case' | 'formula' | 'element';

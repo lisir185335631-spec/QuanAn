@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · vitest.judge.config.ts
+ * QuanAn · US-016 · vitest.judge.config.ts
  * AC-3: 独立 config · 排除常规 unit · CI 单独跑
  * AC-13: timeout_ms=15000 per judge (7 cases × max10s + overhead)
  */

@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-011 AC-12 · VoiceChatAgent LLM Judge
+ * QuanAn · PRD-8 US-011 AC-12 · VoiceChatAgent LLM Judge
  * 3 cases: 1 工具 / 2 工具 / 0 工具 · 每 case 评分 ≥ 4.0/5
  * Judge 评估: 回复是否简洁(≤80字) / 工具是否被正确调用 / 语气是否口语化
  */

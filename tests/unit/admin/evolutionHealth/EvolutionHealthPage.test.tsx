@@ -19,7 +19,7 @@ vi.mock('recharts', () => ({
 }));
 
 // ── Mock DenseTable ────────────────────────────────────────────────────────────
-vi.mock('@quanqn/ui/admin', () => ({
+vi.mock('@quanan/ui/admin', () => ({
   DenseTable: ({ data, loading }: { data: unknown[]; loading?: boolean }) => (
     <div data-testid="dense-table">
       {loading ? 'loading' : `rows:${data.length}`}
@@ -66,7 +66,7 @@ vi.mock('../../../../apps/admin/src/lib/admin-client', () => ({
 import EvolutionHealthPage from '../../../../apps/admin/src/pages/evolutionHealth/EvolutionHealthPage';
 
 function setupDefaultMocks() {
-  mockMe.mockReturnValue({ data: { id: 1, email: 'admin@quanqn.com', role: 'super_admin' } });
+  mockMe.mockReturnValue({ data: { id: 1, email: 'admin@quanan.com', role: 'super_admin' } });
   mockTimeline.mockReturnValue({ data: { profile: null, insights: [], anomalyFlags: [] }, isLoading: false });
   mockForceRebuild.mockReturnValue({ mutate: vi.fn(), isPending: false });
   mockMarkResolved.mockReturnValue({ mutate: vi.fn(), isPending: false });

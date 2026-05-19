@@ -5,7 +5,7 @@
  *
  * Note: 使用 mock prisma (LD-009 · 不 Mock DB 规则适用于集成测试·真接 DB)
  * 本文件是"功能集成测试" — 验证 fan-out → enqueue → upsert 链路完整性
- * 真实 DB 集成测试留 P2 (需要 quanqn_test + prisma migrate)
+ * 真实 DB 集成测试留 P2 (需要 quanan_test + prisma migrate)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

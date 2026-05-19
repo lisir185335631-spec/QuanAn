@@ -7,9 +7,9 @@
     "jsx": "preserve",
     "paths": {
       "@/*": ["./src/*"],
-      "@quanqn/schemas": ["../../packages/schemas/src"],
-      "@quanqn/schemas/*": ["../../packages/schemas/src/*"],
-      "@quanqn/ui/admin/pdf": ["../../packages/ui/src/admin/PdfBillTemplate.tsx"]
+      "@quanan/schemas": ["../../packages/schemas/src"],
+      "@quanan/schemas/*": ["../../packages/schemas/src/*"],
+      "@quanan/ui/admin/pdf": ["../../packages/ui/src/admin/PdfBillTemplate.tsx"]
     }
   },
   "include": ["src", "scripts"],

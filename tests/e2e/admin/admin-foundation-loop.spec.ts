@@ -16,8 +16,8 @@
 import { test, expect, type Page } from '@playwright/test';
 import { PrismaClient } from '@prisma/client';
 
-const ADMIN_EMAIL = 'e2e-foundation@quanqn.com';
-const DB_URL = process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanqn';
+const ADMIN_EMAIL = 'e2e-foundation@quanan.com';
+const DB_URL = process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanan';
 
 let prisma: PrismaClient;
 
@@ -52,7 +52,7 @@ test('admin-foundation-loop: 7 steps · login → layout → nsm → audit → l
   // ── Step 2: Navigate to /login ──────────────────────────────────────────────
   await page.goto('/login');
   await page.waitForLoadState('networkidle');
-  await expect(page.locator('h1')).toHaveText('QuanQn Admin', { timeout: 10_000 });
+  await expect(page.locator('h1')).toHaveText('QuanAn Admin', { timeout: 10_000 });
   await expect(page.locator('#admin-email')).toBeVisible();
 
   // ── Step 3: fill email + click mock OAuth → redirect to /admin ─────────────
@@ -114,7 +114,7 @@ test('admin-foundation-loop: 7 steps · login → layout → nsm → audit → l
   await logoutMenuItem.click();
 
   await page.waitForURL(/\/login/, { timeout: 15_000 });
-  await expect(page.locator('h1')).toHaveText('QuanQn Admin', { timeout: 5_000 });
+  await expect(page.locator('h1')).toHaveText('QuanAn Admin', { timeout: 5_000 });
 
   // Verify admin_session_id cookie is cleared (Max-Age=0 means cleared)
   const cookies = await page.context().cookies();

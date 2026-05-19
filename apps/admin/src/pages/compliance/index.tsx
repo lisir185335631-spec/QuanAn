@@ -22,8 +22,8 @@ import {
 import { PDFDownloadLink } from '@react-pdf/renderer';
 
 import { adminTrpc } from '../../lib/admin-client';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 import { ComplianceReportPdf } from './components/ComplianceReportPdf';
 import type { ComplianceReportData } from './components/ComplianceReportPdf';
 

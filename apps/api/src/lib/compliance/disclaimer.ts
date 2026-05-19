@@ -1,5 +1,5 @@
 /**
- * QuanQn · 行业免责声明(LD-018 · R-14 · ADR-018)
+ * QuanAn · 行业免责声明(LD-018 · R-14 · ADR-018)
  * 派生自 PROMPTS §3.6 + AGENTS §3 LD-018
  *
  * 敏感行业 Specialist 输出后必跑 · 自动加底部免责

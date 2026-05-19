@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # scripts/migrate-monorepo.sh
 # SCAFFOLD §A.3 10-step monorepo migration protocol
-# One-time script — QuanQn src/ single-package → apps/* + packages/* monorepo
+# One-time script — QuanAn src/ single-package → apps/* + packages/* monorepo
 # Each step is idempotent and can be committed independently.
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-echo "QuanQn Monorepo Migration — SCAFFOLD §A.3"
+echo "QuanAn Monorepo Migration — SCAFFOLD §A.3"
 echo "Root: $ROOT"
 echo ""
 

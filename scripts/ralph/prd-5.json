@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-5-p4-creation-modules",
   "description": "PRD-5 P4 创作模块 · 4 工具页(/generate · /boom-generate · /analysis · /video-analysis)+ /history 接入 · CopywritingAgent 解锁 free+boom mode + AnalysisAgent 全新建(2 mode viral/structural · lightweight tier) · 12 US · risk=high · 2 周",
   "userStories": [
@@ -67,21 +67,21 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (RLS · 重写 schema 必带 accountId)",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.history.findMany() 不带 where: { accountId }",
           "correct": "✅ 走 protectedProcedure 自动注入 RLS context · 或显式 where: { accountId: ctx.activeAccountId! }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ analysis/history router 用 publicProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS-first dual-write · ToolForm 模式)",
           "lesson": "LS-first dual-write · DB 写失败时 LS 不回滚 + toast 提示(防数据丢)",
           "antipattern": "❌ LS 写后 DB 失败时回滚 LS · 用户输入丢失",
@@ -140,35 +140,35 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001 (Specialist 不直调 SDK)",
           "lesson": "Specialist execute() 不允许直接调 anthropic / openai SDK",
           "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 直接在 Specialist.ts 内",
           "correct": "✅ 通过 this.llmGateway · grep '@anthropic-ai/sdk\\|openai' 在 specialists/ 0 命中"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-002 (不 while 循环)",
           "lesson": "Specialist execute() 必须是单次 LLM 调用 · 不允许 while/for 循环",
           "antipattern": "❌ async execute(req) { for (const x of items) { await this.llmGateway.complete(...) } } — 这是伪 Agent",
           "correct": "✅ Specialist 是 95% Workflow · 单次 LLM 调用 · 多轮 Agent 必须独立成 L5"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-003-D019 (model 硬编码 + stream meta chunk)",
           "lesson": "Specialist 不硬编码 model 名(D-019 · cost_log.modelUsed 反映 LLMGateway 真选 model)",
           "antipattern": "❌ const model = 'claude-sonnet-4-6'; this.llmGateway.complete({ model });",
           "correct": "✅ this.llmGateway.complete({ model_tier: 'lightweight'|'reasoning' }) · LLMGateway 决定 · SSE 用 stream meta chunk 接收真 model"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (多 mode outputSchema getter)",
           "lesson": "同一 Specialist 多 mode 不能共用一个输出 zod schema",
           "antipattern": "❌ outputSchema 是固定不变 · 不区分 mode",
           "correct": "✅ outputSchema 用 getter · 按 this._mode 返回对应 schema"
         },
         {
-          "source_prd": "QuanQn-PRD-4",
+          "source_prd": "QuanAn-PRD-4",
           "source_story": "TD-014 (multi-mode race window)",
           "lesson": "Multi-mode Specialist _mode + outputSchema getter race window 警示(PRD-4 衍生 · AGENTS §11.6.3)",
           "antipattern": "❌ 不文档化 race window · 高并发场景未来撞 race",
@@ -213,28 +213,28 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (history.create 必带 accountId)",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.history.findMany() 不带 where: { accountId }",
           "correct": "✅ 走 protectedProcedure 自动注入 RLS context · 或显式 where: { accountId: ctx.activeAccountId! }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ analysis/history router 用 publicProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-017 (history 必带 traceId)",
           "lesson": "history.create / cost_log.create 不带 trace_id",
           "antipattern": "❌ await prisma.history.create({ data: { ... } }) 没填 traceId",
           "correct": "✅ traceId: traceId ?? null · 全链路追踪 · TraceId 用 generateSpecialistTraceId(REJ-017)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006 (Specialist 必设 timeout)",
           "lesson": "Specialist 必须设 timeout · 不让 LLM 卡死任意时间",
           "antipattern": "❌ this.llmGateway.complete({ ... }) 不传 timeout_ms",
@@ -283,14 +283,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS-first dual-write)",
           "lesson": "LS-first dual-write · DB 写失败时 LS 不回滚 + toast 提示(防数据丢)",
           "antipattern": "❌ LS 写后 DB 失败时回滚 LS · 用户输入丢失",
           "correct": "✅ LS 先写 + DB 后写 · DB fail 时 LS 保留 + toast.error · 用户可重试"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "LS namespace",
           "lesson": "LS-first dual-write · DB 写失败时 LS 不回滚 + toast 提示(防数据丢)",
           "antipattern": "❌ LS 写后 DB 失败时回滚 LS · 用户输入丢失",
@@ -335,28 +335,28 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (boom mode outputSchema)",
           "lesson": "同一 Specialist 多 mode 不能共用一个输出 zod schema",
           "antipattern": "❌ outputSchema 是固定不变 · 不区分 mode",
           "correct": "✅ outputSchema 用 getter · 按 this._mode 返回对应 schema"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (history accountId)",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.history.findMany() 不带 where: { accountId }",
           "correct": "✅ 走 protectedProcedure 自动注入 RLS context · 或显式 where: { accountId: ctx.activeAccountId! }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ analysis/history router 用 publicProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-PRD-4",
+          "source_prd": "QuanAn-PRD-4",
           "source_story": "TD-014 (boom mode race window)",
           "lesson": "Multi-mode Specialist _mode + outputSchema getter race window 警示(PRD-4 衍生 · AGENTS §11.6.3)",
           "antipattern": "❌ 不文档化 race window · 高并发场景未来撞 race",
@@ -405,7 +405,7 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS dual-write)",
           "lesson": "LS-first dual-write · DB 写失败时 LS 不回滚 + toast 提示(防数据丢)",
           "antipattern": "❌ LS 写后 DB 失败时回滚 LS · 用户输入丢失",
@@ -453,28 +453,28 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ analysis/history router 用 publicProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (history accountId)",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.history.findMany() 不带 where: { accountId }",
           "correct": "✅ 走 protectedProcedure 自动注入 RLS context · 或显式 where: { accountId: ctx.activeAccountId! }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (structural mode schema)",
           "lesson": "同一 Specialist 多 mode 不能共用一个输出 zod schema",
           "antipattern": "❌ outputSchema 是固定不变 · 不区分 mode",
           "correct": "✅ outputSchema 用 getter · 按 this._mode 返回对应 schema"
         },
         {
-          "source_prd": "QuanQn-PRD-4",
+          "source_prd": "QuanAn-PRD-4",
           "source_story": "TD-014 (Analysis mode race)",
           "lesson": "Multi-mode Specialist _mode + outputSchema getter race window 警示(PRD-4 衍生 · AGENTS §11.6.3)",
           "antipattern": "❌ 不文档化 race window · 高并发场景未来撞 race",
@@ -523,7 +523,7 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS dual-write)",
           "lesson": "LS-first dual-write · DB 写失败时 LS 不回滚 + toast 提示(防数据丢)",
           "antipattern": "❌ LS 写后 DB 失败时回滚 LS · 用户输入丢失",
@@ -571,28 +571,28 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ analysis/history router 用 publicProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (history accountId)",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.history.findMany() 不带 where: { accountId }",
           "correct": "✅ 走 protectedProcedure 自动注入 RLS context · 或显式 where: { accountId: ctx.activeAccountId! }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (viral mode schema)",
           "lesson": "同一 Specialist 多 mode 不能共用一个输出 zod schema",
           "antipattern": "❌ outputSchema 是固定不变 · 不区分 mode",
           "correct": "✅ outputSchema 用 getter · 按 this._mode 返回对应 schema"
         },
         {
-          "source_prd": "QuanQn-PRD-4",
+          "source_prd": "QuanAn-PRD-4",
           "source_story": "TD-014 (viral mode race)",
           "lesson": "Multi-mode Specialist _mode + outputSchema getter race window 警示(PRD-4 衍生 · AGENTS §11.6.3)",
           "antipattern": "❌ 不文档化 race window · 高并发场景未来撞 race",
@@ -643,7 +643,7 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS dual-write)",
           "lesson": "LS-first dual-write · DB 写失败时 LS 不回滚 + toast 提示(防数据丢)",
           "antipattern": "❌ LS 写后 DB 失败时回滚 LS · 用户输入丢失",
@@ -705,14 +705,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ analysis/history router 用 publicProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (history.list 必带 accountId · RLS)",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.history.findMany() 不带 where: { accountId }",
@@ -731,8 +731,8 @@
         "tests/judge/analysis-structural.judge.ts 新建 · 2 golden case(减肥 + 育儿 · 5 维度评分 · 检查 overall = 5 维度均分附近)",
         "`pnpm test:judge` 退出码 0 · 22/22 pass(14 PRD-4 + 8 新)",
         "tests/e2e/tools-integration.spec.ts 新建 · 收官 e2e · test.describe.serial · 创建账号 → 跑通 4 工具(generate/boom/analysis/videoAnalysis) → 看 history 4 条 → 点 row 预填验证 · CI 用 mock LLM",
-        "`pnpm --filter @quanqn/web lint --max-warnings=0` 退出码 0(防 PRD-1 lint debt 重现)",
-        "`pnpm --filter @quanqn/api lint --max-warnings=0` 退出码 0",
+        "`pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0(防 PRD-1 lint debt 重现)",
+        "`pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0",
         "`pnpm typecheck` 6 ws 0 error",
         "`pnpm test` ≥ 393/≥ 393(343 PRD-4 + ≥ 50 新)",
         "`pnpm test:e2e` ≥ 111/≥ 111(106 PRD-4 + 5 新 + ip-flow-9-steps 2 skipped)",
@@ -772,7 +772,7 @@
       "files_to_modify": [
         "scripts/ralph/verify-artifacts/US-012/manifest.json"
       ],
-      "test_command": "pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanqn/web lint --max-warnings=0 && pnpm --filter @quanqn/api lint --max-warnings=0",
+      "test_command": "pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanan/web lint --max-warnings=0 && pnpm --filter @quanan/api lint --max-warnings=0",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": []

@@ -1,4 +1,4 @@
-// @quanqn/ui/admin · Aurelian Dark 密集模式 design tokens
+// @quanan/ui/admin · Aurelian Dark 密集模式 design tokens
 // 主应用 base tokens 的 admin 子集 · row 32px + font 13px
 
 export const adminTokens = {

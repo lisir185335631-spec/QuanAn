@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn 主应用前端对齐 aiipznt(Phase 3 · Step 4/4b/5/6/7/8 完整化)",
+  "project": "QuanAn 主应用前端对齐 aiipznt(Phase 3 · Step 4/4b/5/6/7/8 完整化)",
   "branchName": "ralph/prd-18-step-4-4b-5-6-7-8",
   "description": "续 PRD-17 aiipznt 复刻 · 一次性 6 step page(Step 4 执行计划 / Step 4b 变现路径 / Step 5 爆款选题库 / Step 6 拍摄计划 / Step 7 文案生成 / Step 8 直播策划)+ 6 字面常量文件 + E2E 收官 · 14 US · 6 foundation + 7 page(Step 7 拆 form/output)+ 1 收官 · D1=A 像素级 layout + 字面严锁 · D4=B 颜色保留 var(--primary) 金色 token · D3=A 仅 apps/web · 反例累加机制延续 PRD-16/17(+8% 一轮通过率)",
   "userStories": [

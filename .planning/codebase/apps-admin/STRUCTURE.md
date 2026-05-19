@@ -7,7 +7,7 @@
 ```
 apps/admin/
 ├── index.html                              # Vite SPA 入口 · #root + main.tsx
-├── package.json                            # @quanqn/admin · workspace deps
+├── package.json                            # @quanan/admin · workspace deps
 ├── tsconfig.json                           # extends ../../tsconfig.base.json
 ├── vite.config.ts                          # React plugin + @ alias + port 5174
 ├── vite-env.d.ts                           # Vite env type declaration
@@ -152,8 +152,8 @@ apps/admin/
 - `apps/admin/src/App.tsx` · Provider 装配
 
 **Configuration:**
-- `apps/admin/package.json` · workspace deps (React/Vite/tRPC/Recharts/@quanqn/{ui,clients})
-- `apps/admin/tsconfig.json` · paths alias `@/*` + `@quanqn/{schemas,ui,clients}/*`
+- `apps/admin/package.json` · workspace deps (React/Vite/tRPC/Recharts/@quanan/{ui,clients})
+- `apps/admin/tsconfig.json` · paths alias `@/*` + `@quanan/{schemas,ui,clients}/*`
 - `apps/admin/vite.config.ts` · port 5174 + @ alias + dist-admin outDir
 - `apps/admin/vite-env.d.ts` · import.meta.env 类型
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/audit-redlines-admin.sh
-# QuanQn admin 子系统 · 11 LD-A + 6 R-A 一键 grep 检测
+# QuanAn admin 子系统 · 11 LD-A + 6 R-A 一键 grep 检测
 # AC-1(US-007): exit 0 · AC-9(US-009): 8 LD-A + 6 R-A · PRD-14 US-001: +LD-A9 · PRD-14 US-006: +LD-A10 · PRD-14 US-011: +LD-A11
 # 派生自 AGENTS.md §10.4.1 + §10.4.2
 
@@ -14,7 +14,7 @@ fail() { echo "❌ $1"; FAIL=1; }
 pass() { echo "✅ $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn Admin · 11 LD-A + 6 R-A 红线检测"
+echo "  QuanAn Admin · 11 LD-A + 6 R-A 红线检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 echo "【LD-A Locked Decision 检测 · 11 条】"
@@ -223,12 +223,12 @@ echo
 
 # ── R-A1 · apps/web ↔ apps/admin 不互相 import 业务代码 ────────────────────
 echo "  R-A1: web ↔ admin 跨 app import 检测"
-if grep -rn "from '@quanqn/admin\|from '\.\./admin'" apps/web/src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v ".test." ; then
+if grep -rn "from '@quanan/admin\|from '\.\./admin'" apps/web/src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v ".test." ; then
   fail "R-A1a · apps/web 引入 admin 代码 · 触犯 R-A1"
 else
   pass "R-A1a · apps/web 无 admin import"
 fi
-if grep -rn "from '@quanqn/web\|from '\.\./web'" apps/admin/src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v ".test." ; then
+if grep -rn "from '@quanan/web\|from '\.\./web'" apps/admin/src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v ".test." ; then
   fail "R-A1b · apps/admin 引入 web 代码 · 触犯 R-A1"
 else
   pass "R-A1b · apps/admin 无 web import"

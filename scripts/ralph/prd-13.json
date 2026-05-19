@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-13-health-domains",
   "description": "PRD-13 · P9.3 P1 健康度域 5 子域 12 US(域 ⑨ Evolution 进化档案监控 · 域 ⑩ Prompt 版本管理 · 域 ⑪ 配额管理 · 域 ⑫ 行业合规仪表盘 · 域 ⑬ Approval Gates 完整 UI)· 派生 ADMIN §3.5 + §8.5 + DATA-MODEL §13.3-13.6 · 6 新表(approval_requests upgrade + 5 张新)+ 4 _xxxInTx 单点函数 + 2 BullMQ Worker + 5 admin pages · 继承 PRD-12 13 patterns + retro Playbook P-1~P-9 · D-089~D-101 13 LDs",
   "userStories": [
@@ -582,7 +582,7 @@
         "56 行业合规事件占比饼图(分前 10 + '其他'类) · Recharts PieChart · 时间趋势折线 · 分日 / 周 / 月切换(Tab) · 行业 multi-select 筛选(用户可看特定行业的时间趋势)",
         "<DenseTable> 复用 PRD-11 audit_log 列表设计 · 列 timestamp(相对+tooltip) · eventCategory 必含 'compliance' · eventType 'pii_redacted'/'banned_word_hit'/'industry_disclaimer_triggered' · industry(若有) · userId(redacted text 不暴露详情 · 跨 admin 链接到 Users 页) · payload(脱敏 · 见 LD-A-3)",
         "分组 by eventType / by industry / 不分组 三档",
-        "apps/admin/src/pages/compliance/components/ComplianceReportPdf.tsx 新建 · 用 @react-pdf/renderer 4.5.1(PRD-11 已添加) · PDF 模板 4 节(封面:QuanQn 合规月度报告 + 月份 + 生成人 + 报告 ID · §1 总览 4 KPI 数字 + 比上月增减 · §2 行业分布表 56 行业 × 6 列 · §3 时间趋势(用 png snapshot 因 PDF 不支持 SVG · 后端 puppeteer 渲染留 PRR · 本 PRD 用 SimpleLine.png stub) · §4 高频事件 Top 20 列表 · 末页签名栏)",
+        "apps/admin/src/pages/compliance/components/ComplianceReportPdf.tsx 新建 · 用 @react-pdf/renderer 4.5.1(PRD-11 已添加) · PDF 模板 4 节(封面:QuanAn 合规月度报告 + 月份 + 生成人 + 报告 ID · §1 总览 4 KPI 数字 + 比上月增减 · §2 行业分布表 56 行业 × 6 列 · §3 时间趋势(用 png snapshot 因 PDF 不支持 SVG · 后端 puppeteer 渲染留 PRR · 本 PRD 用 SimpleLine.png stub) · §4 高频事件 Top 20 列表 · 末页签名栏)",
         "<Button> 导出 PDF · 点击触发 <PDFDownloadLink> 生成 + 浏览器下载",
         "顶部 <Button> '配置免责模板'(super_admin only) · 弹 Modal · 56 行业 × 1 textarea(每行业可定制免责文案) · 提交走 dual approval · 此功能本 PRD 仅 UI stub · 弹 toast '功能开发中 · P9.4'",
         "使用 agent-browser 打开 /admin/compliance(法务登录) · 看到 4 KPI + 行业饼图 + 时间趋势 + 详情列表 · 点 PDF 导出 · 浏览器下载 compliance-2026-05.pdf 文件 · 含 4 节 + 签名栏 · 切换分组 by eventType / by industry · 列表重新分组",
@@ -756,7 +756,7 @@
           "source_story": "US-012",
           "lesson": "E2E 必须用真 Prisma + 真 DB(D-080 isMock 模式仅 service 层)",
           "antipattern": "E2E mock prisma 全部 · 没真验证写入(test 跑通但实际数据库没动)",
-          "correct": "用 quanqn_test DB(DATABASE_URL_TEST) + beforeEach truncate tables · 真 prisma instance + 真 transaction"
+          "correct": "用 quanan_test DB(DATABASE_URL_TEST) + beforeEach truncate tables · 真 prisma instance + 真 transaction"
         },
         {
           "source_prd": "PRD-13 US-012 #2",

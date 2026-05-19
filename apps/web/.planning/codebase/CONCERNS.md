@@ -18,7 +18,7 @@
 
 **Nested `apps/web/apps/web/` directory:**
 - Issue: `apps/web/apps/web/src/lib/migration/` exists as a duplicate/stale path — likely an artifact of initial scaffolding
-- Files: `/Users/return/Desktop/QuanQn/apps/web/apps/web/src/lib/migration/`
+- Files: `/Users/return/Desktop/QuanAn/apps/web/apps/web/src/lib/migration/`
 - Impact: Confusing directory tree; potential for stale code to be accidentally imported
 - Fix approach: Delete `apps/web/apps/` subtree after confirming it is not referenced anywhere
 
@@ -114,8 +114,8 @@
 - Safe modification: Only change with corresponding spec update; E2E tests (`prd-17-step1-3-3b.spec.ts`) assert exact text
 
 **tRPC `AppRouter` type import chain:**
-- Files: `src/lib/trpc.ts` → `@quanqn/clients/router-types` → `apps/api`
-- Why fragile: `import type { AppRouter }` depends on `@quanqn/clients` being in sync with `apps/api`; type drift causes TS errors without runtime signal
+- Files: `src/lib/trpc.ts` → `@quanan/clients/router-types` → `apps/api`
+- Why fragile: `import type { AppRouter }` depends on `@quanan/clients` being in sync with `apps/api`; type drift causes TS errors without runtime signal
 - Safe modification: After any API router change, run `pnpm typecheck` in `apps/web`
 
 ## Scaling Limits

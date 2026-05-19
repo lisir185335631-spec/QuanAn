@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · PositioningAgent LLM Judge
+ * QuanAn · US-016 · PositioningAgent LLM Judge
  * AC-2: golden case — industry='medical' / platform='douyin'
  * AC-10: real scenario input
  * AC-11: quantifiable criteria

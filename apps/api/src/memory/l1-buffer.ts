@@ -7,7 +7,7 @@
 
 import { redis } from '@/lib/redis';
 
-import type { VoiceChatTurn } from '@quanqn/schemas/specialist-io';
+import type { VoiceChatTurn } from '@quanan/schemas/specialist-io';
 
 const KEY_PREFIX = 'voice_chat:acc_';
 const KEY_SUFFIX = ':turns';

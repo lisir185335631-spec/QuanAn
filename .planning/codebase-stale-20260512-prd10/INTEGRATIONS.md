@@ -103,7 +103,7 @@ All 14 extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSp
 
 **Databases:**
 
-**PostgreSQL 16.13** (local dev: `postgresql://return@localhost:5432/quanqn`; test: `..._test`):
+**PostgreSQL 16.13** (local dev: `postgresql://return@localhost:5432/quanan`; test: `..._test`):
 - Production target: Supabase or Neon (managed, includes pgvector + Auth) — AGENTS §2.5
 - Connection env vars: `DATABASE_URL` (Prisma client) + `DIRECT_URL` (Prisma migrations) + `TEST_DATABASE_URL` (`.env.example:16-18`)
 - Client: Prisma 5.22 + @prisma/client 5.22
@@ -166,7 +166,7 @@ All 14 extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/specialists/base/BaseSp
 **Upstash Redis (REST)** — separate from local Redis; used **only** by LLMGateway rate limiter:
 - Client: `@upstash/redis` 1.34 instantiated at `apps/api/src/workers/llm-gateway/rate-limiter.ts:42`
 - Auth: env `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
-- `@upstash/ratelimit` 2.0 token bucket — keyed `quanqn:rl:{plan}:user:{userId}` (free=50/d, pro=500/d, enterprise=5000/d)
+- `@upstash/ratelimit` 2.0 token bucket — keyed `quanan:rl:{plan}:user:{userId}` (free=50/d, pro=500/d, enterprise=5000/d)
 - Graceful degrade: if URL absent, `checkRateLimit()` warns and returns immediately (`:77-81`)
 
 > ⚠️ **Two Redis stacks coexist**: local ioredis (BullMQ + L1 + 3 per-feature rate limits) vs Upstash REST (LLM gateway rate limit). For prod, either consolidate to managed Redis or keep dual (more cost but cleaner separation).

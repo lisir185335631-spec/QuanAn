@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 BaseSpecialist 抽象类(模板方法模式)
+ * QuanAn · PRD-4 BaseSpecialist 抽象类(模板方法模式)
  * US-001: execute() 4步模板 · 子类只实现 invokeLLM + 3 abstract 属性
  * US-003: LLMGateway 集成 + zod 校验 retry + cost_log 完整字段 + LLMTimeoutError
  * US-015: fallback 路径 · SchemaValidationError/LLMTimeoutError/5xx → fallbackTemplate → status='fallback'

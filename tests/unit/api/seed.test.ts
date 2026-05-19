@@ -85,8 +85,8 @@ async function seedIndustriesWithPrisma(prismaClient: ReturnType<typeof makePris
 
 async function seedMockAccountsWithPrisma(prismaClient: ReturnType<typeof makePrisma>) {
   const devUser = await prismaClient.user.upsert({
-    where: { email: 'dev@quanqn.local' },
-    create: { openId: 'dev_mock_user', name: 'Dev User', email: 'dev@quanqn.local', role: 'user', isActivated: true },
+    where: { email: 'dev@quanan.local' },
+    create: { openId: 'dev_mock_user', name: 'Dev User', email: 'dev@quanan.local', role: 'user', isActivated: true },
     update: {},
   });
   let created = 0;

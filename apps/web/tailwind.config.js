@@ -1,5 +1,5 @@
 /**
- * QuanQn · Tailwind 配置
+ * QuanAn · Tailwind 配置
  *
  * 颜色全部派生自 ui/aurelian_dark/DESIGN.md YAML frontmatter(LD-015 权威源)
  * 字体跟 AGENTS §2.1 一致 · Manrope / Plus Jakarta Sans / Inter

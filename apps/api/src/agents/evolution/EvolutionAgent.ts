@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-003
+ * QuanAn · PRD-8 US-003
  * EvolutionAgent — 真实 LLM 接入 (L5 · 反馈飞轮大脑)
  *
  * AC-1: execute() 移除 throw · 真接 LLMGateway.complete(model_tier='reasoning')
@@ -10,7 +10,7 @@
  * AC-9: cost_log eventType='l5_agent' (via gateway metadata)
  */
 
-import { EvolutionInsightContentSchema } from '@quanqn/schemas/specialist-io';
+import { EvolutionInsightContentSchema } from '@quanan/schemas/specialist-io';
 import { z } from 'zod';
 
 import { generateSpecialistTraceId } from '@/agents/base/types';
@@ -35,7 +35,7 @@ import type {
 } from '@/specialists/base/types';
 
 // AC-8: type re-export for downstream consumers
-export type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
+export type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 export { EvolutionInsightContentSchema };
 
 // ── Input schema ─────────────────────────────────────────────────────────────

@@ -84,7 +84,7 @@ import { prisma } from '@/lib/prisma';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1,
-  email: 'super@quanqn.com',
+  email: 'super@quanan.com',
   role: 'super_admin',
   isMock: true,
   isActive: true,
@@ -92,7 +92,7 @@ const SUPER_ADMIN: AdminLuciaUser = {
 
 const ADMIN_USER: AdminLuciaUser = {
   id: 2,
-  email: 'admin@quanqn.com',
+  email: 'admin@quanan.com',
   role: 'admin',
   isMock: true,
   isActive: true,
@@ -100,7 +100,7 @@ const ADMIN_USER: AdminLuciaUser = {
 
 const READONLY_ADMIN: AdminLuciaUser = {
   id: 3,
-  email: 'ro@quanqn.com',
+  email: 'ro@quanan.com',
   role: 'readonly_admin',
   isMock: true,
   isActive: true,
@@ -164,7 +164,7 @@ const FEATURE_FLAG = {
   updatedAt: new Date('2026-05-15T08:00:00Z'),
 };
 
-const ADMIN_USER_RECORD = { id: 1, email: 'super@quanqn.com' };
+const ADMIN_USER_RECORD = { id: 1, email: 'super@quanan.com' };
 
 const POST_REVIEW_ROW = {
   id: 10,
@@ -260,7 +260,7 @@ describe('featureFlagsRouter.listEmergencySwitches', () => {
     expect(result).toHaveLength(1);
     expect(result[0]!.configKey).toBe('stop_trending_scraper');
     expect(result[0]!.isEmergency).toBe(true);
-    expect(result[0]!.updatedByEmail).toBe('super@quanqn.com');
+    expect(result[0]!.updatedByEmail).toBe('super@quanan.com');
   });
 
   it('queries with isEmergency=true filter', async () => {
@@ -304,7 +304,7 @@ describe('featureFlagsRouter.listFeatureFlags', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]!.flagKey).toBe('new_dashboard');
-    expect(result[0]!.updatedByEmail).toBe('super@quanqn.com');
+    expect(result[0]!.updatedByEmail).toBe('super@quanan.com');
   });
 
   it('orders by updatedAt desc', async () => {
@@ -534,10 +534,10 @@ describe('featureFlagsRouter.listPostReview', () => {
 
   it('includes firstApproverEmail in result', async () => {
     mockApprovalRequestFindMany.mockResolvedValue([POST_REVIEW_ROW]);
-    mockAdminUserFindMany.mockResolvedValue([{ id: 1, email: 'super@quanqn.com' }]);
+    mockAdminUserFindMany.mockResolvedValue([{ id: 1, email: 'super@quanan.com' }]);
 
     const result = await makeCaller(SUPER_ADMIN).listPostReview();
-    expect(result[0]!.firstApproverEmail).toBe('super@quanqn.com');
+    expect(result[0]!.firstApproverEmail).toBe('super@quanan.com');
   });
 
   it('limits to 50 results', async () => {

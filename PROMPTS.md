@@ -1,4 +1,4 @@
-# QuanQn · 14 Specialist Prompt 模板库(PROMPTS.md)
+# QuanAn · 14 Specialist Prompt 模板库(PROMPTS.md)
 
 > **版本** · v0.1(2026-05-06)
 > **角色** · 14 Specialist 的 system prompt 完整模板 · LLM-Judge 配置 · prompt 工程约定

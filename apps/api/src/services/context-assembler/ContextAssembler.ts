@@ -25,8 +25,8 @@ import { ragRetrieveWorker } from '@/workers/rag';
 import { SPECIALIST_TEMPLATES } from './templates';
 
 import type { AssembleRequest, AssembledContext } from './types';
-import type { KnowledgeChunkContent } from '@quanqn/schemas';
-import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
+import type { KnowledgeChunkContent } from '@quanan/schemas';
+import type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 
 const FETCH_TIMEOUT_MS = 5_000;
 

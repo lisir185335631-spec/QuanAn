@@ -8,9 +8,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@quanqn/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
-      '@quanqn/ui': path.resolve(__dirname, '../../packages/ui/src'),
-      '@quanqn/clients': path.resolve(__dirname, '../../packages/clients/src'),
+      '@quanan/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
+      '@quanan/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      '@quanan/clients': path.resolve(__dirname, '../../packages/clients/src'),
     },
     dedupe: ['react', 'react-dom'],
   },

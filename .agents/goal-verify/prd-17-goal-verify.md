@@ -135,7 +135,7 @@
 | N-3 | 不实现 Step 2/4/4b/5/6/7/8 page | git diff Step{2,4,4b,5,6,7,8}.tsx 空 | ✅ |
 | N-4 | 不实现 8 stub 工具完整化 | git diff apps/web/src/pages/tools/ 空 | ✅ |
 | N-5 | 不动 apps/admin/ | git diff apps/admin/ 空 | ✅ |
-| N-6 | 不切 QuanQn `--primary` 金色 | globals.css HSL(43, 87%, 63%) 不变 + 0 violet/amber/gold | ✅ |
+| N-6 | 不切 QuanAn `--primary` 金色 | globals.css HSL(43, 87%, 63%) 不变 + 0 violet/amber/gold | ✅ |
 
 ### §1.6 已满足的需求清单(精选)
 

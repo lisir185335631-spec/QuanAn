@@ -37,7 +37,7 @@ vi.mock('@/lib/logger', () => ({
 
 import { ContextAssembler } from '@/services/context-assembler/ContextAssembler';
 import type { AssembleRequest } from '@/services/context-assembler/types';
-import type { KnowledgeChunkContent } from '@quanqn/schemas';
+import type { KnowledgeChunkContent } from '@quanan/schemas';
 
 // ── Fixtures — simulate seeded knowledge chunks ───────────────────────────────
 

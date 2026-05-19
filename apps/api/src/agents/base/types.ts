@@ -1,5 +1,5 @@
 /**
- * QuanQn · BaseSpecialist 类型定义
+ * QuanAn · BaseSpecialist 类型定义
  * 派生自 ARCHITECTURE.md §6.3 + AGENTS §4.7 + ADR-003
  */
 

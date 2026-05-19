@@ -107,7 +107,7 @@ export async function detectCostAnomalies(
       logger.warn({ userId, dailySpent: dailySpent.toString(), threshold: DAILY_THRESHOLD.toString() }, 'cost_anomaly_detect.alert');
 
       // Send DingTalk notification (stub: isMock=true by default)
-      const msg = `[QuanQn 成本告警] 用户 #${userId} (${email}) 24h 消费 $${dailySpent.toFixed(4)} 超过阈值 $${DAILY_THRESHOLD}`;
+      const msg = `[QuanAn 成本告警] 用户 #${userId} (${email}) 24h 消费 $${dailySpent.toFixed(4)} 超过阈值 $${DAILY_THRESHOLD}`;
       await dingtalk.send(msg).catch((err: unknown) => {
         logger.error({ err, userId }, 'cost_anomaly_detect.dingtalk_send_failed');
       });

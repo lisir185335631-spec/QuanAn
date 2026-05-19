@@ -7,7 +7,7 @@
  * AC-3: URL state useSearchParams + localStorage draft getToolLsKey(accountId,'monetization','draft')
  */
 
-import { MonetizationInputSchema } from '@quanqn/schemas/specialist-io';
+import { MonetizationInputSchema } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';

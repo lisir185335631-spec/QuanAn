@@ -1,4 +1,4 @@
-// @quanqn/schemas/entities/knowledge — PRD-2 US-006
+// @quanan/schemas/entities/knowledge — PRD-2 US-006
 
 import { z } from 'zod';
 

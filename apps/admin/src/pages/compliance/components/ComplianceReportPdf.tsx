@@ -251,14 +251,14 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
 
   return (
     <Document
-      title={`QuanQn 合规月度报告 ${data.month}`}
+      title={`QuanAn 合规月度报告 ${data.month}`}
       author={data.generatedBy}
       subject="合规月度报告"
     >
       {/* 封面 */}
       <Page size="A4" style={styles.coverPage}>
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text style={styles.coverTitle}>QuanQn</Text>
+          <Text style={styles.coverTitle}>QuanAn</Text>
           <Text style={styles.coverSubtitle}>合规月度报告</Text>
           <Text style={styles.coverMeta}>报告月份：{data.month}</Text>
           <Text style={styles.coverMeta}>生成人：{data.generatedBy}</Text>
@@ -266,7 +266,7 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
           <Text style={styles.coverReportId}>报告编号：{data.reportId}</Text>
         </View>
         <View style={styles.footer}>
-          <Text style={styles.footerText}>QuanQn · 内部合规文件 · 禁止外传</Text>
+          <Text style={styles.footerText}>QuanAn · 内部合规文件 · 禁止外传</Text>
           <Text style={styles.footerText}>{data.month}</Text>
         </View>
       </Page>
@@ -302,7 +302,7 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
           </View>
         </View>
         <View style={styles.footer}>
-          <Text style={styles.footerText}>QuanQn 合规报告 {data.month}</Text>
+          <Text style={styles.footerText}>QuanAn 合规报告 {data.month}</Text>
           <Text style={styles.footerText}>§1 / 4</Text>
         </View>
       </Page>
@@ -333,7 +333,7 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
         ))}
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>QuanQn 合规报告 {data.month}</Text>
+          <Text style={styles.footerText}>QuanAn 合规报告 {data.month}</Text>
           <Text style={styles.footerText}>§2 / 4</Text>
         </View>
       </Page>
@@ -351,7 +351,7 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
           </Text>
         </View>
         <View style={styles.footer}>
-          <Text style={styles.footerText}>QuanQn 合规报告 {data.month}</Text>
+          <Text style={styles.footerText}>QuanAn 合规报告 {data.month}</Text>
           <Text style={styles.footerText}>§3 / 4</Text>
         </View>
       </Page>
@@ -386,7 +386,7 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
         )}
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>QuanQn 合规报告 {data.month}</Text>
+          <Text style={styles.footerText}>QuanAn 合规报告 {data.month}</Text>
           <Text style={styles.footerText}>§4 / 4</Text>
         </View>
       </Page>
@@ -411,7 +411,7 @@ export function ComplianceReportPdf({ data }: { data: ComplianceReportData }) {
           报告编号：{data.reportId}　生成时间：{new Date().toLocaleString('zh-CN')}
         </Text>
         <Text style={[styles.tdMuted, { marginTop: 6 }]}>
-          本报告由 QuanQn 系统自动生成，内容依据 admin_audit_log 合规事件数据汇总。
+          本报告由 QuanAn 系统自动生成，内容依据 admin_audit_log 合规事件数据汇总。
         </Text>
       </Page>
     </Document>

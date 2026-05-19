@@ -23,7 +23,7 @@ function extractFn(mw: unknown): RawFn {
 
 function makeCtx(overrides: Record<string, unknown> = {}) {
   return {
-    activeAdminUser: { id: 1, email: 'super@quanqn.com', role: 'super_admin', isMock: true, isActive: true },
+    activeAdminUser: { id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true },
     adminSession: { id: 'sess-audit-1', expiresAt: new Date(), fresh: false },
     crossAccountAccessed: true,
     traceId: 'trace-audit-001',

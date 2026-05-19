@@ -13,7 +13,7 @@ vi.mock('../../../apps/admin/src/lib/admin-client', () => ({
     auth: {
       me: {
         useQuery: () => ({
-          data: { id: 1, email: 'super@quanqn.com', role: 'super_admin' },
+          data: { id: 1, email: 'super@quanan.com', role: 'super_admin' },
         }),
       },
       logout: {
@@ -64,7 +64,7 @@ describe('AdminLayout', () => {
   it('renders TopBar with brand and role badge', () => {
     renderLayout();
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByText('QuanQn Admin')).toBeInTheDocument();
+    expect(screen.getByText('QuanAn Admin')).toBeInTheDocument();
     // super_admin appears in TopBar badge (role) and StatusBar (Role=) — both should be present
     const matches = screen.getAllByText('super_admin');
     expect(matches.length).toBeGreaterThanOrEqual(1);

@@ -283,7 +283,7 @@ PRD-9 完全复用既有基础设施:
 +    "❌ apps/<x>/scripts/<file>.ts 在 prd.json files_to_create · 但 apps/<x>/tsconfig.json include 缺 'scripts' · scripts/ 不会被 typecheck/lint 扫描 · 静默漏审风险"
 + 4. 建议 fix · prd skill 在该 story anti_patterns 字段加预警 · 或 ralph 实施时同时改 tsconfig
 +
-+ **实证** · QuanQn PRD-9 US-002 (commit 3d26b92) · scripts/seed-knowledge-chunk.ts 静默漏 19 错(1 unused + 6 import/order + 12 no-console)· Opus audit 时才发现 · 走 Step 5.5 直 fix 而不 reject
++ **实证** · QuanAn PRD-9 US-002 (commit 3d26b92) · scripts/seed-knowledge-chunk.ts 静默漏 19 错(1 unused + 6 import/order + 12 no-console)· Opus audit 时才发现 · 走 Step 5.5 直 fix 而不 reject
 ```
 
 ### Diff-2 · ralph.py `_run_validator()` 前置 git log check(RCA-006 §4.1)
@@ -338,7 +338,7 @@ PRD-9 完全复用既有基础设施:
 + 4. 不一致 → WARN · 提示:
 +    "⚠️ PRD 字面 N1=<x> 但 apps/api/src/lib/constants/<file>.ts 实际 <m> 项 · canonical 数据源是 SoT · PRD doc 抄数错 · 建议 fix"
 +
-+ **实证** · QuanQn PRD-9 撰写时 PRD 写 22 元素 · 实际 HOT_ELEMENTS 23 项 · TD-033 跟踪整个 PRD lifecycle · 收官 commit 6c40f85 doc-only fix 19 处替换
++ **实证** · QuanAn PRD-9 撰写时 PRD 写 22 元素 · 实际 HOT_ELEMENTS 23 项 · TD-033 跟踪整个 PRD lifecycle · 收官 commit 6c40f85 doc-only fix 19 处替换
 ```
 
 ### Diff-4 · OPUS-AUDIT-CHEATSHEET 加 "Opus 直 fix mechanical 错路径"
@@ -365,7 +365,7 @@ PRD-9 完全复用既有基础设施:
 + 3. 提 chore commit "[US-XXX] Opus audit fix · <类型>"
 + 4. 走 §5.5 OPUS_AUDIT_CHEATSHEET Step 5 approve · 在 approve 报告显式标 "Opus 直 fix mechanical 错 commit XXXXXXX 避免 ralph 又一轮 retry"
 +
-+ **实证** · QuanQn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错 · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min 完成 · 避免又 30 min retry hell
++ **实证** · QuanAn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错 · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min 完成 · 避免又 30 min retry hell
 +
 + **禁止滥用**:
 + - ❌ 大于 20 lines · 必须 reject 让 ralph 修
@@ -510,7 +510,7 @@ PRD-9 期间 22 commits · 4 个 schema/worker/page 创建 + 4 个 audit log + 1
 
 PRD-8 retro 提了 3 个 L4 升级 Diff:
 - Diff-1 stale session SOP → ✅ PRD-9 接手时执行 · 0 self-approve 异常
-- Diff-2 audit-log 跨 session 防御 → ✅ PRD-9 第一次实战写入 audit-log-QuanQn.jsonl
+- Diff-2 audit-log 跨 session 防御 → ✅ PRD-9 第一次实战写入 audit-log-QuanAn.jsonl
 - Diff-3 anti_patterns 字段注入机制 → ✅ PRD-9 US-001 + US-003 各 3 条 · 100% 防御成功
 
 **3/3 Diff 实战兑现** · PRD-8 retro 的 L4 升级带来 PRD-9 成功 ★★

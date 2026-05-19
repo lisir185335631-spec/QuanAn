@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-012 · CopywritingAgent boom mode LLM Judge
+ * QuanAn · US-012 · CopywritingAgent boom mode LLM Judge
  * AC-2: 2 golden cases — 育儿(5候选) + 理财(5候选) · 检查 5 篇风格差异
  */
 

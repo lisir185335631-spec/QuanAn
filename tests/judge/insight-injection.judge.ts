@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-004 AC-8
+ * QuanAn · PRD-8 US-004 AC-8
  * EvolutionInsight 注入 LLM Judge — 2 golden cases
  * AC-8: PositioningAgent / CopywritingAgent 有 insight 注入 → 质量评分 ≥ 4.0/5 (≥ 8/10)
  *

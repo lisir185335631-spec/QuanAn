@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-4-p3-ip-flow-9-steps",
   "description": "PRD-4 P3 IP 主流程 9 步 · 7 Specialist 真接 LLMGateway · ContextAssembler 完整版 · feedback_log 替换占位 · LLM Judge 测试启动 · 18 US · risk=high · 3 周",
   "userStories": [
@@ -38,21 +38,21 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "Specialist execute() 不允许直接调 anthropic.messages.create / openai.chat.completions",
           "antipattern": "❌ 子类 invokeLLM 内 import Anthropic from '@anthropic-ai/sdk'; await client.messages.create(...)",
           "correct": "✅ 必须通过 this.llmGateway.complete() · 由 LLMGateway 统一限流/降级/计费/审计 · grep '@anthropic-ai/sdk\\|openai' 在 specialists/ 下 0 命中"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-002",
           "lesson": "Specialist execute() 必须是单次 LLM 调用 · 不允许 while/for 循环",
           "antipattern": "❌ async execute(req) { for (const x of items) { await this.llmGateway.complete(...) } } — 这是伪 Agent 行为",
           "correct": "✅ Specialist 是 95% Workflow · 单次 LLM 调用 + 单次 zod 校验 + 单次返回 · 多轮 Agent 必须独立成 L5(VoiceChat/Evolution/DailyTask · PRD-8)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007",
           "lesson": "同一 Specialist 多 mode 不能共用一个输出 zod schema",
           "antipattern": "❌ outputSchema 是固定不变 · 不区分 mode · 比如 BrandingAgent packaging mode 跟 persona mode 共用同一 schema",
@@ -107,21 +107,21 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-005",
           "lesson": "Specialist 不要自己拼 systemPrompt 读 stepData / EvolutionProfile / 常量",
           "antipattern": "❌ Specialist execute() 内 const stepData = await prisma.stepData.findMany(); const prompt = `... ${stepData}...`",
           "correct": "✅ 装配 prompt 是 ContextAssembler 职责 · Specialist 调 this.contextAssembler.assemble(...) · 返回 AssembledContext.systemPrompt 直接用"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008",
           "lesson": "prisma 查询不带 account_id WHERE → 跨账号污染",
           "antipattern": "❌ prisma.stepData.findMany() 不带 where: { accountId } → 所有账号 stepData 都拉",
           "correct": "✅ ContextAssembler 内每次 prisma 查询必带 where: { accountId: req.accountId } · 或走 protectedProcedure 自动注入 RLS context"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ ContextAssembler 内直接信任 input.accountId · 不验证用户实际所属",
@@ -170,21 +170,21 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "Specialist 必须设 timeout · 不让 LLM 卡死任意时间",
           "antipattern": "❌ this.llmGateway.complete({ ... }) 不传 timeout_ms · 默认 LLMGateway 不设 timeout",
           "correct": "✅ 必传 timeout_ms = this.config.execution.timeout_ms(30000-120000) · LLMGateway 内部用 AbortController 强制中断"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-033",
           "lesson": "zod 校验失败不能直接 throw · 必须 retry",
           "antipattern": "❌ const validated = outputSchema.parse(llmResp.content) // throw 直接挂",
           "correct": "✅ const result = outputSchema.safeParse(llmResp.content); if (!result.success) { 重试 1 次 ... 二次失败 throw SchemaValidationError }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-017",
           "lesson": "history.create / cost_log.create 不带 trace_id",
           "antipattern": "❌ await prisma.costLog.create({ data: { ... } }) 没填 traceId",
@@ -234,21 +234,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "Specialist execute() 不允许直接调 anthropic / openai SDK",
           "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 直接在 PositioningAgent.ts 内",
           "correct": "✅ 通过 this.llmGateway · grep '@anthropic-ai/sdk' 在 specialists/ 0 命中"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007",
           "lesson": "多 mode 共用一个 outputSchema",
           "antipattern": "❌ outputSchema 不区分 industry vs execution · 用同一个 schema",
           "correct": "✅ outputSchema getter · 按 this.req.mode 返回 Step1OutputSchema 或 Step4OutputSchema"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-004",
           "lesson": "tRPC procedure 内不要直接 new Specialist().execute()",
           "antipattern": "❌ stepData.save mutation 内 new PositioningAgent(...).execute(...)",
@@ -296,21 +296,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007",
           "lesson": "step3 vs step3b 不能共用 outputSchema",
           "antipattern": "❌ outputSchema 是固定不变 · packaging 跟 persona 共用 schema → LLM 输出 packaging schema 但 mode='persona' · 不一致",
           "correct": "✅ outputSchema getter · 按 mode 返回 PackagingSchema 或 PersonaSchema"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-032",
           "lesson": "Specialist 输出不能用 any 兜底",
           "antipattern": "❌ outputSchema = z.any() 或 result: any",
           "correct": "✅ outputSchema 是严格 z.object({...}) · 各字段类型明确 · LD-013 strict"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "不直接 import SDK",
           "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 在 BrandingAgent.ts",
@@ -357,21 +357,21 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "不直接 import SDK",
           "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 在 MonetizationAgent.ts",
           "correct": "✅ 通过 this.llmGateway"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-003",
           "lesson": "不硬编码 model 名",
           "antipattern": "❌ const MODEL = 'claude-sonnet-4-6' 写死",
           "correct": "✅ this.config.execution.model_tier = 'reasoning' · 由 LLMGateway 决定具体 model"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "Specialist 不设 timeout 让 LLM 卡死",
           "antipattern": "❌ this.llmGateway.complete({...}) 不传 timeout_ms",
@@ -423,21 +423,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-002",
           "lesson": "Specialist execute() 不能 while/for 循环 LLM",
           "antipattern": "❌ for (const cat of CATEGORIES) { await this.llmGateway.complete(...) } — 5 category 各调一次循环",
           "correct": "✅ 单次调用 · LLM 一次性输出 1 个 category 的 20 条选题 · 用户输入指定 category · 不在 Specialist 内 loop"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "长输出必设 timeout",
           "antipattern": "❌ this.llmGateway.stream({...}) 不传 timeout_ms · 22KB 输出可能卡 5 分钟",
           "correct": "✅ 必传 timeout_ms = 60000 · 即便 streaming · 总 timeout 也要"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007",
           "lesson": "5 category 不能共用一个 schema",
           "antipattern": "❌ outputSchema 是 z.object({ topics: ... }) 不区分 category",
@@ -485,21 +485,21 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007",
           "lesson": "多 mode 共用 outputSchema",
           "antipattern": "❌ shooting / production / acquisition / storyboard 4 mode 共用一个 schema",
           "correct": "✅ outputSchema getter · 按 mode 返回 ShootingSchema / ProductionSchema / AcquisitionSchema / StoryboardSchema · 本期只实现 shooting · 其他 mode throw 'Not implemented · PRD-6'"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "不直接 import SDK",
           "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 在 VideoAgent.ts",
           "correct": "✅ 通过 this.llmGateway"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-003",
           "lesson": "不硬编码 model 名",
           "antipattern": "❌ const MODEL = 'claude-sonnet-4-6'",
@@ -553,21 +553,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007",
           "lesson": "多 mode(step7/free/boom/acquisition)不能共用 outputSchema",
           "antipattern": "❌ outputSchema 不区分 mode · step7 跟 free 共用 schema → free 有 boomFlavor 字段但 step7 没",
           "correct": "✅ outputSchema getter · 本期只实现 step7 schema · 其他 mode throw 'Not implemented · PRD-5'"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "长输出必设 timeout",
           "antipattern": "❌ this.llmGateway.stream({...}) 不传 timeout_ms · markdown 数千字可能卡 10 分钟",
           "correct": "✅ 必传 timeout_ms = 60000 · 即便 streaming"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-002",
           "lesson": "execute() 不能循环 LLM",
           "antipattern": "❌ for (const section of sections) { await this.llmGateway.stream(...) } — 分段调",
@@ -614,21 +614,21 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "不直接 import SDK",
           "antipattern": "❌ import Anthropic from '@anthropic-ai/sdk' 在 LivestreamAgent.ts",
           "correct": "✅ 通过 this.llmGateway"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-003",
           "lesson": "不硬编码 model 名",
           "antipattern": "❌ const MODEL = 'claude-sonnet-4-6'",
           "correct": "✅ this.config.execution.model_tier = 'reasoning'"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "Specialist 必设 timeout",
           "antipattern": "❌ 不传 timeout_ms",
@@ -692,26 +692,26 @@
         "apps/web/src/pages/step/Step8.tsx",
         "apps/web/src/pages/step/Step9.tsx"
       ],
-      "test_command": "pnpm test tests/unit/web/StepForm.test.tsx && pnpm --filter @quanqn/web typecheck",
+      "test_command": "pnpm test tests/unit/web/StepForm.test.tsx && pnpm --filter @quanan/web typecheck",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-010",
           "lesson": "localStorage key 必须带 acc_{id} 前缀",
           "antipattern": "❌ localStorage.setItem('step3_account_v3', JSON.stringify(data)) 不带 accountId namespace",
           "correct": "✅ 用 stepLsKey(accountId, 'step3') = 'aiip_memory_acc_{id}_step3' · PRD-2 ADR-010 已锁定"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035",
           "lesson": "stepData.save mutation 失败不回滚 LS · LS 有数据但 DB 没",
           "antipattern": "❌ saveMutation.mutateAsync 失败时 LS 已写但不回滚",
           "correct": "✅ LS 先写 · DB 后写 · DB 失败时 LS 不回滚 + toast 提示用户(PRD-2 ADR-010)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ trpc.stepData.save 接受 input.accountId 直接信任",
@@ -776,12 +776,12 @@
         "apps/web/src/pages/step/Step7.tsx",
         "apps/web/src/pages/step/Step8.tsx"
       ],
-      "test_command": "pnpm test tests/unit/web/StepResult.test.tsx && pnpm --filter @quanqn/web typecheck",
+      "test_command": "pnpm test tests/unit/web/StepResult.test.tsx && pnpm --filter @quanan/web typecheck",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-010",
           "lesson": "LS key 不带 acc_{id} 前缀",
           "antipattern": "❌ localStorage.getItem('step5_topics_v2') · 不区分账号",
@@ -843,14 +843,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008",
           "lesson": "prisma 查询不带 account_id WHERE",
           "antipattern": "❌ prisma.stepData.findMany({ where: { stepKey: { in: STEP_KEYS_9 }, status: 'completed' } }) — 漏 accountId",
           "correct": "✅ where: { accountId, stepKey: { in: STEP_KEYS_9 }, status: 'completed' } · 或走 protectedProcedure 自动 RLS"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ progress procedure 用 publicProcedure · 接受 input.accountId 直接信任",
@@ -915,14 +915,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013",
           "lesson": "tRPC procedure 不经 accountIsolation middleware · 直接信任 input.accountId",
           "antipattern": "❌ logFeedback 用 publicProcedure · input 含 accountId",
           "correct": "✅ logFeedback 是 protectedProcedure · ctx.activeAccountId 自动注入"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-017",
           "lesson": "feedback_log.create 不带 trace_id",
           "antipattern": "❌ prisma.costLog.create({ data: { ... } }) 漏 traceId",
@@ -992,14 +992,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-033",
           "lesson": "zod 校验失败直接 throw 不重试",
           "antipattern": "❌ outputSchema.parse(content) // throw · 不 retry · 不 fallback",
           "correct": "✅ retry 1 次后再 fallback · BaseSpecialist 内 try-catch + fallbackTemplate"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-032",
           "lesson": "fallbackTemplate 不能用 any 兜底",
           "antipattern": "❌ static fallbackTemplate: any = {...}",
@@ -1062,14 +1062,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-003",
           "lesson": "judge 不能硬编码 model 名",
           "antipattern": "❌ const JUDGE_MODEL = 'claude-haiku-4-5' 写死",
           "correct": "✅ model_tier: 'lightweight' · 由 LLMGateway 决定具体 model"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "judge 必设 timeout 防 flaky 卡死",
           "antipattern": "❌ runJudge 不设 timeout_ms",
@@ -1139,14 +1139,14 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013",
           "lesson": "e2e 不验证账号隔离",
           "antipattern": "❌ e2e 只跑一个账号 · 不切换验证隔离",
           "correct": "✅ ip-flow-account-isolation.spec.ts 切到 acc2 · 验证 /ip-plan 显示 0/9 · 不串"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-006",
           "lesson": "e2e 真 LLM 调用必设 timeout",
           "antipattern": "❌ playwright.config.ts 默认 timeout 30s · LLM 调用 60s 必超",
@@ -1157,13 +1157,13 @@
     {
       "id": "US-018",
       "title": "PRD-4 收官 · 集成测试 + LLM Judge + lint clean + typecheck",
-      "description": "收官 · pnpm test 全套(unit + integration + judge)≥ 259 tests 全过 · pnpm test:e2e 含 PRD-2/3/4 全 e2e ≥ 104 tests 全过 · pnpm typecheck 全 6 ws 0 error · pnpm --filter @quanqn/web lint clean(--max-warnings=0)· 修任何残留 lint debt(参 PRD-3 Patterns 防 PRD-1 lint debt 重现)。",
+      "description": "收官 · pnpm test 全套(unit + integration + judge)≥ 259 tests 全过 · pnpm test:e2e 含 PRD-2/3/4 全 e2e ≥ 104 tests 全过 · pnpm typecheck 全 6 ws 0 error · pnpm --filter @quanan/web lint clean(--max-warnings=0)· 修任何残留 lint debt(参 PRD-3 Patterns 防 PRD-1 lint debt 重现)。",
       "acceptanceCriteria": [
         "pnpm test 全套 ≥ 259 tests pass(PRD-3 累积 201 + PRD-4 新增 ≥ 58 = 259)",
         "pnpm test:judge 7 case pass(US-016)",
         "pnpm test:e2e ≥ 104 tests pass(PRD-3 累积 100 + PRD-4 新增 4 = 104 · chromium 52 + mobile 52)",
         "pnpm typecheck 全 6 ws 0 error",
-        "pnpm --filter @quanqn/web lint 0 warnings(--max-warnings=0)",
+        "pnpm --filter @quanan/web lint 0 warnings(--max-warnings=0)",
         "跑 pnpm test && pnpm test:judge && pnpm test:e2e && pnpm typecheck && pnpm lint",
         "全过(exit code 0)",
         "每步耗时 + pass count 输出到 verify-artifacts/US-018/",

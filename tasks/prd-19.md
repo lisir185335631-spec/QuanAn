@@ -61,7 +61,7 @@ status_history:
 ### Wave 1 · 协议 + 铺路(2 US · 0 depends_on)
 
 ### US-001 · stepKey 命名规范化 + 老 LS 数据迁移 helper
-- **As a** · QuanQn frontend 开发者 · 在 11 step page 接 useStepData 之前 · 需要统一 stepKey 命名 + 一次性迁移 PRD-15~18 老 LS 数据到 LD-009 namespace
+- **As a** · QuanAn frontend 开发者 · 在 11 step page 接 useStepData 之前 · 需要统一 stepKey 命名 + 一次性迁移 PRD-15~18 老 LS 数据到 LD-009 namespace
 - **I want** · 一个 `lib/migration/legacy-ls.ts` helper · 检测老 `acc_step{N}` keys → 读取数据 → 写到新 `stepLsKey(accountId, 'step{N}')` 命名 → 删除老 key
 - **So that** · 用户从 PRD-18 升级到 PRD-19 时 0 数据丢失 + 跨账号隔离立即生效(LD-009 严守)
 - **risk_level** · foundation(被 US-002~009 全部 depends_on · 任何 bug 升级 high)
@@ -72,7 +72,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:LS migration / data loss / acc_namespace / cross-account)
 
 ### US-002 · useStepData hook 增强 + 跨 step 预填 helper readStepData
-- **As a** · QuanQn 11 step page · 需要在 form mount 时读上游 step 数据(如 Step3 读 acc_step1.industry · Step6 读 acc_step7.body.text)
+- **As a** · QuanAn 11 step page · 需要在 form mount 时读上游 step 数据(如 Step3 读 acc_step1.industry · Step6 读 acc_step7.body.text)
 - **I want** · `useStepData(accountId, stepKey)` 暴露 `load()` 同时新增 `readOtherStep(otherStepKey)` 静态 helper · 直接读 LS 兜底 + DB 预读用 useQuery hook
 - **So that** · 跨 step 数据流统一 · 0 hardcode `localStorage.getItem('acc_step{N}')` 跨 page 散落
 - **risk_level** · foundation(被 US-003~007 page 全部 depends_on)
@@ -83,7 +83,7 @@ status_history:
 ### Wave 2 · step page 真接(5 US · depends_on Wave 1)
 
 ### US-003 · Step1 + Step3 + Step3b 真接 stepData router(industry + IP 定位 + 人设)
-- **As a** · QuanQn 用户 · 在 Step1 选行业 / Step3 填 IP 定位 / Step3b 填人设
+- **As a** · QuanAn 用户 · 在 Step1 选行业 / Step3 填 IP 定位 / Step3b 填人设
 - **I want** · form 提交后 trpc.stepData.save 真接 PositioningAgent(industry mode)+ BrandingAgent(packaging / persona mode)· result 真 LLM 输出(或 fallback mock 若无 OPENAI_KEY)· UI 用 LoadingState + ErrorState 复用
 - **So that** · PRD-17 实施的 3 step page 从 frontend mock 升级到 backend 真接 · 跨账号数据隔离生效
 - **risk_level** · high(3 page 同步改 · Specialist 真 call cost · LLM error handling)
@@ -93,7 +93,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:trpc mutation / loading state / error state / Specialist fallback / LLM cost / 跨 step 预填)
 
 ### US-004 · Step4 + Step4b 真接(执行计划 + 变现规划)
-- **As a** · QuanQn 用户 · 在 Step4 填粉丝/目标/情况 / Step4b 填产品/受众/IP 定位/收入水平
+- **As a** · QuanAn 用户 · 在 Step4 填粉丝/目标/情况 / Step4b 填产品/受众/IP 定位/收入水平
 - **I want** · form 提交 → trpc.stepData.save 接 PositioningAgent(execution mode)/ MonetizationAgent · result 真 LLM(或 fallback)
 - **So that** · PRD-18 实施的 Step4/4b 真接后端 · 3 H3 输出 + 3 阶梯 + 收入结构 + 案例 真 Specialist 输出
 - **risk_level** · high(2 page 同步改 · Step4b 数据复杂 · 3 阶梯 + 收入 + 案例)
@@ -103,7 +103,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:trpc mutation / Specialist 真 call / 跨 step 预填)
 
 ### US-005 · Step5 真接 saveStream SSE(TopicAgent 5 类爆款选题 · 22KB+ 长输出)
-- **As a** · QuanQn 用户 · 在 Step5 填行业/产品 + 上传 file metadata stub
+- **As a** · QuanAn 用户 · 在 Step5 填行业/产品 + 上传 file metadata stub
 - **I want** · 5 类 Tab(traffic/monetize/persona/cognition/case)切换时 · 每 Tab 各自 saveStream SSE 真接 TopicAgent · 进度 UI(已生成 X / 5 类)· first chunk < 3s
 - **So that** · 100 选题真 LLM 输出(20/Tab × 5)· LD-170 file upload 仍 stub 不真传(metadata only)
 - **risk_level** · high(SSE subscription · React Suspense / useSubscription · 5 Tab 各自 stream)
@@ -113,7 +113,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:SSE / saveStream / useSubscription / first chunk / 真上传)
 
 ### US-006 · Step6 + Step7 真接(拍摄 + 文案)
-- **As a** · QuanQn 用户 · 在 Step6 填 textarea ≥10 字 / Step7 填主题 + 22 元素多选
+- **As a** · QuanAn 用户 · 在 Step6 填 textarea ≥10 字 / Step7 填主题 + 22 元素多选
 - **I want** · form 提交 → trpc.stepData.save 接 VideoAgent(shooting mode)/ CopywritingAgent(step7 mode)· 输出 8 列分镜表 + 4 H4 辩论模板
 - **So that** · PRD-18 实施的 Step6/7 真接后端 + History 表自动写入(CopywritingAgent 已实施 history.create)
 - **risk_level** · high(2 page · Step7 22 元素多选复杂)
@@ -123,7 +123,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:trpc mutation / 22 元素 Set / CopywritingAgent / history 自动写)
 
 ### US-007 · Step8 真接(直播策划 · 2 子功能 generate_plan + optimize_script)
-- **As a** · QuanQn 用户 · 在 Step8 切换 2 子功能 · 各自独立 form 提交
+- **As a** · QuanAn 用户 · 在 Step8 切换 2 子功能 · 各自独立 form 提交
 - **I want** · form 提交 → trpc.stepData.save 接 LivestreamAgent · result 真 LLM 输出 6 模块 / 2 InfoCard · sub_function discriminator 隔离防交叉污染
 - **So that** · PRD-18 实施的 Step8 真接后端 + 2 子功能各自独立调用 LivestreamAgent · TD-77 一并 fix(InfoCard label 常量化)
 - **risk_level** · high(2 子功能 discriminator + LivestreamAgent userInput 复杂 enum)
@@ -135,7 +135,7 @@ status_history:
 ### Wave 3 · 收官(2 US)
 
 ### US-008 · 跨 9 step E2E + acc 切换数据隔离 + zero-regression
-- **As a** · QuanQn 用户 · 执行完整 9 step 流程(Step1 → Step3 → Step3b → Step4 → Step4b → Step5 → Step6 → Step7 → Step8)
+- **As a** · QuanAn 用户 · 执行完整 9 step 流程(Step1 → Step3 → Step3b → Step4 → Step4b → Step5 → Step6 → Step7 → Step8)
 - **I want** · playwright e2e/prd-19-frontend-backend.spec.ts 覆盖 ·
   - 真后端启动(`pnpm dev:api` + `pnpm dev:web` 同时跑 · port 5173 / 3000)
   - 9 step 数据真存 DB(每 step 跑 `await prisma.stepData.findFirst({ where: { stepKey, accountId } })` 验证)
@@ -150,7 +150,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:e2e / 真后端 / 真 LLM / fallback / acc 切换 / zero-regression)
 
 ### US-009 · verify-prd-19.sh 35+ 检查项 + maintenance fix TD-76/77
-- **As a** · QuanQn 维护者 · 需要重复执行的脚本验证 PRD-19 全部交付物
+- **As a** · QuanAn 维护者 · 需要重复执行的脚本验证 PRD-19 全部交付物
 - **I want** · `scripts/verify-prd-19.sh` 35+ 检查项 ·
   - §1 11 page 0 hardcode `localStorage.setItem('acc_step{N}')`(LD-009 严守)
   - §2 11 page 全 import useStepData + 用 trpc.stepData.save

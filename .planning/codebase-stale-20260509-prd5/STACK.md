@@ -114,7 +114,7 @@
 
 **Build:**
 - `tsconfig.json` — root project references → `apps/web` + `apps/api` + `apps/admin` + `packages/{schemas,ui,clients}`
-- `tsconfig.base.json` — strict + `noUncheckedIndexedAccess` + `useUnknownInCatchVariables` + path aliases for `@quanqn/{schemas,ui,clients}`
+- `tsconfig.base.json` — strict + `noUncheckedIndexedAccess` + `useUnknownInCatchVariables` + path aliases for `@quanan/{schemas,ui,clients}`
 - `apps/web/vite.config.ts` — manual chunks (`react`, `trpc`, `ui`), proxy `/api/trpc → :3000`, port 5173
 - `turbo.json` — task DAG; `build` and `typecheck` depend on `^build`
 - ESLint 8.57.1 — `@typescript-eslint/eslint-plugin` 6.21.0 + import / react-hooks / jsx-a11y plugins (`max-warnings=0`)
@@ -126,7 +126,7 @@
 **Development:**
 - Node.js 20+ (per `.nvmrc` and `package.json` engines)
 - pnpm 9.15.9
-- PostgreSQL 16.13 (local dev: `postgresql://return@localhost:5432/quanqn` — confirmed in `CLAUDE.md §3`)
+- PostgreSQL 16.13 (local dev: `postgresql://return@localhost:5432/quanan` — confirmed in `CLAUDE.md §3`)
 - pgvector 0.8.0 extension installed for PG 16 (DB declares `extensions = [vector]` in `prisma/schema.prisma:14`)
 - Redis 8.6.3 (`redis://localhost:6379`) — currently only used by `@upstash/ratelimit` against Upstash REST endpoint; **local Redis not yet wired** (DRIFT vs `.env.example REDIS_URL`)
 

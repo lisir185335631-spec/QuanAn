@@ -10,7 +10,7 @@ import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { OpenAIEmbeddingWorker } from '@/workers/embedding/openai-embedding';
 
-import type { KnowledgeChunkContent, RagRetrieveParams } from '@quanqn/schemas';
+import type { KnowledgeChunkContent, RagRetrieveParams } from '@quanan/schemas';
 
 const embeddingWorker = new OpenAIEmbeddingWorker();
 

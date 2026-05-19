@@ -136,7 +136,7 @@ export async function detectViolationThresholds(
         );
 
         // DingTalk notification — isMock=true by default (D-077 · real启 PRR)
-        const msg = `[QuanQn 违规告警] 用户 #${userId} 违规类型「${violationType}」次数=${count}，已触发封禁申请 #${approvalRequest.id}`;
+        const msg = `[QuanAn 违规告警] 用户 #${userId} 违规类型「${violationType}」次数=${count}，已触发封禁申请 #${approvalRequest.id}`;
         await dingtalk.send(msg).catch((err: unknown) => {
           logger.error({ err, userId }, 'violation_detect.dingtalk_send_failed');
         });

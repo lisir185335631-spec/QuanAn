@@ -73,7 +73,7 @@
       "status": "scheduled",
       "evidence": "git show ce1ed9a · 12 shadcn 组件全部写在 apps/web/src/components/ui/* · 而 PRD US-005 AC + SCAFFOLD §A.1 要求 packages/ui/src/base/* (workspace 共享)",
       "root_cause": "ralph 用 shadcn 默认路径(shadcn CLI 默认配)· 没读 SCAFFOLD §A.1 monorepo 拓扑 · 选了「装在调用 app」路径(apps/web/...)而非「共享包」路径(packages/ui/...) · prd.json AC 说了路径但 ralph 注重 shadcn 标准更胜",
-      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanqn/ui/base import · 同时 apps/web 改用 @quanqn/ui/base · 单 web 用时无影响 · admin 复用时必修",
+      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanan/ui/base import · 同时 apps/web 改用 @quanan/ui/base · 单 web 用时无影响 · admin 复用时必修",
       "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
     },
     {
@@ -349,12 +349,12 @@
     {
       "id": "TD-021",
       "title": "ImageGen Worker types 双定义 (zod schema canonical + worker inline interface)",
-      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanqn/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
+      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanan/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
       "scope": [
         "apps/api/src/workers/image-gen/index.ts:14-26 (inline TS interface)",
         "packages/schemas/src/specialist-io/imageGen.schema.ts (zod canonical)"
       ],
-      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanqn/schemas 推断, types 漂移可能让 worker 接错字段",
+      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanan/schemas 推断, types 漂移可能让 worker 接错字段",
       "severity": "Low",
       "categories": [
         "tech-debt",
@@ -365,10 +365,10 @@
       "detected_in_story": "US-001 (Opus audit · F2 跨 story 协议核对)",
       "fix_by": "US-009 真接 (DALL-E 3 SDK wrapper)",
       "status": "resolved",
-      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
+      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
       "resolved_in_prd": "PRD-7 US-004",
       "resolved_at": "2026-05-11T01:14:00",
-      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanqn/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
+      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanan/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
     },
     {
       "id": "TD-022",
@@ -602,7 +602,7 @@
       "discovered_by": "Opus audit US-002",
       "severity": "low",
       "status": "open",
-      "evidence": "/.env 文件 OPENAI_API_KEY= 为空字符串 · Test 2/3 内 HAS_OPENAI_KEY=!!process.env.OPENAI_API_KEY 为 false · 2 tests skipIf · psql quanqn -c 'SELECT type, count(*) FROM knowledge_chunk' 0 行(从未真 seed)",
+      "evidence": "/.env 文件 OPENAI_API_KEY= 为空字符串 · Test 2/3 内 HAS_OPENAI_KEY=!!process.env.OPENAI_API_KEY 为 false · 2 tests skipIf · psql quanan -c 'SELECT type, count(*) FROM knowledge_chunk' 0 行(从未真 seed)",
       "root_cause": "本地 dev 环境约定不配密钥(CLAUDE.md '本地 dev 不需要 ...') · 但 AC-6 要求 psql 验证真 seed count · 这两条本质冲突",
       "scheduled_fix_in": "PRD-9 收官前在 staging/CI 跑 pnpm seed:knowledge 真 seed + psql 验 case=67/formula=23/element=23 总 113 行 · 或更激进 · CI workflow 加 OPENAI_API_KEY secret + integration test 真跑",
       "audit_exemption": "US-002 approve 时豁免 · 因 dry-run + Test 1 (buildChunks count) 已验证 build 逻辑正确 · 真 seed 仅缺密钥这一步 · 不阻塞 RAG retrieve (US-003) 推进 — US-003 retrieve 测试可用 mock chunks"
@@ -628,7 +628,7 @@
       "discovered_by": "Opus audit US-004",
       "severity": "low",
       "status": "resolved",
-      "evidence": "psql quanqn -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
+      "evidence": "psql quanan -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
       "root_cause": "ralph 实施 AC-10 时 · pgvector seed 需要 OPENAI_API_KEY · 走不通 · 改用 psql INSERT 直插 4 条 dummy chunks(只为截图能拿)· 没把 SQL 命令存到 migration 或 seed 文件",
       "scheduled_fix_in": "PRD-9 收官前 · 或在 apps/api/scripts/seed-dev-knowledge.ts 加一个 dev-only seed script · 写到 package.json scripts 'seed:dev-knowledge' · CI/staging 真 OPENAI_API_KEY 跑 pnpm seed:knowledge 真 seed · dev 跑 pnpm seed:dev-knowledge 拿 fallback 数据",
       "audit_exemption": "US-004 approve 时豁免 · 因 4 条 dev seed 仅服务于本地 AC-10 截图验证 · 不污染 prod · 真 prod 走 TD-034 staging seed path · 不阻塞 PRD-9 收尾",

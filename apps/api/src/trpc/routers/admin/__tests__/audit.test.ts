@@ -18,7 +18,7 @@ const mockAdminAuditLogFindFirst = vi.hoisted(() => vi.fn().mockResolvedValue(nu
 const mockAdminAuditLogCreate = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const mockCostLogFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
 const mockFeedbackLogFindMany = vi.hoisted(() => vi.fn().mockResolvedValue([]));
-const mockAdminUserFindUnique = vi.hoisted(() => vi.fn().mockResolvedValue({ email: 'super@quanqn.com' }));
+const mockAdminUserFindUnique = vi.hoisted(() => vi.fn().mockResolvedValue({ email: 'super@quanan.com' }));
 
 const mockPrismaTransaction = vi.hoisted(() =>
   vi.fn().mockImplementation((cb: (tx: unknown) => unknown) =>
@@ -69,13 +69,13 @@ import { prisma } from '@/lib/prisma';
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
 const SUPER_ADMIN: AdminLuciaUser = {
-  id: 1, email: 'super@quanqn.com', role: 'super_admin', isMock: false, isActive: true,
+  id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: false, isActive: true,
 };
 const REGULAR_ADMIN: AdminLuciaUser = {
-  id: 2, email: 'admin@quanqn.com', role: 'admin', isMock: false, isActive: true,
+  id: 2, email: 'admin@quanan.com', role: 'admin', isMock: false, isActive: true,
 };
 const READONLY_ADMIN: AdminLuciaUser = {
-  id: 3, email: 'readonly@quanqn.com', role: 'readonly_admin', isMock: false, isActive: true,
+  id: 3, email: 'readonly@quanan.com', role: 'readonly_admin', isMock: false, isActive: true,
 };
 
 const MOCK_SESSION: AdminLuciaSession = {
@@ -127,7 +127,7 @@ beforeEach(() => {
   mockAdminAuditLogCreate.mockResolvedValue({});
   mockCostLogFindMany.mockResolvedValue([]);
   mockFeedbackLogFindMany.mockResolvedValue([]);
-  mockAdminUserFindUnique.mockResolvedValue({ email: 'super@quanqn.com' });
+  mockAdminUserFindUnique.mockResolvedValue({ email: 'super@quanan.com' });
   mockPrismaTransaction.mockImplementation((cb: (tx: unknown) => unknown) =>
     cb({
       $executeRaw: vi.fn().mockResolvedValue(undefined),
@@ -485,7 +485,7 @@ describe('exportPdf', () => {
     };
     expect(args.traceId).toBe(TRACE_ID);
     expect(args.caseNumber).toBe('CASE-003');
-    expect(args.requesterEmail).toBe('super@quanqn.com');
+    expect(args.requesterEmail).toBe('super@quanan.com');
     expect(args.requesterRole).toBe('super_admin');
   });
 

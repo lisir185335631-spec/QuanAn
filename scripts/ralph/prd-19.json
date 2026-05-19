@@ -1,12 +1,12 @@
 {
-  "project": "QuanQn 主应用 · frontend ↔ backend 真接入",
+  "project": "QuanAn 主应用 · frontend ↔ backend 真接入",
   "branchName": "ralph/prd-19-frontend-backend-bridge",
   "description": "PRD-19 frontend ↔ backend 真接入 · 11 step page 接 useStepData + trpc.stepData.save · 8 Specialist 真 LLM(或 fallback)· LS↔DB 双写桥接 · LD-009 严守 · brownfield 99% 已实施(prisma + 8 Specialist + stepData router + useStepData hook 全 ready)· scope 9 US",
   "userStories": [
     {
       "id": "US-001",
       "title": "stepKey 命名规范化 + 老 LS 数据迁移 helper(migrateLegacyLs)",
-      "description": "作为 QuanQn frontend 开发者 · 在 11 step page 接 useStepData 之前 · 需要统一 stepKey 命名(step1/step3/step3b/step4/step4b/step5/step6/step7/step8)+ 一次性迁移 PRD-15~18 老 `acc_step{N}` LS 数据到 LD-009 规范命名(`aiip_memory_acc_{accountId}_step{N}`)· 防数据丢失 + 跨账号隔离立即生效 · App.tsx mount 时 1 次 call · 用 MIGRATION_FLAG_KEY 防重复跑",
+      "description": "作为 QuanAn frontend 开发者 · 在 11 step page 接 useStepData 之前 · 需要统一 stepKey 命名(step1/step3/step3b/step4/step4b/step5/step6/step7/step8)+ 一次性迁移 PRD-15~18 老 `acc_step{N}` LS 数据到 LD-009 规范命名(`aiip_memory_acc_{accountId}_step{N}`)· 防数据丢失 + 跨账号隔离立即生效 · App.tsx mount 时 1 次 call · 用 MIGRATION_FLAG_KEY 防重复跑",
       "acceptanceCriteria": [
         "新建 apps/web/src/lib/migration/legacy-ls.ts · export migrateLegacyLs(store, accountId): { migrated, skipped } · 内部遍历 LEGACY_KEYS = ['acc_step1', 'acc_step3', 'acc_step3b', 'acc_step4', 'acc_step4b', 'acc_step5', 'acc_step5_selected_topic', 'acc_step6', 'acc_step7', 'acc_step8'] · 读老 key 数据 → 写新 stepLsKey(accountId, stepKey) 或 aiip_memory_acc_{accountId}_selected_topic(跨 step 桥)· 删老 key · 用 MIGRATION_FLAG_KEY = 'aiip_legacy_migration_v1_done' 防重跑(再次 call 返回 { migrated: 0, skipped: 10 })",
         "新增 apps/web/src/lib/migration/__tests__/legacy-ls.test.ts · 单测覆盖 4 类 edge · (a) 0 legacy keys 存在 → migrated=0, skipped=10, FLAG 写 '1'; (b) 全 10 keys 都有数据 → migrated=10; (c) 部分迁 + 部分新 key 已存在 → 不覆盖新 + 删老; (d) QuotaExceededError 时 console.warn + continue 不中断; (e) accountId === null → return { migrated: 0, skipped: 0 } 不跑",
@@ -51,7 +51,7 @@
     {
       "id": "US-002",
       "title": "useStepData hook 增强 · dbQuery + readOtherStep 跨 step 预填 helper",
-      "description": "作为 QuanQn 11 step page · 需要在 form mount 时读上游 step 数据(如 Step3 读 acc_step1.industry · Step6 读 acc_step7.body.text)· 当前 useStepData 仅 save/load · 不暴露跨 step 读 + DB 预读。新增 dbQuery(useQuery 包装 trpc.stepData.get)+ 静态 readOtherStep helper(纯 LS 读 · 兜底)",
+      "description": "作为 QuanAn 11 step page · 需要在 form mount 时读上游 step 数据(如 Step3 读 acc_step1.industry · Step6 读 acc_step7.body.text)· 当前 useStepData 仅 save/load · 不暴露跨 step 读 + DB 预读。新增 dbQuery(useQuery 包装 trpc.stepData.get)+ 静态 readOtherStep helper(纯 LS 读 · 兜底)",
       "acceptanceCriteria": [
         "修改 apps/web/src/hooks/useStepData.ts · 在原有 save/load/isSaving 基础上 · 新增 `dbQuery = trpc.stepData.get.useQuery({ stepKey }, { enabled: accountId !== null, staleTime: 30_000, retry: false })` · 返回 { save, load, isSaving, dbQuery }",
         "在 apps/web/src/hooks/useStepData.ts 文件级 · 新增 `export function readOtherStep<T = Record<string, unknown>>(accountId, otherStepKey): T | null` · 内部 stepLsKey 拼 key + localStorage.getItem + JSON.parse(catch null)· accountId === null 返回 null",
@@ -95,7 +95,7 @@
     {
       "id": "US-003",
       "title": "Step1 + Step3 + Step3b 真接 stepData router(Positioning industry + Branding packaging/persona)",
-      "description": "作为 QuanQn 用户 · 在 Step1 选行业 / Step3 填 IP 定位 / Step3b 填人设 · form 提交后真接 trpc.stepData.save · backend 自动 wire PositioningAgent(industry mode for step1)或 BrandingAgent(packaging mode for step3 / persona mode for step3b)· result 真 LLM 输出(或 fallback mock 若无 OPENAI_KEY)· UI 用 LoadingState + ErrorState 复用(PRD-17 §11.10.2)· EmptyState 必用 template literal pattern(PRD-18 §11.11.1 红线级)",
+      "description": "作为 QuanAn 用户 · 在 Step1 选行业 / Step3 填 IP 定位 / Step3b 填人设 · form 提交后真接 trpc.stepData.save · backend 自动 wire PositioningAgent(industry mode for step1)或 BrandingAgent(packaging mode for step3 / persona mode for step3b)· result 真 LLM 输出(或 fallback mock 若无 OPENAI_KEY)· UI 用 LoadingState + ErrorState 复用(PRD-17 §11.10.2)· EmptyState 必用 template literal pattern(PRD-18 §11.11.1 红线级)",
       "acceptanceCriteria": [
         "修改 apps/web/src/pages/step/Step1.tsx · 删除 hardcode `localStorage.setItem('acc_step1', ...)` · 改用 `const { save, dbQuery, isSaving } = useStepData(accountId, 'step1')` · form submit 调 save({ industry, industryLabel, customIndustry? })· accountId 来自 useActiveAccount",
         "修改 apps/web/src/pages/step/Step3.tsx + Step3b.tsx · 同模式 · useStepData(accountId, 'step3') / useStepData(accountId, 'step3b') · save 调用替换原 mockResult setTimeout · 跨 step 预填 · const acc_step1 = readOtherStep(accountId, 'step1') · 取 industryLabel 显示 SUBTITLE",
@@ -138,7 +138,7 @@
         {
           "source_prd": "prd-16-aiipznt-alignment",
           "source_story": "US-003",
-          "lesson": "LoadingState / ErrorState / 主 CTA gradient 严禁用 Tailwind 真紫色 utility · D4=B 严守 · 必用 var(--primary) 金色 token · QuanQn primary HSL(43, 87%, 63%)",
+          "lesson": "LoadingState / ErrorState / 主 CTA gradient 严禁用 Tailwind 真紫色 utility · D4=B 严守 · 必用 var(--primary) 金色 token · QuanAn primary HSL(43, 87%, 63%)",
           "antipattern": "<div className='bg-gradient-to-r from-violet-600 to-violet-400'>  // 反例 · Tailwind 真紫色",
           "correct": "<div className='bg-gradient-to-r from-primary to-primary/80'>  // 正确 · 用 token · D4=B"
         }
@@ -147,7 +147,7 @@
     {
       "id": "US-004",
       "title": "Step4 + Step4b 真接 stepData router(Positioning execution + Monetization)",
-      "description": "作为 QuanQn 用户 · 在 Step4 填粉丝/目标/情况 / Step4b 填产品/受众/IP定位/收入水平 · form 提交后真接 trpc.stepData.save · backend 自动 wire PositioningAgent(execution mode for step4)或 MonetizationAgent(for step4b)· result 真 LLM 输出(3 H3 执行计划 / 3 阶梯 + 收入结构 + 案例)· Step4b 收入结构 simple progress bar 严守(LD-174 · 0 import recharts)",
+      "description": "作为 QuanAn 用户 · 在 Step4 填粉丝/目标/情况 / Step4b 填产品/受众/IP定位/收入水平 · form 提交后真接 trpc.stepData.save · backend 自动 wire PositioningAgent(execution mode for step4)或 MonetizationAgent(for step4b)· result 真 LLM 输出(3 H3 执行计划 / 3 阶梯 + 收入结构 + 案例)· Step4b 收入结构 simple progress bar 严守(LD-174 · 0 import recharts)",
       "acceptanceCriteria": [
         "修改 apps/web/src/pages/step/Step4.tsx + Step4b.tsx · useStepData(accountId, 'step4') / useStepData(accountId, 'step4b') · save 调用替换原 mockResult · 跨 step 预填 · readOtherStep(accountId, 'step1') 取 industryLabel 显示 SUBTITLE",
         "修改 apps/web/src/components/step4b/Step4bOutputContent.tsx · 接受 Step4bResult 真数据(从 dbQuery.data?.result 来)· 替换 mockResult 渲染逻辑 · 保持 3 阶梯 schema 渲染 + StageCard 折叠 + animate-in 入场 + simple progress bar(0 import recharts · LD-174 严守)",
@@ -199,7 +199,7 @@
     {
       "id": "US-005",
       "title": "Step5 SSE 真接 saveStream subscription(TopicAgent 5 类爆款选题 100 选题)",
-      "description": "作为 QuanQn 用户 · 在 Step5 填行业/产品 + 上传 file metadata stub(LD-170 严守)· 5 类 Tab(traffic/monetize/persona/cognition/case)切换时 · 每 Tab 各自 trpc.stepData.saveStream subscription 真接 TopicAgent · 进度 UI · first chunk < 3s · 100 选题真 LLM 输出(20/Tab × 5)· LS↔DB 双写镜像保留",
+      "description": "作为 QuanAn 用户 · 在 Step5 填行业/产品 + 上传 file metadata stub(LD-170 严守)· 5 类 Tab(traffic/monetize/persona/cognition/case)切换时 · 每 Tab 各自 trpc.stepData.saveStream subscription 真接 TopicAgent · 进度 UI · first chunk < 3s · 100 选题真 LLM 输出(20/Tab × 5)· LS↔DB 双写镜像保留",
       "acceptanceCriteria": [
         "修改 apps/web/src/pages/step/Step5.tsx · 删除 hardcode `localStorage.setItem('acc_step5', ...)` · 改用 useStepData(accountId, 'step5') 持久化 form state · 5 Tab 切换时调 trpc.stepData.saveStream.useSubscription({ stepKey: 'step5', category, inputs }) · enabled=hasSubmitted · onData 处理 { type: 'started' } 显示 streamStatus + { type: 'done' } 渲染 topics",
         "5 Tab 各自独立 subscription · 切换 Tab 时老 subscription unsubscribe + 新 enable · 防 stream 串 + memory leak · 各 Tab 数据隔离 acc_step5.{traffic|monetize|...}(per useStepData LS 镜像)",
@@ -251,7 +251,7 @@
     {
       "id": "US-006",
       "title": "Step6 + Step7 真接 stepData router(Video shooting + Copywriting + history 自动写)",
-      "description": "作为 QuanQn 用户 · 在 Step6 填 textarea ≥10 字 / Step7 填主题 + 22 元素多选 · form 提交后真接 trpc.stepData.save · backend 自动 wire VideoAgent(shooting mode for step6)/ CopywritingAgent(step7 mode for step7)· 输出 8 列分镜表 + 4 H4 辩论模板 · CopywritingAgent 在 stepData router 内自动 prisma.history.create(已实施)· 跨 step 预填 · Step6 自动读 Step7 result.body.text 预填 textarea",
+      "description": "作为 QuanAn 用户 · 在 Step6 填 textarea ≥10 字 / Step7 填主题 + 22 元素多选 · form 提交后真接 trpc.stepData.save · backend 自动 wire VideoAgent(shooting mode for step6)/ CopywritingAgent(step7 mode for step7)· 输出 8 列分镜表 + 4 H4 辩论模板 · CopywritingAgent 在 stepData router 内自动 prisma.history.create(已实施)· 跨 step 预填 · Step6 自动读 Step7 result.body.text 预填 textarea",
       "acceptanceCriteria": [
         "修改 apps/web/src/pages/step/Step6.tsx · useStepData(accountId, 'step6') · 跨 step 预填 · readOtherStep(accountId, 'step7') 取 result.body.text 自动填 textarea(若 acc_step7 有数据)· save({ text }) 触发 VideoAgent · 字符计数 template + < 10 字 disabled 保留",
         "修改 apps/web/src/pages/step/Step7.tsx · useStepData(accountId, 'step7') · 22 elements Set + 20 script types 搜索保留 · onSubmit 改 save({ topic, optimizeDir, scriptType, elements: Array.from(elementsSet) })· 跨 step 预填 · readOtherStep(accountId, 'step5_selected_topic') 取选题预填 topic textarea",
@@ -303,7 +303,7 @@
     {
       "id": "US-007",
       "title": "Step8 真接 stepData router(Livestream 2 子功能 generate_plan + optimize_script)",
-      "description": "作为 QuanQn 用户 · 在 Step8 切换 2 子功能 · 各自独立 form 提交 · trpc.stepData.save · backend 自动 wire LivestreamAgent · result 真 LLM 输出 6 模块(generate_plan)或 2 InfoCard(optimize_script)· sub_function discriminator 严守隔离防交叉污染(PRD-18 §11.11.4)· TD-77 一并 fix(STEP8_OPTIMIZE_OUTPUT_LABELS_2 常量化)",
+      "description": "作为 QuanAn 用户 · 在 Step8 切换 2 子功能 · 各自独立 form 提交 · trpc.stepData.save · backend 自动 wire LivestreamAgent · result 真 LLM 输出 6 模块(generate_plan)或 2 InfoCard(optimize_script)· sub_function discriminator 严守隔离防交叉污染(PRD-18 §11.11.4)· TD-77 一并 fix(STEP8_OPTIMIZE_OUTPUT_LABELS_2 常量化)",
       "acceptanceCriteria": [
         "修改 apps/web/src/pages/step/Step8.tsx · 2 子功能 H3 tab 切换保留 · sub_function discriminator 严守 · LS 数据 sub_function 不匹配时 return(防交叉污染)",
         "修改 apps/web/src/components/step8/Step8GeneratePlan.tsx + Step8OptimizeScript.tsx · 各自 useStepData(accountId, 'step8') · save({ sub_function: 'generate_plan' | 'optimize_script', ...formData })· 替换 mockResult 为真 LivestreamAgent result · userInput.experience enum 验证(新手 | 有经验 | 资深 · LivestreamAgent default '有经验')",
@@ -356,7 +356,7 @@
     {
       "id": "US-008",
       "title": "E2E playwright 跨 9 step + acc 切换数据隔离 + zero-regression 硬门禁",
-      "description": "作为 QuanQn 维护者 · 需要 E2E 验证 PRD-19 9 step page 真接 backend 闭环跑通 · 含 acc 切换数据隔离 · zero-regression PRD-15~18 旧测试 全 PASS · Specialist 真 LLM call 或 fallback mock(默认 fallback · 无 OPENAI_KEY 时)· 真后端 stack 启动(pnpm dev:api + dev:web + PG + Redis)",
+      "description": "作为 QuanAn 维护者 · 需要 E2E 验证 PRD-19 9 step page 真接 backend 闭环跑通 · 含 acc 切换数据隔离 · zero-regression PRD-15~18 旧测试 全 PASS · Specialist 真 LLM call 或 fallback mock(默认 fallback · 无 OPENAI_KEY 时)· 真后端 stack 启动(pnpm dev:api + dev:web + PG + Redis)",
       "acceptanceCriteria": [
         "新建 apps/web/e2e/prd-19-frontend-backend.spec.ts · test.describe('PRD-19 · frontend ↔ backend 真接入') · 4 tests · (a) Step1 真接 PositioningAgent · LS↔DB 双写; (b) acc 切换 · 数据隔离 · Step1 industry 不串(account A 美食 vs B 美妆 互不见); (c) 9 step 完整流程 · 数据真存 DB · 0 hardcode acc_step{N} LS; (d) zero-regression · 119+ vitest tests + tsc 0 error + 旧 e2e PRD-15~18 全 PASS",
         "test (a) · agent-browser 打开 http://localhost:5173/step/1 · 登录 + 选行业 '美食' + 等 LoadingState · prisma.stepData.findFirst({ where: { stepKey: 'step1', accountId } }) 非 null · row.inputs.industryLabel === '美食' · row.status in ['completed', 'fallback'] · LS 镜像 `aiip_memory_acc_${accountId}_step1` 非 null",
@@ -406,7 +406,7 @@
     {
       "id": "US-009",
       "title": "verify-prd-19.sh 35+ 检查项 + TD-76/77 fix 收官",
-      "description": "作为 QuanQn 维护者 · 需要重复执行的 bash script 验证 PRD-19 全部交付物 · 35+ 检查项 · 含 LD-009 严守 / aiip_memory_acc_ 命名 / trpc.stepData.save 真接 / zero-regression / TD-76/77 fix · 一并 commit step7.ts + step8.ts 常量 export + Step7.tsx + Step8OptimizeScript.tsx 用常量",
+      "description": "作为 QuanAn 维护者 · 需要重复执行的 bash script 验证 PRD-19 全部交付物 · 35+ 检查项 · 含 LD-009 严守 / aiip_memory_acc_ 命名 / trpc.stepData.save 真接 / zero-regression / TD-76/77 fix · 一并 commit step7.ts + step8.ts 常量 export + Step7.tsx + Step8OptimizeScript.tsx 用常量",
       "acceptanceCriteria": [
         "新建 scripts/verify-prd-19.sh(chmod +x)· bash + grep + 真 typecheck/vitest 跑 · 35+ 检查项分 10 §·",
         "§1 · grep apps/web/src/pages/step/ 'localStorage.setItem.*acc_step' → 0 hit(LD-009 严守 · 11 page 0 hardcode); §2 · grep apps/web/src/pages/step/ 'from .@/hooks/useStepData' or 'useStepData(' → ≥ 9 命中(9 step page 全 import); §3 · grep 'trpc.stepData.save.useMutation\\|useStepData.*save' → ≥ 9 命中",

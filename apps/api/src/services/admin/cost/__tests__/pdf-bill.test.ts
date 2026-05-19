@@ -19,7 +19,7 @@ vi.mock('@react-pdf/renderer', () => ({
   StyleSheet: { create: (s: unknown) => s },
 }));
 
-vi.mock('@quanqn/ui/admin/pdf', () => ({
+vi.mock('@quanan/ui/admin/pdf', () => ({
   PdfBillTemplate: vi.fn().mockReturnValue(null),
 }));
 

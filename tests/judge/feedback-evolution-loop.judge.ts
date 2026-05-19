@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-013 AC-1
+ * QuanAn · PRD-8 US-013 AC-1
  * feedback-evolution-loop LLM Judge — 1 golden case
  * AC-1: feedback → trigger → EvolutionInsight → injection quality ≥ 4.0/5
  *

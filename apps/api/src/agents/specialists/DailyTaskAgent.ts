@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-007
+ * QuanAn · PRD-8 US-007
  * DailyTaskAgent — 真实 LLM 接入 (L5 · 每日任务大脑)
  *
  * AC-1: execute() 真接 LLMGateway.complete(model_tier='lightweight') · timeout 30s
@@ -10,7 +10,7 @@
 
 import { randomUUID } from 'node:crypto';
 
-import { DailyTaskOutputSchema } from '@quanqn/schemas/specialist-io';
+import { DailyTaskOutputSchema } from '@quanan/schemas/specialist-io';
 import { z } from 'zod';
 
 import { generateSpecialistTraceId } from '@/agents/base/types';
@@ -29,7 +29,7 @@ import type {
   SpecialistResponse,
 } from '@/specialists/base/types';
 
-import type { DailyTaskOutput } from '@quanqn/schemas/specialist-io';
+import type { DailyTaskOutput } from '@quanan/schemas/specialist-io';
 import type { ZodType } from 'zod';
 
 export type { DailyTaskOutput };

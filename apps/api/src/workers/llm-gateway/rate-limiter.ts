@@ -1,5 +1,5 @@
 /**
- * QuanQn · LLMGateway rate limiter
+ * QuanAn · LLMGateway rate limiter
  * AC-2: @upstash/ratelimit token bucket (Free 50/日 · Pro 500/日 · Enterprise 5000/日)
  * When UPSTASH_REDIS_REST_URL is not set (local dev), passes through with a warning.
  * PRD-13 US-005 AC-9: whitelist bypass — if whitelistExpiresAt valid, skip token bucket
@@ -45,7 +45,7 @@ function _buildLimiter(plan: UserPlan): Ratelimit {
   return new Ratelimit({
     redis,
     limiter: Ratelimit.tokenBucket(limit, '1 d', limit),
-    prefix: `quanqn:rl:${plan}`,
+    prefix: `quanan:rl:${plan}`,
   });
 }
 

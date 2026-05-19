@@ -4,8 +4,8 @@
 
 import { useCallback, useMemo, useState, useRef, type MouseEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 import { adminTrpc } from '../../lib/admin-client';
 import { PlanBadge } from './PlanBadge';
 import { UsersOverviewCards } from './UsersOverviewCards';

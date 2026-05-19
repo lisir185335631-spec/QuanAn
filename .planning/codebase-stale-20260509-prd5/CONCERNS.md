@@ -1,4 +1,4 @@
-# Codebase Concerns · QuanQn
+# Codebase Concerns · QuanAn
 
 **Analysis Date:** 2026-05-09
 **Scope:** PRD-1 → PRD-5 完成期 · 12 stories PRD-5 全 PASSED · 准备进入 PRD-6/7
@@ -36,7 +36,7 @@ export const protectedProcedure = publicProcedure.use(accountIsolationMiddleware
 **核心逻辑:**
 ```ts
 return ctx.prisma.$transaction(async (tx) => {
-  await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;                                                  // line 38
+  await tx.$executeRaw`SET LOCAL ROLE quanan_app`;                                                  // line 38
   await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, true)`;  // line 39
   if (user?.id !== null && user?.id !== undefined) {
     await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, true)`;        // line 41
@@ -47,7 +47,7 @@ return ctx.prisma.$transaction(async (tx) => {
 
 **关键设计:**
 - `set_config(name, value, is_local=true)` = transaction-scoped(等价 `SET LOCAL`)· 事务结束自动清除
-- `SET LOCAL ROLE quanqn_app` 切换到非 superuser 角色(superuser 默认 BYPASSRLS)
+- `SET LOCAL ROLE quanan_app` 切换到非 superuser 角色(superuser 默认 BYPASSRLS)
 - AC-6 `apps/api/src/trpc/middleware/account-isolation.ts:9` 注释明确:**整个 apps/api/src 仅此一处用 prisma.$executeRaw**(LD-009 R-009)
 
 **FORBIDDEN 处理:**
@@ -60,7 +60,7 @@ return ctx.prisma.$transaction(async (tx) => {
 **风险等级:** 🟡 MEDIUM
 - ⚠️ 事务 wrap 会增加 DB 连接占用 · 主体业务每次请求 +1 connection · 高 QPS 时 pool 可能耗尽
 - ⚠️ `as unknown as PrismaClient` 类型断言隐藏潜在 bug(see §1.6)
-- ✅ `quanqn_app` 角色与 RLS 策略联动 · 在 RLS 测试中验证(`tests/integration/api/rls-isolation.test.ts:44-50`)
+- ✅ `quanan_app` 角色与 RLS 策略联动 · 在 RLS 测试中验证(`tests/integration/api/rls-isolation.test.ts:44-50`)
 
 ---
 
@@ -229,7 +229,7 @@ const DISCLAIMERS = {
 **为什么现在还没爆雷:**
 - PRD-1~PRD-5 主要做基础设施 + 8 Specialist 接线 + 4 模块 e2e · LLM 测试都是 mock
 - 真用户接入(P9 邀请制内测)前必须修
-- `audit-redlines.sh:24` 注释明确 `R-14 PII/免责` 不在 grep 红线脚本中 · 留给 `audit-ld.sh` 但该脚本不存在(`find /Users/return/Desktop/QuanQn/scripts -name "audit-*.sh"` 仅 `audit-redlines.sh` 一个)
+- `audit-redlines.sh:24` 注释明确 `R-14 PII/免责` 不在 grep 红线脚本中 · 留给 `audit-ld.sh` 但该脚本不存在(`find /Users/return/Desktop/QuanAn/scripts -name "audit-*.sh"` 仅 `audit-redlines.sh` 一个)
 
 **风险等级:** 🔴 **CRITICAL** · 上线即合规违规
 - 影响:可能被 cyberspace administration / 行业监管按数据保护法 + 行业准入条例处罚
@@ -333,7 +333,7 @@ const PLAN_LIMITS = {
 - 超限 → `RateLimitError` 含 `resetAfterMs`(`rate-limiter.ts:13-22`)
 
 **风险点:**
-- 🟡 LD-009 R-005 redis key 命名空间 · `prefix: 'quanqn:rl:${plan}'` (`rate-limiter.ts:47`) 没带 `acc_${id}` 因为 rate limit 是 per-user · 不需要 per-account · 设计合理但偏离 R-5 字面要求 · 未来 audit 可能误报
+- 🟡 LD-009 R-005 redis key 命名空间 · `prefix: 'quanan:rl:${plan}'` (`rate-limiter.ts:47`) 没带 `acc_${id}` 因为 rate limit 是 per-user · 不需要 per-account · 设计合理但偏离 R-5 字面要求 · 未来 audit 可能误报
 
 ### §2.5 慢查询风险点
 
@@ -360,7 +360,7 @@ const PLAN_LIMITS = {
 
 ## §3 Known Tech Debt(15 条 · `.agents/tech-debt.json`)
 
-完整列表来自 `/Users/return/Desktop/QuanQn/.agents/tech-debt.json` · 按 status 排序。
+完整列表来自 `/Users/return/Desktop/QuanAn/.agents/tech-debt.json` · 按 status 排序。
 
 ### §3.1 已闭环(closed)
 
@@ -715,4 +715,4 @@ ls apps/api/src/specialists/*.ts 2>&1 | grep -v "/base" | wc -l
 
 ---
 
-*Concerns audit: 2026-05-09 · QuanQn PRD-1~PRD-5 完成期 · 12 stories PRD-5 PASSED*
+*Concerns audit: 2026-05-09 · QuanAn PRD-1~PRD-5 完成期 · 12 stories PRD-5 PASSED*

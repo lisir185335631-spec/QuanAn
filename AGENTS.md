@@ -1,4 +1,4 @@
-# QuanQn · 代码层设计约束(AGENTS.md)
+# QuanAn · 代码层设计约束(AGENTS.md)
 
 > **版本** · v0.5(2026-05-06 创建 · 2026-05-07 v0.2 修订:§10 admin 5 LD-A + 6 R-A + 14 高风险 + 5 audit_commands · 2026-05-14 v0.3:§10.1 +LD-A7 evolution_profile clear 单点保护 · 2026-05-15 v0.4:§10.1 +LD-A10 constant_versions.status='active' 单点保护 · 2026-05-15 v0.5:§10.1 +LD-A11 feature_flags/system_config 写操作单点保护)
 > **派生自** · [ARCHITECTURE.md](ARCHITECTURE.md) v0.4 + [ADMIN-ARCHITECTURE.md](ADMIN-ARCHITECTURE.md) v0.2 · §4 Agent 编排 + §6 接口契约 + §3 数据架构
@@ -693,7 +693,7 @@ const url = await dalle.generate({...});  // 阻塞 30s 用户主流程
 > Ralph 在创建新文件前 · 先回这棵树查应该放哪。
 
 ```
-QuanQn/
+QuanAn/
 ├── ARCHITECTURE.md          # 架构骨架(只读 · 修改要先开 ADR)
 ├── AGENTS.md                # 本文件 · 代码层约束
 ├── ADR.md                   # 架构决策详情
@@ -2110,7 +2110,7 @@ grep -rn "new OpenAI\|new Anthropic" src/ --exclude-dir=lib/llm-gateway
 set -e
 
 echo "════════════════════════════════════"
-echo "  Opus Audit · QuanQn"
+echo "  Opus Audit · QuanAn"
 echo "════════════════════════════════════"
 
 # Step 1 · 必跑 5 项(§8.3)
@@ -2335,11 +2335,11 @@ spec.md(原版规格)+ DESIGN.md(设计 token)
 #### LD-A1 · admin 子系统独立部署 + 独立 OAuth(对应 ADR-021)
 
 **铁律**:
-- ✅ apps/admin 独立 build → admin.quanqn.com
-- ✅ apps/admin 用独立 OAuth client_id(QUANQN_ADMIN_CLIENT_ID)+ Workspace 限定 @quanqn.com
+- ✅ apps/admin 独立 build → admin.quanan.com
+- ✅ apps/admin 用独立 OAuth client_id(QUANQN_ADMIN_CLIENT_ID)+ Workspace 限定 @quanan.com
 - ✅ apps/admin session 跟主应用 session 完全隔离(独立 Redis namespace `admin:session:*`)
 - ❌ apps/admin 复用主应用 OAuth client / session
-- ❌ apps/admin 部署到 www.quanqn.com 子路径
+- ❌ apps/admin 部署到 www.quanan.com 子路径
 
 **执行检查**:
 - grep `apps/admin/.*QUANQN_WEB_CLIENT` → 0 结果(admin 不应出现 web 的 OAuth 配置名)
@@ -2519,8 +2519,8 @@ grep -rnE "(prisma|db|tx)\.(featureFlag|systemConfig)\.(update|upsert|create)" \
 
 ```bash
 # 检测
-! grep -rn "from '@quanqn/admin\|from '\.\./admin'" apps/web/src/
-! grep -rn "from '@quanqn/web\|from '\.\./web'" apps/admin/src/
+! grep -rn "from '@quanan/admin\|from '\.\./admin'" apps/web/src/
+! grep -rn "from '@quanan/web\|from '\.\./web'" apps/admin/src/
 ```
 
 **例外** · packages/* 三方共享层不算违反(zod / UI base / tRPC client config 共享)。
@@ -2533,7 +2533,7 @@ grep -rnE "(prisma|db|tx)\.(featureFlag|systemConfig)\.(update|upsert|create)" \
 ! grep -rn "/admin" apps/web/src/
 ```
 
-**强制** · admin 用户必须主动访问 admin.quanqn.com · 主应用不暴露 admin 入口。
+**强制** · admin 用户必须主动访问 admin.quanan.com · 主应用不暴露 admin 入口。
 
 #### R-A3 · 不允许 admin SPA 不带 IP 白名单 / MFA 直接上线
 
@@ -2636,8 +2636,8 @@ bash scripts/audit-redlines-admin.sh  # 6 条 R-A 红线一键 grep
 #### §10.4.3 admin 集成测试
 
 ```bash
-pnpm --filter @quanqn/api test:admin           # admin router 单元测试
-pnpm --filter @quanqn/api test:admin-integration  # 含 6 闸鉴权链
+pnpm --filter @quanan/api test:admin           # admin router 单元测试
+pnpm --filter @quanan/api test:admin-integration  # 含 6 闸鉴权链
 pnpm test:e2e:admin                            # admin SPA E2E
 ```
 
@@ -3304,7 +3304,7 @@ trpc subscription 路径必须 ·
 - **server middleware** (`apps/api/src/trpc/middleware/account-isolation.ts`) ·
   ```typescript
   if (type === 'subscription') {
-    await ctx.prisma.$executeRaw`SET ROLE quanqn_app`;
+    await ctx.prisma.$executeRaw`SET ROLE quanan_app`;
     // connection-level SET (is_local=false) · 替代 tx SET LOCAL
     await ctx.prisma.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, false)`;
     return next();

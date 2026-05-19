@@ -1,12 +1,12 @@
 {
-  "project": "QuanQn 主应用前端对齐 aiipznt(Phase 1)",
+  "project": "QuanAn 主应用前端对齐 aiipznt(Phase 1)",
   "branchName": "ralph/prd-16-aiipznt-alignment",
   "description": "跟 aiipznt 1:1 对齐 4 件事 · (1) 设计系统切 Orbitron/Rajdhani/Noto Sans SC 字体 + animate-ping 紫色变体 + glass-card + data-grid-bg utility(D4=B 颜色保留 Aurelian Dark 紫) · (2) 首页 / 全新建 · Hero AI+短视频+IP + 9 步进度 + FUNCTION MATRIX 15 卡(4 H3 + 1 footer) + WORKFLOW 7 步 + READY TO START? CTA · (3) Header 重构 · 4 一级菜单 click dropdown 25 二级项(创作 5 / 策划 8 / 智能 6 / 更多 6) + 「赵语AI」IP 切换 + sally zhao chip + 登出 icon-only · (4) /guide 全新建(USER GUIDE + 5 步流程 + 13 模块卡 + FAQ) + /ip-plan 重写(9 step 卡片网格)",
   "userStories": [
     {
       "id": "US-001",
       "title": "设计系统切 Orbitron/Rajdhani/Noto Sans SC 字体 + animate-ping 紫色变体 + glass-card + data-grid-bg utility(颜色 D4=B 严锁)",
-      "description": "作为开发者,我需要把 aiipznt 的字体 / spacing / motion 设计系统切到 QuanQn 主应用,以便后续 US-002~011 直接套用 1:1 layout · 但严格保留 Aurelian Dark 紫色 token 不变(D4=B)· 所有 aiipznt 的 var(--gold) border-gold/X shadow-gold/X 等映射到 var(--primary) border-primary/X shadow-primary/X",
+      "description": "作为开发者,我需要把 aiipznt 的字体 / spacing / motion 设计系统切到 QuanAn 主应用,以便后续 US-002~011 直接套用 1:1 layout · 但严格保留 Aurelian Dark 紫色 token 不变(D4=B)· 所有 aiipznt 的 var(--gold) border-gold/X shadow-gold/X 等映射到 var(--primary) border-primary/X shadow-primary/X",
       "acceptanceCriteria": [
         "AC-1 · apps/web/index.html head 加 Google Fonts preconnect + 3 字体导入 link · 完整代码 · <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap\" rel=\"stylesheet\">",
         "AC-2 · apps/web/tailwind.config.ts 的 theme.extend.fontFamily 必须含 5 个 family · display(Orbitron+Rajdhani+Noto Sans SC+system-ui+sans-serif) · label(Rajdhani+Noto Sans SC+system-ui+sans-serif) · cn(\"Noto Sans SC\"+system-ui+sans-serif) · sans(ui-sans-serif+system-ui+-apple-system+sans-serif) · mono(ui-monospace+SFMono-Regular+Menlo+monospace)",
@@ -43,7 +43,7 @@
     {
       "id": "US-002",
       "title": "首页 / Hero 区(H1 AI+短视频+IP + 副标 + 2 CTA · 不再 redirect /step/1)",
-      "description": "作为用户,我访问 QuanQn 主应用根 URL / 时,应该看到完整的 aiipznt 风格首页 Hero 区(不再 redirect 到 /step/1),含 H1 AI+短视频+IP(Orbitron 巨大紫色 outline)+ 3 副标题 + 引用副标 + 主 CTA 启动智能分析 + 次 CTA 使用说明",
+      "description": "作为用户,我访问 QuanAn 主应用根 URL / 时,应该看到完整的 aiipznt 风格首页 Hero 区(不再 redirect 到 /step/1),含 H1 AI+短视频+IP(Orbitron 巨大紫色 outline)+ 3 副标题 + 引用副标 + 主 CTA 启动智能分析 + 次 CTA 使用说明",
       "acceptanceCriteria": [
         "AC-1 · apps/web/src/router.tsx 改 · 旧 { index: true, element: <Navigate to=\"/step/1\" replace /> } 删除 · 新 { index: true, element: <Home /> } + import Home from '@/pages/Home'",
         "AC-2 · 新建 apps/web/src/pages/Home.tsx · 含 HeroSection 函数 + Home 默认导出函数 · main 容器用 className=\"flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen\" · HeroSection 含 h1 className=\"font-display text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary to-primary/60 mb-6 tracking-tight\" style={{ WebkitTextStroke: '1px var(--primary)' }} · 文字 'AI+短视频+IP'",
@@ -189,7 +189,7 @@
     {
       "id": "US-007",
       "title": "Header 重构 · 4 一级菜单 click dropdown 25 二级项(创作 5 / 策划 8 / 智能 6 / 更多 6)",
-      "description": "作为用户,Header 中央应该看到 4 一级菜单(创作 / 策划 / 智能 / 更多)· 每个 click 触发(非 hover)弹 dropdown · 内含二级菜单跳转。当前 QuanQn Header 只有 1 个 工具 dropdown(14 工具)+ 6 模块 list · 必须重构为 4 一级菜单严格按 dump §1.2 实测映射",
+      "description": "作为用户,Header 中央应该看到 4 一级菜单(创作 / 策划 / 智能 / 更多)· 每个 click 触发(非 hover)弹 dropdown · 内含二级菜单跳转。当前 QuanAn Header 只有 1 个 工具 dropdown(14 工具)+ 6 模块 list · 必须重构为 4 一级菜单严格按 dump §1.2 实测映射",
       "acceptanceCriteria": [
         "AC-1 · 新建 apps/web/src/lib/constants/header-nav.ts · export HEADER_NAV: HeaderNavGroup[] · 4 group · 严格按 dump §1.2 实测 ·  group[0] = { label: '创作', items: [{ label: '爆款选题', href: '/step/5' }, { label: '文案生成', href: '/step/7' }, { label: '文案解析', href: '/video-analysis' }, { label: '获客视频', href: '/acquisition-video' }, { label: '呈现形式', href: '/present-styles' }] } · group[1] = { label: '策划', items: [{ label: '选择行业', href: '/step/1' }, { label: '账号包装', href: '/step/3' }, { label: '人设定制', href: '/step/3b' }, { label: '执行计划', href: '/step/4' }, { label: '变现路径', href: '/step/4b' }, { label: '拍摄计划', href: '/step/6' }, { label: '直播策划', href: '/step/8' }, { label: '私域成交', href: '/private-domain' }] } · group[2] = { label: '智能', items: [{ label: 'IP诊断', href: '/diagnosis' }, { label: '每日任务', href: '/daily-tasks' }, { label: 'AI视频', href: '/ai-video' }, { label: '语音对话', href: '/voice-chat' }, { label: '深度学习', href: '/deep-learning' }, { label: '进化仪表盘', href: '/evolution' }] } · group[3] = { label: '更多', items: [{ label: '账号管理', href: '/accounts' }, { label: '方法论', href: '/knowledge' }, { label: '使用说明', href: '/guide' }, { label: '我的IP方案', href: '/ip-plan' }, { label: '我的选题库', href: '/my-topics' }, { label: '历史记录', href: '/history' }] }",
         "AC-2 · 重构 apps/web/src/components/Header.tsx · 删 const TOOLS_14 = [...] 数组 + 删 const NEW_MODULES_6 = [...] 数组 + 删 ToolsDropdown 函数 · 替换为 HeaderNav 函数 · 渲染 nav className=\"hidden lg:flex items-center gap-1\" · HEADER_NAV.map(group => <DropdownMenu>...</DropdownMenu>) · 每 dropdown trigger 是 Button · DropdownMenuContent align=\"start\" className=\"min-w-[180px] rounded-xl border border-primary/15 bg-popover/95 backdrop-blur-xl shadow-lg shadow-primary/5 mt-1\" · 内含 group.items.map(item => <DropdownMenuItem asChild><Link to={item.href}>{item.label}</Link></DropdownMenuItem>)",
@@ -290,7 +290,7 @@
     {
       "id": "US-010",
       "title": "/ip-plan page 重写 · [← 返回首页] + H1 我的IP方案 + 进度条 + 9 step 卡片网格(每卡 [查看详情])",
-      "description": "作为用户,我访问 /ip-plan 应该看到完整的 IP 方案 page · 含 [← 返回首页] button + H1 我的IP方案 + 已完成 N / 9 步 + [↻ 刷新] button + glass-card 进度条 + 9 step 卡片网格(每卡 emoji + step 名 + 状态 + [查看详情 → /step/X])· 当前 QuanQn IpPlan 只有 <StepProgress> + skeleton · 必须重写",
+      "description": "作为用户,我访问 /ip-plan 应该看到完整的 IP 方案 page · 含 [← 返回首页] button + H1 我的IP方案 + 已完成 N / 9 步 + [↻ 刷新] button + glass-card 进度条 + 9 step 卡片网格(每卡 emoji + step 名 + 状态 + [查看详情 → /step/X])· 当前 QuanAn IpPlan 只有 <StepProgress> + skeleton · 必须重写",
       "acceptanceCriteria": [
         "AC-1 · 完全重写 apps/web/src/pages/IpPlan.tsx · 新 import { ArrowLeft, RefreshCw, FileText } from 'lucide-react' · 新 const STEP_CARDS = [{ key: '1', emoji: '🎯', title: '行业选择', href: '/step/1' }, { key: '3', emoji: '📦', title: '账号包装', href: '/step/3' }, { key: '3b', emoji: '👤', title: '人设定制', href: '/step/3b' }, { key: '4', emoji: '📋', title: '执行计划', href: '/step/4' }, { key: '4b', emoji: '💰', title: '变现路径', href: '/step/4b' }, { key: '5', emoji: '🔥', title: '爆款选题', href: '/step/5' }, { key: '6', emoji: '🎬', title: '拍摄计划', href: '/step/6' }, { key: '7', emoji: '✏️', title: '文案生成', href: '/step/7' }, { key: '8', emoji: '🎙️', title: '直播策划', href: '/step/8' }] · 严格 9 个 key 跳 step2",
         "AC-2 · main 容器 className=\"flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen\" data-testid=\"ip-plan-page\" · 顶部 div className=\"mb-8\" 含 <Link to=\"/\"><Button variant=\"ghost\" size=\"sm\" className=\"font-cn h-8 mb-4 text-muted-foreground hover:text-foreground gap-1.5 px-3\"><ArrowLeft className=\"h-4 w-4 mr-1\" /> 返回首页</Button></Link> + flex 容器内含 div(h1 + p)+ <Button variant=\"outline\" onClick={() => refetch()}><RefreshCw className=\"h-4 w-4 mr-1\" /> 刷新</Button>",

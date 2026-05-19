@@ -1,6 +1,6 @@
 #!/bin/bash
 # scripts/seed-reject-examples.sh
-# 用途 · 把 PRD-MASTER.md §6.2 的 35 条 QuanQn 通用反例预填到 ~/.claude/playbooks/reject-examples.jsonl
+# 用途 · 把 PRD-MASTER.md §6.2 的 35 条 QuanAn 通用反例预填到 ~/.claude/playbooks/reject-examples.jsonl
 #
 # 派生自 · PRD-MASTER.md §6 PRD-anti-patterns 预填(★ 修复 P0-1 反例库空缺口)
 # 用法   · bash scripts/seed-reject-examples.sh

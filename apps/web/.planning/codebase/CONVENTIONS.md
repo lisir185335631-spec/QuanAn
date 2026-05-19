@@ -25,7 +25,7 @@
 
 **Types/Interfaces:**
 - Interfaces: `PascalCase` + `Props` suffix for component props (`ButtonProps`, `StepFormProps`, `FadeInWrapperProps`)
-- Output types: `PascalCaseOutput` (imported from `@quanqn/clients/router-types`: `AuthMeOutput`, `ActiveAccountOutput`)
+- Output types: `PascalCaseOutput` (imported from `@quanan/clients/router-types`: `AuthMeOutput`, `ActiveAccountOutput`)
 - Domain types: `PascalCase` without suffix (`Industry`, `HeaderNavGroup`, `Turn`)
 - Type unions: `PascalCase` (`PageStatus`, `IndustryCategory`, `TabValue`)
 
@@ -51,15 +51,15 @@
 2. Internal aliases starting with `@/components/`
 3. Internal aliases starting with `@/hooks/`
 4. Internal aliases starting with `@/lib/`
-5. Workspace packages (`@quanqn/clients/router-types`)
+5. Workspace packages (`@quanan/clients/router-types`)
 6. Relative imports (`./sub-component`)
 7. Type-only imports (`import type { ... }`) at end of import block
 
 **Path Aliases:**
 - `@/*` → `src/*` (defined in `tsconfig.json` and `vite.config.ts`)
-- `@quanqn/schemas` → `../../packages/schemas/src`
-- `@quanqn/ui` → `../../packages/ui/src`
-- `@quanqn/clients` → `../../packages/clients/src`
+- `@quanan/schemas` → `../../packages/schemas/src`
+- `@quanan/ui` → `../../packages/ui/src`
+- `@quanan/clients` → `../../packages/clients/src`
 - Cross-package type imports always use `import type` to prevent bundling server code
 
 ## Error Handling
@@ -175,7 +175,7 @@ mutation.mutate(input);
 
 **Type imports (required pattern):**
 ```typescript
-import type { OutputType } from '@quanqn/clients/router-types';
+import type { OutputType } from '@quanan/clients/router-types';
 ```
 
 ---

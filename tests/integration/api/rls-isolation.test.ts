@@ -4,19 +4,19 @@
  * AC-4: no set_config (missing activeAccountId) → 0 rows (RLS default-deny)
  *
  * Requires: PostgreSQL running. Tables created via Prisma migrations.
- * Test DB: quanqn_test (DATABASE_URL_TEST env or falls back to quanqn_test local).
+ * Test DB: quanan_test (DATABASE_URL_TEST env or falls back to quanan_test local).
  *
  * RLS superuser note: the `return` Postgres role is a superuser (BYPASSRLS=true).
  * Superusers always bypass RLS even with FORCE ROW LEVEL SECURITY.
- * Solution: use `SET LOCAL ROLE quanqn_app` inside each test transaction to test as a
- * non-superuser role. quanqn_app must be created (see beforeAll) and granted table access.
+ * Solution: use `SET LOCAL ROLE quanan_app` inside each test transaction to test as a
+ * non-superuser role. quanan_app must be created (see beforeAll) and granted table access.
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 
 const TEST_DB =
-  process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+  process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
 
 const prisma = new PrismaClient({ datasources: { db: { url: TEST_DB } } });
 
@@ -28,16 +28,16 @@ let userBId: number;
 let accountBId: number;
 
 beforeAll(async () => {
-  // ── 1. Ensure quanqn_app role exists (idempotent) ─────────────────────────
+  // ── 1. Ensure quanan_app role exists (idempotent) ─────────────────────────
   await prisma.$executeRaw`
     DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'quanqn_app') THEN
-        CREATE ROLE quanqn_app;
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'quanan_app') THEN
+        CREATE ROLE quanan_app;
       END IF;
     END $$
   `;
-  await prisma.$executeRaw`GRANT SELECT, INSERT, UPDATE, DELETE ON step_data TO quanqn_app`;
-  await prisma.$executeRaw`GRANT quanqn_app TO return`;
+  await prisma.$executeRaw`GRANT SELECT, INSERT, UPDATE, DELETE ON step_data TO quanan_app`;
+  await prisma.$executeRaw`GRANT quanan_app TO return`;
 
   // ── 2. Ensure step_data RLS policy exists (idempotent) ────────────────────
   await prisma.$executeRaw`ALTER TABLE step_data ENABLE ROW LEVEL SECURITY`;
@@ -104,7 +104,7 @@ describe('[Integration] RLS account isolation via set_config', () => {
   it('AC-3: user A (correct account) sees their own step_data rows', async () => {
     const rows = await prisma.$transaction(async (tx) => {
       // Switch to non-superuser role so RLS is enforced
-      await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
+      await tx.$executeRaw`SET LOCAL ROLE quanan_app`;
       await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(accountAId)}, true)`;
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(userAId)}, true)`;
       return tx.$queryRaw<Array<{ account_id: number }>>`SELECT account_id FROM step_data`;
@@ -115,7 +115,7 @@ describe('[Integration] RLS account isolation via set_config', () => {
 
   it('AC-3: user B (different account) sees 0 rows from step_data', async () => {
     const rows = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
+      await tx.$executeRaw`SET LOCAL ROLE quanan_app`;
       await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(accountBId)}, true)`;
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(userBId)}, true)`;
       return tx.$queryRaw<Array<{ account_id: number }>>`SELECT account_id FROM step_data`;
@@ -126,7 +126,7 @@ describe('[Integration] RLS account isolation via set_config', () => {
 
   it('AC-4: no set_config → 0 rows (RLS default-deny via NULL::int)', async () => {
     const rows = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
+      await tx.$executeRaw`SET LOCAL ROLE quanan_app`;
       // current_setting returns NULL when not set → NULL::int → account_id = NULL → false
       return tx.$queryRaw<Array<{ account_id: number }>>`SELECT account_id FROM step_data`;
     });
@@ -136,7 +136,7 @@ describe('[Integration] RLS account isolation via set_config', () => {
   it('AC-7: set_config round-trip overhead < 50ms on localhost', async () => {
     const start = Date.now();
     await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
+      await tx.$executeRaw`SET LOCAL ROLE quanan_app`;
       await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(accountAId)}, true)`;
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(userAId)}, true)`;
     });

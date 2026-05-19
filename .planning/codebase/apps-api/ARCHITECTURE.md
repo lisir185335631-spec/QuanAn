@@ -2,7 +2,7 @@
 # Architecture — apps/api
 
 **Analysis Date:** 2026-05-13
-**Scope:** QuanQn `apps/api` 后端 · monorepo workspace `@quanqn/api` · Hono + tRPC v11 双 endpoint(主应用 + admin)
+**Scope:** QuanAn `apps/api` 后端 · monorepo workspace `@quanan/api` · Hono + tRPC v11 双 endpoint(主应用 + admin)
 
 ## System Overview
 
@@ -92,7 +92,7 @@
 | Admin services | NSM kpi snapshot · cost anomaly detect · forensic PDF · monthly bill PDF · campaign funnel | `apps/api/src/services/admin/{nsm,cost,audit,invites,accounts}/` |
 | Admin BullMQ cron jobs | kpi-snapshot(daily/weekly/monthly)+ cost-anomaly(hourly)+ anomaly-detection(daily 5am) | `apps/api/src/jobs/admin/*.job.ts` |
 | Admin audit service | logAdminAction(traceId+eventType 幂等 · payloadHash · redact · console.error 兜底) | `apps/api/src/services/admin/admin-audit-service.ts` |
-| Main RLS middleware | $transaction + SET LOCAL ROLE quanqn_app + set_config('app.current_account_id') + isGlobal bypass | `apps/api/src/trpc/middleware/account-isolation.ts` |
+| Main RLS middleware | $transaction + SET LOCAL ROLE quanan_app + set_config('app.current_account_id') + isGlobal bypass | `apps/api/src/trpc/middleware/account-isolation.ts` |
 | Admin RLS middleware | $transaction + set_config('app.role','admin') + ctx.adminPrisma 注入 + crossAccountAccessed=true | `apps/api/src/trpc/middleware/admin/adminRLS.ts` |
 | Prisma singleton | globalThis HMR-safe · dev query event log · checkDbConnection → process.exit(1) | `apps/api/src/lib/prisma.ts` |
 | Redis singleton | maxRetriesPerRequest=null(BullMQ 要求)· 复用给 BullMQ + admin idle key | `apps/api/src/lib/redis.ts` |
@@ -159,7 +159,7 @@
 
 ### Admin Cross-Account Query(典型 PRD-11 流)
 
-1. 前端 SPA 发请求到 `https://admin.quanqn.com/trpc/admin/users.list` 携带 `admin_session_id` cookie
+1. 前端 SPA 发请求到 `https://admin.quanan.com/trpc/admin/users.list` 携带 `admin_session_id` cookie
 2. Hono CORS 校验 origin(只允许 `ADMIN_BASE_URL`)+ trace middleware 注 X-Trace-Id (`apps/api/src/index.ts:55-64, 92-101`)
 3. `fetchRequestHandler` 创建 `AdminTRPCContext`(`createAdminContext` 在 `server/context-admin.ts`)· 调 `validateAdminSession`(`lucia-admin.ts:156`)· 检查 Lucia + Redis idle TTL
 4. 进 6 闸 procedure(`procedures/admin.ts`)·
@@ -224,7 +224,7 @@
 
 **HTTP server:**
 - 位置: `apps/api/src/index.ts:start()` (第 291 行)
-- 触发: `pnpm --filter @quanqn/api dev` / `start`(`tsx src/index.ts`)
+- 触发: `pnpm --filter @quanan/api dev` / `start`(`tsx src/index.ts`)
 - 职责: validate config → checkDbConnection → dev 模式 spawn workers + cron + serve
 
 **Admin cron 注册:**
@@ -307,7 +307,7 @@
 
 **Authentication:**
 - 主 · `lib/auth/providers.ts` arctic OAuth + cookie state + CSRF check(mock 跳过)
-- admin · `lib/auth/oauth-admin-factory.ts` + mock/google 两实现 + Workspace 域限定(@quanqn.com per LD-A1)
+- admin · `lib/auth/oauth-admin-factory.ts` + mock/google 两实现 + Workspace 域限定(@quanan.com per LD-A1)
 
 **Authorization:**
 - 主 · accountIsolationMiddleware + `meta.isGlobal` 旁路

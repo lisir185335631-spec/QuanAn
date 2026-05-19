@@ -84,7 +84,7 @@ PRD-16~20 4 个 PRD 已 ship 入 main(commit `e28aff6 Merge: PRD-10~19 累积代
 **PRD-21 解决 4 件事** ·
 
 1. **建立视觉 diff 基础设施** · playwright visual snapshot 配置(`maxDiffPixelRatio: 0.05`)+ `apps/web/scripts/visual-diff.ts` helper(`expectVisualMatch(page, options)`)+ `tests/e2e/prd21-visual-baseline.spec.ts` 4 test fixture + `verify-prd-21.sh §1` CI gate
-2. **Header 视觉精修** · 严格按 dump §1.1 实测 · `h-12 → h-16` / `backdrop-blur-sm → backdrop-blur-2xl` / 单行 "QuanQn" → 双行 stack 占位(用 QuanQn 字)· 4 dropdown ChevronDown 加 `transition-transform data-[state=open]:rotate-180`
+2. **Header 视觉精修** · 严格按 dump §1.1 实测 · `h-12 → h-16` / `backdrop-blur-sm → backdrop-blur-2xl` / 单行 "QuanAn" → 双行 stack 占位(用 QuanAn 字)· 4 dropdown ChevronDown 加 `transition-transform data-[state=open]:rotate-180`
 3. **Mobile nav 重写** · 删除 Sheet drawer 实现 · 新建 `MobileNavPanel` 组件(`lg:hidden border-t bg-background/95 backdrop-blur-2xl max-h-[70vh] overflow-y-auto`)· 严格按 dump §1.5 实测(4 大类 Rajdhani 分组 + 25 二级项 + 用户区固定底部)
 4. **共享 utility 全局补齐 + Home/Guide/IpPlan 视觉精修** ·
    - `data-grid-bg` 用到全 32 page `<main>` wrapper(扫源码替换)
@@ -327,16 +327,16 @@ PRD-16~20 4 个 PRD 已 ship 入 main(commit `e28aff6 Merge: PRD-10~19 累积代
   className="sticky top-0 z-40 w-full border-b border-border bg-surface-container-low/90 backdrop-blur-2xl"
   ```
 
-- [ ] **AC-3** · `apps/web/src/components/Header.tsx` 第 220-224 行 Logo 从单行 "QuanQn" 改为双行 stack 占位(用 QuanQn 字 · 不抄 aiipznt SVG · 严格 D-145 占位规则) · 完整改后代码 ·
+- [ ] **AC-3** · `apps/web/src/components/Header.tsx` 第 220-224 行 Logo 从单行 "QuanAn" 改为双行 stack 占位(用 QuanAn 字 · 不抄 aiipznt SVG · 严格 D-145 占位规则) · 完整改后代码 ·
   ```typescript
   // 改前 ·
   <div className="flex items-center gap-2 mr-3">
     <span className="text-body-md font-display font-semibold text-primary tracking-tight select-none">
-      QuanQn
+      QuanAn
     </span>
   </div>
   // 改后(D-211 双行 stack 锁) ·
-  <Link to="/" className="flex items-center gap-2 mr-3 select-none" aria-label="QuanQn home">
+  <Link to="/" className="flex items-center gap-2 mr-3 select-none" aria-label="QuanAn home">
     {/* 金色方块 icon 占位(用 div + bg-primary 不抄 aiipznt SVG) */}
     <div className="h-8 w-8 rounded bg-primary flex items-center justify-center shrink-0">
       <span className="text-on-primary font-display font-black text-xs">Q</span>
@@ -374,7 +374,7 @@ PRD-16~20 4 个 PRD 已 ship 入 main(commit `e28aff6 Merge: PRD-10~19 累积代
 **Locked Decisions for US-002** ·
 - **D-209** · Header container 高度 `h-16`(64px)· 锁 dump §1.1 实测
 - **D-210** · sticky element `backdrop-blur-2xl`(全局所有 sticky 元素 · 不只 Header · 后续 dropdown 弹层也用)
-- **D-211** · Logo 双行 stack 占位规则 = 金色方块 div(8×8 rounded · bg-primary)+ 双行 `flex flex-col leading-none` text · 字 QUAN / QN(QuanQn 大写 split · 不抄 aiipznt AIP/AGENT)
+- **D-211** · Logo 双行 stack 占位规则 = 金色方块 div(8×8 rounded · bg-primary)+ 双行 `flex flex-col leading-none` text · 字 QUAN / QN(QuanAn 大写 split · 不抄 aiipznt AIP/AGENT)
 - **D-212** · 4 dropdown ChevronDown 加 `transition-transform duration-200 data-[state=open]:rotate-180`
 
 **Anti-patterns** · 检索关键词 `Header` / `sticky` / `backdrop` / `shadcn` / `dropdown` 注入(预期 1-2 条)。
@@ -561,7 +561,7 @@ PRD-16~20 4 个 PRD 已 ship 入 main(commit `e28aff6 Merge: PRD-10~19 累积代
       >
         <div className="container flex h-16 items-center gap-2">
           {/* 双行 logo · US-002 AC-3 */}
-          <Link to="/" className="flex items-center gap-2 mr-3 select-none" aria-label="QuanQn home">
+          <Link to="/" className="flex items-center gap-2 mr-3 select-none" aria-label="QuanAn home">
             <div className="h-8 w-8 rounded bg-primary flex items-center justify-center shrink-0">
               <span className="text-on-primary font-display font-black text-xs">Q</span>
             </div>
@@ -1359,7 +1359,7 @@ PRD-16~20 4 个 PRD 已 ship 入 main(commit `e28aff6 Merge: PRD-10~19 累积代
 - ❌ **不实施 14 工具 page 视觉收官**(留给 PRD-23)
 - ❌ **不实施 6 modules 视觉精修**(留给 PRD-24)
 - ❌ **不切 mobile 端 viewport baseline**(本 PRD 仅 desktop 1440x900 baseline · mobile baseline 留 PRD-24)
-- ❌ **不抄 aiipznt 版权专属素材** · 不直接复制 logo svg / slogan / 品牌营销长文案 / 产品截图 · 用 QuanQn 占位
+- ❌ **不抄 aiipznt 版权专属素材** · 不直接复制 logo svg / slogan / 品牌营销长文案 / 产品截图 · 用 QuanAn 占位
 - ❌ **不去 Manus 依赖**(已 PRD-2 处理)
 - ❌ **不绕过 Audit Gate** · 严格按 Coding 3.0 12 步走
 

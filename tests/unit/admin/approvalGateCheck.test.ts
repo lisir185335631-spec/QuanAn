@@ -12,7 +12,7 @@ function extractFn(mw: unknown): RawFn {
 
 function makeCtx() {
   return {
-    activeAdminUser: { id: 1, email: 'super@quanqn.com', role: 'super_admin', isMock: true, isActive: true },
+    activeAdminUser: { id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true },
     adminSession: { id: 'sess-1', expiresAt: new Date(), fresh: false },
     prisma: { adminAuditLog: { create: vi.fn().mockResolvedValue({}) } },
     traceId: 'trace-1',

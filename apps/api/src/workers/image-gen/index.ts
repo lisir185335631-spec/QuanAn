@@ -6,7 +6,7 @@
  * DallE3ImageGenWorker: 占位 stub · US-009 解锁后真接
  */
 
-import type { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io';
+import type { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io';
 
 // ── Re-export for backward compat (dall-e-3.ts / queue.ts import from ./index) ──
 export type { ImageGenJobPayload, ImageGenJobResult };

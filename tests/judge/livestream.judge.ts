@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · LivestreamAgent LLM Judge
+ * QuanAn · US-016 · LivestreamAgent LLM Judge
  * AC-2: golden case — experience='新手' / 美妆行业 / douyin
  * AC-10: real scenario input
  * AC-11: quantifiable criteria (lastResult ≥ 200 chars, lastOptimizedResult ≥ 200 chars)

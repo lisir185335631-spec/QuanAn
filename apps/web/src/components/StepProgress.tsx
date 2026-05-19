@@ -5,7 +5,7 @@
 
 import { cn } from '@/lib/utils';
 
-// Mirrors apps/api/src/lib/constants/steps.ts — P1 move to @quanqn/schemas
+// Mirrors apps/api/src/lib/constants/steps.ts — P1 move to @quanan/schemas
 const STEP_ORDER = [
   { key: 'step1',  label: '行业选择', emoji: '🎯' },
   { key: 'step3',  label: '账号包装', emoji: '📝' },

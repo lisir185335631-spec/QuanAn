@@ -58,7 +58,7 @@ status_history:
 ### Wave 1 · 真 LLM Infrastructure(2 US · 0 depends_on)
 
 ### US-001 · ENV validation + LLM client init + 启动时模式 log
-- **As a** · QuanQn 后端运维 · 在 apps/api 启动时需要明确 ENV 配置正确性 + 当前 LLM 模式(real / fallback)
+- **As a** · QuanAn 后端运维 · 在 apps/api 启动时需要明确 ENV 配置正确性 + 当前 LLM 模式(real / fallback)
 - **I want** · zod schema 校验 OPENAI_API_KEY + ANTHROPIC_API_KEY 在启动时存在性 · 缺则 log warning + 自动走 fallback · LLM client init(@anthropic-ai/sdk + openai SDK)+ apps/api 启动 log 显示当前模式
 - **So that** · 开发/测试/生产环境配置错误能立即发现 · 不在 runtime 撞 silent fail
 - **risk_level** · foundation(被 US-002~007 全部 depends_on)
@@ -73,7 +73,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:env validation / zod schema / API_KEY / fallback)
 
 ### US-002 · cost_log 真接(BaseSpecialist 内 真 token + cost 真存)+ userQuota atomic 扣额
-- **As a** · QuanQn 运营 · 在用户用真 LLM 时需要真 token / cost 数据持久化 · 防超额 budget
+- **As a** · QuanAn 运营 · 在用户用真 LLM 时需要真 token / cost 数据持久化 · 防超额 budget
 - **I want** · BaseSpecialist 4 步模板第 4 步 writeCostLog 真存 prisma costLog(promptTokens + completionTokens + costUsd Decimal + model + provider + traceId)· 同时 atomic UPDATE userQuota.dailyUsed += tokens 防超扣 · 超额返回 `QUOTA_EXCEEDED` error + UI [配额超限] badge
 - **So that** · 实际 LLM cost 可观测 · per-account daily budget 强制(防恶意消费)
 - **risk_level** · **high · money-critical**(cost_log 精度 + userQuota atomic UPDATE)
@@ -91,7 +91,7 @@ status_history:
 ### Wave 2 · 8 Specialist 真 LLM 验证 + Schema drift 防御(5 US · depends Wave 1)
 
 ### US-003 · PositioningAgent 真 LLM(industry + execution mode · for step1 + step4)
-- **As a** · QuanQn 用户 · 在 Step1 选行业 + Step4 填执行参数 · 真接 PositioningAgent 真 LLM
+- **As a** · QuanAn 用户 · 在 Step1 选行业 + Step4 填执行参数 · 真接 PositioningAgent 真 LLM
 - **I want** · PositioningAgent.invokeLLM 真接 Anthropic Claude(或 OpenAI · model_tier='reasoning')· 真 system prompt + responseFormat schema 验证 · 真 result 存 DB + UI render · 同时验证 fallback mock vs 真 LLM 输出格式对齐(防 Schema drift)
 - **So that** · Step1/Step4 真 LLM 输出可用 · 不是 stub mock
 - **risk_level** · high(money-critical · 真 LLM cost · Schema drift risk)
@@ -104,7 +104,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:real LLM / system prompt / responseFormat / Schema drift / Specialist fallback)
 
 ### US-004 · BrandingAgent 真 LLM(packaging + persona · for step3 + step3b)
-- **As a** · QuanQn 用户 · 在 Step3 IP 定位 + Step3b 人设 · 真接 BrandingAgent
+- **As a** · QuanAn 用户 · 在 Step3 IP 定位 + Step3b 人设 · 真接 BrandingAgent
 - **I want** · BrandingAgent.invokeLLM 真接 LLM · packaging mode (step3) + persona mode (step3b)· system prompt 双 mode 严格区分 + responseFormat schema 各自验证
 - **So that** · Step3/Step3b 真 LLM 输出
 - **risk_level** · high
@@ -116,7 +116,7 @@ status_history:
 - **test_command** · `OPENAI_API_KEY=test cd apps/api && pnpm vitest run src/specialists/__tests__/BrandingAgent.real-llm.test.ts`
 
 ### US-005 · MonetizationAgent + VideoAgent 真 LLM(for step4b + step6)
-- **As a** · QuanQn 用户 · 在 Step4b 变现规划 + Step6 拍摄计划 · 真接 Agent
+- **As a** · QuanAn 用户 · 在 Step4b 变现规划 + Step6 拍摄计划 · 真接 Agent
 - **I want** · 2 Agent invokeLLM real call · MonetizationAgent(3 阶梯 + 收入结构 + 案例 输出 schema)+ VideoAgent shooting mode(8 列分镜表 输出 schema)
 - **So that** · Step4b/Step6 真 LLM 输出
 - **risk_level** · high
@@ -129,7 +129,7 @@ status_history:
 - **test_command** · `OPENAI_API_KEY=test cd apps/api && pnpm vitest run src/specialists/__tests__/{Monetization,Video}Agent.real-llm.test.ts`
 
 ### US-006 · TopicAgent SSE 真 LLM(5 类 100 选题 · TD-82 自然 resolved 期望)
-- **As a** · QuanQn 用户 · 在 Step5 选 1 类 + 提交 · 真 SSE 流接 TopicAgent · 真 5 chunks 渐进出 5 类 100 选题
+- **As a** · QuanAn 用户 · 在 Step5 选 1 类 + 提交 · 真 SSE 流接 TopicAgent · 真 5 chunks 渐进出 5 类 100 选题
 - **I want** · TopicAgent.invokeLLM 真走 llmGateway.stream() SSE · 真 5 chunks 触发(per category)· 跟 fallback mock(1 次性返回)区分 · **TD-82 自然 resolved**(PRD-18 test3 fallback 不模拟 5 chunks · 真 LLM 接入后会自然 5 chunks)
 - **So that** · Step5 真 100 选题 + PRD-18 test3 自然 PASS
 - **risk_level** · high(SSE 真接 · streaming + 5 chunks 渐进 + token 计费)
@@ -142,7 +142,7 @@ status_history:
 - **anti_patterns** · 由 prd skill 注入(关键词:SSE / streaming / 5 chunks / TD-82 / TopicAgent)
 
 ### US-007 · CopywritingAgent + LivestreamAgent 真 LLM(for step7 + step8 2 子功能)
-- **As a** · QuanQn 用户 · 在 Step7 文案生成 + Step8 直播策划 2 子功能 · 真接 Agent
+- **As a** · QuanAn 用户 · 在 Step7 文案生成 + Step8 直播策划 2 子功能 · 真接 Agent
 - **I want** · CopywritingAgent.invokeLLM 真 SSE call(step7 mode · 长 markdown 输出 + history 自动写)+ LivestreamAgent.invokeLLM 真 call(generate_plan + optimize_script 双 mode · sub_function discriminator 严守)
 - **So that** · Step7/Step8 真 LLM 输出 + history 真累积
 - **risk_level** · high
@@ -157,7 +157,7 @@ status_history:
 ### Wave 3 · 收官(2 US)
 
 ### US-008 · E2E manual 真 LLM run + CI weekly fallback default + TD-79/80/81/82 一并 fix
-- **As a** · QuanQn 维护者 · 需要双跑 E2E · 默认 fallback(快 + 无 cost)+ manual/CI weekly 真 LLM(完整端到端)
+- **As a** · QuanAn 维护者 · 需要双跑 E2E · 默认 fallback(快 + 无 cost)+ manual/CI weekly 真 LLM(完整端到端)
 - **I want** · playwright spec 双跑配置 · `E2E_REAL_LLM=1` env 控制 fallback vs 真 LLM · 真 LLM 跑 PRD-18 test3 应自然 PASS(TD-82 resolved)· PRD-15~19 旧 e2e zero-regression 全 PASS · TD-79/80/81 一并 maintenance fix
 - **So that** · 真 LLM cost 可控(CI 默认 fallback)+ weekly 真 LLM 验证 + 4 TD 一并清
 - **risk_level** · high(真 LLM cost ~$0.50/full E2E · 4 TD fix · zero-regression)
@@ -176,7 +176,7 @@ status_history:
 - **test_command** · `cd apps/web && pnpm playwright test e2e/prd-20-real-llm.spec.ts`(默认 fallback)· `E2E_REAL_LLM=1 cd apps/web && pnpm playwright test e2e/prd-20-real-llm.spec.ts`(真 LLM)
 
 ### US-009 · verify-prd-20.sh 40+ 检查 + zero-regression + Specialist tuning baseline 文档
-- **As a** · QuanQn 维护者 · 需要可重复脚本验证 PRD-20 全部交付物 + Specialist tuning baseline 留痕
+- **As a** · QuanAn 维护者 · 需要可重复脚本验证 PRD-20 全部交付物 + Specialist tuning baseline 留痕
 - **I want** · `scripts/verify-prd-20.sh` 40+ 检查项 · 含 §1 ENV validation + §2 LLM SDK 真接 + §3 cost_log 真数据 grep + §4 userQuota atomic + §5 8 Specialist real LLM test 全 PASS(若 OPENAI_API_KEY 存在)+ §6 TD-79/80/81/82 fix 验证 + §7 zero-regression(typecheck + vitest 181 + 旧 e2e 全 PASS)+ §8 D4=B/D3=A/LD-009 严守 grep + Specialist tuning baseline 文档(model_tier / token usage / 平均 cost / 调优记录)
 - **So that** · PRD-20 收官有客观证据 · Specialist tuning 数据 baseline 立 · 后续 PRD-21+ Specialist 优化有对照
 - **risk_level** · medium

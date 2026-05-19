@@ -1,5 +1,5 @@
 // PRD-10 US-002 · admin auth e2e integration test
-// AC-12: seed → login → me → logout using real DB (quanqn_test)
+// AC-12: seed → login → me → logout using real DB (quanan_test)
 // Requires DATABASE_URL_TEST to be set + admin tables migrated
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -18,7 +18,7 @@ vi.mock('@/lib/redis', () => ({
 const testDbUrl = process.env.DATABASE_URL_TEST ?? process.env.DATABASE_URL;
 const prismaTest = new PrismaClient({ datasources: { db: { url: testDbUrl } } });
 
-const TEST_EMAIL = 'auth-flow-test@quanqn.com';
+const TEST_EMAIL = 'auth-flow-test@quanan.com';
 
 beforeAll(async () => {
   process.env.OAUTH_PROVIDER = 'mock';

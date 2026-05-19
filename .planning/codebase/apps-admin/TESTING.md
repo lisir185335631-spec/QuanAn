@@ -134,8 +134,8 @@ describe('PlanBadge', () => {
 - 简单工厂 · `function makeUser(overrides = {}) { return { id: 1, email: '...', ...overrides } }`
 
 **Schema-derived Fixtures:**
-- 用 `@quanqn/schemas` zod schema 推 default value · 保证 fixture 跟 contract 同步
-- 但当前 apps/admin 未直接 import schemas · 直接走 tRPC 类型 (`@quanqn/clients/admin-router-types`)
+- 用 `@quanan/schemas` zod schema 推 default value · 保证 fixture 跟 contract 同步
+- 但当前 apps/admin 未直接 import schemas · 直接走 tRPC 类型 (`@quanan/clients/admin-router-types`)
 
 ## Coverage
 
@@ -168,7 +168,7 @@ pnpm test --coverage    # 计划 · vitest coverage v8
 
 **E2E Tests:**
 - Framework (规划): Playwright (`apps/api` 主项目已有 playwright 习惯 · 可复用 fixture)
-- Scope: 真实浏览器 · 真实后端 (test DB quanqn_test) · 模拟 admin 登录 → 操作
+- Scope: 真实浏览器 · 真实后端 (test DB quanan_test) · 模拟 admin 登录 → 操作
 - 优先级: 上线前 PRR (P9.4 后)
 
 ## Common Patterns (规划落地时遵守)

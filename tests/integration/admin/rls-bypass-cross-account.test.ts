@@ -1,12 +1,12 @@
 // PRD-10 US-006 · adminRLS bypass cross-account integration test
-// 7 test cases · real PostgreSQL (quanqn_test/quanqn DB) + mocked Redis
+// 7 test cases · real PostgreSQL (quanan_test/quanan DB) + mocked Redis
 //
 // Seed: 2 accounts (account_a + account_b) × 5 history each (10 total)
 //       1 admin_user (super_admin, isMock=true)  1 admin_session
 //
 // Test matrix:
-//   1. ctx.prisma without adminRLS (quanqn_app role, no app.current_account_id) → 0 rows
-//   2. ctx.adminPrisma (quanqn_app + set_config('app.role','admin',true)) → 10 rows bypass RLS
+//   1. ctx.prisma without adminRLS (quanan_app role, no app.current_account_id) → 0 rows
+//   2. ctx.adminPrisma (quanan_app + set_config('app.role','admin',true)) → 10 rows bypass RLS
 //   3. ctx.crossAccountAccessed === true after adminRLS middleware runs
 //   4. admin_audit_log cross_account_query written after adminRLS + auditLog chain
 //   5. adminRLS $transaction throw → no new cross_account_query audit row (auditLog never runs)
@@ -66,11 +66,11 @@ afterAll(async () => {
 describe('adminRLS bypass cross-account integration (real PG)', () => {
   it('test 1: ctx.prisma.history.findMany returns 0 rows (main-app RLS blocks without activeAccountId)', async () => {
     // Simulate main-app non-admin query:
-    // SET LOCAL ROLE quanqn_app → non-superuser, RLS enforced
+    // SET LOCAL ROLE quanan_app → non-superuser, RLS enforced
     // No app.current_account_id set → histories_account_isolation policy returns false → 0 rows
     const rows = await prismaTest.$transaction(async (tx) => {
       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
-        'SET LOCAL ROLE quanqn_app',
+        'SET LOCAL ROLE quanan_app',
       );
       return tx.history.findMany({ where: { traceId: SEED_TAG } });
     });
@@ -80,11 +80,11 @@ describe('adminRLS bypass cross-account integration (real PG)', () => {
 
   it('test 2: ctx.adminPrisma.history.findMany returns 10 rows (bypass RLS success)', async () => {
     // adminRLS bypass · 跨账号查 · 走 cross_account_query audit
-    // SET LOCAL ROLE quanqn_app (RLS enforced) + set_config('app.role','admin',true) → admin_full_access_histories policy = true
+    // SET LOCAL ROLE quanan_app (RLS enforced) + set_config('app.role','admin',true) → admin_full_access_histories policy = true
     // AC-14: grep 'set_config.*app.role.*admin' must match this file ≥ 1
     const rows = await prismaTest.$transaction(async (tx) => {
       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
-        'SET LOCAL ROLE quanqn_app',
+        'SET LOCAL ROLE quanan_app',
       );
       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
         "SELECT set_config('app.role', 'admin', true)",
@@ -222,12 +222,12 @@ describe('adminRLS bypass cross-account integration (real PG)', () => {
   });
 
   it('test 7: main-app accountIsolation activeAccountId=account_a → 5 rows (adminRLS does not pollute main-app RLS)', async () => {
-    // Simulate main-app accountIsolation: quanqn_app role + app.current_account_id = accountA.id
+    // Simulate main-app accountIsolation: quanan_app role + app.current_account_id = accountA.id
     // Verifies that running adminRLS earlier did NOT permanently set any GUC that poisons main-app RLS
     // AC-15: grep 'current_setting.*app.role' matches (via getCurrentSetting in test 6 above)
     const rows = await prismaTest.$transaction(async (tx) => {
       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
-        'SET LOCAL ROLE quanqn_app',
+        'SET LOCAL ROLE quanan_app',
       );
       await (tx as unknown as { $executeRawUnsafe: (sql: string) => Promise<unknown> }).$executeRawUnsafe(
         `SELECT set_config('app.current_account_id', '${String(accountA.id)}', true)`,

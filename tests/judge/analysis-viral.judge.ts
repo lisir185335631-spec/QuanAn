@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-012 · AnalysisAgent viral mode LLM Judge
+ * QuanAn · US-012 · AnalysisAgent viral mode LLM Judge
  * AC-3: 2 golden cases — 美妆 + 美食 · 22 元素拆解
  * criteria: elements 数组非空 + insights ≥ 3
  */

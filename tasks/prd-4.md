@@ -311,7 +311,7 @@ step3b 输出 schema · `{ coreIdentity, thoughtSystem{coreBeliefs[3]+uniqueView
 **files_to_modify** ·
 - `apps/web/src/pages/step/Step1.tsx` ~ `Step9.tsx`(9 个 step 页 · 把占位 h1 + 占位卡片替换成 `<StepForm stepKey="stepN" />`)
 
-**test_command** · `pnpm test tests/unit/web/StepForm.test.tsx && pnpm --filter @quanqn/web typecheck`
+**test_command** · `pnpm test tests/unit/web/StepForm.test.tsx && pnpm --filter @quanan/web typecheck`
 
 ---
 
@@ -342,7 +342,7 @@ step3b 输出 schema · `{ coreIdentity, thoughtSystem{coreBeliefs[3]+uniqueView
 **files_to_modify** ·
 - `apps/web/src/pages/step/Step1.tsx` ~ `Step9.tsx`(每页 submit 成功后渲染 `<StepResult />`)
 
-**test_command** · `pnpm test tests/unit/web/StepResult.test.tsx && pnpm --filter @quanqn/web typecheck`
+**test_command** · `pnpm test tests/unit/web/StepResult.test.tsx && pnpm --filter @quanan/web typecheck`
 
 ---
 
@@ -472,7 +472,7 @@ step3b 输出 schema · `{ coreIdentity, thoughtSystem{coreBeliefs[3]+uniqueView
 > **priority** · 18
 > **depends_on** · [US-001, ..., US-017](全)
 
-**描述** · 收官 · pnpm test 全套(unit + integration + judge)≥ 259 tests 全过 · pnpm test:e2e 含 PRD-2/3/4 全 e2e ≥ 104 tests 全过 · pnpm typecheck 全 6 ws 0 error · pnpm --filter @quanqn/web lint clean(--max-warnings=0) · 修任何残留 lint debt(参 PRD-3 Patterns 防 PRD-1 lint debt 重现)。
+**描述** · 收官 · pnpm test 全套(unit + integration + judge)≥ 259 tests 全过 · pnpm test:e2e 含 PRD-2/3/4 全 e2e ≥ 104 tests 全过 · pnpm typecheck 全 6 ws 0 error · pnpm --filter @quanan/web lint clean(--max-warnings=0) · 修任何残留 lint debt(参 PRD-3 Patterns 防 PRD-1 lint debt 重现)。
 
 **触发场景** · 跑 `pnpm test && pnpm test:judge && pnpm test:e2e && pnpm typecheck && pnpm lint` · 全过即收官。
 
@@ -1446,7 +1446,7 @@ step3b 输出 schema · `{ coreIdentity, thoughtSystem{coreBeliefs[3]+uniqueView
 - [ ] `pnpm test:judge` 7 case pass(US-016)
 - [ ] `pnpm test:e2e` ≥ 104 tests pass(PRD-3 累积 100 + PRD-4 新增 4 = 104 · chromium 52 + mobile 52)
 - [ ] `pnpm typecheck` 全 6 ws 0 error
-- [ ] `pnpm --filter @quanqn/web lint` 0 warnings(--max-warnings=0)
+- [ ] `pnpm --filter @quanan/web lint` 0 warnings(--max-warnings=0)
 - [ ] **闭环验收硬规则**:
   - [ ] 跑 `pnpm test && pnpm test:judge && pnpm test:e2e && pnpm typecheck && pnpm lint`
   - [ ] 全过(exit code 0)
@@ -1545,7 +1545,7 @@ ARCHITECTURE.md §9.5 P3 退出条件 ·
 - ✅ cost_log 写 prompt_tokens / completion_tokens / duration_ms / model_used / agent_id / trace_id / account_id · 验证 = US-003 + audit grep
 - ✅ LLM Judge 测试 7 case 全过(lightweight tier · golden output 比对)· 验证 = US-016
 - ✅ pnpm typecheck 全 6 ws 0 error · 验证 = US-018
-- ✅ pnpm --filter @quanqn/web lint clean(--max-warnings=0)· 验证 = US-018(防 PRD-1 lint debt 重现)
+- ✅ pnpm --filter @quanan/web lint clean(--max-warnings=0)· 验证 = US-018(防 PRD-1 lint debt 重现)
 - ✅ Tests pass · 单元 ≥ 278 + 集成 ≥ 8 + e2e ≥ 104 + judge 7 = ≥ 397+ · 验证 = US-018
 
 ---

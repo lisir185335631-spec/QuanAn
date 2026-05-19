@@ -1,5 +1,5 @@
 /**
- * QuanQn · DALL-E 3 图像风格枚举 — PRD-6 US-001
+ * QuanAn · DALL-E 3 图像风格枚举 — PRD-6 US-001
  * 派生自 ARCHITECTURE.md §7 ImageGenWorker + OpenAI DALL-E 3 API spec
  * LD-013: as const satisfies ReadonlyArray pattern
  */

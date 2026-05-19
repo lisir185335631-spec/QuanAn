@@ -11,7 +11,7 @@
 
 ### 0.1 子项目结构
 TypeScript monorepo · pnpm workspaces · **7 workspace**:
-- 根 `quanqn`
+- 根 `quanan`
 - `apps/api`(backend · Hono + tRPC + Prisma + BullMQ)
 - `apps/admin`(admin SPA · React + Vite)
 - `apps/web`(主应用 frontend · React + Vite)

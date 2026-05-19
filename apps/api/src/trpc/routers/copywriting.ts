@@ -8,14 +8,14 @@
  * US-003 AC-2: history.create 写完整字段(agentMode/contentType/scriptType/elements/isFallback/tokensUsed/modelUsed/durationMs)
  * US-012 AC-1: acquisitionGenerate protectedProcedure · 调 copywritingAgent(mode='acquisition')
  * US-012 AC-4: post-validate CTA grep('关注|私信|点击|获取|领取') · 缺失则 retry 1 次
- * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
+ * Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use
  */
 
 import {
   acquisitionCopywritingInputSchema,
   SCRIPT_TYPE_KEYS_20,
   HOT_ELEMENT_KEYS_22,
-} from '@quanqn/schemas/specialist-io';
+} from '@quanan/schemas/specialist-io';
 import { z } from 'zod';
 
 import { copywritingAgent, type CopywritingOutput, type CopywritingFreeOutput, type CopywritingAcquisitionOutput } from '@/specialists/CopywritingAgent';

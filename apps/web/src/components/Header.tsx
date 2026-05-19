@@ -122,7 +122,7 @@ export function Header() {
           </div>
           <div className="flex flex-col leading-none">
             <span className="font-display font-bold text-primary text-sm tracking-tight">QUAN</span>
-            <span className="font-display font-bold text-primary text-sm tracking-tight">QN</span>
+            <span className="font-display font-bold text-primary text-sm tracking-tight">AN</span>
           </div>
         </Link>
 

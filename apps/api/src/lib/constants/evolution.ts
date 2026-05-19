@@ -1,5 +1,5 @@
 /**
- * QuanQn · 5 进化等级
+ * QuanAn · 5 进化等级
  * 派生自 ARCHITECTURE.md §2.6 + §5.6 + spec.md §8.5.3 + ADR-008/009
  */
 

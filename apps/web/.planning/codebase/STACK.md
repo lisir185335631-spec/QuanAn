@@ -76,9 +76,9 @@
 ## Key Dependencies
 
 **Critical:**
-- `@quanqn/clients` (workspace) — exports `AppRouter`, `AuthMeOutput`, `ActiveAccountOutput`, `EvolutionProfileOutput`, `TrendingListItem`, `VoiceChatStreamChunk` from `router-types`
-- `@quanqn/schemas` (workspace) — shared zod schemas
-- `@quanqn/ui` (workspace) — shared UI components
+- `@quanan/clients` (workspace) — exports `AppRouter`, `AuthMeOutput`, `ActiveAccountOutput`, `EvolutionProfileOutput`, `TrendingListItem`, `VoiceChatStreamChunk` from `router-types`
+- `@quanan/schemas` (workspace) — shared zod schemas
+- `@quanan/ui` (workspace) — shared UI components
 
 **Infrastructure:**
 - `@trpc/client` 11.0-rc — `httpBatchStreamLink`, `httpSubscriptionLink`, `splitLink`

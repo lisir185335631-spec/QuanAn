@@ -3,7 +3,7 @@
  * AC-5: 1 procedure (generate) · mock
  * AC-7: mutation writes History row with trace_id
  * AC-8: no LLM call — MonetizationAgent 留 PRD-3+
- * Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
+ * Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use
  */
 
 import { z } from 'zod';

@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-014 · VideoAgent production mode LLM Judge
+ * QuanAn · US-014 · VideoAgent production mode LLM Judge
  * AC-1: 2 golden cases — 美妆(彩妆教程) + 健身(减脂计划)
  * criteria: 13 列分镜检查 + 每列字段必填 + model_tier='lightweight' + eventType='judge_call'
  */

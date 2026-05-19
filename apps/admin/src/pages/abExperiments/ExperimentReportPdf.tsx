@@ -110,7 +110,7 @@ export function ExperimentReportPdf({ data }: { data: ExperimentReportData }) {
       {/* 封面 */}
       <Page size="A4" style={s.coverPage}>
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text style={s.coverTitle}>QuanQn</Text>
+          <Text style={s.coverTitle}>QuanAn</Text>
           <Text style={s.coverSub}>A/B 实验报告</Text>
           <Text style={s.coverMeta}>实验 Key：{data.experimentKey}</Text>
           <Text style={s.coverMeta}>实验名称：{data.name}</Text>
@@ -120,7 +120,7 @@ export function ExperimentReportPdf({ data }: { data: ExperimentReportData }) {
           <Text style={s.coverMeta}>生成时间：{new Date().toLocaleString('zh-CN')}</Text>
         </View>
         <View style={s.footer}>
-          <Text style={s.footerText}>QuanQn A/B 实验报告 · 内部文件</Text>
+          <Text style={s.footerText}>QuanAn A/B 实验报告 · 内部文件</Text>
           <Text style={s.footerText}>{month}</Text>
         </View>
       </Page>
@@ -171,7 +171,7 @@ export function ExperimentReportPdf({ data }: { data: ExperimentReportData }) {
         )}
 
         <View style={s.footer}>
-          <Text style={s.footerText}>QuanQn A/B 实验报告 · {data.experimentKey}</Text>
+          <Text style={s.footerText}>QuanAn A/B 实验报告 · {data.experimentKey}</Text>
           <Text style={s.footerText}>§1 / 4</Text>
         </View>
       </Page>
@@ -256,7 +256,7 @@ export function ExperimentReportPdf({ data }: { data: ExperimentReportData }) {
         )}
 
         <View style={s.footer}>
-          <Text style={s.footerText}>QuanQn A/B 实验报告 · {data.experimentKey}</Text>
+          <Text style={s.footerText}>QuanAn A/B 实验报告 · {data.experimentKey}</Text>
           <Text style={s.footerText}>§2 / 4</Text>
         </View>
       </Page>
@@ -298,7 +298,7 @@ export function ExperimentReportPdf({ data }: { data: ExperimentReportData }) {
         ))}
 
         <View style={s.footer}>
-          <Text style={s.footerText}>QuanQn A/B 实验报告 · {data.experimentKey}</Text>
+          <Text style={s.footerText}>QuanAn A/B 实验报告 · {data.experimentKey}</Text>
           <Text style={s.footerText}>§3 / 4</Text>
         </View>
       </Page>
@@ -323,7 +323,7 @@ export function ExperimentReportPdf({ data }: { data: ExperimentReportData }) {
           报告编号：ab-{data.experimentKey}-{month}
         </Text>
         <Text style={[s.tdMuted, { marginTop: 6 }]}>
-          本报告由 QuanQn 系统自动生成，数据截至 {new Date().toLocaleString('zh-CN')}。
+          本报告由 QuanAn 系统自动生成，数据截至 {new Date().toLocaleString('zh-CN')}。
         </Text>
       </Page>
     </Document>

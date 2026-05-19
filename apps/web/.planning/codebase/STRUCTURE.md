@@ -204,7 +204,7 @@ apps/web/
 **Configuration:**
 - `tailwind.config.js`: Design tokens, color palette, typography scale, animations
 - `vite.config.ts`: Dev server port, API proxy, build output, manual chunks
-- `tsconfig.json`: Path aliases (`@/*`, `@quanqn/*`)
+- `tsconfig.json`: Path aliases (`@/*`, `@quanan/*`)
 - `vitest.config.ts`: Test environment (jsdom), setup file, include glob
 
 **Core Logic:**

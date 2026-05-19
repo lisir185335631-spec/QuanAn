@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-014 · VideoAgent acquisition mode LLM Judge
+ * QuanAn · US-014 · VideoAgent acquisition mode LLM Judge
  * AC-2: 2 golden cases — 理财 + 教育
  * criteria: ctaScript 必含 CTA 关键词 + conversionPath 长度 ≥1
  */

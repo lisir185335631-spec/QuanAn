@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { trpc } from '@/lib/trpc';
 
-import type { TrendingListItem } from '@quanqn/clients/router-types';
+import type { TrendingListItem } from '@quanan/clients/router-types';
 
 import type { TrendingFilterState, TrendingPlatform, TimeRange, SortField } from './components/TrendingFilters';
 import { TrendingFilters } from './components/TrendingFilters';

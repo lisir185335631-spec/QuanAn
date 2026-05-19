@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-DB=${DATABASE_URL:-"postgresql://return@localhost:5432/quanqn"}
+DB=${DATABASE_URL:-"postgresql://return@localhost:5432/quanan"}
 
 # 26 admin/system tables — all with DISABLE ROW LEVEL SECURITY in manual_admin_rls.sql
 # 4 核心主表 + 9 辅助(原 13) + 6 PRD-10 新增 admin + 4 PRD-10/14 system + 3 PRD-14 AB

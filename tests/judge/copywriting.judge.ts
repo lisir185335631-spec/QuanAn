@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · CopywritingAgent LLM Judge
+ * QuanAn · US-016 · CopywritingAgent LLM Judge
  * AC-2: golden case — step7 mode / 健身行业 / xiaohongshu
  * AC-10: real scenario input
  * AC-11: quantifiable criteria (markdown ≥ 500 chars, ≥1 # heading, hooks ≥ 1)

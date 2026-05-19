@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-8-p7-intelligent-modules",
   "description": "PRD-8 P7 智能模块 · 3 L5 自治 Agent(VoiceChat/Evolution/DailyTask)+ 5 层记忆 + 反馈飞轮闭环 · ADR-018 外部 orchestrator + STT/TTS(OpenAI Whisper-1/TTS-1)+ ContextAssembler 注入 EvolutionInsight 到全 11 Specialist · 13 stories · 4 wave · 10-14 days",
   "userStories": [
@@ -62,8 +62,8 @@
           "source_prd": "prd-7-cleanup-td-fix",
           "source_story": "US-001",
           "lesson": "改 schema 时 import type from packages 后必须显式 re-export 维持下游 import · 否则下游 import 旧 type 名失败",
-          "antipattern": "❌ import type { ImportedX } from '@quanqn/schemas' 漏写 export type LocalX = ImportedX · 下游 import LocalX 时编译失败",
-          "correct": "✅ import type { ImportedX } from '@quanqn/schemas' + 显式 export type LocalX = ImportedX(下游 import 不破)· 或直接 export type LocalX = z.infer<typeof LocalSchema>"
+          "antipattern": "❌ import type { ImportedX } from '@quanan/schemas' 漏写 export type LocalX = ImportedX · 下游 import LocalX 时编译失败",
+          "correct": "✅ import type { ImportedX } from '@quanan/schemas' + 显式 export type LocalX = ImportedX(下游 import 不破)· 或直接 export type LocalX = z.infer<typeof LocalSchema>"
         }
       ]
     },
@@ -79,7 +79,7 @@
         "AC-5: cron/daily-task-runner.ts 新建 · cron.schedule('0 0 * * *', ...) 定义但不调 cron.start()(避免 stub 跑)· 留 US-007 启动",
         "AC-6: 3 ContextAssembler templates 新建 · services/context-assembler/templates/evolution-agent.ts + daily-task-agent.ts + voice-chat-agent.ts · 各 ~50 行 prompt persona(参 PROMPTS §12.1/§13.1/§14.1)",
         "AC-7: services/context-assembler/templates/index.ts SPECIALIST_TEMPLATES 加 3 entries · 'EvolutionAgent' / 'DailyTaskAgent' / 'VoiceChatAgent'",
-        "AC-8: type alias re-export · 3 Agent 文件首部 import type from '@quanqn/schemas/specialist-io' + export type 复用",
+        "AC-8: type alias re-export · 3 Agent 文件首部 import type from '@quanan/schemas/specialist-io' + export type 复用",
         "AC-9: SoT 验 §1.0.5 验证 3(5 工具 name 跨 3 处一致 grep)+ 验证 4(7 task type grep ≥7)",
         "AC-10: unit test · 3 Specialist 骨架 happy stub throw(各 1)+ schema getter 校验(各 1)= 6 tests",
         "AC-11: pnpm typecheck 0 error · pnpm lint --max-warnings=0 全过",

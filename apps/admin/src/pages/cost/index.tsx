@@ -5,8 +5,8 @@
 // AC-10: readonly_admin 财务模式可看全部(route requiredRole=admin 已控制)
 
 import { useState, useMemo } from 'react';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 import { adminTrpc } from '../../lib/admin-client';
 import { CostOverviewCards } from './CostOverviewCards';
 import { CostBreakdownChart } from './CostBreakdownChart';

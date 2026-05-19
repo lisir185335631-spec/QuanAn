@@ -1,12 +1,12 @@
 {
-  "project": "QuanQn · 真 OPENAI/Anthropic API key 接入 + 8 Specialist tuning",
+  "project": "QuanAn · 真 OPENAI/Anthropic API key 接入 + 8 Specialist tuning",
   "branchName": "ralph/prd-20-real-llm-integration",
   "description": "PRD-20 真 OPENAI/Anthropic API key 接入 + 8 Specialist real LLM 验证 + cost_log 真接 + userQuota atomic 扣额(money-critical) + TD-79/80/81/82 一并 fix · brownfield LLMGateway 99% 已实施(apps/api/src/workers/llm-gateway/ 5 文件 + BaseSpecialist + 8 Specialist 全 wire) · scope 9 US",
   "userStories": [
     {
       "id": "US-001",
       "title": "ENV validation + LLM client init + 启动时模式 log",
-      "description": "作为 QuanQn 后端运维 · 在 apps/api 启动时需明确 ENV 配置正确性 + 当前 LLM 模式(real / fallback)· zod schema 校验 OPENAI_API_KEY + ANTHROPIC_API_KEY 启动时存在性 · 缺则 log warning + 自动走 fallback(D-187 延续)· LLM client init(@anthropic-ai/sdk + openai SDK 已装)· apps/api 启动 log 显示当前模式 · 防配置错误 runtime silent fail",
+      "description": "作为 QuanAn 后端运维 · 在 apps/api 启动时需明确 ENV 配置正确性 + 当前 LLM 模式(real / fallback)· zod schema 校验 OPENAI_API_KEY + ANTHROPIC_API_KEY 启动时存在性 · 缺则 log warning + 自动走 fallback(D-187 延续)· LLM client init(@anthropic-ai/sdk + openai SDK 已装)· apps/api 启动 log 显示当前模式 · 防配置错误 runtime silent fail",
       "acceptanceCriteria": [
         "新建 apps/api/src/lib/env.ts · export const envSchema = z.object({ OPENAI_API_KEY: z.string().min(1).optional(), ANTHROPIC_API_KEY: z.string().min(1).optional(), LLM_DEFAULT_MODEL: z.string().default('claude-sonnet-4-6'), NODE_ENV: z.enum(['development','production','test']).default('development') }) · export function validateEnv(): Env · 校验失败 console.error + throw · 成功 log mode(real if hasKey else fallback)",
         "新建 apps/api/src/lib/env.test.ts · 5 单测 · (a) 全 key 存在 → mode=real (b) key 缺 → mode=fallback + warning log (c) LLM_DEFAULT_MODEL default 'claude-sonnet-4-6' (d) NODE_ENV default 'development' (e) malformed env → throw",
@@ -52,7 +52,7 @@
     {
       "id": "US-002",
       "title": "cost_log 真接 + userQuota atomic 扣额(money-critical)",
-      "description": "作为 QuanQn 运营 · 在用户用真 LLM 时需要真 token / cost 数据持久化 + 防超额 budget · BaseSpecialist 4 步模板第 4 步 writeCostLog 真存 prisma costLog(promptTokens + completionTokens Integer + costUsd Decimal(10,6) + model + provider + traceId) · 同时 atomic UPDATE userQuota.dailyUsed += tokens 防超扣 race · 超额返回 QUOTA_EXCEEDED error + UI [配额超限] badge · # $ money-critical · userQuota 用 prisma updateMany WITH WHERE dailyUsed + tokens <= dailyQuota 乐观锁",
+      "description": "作为 QuanAn 运营 · 在用户用真 LLM 时需要真 token / cost 数据持久化 + 防超额 budget · BaseSpecialist 4 步模板第 4 步 writeCostLog 真存 prisma costLog(promptTokens + completionTokens Integer + costUsd Decimal(10,6) + model + provider + traceId) · 同时 atomic UPDATE userQuota.dailyUsed += tokens 防超扣 race · 超额返回 QUOTA_EXCEEDED error + UI [配额超限] badge · # $ money-critical · userQuota 用 prisma updateMany WITH WHERE dailyUsed + tokens <= dailyQuota 乐观锁",
       "acceptanceCriteria": [
         "新建 apps/api/src/services/quota/userQuota.service.ts · export async function checkAndDeductQuota(prisma, userId, tokens) · 用 prisma.userQuota.updateMany WITH where: { userId, dailyUsed: { lte: Prisma.raw(`daily_quota - ${tokens}`) } } · updated.count === 0 时返回 { ok: false, reason: 'QUOTA_EXCEEDED', current, quota } · 否则 return { ok: true, remaining }. # $ money-critical: atomic UPDATE 防超扣",
         "新建 apps/api/src/services/quota/__tests__/userQuota.service.test.ts · 单测 (a) 充足 quota → 扣额 + remaining 正确 (b) 已满 quota → return QUOTA_EXCEEDED (c) 新用户 row 不存在 → auto-create plan='free' + dailyQuota=100000 (d) tokens=0 跳过(不扣)(e) ★ 并发 100 用户同时扣 · 最终 dailyUsed === Σ tokens · 不超扣(用 Promise.all 模拟 race)",
@@ -107,7 +107,7 @@
     {
       "id": "US-003",
       "title": "PositioningAgent 真 LLM(industry + execution mode · for step1 + step4)",
-      "description": "作为 QuanQn 用户 · 在 Step1 选行业 + Step4 填执行参数 · 真接 PositioningAgent 真 LLM · PositioningAgent.invokeLLM 真接 Anthropic Claude(或 OpenAI · model_tier='reasoning')· 真 system prompt + responseFormat schema 验证 · 真 result 存 DB + UI render · 同时验证 fallback mock vs 真 LLM 输出格式对齐(防 Schema drift · safeParse 严格匹配 outputSchema)",
+      "description": "作为 QuanAn 用户 · 在 Step1 选行业 + Step4 填执行参数 · 真接 PositioningAgent 真 LLM · PositioningAgent.invokeLLM 真接 Anthropic Claude(或 OpenAI · model_tier='reasoning')· 真 system prompt + responseFormat schema 验证 · 真 result 存 DB + UI render · 同时验证 fallback mock vs 真 LLM 输出格式对齐(防 Schema drift · safeParse 严格匹配 outputSchema)",
       "acceptanceCriteria": [
         "修改 apps/api/src/specialists/PositioningAgent.ts · invokeLLM real call(this.llmGateway.complete 已 wire · brownfield) · system prompt tune(per mode: industry / execution)· 真 model 从 ctx 读 actual model(SHIELD REJ-003 · 不 hardcode 'claude-sonnet-4-6')· 真 token usage 真返回(供 BaseSpecialist step 4 writeCostLog 真存)",
         "新建 apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts · describe.skipIf(!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) · 2 单测 (a) industry mode result.market_analysis/competition_level/positioning_suggestion 都 valid (b) execution mode result.daily_tasks/weekly_milestones/stage_kpis 都 valid · 验证 result.isFallback=false + modelUsed match /claude|gpt/ + tokensUsed.total > 0 + durationMs < 60000",
@@ -162,7 +162,7 @@
     {
       "id": "US-004",
       "title": "BrandingAgent 真 LLM(packaging + persona mode · for step3 + step3b)",
-      "description": "作为 QuanQn 用户 · 在 Step3 IP 定位 + Step3b 人设 · 真接 BrandingAgent · BrandingAgent.invokeLLM 真接 LLM · packaging mode(step3)+ persona mode(step3b)· system prompt 双 mode 严格区分 + responseFormat schema 各自验证 · cost_log 真存",
+      "description": "作为 QuanAn 用户 · 在 Step3 IP 定位 + Step3b 人设 · 真接 BrandingAgent · BrandingAgent.invokeLLM 真接 LLM · packaging mode(step3)+ persona mode(step3b)· system prompt 双 mode 严格区分 + responseFormat schema 各自验证 · cost_log 真存",
       "acceptanceCriteria": [
         "修改 apps/api/src/specialists/BrandingAgent.ts · invokeLLM real call · packaging vs persona mode 严格区分 · 各自 system prompt + responseFormat schema · 不 hardcode model",
         "新建 apps/api/src/specialists/__tests__/BrandingAgent.real-llm.test.ts · describe.skipIf · 2 单测 packaging + persona mode · 验证 result schema 严格对齐 fallback mock + isFallback=false + tokensUsed > 0",
@@ -216,7 +216,7 @@
     {
       "id": "US-005",
       "title": "MonetizationAgent + VideoAgent 真 LLM(for step4b + step6)",
-      "description": "作为 QuanQn 用户 · 在 Step4b 变现规划 + Step6 拍摄计划 · 真接 2 Agent · MonetizationAgent(3 阶梯 + 收入结构 + 案例 输出 schema)+ VideoAgent shooting mode(8 列分镜表 输出 schema · 复杂嵌套)· 防 hardcode model + Schema drift",
+      "description": "作为 QuanAn 用户 · 在 Step4b 变现规划 + Step6 拍摄计划 · 真接 2 Agent · MonetizationAgent(3 阶梯 + 收入结构 + 案例 输出 schema)+ VideoAgent shooting mode(8 列分镜表 输出 schema · 复杂嵌套)· 防 hardcode model + Schema drift",
       "acceptanceCriteria": [
         "修改 apps/api/src/specialists/MonetizationAgent.ts · invokeLLM real call · 3 阶梯 schema(0→90万/100万→1000万/1000万→1亿)严格验证 + 收入结构 + 案例 array 嵌套 schema",
         "修改 apps/api/src/specialists/VideoAgent.ts · invokeLLM real call · shooting mode 主(production/acquisition mode 暂不动) · 8 列分镜表 schema(时长/场景/景别/角度/运镜/情绪/台词/动作)严格验证",
@@ -273,7 +273,7 @@
     {
       "id": "US-006",
       "title": "TopicAgent SSE 真 LLM(5 chunks · TD-82 自然 resolved 期望)",
-      "description": "作为 QuanQn 用户 · 在 Step5 选 1 类 + 提交 · 真 SSE 流接 TopicAgent · 真 5 chunks 渐进出 5 类 100 选题 · TopicAgent.invokeLLM 真走 llmGateway.stream() SSE · 真 5 chunks 触发(per category) · 跟 fallback mock(1 次性返回)区分 · ★ TD-82 自然 resolved 期望(PRD-18 test3 fallback 不模拟 5 chunks · 真 LLM 接入后会自然 5 chunks · 5 Tab 渐进 visible · 真 SSE 流出)",
+      "description": "作为 QuanAn 用户 · 在 Step5 选 1 类 + 提交 · 真 SSE 流接 TopicAgent · 真 5 chunks 渐进出 5 类 100 选题 · TopicAgent.invokeLLM 真走 llmGateway.stream() SSE · 真 5 chunks 触发(per category) · 跟 fallback mock(1 次性返回)区分 · ★ TD-82 自然 resolved 期望(PRD-18 test3 fallback 不模拟 5 chunks · 真 LLM 接入后会自然 5 chunks · 5 Tab 渐进 visible · 真 SSE 流出)",
       "acceptanceCriteria": [
         "修改 apps/api/src/specialists/TopicAgent.ts · invokeLLM real SSE call · 5 chunks 渐进 yield(per category)· 真 model 从 ctx 读 · 真 stream meta chunk { type: 'meta', meta: { model: actualModel } } 首 chunk(< 3s)· cost_log 真存 stream 累积 token",
         "新建 apps/api/src/specialists/__tests__/TopicAgent.real-llm.test.ts · describe.skipIf · 1 SSE chunks 单测 · for await chunk of topicAgent.executeStream(...) · doneChunks.length === 5(per 5 category 自然触发)· doneChunks.map(c => c.category).sort() === ['case', 'cognition', 'monetize', 'persona', 'traffic']",
@@ -328,7 +328,7 @@
     {
       "id": "US-007",
       "title": "CopywritingAgent + LivestreamAgent 真 LLM(for step7 + step8 2 子功能)",
-      "description": "作为 QuanQn 用户 · 在 Step7 文案生成 + Step8 直播策划 2 子功能 · 真接 2 Agent · CopywritingAgent.invokeLLM 真 SSE call(step7 mode · 长 markdown 输出 + history 自动写)+ LivestreamAgent.invokeLLM 真 call(generate_plan + optimize_script 双 sub_function · discriminator 严守 PRD-19 §11.11.4)",
+      "description": "作为 QuanAn 用户 · 在 Step7 文案生成 + Step8 直播策划 2 子功能 · 真接 2 Agent · CopywritingAgent.invokeLLM 真 SSE call(step7 mode · 长 markdown 输出 + history 自动写)+ LivestreamAgent.invokeLLM 真 call(generate_plan + optimize_script 双 sub_function · discriminator 严守 PRD-19 §11.11.4)",
       "acceptanceCriteria": [
         "修改 apps/api/src/specialists/CopywritingAgent.ts · invokeLLM real SSE call(step7 mode · 长 markdown · stream yield)· 真 model 从 ctx 读 · history 自动写 prisma.history.create(已 wire in stepData router · brownfield)",
         "修改 apps/api/src/specialists/LivestreamAgent.ts · invokeLLM real call · 2 sub_function 区分(generate_plan / optimize_script)· system prompt 双 sub_function 严格区分 + responseFormat schema 各自(6 模块 vs 2 InfoCard)· userInput.experience enum(新手/有经验/资深) zod validate",
@@ -385,7 +385,7 @@
     {
       "id": "US-008",
       "title": "E2E 双跑(fallback default + manual/CI weekly real LLM)+ TD-79/80/81/82 一并 maintenance fix",
-      "description": "作为 QuanQn 维护者 · 需要双跑 E2E · 默认 fallback(快 + 无 cost)+ manual/CI weekly 真 LLM(完整端到端)· playwright spec 双跑配置 · E2E_REAL_LLM=1 env 控制 · 真 LLM 跑 PRD-18 test3 应自然 PASS(TD-82 resolved)· PRD-15~19 旧 e2e zero-regression 全 PASS · TD-79/80/81 一并 maintenance fix",
+      "description": "作为 QuanAn 维护者 · 需要双跑 E2E · 默认 fallback(快 + 无 cost)+ manual/CI weekly 真 LLM(完整端到端)· playwright spec 双跑配置 · E2E_REAL_LLM=1 env 控制 · 真 LLM 跑 PRD-18 test3 应自然 PASS(TD-82 resolved)· PRD-15~19 旧 e2e zero-regression 全 PASS · TD-79/80/81 一并 maintenance fix",
       "acceptanceCriteria": [
         "新建 apps/web/e2e/prd-20-real-llm.spec.ts · test.describe(`PRD-20 ${REAL_LLM ? 'real LLM' : 'fallback'}`) · 4 tests · (a) Step5 SSE 5 tabs 真触发(TD-82 验证)· 真 LLM 5 chunks 5 tab 渐进 visible (b) 真 LLM cost_log 真存 verify (c) userQuota atomic 扣额验证 (d) zero-regression vitest 181+ + 旧 PRD-15~19 e2e 全 PASS",
         "新建 .github/workflows/e2e-weekly-real-llm.yml(若选 GitHub CI · 否则文档说明)· weekly cron · OPENAI_API_KEY secret · 真 LLM full e2e run · cost ~$1/run · monthly ~$5",
@@ -456,7 +456,7 @@
     {
       "id": "US-009",
       "title": "verify-prd-20.sh 40+ 检查 + zero-regression + Specialist tuning baseline 文档",
-      "description": "作为 QuanQn 维护者 · 需要可重复 bash script 验证 PRD-20 全部交付物 + Specialist tuning baseline 留痕 · scripts/verify-prd-20.sh 40+ 检查项 · 含 §1 ENV validation + §2 LLM SDK 真接 + §3 cost_log 真数据 grep + §4 userQuota atomic + §5 8 Specialist real LLM test 全 PASS(若 key)+ §6 TD-79/80/81/82 fix 验证 + §7 zero-regression + §8 D4=B/D3=A/LD-009 严守 + §9 Specialist tuning baseline 文档",
+      "description": "作为 QuanAn 维护者 · 需要可重复 bash script 验证 PRD-20 全部交付物 + Specialist tuning baseline 留痕 · scripts/verify-prd-20.sh 40+ 检查项 · 含 §1 ENV validation + §2 LLM SDK 真接 + §3 cost_log 真数据 grep + §4 userQuota atomic + §5 8 Specialist real LLM test 全 PASS(若 key)+ §6 TD-79/80/81/82 fix 验证 + §7 zero-regression + §8 D4=B/D3=A/LD-009 严守 + §9 Specialist tuning baseline 文档",
       "acceptanceCriteria": [
         "新建 scripts/verify-prd-20.sh(chmod +x)· 40+ 检查项 · §1 ENV validation(3 项) · §2 LLM SDK 真接(3 项) · §3 cost_log 真数据 + atomic UPDATE(4 项 money-critical) · §4 8 Specialist real LLM test PASS if key(8 项 · SKIP if no key) · §5 TD-79/80/81/82 fix(4 项) · §6 zero-regression typecheck+vitest 181+(3 项) · §7 D4=B/D3=A/LD-009 严守(3 项) · §8 Specialist tuning baseline doc(1 项)",
         "新建 .agents/specialist-tuning-baseline.md · 8 Specialist baseline 文档 · 每 Agent · model_tier(reasoning) / avg input_tokens / avg output_tokens / avg cost USD / 调优历史 / 跟 fallback mock 输出对比表 · PRD-21+ Specialist 优化有对照基线",

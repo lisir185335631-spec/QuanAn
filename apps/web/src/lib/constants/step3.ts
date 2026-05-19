@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 3 账号包装方案常量 — 字面锁
+ * QuanAn · Step 3 账号包装方案常量 — 字面锁
  * 命名锁: STEP3_PLATFORMS_5 / STEP3_OUTPUT_H3_6 / STEP3_FORM / STEP3_CTA_LABEL / STEP3_BUTTON_*
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.2, 禁止改写
  */

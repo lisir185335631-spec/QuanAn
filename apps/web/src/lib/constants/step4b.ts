@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 4b 变现路径规划常量 — 字面锁
+ * QuanAn · Step 4b 变现路径规划常量 — 字面锁
  * 命名锁: STEP4B_TEXTAREA / STEP4B_INPUTS_3 / STEP4B_THREE_STAGES / STEP4B_PRODUCT_TYPES_4 / STEP4B_OUTPUT_H3_5
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.5 line 1516-1585, 禁止改写
  * 数字锁: STEP4B_INPUTS_3.length === 3 · STEP4B_THREE_STAGES.length === 3 · STEP4B_PRODUCT_TYPES_4.length === 4 · STEP4B_OUTPUT_H3_5.length === 5

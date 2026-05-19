@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-21-visual-alignment-foundation",
   "description": "aiipznt 视觉对齐基础设施 + Header 精修 + Mobile nav 重写 + 共享 utility 全局补齐 + Home/Guide/IpPlan 视觉精修 · 8 US · 1 foundation + 2 high + 5 medium · 17 Locked Decisions D-206~D-222 · D1=A + D4=B 严锁 · pixel-diff < 5% threshold · 后续 PRD-22~24 复用 expectVisualMatch infra",
   "lockedDecisions": [
@@ -8,7 +8,7 @@
     {"id": "D-208", "decision": "expectVisualMatch(page, ExpectVisualMatchOptions) helper API 锁", "rationale": "后续 PRD-22~24 共用 · 参数名 / 类型 / 默认值不允许改"},
     {"id": "D-209", "decision": "Header container 高度 h-16 (64px)", "rationale": "锁 dump §1.1 实测"},
     {"id": "D-210", "decision": "sticky element 全局用 backdrop-blur-2xl", "rationale": "锁 dump §1.6 实测 · Header + 未来 dropdown 弹层都用"},
-    {"id": "D-211", "decision": "Logo 双行 stack 占位规则 · 金色方块 div(8x8 rounded bg-primary)+ 双行 flex flex-col leading-none text QUAN/QN", "rationale": "不抄 aiipznt AIP/AGENT SVG · 用 QuanQn 字面占位避免版权"},
+    {"id": "D-211", "decision": "Logo 双行 stack 占位规则 · 金色方块 div(8x8 rounded bg-primary)+ 双行 flex flex-col leading-none text QUAN/QN", "rationale": "不抄 aiipznt AIP/AGENT SVG · 用 QuanAn 字面占位避免版权"},
     {"id": "D-212", "decision": "4 dropdown ChevronDown 加 transition-transform duration-200 data-[state=open]:rotate-180", "rationale": "锁 dump §1.2 实测旋转动画 · Radix DropdownMenu 自带 data-state attribute"},
     {"id": "D-213", "decision": "Mobile nav 形态 = lg:hidden border-t bg-background/95 backdrop-blur-2xl max-h-[70vh] overflow-y-auto header 下方下拉面板", "rationale": "锁 dump §1.5 实测 · 不用 shadcn Sheet drawer · 跟 aiipznt 实地体验一致"},
     {"id": "D-214", "decision": "data-grid-bg utility 全 32 page <main> wrapper 用", "rationale": "优先通过 RootLayout.tsx / StepLayout.tsx 共享 wrapper 加 · 单 page 不重复加"},
@@ -87,7 +87,7 @@
       "acceptanceCriteria": [
         "AC-1 · apps/web/src/components/Header.tsx 第 219 行 container 高度从 h-12 改为 h-16 · 严格 1:1 对齐 aiipznt 实测 64px(D-209 锁)",
         "AC-2 · apps/web/src/components/Header.tsx 第 216 行 backdrop-blur 从 backdrop-blur-sm 改为 backdrop-blur-2xl(D-210 锁) · 完整 className · sticky top-0 z-40 w-full border-b border-border bg-surface-container-low/90 backdrop-blur-2xl",
-        "AC-3 · apps/web/src/components/Header.tsx 第 220-224 行 Logo 从单行 QuanQn 改为双行 stack 占位(D-211 锁) · 用 <Link to='/'> wrap · 内部 · (a) 金色方块 div · h-8 w-8 rounded bg-primary flex items-center justify-center shrink-0 · 内嵌 <span> text-on-primary font-display font-black text-xs · 字面 'Q' · (b) 双行 stack · flex flex-col leading-none · 2 个 <span> font-display font-bold text-primary text-sm tracking-tight · 字面 'QUAN' 和 'QN' · 不抄 aiipznt AIP/AGENT",
+        "AC-3 · apps/web/src/components/Header.tsx 第 220-224 行 Logo 从单行 QuanAn 改为双行 stack 占位(D-211 锁) · 用 <Link to='/'> wrap · 内部 · (a) 金色方块 div · h-8 w-8 rounded bg-primary flex items-center justify-center shrink-0 · 内嵌 <span> text-on-primary font-display font-black text-xs · 字面 'Q' · (b) 双行 stack · flex flex-col leading-none · 2 个 <span> font-display font-bold text-primary text-sm tracking-tight · 字面 'QUAN' 和 'QN' · 不抄 aiipznt AIP/AGENT",
         "AC-4 · apps/web/src/components/Header.tsx HeaderNav 4 dropdown ChevronDown 加 transition-transform duration-200 data-[state=open]:rotate-180(D-212 锁) · 完整 className · h-3 w-3 text-muted-foreground transition-transform duration-200 data-[state=open]:rotate-180 · Radix DropdownMenu 自动加 data-state attribute · Tailwind data-attribute selector 触发 rotate-180",
         "AC-5 · apps/web/src/components/Header.tsx 严格保留 25 二级 nav 不动 · HEADER_NAV constant 引用从 @/lib/constants/header-nav import 不变 · 不允许改动 lib/constants/header-nav.ts 内容(4 一级 × 25 二级 严锁)",
         "AC-6 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",

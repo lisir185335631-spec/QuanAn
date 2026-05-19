@@ -74,7 +74,7 @@ describe('admin auth router — login', () => {
   it('login happy path: returns sessionId + user, sets cookie', async () => {
     prismaMock.adminUser.findUnique.mockResolvedValue({
       id: 1,
-      email: 'super@quanqn.com',
+      email: 'super@quanan.com',
       role: 'super_admin',
       isMock: true,
       isActive: true,
@@ -83,10 +83,10 @@ describe('admin auth router — login', () => {
     // findUnique for lucia validateSession — not called in login
     const ctx = makeCtx();
     const caller = makeAdminCaller(ctx);
-    const result = await caller.login({ email: 'super@quanqn.com' });
+    const result = await caller.login({ email: 'super@quanan.com' });
 
     expect(result.sessionId).toBeTruthy();
-    expect(result.user.email).toBe('super@quanqn.com');
+    expect(result.user.email).toBe('super@quanan.com');
     expect(result.user.role).toBe('super_admin');
     expect(ctx.resHeaders.get('Set-Cookie')).toContain('admin_session_id=');
     expect(ctx.resHeaders.get('Set-Cookie')).toContain('HttpOnly');
@@ -165,11 +165,11 @@ describe('admin auth router — me', () => {
   it('me: authenticated context returns user', async () => {
     const ctx = makeCtx({
       adminSession: { id: 'sess1', expiresAt: new Date(Date.now() + 3600_000), fresh: false },
-      activeAdminUser: { id: 1, email: 'super@quanqn.com', role: 'super_admin', isMock: true, isActive: true },
+      activeAdminUser: { id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true },
     });
     const caller = makeAdminCaller(ctx);
     const result = await caller.me();
-    expect(result.email).toBe('super@quanqn.com');
+    expect(result.email).toBe('super@quanan.com');
     expect(result.role).toBe('super_admin');
     expect(result.sessionId).toBe('sess1');
   });

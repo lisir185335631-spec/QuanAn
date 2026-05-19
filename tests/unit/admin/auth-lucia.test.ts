@@ -106,13 +106,13 @@ describe('admin Prisma adapter', () => {
       adminUserId: 1,
       expiresAt: new Date(Date.now() + 1000 * 3600),
       isActive: true,
-      adminUser: { email: 'super@quanqn.com', role: 'super_admin', isMock: true, isActive: true },
+      adminUser: { email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true },
     });
     redisMock.getex.mockResolvedValue('1');
 
     const { session, user } = await validateAdminSession('sess1');
     expect(session).not.toBeNull();
-    expect(user?.email).toBe('super@quanqn.com');
+    expect(user?.email).toBe('super@quanan.com');
     expect(user?.role).toBe('super_admin');
   });
 

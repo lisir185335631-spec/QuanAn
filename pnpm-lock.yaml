@@ -108,10 +108,10 @@ importers:
       '@monaco-editor/react':
         specifier: '4'
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@quanqn/clients':
+      '@quanan/clients':
         specifier: workspace:*
         version: link:../../packages/clients
-      '@quanqn/ui':
+      '@quanan/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       '@react-pdf/renderer':
@@ -172,10 +172,10 @@ importers:
       '@prisma/client':
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)
-      '@quanqn/schemas':
+      '@quanan/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
-      '@quanqn/ui':
+      '@quanan/ui':
         specifier: workspace:^
         version: link:../../packages/ui
       '@react-pdf/renderer':
@@ -275,13 +275,13 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.75.0(react@18.3.1))
-      '@quanqn/clients':
+      '@quanan/clients':
         specifier: workspace:*
         version: link:../../packages/clients
-      '@quanqn/schemas':
+      '@quanan/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
-      '@quanqn/ui':
+      '@quanan/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@radix-ui/react-avatar':
@@ -429,7 +429,7 @@ importers:
 
   packages/clients:
     dependencies:
-      '@quanqn/schemas':
+      '@quanan/schemas':
         specifier: workspace:*
         version: link:../schemas
       '@tanstack/react-query':

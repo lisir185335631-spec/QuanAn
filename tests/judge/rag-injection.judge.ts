@@ -50,7 +50,7 @@ vi.mock('@/lib/logger', () => ({
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
 import { ContextAssembler } from '@/services/context-assembler/ContextAssembler';
-import type { KnowledgeChunkContent } from '@quanqn/schemas';
+import type { KnowledgeChunkContent } from '@quanan/schemas';
 
 const CASE_CHUNK: KnowledgeChunkContent = {
   id: 1,
