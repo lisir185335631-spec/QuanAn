@@ -133,9 +133,19 @@ export default function AiVideo() {
           className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
           data-testid="ai-video-textarea"
         />
-        <p className="text-right text-body-sm text-muted-foreground" data-testid="ai-video-char-count">
-          {text.length}/5000
-        </p>
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            data-testid="ai-video-example"
+            onClick={() => setText('大家好！今天给大家分享一款让我爱不释手的好物。它的设计非常精致，功能也超级实用。我已经用了一个月了，真的超级好用！强烈推荐给大家，点赞收藏不迷路～')}
+            className="text-body-sm text-primary hover:underline transition-colors"
+          >
+            示例文案
+          </button>
+          <span className="text-body-sm text-muted-foreground" data-testid="ai-video-char-count">
+            {text.length}/5000
+          </span>
+        </div>
       </div>
 
       {/* AC-3(3): 5 平台 radio */}
