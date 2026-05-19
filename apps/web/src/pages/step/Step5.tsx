@@ -1,8 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 
-import { Step5FileUpload } from '@/components/step5/Step5FileUpload';
+import { FileUpload } from '@/components/file-upload/FileUpload';
 import { Step5TopicGrid } from '@/components/step5/Step5TopicGrid';
-import { EmptyState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
@@ -69,7 +68,6 @@ export default function Step5() {
   const [streamStatuses, setStreamStatuses] = useState<Record<CategoryKey, StreamStatus>>(IDLE_STATUSES);
   const [categoryResults, setCategoryResults] = useState<Partial<Record<CategoryKey, Step5Topic[]>>>({});
 
-  // Track activeCategory in ref to avoid stale closure in onData
   const activeCategoryRef = useRef(activeCategory);
   activeCategoryRef.current = activeCategory;
 
@@ -82,7 +80,6 @@ export default function Step5() {
 
     if (accountId === null) return;
 
-    // Restore form inputs from LS
     try {
       const raw = localStorage.getItem(stepLsKey(accountId, 'step5'));
       if (raw) {
@@ -94,7 +91,6 @@ export default function Step5() {
       }
     } catch { /* ignore */ }
 
-    // Restore per-category results from LS (prior session)
     const loaded: Partial<Record<CategoryKey, Step5Topic[]>> = {};
     for (const cat of ALL_CATEGORIES) {
       try {
@@ -114,7 +110,19 @@ export default function Step5() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId]);
 
-  // Single SSE subscription — input changes when activeCategory changes → auto re-subscribes
+  // Auto-advance to next idle category when current finishes streaming
+  useEffect(() => {
+    if (!hasSubmitted) return;
+    if (streamStatuses[activeCategory] !== 'done') return;
+    const nextIdle = ALL_CATEGORIES.find(
+      (cat) => streamStatuses[cat] === 'idle' && categoryResults[cat] === undefined,
+    );
+    if (nextIdle) {
+      setActiveCategory(nextIdle);
+    }
+  }, [streamStatuses, activeCategory, hasSubmitted, categoryResults]);
+
+  // Single SSE subscription — re-subscribes when activeCategory changes
   trpc.stepData.saveStream.useSubscription(
     { stepKey: 'step5', category: activeCategory, inputs: formData as unknown as Record<string, unknown> },
     {
@@ -148,7 +156,6 @@ export default function Step5() {
 
   function handleCategoryChange(newCat: CategoryKey) {
     if (newCat === activeCategory) return;
-    // If old category was abandoned mid-stream, reset to idle so it retries on return
     if (streamStatuses[activeCategory] === 'loading') {
       setStreamStatuses((prev) => ({ ...prev, [activeCategory]: 'idle' }));
     }
@@ -157,13 +164,12 @@ export default function Step5() {
 
   const isFormValid = formData.industry.trim() !== '' && formData.product.trim() !== '';
   const generateDisabled = !isFormValid || isSaving;
-  const isActiveLoading = streamStatuses[activeCategory] === 'loading';
   const hasAnyResult = Object.values(categoryResults).some(Boolean);
+  const isAnyLoading = Object.values(streamStatuses).some((s) => s === 'loading');
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (generateDisabled) return;
-    // Reset all categories for fresh generation
     setCategoryResults({});
     setStreamStatuses(IDLE_STATUSES);
     setActiveCategory('traffic');
@@ -172,7 +178,6 @@ export default function Step5() {
     document.getElementById('step5-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  // Build merged result for grid from accumulated per-category results
   const mergedTopics = ALL_CATEGORIES.flatMap((cat) => categoryResults[cat] ?? []);
   const fullResult: Step5Result | null = hasAnyResult
     ? { topics: mergedTopics, generated_at: new Date().toISOString() }
@@ -180,9 +185,11 @@ export default function Step5() {
 
   return (
     <main className="flex-1 container py-8">
+      {/* AC-1 字面锁: STEP 05 · 爆款选题库 */}
       <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
         {STEP5_STEP_TAG}
       </p>
+      {/* AC-11: H1 */}
       <h1 className="text-h1 font-display text-on-surface mb-2">{STEP5_H1}</h1>
       <p className="text-body-md text-muted-foreground mb-8">{STEP5_SUBTITLE}</p>
 
@@ -190,6 +197,7 @@ export default function Step5() {
         onSubmit={(e) => { void handleSubmit(e); }}
         className="glass-card rounded-xl p-6 space-y-6 max-w-2xl"
       >
+        {/* AC-2: 2 inputs — 行业领域 + 产品/服务 */}
         {STEP5_INPUTS_2.map((input) => (
           <div key={input.id}>
             <label className="block text-body-sm font-label text-on-surface mb-2">
@@ -201,36 +209,41 @@ export default function Step5() {
               value={formData[input.id as keyof Step5FormData]}
               onChange={(e) => setField(input.id as keyof Step5FormData, e.target.value)}
               placeholder={input.placeholder}
+              data-testid={`step5-input-${input.id}`}
             />
           </div>
         ))}
 
+        {/* AC-2 + AC-4: 2 image FileUploads — 产品图 + 案例图 */}
         {STEP5_FILE_UPLOADS_2.map((upload) => (
-          <Step5FileUpload
+          <FileUpload
             key={upload.id}
             label={upload.label}
-            placeholder={upload.placeholder}
+            multiple
+            accept="image/*"
+            onChange={() => { /* file bytes not sent in this phase */ }}
           />
         ))}
 
+        {/* AC-2 CTA: 生成爆款选题库 */}
         <Button
           type="submit"
           disabled={generateDisabled}
           className="w-full bg-gradient-to-r from-primary to-primary/80"
+          data-testid="step5-cta"
         >
           {STEP5_BUTTON_GENERATE}
         </Button>
       </form>
 
-      <div className="mt-8 max-w-2xl">
-        {isActiveLoading && <LoadingState text={STEP5_LOADING_TEXT} size="lg" />}
-        {!isActiveLoading && !hasAnyResult && (
-          <EmptyState title={`提交表单后生成 100 个${STEP5_H1}`} />
-        )}
-      </div>
-
-      {(hasAnyResult || (hasSubmitted && !isActiveLoading)) && (
+      {/* Output: AC-11 = 1 H1 + 5 H3 = 6 total when submitted */}
+      {hasSubmitted && (
         <section id="step5-output" className="mt-10 max-w-5xl">
+          {isAnyLoading && (
+            <p className="text-body-sm text-muted-foreground mb-6 animate-pulse">
+              {STEP5_LOADING_TEXT}
+            </p>
+          )}
           <Step5TopicGrid
             result={fullResult}
             accountId={accountId}

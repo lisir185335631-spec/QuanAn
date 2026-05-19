@@ -56,17 +56,17 @@ export const STEP5_SUBTITLE =
 
 // ─── Form Inputs ──────────────────────────────────────────────────────────────
 
-// STEP5_INPUTS_2 · 2 必填输入项 · spec §7.6 line 1598-1601
+// STEP5_INPUTS_2 · 2 必填输入项 · AC-2 D-224 字面锁
 export const STEP5_INPUTS_2: readonly Step5Input[] = [
   {
     id: 'industry',
-    label: '你的行业',
+    label: '行业领域',
     required: true,
     placeholder: '例如：美业、餐饮、教育培训、服装...',
   },
   {
     id: 'product',
-    label: '你的产品/服务',
+    label: '产品/服务',
     required: true,
     placeholder: '例如：皮肤管理项目、火锅加盟、英语培训课...',
   },
@@ -74,46 +74,44 @@ export const STEP5_INPUTS_2: readonly Step5Input[] = [
 
 // ─── File Uploads ─────────────────────────────────────────────────────────────
 
-// STEP5_FILE_UPLOADS_2 · 2 可选文件上传 · spec §7.6 line 1602-1605
+// STEP5_FILE_UPLOADS_2 · 2 可选图片上传 · AC-2 "产品图" + "案例图"(可选 · 多张)
 export const STEP5_FILE_UPLOADS_2: readonly Step5FileUpload[] = [
   {
-    id: 'product_doc',
-    label: '上传产品资料',
+    id: 'product_images',
+    label: '产品图',
     required: false,
-    placeholder:
-      '产品介绍、卖点、价格体系、客户案例等。支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）',
+    placeholder: '上传产品图（可选 · 多张）',
   },
   {
-    id: 'persona_doc',
-    label: '上传人物介绍与行业',
+    id: 'case_images',
+    label: '案例图',
     required: false,
-    placeholder:
-      '个人经历、行业背景、专业资质、从业故事等。支持 PDF、Word、TXT、Markdown、CSV（最大 20MB）',
+    placeholder: '上传案例图（可选 · 多张）',
   },
 ] as const;
 
 // ─── File Config ──────────────────────────────────────────────────────────────
 
 export const STEP5_FILE_MAX_MB = 20;
-export const STEP5_FILE_ACCEPT = '.pdf,.doc,.docx,.txt,.md,.csv';
-export const STEP5_FILE_ACCEPT_LABEL = 'PDF、Word、TXT、Markdown、CSV';
+export const STEP5_FILE_ACCEPT = 'image/*';
+export const STEP5_FILE_ACCEPT_LABEL = 'JPG、PNG、WEBP、GIF';
 
 // ─── Buttons ──────────────────────────────────────────────────────────────────
 
-// spec §7.6 line 1606: [一键生成 5大类 爆款选题] — 含 '一键' + '5大类' + 半角空格
-export const STEP5_BUTTON_GENERATE = '一键生成 5大类 爆款选题';
+// AC-2 CTA 字面锁: "生成爆款选题库"
+export const STEP5_BUTTON_GENERATE = '生成爆款选题库';
 export const STEP5_BUTTON_GO_STEP7 = '生成爆款文案';
 export const STEP5_LOADING_TEXT = 'AI 正在生成 100 个爆款选题，预计 60-120 秒...';
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
-// STEP5_CATEGORIES_5 · 5 项严格字面 1:1 spec §7.6 line 1626-1630 · label 中文严禁翻译
+// STEP5_CATEGORIES_5 · 5 项 H3 字面锁 · AC-3 D-220
 export const STEP5_CATEGORIES_5: readonly Step5Category[] = [
-  { key: 'traffic',   label: '流量型', description: '快速获取大量流量' },
-  { key: 'monetize',  label: '变现型', description: '直接转化下单' },
-  { key: 'persona',   label: '人设型', description: '塑造个人 IP' },
-  { key: 'cognition', label: '认知型', description: '提升用户认知' },
-  { key: 'case',      label: '案例型', description: '真实成功故事' },
+  { key: 'traffic',   label: '知识科普类选题', description: '科普行业知识，建立专业形象' },
+  { key: 'monetize',  label: '产品种草类选题', description: '展示产品价值，促进购买决策' },
+  { key: 'persona',   label: '情感共鸣类选题', description: '触动用户情感，增强品牌连接' },
+  { key: 'cognition', label: '争议讨论类选题', description: '引发话题讨论，提升互动数据' },
+  { key: 'case',      label: '干货实操类选题', description: '实用技巧分享，积累精准粉丝' },
 ] as const;
 
 // ─── Numeric Constants ────────────────────────────────────────────────────────

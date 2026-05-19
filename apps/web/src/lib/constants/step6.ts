@@ -44,7 +44,8 @@ export interface Step6Result {
 
 // ─── Page Labels ──────────────────────────────────────────────────────────────
 
-export const STEP6_STEP_TAG = 'STEP 06 · 生成拍摄计划';
+// AC-5 字面锁: "STEP 06 · 拍摄计划"
+export const STEP6_STEP_TAG = 'STEP 06 · 拍摄计划';
 export const STEP6_H1 = '拍摄计划';
 
 // STEP6_SUBTITLE · 字面严格 1:1 spec §7.7 line 1639 · 含全角句号
@@ -55,12 +56,13 @@ export const STEP6_SUBTITLE =
 
 // STEP6_TEXTAREA · 1 必填 textarea · spec §7.7 line 1643-1646
 // placeholder 含 \n\n 两段换行 · 含「」全角引号 · 含全角括号（）· 末尾全角句号
+// AC-6 字面锁: label="短视频文案" · placeholder 无空格"（至少10个字）"
 export const STEP6_TEXTAREA: Step6Textarea = {
   id: 'copywriting_text',
-  label: '文案内容',
+  label: '短视频文案',
   required: true,
   placeholder:
-    '粘贴你的短视频文案（至少 10 个字），AI 将基于文案生成完整的拍摄计划。\n\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。',
+    '粘贴你的短视频文案（至少10个字），AI 将基于文案生成完整的拍摄计划。\n\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。',
 } as const;
 
 // ─── Numeric & Template Constants ─────────────────────────────────────────────

@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { EmptyState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -52,31 +54,27 @@ export default function Step6() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
   const { save, isSaving, dbQuery } = useStepData(accountId, 'step6');
+  const navigate = useNavigate();
 
   const [text, setText] = useState('');
   const [result, setResult] = useState<Step6AgentResult | null>(null);
 
   const prevIsSavingRef = useRef(false);
 
-  // Cross-step prefill: read step7 inputs (topic used as textarea source)
-  // and restore step6 own inputs from LS
   useEffect(() => {
     if (accountId === null) return;
 
-    // Prefill from step7: use topic as starting text (reverse flow: 7→6)
     const step7Data = readOtherStep<{ topic?: string }>(accountId, 'step7');
     if (step7Data?.topic) {
       setText((prev) => prev || step7Data.topic!);
     }
 
-    // Restore step6 inputs
     const step6Data = readOtherStep<{ text?: string }>(accountId, 'step6');
     if (step6Data?.text) {
       setText((prev) => prev || step6Data.text!);
     }
   }, [accountId]);
 
-  // Refetch after save completes (isSaving: true → false)
   useEffect(() => {
     if (prevIsSavingRef.current && !isSaving) {
       void dbQuery.refetch();
@@ -85,7 +83,6 @@ export default function Step6() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSaving]);
 
-  // Sync result from DB (VideoAgent ShootingOutput)
   useEffect(() => {
     if (!dbQuery.data?.result) return;
     const raw = dbQuery.data.result as Record<string, unknown>;
@@ -100,6 +97,7 @@ export default function Step6() {
   }, [dbQuery.data?.result]);
 
   const counterText = STEP6_CHAR_COUNTER_TEMPLATE.replace('{count}', String(text.length));
+  // AC-8 + TD-HINT: disabled when text.length < 10 (not just empty)
   const generateDisabled = isSaving || text.length < STEP6_TEXTAREA_MIN_CHARS;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -111,12 +109,36 @@ export default function Step6() {
 
   return (
     <main className="flex-1 container py-8">
-      {/* Header */}
+      {/* AC-5 字面锁: STEP 06 · 拍摄计划 */}
       <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
         {STEP6_STEP_TAG}
       </p>
+      {/* AC-11: H1 */}
       <h1 className="text-h1 font-display text-on-surface mb-2">{STEP6_H1}</h1>
       <p className="text-body-md text-muted-foreground mb-8">{STEP6_SUBTITLE}</p>
+
+      {/* AC-7: infobox — 跳 /step/7 提示 */}
+      <div
+        className="glass-card rounded-xl p-4 mb-6 max-w-2xl flex items-start gap-3 border-primary/20"
+        data-testid="step6-infobox"
+      >
+        <span className="text-primary mt-0.5 shrink-0">ℹ️</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-body-sm text-muted-foreground">
+            你可以先去第七步「文案生成」生成文案，再回这里
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => void navigate('/step/7')}
+          data-testid="step6-goto-step7"
+          className="shrink-0"
+        >
+          去文案生成
+        </Button>
+      </div>
 
       {/* Form glass-card */}
       <form
@@ -124,6 +146,7 @@ export default function Step6() {
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
         <div>
+          {/* AC-6 字面锁: label="短视频文案" */}
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP6_TEXTAREA.label}
             {STEP6_TEXTAREA.required && <span className="text-destructive ml-1">*</span>}
@@ -135,14 +158,17 @@ export default function Step6() {
             placeholder={STEP6_TEXTAREA.placeholder}
             className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-cn resize-y"
             style={{ minHeight: '120px' }}
+            data-testid="step6-textarea"
           />
           <p className="text-body-xs text-secondary mt-1">{counterText}</p>
         </div>
 
+        {/* AC-8: disabled when text.length < 10 */}
         <Button
           type="submit"
           disabled={generateDisabled}
           className="w-full bg-gradient-to-r from-primary to-primary/80"
+          data-testid="step6-cta"
         >
           {STEP6_BUTTON_GENERATE}
         </Button>
@@ -156,12 +182,12 @@ export default function Step6() {
         )}
       </div>
 
-      {/* Output section — 3 H3 modules */}
+      {/* AC-9 + AC-11: Output section — 2 H3 (分镜脚本 + 拍摄要点) in DOM */}
       {result && !isSaving && (
         <section id="step6-output" className="mt-10 max-w-5xl space-y-8">
-          {/* Module 1: 分镜脚本 — shotList 8 列 */}
-          <div>
-            <h3 className="text-h3 font-display text-on-surface mb-4">
+          {/* Module 1: 分镜脚本 */}
+          <FadeInWrapper delay={0}>
+            <h3 className="text-h3 font-display text-on-surface mb-4" data-testid="step6-h3-storyboard">
               {STEP6_OUTPUT_MODULES_3[0]!.h3Label}
             </h3>
             <div className="glass-card rounded-xl overflow-hidden">
@@ -210,15 +236,15 @@ export default function Step6() {
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
             </div>
-          </div>
+          </FadeInWrapper>
 
-          {/* Module 2: 拍摄方案 — equipment list */}
-          {result.equipment.length > 0 && (
-            <div>
-              <h3 className="text-h3 font-display text-on-surface mb-4">
-                {STEP6_OUTPUT_MODULES_3[1]!.h3Label}
-              </h3>
-              <div className="glass-card rounded-xl p-6">
+          {/* Module 2: 拍摄方案 */}
+          <FadeInWrapper delay={0.05}>
+            <h3 className="text-h3 font-display text-on-surface mb-4" data-testid="step6-h3-shooting">
+              {STEP6_OUTPUT_MODULES_3[1]!.h3Label}
+            </h3>
+            <div className="glass-card rounded-xl p-6">
+              {result.equipment.length > 0 ? (
                 <ul className="space-y-2">
                   {result.equipment.map((item, i) => (
                     <li key={i} className="flex gap-3 text-body-sm">
@@ -227,13 +253,15 @@ export default function Step6() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              ) : (
+                <p className="text-body-sm text-muted-foreground">暂无拍摄方案数据</p>
+              )}
             </div>
-          )}
+          </FadeInWrapper>
 
-          {/* Module 3: 口播提词器 — schedule */}
+          {/* Module 3: 口播提词器 */}
           {result.schedule && (
-            <div>
+            <FadeInWrapper delay={0.1}>
               <h3 className="text-h3 font-display text-on-surface mb-4">
                 {STEP6_OUTPUT_MODULES_3[2]!.h3Label}
               </h3>
@@ -242,7 +270,7 @@ export default function Step6() {
                   {result.schedule}
                 </pre>
               </div>
-            </div>
+            </FadeInWrapper>
           )}
         </section>
       )}
