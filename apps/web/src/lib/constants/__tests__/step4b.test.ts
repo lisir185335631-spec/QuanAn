@@ -33,8 +33,9 @@ describe('STEP4B constants', () => {
     expect(STEP4B_OUTPUT_H3_5.length).toBe(5);
   });
 
-  it('INPUTS_3 数量锁 · length === 3', () => {
-    expect(STEP4B_INPUTS_3.length).toBe(3);
+  it('INPUTS_3 数量锁 · length === 1 · PRD-22 US-008 行业领域 1 项', () => {
+    expect(STEP4B_INPUTS_3.length).toBe(1);
+    expect(STEP4B_INPUTS_3[0]!.id).toBe('industry');
   });
 
   it('TEXTAREA required === true · id === product_description', () => {
