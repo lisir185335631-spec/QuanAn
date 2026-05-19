@@ -2918,3 +2918,49 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
 --- [RALPH] Iteration 12 started: US-009 at 2026-05-19 16:40 ---
 
 --- [RALPH] Iteration 13 started: US-009 at 2026-05-19 17:10 ---
+
+--- [RALPH] Iteration 13 ended: US-009 (26分钟 11秒) ---
+
+--- [RALPH] Iteration 14 started: US-009 at 2026-05-19 17:36 ---
+
+## 2026-05-19 17:40 - US-009
+- 针对 Opus 审计驳回修复：同步 6 个 unit test 期望对齐 PRD-22 实现（只改 test 文件，不动 step5.ts/step6.ts/Step5.tsx/Step6.tsx）
+- 更改的文件：
+  - apps/web/src/lib/constants/__tests__/step5.test.ts：5 类 label 改为新 spec §7.6 字面 + BUTTON_GENERATE 字面
+  - apps/web/src/lib/constants/__tests__/step6.test.ts：placeholder（至少10个字）去掉全角空格
+  - apps/web/src/pages/step/__tests__/Step5.test.tsx：EmptyState 改为验证输出网格未渲染 + CTA 字面
+  - apps/web/src/pages/step/__tests__/Step6.test.tsx：STEP_TAG 字面"STEP 06 · 拍摄计划"（无"生成"）
+- **未来迭代的学习：**
+  - ralph 重写 page/constants 时必须同步检查对应 __tests__/ 全部相关断言，防止同模式反复 reject
+  - EmptyState 缺失时 test 应改为验证"输出区域未渲染"（queryByTestId not.toBeInTheDocument），不要硬写不存在的文字
+  - 验证结果：202 passed · 0 failed · typecheck 0 error
+---
+
+## 2026-05-19 17:55 - US-009 [PRD-22] Opus audit approve · medium 标审(retry 1)
+
+### Retry 路径
+- 17:35 首次 audit · 6 unit test failed(同 US-006 模式 · ralph 重写常量但忘了同步 4 个 test 文件期望)
+- Reject feedback 精确指出 6 处期望值修正
+- 反例自动入 reject-examples.jsonl(全局 · 同模式第 2 次累积)
+- ralph retry 1 修了 4 test 文件 +8/-7 行 · 19 min 修对
+
+### AC 通过 + 关键防御
+- AC 12/12 PASS · vitest 202/202 passed · 0 failed · 零回归
+- D-220 字面锁严守:
+  - /step/5: '知识科普类选题/产品种草类选题/情感共鸣类选题/争议讨论类选题/干货实操类选题' (spec §7.6 5 类)
+  - /step/5 CTA '生成爆款选题库' (spec §7.6 line 1606)
+  - /step/6 STEP_TAG 'STEP 06 · 拍摄计划' (无"生成" · 对齐 spec §7.7 line 1635)
+  - /step/6 placeholder '（至少10个字）' (无全角空格 · 对齐 spec §7.7)
+- AC-4 FileUpload 新组件 · 4 字段 props interface · 多张上传 + 预览缩略图 + 删除 button
+- AC-7 跳 /step/7 提示 + button "去文案生成"
+- AC-8 disabled · text.length < 10 (spec §7.7 "至少10个字")
+- AC-2 行业/产品 input placeholder spec §7.6 字面
+
+### 教训累积(第 2 次 unit test 同步漏更新)
+- US-006 + US-009 连续 2 reject 同模式 · 反例库已有跨 PRD 反例
+- PRD-22 AC-11 漏写 unit test 同步 · 仅写 e2e 同步 · 应在 PRD-23/24 修
+- ralph 后续 US-010 + US-011 + US-012 仍可能撞同问题 · TD-093 登记防御
+
+### TD 续登
+- TD-090 同模式 · baseline 'prd22-step5.png' + 'prd22-step6.png' 应改 '15-step-5-topics.png' + '16-step-6-shooting.png'
+---
