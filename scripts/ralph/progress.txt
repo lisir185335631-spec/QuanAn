@@ -3509,3 +3509,23 @@ PRD-23 范围:
 ---
 ## 2026-05-20 06:59 - US-008 approve · 8 PRD-15 工具 baseline 首跑全建立 · 16 fixture · vitest 287/287
 ---
+
+--- [RALPH] Iteration 14 ended: US-008 (1小时 9分钟 51秒) ---
+
+--- [RALPH] Iteration 15 started: US-009 at 2026-05-20 07:00 ---
+
+## 2026-05-20 07:11 - US-009
+- 验证 PRD-22 visual baseline(13 fixtures)+ PRD-23 visual baseline(16 fixtures)全部通过
+- PRD-22 prd22-visual-baseline.spec.ts: 13 passed
+- PRD-23 prd23-visual-baseline.spec.ts: 16 passed(含 diagnosis-report · copywriting 等)
+- 总 baseline: 29 PNG in /tmp/aiipznt-clone-research/screenshots/(prd22:13 + prd23:16)
+- 无任何 fixture fail · 无需登记 TD · 无需修复
+- typecheck: 0 error(apps/web)
+- vitest: 287 tests passed(≥ 259 ✅)
+- agent-browser 抽查 /generate + /knowledge: 200 OK · 渲染正常 · console 仅 React Router v7 future flag warning(pre-existing · 非 error)
+- 更改的文件: 仅 progress.txt(无代码变更 · 测试首跑全 pass)
+- **未来迭代的学习:**
+  - PRD-23 baseline spec 实际含 16 tests(diagnosis-report 是第 2 个 US-001 fixture)· PRD AC 写的 15 是少算了 diagnosis-report · 实际 16 全 pass
+  - gstack browse 客户端二进制在有多个并发 bun server.ts 实例时会失去连接 · 需 pkill + 重启单实例 · 或用 curl 直连 /command API(Bearer token from .gstack/browse.json)
+  - React Router v7 future flag warning 是全局 pre-existing warning · 不影响功能 · 不算 console error
+---
