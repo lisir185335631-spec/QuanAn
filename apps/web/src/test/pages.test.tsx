@@ -177,7 +177,7 @@ describe('Tool pages render', () => {
 
   it('Knowledge renders h1 heading', () => {
     render(<Knowledge />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('知识库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AIP 文案方法论');
   });
 });
 
