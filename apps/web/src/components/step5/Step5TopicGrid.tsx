@@ -67,32 +67,26 @@ export function Step5TopicGrid({
         const status = streamStatuses[cat.key];
 
         return (
-          <FadeInWrapper key={cat.key} delay={i * 0.05}>
-            {/* AC-3 + AC-11: H3 字面锁 — 5 H3 同时存在于 DOM */}
-            <h3
-              className="text-h3 font-display text-on-surface mb-4"
-              data-testid={`step5-h3-${cat.key}`}
-            >
-              {cat.label}
-            </h3>
-            <p className="text-xs text-muted-foreground mb-3">{cat.description}</p>
+          <FadeInWrapper key={cat.key} delay={i * 0.05} from="up">
+            {/* AC-2: H3 inside glass-card wrapper */}
+            <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-6 mb-4">
+              <h3
+                className="text-h3 font-display text-on-surface mb-2"
+                data-testid={`step5-h3-${cat.key}`}
+              >
+                {cat.label}
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">{cat.description}</p>
 
-            {status === 'loading' && (
-              <div className="glass-card rounded-xl p-6">
-                <LoadingState text={STEP5_LOADING_TEXT} size="lg" />
-              </div>
-            )}
+              {status === 'loading' && <LoadingState text={STEP5_LOADING_TEXT} size="lg" />}
 
-            {status !== 'loading' && topics.length === 0 && (
-              <div className="glass-card rounded-xl p-4">
-                <p className="text-body-sm text-muted-foreground text-center">
+              {status !== 'loading' && topics.length === 0 && (
+                <p className="text-body-sm text-muted-foreground text-center py-4">
                   {status === 'error' ? '生成失败，请重试' : '等待生成...'}
                 </p>
-              </div>
-            )}
+              )}
 
-            {topics.length > 0 && (
-              <div className="glass-card rounded-xl p-4">
+              {topics.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {topics.map((topic) => (
                     <TopicCard
@@ -102,8 +96,8 @@ export function Step5TopicGrid({
                     />
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </FadeInWrapper>
         );
       })}

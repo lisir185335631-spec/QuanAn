@@ -109,38 +109,44 @@ export default function Step6() {
 
   return (
     <main className="flex-1 container py-8">
-      {/* AC-5 字面锁: STEP 06 · 拍摄计划 */}
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP6_STEP_TAG}
-      </p>
-      {/* AC-11: H1 */}
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP6_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{STEP6_SUBTITLE}</p>
-
-      {/* AC-7: infobox — 跳 /step/7 提示 */}
-      <div
-        className="glass-card rounded-xl p-4 mb-6 max-w-2xl flex items-start gap-3 border-primary/20"
-        data-testid="step6-infobox"
-      >
-        <span className="text-primary mt-0.5 shrink-0">ℹ️</span>
-        <div className="flex-1 min-w-0">
-          <p className="text-body-sm text-muted-foreground">
-            你可以先去第七步「文案生成」生成文案，再回这里
+      {/* AC-1: Header with FadeInWrapper stagger */}
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP6_STEP_TAG}
           </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP6_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{STEP6_SUBTITLE}</p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => void navigate('/step/7')}
-          data-testid="step6-goto-step7"
-          className="shrink-0"
-        >
-          去文案生成
-        </Button>
-      </div>
+      </FadeInWrapper>
 
-      {/* Form glass-card */}
+      {/* AC-1 + AC-7: infobox with FadeInWrapper */}
+      <FadeInWrapper delay={0.05} from="up">
+        <div
+          className="glass-card rounded-xl p-4 mb-6 max-w-2xl flex items-start gap-3 border-primary/20"
+          data-testid="step6-infobox"
+        >
+          <span className="text-primary mt-0.5 shrink-0">ℹ️</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-body-sm text-muted-foreground">
+              你可以先去第七步「文案生成」生成文案，再回这里
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => void navigate('/step/7')}
+            data-testid="step6-goto-step7"
+            className="shrink-0"
+          >
+            去文案生成
+          </Button>
+        </div>
+      </FadeInWrapper>
+
+      {/* AC-1: Form with FadeInWrapper */}
+      <FadeInWrapper delay={0.1} from="up">
       <form
         onSubmit={(e) => { handleSubmit(e); }}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
@@ -173,6 +179,7 @@ export default function Step6() {
           {STEP6_BUTTON_GENERATE}
         </Button>
       </form>
+      </FadeInWrapper>
 
       {/* Three-state feedback */}
       <div className="mt-8 max-w-2xl">
@@ -182,15 +189,17 @@ export default function Step6() {
         )}
       </div>
 
-      {/* AC-9 + AC-11: Output section — 2 H3 (分镜脚本 + 拍摄要点) in DOM */}
+      {/* AC-2 + AC-9 + AC-11: Output section — H3 inside glass-card wrapper */}
       {result && !isSaving && (
         <section id="step6-output" className="mt-10 max-w-5xl space-y-8">
-          {/* Module 1: 分镜脚本 */}
-          <FadeInWrapper delay={0}>
-            <h3 className="text-h3 font-display text-on-surface mb-4" data-testid="step6-h3-storyboard">
-              {STEP6_OUTPUT_MODULES_3[0]!.h3Label}
-            </h3>
-            <div className="glass-card rounded-xl overflow-hidden">
+          {/* Module 1: 分镜脚本 — H3 inside glass-card (AC-2) */}
+          <FadeInWrapper delay={0} from="up">
+            <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg mb-4 overflow-hidden">
+              <div className="p-6 pb-3">
+                <h3 className="text-h3 font-display text-on-surface" data-testid="step6-h3-storyboard">
+                  {STEP6_OUTPUT_MODULES_3[0]!.h3Label}
+                </h3>
+              </div>
               <ScrollArea className="w-full">
                 <div className="min-w-max">
                   <table className="w-full text-body-xs border-collapse">
@@ -213,7 +222,7 @@ export default function Step6() {
                       {result.shotList.map((shot, idx) => (
                         <tr
                           key={idx}
-                          className="border-b border-border hover:bg-muted/20 transition-colors"
+                          className="border-b border-border hover:bg-muted/20 transition-all duration-200"
                         >
                           <td className="px-3 py-2 text-muted-foreground font-medium">
                             {idx + 1}
@@ -238,12 +247,12 @@ export default function Step6() {
             </div>
           </FadeInWrapper>
 
-          {/* Module 2: 拍摄方案 */}
-          <FadeInWrapper delay={0.05}>
-            <h3 className="text-h3 font-display text-on-surface mb-4" data-testid="step6-h3-shooting">
-              {STEP6_OUTPUT_MODULES_3[1]!.h3Label}
-            </h3>
-            <div className="glass-card rounded-xl p-6">
+          {/* Module 2: 拍摄方案 — H3 inside glass-card (AC-2) */}
+          <FadeInWrapper delay={0.05} from="up">
+            <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-6 mb-4">
+              <h3 className="text-h3 font-display text-on-surface mb-4" data-testid="step6-h3-shooting">
+                {STEP6_OUTPUT_MODULES_3[1]!.h3Label}
+              </h3>
               {result.equipment.length > 0 ? (
                 <ul className="space-y-2">
                   {result.equipment.map((item, i) => (
@@ -259,13 +268,13 @@ export default function Step6() {
             </div>
           </FadeInWrapper>
 
-          {/* Module 3: 口播提词器 */}
+          {/* Module 3: 口播提词器 — H3 inside glass-card (AC-2) */}
           {result.schedule && (
-            <FadeInWrapper delay={0.1}>
-              <h3 className="text-h3 font-display text-on-surface mb-4">
-                {STEP6_OUTPUT_MODULES_3[2]!.h3Label}
-              </h3>
-              <div className="glass-card rounded-xl p-6">
+            <FadeInWrapper delay={0.1} from="up">
+              <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-6 mb-4">
+                <h3 className="text-h3 font-display text-on-surface mb-4">
+                  {STEP6_OUTPUT_MODULES_3[2]!.h3Label}
+                </h3>
                 <pre className="text-body-sm text-muted-foreground font-cn whitespace-pre-wrap leading-relaxed">
                   {result.schedule}
                 </pre>

@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { PlatformInlineRadio } from '@/components/inline-pickers';
 import { VIDEO_TYPES } from '@/lib/constants/video-types';
 import { cn } from '@/lib/utils';
@@ -103,98 +104,106 @@ export default function AiVideo() {
   return (
     <main className="flex-1 container py-8 space-y-8">
       {/* AC-1: PageHeader + H1 STORYBOARD (Orbitron uppercase) */}
-      <div>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-          内容创作
-        </span>
-        <h1 className="mt-1 text-h1 font-display uppercase tracking-widest text-on-surface">
-          STORYBOARD
-        </h1>
-        <p className="mt-2 text-body-md text-muted-foreground">
-          专业分镜表生成器 · 文案一键转拍摄方案
-        </p>
-      </div>
-
-      {/* AC-3(1): 模块标题 H3 */}
-      <h3 className="text-h3 font-display text-on-surface">专业分镜表生成器</h3>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <span className="text-label-sm font-label text-primary uppercase tracking-wide">
+            内容创作
+          </span>
+          <h1 className="mt-1 text-h1 font-display uppercase tracking-widest text-on-surface">
+            STORYBOARD
+          </h1>
+          <p className="mt-2 text-body-md text-muted-foreground">
+            专业分镜表生成器 · 文案一键转拍摄方案
+          </p>
+        </div>
+      </FadeInWrapper>
 
       {/* AC-3(2): textarea 文案内容 */}
-      <div className="space-y-2">
-        <label htmlFor="ai-video-text" className="block text-body-md font-medium text-on-surface">
-          文案内容
-        </label>
-        <textarea
-          id="ai-video-text"
-          value={text}
-          onChange={(e) => setText(e.target.value.slice(0, 5000))}
-          maxLength={5000}
-          placeholder="粘贴你的短视频文案，AI 将自动生成专业分镜表，可直接交给摄影师执行..."
-          rows={6}
-          className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
-          data-testid="ai-video-textarea"
-        />
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            data-testid="ai-video-example"
-            onClick={() => setText('大家好！今天给大家分享一款让我爱不释手的好物。它的设计非常精致，功能也超级实用。我已经用了一个月了，真的超级好用！强烈推荐给大家，点赞收藏不迷路～')}
-            className="text-body-sm text-primary hover:underline transition-colors"
-          >
-            示例文案
-          </button>
-          <span className="text-body-sm text-muted-foreground" data-testid="ai-video-char-count">
-            {text.length}/5000
-          </span>
+      <FadeInWrapper delay={0.05} from="up">
+        <div className="space-y-2">
+          <h3 className="text-h3 font-display text-on-surface mb-2">专业分镜表生成器</h3>
+          <label htmlFor="ai-video-text" className="block text-body-md font-medium text-on-surface">
+            文案内容
+          </label>
+          <textarea
+            id="ai-video-text"
+            value={text}
+            onChange={(e) => setText(e.target.value.slice(0, 5000))}
+            maxLength={5000}
+            placeholder="粘贴你的短视频文案，AI 将自动生成专业分镜表，可直接交给摄影师执行..."
+            rows={6}
+            className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+            data-testid="ai-video-textarea"
+          />
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              data-testid="ai-video-example"
+              onClick={() => setText('大家好！今天给大家分享一款让我爱不释手的好物。它的设计非常精致，功能也超级实用。我已经用了一个月了，真的超级好用！强烈推荐给大家，点赞收藏不迷路～')}
+              className="text-body-sm text-primary hover:underline transition-all duration-200"
+            >
+              示例文案
+            </button>
+            <span className="text-body-sm text-muted-foreground" data-testid="ai-video-char-count">
+              {text.length}/5000
+            </span>
+          </div>
         </div>
-      </div>
+      </FadeInWrapper>
 
       {/* AC-3(3): 5 平台 radio */}
-      <div className="space-y-2">
-        <label className="block text-body-md font-medium text-on-surface">目标平台</label>
-        <PlatformInlineRadio value={platform} onChange={setPlatform} size="lg" />
-      </div>
+      <FadeInWrapper delay={0.1} from="up">
+        <div className="space-y-2">
+          <label className="block text-body-md font-medium text-on-surface">目标平台</label>
+          <PlatformInlineRadio value={platform} onChange={setPlatform} size="lg" />
+        </div>
+      </FadeInWrapper>
 
       {/* AC-3(4): 6 视频类型 button */}
-      <div className="space-y-2">
-        <label className="block text-body-md font-medium text-on-surface">视频类型</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3" data-testid="video-type-grid">
-          {VIDEO_TYPES.map((vt) => {
-            const isSelected = vt.key === videoType;
-            return (
-              <button
-                key={vt.key}
-                type="button"
-                onClick={() => setVideoType(isSelected ? null : vt.key)}
-                data-testid={`video-type-${vt.key}`}
-                className={cn(
-                  'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all',
-                  isSelected
-                    ? 'border-primary bg-primary/10 ring-1 ring-primary'
-                    : 'border-border bg-card hover:border-primary/40',
-                )}
-              >
-                <span className="text-2xl">{vt.emoji}</span>
-                <span className="font-display font-bold text-sm text-on-surface">{vt.label}</span>
-                <span className="text-xs text-muted-foreground">{vt.desc}</span>
-              </button>
-            );
-          })}
+      <FadeInWrapper delay={0.15} from="up">
+        <div className="space-y-2">
+          <label className="block text-body-md font-medium text-on-surface">视频类型</label>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3" data-testid="video-type-grid">
+            {VIDEO_TYPES.map((vt) => {
+              const isSelected = vt.key === videoType;
+              return (
+                <button
+                  key={vt.key}
+                  type="button"
+                  onClick={() => setVideoType(isSelected ? null : vt.key)}
+                  data-testid={`video-type-${vt.key}`}
+                  className={cn(
+                    'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all duration-200',
+                    isSelected
+                      ? 'border-primary bg-primary/10 ring-1 ring-primary'
+                      : 'border-border bg-card hover:border-primary/40',
+                  )}
+                >
+                  <span className="text-2xl">{vt.emoji}</span>
+                  <span className="font-display font-bold text-sm text-on-surface">{vt.label}</span>
+                  <span className="text-xs text-muted-foreground">{vt.desc}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </FadeInWrapper>
 
       {/* AC-3(5): 主 CTA */}
-      <button
-        type="button"
-        onClick={() => void handleGenerate()}
-        disabled={isDisabled || isSubmitting}
-        data-testid="ai-video-cta"
-        className={cn(
-          'w-full py-3 rounded-xl font-display font-bold text-white bg-gradient-to-r from-primary to-primary/60 transition-opacity',
-          (isDisabled || isSubmitting) && 'opacity-50 cursor-not-allowed',
-        )}
-      >
-        {isSubmitting ? '生成中...' : '一键生成专业分镜表'}
-      </button>
+      <FadeInWrapper delay={0.2} from="up">
+        <button
+          type="button"
+          onClick={() => void handleGenerate()}
+          disabled={isDisabled || isSubmitting}
+          data-testid="ai-video-cta"
+          className={cn(
+            'w-full py-3 rounded-xl font-display font-bold text-white bg-gradient-to-r from-primary to-primary/60 transition-opacity',
+            (isDisabled || isSubmitting) && 'opacity-50 cursor-not-allowed',
+          )}
+        >
+          {isSubmitting ? '生成中...' : '一键生成专业分镜表'}
+        </button>
+      </FadeInWrapper>
 
       {/* Loading skeleton */}
       {isSubmitting && (
@@ -215,7 +224,7 @@ export default function AiVideo() {
               type="button"
               onClick={handleExportCsv}
               data-testid="ai-video-export-csv"
-              className="px-3 py-1.5 rounded-lg border border-border bg-card text-body-sm text-on-surface hover:border-primary/40 transition-colors"
+              className="px-3 py-1.5 rounded-lg border border-border bg-card text-body-sm text-on-surface hover:border-primary/40 transition-all duration-200"
             >
               一键导出 CSV
             </button>
@@ -238,7 +247,7 @@ export default function AiVideo() {
               </thead>
               <tbody>
                 {STUB_ROWS.map((row) => (
-                  <tr key={row.shotNumber} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
+                  <tr key={row.shotNumber} className="border-b border-border last:border-0 hover:bg-muted/20 transition-all duration-200">
                     {STORYBOARD_COLUMNS.map((col) => (
                       <td key={col.key} className="px-3 py-2 whitespace-nowrap text-on-surface">
                         {row[col.key]}

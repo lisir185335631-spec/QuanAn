@@ -287,12 +287,18 @@ export default function Step3() {
 
   return (
     <main className="flex-1 container py-8">
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP3_STEP_TAG}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP3_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+      {/* AC-1: Header with FadeInWrapper stagger */}
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP3_STEP_TAG}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP3_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+        </div>
+      </FadeInWrapper>
 
+      <FadeInWrapper delay={0.05} from="up">
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         {/* personalInfo */}
         <div>
@@ -358,6 +364,7 @@ export default function Step3() {
           )}
         </div>
       </form>
+      </FadeInWrapper>
 
       {/* Result area */}
       <div className="mt-8">

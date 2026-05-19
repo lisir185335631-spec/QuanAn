@@ -111,12 +111,18 @@ export default function Step4() {
 
   return (
     <main className="flex-1 container py-8">
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP4_STEP_TAG}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+      {/* AC-1: Header with FadeInWrapper stagger */}
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP4_STEP_TAG}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+        </div>
+      </FadeInWrapper>
 
+      <FadeInWrapper delay={0.05} from="up">
       <form onSubmit={handleSubmit} className="glass-card rounded-xl p-6 space-y-6 max-w-2xl">
         {STEP4_INPUTS_3.map((input) => (
           <div key={input.id}>
@@ -152,6 +158,7 @@ export default function Step4() {
           {STEP4_BUTTON_GENERATE}
         </Button>
       </form>
+      </FadeInWrapper>
 
       {/* State feedback */}
       <div className="mt-8 max-w-2xl">

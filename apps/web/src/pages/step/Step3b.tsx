@@ -201,12 +201,18 @@ export default function Step3b() {
 
   return (
     <main className="flex-1 container py-8">
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP3B_STEP_TAG}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP3B_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+      {/* AC-1: Header with FadeInWrapper stagger */}
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP3B_STEP_TAG}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP3B_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+        </div>
+      </FadeInWrapper>
 
+      <FadeInWrapper delay={0.05} from="up">
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
         {/* 3 textarea from STEP3B_TEXTAREAS_3 (AC-4) */}
         {STEP3B_TEXTAREAS_3.map((ta) => (
@@ -249,6 +255,7 @@ export default function Step3b() {
           </Button>
         </div>
       </form>
+      </FadeInWrapper>
 
       {/* Result area */}
       <div className="mt-8">
