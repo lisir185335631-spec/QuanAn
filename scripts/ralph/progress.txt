@@ -3324,3 +3324,22 @@ PRD-23 范围:
 --- [RALPH] Iteration 6 ended: US-003 (51分钟 10秒) ---
 
 --- [RALPH] Iteration 7 started: US-003 at 2026-05-20 02:07 ---
+
+## 2026-05-20 02:58 - US-003 [PRD-23] Opus audit approve · high 深审
+
+### audit 5 步
+- Step 1 ARTIFACTS VALID · Step 1.5 vitest 264/264 passed · 零回归(基线 266 - 2 由于 US-003 重写 Step8.test.tsx 部分替换)
+- Step 1.b retryCount=0(1st pass · 但 ralph 自 fix Tabs forceMount inactive content visible 问题 commit 29cf934)
+
+### AC 通过 + D 严守
+- AC 17/17 PASS · D-229 2 tabs '生成直播方案' / 'AI 优化话术' 字面锁 ✓
+- D-230 3 经验 radio 字面锁 6/6 短语命中(新手·刚开始做直播 / 有经验·有一定直播经验 / 资深·直播经验丰富)
+- AC-5 tab1 6 H3 字面(开场话术/中场互动/成交话术/收尾/引流策略/互动设计)
+- AC-7 tab2 4 H3 字面(优化亮点/互动设计/转化关键/注意事项)
+- AC-1 H1 '直播策划' + 副标 + STEP 08 副标签 D1A 字面 1:1
+- D-233 unit test 同步 · Step8.test.tsx + step8.test.ts 同步更新 · 21 new test 全 pass
+- 表单状态 stepData.save(step8) + 子功能 1/2 form state 独立 useState 管理
+
+### 关键修复(ralph 自主)
+- ralph 自 fix shadcn Tabs forceMount issue · data-[state=inactive]:hidden 让 inactive tab content 真隐藏(否则双 tab 内容同时显示)· 反例库价值
+---
