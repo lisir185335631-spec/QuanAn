@@ -30,4 +30,16 @@ test.describe('PRD-22 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-8 US-003: /boom-generate baseline
+  test('/boom-generate fullPage inline matches prd22-boom-generate.png', async ({ page }) => {
+    await page.goto('/boom-generate');
+    await page.waitForSelector('[data-element]');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-boom-generate.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });
