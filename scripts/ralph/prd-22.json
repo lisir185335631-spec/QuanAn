@@ -1,0 +1,535 @@
+{
+  "project": "QuanAn",
+  "branchName": "ralph/prd-22-inline-refactor-step-pages",
+  "description": "5 page inline 重构(/generate · /boom-generate · /ai-video · /knowledge · /step/7)+ 8 step pages 视觉精修(/step/1 · /step/3 · /step/3b · /step/4 · /step/4b · /step/5 · /step/6 · /step/7)· 12 US · 1 foundation + 1 high + 9 medium + 1 收官 · 12 Locked Decisions D-214~D-225 · 13 page visual diff baseline · 复用 PRD-21 expectVisualMatch infra · D1=A + D4=B 严锁 · pixel-diff < 5% threshold · 后续 PRD-23/24 复用 inline picker utility + 8 step page H3 输出锁",
+  "lockedDecisions": [
+    {"id": "D-214", "decision": "inline picker utility 3 件套 · <ScriptTypeInlineCards> + <ElementsInlineMultiPicker> + <PlatformInlineRadio> · 路径 apps/web/src/components/inline-pickers/", "rationale": "aiipznt 5 page 主区直接 inline 渲染所有 button 选项 · 不用 form 抽象 · 跟 ToolForm 解耦"},
+    {"id": "D-215", "decision": "inline picker API 设计 · value / onChange / disabled 标准 React controlled component · 不接 form state", "rationale": "与现有 ToolForm 解耦 · 各 page 自行管理选中态 · 测试友好"},
+    {"id": "D-216", "decision": "/generate 重构后保留 ToolForm import 但不用 · 不删除 ToolForm 组件", "rationale": "PRD-15 沉淀的 ToolForm 仍被 /analysis / /video-production / /acquisition-video 用 · 本 PRD 不动 ToolForm 本身"},
+    {"id": "D-217", "decision": "/knowledge 4 tab 字面锁 · \"20 类脚本\" / \"20 大爆款\" / \"开头公式\" / \"核心公式\" · 顺序固定 · 即使内部数据是 22 元素也要展示 \"20 大爆款\"", "rationale": "dump §3 Diff 6 + spec §8.4.4 实测确认"},
+    {"id": "D-218", "decision": "/step/1 6 tab 字面锁 · \"全部行业 (56)\" / \"🏠 生活服务 (18)\" / \"🛒 电商零售 (13)\" / \"✍️ 内容创作 (7)\" / \"💼 专业服务 (14)\" / \"🏭 产业制造 (4)\" · 第一 tab 必须是\"全部行业 (56)\"且默认选中", "rationale": "dump §3 Diff 3 实测 · 跟 spec §7.1 line 1235 写法不同 · 以 dump 为准"},
+    {"id": "D-219", "decision": "/step/7 与 /generate 共享 inline picker 但状态独立 · /step/7 stepData.save · /generate 不读 step 数据", "rationale": "spec §8.3.1 写 \"step/7 强调与 IP 流程串联(自动复用 step3/3b 的人设、step5 的选题), /generate 是独立调用版本(不读 step 数据)\""},
+    {"id": "D-220", "decision": "step pages 输出区 D1A 字面锁清单(H3 标题) · /step/3 7 H3 · /step/3b 6 H3 · /step/4b 3 阶梯 H3(初阶变现路径 / 中阶变现路径 / 高阶变现路径)+ 收入结构分析 + 成功案例参考 · /step/7 4 H4(话题抛出 / 正方 / 反方 / 我的立场)", "rationale": "dump §2.2 多 H 实测 + spec §7.2/7.3/7.5/7.8 字段名 · D1A 防 ralph 创意改写"},
+    {"id": "D-221", "decision": "/ai-video 分镜表 13 列字面锁 · [\"镜号\", \"景别\", \"角度\", \"运镜\", \"时长\", \"画面描述\", \"台词/解说\", \"字幕\", \"背景音乐\", \"音效\", \"情绪\", \"拍摄要点\", \"剪辑建议\"] · 表头 Orbitron 大写 · 行数据按 spec §8.4.1 输出 6-12 分镜", "rationale": "spec §8.4.1 写 \"每个分镜包含：景别、角度、运镜、情绪、台词\" · 实际表格 13 列扩展 · 防 PRD-6 US-004 header→key 错位错误重演"},
+    {"id": "D-222", "decision": "visual diff 13 page 覆盖矩阵 · /generate / /boom-generate / /ai-video / /knowledge / /step/1 / /step/3 / /step/3b / /step/4 / /step/4b / /step/5 / /step/6 / /step/7 + /knowledge mobile = 13 baseline · 全部用 prd21-visual-baseline 同套 expectVisualMatch helper", "rationale": "复用 PRD-21 infra · 13 page 是 PRD-22 范围"},
+    {"id": "D-223", "decision": "inline picker emoji 渲染锁 · 用 emoji 字符直接渲染 · 不用 <Emoji /> 组件 · 不用 svg icon 替代", "rationale": "spec §Ⅹ.2/Ⅹ.3 数据本身就是 emoji 字符 · 直接渲染对齐 aiipznt DOM"},
+    {"id": "D-224", "decision": "step pages 用 <StepLayout> 包裹 + <StepHeader> 顶部副标签字面锁 \"STEP 0N · {label}\" · 例 \"STEP 01 · 选择行业赛道\"", "rationale": "spec §7.1~7.9 每 step 都有此 STEP 0N 副标签 · 跨 step 一致性"},
+    {"id": "D-225", "decision": "/step/7 stepData 复用 step3/3b 的 personalInfo · step5 的选题 · 但本 PRD 不实现 LLM 调用 · 只搭 UI 骨架 + 跑通 stepData.save / get", "rationale": "PRD-22 范围只视觉精修 · LLM 集成留 PRD-23+"}
+  ],
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "★ foundation · 3 inline picker utility 抽象(<ScriptTypeInlineCards> + <ElementsInlineMultiPicker> + <PlatformInlineRadio> + barrel export + 单元测试 ≥ 15)",
+      "description": "作为 QuanAn 前端开发者 · 我需要 3 个 inline picker utility 组件 · 这样 /generate /boom-generate /ai-video /knowledge /step/7 5 个 page 就能主区直接渲染所有选项 button · 跟 aiipznt 1:1 对齐(50 button / 30 button / 18 button / 30 button / 53 button)· 而不是用 ToolForm 抽象隐藏在 form 后(目前只有 2-6 button)。3 utility 必须 controlled component 设计(value/onChange) + 单元测试覆盖 ≥ 90% · 5 page 复用 · 失败影响 PRD-22 + PRD-23 inline 重构所有 page。",
+      "acceptanceCriteria": [
+        "AC-1 · 新建 apps/web/src/components/inline-pickers/ScriptTypeInlineCards.tsx · 渲染 20 脚本类型(SCRIPT_TYPES from apps/web/src/lib/constants/scripts.ts) · 网格布局 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 · 每卡含 emoji(text-3xl) + label(font-display font-bold) + desc(text-sm text-muted-foreground) · 选中态 border-primary bg-primary/10 · 未选 border-border bg-card hover:border-primary/40 · API · interface ScriptTypeInlineCardsProps { value: string | null; onChange: (key: string) => void; disabled?: boolean; showSearch?: boolean; showMethodology?: boolean; }",
+        "AC-2 · 新建 apps/web/src/components/inline-pickers/ElementsInlineMultiPicker.tsx · 渲染 22 爆款元素 4 组(HOT_ELEMENTS from apps/web/src/lib/constants/elements.ts) · 4 组 = classic(11) / emotion(2) / content(6) / conversion(4) · 每组用 H4 Rajdhani 标题(\"经典元素\" / \"情绪驱动\" / \"内容策略\" / \"转化驱动\") · 选中按钮 bg-primary text-primary-foreground · 未选 border-border bg-card hover:border-primary/40 · 顶部计数 \"选择爆款元素（已选 N 个）\" · API · interface ElementsInlineMultiPickerProps { value: string[]; onChange: (keys: string[]) => void; disabled?: boolean; showCount?: boolean; layout?: 'compact' | 'grouped'; }",
+        "AC-3 · 新建 apps/web/src/components/inline-pickers/PlatformInlineRadio.tsx · 渲染 5 平台 radio(PLATFORMS from apps/web/src/lib/constants/platforms.ts) · 5 button 横向布局 flex gap-3 flex-wrap lg:flex-nowrap · 每 button 含 emoji + label · 选中态 border-primary bg-primary/10 ring-1 ring-primary · API · interface PlatformInlineRadioProps { value: string | null; onChange: (key: string) => void; disabled?: boolean; size?: 'sm' | 'md' | 'lg'; }",
+        "AC-4 · 验证 apps/web/src/lib/constants/platforms.ts 导出 PLATFORMS 数组 · 5 项 · 每项 { key, label, emoji, icon } · D1A 字面锁 · douyin/抖音/📱 + xiaohongshu/小红书/📕 + shipinhao/视频号/📺 + kuaishou/快手/🎬 + bilibili/B站/📺 · 如不存在则新建 · 如存在则字面对照修正",
+        "AC-5 · 验证 apps/web/src/lib/constants/elements.ts 导出 HOT_ELEMENTS 对象 · 4 组 4 keys (classic/emotion/content/conversion) · classic 11 项(greed/💰/贪念 + fear/😨/恐惧 + curiosity/🔍/猎奇 + contrast/🔄/反差 + worst/⚠️/最差 + leverage/🔥/借势 + resonance/💬/共鸣 + empathy/🤝/共情 + small_big/🎯/以小搏大 + low_cost_high/📈/低成本高回报 + low_cost_unknown/🎰/低成本未知回报) · emotion 2 项(anger/😡/愤怒 + surprise/😲/惊喜) · content 6 项(trend/🔥/热点 + controversy/💬/争议 + reveal/🔓/揭秘 + list/📋/清单 + challenge/🎯/挑战 + transformation/🦋/蜕变) · conversion 4 项(scarcity/⏳/稀缺 + social_proof/👍/社会证明 + authority/🎓/权威 + benefit/🎁/利益) · 如不存在则新建 · 如存在则字面对照修正",
+        "AC-6 · 验证 apps/web/src/lib/constants/scripts.ts 导出 SCRIPT_TYPES 数组 · 20 项 · 每项 { key, emoji, label, desc, methodology } · 完整 20 脚本字面锁(opinion/聊/聊观点 · process/晒/晒过程 · knowledge/教/教知识 · story/讲/讲故事 · comedy/尬/尬段子 · product/说/说产品 · review/做/做测评 · expose/揭/揭内幕 · challenge/做/做挑战 · interview/做/做采访 · daily/拍/拍日常 · transform/秀/秀蜕变 · debate/搞/搞辩论 · list/列/列清单 · reaction/看/看反应 · qna/答/答粉丝 · collab/搞/搞联动 · behind/幕/幕后花絮 · trend_news/追/追热点 · motivation/打/打鸡血) · methodology 字段完整保留 spec §Ⅹ.3 文本",
+        "AC-7 · 新建 apps/web/src/components/inline-pickers/index.ts barrel export · 导出 3 utility + 3 props interface",
+        "AC-8 · 新建 apps/web/src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx · ≥ 5 test · 覆盖 (a) 渲染 20 卡 · (b) value/onChange controlled · (c) disabled 状态 · (d) showSearch filter 联动 · (e) showMethodology hover 展开",
+        "AC-9 · 新建 apps/web/src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx · ≥ 5 test · 覆盖 (a) 渲染 22 元素 4 组 · (b) value 数组 add/remove · (c) showCount 计数 · (d) layout grouped vs compact · (e) disabled 状态",
+        "AC-10 · 新建 apps/web/src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx · ≥ 5 test · 覆盖 (a) 渲染 5 平台 · (b) value/onChange · (c) 3 size 变体 · (d) disabled · (e) emoji 字面渲染",
+        "AC-11 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-12 · vitest run 通过 · cd apps/web && pnpm test inline-pickers · 全 ≥ 15 test pass · 不破 PRD-21 已有 181 test → 总 ≥ 196 test pass",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/components/inline-pickers/, apps/web/src/lib/constants/) 涉及的 TD · 主动 fix 跟本 scope 重叠的 ≤ 1 行级 TD · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/inline-pickers/ScriptTypeInlineCards.tsx",
+        "apps/web/src/components/inline-pickers/ElementsInlineMultiPicker.tsx",
+        "apps/web/src/components/inline-pickers/PlatformInlineRadio.tsx",
+        "apps/web/src/components/inline-pickers/index.ts",
+        "apps/web/src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx",
+        "apps/web/src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx",
+        "apps/web/src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/lib/constants/scripts.ts",
+        "apps/web/src/lib/constants/elements.ts",
+        "apps/web/src/lib/constants/platforms.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test --run inline-pickers",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-17-step1-3-3b",
+          "source_story": "US-007",
+          "lesson": "page 文件 hardcode 中文按钮 label · 偏离统一常量 import 模式 · 跨 step 不一致(TD-75)",
+          "antipattern": "在 ScriptTypeInlineCards.tsx 里 hardcode emoji + label 字符串(如 const SCRIPTS = [{key:'opinion', label:'聊观点'}, ...] 写在组件文件内)",
+          "correct": "从 apps/web/src/lib/constants/scripts.ts import SCRIPT_TYPES · component 只渲染 · 不定义数据 · 防止跨 page 数据漂移 · D-214 锁"
+        },
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages (self-injected)",
+          "source_story": "US-001 controlled component 风险",
+          "lesson": "inline picker 不能内部 useState 管理选中态 · 必须 value/onChange 标准 controlled component · 否则 5 page 复用时无法跟 page 级 useState 同步",
+          "antipattern": "useState 内部管理 selected · 不暴露给外部 · 或 mixed mode(同时支持 controlled + uncontrolled)· 测试和 5 page 集成时混乱",
+          "correct": "纯 controlled · props.value 必须存在 · props.onChange 必须调用 · 内部不存任何 source-of-truth · D-215 锁"
+        },
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages (self-injected)",
+          "source_story": "US-001 emoji 渲染风险",
+          "lesson": "spec §Ⅹ.2/Ⅹ.3 emoji 是数据字段直接渲染 · 不能用 lucide-react svg icon 替代 · 不能创建 <Emoji /> 组件",
+          "antipattern": "<Icon name={item.emoji} /> 或 <span dangerouslySetInnerHTML={{__html: item.emoji}} /> · 或把 emoji 转 svg",
+          "correct": "<span className=\"text-3xl\">{item.emoji}</span> · 直接渲染 emoji 字符 · D-223 锁 · 跟 aiipznt DOM 一致"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "high · /generate 重构 inline(20 脚本卡 + 22 元素 + 文案 textarea 0/500 + 主 CTA)",
+      "description": "作为 QuanAn 用户 · 当我访问 /generate · 我看到主区直接 inline 渲染 20 脚本类型卡(可点选 1) + 22 爆款元素 button(可多选 N) + 文案主题 textarea(max 500 字 · 字符计数 0/500) + 一键生成 button · 而不是被 ToolForm 抽象隐藏在 form 后只有 2 button 可见。/generate 是用户访问最高的工具 page · 下游 US-010 /step/7 复用相同 picker · 失败影响视觉对齐感知 · risk_level high。",
+      "acceptanceCriteria": [
+        "AC-1 · apps/web/src/pages/Generate.tsx 完整重写 · H1 字面锁 \"生成爆款文案\" · 副标题字面锁 \"选择脚本类型和爆款元素，输入主题，AI 为你生成 AIP 风格的短视频文案\"(spec §8.3.1 + D1A)",
+        "AC-2 · 主区结构(从上到下)· (1) PageHeader + H1 \"生成爆款文案\" · (2) <ScriptTypeInlineCards value={scriptType} onChange={setScriptType} showSearch /> — 20 卡 + 搜索 input · (3) <ElementsInlineMultiPicker value={elements} onChange={setElements} showCount layout=\"grouped\" /> — 22 元素 4 组 + 计数 · (4) textarea \"文案主题\" max 500 字 · placeholder \"输入你的文案主题，如：美容院如何用抖音获客100个精准客户...\" · 字符计数 \"{topic.length}/500\" 右下角 · (5) 主 CTA button \"生成文案\"(className 含 bg-gradient-to-r from-primary to-primary/60) · (6) 结果区(loading 时 skeleton · 有 result 时按 AIP 起承转合 4 区块展示 stub 可)",
+        "AC-3 · 表单状态本地 useState 管理(scriptType / elements / topic) · **不读 stepData**(D-219 锁 · /generate 独立调用版本) · 不调 trpc.stepData.get",
+        "AC-4 · 主 CTA disabled 条件 · !scriptType || elements.length === 0 || topic.length < 10 · disabled 时 opacity-50 cursor-not-allowed",
+        "AC-5 · 字符计数 \"{topic.length}/500\" · 超过 500 时 text-destructive · textarea 限制 maxLength={500}",
+        "AC-6 · DOM button 数 ≥ 45(20 脚本卡 + 22 元素 + 1 CTA + 2 二级 button)→ 接近 aiipznt 实测 50 · 比 PRD-15/19 baseline 2 button 大幅提升 · 用 page.locator('button').count() 验证",
+        "AC-7 · 保留 ToolForm import(D-216 锁)但不调用 · 仅注释说明 \"// PRD-22 US-002: inline 重构后弃用 ToolForm · 但保留 import 防 PRD-15 沉淀回滚\"",
+        "AC-8 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-9 · 已有 e2e test tests/e2e/prd15-tools-flow.spec.ts /generate 关键 assertion 不破(button click / H1 命中) · 如需更新断言用 page.getByRole('button', { name: /生成文案/ }) 正则",
+        "AC-10 · 新增 visual diff fixture · tests/e2e/prd22-visual-baseline.spec.ts 加 (a) /generate fullPage test · baseline 'prd22-generate' · viewport 1440x900 · 阈值 5%(maxDiffPixelRatio: 0.05) · 首跑用 --update-snapshots flag · Read baseline image 肉眼 confirm · expectVisualMatch helper 复用 PRD-21",
+        "AC-11 · 用 agent-browser 打开 http://localhost:5173/generate · 验证 (a) 20 脚本卡渲染 + 点击切换选中态 · (b) 22 元素 4 组渲染 + 多选 + 计数 \"已选 N 个\" 更新 · (c) textarea 字符计数 0/500 → N/500 · (d) 主 CTA disabled→enabled 切换 · (e) 浏览器 console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 2,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope (apps/web/src/pages/Generate.tsx, tests/e2e/) 涉及的 TD · 主动 fix · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Generate.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd22-visual-baseline' --grep '/generate'",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-21-visual-alignment-foundation",
+          "source_story": "US-001",
+          "lesson": "playwright visual snapshot 首跑必须用 --update-snapshots flag · 否则 fail · CI 不能直接跑不带 flag · 必须先 Read baseline image 肉眼 confirm 才 commit",
+          "antipattern": "首跑就 pnpm test:visual:check 不带 flag · 没 baseline 直接 fail · 或 baseline 错的 update-snapshots 后没 Read confirm 就 commit · 后续永远 pass 但视觉偏差大",
+          "correct": "首跑 pnpm test:visual --update-snapshots · 然后 Read /tmp/aiipznt-clone-research/screenshots/prd22-generate.png 跟 aiipznt 实际页对照 · 确认无误才 commit · CI 用 pnpm test:visual:check"
+        },
+        {
+          "source_prd": "prd-16-aiipznt-alignment",
+          "source_story": "US-004",
+          "lesson": "D1A 长文本字面双锁 · 副标 / placeholder 必须字符级 1:1 · ralph 创意改写 placeholder 是高频错(\"输入文案主题\" 写成 \"在此输入文案主题\")",
+          "antipattern": "placeholder=\"输入你的文案主题\"(漏 \"，如：美容院如何用抖音获客100个精准客户...\" 完整后缀)· 或副标 \"AI 帮你生成爆款文案\" 改写",
+          "correct": "placeholder 完整字面 spec §8.3.1 line 1699 完整字符串复制 · 副标 \"选择脚本类型和爆款元素，输入主题，AI 为你生成 AIP 风格的短视频文案\" 全字符锁"
+        },
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages (self-injected)",
+          "source_story": "US-002 ToolForm 删除风险",
+          "lesson": "/generate 重构 inline 后不允许删除 ToolForm import · D-216 锁 · ToolForm 仍被 /analysis / /video-production / /acquisition-video 用 · 删了破其他 page",
+          "antipattern": "rm import ToolForm 或删 apps/web/src/components/tools/ToolForm.tsx · 或重命名 · 或改 props 不向后兼容",
+          "correct": "import { ToolForm } from '@/components/tools/ToolForm' 保留 · 加 // PRD-22 US-002: inline 重构后弃用 但保留 import · 不调用 · 不动 ToolForm 文件本身"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "medium · /boom-generate 重构 inline(22 元素 4 组 + 行业 input + 主题 input + 一键生成 5 篇)",
+      "description": "作为 QuanAn 用户 · 当我访问 /boom-generate · 我看到主区直接 inline 渲染 22 爆款元素 button(4 组) + 行业 input + 主题 input + 一键生成 5 篇 button · 而不是被 ToolForm 抽象隐藏只有 0 button 可见。复用 US-001 ElementsInlineMultiPicker。",
+      "acceptanceCriteria": [
+        "AC-1 · apps/web/src/pages/BoomGenerate.tsx 完整重写 · H1 字面锁 \"爆款元素自动生成\" · 副标题字面锁 \"选择爆款元素组合，AI 自动生成 5 篇深度爆款文案，每篇至少 300 字，拒绝表面化\"(spec §8.2.3 + D1A)",
+        "AC-2 · 主区结构 · (1) PageHeader + H1 · (2) <ElementsInlineMultiPicker value={elements} onChange={setElements} showCount layout=\"grouped\" /> · (3) input \"行业领域\" · placeholder \"当前：{industry}（可手动输入覆盖）\" · 默认值取 ipPlanContext.industry || '' · (4) input \"主题方向\" · placeholder \"如：减肥、理财、育儿...\" · (5) 主 CTA button \"一键生成爆款文案\" · (6) 结果区(loading 时 skeleton · 有 result 时 5 篇 card 网格)",
+        "AC-3 · 主 CTA disabled 条件 · elements.length === 0 · 不强制 industry / topic(可选)",
+        "AC-4 · DOM button 数 ≥ 25(22 元素 + 1 CTA + 2 二级)→ 接近 aiipznt 30",
+        "AC-5 · 表单状态本地 useState · scriptType 不存在(boom-generate 不需要)· 不读 stepData",
+        "AC-6 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-7 · 新增 e2e tests/e2e/prd22-boom-generate.spec.ts · ≥ 4 test(H1 存在 / 22 元素渲染 / 多选行为 / disabled 条件)",
+        "AC-8 · visual diff fixture 加 /boom-generate · baseline 'prd22-boom-generate' · viewport 1440x900 · 阈值 5% · 首跑 --update-snapshots + Read confirm",
+        "AC-9 · 用 agent-browser 打开 http://localhost:5173/boom-generate · 验证 (a) 22 元素 4 组渲染 + 多选 + 计数 · (b) 主 CTA disabled→enabled · (c) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 3,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope 涉及的 TD · 主动 fix",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/e2e/prd22-boom-generate.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/BoomGenerate.tsx",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd22-boom-generate'",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-004",
+      "title": "medium · /ai-video 重构 inline(5 平台 + 6 视频类型 + 文案 textarea 0/5000 + 分镜表 13 列)",
+      "description": "作为 QuanAn 用户 · 当我访问 /ai-video · 我看到 H1 \"STORYBOARD\"(Orbitron 大字) + 主区 inline 5 平台 radio + 6 视频类型 button + 文案 textarea(0/5000) + 分镜表 13 列输出 · 而不是被 ToolForm 抽象隐藏只有 0 button 可见。复用 US-001 PlatformInlineRadio · 防 PRD-6 US-004 13 列 header→key 错位重演。",
+      "acceptanceCriteria": [
+        "AC-1 · apps/web/src/pages/AiVideo.tsx 完整重写 · H1 字面锁 \"STORYBOARD\"(Orbitron uppercase) · 副标题字面锁 \"专业分镜表生成器 · 文案一键转拍摄方案\"(spec §8.4.1 + D1A) · 模块标题 H3 \"专业分镜表生成器\"",
+        "AC-2 · 新建 apps/web/src/lib/constants/video-types.ts · 6 视频类型字面锁 · export const VIDEO_TYPES = [{ key: 'monologue', emoji: '🗣', label: '口播', desc: '真人出镜讲述' }, { key: 'plot', emoji: '🎬', label: '剧情', desc: '故事情节演绎' }, { key: 'vlog', emoji: '📹', label: 'Vlog', desc: '生活记录风格' }, { key: 'product', emoji: '🛍', label: '产品展示', desc: '商品种草带货' }, { key: 'interview', emoji: '🎤', label: '街头采访', desc: '随机路人互动' }, { key: 'tutorial', emoji: '📚', label: '教程', desc: '知识技能教学' }]",
+        "AC-3 · 主区结构 · (1) PageHeader + H1 \"STORYBOARD\"(Orbitron font-display uppercase) + 模块标题 H3 \"专业分镜表生成器\" · (2) textarea \"文案内容\" max 5000 字 · placeholder \"粘贴你的短视频文案，AI 将自动生成专业分镜表，可直接交给摄影师执行...\" · 字符计数 \"{text.length}/5000\" · maxLength={5000} · (3) <PlatformInlineRadio value={platform} onChange={setPlatform} size=\"lg\" /> · (4) 6 视频类型 button(grid grid-cols-2 md:grid-cols-3 gap-3) · 每 button emoji + label + desc · (5) 主 CTA button \"一键生成专业分镜表\" · (6) 输出 · 分镜表 13 列 table",
+        "AC-4 · 分镜表 13 列字面锁(D-221) · table 表头 thead 13 个 th · 字面顺序 · \"镜号\" / \"景别\" / \"角度\" / \"运镜\" / \"时长\" / \"画面描述\" / \"台词/解说\" / \"字幕\" / \"背景音乐\" / \"音效\" / \"情绪\" / \"拍摄要点\" / \"剪辑建议\" · 表头 className \"font-display uppercase text-xs\" · 横向滚动支持 overflow-x-auto",
+        "AC-5 · 加 \"一键导出 CSV\" button(table 右上角) · onClick 调 stub function · 实际 LLM 集成留 PRD-23+",
+        "AC-6 · DOM button 数 ≥ 14(5 平台 + 6 视频类型 + 1 CTA + 2 二级)→ 接近 aiipznt 18",
+        "AC-7 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-8 · 新增 e2e tests/e2e/prd22-ai-video.spec.ts · ≥ 5 test(H1 STORYBOARD / 5 平台 / 6 视频类型 / 分镜表 13 列字面 / 导出 CSV button)",
+        "AC-9 · visual diff fixture 加 /ai-video · baseline 'prd22-ai-video' · viewport 1440x900 · 阈值 5% · 首跑 --update-snapshots + Read confirm",
+        "AC-10 · 用 agent-browser 打开 http://localhost:5173/ai-video · 验证 (a) H1 STORYBOARD 大字 · (b) 5 平台 radio · (c) 6 视频类型 button · (d) textarea 字符计数 0/5000 · (e) 13 列表头字面 · (f) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 4,
+      "passes": false,
+      "notes": "[TD-HINT] 13 列 header→key 必须 1:1 对应 D-221 锁 · 不能为凑列硬塞错位 key(PRD-6 US-004 教训)",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/video-types.ts",
+        "tests/e2e/prd22-ai-video.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/AiVideo.tsx",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd22-ai-video'",
+      "size_hint": "medium",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-6-p5-video-modules",
+          "source_story": "US-004",
+          "lesson": "13 列分镜表 header→key 错位是 ralph 高频错误 · 为凑 13 列硬塞错位 key(如镜号→scene · BGM→lighting) · 必须 header label 跟数据 key 语义对应",
+          "antipattern": "{ header: '镜号', key: 'scene' } 或 { header: '背景音乐', key: 'lighting' } · header 跟 key 语义错位 · 用 React idx+1 替代 schema 字段",
+          "correct": "13 列字面锁(D-221) header 顺序固定 · 数据可用 stub data array · 每列 header→cell 渲染 1:1 对应 · 表头是字面 \"镜号\" / \"景别\" / 等 · 数据列 key 可自定义但必须跟 header 语义一致"
+        },
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages (self-injected)",
+          "source_story": "US-004 stub data 风险",
+          "lesson": "本 PRD 不做 LLM 集成 · 必须 stub 分镜表 6-12 行假数据用于视觉对齐 · 不能空表",
+          "antipattern": "分镜表只渲染 thead 不渲染 tbody · 或 tbody 只 1 行 · visual diff 跟 aiipznt 6-12 行 baseline 不一致",
+          "correct": "stub 6-8 行假数据 · 字面如 \"镜号 1 / 景别 全景 / 角度 平视 / ...\" · LLM 集成后替换为真数据 · 当前 stub 保证视觉密度对齐"
+        }
+      ]
+    },
+    {
+      "id": "US-005",
+      "title": "medium · /knowledge 重构(4 tab 字面锁 + 20 卡 + 案例计数 button + 搜索 input + 22 元素展示)",
+      "description": "作为 QuanAn 用户 · 当我访问 /knowledge · 我看到 H1 \"AIP 文案方法论\" + 4 tab(20 类脚本 / 20 大爆款 / 开头公式 / 核心公式) · tab 1 默认展示 20 脚本类型卡 + 案例计数 button · 主区 inline 渲染 30 button · 而不是被 stub 占位只有 1 button 可见。复用 US-001 ScriptTypeInlineCards + ElementsInlineMultiPicker。",
+      "acceptanceCriteria": [
+        "AC-1 · apps/web/src/pages/Knowledge.tsx 完整重写 · H1 字面锁 \"AIP 文案方法论\" · 副标题字面锁 \"系统学习 AIP 的短视频文案创作方法论，掌握爆款文案的核心技巧\"(spec §8.4.4 + D1A)",
+        "AC-2 · 4 tab 字面锁(D-217) · 顺序固定 · tab 1 \"20 类脚本\"(默认 active) · tab 2 \"20 大爆款\" · tab 3 \"开头公式\" · tab 4 \"核心公式\" · tab 实现用 Radix Tabs(shadcn) · TabsList + 4 TabsTrigger · 选中态 data-[state=active]:bg-primary/10",
+        "AC-3 · tab 1 实现 · 顶部 search input \"搜索脚本类型...\" + <ScriptTypeInlineCards value={selectedScript} onChange={setSelectedScript} showSearch showMethodology /> · 20 脚本卡 5 列网格 · 每卡含 emoji + label + desc + methodology(<details> 折叠) + 案例计数 button \"实战案例 ({N})\" (N=stub 1-9 用于 visual 一致)",
+        "AC-4 · tab 2 实现 · 复用 <ElementsInlineMultiPicker value={[]} onChange={() => {}} layout=\"grouped\" disabled /> 纯展示态 · 4 组 H4 + 22 元素 button(disabled 状态)",
+        "AC-5 · tab 3 + tab 4 stub placeholder · 内容 \"5 类开头公式 · PRD-23 完整化\" 和 \"AIP 起承转合公式 · PRD-23 完整化\" · 占位 div + text-muted-foreground",
+        "AC-6 · DOM 总 button 数(无隐藏) ≥ 47(4 tab + 20 脚本 + 22 元素 + 1 search) · tab 切换时 button 数随 tab 变化 · tab 1 主区 button ≥ 30(20 卡 + 20 案例计数 button · 接近 aiipznt 30)",
+        "AC-7 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-8 · 新增 e2e tests/e2e/prd22-knowledge.spec.ts · ≥ 6 test(H1 / 4 tab 切换 / 20 脚本卡 / search filter 联动 / 案例计数 button / 22 元素展示)",
+        "AC-9 · visual diff fixture 加 /knowledge desktop + mobile · baseline 'prd22-knowledge' + 'prd22-knowledge-mobile' · desktop 1440x900 · mobile 375x812 · 阈值 5% · 首跑 --update-snapshots + Read confirm",
+        "AC-10 · 用 agent-browser 打开 http://localhost:5173/knowledge · 验证 (a) 4 tab 字面 · (b) tab 1 默认 active · (c) 20 脚本卡 · (d) search 实时 filter · (e) tab 切换平滑 · (f) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 5,
+      "passes": false,
+      "notes": "[TD-HINT] 4 tab 字面锁 D-217 严守 · 即使内部数据是 22 元素 tab 2 标题也必须是 \"20 大爆款\" 不是 \"22 大爆款\"",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "tests/e2e/prd22-knowledge.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Knowledge.tsx",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd22-knowledge'",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-006",
+      "title": "medium · /step/1 视觉精修(56 emoji 卡 5 列网格 + 6 tab 字面锁 + 自定义 modal + 已选状态卡)",
+      "description": "作为 QuanAn 用户 · 当我访问 /step/1 · 我看到 H1 \"选择你的行业赛道\" + 6 tab(全部行业 56 + 5 大类) + 56 行业 emoji 卡 5 列网格 + 自定义输入行业 button(弹 modal) · 而不是 IndustryDropdown 单选下拉(6 button 极简实现)。",
+      "acceptanceCriteria": [
+        "AC-1 · apps/web/src/pages/steps/Step1.tsx 完整重写 · H1 字面锁 \"选择你的行业赛道\" · 副标题字面锁 \"覆盖抖音、视频号等主流平台的 56+ 个细分行业。你也可以自定义输入行业。\"(spec §7.1)",
+        "AC-2 · 顶部副标签字面锁 \"STEP 01 · 选择行业赛道\"(D-224)",
+        "AC-3 · 6 tab 字面锁(D-218) · 横向滚动 · tab 1 \"全部行业 (56)\"(默认 active · 显示全 56) · tab 2 \"🏠 生活服务 (18)\" · tab 3 \"🛒 电商零售 (13)\" · tab 4 \"✍️ 内容创作 (7)\" · tab 5 \"💼 专业服务 (14)\" · tab 6 \"🏭 产业制造 (4)\" · 第一 tab 必须是 \"全部行业 (56)\" 且默认 active",
+        "AC-4 · 搜索 input placeholder \"搜索行业名称或关键词（如：美容院、餐饮、教育...）\" · 实时按 label + keywords 模糊匹配 · 联动 tab 筛选(tab 限制 in 当前类别)",
+        "AC-5 · 新建 apps/web/src/components/industry/IndustryEmojiGrid.tsx · 56 行业卡 5 列网格 className \"grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3\" · 每卡含 emoji + label · 选中态 bg-primary/10 border-primary · 未选 border-border hover:border-primary/40 · 数据从 apps/web/src/lib/constants/industries.ts INDUSTRIES 读 · 接 controlled API value/onChange",
+        "AC-6 · 已选时顶部显示已选状态卡 · glass-card wrapper · 显示 emoji + label + keywords list(text-sm muted)",
+        "AC-7 · 新建 apps/web/src/components/industry/CustomIndustryModal.tsx · <Dialog> from shadcn · trigger button \"自定义输入行业\" link 风格(卡片网格下方) · modal 含 input + 保存 button · 保存后顶部已选状态卡显示 customIndustry · D1A 字面 \"自定义输入行业\"",
+        "AC-8 · 主 CTA button \"确认并进入下一步\"(className 含 bg-gradient-to-r from-primary to-primary/60) · disabled 条件 · !industry && !customIndustry · onClick 跳 /step/3",
+        "AC-9 · DOM button 数 ≥ 65(56 行业卡 + 6 tab + 1 search + 1 自定义 + 1 CTA)→ 接近 aiipznt 71",
+        "AC-10 · 表单状态走 stepData.save(step1 · { industry, industryLabel, customIndustry? }) · 用 useStepData(step1) hook",
+        "AC-11 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-12 · 已有 e2e tests/e2e/prd17-step1-flow.spec.ts 更新断言对齐新结构(56 卡 / 6 tab / modal) · 5 test 全 pass",
+        "AC-13 · visual diff fixture 加 /step/1 · baseline 'prd22-step1' · viewport 1440x900 · 阈值 5% · 首跑 --update-snapshots + Read confirm",
+        "AC-14 · 用 agent-browser 打开 http://localhost:5173/step/1 · 验证 (a) 6 tab 字面正确 · (b) tab 1 默认 active · (c) 56 卡 5 列网格 · (d) tab 切换筛选 · (e) search filter · (f) 自定义 modal 弹出保存 · (g) 主 CTA disabled→enabled · (h) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 6,
+      "passes": false,
+      "notes": "[TD-HINT] D-218 tab 1 必须是 \"全部行业 (56)\"(dump §3 Diff 3 实测) · 不是 spec §7.1 line 1235 的 5 大类 · 严守 dump > spec",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/industry/IndustryEmojiGrid.tsx",
+        "apps/web/src/components/industry/CustomIndustryModal.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/steps/Step1.tsx",
+        "tests/e2e/prd17-step1-flow.spec.ts",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd17-step1' --grep 'prd22-visual-baseline.*step1'",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-007",
+      "title": "medium · /step/3 + /step/3b 视觉精修(7+6 H3 输出区 + PlatformInlineRadio + 多 textarea)",
+      "description": "作为 QuanAn 用户 · 当我访问 /step/3 · 我看到 H1 \"账号包装方案\" + 个人信息 textarea + 5 平台 radio(PlatformInlineRadio) + 目标受众 input + 现有账号情况 input + 主 CTA · 输出区 7 H3 块(视频参考案例 / 昵称推荐 / 头像设计方案 / 背景图设计方案 / 简介文案方案 / 整体包装策略 + 顶部账号包装方案总览) · 每块独立\"复制\" + \"重新生成\" button · 而不是 ToolForm 通用抽象只有 2 H 标签。/step/3b 类似 6 H3 块。",
+      "acceptanceCriteria": [
+        "AC-1 · /step/3 H1 字面锁 \"账号包装方案\" · 副标题字面锁 \"当前行业：{industry}。输入你的个人信息，AI 将为你生成极其详细的账号包装方案，包含昵称、头像参考图、背景图参考、简介等全方位深度解析。\"(spec §7.2) · 顶部副标签 \"STEP 03 · 账号包装方案\"(D-224)",
+        "AC-2 · /step/3 输入表单 · (1) textarea \"你的个人信息\"(必填) placeholder spec §7.2 line 1289 完整字面 \"详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。\\n\\n示例：我是一名有10年经验的美容师，擅长皮肤管理和抗衰项目...\" · (2) <PlatformInlineRadio value={platform} onChange={setPlatform} /> · (3) input \"目标受众\"(可选) placeholder \"你想吸引什么样的粉丝？\" · (4) input \"现有账号情况\"(可选) placeholder \"新账号/已有账号的粉丝量等\" · (5) 主 CTA \"生成账号包装方案\" · (6) 次级 \"[重新生成]\" \"[智能优化]\"(已有结果时显示)",
+        "AC-3 · /step/3 输出区 7 H3 块(D-220 字面锁) · 顺序固定 · (1) H3 \"账号包装方案\"(顶部总览) · (2) H3 \"视频参考案例\"(3 个 list) · (3) H3 \"昵称推荐\"(5 备选) · (4) H3 \"头像设计方案\" · (5) H3 \"背景图设计方案\" · (6) H3 \"简介文案方案\" · (7) H3 \"整体包装策略\" · 每 H3 块右侧 \"[复制]\" + \"[重新生成]\" button · 顶部右侧 \"[一键重新生成]\" + \"[复制全部]\" button",
+        "AC-4 · /step/3b H1 字面锁 \"人设定制方案\" · 顶部副标签 \"STEP 03B · 人设定制方案\" · 输入 · (1) textarea \"你的个人信息\"(必填) · (2) textarea \"你的独特优势\"(可选) placeholder spec §7.3 完整字面 · (3) textarea \"你的个人故事\"(可选) placeholder spec §7.3 · (4) input \"目标受众\"(可选)",
+        "AC-5 · /step/3b 输出区 6 H3 块(D-220 字面锁) · 顺序固定 · (1) H3 \"人设定位\" · (2) H3 \"人设标签\" · (3) H3 \"内容方向\" · (4) H3 \"差异化策略\" · (5) H3 \"内容方向建议\" · (6) H3 \"IP 故事框架\"",
+        "AC-6 · 表单状态走 stepData.save(step3 / step3b) · 用 useStepData hook · 字段保留 stub 默认值(本 PRD 不接 LLM)",
+        "AC-7 · 加 glass-card wrapper 用到所有 H3 输出块 · className \"bg-card/40 backdrop-blur-md border-border/40 rounded-lg p-6 mb-4\" · framer-motion <FadeInWrapper delay={0.05 * idx} from=\"up\">",
+        "AC-8 · DOM H 标签数(/step/3) = 8(H1 + 7 H3) · 用 page.locator('h3').count() 验证 ≥ 7",
+        "AC-9 · DOM H 标签数(/step/3b) = 7(H1 + 6 H3) · 用 page.locator('h3').count() 验证 ≥ 6",
+        "AC-10 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-11 · 已有 e2e tests/e2e/prd17-step3-flow.spec.ts + tests/e2e/prd17-step3b-flow.spec.ts 更新断言对齐新结构 · 全 pass",
+        "AC-12 · visual diff fixture 加 /step/3 + /step/3b · baseline 'prd22-step3' + 'prd22-step3b' · viewport 1440x900 · 阈值 5% · 首跑 --update-snapshots + Read confirm",
+        "AC-13 · 用 agent-browser 打开 http://localhost:5173/step/3 + /step/3b · 验证 (a) 7+6 H3 字面 · (b) 5 平台 radio · (c) 多 textarea · (d) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 7,
+      "passes": false,
+      "notes": "[TD-HINT] D-220 7+6 H3 字面严守 · ralph 创意改写 H3 标题是高频错(\"视频参考案例\" 改成 \"参考案例\")· 必须字符级 1:1 · 若 prompt > 11K → 拆 US-007a /step/3 + US-007b /step/3b",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/steps/Step3.tsx",
+        "apps/web/src/pages/steps/Step3b.tsx",
+        "tests/e2e/prd17-step3-flow.spec.ts",
+        "tests/e2e/prd17-step3b-flow.spec.ts",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd17-step3' --grep 'prd22-visual-baseline.*step3'",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-008",
+      "title": "medium · /step/4 + /step/4b 视觉精修(3 KPI H3 + 3 阶梯 H3 + 收入结构 + 成功案例)",
+      "description": "作为 QuanAn 用户 · 当我访问 /step/4 · 我看到 H1 \"执行计划\" + 3 输入 + 主 CTA · 输出 3 KPI H3(每日/每周/阶段) · 访问 /step/4b · H1 \"变现路径规划\" + 多输入 + 输出 3 阶梯 H3(初阶/中阶/高阶) + 收入结构 H3 + 成功案例 H3 · 而不是 ToolForm 通用抽象。",
+      "acceptanceCriteria": [
+        "AC-1 · /step/4 H1 字面锁 \"执行计划\" · 顶部副标签 \"STEP 04 · 执行计划\"(D-224)",
+        "AC-2 · /step/4 输入 · (1) input \"当前粉丝量\"(可选) · (2) input \"目标(如：6个月做到5万粉)\"(可选) · (3) textarea \"详细描述你的情况\"(可选) placeholder spec §7.4 完整字面 \"描述你的情况，比如：\\n- 每天可投入2小时\\n- 有实体店/线上课程\\n- 擅长口播/拍摄\" · 主 CTA \"生成执行计划\"",
+        "AC-3 · /step/4 输出 3 KPI H3(D-220) · 字面锁 · (1) H3 \"每日 KPI\" · (2) H3 \"每周 KPI\" · (3) H3 \"阶段 KPI\" · 每块 glass-card + 数据 list",
+        "AC-4 · /step/4b H1 字面锁 \"变现路径规划\" · 顶部副标签 \"STEP 04B · 变现路径规划\"",
+        "AC-5 · /step/4b 输入 · (1) textarea \"产品/服务描述\"(必填) placeholder spec §7.5 完整字面 \"描述你的产品或服务，比如：\\n- 美容院皮肤管理项目，客单价500-3000元\\n- 线上知识付费课程，定价199-999元\" · (2) input \"行业领域\"(可选) · (3) <PlatformInlineRadio value={platform} onChange={setPlatform} />(可选 · 用 US-001 utility)",
+        "AC-6 · /step/4b 输出 3 阶梯 H3(D-220 字面锁) · 顺序固定 · (1) H3 \"初阶变现路径\"(粉丝量级 + 月收入预估 + 具体方式) · (2) H3 \"中阶变现路径\"(同上 · 进阶) · (3) H3 \"高阶变现路径\"(同上 · 顶级) · (4) H3 \"收入结构分析\" · (5) H3 \"成功案例参考\"(行业典型案例) · 总 5 H3 输出区",
+        "AC-7 · glass-card + FadeInWrapper 用到所有 H3 输出块 · stagger delay={0.05 * idx}",
+        "AC-8 · DOM H 标签数(/step/4) = 4(H1 + 3 KPI H3) · (/step/4b) = 6(H1 + 5 H3)对齐 aiipznt",
+        "AC-9 · 表单状态 stepData.save(step4 / step4b)",
+        "AC-10 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-11 · 已有 e2e tests/e2e/prd18-step4-flow.spec.ts + tests/e2e/prd18-step4b-flow.spec.ts 更新断言",
+        "AC-12 · visual diff fixture 加 /step/4 + /step/4b · baseline 'prd22-step4' + 'prd22-step4b' · viewport 1440x900 · 阈值 5%",
+        "AC-13 · 用 agent-browser 打开 /step/4 + /step/4b · 验证 (a) H1 + 副标签 · (b) 3 KPI H3 vs 3 阶梯 H3 · (c) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 8,
+      "passes": false,
+      "notes": "[TD-HINT] D-220 3 阶梯 H3 字面 \"初阶变现路径/中阶变现路径/高阶变现路径\" 严守 · ralph 改写为 \"低阶/中阶/高阶\" 或 \"阶段一/阶段二/阶段三\" 都不允许",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/steps/Step4.tsx",
+        "apps/web/src/pages/steps/Step4b.tsx",
+        "tests/e2e/prd18-step4-flow.spec.ts",
+        "tests/e2e/prd18-step4b-flow.spec.ts",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd18-step4' --grep 'prd22-visual-baseline.*step4'",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-009",
+      "title": "medium · /step/5 + /step/6 视觉精修(file upload × 2 + 粘贴文案 textarea + 跳 step7 提示)",
+      "description": "作为 QuanAn 用户 · 当我访问 /step/5 · 我看到 H1 \"爆款选题库\" + 行业/产品 input × 2 + file upload × 2(产品图/案例图) + 主 CTA · 访问 /step/6 · H1 \"拍摄计划\" + 粘贴文案 textarea(至少 10 字) + 跳 step7 提示 + 主 CTA。",
+      "acceptanceCriteria": [
+        "AC-1 · /step/5 H1 字面锁 \"爆款选题库\" · 顶部副标签 \"STEP 05 · 爆款选题库\"(D-224)",
+        "AC-2 · /step/5 输入 · (1) input \"行业领域\" placeholder \"例如：美业、餐饮、教育培训、服装...\" · (2) input \"产品/服务\" placeholder \"例如：皮肤管理项目、火锅加盟、英语培训课...\" · (3) FileUpload \"产品图\"(可选 · 多张) · (4) FileUpload \"案例图\"(可选 · 多张) · 主 CTA \"生成爆款选题库\"",
+        "AC-3 · /step/5 输出 5 大选题类别 H3(D-220) · (1) H3 \"知识科普类选题\" · (2) H3 \"产品种草类选题\" · (3) H3 \"情感共鸣类选题\" · (4) H3 \"争议讨论类选题\" · (5) H3 \"干货实操类选题\" · 每 H3 块 glass-card + 选题 list",
+        "AC-4 · 验证 apps/web/src/components/file-upload/FileUpload.tsx · 如不存在则新建 · API · interface FileUploadProps { label: string; multiple?: boolean; accept?: string; onChange: (files: File[]) => void; } · 内部 input type=\"file\" + 预览缩略图 · 选中显示文件名 list · 删除 button",
+        "AC-5 · /step/6 H1 字面锁 \"拍摄计划\" · 顶部副标签 \"STEP 06 · 拍摄计划\"(D-224)",
+        "AC-6 · /step/6 输入 · textarea \"短视频文案\" 必填 · 字符 ≥ 10 · placeholder \"粘贴你的短视频文案（至少10个字），AI 将基于文案生成完整的拍摄计划。\\n\\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。\"(spec §7.7)",
+        "AC-7 · /step/6 提示卡 infobox · 内容 \"你可以先去第七步「文案生成」生成文案 · 再回这里\" + 跳 /step/7 button \"去文案生成\"",
+        "AC-8 · /step/6 主 CTA \"生成拍摄计划\" · disabled 条件 · text.length < 10",
+        "AC-9 · /step/6 输出 spec §7.7 分镜表 + 拍摄要点 H3 · 至少 2 H3 输出区",
+        "AC-10 · glass-card + FadeInWrapper",
+        "AC-11 · DOM H 标签数(/step/5) = 6(H1 + 5 H3) · (/step/6) = 3(H1 + 2 H3)对齐 aiipznt",
+        "AC-12 · 表单状态 stepData.save(step5 / step6)",
+        "AC-13 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-14 · 已有 e2e tests/e2e/prd18-step5-flow.spec.ts + tests/e2e/prd18-step6-flow.spec.ts 更新断言",
+        "AC-15 · visual diff fixture 加 /step/5 + /step/6 · baseline 'prd22-step5' + 'prd22-step6' · 阈值 5%",
+        "AC-16 · 用 agent-browser 打开 /step/5 + /step/6 · 验证 (a) file upload 弹窗 · (b) 粘贴 < 10 字 disabled · ≥ 10 字 enabled · (c) 跳 /step/7 button · (d) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 9,
+      "passes": false,
+      "notes": "[TD-HINT] /step/6 disabled 条件必须文案 < 10 字才 disabled · 不是空才 disabled(spec §7.7 line 1639 明示 \"至少 10 个字\")",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/file-upload/FileUpload.tsx"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/steps/Step5.tsx",
+        "apps/web/src/pages/steps/Step6.tsx",
+        "tests/e2e/prd18-step5-flow.spec.ts",
+        "tests/e2e/prd18-step6-flow.spec.ts",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd18-step5' --grep 'prd18-step6'",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-010",
+      "title": "medium · /step/7 视觉精修(20 脚本搜索 + 22 元素多选 + 4 H4 输出 + AI 优化 + 跳选题库)",
+      "description": "作为 QuanAn 用户 · 当我访问 /step/7 · 我看到 H1 \"文案生成\" + ScriptTypeInlineCards(20 卡 + 搜索) + ElementsInlineMultiPicker(22 元素 + 计数) + 主题 textarea + 优化方向 input + 主 CTA + 次级 button · 输出区按 spec §7.8 文案结果结构(以\"搞辩论\"为例 4 H4:话题抛出 / 正方 / 反方 / 我的立场)。复用 US-001 + US-002 模式。",
+      "acceptanceCriteria": [
+        "AC-1 · apps/web/src/pages/steps/Step7.tsx 完整重写 · H1 字面锁 \"文案生成\" · 副标题字面锁 \"选择脚本类型和爆款元素，输入主题，AI 将基于方法论生成深度爆款文案，支持 AI 智能修改优化。\"(spec §7.8 + D1A) · 顶部副标签 \"STEP 07 · AI 智能文案生成\"(D-224)",
+        "AC-2 · 主区结构 · (1) PageHeader + H1 · (2) <ScriptTypeInlineCards value={scriptType} onChange={setScriptType} showSearch /> · (3) <ElementsInlineMultiPicker value={elements} onChange={setElements} showCount layout=\"grouped\" /> · (4) textarea \"文案主题\" 必填 · placeholder \"输入你的文案主题，如：美容院如何用抖音获客100个精准客户...\"(D1A) · (5) 显示 \"当前脚本：{label} - {desc}\"(spec §7.8 line 1701) · (6) input \"优化方向\"(可选) · placeholder \"输入优化方向（可选），如：更有吸引力、增加互动感、更口语化...\" · (7) 主 CTA \"[生成爆款文案]\" · (8) 次级 button \"[AI 优化文案]\" \"[我的选题库]\" \"[爆款选题]\"(跳 /step/5)",
+        "AC-3 · 表单状态走 stepData.save(step7 · { scriptType, elements, topic, optimizeDirection, result }) · **读** stepData(D-219 / D-225 · 跟 /generate 独立调用不同) · 进入 page 时自动调 trpc.stepData.get(step7) 预填",
+        "AC-4 · 输出区(以\"搞辩论\"为例 · D-220 字面锁) 4 H4 · 顺序固定 · (1) H4 \"话题抛出\" · (2) H4 \"正方\" · (3) H4 \"反方\" · (4) H4 \"我的立场\" · 加 \"评论区引导\" + \"话题标签 #xxx\" 显示",
+        "AC-5 · 其他脚本类型输出区按 stub schema 渲染(本 PRD 仅\"搞辩论\"完整化 4 H4 · 其他类型显示 \"该脚本类型输出 schema · PRD-23 完整化\" 占位)",
+        "AC-6 · DOM button 数 ≥ 50(20 脚本 + 22 元素 + 1 CTA + 5 次级)→ 接近 aiipznt 53",
+        "AC-7 · DOM H 标签数 ≥ 11(H1 + 10 H4 含 4 + 输出区其他)对齐 aiipznt 实测",
+        "AC-8 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-9 · 已有 e2e tests/e2e/prd18-step7-flow.spec.ts 更新断言对齐新结构",
+        "AC-10 · visual diff fixture 加 /step/7 · baseline 'prd22-step7' · viewport 1440x900 · 阈值 5%",
+        "AC-11 · 用 agent-browser 打开 /step/7 · 验证 (a) 20 脚本 + 22 元素 · (b) 4 H4 输出字面 · (c) AI 优化 button · (d) 跳 /step/5 button · (e) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002"],
+      "priority": 10,
+      "passes": false,
+      "notes": "[TD-HINT] D-219 /step/7 跟 /generate 区别 · /step/7 读 stepData · /generate 不读 · D-220 4 H4 字面 \"话题抛出/正方/反方/我的立场\" 严守",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/steps/Step7.tsx",
+        "tests/e2e/prd18-step7-flow.spec.ts",
+        "tests/e2e/prd22-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:e2e --grep 'prd18-step7' --grep 'prd22-visual-baseline.*step7'",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-011",
+      "title": "medium · 跨 13 page polish(FadeInWrapper stagger + glass-card + hover transition 200ms + Toaster 验证)",
+      "description": "作为 QuanAn 视觉一致性 owner · 我需要扫 13 page 把 framer-motion FadeInWrapper / glass-card / hover transition 时长 / Toaster sonner duration 统一 · 这样 PRD-21 D-211/213 命名锁能完整覆盖 PRD-22 范围 · pixel-diff 减少视觉抖动。",
+      "acceptanceCriteria": [
+        "AC-1 · 13 page 主区结构都用 <FadeInWrapper delay={0.05 * idx} from=\"up\"> 包裹 · 替换 raw <div> 包装 · 13 page · /generate /boom-generate /ai-video /knowledge /step/1 /step/3 /step/3b /step/4 /step/4b /step/5 /step/6 /step/7 + Knowledge mobile",
+        "AC-2 · 8 step page H3 输出块都用 glass-card wrapper · className \"bg-card/40 backdrop-blur-md border-border/40 rounded-lg p-6 mb-4\" · /step/3 7 H3 / /step/3b 6 H3 / /step/4 3 H3 / /step/4b 5 H3 / /step/5 5 H3 / /step/6 2 H3 / /step/7 4 H4 = 总 ≥ 30 glass-card 实例",
+        "AC-3 · 所有 button hover transition 统一 transition-all duration-200 · 扫 apps/web/src/pages/{Generate,BoomGenerate,AiVideo,Knowledge}.tsx + apps/web/src/pages/steps/Step{1,3,3b,4,4b,5,6,7}.tsx 中 button className · 替换 transition-colors / transition (无 duration) → transition-all duration-200",
+        "AC-4 · 验证 Toaster sonner position=\"bottom-right\" duration={4000}(继承 PRD-21 US-004 配置) · grep apps/web/src/main.tsx 或 App.tsx Toaster import + props 确认",
+        "AC-5 · 新建/确认 apps/web/src/components/ui/glass-card.tsx · 如不存在则新建 · 简单 wrapper · interface GlassCardProps { children: React.ReactNode; className?: string; } · 默认 className \"bg-card/40 backdrop-blur-md border border-border/40 rounded-lg\"",
+        "AC-6 · DOM <FadeInWrapper> 数量 13 page 总 ≥ 60(每 page ≥ 3 stagger)",
+        "AC-7 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-8 · 已有 e2e 全部不破(PRD-15~22 所有 e2e fixture)",
+        "AC-9 · visual diff 13 baseline 全跑 · pnpm test:visual:check · 阈值 5%(可能因 polish 微调有 pixel diff · 需要 --update-snapshots 重新确认 baseline · Read 肉眼 confirm)",
+        "AC-10 · 用 agent-browser 抽查 3 page(/generate · /step/3 · /knowledge) · 验证 (a) 入场 FadeInWrapper stagger · (b) glass-card 模糊 · (c) hover 200ms 平滑 · (d) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-002", "US-003", "US-004", "US-005", "US-006", "US-007", "US-008", "US-009", "US-010"],
+      "priority": 11,
+      "passes": false,
+      "notes": "[TD-HINT] 不动 PRD-21 已 polish 过的 4 公开 page(/, /guide, /ip-plan, Header) · 仅扫 PRD-22 新 13 page",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "apps/web/src/pages/Generate.tsx",
+        "apps/web/src/pages/BoomGenerate.tsx",
+        "apps/web/src/pages/AiVideo.tsx",
+        "apps/web/src/pages/Knowledge.tsx",
+        "apps/web/src/pages/steps/Step1.tsx",
+        "apps/web/src/pages/steps/Step3.tsx",
+        "apps/web/src/pages/steps/Step3b.tsx",
+        "apps/web/src/pages/steps/Step4.tsx",
+        "apps/web/src/pages/steps/Step4b.tsx",
+        "apps/web/src/pages/steps/Step5.tsx",
+        "apps/web/src/pages/steps/Step6.tsx",
+        "apps/web/src/pages/steps/Step7.tsx",
+        "apps/web/src/components/ui/glass-card.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm test:visual:check",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-012",
+      "title": "收官 · verify-prd-22.sh 10 section 50+ checks + 13 page visual diff + /goal-verify + /prd-retro",
+      "description": "作为 PRD-22 收官 owner · 我需要 verify-prd-22.sh 完整 10 section + 13 page visual diff 全 PASS + /goal-verify §0 跑 gsd-map-codebase 同步事实层 + /prd-retro 反哺 reject-examples.jsonl · 这样 PRD-22 ship 后下游 PRD-23 能正确启动。",
+      "acceptanceCriteria": [
+        "AC-1 · 新建 scripts/verify-prd-22.sh · 复用 PRD-21 10 section 结构 · ≥ 50 checks · 关键检查 · §1 5 inline picker utility · grep 3 utility 文件存在 + barrel export + 单元测试存在 · §2 /generate inline · grep ScriptTypeInlineCards + ElementsInlineMultiPicker import + main 区结构 · §3 /boom-generate · grep ElementsInlineMultiPicker + 行业/主题 input · §4 /ai-video · grep PlatformInlineRadio + VIDEO_TYPES import + 分镜表 13 列字面 · §5 /knowledge · grep 4 tab \"20 类脚本\" \"20 大爆款\" \"开头公式\" \"核心公式\" 字面 + 20 卡 + search input · §6 /step/1 · grep 6 tab \"全部行业 (56)\" 字面 + 56 卡 + 自定义 modal · §7 /step/3 + /step/3b · grep 7+6 H3 字面(D-220 锁) + PlatformInlineRadio · §8 /step/4 + /step/4b · grep 3 阶梯 H3 \"初阶变现路径\" \"中阶变现路径\" \"高阶变现路径\" 字面 · §9 /step/5 + /step/6 + /step/7 · grep file upload + textarea + 20 脚本 + 22 元素 + 4 H4 输出 · §10 跨 page · typecheck 0 errors + vitest > 196 test pass + 13 page visual diff pass + 13 visual baseline 文件存在",
+        "AC-2 · pnpm test:visual:check 13 page 全 PASS · 阈值 5% · 如有 fail 用 --update-snapshots 重 baseline 然后 Read 肉眼 confirm",
+        "AC-3 · /goal-verify 跑 §0 · apps/web/.planning/codebase/ 7 文件 gsd-map-codebase 重新生成(/gsd-map-codebase) · D1=A 文字字面对账(13 page H1/副标/H3/H4 + 常量 SCRIPT_TYPES + HOT_ELEMENTS + PLATFORMS + INDUSTRIES + VIDEO_TYPES) · D4=B 颜色严锁(grep red flag from-violet/from-amber)",
+        "AC-4 · /goal-verify 跑 §1+ · 对比 PRD-22 §2 目标 11 项 vs 12 US 交付 · 全 11 项 ✅ 才算 PASS · 输出 .agents/goal-verify/prd-22-goal-verify.md",
+        "AC-5 · /prd-retro · 跨 PRD-21 vs PRD-22 复盘 · 提炼可迁移 Playbook(inline picker pattern + step page H3 输出锁 + visual diff 13 page extend) · 反哺 ~/.claude/playbooks/reject-examples.jsonl · 输出 .agents/retros/prd-22-vs-prd-21-retrospective.md",
+        "AC-6 · 更新 .agents/tech-debt.json · 登记 PRD-22 内偏差(预期 ≤ 3 TD)",
+        "AC-7 · 更新 AGENTS.md §11 · 加 PRD-22 沉淀(inline picker 抽象 + 13 page visual diff baseline)",
+        "AC-8 · 更新 scripts/ralph/progress.txt · ship summary 模板含 Ship date + Branch + Final commit + 12 US 全 audit approved 状态 + 13 page visual diff baseline 列 + Vitest test 数 + TypeScript errors + verify-prd-22.sh checks 数 + PRD-22 → PRD-23 Handoff(目标 / 继承 / TD 修复)",
+        "AC-9 · TypeScript 编译通过 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-10 · bash scripts/verify-prd-22.sh · 全 PASS · 退出码 0",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006", "US-007", "US-008", "US-009", "US-010", "US-011"],
+      "priority": 12,
+      "passes": false,
+      "notes": "[TD-HINT] verify-prd-22.sh 是 CI gate · 必须 chmod +x · §1-§10 任一 fail 整体 fail",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-22.sh",
+        ".agents/goal-verify/prd-22-goal-verify.md",
+        ".agents/retros/prd-22-vs-prd-21-retrospective.md"
+      ],
+      "files_to_modify": [
+        ".agents/tech-debt.json",
+        "AGENTS.md",
+        "scripts/ralph/progress.txt"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && cd ../.. && bash scripts/verify-prd-22.sh",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    }
+  ]
+}
