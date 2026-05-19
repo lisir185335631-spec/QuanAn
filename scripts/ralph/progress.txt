@@ -5,6 +5,29 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 03:50 - US-005 [PRD-23] · /analysis 真表单 + 5 H3 stub 输出(文案结构分析)
+- 实现了什么:
+  - apps/web/src/pages/tools/Analysis.tsx: 完整重写 · 去除 tRPC/ToolForm 依赖 · 本地 state(text/submitted) · 字符计数右下角(`{text.length} 字`) · CTA disabled(text<10) · 提交→5 H3 stub 输出
+  - apps/web/src/pages/tools/__tests__/Analysis.test.tsx: 新建 · 7 tests · H1字面/副标题/0字计数/计数更新/disabled/enabled/5H3
+  - tests/e2e/prd23-analysis-flow.spec.ts: 新建 · 3 tests · 6/6 pass(chromium+mobile)
+  - tests/e2e/prd23-visual-baseline.spec.ts: 追加 /analysis baseline 'prd23-analysis.png'
+- 验证结果:
+  - AC-6 typecheck: ✅ 0 errors
+  - AC-6 vitest: ✅ 276 tests pass (≥ 251 ✓)
+  - AC-7 e2e: ✅ 6/6 pass(3 chromium + 3 mobile)
+  - AC-8 visual: ✅ prd23-analysis.png baseline written · threshold 0.05
+  - AC-9 browser: ✅ 通过 Playwright e2e 验证 · H1/副标/字符计数/disabled→enabled/5H3 · gstack browse binary 无响应(已记录)
+- 更改的文件:
+  - apps/web/src/pages/tools/Analysis.tsx (重写)
+  - apps/web/src/pages/tools/__tests__/Analysis.test.tsx (新建)
+  - tests/e2e/prd23-analysis-flow.spec.ts (新建)
+  - tests/e2e/prd23-visual-baseline.spec.ts (追加)
+- **未来迭代的学习:**
+  - PRD-23 stub 页范式已固化: Analysis.tsx 和 VideoAnalysis.tsx 共用同一模式(本地 state · disabled · 字符计数 · 5 H3 stub)
+  - 字符计数 data-testid="char-count" 是 unit test + e2e 双验证的标准 hook
+  - gstack browse binary 在此次对话中无响应 · 改用 Playwright e2e 完成 AC-9 browser 验证(6/6 pass)
+---
+
 ## 2026-05-20 03:05 - US-004 [PRD-23] · /video-analysis 真表单 + 5 H3 stub 输出
 - 实现了什么:
   - apps/web/src/pages/tools/VideoAnalysis.tsx: 完整重写 · 去除 tRPC 依赖 · 本地 state(title/copy/submitted) · 表单 disabled(copy<10) · 提交→5 H3 stub 输出 · 一键仿写 button → navigate('/generate')
@@ -3374,4 +3397,11 @@ PRD-23 范围:
 ## 2026-05-20 03:44 - US-004 [PRD-23] Opus audit approve · medium 快审
 - AC 10/10 PASS · vitest 269/269 · 1st pass · D-233 unit test 同步
 - 字面锁 9/9 · 爆款文案解析 H1 + 副标 + 5 H3 输出 + 使用方法 infobox
+---
+
+--- [RALPH] Iteration 8 ended: US-004 (47分钟 12秒) ---
+
+--- [RALPH] Iteration 9 started: US-005 at 2026-05-20 03:44 ---
+
+## 2026-05-20 04:02 - US-005 [PRD-23] Opus audit approve · medium 快审 · 1st pass · 字面 9/9 + 字符计数
 ---
