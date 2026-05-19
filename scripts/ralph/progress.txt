@@ -5,6 +5,41 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-19 18:45 - US-009 [PRD-22] medium · /step/5 + /step/6 视觉精修
+- 实现了什么:
+  - FileUpload.tsx: 新建 apps/web/src/components/file-upload/ · interface { label, multiple?, accept?, onChange } · input type="file" + 缩略图预览 + 删除按钮 · data-testid="file-upload-{label}" / "file-upload-trigger-{label}" / "file-upload-input-{label}"
+  - Step5.tsx: 完整重写 · H1 "爆款选题库" + STEP_TAG + 2 inputs + 2 FileUpload(产品图/案例图) + CTA "生成爆款选题库" · 5 H3 并行流式渲染(all in DOM on submit, AC-11: 1H1+5H3=6)
+  - Step5TopicGrid.tsx: 更新 · vertical layout(非 tab) · 5 H3 同时渲染 · glass-card + FadeInWrapper per section
+  - Step6.tsx: 修复 TD-HINT: disabled = text.length < 10(非 text==='' · spec §7.7 line 1639) · infobox + "去文案生成" button → /step/7 · textarea label "短视频文案" · CTA "生成拍摄计划"
+  - constants/step5.ts: 字面锁 STEP5_INPUTS_2/STEP5_FILE_UPLOADS_2/STEP5_CATEGORIES_5(5 H3 key-label map)
+  - constants/step6.ts: 字面锁 STEP6_TEXTAREA_MIN_CHARS=10 / STEP6_BUTTON_GENERATE / STEP6_OUTPUT_MODULES_3
+  - tests/e2e/prd18-step5-flow.spec.ts: 新建 · 8 tests(AC-1/2/4/3+AC-11/16)
+  - tests/e2e/prd18-step6-flow.spec.ts: 新建 · 10 tests(AC-5/6/7/8/16 + TD-HINT disabled<10)
+  - tests/e2e/prd22-visual-baseline.spec.ts: 追加 /step/5 prd22-step5 + /step/6 prd22-step6 baselines
+- 验证结果:
+  - AC-13 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-14 e2e: ✅ 36/36 prd18-step5-flow + prd18-step6-flow (chromium + mobile)
+  - AC-15 visual: ✅ prd22-step5.png + prd22-step6.png baseline 写入 /tmp/aiipznt-clone-research/screenshots/
+  - AC-16 browser: ✅ apps/web/e2e prd-18 test3(step5) + test4(step6) pass · 0 console errors
+  - TD-HINT fix: ✅ text.length < 10 disabled · 9字 disabled · 10字 enabled · 全覆盖测试
+- 更改的文件:
+  - apps/web/src/components/file-upload/FileUpload.tsx (新建)
+  - apps/web/src/components/step5/Step5TopicGrid.tsx (更新 vertical layout)
+  - apps/web/src/lib/constants/step5.ts (更新 5 categories 字面)
+  - apps/web/src/lib/constants/step6.ts (更新 TEXTAREA_MIN_CHARS + OUTPUT_MODULES_3)
+  - apps/web/src/pages/step/Step5.tsx (完整重写 · FileUpload + vertical 5-H3)
+  - apps/web/src/pages/step/Step6.tsx (TD-HINT fix: disabled = text.length < STEP6_TEXTAREA_MIN_CHARS)
+  - apps/web/e2e/prd-18-step-4-5-6-7-8.spec.ts (step5/step6 测试断言更新)
+  - tests/e2e/prd18-step5-flow.spec.ts (新建)
+  - tests/e2e/prd18-step6-flow.spec.ts (新建)
+  - tests/e2e/prd22-visual-baseline.spec.ts (追加 step5 + step6 baseline)
+- **未来迭代的学习:**
+  - TD-HINT 修复 disabled 条件: text.length < MIN_CHARS 不是 text==='' · spec 里"至少N字"要转成 length < N
+  - FileUpload 组件 data-testid="file-upload-{label}" 用中文 label 直接 concat · Playwright 通过 [data-testid="file-upload-产品图"] 定位
+  - 5 H3 vertical layout(非 tab)下 all H3 在 DOM after submit → AC-11 断言 H heading count 包含输入前 H1 + 提交后 5 H3 = 6 total
+  - apps/web/e2e/ 用 apps/web/playwright.config.ts · tests/e2e/ 用根 playwright.config.ts · 两套不能混跑
+---
+
 ## 2026-05-19 17:15 - US-006 [PRD-22] medium · /step/1 视觉精修
 - 实现了什么:
   - IndustryEmojiGrid.tsx: 新建 · 56 行业卡 5 列网格 grid-cols-3/4/5 · controlled value/onChange · data-testid 每卡
@@ -2877,3 +2912,9 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
 ### TD 续登
 - TD-090 同模式 · baseline 'prd22-step4.png' + 'prd22-step4b.png' 应改 '13-step-4-execution.png' + '14-step-4b-monetization.png'
 ---
+
+--- [RALPH] Iteration 11 ended: US-008 (32分钟 18秒) ---
+
+--- [RALPH] Iteration 12 started: US-009 at 2026-05-19 16:40 ---
+
+--- [RALPH] Iteration 13 started: US-009 at 2026-05-19 17:10 ---
