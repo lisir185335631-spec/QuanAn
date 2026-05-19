@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-18T20:10:00",
+  "last_updated": "2026-05-19T11:42:00",
   "items": [
     {
       "id": "TD-001",
@@ -1771,10 +1771,14 @@
       "category": "design-drift",
       "title": "MyTopics.tsx text-amber-400 D4=B 颜色约束 amber hardcode",
       "description": "apps/web/src/pages/modules/MyTopics.tsx L332: text-amber-400 hardcode · D4=B 颜色严锁禁 amber · 但为 pre-existing(PRD-21 前已存在 · git log 确认) · PRD-21 未引入",
-      "scope": ["apps/web/src/pages/modules/MyTopics.tsx"],
+      "scope": [
+        "apps/web/src/pages/modules/MyTopics.tsx"
+      ],
       "impact": "Low: pre-existing · PRD-21 未新增 · 仅通过 /goal-verify §0 对账发现",
       "severity": "Low",
-      "categories": ["design-drift"],
+      "categories": [
+        "design-drift"
+      ],
       "created_in_prd": "PRD-21",
       "detected_in_prd": "PRD-21",
       "detected_in_story": "US-008 (/goal-verify §0 codebase-mapper 对账)",
@@ -1789,16 +1793,47 @@
       "category": "design-drift",
       "title": "apps/web/src/App.tsx 死代码 stale 嵌套目录 apps/web/apps/web/ 残留",
       "description": "gsd-map-codebase 扫描发现: apps/web/apps/web/ 嵌套同名目录仍存在 · 与 TD-086 App.tsx 死代码同为 PRD-21 /goal-verify §0 发现 · 增加 mental overhead",
-      "scope": ["apps/web/apps/web/"],
+      "scope": [
+        "apps/web/apps/web/"
+      ],
       "impact": "Low: 不影响 runtime · 但 gsd-map-codebase 对账时混淆文件树分析",
       "severity": "Low",
-      "categories": ["design-drift", "cleanup"],
+      "categories": [
+        "design-drift",
+        "cleanup"
+      ],
       "created_in_prd": "PRD-21",
       "detected_in_prd": "PRD-21",
       "detected_in_story": "US-008 (/goal-verify §0 codebase-mapper)",
       "fix_by": "PRD-22",
       "status": "open",
       "fix_hint": "rm -rf apps/web/apps/ 后 pnpm typecheck 确认 0 errors",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-089",
+      "category": "spec-self-inconsistency",
+      "title": "HOT_ELEMENTS 实际 23 keys vs spec §Ⅹ.2 描述 '22 元素'",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-001 (PRD-22)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "apps/web/src/lib/constants/elements.ts 4 组实际 23 keys(classic 11 + emotion 2 + content 6 + conversion 4)· spec §Ⅹ.2 line 2793 自注释 '11+2+6+4 = 23 · 实际去重后约 22 个' · 但 4 组之间无 key 重复(list/challenge 跨 content + SCRIPT_TYPES 但不同语义不同 const)",
+      "root_cause": "aiipznt-spec.md §Ⅹ.2 描述错误 · spec 标 '22 元素' 但提供的数据是 23 keys",
+      "scheduled_fix_in": "PRD-23+ 如有 LLM 调用需要传 element keys 时再决策(可选 22 去重 vs 23 全保留)· 本 PRD-22 仅视觉精修不涉及",
+      "audit_exemption": "US-001 approve 时豁免 · ralph 忠实复刻 spec 4 组结构 · 不影响 UI 功能(用户体验 4 组 23 button 选择 · 数量不影响交互)",
+      "scope": [
+        "apps/web/src/lib/constants/elements.ts",
+        "aiipznt-spec.md §Ⅹ.2"
+      ],
+      "impact": "Low: 影响视觉密度 (23 vs aiipznt 实测 22 · 1 button 视觉差距) · 但实际 aiipznt DOM 也按 spec 数据渲染 · pixel diff 影响可控",
+      "categories": [
+        "spec-fidelity",
+        "design-fidelity"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-001 (Opus audit · foundation 深审)",
       "resolved_in_prd": null,
       "resolved_at": null
     }
