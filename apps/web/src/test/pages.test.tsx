@@ -182,14 +182,14 @@ describe('Tool pages render', () => {
 });
 
 describe('Module pages render', () => {
-  it('Diagnosis renders h1 heading', () => {
+  it('Diagnosis renders h1 字面锁 "7 维度 IP 诊断报告" (PRD-23 US-001 完整化)', () => {
     render(<Diagnosis />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 诊断');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('7 维度 IP 诊断报告');
   });
 
-  it('Diagnosis shows empty state when no data', () => {
+  it('Diagnosis shows 8-step wizard (Step 1 · 基本信息)', () => {
     render(<Diagnosis />);
-    expect(screen.getByText('暂无诊断记录 · 请先完成 IP 诊断问卷')).toBeInTheDocument();
+    expect(screen.getByText('步骤 1 / 8 · 基本信息')).toBeInTheDocument();
   });
 
   it('Evolution renders h1 heading', () => {

@@ -31,6 +31,11 @@ export function getToolLsKey(accountId: number, toolKey: string, suffix: string)
   return `${LS_PREFIX}_${accountId}_tool_${toolKey}_${suffix}`;
 }
 
+/** General-purpose key: aiip_memory_acc_{accountId}_{suffix} */
+export function getLsKey(accountId: number, suffix: string): string {
+  return `${LS_PREFIX}_${accountId}_${suffix}`;
+}
+
 /** Prefix covering all keys for a given account */
 export function accountLsPrefix(accountId: number): string {
   return `${LS_PREFIX}_${accountId}_`;
