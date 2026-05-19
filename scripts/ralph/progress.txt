@@ -5,6 +5,43 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-19 22:55 - US-001 [PRD-23] high · /diagnosis 8步问卷向导 + 16自评项 + 7维度诊断报告(stub)
+- 实现了什么:
+  - apps/web/src/lib/constants/diagnosis.ts: 新建 · DIAGNOSIS_DIMENSIONS_8(8维度·19 checkboxes·1:1 spec§8.5.1字面锁) + DIAGNOSIS_STAGES_4(4阶段radio) + REPORT_SUGGESTIONS_7 + H1/subtitle常量
+  - apps/web/src/lib/ls-namespace.ts: 追加getLsKey()通用key builder(多账号隔离LD-009)
+  - apps/web/src/components/diagnosis/DiagnosisStepCard.tsx: 新建 · D-226通用step组件 · controlled props · Step1特殊(行业/产品 input + 4 stage radio) · Step2-8 checkbox列+notes textarea · 上/下一步button(isLast→"生成诊断报告")
+  - apps/web/src/pages/modules/Diagnosis.tsx: 完整重写 · useState 8step状态管理 · localStorage save(getLsKey acc_前缀·LD-009) · Step8后渲染stub 7维度健康度报告(60-95分+改进建议) + 导出PDF button(toast提示PRD-25+)
+  - apps/web/src/lib/constants/__tests__/diagnosis.test.ts: 15 tests(8dimensions/19checkboxes/4stages字面/H1/subtitle)
+  - apps/web/src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx: 11 tests(props渲染/checkbox toggle/prev/next/isLast CTA变化/Step1特殊表单)
+  - apps/web/src/pages/__tests__/Diagnosis.test.tsx: 11 tests(H1字面/8step切换/checkbox多选toggle/Step8报告7维度/localStorage save/导出PDF toast)
+  - apps/web/src/test/pages.test.tsx: D-233同步 · 更新旧Diagnosis测试2条对齐新字面("7维度IP诊断报告" + "步骤1/8·基本信息")
+  - tests/e2e/prd23-diagnosis-flow.spec.ts: 新建 · 6 e2e tests(H1字面/Step1表单/8step切换/checkbox toggle/Step8报告7维度/4阶段radio字面)
+  - tests/e2e/prd23-visual-baseline.spec.ts: 新建 · prd23-diagnosis.png + prd23-diagnosis-report.png baseline写入/tmp/aiipznt-clone-research/screenshots/
+- 验证结果:
+  - AC-12 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-13 vitest: ✅ 243 tests pass(基线206 + 新增37 · ≥219 ✓)
+  - AC-15 visual: ✅ prd23-diagnosis.png + prd23-diagnosis-report.png baseline已写入 · 4/4 pass
+  - AC-16 browser: ✅ http://localhost:5173/diagnosis · H1字面/副标/8step切换/Step1表单/checkbox toggle/Step8报告+改进建议+导出PDF · console无error
+  - TD-HINT: ✅ 无相关scope的open TD
+- 更改的文件:
+  - apps/web/src/lib/constants/diagnosis.ts (新建)
+  - apps/web/src/lib/ls-namespace.ts (追加getLsKey)
+  - apps/web/src/components/diagnosis/DiagnosisStepCard.tsx (新建)
+  - apps/web/src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx (新建)
+  - apps/web/src/lib/constants/__tests__/diagnosis.test.ts (新建)
+  - apps/web/src/pages/modules/Diagnosis.tsx (完整重写)
+  - apps/web/src/pages/__tests__/Diagnosis.test.tsx (新建)
+  - apps/web/src/test/pages.test.tsx (D-233同步更新)
+  - tests/e2e/prd23-diagnosis-flow.spec.ts (新建)
+  - tests/e2e/prd23-visual-baseline.spec.ts (新建)
+- **未来迭代的学习:**
+  - AC说"16 self-eval checkbox"是笔误 · spec§8.5.1实际checkboxes=19(3+3+2+2+3+3+3) · 以spec字面为准
+  - Diagnosis page位于apps/web/src/pages/modules/Diagnosis.tsx(非pages/Diagnosis.tsx) · routing在apps/web/src/router.tsx line 111
+  - getLsKey()已追加到ls-namespace.ts · 通用key builder(aiip_memory_acc_{accountId}_{suffix}) · 新页面优先用此而非getToolLsKey
+  - tests/e2e/是playwright测试正确位置 · apps/web/e2e/是旧PRD17配置的路径(不建议新文件放这里)
+  - 旧Diagnosis test依赖trpc.diagnosis.latest.useQuery · 新实现不再依赖tRPC · 测试mock可简化为只mock ipAccounts.active
+---
+
 ## 2026-05-19 21:00 - US-012 [PRD-22] 收官 · verify-prd-22.sh + /goal-verify + /prd-retro
 - 实现了什么:
   - scripts/verify-prd-22.sh: 新建 · 10 section · 52 checks · chmod +x · 全 PASS · 退出码 0
@@ -3117,3 +3154,5 @@ PRD-23 范围:
 - 继承 PRD-22 inline picker utility(3 件套)
 - 继承 PRD-22 visual baseline infra(13 page)
 ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-19 22:36 ---
