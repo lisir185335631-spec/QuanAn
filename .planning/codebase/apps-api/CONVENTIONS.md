@@ -75,8 +75,8 @@ import { adminTrpcRouter } from '@/trpc/trpc-admin';
 
 **Path Aliases:**
 - `@/*` → `apps/api/src/*`(`apps/api/tsconfig.json:9`)
-- `@quanqn/schemas` → `packages/schemas/src`(workspace)
-- `@quanqn/ui/admin/pdf` → `packages/ui/src/admin/PdfBillTemplate.tsx`(`apps/api/tsconfig.json:12`)
+- `@quanan/schemas` → `packages/schemas/src`(workspace)
+- `@quanan/ui/admin/pdf` → `packages/ui/src/admin/PdfBillTemplate.tsx`(`apps/api/tsconfig.json:12`)
 
 ## Error Handling
 

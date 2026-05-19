@@ -1,5 +1,5 @@
 /**
- * QuanQn · 23 文案公式 — PRD-9 US-002
+ * QuanAn · 23 文案公式 — PRD-9 US-002
  * CopywritingAgent / BoomGenerator 引用公式做 few-shot
  */
 

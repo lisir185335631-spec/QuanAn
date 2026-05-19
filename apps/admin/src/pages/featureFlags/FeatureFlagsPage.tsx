@@ -12,8 +12,8 @@ import { lazy, Suspense, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { adminTrpc } from '../../lib/admin-client';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 
 // ── Lazy Monaco (复用 PRD-13 US-007 pattern) ─────────────────────────────────
 // AC-8: EditConfigModal Monaco JSON editor(lazy import)

@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-003 AC-13
+ * QuanAn · PRD-8 US-003 AC-13
  * EvolutionAgent LLM Judge — 1 golden case
  * AC-13: EvolutionAgent reasoning 质量评分 ≥ 4.0/5 (≥ 8/10 on 0-10 scale)
  *

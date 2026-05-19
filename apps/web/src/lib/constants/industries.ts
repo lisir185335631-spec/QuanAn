@@ -1,5 +1,5 @@
 /**
- * QuanQn · 56 行业常量 (5 大类) — Step 1 字面锁
+ * QuanAn · 56 行业常量 (5 大类) — Step 1 字面锁
  * 命名锁: STEP1_TABS / STEP1_INDUSTRIES_56 / STEP1_SEARCH_PLACEHOLDER / STEP1_CTA_LABEL / STEP1_CUSTOM_*
  * D1=A 红线: 所有字面量 1:1 来源 aiipznt-spec.md §7.1 + aiipznt-deep-dom-dump.md §2.2, 禁止改写
  */

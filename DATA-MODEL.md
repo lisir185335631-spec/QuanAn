@@ -1,4 +1,4 @@
-# QuanQn · 数据模型(DATA-MODEL.md)
+# QuanAn · 数据模型(DATA-MODEL.md)
 
 > **版本** · v0.2(2026-05-06 创建 · 2026-05-07 v0.2 修订:§13 admin 13 表 schema + RLS + 索引)
 > **角色** · 把 [ARCHITECTURE.md §3](ARCHITECTURE.md) 的 ER 图展开成完整 Prisma schema · RLS 策略 · 索引 · 迁移
@@ -1228,7 +1228,7 @@ model Asset {
 
 ## §6 诊断 + 进化(4 张 · 反馈飞轮核心)
 
-> 这 4 张表共同支撑 **反馈飞轮 5 阶段闭环**(ADR-008)· 是 QuanQn 最有创意的产品机制的物理载体。
+> 这 4 张表共同支撑 **反馈飞轮 5 阶段闭环**(ADR-008)· 是 QuanAn 最有创意的产品机制的物理载体。
 > 关联 · ADR-008 + ADR-009 + ADR-014 + LD-008 · 详见 [ARCHITECTURE.md §5.4](ARCHITECTURE.md)
 
 ### §6.1 DiagnosisReport · 8 维度 IP 诊断

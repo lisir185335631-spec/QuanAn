@@ -1,6 +1,6 @@
 // PRD-11 US-014 · PDF Bill Template — server-side only (@react-pdf/renderer)
 // Used by apps/api/src/services/admin/cost/pdf-bill.service.ts
-// DO NOT import this in browser bundles (@quanqn/ui/admin/pdf export path is server-only)
+// DO NOT import this in browser bundles (@quanan/ui/admin/pdf export path is server-only)
 
 import {
   Document,
@@ -254,7 +254,7 @@ export function PdfBillTemplate({ data }: { data: PdfBillData }) {
       <Page size="A4" style={s.page}>
         {/* Logo / company header */}
         <View style={s.headerBlock}>
-          <Text style={s.logo}>QuanQn</Text>
+          <Text style={s.logo}>QuanAn</Text>
           <Text style={s.logoSub}>IP 起号 · 内容创作 SaaS · Admin 内部使用</Text>
           <Text style={s.title}>月度成本账单 · {data.month}</Text>
           <Text style={s.subtitle}>系统生成 · 仅供内部财务核对</Text>

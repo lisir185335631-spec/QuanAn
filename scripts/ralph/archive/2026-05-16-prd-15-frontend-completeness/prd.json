@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn 主应用前端完整化(A-Slim · P9.5)",
+  "project": "QuanAn 主应用前端完整化(A-Slim · P9.5)",
   "branchName": "ralph/prd-15-frontend-completeness",
   "description": "PRD-15 · 6 stub 工具补完 + 2 衍生页新建 + mock data seed + 集成测试 · 让 14 PRD audit 全过升级为本地 dev demo 可演示",
   "userStories": [
@@ -10,7 +10,7 @@
       "acceptanceCriteria": [
         "prisma/seed.ts 加 seedIndustries() 函数 · 插入 56 个行业(参 ui/aiipznt_spec.md §Ⅴ 实测原版下拉数据) · 每条 {key,label,category,order} · INSERT 入 industries 表(若不存在则新建 prisma model Industry)",
         "seedMockIpAccounts() 加 5 个 mock IP 账号 · 覆盖 4 用户路径 + 1 demo: account1(AI 创业者小张 · ip-creator) / account2(OPC 经营者老王 · opc-founder) / account3(实体店主陈姐 · traditional-transform) / account4(MCN 矩阵号 · mcn-manager) / account5(Demo 演示号 · demo)",
-        "apps/api/src/middleware/auth.ts 加 DEV_OAUTH_MOCK env flag · NODE_ENV=development && DEV_OAUTH_MOCK=true 时 auth.me 返 mock user {id:1, email:'dev@quanqn.local', role:'user'} + 自动绑定 5 mock IP 账号 · 不走真 OAuth",
+        "apps/api/src/middleware/auth.ts 加 DEV_OAUTH_MOCK env flag · NODE_ENV=development && DEV_OAUTH_MOCK=true 时 auth.me 返 mock user {id:1, email:'dev@quanan.local', role:'user'} + 自动绑定 5 mock IP 账号 · 不走真 OAuth",
         "apps/api/src/trpc/routers/ipAccounts.ts list procedure brownfield · NODE_ENV=development 时若 user 没账号自动绑 5 mock 账号",
         "apps/web/src/components/AccountSwitcher.tsx 头部账号切换器 · 列出 5 mock 账号 · 切换走 useActiveAccount.switchTo(accountId) 整页刷新(§11.5 PRD-3 沉淀)",
         "apps/web/src/components/IndustryDropdown.tsx 56 行业下拉组件 · 复用到 9 step + 6 工具 page · 按 category 分组显示",

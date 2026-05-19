@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { ElementsMultiSelect } from './ElementsMultiSelect';
 import { ScriptTypeSelect } from './ScriptTypeSelect';
 
-import type { HotElementKey, ScriptTypeKey } from '@quanqn/schemas/specialist-io';
+import type { HotElementKey, ScriptTypeKey } from '@quanan/schemas/specialist-io';
 import type { FieldError } from 'react-hook-form';
 import type { ZodTypeAny } from 'zod';
 

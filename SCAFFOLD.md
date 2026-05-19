@@ -1,4 +1,4 @@
-# QuanQn · src/ 脚手架索引(SCAFFOLD.md)
+# QuanAn · src/ 脚手架索引(SCAFFOLD.md)
 
 > **版本** · v0.2(2026-05-06 创建 · 2026-05-07 v0.2 修订:§A monorepo 强制改造)
 > **角色** · src/ 代码工程的"目录索引"+ 文件清单 · 让 Ralph 在 Coding 3.0 P0 阶段立即可用
@@ -28,7 +28,7 @@
 ## 完整目录树
 
 ```
-QuanQn/
+QuanAn/
 ├── package.json                    # 依赖锁定 · 跟 AGENTS §2 一致
 ├── pnpm-workspace.yaml             # workspace(可选)
 ├── tsconfig.json                   # strict + noUncheckedIndexedAccess
@@ -247,14 +247,14 @@ QuanQn/
 ### §A.1 目标 workspace 结构
 
 ```
-QuanQn/(monorepo)
+QuanAn/(monorepo)
 ├── pnpm-workspace.yaml             ★ 强制(不再可选)
 ├── package.json                    根 package · 仅 devDeps + scripts
 ├── turbo.json                      Turborepo 配置(可选 · 加速 build)
 ├── tsconfig.base.json              共享 tsc 配置
 │
 ├── apps/
-│   ├── web/                        主应用 SPA · www.quanqn.com
+│   ├── web/                        主应用 SPA · www.quanan.com
 │   │   ├── src/
 │   │   │   ├── pages/              33 路由(9 步 + 14 工具 + 6 新 + 4 辅助)
 │   │   │   ├── components/
@@ -264,11 +264,11 @@ QuanQn/(monorepo)
 │   │   ├── public/manifest.json    PWA
 │   │   ├── index.html
 │   │   ├── vite.config.ts          build target: dist-web
-│   │   ├── tailwind.config.js      引用 @quanqn/ui base
+│   │   ├── tailwind.config.js      引用 @quanan/ui base
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   ├── admin/                  ★ 新增 · 管理后台 SPA · admin.quanqn.com
+│   ├── admin/                  ★ 新增 · 管理后台 SPA · admin.quanan.com
 │   │   ├── src/
 │   │   │   ├── pages/              13 路由组(对应 ADMIN §6.3 16 业务管理域)
 │   │   │   │   ├── ops/Dashboard.tsx      (域 ① NSM)
@@ -293,11 +293,11 @@ QuanQn/(monorepo)
 │   │   ├── public/
 │   │   ├── index.html
 │   │   ├── vite.config.ts          build target: dist-admin
-│   │   ├── tailwind.config.js      引用 @quanqn/ui base + admin
+│   │   ├── tailwind.config.js      引用 @quanan/ui base + admin
 │   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   └── api/                        后端服务 · api.quanqn.com
+│   └── api/                        后端服务 · api.quanan.com
 │       ├── src/
 │       │   ├── trpc/
 │       │   │   ├── context.ts
@@ -363,7 +363,7 @@ QuanQn/(monorepo)
 │   │   │   │   ├── deep-learn-review.schema.ts
 │   │   │   │   └── ...(13 业务管理域 schema)
 │   │   │   └── index.ts            (barrel)
-│   │   └── package.json            "@quanqn/schemas"
+│   │   └── package.json            "@quanan/schemas"
 │   │
 │   ├── ui/                         Aurelian Dark + admin 密度
 │   │   ├── src/
@@ -383,14 +383,14 @@ QuanQn/(monorepo)
 │   │   │   │   ├── AdminApprovalModal.tsx
 │   │   │   │   └── charts/              (Recharts 封装 · 折线/漏斗/饼图)
 │   │   │   └── index.ts
-│   │   └── package.json            "@quanqn/ui"
+│   │   └── package.json            "@quanan/ui"
 │   │
 │   └── clients/                    tRPC client config
 │       ├── src/
 │       │   ├── app-client.ts       (主应用调 appRouter)
 │       │   ├── admin-client.ts     ★ 新增(admin SPA 调 adminRouter)
 │       │   └── trace.ts            (trace_id 协议 · 三方共享)
-│       └── package.json            "@quanqn/clients"
+│       └── package.json            "@quanan/clients"
 │
 ├── prisma/                         共享 schema(主应用 + admin 共用)
 │   ├── schema.prisma               (15 业务实体 + 3 运维表 + ★ 13 admin 新表 · 详 DATA-MODEL §11)
@@ -429,20 +429,20 @@ packages:
 
 ```json
 {
-  "name": "quanqn",
+  "name": "quanan",
   "private": true,
   "scripts": {
-    "dev:web": "pnpm --filter @quanqn/web dev",
-    "dev:admin": "pnpm --filter @quanqn/admin dev",
-    "dev:api": "pnpm --filter @quanqn/api dev",
-    "build:web": "pnpm --filter @quanqn/web build",
-    "build:admin": "pnpm --filter @quanqn/admin build",
-    "build:api": "pnpm --filter @quanqn/api build",
+    "dev:web": "pnpm --filter @quanan/web dev",
+    "dev:admin": "pnpm --filter @quanan/admin dev",
+    "dev:api": "pnpm --filter @quanan/api dev",
+    "build:web": "pnpm --filter @quanan/web build",
+    "build:admin": "pnpm --filter @quanan/admin build",
+    "build:api": "pnpm --filter @quanan/api build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "audit:redlines": "bash scripts/audit-redlines.sh",
-    "db:migrate": "pnpm --filter @quanqn/api db:migrate",
-    "db:seed": "pnpm --filter @quanqn/api db:seed"
+    "db:migrate": "pnpm --filter @quanan/api db:migrate",
+    "db:seed": "pnpm --filter @quanan/api db:seed"
   },
   "devDependencies": {
     "typescript": "^5.4.0",
@@ -462,12 +462,12 @@ packages:
     "moduleResolution": "bundler",
     "target": "ES2022",
     "paths": {
-      "@quanqn/schemas": ["./packages/schemas/src"],
-      "@quanqn/schemas/*": ["./packages/schemas/src/*"],
-      "@quanqn/ui": ["./packages/ui/src"],
-      "@quanqn/ui/*": ["./packages/ui/src/*"],
-      "@quanqn/clients": ["./packages/clients/src"],
-      "@quanqn/clients/*": ["./packages/clients/src/*"]
+      "@quanan/schemas": ["./packages/schemas/src"],
+      "@quanan/schemas/*": ["./packages/schemas/src/*"],
+      "@quanan/ui": ["./packages/ui/src"],
+      "@quanan/ui/*": ["./packages/ui/src/*"],
+      "@quanan/clients": ["./packages/clients/src"],
+      "@quanan/clients/*": ["./packages/clients/src/*"]
     }
   }
 }
@@ -477,7 +477,7 @@ packages:
 
 ```
 v0.1 现状:
-QuanQn/
+QuanAn/
 ├── src/server/         ← 移到 apps/api/src/
 ├── src/lib/            ← 拆分:schemas → packages/schemas · ui → packages/ui · 其他 → apps/api 或 apps/web
 ├── prisma/             ← 不动 · 留根目录

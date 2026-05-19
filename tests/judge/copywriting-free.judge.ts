@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-012 · CopywritingAgent free mode LLM Judge
+ * QuanAn · US-012 · CopywritingAgent free mode LLM Judge
  * AC-1: 2 golden cases — 医美自媒体(熬夜皮肤好) + 健身教练(30天减脂)
  * criteria: markdown 含 hook + 干货 + cta + 0 编造数据
  */

@@ -50,7 +50,7 @@
 
 ### §0.4 0 Reject · 0 PATH-B 触发 · 历史最佳
 
-PRD-12 是 QuanQn 项目**首个 0 reject + 0 PATH-B 触发 + 100% 严格一轮通过率**的 PRD:
+PRD-12 是 QuanAn 项目**首个 0 reject + 0 PATH-B 触发 + 100% 严格一轮通过率**的 PRD:
 - ❌ 0 Validator 通过失败导致 audit-gate reject
 - ❌ 0 Sonnet Validator agent timeout 触发 PATH-B 兜底
 - ❌ 0 max retry 5 BLOCKED
@@ -602,7 +602,7 @@ PRD-11 retro 预测的其他指标 vs 实际:
 - **原因** · PRD-12 US-004 + US-009 主动抽象 _createXxxInTx 单点函数 · LD-A-5 类硬闸门 grep 严格 1 命中 · 应自动 catch
 - **建议 diff**:
   ```diff
-  + ##### 2.6.16 单点函数抽象检查(QuanQn PRD-12 retro M-1 固化 · 2026-05-14 新增)
+  + ##### 2.6.16 单点函数抽象检查(QuanAn PRD-12 retro M-1 固化 · 2026-05-14 新增)
   +
   + 扫 prd.json 每个 high/foundation risk story · 检查是否需要单点函数抽象。
   +
@@ -618,7 +618,7 @@ PRD-11 retro 预测的其他指标 vs 实际:
   + **建议输出格式**:
   + "US-XXX 触发单点函数抽象阈值 · 建议在 files_to_create 加 `_create<Model>InTx`(在 approve procedure 内部)· 让 approve + batchAction.approve 2 caller delegate to single function · LD-A-5 grep 验证更严"
   +
-  + **ROI**(基于 QuanQn PRD-12 实证):US-004 + US-009 主动抽象 _createXxxInTx · 每 PRD 防 1-2 个 LD-A-5 类 grep 漏判
+  + **ROI**(基于 QuanAn PRD-12 实证):US-004 + US-009 主动抽象 _createXxxInTx · 每 PRD 防 1-2 个 LD-A-5 类 grep 漏判
   ```
 - **人工 apply 流程**:
   1. 用户 review 该 diff
@@ -653,7 +653,7 @@ PRD-11 retro 预测的其他指标 vs 实际:
   +     # defended_count += 1 · last_defended_prd / last_defended_at 更新
   +     # 写回
   ```
-- **ROI**(基于 QuanQn PRD-11/12 实证):跨 PRD 评估反例库 ROI · 防 anti_patterns 段膨胀 · 长期维护反例库价值
+- **ROI**(基于 QuanAn PRD-11/12 实证):跨 PRD 评估反例库 ROI · 防 anti_patterns 段膨胀 · 长期维护反例库价值
 
 ### Diff-6(可选) · plan-check 2.6.14 升级 · ERROR 时自动输出拆分建议(M-3 固化)
 
@@ -661,7 +661,7 @@ PRD-11 retro 预测的其他指标 vs 实际:
 - **原因** · PRD-12 4 子 UI US 是人工拆分 · plan-check 仅 WARN/ERROR · 不给具体建议 · 浪费 prd skill 转换时间
 - **建议 diff**:
   ```diff
-  + ##### 2.6.14 大 UI Story 拆分检查 · 自动建议升级(QuanQn PRD-12 retro M-3 · 2026-05-14)
+  + ##### 2.6.14 大 UI Story 拆分检查 · 自动建议升级(QuanAn PRD-12 retro M-3 · 2026-05-14)
   +
   + 当 plan-check 2.6.14 ERROR 时 · 自动输出拆分建议(基于 AC 关键词分类):
   +
@@ -670,7 +670,7 @@ PRD-11 retro 预测的其他指标 vs 实际:
   + - AC 含 "Dialog" / "Approval trigger" → 建议拆为 `US-XXXc Dialog + Approval`(3 files)
   + - AC 含 "Monaco 编辑器" → 建议拆为 `US-XXXd Monaco 编辑器 + Diff`(4-5 files · 单独 dep)
   +
-  + **ROI**(基于 QuanQn PRD-11/12 实证):每个大 UI 拆分提前 + 自动建议 · 节省 prd skill 转换 ~10-15 min/PRD
+  + **ROI**(基于 QuanAn PRD-11/12 实证):每个大 UI 拆分提前 + 自动建议 · 节省 prd skill 转换 ~10-15 min/PRD
   ```
 
 ### §14.1 Skill 升级建议最重要的 1 个 Diff 标题
@@ -768,7 +768,7 @@ PRD-9 → PRD-10 → PRD-11 → **PRD-12** 四连胜:
 
 ### §16.5 PRD-12 是分水岭
 
-PRD-12 是 QuanQn 项目流程成熟度的分水岭:
+PRD-12 是 QuanAn 项目流程成熟度的分水岭:
 - **前 9 个 PRD**(PRD-1~9)· 探索期 · PRD-9 reject 7 次拉响警报
 - **PRD-10/11**(P9.0/P9.1)· 框架沉淀期 · 86% / 91% 通过率
 - **★ PRD-12**(P9.2)· **机制成熟期** · 100% 通过率 + 3 Skill Diff 首战告捷

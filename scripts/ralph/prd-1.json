@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-1-p0-foundation",
   "description": "PRD-1 P0 基础设施 · 2 周 · risk=foundation · 7 US · 19 测试用例 · 派生 ARCHITECTURE.md §9.2 + AGENTS.md §1-§9 + SCAFFOLD.md §A · 锁定 monorepo / Aurelian Dark / Agent 抽象 / OAuth(2 阶段)",
   "userStories": [
@@ -10,7 +10,7 @@
       "acceptanceCriteria": [
         "pnpm typecheck (root) 退出码 0 · apps/web + apps/api + packages/* 全 typecheck 通过",
         "无 'Cannot find module @/...' 残留(老 src/ 风格 import 全部改为 monorepo 风格)",
-        "packages/schemas / ui / clients 的 @quanqn/* 路径解析正确(tsconfig paths · vite alias · 双轨同步)",
+        "packages/schemas / ui / clients 的 @quanan/* 路径解析正确(tsconfig paths · vite alias · 双轨同步)",
         "占位 .gitkeep 不删 · 注释保留(说明该目录 P9.0 / PRD-N 何时填)",
         "pnpm install 增量 < 60s(已有 lockfile)· pnpm typecheck 全 workspace < 30s",
         "Typecheck passes",
@@ -50,7 +50,7 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-032",
           "lesson": "TS strict 模式下不允许 any · 必须 zod schema / generic / interface 显式定义",
           "antipattern": "❌ 用 any 绕过 typecheck",
@@ -61,12 +61,12 @@
     {
       "id": "US-002",
       "title": "Vite + React 18 + TS 主应用启动(apps/web)",
-      "description": "As IP 起号者 · I want 在 localhost:5173 看到 QuanQn 首页(占位 · 文字'QuanQn · 工程骨架就绪')· So that NSM 9 步主向导前置工程基础就位",
+      "description": "As IP 起号者 · I want 在 localhost:5173 看到 QuanAn 首页(占位 · 文字'QuanAn · 工程骨架就绪')· So that NSM 9 步主向导前置工程基础就位",
       "acceptanceCriteria": [
         "pnpm dev:web 启动 vite dev server · 监听 5173 · 0 error",
-        "浏览器访问 http://localhost:5173 · 页面显示 'QuanQn · 工程骨架就绪' 占位文字",
+        "浏览器访问 http://localhost:5173 · 页面显示 'QuanAn · 工程骨架就绪' 占位文字",
         "vite cold start < 3s · HMR < 1s(改 main.tsx 浏览器 < 1s 反映)",
-        "pnpm --filter @quanqn/web build 退出码 0 · 生成 dist/ · 占位 main.js < 5KB(无 React 引入时)",
+        "pnpm --filter @quanan/web build 退出码 0 · 生成 dist/ · 占位 main.js < 5KB(无 React 引入时)",
         "端口 5173 被占时 vite 自动尝试 5174 / 5175(vite 默认行为)· 不静默失败",
         "vite proxy 配置 · /api/trpc → http://localhost:3000(为 US-003 准备)",
         "Typecheck passes",
@@ -91,7 +91,7 @@
         "apps/web/vite.config.ts",
         "apps/web/package.json"
       ],
-      "test_command": "pnpm --filter @quanqn/web typecheck && pnpm --filter @quanqn/web build",
+      "test_command": "pnpm --filter @quanan/web typecheck && pnpm --filter @quanan/web build",
       "size_hint": "small",
       "risk_level": "foundation",
       "anti_patterns": []
@@ -133,19 +133,19 @@
         "apps/api/src/index.ts",
         "apps/api/package.json"
       ],
-      "test_command": "pnpm --filter @quanqn/api typecheck && pnpm --filter @quanqn/api test",
+      "test_command": "pnpm --filter @quanan/api typecheck && pnpm --filter @quanan/api test",
       "size_hint": "medium",
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008",
           "lesson": "所有 query/mutate 必须按 account_id 过滤(per-tenant 隔离)· 即便 LD-009 全局表例外也要明确",
           "antipattern": "❌ prisma.entity.findMany() 不带 where account_id",
           "correct": "✅ prisma.entity.findMany({ where: { accountId: ctx.activeAccountId } })"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-009",
           "lesson": "RLS 策略 12 业务表强制开 · admin 13 表 DISABLE · 不允许 prisma.$executeRaw 绕过 RLS",
           "antipattern": "❌ prisma.$executeRaw('SELECT * FROM step_data') 跨 account 查",
@@ -185,7 +185,7 @@
         "apps/web/src/main.tsx",
         "apps/web/src/styles/globals.css"
       ],
-      "test_command": "pnpm --filter @quanqn/web typecheck && pnpm --filter @quanqn/web test",
+      "test_command": "pnpm --filter @quanan/web typecheck && pnpm --filter @quanan/web test",
       "size_hint": "small",
       "risk_level": "medium",
       "anti_patterns": []
@@ -198,7 +198,7 @@
         "shadcn 12 基础组件 copy-paste 到 packages/ui/src/base/*(button / input / dropdown-menu / avatar / dialog / sheet / separator / scroll-area / toast / tooltip / tabs / select)",
         "packages/ui/src/base/index.ts 聚合 export 12 组件",
         "apps/web/src/components/Header.tsx 单文件 · 含 3 dropdown(用户头像 / IP 账号 / 工具入口)· 内联 mock 数据 · 不拆 4 子组件(简化交付)",
-        "Header 用户头像 dropdown 显示 mock(name='Mock User' / email='mock@quanqn.dev' / 占位 avatar) + logout 入口",
+        "Header 用户头像 dropdown 显示 mock(name='Mock User' / email='mock@quanan.dev' / 占位 avatar) + logout 入口",
         "Header IP 账号 dropdown 显示 mock 列表 2-3 个示例账号 + '+ 新建账号' 入口",
         "Header 工具入口 dropdown 显示 14 工具 + 6 新模块文字占位(链接占位 # · 不导航)",
         "apps/web/src/App.tsx 引 Header 替换占位 h1",
@@ -234,7 +234,7 @@
         "packages/ui/src/base/index.ts",
         "packages/ui/package.json"
       ],
-      "test_command": "pnpm --filter @quanqn/web typecheck",
+      "test_command": "pnpm --filter @quanan/web typecheck",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": []
@@ -294,12 +294,12 @@
         "apps/web/src/components/UserDropdown.tsx",
         ".env.example"
       ],
-      "test_command": "pnpm --filter @quanqn/api typecheck && pnpm --filter @quanqn/api test && pnpm test:e2e -- oauth",
+      "test_command": "pnpm --filter @quanan/api typecheck && pnpm --filter @quanan/api test && pnpm test:e2e -- oauth",
       "size_hint": "large",
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-026",
           "lesson": "主应用 session cookie 跟 admin session 必须独立 · 不共享 Redis key prefix",
           "antipattern": "❌ Redis key 'session:<id>' · 主+admin 共用",
@@ -351,26 +351,26 @@
         "apps/api/src/trpc/context.ts",
         "apps/api/src/server.ts"
       ],
-      "test_command": "pnpm --filter @quanqn/api typecheck && pnpm --filter @quanqn/api test",
+      "test_command": "pnpm --filter @quanan/api typecheck && pnpm --filter @quanan/api test",
       "size_hint": "medium",
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001",
           "lesson": "Specialist execute() 必须经 LLMGateway · 不能直调 anthropic/openai SDK",
           "antipattern": "❌ Specialist execute() 内 anthropic.messages.create / openai.chat.completions",
           "correct": "✅ this.gateway.complete(tier, messages) · LLMGateway 统一限流/降级/计费/审计"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-002",
           "lesson": "Specialist 是 95% Workflow · 单次 LLM 调用 + zod 校验 + 单次返回 · 多轮 Agent 必须独立成 L5",
           "antipattern": "❌ Specialist execute() 内 while/for 循环调 LLM(伪 Agent 行为)",
           "correct": "✅ Specialist 单次执行 · 多轮交互留 VoiceChat / Evolution / DailyTask"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-003",
           "lesson": "应用代码不允许硬编码 model 名 · 用 model_tier 枚举 · 由 LLMGateway 决定具体 model",
           "antipattern": "❌ const model = 'claude-sonnet-4-6'",

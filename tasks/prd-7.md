@@ -282,7 +282,7 @@ const imageGenJobResultError = z.object({
 export const imageGenJobResult = z.union([imageGenJobResultSuccess, imageGenJobResultError]);
 ```
 
-**变更**: `apps/api/src/workers/image-gen/index.ts` 删除 inline TS interface(line 14-26)· 改 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io'(US-004 落地)。worker 内部仍用 z.infer 推导类型 · 但 runtime 校验走 packages/schemas 的 zod schema(if needed)。
+**变更**: `apps/api/src/workers/image-gen/index.ts` 删除 inline TS interface(line 14-26)· 改 import { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io'(US-004 落地)。worker 内部仍用 z.infer 推导类型 · 但 runtime 校验走 packages/schemas 的 zod schema(if needed)。
 
 #### §1.0.6 SoT 一致性验证规则(US-001 验收硬要求)
 
@@ -299,7 +299,7 @@ grep -E "z\.object\(\{.*shotList" apps/api/src/trpc/routers/videoProduction.ts
 # 期望: 0 命中(已删除 inline output · 透传 specialists 类型)
 
 # 验 3: router inline import 自 packages/schemas
-grep "from '@quanqn/schemas/specialist-io'" apps/api/src/trpc/routers/{videoProduction,acquisitionVideo,aiVideo,copywriting}.ts
+grep "from '@quanan/schemas/specialist-io'" apps/api/src/trpc/routers/{videoProduction,acquisitionVideo,aiVideo,copywriting}.ts
 # 期望: 4 处全命中
 
 # 验 4: packages/schemas 删除 legacy acquisitionCopywritingInput
@@ -307,7 +307,7 @@ grep -E "^export const acquisitionCopywritingInput\b" packages/schemas/src/speci
 # 期望: 0 命中(legacy 已删除 · 仅保留 acquisitionCopywritingInputSchema 新版)
 
 # 验 5: 5 schema input/output 总字段数一致
-node -e "const s = require('@quanqn/schemas/specialist-io'); console.log(Object.keys(s.videoProductionOutput.shape))" \
+node -e "const s = require('@quanan/schemas/specialist-io'); console.log(Object.keys(s.videoProductionOutput.shape))" \
   && grep -c "^\s*\(scene\|duration\|action\|dialogue\|cameraAngle\|prop\|lighting\|transition\|sfx\|voiceover\|subtitle\|costume\|location\):" \
      apps/api/src/specialists/VideoAgent.ts
 # 期望: 13 字段必填一一对应
@@ -353,21 +353,21 @@ node -e "const s = require('@quanqn/schemas/specialist-io'); console.log(Object.
 - [ ] **AC-6** · apps/api/src/specialists/VideoAgent.ts:
   - StoryboardSceneSchema regex 从 `/^[ -~\t\n\r]+$/` 改为 `/^[\x00-\x7F]+$/`(跟 packages/schemas aiVideoSceneSchema 100% 一致)
   - 其他 schema 字段表已 canonical · 不改字段集 · 仅改 import 路径(从 packages/schemas 导出 type 复用)
-- [ ] **AC-7** · apps/api/src/specialists/CopywritingAgent.ts CopywritingAcquisitionOutputSchema 字段已 canonical · 不动字段集 · 但 `import { acquisitionCopywritingOutput } from '@quanqn/schemas/specialist-io'` 后 type 复用
+- [ ] **AC-7** · apps/api/src/specialists/CopywritingAgent.ts CopywritingAcquisitionOutputSchema 字段已 canonical · 不动字段集 · 但 `import { acquisitionCopywritingOutput } from '@quanan/schemas/specialist-io'` 后 type 复用
 - [ ] **AC-8** · apps/api/src/trpc/routers/videoProduction.ts:
   - 删除 inline `videoProductionInputSchema`(line 27-32)
-  - 改 `import { videoProductionInput } from '@quanqn/schemas/specialist-io'`
+  - 改 `import { videoProductionInput } from '@quanan/schemas/specialist-io'`
   - 用 `videoProductionInput` 替代 inline schema
   - generateStoryboardInput / generateSceneImageInput stub 保留(legacy)
 - [ ] **AC-9** · apps/api/src/trpc/routers/acquisitionVideo.ts:
   - 删除 inline `acquisitionVideoInputSchema`(line 22-27)
-  - 改 `import { acquisitionVideoInput } from '@quanqn/schemas/specialist-io'`
+  - 改 `import { acquisitionVideoInput } from '@quanan/schemas/specialist-io'`
 - [ ] **AC-10** · apps/api/src/trpc/routers/aiVideo.ts:
   - 删除 inline `generateStoryboardInputSchema`(line 22-31)
-  - 改 `import { aiVideoInput } from '@quanqn/schemas/specialist-io'`
+  - 改 `import { aiVideoInput } from '@quanan/schemas/specialist-io'`
 - [ ] **AC-11** · apps/api/src/trpc/routers/copywriting.ts:
   - 删除 inline `acquisitionCopywritingInputSchema`(line 45-50)
-  - 改 `import { acquisitionCopywritingInputSchema } from '@quanqn/schemas/specialist-io'`(canonical)
+  - 改 `import { acquisitionCopywritingInputSchema } from '@quanan/schemas/specialist-io'`(canonical)
   - SCRIPT_TYPE_ENUM / HOT_ELEMENT_ENUM 删除(改用 packages/schemas 的 SCRIPT_TYPE_KEYS_20 + HOT_ELEMENT_KEYS_22)
   - copywritingFreeGenerateInput 同样改 import canonical 版
 - [ ] **AC-12** · 既有 unit test 全过 · 调整 assertion 适配新字段名(如 video-schemas.test.ts / VideoAgent.test.ts / CopywritingAgent.test.ts)
@@ -429,7 +429,7 @@ node -e "const s = require('@quanqn/schemas/specialist-io'); console.log(Object.
 - [ ] **AC-4** · 不删除 24h 内文件(本 PRD 新产物保留)
 - [ ] **AC-5** · 日志输出 `[CLEANUP] Removed N stale files (>{threshold}h) in verify-artifacts/` · 跟 ralph-output.log 风格一致
 - [ ] **AC-6** · 用 mocking 模拟 verify-artifacts/ 目录 · pytest unit 验证 cleanup 逻辑
-- [ ] **AC-7** · 实测 · `cd /Users/return/Desktop/QuanQn && find scripts/ralph/verify-artifacts -type f | wc -l` PRD-7 启动后输出文件数 << 启动前(假设有残留)
+- [ ] **AC-7** · 实测 · `cd /Users/return/Desktop/QuanAn && find scripts/ralph/verify-artifacts -type f | wc -l` PRD-7 启动后输出文件数 << 启动前(假设有残留)
 - [ ] **AC-8** · audit-artifacts.py timestamps 检查不再误报 60h+ 跨度(US-001 audit 时验证)
 
 **files_to_modify**:
@@ -491,25 +491,25 @@ node -e "const s = require('@quanqn/schemas/specialist-io'); console.log(Object.
 
 ---
 
-### **US-004 · TD-021 ImageGen Worker types 改 import @quanqn/schemas**(risk_level=low)
+### **US-004 · TD-021 ImageGen Worker types 改 import @quanan/schemas**(risk_level=low)
 
 > **risk_level** · `low`
 > **priority** · 4
 > **depends_on** · [US-001](因 US-001 改 packages/schemas imageGen.schema.ts · 但本期不改字段 · 顺序 OK)
 
-**描述** · `apps/api/src/workers/image-gen/index.ts` 改 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io' · 删 inline TS interface · 仅保留 IImageGenWorker interface。
+**描述** · `apps/api/src/workers/image-gen/index.ts` 改 import { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io' · 删 inline TS interface · 仅保留 IImageGenWorker interface。
 
 实施步骤:
 1. **apps/api/src/workers/image-gen/index.ts** 删 inline `ImageGenJobPayload` interface(line 13-20)+ inline `ImageGenJobResult` type(line 22-24)
-2. 顶部 `import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io'`
+2. 顶部 `import { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io'`
 3. 保留 `IImageGenWorker` interface(line 28-30)— 这不在 packages/schemas
 4. 保留 `export { DallE3ImageGenWorker, imageGenQueue }`(line 34-35)
-5. 改 dependent 文件 import(若 dall-e-3.ts / queue.ts 内 import 自 ./index 取 ImageGenJobPayload · 改 import 自 @quanqn/schemas/specialist-io)
+5. 改 dependent 文件 import(若 dall-e-3.ts / queue.ts 内 import 自 ./index 取 ImageGenJobPayload · 改 import 自 @quanan/schemas/specialist-io)
 
 **Acceptance Criteria** ·
 
 - [ ] **AC-1** · apps/api/src/workers/image-gen/index.ts 删 inline `interface ImageGenJobPayload`(原 line 13-20)+ `type ImageGenJobResult`(原 line 22-24)
-- [ ] **AC-2** · index.ts 顶部加 `import type { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io';`
+- [ ] **AC-2** · index.ts 顶部加 `import type { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io';`
 - [ ] **AC-3** · 保留 `export interface IImageGenWorker { ... }`(line 28-30)— 不在 packages/schemas
 - [ ] **AC-4** · re-export type for backward compat: `export type { ImageGenJobPayload, ImageGenJobResult };`(让 dall-e-3.ts / queue.ts 仍可 import 自 ./index)
 - [ ] **AC-5** · grep 验证 · `grep -E "^export (interface|type) ImageGenJob" apps/api/src/workers/image-gen/index.ts` 命中 0(只有 IImageGenWorker)
@@ -545,7 +545,7 @@ node -e "const s = require('@quanqn/schemas/specialist-io'); console.log(Object.
 2. **~/.claude/scripts/ralph/sync-to-project.sh**:
    - 加 ralph.py 版本检测 · 项目副本跟全局源版本不一致时自动 sync(prompt 用户确认 / `--force` flag 跳过)
    - 同步时备份 · `scripts/ralph/ralph.py.bak.before-sync-{timestamp}`
-3. **/Users/return/Desktop/QuanQn/.agents/rca/RCA-004-health-check-timeout.md**:
+3. **/Users/return/Desktop/QuanAn/.agents/rca/RCA-004-health-check-timeout.md**:
    - 文档头部 status 从 `本项目已修` 改为 `resolved`
    - §5.2 全局级(留 PRR · 跨项目)章节加完成日期: `2026-05-10 · PRD-7 US-005 落地`
 
@@ -556,20 +556,20 @@ node -e "const s = require('@quanqn/schemas/specialist-io'); console.log(Object.
 - [ ] **AC-3** · ~/.claude/scripts/ralph/sync-to-project.sh 加 `_check_ralph_version()` 函数 · 用 md5sum 比对 ~/.claude/scripts/ralph/ralph.py 跟 <project>/scripts/ralph/ralph.py
 - [ ] **AC-4** · sync-to-project.sh 主流程加判断: 若版本不一致 + `--force` flag · 自动 cp 全局到项目 · 备份旧版到 ralph.py.bak.before-sync-{timestamp}
 - [ ] **AC-5** · sync-to-project.sh 不带 `--force` 时仅 prompt warning(不强制 sync)
-- [ ] **AC-6** · /Users/return/Desktop/QuanQn/.agents/rca/RCA-004-health-check-timeout.md 头部 status 改 `resolved` · §5.2 加 'PRD-7 US-005 落地 · 2026-05-10' 完成标记
-- [ ] **AC-7** · 实测: 跑 `bash ~/.claude/scripts/ralph/sync-to-project.sh /Users/return/Desktop/QuanQn` 不报错 · 项目副本 ralph.py timeout 也是 20
+- [ ] **AC-6** · /Users/return/Desktop/QuanAn/.agents/rca/RCA-004-health-check-timeout.md 头部 status 改 `resolved` · §5.2 加 'PRD-7 US-005 落地 · 2026-05-10' 完成标记
+- [ ] **AC-7** · 实测: 跑 `bash ~/.claude/scripts/ralph/sync-to-project.sh /Users/return/Desktop/QuanAn` 不报错 · 项目副本 ralph.py timeout 也是 20
 - [ ] **AC-8** · grep 验证: `grep "timeout: int = 20" ~/.claude/scripts/ralph/ralph.py` 命中 1
 - [ ] **AC-9** · grep 验证: `grep "timeout: int = 5\b" ~/.claude/scripts/ralph/ralph.py` 命中 0(防止还有其他地方写 5)
 
 **files_to_modify**:
 - `~/.claude/scripts/ralph/ralph.py`(全局 · timeout 改 20)
 - `~/.claude/scripts/ralph/sync-to-project.sh`(全局 · 加版本检测)
-- `/Users/return/Desktop/QuanQn/.agents/rca/RCA-004-health-check-timeout.md`(本项目 · status 改 resolved)
-- `/Users/return/Desktop/QuanQn/scripts/ralph/ralph.py`(项目副本 · 同步全局 · 已经在 PRD-6 临时修过 · 本期再确认)
+- `/Users/return/Desktop/QuanAn/.agents/rca/RCA-004-health-check-timeout.md`(本项目 · status 改 resolved)
+- `/Users/return/Desktop/QuanAn/scripts/ralph/ralph.py`(项目副本 · 同步全局 · 已经在 PRD-6 临时修过 · 本期再确认)
 
 **files_to_create**: 无
 
-**test_command** · `bash ~/.claude/scripts/ralph/sync-to-project.sh --check /Users/return/Desktop/QuanQn` (or similar dry-run)
+**test_command** · `bash ~/.claude/scripts/ralph/sync-to-project.sh --check /Users/return/Desktop/QuanAn` (or similar dry-run)
 
 **anti_patterns**: 无相关 reject 历史
 
@@ -734,7 +734,7 @@ function AccountDropdown() {
 - **FR-1**: 5 schema(videoProductionInput/Output, acquisitionVideoInput/Output, aiVideoInput/Output, acquisitionCopywritingInputSchema/Output, imageGenJobPayload/Result)字段名 + 类型 + boundary + enum + regex 在 packages/schemas + apps/api specialists inline + apps/api routers inline 三处必须 1:1 一致
 - **FR-2**: ralph.py daemon 启动期自动清 verify-artifacts/ 跨 PRD 残留 · mtime > 24h
 - **FR-3**: VALIDATOR.md 含产物清单 · audit-artifacts.py 改进(zero_regression skip / partial FAKE INFO)
-- **FR-4**: ImageGen Worker types 不在 worker 内 inline 定义 · 必须 import 自 @quanqn/schemas/specialist-io
+- **FR-4**: ImageGen Worker types 不在 worker 内 inline 定义 · 必须 import 自 @quanan/schemas/specialist-io
 - **FR-5**: ralph.py timeout 5→20 全局 sync · 各项目副本通过 sync-to-project.sh --force 同步
 - **FR-6**: audit-artifacts.py manifest 缺 exit_code 必硬 reject(非 SKIP)
 - **FR-7**: ralph.py daemon retry=5 时自动 detect [US-XXX] commit · 命中则路径 B 自动触发(写 audit-gate(pending))· 不命中维持 BLOCKED
@@ -808,7 +808,7 @@ function AccountDropdown() {
 - TD-022 关闭(packages/schemas + specialists + routers 三处 5 schema 字段 100% 一致 · audit grep 验证)
 - TD-020 关闭(ralph.py daemon 启动期自动清 verify-artifacts/ 残留 · audit-artifacts.py 不再误报 timestamps FAKE)
 - TD-023 关闭(VALIDATOR.md 含产物清单 · audit-artifacts.py 改进)
-- TD-021 关闭(ImageGen Worker types import @quanqn/schemas)
+- TD-021 关闭(ImageGen Worker types import @quanan/schemas)
 - TD-003 关闭(audit-artifacts.py manifest 缺 exit_code 硬 reject)
 - TD-006 关闭(ralph.py daemon retry=5 自动路径 B 触发)
 - TD-011 关闭(AccountDropdown ScrollArea 自适应)

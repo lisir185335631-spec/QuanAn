@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-012 · AnalysisAgent structural mode LLM Judge
+ * QuanAn · US-012 · AnalysisAgent structural mode LLM Judge
  * AC-4: 2 golden cases — 减肥 + 育儿 · 5 维度评分
  * criteria: overall = 5 维度均分附近
  */

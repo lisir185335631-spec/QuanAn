@@ -20,7 +20,7 @@ pnpm test                                    # 根 · vitest run · 全跑(单�
 pnpm test:unit                               # 根 · 仅 tests/unit/ 下
 pnpm test:integration                        # 根 · 仅 tests/integration/ 下
 pnpm test:admin-integration                  # 根 · tests/integration/admin/
-pnpm --filter @quanqn/api test:admin         # AGENTS §10.4.3 列出 · 实际 apps/api/package.json 无此 script · 跑根级 vitest 即可
+pnpm --filter @quanan/api test:admin         # AGENTS §10.4.3 列出 · 实际 apps/api/package.json 无此 script · 跑根级 vitest 即可
 ```
 
 **Coverage:**
@@ -92,7 +92,7 @@ import { adminAuditRouter } from '@/trpc/routers/admin/audit';
 import type { AdminTRPCContext } from '@/server/context-admin';
 
 // 5. Fixtures
-const SUPER_ADMIN: AdminLuciaUser = { id: 1, email: 'super@quanqn.com', role: 'super_admin', ... };
+const SUPER_ADMIN: AdminLuciaUser = { id: 1, email: 'super@quanan.com', role: 'super_admin', ... };
 const MOCK_SESSION: AdminLuciaSession = { id: 'sess-audit-test', expiresAt: ..., fresh: false };
 
 // 6. Helpers
@@ -173,13 +173,13 @@ vi.mock('@/services/admin/admin-audit-service', () => ({
 ```typescript
 // Admin user 三档(super / admin / readonly)在每个测试文件顶部 const
 const SUPER_ADMIN: AdminLuciaUser = {
-  id: 1, email: 'super@quanqn.com', role: 'super_admin', isMock: false, isActive: true,
+  id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: false, isActive: true,
 };
 const REGULAR_ADMIN: AdminLuciaUser = {
-  id: 2, email: 'admin@quanqn.com', role: 'admin', isMock: false, isActive: true,
+  id: 2, email: 'admin@quanan.com', role: 'admin', isMock: false, isActive: true,
 };
 const READONLY_ADMIN: AdminLuciaUser = {
-  id: 3, email: 'readonly@quanqn.com', role: 'readonly_admin', isMock: false, isActive: true,
+  id: 3, email: 'readonly@quanan.com', role: 'readonly_admin', isMock: false, isActive: true,
 };
 
 // Session fixture

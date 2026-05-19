@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-14-advanced-domains",
   "description": "PRD-14 · P9.4 P2 高级域 3 子域 15 US(域 ⑭ A/B 测试管理 · 域 ⑮ 知识库 / 常量管理完整版本化 · 域 ⑯ 系统配置中心 5+ 紧急开关)· 派生 ADMIN §3.7 + §8.6 + DATA-MODEL §13.7 4 张占位表 · 继承 PRD-13 8 patterns + 4 _xxxInTx 单点 + 11 LD-A 红线 · D-102~D-115 14 LDs · §7.5 协议锁 18 entries",
   "userStories": [
@@ -932,7 +932,7 @@
           "source_story": "US-015",
           "lesson": "E2E 真 Prisma + 真 DB(D-080 模式)",
           "antipattern": "mock prisma 全部",
-          "correct": "用 quanqn_test DB · beforeEach truncate"
+          "correct": "用 quanan_test DB · beforeEach truncate"
         },
         {
           "source_prd": "PRD-13 US-012 复用",

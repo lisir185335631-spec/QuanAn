@@ -2,7 +2,7 @@
  * tRPC client for the main app — US-006
  * US-007: injects X-Trace-Id header on every fetch for end-to-end trace propagation.
  * PRD-19 US-005: splitLink routes subscriptions to httpSubscriptionLink (SSE).
- * AppRouter type lives in @quanqn/clients/router-types so apps/web can import it
+ * AppRouter type lives in @quanan/clients/router-types so apps/web can import it
  * via 'import type' — Vite/esbuild erases type-only imports, keeping @trpc/server
  * out of the browser bundle.
  * TD: switch to TypeScript project references in P1.
@@ -12,7 +12,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { httpBatchStreamLink, httpSubscriptionLink, splitLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 
-import type { AppRouter, AuthMeOutput } from '@quanqn/clients/router-types';
+import type { AppRouter, AuthMeOutput } from '@quanan/clients/router-types';
 
 export type { AuthMeOutput };
 export type { AppRouter };

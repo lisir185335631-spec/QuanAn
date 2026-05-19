@@ -53,7 +53,7 @@ status_history:
 > - ✅ prisma/migrations/manual_admin_rls.sql · 16 + 4 占位
 > - ✅ scripts/ralph/sync-to-project.sh · 13 文件 ralph 工具链
 > - ✅ scripts/ralph/switch-prd.sh · chmod +x
-> - ✅ 本地 PG 16.13 + Redis 8.6.3 + pgvector 0.8.0 · 数据库 quanqn / quanqn_test 已建
+> - ✅ 本地 PG 16.13 + Redis 8.6.3 + pgvector 0.8.0 · 数据库 quanan / quanan_test 已建
 > - ✅ .env(本地 dev)+ .env.example(模板)
 >
 > Ralph 在 PRD-1 的工作 · 在上述准备基础上 · 完成 7 个 US
@@ -78,7 +78,7 @@ status_history:
 ### US-002 · Vite + React 18 + TS 主应用启动(apps/web)
 
 - **As** · IP 起号者(ARCHITECTURE §1.6 第 1 类)
-- **I want** · 在 localhost:5173 看到 QuanQn 首页(占位 · 文字"QuanQn · 工程骨架就绪")
+- **I want** · 在 localhost:5173 看到 QuanAn 首页(占位 · 文字"QuanAn · 工程骨架就绪")
 - **So that** · 推进 NSM「9 步主向导第 1 步进入率」的前置工程基础就位
 - **risk_level** · foundation
 - **depends_on** · [US-001]
@@ -167,7 +167,7 @@ status_history:
 
 - **场景 B1** · workspace 内某包(如 packages/schemas)的 export 被另一包(apps/api)import · 但 packages/schemas 没 build
   - Given · 同 H
-  - When · `pnpm --filter @quanqn/api typecheck` · 引 `@quanqn/schemas`
+  - When · `pnpm --filter @quanan/api typecheck` · 引 `@quanan/schemas`
   - Then · TS path alias 解析到 packages/schemas/src/index.ts · 不需 build · typecheck 仍通过
 
 ### AC-001-P(US-001 performance)
@@ -183,7 +183,7 @@ status_history:
 - **When** · `pnpm dev:web`(localhost:5173)
 - **Then** ·
   - vite dev server 启动 · 无 error
-  - 浏览器访问 http://localhost:5173 · 显示文字"QuanQn · 工程骨架就绪"(占位 main.tsx 内容)
+  - 浏览器访问 http://localhost:5173 · 显示文字"QuanAn · 工程骨架就绪"(占位 main.tsx 内容)
   - 启动时间 < 3s
   - HMR 启用(改 main.tsx 内容 · 浏览器 < 1s 反映)
 
@@ -198,12 +198,12 @@ status_history:
 
 - **场景 B1** · main.tsx 占位 · 不引入任何 React 库
   - Given · main.tsx 仅 console.warn + export {}
-  - When · `pnpm --filter @quanqn/web build`
+  - When · `pnpm --filter @quanan/web build`
   - Then · 退出码 0 · 生成 dist/ · main.js < 5KB(占位无 React deps)
 
 ### AC-002-P(US-002 performance)
 
-- **场景 P1** · `pnpm --filter @quanqn/web build` 总耗时 < 10s(占位)
+- **场景 P1** · `pnpm --filter @quanan/web build` 总耗时 < 10s(占位)
 - **场景 P2** · vite dev cold start < 3s · HMR < 1s
 
 ---
@@ -222,7 +222,7 @@ status_history:
 ### AC-003-E(US-003 error)
 
 - **场景 E1** · DATABASE_URL 错(连不上 PG)
-  - Given · .env DATABASE_URL = postgres://wrong:wrong@badhost:5432/quanqn
+  - Given · .env DATABASE_URL = postgres://wrong:wrong@badhost:5432/quanan
   - When · `pnpm dev:api`
   - Then · server 启动报错 · pino log 含 "DB connection failed" · trace_id 写入 · 进程优雅退出 code 1
 - **场景 E2** · prisma generate 没跑 · @prisma/client 找不到 schema

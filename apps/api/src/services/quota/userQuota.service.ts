@@ -1,5 +1,5 @@
 /**
- * QuanQn · UserQuota atomic deduction service
+ * QuanAn · UserQuota atomic deduction service
  * money-critical: uses single-SQL UPDATE...WHERE to prevent race conditions
  *
  * AC-1(US-002): checkAndDeductQuota — atomic updateMany WITH WHERE lte guard

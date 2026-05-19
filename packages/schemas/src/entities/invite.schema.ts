@@ -1,4 +1,4 @@
-// @quanqn/schemas/entities/invite — PRD-2 US-006
+// @quanan/schemas/entities/invite — PRD-2 US-006
 
 import { z } from 'zod';
 

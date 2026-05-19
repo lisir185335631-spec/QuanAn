@@ -7,7 +7,7 @@
 > 3. Header 重构 · 4 一级菜单 dropdown 25 二级项(创作 5 / 策划 8 / 智能 6 / 更多 6)+ 「赵语AI」IP 账号切换器 + sally zhao chip + 登出 icon-only
 > 4. /guide 全新建 · USER GUIDE + 13 模块详解卡 + FAQ 5 + /ip-plan 重写(9 step 卡片网格 + glass-card 进度条)
 > **基线** · PRD-15 收官后 · 14 PRD 主开发 + 6 stub 工具完整化 + 2 衍生页(MyTopics + History)已沉淀
-> **目标** · 让用户访问 QuanQn 主应用看到的**功能模块 + 操作流程 + 整体页面布局**跟 aiipznt 1:1 对齐(颜色除外)
+> **目标** · 让用户访问 QuanAn 主应用看到的**功能模块 + 操作流程 + 整体页面布局**跟 aiipznt 1:1 对齐(颜色除外)
 > **预估** · 11 US · 1.5-2 周 wall time · 1 foundation + 4 high + 6 medium · 25-30 commits · 9-13h daemon time
 
 ---
@@ -58,7 +58,7 @@
 
 ### US-001 ★ foundation · 设计系统切换 · 字体 / spacing / motion(颜色 D4=B 严锁)
 
-**描述** · 作为开发者,我需要把 aiipznt 的字体 / spacing / motion 设计系统切到 QuanQn 主应用,以便后续 US-002~011 直接套用 1:1 layout · 但**严格保留** Aurelian Dark 紫色 token 不变(D4=B)· 所有 aiipznt 的 `var(--gold)` `border-gold/X` `shadow-gold/X` 等映射到 `var(--primary)` `border-primary/X` `shadow-primary/X`。
+**描述** · 作为开发者,我需要把 aiipznt 的字体 / spacing / motion 设计系统切到 QuanAn 主应用,以便后续 US-002~011 直接套用 1:1 layout · 但**严格保留** Aurelian Dark 紫色 token 不变(D4=B)· 所有 aiipznt 的 `var(--gold)` `border-gold/X` `shadow-gold/X` 等映射到 `var(--primary)` `border-primary/X` `shadow-primary/X`。
 
 **Acceptance Criteria** ·
 
@@ -139,7 +139,7 @@
 
 ### US-002 high · 首页 / Hero 区(H1 "AI+短视频+IP" + 副标 + 2 CTA)
 
-**描述** · 作为用户,我访问 QuanQn 主应用根 URL `/` 时,应该看到完整的 aiipznt 风格首页 Hero 区(不再 redirect 到 `/step/1`),含 H1 "AI+短视频+IP"(Orbitron 巨大紫色 outline)+ 3 副标题 + 引用副标 + 主 CTA "启动智能分析" + 次 CTA "使用说明"。
+**描述** · 作为用户,我访问 QuanAn 主应用根 URL `/` 时,应该看到完整的 aiipznt 风格首页 Hero 区(不再 redirect 到 `/step/1`),含 H1 "AI+短视频+IP"(Orbitron 巨大紫色 outline)+ 3 副标题 + 引用副标 + 主 CTA "启动智能分析" + 次 CTA "使用说明"。
 
 **Acceptance Criteria** ·
 
@@ -511,7 +511,7 @@
 
 ### US-007 ★ high · Header 重构 · 4 一级菜单 click dropdown(创作 5 / 策划 8 / 智能 6 / 更多 6 共 25 二级项)
 
-**描述** · 作为用户,Header 中央应该看到 4 一级菜单(创作 / 策划 / 智能 / 更多)· 每个 click 触发(非 hover)弹 dropdown · 内含二级菜单跳转。当前 QuanQn Header 只有 1 个 "工具" dropdown(14 工具)+ 6 模块 list · 必须重构为 4 一级菜单严格按 dump §1.2 实测映射。
+**描述** · 作为用户,Header 中央应该看到 4 一级菜单(创作 / 策划 / 智能 / 更多)· 每个 click 触发(非 hover)弹 dropdown · 内含二级菜单跳转。当前 QuanAn Header 只有 1 个 "工具" dropdown(14 工具)+ 6 模块 list · 必须重构为 4 一级菜单严格按 dump §1.2 实测映射。
 
 **Acceptance Criteria** ·
 
@@ -900,7 +900,7 @@
 
 ### US-010 medium · /ip-plan page 重写 · `[← 返回首页]` + H1 + 进度条 + 9 step 卡片网格
 
-**描述** · 作为用户,我访问 `/ip-plan` 应该看到完整的 IP 方案 page · 含 `[← 返回首页]` button + H1 "我的IP方案" + `已完成 N / 9 步` + `[↻ 刷新]` button + glass-card 进度条 + 9 step 卡片网格(每卡 emoji + step 名 + 状态 + `[查看详情 → /step/X]`)。当前 QuanQn IpPlan 只有 `<StepProgress>` + skeleton · 必须重写。
+**描述** · 作为用户,我访问 `/ip-plan` 应该看到完整的 IP 方案 page · 含 `[← 返回首页]` button + H1 "我的IP方案" + `已完成 N / 9 步` + `[↻ 刷新]` button + glass-card 进度条 + 9 step 卡片网格(每卡 emoji + step 名 + 状态 + `[查看详情 → /step/X]`)。当前 QuanAn IpPlan 只有 `<StepProgress>` + skeleton · 必须重写。
 
 **Acceptance Criteria** ·
 

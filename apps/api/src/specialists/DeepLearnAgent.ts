@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-9+ (留 PRR)
+ * QuanAn · PRD-9+ (留 PRR)
  * DeepLearnAgent — /deep-learning 深度学习样本分析
  * 本期骨架 · 真实 LLM 接入留 PRD-9
  */

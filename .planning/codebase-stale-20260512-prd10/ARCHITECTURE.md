@@ -1,5 +1,5 @@
 <!-- refreshed: 2026-05-11 -->
-# Architecture · QuanQn
+# Architecture · QuanAn
 
 **Analysis Date:** 2026-05-11
 **Scope:** PRD-1 → PRD-8 完成期 · 14/14 Specialist 类全部存在(11 生成型 active · 3 L5 自治型走双路径)· 3 orchestrator(BullMQ + node-cron + tRPC subscription)· 5 路 ContextAssembler · L1 Buffer Redis
@@ -156,7 +156,7 @@
 │  │     tools-dispatcher │   │                                                │
 │  └──────────┬───────────┘   │                                                │
 └─────────────┼───────────────┼─────────────────────────────────────────────────┘
-              │ Prisma 5.22 ($transaction · SET LOCAL ROLE quanqn_app)
+              │ Prisma 5.22 ($transaction · SET LOCAL ROLE quanan_app)
               ▼
    ┌──────────────────────────────────────────────────────────┐
    │ PostgreSQL 16 + pgvector 0.8                              │
@@ -177,7 +177,7 @@
    │     - rate-limit/{image-gen,stt,tts} INCR + EXPIRE 86400  │
    │     - L1 Buffer voice_chat:acc_{id}:turns LPUSH/LTRIM     │
    │   Upstash REST (workers/llm-gateway/rate-limiter.ts) ·   │
-   │     - LLMGateway 限流 token bucket (key prefix quanqn:rl:)│
+   │     - LLMGateway 限流 token bucket (key prefix quanan:rl:)│
    └──────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -213,7 +213,7 @@
 | **Hono app** | HTTP 入口 · CORS · X-Trace-Id mw · OAuth /auth/* · dev in-process worker + cron 启动 | `apps/api/src/index.ts` | 233 |
 | **tRPC context** | lucia session 解析 · activeAccountId 注入 · X-Trace-Id 读 | `apps/api/src/trpc/context.ts` | 58 |
 | **traceMiddleware** | X-Trace-Id 生成或传 · AsyncLocalStorage 写 traceStore (pino mixin auto-attach) | `apps/api/src/trpc/trpc.ts:34-39` | — |
-| **accountIsolationMiddleware** | `$transaction` · `SET LOCAL ROLE quanqn_app` · `set_config('app.current_account_id', …, true)` · ★ 唯一允许 `prisma.$executeRaw` 处(LD-009 · R-009) | `apps/api/src/trpc/middleware/account-isolation.ts` | 58 |
+| **accountIsolationMiddleware** | `$transaction` · `SET LOCAL ROLE quanan_app` · `set_config('app.current_account_id', …, true)` · ★ 唯一允许 `prisma.$executeRaw` 处(LD-009 · R-009) | `apps/api/src/trpc/middleware/account-isolation.ts` | 58 |
 | **protectedProcedure** | publicProcedure + accountIsolationMw(默认) | `account-isolation.ts:52` | — |
 | **globalProcedure** | publicProcedure + `meta({isGlobal:true})` — 跳过 RLS · 仅 User/InviteCode/TrendingItem | `account-isolation.ts:58` | — |
 | **appRouter** | 24 sub-router 合并 → `AppRouter` type · packages/clients 同名 shadow 镜像导出 | `apps/api/src/trpc/routers/_app.ts` | 60 |
@@ -356,7 +356,7 @@ External:   PostgreSQL 16 + pgvector · Redis · OpenAI · Anthropic
 7. tRPC trace mw 再读 X-Trace-Id (avoid 'pending')(`apps/api/src/trpc/trpc.ts:34`)
 8. `protectedProcedure` = publicProcedure + `accountIsolationMw` (`apps/api/src/trpc/middleware/account-isolation.ts:52`)
 9. `accountIsolationMw` 校验 `activeAccountId !== null` → 进入 `$transaction`:
-   - `SET LOCAL ROLE quanqn_app` (非超用户 · RLS 生效)
+   - `SET LOCAL ROLE quanan_app` (非超用户 · RLS 生效)
    - `SELECT set_config('app.current_account_id', <id>, true)` (tx-scoped)
    - `next({ctx: {...ctx, prisma: tx}})` (后续 resolver 用 tx)
 10. `copywriting.generate` resolver 调 `copywritingAgent.execute({...})` (`apps/api/src/trpc/routers/copywriting.ts`)
@@ -523,7 +523,7 @@ PositioningAgent · BrandingAgent · MonetizationAgent · TopicAgent · Copywrit
   - `apps/api/src/lib/voice-chat/tools-dispatcher.ts:14` `_lockMap: Map<number, Promise<void>>` (per-account lock)
   - `apps/api/src/specialists/VoiceChatAgent.ts` `_activeSessions: Map<number, boolean>` (并发防护)
 - **Circular imports** · `protectedProcedure` 定义在 `middleware/account-isolation.ts` 不是 `trpc.ts` (避免 publicProcedure 与 mw 循环)· `publicProcedure` 从 trpc.ts re-import 进 mw 文件
-- **Transaction scope** · `accountIsolationMw` 把全 resolver 包在 `prisma.$transaction(async tx => ...)` · `SET LOCAL` 仅 tx-scoped · RLS 策略生效需 `SET LOCAL ROLE quanqn_app` (superuser bypass RLS by default)
+- **Transaction scope** · `accountIsolationMw` 把全 resolver 包在 `prisma.$transaction(async tx => ...)` · `SET LOCAL` 仅 tx-scoped · RLS 策略生效需 `SET LOCAL ROLE quanan_app` (superuser bypass RLS by default)
 - **dev mode in-process** · `NODE_ENV=development` 时 `index.ts:212` 启动 imageGenWorker + dailyTaskWorker 在 API 进程内 · prod 走独立 container
 - **subscription long-lived** · tRPC v11 subscription 走 `httpBatchStreamLink` · 不是 websocket · `responseType=streaming`
 - **TS strict** · `tsconfig.base.json` `strict:true + noUncheckedIndexedAccess + noImplicitOverride + useUnknownInCatchVariables`

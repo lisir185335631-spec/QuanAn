@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-12-content-review",
   "description": "PRD-12 · P9.2 2 P0 内容审核域 · 13 stories(域 ⑦ TrendingItem × 6 · LD-A-5 硬闸门 + 域 ⑧ DeepLearning × 6 · PII 扫描 + violation 累计 + 收官 × 1)· 派生 ADMIN §3.4 + §8.4 + DATA-MODEL §13.6.D + §13.6.E + AGENTS §10 LD-A-5 · D-079~088 10 LD · 21+ anti_patterns 8 类(继承 6 + 新增 LD-A-5 worker + PII detect critical)· seed 详细度 1162 行 tasks/prd-12.md",
   "userStories": [
@@ -262,7 +262,7 @@
       "acceptanceCriteria": [
         "apps/admin/src/pages/reviewTrending/index.tsx 替换 placeholder · 主页面 part 1 框架 + 抽屉 state · admin-routes metadata.prd: 12 + git rm placeholder.tsx",
         "ReviewTrendingFilters.tsx · status / platform(5 平台 dropdown)/ autoVerdict / dateRange filter · debounce 300ms",
-        "ReviewTrendingTable.tsx · DenseTable from @quanqn/ui/admin · 列(queueId/platform/sourceUrl/autoVerdict/status/fetchedAt/操作)· virtualScroll",
+        "ReviewTrendingTable.tsx · DenseTable from @quanan/ui/admin · 列(queueId/platform/sourceUrl/autoVerdict/status/fetchedAt/操作)· virtualScroll",
         "TrendingReviewDrawer.tsx · 右侧抽屉 5 段 · 基本/rawContent JSON 树折叠/autoScanResult 命中违禁 red + PII orange/审核状态/链路追溯",
         "OverviewCards.tsx · 顶部 4 数字 [待审核/已批准/已驳回/命中违禁词]",
         "列表空 · 显示 '暂无待审核内容 · TrendingScraper 抓回后自动入队'",

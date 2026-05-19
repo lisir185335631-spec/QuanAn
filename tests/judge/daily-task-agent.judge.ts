@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-013 AC-1
+ * QuanAn · PRD-8 US-013 AC-1
  * DailyTaskAgent LLM Judge — 2 golden cases
  * AC-1: DailyTaskAgent output quality ≥ 4.0/5
  *

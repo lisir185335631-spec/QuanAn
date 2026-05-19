@@ -1,5 +1,5 @@
 /**
- * QuanQn · 私域成交 6 阶段
+ * QuanAn · 私域成交 6 阶段
  * 派生自 ARCHITECTURE.md §3.6 + spec.md §Ⅹ.5 + PROMPTS §8.2
  */
 

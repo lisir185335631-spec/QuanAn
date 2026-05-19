@@ -4,7 +4,7 @@
  *       elements checkbox group(22, 4 组) + additionalContext textarea
  */
 
-import { HOT_ELEMENT_GROUPS, HOT_ELEMENT_LABELS } from '@quanqn/schemas/specialist-io';
+import { HOT_ELEMENT_GROUPS, HOT_ELEMENT_LABELS } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, type ChangeEvent } from 'react';
 
 import { Button } from '@/components/ui/button';

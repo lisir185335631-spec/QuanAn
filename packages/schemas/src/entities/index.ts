@@ -1,4 +1,4 @@
-// @quanqn/schemas/entities — PRD-2 US-003 + US-006
+// @quanan/schemas/entities — PRD-2 US-003 + US-006
 
 export * from './ipAccount.schema';
 export * from './stepData.schema';

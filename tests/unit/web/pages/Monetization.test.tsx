@@ -35,7 +35,7 @@ describe('Monetization.tsx page structure', () => {
   it('imports and uses MonetizationInputSchema', () => {
     const page = src(MONETIZATION_PAGE);
     expect(page).toContain('MonetizationInputSchema');
-    expect(page).toContain('@quanqn/schemas/specialist-io');
+    expect(page).toContain('@quanan/schemas/specialist-io');
   });
 
   it('calls trpc.monetization.generate.useMutation', () => {

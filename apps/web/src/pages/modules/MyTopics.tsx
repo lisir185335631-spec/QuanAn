@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { IndustryDropdown } from '@/components/IndustryDropdown';
 import { trpc } from '@/lib/trpc';
 
-import type { MyTopicItem, MyTopicSource } from '@quanqn/clients/router-types';
+import type { MyTopicItem, MyTopicSource } from '@quanan/clients/router-types';
 
 // ── URL state helpers ─────────────────────────────────────────────────────────
 

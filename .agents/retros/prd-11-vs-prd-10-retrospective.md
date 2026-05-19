@@ -445,7 +445,7 @@ PRD-11 9 self-correct fix 都是 sonnet 跑完主 commit 后 ralph 自检+加 fi
 - **原因** · PRD-11 US-007 PATH-B 触发 ECONNRESET · 大 UI Story 13→8 files collapse 仍接近边界 · 应自动 catch
 - **建议 diff**:
   ```diff
-  + ##### 2.6.14 大 UI Story 拆分检查(QuanQn PRD-11 retro M-1 固化 · 2026-05-13 新增)
+  + ##### 2.6.14 大 UI Story 拆分检查(QuanAn PRD-11 retro M-1 固化 · 2026-05-13 新增)
   +
   + 扫 prd.json 每个 UI 类 story · 检查是否触发大 UI Story 拆分阈值。
   +
@@ -465,7 +465,7 @@ PRD-11 9 self-correct fix 都是 sonnet 跑完主 commit 后 ralph 自检+加 fi
   + - US-007b · 5 Tab 详情内容(5 files)
   + - US-007c · 3 Dialog + Approval trigger UI(3 files)
   +
-  + **ROI**(基于 QuanQn PRD-11 实证):US-007 13 files collapse 到 8 files 仍 PATH-B 触发 ECONNRESET · 节省 ~50 min/PRD
+  + **ROI**(基于 QuanAn PRD-11 实证):US-007 13 files collapse 到 8 files 仍 PATH-B 触发 ECONNRESET · 节省 ~50 min/PRD
   ```
 - **人工 apply 流程**:
   1. 用户 review 该 diff
@@ -479,7 +479,7 @@ PRD-11 9 self-correct fix 都是 sonnet 跑完主 commit 后 ralph 自检+加 fi
 - **原因** · PRD-11 audit-artifacts 多次报 pytest-full FAKE · Sonnet 自宣 pre-existing 没 cross-check · 单向信任漏洞
 - **建议 diff**:
   ```diff
-  + ### Step 1.6.b — pre-existing 强 confirm(QuanQn PRD-11 retro M-2 固化 · 2026-05-13 新增)
+  + ### Step 1.6.b — pre-existing 强 confirm(QuanAn PRD-11 retro M-2 固化 · 2026-05-13 新增)
   +
   + **触发条件** · Step 1 audit-artifacts 报 `pytest-full FAIL: N failed`(或等价 lint/typecheck 失败)且 Sonnet manifest 标 `zero_regression: "FAIL", zero_regression_note: "pre-existing TD ..."`
   +
@@ -505,7 +505,7 @@ PRD-11 9 self-correct fix 都是 sonnet 跑完主 commit 后 ralph 自检+加 fi
   +
   + **若跳过此 confirm 步骤 approve** · 写明 "Opus 跳过 git stash confirm · 接受 Sonnet 自宣 pre-existing" + 风险评估(为什么不需 stash · eg. test 文件 mtime > validator_start_ts 明显 pre-existing)
   +
-  + **ROI**(基于 QuanQn PRD-11 retro):TD-046 audit-artifacts 单向信任漏洞 · 每 2 PRD 防 1 次 Sonnet 偷懒 pre-existing 误标
+  + **ROI**(基于 QuanAn PRD-11 retro):TD-046 audit-artifacts 单向信任漏洞 · 每 2 PRD 防 1 次 Sonnet 偷懒 pre-existing 误标
   ```
 - **人工 apply 流程** · 同 Diff-1
 
@@ -514,7 +514,7 @@ PRD-11 9 self-correct fix 都是 sonnet 跑完主 commit 后 ralph 自检+加 fi
 - **文件** · `~/.claude/commands/plan-check.md`
 - **建议 diff**:
   ```diff
-  + ##### 2.6.15 cron schedule wire 检查(QuanQn PRD-11 retro M-3 固化 · 2026-05-13 新增)
+  + ##### 2.6.15 cron schedule wire 检查(QuanAn PRD-11 retro M-3 固化 · 2026-05-13 新增)
   +
   + 扫 prd.json 每个 cron / job / schedule 类 story · 检查 index.ts 是否在 files_to_modify。
   +
@@ -526,7 +526,7 @@ PRD-11 9 self-correct fix 都是 sonnet 跑完主 commit 后 ralph 自检+加 fi
   + - ERROR · 含 cron 触发词但 files_to_modify 不含 `apps/api/src/index.ts`(或等价 server entry)→ 必加 wire
   + - 检查规则输出格式 · "US-XXX 缺 index.ts wire · 加 await scheduleX() 到启动序列"
   +
-  + **ROI**(基于 QuanQn PRD-11 US-009 reject):每 P9.X 都有 1-2 cron · 防 1 次 reject(~30 min) / PRD
+  + **ROI**(基于 QuanAn PRD-11 US-009 reject):每 P9.X 都有 1-2 cron · 防 1 次 reject(~30 min) / PRD
   ```
 
 ---

@@ -3,7 +3,7 @@
 //   DEV_OAUTH_MOCK=true → auth.me 返 mock user →
 //   5 mock 账号下拉 → 切换 OPC 创业者 localStorage 写入 →
 //   reload 仍登录 + 账号选中 → 切换 MCN 矩阵号 followers=50000 KPI
-// SHIELD: real DB (quanqn_test) · no mock prisma
+// SHIELD: real DB (quanan_test) · no mock prisma
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
@@ -13,7 +13,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 
@@ -116,7 +116,7 @@ describe('E2E Flow 4: Mock OAuth + 5 账号切换 (PRD-15 US-009 AC-5)', () => {
   });
 
   it('Step 2: auth.me 返 mock user — getDevMockUserAttrs 可查到 dev 用户', async () => {
-    // Use the test user's email as a proxy (real seed uses dev@quanqn.local)
+    // Use the test user's email as a proxy (real seed uses dev@quanan.local)
     const devUser = await testPrisma.user.findFirst({
       where: { id: devUserId },
       select: { id: true, email: true, name: true, activeAccountId: true },

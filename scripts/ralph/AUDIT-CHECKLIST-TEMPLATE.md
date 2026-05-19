@@ -425,7 +425,7 @@ pytest --collect-only -q backend/tests/ | tail -1
 
 ---
 
-### H. Frontend list/dropdown PRD(2026-05-08 · QuanQn PRD-3 US-006 经验)
+### H. Frontend list/dropdown PRD(2026-05-08 · QuanAn PRD-3 US-006 经验)
 
 > **背景**: PRD-3 US-006 实证 — `AccountDropdown` 漏写 `<ScrollArea>`,DB 累积 30+ accounts 时新建 item 在 dropdown viewport 外,playwright click 56 × retry 30s timeout。**ralph 12 iter blocked,Opus 接管 30min 才发现真根因**。`ToolsDropdown` 同 codebase 内有正确模式(`<ScrollArea className="h-52">`),但被遗漏。
 >
@@ -466,7 +466,7 @@ grep -E "workers" playwright.config.ts apps/web/playwright.config.ts 2>/dev/null
 
 ---
 
-### I. Multi-mode Specialist race window(2026-05-09 · QuanQn PRD-4 TD-014 经验)
+### I. Multi-mode Specialist race window(2026-05-09 · QuanAn PRD-4 TD-014 经验)
 
 > **背景**: PRD-4 7 Specialist 中 4 个用 multi-mode(`PositioningAgent` industry/execution · `BrandingAgent` packaging/persona · `VideoAgent` 4 mode · `CopywritingAgent` 4 mode)。ralph 用 `private _mode` instance state + `outputSchema` getter 按 mode 返回 schema · `invokeLLM` 改 _mode → BaseSpecialist safeParse 读 _mode · **await 间隙其他 execute() 切入 race window**。P3 单 user 串行不触发 · 但**架构层 design smell**。
 >
@@ -506,7 +506,7 @@ grep -E "export const \w+Agent" apps/api/src/specialists/<Agent>.ts
 
 ---
 
-### J. Cross-cut router coverage(2026-05-09 · QuanQn PRD-4 US-017 经验)
+### J. Cross-cut router coverage(2026-05-09 · QuanAn PRD-4 US-017 经验)
 
 > **背景**: PRD-4 US-017 9 步 e2e 才发现 stepData.save handler 漏 step5/7 · UI skeleton 永挂 · 浪费 1 次 e2e 跑(~30 min)。原因是 Specialist Wave 4 时各 US 只加自己的 step branch · **没人负责"全 N step coverage"的 cross-cut audit**。
 >

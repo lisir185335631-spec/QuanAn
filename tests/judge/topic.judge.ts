@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · TopicAgent LLM Judge
+ * QuanAn · US-016 · TopicAgent LLM Judge
  * AC-2: golden case — category='traffic' / 健康行业
  * AC-10: real scenario input
  * AC-11: quantifiable criteria (topics.length === 20, 含5 fields/item)

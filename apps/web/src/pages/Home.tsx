@@ -4,12 +4,13 @@ import { StepProgress, STEP_ORDER_KEYS } from '@/components/StepProgress';
 import { trpc } from '@/lib/trpc';
 import { FUNCTION_MATRIX, FUNCTION_MATRIX_FOOTER } from '@/lib/constants/function-matrix';
 import { WORKFLOW_STEPS } from '@/lib/constants/workflow';
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 
 function HeroSection() {
   return (
     <section className="flex flex-col items-center justify-center text-center py-20">
       <h1
-        className="font-display text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary to-primary/60 mb-6 tracking-tight"
+        className="font-display text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary to-primary/60 mb-8 tracking-tight"
         style={{ WebkitTextStroke: '1px var(--primary)' }}
       >
         AI+短视频+IP
@@ -103,27 +104,31 @@ function FunctionMatrixSection() {
             {group.title}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {group.cards.map((card) => (
-              <Link to={card.href} key={card.href}>
-                <div className="glass-card rounded-xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer h-full">
-                  <div className="text-3xl mb-3">{card.icon}</div>
-                  <div className="font-display text-base font-bold text-foreground mb-1">{card.title}</div>
-                  <div className="font-cn text-xs text-muted-foreground">{card.desc}</div>
-                </div>
-              </Link>
+            {group.cards.map((card, cIdx) => (
+              <FadeInWrapper key={card.href} delay={0.05 * cIdx} from="up">
+                <Link to={card.href}>
+                  <div className="glass-card rounded-xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer h-full">
+                    <div className="text-3xl mb-3">{card.icon}</div>
+                    <div className="font-display text-base font-bold text-foreground mb-1">{card.title}</div>
+                    <div className="font-cn text-xs text-muted-foreground">{card.desc}</div>
+                  </div>
+                </Link>
+              </FadeInWrapper>
             ))}
           </div>
         </div>
       ))}
 
       <div className="mt-10 max-w-md mx-auto">
-        <Link to={FUNCTION_MATRIX_FOOTER.href}>
-          <div className="glass-card rounded-xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer">
-            <div className="text-3xl mb-3">{FUNCTION_MATRIX_FOOTER.icon}</div>
-            <div className="font-display text-base font-bold text-foreground mb-1">{FUNCTION_MATRIX_FOOTER.title}</div>
-            <div className="font-cn text-xs text-muted-foreground">{FUNCTION_MATRIX_FOOTER.desc}</div>
-          </div>
-        </Link>
+        <FadeInWrapper delay={0.3}>
+          <Link to={FUNCTION_MATRIX_FOOTER.href}>
+            <div className="glass-card rounded-xl p-5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer">
+              <div className="text-3xl mb-3">{FUNCTION_MATRIX_FOOTER.icon}</div>
+              <div className="font-display text-base font-bold text-foreground mb-1">{FUNCTION_MATRIX_FOOTER.title}</div>
+              <div className="font-cn text-xs text-muted-foreground">{FUNCTION_MATRIX_FOOTER.desc}</div>
+            </div>
+          </Link>
+        </FadeInWrapper>
       </div>
     </section>
   );
@@ -141,20 +146,22 @@ function WorkflowSection() {
 
       <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-2">
         {WORKFLOW_STEPS.map((step, i) => (
-          <div key={step.num} className="flex md:flex-row items-center">
-            <div className="flex flex-col items-center text-center flex-1">
-              <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/40 flex items-center justify-center mb-3">
-                <span className="font-display text-sm font-bold text-primary">{step.num}</span>
+          <FadeInWrapper key={step.num} delay={0.1 * i}>
+            <div className="flex md:flex-row items-center">
+              <div className="flex flex-col items-center text-center flex-1">
+                <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/40 flex items-center justify-center mb-3">
+                  <span className="font-display text-sm font-bold text-primary">{step.num}</span>
+                </div>
+                <span className="font-cn font-bold text-sm text-foreground mb-1">{step.title}</span>
+                <span className="font-cn text-xs text-muted-foreground">{step.desc}</span>
               </div>
-              <span className="font-cn font-bold text-sm text-foreground mb-1">{step.title}</span>
-              <span className="font-cn text-xs text-muted-foreground">{step.desc}</span>
+              {i < 6 && (
+                <div className="hidden md:flex items-center self-center w-8 shrink-0">
+                  <div className="w-full h-px bg-primary/20" />
+                </div>
+              )}
             </div>
-            {i < 6 && (
-              <div className="hidden md:flex items-center self-center w-8 shrink-0">
-                <div className="w-full h-px bg-primary/20" />
-              </div>
-            )}
-          </div>
+          </FadeInWrapper>
         ))}
       </div>
     </section>

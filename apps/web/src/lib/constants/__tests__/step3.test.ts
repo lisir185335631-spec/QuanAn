@@ -9,9 +9,10 @@ describe('STEP3 constants', () => {
       expect(p.label).toMatch(/^[\u{1F300}-\u{1F9FF}]/u);
     });
   });
-  it('output H3 labels start with number 1-6', () => {
+  it('output H3 labels match D-220 字面锁 (no number prefix)', () => {
+    const expected = ['视频参考案例', '昵称推荐', '头像设计方案', '背景图设计方案', '简介文案方案', '整体包装策略'];
     STEP3_OUTPUT_H3_6.forEach((block, idx) => {
-      expect(block.h3Label.startsWith(`${idx + 1}. `)).toBe(true);
+      expect(block.h3Label).toBe(expected[idx]);
     });
   });
 });

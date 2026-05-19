@@ -1,7 +1,7 @@
 {
-  "project": "QuanQn 主应用前端对齐 aiipznt(Phase 2 · Step 1/3/3b 完整化)",
+  "project": "QuanAn 主应用前端对齐 aiipznt(Phase 2 · Step 1/3/3b 完整化)",
   "branchName": "ralph/prd-17-step1-3-3b",
-  "description": "续 PRD-16 aiipznt 复刻 · 重写 Step 1 行业选择 + Step 3 账号包装方案 + Step 3b 人设定制方案 三个 step page · 1:1 对齐 aiipznt layout + 文字字面(D1=A 严锁)· 颜色保留 QuanQn 金色 var(--primary)(D4=B 严锁)· 11 US · 4 foundation(常量+三态)+ 3 high(Step 3/3b 完整)+ 4 medium(Step1 page + E2E)· seed 1514 行 · 详细度高 · 反例累加机制延续 PRD-16(+36% 一轮通过率)",
+  "description": "续 PRD-16 aiipznt 复刻 · 重写 Step 1 行业选择 + Step 3 账号包装方案 + Step 3b 人设定制方案 三个 step page · 1:1 对齐 aiipznt layout + 文字字面(D1=A 严锁)· 颜色保留 QuanAn 金色 var(--primary)(D4=B 严锁)· 11 US · 4 foundation(常量+三态)+ 3 high(Step 3/3b 完整)+ 4 medium(Step1 page + E2E)· seed 1514 行 · 详细度高 · 反例累加机制延续 PRD-16(+36% 一轮通过率)",
   "userStories": [
     {
       "id": "US-001",
@@ -343,7 +343,7 @@
           "source_prd": "prd-15-frontend-completeness",
           "source_story": "US-002",
           "lesson": "★ LD-009 红线 · localStorage key 必须 'acc_' namespace 前缀 · 防 portal/admin/marketing 跨 SPA 串扰 · PRD-15 US-002 reject 教训 · ralph 容易写裸 key 'step3' 而不是 'acc_step3'",
-          "antipattern": "localStorage.setItem('step3', ...) · 或 localStorage.setItem('quanqn_step3', ...)",
+          "antipattern": "localStorage.setItem('step3', ...) · 或 localStorage.setItem('quanan_step3', ...)",
           "correct": "localStorage.setItem('acc_step3', JSON.stringify(...)) · 严格 'acc_' 前缀 · 继承 PRD-15 ls-namespace 规则"
         }
       ]

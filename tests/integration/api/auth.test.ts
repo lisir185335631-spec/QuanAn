@@ -19,7 +19,7 @@ const devOAuthMock = process.env.DEV_OAUTH_MOCK === 'true';
 
 const API = 'http://localhost:3000';
 const prisma = new PrismaClient({
-  datasources: { db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanqn' } },
+  datasources: { db: { url: process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanan' } },
 });
 
 // Helper: follow mock login flow and extract session cookie

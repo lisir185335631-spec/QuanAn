@@ -1,4 +1,4 @@
-# Codebase Structure · QuanQn
+# Codebase Structure · QuanAn
 
 **Analysis Date:** 2026-05-11
 **Scope:** PRD-1 → PRD-8 完成期 · 6 workspace 全到位 · 14 Specialist · 9 Worker · 25 tRPC router · 34 web route
@@ -9,10 +9,10 @@
 ## §1 Directory Layout
 
 ```
-QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
+QuanAn/  (monorepo root · pnpm 9.15.9 + turbo 2)
 │
 ├── apps/  (3 个 deployable applications)
-│   ├── api/                          # Hono + tRPC 后端 · @quanqn/api · 125 ts files
+│   ├── api/                          # Hono + tRPC 后端 · @quanan/api · 125 ts files
 │   │   ├── src/
 │   │   │   ├── index.ts              # Hono boot · CORS · OAuth · /trpc · cron / dev workers
 │   │   │   ├── trpc/                 # tRPC v11 装配
@@ -144,10 +144,10 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
 │   │   │       └── voice-chat/
 │   │   │           └── tools-dispatcher.ts  # 5 工具 prisma query + per-account lock
 │   │   │
-│   │   ├── package.json              # @quanqn/api · deps: hono/trpc/prisma/lucia/bullmq/anthropic/openai/pino
+│   │   ├── package.json              # @quanan/api · deps: hono/trpc/prisma/lucia/bullmq/anthropic/openai/pino
 │   │   └── tsconfig.json
 │   │
-│   ├── web/                          # Vite + React SPA · @quanqn/web · 105 ts/tsx files
+│   ├── web/                          # Vite + React SPA · @quanan/web · 105 ts/tsx files
 │   │   ├── src/
 │   │   │   ├── main.tsx              # createRoot + Provider 三层套
 │   │   │   ├── App.tsx               # 16 行 placeholder(MVP 已 deprecated)
@@ -198,7 +198,7 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
 │   │   │   └── test/                        # vitest setup
 │   │   │
 │   │   ├── index.html
-│   │   ├── package.json              # @quanqn/web · deps: react 18.3 / radix-ui / tanstack-query / trpc-client / lucide / sonner / zod / recharts / zustand
+│   │   ├── package.json              # @quanan/web · deps: react 18.3 / radix-ui / tanstack-query / trpc-client / lucide / sonner / zod / recharts / zustand
 │   │   ├── postcss.config.js · tailwind.config.js
 │   │   ├── vite.config.ts
 │   │   └── tsconfig.json
@@ -210,10 +210,10 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
 │       │   ├── hooks/                       # 空目录
 │       │   ├── pages/                       # 空目录
 │       │   └── styles/                      # 空目录
-│       └── package.json              # @quanqn/admin · 占位(scripts 都 echo)
+│       └── package.json              # @quanan/admin · 占位(scripts 都 echo)
 │
 ├── packages/  (3 个 shared libraries)
-│   ├── schemas/                      # zod schema 真理来源 · @quanqn/schemas
+│   ├── schemas/                      # zod schema 真理来源 · @quanan/schemas
 │   │   └── src/
 │   │       ├── index.ts                     # barrel(P0 占位仅 export entities + 5 video)
 │   │       ├── entities/                    # 4 业务实体 schema
@@ -233,12 +233,12 @@ QuanQn/  (monorepo root · pnpm 9.15.9 + turbo 2)
 │   │       │   └── step-inputs.schema.ts
 │   │       └── admin/                       # 空目录(P9.0 起填 · PRD-10+)
 │   │
-│   ├── clients/                      # tRPC client 共享类型 · @quanqn/clients
+│   ├── clients/                      # tRPC client 共享类型 · @quanan/clients
 │   │   └── src/
 │   │       ├── index.ts              # 占位 export {}
 │   │       └── router-types.ts       # ★ AppRouter shadow router(避免前端 bundle @trpc/server)
 │   │
-│   └── ui/                           # Aurelian Dark 设计系统 · @quanqn/ui
+│   └── ui/                           # Aurelian Dark 设计系统 · @quanan/ui
 │       └── src/
 │           ├── index.ts              # 占位 export {}
 │           ├── base/                 # 占位(主应用通用)· ⚠️ TD-005 14 shadcn 实在 apps/web/components/ui/

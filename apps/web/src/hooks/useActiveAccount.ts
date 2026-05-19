@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { clearLsNamespace } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
-import type { ActiveAccountOutput } from '@quanqn/clients/router-types';
+import type { ActiveAccountOutput } from '@quanan/clients/router-types';
 
 export type { ActiveAccountOutput };
 

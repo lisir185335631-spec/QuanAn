@@ -1,5 +1,5 @@
 /**
- * QuanQn · PII 脱敏(LD-018 · R-14 · ADR-018)
+ * QuanAn · PII 脱敏(LD-018 · R-14 · ADR-018)
  * 派生自 PROMPTS.md §0.6 + AGENTS §3 LD-018
  *
  * ContextAssembler 在拼 prompt 前必跑 · 防 PII 入 LLM

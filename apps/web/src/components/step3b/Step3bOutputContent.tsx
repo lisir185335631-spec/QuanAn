@@ -1,49 +1,14 @@
 import { cn } from '@/lib/utils';
+import type { Step3bOutputBlock } from '@/lib/constants/step3b';
 
-// Result types matching mock data structure (AC-9)
-export interface Step3bCoreIdentity {
-  persona?: string;
-  slogan?: string;
-  differentiation?: string;
-  memoryPoints?: string[];
-  personality?: string;
-}
-
-export interface Step3bThoughtSystem {
-  coreIdeas?: string[];
-  uniqueViews?: string[];
-  catchphrases?: string[];
-}
-
-export interface Step3bContentPersona {
-  speakingStyle?: string;
-  sampleScript?: string;
-  visualStyle?: string;
-  contentPillars?: string[];
-}
-
-export interface Step3bTrustSystem {
-  endorsements?: string[];
-  socialProof?: string;
-  personalStory?: string;
-}
-
-export interface Step3bRoadmapPhase {
-  label: string;    // e.g. '0-1个月'
-  goal: string;
-  keyResults: string[];
-}
-
-export interface Step3bPersonaRoadmap {
-  phases?: Step3bRoadmapPhase[];
-}
-
+// Step3bResult — 6 块结构对应 D-220 字面锁
 export interface Step3bResult {
-  coreIdentity?: Step3bCoreIdentity;
-  thoughtSystem?: Step3bThoughtSystem;
-  contentPersona?: Step3bContentPersona;
-  trustSystem?: Step3bTrustSystem;
-  roadmap?: Step3bPersonaRoadmap;
+  personaPosition?: string;          // 人设定位
+  personaTags?: string[];             // 人设标签
+  contentDirection?: string[];        // 内容方向
+  differentiationStrategy?: string;   // 差异化策略
+  contentDirectionAdvice?: string[];  // 内容方向建议
+  ipStoryFramework?: string;          // IP 故事框架
 }
 
 function StringList({ items }: { items?: string[] }) {
@@ -70,7 +35,7 @@ function Field({ label, value }: { label: string; value?: string }) {
 }
 
 interface Props {
-  blockId: 'coreIdentity' | 'ideologySystem' | 'contentPersona' | 'trustSystem' | 'personaRoadmap';
+  blockId: Step3bOutputBlock['id'];
   result: Step3bResult;
   className?: string;
 }
@@ -78,69 +43,40 @@ interface Props {
 export default function Step3bOutputContent({ blockId, result, className }: Props) {
   return (
     <div className={cn('space-y-3', className)}>
-      {blockId === 'coreIdentity' && (
-        <>
-          <Field label="人设定位" value={result.coreIdentity?.persona} />
-          <Field label="Slogan" value={result.coreIdentity?.slogan} />
-          <Field label="差异化" value={result.coreIdentity?.differentiation} />
-          <div className="space-y-1">
-            <p className="text-body-xs font-medium text-on-surface">记忆点</p>
-            <StringList items={result.coreIdentity?.memoryPoints} />
-          </div>
-          <Field label="性格标签" value={result.coreIdentity?.personality} />
-        </>
+      {blockId === 'personaPosition' && (
+        <Field label="人设定位" value={result.personaPosition} />
       )}
 
-      {blockId === 'ideologySystem' && (
-        <>
-          <div className="space-y-1">
-            <p className="text-body-xs font-medium text-on-surface">核心理念</p>
-            <StringList items={result.thoughtSystem?.coreIdeas} />
-          </div>
-          <div className="space-y-1">
-            <p className="text-body-xs font-medium text-on-surface">独特观点</p>
-            <StringList items={result.thoughtSystem?.uniqueViews} />
-          </div>
-          <div className="space-y-1">
-            <p className="text-body-xs font-medium text-on-surface">口头禅</p>
-            <StringList items={result.thoughtSystem?.catchphrases} />
-          </div>
-        </>
-      )}
-
-      {blockId === 'contentPersona' && (
-        <>
-          <Field label="表达风格" value={result.contentPersona?.speakingStyle} />
-          <Field label="示例脚本" value={result.contentPersona?.sampleScript} />
-          <Field label="视觉风格" value={result.contentPersona?.visualStyle} />
-          <div className="space-y-1">
-            <p className="text-body-xs font-medium text-on-surface">内容支柱</p>
-            <StringList items={result.contentPersona?.contentPillars} />
-          </div>
-        </>
-      )}
-
-      {blockId === 'trustSystem' && (
-        <>
-          <div className="space-y-1">
-            <p className="text-body-xs font-medium text-on-surface">背书资源</p>
-            <StringList items={result.trustSystem?.endorsements} />
-          </div>
-          <Field label="社会证明" value={result.trustSystem?.socialProof} />
-          <Field label="个人故事" value={result.trustSystem?.personalStory} />
-        </>
-      )}
-
-      {blockId === 'personaRoadmap' && (
-        <div className="space-y-4">
-          {result.roadmap?.phases?.map((phase, i) => (
-            <div key={i} className="space-y-2">
-              <p className="text-body-sm font-semibold text-primary">{phase.label}</p>
-              <p className="text-body-xs font-medium text-on-surface">目标：{phase.goal}</p>
-              <StringList items={phase.keyResults} />
-            </div>
-          )) ?? <p className="text-body-sm text-muted-foreground">—</p>}
+      {blockId === 'personaTags' && (
+        <div className="flex flex-wrap gap-2">
+          {(result.personaTags ?? []).map((tag, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center bg-primary/10 text-primary rounded-full px-3 py-1 text-body-sm"
+            >
+              {tag}
+            </span>
+          ))}
+          {!result.personaTags?.length && (
+            <p className="text-body-sm text-muted-foreground">—</p>
+          )}
         </div>
+      )}
+
+      {blockId === 'contentDirection' && (
+        <StringList items={result.contentDirection} />
+      )}
+
+      {blockId === 'differentiationStrategy' && (
+        <Field label="差异化策略" value={result.differentiationStrategy} />
+      )}
+
+      {blockId === 'contentDirectionAdvice' && (
+        <StringList items={result.contentDirectionAdvice} />
+      )}
+
+      {blockId === 'ipStoryFramework' && (
+        <Field label="IP 故事框架" value={result.ipStoryFramework} />
       )}
     </div>
   );

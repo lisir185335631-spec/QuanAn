@@ -1,5 +1,5 @@
 /**
- * QuanQn · IPProgressService · 软 Supervisor(确定性服务 · 无 LLM)
+ * QuanAn · IPProgressService · 软 Supervisor(确定性服务 · 无 LLM)
  * 派生自 ARCHITECTURE.md §4.6 + ADR-004
  *
  * 跟踪 9 步进度 · 服务 /ip-plan · /daily-tasks · /evolution

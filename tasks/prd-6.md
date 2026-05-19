@@ -448,7 +448,7 @@
    - 各调 `runJudge(case_)` · model_tier='lightweight' · cost_log eventType='judge_call'
    - **累计 30 judge tests**(22 PRD-5 + 8 新)
 2. **4 工具页 e2e 集成** · `tests/e2e/video-tools-integration.spec.ts`(test.describe.serial · 创建账号 → 跑 4 视频工具 generate/acquisition/storyboard 各 1 次 + acquisition copywriting · 看 history 4-5 条 · 跳预填验证 · CI 用 mock LLM + mock ImageGen)
-3. **lint clean** · `pnpm --filter @quanqn/web lint --max-warnings=0` 退出码 0 · `pnpm --filter @quanqn/api lint --max-warnings=0` 退出码 0
+3. **lint clean** · `pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0 · `pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0
 4. **全套绿灯门禁** · vitest ≥ 620 / 620(563 PRD-5 累计 + ≥ 60 新)· typecheck 6 ws 0 error · playwright ≥ 138 / 138(126 PRD-5 + ≥ 12 新 + 1 新收官 spec)· judge 30/30
 
 **files_to_create** ·
@@ -463,7 +463,7 @@
 - `apps/web/eslint.config.js` 或修边缘 lint warnings(若 US-004/006/008 引入)
 - `apps/api/eslint.config.js` 或修边缘 lint warnings(若 US-003/005/007/009/010 引入)
 
-**test_command** · `pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanqn/web lint --max-warnings=0 && pnpm --filter @quanqn/api lint --max-warnings=0`
+**test_command** · `pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanan/web lint --max-warnings=0 && pnpm --filter @quanan/api lint --max-warnings=0`
 
 ---
 
@@ -811,8 +811,8 @@ H · Happy:
 - [ ] tests/judge/copywriting-acquisition.judge.ts 新建 · 2 golden case(育儿 + 医美 · 200-500 字 + CTA)pass
 - [ ] `pnpm test:judge` 退出码 0 · **30/30 pass**(22 PRD-5 + 8 新)
 - [ ] tests/e2e/video-tools-integration.spec.ts 新建 · 收官 e2e · serial · 创账号 → 跑 4 视频工具 → history 5 条 → 跳预填 · CI mock LLM + ImageGen
-- [ ] `pnpm --filter @quanqn/web lint --max-warnings=0` 退出码 0
-- [ ] `pnpm --filter @quanqn/api lint --max-warnings=0` 退出码 0
+- [ ] `pnpm --filter @quanan/web lint --max-warnings=0` 退出码 0
+- [ ] `pnpm --filter @quanan/api lint --max-warnings=0` 退出码 0
 - [ ] `pnpm typecheck` 6 ws 0 error
 - [ ] `pnpm test` ≥ 620 / ≥ 620(563 PRD-5 + ≥ 60 新)
 - [ ] `pnpm test:e2e` ≥ 138 / ≥ 138(126 PRD-5 + 5 工具 e2e + 1 收官 spec + 6 各 spec)
@@ -1002,9 +1002,9 @@ lint:          0 warnings (--max-warnings=0) ✓ (防 PRD-1 lint debt 重现)
 {
   "id": "US-007",
   "anti_patterns": [
-    { "source_prd": "QuanQn-base", "source_story": "REJ-013 (protectedProcedure)", "lesson": "tRPC procedure 不经 accountIsolation middleware", "antipattern": "❌ aiVideo router 用 publicProcedure · 不验证用户实际所属", "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS · LD-009 双层防护 explicit accountId(TD-019 PRD-5 教训)" },
-    { "source_prd": "QuanQn-PRD-5", "source_story": "TD-019 (knowledge.ts 修)", "lesson": "RLS-only 单层防护 不算双层", "antipattern": "❌ where: { historyId } 不带 accountId · 只靠 RLS auto filter", "correct": "✅ where: { accountId: activeAccountId!, historyId } · explicit + RLS 双层" },
-    { "source_prd": "QuanQn-base", "source_story": "REJ-009 (executeRaw 仅 middleware)", "lesson": "Worker 直调 prisma.$queryRaw / executeRaw 跳过 RLS", "antipattern": "❌ ImageGen Worker 用 prisma.$queryRaw('UPDATE history...')", "correct": "✅ Worker 用 prisma.history.update + Worker context set_config(via Worker level RLS · 留 R-12 manual review)" }
+    { "source_prd": "QuanAn-base", "source_story": "REJ-013 (protectedProcedure)", "lesson": "tRPC procedure 不经 accountIsolation middleware", "antipattern": "❌ aiVideo router 用 publicProcedure · 不验证用户实际所属", "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS · LD-009 双层防护 explicit accountId(TD-019 PRD-5 教训)" },
+    { "source_prd": "QuanAn-PRD-5", "source_story": "TD-019 (knowledge.ts 修)", "lesson": "RLS-only 单层防护 不算双层", "antipattern": "❌ where: { historyId } 不带 accountId · 只靠 RLS auto filter", "correct": "✅ where: { accountId: activeAccountId!, historyId } · explicit + RLS 双层" },
+    { "source_prd": "QuanAn-base", "source_story": "REJ-009 (executeRaw 仅 middleware)", "lesson": "Worker 直调 prisma.$queryRaw / executeRaw 跳过 RLS", "antipattern": "❌ ImageGen Worker 用 prisma.$queryRaw('UPDATE history...')", "correct": "✅ Worker 用 prisma.history.update + Worker context set_config(via Worker level RLS · 留 R-12 manual review)" }
   ]
 }
 ```

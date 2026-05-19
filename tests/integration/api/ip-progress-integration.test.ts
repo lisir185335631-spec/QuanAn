@@ -2,7 +2,7 @@
  * ip-progress-integration.test.ts — US-013 AC-16
  * 真实 DB 插入 stepData → 验证 getProgress 返回正确 N/9
  *
- * Connects to quanqn_test. Superuser bypasses RLS — no SET LOCAL ROLE needed here.
+ * Connects to quanan_test. Superuser bypasses RLS — no SET LOCAL ROLE needed here.
  * getProgress uses explicit accountId WHERE so isolation is correct even without RLS.
  */
 
@@ -12,7 +12,7 @@ import { PrismaClient } from '@prisma/client';
 import { getProgress, STEP_KEYS_9 } from '@/services/ip-progress/IPProgressService';
 
 const TEST_DB =
-  process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+  process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
 
 const prisma = new PrismaClient({ datasources: { db: { url: TEST_DB } } });
 

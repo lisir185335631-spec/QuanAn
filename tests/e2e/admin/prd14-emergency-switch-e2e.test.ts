@@ -14,7 +14,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

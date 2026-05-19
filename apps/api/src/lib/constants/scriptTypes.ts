@@ -1,5 +1,5 @@
 /**
- * QuanQn · 20 类脚本 + methodology
+ * QuanAn · 20 类脚本 + methodology
  * 派生自 ARCHITECTURE.md §3.6 + spec.md §Ⅹ.3 实测
  *
  * methodology 字段是 CopywritingAgent prompt 注入的核心

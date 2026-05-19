@@ -7,8 +7,8 @@ import { createHash } from 'node:crypto';
 import React from 'react';
 import { renderToBuffer } from '@react-pdf/renderer';
 
-import { PdfForensicTemplate } from '@quanqn/ui/admin/forensic-pdf';
-import type { ForensicPdfData, ForensicTimelineEntry } from '@quanqn/ui/admin/forensic-pdf';
+import { PdfForensicTemplate } from '@quanan/ui/admin/forensic-pdf';
+import type { ForensicPdfData, ForensicTimelineEntry } from '@quanan/ui/admin/forensic-pdf';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 

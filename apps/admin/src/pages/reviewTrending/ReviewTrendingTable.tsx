@@ -1,10 +1,10 @@
 // PRD-12 US-005 · ReviewTrendingTable
-// DenseTable from @quanqn/ui/admin · virtualScroll
+// DenseTable from @quanan/ui/admin · virtualScroll
 // Columns: queueId / platform / sourceUrl / autoVerdict / status / fetchedAt / 操作
 
 import { useMemo } from 'react';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 
 export type QueueRow = {
   id: number;

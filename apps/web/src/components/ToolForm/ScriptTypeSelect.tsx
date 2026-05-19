@@ -3,7 +3,7 @@
  * AGENTS §11.4 + §11.6.7 模式 · ScrollArea h-72 (>8 items 必须)
  */
 
-import { SCRIPT_TYPE_KEYS_20, SCRIPT_TYPE_LABELS } from '@quanqn/schemas/specialist-io';
+import { SCRIPT_TYPE_KEYS_20, SCRIPT_TYPE_LABELS } from '@quanan/schemas/specialist-io';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import type { ScriptTypeKey } from '@quanqn/schemas/specialist-io';
+import type { ScriptTypeKey } from '@quanan/schemas/specialist-io';
 import type { FieldError } from 'react-hook-form';
 
 interface ScriptTypeSelectProps {

@@ -6,13 +6,13 @@
 import {
   HOT_ELEMENT_GROUPS,
   HOT_ELEMENT_LABELS,
-} from '@quanqn/schemas/specialist-io';
+} from '@quanan/schemas/specialist-io';
 import { useState } from 'react';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
-import type { HotElementKey } from '@quanqn/schemas/specialist-io';
+import type { HotElementKey } from '@quanan/schemas/specialist-io';
 import type { FieldError } from 'react-hook-form';
 
 interface ElementsMultiSelectProps {

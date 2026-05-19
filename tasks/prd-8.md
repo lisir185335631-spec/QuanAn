@@ -259,7 +259,7 @@ grep -c "do_step\|optimize_content\|learn_methodology\|review_diagnosis\|upload_
 # 期望: ≥ 7 命中
 
 # 验 5: type alias chain(PRD-7 R1 教训)
-grep "export type.*=.*Imported\|export type.*from '@quanqn/schemas'" apps/api/src/specialists/EvolutionAgent.ts apps/api/src/specialists/DailyTaskAgent.ts apps/api/src/specialists/VoiceChatAgent.ts
+grep "export type.*=.*Imported\|export type.*from '@quanan/schemas'" apps/api/src/specialists/EvolutionAgent.ts apps/api/src/specialists/DailyTaskAgent.ts apps/api/src/specialists/VoiceChatAgent.ts
 # 期望: 每个文件至少 1 个 re-export · 保证下游 import 不破
 ```
 
@@ -309,7 +309,7 @@ grep "export type.*=.*Imported\|export type.*from '@quanqn/schemas'" apps/api/sr
 - [ ] AC-7: `apps/api/src/services/context-assembler/types.ts` AssembledContext 加 `evolutionInsight?: EvolutionInsightContent | null` 字段
 - [ ] AC-8: `apps/api/src/services/context-assembler/ContextAssembler.ts` assemble() 加第 5 路并行 fetch L4 latest insight · Promise.allSettled · 5s timeout · 失败 evolutionInsight=null
 - [ ] AC-9: `packages/schemas/src/specialist-io/index.ts` barrel 加 3 新 export · grep `from './evolution.schema'` + `from './dailyTask.schema'` + `from './voiceChat.schema'` 命中 3
-- [ ] AC-10: type alias re-export(PRD-7 R1 教训)· EvolutionAgent.ts / DailyTaskAgent.ts / VoiceChatAgent.ts(US-002 创建)预留 `export type { ... } from '@quanqn/schemas/specialist-io'`
+- [ ] AC-10: type alias re-export(PRD-7 R1 教训)· EvolutionAgent.ts / DailyTaskAgent.ts / VoiceChatAgent.ts(US-002 创建)预留 `export type { ... } from '@quanan/schemas/specialist-io'`
 - [ ] AC-11: SoT 验 §1.0.5 验证 1-2-5 全过(其他 3-4 在 US-002/011 跑)
 - [ ] AC-12: vitest unit · L1 Buffer 5 tests(push/get/clear/maxLimit/TTL)+ schema validation 8 tests(3 schemas × happy + reject)
 - [ ] AC-13: pnpm typecheck 6 ws 0 error · pnpm lint --max-warnings=0 全过
@@ -374,7 +374,7 @@ grep "export type.*=.*Imported\|export type.*from '@quanqn/schemas'" apps/api/sr
 - [ ] AC-5: cron/daily-task-runner.ts 新建 · cron.schedule('0 0 * * *', ...) 定义但**不**调 cron.start()(避免 stub 跑)· 留 US-007 启动
 - [ ] AC-6: 3 ContextAssembler templates 新建(evolution-agent / daily-task-agent / voice-chat-agent)· 各 ~50 行 prompt persona(参 PROMPTS §12.1/§13.1/§14.1)
 - [ ] AC-7: services/context-assembler/templates/index.ts SPECIALIST_TEMPLATES 加 3 entries
-- [ ] AC-8: type alias re-export(PRD-7 R1)· 每 Agent .ts 文件首部 `export type { ... } from '@quanqn/schemas/specialist-io'` re-export 对应 types
+- [ ] AC-8: type alias re-export(PRD-7 R1)· 每 Agent .ts 文件首部 `export type { ... } from '@quanan/schemas/specialist-io'` re-export 对应 types
 - [ ] AC-9: SoT 验 §1.0.5 验证 3(5 工具 name 跨 3 处一致)+ 验证 4(7 task type)全过
 - [ ] AC-10: unit test · 3 Specialist 骨架 happy path stub call should throw(各 1 test)+ schema getter 校验(各 1 test)= 6 tests
 - [ ] AC-11: pnpm typecheck 0 error · pnpm lint --max-warnings=0 全过
@@ -1101,4 +1101,4 @@ grep "export type.*=.*Imported\|export type.*from '@quanqn/schemas'" apps/api/sr
 ---
 
 > **本 PRD 由 Claude(Opus 4.7)在 PRD-7 完整收官后写 · 2026-05-11 · 含 PRD-7 retro Playbook P-1~P-7 内化 · §1.0 SoT 表沿用 D-046 三处一致原则 · anti_patterns 注入 PRD-6 + PRD-7 教训。**
-> **3 L5 自治 Agent + 5 层记忆 + 反馈飞轮闭环 · P7 智能模块 = QuanQn 项目最有创意的设计落地。**
+> **3 L5 自治 Agent + 5 层记忆 + 反馈飞轮闭环 · P7 智能模块 = QuanAn 项目最有创意的设计落地。**

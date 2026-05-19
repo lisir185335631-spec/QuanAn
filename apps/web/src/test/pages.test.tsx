@@ -162,7 +162,7 @@ describe('Step pages render', () => {
 describe('Tool pages render', () => {
   it('Generate renders h1 heading', () => {
     render(<MemoryRouter><Generate /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AI 智能生成');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('生成爆款文案');
   });
 
   it('Trending renders h1 heading', () => {
@@ -177,7 +177,7 @@ describe('Tool pages render', () => {
 
   it('Knowledge renders h1 heading', () => {
     render(<Knowledge />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('知识库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AIP 文案方法论');
   });
 });
 
@@ -237,7 +237,7 @@ describe('IpPlan page (US-010)', () => {
 
   it('renders 9 step cards with 查看详情 buttons', () => {
     render(<MemoryRouter><IpPlan /></MemoryRouter>);
-    const buttons = screen.getAllByRole('button', { name: '查看详情' });
+    const buttons = screen.getAllByRole('button', { name: /查看详情/ });
     expect(buttons).toHaveLength(9);
   });
 

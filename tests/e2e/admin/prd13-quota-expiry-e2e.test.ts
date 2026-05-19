@@ -2,7 +2,7 @@
 // AC-5: quota adjustment E2E · adjustQuota → quotaAdjustmentLog + delayed job
 //       simulate 24h → processExpiry → dailyQuota rollback + expiredAt written
 // SHIELD: vi.useFakeTimers() to simulate 24h advancement (no real wait)
-// SHIELD: real DB (quanqn_test) · processExpiry called directly after export
+// SHIELD: real DB (quanan_test) · processExpiry called directly after export
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
@@ -12,7 +12,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

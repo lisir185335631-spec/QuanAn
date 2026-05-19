@@ -8,8 +8,8 @@
 ```
 apps/api/
 ├── .env.example                # 文档化必需 env vars(主 + admin + LLM + 钉钉)
-├── package.json                # @quanqn/api workspace · dev/start/build/lint scripts
-├── tsconfig.json               # extends base · paths 映射 @/* → src/* + @quanqn/* workspace
+├── package.json                # @quanan/api workspace · dev/start/build/lint scripts
+├── tsconfig.json               # extends base · paths 映射 @/* → src/* + @quanan/* workspace
 ├── scripts/
 │   └── seed-knowledge-chunk.ts # 知识库 chunk seed(KnowledgeChunk 表)
 ├── test-results/               # vitest 输出 · 不进 git

@@ -8,7 +8,7 @@
  * SHIELD REJ-008: explicit accountId where · 双层防护
  */
 
-import { aiVideoInput } from '@quanqn/schemas/specialist-io';
+import { aiVideoInput } from '@quanan/schemas/specialist-io';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 

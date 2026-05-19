@@ -1209,7 +1209,7 @@
 **risk_level** · high(★ 收官 · 跨 14 US · 横切 emergency + brownfield 3 worker)
 
 **anti_patterns**:
-- **lesson** · "E2E 真 Prisma + 真 DB (D-080 模式)"(同 PRD-13 US-012) · **antipattern** · mock prisma 全部 · **correct** · 用 quanqn_test DB · beforeEach truncate
+- **lesson** · "E2E 真 Prisma + 真 DB (D-080 模式)"(同 PRD-13 US-012) · **antipattern** · mock prisma 全部 · **correct** · 用 quanan_test DB · beforeEach truncate
 - **lesson** · "fake-timers 模拟 24h"(同 PRD-13 US-012) · **antipattern** · `await new Promise(r => setTimeout(r, 24*60*60*1000))` 真等 · **correct** · `vi.useFakeTimers() + vi.advanceTimersByTime(24*60*60*1000)`
 - **lesson** · "FORBIDDEN_SAME_APPROVER 跨 4 调用点全测"(同 PRD-13 US-002) · **antipattern** · 仅测 dual approval 第二批 · 不测 post-review 同 approver · **correct** · 测 approveRequest 第二批 + postReviewApprove + emergencyApprove 全 3 处
 

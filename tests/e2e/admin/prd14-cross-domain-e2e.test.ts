@@ -6,7 +6,7 @@
 //   + 恢复 emergencyToggle false
 //   + 重新查 constant_versions 返 v3
 //   + assert 完整跨域 admin_audit_log 链
-// SHIELD: real DB (quanqn_test) · no mock prisma · mock Redis + BullMQ
+// SHIELD: real DB (quanan_test) · no mock prisma · mock Redis + BullMQ
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
@@ -16,7 +16,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

@@ -9,8 +9,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { adminTrpc } from '../../lib/admin-client';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 import type { ApprovalRow } from './ApprovalDetailDrawer';
 import { ApprovalDetailDrawer } from './ApprovalDetailDrawer';
 

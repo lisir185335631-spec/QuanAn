@@ -1,5 +1,5 @@
 /**
- * QuanQn · 12 类常量 barrel(LD-011)
+ * QuanAn · 12 类常量 barrel(LD-011)
  *
  * 总大小约 30KB · 直接 import 不入向量库(详见 ADR-012)
  * PRD-6 US-001: +3 视频域常量(videoTypes / videoDurations / imageStyles)

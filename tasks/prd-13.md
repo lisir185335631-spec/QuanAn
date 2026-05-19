@@ -1042,12 +1042,12 @@ PRD-12 retro §13 已 apply 1 Skill 升级 Diff 到全局 ~/.claude:
 [H PDF 导出]
 - [ ] `apps/admin/src/pages/compliance/components/ComplianceReportPdf.tsx` 新建 · 用 @react-pdf/renderer 4.5.1(PRD-11 已添加)
 - [ ] PDF 模板:
-  - 封面:QuanQn 合规月度报告 + 月份 + 生成人(super_admin) + 报告 ID
+  - 封面:QuanAn 合规月度报告 + 月份 + 生成人(super_admin) + 报告 ID
   - §1 总览:4 KPI 数字 + 比上月增减
   - §2 行业分布表:56 行业 × 6 列(免责数 / 违禁 / PII / 总触发 / 占比 / 趋势)
   - §3 时间趋势:折线图(用 png snapshot · 因 PDF 不支持 SVG · 后端 puppeteer 渲染留 PRR · 本 PRD 用 SimpleLine.png stub)
   - §4 高频事件 Top 20 列表
-  - 末页:签名栏 · "本报告由 QuanQn admin 系统自动生成 · 报告 ID: XXX · 生成时间 XXX"
+  - 末页:签名栏 · "本报告由 QuanAn admin 系统自动生成 · 报告 ID: XXX · 生成时间 XXX"
 - [ ] `<Button>` 导出 PDF · 点击触发 `<PDFDownloadLink>` 生成 + 浏览器下载
 
 [H 配置免责模板]
@@ -1261,7 +1261,7 @@ PRD-12 retro §13 已 apply 1 Skill 升级 Diff 到全局 ~/.claude:
 **size_hint** · high(6 files · 但收官 · 复杂的 E2E 跨 11 US)
 
 **anti_patterns**:
-- **lesson** · "E2E 必须用真 Prisma + 真 DB(D-080 isMock 模式仅 service 层)" · **antipattern** · E2E mock prisma 全部 · 没真验证写入 · **correct** · 用 quanqn_test DB(DATABASE_URL_TEST) + beforeEach truncate tables
+- **lesson** · "E2E 必须用真 Prisma + 真 DB(D-080 isMock 模式仅 service 层)" · **antipattern** · E2E mock prisma 全部 · 没真验证写入 · **correct** · 用 quanan_test DB(DATABASE_URL_TEST) + beforeEach truncate tables
 - **lesson** · "fake-timers 模拟 24h 推进 · 用 vitest useFakeTimers" · **antipattern** · `await new Promise(r => setTimeout(r, 24*60*60*1000))` 真等(测试卡 24h)· **correct** · `vi.useFakeTimers(); vi.advanceTimersByTime(24*60*60*1000); vi.useRealTimers();`
 
 ---

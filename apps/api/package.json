@@ -1,5 +1,5 @@
 {
-  "name": "@quanqn/api",
+  "name": "@quanan/api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,8 +14,8 @@
     "@anthropic-ai/sdk": "^0.30.0",
     "@hono/node-server": "^2.0.1",
     "@prisma/client": "^5.22.0",
-    "@quanqn/schemas": "workspace:*",
-    "@quanqn/ui": "workspace:^",
+    "@quanan/schemas": "workspace:*",
+    "@quanan/ui": "workspace:^",
     "@react-pdf/renderer": "^4.5.1",
     "@stdlib/stats-base-dists-chisquare-cdf": "^0.3.1",
     "@stdlib/stats-base-dists-t-cdf": "^0.2.3",

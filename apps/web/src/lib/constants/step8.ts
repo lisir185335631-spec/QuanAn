@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 8 直播策划常量 — 字面锁
+ * QuanAn · Step 8 直播策划常量 — 字面锁
  * 命名锁: STEP8_SUBFUNCTIONS_2 / STEP8_EXPERIENCE_3 / STEP8_OUTPUT_MODULES_6
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.9 line 1748-1786, 禁止改写
  * 数字锁: STEP8_SUBFUNCTIONS_2.length === 2 · STEP8_EXPERIENCE_3.length === 3

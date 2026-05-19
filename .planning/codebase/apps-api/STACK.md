@@ -1,7 +1,7 @@
 # Technology Stack — apps/api
 
 **Analysis Date:** 2026-05-13
-**Scope:** `apps/api/` (QuanQn 主应用 + admin 后端 · monorepo workspace `@quanqn/api`)
+**Scope:** `apps/api/` (QuanAn 主应用 + admin 后端 · monorepo workspace `@quanan/api`)
 
 ## Languages
 
@@ -60,8 +60,8 @@
 - @anthropic-ai/sdk ^0.30.0 + openai ^4.70.0 — LLM Gateway 双 provider(`apps/api/src/workers/llm-gateway/`)
 
 **Workspace cross-imports:**
-- @quanqn/schemas — `packages/schemas/src/` · zod schemas 跨前后端复用(`workspace:*`)
-- @quanqn/ui ^ — UI primitive + admin PDF 模板(`workspace:^`)· `tsconfig.json` 显式映射 `@quanqn/ui/admin/pdf`
+- @quanan/schemas — `packages/schemas/src/` · zod schemas 跨前后端复用(`workspace:*`)
+- @quanan/ui ^ — UI primitive + admin PDF 模板(`workspace:^`)· `tsconfig.json` 显式映射 `@quanan/ui/admin/pdf`
 
 ## Configuration
 
@@ -89,9 +89,9 @@
 
 **Development:**
 - Node ≥ 20 · pnpm 9.15.9
-- PostgreSQL 16 + pgvector 0.8(per project CLAUDE.md · 主开发库 `quanqn` · 测试库 `quanqn_test`)
+- PostgreSQL 16 + pgvector 0.8(per project CLAUDE.md · 主开发库 `quanan` · 测试库 `quanan_test`)
 - Redis 8.6.3(本地 brew 启动)
-- 启动 · `pnpm --filter @quanqn/api dev`(根 script `dev:api`)· tsx 直接跑 `src/index.ts`
+- 启动 · `pnpm --filter @quanan/api dev`(根 script `dev:api`)· tsx 直接跑 `src/index.ts`
 
 **Production:**
 - 推断目标 · Node container(Vercel / Railway 待 PRR · 见项目 CLAUDE.md §7)

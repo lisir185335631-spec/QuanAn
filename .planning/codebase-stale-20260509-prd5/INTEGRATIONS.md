@@ -64,7 +64,7 @@ All 8 live specialists extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/special
 ## Data Storage
 
 **Databases:**
-- **PostgreSQL 16.13** (local dev: `postgresql://return@localhost:5432/quanqn`; test DB: `postgresql://return@localhost:5432/quanqn_test` per `CLAUDE.md §3`)
+- **PostgreSQL 16.13** (local dev: `postgresql://return@localhost:5432/quanan`; test DB: `postgresql://return@localhost:5432/quanan_test` per `CLAUDE.md §3`)
   - Production target: Supabase or Neon (managed, includes pgvector + Auth) — AGENTS §2.5
   - Connection: env vars `DATABASE_URL` (Prisma client) + `DIRECT_URL` (Prisma migrations) + `TEST_DATABASE_URL` (`.env.example:16-18`)
   - Client: Prisma 5.22.0 + @prisma/client 5.22.0
@@ -84,7 +84,7 @@ All 8 live specialists extend `BaseSpecialist<TIn, TOut>` (`apps/api/src/special
 - **Upstash Redis (REST)** — only Redis path live currently
   - Client: `@upstash/redis` 1.38.0 instantiated at `apps/api/src/workers/llm-gateway/rate-limiter.ts:42`
   - Auth: env vars `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
-  - Use: `@upstash/ratelimit` token bucket — keyed `quanqn:rl:{plan}:user:{userId}` (free=50/d, pro=500/d, enterprise=5000/d)
+  - Use: `@upstash/ratelimit` token bucket — keyed `quanan:rl:{plan}:user:{userId}` (free=50/d, pro=500/d, enterprise=5000/d)
   - Graceful degrade: if `UPSTASH_REDIS_REST_URL` absent, `checkRateLimit()` warns and returns immediately (`apps/api/src/workers/llm-gateway/rate-limiter.ts:77-81`)
 - **Local Redis 8.6.3** declared at `redis://localhost:6379` (CLAUDE.md §3, `.env.example REDIS_URL`)
   - **DRIFT: declared but not wired** — no `import 'ioredis'` or `import { createClient } from 'redis'` anywhere in `apps/api/src/`. ioredis is in deps awaiting bullmq use (PRD-6+).

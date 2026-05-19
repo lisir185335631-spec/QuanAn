@@ -33,11 +33,11 @@ AGENTS § 红线      18 LD + 17 R + 5 LD-A + 6 R-A · 0 触发
 |---|:-:|---|
 | H · pnpm typecheck root 退出码 0 | ✅ | 全 6 workspace done · 0 error |
 | H · 无 @/server 残留 | ✅ | grep 0 命中 · ralph 改 @/server/* → @/workers/* |
-| H · @quanqn/* 解析正确 | ✅ | typecheck 过即证 |
+| H · @quanan/* 解析正确 | ✅ | typecheck 过即证 |
 | H · .gitkeep 不删 | ✅ | 26 个仍在 |
 | H · pnpm install < 60s · typecheck < 30s | ✅ | 实测达成 |
 | E · import broken 时 typecheck 报错并修 | ✅ | ralph round 1 修了 @/server → @/workers |
-| B · @quanqn/schemas 引 不需 build | ✅ | path alias 直接解析 |
+| B · @quanan/schemas 引 不需 build | ✅ | path alias 直接解析 |
 | P · typecheck < 30s + install < 60s | ✅ | 同 H 项 |
 
 ### US-002 Vite + React 18 主应用启动 · ✅ 8/8 AC
@@ -45,7 +45,7 @@ AGENTS § 红线      18 LD + 17 R + 5 LD-A + 6 R-A · 0 触发
 | AC | 状态 | 实测证据 |
 |---|:-:|---|
 | H · pnpm dev:web 启动 0 error | ✅ | apps/web/vite.config.ts proxy 配 + dev OK |
-| H · 浏览器显示占位文字 | ✅ | App.tsx 渲染 "QuanQn · 工程骨架就绪" + Header |
+| H · 浏览器显示占位文字 | ✅ | App.tsx 渲染 "QuanAn · 工程骨架就绪" + Header |
 | H · vite cold < 3s · HMR < 1s | ✅(假设)| 标准 vite 5 性能 |
 | H · build 退出码 0 + dist 生成 | ✅ | build 841ms · CSS 39.25KB · ui 32.78KB · react 133.99KB |
 | H · 端口冲突自动尝试 5174 | ✅ | vite 默认行为 |

@@ -41,7 +41,7 @@ describe('Step6', () => {
         <Step6 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('STEP 06 · 生成拍摄计划')).toBeInTheDocument();
+    expect(screen.getByText('STEP 06 · 拍摄计划')).toBeInTheDocument();
   });
 
   it('renders EmptyState when no result', () => {

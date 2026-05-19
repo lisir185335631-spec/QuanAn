@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-3-p2-routes-home",
   "description": "PRD-3 P2 路由 + 首页 · 1w · risk=medium · 6 US · 派生 ARCHITECTURE §9.4 + §2.4/2.5 + §3.6.4 + spec.md §Ⅴ/§Ⅵ · 34 路由占位 + IP 账号切换 + /ip-plan 进度 + 顺带合并 TD-012(account/step alias)",
   "userStories": [
@@ -76,7 +76,7 @@
         "tests/unit/web/pages.test.tsx"
       ],
       "files_to_modify": [],
-      "test_command": "pnpm --filter @quanqn/web test && pnpm --filter @quanqn/web typecheck",
+      "test_command": "pnpm --filter @quanan/web test && pnpm --filter @quanan/web typecheck",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": []
@@ -112,7 +112,7 @@
       "files_to_modify": [
         "apps/web/src/router.tsx"
       ],
-      "test_command": "pnpm --filter @quanqn/web test",
+      "test_command": "pnpm --filter @quanan/web test",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": []
@@ -145,12 +145,12 @@
         "apps/web/src/components/Header.tsx",
         "apps/web/src/hooks/useActiveAccount.ts"
       ],
-      "test_command": "pnpm --filter @quanqn/web test && pnpm test:e2e -- account-switch",
+      "test_command": "pnpm --filter @quanan/web test && pnpm test:e2e -- account-switch",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013",
           "lesson": "切账号必走 ipAccounts.switchActive · 不允许直 user.update",
           "antipattern": "❌ prisma.user.update({ activeAccountId }) 散落代码",
@@ -189,7 +189,7 @@
         "apps/api/src/agents/base/IPProgressService.ts",
         "apps/web/src/router.tsx"
       ],
-      "test_command": "pnpm --filter @quanqn/web test && pnpm --filter @quanqn/api test",
+      "test_command": "pnpm --filter @quanan/web test && pnpm --filter @quanan/api test",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": []
@@ -205,7 +205,7 @@
         "vitest 全过 · ≥ 200 tests(原 178 + 新 ≥ 22)",
         "playwright e2e 全过 · 含 PRD-2 4 e2e + PRD-3 4 新 e2e = 8",
         "pnpm typecheck 全 6 workspace 0 error",
-        "pnpm --filter @quanqn/web lint clean(★ 防 PRD-1 lint debt 重现)",
+        "pnpm --filter @quanan/web lint clean(★ 防 PRD-1 lint debt 重现)",
         "Typecheck passes",
         "Tests pass(全套)"
       ],

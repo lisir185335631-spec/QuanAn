@@ -12,7 +12,7 @@ import {
   PRESENT_STYLE_PLATFORMS,
   type PresentStyleType,
   type PresentStylePlatform,
-} from '@quanqn/schemas/specialist-io';
+} from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';

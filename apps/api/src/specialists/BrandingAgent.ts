@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 US-005
+ * QuanAn · PRD-4 US-005
  * BrandingAgent — step3(账号包装 · packaging mode · 8KB)+ step3b(人设定制 · persona mode · 6KB)
  * 两个 mode 共用一个 Specialist · outputSchema getter 按 mode 返回对应 schema(REJ-007)
  *

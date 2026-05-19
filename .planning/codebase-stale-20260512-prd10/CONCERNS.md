@@ -1,4 +1,4 @@
-# Codebase Concerns · QuanQn
+# Codebase Concerns · QuanAn
 
 **Analysis Date:** 2026-05-11
 **Scope:** PRD-1 → PRD-8 完成期 · 65 stories all approved · 准备进入 PRD-9
@@ -34,7 +34,7 @@ export const protectedProcedure = publicProcedure.use(accountIsolationMiddleware
 **核心逻辑:**
 ```ts
 return ctx.prisma.$transaction(async (tx) => {
-  await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;                                           // L38
+  await tx.$executeRaw`SET LOCAL ROLE quanan_app`;                                           // L38
   await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, true)`;  // L39
   if (user?.id !== null && user?.id !== undefined) {
     await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, true)`;  // L41
@@ -50,7 +50,7 @@ return ctx.prisma.$transaction(async (tx) => {
 **风险等级:** 🟡 MEDIUM
 - ⚠️ 每请求 wrap `$transaction` → +1 connection 占用 · 高 QPS 连接池可能耗尽(留 PRR)
 - ⚠️ `as unknown as PrismaClient` 类型断言隐藏潜在 bug
-- ✅ `quanqn_app` 非 superuser 角色与 RLS 策略联动 · RLS isolation test 覆盖
+- ✅ `quanan_app` 非 superuser 角色与 RLS 策略联动 · RLS isolation test 覆盖
 
 ---
 
@@ -297,7 +297,7 @@ await redis.expire(key, 1800);               // 30 min TTL · AC-5
 
 ## §3 Known Tech Debt(5 open · `.agents/tech-debt.json` 36 条 · post PRD-9)
 
-完整列表来自 `/Users/return/Desktop/QuanQn/.agents/tech-debt.json` · 20 resolved + 3 accepted + 3 closed + 5 open = 36 条 (post PRD-9 · 2026-05-12)。本节聚焦 5 open(按 severity 排序)· 详细 PRD-9 新加 TD-034/035 见 retro `.agents/retros/prd-9-vs-prd-8-retrospective.md`。
+完整列表来自 `/Users/return/Desktop/QuanAn/.agents/tech-debt.json` · 20 resolved + 3 accepted + 3 closed + 5 open = 36 条 (post PRD-9 · 2026-05-12)。本节聚焦 5 open(按 severity 排序)· 详细 PRD-9 新加 TD-034/035 见 retro `.agents/retros/prd-9-vs-prd-8-retrospective.md`。
 
 ### §3.1 🔴 High Severity Open(2 条)
 
@@ -653,4 +653,4 @@ ls scripts/audit-*.sh
 
 ---
 
-*Concerns audit: 2026-05-11 · QuanQn PRD-1~PRD-8 完成期 · 65 stories all approved · 8 open TD · 准备进入 PRD-9*
+*Concerns audit: 2026-05-11 · QuanAn PRD-1~PRD-8 完成期 · 65 stories all approved · 8 open TD · 准备进入 PRD-9*

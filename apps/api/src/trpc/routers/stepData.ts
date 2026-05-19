@@ -5,7 +5,7 @@
  * AC-8: stepData.get returns current account's data (RLS account_id isolation → cross-account=0)
  * US-007: adds saveStream SSE subscription for step5 (TopicAgent · 22KB · 5 category SSE)
  * SHIELD: do NOT add where:{accountId} to reads — RLS (account_id isolation) handles it
- * Note: Zod schemas inlined — @quanqn/schemas/entities has the canonical definition for client use
+ * Note: Zod schemas inlined — @quanan/schemas/entities has the canonical definition for client use
  */
 
 import { TRPCError } from '@trpc/server';

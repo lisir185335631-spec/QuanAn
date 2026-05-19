@@ -54,7 +54,7 @@ export default function Login() {
         }}
       >
         <h1 style={{ color: '#d4af37', marginBottom: '0.25rem', fontSize: '1.5rem' }}>
-          QuanQn Admin
+          QuanAn Admin
         </h1>
         <p style={{ color: '#555', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
           管理员登录
@@ -72,7 +72,7 @@ export default function Login() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="super@quanqn.com"
+            placeholder="super@quanan.com"
             style={{
               width: '100%',
               padding: '0.5rem 0.75rem',

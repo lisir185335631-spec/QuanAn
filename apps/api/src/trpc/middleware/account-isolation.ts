@@ -35,7 +35,7 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next, t
   // Use connection-level SET (is_local=false) instead — safe because each SSE request is a
   // dedicated HTTP connection that is closed when the subscription ends.
   if (type === 'subscription') {
-    await ctx.prisma.$executeRaw`SET ROLE quanqn_app`;
+    await ctx.prisma.$executeRaw`SET ROLE quanan_app`;
     await ctx.prisma.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, false)`;
     if (user?.id !== null && user?.id !== undefined) {
       await ctx.prisma.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, false)`;
@@ -45,10 +45,10 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next, t
 
   // set_config(name, value, is_local=true) is transaction-scoped (equivalent to SET LOCAL).
   // Wrapping in $transaction ensures is_local applies correctly — parameters are cleared on commit.
-  // SET LOCAL ROLE quanqn_app ensures RLS policies apply even when the connection owner is a superuser.
+  // SET LOCAL ROLE quanan_app ensures RLS policies apply even when the connection owner is a superuser.
   return ctx.prisma.$transaction(async (tx) => {
     // Switch to non-superuser role so RLS policies are enforced (superusers bypass RLS by default)
-    await tx.$executeRaw`SET LOCAL ROLE quanqn_app`;
+    await tx.$executeRaw`SET LOCAL ROLE quanan_app`;
     await tx.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, true)`;
     if (user?.id !== null && user?.id !== undefined) {
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${String(user.id)}, true)`;

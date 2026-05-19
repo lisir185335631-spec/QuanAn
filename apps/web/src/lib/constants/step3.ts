@@ -1,5 +1,5 @@
 /**
- * QuanQn · Step 3 账号包装方案常量 — 字面锁
+ * QuanAn · Step 3 账号包装方案常量 — 字面锁
  * 命名锁: STEP3_PLATFORMS_5 / STEP3_OUTPUT_H3_6 / STEP3_FORM / STEP3_CTA_LABEL / STEP3_BUTTON_*
  * D1=A 红线: 所有字面量 1:1 来源 spec §7.2, 禁止改写
  */
@@ -27,12 +27,12 @@ export interface Step3OutputBlock {
 }
 
 export const STEP3_OUTPUT_H3_6: readonly Step3OutputBlock[] = [
-  { id: 'videoReferences', h3Label: '1. 视频参考案例',   hint: 'AI 推荐 3 个本行业的爆款视频参考(含标题、描述、搜索词)' },
-  { id: 'nickname',        h3Label: '2. 昵称推荐',       hint: '5 个备选昵称 + 命名策略 + 各平台调整建议' },
-  { id: 'avatar',          h3Label: '3. 头像设计方案',   hint: '风格 / 配色 / 表情 / 必含元素 / 禁忌 / AI 绘图 prompt' },
-  { id: 'background',      h3Label: '4. 背景图设计方案', hint: '风格 / 布局 / 配色 / 文案 / 3 平台尺寸适配 / AI 绘图 prompt' },
-  { id: 'bio',             h3Label: '5. 简介文案方案',   hint: '简介公式 + 6 个版本(3 平台 × 主号副号)+ SEO 关键词' },
-  { id: 'strategy',        h3Label: '6. 整体包装策略',   hint: '视觉一致性 / 第一印象 / 转化路径 / 平台优先级' },
+  { id: 'videoReferences', h3Label: '视频参考案例',   hint: 'AI 推荐 3 个本行业的爆款视频参考(含标题、描述、搜索词)' },
+  { id: 'nickname',        h3Label: '昵称推荐',       hint: '5 个备选昵称 + 命名策略 + 各平台调整建议' },
+  { id: 'avatar',          h3Label: '头像设计方案',   hint: '风格 / 配色 / 表情 / 必含元素 / 禁忌 / AI 绘图 prompt' },
+  { id: 'background',      h3Label: '背景图设计方案', hint: '风格 / 布局 / 配色 / 文案 / 3 平台尺寸适配 / AI 绘图 prompt' },
+  { id: 'bio',             h3Label: '简介文案方案',   hint: '简介公式 + 6 个版本(3 平台 × 主号副号)+ SEO 关键词' },
+  { id: 'strategy',        h3Label: '整体包装策略',   hint: '视觉一致性 / 第一印象 / 转化路径 / 平台优先级' },
 ] as const;
 
 // STEP3_BUTTONS_3 · 每 H3 子模块右侧 3 按钮 + 头像/背景图 加 [生成参考图]

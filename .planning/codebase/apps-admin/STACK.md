@@ -52,9 +52,9 @@
 ## Key Dependencies
 
 **Critical (workspace · 跨子项目共享):**
-- @quanqn/ui workspace:^ - DenseTable + tokens + PdfBillTemplate + PdfForensicTemplate (`packages/ui/src/admin/`)
-- @quanqn/clients workspace:* - AdminRouter 类型 (`packages/clients/src/admin-router-types.ts`)
-- @quanqn/schemas (path alias 可用 · 当前 apps/admin 未直接 import)
+- @quanan/ui workspace:^ - DenseTable + tokens + PdfBillTemplate + PdfForensicTemplate (`packages/ui/src/admin/`)
+- @quanan/clients workspace:* - AdminRouter 类型 (`packages/clients/src/admin-router-types.ts`)
+- @quanan/schemas (path alias 可用 · 当前 apps/admin 未直接 import)
 
 **Infrastructure:**
 - react / react-dom 18.3.1 - 基础运行时
@@ -82,9 +82,9 @@
 
 **TypeScript Paths (apps/admin/tsconfig.json:5-13):**
 - `@/*` → `./src/*` (业务页 · `import { adminTrpc } from '@/lib/admin-client'` · 见 `pages/Login.tsx:8`)
-- `@quanqn/schemas` / `@quanqn/schemas/*` → `../../packages/schemas/src`
-- `@quanqn/ui` / `@quanqn/ui/*` → `../../packages/ui/src`
-- `@quanqn/clients` / `@quanqn/clients/*` → `../../packages/clients/src`
+- `@quanan/schemas` / `@quanan/schemas/*` → `../../packages/schemas/src`
+- `@quanan/ui` / `@quanan/ui/*` → `../../packages/ui/src`
+- `@quanan/clients` / `@quanan/clients/*` → `../../packages/clients/src`
 
 **Vite Config (apps/admin/vite.config.ts):**
 - React plugin
@@ -113,11 +113,11 @@
 - 后端 · `apps/api` 跑在 port 3000 (admin-client.ts 默认 VITE_API_BASE_URL)
 
 **Production:**
-- 部署目标 · admin.quanqn.com 独立子域名 (ADR-021)
+- 部署目标 · admin.quanan.com 独立子域名 (ADR-021)
 - 部署方式 · 静态站 (dist-admin/ 上 CDN / Vercel static)
 - Backend 路径 · `/trpc/admin/*` (与主应用 /trpc/user 同源 / 不同 router)
 - WAF / IP 白名单 · 上线前 PRR 阶段配置 (当前 stub · StatusBar 显示 `WAF=stub`)
-- OAuth · Google Workspace Internal (@quanqn.com 限定 · 当前 mock · stub button disabled · 见 `pages/Login.tsx:111`)
+- OAuth · Google Workspace Internal (@quanan.com 限定 · 当前 mock · stub button disabled · 见 `pages/Login.tsx:111`)
 - TLS · HTTPS 强制 (production 部署平台默认)
 
 ## Browser API Usage
@@ -134,7 +134,7 @@
 ## tRPC + Auth Stack
 
 **Client (apps/admin/src/lib/admin-client.ts):**
-- `createTRPCReact<AdminRouter>()` - 类型从 @quanqn/clients 取
+- `createTRPCReact<AdminRouter>()` - 类型从 @quanan/clients 取
 - `httpBatchLink({ url: '/trpc/admin', fetch: ... credentials:'include' })`
 - `new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1 } } })`
 - 全局 30s staleTime · 单次 retry · 业务页可 override (e.g. CostAlertsPanel staleTime 30s + refetchInterval 60s)

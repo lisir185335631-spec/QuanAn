@@ -1,5 +1,5 @@
 /**
- * QuanQn · Prisma seed 数据
+ * QuanAn · Prisma seed 数据
  *
  * 跟 DATA-MODEL.md §12.2 一致
  * 跑 · pnpm db:seed
@@ -66,7 +66,7 @@ export async function seedIndustries(prismaClient = prisma) {
 // 0b. Mock IP 账号 (5 个) · PRD-15 US-001 AC-2
 // ====================================================
 
-const DEV_MOCK_USER_EMAIL = 'dev@quanqn.local';
+const DEV_MOCK_USER_EMAIL = 'dev@quanan.local';
 
 const MOCK_IP_ACCOUNTS = [
   { name: 'AI 创业者小张', industry: 'enterprise', platform: 'douyin', stage: 'starter', personalInfo: 'AI 创业者 · ip-creator 路径', ipPositioning: 'ip-creator', followersRange: '0-1000' as const },
@@ -606,7 +606,7 @@ async function seedSystemConfig() {
 
 async function main() {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(' QuanQn Seed v0.2');
+  console.log(' QuanAn Seed v0.2');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   await seedIndustries();

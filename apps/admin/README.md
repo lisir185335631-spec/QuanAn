@@ -1,8 +1,8 @@
-# @quanqn/admin · 管理后台 SPA(占位)
+# @quanan/admin · 管理后台 SPA(占位)
 
 > **当前状态** · P0 占位 · 仅目录骨架就位 · 实施留 P9.0(参 ADMIN-ARCHITECTURE.md §8.2)
 > **触发** · 主应用 P8(PRD-9 知识库)完成后启动 · ADMIN-ARCHITECTURE.md §8.7 协同节奏
-> **独立** · 独立 OAuth(Google Workspace Internal · @quanqn.com 限定)+ WAF IP 白名单 + 独立子域名 admin.quanqn.com(参 ADR-021)
+> **独立** · 独立 OAuth(Google Workspace Internal · @quanan.com 限定)+ WAF IP 白名单 + 独立子域名 admin.quanan.com(参 ADR-021)
 
 ---
 

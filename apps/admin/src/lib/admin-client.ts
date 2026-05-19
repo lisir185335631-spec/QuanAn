@@ -5,7 +5,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 
-import type { AdminRouter } from '@quanqn/clients/admin-router-types';
+import type { AdminRouter } from '@quanan/clients/admin-router-types';
 
 export const adminTrpc = createTRPCReact<AdminRouter>();
 

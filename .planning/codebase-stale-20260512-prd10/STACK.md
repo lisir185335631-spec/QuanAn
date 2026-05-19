@@ -148,7 +148,7 @@
 
 **Build:**
 - `tsconfig.json` — root project references → `apps/{web,api,admin}` + `packages/{schemas,ui,clients}`
-- `tsconfig.base.json` — strict + `noUncheckedIndexedAccess` + `useUnknownInCatchVariables` + path aliases `@quanqn/{schemas,ui,clients}`
+- `tsconfig.base.json` — strict + `noUncheckedIndexedAccess` + `useUnknownInCatchVariables` + path aliases `@quanan/{schemas,ui,clients}`
 - `turbo.json` — `build`/`typecheck` depend on `^build`
 - ESLint 8.57 — `@typescript-eslint/eslint-plugin` 6.21 + import / react / react-hooks / jsx-a11y plugins (`--max-warnings=0`)
 - Prettier 3 + `prettier-plugin-tailwindcss` 0.6 (class sort)
@@ -159,7 +159,7 @@
 **Development (verified local, 2026-05-07):**
 - Node.js 20+ (per `.nvmrc` and `package.json` engines)
 - pnpm 9.15.9
-- PostgreSQL 16.13 local (brew, `postgresql://return@localhost:5432/quanqn` + `_test`)
+- PostgreSQL 16.13 local (brew, `postgresql://return@localhost:5432/quanan` + `_test`)
 - pgvector 0.8.0 extension (DB declares `extensions = [vector]` in `prisma/schema.prisma:14`)
 - Redis 8.6.3 local (brew, `redis://localhost:6379`) — used by **3 active subsystems**: BullMQ (`apps/api/src/lib/redis.ts`), L1 Buffer (`apps/api/src/memory/l1-buffer.ts`), 3 daily-rate-limit counters (`apps/api/src/lib/rate-limit/*.ts`)
 - `.gitattributes` enforces LF line endings for `*.ts/tsx/sh/py/json/md/sql/yaml/prisma`

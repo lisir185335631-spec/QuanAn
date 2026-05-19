@@ -12,7 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { trpc } from '@/lib/trpc';
 
-import type { TrendingDetailItem } from '@quanqn/clients/router-types';
+import type { TrendingDetailItem } from '@quanan/clients/router-types';
 
 const PLATFORM_LABELS: Record<string, string> = {
   douyin: '📱 抖音',

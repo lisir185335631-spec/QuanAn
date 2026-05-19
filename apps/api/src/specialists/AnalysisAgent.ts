@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-5 US-002
+ * QuanAn · PRD-5 US-002
  * AnalysisAgent — /analysis(structural) + /video-analysis(viral)
  *
  * AC-1:  继承 BaseSpecialist · 五层配置 · model_tier='lightweight' · streaming=false
@@ -31,8 +31,8 @@ import type {
 
 export type AnalysisMode = 'viral' | 'structural';
 
-// ── I/O schemas (inline equiv of @quanqn/schemas/specialist-io analysis.schema) ──
-// Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use
+// ── I/O schemas (inline equiv of @quanan/schemas/specialist-io analysis.schema) ──
+// Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use
 
 /** viral mode input: 爆款文案 + 可选标题 */
 export const analysisViralInput = z.object({

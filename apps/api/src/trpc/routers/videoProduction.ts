@@ -9,7 +9,7 @@
  * Note: generateStoryboard 保留为 stub — PRD-6 US-007 真接
  */
 
-import { videoProductionInput } from '@quanqn/schemas/specialist-io';
+import { videoProductionInput } from '@quanan/schemas/specialist-io';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 

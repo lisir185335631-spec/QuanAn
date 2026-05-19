@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · VideoAgent LLM Judge
+ * QuanAn · US-016 · VideoAgent LLM Judge
  * AC-2: golden case — shooting mode / 美食行业 / douyin
  * AC-10: real scenario input
  * AC-11: quantifiable criteria (shotList ≥ 1, 13 fields/shot)

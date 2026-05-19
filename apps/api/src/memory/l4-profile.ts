@@ -4,11 +4,11 @@
  * getDeepLearningSamples: recent deep learning archives for a given account
  */
 
-import { EvolutionInsightContentSchema } from '@quanqn/schemas/specialist-io';
+import { EvolutionInsightContentSchema } from '@quanan/schemas/specialist-io';
 
 import { prisma } from '@/lib/prisma';
 
-import type { EvolutionInsightContent } from '@quanqn/schemas/specialist-io';
+import type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 
 export async function getLatestInsight(
   accountId: number,

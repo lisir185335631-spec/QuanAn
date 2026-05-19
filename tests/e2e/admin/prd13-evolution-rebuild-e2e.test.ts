@@ -3,7 +3,7 @@
 //       → _forceRebuildEvolutionInTx callback → evolution_profile cleared
 //       → evolution_insights all isFallback=true+levelAfter='rebuild'
 //       → BullMQ EvolutionAgent batch job enqueued
-// SHIELD: real DB (quanqn_test) · mock BullMQ to capture queue.add calls
+// SHIELD: real DB (quanan_test) · mock BullMQ to capture queue.add calls
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
@@ -13,7 +13,7 @@ const { testPrisma, mockBullmqQueueAdd } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   const mockBullmqQueueAdd = vi.fn().mockResolvedValue({ id: 'evo-rebuild-job' });
   return {
     testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }),

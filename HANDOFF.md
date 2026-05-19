@@ -1,4 +1,4 @@
-# QuanQn · Coding 3.0 启动前 HANDOFF 状态
+# QuanAn · Coding 3.0 启动前 HANDOFF 状态
 
 > **创建** · 2026-05-07 · 上一会话 context 75% 触顶 · 写本文件给下一会话接续
 > **当前阶段** · 开发就绪度 ≈ 50%(从全周期 PRR 20% 收窄到 DEV-READINESS 8 维度)
@@ -34,7 +34,7 @@
 - ✅ **PostgreSQL 16.13 已装 + 已启动**(`brew services list` 显示 started · LaunchAgent 自动启动)
   - 默认数据库 cluster · `/opt/homebrew/var/postgresql@16`
   - 默认 user 是 `return`(macOS 用户名)· 无密码 · 数据库名 `postgres`
-  - DATABASE_URL 形如 · `postgresql://return@localhost:5432/quanqn`(后续要 createdb quanqn)
+  - DATABASE_URL 形如 · `postgresql://return@localhost:5432/quanan`(后续要 createdb quanan)
 - ✅ **Redis 8.6.3 已装 + 已启动**(LaunchAgent 自动启动)
   - REDIS_URL · `redis://localhost:6379`
 - ✅ `~/.claude/scripts/ralph/sync-to-project.sh` 真存在(供 P0-2 用)
@@ -82,12 +82,12 @@
 
 ⏳ 仍需做(只剩 1 件 · 1 分钟)·
   · 创建项目数据库 ·
-    createdb quanqn        # 主开发库
-    createdb quanqn_test   # 测试库
+    createdb quanan        # 主开发库
+    createdb quanan_test   # 测试库
     
   · 启用 pgvector 扩展 ·
-    psql quanqn -c "CREATE EXTENSION IF NOT EXISTS vector;"
-    psql quanqn_test -c "CREATE EXTENSION IF NOT EXISTS vector;"
+    psql quanan -c "CREATE EXTENSION IF NOT EXISTS vector;"
+    psql quanan_test -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
 (新会话可以用 Bash 跑这两步 · 不需要用户做 · 已纳入 §3.2 Step 0)
 ```
@@ -106,7 +106,7 @@ Step 1 · 修 8 项问题(我做 · 30 分钟)
 
 Step 2 · 跑 7 件 P0(我做 · 1.5 天)
   P0-1 · git init + .gitignore(已有 .gitignore · 加 git init)
-  P0-2 · sync ralph 工具链 · bash ~/.claude/scripts/ralph/sync-to-project.sh /Users/return/Desktop/QuanQn
+  P0-2 · sync ralph 工具链 · bash ~/.claude/scripts/ralph/sync-to-project.sh /Users/return/Desktop/QuanAn
   P0-3 · 拆 monorepo workspace(SCAFFOLD §A.3 10 步迁移)
   P0-4 · prisma schema 加 admin 13 表(从 DATA-MODEL §13 复制)
   P0-5 · prisma/migrations/manual_admin_rls.sql 创建
@@ -126,12 +126,12 @@ Step 3 · 启动 ralph daemon(我做)
 新会话用这个指令开:
 
 ```
-我是 QuanQn 项目的开发者 · 用户名 return · 项目在 /Users/return/Desktop/QuanQn
+我是 QuanAn 项目的开发者 · 用户名 return · 项目在 /Users/return/Desktop/QuanAn
 
 请按以下顺序工作:
-1. 读 /Users/return/Desktop/QuanQn/HANDOFF.md 了解上一会话工作交接
-2. 读 /Users/return/Desktop/QuanQn/DEV-READINESS.md 了解开发就绪度
-3. 读 /Users/return/Desktop/QuanQn/PRD-MASTER.md 了解 PRD 体系
+1. 读 /Users/return/Desktop/QuanAn/HANDOFF.md 了解上一会话工作交接
+2. 读 /Users/return/Desktop/QuanAn/DEV-READINESS.md 了解开发就绪度
+3. 读 /Users/return/Desktop/QuanAn/PRD-MASTER.md 了解 PRD 体系
 4. 按 HANDOFF.md §3.2 顺序 · 跑 Step 0(createdb)+ Step 1(8 项修复)+ Step 2(7 件 P0)+ Step 3(启动 ralph daemon)
 
 环境状态(上一会话已就位)·
@@ -142,7 +142,7 @@ Step 3 · 启动 ralph daemon(我做)
 · reject-examples.jsonl 35 条已就位
 
 你需要做什么(全部你能做 · 不需要我介入)·
-· Step 0 · createdb quanqn + quanqn_test + 启 pgvector(2 分钟)
+· Step 0 · createdb quanan + quanan_test + 启 pgvector(2 分钟)
 · Step 1 · 修 D/E/F/G 4 项文档(30 分钟 · C 跳过 · 本地 PG 不需 docker-compose)
 · Step 2 · 跑 7 件 P0(1.5 天)
 · Step 3 · 启动 ralph daemon
@@ -179,7 +179,7 @@ Step 3 · 启动 ralph daemon(我做)
 ## §5 关键文件位置
 
 ```
-/Users/return/Desktop/QuanQn/
+/Users/return/Desktop/QuanAn/
 ├── ARCHITECTURE.md       v0.4(主架构骨架)
 ├── ADMIN-ARCHITECTURE.md v0.2(admin 子系统)
 ├── AGENTS.md             v0.2(代码层约束)

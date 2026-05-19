@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# QuanQn · 18 LD + 5 复杂 R 检测 (TD-018 修 · 2026-05-09 新建)
+# QuanAn · 18 LD + 5 复杂 R 检测 (TD-018 修 · 2026-05-09 新建)
 # 派生自 AGENTS.md §3 Locked Decisions + §5.6 红线
 # audit-redlines.sh 已 cover 12 条简单 grep · 本脚本补 5 条复杂 + 18 LD 关键验证
 
@@ -14,7 +14,7 @@ pass() { echo "✅ $1"; }
 warn() { echo "⚠️  $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn · 18 LD + 5 复杂 R 检测"
+echo "  QuanAn · 18 LD + 5 复杂 R 检测"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo
 
@@ -126,7 +126,7 @@ else fail "LD-016 · 测试不全 (unit=${UNIT_DIRS} · judge=${JUDGE_FILES} · 
 
 # LD-A-1 · admin 子系统独立部署 (admin 占位 + 主 web 不引用 admin)
 if [ -d "apps/admin" ]; then
-  CROSS_IMPORT=$(grep -rln "from '@quanqn/admin\|from '../../admin\|from '../admin" apps/web/src 2>/dev/null | wc -l | tr -d ' ')
+  CROSS_IMPORT=$(grep -rln "from '@quanan/admin\|from '../../admin\|from '../admin" apps/web/src 2>/dev/null | wc -l | tr -d ' ')
   if [ "$CROSS_IMPORT" -gt 0 ]; then fail "LD-A-1 · apps/web 引用 apps/admin · 触犯独立部署"
   else pass "LD-A-1 · apps/admin 独立部署 (apps/web 0 引用)"; fi
 else warn "LD-A-1 · apps/admin 不存在 · 跳过"; fi

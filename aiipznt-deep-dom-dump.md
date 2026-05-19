@@ -100,7 +100,7 @@
 
 ### §1.6 字体 + 设计系统(D4=B 颜色保留)
 
-| 元素 | aiipznt 实测 | QuanQn(D4=B 保留) |
+| 元素 | aiipznt 实测 | QuanAn(D4=B 保留) |
 |---|---|---|
 | 主色 token | OKLCH 金色 `#eebc4a` | **Aurelian Dark 紫色** `var(--primary)` 不变 |
 | 大标题字体 | **Orbitron** (FUNCTION MATRIX / WORKFLOW / AI+短视频+IP) | **Orbitron** ★ 切(已是 PRD-3 加的)|
@@ -116,7 +116,7 @@
 
 ## §2 32 SPA 路由完整 page DOM 实测(每行 1 page)
 
-> **格式** · `[路由]` · H1 / H数 / Button数 / Input数 / Total Elements / 关键 button(top 6) / 关键 input(top 3) / QuanQn 现状 + Diff
+> **格式** · `[路由]` · H1 / H数 / Button数 / Input数 / Total Elements / 关键 button(top 6) / 关键 input(top 3) / QuanAn 现状 + Diff
 
 ### §2.1 公开 + 主流程导航(3 page)
 
@@ -137,7 +137,7 @@
     - **footer 1** · 使用说明(单独一张 · 在 4 H3 之外)
   - WORKFLOW(Orbitron 大标题)· 7 步系统化流程图(选行业→变现设计→学爆款→生成文案→制作视频→私域转化)
   - READY TO START? · 主 CTA "立即启动 → /step/1"
-- **QuanQn 现状** · ❌ **完全没有**(`/` redirect → `/step/1`)
+- **QuanAn 现状** · ❌ **完全没有**(`/` redirect → `/step/1`)
 - **Diff** · 全新建首页 · ★ PRD-16 核心 1 个 US
 
 #### `/guide` 使用说明(01-guide)
@@ -154,7 +154,7 @@
   - **13 模块详解卡片**(可点击展开详细使用步骤) · 同 §10.0 §6.2 14 工具(去掉 14 呈现形式 + 加 1 爆款解析)
   - FAQ 5 问 5 答(spec §9.1 已记录)
   - 顶部搜索框 input
-- **QuanQn 现状** · ❌ **完全没有**
+- **QuanAn 现状** · ❌ **完全没有**
 - **Diff** · 全新建 /guide page · ★ PRD-16 第 2 核心 US
 
 #### `/ip-plan` 我的IP方案(02-ip-plan)
@@ -167,12 +167,12 @@
   - 顶部 ·  `[← 返回首页]` button(灰)+ H1 + 副标 `已完成 N / 9 步` + `[↻ 刷新]` button(金色 outline)
   - 进度卡 · `glass-card` 容器 + `IP打造进度 N%` + 横向进度条(`bg-gradient-to-r from-gold to-gold-dark` · D4=B → primary 紫色 gradient)
   - 9 步卡片网格 · 每卡 emoji + 步骤名 + 状态(已完成/未完成)+ "数据已保存" hint + `[查看详情 → /step/X]` button
-- **QuanQn 现状** · ⚠️ 只有 `<StepProgress>` + skeleton · **无 H1 + 9 step 卡片网格 + glass-card 进度卡**
+- **QuanAn 现状** · ⚠️ 只有 `<StepProgress>` + skeleton · **无 H1 + 9 step 卡片网格 + glass-card 进度卡**
 - **Diff** · 重写 IpPlan.tsx · ★ PRD-16 第 3 核心 US
 
 ### §2.2 9 步主流程(11 page · spec §7 已写 SOP · 本 dump 补 DOM 数)
 
-| Step | H1 | H数 | Btns | Inputs | Els | QuanQn 现状 | Diff |
+| Step | H1 | H数 | Btns | Inputs | Els | QuanAn 现状 | Diff |
 |:-:|---|:-:|:-:|:-:|:-:|---|---|
 | `/step/1` | 选择你的行业赛道 | 1 | 71 | 1 | 313 | ⚠️ StepForm 通用 + IndustryDropdown · 无 56 卡 emoji 双行 + 6 tab + 已选状态 + 自定义 modal | ★ 重写 PRD-17 |
 | `/step/3` | 账号包装方案 | 8 | 24 | 3 | 606 | ⚠️ StepForm 通用 · 无 textarea + 5 平台 radio + 6 H3 输出区 | ★ 重写 PRD-17 |
@@ -196,7 +196,7 @@
 
 ### §2.3 14 工具 page(14 page · spec §8 已写 SOP · 本 dump 补 DOM 数)
 
-| 工具 | H1 | H数 | Btns | Inputs | Els | QuanQn 现状 | Diff |
+| 工具 | H1 | H数 | Btns | Inputs | Els | QuanAn 现状 | Diff |
 |:-:|---|:-:|:-:|:-:|:-:|---|---|
 | `/trending` | 全网爆款库 | 1 | 9 | 2 | 934 | ✅ PRD-15 US-006 完整化 · 验证对齐度 | 🟡 验证视觉精度 PRD-19 |
 | `/video-analysis` | 爆款文案解析 | 1 | 7 | 2 | 119 | ⚠️ stub 未触 | ★ 完整化 PRD-19 |
@@ -216,7 +216,7 @@
 
 ### §2.4 6 modules + 1 衍生 page(6 page · 部分 PRD-15 已加)
 
-| 模块 | H1 | H数 | Btns | Inputs | Els | QuanQn 现状 | Diff |
+| 模块 | H1 | H数 | Btns | Inputs | Els | QuanAn 现状 | Diff |
 |:-:|---|:-:|:-:|:-:|:-:|---|---|
 | `/diagnosis` | 7维度IP诊断报告 | 1 | 12 | 2 | 146 | ⚠️ stub 未触 · 行业 input + 产品 input | ★ 完整化 PRD-19 |
 | `/daily-tasks` | 今日行动清单 | 4 | 8 | 0 | 190 | ⚠️ stub 未触 · 3 H3 任务卡 | ★ 完整化 PRD-19 |

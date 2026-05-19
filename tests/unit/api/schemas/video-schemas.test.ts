@@ -12,7 +12,7 @@ import {
   acquisitionCopywritingInputSchema,
   imageGenJobPayload,
   imageGenJobResult,
-} from '@quanqn/schemas/specialist-io';
+} from '@quanan/schemas/specialist-io';
 
 // ── videoProductionInput ──────────────────────────────────────────────────────
 
@@ -282,7 +282,7 @@ describe('imageGenJobResult', () => {
   it('error variant: error result with placeholder parses', () => {
     const result = imageGenJobResult.safeParse({
       error: 'DALL-E 3 API timeout',
-      sceneImageUrl: 'https://placeholder.quanqn.com/scene-error.png',
+      sceneImageUrl: 'https://placeholder.quanan.com/scene-error.png',
     });
     expect(result.success).toBe(true);
   });

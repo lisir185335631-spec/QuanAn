@@ -3,8 +3,8 @@
 // SHIELD: useVirtualizer via DenseTable · never data.map(<tr>)
 
 import { useMemo } from 'react';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 
 export type DeepLearnRow = {
   id: number;

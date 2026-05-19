@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 
-import type { TrendingListItem } from '@quanqn/clients/router-types';
+import type { TrendingListItem } from '@quanan/clients/router-types';
 
 import 'react-virtualized/styles.css';
 

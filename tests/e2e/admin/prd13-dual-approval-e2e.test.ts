@@ -1,8 +1,8 @@
 // PRD-13 US-012 · prd13-dual-approval-e2e.test.ts
-// AC-2/3: vitest + real Prisma(quanqn_test) · dual approval E2E
+// AC-2/3: vitest + real Prisma(quanan_test) · dual approval E2E
 // 6 steps: submitForReview → first_approved → FORBIDDEN_SAME_APPROVER →
 //          second_approved → _publishPromptVersionInTx → ContextAssembler v18
-// SHIELD: real DB (quanqn_test) · no mock prisma · mock Redis + BullMQ only
+// SHIELD: real DB (quanan_test) · no mock prisma · mock Redis + BullMQ only
 // SHIELD: beforeEach truncate relevant tables per run-id (no cross-test pollution)
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
@@ -13,7 +13,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

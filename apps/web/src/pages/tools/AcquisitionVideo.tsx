@@ -20,7 +20,7 @@ import { getToolLsKey } from '@/lib/ls-namespace';
 import { acquisitionVideoFrontendInput } from '@/lib/schemas/acquisitionVideoFrontend';
 import { trpc } from '@/lib/trpc';
 
-import type { AcquisitionVideoHistoryRow } from '@quanqn/clients/router-types';
+import type { AcquisitionVideoHistoryRow } from '@quanan/clients/router-types';
 
 export { acquisitionVideoFrontendInput } from '@/lib/schemas/acquisitionVideoFrontend';
 

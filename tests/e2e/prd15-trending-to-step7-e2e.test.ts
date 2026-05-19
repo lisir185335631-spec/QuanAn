@@ -4,7 +4,7 @@
 //   /my-topics?view=card&source=trending 见收藏 → click →
 //   /step/7?topic=...&trendingId=xxx → Step 7 input 自动填充 + 提交 →
 //   trending_favorites + step_data 写入验证
-// SHIELD: real DB (quanqn_test) · no mock prisma
+// SHIELD: real DB (quanan_test) · no mock prisma
 
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 
@@ -14,7 +14,7 @@ const { testPrisma } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client') as typeof import('@prisma/client');
   const TEST_DB =
-    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanqn_test';
+    process.env.DATABASE_URL_TEST ?? 'postgresql://return@localhost:5432/quanan_test';
   return { testPrisma: new PrismaClient({ datasources: { db: { url: TEST_DB } } }) };
 });
 

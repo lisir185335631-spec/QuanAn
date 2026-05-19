@@ -1,10 +1,13 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+
 import Step4bOutputContent from '@/components/step4b/Step4bOutputContent';
 import type { Step4bResult } from '@/components/step4b/Step4bOutputContent';
 import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PlatformInlineRadio } from '@/components/inline-pickers';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
 import {
@@ -18,14 +21,11 @@ import {
   STEP4B_TEXTAREA,
   STEP4B_THREE_STAGES,
 } from '@/lib/constants/step4b';
-import type { Step4bStageDetail } from '@/lib/constants/step4b';
 import { cn } from '@/lib/utils';
 
 export interface Step4bFormData {
   product_description: string;
-  target_audience: string;
-  ip_positioning: string;
-  current_income: string;
+  industry: string;
 }
 
 // ── Adapter: backend Step4bOutput → frontend Step4bResult ────────────────────
@@ -43,18 +43,18 @@ export function adaptStep4bResult(
     ? (raw.successCases as Array<{ title?: string; summary?: string }>)
     : [];
 
-  function mapLadder(i: number, stageConst: (typeof STEP4B_THREE_STAGES)[number]): Step4bStageDetail {
+  function mapLadder(i: number, stageConst: (typeof STEP4B_THREE_STAGES)[number]) {
     const lad = ladder[i] ?? {};
     return {
       range: stageConst.range,
       title: stageConst.title,
       duration: stageConst.duration,
       coreStrategy: lad.action ?? '',
-      productMatrix: [],
+      productMatrix: [] as [],
       trafficStrategy: lad.stage ?? '',
-      conversionFlow: [],
+      conversionFlow: [] as string[],
       keyActions: lad.revenue ? [`目标营收：${lad.revenue}`] : [],
-      risks: [],
+      risks: [] as string[],
     };
   }
 
@@ -89,6 +89,73 @@ export function adaptStep4bResult(
   };
 }
 
+function generateMockResult(): Step4bResult {
+  return {
+    market_analysis: {
+      industry: '通用行业',
+      marketSize: '市场规模广阔，增量用户持续涌入',
+      competitionLevel: '中高竞争',
+      monetizationPotential: '变现潜力强，多元化路径可选',
+    },
+    three_stages: [
+      {
+        range: STEP4B_THREE_STAGES[0].range,
+        title: STEP4B_THREE_STAGES[0].title,
+        duration: STEP4B_THREE_STAGES[0].duration,
+        coreStrategy: '私信成交、线下体验、小额引流品',
+        productMatrix: [],
+        trafficStrategy: '短视频引流 + 私域承接',
+        conversionFlow: ['内容种草', '私信沟通', '成交转化'],
+        keyActions: ['每日发布1-2条内容', '建立私信话术', '积累100个精准客户'],
+        risks: [],
+      },
+      {
+        range: STEP4B_THREE_STAGES[1].range,
+        title: STEP4B_THREE_STAGES[1].title,
+        duration: STEP4B_THREE_STAGES[1].duration,
+        coreStrategy: '知识付费课程、社群运营、代理分销',
+        productMatrix: [],
+        trafficStrategy: '矩阵号 + 直播 + 私域裂变',
+        conversionFlow: ['社群预热', '直播成交', '裂变分销'],
+        keyActions: ['搭建3-5人团队', '推出标准化产品', '月营业额破百万'],
+        risks: [],
+      },
+      {
+        range: STEP4B_THREE_STAGES[2].range,
+        title: STEP4B_THREE_STAGES[2].title,
+        duration: STEP4B_THREE_STAGES[2].duration,
+        coreStrategy: '品牌IP授权、资本运作、生态合作',
+        productMatrix: [],
+        trafficStrategy: '全域营销 + 品牌联名 + 媒体矩阵',
+        conversionFlow: ['品牌曝光', '生态合作', '资本整合'],
+        keyActions: ['品牌化运营', '资本合作', '生态扩张'],
+        risks: [],
+      },
+    ],
+    revenue_structure: [
+      { category: '知识付费/课程', percent: 50, description: '核心收入来源，稳定可预期' },
+      { category: '品牌合作/赞助', percent: 30, description: '规模化后的重要增量来源' },
+      { category: '代理/分销', percent: 20, description: '被动收入，杠杆放大效果' },
+    ],
+    success_cases: [
+      {
+        name: '张教练',
+        type: '健身行业',
+        journey: '从健身房教练做短视频，18个月私域沉淀3000人',
+        result: '年收入从5万增至200万',
+        insight: '垂直深耕 + 案例可视化是关键',
+      },
+      {
+        name: '李美妆',
+        type: '美妆行业',
+        journey: '美妆博主起号，精准定位25-35岁职场女性',
+        result: '私域3000人，月入稳定10万+',
+        insight: '人设精准 + 内容一致性是护城河',
+      },
+    ],
+  };
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Step4b() {
@@ -98,10 +165,9 @@ export default function Step4b() {
 
   const [formData, setFormData] = useState<Step4bFormData>({
     product_description: '',
-    target_audience: '',
-    ip_positioning: '',
-    current_income: '',
+    industry: '',
   });
+  const [platform, setPlatform] = useState('');
   const [result, setResult] = useState<Step4bResult | null>(null);
 
   const prevIsSavingRef = useRef(false);
@@ -123,14 +189,12 @@ export default function Step4b() {
     if (saved?.product_description) {
       setFormData({
         product_description: saved.product_description,
-        target_audience: saved.target_audience ?? '',
-        ip_positioning: saved.ip_positioning ?? '',
-        current_income: saved.current_income ?? '',
+        industry: saved.industry ?? '',
       });
     }
   }, [accountId]);
 
-  // Refetch after save completes (isSaving: true → false)
+  // Refetch after save completes
   useEffect(() => {
     if (prevIsSavingRef.current && !isSaving) {
       void dbQuery.refetch();
@@ -154,32 +218,39 @@ export default function Step4b() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (generateDisabled) return;
-    save(formData as unknown as Record<string, unknown>);
+    save({ ...formData, platform } as unknown as Record<string, unknown>);
+    // Stub mode: show mock result immediately (LLM integration in PRD-23+)
+    setResult(generateMockResult());
     document.getElementById('step4b-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   function handleOptimize() {
     if (optimizeDisabled) return;
-    save({ ...formData, _action: 'optimize' });
+    save({ ...formData, platform, _action: 'optimize' } as unknown as Record<string, unknown>);
   }
 
   function handleRegenerate() {
     if (regenerateDisabled) return;
     setResult(null);
-    save(formData as unknown as Record<string, unknown>);
+    save({ ...formData, platform } as unknown as Record<string, unknown>);
     document.getElementById('step4b-output')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   return (
     <main className="flex-1 container py-8">
       {/* Header */}
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP4B_STEP_TAG}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4B_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP4B_STEP_TAG}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4B_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+        </div>
+      </FadeInWrapper>
 
       {/* Form glass-card */}
+      <FadeInWrapper delay={0.05} from="up">
       <form onSubmit={(e) => { void handleSubmit(e); }} className="glass-card rounded-xl p-6 space-y-6 max-w-2xl">
         {/* Required textarea — STEP4B_TEXTAREA */}
         <div>
@@ -197,21 +268,29 @@ export default function Step4b() {
           />
         </div>
 
-        {/* 3 optional inputs — STEP4B_INPUTS_3 */}
+        {/* 行业领域 input — STEP4B_INPUTS_3[0] */}
         {STEP4B_INPUTS_3.map((input) => (
           <div key={input.id}>
             <label className="block text-body-sm font-label text-on-surface mb-2">
               {input.label}
             </label>
             <Input
-              value={formData[input.id as keyof Step4bFormData]}
+              value={formData[input.id as keyof Step4bFormData] ?? ''}
               onChange={(e) => setField(input.id as keyof Step4bFormData, e.target.value)}
               placeholder={input.placeholder}
             />
           </div>
         ))}
 
-        {/* 3 buttons */}
+        {/* PlatformInlineRadio — US-001 utility */}
+        <div>
+          <label className="block text-body-sm font-label text-on-surface mb-2">
+            平台选择
+          </label>
+          <PlatformInlineRadio value={platform} onChange={setPlatform} />
+        </div>
+
+        {/* Buttons */}
         <div className="flex flex-wrap gap-3">
           <Button
             type="submit"
@@ -240,26 +319,31 @@ export default function Step4b() {
           </Button>
         </div>
       </form>
+      </FadeInWrapper>
 
       {/* State feedback */}
-      <div className="mt-8 max-w-2xl">
-        {isSaving && <LoadingState text="AI 正在制定变现规划 ..." size="lg" />}
-        {!isSaving && dbQuery.isError && (
-          <ErrorState
-            message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
-            onRetry={dbQuery.refetch}
-          />
-        )}
-        {!isSaving && !dbQuery.isError && !hasResult && (
-          <EmptyState title={`提交表单后查看${STEP4B_H1}`} />
-        )}
-      </div>
+      <FadeInWrapper delay={0.1} from="up">
+        <div className="mt-8 max-w-2xl">
+          {isSaving && <LoadingState text="AI 正在制定变现规划 ..." size="lg" />}
+          {!isSaving && dbQuery.isError && (
+            <ErrorState
+              message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
+              onRetry={dbQuery.refetch}
+            />
+          )}
+          {!isSaving && !dbQuery.isError && !hasResult && (
+            <EmptyState title={`提交表单后查看${STEP4B_H1}`} />
+          )}
+        </div>
+      </FadeInWrapper>
 
-      {/* Output section — 5 H3 blocks */}
+      {/* Output: 5 H3 blocks — AC-6 · D-220 字面锁 */}
       {hasResult && result && (
-        <section id="step4b-output" className="mt-10 max-w-4xl">
-          <Step4bOutputContent result={result} />
-        </section>
+        <FadeInWrapper delay={0.15} from="up">
+          <section id="step4b-output" className="mt-10 max-w-4xl">
+            <Step4bOutputContent result={result} />
+          </section>
+        </FadeInWrapper>
       )}
     </main>
   );

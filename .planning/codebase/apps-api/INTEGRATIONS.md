@@ -22,7 +22,7 @@
   - Auth env: provider-specific(Google / WeChat 等 · validateStartupConfig 启动校验)
 - admin OAuth(管理员登录 · ADR-021 隔离)— `apps/api/src/lib/auth/oauth-admin-factory.ts`
   - 提供 `getAdminOAuthProvider()` 返回 `(email) → AdminUser` 函数
-  - 子实现: `oauth-admin-google.ts`(Workspace 域限定 @quanqn.com) + `oauth-admin-mock.ts`(dev)
+  - 子实现: `oauth-admin-google.ts`(Workspace 域限定 @quanan.com) + `oauth-admin-mock.ts`(dev)
   - Auth env: `OAUTH_PROVIDER`(=mock/google) + `QUANQN_ADMIN_CLIENT_ID` + Google secret
 
 **Notification Services:**
@@ -38,7 +38,7 @@
 - PostgreSQL 16 + pgvector 0.8 — 唯一关系型存储
   - Connection: `DATABASE_URL`(`apps/api/src/lib/prisma.ts`)
   - Client: `@prisma/client` 5.22.0 · 单例 + globalThis HMR-safe
-  - 测试 connection: `DATABASE_URL_TEST` → `quanqn_test`
+  - 测试 connection: `DATABASE_URL_TEST` → `quanan_test`
   - RLS · 主应用 18 表强制 RLS(per-tenant)· admin 13 表 RLS DISABLE(per DATA-MODEL §13.8)
   - admin bypass · `SELECT set_config('app.role', 'admin', true)` 在 `$transaction` 内(`apps/api/src/trpc/middleware/admin/adminRLS.ts:11`)
 
@@ -94,7 +94,7 @@
 **Hosting:**
 - 未检出(留 PRR · 项目 CLAUDE.md §7)
 - 推断 · Vercel / Railway / 阿里云 RDS(per `project CLAUDE.md §7`)
-- 双部署目标 · `apps/web` 主前端 · `apps/api` 双 endpoint(主 + admin 同进程)· `apps/admin` 独立 SPA(admin.quanqn.com)
+- 双部署目标 · `apps/web` 主前端 · `apps/api` 双 endpoint(主 + admin 同进程)· `apps/admin` 独立 SPA(admin.quanan.com)
 
 **CI Pipeline:**
 - 未检出 .github/workflows · CI 待后续

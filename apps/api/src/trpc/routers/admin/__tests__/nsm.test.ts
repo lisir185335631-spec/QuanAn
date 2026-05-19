@@ -61,7 +61,7 @@ import { prisma } from '@/lib/prisma';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1,
-  email: 'super@quanqn.com',
+  email: 'super@quanan.com',
   role: 'super_admin',
   isMock: true,
   isActive: true,
@@ -69,7 +69,7 @@ const SUPER_ADMIN: AdminLuciaUser = {
 
 const ADMIN_USER: AdminLuciaUser = {
   id: 2,
-  email: 'admin@quanqn.com',
+  email: 'admin@quanan.com',
   role: 'admin',
   isMock: true,
   isActive: true,

@@ -167,7 +167,7 @@ else
 fi
 
 echo "  [RUN] pnpm test..."
-if pnpm --filter @quanqn/web test 2>&1 | tail -3; then
+if pnpm --filter @quanan/web test 2>&1 | tail -3; then
   ok "pnpm test (apps/web) PASS"
 else
   fail "pnpm test (apps/web) FAIL"

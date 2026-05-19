@@ -11,7 +11,7 @@ import { useEffect, useMemo } from 'react';
 import { evolutionLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
-import type { EvolutionProfileOutput } from '@quanqn/clients/router-types';
+import type { EvolutionProfileOutput } from '@quanan/clients/router-types';
 
 export type { EvolutionProfileOutput };
 

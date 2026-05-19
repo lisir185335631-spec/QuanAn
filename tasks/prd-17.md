@@ -32,7 +32,7 @@
 | **anti_patterns 注入** | 4 foundation + 3 high US 必须从 reject-examples.jsonl 检索 ≤3 条注入 |
 | **依赖前置 PRD** | PRD-15(StepForm + IndustryDropdown + ls-namespace `acc_` 复用)+ PRD-16(设计系统切换 + glass-card / animate-ping-primary / D4=B 颜色锁 / D1=A 字面锁) |
 | **下游 PRD** | PRD-18(Step 2/4/4b/5/6/7/8 完整化 · 10-12 US)· PRD-19(8 stub 工具 + 4 modules + 视觉精修 · 10-12 US) |
-| **关键 D 锁** | **D1=A** 像素级 layout(文字 = layout 严格一部分 · retro §10 M-2 固化)· **D4=B** 颜色保留 QuanQn `--primary: 43 87% 63%` 金色(0 violet/amber/gold OKLCH 引入)· **D3=A** 仅主应用(apps/admin/ 0 触动) |
+| **关键 D 锁** | **D1=A** 像素级 layout(文字 = layout 严格一部分 · retro §10 M-2 固化)· **D4=B** 颜色保留 QuanAn `--primary: 43 87% 63%` 金色(0 violet/amber/gold OKLCH 引入)· **D3=A** 仅主应用(apps/admin/ 0 触动) |
 
 ### §0.3 复刻定调(D1=A · D4=B 严锁 · 延续 PRD-16 D-145)
 
@@ -45,7 +45,7 @@
 | SVG icons / lucide-react | ✅ **切**(已 95% 一致 · 仅补缺) |
 | 卡片 hover 效果 + glass-card 模糊 + Dialog/Modal 浮层 | ✅ **切** |
 | **文字内容**(H1/H2/H3/p / button label / placeholder / FAQ q/a / step 顶部标签 等) | ✅ **切 严格 1:1**(D1=A 锁 · plan-check §2.6.20 D1A-text-content-drift 检查 · retro §10 M-2 固化) |
-| **颜色 token**(primary / accent / background / border / shadow / chart × 5) | ❌ **不切 · 保留 QuanQn globals.css 金色** `--primary: 43 87% 63%` |
+| **颜色 token**(primary / accent / background / border / shadow / chart × 5) | ❌ **不切 · 保留 QuanAn globals.css 金色** `--primary: 43 87% 63%` |
 | aiipznt 的 `var(--gold)` `border-gold/X` `shadow-gold/X` 等映射 | ❌ **替换为** `var(--primary)` `border-primary/X` `shadow-primary/X`(参 PRD-16 US-001 已落地映射规则) |
 | UX behavior(search filter 联动 / 自定义 modal 显示时机 / button hover transition 时长 / etc) | 🟡 **可自由发挥**(D1=A 不锁 · 这是 UX 不是 layout) |
 
@@ -1225,7 +1225,7 @@
 - **N-3** · 不实现 Step 2 / Step 4 / Step 4b / Step 5 / Step 6 / Step 7 / Step 8 page(留 PRD-18)
 - **N-4** · 不实现 14 工具 page 中尚未完整化的 8 个 stub(留 PRD-19)
 - **N-5** · 不动 admin SPA (`apps/admin/`)· D3=A 锁定 · 0 触动
-- **N-6** · 不切 QuanQn 颜色 token · 继续保留 globals.css `--primary: 43 87% 63%` 金色 + 紫色辅助 token(D4=B 锁)
+- **N-6** · 不切 QuanAn 颜色 token · 继续保留 globals.css `--primary: 43 87% 63%` 金色 + 紫色辅助 token(D4=B 锁)
 
 ---
 

@@ -1,5 +1,5 @@
 /**
- * QuanQn · 9 步主流程
+ * QuanAn · 9 步主流程
  * 派生自 ARCHITECTURE.md §2.2 + spec.md §Ⅹ.7
  *
  * ⚠️ 没有 step2 · 实测原版 404(spec §ⅩⅦ)

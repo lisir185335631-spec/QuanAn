@@ -104,7 +104,7 @@
 
 **PRD-16 漏洞**(retro 发现) ·
 1. **D4=B 颜色措辞误读**(US-003 reject 根因)· PRD seed 写"紫色 gradient" + 代码 `from-primary` 自相矛盾 · ralph 字面读"紫色"用 violet-600
-   - **plan-check WARN-1 已警告**("QuanQn 实际是金色非紫色 · ralph 用 var(--primary) 不论值都正确")· 但 PRD 文档没修(用户选 A 不修)
+   - **plan-check WARN-1 已警告**("QuanAn 实际是金色非紫色 · ralph 用 var(--primary) 不论值都正确")· 但 PRD 文档没修(用户选 A 不修)
    - 教训 · plan-check WARN 必须在启 daemon 前修文档 · 不能仅给 ralph 自由发挥
 2. **D1=A 文字内容锁不够明确**(US-004 reject 根因)· PRD AC-2 写 15 卡数据字面 + 跨工具命名锁 · 但没显式说"desc 是 layout 一部分 · 不允许创意改写"· ralph 当 desc 字段是"建议"
    - 教训 · PRD §0.3 复刻定调表应加一行 "**文字内容(title/desc/文案 等)= layout 严格一部分**"
@@ -126,7 +126,7 @@
 
 ### 评估
 
-- **WARN-1 D4=B 颜色措辞警告(写而不修 · 后果)** · plan-check 早警告"QuanQn 实际金色 + PRD 写紫色文档措辞误"· 但用户选 A 不修 PRD · ralph 字面解读 → US-003 reject。**如修 PRD 文档预估省 1 reject(80 min)**。
+- **WARN-1 D4=B 颜色措辞警告(写而不修 · 后果)** · plan-check 早警告"QuanAn 实际金色 + PRD 写紫色文档措辞误"· 但用户选 A 不修 PRD · ralph 字面解读 → US-003 reject。**如修 PRD 文档预估省 1 reject(80 min)**。
 - WARN-2 AC ≥9 条详细度优先 · 实际验证通过(US-001 10 AC + US-004 10 AC + US-007 10 AC + US-009 11 AC 都单 ralph 完成)· 警告噪音可忽略。
 
 **ROI 量化** · plan-check 在 PRD-16 预埋 0 主动 patches(纯结构检查) · WARN-1 未修文档造成 1 reject 损失 · **plan-check 实际收益偏低 · 应升级 WARN-1 类规则为 PRD 必修门禁**(留 §10 Diff)。
@@ -367,7 +367,7 @@
 
 ### M-1 · plan-check WARN 必修门禁(防 US-003 类 reject)
 
-- **观察** · PRD-16 plan-check WARN-1 说"PRD seed 写紫色但 QuanQn 实际金色 · ralph 字面理解风险" · 用户选 A 不修 PRD · ralph 真字面理解 → US-003 reject
+- **观察** · PRD-16 plan-check WARN-1 说"PRD seed 写紫色但 QuanAn 实际金色 · ralph 字面理解风险" · 用户选 A 不修 PRD · ralph 真字面理解 → US-003 reject
 - **现状** · plan-check WARN 仅警告 · 不阻断
 - **建议机制化位置** · `/plan-check` 升级 · WARN-1 类(PRD AC 中文颜色词 vs token 不一致)从 WARN 升级到 ERROR(阻断 plan-check)· 强制 PRD 修文档再启 daemon
 - **实现思路** ·
@@ -464,7 +464,7 @@
 + 
 + **目的** · 防 ralph 把 PRD AC 锁定的 desc/title/label/文案 当"建议"创意改写 · 违反 D1=A 像素级 layout
 + 
-+ **背景** · QuanQn PRD-16 US-004 实证 · 15 卡 desc 全创意改写(`'追踪全平台热门内容趋势'` vs aiipznt 实测 `'一键抓取全平台爆款视频和文案'`)· 1 reject 修对.
++ **背景** · QuanAn PRD-16 US-004 实证 · 15 卡 desc 全创意改写(`'追踪全平台热门内容趋势'` vs aiipznt 实测 `'一键抓取全平台爆款视频和文案'`)· 1 reject 修对.
 + 
 + **触发信号** · prd.json 含 D1=A 像素级 layout 锁定的常量数据(`apps/web/src/lib/constants/*.ts` 文件 · 含 `title: 'X'` / `desc: 'Y'` / `label: 'Z'`)
 + 
@@ -522,7 +522,7 @@
 - **建议 diff** · 加实证数据更新
 
 ```diff
-##### 2.6.13 anti_patterns 注入覆盖率检查(QuanQn PRD-8 retro M-2 固化 · 2026-05-11 新增 · PRD-16 retro 实证强化 · 2026-05-17)
+##### 2.6.13 anti_patterns 注入覆盖率检查(QuanAn PRD-8 retro M-2 固化 · 2026-05-11 新增 · PRD-16 retro 实证强化 · 2026-05-17)
 
 + **PRD-16 实证 ROI**(2026-05-17 retro 加):
 + - 前 4 US(US-001~004)· 严格通过率 50%(2/4)· 2 reject 入库

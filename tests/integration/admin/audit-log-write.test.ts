@@ -1,6 +1,6 @@
 // PRD-10 US-004 · audit log write integration test (AC-12)
 // seed → admin_login → cross_account_query → approval_request_create → admin_audit_log ≥ 3 rows
-// Hits real DB (quanqn_test) to verify logAdminAction service end-to-end
+// Hits real DB (quanan_test) to verify logAdminAction service end-to-end
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PrismaClient } from '@prisma/client';
@@ -19,7 +19,7 @@ const testDbUrl = process.env.DATABASE_URL_TEST ?? process.env.DATABASE_URL;
 const prismaTest = new PrismaClient({ datasources: { db: { url: testDbUrl } } });
 
 const TRACE_ID = `audit-integ-${Date.now()}`;
-const TEST_EMAIL = `audit-write-test-${Date.now()}@quanqn.test`;
+const TEST_EMAIL = `audit-write-test-${Date.now()}@quanan.test`;
 
 beforeAll(async () => {
   // Seed admin user for the integration test

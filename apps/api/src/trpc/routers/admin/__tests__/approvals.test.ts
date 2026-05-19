@@ -64,7 +64,7 @@ import { prisma } from '@/lib/prisma';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1,
-  email: 'super@quanqn.com',
+  email: 'super@quanan.com',
   role: 'super_admin',
   isMock: true,
   isActive: true,
@@ -72,7 +72,7 @@ const SUPER_ADMIN: AdminLuciaUser = {
 
 const ADMIN: AdminLuciaUser = {
   id: 2,
-  email: 'admin@quanqn.com',
+  email: 'admin@quanan.com',
   role: 'admin',
   isMock: true,
   isActive: true,
@@ -80,7 +80,7 @@ const ADMIN: AdminLuciaUser = {
 
 const READONLY: AdminLuciaUser = {
   id: 3,
-  email: 'readonly@quanqn.com',
+  email: 'readonly@quanan.com',
   role: 'readonly_admin',
   isMock: true,
   isActive: true,
@@ -208,14 +208,14 @@ describe('listPending', () => {
       status: 'pending',
     };
     mockApprovalFindMany.mockResolvedValue([dualPendingAfterFirst]);
-    mockAdminUserFindMany.mockResolvedValue([{ id: 2, email: 'admin@quanqn.com' }]);
+    mockAdminUserFindMany.mockResolvedValue([{ id: 2, email: 'admin@quanan.com' }]);
 
     const caller = approvalsRouter.createCaller(makeCtx());
     const result = await caller.listPending({ limit: 20 });
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0]!.displayStatus).toBe('first_approved');
-    expect(result.items[0]!.firstApproverEmail).toBe('admin@quanqn.com');
+    expect(result.items[0]!.firstApproverEmail).toBe('admin@quanan.com');
   });
 });
 
@@ -225,14 +225,14 @@ describe('listDecided', () => {
   it('returns decided requests in order', async () => {
     const decided = { ...MOCK_APPROVAL_REQUEST, status: 'approved', approverAdminId: 1, decidedAt: new Date() };
     mockApprovalFindMany.mockResolvedValue([decided]);
-    mockAdminUserFindMany.mockResolvedValue([{ id: 1, email: 'super@quanqn.com' }]);
+    mockAdminUserFindMany.mockResolvedValue([{ id: 1, email: 'super@quanan.com' }]);
 
     const caller = approvalsRouter.createCaller(makeCtx());
     const result = await caller.listDecided({ limit: 20 });
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0]!.status).toBe('approved');
-    expect(result.items[0]!.firstApproverEmail).toBe('super@quanqn.com');
+    expect(result.items[0]!.firstApproverEmail).toBe('super@quanan.com');
   });
 });
 

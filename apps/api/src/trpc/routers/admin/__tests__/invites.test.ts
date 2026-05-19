@@ -84,21 +84,21 @@ import { prisma } from '@/lib/prisma';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1,
-  email: 'super@quanqn.com',
+  email: 'super@quanan.com',
   role: 'super_admin',
   isMock: true,
   isActive: true,
 };
 const ADMIN_USER: AdminLuciaUser = {
   id: 2,
-  email: 'admin@quanqn.com',
+  email: 'admin@quanan.com',
   role: 'admin',
   isMock: true,
   isActive: true,
 };
 const READONLY_ADMIN: AdminLuciaUser = {
   id: 3,
-  email: 'ro@quanqn.com',
+  email: 'ro@quanan.com',
   role: 'readonly_admin',
   isMock: true,
   isActive: true,
@@ -396,7 +396,7 @@ describe('invitesRouter', () => {
       createdAt: new Date(),
       usedAt: new Date(),
       usedById: 42,
-      createdBy: { id: 1, email: 'super@quanqn.com' },
+      createdBy: { id: 1, email: 'super@quanan.com' },
       usedBy: { id: 42, email: 'user@example.com', isActivated: true, createdAt: new Date() },
     };
 

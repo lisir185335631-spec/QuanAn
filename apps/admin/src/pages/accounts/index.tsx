@@ -5,8 +5,8 @@
 
 import { useCallback, useMemo, useState, type MouseEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { adminTrpc } from '../../lib/admin-client';
 import type { AccountFilterState } from './AccountListFilters';

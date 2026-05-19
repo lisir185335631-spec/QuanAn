@@ -42,7 +42,8 @@ describe('Step5', () => {
         <Step5 />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/提交表单后生成 100 个爆款选题库/)).toBeInTheDocument();
+    // Output grid is not shown before form submission
+    expect(screen.queryByTestId('step5-output-grid')).not.toBeInTheDocument();
   });
 
   it('renders CTA button 一键生成', () => {
@@ -51,7 +52,7 @@ describe('Step5', () => {
         <Step5 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('一键生成 5大类 爆款选题')).toBeInTheDocument();
+    expect(screen.getByText('生成爆款选题库')).toBeInTheDocument();
   });
 
   it('renders industry input placeholder', () => {

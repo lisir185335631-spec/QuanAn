@@ -209,7 +209,7 @@ PRD-2 起本项目 prd skill 应自检 · 不自动改全局。
 
 **M-4 · TD-007 lint 3 errors 修期**
 
-**推荐 ·** PRD-2 起 ralph 写新 web 文件时 · 它跑 lint:fix 顺手清。或用户在闲时跑 `pnpm --filter @quanqn/web lint --fix` 一键。
+**推荐 ·** PRD-2 起 ralph 写新 web 文件时 · 它跑 lint:fix 顺手清。或用户在闲时跑 `pnpm --filter @quanan/web lint --fix` 一键。
 
 ---
 

@@ -1,5 +1,5 @@
 /**
- * QuanQn · LLMGateway cost_log writer
+ * QuanAn · LLMGateway cost_log writer
  * AC-6: writes userId/model/tokens/durationMs/success/isFallback/traceId to cost_log
  */
 

@@ -27,8 +27,8 @@ vi.mock('../../../../apps/admin/src/lib/admin-client', () => ({
   adminQueryClient: {},
 }));
 
-// Mock DenseTable to avoid @quanqn/ui dependency complexity
-vi.mock('@quanqn/ui/admin', () => ({
+// Mock DenseTable to avoid @quanan/ui dependency complexity
+vi.mock('@quanan/ui/admin', () => ({
   DenseTable: ({
     data,
     onRowClick,

@@ -1,6 +1,6 @@
 // PRD-11 US-018 · Forensic PDF Template — server-side only (@react-pdf/renderer)
 // Used by apps/api/src/services/admin/audit/pdf-forensic.service.ts
-// DO NOT import in browser bundles — use @quanqn/ui/admin/forensic-pdf export path
+// DO NOT import in browser bundles — use @quanan/ui/admin/forensic-pdf export path
 
 import {
   Document,
@@ -334,7 +334,7 @@ export function PdfForensicTemplate({ data }: { data: ForensicPdfData }) {
       {/* ── Cover page ── */}
       <Page size="A4" style={s.page}>
         <View style={s.coverBlock}>
-          <Text style={s.logo}>QuanQn</Text>
+          <Text style={s.logo}>QuanAn</Text>
           <Text style={s.logoSub}>IP 起号 · 内容创作 SaaS · 司法取证文件 · 严禁外传</Text>
           <Text style={s.title}>审计日志取证导出</Text>
           <Text style={s.subtitle}>Forensic Audit Export · 法务专用</Text>

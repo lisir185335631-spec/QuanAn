@@ -110,9 +110,9 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
   }
   ```
 - [ ] H-2 · 跑 `pnpm prisma migrate dev --name add_kpi_snapshots` · migration 文件含 `CREATE TABLE kpi_snapshots ... + CREATE UNIQUE INDEX ... + CREATE INDEX ...` SQL
-- [ ] H-3 · 跑 `pnpm prisma db push` · 表实际建到 `quanqn` 数据库 · `psql -d quanqn -c '\d kpi_snapshots'` 看到 13 字段 + 2 indexes
-- [ ] H-4 · 在 `manual_admin_rls.sql` 加 `ALTER TABLE kpi_snapshots DISABLE ROW LEVEL SECURITY;`(跟其他 14 admin 表一致 · LD-A-2)· 跑 `psql -d quanqn -f prisma/migrations/manual_admin_rls.sql`
-- [ ] H-5 · 跑 `psql -d quanqn -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname='kpi_snapshots'"` · 返回 `kpi_snapshots | f`(RLS OFF · 跟 14 admin 表对齐)
+- [ ] H-3 · 跑 `pnpm prisma db push` · 表实际建到 `quanan` 数据库 · `psql -d quanan -c '\d kpi_snapshots'` 看到 13 字段 + 2 indexes
+- [ ] H-4 · 在 `manual_admin_rls.sql` 加 `ALTER TABLE kpi_snapshots DISABLE ROW LEVEL SECURITY;`(跟其他 14 admin 表一致 · LD-A-2)· 跑 `psql -d quanan -f prisma/migrations/manual_admin_rls.sql`
+- [ ] H-5 · 跑 `psql -d quanan -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname='kpi_snapshots'"` · 返回 `kpi_snapshots | f`(RLS OFF · 跟 14 admin 表对齐)
 - [ ] H-6 · 在 `apps/api/src/services/admin/nsm/kpi-snapshot.service.ts` 新建跨表聚合 SQL 函数 `computeSnapshot(date: Date, granularity: 'day'|'week'|'month'): Promise<KpiSnapshotData>` · 内部走 adminRLS bypass:
   ```typescript
   // apps/api/src/services/admin/nsm/kpi-snapshot.service.ts
@@ -289,7 +289,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
   ```
 - [ ] H-2 · `apps/api/src/server.ts` 在启动时调用 `scheduleDailySnapshot()` + `scheduleWeeklySnapshot()` + `scheduleMonthlySnapshot()` 注册 cron(BullMQ 自动持久化)
 - [ ] H-3 · 启动 api · `pnpm dev` · 看 log 包含 `[bullmq] admin:kpi-snapshot worker started` + `daily-snapshot-recurring registered`
-- [ ] H-4 · `psql -d quanqn -c "SELECT * FROM kpi_snapshots WHERE snapshot_date = CURRENT_DATE AND granularity='day'"` · 1h 后看到当日 snapshot(测试时可手动 `kpiSnapshotQueue.add('compute-daily', {...})` 立即跑)
+- [ ] H-4 · `psql -d quanan -c "SELECT * FROM kpi_snapshots WHERE snapshot_date = CURRENT_DATE AND granularity='day'"` · 1h 后看到当日 snapshot(测试时可手动 `kpiSnapshotQueue.add('compute-daily', {...})` 立即跑)
 
 ##### E 错误 / 边界
 - [ ] E-1 · cron 失败(SQL 超时 / DB 断连)· BullMQ `attempts: 3` 自动重试 3 次 · 第 3 次失败写 `failed` 队列 · admin_audit_log 记录 `eventCategory='system_alert', eventType='kpi_snapshot_failed'`
@@ -479,7 +479,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 **priority** · 4
 **depends_on** · ["US-003"]
 
-**描述** · 作为运营 / 财务 · 我需要打开 admin.quanqn.com/nsm 看 4 大数字(NSM / 完成 9 步 / 反馈率 / 升级率)+ 漏斗图 + 分日折线 + 3 饼图(行业 / 平台 / 用户画像)+ 右侧告警栏 · 数据从 adminRouter.nsm 5 procedure 拿。
+**描述** · 作为运营 / 财务 · 我需要打开 admin.quanan.com/nsm 看 4 大数字(NSM / 完成 9 步 / 反馈率 / 升级率)+ 漏斗图 + 分日折线 + 3 饼图(行业 / 平台 / 用户画像)+ 右侧告警栏 · 数据从 adminRouter.nsm 5 procedure 拿。
 
 **AC**:
 
@@ -604,9 +604,9 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
   }
   ```
 - [ ] H-2 · `pnpm prisma migrate dev --name add_user_lastlogin_indexes` · migration 文件含 `ALTER TABLE users ADD COLUMN last_login_at TIMESTAMP, ADD COLUMN last_login_ip VARCHAR(45);` + 4 个 `CREATE INDEX`
-- [ ] H-3 · `psql -d quanqn -c '\d users'` 看到新字段 + 4 indexes
+- [ ] H-3 · `psql -d quanan -c '\d users'` 看到新字段 + 4 indexes
 - [ ] H-4 · 既有用户 · `last_login_at IS NULL` · 不抛 NOT NULL 约束(允许 nullable · 渐进采集)
-- [ ] H-5 · users 表仍 RLS ON(主应用 18 表 RLS 强制 · LD-A-2)· 跑 `psql -d quanqn -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname='users'"` · 返回 `users | t`(RLS ON)
+- [ ] H-5 · users 表仍 RLS ON(主应用 18 表 RLS 强制 · LD-A-2)· 跑 `psql -d quanan -c "SELECT relname, relrowsecurity FROM pg_class WHERE relname='users'"` · 返回 `users | t`(RLS ON)
 - [ ] H-6 · auth middleware 内每次成功登录 · 更新 `lastLoginAt = NOW()`, `lastLoginIp = ctx.req.ip`:
   ```typescript
   // apps/api/src/middleware/auth.ts(US-005 修改)
@@ -865,7 +865,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 **priority** · 7
 **depends_on** · ["US-006"]
 
-**描述** · 作为运营 / 客服 · 我需要打开 admin.quanqn.com/users 看用户列表(分页 + 搜索 + 多维筛选 + 排序 + CSV 导出按钮)+ 点用户行打开右侧抽屉看 5 Tab 详情(基本 / 活跃度 / 成本 / 审计 / 关联账号)+ 改套餐 / 封禁 / 重置密码按钮(走 Approval stub UI)。
+**描述** · 作为运营 / 客服 · 我需要打开 admin.quanan.com/users 看用户列表(分页 + 搜索 + 多维筛选 + 排序 + CSV 导出按钮)+ 点用户行打开右侧抽屉看 5 Tab 详情(基本 / 活跃度 / 成本 / 审计 / 关联账号)+ 改套餐 / 封禁 / 重置密码按钮(走 Approval stub UI)。
 
 **AC**:
 
@@ -873,7 +873,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 - [ ] H-1 · `apps/admin/src/pages/users/index.tsx` 替换 placeholder · 实现完整用户管理 page:
   ```tsx
   import { trpc } from '../../lib/trpc';
-  import { DenseTable } from '@quanqn/ui-admin';
+  import { DenseTable } from '@quanan/ui-admin';
   import { UserDetailDrawer } from './UserDetailDrawer';
   import { UserListFilters } from './UserListFilters';
 
@@ -1329,7 +1329,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 **priority** · 11
 **depends_on** · ["US-010"]
 
-**描述** · 作为运营 / 客服 · 我需要打开 admin.quanqn.com/accounts 看 IP 账号列表 + 行业/平台/阶段分布 + 异常账号专属 Tab + 详情抽屉。
+**描述** · 作为运营 / 客服 · 我需要打开 admin.quanan.com/accounts 看 IP 账号列表 + 行业/平台/阶段分布 + 异常账号专属 Tab + 详情抽屉。
 
 **AC**(简化模式同 US-007):
 
@@ -1493,7 +1493,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 **priority** · 13
 **depends_on** · ["US-012"]
 
-**描述** · 作为运营 / 财务 · 我需要打开 admin.quanqn.com/cost 看月度成本(同比/环比)+ Top 10 用户 + 多维切换 + 异常告警栏。
+**描述** · 作为运营 / 财务 · 我需要打开 admin.quanan.com/cost 看月度成本(同比/环比)+ Top 10 用户 + 多维切换 + 异常告警栏。
 
 **AC**(简化):
 
@@ -1890,7 +1890,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 **priority** · 17
 **depends_on** · ["US-016"]
 
-**描述** · 作为法务 / super_admin · 我需要打开 admin.quanqn.com/audit 看 trace_id 反查输入框 + 用户 / admin 操作时间线 + 详情抽屉。
+**描述** · 作为法务 / super_admin · 我需要打开 admin.quanan.com/audit 看 trace_id 反查输入框 + 用户 / admin 操作时间线 + 详情抽屉。
 
 **AC**(简化):
 
@@ -2171,7 +2171,7 @@ NSM(产品健康度生死线)· 4 大数字(NSM=7 天活跃账号 / 完成 9 步
 **priority** · 21
 **depends_on** · ["US-020"]
 
-**描述** · 作为运营 · 我需要打开 admin.quanqn.com/invites 看邀请码列表 + 创建按钮 + campaign 分组 Tab + 漏斗图。
+**描述** · 作为运营 · 我需要打开 admin.quanan.com/invites 看邀请码列表 + 创建按钮 + campaign 分组 Tab + 漏斗图。
 
 **AC**(简化):
 
@@ -2393,7 +2393,7 @@ DenseTable.tsx 真实现 + admin-routes.ts metadata 更新到 PRD-11 + 6 placeho
 - MFA TOTP 真启 · super_admin 强制(PRD-11 仅 stub)
 - 钉钉 webhook 真启 URL(PRD-11 仅 log)
 - 邮件服务 SMTP 真启(PRD-11 reset password 仅 log)
-- prod 部署 · 域名 admin.quanqn.com · DNS / TLS / ICP 备案
+- prod 部署 · 域名 admin.quanan.com · DNS / TLS / ICP 备案
 
 ### §3.5 1.0 不做
 

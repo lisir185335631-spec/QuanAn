@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-003 AC-7
+ * QuanAn · PRD-8 US-003 AC-7
  * enqueueIfThresholdMet — 原子阈值触发器
  *
  * 用 prisma.$queryRaw 的 INSERT ON CONFLICT UPDATE RETURNING 防 read-then-write race。

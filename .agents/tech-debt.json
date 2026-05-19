@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-18T20:10:00",
+  "last_updated": "2026-05-19T17:55:00",
   "items": [
     {
       "id": "TD-001",
@@ -73,7 +73,7 @@
       "status": "scheduled",
       "evidence": "git show ce1ed9a · 12 shadcn 组件全部写在 apps/web/src/components/ui/* · 而 PRD US-005 AC + SCAFFOLD §A.1 要求 packages/ui/src/base/* (workspace 共享)",
       "root_cause": "ralph 用 shadcn 默认路径(shadcn CLI 默认配)· 没读 SCAFFOLD §A.1 monorepo 拓扑 · 选了「装在调用 app」路径(apps/web/...)而非「共享包」路径(packages/ui/...) · prd.json AC 说了路径但 ralph 注重 shadcn 标准更胜",
-      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanqn/ui/base import · 同时 apps/web 改用 @quanqn/ui/base · 单 web 用时无影响 · admin 复用时必修",
+      "scheduled_fix_in": "P9.0 admin 启动前 · 把 12 shadcn 组件从 apps/web/src/components/ui/ lift 到 packages/ui/src/base/ · admin 通过 @quanan/ui/base import · 同时 apps/web 改用 @quanan/ui/base · 单 web 用时无影响 · admin 复用时必修",
       "audit_exemption": "US-005 approve 时接受 · 因为路径偏差不影响功能 · typecheck/lint/build 全过 · 单 apps/web 完整可用 · admin P9.0 会有专门 story 处理 lift"
     },
     {
@@ -349,12 +349,12 @@
     {
       "id": "TD-021",
       "title": "ImageGen Worker types 双定义 (zod schema canonical + worker inline interface)",
-      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanqn/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
+      "description": "apps/api/src/workers/image-gen/index.ts 内 inline 定义 ImageGenJobPayload + ImageGenJobResult 类型 (line 14-26), 但 packages/schemas/src/specialist-io/imageGen.schema.ts 已 canonical 定义同名 zod schema + z.infer types. 双定义冗余 · 风险: 未来改 schema 但忘改 worker types 漂移. 注释已标 'canonical: @quanan/schemas/specialist-io imageGen.schema' · 但仍是 stub 期合理设计 (避免跨包 import 引 cycle).",
       "scope": [
         "apps/api/src/workers/image-gen/index.ts:14-26 (inline TS interface)",
         "packages/schemas/src/specialist-io/imageGen.schema.ts (zod canonical)"
       ],
-      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanqn/schemas 推断, types 漂移可能让 worker 接错字段",
+      "impact": "Low: 本期 stub 期不影响 (DallE3ImageGenWorker throw 'PRD-6 US-009 真接') · US-009/010 真接时若不统一 import @quanan/schemas 推断, types 漂移可能让 worker 接错字段",
       "severity": "Low",
       "categories": [
         "tech-debt",
@@ -365,10 +365,10 @@
       "detected_in_story": "US-001 (Opus audit · F2 跨 story 协议核对)",
       "fix_by": "US-009 真接 (DALL-E 3 SDK wrapper)",
       "status": "resolved",
-      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanqn/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
+      "fix_hint": "US-009 真接时, apps/api/src/workers/image-gen/index.ts 改用 import { ImageGenJobPayload, ImageGenJobResult } from '@quanan/schemas/specialist-io' · 删 inline interface (line 14-26) · 仅保留 IImageGenWorker interface.",
       "resolved_in_prd": "PRD-7 US-004",
       "resolved_at": "2026-05-11T01:14:00",
-      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanqn/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
+      "close_evidence": "PRD-7 US-004 commit f2afdbc · apps/api/src/workers/image-gen/index.ts L9 import type from @quanan/schemas/specialist-io · L12 re-export 向后兼容 dall-e-3.ts/worker.ts · L16 IImageGenWorker 保留 · grep ^export (interface|type) ImageGenJob 命中 0 · vitest 727/727 + typecheck 6 ws 0 + py_compile 不需(TS)"
     },
     {
       "id": "TD-022",
@@ -602,7 +602,7 @@
       "discovered_by": "Opus audit US-002",
       "severity": "low",
       "status": "open",
-      "evidence": "/.env 文件 OPENAI_API_KEY= 为空字符串 · Test 2/3 内 HAS_OPENAI_KEY=!!process.env.OPENAI_API_KEY 为 false · 2 tests skipIf · psql quanqn -c 'SELECT type, count(*) FROM knowledge_chunk' 0 行(从未真 seed)",
+      "evidence": "/.env 文件 OPENAI_API_KEY= 为空字符串 · Test 2/3 内 HAS_OPENAI_KEY=!!process.env.OPENAI_API_KEY 为 false · 2 tests skipIf · psql quanan -c 'SELECT type, count(*) FROM knowledge_chunk' 0 行(从未真 seed)",
       "root_cause": "本地 dev 环境约定不配密钥(CLAUDE.md '本地 dev 不需要 ...') · 但 AC-6 要求 psql 验证真 seed count · 这两条本质冲突",
       "scheduled_fix_in": "PRD-9 收官前在 staging/CI 跑 pnpm seed:knowledge 真 seed + psql 验 case=67/formula=23/element=23 总 113 行 · 或更激进 · CI workflow 加 OPENAI_API_KEY secret + integration test 真跑",
       "audit_exemption": "US-002 approve 时豁免 · 因 dry-run + Test 1 (buildChunks count) 已验证 build 逻辑正确 · 真 seed 仅缺密钥这一步 · 不阻塞 RAG retrieve (US-003) 推进 — US-003 retrieve 测试可用 mock chunks"
@@ -628,7 +628,7 @@
       "discovered_by": "Opus audit US-004",
       "severity": "low",
       "status": "resolved",
-      "evidence": "psql quanqn -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
+      "evidence": "psql quanan -c 'SELECT type, COUNT(*) FROM knowledge_chunk GROUP BY type' 返 case=2/element=1/formula=1 = 4 条 · 含 '矛盾' / '认知失调' / 心理学元素 · 但 fb0c206 commit 没有任何 .sql / migration / seed script 文件改 · ralph 用了 psql 命令直插",
       "root_cause": "ralph 实施 AC-10 时 · pgvector seed 需要 OPENAI_API_KEY · 走不通 · 改用 psql INSERT 直插 4 条 dummy chunks(只为截图能拿)· 没把 SQL 命令存到 migration 或 seed 文件",
       "scheduled_fix_in": "PRD-9 收官前 · 或在 apps/api/scripts/seed-dev-knowledge.ts 加一个 dev-only seed script · 写到 package.json scripts 'seed:dev-knowledge' · CI/staging 真 OPENAI_API_KEY 跑 pnpm seed:knowledge 真 seed · dev 跑 pnpm seed:dev-knowledge 拿 fallback 数据",
       "audit_exemption": "US-004 approve 时豁免 · 因 4 条 dev seed 仅服务于本地 AC-10 截图验证 · 不污染 prod · 真 prod 走 TD-034 staging seed path · 不阻塞 PRD-9 收尾",
@@ -1719,6 +1719,233 @@
       "resolved_in_prd": "prd-20",
       "resolved_at": "2026-05-18T20:10:00",
       "notes": "Opus audit 介入 US-008 BLOCKED unblock. ralph SUSPECTED 推测正确(specialist LLM 调用 > 30s · 但只 step4/4b/6/8 命中)· Opus trust 推测无回归代码"
+    },
+    {
+      "id": "TD-085",
+      "title": "daemon iter 3-7 撞 Anthropic API ECONNRESET / timeout 5h(PRD-21 US-002)",
+      "description": "US-002 code 在 iter 1 commit 2c435a6 就修对(Header.tsx h-16 + backdrop-blur-2xl + 双行 logo + chevron rotate)· 但 daemon iter 3-7 跑 dev 1802s + validate 3604s 各 timeout 上限 × 5 次累计 ~5h · iter 8 才正常通过 audit-gate · 期间 ralph 5 个 chore commit 都说 all AC reconfirmed 但无 code 改动 · 表明是 Anthropic API 或 daemon 状态机问题",
+      "scope": [
+        "scripts/ralph/ralph.py",
+        "scripts/ralph/cost-log-ralph-prd-21-aiipznt-alignment.jsonl"
+      ],
+      "impact": "Medium: daemon time 浪费 5h(本应 15-25 min)· 但不影响 code 质量 · 如果未来 PRD 累积此模式 · 单 PRD wall time 严重超预期",
+      "severity": "Medium",
+      "categories": [
+        "daemon-infra",
+        "timeout",
+        "cost-efficiency"
+      ],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-002 (Opus audit)",
+      "fix_by": "下一 PRD 启动前 + PRD-21 retro",
+      "status": "open",
+      "fix_hint": "调研 1. daemon timeout 阈值是否过宽(30+60 min × 5 retry = 7.5h max 过宽)· 2. health check 增加 ECONNRESET detection · 3. 同 commit hash 连续 N retry 时早 abort + reject",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-086",
+      "title": "apps/web/src/App.tsx 死代码 · 含老 Toaster(top-center)误导 + 整文件 unreached",
+      "description": "main.tsx 用 RouterProvider 直接渲染 · 0 import App.tsx · App.tsx 仍含 <Toaster position=\"top-center\"> 等老代码 · grep 时易误判为双 Toaster instance · 实际 active 仅 RootLayout 的 bottom-right",
+      "scope": [
+        "apps/web/src/App.tsx"
+      ],
+      "impact": "Low: 死代码不影响 runtime · 但 audit/grep/review 时易误判 · 增加心智负担",
+      "severity": "Low",
+      "categories": [
+        "dead-code",
+        "cleanup"
+      ],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-004 (Opus audit)",
+      "fix_by": "PRD-21 retro 或 PRD-22",
+      "status": "open",
+      "fix_hint": "直接 rm apps/web/src/App.tsx · grep 验证无 import 后安全删 · 或保留作 layout placeholder 但删 Toaster line",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-087",
+      "category": "design-drift",
+      "title": "MyTopics.tsx text-amber-400 D4=B 颜色约束 amber hardcode",
+      "description": "apps/web/src/pages/modules/MyTopics.tsx L332: text-amber-400 hardcode · D4=B 颜色严锁禁 amber · 但为 pre-existing(PRD-21 前已存在 · git log 确认) · PRD-21 未引入",
+      "scope": [
+        "apps/web/src/pages/modules/MyTopics.tsx"
+      ],
+      "impact": "Low: pre-existing · PRD-21 未新增 · 仅通过 /goal-verify §0 对账发现",
+      "severity": "Low",
+      "categories": [
+        "design-drift"
+      ],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-008 (/goal-verify §0 codebase-mapper 对账)",
+      "fix_by": "PRD-22 prep",
+      "status": "open",
+      "fix_hint": "将 text-amber-400 / bg-amber-500 改为 Aurelian Dark token · 用 text-yellow-400/primary 系列替代",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-088",
+      "category": "design-drift",
+      "title": "apps/web/src/App.tsx 死代码 stale 嵌套目录 apps/web/apps/web/ 残留",
+      "description": "gsd-map-codebase 扫描发现: apps/web/apps/web/ 嵌套同名目录仍存在 · 与 TD-086 App.tsx 死代码同为 PRD-21 /goal-verify §0 发现 · 增加 mental overhead",
+      "scope": [
+        "apps/web/apps/web/"
+      ],
+      "impact": "Low: 不影响 runtime · 但 gsd-map-codebase 对账时混淆文件树分析",
+      "severity": "Low",
+      "categories": [
+        "design-drift",
+        "cleanup"
+      ],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-008 (/goal-verify §0 codebase-mapper)",
+      "fix_by": "PRD-22",
+      "status": "open",
+      "fix_hint": "rm -rf apps/web/apps/ 后 pnpm typecheck 确认 0 errors",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-089",
+      "category": "spec-self-inconsistency",
+      "title": "HOT_ELEMENTS 实际 23 keys vs spec §Ⅹ.2 描述 '22 元素'",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-001 (PRD-22)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "apps/web/src/lib/constants/elements.ts 4 组实际 23 keys(classic 11 + emotion 2 + content 6 + conversion 4)· spec §Ⅹ.2 line 2793 自注释 '11+2+6+4 = 23 · 实际去重后约 22 个' · 但 4 组之间无 key 重复(list/challenge 跨 content + SCRIPT_TYPES 但不同语义不同 const)",
+      "root_cause": "aiipznt-spec.md §Ⅹ.2 描述错误 · spec 标 '22 元素' 但提供的数据是 23 keys",
+      "scheduled_fix_in": "PRD-23+ 如有 LLM 调用需要传 element keys 时再决策(可选 22 去重 vs 23 全保留)· 本 PRD-22 仅视觉精修不涉及",
+      "audit_exemption": "US-001 approve 时豁免 · ralph 忠实复刻 spec 4 组结构 · 不影响 UI 功能(用户体验 4 组 23 button 选择 · 数量不影响交互)",
+      "scope": [
+        "apps/web/src/lib/constants/elements.ts",
+        "aiipznt-spec.md §Ⅹ.2"
+      ],
+      "impact": "Low: 影响视觉密度 (23 vs aiipznt 实测 22 · 1 button 视觉差距) · 但实际 aiipznt DOM 也按 spec 数据渲染 · pixel diff 影响可控",
+      "categories": [
+        "spec-fidelity",
+        "design-fidelity"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-001 (Opus audit · foundation 深审)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-090",
+      "category": "visual-diff-fidelity",
+      "title": "visual baseline 命名应用 aiipznt 实拍编号 · 不是 prd22-XXX 自截图",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-002 (PRD-22)",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "tests/e2e/prd22-visual-baseline.spec.ts line 27 · baseline 'prd22-generate.png' 是 ralph --update-snapshots 时自截图(1440x1619 fullPage QuanAn 实现)· 而 aiipznt 实拍 baseline 26-generate.png 早已存在 /tmp/aiipznt-clone-research/screenshots/(同目录)· ralph 用自截图作为 baseline 后续永远 PASS · 失去 visual diff 跟 aiipznt 对比的真意义",
+      "root_cause": "PRD-22 §3 US-002 AC-10 + US-003 AC-8 + US-004 AC-9 + US-005 AC-9 全自己写 baseline 命名 'prd22-XXX' · 应改为对应 aiipznt 实拍编号(25-boom-generate / 26-generate / 30-ai-video / 33-knowledge / 10-step-1-industry / 11-step-3-account / 12-step-3b-persona / 13-step-4-execution / 14-step-4b-monetization / 15-step-5-topics / 16-step-6-shooting / 17-step-7-copywriting / 33-knowledge mobile crop)· 我的 PRD 设计 bug · 不是 ralph 实现错",
+      "scheduled_fix_in": "US-012 收官 · verify-prd-22.sh 跑前统一修 spec.ts baseline 引用为 aiipznt 编号 + 删 prd22-XXX 自截图 + 跑 pnpm test:visual:check 看实际 pixel diff",
+      "audit_exemption": "US-002 approve 时豁免 · ralph 严格按 PRD AC 实现 + visual fixture 框架本身正确(expectVisualMatch / viewport 1440x900 / fullPage / 5% threshold 全对) · 仅 baseline 名称引用错 · 1 行修",
+      "scope": [
+        "tests/e2e/prd22-visual-baseline.spec.ts",
+        "tasks/prd-22.md §3 AC-10/AC-8/AC-9",
+        "scripts/ralph/prd-22.json US-002~005 AC",
+        "/tmp/aiipznt-clone-research/screenshots/prd22-XXX.png(待删)"
+      ],
+      "impact": "Medium · 不影响 PRD-22 内 ship · 但失去 visual diff 跟 aiipznt 对比的核心价值 · 后续 PRD-23/24 复用 visual infra 时需修正",
+      "categories": [
+        "prd-design-flaw",
+        "visual-fidelity"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-002 (Opus audit · high 深审)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-091",
+      "category": "layout-fidelity",
+      "title": "/generate 单列 layout vs aiipznt 双栏 · D1=A 严守度不足",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-002 (PRD-22)",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "对比 /tmp/aiipznt-clone-research/screenshots/26-generate.png(aiipznt 实拍 · 主区分左右两栏 · 左输入 + 右实时结果区) vs /tmp/aiipznt-clone-research/screenshots/prd22-generate.png(QuanAn 实现 · 单列纵向 6 区块) · layout 根本结构不同 · pixel diff 估计 30-50%",
+      "root_cause": "PRD-22 §3 US-002 AC-2 自己写'主区结构(从上到下)'单列结构 · 没要求双栏 · ralph 严格按 PRD 实现 · 我的 PRD 设计 bug · 不是 ralph 实现错",
+      "scheduled_fix_in": "US-011 跨 page polish 阶段 · 评估是否重做 5 inline page 为双栏 layout(影响 /generate /boom-generate /knowledge 等) · 或 PRD-23+ 设计阶段决策",
+      "audit_exemption": "US-002 approve 时豁免 · ralph 严格按 PRD AC-2 单列结构实现 + 所有 AC 12/12 PASS · inline picker 复用 / 字符计数 / 主 CTA disabled 条件 / ToolForm import 保留 D-216 等全对",
+      "scope": [
+        "apps/web/src/pages/tools/Generate.tsx",
+        "apps/web/src/pages/BoomGenerate.tsx(US-003 待实现)",
+        "apps/web/src/pages/Knowledge.tsx(US-005 待实现)",
+        "tasks/prd-22.md §3 US-002 AC-2 / US-003 AC-2 / US-005 AC-3"
+      ],
+      "impact": "Medium · 影响 visual diff < 5% 目标(可能 fail) · 但用户功能不受影响(inline 选择 + 字符计数 + 主 CTA 都正确) · 5 inline page 跟 aiipznt 双栏差距是 D1=A 严守度问题",
+      "categories": [
+        "prd-design-flaw",
+        "layout-fidelity",
+        "d1a-severity"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-002 (Opus audit · high 深审 · 肉眼对比 baseline)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-092",
+      "category": "prd-spec-mismatch",
+      "title": "PRD-22 AC-3/AC-8 /step/3 误把 H1 算 H3 顶部总览 · 8 H 标签预期 vs spec §7.2 6 模块",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-007 (PRD-22)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "PRD-22 §3 US-007 AC-3 写 '/step/3 输出区 7 H3 块(D-220 字面锁) · (1) H3 \"账号包装方案\"(顶部总览) + 6 子模块' · AC-8 写 'DOM H 标签数(/step/3) = 8(H1 + 7 H3)' · 但 spec §7.2 line 1326 写 '生成结果结构(6 大模块)' · ralph 严守 spec 6 H3 + 顶部 H1 \"账号包装方案\" = 7 H 标签",
+      "root_cause": "PRD AC-3 把 dump §2.2 写的 '/step/3 8 H 标签(H1 + 7 H3)' 字面理解错了 · dump 实测 8 H 可能含表单 section H3 · 但我 PRD 解读为'账号包装方案'被算两次(H1 + 顶部总览 H3)· spec §7.2 明确 6 大模块 · ralph 对齐 spec 正确",
+      "scheduled_fix_in": "US-012 收官 · 修 PRD AC-3 + AC-8 字面 · 改 '7 H3' → '6 H3'(对齐 spec §7.2 + ralph 实际实现)· 不重做代码",
+      "audit_exemption": "US-007 approve 时豁免 · ralph 严守 spec §7.2 6 大模块 + STEP3_OUTPUT_H3_6 常量化模式 · 是优于 PRD AC 的实现",
+      "scope": [
+        "tasks/prd-22.md §3 US-007 AC-3/AC-8",
+        "scripts/ralph/prd-22.json US-007 AC-3/AC-8",
+        "apps/web/src/lib/constants/step3.ts STEP3_OUTPUT_H3_6"
+      ],
+      "impact": "Low · 不影响功能 · 不影响视觉(6 H3 子模块跟 aiipznt 一致) · 只影响 PRD AC 文本数字描述",
+      "categories": [
+        "prd-design-flaw"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-007 (Opus audit)",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-093",
+      "category": "prd-template-flaw",
+      "title": "PRD step page 重写 AC 漏写 unit test 同步 · 跨 US-006/US-009 累积 2 reject 同模式",
+      "discovered_at": "2026-05-19",
+      "discovered_by": "Opus audit US-009 (PRD-22)",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "PRD-22 §3 US-006/007/008/009 AC-11 全写 '已有 e2e 更新断言' · 都没写 '同步更新对应 __tests__/Page.test.tsx unit test 期望' · US-006 + US-009 连续 2 次 reject 同模式 · ralph 严格按 PRD-22 D1A 字面锁改 page/常量 · 但 PRD-17/18 沉淀 unit test 期望旧字面 · zero_regression FAIL · 浪费 ~40 min retry",
+      "root_cause": "PRD-22 AC template 设计漏项 · 重写 page/常量必须同步更新 unit test 期望 · 但 PRD AC 只列 e2e 更新 · ralph 不主动延伸到 unit test",
+      "scheduled_fix_in": "下一次写 PRD(PRD-23/24+)时 · 任何 page/常量重写的 AC 必须加 '同步更新 apps/web/src/pages/step/__tests__/StepN.test.tsx + lib/constants/__tests__/stepN.test.ts unit test 期望对齐新字面 · vitest 全 pass' · 或在 plan-check 加规则自动检测 page 重写 + unit test 同步",
+      "audit_exemption": "US-006 + US-009 都 reject 后 1 retry 修对 · 不污染下游 US",
+      "scope": [
+        "tasks/prd-22.md US-006~012 AC-11 模板",
+        "apps/web/src/pages/step/__tests__/",
+        "apps/web/src/lib/constants/__tests__/"
+      ],
+      "impact": "Medium · 每 step page US 多 1 retry(~30-40 min daemon time)· 5 step page 累计 ~3h daemon 浪费",
+      "categories": [
+        "prd-template-flaw",
+        "unit-test-sync"
+      ],
+      "detected_in_prd": "PRD-22",
+      "detected_in_story": "US-009 (Opus audit · 第 2 次同模式 reject)",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ]
 }

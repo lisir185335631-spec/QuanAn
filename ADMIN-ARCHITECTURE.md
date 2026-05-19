@@ -1,4 +1,4 @@
-# QuanQn · 管理后台架构(ADMIN-ARCHITECTURE.md)
+# QuanAn · 管理后台架构(ADMIN-ARCHITECTURE.md)
 
 > **版本** · v0.2(2026-05-07 · 跟 ARCHITECTURE.md 平级 · 不依附主架构 · v0.2 修订:§8.7 + §9.3 改单 daemon 串行)
 > **范围** · 管理后台子系统的**独立架构** — 部署 / 鉴权 / 业务管理域 / 接口契约 / 前端 / 路线图
@@ -29,7 +29,7 @@
 | § | 章节 | 一句话 |
 |:-:|---|---|
 | §1 | **系统总览** | admin 是独立 first-class 子系统 · 跟主应用解耦 · 服务运营/财务/法务/客服 4 类内部用户 |
-| §2 | **部署形态** | 独立子域名(admin.quanqn.com)+ 独立 SPA(apps/admin)+ 独立 OAuth + IP 白名单 + 独立 CI/CD |
+| §2 | **部署形态** | 独立子域名(admin.quanan.com)+ 独立 SPA(apps/admin)+ 独立 OAuth + IP 白名单 + 独立 CI/CD |
 | §3 | **业务管理域全景**(★ 核心) | 13+ 域:6 P0 + 2 P0 内容审核 + 5 P1 + 3 P2 — 每域含数据来源/KPI/交互/鉴权/UI |
 | §4 | **数据访问与隔离** | admin 跨账号 RLS policy + admin_audit_log 独立审计 + 三档角色权限矩阵 |
 | §5 | **接口契约** | adminRouter 跟 appRouter 并列的 tRPC 树 + 鉴权链 + 命名规范 |
@@ -78,7 +78,7 @@
    │                         │   adminRouter 隔离) │                         │
    │  · 用户 OAuth           │                    │  · 独立 admin OAuth     │
    │  · 主 SPA bundle        │                    │  · 独立 admin SPA       │
-   │  · www.quanqn.com       │                    │  · admin.quanqn.com     │
+   │  · www.quanan.com       │                    │  · admin.quanan.com     │
    │  · 14 Specialist        │                    │  · 13 业务管理域        │
    │  · 进化飞轮             │                    │  · 不调 Specialist      │
    └────────────────────────┘                    └────────────────────────┘
@@ -96,7 +96,7 @@
 - ❌ OAuth 应用 · 主应用 client_id ≠ admin client_id
 - ❌ Session · 主应用 session 不能登 admin · 反之亦然
 - ❌ SPA bundle · `apps/web` 跟 `apps/admin` 是两个独立 build 产物
-- ❌ 域名 · `www.quanqn.com` ≠ `admin.quanqn.com`
+- ❌ 域名 · `www.quanan.com` ≠ `admin.quanan.com`
 - ❌ 路由 / 页面 / 设计密度
 - ❌ CI/CD · 改 web 不发 admin · 改 admin 不发 web
 - ❌ 故障域 · admin 挂不影响 web · web 挂不影响 admin
@@ -169,7 +169,7 @@
 
 > ARCHITECTURE.md §1.7 列了 8 条偏离决策(视觉/拓扑/文案/记忆/进化/流式/多账号/透明度)· 本架构补**第 9 条**:
 
-| # | 维度 | aiipznt 原版 | QuanQn 本架构 | 偏离理由 |
+| # | 维度 | aiipznt 原版 | QuanAn 本架构 | 偏离理由 |
 |:-:|---|---|---|---|
 | **9** | **管理后台** | 1 个 `/invite-manage`(嵌入主应用)+ "推测后台功能"(spec.md §16.3) | **独立子系统** · 13+ 业务管理域 · 独立部署 · 独立鉴权 · 独立路线图 | 原版 admin 简陋是历史包袱 · 复刻产品不应连同包袱一起复刻 · 用户硬约束#2 #3 要求独立 |
 
@@ -191,27 +191,27 @@
 
 ## §2 部署形态
 
-### §2.1 独立子域名 · admin.quanqn.com
+### §2.1 独立子域名 · admin.quanan.com
 
 ```
-www.quanqn.com         · 主应用(apps/web)        · 用户访问
-admin.quanqn.com       · 管理后台(apps/admin)    · 内部团队访问
-api.quanqn.com         · 后端 API(apps/api)      · 两端都调用
+www.quanan.com         · 主应用(apps/web)        · 用户访问
+admin.quanan.com       · 管理后台(apps/admin)    · 内部团队访问
+api.quanan.com         · 后端 API(apps/api)      · 两端都调用
                           ↑
                           ├── /trpc/app.*      · 主应用调
                           └── /trpc/admin.*    · 管理后台调
 ```
 
 **子域名隔离的好处**:
-- ✅ Cookie / Session 自然隔离(`admin.quanqn.com` 跟 `www.quanqn.com` Cookie 不互通)
+- ✅ Cookie / Session 自然隔离(`admin.quanan.com` 跟 `www.quanan.com` Cookie 不互通)
 - ✅ CDN / 静态托管可分别配置(admin 走更严格的 CDN policy · 比如禁缓存)
 - ✅ DNS / WAF 层可独立加防护(admin 加 IP 白名单 · www 不加)
-- ✅ 用户视觉认知清晰(打开 admin.quanqn.com 就知道是后台)
+- ✅ 用户视觉认知清晰(打开 admin.quanan.com 就知道是后台)
 
 ### §2.2 独立 SPA bundle · apps/admin
 
 ```
-QuanQn/(monorepo)
+QuanAn/(monorepo)
 ├── apps/
 │   ├── web/                    主应用 SPA(原 src/pages/* 主部分)
 │   │   ├── src/pages/
@@ -257,15 +257,15 @@ QuanQn/(monorepo)
 主应用 OAuth:
   client_id     · QUANQN_WEB_CLIENT_ID
   client_secret · QUANQN_WEB_CLIENT_SECRET
-  redirect_uri  · https://www.quanqn.com/auth/callback
+  redirect_uri  · https://www.quanan.com/auth/callback
   scope         · openid email profile
   
 管理后台 OAuth(独立申请):
   client_id     · QUANQN_ADMIN_CLIENT_ID    ★ 不同 client_id
   client_secret · QUANQN_ADMIN_CLIENT_SECRET
-  redirect_uri  · https://admin.quanqn.com/auth/callback   ★ 不同回调
+  redirect_uri  · https://admin.quanan.com/auth/callback   ★ 不同回调
   scope         · openid email profile
-  额外限制      · Google Workspace 内部域名(只允许 @quanqn.com 邮箱)
+  额外限制      · Google Workspace 内部域名(只允许 @quanan.com 邮箱)
 ```
 
 > 🟢 **为什么必须独立** · 同一 OAuth 应用同时支持两个 client 看似省事 · 但:
@@ -276,14 +276,14 @@ QuanQn/(monorepo)
 ### §2.4 IP 白名单 + MFA + 强制审计
 
 ```
-admin.quanqn.com 访问链路:
+admin.quanan.com 访问链路:
 ─────────────────────────────────────────────────
   ① DNS → CDN
        └── WAF 层 IP 白名单(office network + VPN IP 段)
             └── 不在白名单 → 403 Forbidden(连 OAuth 页面都不显示)
             
   ② OAuth 登录
-       └── Google Workspace 限定 @quanqn.com
+       └── Google Workspace 限定 @quanan.com
             └── 不是内部邮箱 → 拒绝
             
   ③ Session 建立(独立 admin session · 跟主应用 session 不互通)
@@ -307,12 +307,12 @@ GitHub Actions(monorepo · 路径触发)
   apps/web/**          → web-deploy.yml
                           ├── lint + test web
                           ├── build apps/web → dist-web
-                          └── deploy to Vercel(www.quanqn.com)
+                          └── deploy to Vercel(www.quanan.com)
                           
   apps/admin/**        → admin-deploy.yml ★ 独立 workflow
                           ├── lint + test admin
                           ├── build apps/admin → dist-admin
-                          └── deploy to Vercel(admin.quanqn.com)
+                          └── deploy to Vercel(admin.quanan.com)
                           ★ 独立的 deployment URL · 独立的发版历史
                           
   apps/api/**          → api-deploy.yml
@@ -333,7 +333,7 @@ GitHub Actions(monorepo · 路径触发)
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                    GitHub(monorepo · QuanQn)                     │
+│                    GitHub(monorepo · QuanAn)                     │
 └──────────────┬─────────────┬───────────────────┬────────────────┘
                │             │                   │
                ▼             ▼                   ▼
@@ -344,7 +344,7 @@ GitHub Actions(monorepo · 路径触发)
              ▼              ▼                    ▼
     ┌──────────────┐  ┌──────────────┐   ┌──────────────────┐
     │  Vercel      │  │  Vercel      │   │  Railway/Fly.io  │
-    │ www.quanqn   │  │ admin.quanqn │   │  api.quanqn      │
+    │ www.quanan   │  │ admin.quanan │   │  api.quanan      │
     │ (公开 CDN)   │  │ (IP 白名单)  │   │  (容器 + autoscale│
     └──────┬───────┘  └──────┬───────┘   └────────┬─────────┘
            │                 │                    │
@@ -368,7 +368,7 @@ GitHub Actions(monorepo · 路径触发)
 ### §2.7 部署形态小结
 
 本节答 5 件事:
-1. **独立子域名** · admin.quanqn.com / www.quanqn.com / api.quanqn.com — 自然隔离
+1. **独立子域名** · admin.quanan.com / www.quanan.com / api.quanan.com — 自然隔离
 2. **独立 SPA bundle** · monorepo 下 `apps/web` + `apps/admin` + `apps/api` + 共享 `packages/*`
 3. **独立 OAuth 应用** · 不同 client_id + Workspace 限定内部域名
 4. **多重防护** · WAF IP 白名单 + Google Workspace + MFA(super_admin)+ Approval Gates + 全审计
@@ -1046,7 +1046,7 @@ export const readonlyAdminProcedure = t.procedure
 ```
 ┌────────────────────────────────────────────────────────────────────┐
 │  topbar · 56px(深色 #0e0e11)                                      │
-│  ├─ logo(QuanQn admin)│ breadcrumb         │ search │ admin avatar│
+│  ├─ logo(QuanAn admin)│ breadcrumb         │ search │ admin avatar│
 └────────────────────────────────────────────────────────────────────┘
 ┌────────────────┬─────────────────────────────────────┬─────────────┐
 │ sidebar · 240px│ main · flex-1                        │ audit drawer│
@@ -1082,7 +1082,7 @@ export const readonlyAdminProcedure = t.procedure
 │ └────────────┘ │                                      │             │
 └────────────────┴─────────────────────────────────────┴─────────────┘
                   └─ status bar(底部 32px)
-                     │ admin: alice@quanqn │ role: admin │ session 28m │
+                     │ admin: alice@quanan │ role: admin │ session 28m │
                      │ pending approvals: 3 │ alerts: 1   │ (钉钉链接) │
 ```
 
@@ -1098,7 +1098,7 @@ export const readonlyAdminProcedure = t.procedure
 > 路由跟 §3 业务管理域一一对应 · 但 P2 域(⑭⑮⑯)在 P9.4 后才暴露 · MVP 时仅 13 路由可见。
 
 ```
-admin.quanqn.com/(根 = NSM 仪表盘 · 默认页)
+admin.quanan.com/(根 = NSM 仪表盘 · 默认页)
                   /                            → 域 ① NSM
                   /users                       → 域 ② 用户管理
                   /users/:userId              → 用户详情
@@ -1277,11 +1277,11 @@ OAuth Provider · Google Workspace
 ─────────────────────────────────────────────────
   client_id     · QUANQN_ADMIN_CLIENT_ID(独立申请 · 不复用主应用 client)
   client_secret · 存 .env.admin · 不进 git
-  redirect_uri  · https://admin.quanqn.com/auth/callback
+  redirect_uri  · https://admin.quanan.com/auth/callback
   scope         · openid email profile
   
   额外限制 ·
-    ① Workspace 限定 · hd=quanqn.com(只允许 @quanqn.com 邮箱登录)
+    ① Workspace 限定 · hd=quanan.com(只允许 @quanan.com 邮箱登录)
     ② 邮箱白名单二次过滤 · 白名单存 admin_users 表 · 不在白名单 → 403
     ③ 首次登录 · 创建 admin user 记录 + role=待分配 + 通知 super_admin
 
@@ -1499,7 +1499,7 @@ export const banUserProcedure = adminProcedure
 | **★ 架构相关** | 跟主应用最大不同 · 这是**第一次运行 monorepo 多 SPA** · 必须验证:<br>① web build 不影响 admin build<br>② admin OAuth 跟主 OAuth 完全隔离<br>③ adminRLS bypass 跨账号查通过测试<br>④ WAF 真挡掉非白名单 IP |
 | **引用知识库** | reference-materials/Agent安全架构与合规指南 §鉴权 / OWASP LLM Top 10 · ADR-016 Approval Gates |
 | **风险** | • monorepo 重构破坏主应用现有代码(0 业务影响要求 · 严格回归)<br>• OAuth 二次申请 google workspace 配置 |
-| **退出条件** | super_admin 用 admin@quanqn.com 登录 admin.quanqn.com · 必经 OAuth + MFA · 看到空 layout · admin_audit_log 有 admin_login 记录 · WAF 拒绝非白名单 IP |
+| **退出条件** | super_admin 用 admin@quanan.com 登录 admin.quanan.com · 必经 OAuth + MFA · 看到空 layout · admin_audit_log 有 admin_login 记录 · WAF 拒绝非白名单 IP |
 
 ### §8.3 P9.1 · 6 个 P0 业务核心域(3 周)
 
@@ -1647,7 +1647,7 @@ admin 时间线(Week 17-25 · ★ 主应用 P8 完成后才启动):
 > ⚠️ **v0.2 真相** · 严格串行 · 同一 daemon · prd.json 切换。
 
 ```bash
-# 全程在项目根 /Users/return/Desktop/QuanQn 跑(同一 PROJECT_ROOT)
+# 全程在项目根 /Users/return/Desktop/QuanAn 跑(同一 PROJECT_ROOT)
 # 14 PRD 严格串行 · 一次只跑一份
 
 # Week 1-16 · 主应用 PRD-1 ~ PRD-9

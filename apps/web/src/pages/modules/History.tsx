@@ -61,7 +61,7 @@ import {
 } from '@/components/ui/sheet';
 import { trpc } from '@/lib/trpc';
 
-import type { HistoryListRow } from '@quanqn/clients/router-types';
+import type { HistoryListRow } from '@quanan/clients/router-types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

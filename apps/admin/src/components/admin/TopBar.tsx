@@ -33,7 +33,7 @@ export function TopBar({ onAuditDrawerToggle, auditDrawerOpen }: TopBarProps) {
 
   return (
     <header className="admin-topbar" role="banner">
-      <span className="admin-topbar__brand">QuanQn Admin</span>
+      <span className="admin-topbar__brand">QuanAn Admin</span>
 
       <div className="admin-topbar__spacer" />
 

@@ -1,4 +1,4 @@
-# Codebase Structure · QuanQn
+# Codebase Structure · QuanAn
 
 **Analysis Date:** 2026-05-09
 **Scope:** PRD-1 → PRD-5 完成期 · 12 stories PRD-5 全 PASSED · 6 workspaces · pnpm + turbo · TS project references
@@ -9,7 +9,7 @@
 ## §1 Top-Level Layout
 
 ```text
-QuanQn/                                  ★ 根 monorepo (Node 20 · pnpm 9.15.9)
+QuanAn/                                  ★ 根 monorepo (Node 20 · pnpm 9.15.9)
 ├─ apps/
 │  ├─ api/                               ★ Hono + tRPC 后端服务 (主开发)
 │  ├─ web/                               ★ React + Vite SPA 主应用前端 (主开发)
@@ -79,7 +79,7 @@ QuanQn/                                  ★ 根 monorepo (Node 20 · pnpm 9.15.
 
 ## §2 Workspace Map
 
-### §2.1 `apps/api` · 后端 API 服务 (`@quanqn/api`)
+### §2.1 `apps/api` · 后端 API 服务 (`@quanan/api`)
 
 **Type:** Node.js Hono 4 + tRPC v11 backend service
 **Entry:** `apps/api/src/index.ts` (port 3000 · `tsx watch src/index.ts` for dev)
@@ -88,7 +88,7 @@ QuanQn/                                  ★ 根 monorepo (Node 20 · pnpm 9.15.
 
 ```text
 apps/api/
-├─ package.json                          @quanqn/api · scripts {dev, start, build, typecheck, lint}
+├─ package.json                          @quanan/api · scripts {dev, start, build, typecheck, lint}
 ├─ tsconfig.json                         extends ../../tsconfig.base.json
 ├─ src/
 │  ├─ index.ts                           ★ Hono app · CORS · trace mw · OAuth /auth/* · /trpc/*
@@ -198,10 +198,10 @@ apps/api/
 
 **Edges (依赖):**
 - 入: `apps/web` (HTTP/cookies) · `tests/integration/api/*` · `tests/unit/api/*`
-- 出: PG (`postgresql://return@localhost:5432/quanqn`) · Redis (Upstash optional) · Anthropic API · OpenAI API
-- 包: `@quanqn/schemas` (workspace:*)
+- 出: PG (`postgresql://return@localhost:5432/quanan`) · Redis (Upstash optional) · Anthropic API · OpenAI API
+- 包: `@quanan/schemas` (workspace:*)
 
-### §2.2 `apps/web` · 主应用前端 (`@quanqn/web`)
+### §2.2 `apps/web` · 主应用前端 (`@quanan/web`)
 
 **Type:** React 18.3 + Vite 5 SPA
 **Entry:** `apps/web/src/main.tsx` (port 5173 · `vite` for dev)
@@ -210,8 +210,8 @@ apps/api/
 
 ```text
 apps/web/
-├─ package.json                          @quanqn/web · 38 deps + 17 devDeps
-├─ tsconfig.json                         extends base + paths {@quanqn/{schemas,ui,clients}}
+├─ package.json                          @quanan/web · 38 deps + 17 devDeps
+├─ tsconfig.json                         extends base + paths {@quanan/{schemas,ui,clients}}
 ├─ vite.config.ts                        plugins:[react()] · alias · proxy /api/trpc → :3000 · manualChunks
 ├─ vitest.config.ts                      jsdom · setup tests/setup.ts
 ├─ tailwind.config.js                    Aurelian Dark token derived (LD-015)
@@ -326,20 +326,20 @@ apps/web/
 **Edges:**
 - 入: 浏览器(用户)
 - 出: `apps/api`(/trpc + /auth · cookies)
-- 包: `@quanqn/schemas` · `@quanqn/clients` · `@quanqn/ui`(占位)
+- 包: `@quanan/schemas` · `@quanan/clients` · `@quanan/ui`(占位)
 - ✅ R-A1 验证: `grep import.*admin apps/web/src/ -r` → 0 命中
 - ✅ R-1 验证: `grep '@anthropic-ai/sdk\|from openai' apps/web/src/ -r` → 0 命中
 
-### §2.3 `apps/admin` · admin SPA (P0 占位 · `@quanqn/admin`)
+### §2.3 `apps/admin` · admin SPA (P0 占位 · `@quanan/admin`)
 
 **Type:** Vite SPA (P9.0 起填)
 **Entry:** `apps/admin/src/index.ts`(12 行 stub)
 **LOC:** ~12 行
-**Purpose:** 内容审核 + 账号 + 套餐 + 数据看板(ADR-021 独立部署 · admin.quanqn.com 子域名)
+**Purpose:** 内容审核 + 账号 + 套餐 + 数据看板(ADR-021 独立部署 · admin.quanan.com 子域名)
 
 ```text
 apps/admin/
-├─ package.json                          @quanqn/admin · scripts {dev,build} 全 echo 占位
+├─ package.json                          @quanan/admin · scripts {dev,build} 全 echo 占位
 ├─ src/
 │  ├─ index.ts                           12 行 README 注释
 │  ├─ pages/.gitkeep                     占位
@@ -354,7 +354,7 @@ apps/admin/
 - 出: `apps/api/admin/*` (子 router · 待 PRD-10 起建立)
 - 边界: ★ R-A1 严格 · admin 子系统不能 import 主应用业务代码 · 反之亦然
 
-### §2.4 `packages/schemas` · zod 真理来源 (`@quanqn/schemas`)
+### §2.4 `packages/schemas` · zod 真理来源 (`@quanan/schemas`)
 
 **Type:** zod schema package(无 build · `main = ./src/index.ts`)
 **Entry:** `packages/schemas/src/index.ts`(主 barrel · entities/* + stepData)
@@ -395,7 +395,7 @@ packages/schemas/
 - 入: `apps/api`(import canonical · 含 router 内 inline 副本 · 注释标注)· `apps/web`(form validation)· `packages/clients`
 - 出: 0 (纯 schema)
 
-### §2.5 `packages/clients` · tRPC 类型导出 (`@quanqn/clients`)
+### §2.5 `packages/clients` · tRPC 类型导出 (`@quanan/clients`)
 
 **Type:** TS package(`main = ./src/index.ts`)
 **Entry:** `packages/clients/src/index.ts`(占位)+ `router-types.ts`(shadow router)
@@ -410,11 +410,11 @@ packages/clients/
 ```
 
 **Edges:**
-- 入: `apps/web/src/lib/trpc.ts`(`import type { AppRouter } from '@quanqn/clients/router-types'`)
+- 入: `apps/web/src/lib/trpc.ts`(`import type { AppRouter } from '@quanan/clients/router-types'`)
 - 出: 仅 type · 运行时 0 (Vite tree-shake)
 - TD: P1 改 TypeScript project references(`router-types.ts:8` 注释)
 
-### §2.6 `packages/ui` · Aurelian Dark 共享 UI (`@quanqn/ui`)
+### §2.6 `packages/ui` · Aurelian Dark 共享 UI (`@quanan/ui`)
 
 **Type:** TS package(P0 占位)
 **Entry:** `packages/ui/src/index.ts`
@@ -448,9 +448,9 @@ grep -rl "import.*admin" apps/web/src 2>/dev/null
 # 期望: 0 命中
 # 实测: 0 命中 ✅
 
-# 验证 2 · web 不引 @quanqn/admin
-grep -rl "@quanqn/admin" apps/web/src 2>/dev/null
-# 期望: 0 命中 (apps/admin · NOT @quanqn/admin module)
+# 验证 2 · web 不引 @quanan/admin
+grep -rl "@quanan/admin" apps/web/src 2>/dev/null
+# 期望: 0 命中 (apps/admin · NOT @quanan/admin module)
 # 实测: 0 命中 ✅
 ```
 
@@ -483,7 +483,7 @@ grep -rln "import.*'@anthropic-ai\|import.*'openai\|new Anthropic\|new OpenAI" a
 ### §3.5 packages → apps 反向依赖禁止
 
 ```bash
-grep -rn "from '@quanqn/api'\|from '../../apps" packages/ 2>/dev/null
+grep -rn "from '@quanan/api'\|from '../../apps" packages/ 2>/dev/null
 # 期望: 0 命中
 # 实测: 0 命中 ✅
 ```
@@ -491,7 +491,7 @@ grep -rn "from '@quanqn/api'\|from '../../apps" packages/ 2>/dev/null
 ### §3.6 admin / web 共享 UI 边界(待 P9.0 验)
 
 - 当前: web 自包含 `apps/web/src/components/ui/*` (12 shadcn) · admin 还未起
-- 目标: 12 组件 lift 到 `packages/ui/src/base/*` · web + admin 都 import `@quanqn/ui/base`(TD-005 · scheduled P9.0)
+- 目标: 12 组件 lift 到 `packages/ui/src/base/*` · web + admin 都 import `@quanan/ui/base`(TD-005 · scheduled P9.0)
 
 ---
 
@@ -770,11 +770,11 @@ ui/
 | Alias | Maps to | 在哪用 |
 |---|---|---|
 | `@/*` | 当前 workspace 的 src | `apps/{api,web,admin}/tsconfig.json` |
-| `@quanqn/schemas` | `packages/schemas/src` | `apps/api`,`apps/web`,`packages/clients` |
-| `@quanqn/schemas/*` | `packages/schemas/src/*` | 同上 |
-| `@quanqn/clients` | `packages/clients/src` | `apps/web` |
-| `@quanqn/clients/*` | `packages/clients/src/*` | 同上 |
-| `@quanqn/ui`/`@quanqn/ui/*` | `packages/ui/src/*` | 占位 |
+| `@quanan/schemas` | `packages/schemas/src` | `apps/api`,`apps/web`,`packages/clients` |
+| `@quanan/schemas/*` | `packages/schemas/src/*` | 同上 |
+| `@quanan/clients` | `packages/clients/src` | `apps/web` |
+| `@quanan/clients/*` | `packages/clients/src/*` | 同上 |
+| `@quanan/ui`/`@quanan/ui/*` | `packages/ui/src/*` | 占位 |
 
 ---
 
@@ -817,7 +817,7 @@ ui/
 - 位置:`packages/schemas/src/specialist-io/<name>.schema.ts` 或 `packages/schemas/src/entities/<name>.schema.ts`
 - export 到对应子目录 `index.ts` barrel
 - 主 `packages/schemas/src/index.ts` 不直接 re-export(防 tree-shaking 风险)
-- ★ Inline duplicate: tRPC router 内允许 inline 副本 + 注释 `Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use`
+- ★ Inline duplicate: tRPC router 内允许 inline 副本 + 注释 `Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use`
 
 ### §6.4 New Component / Page
 
@@ -984,4 +984,4 @@ python3.11 scripts/ralph/ralph.py --model sonnet --daemon
 
 ---
 
-*Structure analysis: 2026-05-09 · QuanQn PRD-1~PRD-5 完成期 · 6 workspaces · 39 prisma models · 8 / 14 Specialist · 34 routes · 79 tests*
+*Structure analysis: 2026-05-09 · QuanAn PRD-1~PRD-5 完成期 · 6 workspaces · 39 prisma models · 8 / 14 Specialist · 34 routes · 79 tests*

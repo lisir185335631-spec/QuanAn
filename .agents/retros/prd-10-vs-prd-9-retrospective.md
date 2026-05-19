@@ -623,7 +623,7 @@ git log --reverse --oneline "$MERGE_BASE"..HEAD
 
 ## 16. 结论
 
-**[PRD-10 = QuanQn 项目里程碑 PRD]**:
+**[PRD-10 = QuanAn 项目里程碑 PRD]**:
 - ⭐ 第一个 admin 子系统 PRD · 立下 7 大 patterns + 5 audit scripts 模板
 - ⭐ 严格 86% 一轮通过率(PRD-9 0% → PRD-10 86%)· 大幅跃迁
 - ⭐ 0 reject + 0 BLOCKED + 0 RCA + 0 Opus 直 fix(全清零 · 连 4 PRD 0 reject)

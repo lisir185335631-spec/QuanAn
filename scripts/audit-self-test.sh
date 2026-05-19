@@ -26,7 +26,7 @@ section() { echo ""; echo "━━━ $1 ━━━"; }
 cd "$(dirname "$0")/.."
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  QuanQn audit script coverage self-test"
+echo "  QuanAn audit script coverage self-test"
 echo "  时间: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

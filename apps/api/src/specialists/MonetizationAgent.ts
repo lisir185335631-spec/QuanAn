@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 US-006
+ * QuanAn · PRD-4 US-006
  * MonetizationAgent — step4b(变现路径 · 单 mode · 8KB)
  *
  * AC-1: 五层配置完整(persona/memory/knowledge/tools/execution) · model_tier='reasoning' timeout_ms=45000

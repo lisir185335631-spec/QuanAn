@@ -9,7 +9,7 @@
  * US-013 SHIELD REJ-010: ?historyId pre-fill → write defaults to LS namespace for persistence
  */
 
-import { videoProductionInput } from '@quanqn/schemas/specialist-io';
+import { videoProductionInput } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
-import type { VideoProductionHistoryRow } from '@quanqn/clients/router-types';
+import type { VideoProductionHistoryRow } from '@quanan/clients/router-types';
 
 export default function VideoProduction() {
   const { account } = useActiveAccount();

@@ -5,11 +5,11 @@
 ## APIs & External Services
 
 **Backend (主开发期唯一外部依赖):**
-- QuanQn API (`apps/api`) - admin tRPC router
+- QuanAn API (`apps/api`) - admin tRPC router
   - 端点: `http://localhost:3000/trpc/admin` (默认 dev)
   - 生产: `${VITE_API_BASE_URL}/trpc/admin`
   - Client: @trpc/client httpBatchLink + @trpc/react-query
-  - 类型: `import type { AdminRouter } from '@quanqn/clients/admin-router-types'`
+  - 类型: `import type { AdminRouter } from '@quanan/clients/admin-router-types'`
   - 凭证: lucia-auth session cookie 自动 (credentials: 'include')
   - 实现: `apps/admin/src/lib/admin-client.ts`
 
@@ -85,7 +85,7 @@
 
 **Databases:**
 - 前端不直接访问数据库 (LD-A-1 红线 · 通过后端 6 闸鉴权链)
-- 后端实际访问: PostgreSQL 16 + pgvector (主开发库 quanqn / 测试库 quanqn_test) · 参 `CLAUDE.md §3`
+- 后端实际访问: PostgreSQL 16 + pgvector (主开发库 quanan / 测试库 quanan_test) · 参 `CLAUDE.md §3`
 
 **File Storage:**
 - ⚠️ 客户端临时 · URL.createObjectURL → blob → anchor.click → download
@@ -100,7 +100,7 @@
 **Auth Provider:**
 - lucia-auth (后端 issue session cookie · 前端透明)
 - 当前实现 · email-based mock login (dev only · `pages/Login.tsx:15-23`)
-- 上线前替换 · Google Workspace OAuth (Internal · @quanqn.com 限定 · 见 ADR-021)
+- 上线前替换 · Google Workspace OAuth (Internal · @quanan.com 限定 · 见 ADR-021)
 - Frontend 路径: 点 mock login → adminTrpc.auth.login.useMutation → cookie 写入 → navigate('/admin')
 
 **Authorization:**
@@ -134,7 +134,7 @@
 
 **Hosting:**
 - 当前 · 本地 dev (`pnpm dev` → port 5174)
-- 生产 (PRR 后) · admin.quanqn.com 子域名 (ADR-021 独立部署)
+- 生产 (PRR 后) · admin.quanan.com 子域名 (ADR-021 独立部署)
 - 静态站托管 · 候选 Vercel / Cloudflare Pages / 阿里云 OSS+CDN (上线前 PRR 决定)
 
 **CI Pipeline:**
@@ -186,8 +186,8 @@
 ## Cross-App Isolation (LD-A-1 验证)
 
 **实测结果 ✅ 完全隔离:**
-- apps/admin/src 内 `grep "apps/web\|@quanqn/web"` → **0 命中**
-- apps/admin 仅 import `@quanqn/ui` / `@quanqn/clients` (workspace shared packages · 双向可用 · 不算违反)
+- apps/admin/src 内 `grep "apps/web\|@quanan/web"` → **0 命中**
+- apps/admin 仅 import `@quanan/ui` / `@quanan/clients` (workspace shared packages · 双向可用 · 不算违反)
 - apps/admin 用独立 `/trpc/admin` 端点 (不复用 apps/web 的 `/trpc/user`)
 - apps/admin 用 `<AdminRouter>` 类型 (`packages/clients/src/admin-router-types.ts`) · 与 apps/web 的 `router-types.ts` 分开
 - 端口隔离 · apps/admin dev port 5174 / apps/web port 5173

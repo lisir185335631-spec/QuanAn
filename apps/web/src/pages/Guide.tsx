@@ -1,147 +1,95 @@
 import { useState } from 'react';
-import { GUIDE_MODULES, FAQS } from '@/lib/constants/guide';
-import type { GuideModule, FAQ } from '@/lib/constants/guide';
+import { Link } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { FUNCTION_MATRIX, FUNCTION_MATRIX_FOOTER } from '@/lib/constants/function-matrix';
+import { GUIDE_FAQ_5 } from '@/lib/constants/guide-faq';
 
 const RECOMMENDED_FLOW = [
-  { num: '01', title: '分析市场', desc: '爆款库 · 爆款解析掌握趋势' },
-  { num: '02', title: '规划变现', desc: '变现模型 · 私域成交设计路径' },
-  { num: '03', title: '创作内容', desc: '爆款生成 · 文案分析打磨内容' },
-  { num: '04', title: '制作视频', desc: 'AI视频 · 视频制作落地执行' },
-  { num: '05', title: '持续优化', desc: '深度学习 · 数据反馈迭代升级' },
-];
+  { num: '01', title: '深度学习', desc: '上传文档让 AI 学习你的行业知识' },
+  { num: '02', title: '设计变现', desc: '定制变现路径和收入结构' },
+  { num: '03', title: '创作内容', desc: '生成爆款文案和选题' },
+  { num: '04', title: '制作视频', desc: '一键生成分镜表和拍摄计划' },
+  { num: '05', title: '私域成交', desc: '完整成交话术和流程设计' },
+] as const;
 
 const SYSTEM_OVERVIEW = [
-  { icon: '🤖', title: '智能分析', desc: '13个AI工具全面覆盖内容创作全链路' },
-  { icon: '🗺️', title: '系统化流程', desc: '9步IP打造体系从定位到变现' },
-  { icon: '📈', title: '数据驱动', desc: '实时追踪持续优化内容创作策略' },
-];
+  { title: '什么是AIP智能体', desc: '基于 AI 的 IP 起号 / 内容创作平台 · 9 步标准化向导' },
+  { title: '核心定位', desc: 'OPC(One Person Company)创业者 + 个人 IP 起号者' },
+  { title: '使用前准备', desc: '准备好账号信息 · 行业知识 · 目标受众画像' },
+] as const;
 
-function ModuleCard({ mod }: { mod: GuideModule }) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div
-      className="glass-card rounded-xl p-4 cursor-pointer hover:border-primary/40 transition-colors border border-border"
-      onClick={() => setExpanded((v) => !v)}
-    >
-      <div className="flex items-start gap-3">
-        <span className="text-2xl">{mod.icon}</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <h4 className="font-label text-sm font-bold text-foreground">{mod.title}</h4>
-            <span className="text-muted-foreground text-xs ml-2 flex-shrink-0">
-              {expanded ? '−' : '+'}
-            </span>
-          </div>
-          <p className="font-cn text-xs text-muted-foreground mt-1">{mod.desc}</p>
-          {expanded && mod.steps && mod.steps.length > 0 && (
-            <ol className="mt-3 space-y-1">
-              {mod.steps.map((step, i) => (
-                <li key={i} className="font-cn text-xs text-foreground/80 flex gap-2">
-                  <span className="text-primary font-bold flex-shrink-0">{i + 1}.</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FAQItem({ faq }: { faq: FAQ }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="border border-border rounded-lg overflow-hidden">
-      <button
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/30 transition-colors"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span className="font-cn text-sm font-medium text-foreground">{faq.q}</span>
-        <span className="text-primary font-bold ml-3 flex-shrink-0">{open ? '−' : '+'}</span>
-      </button>
-      {open && (
-        <div className="px-5 pb-4">
-          <p className="font-cn text-sm text-muted-foreground">{faq.a}</p>
-        </div>
-      )}
-    </div>
-  );
-}
+// 13 modules: all FUNCTION_MATRIX cards excluding methodology knowledge base
+const ALL_MODULES = FUNCTION_MATRIX.flatMap((g) => g.cards).filter(
+  (c) => c.href !== '/knowledge',
+);
 
 export default function Guide() {
-  const [search, setSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const filteredModules = search.trim()
-    ? GUIDE_MODULES.filter(
-        (m) => m.title.includes(search) || m.desc.includes(search),
+  const filteredModules = searchQuery
+    ? ALL_MODULES.filter(
+        (m) => m.title.includes(searchQuery) || m.desc.includes(searchQuery),
       )
-    : GUIDE_MODULES;
+    : ALL_MODULES;
 
   return (
     <main className="flex-1 container mx-auto px-4 py-8 data-grid-bg min-h-screen">
-      {/* Header */}
-      <section className="text-center mb-10">
-        <h1 className="font-display text-5xl font-black text-primary tracking-widest mb-4">
+      {/* H1 + subtitle */}
+      <section className="text-center mb-8">
+        <h1 className="font-display text-5xl md:text-6xl font-black text-primary tracking-widest text-center mb-3">
           USER GUIDE
         </h1>
-        <p className="font-cn text-base text-muted-foreground">
+        <p className="font-cn text-lg text-muted-foreground text-center mb-12">
           产品使用说明 · 功能详解 · 最佳实践
         </p>
       </section>
 
-      {/* SearchBox */}
-      <section className="mb-10">
-        <div className="max-w-md mx-auto">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="搜索功能说明..."
-            className="font-cn w-full px-4 py-2 rounded-lg bg-input border border-border focus:outline-none focus:border-primary/40"
-          />
-        </div>
-      </section>
+      {/* Search input */}
+      <div className="max-w-md mx-auto mb-12">
+        <Input
+          type="search"
+          placeholder="搜索功能说明..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
-      {/* RecommendedFlow — only visible when no search */}
-      {!search.trim() && (
-        <section className="mb-10">
+      {/* 推荐使用流程 — hidden while searching */}
+      {!searchQuery && (
+        <section className="mb-16">
           <h2 className="font-display text-2xl font-bold text-foreground mb-6 text-center tracking-wider">
-            RECOMMENDED FLOW
+            推荐使用流程
           </h2>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {RECOMMENDED_FLOW.map((step, idx) => (
-              <div key={step.num} className="flex items-center gap-2">
-                <div className="glass-card rounded-xl px-5 py-4 text-center min-w-[120px]">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {RECOMMENDED_FLOW.map((step, i) => (
+              <FadeInWrapper key={step.num} delay={0.05 * i}>
+                <div className="glass-card rounded-xl p-4 text-center">
                   <div className="font-display text-lg font-black text-primary mb-1">
                     {step.num}
                   </div>
-                  <div className="font-label text-sm font-bold text-foreground mb-1">
+                  <div className="font-cn text-sm font-bold text-foreground mb-1">
                     {step.title}
                   </div>
-                  <div className="font-cn text-xs text-muted-foreground">{step.desc}</div>
+                  <div className="font-cn text-xs text-muted-foreground">
+                    {step.desc}
+                  </div>
                 </div>
-                {idx < RECOMMENDED_FLOW.length - 1 && (
-                  <span className="text-primary font-bold text-xl hidden md:block">→</span>
-                )}
-              </div>
+              </FadeInWrapper>
             ))}
           </div>
         </section>
       )}
 
-      {/* SystemOverview — only visible when no search */}
-      {!search.trim() && (
-        <section className="mb-10">
+      {/* 系统概览 — hidden while searching */}
+      {!searchQuery && (
+        <section className="mb-16">
           <h2 className="font-display text-2xl font-bold text-foreground mb-6 text-center tracking-wider">
-            SYSTEM OVERVIEW
+            系统概览
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {SYSTEM_OVERVIEW.map((card) => (
-              <div key={card.title} className="glass-card rounded-xl p-5 text-center">
-                <span className="text-3xl block mb-3">{card.icon}</span>
+              <div key={card.title} className="glass-card rounded-xl p-5">
                 <h4 className="font-label text-base font-bold text-foreground mb-2">
                   {card.title}
                 </h4>
@@ -149,38 +97,82 @@ export default function Guide() {
               </div>
             ))}
           </div>
-          <div className="rounded-xl bg-primary/10 border border-primary/30 px-6 py-4">
-            <p className="font-cn text-sm text-primary text-center font-medium">
-              💡 实用技巧：完成 IP 打造 9 步后，13 个 AI 工具会根据您的账号数据个性化调优，效果更佳。
-            </p>
-          </div>
         </section>
       )}
 
-      {/* ModuleCards */}
-      <section className="mb-10">
+      {/* 13 模块详解 */}
+      <section className="mb-16">
         <h2 className="font-display text-2xl font-bold text-foreground mb-6 text-center tracking-wider">
-          MODULE GUIDE
+          13 模块详解
         </h2>
         {filteredModules.length === 0 ? (
-          <p className="font-cn text-center text-muted-foreground py-8">未找到匹配的功能模块</p>
+          <p className="font-cn text-center text-muted-foreground py-8">
+            未找到匹配的功能模块
+          </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredModules.map((mod) => (
-              <ModuleCard key={mod.title} mod={mod} />
+            {filteredModules.map((card, cIdx) => (
+              <FadeInWrapper key={card.href} delay={0.03 * cIdx}>
+                <Link
+                  to={card.href}
+                  className="glass-card cursor-pointer rounded-xl p-4 block border border-border hover:border-primary/40 transition-all duration-200"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">{card.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-label text-sm font-bold text-foreground">
+                        {card.title}
+                      </h4>
+                      <p className="font-cn text-xs text-muted-foreground mt-1">
+                        {card.desc}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </FadeInWrapper>
             ))}
+          </div>
+        )}
+
+        {/* Footer card — 使用说明 (max-w-md mx-auto, single) */}
+        {!searchQuery && (
+          <div className="max-w-md mx-auto mt-6">
+            <Link
+              to={FUNCTION_MATRIX_FOOTER.href}
+              className="glass-card cursor-pointer rounded-xl p-4 block border border-border hover:border-primary/40 transition-all duration-200"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{FUNCTION_MATRIX_FOOTER.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-label text-sm font-bold text-foreground">
+                    {FUNCTION_MATRIX_FOOTER.title}
+                  </h4>
+                  <p className="font-cn text-xs text-muted-foreground mt-1">
+                    {FUNCTION_MATRIX_FOOTER.desc}
+                  </p>
+                </div>
+              </div>
+            </Link>
           </div>
         )}
       </section>
 
-      {/* FAQSection */}
-      <section className="mb-10">
+      {/* FAQ 常见问题 */}
+      <section className="mb-16">
         <h2 className="font-display text-2xl font-bold text-foreground mb-6 text-center tracking-wider">
-          FAQ
+          FAQ 常见问题
         </h2>
-        <div className="max-w-3xl mx-auto space-y-3">
-          {FAQS.map((faq) => (
-            <FAQItem key={faq.q} faq={faq} />
+        <div className="max-w-3xl mx-auto space-y-2">
+          {GUIDE_FAQ_5.map((faq) => (
+            <details key={faq.q} className="glass-card rounded-xl overflow-hidden">
+              <summary className="px-5 py-4 cursor-pointer font-cn text-sm font-medium text-foreground hover:bg-muted/20 transition-colors list-none flex items-center justify-between">
+                <span>{faq.q}</span>
+                <span className="text-primary font-bold ml-3 flex-shrink-0 select-none">+</span>
+              </summary>
+              <div className="px-5 pb-4 pt-0">
+                <p className="font-cn text-sm text-muted-foreground">{faq.a}</p>
+              </div>
+            </details>
           ))}
         </div>
       </section>

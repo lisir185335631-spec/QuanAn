@@ -54,7 +54,7 @@
 
 ### §0.4 Self-fix 10 commits 全分析(★ 关键归因)
 
-PRD-13 是 QuanQn 项目**首个 self-fix > Reject 倒置**的 PRD:
+PRD-13 是 QuanAn 项目**首个 self-fix > Reject 倒置**的 PRD:
 - ❌ 0 Validator 通过失败导致 audit-gate reject(严格保留 PRD-12 100% 一轮通过率)
 - ✅ 10 个 ralph 主动 self-fix commit · validator 跑后 ralph 自检发现 AC 边界 / 配置缺失 / 静默 bug · 主动 commit
 
@@ -528,7 +528,7 @@ PRD-13 沉淀 7 大模式 · 已写在 [.agents/retros/goal-verify-prd-13.md §6
 - **建议 diff**:
 
 ```diff
-+ ##### 2.6.14 LD-A 红线三方一致性(QuanQn PRD-13 US-005 retro M-3 固化 · 2026-05-14 新增)
++ ##### 2.6.14 LD-A 红线三方一致性(QuanAn PRD-13 US-005 retro M-3 固化 · 2026-05-14 新增)
 +
 + 防 LD-A red-line metadata 在 audit-redlines-admin.sh / AGENTS.md §10.1 / 实际单点函数 三方不一致(TD-059 教训)。
 +
@@ -562,7 +562,7 @@ PRD-13 沉淀 7 大模式 · 已写在 [.agents/retros/goal-verify-prd-13.md §6
 - **建议 diff**:
 
 ```diff
-+ ##### 2.6.15 files_to_create test 覆盖率(QuanQn PRD-13 retro M-1 固化 · 2026-05-14 新增)
++ ##### 2.6.15 files_to_create test 覆盖率(QuanAn PRD-13 retro M-1 固化 · 2026-05-14 新增)
 +
 + 防 ralph 漏建 PRD files_to_create 列的 test file(TD-056/057/060/061 反复教训)。
 +
@@ -594,7 +594,7 @@ PRD-13 沉淀 7 大模式 · 已写在 [.agents/retros/goal-verify-prd-13.md §6
 - **建议 diff**:
 
 ```diff
-+ ##### 2.6.16 audit grep 实测对齐(QuanQn PRD-13 retro M-2 固化 · 2026-05-14 新增)
++ ##### 2.6.16 audit grep 实测对齐(QuanAn PRD-13 retro M-2 固化 · 2026-05-14 新增)
 +
 + 防 audit script grep 关键词跟实际 service 实现字段名 drift(TD-016 PII / TD-058 LD-A7 reolved 反复教训)。
 +
@@ -626,7 +626,7 @@ PRD-13 沉淀 7 大模式 · 已写在 [.agents/retros/goal-verify-prd-13.md §6
 - **建议 diff**:
 
 ```diff
-+ ### TD 主动清理 hint(QuanQn PRD-13 retro 偶然成功 #2 固化)
++ ### TD 主动清理 hint(QuanAn PRD-13 retro 偶然成功 #2 固化)
 +
 + 转 prd.json 时 · 给每个 story 的 `notes` 字段加自动 hint:
 + "执行前 grep .agents/tech-debt.json status=open 列出本 story scope 涉及的 TD · 主动 fix · 不等专项 story"

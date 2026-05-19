@@ -1,7 +1,7 @@
 # Coding Conventions
 
 **Analysis Date:** 2026-05-09
-**Project:** QuanQn · IP 起号 / 内容创作 SaaS · TypeScript monorepo (pnpm 9.15.9 + turbo)
+**Project:** QuanAn · IP 起号 / 内容创作 SaaS · TypeScript monorepo (pnpm 9.15.9 + turbo)
 **Status (post PRD-5):** typecheck 6 workspaces · 0 errors · lint --max-warnings=0 通过 · 542 unit + 22 judge + 126 e2e 全绿
 
 ---
@@ -210,7 +210,7 @@ eqeqeq: ['error', 'always'],     // 必须 ===
 
 1. **builtin** — node 内置 (`node:crypto`, `node:async_hooks`)
 2. **external** — npm 包 (`zod`, `@trpc/server`, `react`)
-3. **internal** — `@/...` (workspace alias) 和 `@quanqn/...`
+3. **internal** — `@/...` (workspace alias) 和 `@quanan/...`
 4. **parent** — `../foo`
 5. **sibling** — `./foo`
 6. **index** — `./`
@@ -254,8 +254,8 @@ import type { Prisma } from '@prisma/client';
 ### 3.4 实例 (`apps/web/src/pages/tools/Generate.tsx:9-20`)
 
 ```typescript
-// external (workspace 包归 external — eslint-import-resolver-typescript 视 @quanqn/* 为 external)
-import { copywritingFreeGenerateInput } from '@quanqn/schemas/specialist-io';
+// external (workspace 包归 external — eslint-import-resolver-typescript 视 @quanan/* 为 external)
+import { copywritingFreeGenerateInput } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -268,7 +268,7 @@ import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
 // type
-import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
+import type { FreeGenerateHistoryRow } from '@quanan/clients/router-types';
 ```
 
 ### 3.5 路径别名 (path aliases)
@@ -277,12 +277,12 @@ import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
 
 ```json
 "paths": {
-  "@quanqn/schemas":    ["./packages/schemas/src"],
-  "@quanqn/schemas/*":  ["./packages/schemas/src/*"],
-  "@quanqn/ui":         ["./packages/ui/src"],
-  "@quanqn/ui/*":       ["./packages/ui/src/*"],
-  "@quanqn/clients":    ["./packages/clients/src"],
-  "@quanqn/clients/*":  ["./packages/clients/src/*"]
+  "@quanan/schemas":    ["./packages/schemas/src"],
+  "@quanan/schemas/*":  ["./packages/schemas/src/*"],
+  "@quanan/ui":         ["./packages/ui/src"],
+  "@quanan/ui/*":       ["./packages/ui/src/*"],
+  "@quanan/clients":    ["./packages/clients/src"],
+  "@quanan/clients/*":  ["./packages/clients/src/*"]
 }
 ```
 
@@ -291,9 +291,9 @@ import type { FreeGenerateHistoryRow } from '@quanqn/clients/router-types';
 ```json
 "paths": {
   "@/*": ["./src/*"],
-  "@quanqn/schemas":   ["../../packages/schemas/src"],
-  "@quanqn/schemas/*": ["../../packages/schemas/src/*"]
-  // (admin/web 还含 @quanqn/ui · @quanqn/clients)
+  "@quanan/schemas":   ["../../packages/schemas/src"],
+  "@quanan/schemas/*": ["../../packages/schemas/src/*"]
+  // (admin/web 还含 @quanan/ui · @quanan/clients)
 }
 ```
 
@@ -414,7 +414,7 @@ list: protectedProcedure
 
 **inline schema** (router 文件内) ·
 - 组合形态 · `<Verb><Entity>Input` (camelCase) · 如 `generateCopywritingInput` `optimizeCopywritingInput`
-- 注意 · 同一 schema 在 router 和 `@quanqn/schemas` 都有时 **inline equiv**, 注释标 "Zod schemas inlined — `@quanqn/schemas/specialist-io` has canonical definition for client use" (`apps/api/src/trpc/routers/copywriting.ts:9`)
+- 注意 · 同一 schema 在 router 和 `@quanan/schemas` 都有时 **inline equiv**, 注释标 "Zod schemas inlined — `@quanan/schemas/specialist-io` has canonical definition for client use" (`apps/api/src/trpc/routers/copywriting.ts:9`)
 
 **packages/schemas 中央 schema** ·
 - 文件名 · `<entity>.schema.ts` (`copywriting.schema.ts` `analysis.schema.ts` `step-inputs.schema.ts`)
@@ -615,7 +615,7 @@ console.error('LLM failed:', err);       // 业务代码禁
 - `// AC-7: pass/score consistency`
 - `// LD-016 严格门禁`
 - `// REJ-035 LS先写 + DB后写 · DB fail 时 LS 保留 + toast.error`
-- `// ★ 必须设 SET LOCAL ROLE quanqn_app 否则 superuser 跳过 RLS`
+- `// ★ 必须设 SET LOCAL ROLE quanan_app 否则 superuser 跳过 RLS`
 
 ---
 
@@ -668,7 +668,7 @@ console.error('LLM failed:', err);       // 业务代码禁
 ### 11.4 表单
 
 - ★ 必用 `react-hook-form` + `zodResolver(@hookform/resolvers/zod)` (`apps/web/src/components/ToolForm/ToolForm.tsx:9-12`)
-- schema 来源 · `@quanqn/schemas/specialist-io` (前后端共享)
+- schema 来源 · `@quanan/schemas/specialist-io` (前后端共享)
 
 ### 11.5 LS-first dual-write (REJ-035)
 

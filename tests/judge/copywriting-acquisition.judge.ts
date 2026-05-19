@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-014 · CopywritingAgent acquisition mode LLM Judge
+ * QuanAn · US-014 · CopywritingAgent acquisition mode LLM Judge
  * AC-4: 2 golden cases — 育儿 + 医美
  * criteria: markdown 200-500 字 + 末尾 CTA
  */

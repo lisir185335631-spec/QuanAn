@@ -1,4 +1,4 @@
-// @quanqn/ui/admin · DenseTable — virtualised 32px dense rows (PRD-11 US-022)
+// @quanan/ui/admin · DenseTable — virtualised 32px dense rows (PRD-11 US-022)
 // Always uses @tanstack/react-virtual for smooth 100k+ row scrolling.
 
 import { useRef, useState } from 'react';

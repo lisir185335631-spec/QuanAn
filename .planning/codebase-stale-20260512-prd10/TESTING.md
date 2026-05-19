@@ -1,7 +1,7 @@
 # Testing Patterns
 
 **Analysis Date:** 2026-05-11
-**Project:** QuanQn · IP 起号 / 内容创作 SaaS · TypeScript monorepo
+**Project:** QuanAn · IP 起号 / 内容创作 SaaS · TypeScript monorepo
 **Status (post PRD-8):**
 - `pnpm test` (vitest) · **861 passed** · 68 unit files + 23 integration files
 - `pnpm test:judge` (LLM judge) · **51 passed / 20 files** (20 specialist + flywheel + injection judges)
@@ -132,9 +132,9 @@ export default defineConfig({
       'bullmq': path.resolve(__dirname, 'apps/api/node_modules/bullmq'),
       // @trpc/server lives in apps/api/node_modules — expose so vi.hoisted test files can import TRPCError (PRD-6 US-007)
       '@trpc/server': path.resolve(__dirname, 'apps/api/node_modules/@trpc/server'),
-      // @quanqn/schemas subpath exports — PRD-6 US-001 schema tests
-      '@quanqn/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
-      '@quanqn/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
+      // @quanan/schemas subpath exports — PRD-6 US-001 schema tests
+      '@quanan/schemas/specialist-io': path.resolve(__dirname, 'packages/schemas/src/specialist-io/index.ts'),
+      '@quanan/schemas': path.resolve(__dirname, 'packages/schemas/src/index.ts'),
     },
   },
   test: {
@@ -172,7 +172,7 @@ export default defineConfig({
 - `@/` alias 指向 `apps/api/src` (★ 根 vitest 默认对接 api 单元测试 · web 在自己的 config 处理)
 - `zod` alias 显式指向 `apps/api/node_modules/zod` — 因 zod 装在 api workspace · 不在根 node_modules · 否则 unit 跑不动
 - **PRD-6 新增 alias** · `openai` / `ioredis` / `bullmq` / `@trpc/server` 显式指向 `apps/api/node_modules/` — 让 `vi.mock('openai')` 跟 worker 用同一份模块 (`vi.hoisted` + `vi.mock` 模式工作的前提)
-- **PRD-6 新增 alias** · `@quanqn/schemas/specialist-io` 显式映射 subpath export — 否则单测 import schema 解析失败
+- **PRD-6 新增 alias** · `@quanan/schemas/specialist-io` 显式映射 subpath export — 否则单测 import schema 解析失败
 - coverage 三档门槛 · `src/server/agents/**` 90% (Specialist 核心) · `src/lib/**` 95% (工具函数) · 整体 80%
 - include 同时收 unit + integration (一次 `pnpm test` 跑两层)
 
@@ -226,9 +226,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),                                // ★ web 自己的 @ → src
-      '@quanqn/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
-      '@quanqn/ui':      path.resolve(__dirname, '../../packages/ui/src'),
-      '@quanqn/clients': path.resolve(__dirname, '../../packages/clients/src'),
+      '@quanan/schemas': path.resolve(__dirname, '../../packages/schemas/src'),
+      '@quanan/ui':      path.resolve(__dirname, '../../packages/ui/src'),
+      '@quanan/clients': path.resolve(__dirname, '../../packages/clients/src'),
     },
   },
   test: {
@@ -246,7 +246,7 @@ export default defineConfig({
 - `@/` 指向 `apps/web/src` (vs apps/api/src)
 - include 范围在 `apps/web/src/**` — 跟根 vitest `tests/unit/**` 互不重叠
 - web 单元测试 4 文件 (`apps/web/src/test/feedback-button.test.tsx` · `pages.test.tsx` · `step-progress.test.tsx` · `apps/web/src/components/StepProgress.test.tsx`)
-- 调用 · `pnpm --filter @quanqn/web test`
+- 调用 · `pnpm --filter @quanan/web test`
 
 ### 3.4 `playwright.config.ts`
 
@@ -1467,7 +1467,7 @@ describe('US-009 AC-7.5: API error — OpenAI 4xx/5xx → INTERNAL_SERVER_ERROR'
 **范围** · `tests/integration/api/**/*.test.ts`
 
 **关键差异 vs unit** ·
-- 用真 prisma (实测 DB · `quanqn` or `quanqn_test`)
+- 用真 prisma (实测 DB · `quanan` or `quanan_test`)
 - 用 nock 拦截 SDK HTTP (兜底 · 防真调 LLM / OpenAI)
 - vi.mock LLM gateway 提供 mock stream
 - 测完必 cleanup (deleteMany by traceId)
@@ -1512,7 +1512,7 @@ describe('US-003 AC-4: copywriting.freeGenerate integration — nock SDK + real 
 });
 ```
 
-**rls-isolation.test.ts** · 真 DB 真 RLS · 用两个 account 验证跨账号不可见 (LD-009 实证) · 用 `SET LOCAL ROLE quanqn_app` 绕过 superuser BYPASSRLS。
+**rls-isolation.test.ts** · 真 DB 真 RLS · 用两个 account 验证跨账号不可见 (LD-009 实证) · 用 `SET LOCAL ROLE quanan_app` 绕过 superuser BYPASSRLS。
 
 **voice-chat-flow.test.ts (PRD-8 US-011 AC-10)** · 真 Redis L1 Buffer · 3 turn 对话 · 验证 6 turns (3 user + 3 assistant) 写入。
 
@@ -1936,7 +1936,7 @@ pnpm test:e2e -- tools-integration  # 跑指定 spec
 pnpm test:e2e -- voice-chat-flow    # 跑 PRD-8 voice chat
 
 # Web workspace
-pnpm --filter @quanqn/web test      # 仅 web jsdom unit (4 tests)
+pnpm --filter @quanan/web test      # 仅 web jsdom unit (4 tests)
 
 # Watch mode
 pnpm test --watch                   # vitest watch

@@ -1,6 +1,7 @@
 /**
- * Knowledge.test.tsx — PRD-9 US-004 AC-11
- * Source-inspection tests: 15 tests covering 3 tab + search debounce + card renders + empty state
+ * Knowledge.test.tsx — PRD-22 US-005 AC-1~AC-6
+ * Source-inspection tests: 4-tab structure + search + case count buttons + elements picker
+ * Replaces PRD-9 US-004 tests (3-tab structure no longer valid)
  */
 
 import { describe, expect, it } from 'vitest';
@@ -9,149 +10,138 @@ import { resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../../../../');
 const PAGE = `${ROOT}/apps/web/src/pages/tools/Knowledge.tsx`;
-const ROUTER_TYPES = `${ROOT}/packages/clients/src/router-types.ts`;
-const KNOWLEDGE_ROUTER = `${ROOT}/apps/api/src/trpc/routers/knowledge.ts`;
 
-function pageSrc(): string {
+function src(): string {
   return readFileSync(PAGE, 'utf-8');
 }
 
-function routerTypesSrc(): string {
-  return readFileSync(ROUTER_TYPES, 'utf-8');
-}
+// ── 1 · H1 + subtitle 字面锁 (AC-1) ──────────────────────────────────────────
 
-function apiRouterSrc(): string {
-  return readFileSync(KNOWLEDGE_ROUTER, 'utf-8');
-}
-
-// ── 1 · Tab 切换 ─────────────────────────────────────────────────────────────
-
-describe('AC-2: 3 tab 渲染 — 案例/公式/元素', () => {
-  it('page imports shadcn Tabs components', () => {
-    const src = pageSrc();
-    expect(src).toContain('Tabs');
-    expect(src).toContain('TabsList');
-    expect(src).toContain('TabsTrigger');
-    expect(src).toContain('TabsContent');
+describe('AC-1: H1 + subtitle 字面锁', () => {
+  it('H1 字面锁 "AIP 文案方法论"', () => {
+    expect(src()).toContain('AIP 文案方法论');
   });
 
-  it('知识库 h1 heading', () => {
-    expect(pageSrc()).toContain('知识库');
+  it('副标题字面锁含 AIP 短视频文案创作方法论', () => {
+    expect(src()).toContain('系统学习 AIP 的短视频文案创作方法论');
+  });
+
+  it('副标题字面锁含 掌握爆款文案的核心技巧', () => {
+    expect(src()).toContain('掌握爆款文案的核心技巧');
+  });
+});
+
+// ── 2 · 4 tab 字面锁 (AC-2 D-217) ───────────────────────────────────────────
+
+describe('AC-2: 4 tab 字面锁 D-217', () => {
+  it('引入 shadcn Tabs 组件', () => {
+    const s = src();
+    expect(s).toContain('Tabs');
+    expect(s).toContain('TabsList');
+    expect(s).toContain('TabsTrigger');
+    expect(s).toContain('TabsContent');
   });
 
   it('data-testid="knowledge-tabs" 存在', () => {
-    expect(pageSrc()).toContain('data-testid="knowledge-tabs"');
+    expect(src()).toContain('data-testid="knowledge-tabs"');
   });
 
-  it('3 tab value: case/formula/element', () => {
-    const src = pageSrc();
-    expect(src).toContain("'case'");
-    expect(src).toContain("'formula'");
-    expect(src).toContain("'element'");
-  });
-});
-
-// ── 2 · Search debounce ───────────────────────────────────────────────────────
-
-describe('AC-3: search debounce 300ms · ≥2 字符', () => {
-  it('debounce timer 值为 300ms', () => {
-    expect(pageSrc()).toContain('300');
+  it('tab 1 字面锁 "20 类脚本"(默认 active)', () => {
+    const s = src();
+    expect(s).toContain('20 类脚本');
+    expect(s).toContain("defaultValue");
   });
 
-  it('searchInput.length < 2 触发清空逻辑', () => {
-    expect(pageSrc()).toContain('searchInput.length < 2');
+  it('tab 2 字面锁 "20 大爆款"', () => {
+    expect(src()).toContain('20 大爆款');
   });
 
-  it('调用 knowledge.search.useMutation', () => {
-    expect(pageSrc()).toContain('knowledge.search.useMutation');
+  it('tab 3 字面锁 "开头公式"', () => {
+    expect(src()).toContain('开头公式');
   });
 
-  it('status bar 有 aria-live="polite"', () => {
-    expect(pageSrc()).toContain('aria-live="polite"');
+  it('tab 4 字面锁 "核心公式"', () => {
+    expect(src()).toContain('核心公式');
+  });
+
+  it('选中态 data-[state=active]:bg-primary/10', () => {
+    expect(src()).toContain('data-[state=active]:bg-primary/10');
   });
 });
 
-// ── 3 · Case card ─────────────────────────────────────────────────────────────
+// ── 3 · tab 1: search + 20 脚本卡 + 案例计数 button (AC-3) ──────────────────
 
-describe('AC-4: case card — scriptType badge + industry badge + content 100 字 + 展开', () => {
-  it('CaseCard 组件存在', () => {
-    expect(pageSrc()).toContain('CaseCard');
+describe('AC-3: tab 1 · search + 脚本卡 + 案例计数 button', () => {
+  it('search input placeholder "搜索脚本类型..."', () => {
+    expect(src()).toContain('搜索脚本类型...');
   });
 
-  it('case card content slice(0, 100)', () => {
-    expect(pageSrc()).toContain('slice(0, 100)');
+  it('data-testid="script-search" 存在', () => {
+    expect(src()).toContain('data-testid="script-search"');
   });
 
-  it('scriptType badge 渲染', () => {
-    expect(pageSrc()).toContain('meta.scriptType');
+  it('引入 SCRIPT_TYPES 常量(20 脚本卡数据源)', () => {
+    expect(src()).toContain('SCRIPT_TYPES');
   });
 
-  it('industry badge 渲染', () => {
-    expect(pageSrc()).toContain('meta.industry');
-  });
-});
-
-// ── 4 · Formula / Element card ────────────────────────────────────────────────
-
-describe('AC-5/AC-6: formula/element card', () => {
-  it('FormulaCard 组件存在', () => {
-    expect(pageSrc()).toContain('FormulaCard');
+  it('案例计数 button 字面锁含 "实战案例"', () => {
+    expect(src()).toContain('实战案例');
   });
 
-  it('formula category badge 渲染', () => {
-    expect(pageSrc()).toContain('meta.category');
+  it('方法论 details 折叠存在', () => {
+    expect(src()).toContain('<details');
+    expect(src()).toContain('方法论');
   });
 
-  it('ElementCard 组件存在', () => {
-    expect(pageSrc()).toContain('ElementCard');
+  it('5 列网格 lg:grid-cols-5', () => {
+    expect(src()).toContain('lg:grid-cols-5');
   });
 
-  it('element psychologyTag badge 渲染', () => {
-    expect(pageSrc()).toContain('meta.psychologyTag');
+  it('filter 逻辑含 toLowerCase', () => {
+    expect(src()).toContain('toLowerCase');
   });
 });
 
-// ── 5 · Empty state ───────────────────────────────────────────────────────────
+// ── 4 · tab 2: ElementsInlineMultiPicker disabled (AC-4) ─────────────────────
 
-describe('AC-7: empty state', () => {
-  it('EmptyState 组件存在', () => {
-    expect(pageSrc()).toContain('EmptyState');
+describe('AC-4: tab 2 · ElementsInlineMultiPicker 纯展示态', () => {
+  it('引入 ElementsInlineMultiPicker', () => {
+    expect(src()).toContain('ElementsInlineMultiPicker');
   });
 
-  it('暂无匹配结果提示含关键词', () => {
-    const src = pageSrc();
-    expect(src).toContain('暂无匹配结果');
-    expect(src).toContain('矛盾冲突');
-    expect(src).toContain('AIDA');
-    expect(src).toContain('稀缺性');
+  it('layout="grouped" 传递', () => {
+    expect(src()).toContain('layout="grouped"');
+  });
+
+  it('disabled 属性传递', () => {
+    expect(src()).toContain('disabled');
   });
 });
 
-// ── 6 · API router + shadow types ────────────────────────────────────────────
+// ── 5 · tab 3/4 stub placeholder (AC-5) ──────────────────────────────────────
 
-describe('AC-1/AC-8: tRPC router procedures + shadow types', () => {
-  it('knowledge router 包含 list procedure', () => {
-    expect(apiRouterSrc()).toContain('list:');
-    expect(apiRouterSrc()).toContain('publicProcedure');
+describe('AC-5: tab 3/4 stub placeholder', () => {
+  it('tab 3 stub 含 "5 类开头公式"', () => {
+    expect(src()).toContain('5 类开头公式');
   });
 
-  it('knowledge router 包含 search mutation', () => {
-    expect(apiRouterSrc()).toContain('search:');
-    expect(apiRouterSrc()).toContain('ragRetrieveWorker');
+  it('tab 3 stub 含 PRD-23 标记', () => {
+    expect(src()).toContain('PRD-23');
   });
 
-  it('knowledge router 包含 getById procedure', () => {
-    expect(apiRouterSrc()).toContain('getById:');
+  it('tab 4 stub 含 "AIP 起承转合公式"', () => {
+    expect(src()).toContain('AIP 起承转合公式');
+  });
+});
+
+// ── 6 · forceMount 保证 DOM button 计数 (AC-6) ────────────────────────────────
+
+describe('AC-6: forceMount 保证 DOM button 总数', () => {
+  it('TabsContent 使用 forceMount', () => {
+    expect(src()).toContain('forceMount');
   });
 
-  it('router-types.ts 包含 KnowledgeChunkContent shadow type', () => {
-    expect(routerTypesSrc()).toContain('KnowledgeChunkContent');
-  });
-
-  it('router-types.ts knowledge shadow router 包含 list/search/getById', () => {
-    const src = routerTypesSrc();
-    expect(src).toContain('list:');
-    expect(src).toContain('search:');
-    expect(src).toContain('getById:');
+  it('inactive tab hidden via data-[state=inactive]:hidden', () => {
+    expect(src()).toContain('data-[state=inactive]:hidden');
   });
 });

@@ -1,5 +1,5 @@
 /**
- * QuanQn · API server entry
+ * QuanAn · API server entry
  * Hono + @hono/node-server + tRPC v11 · US-003
  * AC-1: listen :3000 · cold start < 5s
  * AC-5: DATABASE_URL invalid → log 'DB connection failed' + exit 1

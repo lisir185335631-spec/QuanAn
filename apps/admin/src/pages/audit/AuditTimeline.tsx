@@ -3,8 +3,8 @@
 // SHIELD: payloadHash 必须在时间线条目显示
 
 import { useMemo } from 'react';
-import { DenseTable } from '@quanqn/ui/admin';
-import type { DenseTableColumn } from '@quanqn/ui/admin';
+import { DenseTable } from '@quanan/ui/admin';
+import type { DenseTableColumn } from '@quanan/ui/admin';
 
 export interface TimelineItem {
   id: number;

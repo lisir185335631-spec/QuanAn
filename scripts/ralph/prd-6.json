@@ -1,5 +1,5 @@
 {
-  "project": "QuanQn",
+  "project": "QuanAn",
   "branchName": "ralph/prd-6-p5-video-modules",
   "description": "PRD-6 · P5 视频模块 · VideoAgent 解锁 3 mode (production/acquisition/storyboard) + CopywritingAgent acquisition mode + ImageGen Worker (DALL-E 3 · BullMQ 异步队列 · rate limit) + 3 视频工具页 + 收官 e2e/judge/lint。14 stories · 2 batch (US-001~007 + US-008~014) · risk=high · 计划 2 周。继承 D-001~D-035 + 17+ REJ · 新增 D-036~D-045 · TD-016 PII 已 PRD-5 接线。",
   "userStories": [
@@ -54,21 +54,21 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (多 mode outputSchema getter)",
           "lesson": "as const satisfies ReadonlyArray<...> 跨包 map() 时需显式类型标注回调参数",
           "antipattern": "❌ const TYPES = ['a','b'] as const → packages/schemas 跨包 import 后 .map(t => t) 推断为 string[] · 失去 union 信息",
           "correct": "✅ as const satisfies ReadonlyArray<'a'|'b'> · 或在 map 回调显式标注: .map((t: typeof TYPES[number]) => t)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (RLS · 重写 schema 必带 accountId)",
           "lesson": "Asset 表加新字段不影响 RLS · 但 worker 写 Asset 行时仍必带 accountId",
           "antipattern": "❌ ImageGen Worker 用 prisma.asset.create({ data: { sceneIndex, ... } }) 不带 accountId",
           "correct": "✅ 必带 accountId: prisma.asset.create({ data: { accountId: payload.accountId, sceneIndex, ... } }) · RLS 自动二次防护"
         },
         {
-          "source_prd": "QuanQn-PRD-1",
+          "source_prd": "QuanAn-PRD-1",
           "source_story": "TD-001 (tailwind hardcode color)",
           "lesson": "新建 schema/常量文件不要 inline 重复 enum · 应从 packages/schemas/src/specialist-io/constants.ts 引",
           "antipattern": "❌ acquisitionVideo.schema.ts 内 inline z.enum(['douyin','xiaohongshu','wechat']) · 若 SCRIPT_TYPE_KEYS_20 等已存在",
@@ -120,21 +120,21 @@
       "risk_level": "foundation",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001 (LLM SDK 直调)",
           "lesson": "Specialist 不直接 import @anthropic-ai/sdk / openai · 只能调 LLMGateway",
           "antipattern": "❌ VideoAgent.ts: import Anthropic from '@anthropic-ai/sdk'; const client = new Anthropic({ apiKey: ... })",
           "correct": "✅ import { llmGateway } from '@/workers/llm-gateway' · 调 llmGateway.complete({ tier: 'reasoning', messages, ... }) · LLMGateway 是唯一入口 (LD-012)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (多 mode outputSchema getter)",
           "lesson": "多 mode Specialist 用 _mode + outputSchema getter (D-028) · 不用 z.discriminatedUnion",
           "antipattern": "❌ outputSchema = z.discriminatedUnion('mode', [...]) · BaseSpecialist safeParse 时无法按 _mode 切换 · 4 mode 输出耦合",
           "correct": "✅ private _mode: VideoMode = 'shooting' · invokeLLM 内 this._mode = req.mode · get outputSchema() { switch(this._mode) { ... } } · BaseSpecialist 调 outputSchema 自动取最新 mode (PRD-4 PositioningAgent 模式继承 · TD-014 race window 文档化)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-005 (Specialist 不自己拼 prompt)",
           "lesson": "Specialist 不在 invokeLLM 内 string template 拼 user prompt · system prompt 必走 ContextAssembler · user prompt 段在 _buildUserPrompt(mode) 内但调 ContextAssembler.assembleUser",
           "antipattern": "❌ invokeLLM(req) { const prompt = `分析这段文案 ${req.userInput.sourceCopy}...`; llmGateway.complete({ messages: [{ role: 'user', content: prompt }] }) }",
@@ -182,21 +182,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ videoProduction router 用 publicProcedure 或 globalProcedure · 不验证用户实际所属",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS · LD-009 三道闸"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "TD-019 (knowledge.ts 修)",
           "lesson": "RLS-only 单层防护 不算双层 · LD-009 必须 explicit + RLS 双层",
           "antipattern": "❌ where: { id: historyId } 不带 accountId · 只靠 RLS auto filter",
           "correct": "✅ where: { accountId: ctx.activeAccountId!, id: historyId } · explicit + RLS 双层 · TD-019 PRD-5 教训"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-017 (cost_log 必带 traceId)",
           "lesson": "cost_log 写入必带 traceId 关联 LLM 调用 · 否则 admin cost dashboard 无法 trace",
           "antipattern": "❌ prisma.costLog.create({ data: { tokens, costUsd } }) 缺 traceId/accountId",
@@ -250,21 +250,21 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-010 (LS namespace)",
           "lesson": "LS key 必含 account namespace · 切账号时不能复用旧 key",
           "antipattern": "❌ localStorage.setItem('video_production_input', JSON.stringify(form))",
           "correct": "✅ const key = getToolLsKey(activeAccountId, 'video-production', 'input') · key = `acc_${activeAccountId}_tool_video-production_input` · D-031"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS-first dual-write · ToolForm 模式)",
           "lesson": "LS 先写 + DB 后写 · DB fail 时 LS 不回滚 + toast.error · 用户可重试",
           "antipattern": "❌ LS 写后 DB 失败 try { ls.setItem(...) } catch { ls.removeItem(...) } · 用户输入丢失",
           "correct": "✅ ls.setItem(key, val) → trpc.mutate(...) · onError: toast.error('保存失败 · LS 已保留 · 可重试') · LS 不动"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "PRD-5 e2e CI mock 教训",
           "lesson": "tRPC v11 httpBatchStreamLink CI mock 必须用 page.addInitScript 替换 fetch · 返回 3 行 JSONL · 不能用 route.fulfill",
           "antipattern": "❌ page.route('/api/trpc/**', route => route.fulfill({ json: ... })) · tRPC v11 是 JSONL 格式 不是 JSON",
@@ -311,14 +311,14 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ acquisitionVideo router 用 publicProcedure",
           "correct": "✅ 必用 protectedProcedure · accountIsolationMiddleware 自动 set_config + RLS"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "TD-019 (knowledge.ts 修)",
           "lesson": "RLS-only 单层防护 不算双层 · LD-009 必须 explicit + RLS 双层",
           "antipattern": "❌ where: { id } 不带 accountId · 只靠 RLS auto filter",
@@ -369,14 +369,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-010 (LS namespace)",
           "lesson": "LS key 必含 account namespace",
           "antipattern": "❌ localStorage.setItem('acquisition_input', ...)",
           "correct": "✅ getToolLsKey(activeAccountId, 'acquisition-video', 'input')"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS-first dual-write)",
           "lesson": "DB fail 时 LS 不回滚 + toast 提示",
           "antipattern": "❌ DB 失败时 ls.removeItem(key) · 用户输入丢失",
@@ -431,21 +431,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-001 (LLM SDK 直调) · ★ ImageGen 例外!",
           "lesson": "★ 重要例外 · D-038 ImageGen 不走 LLMGateway · 直接 import openai SDK 是合规的 · 但 仅限 apps/api/src/workers/image-gen/dall-e-3.ts 本文件 · 其他位置 0 命中 image API 调用",
           "antipattern": "❌ 把 ImageGen 加到 LLMGateway: llmGateway.complete({ tier: 'image', ... }) · LLMGateway 膨胀违反 SRP · 或在 BrandingAgent 直调 OpenAI image API · 违反 R-001",
           "correct": "✅ apps/api/src/workers/image-gen/dall-e-3.ts: import OpenAI from 'openai' · const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) · client.images.generate({ model: 'dall-e-3', ... }) · 单独 Worker · OpenAI image API 仅本文件 · grep 'images.generate' apps/api 应仅命中本文件"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (Worker 写 prisma 必带 accountId)",
           "lesson": "Worker 写 Asset 表 + history 反写必带 accountId · 不能跳 RLS",
           "antipattern": "❌ prisma.asset.create({ data: { sceneIndex, ... } }) 缺 accountId · prisma.history.update({ where: { id }, data: { scenes } }) 缺 accountId where",
           "correct": "✅ Asset.create({ data: { accountId: payload.accountId, ... } }) · history.update({ where: { accountId: payload.accountId, id: payload.historyId }, data: { scenes } })"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-017 (cost_log 必带 traceId)",
           "lesson": "image_gen cost_log 必带 traceId 关联整个 storyboard 调用链",
           "antipattern": "❌ prisma.costLog.create({ data: { eventType: 'image_gen', costUsd } }) 缺 traceId · admin dashboard 无法 trace",
@@ -502,21 +502,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (Worker 写 prisma 必带 accountId)",
           "lesson": "BullMQ Worker 在独立 context 跑 · 必须从 job.data.accountId 显式带过 · 不能依赖 RLS auto-filter",
           "antipattern": "❌ Worker job 内 prisma.history.update({ where: { id } }) 不带 accountId · Worker 没有 ctx.activeAccountId",
           "correct": "✅ Worker job: prisma.history.update({ where: { accountId: job.data.accountId, id: job.data.historyId } }) · job.data.accountId 来自 generateStoryboard 入栈时显式带"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-009 (executeRaw 仅 middleware)",
           "lesson": "Worker 不能用 prisma.$executeRaw 跳过 RLS · 必须走 prisma 客户端方法",
           "antipattern": "❌ Worker 调 prisma.$executeRaw('UPDATE history SET scenes = ... WHERE id = ?', ...) · 跳 RLS",
           "correct": "✅ Worker 调 prisma.history.update · 或 prisma.$transaction 内 set_config(local) + prisma client 方法"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "PRD-5 e2e BullMQ test 教训",
           "lesson": "BullMQ + Redis integration test 必须 redis-cli FLUSHDB 清旧数据 · 否则 stale jobs 污染",
           "antipattern": "❌ vitest 跑 image-gen-bullmq.test.ts 不清 Redis · 上次跑剩的 jobs 影响这次 count",
@@ -568,21 +568,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "tRPC procedure 不经 accountIsolation middleware",
           "antipattern": "❌ aiVideo router 用 publicProcedure",
           "correct": "✅ 必用 protectedProcedure · LD-009 双层防护 explicit accountId (TD-019 PRD-5 教训)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-009 (executeRaw 仅 middleware)",
           "lesson": "history.scenes JSON 反写时不能用 prisma.$executeRaw('UPDATE history SET scenes = ...') 跳过 RLS · Worker 也不行",
           "antipattern": "❌ ImageGen Worker 调 prisma.$queryRaw('UPDATE history SET scenes ...') · 跳过 RLS",
           "correct": "✅ Worker context 走 prisma.history.update + 加 set_config(via accountId-aware connection) · 或在 Worker 启动时配 RLS bypass role 但显式 where: { accountId } 验证"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (RLS · prisma 必带 accountId)",
           "lesson": "history.create + jobStatus 查 history 必带 accountId 双层",
           "antipattern": "❌ prisma.history.findUnique({ where: { id: historyId } }) 不带 accountId",
@@ -642,21 +642,21 @@
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-010 (LS namespace)",
           "lesson": "polling state 写 LS 必含 account namespace · 避免切账号污染",
           "antipattern": "❌ localStorage.setItem('ai_video_active_polling', JSON.stringify({historyId,jobIds}))",
           "correct": "✅ getToolLsKey(activeAccountId, 'ai-video', 'active_polling')"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-035 (LS-first dual-write)",
           "lesson": "polling 失败时 LS lastHistoryId 不回滚 · 让用户能 reload 后恢复",
           "antipattern": "❌ polling 错误后 ls.removeItem('lastHistoryId') · 用户 reload 后丢上下文",
           "correct": "✅ 失败时 toast.error · LS 保留 · 用户 reload 后 useEffect 自动恢复 polling"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "PRD-5 e2e mock 教训",
           "lesson": "polling e2e 必须 mock window.fetch + 控制 vi.useFakeTimers · 不能 sleep 真 3s",
           "antipattern": "❌ await page.waitForTimeout(15000) // 等 5 次 polling · 慢且不稳定",
@@ -704,14 +704,14 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "rate limit middleware 仍需走 protectedProcedure",
           "antipattern": "❌ aiVideo.dailyUsage 用 publicProcedure",
           "correct": "✅ protectedProcedure · accountId 自动从 ctx 拿"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-008 (RLS · accountId 隔离)",
           "lesson": "rate limit Redis key 必含 accountId · 跨 user 不能共享",
           "antipattern": "❌ rate-limit Redis key='rate:image_gen:date:{date}' · 全局共享",
@@ -760,21 +760,21 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-007 (多 mode outputSchema getter)",
           "lesson": "CopywritingAgent acquisition 走 _mode + outputSchema getter 模式 · 不破坏 free/boom",
           "antipattern": "❌ acquisition mode 单独写一个 CopywritingAcquisitionAgent class",
           "correct": "✅ 复用 CopywritingAgent · _mode='acquisition' · outputSchema getter case 加 acquisition (D-028 + D-035)"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "acquisitionGenerate procedure 必经 protectedProcedure",
           "antipattern": "❌ acquisitionGenerate 用 publicProcedure",
           "correct": "✅ protectedProcedure + explicit accountId 双层"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-005 (Specialist prompt 装配)",
           "lesson": "acquisition prompt 走 ContextAssembler · 不在 Specialist 内 string template 拼",
           "antipattern": "❌ invokeLLM 内 const prompt = `生成 acquisition 文案 ${userInput.topic}...`",
@@ -830,21 +830,21 @@
       "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "TD-019 (knowledge.ts RLS-only 单层)",
           "lesson": "history.detail 必双层防护 · 不能 RLS-only",
           "antipattern": "❌ where: { id: input.id } 不带 accountId · TD-019 PRD-5 已修类似",
           "correct": "✅ where: { accountId: ctx.activeAccountId!, id: input.id }"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-010 (LS namespace)",
           "lesson": "4 工具页 useEffect ?historyId 预填后必须把 input 写入 LS namespace",
           "antipattern": "❌ useEffect(() => trpc.history.detail({id}).then(d => setForm(d.input))) 不写 LS",
           "correct": "✅ 写 getToolLsKey(activeAccountId, toolName, 'input') · 用户切走再回来不丢"
         },
         {
-          "source_prd": "QuanQn-base",
+          "source_prd": "QuanAn-base",
           "source_story": "REJ-013 (protectedProcedure)",
           "lesson": "history.list/detail 必经 protectedProcedure",
           "antipattern": "❌ history router 用 publicProcedure",
@@ -864,8 +864,8 @@
         "pnpm test:judge 退出码 0 · 30/30 pass (22 PRD-5 + 8 新)",
         "新建 tests/e2e/video-tools-integration.spec.ts · test.describe.serial · 创建 dev@local.test 测试账号 → 跑 4 视频工具 (video-production + acquisition-video + ai-video + generate?mode=acquisition) 各 1 次 → 看 /history 4-5 条 → 点任一 row 跳预填 · CI mock LLM (page.addInitScript fetch override · 3 行 JSONL) + mock ImageGen (queue.add 立即 push 完成 event · sceneImageUrl=mock url)",
         "e2e workers=1 + fullyParallel=false (沿用 PRD-5 US-012 教训)",
-        "pnpm --filter @quanqn/web lint --max-warnings=0 退出码 0",
-        "pnpm --filter @quanqn/api lint --max-warnings=0 退出码 0",
+        "pnpm --filter @quanan/web lint --max-warnings=0 退出码 0",
+        "pnpm --filter @quanan/api lint --max-warnings=0 退出码 0",
         "pnpm typecheck 6 workspaces 0 error",
         "pnpm test 全套 ≥ 620 / ≥ 620 (PRD-5 累计 563 + ≥60 新 PRD-6)",
         "pnpm test:e2e 全套 ≥ 138 / ≥ 138 (PRD-5 累计 126 + 5 工具 e2e + 1 收官 spec + 6 各 spec ≈ +12)",
@@ -905,26 +905,26 @@
         "scripts/ralph/verify-artifacts/US-014/manifest.json"
       ],
       "files_to_modify": [],
-      "test_command": "pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanqn/web lint --max-warnings=0 && pnpm --filter @quanqn/api lint --max-warnings=0",
+      "test_command": "pnpm typecheck && pnpm test && pnpm test:judge && pnpm test:e2e && pnpm --filter @quanan/web lint --max-warnings=0 && pnpm --filter @quanan/api lint --max-warnings=0",
       "size_hint": "large",
       "risk_level": "high",
       "anti_patterns": [
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "PRD-5 US-012 e2e 教训",
           "lesson": "e2e mock 必须 page.addInitScript window.fetch · 不能 page.route · workers=1 + fullyParallel=false 序列化",
           "antipattern": "❌ page.route('/api/trpc/**', route => route.fulfill({ json: ... })) · 跑挂",
           "correct": "✅ page.addInitScript window.fetch return JSONL · workers=1"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "PRD-5 L-4 教训 (Validator 只写 manifest.json 不留 5 stdout)",
           "lesson": "verify-artifacts 必落 5 stdout · 不只 manifest.json (audit-artifacts.py 会验)",
           "antipattern": "❌ 只写 manifest.json · 缺 vitest-full.stdout.txt / judge.stdout.txt / e2e.stdout.txt / typecheck.stdout.txt / lint.stdout.txt",
           "correct": "✅ tee 保存 5 stdout 到 verify-artifacts/US-014/ · 在 manifest.artifacts 列出"
         },
         {
-          "source_prd": "QuanQn-PRD-5",
+          "source_prd": "QuanAn-PRD-5",
           "source_story": "PRD-5 US-006 lint 教训",
           "lesson": "lint --max-warnings=0 严格 · 收官时统一 fix 所有边缘 warning",
           "antipattern": "❌ Header.tsx onClick={asyncFn} · no-misused-promises warning · TD-007",

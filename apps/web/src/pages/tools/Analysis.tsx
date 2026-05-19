@@ -9,7 +9,7 @@
  * US-011: ?historyId → trpc.history.detail.useQuery → 预填 copy(inputSummary) + setResult(历史 content)
  */
 
-import { analysisStructuralInput } from '@quanqn/schemas/specialist-io';
+import { analysisStructuralInput } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ import { ToolForm } from '@/components/ToolForm/ToolForm';
 import { AnalysisResult } from '@/components/ToolResult/AnalysisResult';
 import { trpc } from '@/lib/trpc';
 
-import type { AnalysisHistoryRow } from '@quanqn/clients/router-types';
+import type { AnalysisHistoryRow } from '@quanan/clients/router-types';
 
 export default function Analysis() {
   const [result, setResult] = useState<AnalysisHistoryRow | null>(null);

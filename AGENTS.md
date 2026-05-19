@@ -1,4 +1,4 @@
-# QuanQn · 代码层设计约束(AGENTS.md)
+# QuanAn · 代码层设计约束(AGENTS.md)
 
 > **版本** · v0.5(2026-05-06 创建 · 2026-05-07 v0.2 修订:§10 admin 5 LD-A + 6 R-A + 14 高风险 + 5 audit_commands · 2026-05-14 v0.3:§10.1 +LD-A7 evolution_profile clear 单点保护 · 2026-05-15 v0.4:§10.1 +LD-A10 constant_versions.status='active' 单点保护 · 2026-05-15 v0.5:§10.1 +LD-A11 feature_flags/system_config 写操作单点保护)
 > **派生自** · [ARCHITECTURE.md](ARCHITECTURE.md) v0.4 + [ADMIN-ARCHITECTURE.md](ADMIN-ARCHITECTURE.md) v0.2 · §4 Agent 编排 + §6 接口契约 + §3 数据架构
@@ -693,7 +693,7 @@ const url = await dalle.generate({...});  // 阻塞 30s 用户主流程
 > Ralph 在创建新文件前 · 先回这棵树查应该放哪。
 
 ```
-QuanQn/
+QuanAn/
 ├── ARCHITECTURE.md          # 架构骨架(只读 · 修改要先开 ADR)
 ├── AGENTS.md                # 本文件 · 代码层约束
 ├── ADR.md                   # 架构决策详情
@@ -2110,7 +2110,7 @@ grep -rn "new OpenAI\|new Anthropic" src/ --exclude-dir=lib/llm-gateway
 set -e
 
 echo "════════════════════════════════════"
-echo "  Opus Audit · QuanQn"
+echo "  Opus Audit · QuanAn"
 echo "════════════════════════════════════"
 
 # Step 1 · 必跑 5 项(§8.3)
@@ -2335,11 +2335,11 @@ spec.md(原版规格)+ DESIGN.md(设计 token)
 #### LD-A1 · admin 子系统独立部署 + 独立 OAuth(对应 ADR-021)
 
 **铁律**:
-- ✅ apps/admin 独立 build → admin.quanqn.com
-- ✅ apps/admin 用独立 OAuth client_id(QUANQN_ADMIN_CLIENT_ID)+ Workspace 限定 @quanqn.com
+- ✅ apps/admin 独立 build → admin.quanan.com
+- ✅ apps/admin 用独立 OAuth client_id(QUANQN_ADMIN_CLIENT_ID)+ Workspace 限定 @quanan.com
 - ✅ apps/admin session 跟主应用 session 完全隔离(独立 Redis namespace `admin:session:*`)
 - ❌ apps/admin 复用主应用 OAuth client / session
-- ❌ apps/admin 部署到 www.quanqn.com 子路径
+- ❌ apps/admin 部署到 www.quanan.com 子路径
 
 **执行检查**:
 - grep `apps/admin/.*QUANQN_WEB_CLIENT` → 0 结果(admin 不应出现 web 的 OAuth 配置名)
@@ -2519,8 +2519,8 @@ grep -rnE "(prisma|db|tx)\.(featureFlag|systemConfig)\.(update|upsert|create)" \
 
 ```bash
 # 检测
-! grep -rn "from '@quanqn/admin\|from '\.\./admin'" apps/web/src/
-! grep -rn "from '@quanqn/web\|from '\.\./web'" apps/admin/src/
+! grep -rn "from '@quanan/admin\|from '\.\./admin'" apps/web/src/
+! grep -rn "from '@quanan/web\|from '\.\./web'" apps/admin/src/
 ```
 
 **例外** · packages/* 三方共享层不算违反(zod / UI base / tRPC client config 共享)。
@@ -2533,7 +2533,7 @@ grep -rnE "(prisma|db|tx)\.(featureFlag|systemConfig)\.(update|upsert|create)" \
 ! grep -rn "/admin" apps/web/src/
 ```
 
-**强制** · admin 用户必须主动访问 admin.quanqn.com · 主应用不暴露 admin 入口。
+**强制** · admin 用户必须主动访问 admin.quanan.com · 主应用不暴露 admin 入口。
 
 #### R-A3 · 不允许 admin SPA 不带 IP 白名单 / MFA 直接上线
 
@@ -2636,8 +2636,8 @@ bash scripts/audit-redlines-admin.sh  # 6 条 R-A 红线一键 grep
 #### §10.4.3 admin 集成测试
 
 ```bash
-pnpm --filter @quanqn/api test:admin           # admin router 单元测试
-pnpm --filter @quanqn/api test:admin-integration  # 含 6 闸鉴权链
+pnpm --filter @quanan/api test:admin           # admin router 单元测试
+pnpm --filter @quanan/api test:admin-integration  # 含 6 闸鉴权链
 pnpm test:e2e:admin                            # admin SPA E2E
 ```
 
@@ -3304,7 +3304,7 @@ trpc subscription 路径必须 ·
 - **server middleware** (`apps/api/src/trpc/middleware/account-isolation.ts`) ·
   ```typescript
   if (type === 'subscription') {
-    await ctx.prisma.$executeRaw`SET ROLE quanqn_app`;
+    await ctx.prisma.$executeRaw`SET ROLE quanan_app`;
     // connection-level SET (is_local=false) · 替代 tx SET LOCAL
     await ctx.prisma.$executeRaw`SELECT set_config('app.current_account_id', ${String(activeAccountId)}, false)`;
     return next();
@@ -3328,6 +3328,31 @@ Step8 2 子功能 LS 数据 + DB result 都检 sub_function key:
 BaseSpecialist (`apps/api/src/specialists/base/BaseSpecialist.ts`) isFallbackable += `err.message?.includes('API_KEY missing')` · 无 OPENAI_KEY 时 fallback mock + UI [降级] badge(status='fallback')。
 
 E2E 默认走 fallback 路径(D-187)· 但**必须**考虑 SSE chunks 模拟(参 TD-82 反例 · PRD-18 test3 fallback 不模拟 5 chunks 撞 30s timeout)。PRD-20+ E2E 设计需提前规划 fallback path SSE 行为(test.skip if no OPENAI_KEY 或 reduced timeout 或 fallback 模拟 chunks)。
+
+---
+
+### §11.13 PRD-22 inline-refactor + step-pages 沉淀(PRD-22 retro 2026-05-19 文档回流 · 34 commits 事实驱动)
+
+> **派生** · `.agents/retros/prd-22-vs-prd-21-retrospective.md` · 11/11 dev US ALL PASSED · 82% 严格一轮通过率 · 2 Opus reject(US-006 D-218 tab + US-009 TD-093 unit test 漏) · inline picker utility 3 件套首次建立跨 page 复用基础设施 · 13 page visual diff 基线扩展(4→13) · 206 vitest tests · 0 typecheck errors。
+
+#### §11.13.1 Inline Picker Utility 3 件套跨 page 复用模式(apps/web/src/components/inline-pickers/)
+
+`ScriptTypeInlineCards` / `ElementsInlineMultiPicker` / `PlatformInlineRadio` — controlled component API(`value`/`onChange`/`disabled`) · barrel export `index.ts` · 单元测试各 ≥5 case。PRD-22 中 11 个 dev US 有 8 个直接 import · 0 重复实现。PRD-23+ 新选项 UI 先检查此目录有无匹配 · 无则新建 + barrel + 单测。
+
+#### §11.13.2 Step Page 重写 AC 模板必含 unit test 要求(TD-093 根因 · 红线级)
+
+任何 step page 完整重写 US(Step{N}.tsx + OutputContent + constants)的 AC 中**必须**明确写 unit test 要求，特别是新建 component 名称。PRD-22 US-009 因 AC 未写 FileUpload 单测 → Opus reject → 补写后 PASS。模板：
+- `AC-x: TypeScript typecheck → 0 errors`
+- `AC-y: e2e tests · N tests PASS`
+- `AC-z: unit tests for [具体 component 名] → N tests PASS`
+
+#### §11.13.3 Visual Diff Baseline 扩展模式(13 page · 继续扩展到 32)
+
+`tests/e2e/prd{N}-visual-baseline.spec.ts` 追加 `expectVisualMatch` · 首跑 `--update-snapshots` · 命名 `prd{N}-{page-slug}.png` · CI 用 `pnpm test:visual:prd{N}:check`。PRD-21 4 baselines → PRD-22 13 baselines → PRD-24 目标 32 全覆盖。每个改变 UI 的 step/工具 page 完成后当轮追加 baseline · 不推迟到收官。
+
+#### §11.13.4 D-220 H3/H4 字面锁 + D-221 13 列分镜表(强制 constants 文件 · 继承全 PRD)
+
+step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `readonly Block[]` · h3Label/h4Label 1:1 来源 spec · 禁止在 JSX 直接写字面。`STORYBOARD_COLUMNS` 13 列同理。PRD-22 全 11 dev US 严守 · 0 字面漂移。
 
 ---
 
@@ -3364,6 +3389,11 @@ E2E 默认走 fallback 路径(D-187)· 但**必须**考虑 SSE chunks 模拟(参
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
   - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
+- **2026-05-19 v0.6** · 加 §11.13 PRD-22 inline-refactor + step-pages 沉淀(34 commits · 13 page visual diff · 3 inline picker utility)
+  - §11.13.1 · Inline Picker Utility 3 件套跨 page 复用(components/inline-pickers/ · barrel export · 8 page 复用 · 0 重复实现)
+  - §11.13.2 · Step Page 重写 AC 模板必含 unit test 要求(TD-093 红线 · 具体 component 名称写入 AC · 防 Opus reject)
+  - §11.13.3 · Visual Diff Baseline 扩展模式(4→13 page · prd{N}-visual-baseline.spec.ts · --update-snapshots 首跑 · 目标 PRD-24 32 全覆盖)
+  - §11.13.4 · D-220 H3/H4 字面锁 + D-221 13 列分镜表(constants/step{N}.ts readonly Block[] · JSX 禁直接写字面 · PRD-22 0 字面漂移)
 - **2026-05-18 v0.5** · 加 §11.7 真 LLM 接入沉淀(PRD-20 retro 文档回流 · 5 子节 commit 事实驱动)
   - §11.7.1 · ENV validation + LLM client init(`apps/api/src/lib/env.ts` · zod safeParse + `.optional()` 双 SDK API_KEY · 缺一者 warning + 启动 log 模式 · 不 throw graceful fallback · D-191/192/193)
   - §11.7.2 · money-critical cost_log + userQuota atomic(`Prisma.raw` `UPDATE userQuota SET consumedTokens = consumedTokens + N WHERE accountId = X AND consumedTokens <= dailyBudgetTokens - N` 乐观锁 + Decimal(10,6) costUsd + Integer promptTokens/completionTokens · 并发 100 race test · 严守 D-194/195)

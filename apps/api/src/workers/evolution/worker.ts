@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-003 AC-6
+ * QuanAn · PRD-8 US-003 AC-6
  * Evolution BullMQ Worker
  *
  * concurrency: 1 per accountId — 通过 trigger.ts 的 jobId=`evo:{accountId}:{count}` 去重实现

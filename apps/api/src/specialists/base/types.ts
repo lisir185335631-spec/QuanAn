@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 Specialist 类型定义
+ * QuanAn · PRD-4 Specialist 类型定义
  * SpecialistConfig(五层) + SpecialistRequest<TIn> + SpecialistResponse<TOut>
  * AC-2(US-001)
  */

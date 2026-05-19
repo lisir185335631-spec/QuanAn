@@ -230,7 +230,7 @@ sep "§9  Zero-regression · typecheck + vitest"
 # ─────────────────────────────────────────────────────────────────────────────
 
 # 9.1 TypeScript typecheck passes
-echo "  [running] pnpm --filter @quanqn/web typecheck ..."
+echo "  [running] pnpm --filter @quanan/web typecheck ..."
 if (cd "$ROOT/apps/web" && pnpm typecheck) 2>&1; then
   ok "9.1 pnpm typecheck passed (exit 0)"
 else
@@ -238,7 +238,7 @@ else
 fi
 
 # 9.2 Vitest run passes
-echo "  [running] pnpm --filter @quanqn/web vitest run ..."
+echo "  [running] pnpm --filter @quanan/web vitest run ..."
 VITEST_OUT=$((cd "$ROOT/apps/web" && pnpm vitest run) 2>&1 || true)
 if echo "$VITEST_OUT" | grep -qE "passed"; then
   ok "9.2 pnpm vitest run passed"

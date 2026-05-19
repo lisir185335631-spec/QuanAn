@@ -1,4 +1,4 @@
-# QuanQn · AI IP 孵化平台
+# QuanAn · AI IP 孵化平台
 
 > AI 驱动的"个人 IP 孵化 + 变现加速"工具集 · 复刻 [aiipznt.vip](https://aiipznt.vip) + 引入知识库 Agent 哲学 + Aurelian Dark 重塑视觉。
 >
@@ -50,7 +50,7 @@ pnpm audit:redlines
 ## 项目结构速览
 
 ```
-QuanQn/
+QuanAn/
 ├── ARCHITECTURE.md / AGENTS.md / ADR.md / ...     # 文档体系
 ├── prisma/                                        # DB schema
 ├── src/

@@ -1,5 +1,5 @@
 /**
- * QuanQn · 合规接线 unit + integration tests (TD-016 修)
+ * QuanAn · 合规接线 unit + integration tests (TD-016 修)
  * 覆盖 LD-018 R-14 PII mask + disclaimer · 验证:
  *   - piiMask: email/phone/id_card/bank_card 脱敏 + 递归对象 + 特殊对象保护
  *   - appendDisclaimerIfSensitive: 医疗/法律/金融 markdown 末尾追加 + 非敏感原样

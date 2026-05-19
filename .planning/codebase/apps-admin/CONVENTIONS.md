@@ -73,7 +73,7 @@
 1. React core (`useState` / `useEffect` / `useCallback` / `useMemo` / `Component` / 类型)
 2. React Router (`useNavigate` / `useSearchParams` / `Outlet` / `Link` / `NavLink`)
 3. 第三方库 (`@tanstack/react-query` / `@trpc/client` / `recharts`)
-4. workspace package (`@quanqn/ui/admin` / `@quanqn/clients/admin-router-types`)
+4. workspace package (`@quanan/ui/admin` / `@quanan/clients/admin-router-types`)
 5. 相对路径 (`../../lib/admin-client` / `./PlanBadge` / `./UserDetailDrawer`)
 6. type-only import (`import type { ... }`) 紧跟同源 value import 后 (verbatimModuleSyntax: true 要求)
 
@@ -82,13 +82,13 @@
 - 仅 `pages/Login.tsx:8` 使用 `@/lib/admin-client` · 习惯不统一 (tech debt)
 
 **Workspace Aliases:**
-- `@quanqn/ui/admin` - 共享 UI 组件 (DenseTable 6 业务页全部用)
-- `@quanqn/clients/admin-router-types` - tRPC AdminRouter 类型
-- `@quanqn/schemas` - zod schema (admin app 当前未直接 import · 路径已就位)
+- `@quanan/ui/admin` - 共享 UI 组件 (DenseTable 6 业务页全部用)
+- `@quanan/clients/admin-router-types` - tRPC AdminRouter 类型
+- `@quanan/schemas` - zod schema (admin app 当前未直接 import · 路径已就位)
 
 **Type-only import:**
 - 强制 `import type { ... }` 分开 (verbatimModuleSyntax: true)
-- 例: `import { DenseTable } from '@quanqn/ui/admin'; import type { DenseTableColumn } from '@quanqn/ui/admin';` (`pages/users/index.tsx:7-8`)
+- 例: `import { DenseTable } from '@quanan/ui/admin'; import type { DenseTableColumn } from '@quanan/ui/admin';` (`pages/users/index.tsx:7-8`)
 - 例: `import type { FilterState } from './UserListFilters';` (`pages/users/index.tsx:17`)
 
 ## Error Handling
@@ -192,7 +192,7 @@ function showToast(msg: string, type: 'ok' | 'warn' | 'err'): void
 - ⚠️ `apps/admin/src/index.ts` 仅 `export {}` 占位 · 不导出业务
 - 各业务页无 barrel (即 pages/users/index.ts 不存在 · `pages/users/index.tsx` 是页面本体)
 - 跨模块导入直接走具体文件 (e.g. `import { PlanBadge } from './PlanBadge'`)
-- @quanqn/ui/admin 有 barrel (`packages/ui/src/admin/index.ts`)
+- @quanan/ui/admin 有 barrel (`packages/ui/src/admin/index.ts`)
 
 **Default Export:**
 - 仅页面级 (`export default function <Page>()`) · 配合 React Router lazy 习惯

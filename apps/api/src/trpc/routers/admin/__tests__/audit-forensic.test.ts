@@ -17,7 +17,7 @@ vi.mock('@react-pdf/renderer', () => ({
   StyleSheet: { create: (s: unknown) => s },
 }));
 
-vi.mock('@quanqn/ui/admin/forensic-pdf', () => ({
+vi.mock('@quanan/ui/admin/forensic-pdf', () => ({
   PdfForensicTemplate: (_props: unknown) => null,
 }));
 
@@ -49,7 +49,7 @@ const BASE_INPUT = {
   caseNumber: 'CASE-2026-001',
   reason: 'Legal forensic investigation',
   requesterAdminId: 1,
-  requesterEmail: 'super@quanqn.com',
+  requesterEmail: 'super@quanan.com',
   requesterRole: 'super_admin',
 };
 
@@ -130,13 +130,13 @@ describe('generateForensicPdf', () => {
   it('requesterEmail and requesterRole appear in template data (AC-2/SHIELD)', async () => {
     await generateForensicPdf({
       ...BASE_INPUT,
-      requesterEmail: 'legal@quanqn.com',
+      requesterEmail: 'legal@quanan.com',
       requesterRole: 'readonly_admin',
       timeline: [],
     });
 
     const data = (mockRenderToBuffer.mock.calls[0]![0] as { props: { data: { requesterEmail: string; requesterRole: string } } }).props?.data;
-    expect(data?.requesterEmail).toBe('legal@quanqn.com');
+    expect(data?.requesterEmail).toBe('legal@quanan.com');
     expect(data?.requesterRole).toBe('readonly_admin');
   });
 

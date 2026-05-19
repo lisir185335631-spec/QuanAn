@@ -1,4 +1,4 @@
-# QuanQn · 开发阶段就绪度审计(Dev Readiness)
+# QuanAn · 开发阶段就绪度审计(Dev Readiness)
 
 > **版本** · v0.2(2026-05-07 · 从 PRODUCTION-READINESS.md v0.1 收窄而来)
 > **范围** · **只看开发阶段** · 不包括上线后的跨开发工作(部署 / 法务 / 合规 / 监控 / 运营 / 财务 / 应急 / 团队招聘)
@@ -159,7 +159,7 @@ P0 立即可做 7 件(纯代码 / 工具链 / 文档 · 全部我能做) ·
 
 | 项 | 状态 | 备注 |
 |---|:-:|---|
-| 域名 quanqn.com | 🔴 | **未购买** · 必须先买 |
+| 域名 quanan.com | 🔴 | **未购买** · 必须先买 |
 | DNS 配置(www / admin / api 子域名) | 🔴 | 未配 |
 | Vercel / Cloudflare Pages 项目 | 🔴 | 未建 |
 | Railway / Fly.io 后端项目 | 🔴 | 未建 |
@@ -176,7 +176,7 @@ P0 立即可做 7 件(纯代码 / 工具链 / 文档 · 全部我能做) ·
 |---|:-:|---|
 | 主应用 OAuth 应用申请 | 🔴 | Google Cloud Console 未建 |
 | admin OAuth 应用申请(独立)| 🔴 | 同上 |
-| Workspace Internal 限定(@quanqn.com)| 🔴 | 域名都没买 |
+| Workspace Internal 限定(@quanan.com)| 🔴 | 域名都没买 |
 | MFA(super_admin 强制)| 🔴 | 未实施 |
 | IP 白名单(WAF)| 🔴 | 未实施 |
 | Approval Gates 代码 | 🔴 | 未实施(PRD-13 P9.3 时实施)|
@@ -255,7 +255,7 @@ P0 立即可做 7 件(纯代码 / 工具链 / 文档 · 全部我能做) ·
 | trending 第三方授权(新榜 / 蝉妈妈 / 飞瓜)| 🔴 | 月费 ¥5K-30K · 必须签合同(参 ADR-017)· P5 启动前必备 |
 | LLM API 商业合同(Anthropic / OpenAI)| 🟡 | API key 可个人买 · 但生产级需企业账户(月用量大需 Enterprise)|
 | 国内 LLM 备选(文心 / 通义 / DeepSeek)| 🔴 | 国内合规备案 · 上线前必备 |
-| 商标(QuanQn / 全 Q · 中文 / 英文)| 🔴 | 未注册 · 1-3 个月 |
+| 商标(QuanAn / 全 Q · 中文 / 英文)| 🔴 | 未注册 · 1-3 个月 |
 | 版权(原创内容 · UI 设计版权)| 🔴 | 未规划 |
 | 增值电信经营许可证(ICP-VAS · 商业版必需)| 🔴 | 上线前必须(1-3 个月 + 50w+ 注册资本)|
 
@@ -413,7 +413,7 @@ P0 立即可做 7 件(纯代码 / 工具链 / 文档 · 全部我能做) ·
 | # | 动作 | 工作量 | 谁做 | 阻塞什么 |
 |:-:|---|:-:|---|---|
 | **3-1** | **`git init` + 配置 .gitignore** | 5 分钟 | 我 + 你确认 | 所有版本控制 / Ralph 写代码后 commit / 灾备 |
-| **3-2** | **同步 ralph 工具链** · 跑 `~/.claude/scripts/ralph/sync-to-project.sh /Users/return/Desktop/QuanQn`(把 ralph.py / dashboard.py / VALIDATOR.md / OPUS-AUDIT-CHEATSHEET.md / AUDIT-CHECKLIST-TEMPLATE.md / TECH-DEBT-SCHEMA.md / ralph-tools.py 等复制到 scripts/ralph/)| 1 小时(含可能的 manual fixup)| 我 | ralph daemon 启动 |
+| **3-2** | **同步 ralph 工具链** · 跑 `~/.claude/scripts/ralph/sync-to-project.sh /Users/return/Desktop/QuanAn`(把 ralph.py / dashboard.py / VALIDATOR.md / OPUS-AUDIT-CHEATSHEET.md / AUDIT-CHECKLIST-TEMPLATE.md / TECH-DEBT-SCHEMA.md / ralph-tools.py 等复制到 scripts/ralph/)| 1 小时(含可能的 manual fixup)| 我 | ralph daemon 启动 |
 | **3-3** | **拆 monorepo workspace**(SCAFFOLD §A.3 10 步迁移 · `apps/web` `apps/admin`(占位)`apps/api` `packages/{schemas,ui,clients}` `pnpm-workspace.yaml`)| 0.5 天 | 我 + 你 review | 主应用 + admin 独立部署边界 |
 | **3-4** | **prisma/schema.prisma 加 admin 13 表** · 从 DATA-MODEL §13 复制 | 0.5 天 | 我 | admin PRD 数据层 |
 | **3-5** | **创建 migrations/manual_admin_rls.sql**(13 表 DISABLE RLS · 见 DATA-MODEL §13.8) | 30 分钟 | 我 | admin 跨账号查 |
@@ -680,12 +680,12 @@ Day 3 起 ·
 - [ui/aurelian_dark/DESIGN.md](ui/aurelian_dark/DESIGN.md) · 设计 token
 
 #### 实测命令
-- `find /Users/return/Desktop/QuanQn -type f` · 文件清单
+- `find /Users/return/Desktop/QuanAn -type f` · 文件清单
 - `wc -l prisma/schema.prisma` = 626 行 · `grep -c "^model "` = 18 model
 - `find tests/ -name "*.test.*" \| wc -l` = 0
-- `ls /Users/return/Desktop/QuanQn/scripts/ralph/` = 空目录
-- `ls /Users/return/Desktop/QuanQn/.git` = 不存在
-- `ls /Users/return/Desktop/QuanQn/apps/` = 不存在
+- `ls /Users/return/Desktop/QuanAn/scripts/ralph/` = 空目录
+- `ls /Users/return/Desktop/QuanAn/.git` = 不存在
+- `ls /Users/return/Desktop/QuanAn/apps/` = 不存在
 - `wc -l ~/.claude/playbooks/reject-examples.jsonl` = 35
 - `grep -E "Sentry\|OTel\|Plausible"` 项目内代码 = 0
 

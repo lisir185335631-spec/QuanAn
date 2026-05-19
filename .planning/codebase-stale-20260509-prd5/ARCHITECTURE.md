@@ -1,5 +1,5 @@
 <!-- refreshed: 2026-05-09 -->
-# Architecture · QuanQn
+# Architecture · QuanAn
 
 **Analysis Date:** 2026-05-09
 **Scope:** PRD-1 → PRD-5 完成期 · 12 stories PRD-5 全 PASSED · 8 / 14 Specialist 落地 · 2 子应用骨架 (apps/admin 占位)
@@ -126,7 +126,7 @@
                                  ▼
                 ┌────────────────────────────────────────────────┐
                 │ Redis (Upstash REST · rate limit + future cache)│
-                │   prefix: quanqn:rl:{plan}                     │
+                │   prefix: quanan:rl:{plan}                     │
                 │   token bucket 50/500/5000 calls/day            │
                 └────────────────────────────────────────────────┘
 
@@ -161,7 +161,7 @@
 | **Hono app** | HTTP 入口 · CORS · trace · OAuth /auth/* · tRPC 挂载 | `apps/api/src/index.ts` | 230 |
 | **tRPC context** | lucia session 解析 · activeAccountId 注入 · X-Trace-Id 读取 | `apps/api/src/trpc/context.ts` | 58 |
 | **traceMiddleware** | X-Trace-Id 生成或传 + AsyncLocalStorage 写入 (pino mixin auto-attach) | `apps/api/src/trpc/trpc.ts:34-39` | — |
-| **accountIsolationMiddleware** | $transaction · SET LOCAL ROLE quanqn_app · set_config('app.current_account_id') · ★ 唯一允许 prisma.$executeRaw 处 | `apps/api/src/trpc/middleware/account-isolation.ts` | 58 |
+| **accountIsolationMiddleware** | $transaction · SET LOCAL ROLE quanan_app · set_config('app.current_account_id') · ★ 唯一允许 prisma.$executeRaw 处 | `apps/api/src/trpc/middleware/account-isolation.ts` | 58 |
 | **protectedProcedure** | publicProcedure + accountIsolationMiddleware (默认) | `account-isolation.ts:52` | — |
 | **globalProcedure** | publicProcedure + meta({isGlobal:true}) — 跳过 RLS · 仅用于 User/InviteCode/TrendingItem | `account-isolation.ts:58` | — |
 | **appRouter** | 18 sub-router 合并 → AppRouter type → 由 packages/clients 同名 shadow 镜像导出给前端 | `apps/api/src/trpc/routers/_app.ts` | 47 |
@@ -226,7 +226,7 @@
 - **Purpose:** SPA 用户界面 · LS 双写 · 实时与 API 同步 · 表单 zod 校验 · markdown 渲染
 - **Location:** `apps/web/src/`
 - **Contains:** React 18 components · pages · layouts · lib (trpc/utils/ls-namespace) · hooks · 4 大组件目录(StepForm/StepResult/ToolForm/ToolResult/ui)
-- **Depends on:** `@quanqn/schemas` (zod), `@quanqn/clients` (router types), `@quanqn/ui` (占位), 自身 `@/*`
+- **Depends on:** `@quanan/schemas` (zod), `@quanan/clients` (router types), `@quanan/ui` (占位), 自身 `@/*`
 - **Used by:** Browser
 
 ### §4.2 API 层(`apps/api/src/index.ts` + `apps/api/src/trpc/`)
@@ -292,9 +292,9 @@
 
 ### §4.8 Cross-cutting · packages/
 
-- **`@quanqn/schemas`** · zod schemas 真理来源 · 38 schemas across 5 sub-paths
-- **`@quanqn/clients`** · 跨 app tRPC 类型导出 + shadow router (避免前端 bundle @trpc/server)
-- **`@quanqn/ui`** · 主应用 + admin 共享 UI · ★ DRIFT 占位 · 12 shadcn 组件还在 apps/web/src/components/ui/ (TD-005)
+- **`@quanan/schemas`** · zod schemas 真理来源 · 38 schemas across 5 sub-paths
+- **`@quanan/clients`** · 跨 app tRPC 类型导出 + shadow router (避免前端 bundle @trpc/server)
+- **`@quanan/ui`** · 主应用 + admin 共享 UI · ★ DRIFT 占位 · 12 shadcn 组件还在 apps/web/src/components/ui/ (TD-005)
 
 ---
 
@@ -305,7 +305,7 @@
 ```text
 1. 用户填表单
    apps/web/src/pages/tools/Generate.tsx (假设)
-   ├─ react-hook-form + zod resolver (copywritingFreeGenerateInput from @quanqn/schemas)
+   ├─ react-hook-form + zod resolver (copywritingFreeGenerateInput from @quanan/schemas)
    ├─ trpc.copywriting.freeGenerate.useMutation()
    └─ POST /trpc/copywriting.freeGenerate
       ↓
@@ -326,7 +326,7 @@
    ├─ if (meta?.isGlobal) → next() (跳过 RLS · 仅 ipAccounts.create/switchActive 等用)
    ├─ else if (!activeAccountId) → throw FORBIDDEN 'no_active_account'
    └─ ctx.prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SET LOCAL ROLE quanqn_app`              // 切非 superuser
+        await tx.$executeRaw`SET LOCAL ROLE quanan_app`              // 切非 superuser
         await tx.$executeRaw`SELECT set_config('app.current_account_id', ...)`
         await tx.$executeRaw`SELECT set_config('app.current_user_id', ...)`
         return next({ ctx: { ...ctx, prisma: tx } })  // ★ 后续 prisma 都是 tx
@@ -444,7 +444,7 @@ SSE chunks 经 trpc httpBatchStreamLink 流回 apps/web
 
 ```text
 任何 protectedProcedure → accountIsolationMiddleware → $transaction
-   ├─ SET LOCAL ROLE quanqn_app  (非 superuser · RLS 强制启用)
+   ├─ SET LOCAL ROLE quanan_app  (非 superuser · RLS 强制启用)
    ├─ set_config('app.current_account_id', activeAccountId, true) ★ true=is_local=tx 范围
    ├─ set_config('app.current_user_id', user.id, true)
    └─ next({ ctx: { prisma: tx } })
@@ -722,8 +722,8 @@ export type AppRouter = typeof _shadowRouter;
 ### Anti-Pattern E · 12 shadcn 组件路径偏差
 
 **What happens:** SCAFFOLD §A.1 + PRD-1 US-005 AC 要求 `packages/ui/src/base/` · 实际写在 `apps/web/src/components/ui/`
-**Why it's wrong:** admin 子应用 P9.0 启动时无法 `import from '@quanqn/ui/base'` 复用 · 必须 lift 一遍
-**Do this instead:** P9.0 admin 启动前 · `mv apps/web/src/components/ui/* packages/ui/src/base/` · web import 改 `@quanqn/ui/base`
+**Why it's wrong:** admin 子应用 P9.0 启动时无法 `import from '@quanan/ui/base'` 复用 · 必须 lift 一遍
+**Do this instead:** P9.0 admin 启动前 · `mv apps/web/src/components/ui/* packages/ui/src/base/` · web import 改 `@quanan/ui/base`
 **Tracker:** TD-005 · scheduled
 
 ### Anti-Pattern F · 6 worker 子目录全空
@@ -776,7 +776,7 @@ export type AppRouter = typeof _shadowRouter;
 - **Framework:** zod 3.23
 - **Approach:**
   - input schemas in `packages/schemas/src/specialist-io/*.schema.ts`(canonical)
-  - tRPC routers inline duplicate(comment 注:`Note: Zod schemas inlined — @quanqn/schemas/specialist-io has canonical definition for client use`)
+  - tRPC routers inline duplicate(comment 注:`Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use`)
   - BaseSpecialist `inputSchema.parse` Step 1 + `outputSchema.safeParse` Step 4(retry 1)
   - 前端 react-hook-form `@hookform/resolvers` + zodResolver
 
@@ -797,7 +797,7 @@ export type AppRouter = typeof _shadowRouter;
 - **Approach:**
   - protectedProcedure 默认 · activeAccountId 缺失 → FORBIDDEN
   - globalProcedure for User/InviteCode/TrendingItem(无账号上下文)
-  - SET LOCAL ROLE quanqn_app 切非 superuser(superuser 默认 BYPASSRLS)
+  - SET LOCAL ROLE quanan_app 切非 superuser(superuser 默认 BYPASSRLS)
   - PG RLS policy 12 张账号表 · `ip_accounts` 用 user_id 隔离(聚合根)· 其他用 account_id
 
 ### §11.5 Trace Propagation
@@ -851,4 +851,4 @@ export type AppRouter = typeof _shadowRouter;
 
 ---
 
-*Architecture analysis: 2026-05-09 · QuanQn PRD-1~PRD-5 完成期 · 8 / 14 Specialist 落地 · 文件总数 ~16K LOC · 39 prisma models · 19 tRPC routers · 0 critical bug · 1 critical compliance gap (PII 未接线)*
+*Architecture analysis: 2026-05-09 · QuanAn PRD-1~PRD-5 完成期 · 8 / 14 Specialist 落地 · 文件总数 ~16K LOC · 39 prisma models · 19 tRPC routers · 0 critical bug · 1 critical compliance gap (PII 未接线)*

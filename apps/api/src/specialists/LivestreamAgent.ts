@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-4 US-010 + PRD-20 US-007
+ * QuanAn · PRD-4 US-010 + PRD-20 US-007
  * LivestreamAgent — step8(直播话术)
  *
  * PRD-4 US-010: 继承 BaseSpecialist · 五层配置完整 · model_tier='reasoning' timeout_ms=30000

@@ -128,7 +128,7 @@ PRD-6 wall-clock ~12h vs PRD-7 ~2h = 6× 速度提升 · 主要原因(详 §3):
   - audit-artifacts.py 双逻辑(zero_regression skip + exit_code hard reject)
   - ralph.py cleanup + path B
   - sync-to-project.sh 版本检测 + --force
-  - **跨项目价值** · 后续所有 QuanQn 项目 PRD + 其他用户的项目都受益
+  - **跨项目价值** · 后续所有 QuanAn 项目 PRD + 其他用户的项目都受益
 
 ### 8. Audit 专项扫描
 
@@ -256,7 +256,7 @@ PRD-6 wall-clock ~12h vs PRD-7 ~2h = 6× 速度提升 · 主要原因(详 §3):
 
 #### M-1: type alias re-export 漏写(US-001 R1 reject 教训)
 
-- **观察**: PRD-7 US-001 R1 实施 schema 重构时 · `import type { ImportedX } from '@quanqn/schemas'` 后必须 `export type LocalX = ImportedX`(否则下游 import 旧 type 名失败)· ralph 写第一次时漏写
+- **观察**: PRD-7 US-001 R1 实施 schema 重构时 · `import type { ImportedX } from '@quanan/schemas'` 后必须 `export type LocalX = ImportedX`(否则下游 import 旧 type 名失败)· ralph 写第一次时漏写
 - **现状**: 目前靠 Validator R1 retry 内部纠错(本次 OK · 但是隐患)
 - **建议机制化位置**: `/plan-check 2.6.13 type alias chain 检查` (新增子节)
 - **实现思路**:
@@ -277,13 +277,13 @@ PRD-6 wall-clock ~12h vs PRD-7 ~2h = 6× 速度提升 · 主要原因(详 §3):
   ```diff
   + ##### 2.6.13 type alias chain 一致性检查(PRD-7 US-001 教训 · 2026-05-11 新增)
   +
-  + 当 AC 含 "import type X from '@quanqn/schemas'" + 原代码已 "export type LocalY = ..." 模式时:
+  + 当 AC 含 "import type X from '@quanan/schemas'" + 原代码已 "export type LocalY = ..." 模式时:
   +
   + - ✅ AC 必须显式提到 "保留 backward-compat: export type LocalY = X"
   + - ❌ 仅写 "import type X" 但不加 export type alias chain → WARNING
   +
   + **触发信号**: AC 含以下关键词组合
-  + - "import type" + "@quanqn/schemas" / "from packages/schemas"
+  + - "import type" + "@quanan/schemas" / "from packages/schemas"
   + - 文件中已有 "export type LocalY"
   +
   + **输出示例**:
@@ -357,7 +357,7 @@ git diff --name-status "$MERGE_BASE"..HEAD  # 全 file changes
 
 ### 项目里程碑
 
-PRD-7 是 QuanQn 项目首次实现:
+PRD-7 是 QuanAn 项目首次实现:
 - 0 open TD 收官(从 7 → 0)
 - 0 Opus reject(anti_patterns 完美预审)
 - 0 RCA(daemon 全程稳定)

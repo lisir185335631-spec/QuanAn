@@ -1,4 +1,4 @@
-// @quanqn/ui · Aurelian Dark 设计系统 + admin 密度
+// @quanan/ui · Aurelian Dark 设计系统 + admin 密度
 // · base/        · 主应用通用组件 + tokens
 // · admin/       · admin 专属密度 token + AdminLayout/Table/etc(P9.0 起填)
 //

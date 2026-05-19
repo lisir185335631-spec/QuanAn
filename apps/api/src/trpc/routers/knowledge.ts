@@ -12,7 +12,7 @@ import { publicProcedure, router } from '@/trpc/trpc';
 import { ragRetrieveWorker } from '@/workers/rag/retrieve';
 
 import type { Prisma } from '@prisma/client';
-import type { KnowledgeChunkContent } from '@quanqn/schemas';
+import type { KnowledgeChunkContent } from '@quanan/schemas';
 
 // ── PRD-9 US-004: public knowledge procedures ─────────────────────────────────
 

@@ -11,7 +11,7 @@ import {
   DailyTaskOutputSchema,
   VoiceChatTurnSchema,
   VOICE_CHAT_TOOLS,
-} from '@quanqn/schemas/specialist-io';
+} from '@quanan/schemas/specialist-io';
 
 // ── EvolutionInsightContentSchema ─────────────────────────────────────────────
 

@@ -1,0 +1,9 @@
+# QuanQn · Ralph Daemon Progress
+
+## PRD-21 · aiipznt 视觉对齐基础设施 + Header 精修 + 共享 utility + Home/Guide/IpPlan 视觉精修
+> 启动 · 2026-05-18 BJT · Opus 4.7 主对话
+> Branch · ralph/prd-21-visual-alignment-foundation
+> Scope · 8 US · 1 foundation + 2 high + 5 medium
+> Locked Decisions · D-206 ~ D-222 (17 D)
+> Plan-check · PASS-WITH-WARN(15/2/0)
+

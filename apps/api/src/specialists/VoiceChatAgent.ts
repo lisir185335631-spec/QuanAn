@@ -1,5 +1,5 @@
 /**
- * QuanQn · PRD-8 US-011
+ * QuanAn · PRD-8 US-011
  * VoiceChatAgent — 真接 LLMGateway.stream() + 5 工具 + L1 Buffer + tRPC subscription
  *
  * AC-1: execute() 真接 LLMGateway.stream() · model_tier='reasoning' · tools=VOICE_CHAT_TOOLS · timeout 30s
@@ -33,10 +33,10 @@ import type {
   SpecialistRequest,
   SpecialistResponse,
 } from './base/types';
-import type { VoiceChatBuffer, VoiceChatTurn } from '@quanqn/schemas/specialist-io';
+import type { VoiceChatBuffer, VoiceChatTurn } from '@quanan/schemas/specialist-io';
 
-export { VoiceChatBufferSchema } from '@quanqn/schemas/specialist-io';
-export type { VoiceChatBuffer, VoiceChatTurn, VoiceChatRole } from '@quanqn/schemas/specialist-io';
+export { VoiceChatBufferSchema } from '@quanan/schemas/specialist-io';
+export type { VoiceChatBuffer, VoiceChatTurn, VoiceChatRole } from '@quanan/schemas/specialist-io';
 
 // ── VOICE_CHAT_TOOLS — 5 工具 (SoT · §1.0.4) ──────────────────────────────────
 

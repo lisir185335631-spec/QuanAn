@@ -8,7 +8,7 @@
  * SHIELD REJ-008: explicit accountId where + RLS via protectedProcedure
  */
 
-import { acquisitionVideoInput } from '@quanqn/schemas/specialist-io';
+import { acquisitionVideoInput } from '@quanan/schemas/specialist-io';
 import { TRPCError } from '@trpc/server';
 
 import { videoAgent, type VideoAcquisitionOutput } from '@/specialists/VideoAgent';

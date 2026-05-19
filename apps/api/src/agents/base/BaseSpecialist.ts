@@ -1,5 +1,5 @@
 /**
- * QuanQn · BaseSpecialist 抽象类(模板方法模式)
+ * QuanAn · BaseSpecialist 抽象类(模板方法模式)
  * 派生自 ARCHITECTURE.md §6.3 + ADR-003 + LD-005
  *
  * 全 14 Specialist 必继承此类(R-2 grep 检测)

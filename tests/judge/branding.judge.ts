@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · BrandingAgent LLM Judge
+ * QuanAn · US-016 · BrandingAgent LLM Judge
  * AC-2: golden case — packaging mode / 美妆行业 / xiaohongshu
  * AC-10: real scenario input
  * AC-11: quantifiable criteria

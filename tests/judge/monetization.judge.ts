@@ -1,5 +1,5 @@
 /**
- * QuanQn · US-016 · MonetizationAgent LLM Judge
+ * QuanAn · US-016 · MonetizationAgent LLM Judge
  * AC-2: golden case — 教育行业 / 新手创作者 / 零基础变现
  * AC-10: real scenario input
  * AC-11: quantifiable criteria
