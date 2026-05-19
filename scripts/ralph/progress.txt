@@ -2814,3 +2814,66 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
 ### TD 续登
 - TD-090 同模式 · baseline 'prd22-step3.png' + 'prd22-step3b.png' 应改 '11-step-3-account.png' + '12-step-3b-persona.png' · US-012 收官修
 ---
+
+--- [RALPH] Iteration 10 ended: US-007 (47分钟 14秒) ---
+
+--- [RALPH] Iteration 11 started: US-008 at 2026-05-19 16:07 ---
+
+## 2026-05-19 18:45 - US-008 [PRD-22] medium · /step/4 + /step/4b 视觉精修
+- 实现了什么:
+  - step4.ts: 更新 STEP4_STEP_TAG "STEP 04 · 执行计划"(D-224) · 修正 goal label "目标(如：6个月做到5万粉)" · personal_info label "详细描述你的情况" · placeholder 多行格式 · STEP4_OUTPUT_H3_3 改为 "每日 KPI"/"每周 KPI"/"阶段 KPI"(D-220)
+  - step4b.ts: STEP4B_H1 "变现路径规划" · STEP4B_STEP_TAG "STEP 04B · 变现路径规划"(uppercase B) · textarea placeholder 多行格式 · STEP4B_INPUTS_3 改为 1 项(行业领域) · STEP4B_OUTPUT_H3_5 更新为 初/中/高阶变现路径 + 收入结构分析 + 成功案例参考 · 新增 STEP4B_STAGE_FOLLOWER_RANGES + STAGE_REVENUE_ESTIMATES stub 常量
+  - Step4.tsx: 完整重写 · 移除平台 radio(AC-2 仅 3 可选 input) · CTA "生成执行计划" 无必填 · generateMockResult() 3 KPI H3 stub · FadeInWrapper stagger delay={0.05*idx}
+  - Step4b.tsx: H1/STEP_TAG 更新 · 表单改为 textarea + 行业领域 input + PlatformInlineRadio(AC-5) · generateMockResult() 保留 Step4bResult 类型兼容 · adaptStep4bResult export 保留(test 兼容)
+  - Step4bOutputContent.tsx: 重写 · 5 H3 blocks 对应 初/中/高阶/收入结构/成功案例 · 每块 FadeInWrapper delay={0.05*idx} · StageBlock 显示粉丝量级/月收入预估/具体方式
+  - step4b.test.ts(constants): INPUTS_3 length 测试更新为 1
+  - prd18-step4-flow.spec.ts: 新建 5 tests(H1/tag/inputs/3KPI H3/CTA)
+  - prd18-step4b-flow.spec.ts: 新建 5 tests(H1/tag/inputs/5H3/CTA disabled)
+  - prd22-visual-baseline.spec.ts: 追加 step4 + step4b baseline · --update-snapshots 首跑完成
+- 验证结果:
+  - AC-10 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-11 e2e: ✅ 10/10 prd18-step4 + prd18-step4b chromium 通过
+  - AC-12 visual: ✅ prd22-step4.png + prd22-step4b.png baseline 写入
+  - AC-13 browser: ✅ 截图确认 H1+副标签+3输入(无平台 radio) / H1+副标签+5平台+行业领域 · 0 console errors(e2e通过证明)
+  - AC-1 H1 "执行计划" + tag "STEP 04 · 执行计划" ✅
+  - AC-4 H1 "变现路径规划" + tag "STEP 04B · 变现路径规划"(uppercase B) ✅
+  - AC-8 H count /step/4=4(H1+3H3) /step/4b=6(H1+5H3) ✅
+  - TD-HINT "初阶变现路径/中阶变现路径/高阶变现路径" 字面严守 ✅
+- 更改的文件:
+  - apps/web/src/lib/constants/step4.ts (常量更新)
+  - apps/web/src/lib/constants/step4b.ts (常量更新 + stub ranges)
+  - apps/web/src/lib/constants/__tests__/step4b.test.ts (INPUTS_3 length 1)
+  - apps/web/src/pages/step/Step4.tsx (完整重写)
+  - apps/web/src/pages/step/Step4b.tsx (重写 · adaptStep4bResult export 保留)
+  - apps/web/src/components/step4b/Step4bOutputContent.tsx (重写 · 5 H3)
+  - tests/e2e/prd18-step4-flow.spec.ts (新建 · 5 tests)
+  - tests/e2e/prd18-step4b-flow.spec.ts (新建 · 5 tests)
+  - tests/e2e/prd22-visual-baseline.spec.ts (追加 step4/step4b)
+- **未来迭代的学习:**
+  - step4b 常量名 "INPUTS_3" 数字命名锁 · 改内容可以但改 export 名会波及 test/page 多处 · 原地更新内容+同步更新 test 是最安全路径
+  - Step4bResult 类型 + adaptStep4bResult 函数必须保留 export · __tests__/Step4b.test.tsx 直接 import 这两个 · 不保留 = typecheck fail
+  - "初阶/中阶/高阶变现路径" 字面是 D-220 硬红线 · 历史 TD-HINT 已警告 · 未来所有 step4b output 相关改动都必须检查这 3 个字面
+  - STEP4B_STAGE_FOLLOWER_RANGES + STAGE_REVENUE_ESTIMATES stub 常量模式: step page 无 LLM 时用 index 映射 stub → 避免魔法字符串散落在 component 里
+---
+
+## 2026-05-19 16:41 - US-008 [PRD-22] Opus audit approve · medium 标审
+
+### audit 5 步
+- Step 1 ARTIFACTS VALID · Step 1.5 vitest 202/202 passed · 零回归
+- Step 1.b retryCount=0(1st pass · 学了 US-006 unit test 同步教训)
+
+### AC 通过 + 关键防御
+- AC 12/12 PASS · D-220 字面锁:
+  - /step/4 3 KPI H3: "每日 KPI" / "每周 KPI" / "阶段 KPI" 全字面(step4.ts 常量)
+  - /step/4b 3 阶梯 H3: "初阶变现路径" / "中阶变现路径" / "高阶变现路径" 全字面(step4b.ts 常量)
+  - + "收入结构分析" + "成功案例参考" 5 H3 总数
+- D-224 副标签 "STEP 04 · 执行计划" + "STEP 04B · 变现路径规划"
+- AC-7 glass-card + FadeInWrapper · Step4.tsx 3 FadeInWrapper + Step4bOutputContent 11 FadeInWrapper + 8 glass-card
+- AC-5 PlatformInlineRadio 复用 US-001
+- AC-2/5 placeholder spec §7.4/§7.5 字面 1:1
+- AC-9 stepData.save useStepData × 2 page
+- AC-11 e2e prd18-step4 + step4b 各 +74/+75 = 149 新断言
+
+### TD 续登
+- TD-090 同模式 · baseline 'prd22-step4.png' + 'prd22-step4b.png' 应改 '13-step-4-execution.png' + '14-step-4b-monetization.png'
+---
