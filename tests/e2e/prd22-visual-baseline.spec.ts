@@ -78,4 +78,16 @@ test.describe('PRD-22 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-13 US-006: /step/1 baseline · prd22-step1
+  test('/step/1 fullPage inline matches prd22-step1.png', async ({ page }) => {
+    await page.goto('/step/1');
+    await page.waitForSelector('[data-testid="step1-cta"]');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-step1.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });
