@@ -3529,3 +3529,5 @@ PRD-23 范围:
   - gstack browse 客户端二进制在有多个并发 bun server.ts 实例时会失去连接 · 需 pkill + 重启单实例 · 或用 curl 直连 /command API(Bearer token from .gstack/browse.json)
   - React Router v7 future flag warning 是全局 pre-existing warning · 不影响功能 · 不算 console error
 ---
+## 2026-05-20 07:24 - US-009 approve · 29 baseline · vitest 287/287
+---
