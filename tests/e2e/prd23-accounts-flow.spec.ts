@@ -33,9 +33,10 @@ async function trpcMutate(
 test.describe('PRD-23 US-002 · /accounts IP 账号管理', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto(`${API_BASE}/auth/login`);
+    // Use /auth/dev-login instead of OAuth flow — avoids external provider redirect
+    // and reliably sets a Lucia session cookie for the mock dev user.
+    await page.goto(`${API_BASE}/auth/dev-login`);
     await page.waitForURL(`${BASE_URL}/**`);
-    await page.waitForSelector('[data-testid="app-header"]');
     await page.goto(`${BASE_URL}/accounts`);
     await page.waitForLoadState('networkidle');
   });

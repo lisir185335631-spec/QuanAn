@@ -38,15 +38,24 @@ const createIpAccountInput = z.object({
 const updateIpAccountInput = createIpAccountInput.partial();
 
 export const ipAccountsRouter = router({
-  /** AC-5: returns all user-owned ip_accounts; ip_accounts RLS filters by current_user_id */
-  list: protectedProcedure.query(async ({ ctx }) => {
-    const accounts = await ctx.prisma.ipAccount.findMany({
+  /**
+   * AC-5: returns all user-owned ip_accounts.
+   * Uses globalProcedure so the /accounts management page is accessible to
+   * authenticated users who do not yet have an activeAccountId (new users).
+   * Explicit where: { userId } replaces RLS since RLS is bypassed.
+   */
+  list: globalProcedure.query(async ({ ctx }) => {
+    const { user, prisma } = ctx;
+    if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+
+    const accounts = await prisma.ipAccount.findMany({
+      where: { userId: user.id },
       select: ACCOUNT_SELECT,
       orderBy: { createdAt: 'asc' },
     });
 
     // PRD-15 US-001 AC-4: in dev mode, auto-bind 5 mock accounts if user has none
-    if (process.env.NODE_ENV === 'development' && accounts.length === 0 && ctx.user) {
+    if (process.env.NODE_ENV === 'development' && accounts.length === 0) {
       const mockNames = [
         { name: 'AI 创业者小张', industry: 'enterprise', platform: 'douyin', stage: 'starter', followersRange: '0-1000', ipPositioning: 'ip-creator' },
         { name: 'OPC 经营者老王', industry: 'enterprise', platform: 'douyin', stage: 'growth', followersRange: '1000-10000', ipPositioning: 'opc-founder' },
@@ -56,12 +65,20 @@ export const ipAccountsRouter = router({
       ];
       const created = await Promise.all(
         mockNames.map((acc) =>
-          ctx.prisma.ipAccount.create({
-            data: { ...acc, userId: ctx.user!.id },
+          prisma.ipAccount.create({
+            data: { ...acc, userId: user.id },
             select: ACCOUNT_SELECT,
           }),
         ),
       );
+      // Set first mock account as active so protectedProcedure works immediately
+      const firstId = created[0]?.id;
+      if (firstId) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { activeAccountId: firstId },
+        });
+      }
       return created;
     }
 
@@ -69,10 +86,12 @@ export const ipAccountsRouter = router({
   }),
 
   /** Returns the currently active ip_account */
-  active: protectedProcedure.query(async ({ ctx }) => {
-    const { prisma, activeAccountId } = ctx;
-    const account = await prisma.ipAccount.findUnique({
-      where: { id: activeAccountId! },
+  active: globalProcedure.query(async ({ ctx }) => {
+    const { user, prisma, activeAccountId } = ctx;
+    if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+    if (!activeAccountId) return null;
+    const account = await prisma.ipAccount.findFirst({
+      where: { id: activeAccountId, userId: user.id },
       select: ACCOUNT_SELECT,
     });
     return account ?? null;
