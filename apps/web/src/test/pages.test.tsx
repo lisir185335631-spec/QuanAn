@@ -162,7 +162,7 @@ describe('Step pages render', () => {
 describe('Tool pages render', () => {
   it('Generate renders h1 heading', () => {
     render(<MemoryRouter><Generate /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AI 智能生成');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('生成爆款文案');
   });
 
   it('Trending renders h1 heading', () => {

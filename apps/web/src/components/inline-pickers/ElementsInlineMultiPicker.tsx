@@ -40,6 +40,7 @@ export function ElementsInlineMultiPicker({
               <button
                 key={el.key}
                 type="button"
+                data-element={el.key}
                 onClick={() => toggle(el.key)}
                 disabled={disabled}
                 className={cn(
@@ -78,6 +79,7 @@ export function ElementsInlineMultiPicker({
                 <button
                   key={el.key}
                   type="button"
+                  data-element={el.key}
                   onClick={() => toggle(el.key)}
                   disabled={disabled}
                   className={cn(

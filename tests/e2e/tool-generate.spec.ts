@@ -1,11 +1,12 @@
 /**
- * E2E test — PRD-5 US-004 AC-7
+ * E2E test — PRD-5 US-004 AC-7 · PRD-22 US-002 AC-9 (assertions updated for inline refactor)
  * /generate 工具页真表单流程 · mock LLM via window.fetch override
  *
- * Flow: 创建账号 → /generate → 选 scriptType + elements + topic → submit →
+ * Flow: 创建账号 → /generate → 选 scriptType 卡 + elements button + topic → submit →
  *       看结果出现 + isFallback=false + 无控制台错误
  *
  * tRPC v11 httpBatchStreamLink JSONL mock pattern (same as fallback.spec.ts)
+ * PRD-22: ToolForm removed from UI · inline pickers + generate-cta button
  */
 
 import { test, expect } from '@playwright/test';
@@ -19,7 +20,7 @@ const MOCK_FREE_GENERATE_ROW = {
   contentType: 'markdown',
   agentId: 'CopywritingAgent',
   agentMode: 'free',
-  scriptType: 'tutorial',
+  scriptType: 'knowledge',
   elements: ['fear', 'social_proof'],
   isFallback: false,
   tokensUsed: 800,
@@ -49,8 +50,8 @@ async function trpcMutate(
   );
 }
 
-test.describe('/generate 工具页 E2E (US-004)', () => {
-  test('创建账号 → /generate → 选 scriptType + elements + topic → submit → 结果出现 + isFallback=false + 无控制台错误', async ({
+test.describe('/generate 工具页 E2E (US-004 · PRD-22 inline)', () => {
+  test('创建账号 → /generate → 选 scriptType 卡 + elements + topic → submit → 结果出现 + isFallback=false + 无控制台错误', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
@@ -99,27 +100,23 @@ test.describe('/generate 工具页 E2E (US-004)', () => {
     await page.goto(`${WEB_BASE}/generate`);
     await page.waitForLoadState('networkidle');
 
-    // 5. Verify ToolForm renders
-    const form = page.getByTestId('tool-form-freeGenerate');
-    await expect(form).toBeVisible();
+    // 5. Verify H1 "生成爆款文案" renders (PRD-22 US-002 AC-1)
+    await expect(page.getByRole('heading', { name: '生成爆款文案' })).toBeVisible();
 
-    // 6. Select scriptType: tutorial
-    const scriptTypeSelect = page.getByTestId('script-type-select');
-    await scriptTypeSelect.click();
-    // Radix Select portal
-    const tutorialOption = page.getByRole('option', { name: /教程演示/i }).first();
-    await tutorialOption.click({ timeout: 2000 });
+    // 6. Select scriptType: click '教知识' card (key=knowledge · PRD-22 inline card)
+    const knowledgeCard = page.getByRole('button', { name: /教知识/ }).first();
+    await knowledgeCard.click({ timeout: 3000 });
 
-    // 7. Select elements: fear
+    // 7. Select element: fear (data-element attribute preserved from inline picker)
     const fearBtn = page.locator('[data-element="fear"]');
     await fearBtn.click({ timeout: 2000 });
 
     // 8. Fill topic textarea
-    const topicTextarea = form.locator('textarea');
+    const topicTextarea = page.getByTestId('topic-textarea');
     await topicTextarea.fill('为什么有的人30岁就财富自由');
 
-    // 9. Submit form
-    const submitBtn = form.getByRole('button', { name: /开始生成/ });
+    // 9. Submit via CTA button (PRD-22: /生成文案/ regex · AC-9)
+    const submitBtn = page.getByRole('button', { name: /生成文案/ });
     await submitBtn.click();
 
     // 10. Verify result appears
