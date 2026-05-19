@@ -54,4 +54,28 @@ test.describe('PRD-22 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-9 US-005: /knowledge desktop baseline
+  test('/knowledge desktop fullPage matches prd22-knowledge.png', async ({ page }) => {
+    await page.goto('/knowledge');
+    await page.waitForSelector('[data-testid="tab-scripts"]');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-knowledge.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-9 US-005: /knowledge mobile baseline
+  test('/knowledge mobile fullPage matches prd22-knowledge-mobile.png', async ({ page }) => {
+    await page.goto('/knowledge');
+    await page.waitForSelector('[data-testid="tab-scripts"]');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-knowledge-mobile.png',
+      viewport: { width: 375, height: 812 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });
