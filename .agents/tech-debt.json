@@ -1719,6 +1719,88 @@
       "resolved_in_prd": "prd-20",
       "resolved_at": "2026-05-18T20:10:00",
       "notes": "Opus audit 介入 US-008 BLOCKED unblock. ralph SUSPECTED 推测正确(specialist LLM 调用 > 30s · 但只 step4/4b/6/8 命中)· Opus trust 推测无回归代码"
+    },
+    {
+      "id": "TD-085",
+      "title": "daemon iter 3-7 撞 Anthropic API ECONNRESET / timeout 5h(PRD-21 US-002)",
+      "description": "US-002 code 在 iter 1 commit 2c435a6 就修对(Header.tsx h-16 + backdrop-blur-2xl + 双行 logo + chevron rotate)· 但 daemon iter 3-7 跑 dev 1802s + validate 3604s 各 timeout 上限 × 5 次累计 ~5h · iter 8 才正常通过 audit-gate · 期间 ralph 5 个 chore commit 都说 all AC reconfirmed 但无 code 改动 · 表明是 Anthropic API 或 daemon 状态机问题",
+      "scope": [
+        "scripts/ralph/ralph.py",
+        "scripts/ralph/cost-log-ralph-prd-21-aiipznt-alignment.jsonl"
+      ],
+      "impact": "Medium: daemon time 浪费 5h(本应 15-25 min)· 但不影响 code 质量 · 如果未来 PRD 累积此模式 · 单 PRD wall time 严重超预期",
+      "severity": "Medium",
+      "categories": [
+        "daemon-infra",
+        "timeout",
+        "cost-efficiency"
+      ],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-002 (Opus audit)",
+      "fix_by": "下一 PRD 启动前 + PRD-21 retro",
+      "status": "open",
+      "fix_hint": "调研 1. daemon timeout 阈值是否过宽(30+60 min × 5 retry = 7.5h max 过宽)· 2. health check 增加 ECONNRESET detection · 3. 同 commit hash 连续 N retry 时早 abort + reject",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-086",
+      "title": "apps/web/src/App.tsx 死代码 · 含老 Toaster(top-center)误导 + 整文件 unreached",
+      "description": "main.tsx 用 RouterProvider 直接渲染 · 0 import App.tsx · App.tsx 仍含 <Toaster position=\"top-center\"> 等老代码 · grep 时易误判为双 Toaster instance · 实际 active 仅 RootLayout 的 bottom-right",
+      "scope": [
+        "apps/web/src/App.tsx"
+      ],
+      "impact": "Low: 死代码不影响 runtime · 但 audit/grep/review 时易误判 · 增加心智负担",
+      "severity": "Low",
+      "categories": [
+        "dead-code",
+        "cleanup"
+      ],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-004 (Opus audit)",
+      "fix_by": "PRD-21 retro 或 PRD-22",
+      "status": "open",
+      "fix_hint": "直接 rm apps/web/src/App.tsx · grep 验证无 import 后安全删 · 或保留作 layout placeholder 但删 Toaster line",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-087",
+      "category": "design-drift",
+      "title": "MyTopics.tsx text-amber-400 D4=B 颜色约束 amber hardcode",
+      "description": "apps/web/src/pages/modules/MyTopics.tsx L332: text-amber-400 hardcode · D4=B 颜色严锁禁 amber · 但为 pre-existing(PRD-21 前已存在 · git log 确认) · PRD-21 未引入",
+      "scope": ["apps/web/src/pages/modules/MyTopics.tsx"],
+      "impact": "Low: pre-existing · PRD-21 未新增 · 仅通过 /goal-verify §0 对账发现",
+      "severity": "Low",
+      "categories": ["design-drift"],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-008 (/goal-verify §0 codebase-mapper 对账)",
+      "fix_by": "PRD-22 prep",
+      "status": "open",
+      "fix_hint": "将 text-amber-400 / bg-amber-500 改为 Aurelian Dark token · 用 text-yellow-400/primary 系列替代",
+      "resolved_in_prd": null,
+      "resolved_at": null
+    },
+    {
+      "id": "TD-088",
+      "category": "design-drift",
+      "title": "apps/web/src/App.tsx 死代码 stale 嵌套目录 apps/web/apps/web/ 残留",
+      "description": "gsd-map-codebase 扫描发现: apps/web/apps/web/ 嵌套同名目录仍存在 · 与 TD-086 App.tsx 死代码同为 PRD-21 /goal-verify §0 发现 · 增加 mental overhead",
+      "scope": ["apps/web/apps/web/"],
+      "impact": "Low: 不影响 runtime · 但 gsd-map-codebase 对账时混淆文件树分析",
+      "severity": "Low",
+      "categories": ["design-drift", "cleanup"],
+      "created_in_prd": "PRD-21",
+      "detected_in_prd": "PRD-21",
+      "detected_in_story": "US-008 (/goal-verify §0 codebase-mapper)",
+      "fix_by": "PRD-22",
+      "status": "open",
+      "fix_hint": "rm -rf apps/web/apps/ 后 pnpm typecheck 确认 0 errors",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ]
 }

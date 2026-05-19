@@ -2322,3 +2322,76 @@
   - completedSteps 由 IPProgressService 返回 StepKey9[] (step1/step3/step3b/step4/step4b/step5/step6/step7/step8) · IpPlanStepGrid 的 stepKey 字段要匹配这些值
   - IP_PLAN_STEPS 9项 emoji+title 是 D1=A 锁死内容 · 任何"看起来合理"的改写都违反约束
 ---
+
+--- [RALPH] Iteration 13 ended: US-007 (18分钟 31秒) ---
+
+--- [RALPH] Iteration 14 started: US-007 at 2026-05-19 08:15 ---
+
+## 2026-05-19 08:20 - US-007 (retry 1)
+- 修复 apps/web/src/test/pages.test.tsx:240 · 将 `{ name: '查看详情' }` 改为 `{ name: /查看详情/ }` (正则匹配含箭头)
+- 根因: IpPlanStepGrid.tsx 按 AC-5 渲染 '查看详情 →'(含箭头) · 旧 test 用精确字符串匹配无箭头 → 不匹配
+- 更改文件: apps/web/src/test/pages.test.tsx
+- **未来迭代的学习:**
+  - 按钮文案含尾缀符号(→ / ✓ 等)时 · vitest getByRole({ name }) 必须用正则 /关键字/ 而非精确字符串
+  - AC 要求带箭头文案时 · 同步更新 test 断言为正则匹配
+---
+
+--- [RALPH] Iteration 14 ended: US-007 (8分钟 33秒) ---
+
+--- [RALPH] Iteration 15 started: US-008 at 2026-05-19 08:23 ---
+
+---
+
+## 2026-05-19 09:00 - US-008 [PRD-21] 收官 · verify-prd-21.sh + /goal-verify + /prd-retro
+
+### PRD-21 Ship Summary
+- **Ship date**: 2026-05-19
+- **Branch**: ralph/prd-21-visual-alignment-foundation
+- **Final commit**: 29e956acb4cf5dcbc35352ce770fdf541dffb38a
+- **8 US 全 audit approved**: US-001 ✅ US-002 ✅ US-003 ✅ US-004 ✅ US-005 ✅ US-006 ✅ US-007 ✅ US-008 ✅
+- **Visual diff baseline 建立**: 4 page (home/guide/ip-plan/header) · /tmp/aiipznt-clone-research/screenshots/ 33 PNG · pnpm test:visual:check 全 4 pass
+- **Vitest**: 181 tests pass (> 123 baseline)
+- **TypeScript**: 0 errors
+- **verify-prd-21.sh**: 45/45 checks pass (10 sections)
+
+### PRD-21 → PRD-22 Handoff
+PRD-22 目标: 5 inline 重构 + step pages 视觉精修
+- 继承 PRD-21 visual baseline (test:visual:check green)
+- 继承 FadeInWrapper + IpPlanStepGrid + MobileNavPanel patterns
+- 修复 TD-086 (App.tsx 死代码) + TD-087 (MyTopics amber) + TD-088 (stale dir)
+
+### /goal-verify §0 结果
+- gsd-map-codebase 跑完: apps/web/.planning/codebase/ 7 文件生成 ✅
+- D1=A 文字字面锁: ✅ RECOMMENDED_FLOW / SYSTEM_OVERVIEW / GUIDE_FAQ_5 / IP_PLAN_STEPS 全部字面保留
+- D4=B 颜色严锁: PRD-21 未新增违规 · pre-existing MyTopics amber(TD-087)登记
+- 新增设计漂移: TD-087(MyTopics amber pre-existing) + TD-088(stale dir) 已登记
+
+### /goal-verify §1+ Goal-backward 验证
+PRD-21 §2 目标 7 项 vs 8 US 交付对照:
+1. ✅ 视觉 diff 基础设施建立 → US-001 (expectVisualMatch + baseline)
+2. ✅ Header h-16 + backdrop-blur-2xl + 双行 logo + chevron rotate → US-002
+3. ✅ MobileNavPanel 替代 Sheet drawer · lg:hidden 下方展开 → US-003
+4. ✅ data-grid-bg + animate-ping-primary + Toaster bottom-right + FadeInWrapper → US-004
+5. ✅ Home Hero text-8xl/9xl + stagger FadeInWrapper → US-005
+6. ✅ /guide RECOMMENDED_FLOW + SYSTEM_OVERVIEW + GUIDE_FAQ_5 → US-006
+7. ✅ /ip-plan IP_PLAN_STEPS 9步 grid + glass-card + N/9 + 返回首页 → US-007
+全 7 项完成 ✅
+
+### /prd-retro 可迁移 Playbook (PRD-22+ 复用)
+1. **visual-diff 基础设施**: playwright snapshotDir 直接指向 aiipznt baseline dir · snapshotPathTemplate={snapshotDir}/{arg}{ext} · 首跑 --update-snapshots 必须 Read baseline image 肉眼 confirm 才 commit · 否则 baseline 错了后续永远 pass
+2. **Header 双行 logo pattern**: 两个 `<span className="font-display">` 分行 · 配合 `flex-col items-start` · 非单行 truncate
+3. **MobileNavPanel pattern**: lg:hidden 下方下拉面板(非 Sheet/Drawer) · data-testid="header-mobile-panel" · test.use({ viewport: { width: 375 } }) · getByText strict:true 防 partial match
+4. **FadeInWrapper API**: `delay={0.05 * idx}` stagger · `from="up"` 方向 · key 必须在 FadeInWrapper 上(不在内部子元素)
+5. **IpPlanStepGrid pattern**: glass-card + border conditional · FadeInWrapper stagger · completedSteps.includes(stepKey) 判断完成态
+6. **verify script 10 section 模式**: §1-§7 各 US grep 检查 · §8 跨 PRD fixture 数量 · §9 typecheck + vitest count · §10 git state · 全 45 check pass = CI gate
+
+- 更改的文件:
+  - scripts/verify-prd-21.sh (完整 10 section · 45 checks · 原只有 §1 8 checks)
+  - apps/web/.planning/codebase/ (7 新文件 · /goal-verify §0 gsd-map-codebase)
+  - .agents/tech-debt.json (TD-087 + TD-088 登记)
+  - scripts/ralph/progress.txt (本条目追加)
+- **未来迭代的学习:**
+  - verify script 早建 · US-001 时就应建 10-section 框架而非最后 US-008 补齐(当时只写了 §1)
+  - /goal-verify §0 codebase-mapper 扫出的 pre-existing 漂移要及时 TD 登记 · 否则在新 audit 时误报为当前 story 引入
+  - prd21 所有 US 通过的关键:每个 US 独立 commit + typecheck + vitest 守门 · 没有一个 US 靠口头 approve
+---
