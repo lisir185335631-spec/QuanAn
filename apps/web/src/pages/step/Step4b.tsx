@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+
 import Step4bOutputContent from '@/components/step4b/Step4bOutputContent';
 import type { Step4bResult } from '@/components/step4b/Step4bOutputContent';
 import { EmptyState, ErrorState, LoadingState } from '@/components/states';
@@ -237,13 +239,18 @@ export default function Step4b() {
   return (
     <main className="flex-1 container py-8">
       {/* Header */}
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP4B_STEP_TAG}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4B_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP4B_STEP_TAG}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4B_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
+        </div>
+      </FadeInWrapper>
 
       {/* Form glass-card */}
+      <FadeInWrapper delay={0.05} from="up">
       <form onSubmit={(e) => { void handleSubmit(e); }} className="glass-card rounded-xl p-6 space-y-6 max-w-2xl">
         {/* Required textarea — STEP4B_TEXTAREA */}
         <div>
@@ -312,26 +319,31 @@ export default function Step4b() {
           </Button>
         </div>
       </form>
+      </FadeInWrapper>
 
       {/* State feedback */}
-      <div className="mt-8 max-w-2xl">
-        {isSaving && <LoadingState text="AI 正在制定变现规划 ..." size="lg" />}
-        {!isSaving && dbQuery.isError && (
-          <ErrorState
-            message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
-            onRetry={dbQuery.refetch}
-          />
-        )}
-        {!isSaving && !dbQuery.isError && !hasResult && (
-          <EmptyState title={`提交表单后查看${STEP4B_H1}`} />
-        )}
-      </div>
+      <FadeInWrapper delay={0.1} from="up">
+        <div className="mt-8 max-w-2xl">
+          {isSaving && <LoadingState text="AI 正在制定变现规划 ..." size="lg" />}
+          {!isSaving && dbQuery.isError && (
+            <ErrorState
+              message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
+              onRetry={dbQuery.refetch}
+            />
+          )}
+          {!isSaving && !dbQuery.isError && !hasResult && (
+            <EmptyState title={`提交表单后查看${STEP4B_H1}`} />
+          )}
+        </div>
+      </FadeInWrapper>
 
       {/* Output: 5 H3 blocks — AC-6 · D-220 字面锁 */}
       {hasResult && result && (
-        <section id="step4b-output" className="mt-10 max-w-4xl">
-          <Step4bOutputContent result={result} />
-        </section>
+        <FadeInWrapper delay={0.15} from="up">
+          <section id="step4b-output" className="mt-10 max-w-4xl">
+            <Step4bOutputContent result={result} />
+          </section>
+        </FadeInWrapper>
       )}
     </main>
   );

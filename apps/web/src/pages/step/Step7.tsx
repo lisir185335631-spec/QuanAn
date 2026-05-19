@@ -1,4 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { useNavigate } from 'react-router-dom';
 import { Copy, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -133,13 +135,18 @@ export default function Step7() {
   return (
     <main className="flex-1 container py-8">
       {/* Header — AC-1 字面锁 */}
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP7_STEP_TAG}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP7_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{STEP7_SUBTITLE}</p>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP7_STEP_TAG}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP7_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{STEP7_SUBTITLE}</p>
+        </div>
+      </FadeInWrapper>
 
       {/* Form glass-card */}
+      <FadeInWrapper delay={0.05} from="up">
       <form
         onSubmit={handleSubmit}
         className="glass-card rounded-xl p-6 space-y-8 max-w-3xl"
@@ -253,6 +260,7 @@ export default function Step7() {
           </div>
         </div>
       </form>
+      </FadeInWrapper>
 
       {/* Loading state */}
       {isSaving && (
@@ -262,90 +270,94 @@ export default function Step7() {
       )}
 
       {/* Output section — AC-4 · AC-5 · AC-7 */}
-      <section id="step7-output" className="mt-8 max-w-3xl">
-        {isDebate ? (
-          /* 搞辩论: 4 H4 structure always in DOM (AC-4 · D-220 字面锁) */
-          <div className="glass-card rounded-xl p-5 space-y-6">
-            {/* Action row: regenerate + copy — always visible for button count (AC-6) */}
-            <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={!result}
-                onClick={handleRegenerate}
-              >
-                <RefreshCw className="h-4 w-4 mr-1" />
-                重新生成
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={!result}
-                onClick={handleCopyAll}
-              >
-                <Copy className="h-4 w-4 mr-1" />
-                复制全部
-              </Button>
-            </div>
+      <FadeInWrapper delay={0.1} from="up">
+        <section id="step7-output" className="mt-8 max-w-3xl">
+          {isDebate ? (
+            /* 搞辩论: 4 H4 structure always in DOM (AC-4 · D-220 字面锁) */
+            <div className="space-y-4">
+              {/* Action row: regenerate + copy — always visible for button count (AC-6) */}
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!result}
+                  onClick={handleRegenerate}
+                >
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  重新生成
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!result}
+                  onClick={handleCopyAll}
+                >
+                  <Copy className="h-4 w-4 mr-1" />
+                  复制全部
+                </Button>
+              </div>
 
-            {/* 4 H4 sections — fixed order per spec §7.8 (AC-4) */}
-            {STEP7_DEBATE_H4_4.map((item) => {
-              const fieldKey = item.id as keyof Step7DebateResult;
-              const content = debateResult?.[fieldKey];
-              return (
-                <div key={item.id}>
-                  <h4 className="text-base font-label font-bold text-on-surface mb-2">
-                    {item.h4Label}
-                  </h4>
-                  {typeof content === 'string' && content.length > 0 ? (
-                    <p className="text-body-sm text-on-surface leading-relaxed">{content}</p>
-                  ) : (
-                    <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
-                  )}
-                </div>
-              );
-            })}
+              {/* 4 H4 sections — fixed order per spec §7.8 (AC-4) · each in own glass-card */}
+              {STEP7_DEBATE_H4_4.map((item, idx) => {
+                const fieldKey = item.id as keyof Step7DebateResult;
+                const content = debateResult?.[fieldKey];
+                return (
+                  <FadeInWrapper key={item.id} delay={0.05 * idx} from="up">
+                    <div className="glass-card rounded-xl p-5">
+                      <h4 className="text-base font-label font-bold text-on-surface mb-2">
+                        {item.h4Label}
+                      </h4>
+                      {typeof content === 'string' && content.length > 0 ? (
+                        <p className="text-body-sm text-on-surface leading-relaxed">{content}</p>
+                      ) : (
+                        <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
+                      )}
+                    </div>
+                  </FadeInWrapper>
+                );
+              })}
 
-            {/* 评论区引导 — AC-4 */}
-            <div>
-              <h4 className="text-base font-label font-bold text-on-surface mb-2">评论区引导</h4>
-              {typeof debateResult?.comment_guide === 'string' && debateResult.comment_guide.length > 0 ? (
-                <p className="text-body-sm text-on-surface">{debateResult.comment_guide}</p>
-              ) : (
-                <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
-              )}
-            </div>
+              {/* 评论区引导 — AC-4 */}
+              <div className="glass-card rounded-xl p-5">
+                <h4 className="text-base font-label font-bold text-on-surface mb-2">评论区引导</h4>
+                {typeof debateResult?.comment_guide === 'string' && debateResult.comment_guide.length > 0 ? (
+                  <p className="text-body-sm text-on-surface">{debateResult.comment_guide}</p>
+                ) : (
+                  <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
+                )}
+              </div>
 
-            {/* 话题标签 #xxx — AC-4 */}
-            <div>
-              <h4 className="text-base font-label font-bold text-on-surface mb-2">话题标签</h4>
-              {Array.isArray(debateResult?.topic_tags) && debateResult.topic_tags.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {debateResult.topic_tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-sm"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
-              )}
+              {/* 话题标签 #xxx — AC-4 */}
+              <div className="glass-card rounded-xl p-5">
+                <h4 className="text-base font-label font-bold text-on-surface mb-2">话题标签</h4>
+                {Array.isArray(debateResult?.topic_tags) && debateResult.topic_tags.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {debateResult.topic_tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-sm"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
+                )}
+              </div>
             </div>
-          </div>
-        ) : (
-          /* 其他脚本类型: stub placeholder (AC-5) */
-          <div className="glass-card rounded-xl p-5">
-            <p className="text-body-sm text-muted-foreground">
-              该脚本类型输出 schema · PRD-23 完整化
-            </p>
-          </div>
-        )}
-      </section>
+          ) : (
+            /* 其他脚本类型: stub placeholder (AC-5) */
+            <div className="glass-card rounded-xl p-5">
+              <p className="text-body-sm text-muted-foreground">
+                该脚本类型输出 schema · PRD-23 完整化
+              </p>
+            </div>
+          )}
+        </section>
+      </FadeInWrapper>
     </main>
   );
 }

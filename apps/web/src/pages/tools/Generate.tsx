@@ -7,6 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { FeedbackButton } from '@/components/FeedbackButton';
 // PRD-22 US-002: inline 重构后弃用 ToolForm · 但保留 import 防 PRD-15 沉淀回滚
 import { ToolForm } from '@/components/ToolForm/ToolForm';
@@ -90,70 +91,78 @@ export default function Generate() {
   return (
     <main className="flex-1 container py-8 space-y-8">
       {/* PageHeader */}
-      <div>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-          内容创作
-        </span>
-        <h1 className="mt-1 text-h1 font-display text-on-surface">生成爆款文案</h1>
-        <p className="mt-2 text-body-md text-muted-foreground">
-          选择脚本类型和爆款元素，输入主题，AI 为你生成 AIP 风格的短视频文案
-        </p>
-      </div>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <span className="text-label-sm font-label text-primary uppercase tracking-wide">
+            内容创作
+          </span>
+          <h1 className="mt-1 text-h1 font-display text-on-surface">生成爆款文案</h1>
+          <p className="mt-2 text-body-md text-muted-foreground">
+            选择脚本类型和爆款元素，输入主题，AI 为你生成 AIP 风格的短视频文案
+          </p>
+        </div>
+      </FadeInWrapper>
 
       {/* Mode tabs — 2 secondary buttons (AC-6 计数) */}
-      <div className="flex gap-2" role="tablist" aria-label="生成模式">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === 'free'}
-          onClick={() => handleModeChange('free')}
-          className={cn(
-            'px-4 py-1.5 rounded-full text-body-sm font-medium transition-colors',
-            mode === 'free'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80',
-          )}
-          data-testid="mode-tab-free"
-        >
-          自由创作
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === 'acquisition'}
-          onClick={() => handleModeChange('acquisition')}
-          className={cn(
-            'px-4 py-1.5 rounded-full text-body-sm font-medium transition-colors',
-            mode === 'acquisition'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80',
-          )}
-          data-testid="mode-tab-acquisition"
-        >
-          获客文案
-        </button>
-      </div>
+      <FadeInWrapper delay={0.05} from="up">
+        <div className="flex gap-2" role="tablist" aria-label="生成模式">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'free'}
+            onClick={() => handleModeChange('free')}
+            className={cn(
+              'px-4 py-1.5 rounded-full text-body-sm font-medium transition-all duration-200',
+              mode === 'free'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+            )}
+            data-testid="mode-tab-free"
+          >
+            自由创作
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'acquisition'}
+            onClick={() => handleModeChange('acquisition')}
+            className={cn(
+              'px-4 py-1.5 rounded-full text-body-sm font-medium transition-all duration-200',
+              mode === 'acquisition'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+            )}
+            data-testid="mode-tab-acquisition"
+          >
+            获客文案
+          </button>
+        </div>
+      </FadeInWrapper>
 
       {/* AC-2(2): 20 脚本卡 + 搜索 input */}
-      <section className="space-y-3">
-        <h2 className="text-h3 font-display text-on-surface">选择脚本类型</h2>
-        <ScriptTypeInlineCards
-          value={scriptType}
-          onChange={setScriptType}
-          showSearch
-        />
-      </section>
+      <FadeInWrapper delay={0.1} from="up">
+        <section className="space-y-3">
+          <h2 className="text-h3 font-display text-on-surface">选择脚本类型</h2>
+          <ScriptTypeInlineCards
+            value={scriptType}
+            onChange={setScriptType}
+            showSearch
+          />
+        </section>
+      </FadeInWrapper>
 
       {/* AC-2(3): 22 元素 4 组 + 计数 */}
-      <section className="space-y-3">
-        <h2 className="text-h3 font-display text-on-surface">选择爆款元素</h2>
-        <ElementsInlineMultiPicker
-          value={elements}
-          onChange={setElements}
-          showCount
-          layout="grouped"
-        />
-      </section>
+      <FadeInWrapper delay={0.15} from="up">
+        <section className="space-y-3">
+          <h2 className="text-h3 font-display text-on-surface">选择爆款元素</h2>
+          <ElementsInlineMultiPicker
+            value={elements}
+            onChange={setElements}
+            showCount
+            layout="grouped"
+          />
+        </section>
+      </FadeInWrapper>
 
       {/* Acquisition mode extra field */}
       {mode === 'acquisition' && (
@@ -172,43 +181,47 @@ export default function Generate() {
       )}
 
       {/* AC-2(4): textarea 文案主题 max 500 + 字符计数 */}
-      <div className="space-y-2">
-        <label className="block text-body-md font-medium text-on-surface">文案主题</label>
-        <div className="relative">
-          <textarea
-            maxLength={500}
-            placeholder="输入你的文案主题，如：美容院如何用抖音获客100个精准客户..."
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            rows={4}
-            className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
-            data-testid="topic-textarea"
-          />
-          {/* AC-5 · 字符计数 + text-destructive > 500 */}
-          <span
-            className={cn(
-              'absolute bottom-2 right-3 text-xs',
-              topic.length > 500 ? 'text-destructive' : 'text-muted-foreground',
-            )}
-          >
-            {topic.length}/500
-          </span>
+      <FadeInWrapper delay={0.2} from="up">
+        <div className="space-y-2">
+          <label className="block text-body-md font-medium text-on-surface">文案主题</label>
+          <div className="relative">
+            <textarea
+              maxLength={500}
+              placeholder="输入你的文案主题，如：美容院如何用抖音获客100个精准客户..."
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+              data-testid="topic-textarea"
+            />
+            {/* AC-5 · 字符计数 + text-destructive > 500 */}
+            <span
+              className={cn(
+                'absolute bottom-2 right-3 text-xs',
+                topic.length > 500 ? 'text-destructive' : 'text-muted-foreground',
+              )}
+            >
+              {topic.length}/500
+            </span>
+          </div>
         </div>
-      </div>
+      </FadeInWrapper>
 
       {/* AC-2(5): 主 CTA · bg-gradient-to-r from-primary to-primary/60 */}
-      <button
-        type="button"
-        onClick={() => void handleSubmit()}
-        disabled={isDisabled || isSubmitting}
-        className={cn(
-          'w-full py-3 rounded-xl font-display font-bold text-white bg-gradient-to-r from-primary to-primary/60 transition-opacity',
-          (isDisabled || isSubmitting) && 'opacity-50 cursor-not-allowed',
-        )}
-        data-testid="generate-cta"
-      >
-        {isSubmitting ? '生成中...' : '生成文案'}
-      </button>
+      <FadeInWrapper delay={0.25} from="up">
+        <button
+          type="button"
+          onClick={() => void handleSubmit()}
+          disabled={isDisabled || isSubmitting}
+          className={cn(
+            'w-full py-3 rounded-xl font-display font-bold text-white bg-gradient-to-r from-primary to-primary/60 transition-opacity',
+            (isDisabled || isSubmitting) && 'opacity-50 cursor-not-allowed',
+          )}
+          data-testid="generate-cta"
+        >
+          {isSubmitting ? '生成中...' : '生成文案'}
+        </button>
+      </FadeInWrapper>
 
       {/* Loading skeleton */}
       {isSubmitting && (

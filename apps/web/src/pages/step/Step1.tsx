@@ -2,6 +2,8 @@ import { Search } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
 import { IndustryEmojiGrid } from '@/components/industry/IndustryEmojiGrid';
 import { EmptyState } from '@/components/states';
@@ -98,91 +100,103 @@ export default function Step1() {
         </div>
       )}
 
-      {/* 顶部副标签 D-224 */}
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP1_LABEL}
-      </p>
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP1_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-6">{STEP1_SUBTITLE}</p>
+      {/* 顶部副标签 D-224 + H1 + subtitle */}
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP1_LABEL}
+          </p>
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP1_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-6">{STEP1_SUBTITLE}</p>
+        </div>
+      </FadeInWrapper>
 
       {/* 搜索框 AC-4 · 含搜索 icon button(+1 DOM button) */}
-      <div className="relative mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={STEP1_SEARCH_PLACEHOLDER}
-          data-testid="industry-search"
-          className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 pr-9 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        />
-        <button
-          type="button"
-          aria-label="搜索"
-          data-testid="industry-search-btn"
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-on-surface"
-        >
-          <Search size={16} />
-        </button>
-      </div>
+      <FadeInWrapper delay={0.05} from="up">
+        <div className="relative mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={STEP1_SEARCH_PLACEHOLDER}
+            data-testid="industry-search"
+            className="flex h-9 w-full rounded-md border border-border bg-input px-3 py-1 pr-9 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          />
+          <button
+            type="button"
+            aria-label="搜索"
+            data-testid="industry-search-btn"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-on-surface"
+          >
+            <Search size={16} />
+          </button>
+        </div>
+      </FadeInWrapper>
 
       {/* 6 tabs 横向滚动 AC-3 D-218 */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-        {STEP1_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            data-testid={`tab-${tab.id}`}
-            data-state={activeTabId === tab.id ? 'active' : 'inactive'}
-            onClick={() => setActiveTabId(tab.id)}
-            className={[
-              'flex-shrink-0 rounded-md px-3 py-2 text-body-sm text-center transition-colors whitespace-nowrap',
-              activeTabId === tab.id
-                ? 'bg-primary/20 text-primary border border-primary/40'
-                : 'bg-surface-container text-muted-foreground border border-border hover:bg-surface-container-high',
-            ].join(' ')}
-          >
-            {/* D-218: tab 1 "全部行业 (56)" 无 emoji · tab 2-6 有 emoji */}
-            {tab.id !== 'all' ? `${tab.emoji} ` : ''}
-            {tab.label} ({tab.count})
-          </button>
-        ))}
-      </div>
+      <FadeInWrapper delay={0.1} from="up">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+          {STEP1_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              data-testid={`tab-${tab.id}`}
+              data-state={activeTabId === tab.id ? 'active' : 'inactive'}
+              onClick={() => setActiveTabId(tab.id)}
+              className={[
+                'flex-shrink-0 rounded-md px-3 py-2 text-body-sm text-center transition-all duration-200 whitespace-nowrap',
+                activeTabId === tab.id
+                  ? 'bg-primary/20 text-primary border border-primary/40'
+                  : 'bg-surface-container text-muted-foreground border border-border hover:bg-surface-container-high',
+              ].join(' ')}
+            >
+              {/* D-218: tab 1 "全部行业 (56)" 无 emoji · tab 2-6 有 emoji */}
+              {tab.id !== 'all' ? `${tab.emoji} ` : ''}
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+      </FadeInWrapper>
 
       {/* 行业卡网格 AC-5 */}
-      {filteredIndustries.length === 0 ? (
-        <EmptyState title="未找到匹配的行业" description="尝试自定义输入" />
-      ) : (
-        <div className="mb-6">
-          <IndustryEmojiGrid
-            industries={filteredIndustries}
-            value={selectedIndustry}
-            onChange={handleSelectIndustry}
-          />
+      <FadeInWrapper delay={0.15} from="up">
+        {filteredIndustries.length === 0 ? (
+          <EmptyState title="未找到匹配的行业" description="尝试自定义输入" />
+        ) : (
+          <div className="mb-6">
+            <IndustryEmojiGrid
+              industries={filteredIndustries}
+              value={selectedIndustry}
+              onChange={handleSelectIndustry}
+            />
+          </div>
+        )}
+      </FadeInWrapper>
+
+      {/* 自定义输入行业 AC-7 D1A 字面 + 主 CTA AC-8 */}
+      <FadeInWrapper delay={0.2} from="up">
+        <div>
+          <div className="mb-4 text-center">
+            <CustomIndustryModal onConfirm={handleCustomConfirm} />
+          </div>
+          <div className="mt-4">
+            <button
+              type="button"
+              disabled={isCtaDisabled}
+              onClick={handleSubmit}
+              data-testid="step1-cta"
+              className={[
+                'w-full rounded-lg px-6 py-3 text-body-md font-label transition-all duration-200',
+                isCtaDisabled
+                  ? 'bg-surface-container text-muted-foreground cursor-not-allowed'
+                  : 'bg-gradient-to-r from-primary to-primary/60 hover:from-primary/90 hover:to-primary/50 text-on-primary cursor-pointer',
+              ].join(' ')}
+            >
+              {STEP1_CTA}
+            </button>
+          </div>
         </div>
-      )}
-
-      {/* 自定义输入行业 AC-7 D1A 字面 */}
-      <div className="mb-4 text-center">
-        <CustomIndustryModal onConfirm={handleCustomConfirm} />
-      </div>
-
-      {/* 主 CTA AC-8 */}
-      <div className="mt-4">
-        <button
-          type="button"
-          disabled={isCtaDisabled}
-          onClick={handleSubmit}
-          data-testid="step1-cta"
-          className={[
-            'w-full rounded-lg px-6 py-3 text-body-md font-label transition-colors',
-            isCtaDisabled
-              ? 'bg-surface-container text-muted-foreground cursor-not-allowed'
-              : 'bg-gradient-to-r from-primary to-primary/60 hover:from-primary/90 hover:to-primary/50 text-on-primary cursor-pointer',
-          ].join(' ')}
-        >
-          {STEP1_CTA}
-        </button>
-      </div>
+      </FadeInWrapper>
     </main>
   );
 }

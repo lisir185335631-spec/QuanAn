@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { ElementsInlineMultiPicker } from '@/components/inline-pickers';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -95,12 +96,16 @@ export default function Knowledge() {
   return (
     <main className="flex-1 container py-8 max-w-7xl">
       {/* AC-1: H1 + subtitle 字面锁 */}
-      <h1 className="font-display text-4xl font-bold text-on-surface mb-2">
-        AIP 文案方法论
-      </h1>
-      <p className="text-muted-foreground mb-8">
-        系统学习 AIP 的短视频文案创作方法论，掌握爆款文案的核心技巧
-      </p>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <h1 className="font-display text-4xl font-bold text-on-surface mb-2">
+            AIP 文案方法论
+          </h1>
+          <p className="text-muted-foreground mb-8">
+            系统学习 AIP 的短视频文案创作方法论，掌握爆款文案的核心技巧
+          </p>
+        </div>
+      </FadeInWrapper>
 
       {/* AC-2: 4 tab 字面锁 D-217 */}
       <Tabs defaultValue="scripts" data-testid="knowledge-tabs">
@@ -142,7 +147,9 @@ export default function Knowledge() {
           className="data-[state=inactive]:hidden"
           data-testid="tab-content-scripts"
         >
-          <ScriptCardsTab />
+          <FadeInWrapper delay={0.05} from="up">
+            <ScriptCardsTab />
+          </FadeInWrapper>
         </TabsContent>
 
         {/* AC-4: tab 2 · ElementsInlineMultiPicker 纯展示态 · forceMount 保证 DOM 按钮计数 */}
@@ -152,13 +159,15 @@ export default function Knowledge() {
           className="data-[state=inactive]:hidden"
           data-testid="tab-content-elements"
         >
-          <ElementsInlineMultiPicker
-            value={[]}
-            onChange={() => {}}
-            layout="grouped"
-            disabled
-            showCount={false}
-          />
+          <FadeInWrapper delay={0.05} from="up">
+            <ElementsInlineMultiPicker
+              value={[]}
+              onChange={() => {}}
+              layout="grouped"
+              disabled
+              showCount={false}
+            />
+          </FadeInWrapper>
         </TabsContent>
 
         {/* AC-5: tab 3 stub */}
@@ -168,9 +177,11 @@ export default function Knowledge() {
           className="data-[state=inactive]:hidden"
           data-testid="tab-content-intros"
         >
-          <div className="flex items-center justify-center h-40">
-            <p className="text-muted-foreground">5 类开头公式 · PRD-23 完整化</p>
-          </div>
+          <FadeInWrapper delay={0.05} from="up">
+            <div className="flex items-center justify-center h-40">
+              <p className="text-muted-foreground">5 类开头公式 · PRD-23 完整化</p>
+            </div>
+          </FadeInWrapper>
         </TabsContent>
 
         {/* AC-5: tab 4 stub */}
@@ -180,9 +191,11 @@ export default function Knowledge() {
           className="data-[state=inactive]:hidden"
           data-testid="tab-content-core"
         >
-          <div className="flex items-center justify-center h-40">
-            <p className="text-muted-foreground">AIP 起承转合公式 · PRD-23 完整化</p>
-          </div>
+          <FadeInWrapper delay={0.05} from="up">
+            <div className="flex items-center justify-center h-40">
+              <p className="text-muted-foreground">AIP 起承转合公式 · PRD-23 完整化</p>
+            </div>
+          </FadeInWrapper>
         </TabsContent>
       </Tabs>
     </main>

@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { FileUpload } from '@/components/file-upload/FileUpload';
 import { Step5TopicGrid } from '@/components/step5/Step5TopicGrid';
 import { Button } from '@/components/ui/button';
@@ -186,13 +187,18 @@ export default function Step5() {
   return (
     <main className="flex-1 container py-8">
       {/* AC-1 字面锁: STEP 05 · 爆款选题库 */}
-      <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-        {STEP5_STEP_TAG}
-      </p>
-      {/* AC-11: H1 */}
-      <h1 className="text-h1 font-display text-on-surface mb-2">{STEP5_H1}</h1>
-      <p className="text-body-md text-muted-foreground mb-8">{STEP5_SUBTITLE}</p>
+      <FadeInWrapper delay={0} from="up">
+        <div>
+          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
+            {STEP5_STEP_TAG}
+          </p>
+          {/* AC-11: H1 */}
+          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP5_H1}</h1>
+          <p className="text-body-md text-muted-foreground mb-8">{STEP5_SUBTITLE}</p>
+        </div>
+      </FadeInWrapper>
 
+      <FadeInWrapper delay={0.05} from="up">
       <form
         onSubmit={(e) => { void handleSubmit(e); }}
         className="glass-card rounded-xl p-6 space-y-6 max-w-2xl"
@@ -235,23 +241,26 @@ export default function Step5() {
           {STEP5_BUTTON_GENERATE}
         </Button>
       </form>
+      </FadeInWrapper>
 
       {/* Output: AC-11 = 1 H1 + 5 H3 = 6 total when submitted */}
       {hasSubmitted && (
-        <section id="step5-output" className="mt-10 max-w-5xl">
-          {isAnyLoading && (
-            <p className="text-body-sm text-muted-foreground mb-6 animate-pulse">
-              {STEP5_LOADING_TEXT}
-            </p>
-          )}
-          <Step5TopicGrid
-            result={fullResult}
-            accountId={accountId}
-            streamStatuses={streamStatuses}
-            activeCategory={activeCategory}
-            onCategoryChange={handleCategoryChange}
-          />
-        </section>
+        <FadeInWrapper delay={0.1} from="up">
+          <section id="step5-output" className="mt-10 max-w-5xl">
+            {isAnyLoading && (
+              <p className="text-body-sm text-muted-foreground mb-6 animate-pulse">
+                {STEP5_LOADING_TEXT}
+              </p>
+            )}
+            <Step5TopicGrid
+              result={fullResult}
+              accountId={accountId}
+              streamStatuses={streamStatuses}
+              activeCategory={activeCategory}
+              onCategoryChange={handleCategoryChange}
+            />
+          </section>
+        </FadeInWrapper>
       )}
     </main>
   );
