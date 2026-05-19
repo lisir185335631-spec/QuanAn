@@ -18,9 +18,9 @@ describe('STEP6 constants', () => {
   it('TEXTAREA placeholder 含 \\n\\n 两段换行 · 「文案生成」全角引号 · 全角括号', () => {
     expect(STEP6_TEXTAREA.placeholder).toContain('\n\n');
     expect(STEP6_TEXTAREA.placeholder).toContain('「文案生成」');
-    expect(STEP6_TEXTAREA.placeholder).toContain('（至少 10 个字）');
+    expect(STEP6_TEXTAREA.placeholder).toContain('（至少10个字）');
     expect(STEP6_TEXTAREA.placeholder).toBe(
-      '粘贴你的短视频文案（至少 10 个字），AI 将基于文案生成完整的拍摄计划。\n\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。',
+      '粘贴你的短视频文案（至少10个字），AI 将基于文案生成完整的拍摄计划。\n\n你可以使用第七步「文案生成」功能先生成文案，再来这里生成拍摄计划。',
     );
   });
 

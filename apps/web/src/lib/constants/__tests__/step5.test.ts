@@ -19,7 +19,7 @@ describe('STEP5 constants', () => {
 
   it('5 类 label 数组字面 1:1 spec §7.6 line 1626-1630', () => {
     const labels = STEP5_CATEGORIES_5.map((c) => c.label);
-    expect(labels).toEqual(['流量型', '变现型', '人设型', '认知型', '案例型']);
+    expect(labels).toEqual(['知识科普类选题', '产品种草类选题', '情感共鸣类选题', '争议讨论类选题', '干货实操类选题']);
   });
 
   it('INPUTS_2 数量锁 · length === 2', () => {
@@ -35,7 +35,7 @@ describe('STEP5 constants', () => {
   });
 
   it('BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606', () => {
-    expect(STEP5_BUTTON_GENERATE).toBe('一键生成 5大类 爆款选题');
+    expect(STEP5_BUTTON_GENERATE).toBe('生成爆款选题库');
   });
 
   it('TOTAL_TOPICS === 100', () => {
