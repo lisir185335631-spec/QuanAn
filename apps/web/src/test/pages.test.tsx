@@ -50,6 +50,7 @@ vi.mock('@/lib/trpc', () => ({
       list: { useQuery: () => ({ data: [], isLoading: false }) },
       active: { useQuery: () => ({ data: null, isLoading: false }) },
       switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      create: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ id: 1, name: 'test', industry: 'tech', platform: 'douyin', stage: 'starter', isActive: true, followersRange: '0-1000' }), isPending: false }) },
     },
     knowledge: {
       getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -203,13 +204,13 @@ describe('Module pages render', () => {
   });
 
   it('Accounts renders h1 heading', () => {
-    render(<Accounts />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 账号');
+    render(<MemoryRouter><Accounts /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 账号管理');
   });
 
   it('Accounts shows empty state when no data', () => {
-    render(<Accounts />);
-    expect(screen.getByText('暂无 IP 账号 · 请先完成 Step 1 创建')).toBeInTheDocument();
+    render(<MemoryRouter><Accounts /></MemoryRouter>);
+    expect(screen.getByText(/暂无 IP 账号/)).toBeInTheDocument();
   });
 
   it('DailyTasks renders h1 heading', () => {

@@ -1,6 +1,7 @@
-// PRD-23 US-001 · prd23-visual-baseline.spec.ts
-// Visual snapshot baseline: /diagnosis 8 步问卷向导
+// PRD-23 US-001/002 · prd23-visual-baseline.spec.ts
+// Visual snapshot baseline: /diagnosis 8 步问卷向导 + /accounts IP 账号管理
 // AC-15: viewport 1440x900 · threshold 0.05 · baseline 'prd23-diagnosis.png'
+// AC-13: /accounts · baseline 'prd23-accounts.png' · viewport 1440x900 · 阈值 0.05
 // Run first: pnpm exec playwright test tests/e2e/prd23-visual-baseline.spec.ts --update-snapshots
 // CI check:  pnpm exec playwright test tests/e2e/prd23-visual-baseline.spec.ts
 
@@ -31,6 +32,18 @@ test.describe('PRD-23 Visual Baseline', () => {
     await page.waitForSelector('[data-testid="diagnosis-step-card"]');
     await expectVisualMatch(page, {
       baseline: 'prd23-diagnosis.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
+
+  // AC-13 · /accounts IP 账号管理 baseline
+  test('/accounts fullPage matches prd23-accounts.png', async ({ page }) => {
+    await page.goto('/accounts');
+    await page.waitForLoadState('networkidle');
+    await expectVisualMatch(page, {
+      baseline: 'prd23-accounts.png',
       viewport: { width: 1440, height: 900 },
       fullPage: true,
       maxDiffPixelRatio: 0.05,

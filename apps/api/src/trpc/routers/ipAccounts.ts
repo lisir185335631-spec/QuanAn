@@ -23,13 +23,16 @@ const ACCOUNT_SELECT = {
   stage: true,
   isActive: true,
   followersRange: true,
+  personalInfo: true,
+  ipPositioning: true,
 } satisfies Prisma.IpAccountSelect;
 
 const createIpAccountInput = z.object({
   name: z.string().min(1).max(100),
   industry: z.string().min(1).max(64),
   platform: z.string().min(1).max(32),
-  stage: z.string().min(1).max(32),
+  stage: z.string().min(1).max(32).default('starter'),
+  personalInfo: z.string().max(500).optional(),
 });
 
 const updateIpAccountInput = createIpAccountInput.partial();
