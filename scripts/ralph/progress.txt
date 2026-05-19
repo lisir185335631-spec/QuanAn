@@ -3482,3 +3482,30 @@ PRD-23 范围:
 ---
 ## 2026-05-20 05:20 - US-007 approve · medium 1st pass · 字面 9/9 + 3 方案 grid · vitest 287/287
 ---
+
+--- [RALPH] Iteration 12 ended: US-007 (19分钟 0秒) ---
+
+--- [RALPH] Iteration 13 started: US-008 at 2026-05-20 05:19 ---
+
+--- [RALPH] Iteration 14 started: US-008 at 2026-05-20 05:50 ---
+
+## 2026-05-20 06:20 - US-008
+- 实现了什么:
+  - tests/e2e/prd23-visual-baseline.spec.ts: 加 8 fixture · /trending /present-styles /monetization /private-domain /deep-learning /copywriting /my-topics /history · viewport 1440x900 · threshold 0.05 · dev-login auth bypass
+  - /my-topics 加 Promise.race 等待 empty-state/card-grid/topic-table 之一 visible · 避免 loading-state snapshot
+  - /history 加 Promise.race 等待 history-empty/history-timeline/history-error 之一 visible
+  - apps/web/src/pages/modules/History.tsx: data-testid 到 loading/error/empty 三态 (history-loading / history-error / history-empty) · 供 e2e wait 使用
+  - apps/api/src/index.ts: dev-login 在 user 无 ipAccount 时自动创建 1 个默认 mock account · 保证 activeAccountId 始终设置 · protectedProcedure 可正常工作
+  - /copywriting baseline 因 US-006 form 扩展(1038→1052px 高度差) 自动更新
+- 更改的文件:
+  - tests/e2e/prd23-visual-baseline.spec.ts
+  - apps/web/src/pages/modules/History.tsx
+  - apps/api/src/index.ts
+- **未来迭代的学习:**
+  - protectedProcedure 在 Playwright runner 上下文中定期出现 timing 问题(networkidle 在 tRPC 请求前 fire → query 永远 loading) · 诊断路径: 直接 chromium.launch() 实测正常 → 问题出在 test runner 的 browser context 时序
+  - 解法: 等特定 data-testid(empty-state/card-grid) 可见而非靠 h1 + networkidle · 对 protectedProcedure 类页面(history/myTopics)必须加显式 Promise.race wait
+  - globalProcedure 页面(trending)无此问题 · protectedProcedure 页面(history/myTopics)有 · 区分标准: 是否做 SET LOCAL ROLE quanan_app + $transaction
+  - History.tsx 的 loading/error/empty 状态缺 data-testid 是 e2e 等待的盲点 · 所有有 loading 态的页面都应加 data-testid 方便 e2e
+---
+## 2026-05-20 06:59 - US-008 approve · 8 PRD-15 工具 baseline 首跑全建立 · 16 fixture · vitest 287/287
+---
