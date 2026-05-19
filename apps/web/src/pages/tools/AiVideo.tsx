@@ -1,172 +1,245 @@
 /**
- * AiVideo.tsx — /ai-video 工具页 · PRD-6 US-008 · US-013
- * 真表单: ToolForm(toolKey=ai-video) + sourceCopy textarea + scenesCount select 5-8 + imageStyle select
- * submit → trpc.aiVideo.generateStoryboard.mutate → historyId + jobIds
- * 提交后立即跳结果区 AiVideoResult(polling 5-8 镜头 skeleton → 真图)
- * LS-first dual-write (SHIELD REJ-010): getToolLsKey(accountId, 'ai-video', 'active_polling') → { historyId, jobIds }
- * SHIELD REJ-035: polling fail 不清 LS lastHistoryId
- * ?historyId=N: 恢复 polling 当前 historyId · 镜头网格继续显示
- * US-013 SHIELD REJ-010: ?historyId 设置 activeHistory 时同步写入 LS namespace
- * rate limit (TOO_MANY_REQUESTS) → '今日已达上限 · 明日再来' + disabled 按钮
+ * AiVideo.tsx — /ai-video 工具页 · PRD-22 US-004
+ * 完整 inline 重构: H1 STORYBOARD(Orbitron) + 5 平台 radio + 6 视频类型 + textarea 5000 + 分镜表 13 列
+ * H1 字面锁: "STORYBOARD"
+ * 副标题锁: "专业分镜表生成器 · 文案一键转拍摄方案"
+ * 模块标题 H3: "专业分镜表生成器"
+ * D-221 · 13 列表头字面锁 (header→key 1:1 对应, 防 PRD-6 US-004 教训)
+ * stub 6-8 行假数据用于视觉密度对齐 · LLM 集成留 PRD-23+
  */
 
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useState } from 'react';
 
-import { ToolForm } from '@/components/ToolForm/ToolForm';
-import { AiVideoResult } from '@/components/ToolResult/AiVideoResult';
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { getToolLsKey } from '@/lib/ls-namespace';
-import { aiVideoFrontendInput } from '@/lib/schemas/aiVideoFrontend';
-import { trpc } from '@/lib/trpc';
+import { PlatformInlineRadio } from '@/components/inline-pickers';
+import { VIDEO_TYPES } from '@/lib/constants/video-types';
+import { cn } from '@/lib/utils';
 
-import type { GenerateStoryboardOutput } from '@quanan/clients/router-types';
+// ── D-221 · 13 列分镜表定义 (header→key 1:1 对应) ────────────────────────────
 
-// ── LS types ──────────────────────────────────────────────────────────────────
-
-interface PollingLsData {
-  historyId: number;
-  jobIds: string[];
+interface StoryboardColumn {
+  header: string;
+  key: keyof StoryboardRow;
 }
+
+interface StoryboardRow {
+  shotNumber: string;
+  framing: string;
+  angle: string;
+  movement: string;
+  duration: string;
+  visualDesc: string;
+  dialogue: string;
+  subtitle: string;
+  bgm: string;
+  sfx: string;
+  emotion: string;
+  shootingNotes: string;
+  editingNotes: string;
+}
+
+const STORYBOARD_COLUMNS: StoryboardColumn[] = [
+  { header: '镜号',    key: 'shotNumber'    },
+  { header: '景别',    key: 'framing'       },
+  { header: '角度',    key: 'angle'         },
+  { header: '运镜',    key: 'movement'      },
+  { header: '时长',    key: 'duration'      },
+  { header: '画面描述', key: 'visualDesc'   },
+  { header: '台词/解说', key: 'dialogue'   },
+  { header: '字幕',    key: 'subtitle'      },
+  { header: '背景音乐', key: 'bgm'         },
+  { header: '音效',    key: 'sfx'           },
+  { header: '情绪',    key: 'emotion'       },
+  { header: '拍摄要点', key: 'shootingNotes' },
+  { header: '剪辑建议', key: 'editingNotes'  },
+];
+
+// Stub data (6 rows for visual density) · replaced by real LLM output in PRD-23+
+const STUB_ROWS: StoryboardRow[] = [
+  { shotNumber: '01', framing: '全景',   angle: '平视', movement: '固定',     duration: '3s',  visualDesc: '博主出现在镜头前，背景整洁',      dialogue: '大家好，今天给大家带来...',  subtitle: '大家好，今天给大家带来...', bgm: '轻快背景乐',   sfx: '环境音',   emotion: '活力',   shootingNotes: '注意背景简洁',  editingNotes: '配合开场音乐剪辑' },
+  { shotNumber: '02', framing: '中景',   angle: '微俯', movement: '推进',     duration: '5s',  visualDesc: '主角走向产品，眼神坚定',           dialogue: '这款产品让我...',           subtitle: '这款产品让我...',          bgm: '渐强背景乐',   sfx: '脚步声',   emotion: '期待',   shootingNotes: '保持平稳推进',  editingNotes: '慢推配合情绪渐入' },
+  { shotNumber: '03', framing: '近景',   angle: '平视', movement: '固定',     duration: '8s',  visualDesc: '产品特写，展示核心功能',           dialogue: '你们看这里...',             subtitle: '你们看这里...',            bgm: '高潮背景乐',   sfx: '点击声',   emotion: '惊喜',   shootingNotes: '对焦清晰',      editingNotes: '配合文字特效' },
+  { shotNumber: '04', framing: '特写',   angle: '仰视', movement: '环绕',     duration: '4s',  visualDesc: '细节展示，质感突出',              dialogue: '（无对话）',               subtitle: '',                        bgm: '高潮背景乐',   sfx: '无',       emotion: '震撼',   shootingNotes: '微距镜头',      editingNotes: '慢动作处理' },
+  { shotNumber: '05', framing: '中景',   angle: '平视', movement: '摇镜',     duration: '6s',  visualDesc: '博主展示使用效果',               dialogue: '实际用起来感觉...',         subtitle: '实际用起来感觉...',        bgm: '温和背景乐',   sfx: '环境音',   emotion: '满足',   shootingNotes: '稳定器拍摄',    editingNotes: '自然剪辑' },
+  { shotNumber: '06', framing: '全景',   angle: '平视', movement: '固定',     duration: '5s',  visualDesc: '博主面对镜头，总结推荐',          dialogue: '总结来说，强烈推荐...',     subtitle: '总结来说，强烈推荐...',   bgm: '收尾背景乐',   sfx: '无',       emotion: '真诚',   shootingNotes: '注意结尾表情',  editingNotes: '渐出淡化' },
+  { shotNumber: '07', framing: '近景',   angle: '平视', movement: '固定',     duration: '3s',  visualDesc: '点赞关注引导画面',               dialogue: '如果觉得有用点个赞...',     subtitle: '点赞关注！',              bgm: '轻快结尾乐',   sfx: '提示音',   emotion: '友好',   shootingNotes: '手势配合',      editingNotes: '配合弹出引导动画' },
+  { shotNumber: '08', framing: '全景',   angle: '俯视', movement: '拉远',     duration: '2s',  visualDesc: '结尾定格画面',                   dialogue: '下次见！',                  subtitle: '下次见！',                bgm: '收尾',         sfx: '无',       emotion: '愉快',   shootingNotes: '留出片尾空间',  editingNotes: 'Logo 叠加' },
+];
 
 // ── Page component ────────────────────────────────────────────────────────────
 
 export default function AiVideo() {
-  const { account } = useActiveAccount();
-  const accountId = (account as { id: number } | null)?.id ?? null;
+  const [platform, setPlatform] = useState<string | null>('douyin');
+  const [videoType, setVideoType] = useState<string | null>(null);
+  const [text, setText] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [searchParams] = useSearchParams();
-  const queryHistoryId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
+  const isDisabled = text.trim().length === 0;
 
-  const [activeHistory, setActiveHistory] = useState<{ historyId: number; jobIds: string[] } | null>(null);
-  const [isRateLimited, setIsRateLimited] = useState(false);
-
-  // US-011 AC-4: daily usage query (read-only · no INCR)
-  const dailyUsageQuery = trpc.aiVideo.dailyUsage.useQuery(undefined, {
-    refetchInterval: 60_000,
-  });
-  const usageCount = dailyUsageQuery.data?.count ?? 0;
-  const usageLimit = dailyUsageQuery.data?.limit ?? 10;
-  const isOverLimit = usageCount >= usageLimit || isRateLimited;
-
-  const abortRef = useRef<AbortController>(null!);
-  useEffect(() => {
-    abortRef.current = new AbortController();
-    return () => { abortRef.current.abort(); };
-  }, []);
-
-  // ?historyId=N: show history polling view + write to LS (US-013 SHIELD REJ-010)
-  useEffect(() => {
-    if (queryHistoryId && !activeHistory) {
-      const pollingData: PollingLsData = { historyId: queryHistoryId, jobIds: [] };
-      setActiveHistory(pollingData);
-      if (accountId !== null) {
-        try {
-          localStorage.setItem(
-            getToolLsKey(accountId, 'ai-video', 'active_polling'),
-            JSON.stringify(pollingData),
-          );
-        } catch { /* storage full */ }
-      }
-    }
-  }, [queryHistoryId, accountId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // LS restore on mount (SHIELD REJ-010 · AC-15)
-  useEffect(() => {
-    if (accountId === null || activeHistory || queryHistoryId) return;
-    try {
-      const stored = localStorage.getItem(getToolLsKey(accountId, 'ai-video', 'active_polling'));
-      if (stored) {
-        const parsed = JSON.parse(stored) as PollingLsData;
-        if (parsed.historyId) {
-          setActiveHistory({ historyId: parsed.historyId, jobIds: parsed.jobIds ?? [] });
-        }
-      }
-    } catch {
-      // ignore malformed LS
-    }
-  }, [accountId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const mutation = trpc.aiVideo.generateStoryboard.useMutation();
-
-  async function handleSubmit(data: Record<string, unknown>) {
-    if (abortRef.current.signal.aborted) throw new Error('aborted');
-
-    let result: GenerateStoryboardOutput;
-    try {
-      result = await mutation.mutateAsync({
-        sourceCopy: data.sourceCopy as string,
-        scenesCount: data.scenesCount as number,
-        imageStyle: data.imageStyle as 'vivid' | 'natural',
-      });
-    } catch (err: unknown) {
-      // AC-13: TOO_MANY_REQUESTS → rate limit UI
-      const errData = (err as { data?: { code?: string }; message?: string }) ?? {};
-      if (errData?.data?.code === 'TOO_MANY_REQUESTS' || String(errData?.message ?? '').includes('TOO_MANY_REQUESTS')) {
-        setIsRateLimited(true);
-        void dailyUsageQuery.refetch();
-        toast.error('今日已达上限 · 明日再来');
-      }
-      throw err;
-    }
-
-    if (abortRef.current.signal.aborted) throw new Error('aborted');
-    return result;
+  async function handleGenerate() {
+    if (isDisabled || isSubmitting) return;
+    setIsSubmitting(true);
+    // Stub: show table immediately · real LLM call leaves for PRD-23+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    setShowResult(true);
+    setIsSubmitting(false);
   }
 
-  function handleSuccess(row: unknown) {
-    const result = row as GenerateStoryboardOutput;
-    const { historyId, jobIds } = result;
-
-    // SHIELD REJ-010: LS write with account namespace (not plain key)
-    if (accountId !== null) {
-      try {
-        localStorage.setItem(
-          getToolLsKey(accountId, 'ai-video', 'active_polling'),
-          JSON.stringify({ historyId, jobIds } satisfies PollingLsData),
-        );
-      } catch {
-        // Storage full — continue
-      }
-    }
-
-    setActiveHistory({ historyId, jobIds });
-    setIsRateLimited(false);
-    void dailyUsageQuery.refetch();
+  function handleExportCsv() {
+    // Stub: real export integration leaves for PRD-23+
+    const headers = STORYBOARD_COLUMNS.map((c) => c.header).join(',');
+    const rows = STUB_ROWS.map((row) =>
+      STORYBOARD_COLUMNS.map((c) => `"${row[c.key]}"`).join(',')
+    ).join('\n');
+    const blob = new Blob([`${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'storyboard.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
     <main className="flex-1 container py-8 space-y-8">
+      {/* AC-1: PageHeader + H1 STORYBOARD (Orbitron uppercase) */}
       <div>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">内容创作</span>
-        <h1 className="mt-1 text-h1 font-display text-on-surface">一键生成 AI 视频</h1>
-        <p className="mt-2 text-body-md text-muted-foreground">从原始文案自动生成分镜脚本 + AI 配图，一键出片</p>
+        <span className="text-label-sm font-label text-primary uppercase tracking-wide">
+          内容创作
+        </span>
+        <h1 className="mt-1 text-h1 font-display uppercase tracking-widest text-on-surface">
+          STORYBOARD
+        </h1>
+        <p className="mt-2 text-body-md text-muted-foreground">
+          专业分镜表生成器 · 文案一键转拍摄方案
+        </p>
       </div>
 
-      {/* US-011 AC-4: daily usage display */}
-      {dailyUsageQuery.data && (
-        <div
-          className="flex items-center gap-2 text-body-sm text-muted-foreground"
-          data-testid="ai-video-daily-usage"
-        >
-          <span>今日剩余 {Math.max(0, usageLimit - usageCount)} 次</span>
-          <span className="text-muted-foreground/50">({usageCount}/{usageLimit})</span>
+      {/* AC-3(1): 模块标题 H3 */}
+      <h3 className="text-h3 font-display text-on-surface">专业分镜表生成器</h3>
+
+      {/* AC-3(2): textarea 文案内容 */}
+      <div className="space-y-2">
+        <label htmlFor="ai-video-text" className="block text-body-md font-medium text-on-surface">
+          文案内容
+        </label>
+        <textarea
+          id="ai-video-text"
+          value={text}
+          onChange={(e) => setText(e.target.value.slice(0, 5000))}
+          maxLength={5000}
+          placeholder="粘贴你的短视频文案，AI 将自动生成专业分镜表，可直接交给摄影师执行..."
+          rows={6}
+          className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
+          data-testid="ai-video-textarea"
+        />
+        <p className="text-right text-body-sm text-muted-foreground" data-testid="ai-video-char-count">
+          {text.length}/5000
+        </p>
+      </div>
+
+      {/* AC-3(3): 5 平台 radio */}
+      <div className="space-y-2">
+        <label className="block text-body-md font-medium text-on-surface">目标平台</label>
+        <PlatformInlineRadio value={platform} onChange={setPlatform} size="lg" />
+      </div>
+
+      {/* AC-3(4): 6 视频类型 button */}
+      <div className="space-y-2">
+        <label className="block text-body-md font-medium text-on-surface">视频类型</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3" data-testid="video-type-grid">
+          {VIDEO_TYPES.map((vt) => {
+            const isSelected = vt.key === videoType;
+            return (
+              <button
+                key={vt.key}
+                type="button"
+                onClick={() => setVideoType(isSelected ? null : vt.key)}
+                data-testid={`video-type-${vt.key}`}
+                className={cn(
+                  'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all',
+                  isSelected
+                    ? 'border-primary bg-primary/10 ring-1 ring-primary'
+                    : 'border-border bg-card hover:border-primary/40',
+                )}
+              >
+                <span className="text-2xl">{vt.emoji}</span>
+                <span className="font-display font-bold text-sm text-on-surface">{vt.label}</span>
+                <span className="text-xs text-muted-foreground">{vt.desc}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* AC-3(5): 主 CTA */}
+      <button
+        type="button"
+        onClick={() => void handleGenerate()}
+        disabled={isDisabled || isSubmitting}
+        data-testid="ai-video-cta"
+        className={cn(
+          'w-full py-3 rounded-xl font-display font-bold text-white bg-gradient-to-r from-primary to-primary/60 transition-opacity',
+          (isDisabled || isSubmitting) && 'opacity-50 cursor-not-allowed',
+        )}
+      >
+        {isSubmitting ? '生成中...' : '一键生成专业分镜表'}
+      </button>
+
+      {/* Loading skeleton */}
+      {isSubmitting && (
+        <div className="space-y-3 animate-pulse">
+          <div className="h-4 w-3/4 rounded bg-muted" />
+          <div className="h-4 w-full rounded bg-muted" />
+          <div className="h-48 w-full rounded bg-muted" />
         </div>
       )}
 
-      <ToolForm
-        toolKey="ai-video"
-        schema={aiVideoFrontendInput}
-        onSubmit={handleSubmit}
-        onSuccess={handleSuccess}
-        submitLabel="生成 AI 视频"
-        disabled={isOverLimit}
-        disabledLabel={`今日已达上限 (${usageCount}/${usageLimit}) · 明日再来`}
-      />
+      {/* AC-3(6): 分镜表 13 列 table (AC-4 · D-221 字面锁) */}
+      {showResult && !isSubmitting && (
+        <div className="space-y-3" data-testid="ai-video-storyboard-wrapper">
+          <div className="flex items-center justify-between">
+            <h4 className="text-body-md font-medium text-on-surface">分镜表</h4>
+            {/* AC-5: 导出 CSV button */}
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              data-testid="ai-video-export-csv"
+              className="px-3 py-1.5 rounded-lg border border-border bg-card text-body-sm text-on-surface hover:border-primary/40 transition-colors"
+            >
+              一键导出 CSV
+            </button>
+          </div>
 
-      {activeHistory && (
-        <AiVideoResult historyId={activeHistory.historyId} />
+          {/* AC-4 · 横向滚动 · 13 列 */}
+          <div className="overflow-x-auto rounded-lg border border-border" data-testid="ai-video-storyboard-table">
+            <table className="w-full min-w-max text-body-sm">
+              <thead className="bg-muted/40">
+                <tr>
+                  {STORYBOARD_COLUMNS.map((col) => (
+                    <th
+                      key={col.key}
+                      className="font-display uppercase text-xs px-3 py-2 text-left whitespace-nowrap text-muted-foreground border-b border-border"
+                    >
+                      {col.header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {STUB_ROWS.map((row) => (
+                  <tr key={row.shotNumber} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
+                    {STORYBOARD_COLUMNS.map((col) => (
+                      <td key={col.key} className="px-3 py-2 whitespace-nowrap text-on-surface">
+                        {row[col.key]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
     </main>
   );

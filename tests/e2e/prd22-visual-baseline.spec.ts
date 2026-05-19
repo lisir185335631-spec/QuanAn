@@ -42,4 +42,16 @@ test.describe('PRD-22 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  // AC-9 US-004: /ai-video baseline
+  test('/ai-video fullPage inline matches prd22-ai-video.png', async ({ page }) => {
+    await page.goto('/ai-video');
+    await page.waitForSelector('[data-testid="ai-video-textarea"]');
+    await expectVisualMatch(page, {
+      baseline: 'prd22-ai-video.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });
