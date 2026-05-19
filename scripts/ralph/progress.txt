@@ -2618,3 +2618,67 @@ PRD-21 §2 目标 7 项 vs 8 US 交付对照:
 ### TD 续登
 - TD-090 同模式 · baseline 'prd22-ai-video.png' 应改 '30-ai-video.png' · scope 已覆盖
 ---
+
+--- [RALPH] Iteration 5 ended: US-004 (21分钟 9秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-19 13:45 ---
+
+## 2026-05-19 14:15 - US-005 [PRD-22] medium · /knowledge 重构(4 tab 字面锁 + 20 卡 + 案例计数 button + 搜索 input + 22 元素展示)
+- 实现了什么:
+  - Knowledge.tsx 完整重写 · H1 "AIP 文案方法论" + 副标题字面锁
+  - 4 tab 字面锁 D-217 · "20 类脚本"(默认 active) / "20 大爆款" / "开头公式" / "核心公式"
+  - Tab 1: 自定义 ScriptCardsTab · search input + 20 div 脚本卡(role="button" + onClick) + 案例计数 button(实战案例 ({N}) · N=stub 1-9) + details methodology
+  - Tab 2: ElementsInlineMultiPicker(disabled · grouped · showCount=false) · 复用 US-001 组件
+  - Tab 3/4: stub placeholder · "5 类开头公式 · PRD-23 完整化" / "AIP 起承转合公式 · PRD-23 完整化"
+  - forceMount 所有 TabsContent · data-[state=inactive]:hidden · DOM 总 button 数 = 4 tab + 20 case + 23 elements = 47
+  - e2e: tests/e2e/prd22-knowledge.spec.ts · 8 tests · 全部通过
+  - visual: prd22-visual-baseline.spec.ts 添加 /knowledge desktop + mobile baseline · 2 snapshots 写入
+  - browser: Playwright screenshot 确认 UI 正确渲染 · 4 tab 字面 · 20 卡 5 列网格 · 案例计数 · 0 console error
+- 更改的文件:
+  - apps/web/src/pages/tools/Knowledge.tsx (完整重写 · 删除旧 PRD-9 tRPC 逻辑)
+  - tests/e2e/prd22-knowledge.spec.ts (新建 · 8 tests)
+  - tests/e2e/prd22-visual-baseline.spec.ts (添加 /knowledge desktop + mobile)
+- 验证结果:
+  - AC-7 typecheck: ✅ pnpm typecheck → 0 errors
+  - AC-8 e2e: ✅ 8/8 prd22-knowledge.spec.ts chromium 通过
+  - AC-9 visual: ✅ 2/2 新 baseline 写入(/knowledge desktop + mobile)
+  - AC-10 browser: ✅ Playwright screenshot 确认 · H1/4tab/20卡/search/案例计数 全部正确
+- **未来迭代的学习:**
+  - [TD-HINT 严守] tab 字面锁 D-217 · "20 大爆款" 不是 "22 大爆款" · 即使实际 element 数量是 23 · tab 标题字面固定
+  - forceMount + data-[state=inactive]:hidden 是"DOM 总 button 数"测试的唯一可靠方案 · 不 forceMount 的话隐藏 tab 的 button 不在 DOM · 总数不到 47
+  - 当 ScriptTypeInlineCards 渲染 button 为卡片 · 无法在卡片内嵌套子 button(HTML 规范禁止) · 解决方案: div+role="button" 做卡片 + 独立 button 做案例计数
+  - e2e tests 路径在 /Users/return/Desktop/QuanAn/tests/e2e/ (root level) · 不在 apps/web/e2e/ · prd.json files_to_create 的 "tests/e2e/" 就是这里
+  - 旧 Knowledge.tsx 是 PRD-9 tRPC 版 · PRD-22 US-005 完整重写替换掉 · 不需要担心向后兼容
+---
+
+--- [RALPH] Iteration 6 ended: US-005 (27分钟 36秒) ---
+
+--- [RALPH] Iteration 7 started: US-005 at 2026-05-19 14:12 ---
+
+## 2026-05-19 14:20 - US-005 (retry fix)
+- 修复两处 CONFIRMED 测试失败（Validator 第 1 次 reject 提供的反馈）
+- Fix 1: apps/web/src/test/pages.test.tsx:180 — 将 stale H1 断言 '知识库' 改为 'AIP 文案方法论'
+- Fix 2: tests/unit/web/pages/Knowledge.test.tsx — 删除 PRD-9 US-004 遗留的 16 个 3-tab 测试，替换为 PRD-22 AC-1~AC-6 的 25 个 source-inspection 测试
+- 更改的文件: apps/web/src/test/pages.test.tsx, tests/unit/web/pages/Knowledge.test.tsx
+- 验证: apps/web pnpm test 202/202 ✓ · unit Knowledge.test 25/25 ✓ · typecheck 0 error ✓
+- **未来迭代的学习:**
+  - 重写页面时必须同时更新所有引用旧 H1/heading 的测试（pages.test.tsx + 独立 unit test 文件）
+  - PRD-N 遗留 unit test 文件在下一个 PRD 重写同一页面时必须删除/重写，不能只改实现不改测试
+---
+
+## 2026-05-19 14:31 - US-005 [PRD-22] Opus audit approve · medium 标审
+
+### audit 5 步
+- Step 1 audit-artifacts: ARTIFACTS VALID + pytest-full 202/202 passed
+- Step 1.b retryCount=0(1st pass) · risk_level=medium
+
+### AC 通过 + 关键防御
+- AC 9/9 PASS · D-217 4 tab 字面锁全 4/4 命中:"20 类脚本" / "20 大爆款" / "开头公式" / "核心公式"
+- 即使内部数据 22 元素 · tab 2 标题仍是 "20 大爆款" · D-217 严守
+- tab 3/4 stub placeholder 字面 "5 类开头公式 · PRD-23 完整化" + "AIP 起承转合公式 · PRD-23 完整化"
+- ScriptTypeInlineCards showSearch + 案例计数 "实战案例 ({caseCount})" button
+- ElementsInlineMultiPicker disabled grouped 纯展示态(forceMount 保证 DOM)
+
+### TD 续登
+- TD-090 同模式 · baseline 'prd22-knowledge.png' + 'prd22-knowledge-mobile.png' 应改 '33-knowledge.png' · US-012 收官修
+---
