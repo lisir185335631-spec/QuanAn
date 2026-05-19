@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -33,7 +33,9 @@ describe('Step1', () => {
         <Step1 />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/提交表单后查看选择你的行业赛道/)).toBeInTheDocument();
+    const input = screen.getByTestId('industry-search');
+    fireEvent.change(input, { target: { value: 'xyznotfound12345' } });
+    expect(screen.getByText('未找到匹配的行业')).toBeInTheDocument();
   });
 
   it('renders CTA button with new label', () => {
@@ -42,7 +44,7 @@ describe('Step1', () => {
         <Step1 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('生成行业洞察')).toBeInTheDocument();
+    expect(screen.getByText('确认并进入下一步')).toBeInTheDocument();
   });
 
   it('CTA label uses constant not hardcoded string', () => {
@@ -51,8 +53,8 @@ describe('Step1', () => {
         <Step1 />
       </MemoryRouter>,
     );
-    // STEP1_CTA_LABEL = '生成行业洞察' — old '确认并进入下一步' removed
-    expect(screen.queryByText('确认并进入下一步')).toBeNull();
-    expect(screen.getByText('生成行业洞察')).toBeInTheDocument();
+    // STEP1_CTA = '确认并进入下一步' — aligns with PRD AC-8 D1A + aiipznt spec §7.1
+    expect(screen.queryByRole('button', { name: '生成行业洞察' })).toBeNull();
+    expect(screen.getByRole('button', { name: '确认并进入下一步' })).toBeInTheDocument();
   });
 });
