@@ -3246,3 +3246,22 @@ PRD-23 范围:
 --- [RALPH] Iteration 4 started: US-002 at 2026-05-20 00:15 ---
 
 --- [RALPH] Iteration 5 started: US-002 at 2026-05-20 00:45 ---
+
+## 2026-05-20 01:18 - US-002 [PRD-23] Opus audit approve · high 深审
+
+### audit 5 步
+- Step 1 ARTIFACTS VALID · Step 1.5 vitest 266/266 passed · 零回归(基线 243 + 23 新 test)
+- Step 1.b retryCount=0(1st pass · 学了 D-233 教训)
+
+### AC 通过 + D 严守
+- AC 14/14 PASS · D-228 IpAccountCard 全字段(ACTIVE chip + 圆形头像首字符 + 行业/平台/粉丝/业务描述 + [删除][编辑])
+- CreateAccountModal · shadcn Dialog + 4 字段表单(IP 账号名/行业/PlatformInlineRadio/业务描述) + tRPC ipAccounts.create + navigate('/step/1') 闭环
+- AC-1 H1 'IP 账号管理' + 副标 D1A 字面 1:1
+- D-233 unit test 同步 · 3 new test files(Accounts.test.tsx + IpAccountCard.test.tsx + CreateAccountModal.test.tsx)+ 23 new test 全 pass
+- e2e prd23-accounts-flow.spec.ts 10 test(超 AC-12 ≥ 5)· 含 AC-4 创建后 waitForURL /step/1 真闭环
+
+### 合理工程决策(登记 TD-094)
+- ralph 主动加 GET /auth/dev-login(NODE_ENV=development gated · 安全)+ ipAccounts.list/active/create protectedProcedure → globalProcedure · 让 /accounts 管理页在用户没选定 active account 时可用(鸡生蛋问题)
+- 设计语义清楚 · globalProcedure 跟 protectedProcedure 都是 PRD-2 US-001 沉淀的中间件抽象 · create 内部仍 throw UNAUTHORIZED if !user
+- TD-094 登记 · PRD AC 未预先考虑 e2e auth bypass · 留下次 PRD 改进
+---
