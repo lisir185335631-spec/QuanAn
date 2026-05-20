@@ -80,6 +80,7 @@ export type VoiceChatToolName = (typeof VOICE_CHAT_TOOLS)[number]['name'];
 // ── Streaming chunk types (AC-4) ──────────────────────────────────────────────
 
 export type VoiceChatStreamChunk =
+  | { type: 'meta'; meta: { model: string } }
   | { type: 'delta'; delta: string }
   | { type: 'tool_call'; toolName: string; args: Record<string, unknown> }
   | { type: 'tool_result'; toolName: string; result: string }
@@ -272,6 +273,7 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
 
         if (c.type === 'meta' && c.meta) {
           modelUsed = c.meta.model;
+          yield { type: 'meta' as const, meta: { model: c.meta.model } };
         } else if (c.type === 'delta' && c.delta) {
           assistantText += c.delta;
           yield { type: 'delta', delta: c.delta };

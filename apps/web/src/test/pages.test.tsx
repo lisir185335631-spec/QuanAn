@@ -106,6 +106,7 @@ vi.mock('@/lib/trpc', () => ({
     },
     voiceChat: {
       clearSession: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true }), isPending: false }) },
+      start: { useSubscription: vi.fn() },
     },
   },
   queryClient: {},
@@ -116,6 +117,15 @@ vi.mock('@/lib/trpc', () => ({
       },
     },
   },
+}));
+
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({
+    account: { id: 1, name: 'Test', platform: 'douyin', stage: 'starter', industry: '科技', followersRange: '0-1000' },
+    isLoading: false,
+    isSwitching: false,
+    switchTo: vi.fn(),
+  }),
 }));
 
 // Component that throws on render for ErrorBoundary testing

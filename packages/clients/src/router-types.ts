@@ -269,6 +269,7 @@ export type DailyTaskListOutput = DailyTaskHistoryRow[];
 // ── Voice Chat types (PRD-8 US-012) ───────────────────────────────────────────
 
 export type VoiceChatStreamChunk =
+  | { type: 'meta'; meta: { model: string } }
   | { type: 'delta'; delta: string }
   | { type: 'tool_call'; toolName: string; args: Record<string, unknown> }
   | { type: 'tool_result'; toolName: string; result: string }
