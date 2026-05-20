@@ -3742,3 +3742,19 @@ PRD-23 范围:
 --- [RALPH] Iteration 3 started: US-003 at 2026-05-20 10:10 ---
 ## 2026-05-20 10:37 - US-003 [PRD-24] approve · high 1st pass · D-239 字面 11/11 · vitest 334/334
 ---
+
+--- [RALPH] Iteration 3 ended: US-003 (28分钟 12秒) ---
+
+--- [RALPH] Iteration 4 started: US-004 at 2026-05-20 10:39 ---
+## 2026-05-20 10:47 - US-004 · 全 32 page visual baseline 收官 + regression 验证
+- prd24-visual-baseline.spec.ts 已存在含 3 fixture(/daily-tasks, /evolution, /voice-chat)，无需新建
+- 跑全 32 baseline: prd22(13) + prd23(16) + prd24(3) = 32 passed (3.9 min)
+- /tmp/aiipznt-clone-research/screenshots/ 含全 32 prd*.png，prd24 3 张已确认
+- typecheck: 0 error · vitest: 334 passed (≥308)
+- AC-6 browser 抽查 /voice-chat: 截图确认 H1/6 prompts/输入框正常，playwright test passed
+- 变更文件: tests/e2e/prd23-visual-baseline.spec.ts (copywriting mobile skip 已有), scripts/ralph/progress.txt
+- **未来迭代的学习:**
+  - prd24-visual-baseline.spec.ts 在 US-003 迭代末尾已追加 evolution/voice-chat fixture，US-004 无需重建
+  - 全 32 regression 验证证明 PRD-22/23/24 各页面无 visual 回退，阈值 0.05 全 pass
+  - prd23 copywriting fixture 已加 mobile skip (deviceScaleFactor 差异)，PRD-24+ 新 fixture 如有 mobile 渲染差异同样需要
+---
