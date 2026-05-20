@@ -1,299 +1,130 @@
 /**
- * PRD-8 US-005: /evolution 页面
- * 4 sections: Hero(level+满意率) · Insight卡片 · 趋势 Recharts · Module ranking table
- * AC-8: level=L1 + 0 insight → cold-start UI
+ * Evolution.tsx — PRD-24 US-002
+ * /evolution · 智能体进化中心 · 5 级进化 badge + 4 指标仪表盘 + 5 H3 模块 + 进化方向 radio
+ * AC-1: H1 '智能体进化中心' + 副标 EVOLUTION_SUBTITLE + '智能' 菜单分类
+ * AC-5: stub L2 active · 5 badge 卡 + 4 指标 grid-cols-4 + 5 H3 模块
+ * AC-6: localStorage acc_{accountId}_evolution_settings via getLsKey
+ * AC-7: DOM button ≥ 9
+ * PRD-25+: 接 LLM 时替换 stub 数据为 trpc.evolution.getProfile.useQuery()
  */
+import { BookOpen, Brain, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+  EVOLUTION_DIRECTIONS_4,
+  EVOLUTION_LEVELS_5,
+  EVOLUTION_METRICS_STUB,
+  EVOLUTION_MODULES_5,
+  EVOLUTION_SUBTITLE,
+} from '@/lib/constants/evolution';
+import { getLsKey } from '@/lib/ls-namespace';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { trpc } from '@/lib/trpc';
+// ── LevelBadge row ────────────────────────────────────────────────────────────
 
-// ── types ─────────────────────────────────────────────────────────────────────
-
-type EvolutionInsightContent = {
-  direction: string;
-  insights: {
-    preferredCatchphrases: string[];
-    styleTone: string;
-    avoidList: string[];
-    strongPoints: string[];
-    weakPoints: string[];
-  };
-};
-
-// ── sub-components ────────────────────────────────────────────────────────────
-
-function LevelBadge({ level }: { level: string }) {
+function LevelBadgeRow({ activeId }: { activeId: string }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-label-sm font-label text-primary uppercase tracking-wide">
-      {level}
-    </span>
-  );
-}
-
-function SatisfactionBar({ rate }: { rate: number | null }) {
-  const pct = rate !== null && rate !== undefined ? Math.round(rate * 100) : 0;
-  return (
-    <div className="flex items-center gap-3">
-      <div className="h-2 flex-1 rounded-full bg-surface-variant overflow-hidden">
-        <div
-          className="h-full rounded-full bg-primary transition-all"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className="text-label-sm font-label text-on-surface-variant w-10 text-right">
-        {pct}%
-      </span>
+    <div className="flex flex-wrap gap-3">
+      {EVOLUTION_LEVELS_5.map((lvl) => {
+        const isActive = lvl.id === activeId;
+        return (
+          <div
+            key={lvl.id}
+            data-testid={`badge-${lvl.id}`}
+            className={`flex items-center gap-2 rounded-full px-4 py-2 text-body-sm border transition-all ${
+              isActive
+                ? 'bg-primary text-primary-foreground border-primary font-semibold'
+                : 'bg-surface-variant/40 text-muted-foreground border-border/40 opacity-50'
+            }`}
+          >
+            <span>{lvl.emoji}</span>
+            <span>{lvl.id}</span>
+            <span>{lvl.label}</span>
+            <span className="text-xs opacity-70">{lvl.range}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function ColdStartInsight() {
-  return (
-    <Card>
-      <CardContent className="pt-6 text-center py-10">
-        <p className="text-body-md text-muted-foreground">
-          暂无 insight · 等累计 5 条反馈后自动生成
-        </p>
-        <p className="mt-2 text-body-sm text-on-surface-variant">
-          对每次 AI 生成结果点击 👍 / 👎 来积累反馈
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
+// ── MetricCard ────────────────────────────────────────────────────────────────
 
-function InsightCard({ insight }: { insight: EvolutionInsightContent }) {
-  return (
-    <Card>
-      <CardHeader>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-          当前偏好画像 · {insight.direction}
-        </span>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {insight.insights.preferredCatchphrases.length > 0 && (
-          <div>
-            <p className="text-label-sm font-label text-on-surface-variant mb-2">偏好风格</p>
-            <div className="flex flex-wrap gap-2">
-              {insight.insights.preferredCatchphrases.map((phrase, i) => (
-                <span
-                  key={i}
-                  className="rounded-md bg-surface-variant px-2 py-1 text-body-sm text-on-surface"
-                >
-                  {phrase}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-        {insight.insights.styleTone && (
-          <div>
-            <p className="text-label-sm font-label text-on-surface-variant mb-1">风格基调</p>
-            <p className="text-body-md text-on-surface">{insight.insights.styleTone}</p>
-          </div>
-        )}
-        {insight.insights.avoidList.length > 0 && (
-          <div>
-            <p className="text-label-sm font-label text-on-surface-variant mb-2">避免使用</p>
-            <div className="flex flex-wrap gap-2">
-              {insight.insights.avoidList.map((item, i) => (
-                <span
-                  key={i}
-                  className="rounded-md bg-destructive/10 px-2 py-1 text-body-sm text-destructive"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function TrendChart({ data }: { data: Array<{ date: string; total: number; good: number; satisfactionRate: number }> | undefined }) {
-  if (!data || data.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <span className="text-label-sm font-label text-primary uppercase tracking-wide">反馈趋势</span>
-        </CardHeader>
-        <CardContent className="py-8 text-center">
-          <p className="text-body-sm text-muted-foreground">暂无趋势数据 · 开始使用后自动统计</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const chartData = data.map((d) => ({
-    date: d.date.slice(5), // MM-DD
-    total: d.total,
-    good: d.good,
-    rate: Math.round(d.satisfactionRate * 100),
-  }));
-
-  return (
-    <Card>
-      <CardHeader>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-          反馈趋势 · 近 30 天
-        </span>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={chartData} margin={{ top: 5, right: 16, left: -24, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-            <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
-            <Tooltip
-              contentStyle={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 8 }}
-              labelStyle={{ color: '#ccc' }}
-            />
-            <Line
-              type="monotone"
-              dataKey="good"
-              stroke="#6366f1"
-              strokeWidth={2}
-              dot={false}
-              name="👍"
-            />
-            <Line
-              type="monotone"
-              dataKey="total"
-              stroke="#475569"
-              strokeWidth={1.5}
-              dot={false}
-              name="总计"
-              strokeDasharray="4 2"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ModuleRankingTable({
-  ranking,
+function MetricCard({
+  label,
+  value,
+  unit = '',
 }: {
-  ranking:
-    | Array<{
-        agentId: string;
-        goodCount: number;
-        badCount: number;
-        totalCalls: number;
-        satisfactionRate: number;
-      }>
-    | undefined;
+  label: string;
+  value: number;
+  unit?: string;
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-          模块满意率排名
-        </span>
-      </CardHeader>
-      <CardContent>
-        {!ranking || ranking.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground py-4 text-center">
-            暂无数据 · 使用各模块后自动统计
-          </p>
-        ) : (
-          <table className="w-full text-body-sm">
-            <thead>
-              <tr className="border-b border-outline-variant text-left">
-                <th className="pb-2 text-label-sm font-label text-on-surface-variant">模块</th>
-                <th className="pb-2 text-label-sm font-label text-on-surface-variant text-right">
-                  👍
-                </th>
-                <th className="pb-2 text-label-sm font-label text-on-surface-variant text-right">
-                  👎
-                </th>
-                <th className="pb-2 text-label-sm font-label text-on-surface-variant text-right">
-                  调用
-                </th>
-                <th className="pb-2 text-label-sm font-label text-on-surface-variant text-right">
-                  满意率
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {ranking.map((row) => (
-                <tr key={row.agentId} className="border-b border-outline-variant/40 last:border-0">
-                  <td className="py-2 text-on-surface font-medium">{row.agentId}</td>
-                  <td className="py-2 text-right text-on-surface">{row.goodCount}</td>
-                  <td className="py-2 text-right text-on-surface">{row.badCount}</td>
-                  <td className="py-2 text-right text-muted-foreground">{row.totalCalls}</td>
-                  <td className="py-2 text-right">
-                    <span
-                      className={
-                        row.satisfactionRate >= 0.8
-                          ? 'text-green-400'
-                          : row.satisfactionRate >= 0.5
-                            ? 'text-yellow-400'
-                            : 'text-red-400'
-                      }
-                    >
-                      {Math.round(row.satisfactionRate * 100)}%
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function HistoryList({
-  insights,
-}: {
-  insights: Array<{
-    id: number;
-    triggerType: string;
-    direction: string;
-    content: unknown;
-    levelBefore: string | null;
-    levelAfter: string | null;
-    createdAt: string | Date;
-  }> | undefined;
-}) {
-  if (!insights || insights.length === 0) return null;
-
-  return (
-    <div className="space-y-3">
-      <p className="text-label-sm font-label text-on-surface-variant uppercase tracking-wide">
-        进化历史
+    <div
+      data-testid={`metric-${label}`}
+      className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-4 text-center space-y-1"
+    >
+      <p className="text-2xl font-display font-bold text-on-surface">
+        {value}
+        {unit}
       </p>
-      {insights.map((insight) => (
-        <Card key={insight.id}>
-          <CardContent className="pt-4 pb-4">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-label-sm font-label text-primary">{insight.direction}</span>
-              <span className="text-body-sm text-muted-foreground">
-                {insight.levelBefore} → {insight.levelAfter}
-              </span>
-            </div>
-            <p className="text-body-sm text-on-surface-variant">{insight.triggerType}</p>
-            <p className="text-body-xs text-muted-foreground mt-1">
-              {new Date(insight.createdAt).toLocaleDateString('zh-CN')}
-            </p>
-          </CardContent>
-        </Card>
+      <p className="text-label-sm font-label text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+// ── DirectionRadio ────────────────────────────────────────────────────────────
+
+function DirectionRadio({
+  selected,
+  onChange,
+}: {
+  selected: string;
+  onChange: (val: string) => void;
+}) {
+  return (
+    <div className="space-y-2" aria-label="进化方向">
+      {EVOLUTION_DIRECTIONS_4.map((dir) => (
+        <button
+          key={dir}
+          type="button"
+          aria-pressed={selected === dir}
+          data-testid={`direction-${dir}`}
+          onClick={() => onChange(dir)}
+          className={`w-full text-left px-4 py-3 rounded-lg border text-body-sm transition-all ${
+            selected === dir
+              ? 'bg-primary/10 border-primary text-on-surface font-medium'
+              : 'bg-surface-variant/30 border-border/40 text-muted-foreground hover:border-border'
+          }`}
+        >
+          {dir}
+        </button>
       ))}
+    </div>
+  );
+}
+
+// ── module card helpers ───────────────────────────────────────────────────────
+
+function ModuleCard({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-5 space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-primary">{icon}</span>
+        <h3 className="text-body-md font-display text-on-surface">{title}</h3>
+      </div>
+      {children}
     </div>
   );
 }
@@ -301,70 +132,137 @@ function HistoryList({
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function Evolution() {
-  const { data: profile, isLoading: profileLoading } = trpc.evolution.getProfile.useQuery();
-  const { data: insightHistory, isLoading: historyLoading } =
-    trpc.evolution.getInsightHistory.useQuery();
-  const { data: trendData, isLoading: trendLoading } = trpc.evolution.getFeedbackTrend.useQuery({
-    days: 30,
-  });
-  const { data: rankingData, isLoading: rankingLoading } =
-    trpc.evolution.getModuleRanking.useQuery({ limit: 10 });
+  const { account } = useActiveAccount();
+  const navigate = useNavigate();
+  const accountId = account?.id ?? null;
 
-  const isLoading = profileLoading || historyLoading || trendLoading || rankingLoading;
+  // AC-6: load evolution direction from localStorage
+  const [direction, setDirection] = useState<string>(EVOLUTION_DIRECTIONS_4[0]!);
 
-  const isColdStart =
-    !isLoading &&
-    (!insightHistory || insightHistory.length === 0) &&
-    (!profile || profile.level === 'L1');
+  useEffect(() => {
+    if (!accountId) return;
+    const key = getLsKey(accountId, 'evolution_settings');
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        const parsed = JSON.parse(stored) as { direction?: string };
+        if (parsed.direction && EVOLUTION_DIRECTIONS_4.includes(parsed.direction as string)) {
+          setDirection(parsed.direction);
+        }
+      }
+    } catch { /* ignore malformed */ }
+  }, [accountId]);
 
-  const latestInsight = profile?.latestInsight as EvolutionInsightContent | null;
+  function handleDirectionChange(val: string) {
+    setDirection(val);
+    if (!accountId) return;
+    const key = getLsKey(accountId, 'evolution_settings');
+    localStorage.setItem(key, JSON.stringify({ direction: val }));
+  }
+
+  const stubLevel = 'L2';
 
   return (
     <main className="flex-1 container py-8 space-y-6 max-w-3xl">
-      <h1 className="text-h1 font-display text-on-surface">进化中心</h1>
+      {/* AC-1: header */}
+      <div>
+        <span className="text-label-sm font-label text-primary uppercase tracking-wide">智能</span>
+        <h1 className="mt-1 text-h1 font-display text-on-surface">智能体进化中心</h1>
+        <p className="mt-2 text-body-md text-muted-foreground">{EVOLUTION_SUBTITLE}</p>
+      </div>
 
-      {isLoading ? (
-        <p className="text-body-md text-muted-foreground">加载中…</p>
-      ) : (
-        <>
-          {/* Section 1: Hero — level + satisfaction rate */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4 mb-4">
-                <LevelBadge level={profile?.level ?? 'L1'} />
-                <span className="text-body-md text-on-surface-variant">
-                  总反馈 {profile?.feedbackCountTotal ?? 0} 条
-                </span>
-              </div>
-              <div className="space-y-2">
-                <p className="text-label-sm font-label text-on-surface-variant">满意率</p>
-                <SatisfactionBar rate={profile?.satisfactionRate ?? null} />
-              </div>
-              <div className="mt-4 flex gap-6 text-body-sm text-muted-foreground">
-                <span>👍 {profile?.feedbackCountGood ?? 0}</span>
-                <span>👎 {profile?.feedbackCountBad ?? 0}</span>
-                <span>方向: {profile?.currentDirection ?? '综合'}</span>
-              </div>
-            </CardContent>
-          </Card>
+      {/* AC-5: 5 级 badge 卡 — stub L2 active */}
+      <div className="bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-5 space-y-3">
+        <p className="text-label-sm font-label text-on-surface-variant uppercase tracking-wide">
+          当前进化等级
+        </p>
+        <LevelBadgeRow activeId={stubLevel} />
+      </div>
 
-          {/* Section 2: Latest Insight (or cold-start) */}
-          {isColdStart ? (
-            <ColdStartInsight />
-          ) : latestInsight ? (
-            <InsightCard insight={latestInsight} />
-          ) : null}
+      {/* AC-5: 4 指标仪表盘 grid-cols-4 stub */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <MetricCard label="好评数" value={EVOLUTION_METRICS_STUB.goodCount} />
+        <MetricCard label="待改进" value={EVOLUTION_METRICS_STUB.needsImprovement} />
+        <MetricCard label="学习档案" value={EVOLUTION_METRICS_STUB.learningArchive} unit=" 条" />
+        <MetricCard label="满意率" value={EVOLUTION_METRICS_STUB.satisfactionRate} unit="%" />
+      </div>
 
-          {/* Section 3: Trend chart */}
-          <TrendChart data={trendData} />
+      {/* AC-5: 5 H3 模块 grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Module 1: 进化等级 */}
+        <ModuleCard title={EVOLUTION_MODULES_5[0]!} icon={<TrendingUp className="w-4 h-4" />}>
+          <p className="text-body-sm text-muted-foreground">
+            当前等级 L2 · 还需 13 条好评反馈升至 L3
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => toast.info('触发进化 PRD-25+')}
+          >
+            触发进化
+          </Button>
+        </ModuleCard>
 
-          {/* Section 4: Module ranking table */}
-          <ModuleRankingTable ranking={rankingData?.ranking} />
+        {/* Module 2: 进化洞察 */}
+        <ModuleCard title={EVOLUTION_MODULES_5[1]!} icon={<Brain className="w-4 h-4" />}>
+          <p className="text-body-sm text-muted-foreground">
+            累计 5+ 条反馈后自动生成偏好画像洞察
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => toast.info('生成洞察 PRD-25+')}
+          >
+            生成洞察
+          </Button>
+        </ModuleCard>
 
-          {/* Section 5: History list */}
-          <HistoryList insights={insightHistory} />
-        </>
-      )}
+        {/* Module 3: 最近反馈 */}
+        <ModuleCard title={EVOLUTION_MODULES_5[2]!} icon={<Zap className="w-4 h-4" />}>
+          <p className="text-body-sm text-muted-foreground">
+            共 {EVOLUTION_METRICS_STUB.goodCount} 条好评 · {EVOLUTION_METRICS_STUB.needsImprovement} 条待改进
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate('/daily-tasks')}
+          >
+            查看全部
+          </Button>
+        </ModuleCard>
+
+        {/* Module 4: 深度学习档案 */}
+        <ModuleCard title={EVOLUTION_MODULES_5[3]!} icon={<BookOpen className="w-4 h-4" />}>
+          <p className="text-body-sm text-muted-foreground">
+            已归档 {EVOLUTION_METRICS_STUB.learningArchive} 条学习记录
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => toast.info('新增学习 PRD-25+')}
+          >
+            新增学习
+          </Button>
+        </ModuleCard>
+      </div>
+
+      {/* Module 5: 进化设置 (full width) */}
+      <ModuleCard title={EVOLUTION_MODULES_5[4]!} icon={<Sparkles className="w-4 h-4" />}>
+        <p className="text-body-sm text-muted-foreground mb-3">
+          选择进化方向 · 影响 AI 智能体学习偏好
+        </p>
+        <DirectionRadio selected={direction} onChange={handleDirectionChange} />
+        <div className="pt-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-muted-foreground"
+            onClick={() => toast.success('设置已保存')}
+          >
+            保存设置
+          </Button>
+        </div>
+      </ModuleCard>
     </main>
   );
 }

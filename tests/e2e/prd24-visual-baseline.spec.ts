@@ -39,4 +39,19 @@ test.describe('PRD-24 Visual Baseline', () => {
       maxDiffPixelRatio: 0.05,
     });
   });
+
+  test('/evolution fullPage matches prd24-evolution.png', async ({ page }) => {
+    await page.goto(`${API_BASE}/auth/dev-login`);
+    await page.waitForURL(`${BASE_URL}/**`);
+    await page.goto(`${BASE_URL}/evolution`);
+    await page.waitForLoadState('networkidle');
+    await page.locator('h1').waitFor({ state: 'visible' });
+    await page.waitForSelector('h3', { timeout: 3000 }).catch(() => {});
+    await expectVisualMatch(page, {
+      baseline: 'prd24-evolution.png',
+      viewport: { width: 1440, height: 900 },
+      fullPage: true,
+      maxDiffPixelRatio: 0.05,
+    });
+  });
 });

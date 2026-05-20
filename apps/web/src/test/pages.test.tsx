@@ -193,14 +193,16 @@ describe('Module pages render', () => {
     expect(screen.getByText('步骤 1 / 8 · 基本信息')).toBeInTheDocument();
   });
 
-  it('Evolution renders h1 heading', () => {
-    render(<Evolution />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('进化中心');
+  it('Evolution renders h1 heading (PRD-24 US-002 · 智能体进化中心)', () => {
+    render(<MemoryRouter><Evolution /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('智能体进化中心');
   });
 
-  it('Evolution shows cold-start state when no data', () => {
-    render(<Evolution />);
-    expect(screen.getByText('暂无 insight · 等累计 5 条反馈后自动生成')).toBeInTheDocument();
+  it('Evolution shows spec §8.5.3 subtitle', () => {
+    render(<MemoryRouter><Evolution /></MemoryRouter>);
+    expect(
+      screen.getByText('你的智能体通过反馈学习和深度学习持续进化，越用越懂你'),
+    ).toBeInTheDocument();
   });
 
   it('Accounts renders h1 heading', () => {
