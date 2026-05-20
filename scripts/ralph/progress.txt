@@ -5,6 +5,35 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 10:20 - US-003 [PRD-24] · /voice-chat 完整化(VOICE CHAT H1 + 6 quick prompts + 历史 localStorage · D-239)
+- 实现了什么:
+  - apps/web/src/lib/constants/voice-chat.ts: 新建 · VOICE_CHAT_QUICK_PROMPTS_6(D-239 6条字面 spec §8.4.2) + VOICE_CHAT_INTRO
+  - apps/web/src/pages/tools/VoiceChat.tsx: 完整重写(PRD-8 tRPC 版 → PRD-24 stub 版) · H1 VOICE CHAT(Orbitron uppercase) + 副标 + H3 模块标题 + 自我介绍 glass-card + 6 quick prompts grid(2×3) + input + 发送 + mic stub + speaker stub + copy button per history entry + localStorage acc_ 前缀
+  - apps/web/src/test/pages.test.tsx: 更新 VoiceChat 测试段(旧 PRD-8 → 新 PRD-24 H1 / H3 / input)
+  - apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx: 新建 · 10 tests(H1/H3/INTRO字面/6prompts字面/click填input/发送历史/localStorage acc_前缀/加载历史/button≥12/H标签≥2)
+  - apps/web/src/lib/constants/__tests__/voice-chat.test.ts: 新建 · 8 tests(6条prompt字面 + INTRO字面)
+  - tests/e2e/prd24-voice-chat-flow.spec.ts: 新建 · 5 tests · 10/10 pass(chromium+mobile)
+  - tests/e2e/prd24-visual-baseline.spec.ts: 追加 /voice-chat baseline 'prd24-voice-chat.png'
+- 验证结果:
+  - typecheck: ✅ 0 errors
+  - vitest: ✅ 334 tests pass (≥ 308 ✓)
+  - e2e: ✅ 10/10 pass (5 chromium + 5 mobile)
+  - visual: ✅ prd24-voice-chat.png baseline written · 1440x900 · 0.05 threshold
+  - browser(via e2e Playwright): ✅ H1 VOICE CHAT / 6 quick prompts / input+发送 / click填input / 历史list渲染 / console 无 error
+- 更改的文件:
+  - apps/web/src/lib/constants/voice-chat.ts (新建)
+  - apps/web/src/pages/tools/VoiceChat.tsx (重写)
+  - apps/web/src/test/pages.test.tsx (更新 VoiceChat 测试)
+  - apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx (新建)
+  - apps/web/src/lib/constants/__tests__/voice-chat.test.ts (新建)
+  - tests/e2e/prd24-voice-chat-flow.spec.ts (新建)
+  - tests/e2e/prd24-visual-baseline.spec.ts (追加)
+- **未来迭代的学习:**
+  - 完整重写旧 tRPC 实现为 stub 时 · 必须同步清除旧测试依赖(pages.test.tsx 里的 VoiceChat 旧测段) · 否则测试用 '语音对话' 等旧字面会 fail
+  - AC-7 button count 要覆盖"其他"按钮 · 用 copy 按钮 per history entry 补足 ≥12 · 预加载 2 条历史才能稳定满足 ≥12
+  - stub 工具页彻底去掉 tRPC import · 无需 mock trpc 任何 hook · 测试用 vi.mock('@/hooks/useActiveAccount') 即可
+---
+
 ## 2026-05-20 09:01 - US-001 [PRD-24] · /daily-tasks 完整化(3-5 stub 任务卡 + loading + EmptyState + ls-namespace)
 - 实现了什么:
   - apps/web/src/lib/constants/daily-tasks.ts: 新建 · DAILY_TASKS_STUB(3 任务 spec §8.5.2 字面 line 2438-2440) + LOADING_TEXT + EMPTY_TITLE/DESC/CTA
@@ -3706,4 +3735,10 @@ PRD-23 范围:
   - EVOLUTION_MODULES_5 是 readonly string[] · 下标访问返回 string | undefined · 必须用 `arr[i]!` 非空断言或类型收窄才能赋给 string prop
   - pages.test.tsx 是全组件兼容性测试 · 重写 page 时必须同步更新 H1 断言 · Evolution 从无 MemoryRouter 改为有 MemoryRouter(因 useNavigate 依赖)
 ## 2026-05-20 10:11 - US-002 [PRD-24] approve · high 1st pass · 字面 100% · vitest 316/316
+---
+
+--- [RALPH] Iteration 2 ended: US-002 (27分钟 28秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-20 10:10 ---
+## 2026-05-20 10:37 - US-003 [PRD-24] approve · high 1st pass · D-239 字面 11/11 · vitest 334/334
 ---
