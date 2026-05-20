@@ -176,6 +176,37 @@ python scripts/ralph/ralph-tools.py audit-status         # 查看门禁状态
 - **禁止修改或删除 `ralph-lock.json`** — 这是 ralph.py 的进程锁文件，用于防止多实例并发和崩溃恢复
 - **禁止修改或删除 `cost-log.jsonl`** — 这是 ralph.py 的成本追踪日志，仅由编排器追加写入
 
+## Dev Server 启动说明 (TD-095 · 2026-05-20)
+
+ralph daemon 默认自动 fork `pnpm dev`(apps/web) 子进程供 Validator e2e/browse 使用。
+
+### 启动命令
+
+```bash
+# 默认: 自动 fork pnpm dev (--with-dev-server 默认开启)
+python3 scripts/ralph/ralph.py --model sonnet --daemon
+
+# 显式禁用 dev server 管理 (手工启动 pnpm dev 或已有 dev server)
+python3 scripts/ralph/ralph.py --model sonnet --daemon --no-dev-server
+```
+
+### Dev Server 状态检查
+
+```bash
+# 检查 dev server PID
+cat scripts/ralph/dev-server.pid 2>/dev/null || echo "dev-server.pid 不存在(未 fork 或已退出)"
+
+# 检查 dev server log
+tail -20 scripts/ralph/dev-server.log 2>/dev/null
+
+# 手动健康检查
+curl -s http://localhost:5173 > /dev/null && echo "dev server OK" || echo "dev server not ready"
+```
+
+### Validator 调 Browse 前必检查
+
+见 VALIDATOR.md §X · dev server 健康检查 SOP — Validator 调 playwright / agent-browser 前必须先 curl 健康检查, 未就绪时 retry ≤6 次, 超时写 `SUSPECTED:dev_server_unavailable`。
+
 ## 关于该项目的重要注意事项
 
 项目根路径下读取 AGENTS.md，这是整个项目的技术架构开发指导说明。

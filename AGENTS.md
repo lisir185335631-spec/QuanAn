@@ -3389,6 +3389,12 @@ step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `r
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
   - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
+- **2026-05-20 v0.9** · 加 §11.16 PRD-25 LLM 接入全链路沉淀(7 US · 8 Specialist 真 LLM · 0 reject 首轮通过 · TD-027/090/091/095 关闭)
+  - §11.16.1 · LLM 接入 useMutation 模式 · trpc mutation 标准范式 `useMutation({onSuccess: () => void utils.xxx.invalidate()})` — `void` 防 unhandled rejection · isFallback banner = `data-testid=fallback-banner` · fallback 时 UI 正常渲染(不 throw · graceful degradation) · US-001~007 全严守此模式
+  - §11.16.2 · isFallback 处理标准 · agent 返回 `isFallback=true` 时前端渲染 fallback hint banner + 正常展示 stub 数据(不隐藏 · 不 error toast) · 测试必含 `data-testid=fallback-banner` 显示断言 · Opus audit D1=A 必查 isFallback banner 是否出现
+  - §11.16.3 · DiagnosisAgent 启用经验 · 7 维度评分 `DIAGNOSIS_DIMENSIONS_8` data-driven · `stubScore` hash-based 本地 fallback · trpc mutation `diagnosis.complete` 传 8 步答案 → server 调真 LLM · 前端 loading spinner `data-testid=diagnosis-loading` + report `data-testid=diagnosis-report` · US-001 首创, 后续 module 可复用 loading/report/error 三态模式
+  - §11.16.4 · smartRecommend 模式 · `ipAccounts.smartRecommend` procedure 接 LivestreamAgent `executeForAccount(accountId)` · 结果写 ipAccount.notes(JSON serialize) · 前端 `/accounts` 页展示推荐结果 · router test ≥ 3 cases(有账号/无账号/多账号) · US-007 建立
+  - §11.16.5 · dev server 配套 SOP (TD-095) · ralph.py `--with-dev-server`(默认) fork `pnpm dev`(apps/web) 子进程 · pid 写 `scripts/ralph/dev-server.pid` · atexit SIGTERM 清理 · `--no-dev-server` 显式禁用 · VALIDATOR.md §X: Validator 调 browse 前必 curl localhost:5173 健康检查 + retry ≤6 次 · 失败写 `SUSPECTED:dev_server_unavailable`
 - **2026-05-20 v0.8** · 加 §11.15 PRD-24 modules final polish 沉淀(3 module 完整化 + 32 page visual baseline 收官 · 连续 2 PRD 100% 严格一轮通过率 · 1:1 视觉复刻里程碑达成)
   - §11.15.1 · stub 完整化 3件套范式已稳固(constants → page → __tests__ 顺序不可调 · PRD-24 3 pages 全严守 · constants first 迫使字面锁优先)· DailyTasks(3 任务 DAILY_TASKS_STUB) · Evolution(5 badge + 4 metrics + 5 H3 + 4 radio) · VoiceChat(VOICE CHAT H1 + 6 prompts + 历史 LS)
   - §11.15.2 · D= 字面锁 LD 必须在 PRD 写作时确定(D-237/238/239 字面锁 · 实现前锁好 → Opus audit D1=A 100% · 反例: PRD-22 事后锁 → reject → 80min 浪费)· 字面锁命名规则: PAGENAME_ITEMS_N as const readonly
