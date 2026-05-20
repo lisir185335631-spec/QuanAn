@@ -1,0 +1,266 @@
+{
+  "project": "QuanAn",
+  "branchName": "ralph/prd-24-modules-final-polish",
+  "description": "3 modules 完整化(/daily-tasks 今日任务 + /evolution 智能体进化中心 + /voice-chat 语音对话) + 全 32 page visual diff 收官 · 5 US · 3 high + 1 medium + 1 收官 · D-236~D-241 6 Locked Decisions · D-233 unit test 同步硬规则严守(继承 PRD-23) · D-234 不接 LLM(留 PRD-25+) · 累计 32 baseline(PRD-22 13 + PRD-23 16 + PRD-24 3)",
+  "lockedDecisions": [
+    {"id": "D-236", "decision": "/daily-tasks · 3-5 stub 任务卡 grid + 'AI 老师正在为你制定今日任务...' loading 状态 + 无 active account 时显示'添加账号' button · '智能' 菜单分类", "rationale": "spec §8.5.2"},
+    {"id": "D-237", "decision": "/evolution · 5 级进化系统字面锁 · 🌱 L1 初始化 / 📚 L2 学习中 / 🌿 L3 成长期 / 🌳 L4 成熟期 / 👑 L5 大师级 + 4 指标仪表盘(好评数/待改进/学习档案/满意率) + 5 H3 模块(进化等级/进化洞察/最近反馈/深度学习档案/进化设置)", "rationale": "spec §8.5.3 字面锁"},
+    {"id": "D-238", "decision": "/evolution 进化方向 4 选 1 字面锁 · 综合优化（积累反馈后自动生成）/ 创意性优先 / 转化率优先 / 真实感优先 · ls-namespace acc_{accountId}_evolution_settings 存储", "rationale": "spec §8.5.3"},
+    {"id": "D-239", "decision": "/voice-chat · H1 'VOICE CHAT'(Orbitron) + 副标 + 模块标题 + 6 quick prompts 字面锁 + input + 历史 localStorage(acc_{accountId}_voice_chat_history 前缀)", "rationale": "spec §8.4.2"},
+    {"id": "D-240", "decision": "全 32 page visual baseline 覆盖矩阵 · PRD-22 13 + PRD-23 16 + PRD-24 新 3 = 32 baseline · prd24-visual-baseline.spec.ts 3 fixture · 复用 expectVisualMatch helper", "rationale": "收官目标"},
+    {"id": "D-241", "decision": "verify-prd-24.sh 收官 ALL CHECKS PASSED · 含全 PRD-21~24 cumulative checks(prd21 8 + prd22 52 + prd23 60 + prd24 new ≥ 30 = ≥ 150) · 一键 CI gate", "rationale": "历史可追溯"}
+  ],
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "high · /daily-tasks 完整化(3-5 stub 任务卡 + loading + 空态 + ls-namespace acc_ 前缀)",
+      "description": "作为 QuanAn 用户 · 当我访问 /daily-tasks · 我看到 H1 '今日行动清单' + 副标 + 3 H3 任务卡(stub data: 今天发布 1 条 step/7 生成的文案 / 优化 step/3 的简介 / 回复粉丝评论 X 条) + 完成打卡 button · 无 active account 时显示 EmptyState + '添加账号' CTA → 跳 /accounts · AI loading 状态显示 'AI 老师正在为你制定今日任务...' + spinner · localStorage acc_{accountId}_daily_tasks_completed 存储打卡 ids · D-236 严守 · risk_level high.",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '今日行动清单' · 副标字面 spec §8.5.2 · 顶部 '智能' 菜单分类标识",
+        "AC-2 · 新建 apps/web/src/lib/constants/daily-tasks.ts · 导出 DAILY_TASKS_STUB(3-5 项 stub 任务 · 每项 { id, title, hint, link }) · 字面包含 spec §8.5.2 line 2438-2440 示例 · '今天发布 1 条 step/7 生成的文案' / '优化 step/3 的简介' / '回复粉丝评论 X 条'",
+        "AC-3 · 重写 apps/web/src/pages/modules/DailyTasks.tsx · 渲染 4 H 标签(H1 + 3 H3 stub 任务卡 · 接近 aiipznt 4 H) · 每任务卡 glass-card + 完成 button(stub onClick toast '打卡功能 PRD-25+')",
+        "AC-4 · 无 active account 状态(useActiveAccount 返回 null) · 显示 EmptyState + '添加账号' CTA button → navigate('/accounts')",
+        "AC-5 · AI loading 状态(stub loading={true}) · 显示 'AI 老师正在为你制定今日任务...' text + spinner(Loader2 lucide icon)",
+        "AC-6 · localStorage acc_{accountId}_daily_tasks_completed 存储 stub 已打卡 ids · 用 getLsKey helper from @/lib/ls-namespace · LD-009 多账号隔离",
+        "AC-7 · DOM button 数 ≥ 8(3-5 任务卡完成 button + 1 添加账号 + 其他) · 接近 aiipznt 实测 8",
+        "AC-8 · D-233 unit test 同步 · 新建 apps/web/src/pages/__tests__/DailyTasks.test.tsx + apps/web/src/lib/constants/__tests__/daily-tasks.test.ts · ≥ 6 test(H1 字面 / stub 任务渲染 / 完成 click / 空态显示 / loading state / localStorage save)",
+        "AC-9 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 293",
+        "AC-10 · 新增 e2e tests/e2e/prd24-daily-tasks-flow.spec.ts · ≥ 3 test",
+        "AC-11 · visual baseline 加 /daily-tasks · 'prd24-daily-tasks.png' · 阈值 0.05",
+        "AC-12 · agent-browser 验证 (a) H1 + 副标 · (b) 3 任务卡渲染 · (c) 空态显示(stub mock no-account) · (d) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/modules/DailyTasks.tsx, apps/web/src/lib/constants/daily-tasks.ts",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/daily-tasks.ts",
+        "apps/web/src/pages/__tests__/DailyTasks.test.tsx",
+        "apps/web/src/lib/constants/__tests__/daily-tasks.test.ts",
+        "tests/e2e/prd24-daily-tasks-flow.spec.ts",
+        "tests/e2e/prd24-visual-baseline.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/modules/DailyTasks.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run DailyTasks daily-tasks",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish",
+          "source_story": "US-001~007 D-233 unit test 同步成功 pattern",
+          "lesson": "重写 page/常量必须同步建 __tests__/*.test.tsx · D-233 硬规则 · PRD-23 10/10 1st pass 实证机制化生效",
+          "antipattern": "改完 DailyTasks.tsx + daily-tasks.ts 常量 · 不同步建对应 test 文件 → vitest 不增 test · D-233 fail · audit reject",
+          "correct": "AC-8 明确要求新建 2 test files(DailyTasks.test.tsx + daily-tasks.test.ts) · 必须 ≥ 6 test 全 pass · pnpm exec vitest run DailyTasks 验证"
+        },
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-002/US-005 LocalStorage acc_ 前缀反例",
+          "lesson": "localStorage 必须用 getLsKey/getToolLsKey from ls-namespace · 字面 acc_{accountId}_ 前缀 · 不能拼接 LS_PREFIX 变量",
+          "antipattern": "const LS_KEY = `acc_${accountId}_daily_tasks_completed`; localStorage.setItem(LS_KEY, value) · audit grep R-5 LD-009 字面看不到 acc_ 前缀字面 · false positive reject",
+          "correct": "import { getLsKey } from '@/lib/ls-namespace'; localStorage.setItem(getLsKey(accountId, 'daily_tasks_completed'), value) · 字面 acc_ 前缀在 helper 内 · audit grep 通过"
+        },
+        {
+          "source_prd": "prd-24-modules-final-polish (self-injected)",
+          "source_story": "US-001 EmptyState 空态风险",
+          "lesson": "无 active account 时必须显示 EmptyState + 添加账号 CTA · 不能只显示 spinner 或空白 · UX 必须清晰",
+          "antipattern": "if (!accountId) return <div>Loading...</div> · 用户卡在 loading 永远不知道要去 /accounts · UX 破坏",
+          "correct": "if (!accountId) return <EmptyState title='请先创建 IP 账号' description='完成账号配置后即可获取每日任务' action={<Button onClick={() => navigate('/accounts')}>添加账号</Button>} />"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "high · /evolution 完整化(5 级进化 badge + 4 指标仪表盘 + 5 H3 模块 + 进化方向 radio · D-237/D-238 字面锁)",
+      "description": "作为 QuanAn 用户 · 当我访问 /evolution · 我看到 H1 '智能体进化中心' + 副标 + 5 级进化 badge(🌱 L1 / 📚 L2 / 🌿 L3 / 🌳 L4 / 👑 L5) + 4 指标仪表盘(好评数/待改进/学习档案/满意率 · stub) + 5 H3 模块(进化等级 / 进化洞察 / 最近反馈 / 深度学习档案 / 进化设置) + 进化方向 4 选 1 radio(综合优化/创意性优先/转化率优先/真实感优先) · D-237/D-238 严守 · risk_level high.",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '智能体进化中心' · 副标字面 spec §8.5.3 '你的智能体通过反馈学习和深度学习持续进化，越用越懂你' · '智能' 菜单分类",
+        "AC-2 · 新建 apps/web/src/lib/constants/evolution.ts · 导出 EVOLUTION_LEVELS_5(D-237) 字面锁 · const EVOLUTION_LEVELS_5 = [{ id: 'L1', emoji: '🌱', label: '初始化', range: '0-4 反馈' }, { id: 'L2', emoji: '📚', label: '学习中', range: '5-19 反馈' }, { id: 'L3', emoji: '🌿', label: '成长期', range: '20-49 反馈' }, { id: 'L4', emoji: '🌳', label: '成熟期', range: '50-99 反馈' }, { id: 'L5', emoji: '👑', label: '大师级', range: '100+ 反馈' }]",
+        "AC-3 · 导出 EVOLUTION_MODULES_5(D-237) · 5 H3 模块字面锁 · '进化等级' / '进化洞察' / '最近反馈' / '深度学习档案' / '进化设置'",
+        "AC-4 · 导出 EVOLUTION_DIRECTIONS_4(D-238) · 4 进化方向 radio 字面锁 · '综合优化（积累反馈后自动生成）' / '创意性优先' / '转化率优先' / '真实感优先'",
+        "AC-5 · 重写 apps/web/src/pages/modules/Evolution.tsx · 6 H 标签(H1 + 5 H3 模块) · 顶部 5 级 badge 卡(stub 当前 L2 active 高亮 + 其他 L1/L3/L4/L5 灰显示) + 4 指标仪表盘(grid-cols-4 stub 随机值 60-95) + 5 H3 模块 grid · 进化设置内嵌 EVOLUTION_DIRECTIONS_4 radio",
+        "AC-6 · localStorage acc_{accountId}_evolution_settings 存储进化方向选择(用 getLsKey helper) · 切换 radio → save",
+        "AC-7 · DOM button 数 ≥ 9(5 H3 模块各 1 button + 4 进化方向 radio + 触发进化 + 新增学习) · 接近 aiipznt 9",
+        "AC-8 · D-233 unit test 同步 · 新建 apps/web/src/pages/__tests__/Evolution.test.tsx + apps/web/src/lib/constants/__tests__/evolution.test.ts · ≥ 8 test(H1 / 5 级 badge / 4 指标 / 5 H3 字面 / 4 进化方向 radio / radio click / localStorage save / spec §8.5.3 字面对照)",
+        "AC-9 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 301",
+        "AC-10 · e2e tests/e2e/prd24-evolution-flow.spec.ts · ≥ 4 test",
+        "AC-11 · visual baseline 'prd24-evolution.png' · 阈值 0.05",
+        "AC-12 · agent-browser 验证 (a) H1 + 副标 · (b) 5 级 badge 显示 · (c) 4 指标 · (d) 5 H3 + 进化方向 radio · (e) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 2,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/modules/Evolution.tsx + apps/web/src/lib/constants/evolution.ts",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/evolution.ts",
+        "apps/web/src/pages/__tests__/Evolution.test.tsx",
+        "apps/web/src/lib/constants/__tests__/evolution.test.ts",
+        "tests/e2e/prd24-evolution-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/modules/Evolution.tsx",
+        "tests/e2e/prd24-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run Evolution evolution",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages",
+          "source_story": "US-005 D-217 4 tab 字面锁(20 大爆款数据是 22 但 tab 名仍 20)",
+          "lesson": "字面锁严守 · 即使内部语义跟数字不完全一致 · UI 显示字面必须 1:1 spec · 不允许创意改写",
+          "antipattern": "5 级 badge 写成 '🌱 1 级 初始化(0-4 次反馈)' · 改了 spec 字面 'L1' → '1 级' · 或合并 'range' 改成 '0-4 次反馈' 加 '次' · 违反 D-237 字面锁",
+          "correct": "EVOLUTION_LEVELS_5 常量字面 1:1 spec §8.5.3 · 'L1' / '初始化' / '0-4 反馈' · 渲染时不允许改写 emoji 或 label"
+        },
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish",
+          "source_story": "US-001~007 D-233 unit test 同步成功 pattern",
+          "lesson": "重写 page 必须同步建 unit test · 8 test 覆盖关键 AC · 5 级 badge + 4 指标 + 5 H3 + 进化方向 radio 全测",
+          "antipattern": "只建 Evolution.test.tsx · 不建 evolution.test.ts 常量测试 · 字面锁不验证 · 后续 PRD-25+ 修常量字面时 ralph 不会 catch",
+          "correct": "AC-8 明确建 2 test files · evolution.test.ts 必须 expect(EVOLUTION_LEVELS_5).toEqual([...完整 5 项字面...]) · expect(EVOLUTION_DIRECTIONS_4).toContain('综合优化（积累反馈后自动生成）') 等字面对照"
+        },
+        {
+          "source_prd": "prd-24-modules-final-polish (self-injected)",
+          "source_story": "US-002 5 H3 模块结构风险",
+          "lesson": "5 H3 模块必须有顺序 + 字面锁 · 不能合并或拆分 · '进化设置' 必须含进化方向 radio · 不能拆到独立 page",
+          "antipattern": "5 H3 模块顺序混乱 · 或合并 '深度学习档案' + '进化设置' 为一个 H3 · 或把进化方向 radio 拆到 /accounts 设置页",
+          "correct": "EVOLUTION_MODULES_5 顺序字面 1:1 spec line 2480-2487 · '进化等级' / '进化洞察' / '最近反馈' / '深度学习档案' / '进化设置' · 进化设置内嵌 EVOLUTION_DIRECTIONS_4 radio · 用 page.locator('h3').allTextContents() 验证顺序"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "high · /voice-chat 完整化(VOICE CHAT H1 + 6 quick prompts + 历史 localStorage)",
+      "description": "作为 QuanAn 用户 · 当我访问 /voice-chat · 我看到 H1 'VOICE CHAT'(Orbitron) + 副标 + 模块标题 '你的专属 IP 变现顾问' + 自我介绍文案(glass-card) + 6 quick prompts button grid(2×3) + input 框 placeholder '有什么问题尽管问我...' + 发送 button + mic button(stub) + speaker button(stub) + 历史对话 list(从 localStorage 加载) · 点 quick prompt → 填 input · 点发送 → 添加历史 list + localStorage save · 不接 LLM(D-234)· D-239 严守 · risk_level high.",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 'VOICE CHAT'(Orbitron font-display uppercase) · 副标字面 spec §8.4.2 · '语音对话 · 你的专属 IP 变现顾问' · 模块标题 H3 '你的专属 IP 变现顾问'",
+        "AC-2 · 新建 apps/web/src/lib/constants/voice-chat.ts · 导出 VOICE_CHAT_QUICK_PROMPTS_6(D-239) · 6 prompts 字面锁 spec §8.4.2 line 2196-2201 · ['我是新手，怎么从0开始做短视频变现？', '帮我分析一下美业赛道怎么做IP', '怎么写出让人停不下来的爆款文案？', '直播带货有哪些实操技巧？', '如何打造个人 IP 的记忆点？', '小红书和抖音哪个更适合新手？']",
+        "AC-3 · 导出 VOICE_CHAT_INTRO 自我介绍文案字面 spec §8.4.2 line 2185 · '有什么问题尽管问我，我会用大白话给你讲清楚，还会给你详细的解决方案和落地步骤。不管是短视频、直播、还是私域变现，我都能帮你搞定。'",
+        "AC-4 · 重写 apps/web/src/pages/tools/VoiceChat.tsx · 顶部 H1 VOICE CHAT(Orbitron uppercase) + 副标 + 模块标题 H3 + 自我介绍卡(glass-card) · 中间 6 quick prompts button grid(grid-cols-2 md:grid-cols-3 gap-3) · 底部 input 框 placeholder '有什么问题尽管问我...' + 发送 button(Send lucide icon) + mic button(Mic icon · stub onClick toast '语音输入 PRD-25+') + speaker button(Volume2 icon · stub TTS PRD-25+)",
+        "AC-5 · 历史对话 list · 从 localStorage acc_{accountId}_voice_chat_history 加载 · 渲染历史问答 pair(用户问 + AI 回 + 时间戳 · stub data) · 顶部 '清空历史' button(stub)",
+        "AC-6 · 点 quick prompt button → 自动填到 input(setInput(prompt)) · 点发送 → 添加到历史 list + getLsKey helper save 到 localStorage · 不接 LLM(stub AI 回复 '功能 PRD-25+ 接 LLM')",
+        "AC-7 · DOM button 数 ≥ 12(6 quick prompts + 发送 + mic + speaker + 清空历史 + 其他) · 接近 aiipznt 12",
+        "AC-8 · DOM H 标签数 ≥ 2(H1 + H3 模块标题)",
+        "AC-9 · D-233 unit test 同步 · 新建 apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx + apps/web/src/lib/constants/__tests__/voice-chat.test.ts · ≥ 7 test(H1 字面 / 6 quick prompts 字面 / 自我介绍字面 / quick prompt click 填 input / 发送 add 历史 / localStorage save / load 历史)",
+        "AC-10 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 308",
+        "AC-11 · e2e tests/e2e/prd24-voice-chat-flow.spec.ts · ≥ 4 test",
+        "AC-12 · visual baseline 'prd24-voice-chat.png' · 阈值 0.05",
+        "AC-13 · agent-browser 验证 (a) H1 VOICE CHAT · (b) 6 quick prompts · (c) input + 发送 · (d) quick prompt click 填 input · (e) 历史 list 渲染 · (f) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 3,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/tools/VoiceChat.tsx(完整重写 612 LOC stub) + apps/web/src/lib/constants/voice-chat.ts",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/voice-chat.ts",
+        "apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx",
+        "apps/web/src/lib/constants/__tests__/voice-chat.test.ts",
+        "tests/e2e/prd24-voice-chat-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/VoiceChat.tsx",
+        "tests/e2e/prd24-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run VoiceChat voice-chat",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish",
+          "source_story": "US-001~007 D-233 unit test 同步",
+          "lesson": "重写 page 必须同步建 unit test · 6 quick prompts 字面 + 自我介绍字面必须有常量测试",
+          "antipattern": "只建 VoiceChat.test.tsx 不建 voice-chat.test.ts · quick prompts 字面没字面测试 · 后续改字面不会 catch",
+          "correct": "voice-chat.test.ts 必须 expect(VOICE_CHAT_QUICK_PROMPTS_6).toHaveLength(6) + expect(VOICE_CHAT_QUICK_PROMPTS_6[0]).toBe('我是新手，怎么从0开始做短视频变现？') 等字面对照"
+        },
+        {
+          "source_prd": "prd-15-frontend-completeness",
+          "source_story": "US-002 LocalStorage acc_ 前缀",
+          "lesson": "voice-chat 历史必须 acc_ 前缀多账号隔离 · 不能全局共享",
+          "antipattern": "localStorage.setItem('voice_chat_history', JSON.stringify(history)) · 不分账号 · 切换账号看到别人历史",
+          "correct": "import { getLsKey } from '@/lib/ls-namespace'; localStorage.setItem(getLsKey(accountId, 'voice_chat_history'), JSON.stringify(history))"
+        },
+        {
+          "source_prd": "prd-24-modules-final-polish (self-injected)",
+          "source_story": "US-003 quick prompts click 填 input 风险",
+          "lesson": "点 quick prompt → setInput(prompt) · 必须填到 input 让用户看到再发送 · 不能直接 send",
+          "antipattern": "onClick={() => handleSend(prompt)} 直接发送 · 用户没机会编辑 · UX 破坏 + 失误率高",
+          "correct": "onClick={() => setInput(prompt)} 只填 input · 用户可编辑再点发送 · UX 友好"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "medium · 全 32 page visual baseline 收官 + regression 验证",
+      "description": "作为 QuanAn 视觉一致性 owner · 我需要 prd24-visual-baseline.spec.ts 含本 PRD 新加 3 fixture(/daily-tasks · /evolution · /voice-chat) + 跑全 32 baseline 总 regression 验证(PRD-22 13 + PRD-23 16 + PRD-24 3) · 阈值 0.05 全 pass.",
+      "acceptanceCriteria": [
+        "AC-1 · tests/e2e/prd24-visual-baseline.spec.ts 3 fixture · /daily-tasks · /evolution · /voice-chat · 复用 expectVisualMatch helper · viewport 1440x900 · fullPage · maxDiffPixelRatio 0.05",
+        "AC-2 · 跑全 baseline · cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd22-visual-baseline prd23-visual-baseline prd24-visual-baseline · 总 13 + 16 + 3 = 32 fixture 全 pass",
+        "AC-3 · /tmp/aiipznt-clone-research/screenshots/ 含 32 prd*-XXX.png 全建立 · grep prd24-daily-tasks.png + prd24-evolution.png + prd24-voice-chat.png 全存在",
+        "AC-4 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 308",
+        "AC-5 · 任一 fixture fail · 修小问题(scope ≤ 100 LOC) · D-233 unit test 同步(如有 page 改动)",
+        "AC-6 · agent-browser 抽查 /voice-chat · 验证渲染正常 · console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003"],
+      "priority": 4,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: tests/e2e/prd24-visual-baseline.spec.ts + 全 32 baseline 验证",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "tests/e2e/prd24-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd22-visual-baseline prd23-visual-baseline prd24-visual-baseline",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-005",
+      "title": "收官 · verify-prd-24.sh ALL CHECKS PASSED + /goal-verify + /prd-retro + AGENTS.md §11.15",
+      "description": "作为 PRD-24 收官 owner · 我需要 verify-prd-24.sh ALL CHECKS PASSED + /goal-verify §0 跑 gsd-map-codebase + /prd-retro 跨 PRD-21~24 复盘 + AGENTS.md §11.15 沉淀 · 标志 1:1 视觉复刻达成 · LLM 接入留 PRD-25+.",
+      "acceptanceCriteria": [
+        "AC-1 · 新建 scripts/verify-prd-24.sh · 复用 PRD-23 10 section 结构 · ≥ 30 checks(PRD-24 内) · 关键检查 · §1 /daily-tasks(grep H1 + 3 H3 stub + 添加账号 button) · §2 /evolution(grep H1 + 5 级 badge + 4 指标 + 5 H3 + 4 进化方向) · §3 /voice-chat(grep H1 VOICE CHAT + 6 quick prompts + 自我介绍) · §4 跨 page typecheck + vitest ≥ 308 · §5 visual baseline 32 fixture(prd22 13 + prd23 16 + prd24 3) 全 pass · §6 unit test 同步规则验证(3 new page 都有对应 __tests__/*.test.tsx)",
+        "AC-2 · 跑 verify-prd-24.sh ALL CHECKS PASSED · 退出码 0",
+        "AC-3 · /goal-verify 跑 §0 · apps/web/.planning/codebase/ 5 文件 gsd-map-codebase 重新生成 · D1=A 字面对账(3 new page + 字面常量)",
+        "AC-4 · /goal-verify §1+ · 对比 PRD-24 §2 目标 5 项 vs 5 US 交付 · 全 5 项 ✅ · 输出 .agents/goal-verify/prd-24-goal-verify.md",
+        "AC-5 · /prd-retro · 跨 PRD-21~24 4 PRD 复盘(累积通过率 + visual baseline 增长曲线 + 反例库统计) · 输出 .agents/retros/prd-24-vs-prd-23-retrospective.md",
+        "AC-6 · 更新 .agents/tech-debt.json · 关 TD-094(如 PRD-24 修了 e2e auth bypass 模板) · 登记 PRD-24 内偏差(预期 ≤ 2 TD)",
+        "AC-7 · 更新 AGENTS.md §11.15 · 加 PRD-24 沉淀(3 modules 完整化 + 32 baseline 收官 + 1:1 视觉复刻达成 + LLM 接入 PRD-25+ handoff)",
+        "AC-8 · 更新 scripts/ralph/progress.txt · PRD-24 ship summary(累计 4 PRD 视觉对齐征程总结 + 严格通过率趋势 + visual baseline 增长 13 → 29 → 32)",
+        "AC-9 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-10 · bash scripts/verify-prd-24.sh · ALL CHECKS PASSED · exit 0",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004"],
+      "priority": 5,
+      "passes": false,
+      "notes": "[TD-HINT] 收官 · 关 TD-094(若适用) · 反哺全局 ~/.claude/ skill 模板",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-24.sh",
+        ".agents/goal-verify/prd-24-goal-verify.md",
+        ".agents/retros/prd-24-vs-prd-23-retrospective.md"
+      ],
+      "files_to_modify": [
+        ".agents/tech-debt.json",
+        "AGENTS.md",
+        "scripts/ralph/progress.txt"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && bash scripts/verify-prd-24.sh",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    }
+  ]
+}
