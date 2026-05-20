@@ -4572,3 +4572,46 @@ PRD-23 范围:
   - AC "monorepo lint from ROOT" 不是 lint 全量 0 errors · 是 "0 errors in 本 story 引入 files"
   - DATABASE_URL env 默认不从 .env 加载 · 跑 audit script 需显式 `DATABASE_URL=postgresql://... pnpm audit:rls-tables`
 ---
+
+--- [RALPH] Iteration 7 ended: US-005 (27分钟 24秒) ---
+
+--- [RALPH] Iteration 8 started: US-006 at 2026-05-21 04:04 ---
+
+--- [RALPH] Iteration 9 started: US-006 at 2026-05-21 04:34 ---
+
+## 2026-05-21 04:52 - US-006 [PRD-26] · admin lazy load + chunking + 17 page unit test 补(TD-099 · D-256)
+- 实现了什么:
+  - apps/admin/src/router.tsx: 17 page 全 React.lazy import + Suspense fallback={<AdminLoading />} wrap + webpackChunkName comment 标 chunk 名
+  - apps/admin/src/components/AdminLoading.tsx: 新建 · Loader2-style SVG spinner + '加载页面...' · ≤ 30 LOC
+  - apps/admin/vite.config.ts: 加 manualChunks fn · 4 chunks: p0-core(6 page) + p0-review(2 page) + p1-health(5 page) + p2-advanced(4 page)
+  - apps/admin/vitest.config.ts: 新建 · jsdom + @testing-library/jest-dom setup
+  - apps/admin/src/test/setup.ts: 新建 · import @testing-library/jest-dom
+  - apps/admin/src/pages/*/___tests___/*.test.tsx: 17 page unit test files(每 page 3 test: renders/h1/loading-isPending)
+    - nsm/NsmDashboard · users/UsersPage · accounts/AccountsPage · cost/CostPage · audit/AuditPage · invites/InvitesPage
+    - reviewTrending/ReviewTrendingPage · reviewDeepLearn/ReviewDeepLearnPage
+    - evolutionHealth/EvolutionHealthPage · prompts/PromptsPage · quota/QuotaPage · compliance/CompliancePage · approvals/ApprovalGatesPage
+    - abExperiments/AbExperimentsPage · constants/ConstantsPage · featureFlags/FeatureFlagsPage · admin/placeholder/KnowledgePlaceholder
+  - .agents/tech-debt.json: TD-099 status=partial_resolved · notes_by_us006 标记 admin 部分完成 · 留 web 部分 PRD-27
+  - scripts/ralph/verify-artifacts/US-006/admin-lazy-load-{nsm,users,cost}.png: 3 张截图(playwright headless · super_admin 登录)
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors (AC-10)
+  - pnpm --filter @quanan/admin build: ✅ 6 chunks (main×2 + p0-core + p0-review + p1-health + p2-advanced) ≥ 5 (AC-4)
+  - pnpm --filter @quanan/admin test: ✅ 17 file 51 tests passed (AC-8)
+  - pnpm vitest run: ✅ 51/51 pass (AC-9)
+  - cd apps/admin && pnpm exec eslint (US-006 files): ✅ 0 errors (AC-12)
+  - browser: NSM仪表盘 + 用户管理 + 成本仪表盘 3 pages verified lazy load OK (AC-14)
+- 更改的文件:
+  - apps/admin/src/router.tsx (React.lazy 17 page)
+  - apps/admin/src/components/AdminLoading.tsx (新建)
+  - apps/admin/vite.config.ts (manualChunks 4 chunks)
+  - apps/admin/vitest.config.ts (新建)
+  - apps/admin/src/test/setup.ts (新建)
+  - apps/admin/src/pages/*/___tests___/*.test.tsx (17 个新建)
+  - .agents/tech-debt.json (TD-099 partial_resolved)
+  - scripts/ralph/verify-artifacts/US-006/ (3 截图)
+- **未来迭代的学习:**
+  - admin vitest 用 jsdom + @testing-library/jest-dom · 测试 mock 必 vi.hoisted + beforeEach(避免固定 mock 值)
+  - manualChunks fn 靠 id 路径匹配 · 4 chunk + main · vite build 产出 6 个 JS(2 main + 4 named)
+  - playwright headless 登录 admin · fill email input + click submit · 等 waitForURL '**/admin/**'
+  - 截图从 login redirect 到 nsm 约 2s · waitForTimeout(2000) 足够
+---

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T00:00:00",
+  "last_updated": "2026-05-21T04:29:15",
   "items": [
     {
       "id": "TD-001",
@@ -2094,11 +2094,11 @@
     {
       "id": "TD-099",
       "category": "test-coverage",
-      "title": "AiVideo / BoomGenerate / Generate page 缺 unit test(PRD-22 inline 重构后未补)",
+      "title": "AiVideo / BoomGenerate / Generate page 缺 unit test(PRD-22 inline 重构后未补) · admin 17 page tests 已补(PRD-26 US-006)",
       "discovered_at": "2026-05-21",
       "discovered_by": "Opus PRD-26-prep cleanup",
       "severity": "low",
-      "status": "open",
+      "status": "partial_resolved",
       "evidence": "tests/unit/web/pages/{AiVideo,BoomGenerate,Generate}.test.tsx 是 PRD-15 ToolForm-era 旧 test · PRD-22 inline 重构(commit 34 commits)后 page 实现变 · 旧 test 测的 ToolForm + toolKey 模式已不适用 · 21 tests fail · 不是 bug · 是 stale fixture · 已删 · 但 page 本身无 unit test 覆盖",
       "root_cause": "PRD-22 inline 重构时 ralph 没主动同步 unit test(D-233 D-233 unit test 同步硬规则在 PRD-23 才确立 · PRD-22 时还没机制)· 是历史欠债",
       "scheduled_fix_in": "PRD-26 admin UI MVP cleanup 顺手补 · 每 page ≥ 5 unit test(inline picker render + textarea char count + submit gate + toast)· 复用 PRD-22 inline picker 测试 pattern",
@@ -2115,7 +2115,9 @@
       ],
       "detected_in_prd": "PRD-26-prep",
       "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_at": null,
+      "notes_by_us006": "Admin 17 page unit test 已补(PRD-26 US-006 · 2026-05-21) · 剩余 web 部分(AiVideo/BoomGenerate/Generate)留 PRD-27",
+      "resolved_at_partial": "2026-05-21"
     }
   ]
 }
