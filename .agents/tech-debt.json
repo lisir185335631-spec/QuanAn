@@ -2002,6 +2002,40 @@
       "affects_prd": [
         "PRD-25"
       ]
+    },
+    {
+      "id": "TD-096",
+      "category": "design-drift",
+      "title": "apps-web .planning/codebase/ 事实层缺失 · PRD-25 新增 tRPC hooks + LLM 接入后未同步",
+      "discovered_at": "2026-05-20",
+      "discovered_by": "PRD-25 US-009 /goal-verify §0",
+      "severity": "low",
+      "status": "open",
+      "evidence": ".planning/codebase/ 仅有 apps-api/ + apps-admin/ 两个子目录 · apps-web/ 事实层从未建立。PRD-25 在 apps/web 新增大量 tRPC hooks(diagnosis.generate / voiceChat.start.subscription / dailyTasks.getToday+regenerateToday+markCompleted / evolution.getProfile+evolve+updateConfig) · 但无对应事实层记录。",
+      "root_cause": "gsd-map-codebase 仅对 api/admin 跑过 · apps/web 因纯 React 前端未纳入扫描范围。每 PRD 收官时仅 /goal-verify §0 api 层 · 遗漏 web 层。",
+      "scheduled_fix_in": "PRD-26 /goal-verify §0(下一轮收官时补建 apps-web 7 files)",
+      "fix_hint": "/gsd-map-codebase apps/web 生成 .planning/codebase/apps-web/ 7 文件 + 与 AGENTS.md §4 设计约束对账",
+      "impact": "Low: 事实层缺失不影响运行 · 但让 cross-PRD AGENTS.md 对账失去 web 层参照",
+      "affects_prd": [
+        "PRD-25"
+      ]
+    },
+    {
+      "id": "TD-097",
+      "category": "design-drift",
+      "title": "apps-api .planning/codebase/ 事实层 2026-05-13 快照 · PRD-25 LLM 接入后 stale",
+      "discovered_at": "2026-05-20",
+      "discovered_by": "PRD-25 US-009 /goal-verify §0",
+      "severity": "low",
+      "status": "open",
+      "evidence": "apps/api/.planning/codebase/STACK.md 最后更新日期 2026-05-13 · PRD-25(2026-05-20)在 apps/api 新增 7 个 LLM 路由变更(diagnosis.generate 真 LLM / voiceChat.start subscription / dailyTasks / evolution / AnalysisAgent / VideoAgent / LivestreamAgent 解锁)。事实层未反映这些改动。",
+      "root_cause": "每 PRD 未自动 refresh .planning/codebase/ 事实层 · 手动调用 /gsd-map-codebase 成本高 · 容易遗漏。",
+      "scheduled_fix_in": "PRD-26 /goal-verify §0(下一轮收官时 refresh)",
+      "fix_hint": "/gsd-map-codebase apps/api 重新扫 STACK.md / INTEGRATIONS.md(LLM Gateway 集成)/ TESTING.md(judge tests)",
+      "impact": "Low: 事实层记录 stale · 不影响运行 · 影响未来 AGENTS.md 对账准确性",
+      "affects_prd": [
+        "PRD-25"
+      ]
     }
   ]
 }
