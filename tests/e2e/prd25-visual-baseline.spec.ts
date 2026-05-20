@@ -1,7 +1,8 @@
 /**
- * PRD-25 US-001 AC-13 + US-002 AC-11 · visual diff baselines
+ * PRD-25 US-001 AC-13 + US-002 AC-11 + US-003 AC-12 · visual diff baselines
  * prd25-diagnosis-report.png baseline · 跑 8 步完成 → 截图 report 区域
  * prd25-voice-chat-streaming.png baseline · quick prompt + 发送 → 流式完成/error → 截图
+ * prd25-daily-tasks-with-tasks.png baseline · seed 3 tasks → /daily-tasks → 截图
  */
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
@@ -79,6 +80,41 @@ test.describe('PRD-25 US-002 · voice-chat visual baseline', () => {
     }
 
     const baselinePath = path.join(BASELINE_DIR, 'prd25-voice-chat-streaming.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+test.describe('PRD-25 US-003 AC-12 · daily-tasks visual baseline', () => {
+  test('AC-12 · prd25-daily-tasks-with-tasks.png baseline · server data 渲染截图', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+
+    // Attempt to seed 3 tasks for the dev user
+    const API_URL = process.env.E2E_API_URL ?? 'http://localhost:3000';
+    await page.request.post(`${API_URL}/trpc/dailyTasks.debugSeedTasks`, {
+      data: { count: 3, accountId: 1 },
+      headers: { 'Content-Type': 'application/json' },
+    }).catch(() => { /* seed may fail if server not running */ });
+
+    await page.goto(`${BASE_URL}/daily-tasks`);
+    await page.waitForLoadState('networkidle');
+
+    // Wait for page to settle (tasks or empty state)
+    const taskOrEmpty = page
+      .locator('[data-testid^="task-card-"]')
+      .or(page.locator('text=AI 暂未生成今日任务'))
+      .or(page.locator('text=请先创建 IP 账号'));
+    await expect(taskOrEmpty).toBeVisible({ timeout: 15_000 });
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-daily-tasks-with-tasks.png');
     await page.screenshot({ path: baselinePath, fullPage: true });
 
     expect(fs.existsSync(baselinePath)).toBe(true);

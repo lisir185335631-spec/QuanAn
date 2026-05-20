@@ -29,13 +29,18 @@ vi.mock('@/lib/trpc', () => ({
     costLog: { logFeedback: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) } },
     useUtils: () => ({
       dailyTasks: {
-        getToday: { getData: vi.fn(() => null), setData: vi.fn() },
+        getToday: {
+          getData: vi.fn(() => null),
+          setData: vi.fn(),
+          cancel: vi.fn().mockResolvedValue(undefined),
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
       },
     }),
     dailyTasks: {
       getToday: { useQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }) },
       getHistory: { useQuery: () => ({ data: [], isLoading: false }) },
-      markCompleted: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true, completedCount: 0, totalCount: 0 }), isPending: false }) },
+      markCompleted: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({ ok: true, completedCount: 0, totalCount: 0 }), isPending: false }) },
       regenerateToday: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
     diagnosis: {
