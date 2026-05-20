@@ -5,6 +5,31 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-21 00:50 - US-001 [PRD-26] · admin index + 7 unused placeholder cleanup(TD-031 closed)
+- 实现了什么:
+  - apps/admin/src/index.ts: placeholder 注释 → barrel export (AdminRoutes from ./router + AdminLayout from ./layouts/AdminLayout)
+  - 删 7 unused placeholder pages: ab/approval/compliance/config/evolution/prompts/quota.tsx
+  - 保留 knowledge.tsx (router.tsx 仍引用)
+  - .agents/tech-debt.json: TD-031 status=open → resolved(resolved_at=2026-05-21, resolved_in_prd=PRD-26 + close_evidence)
+  - scripts/ralph/verify-artifacts/US-001/admin-after-cleanup.png: admin SPA 截图(gitignored · local only)
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors
+  - lint admin(US-001 引入 files): ✅ apps/admin/src/index.ts 0 errors(pre-existing 268 errors 不在范围)
+  - grep placeholder/ 全项目: ✅ 1 命中(router.tsx:18 knowledge only)
+  - grep apiKey/OpenAI/Anthropic apps/admin: ✅ 0 命中
+  - vitest: ✅ 15 fails pre-existing(stash 验证同数·继承 PRD-26-prep 状態)
+  - curl localhost:5174: ✅ 200
+  - browser screenshot: ✅ sidebar + topbar + NSM 默认页渲染正常(Playwright 截图)
+- 更改的文件:
+  - apps/admin/src/index.ts (placeholder→barrel export)
+  - apps/admin/src/pages/admin/placeholder/{ab,approval,compliance,config,evolution,prompts,quota}.tsx (deleted)
+  - .agents/tech-debt.json (TD-031 resolved)
+- **未来迭代的学习:**
+  - AC-9 monorepo lint scope: pnpm lint from ROOT 时 apps/api pre-existing 97 errors 存在 · AC 字面 "0 errors in US-001 引入 files" 核实只需要看自己改的文件·用 eslint 单文件命令验证
+  - browse binary 需要 gstack setup · 未 build 时可用 playwright 直接调(pnpm store: node_modules/.pnpm/playwright@1.59.1/node_modules/playwright/index.mjs)
+  - git stash + rerun tests 是快速验证 pre-existing failures 的标准做法
+---
+
 ## 2026-05-20 17:12 - US-004 [PRD-25] · /evolution 接 trpc.evolution 全套
 - 实现了什么:
   - packages/clients/src/router-types.ts: evolution router 加 evolve + updateConfig mutations
@@ -4365,3 +4390,5 @@ PRD-23 范围:
 
 --- [RALPH] Iteration 2 ended: US-009 (31分钟 44秒) ---
 [Opus audit US-009] TD-098 approve 豁免: apps/api 5 lint errors in PRD-25 US-007 引入的 test files(import/order + type-only import + unbound-method · mechanical only · 不影响 ship)· web cleanup 222 successes given credit · 留 PRD-26 启动前 cleanup · audit_exemption + scheduled_fix_in 完整登记
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-21 00:43 ---
