@@ -1,0 +1,52 @@
+
+Running 5 tests using 1 worker
+
+[1A[2K[1/5] [chromium] › tests/e2e/validator-us002-browser.spec.ts:3:1 › AC-9a: Header height is 64px
+[1A[2K[chromium] › tests/e2e/validator-us002-browser.spec.ts:3:1 › AC-9a: Header height is 64px
+Header height: [33m65[39m
+
+[1A[2K  1) [chromium] › tests/e2e/validator-us002-browser.spec.ts:3:1 › AC-9a: Header height is 64px ─────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m64[39m
+    Received: [31m65[39m
+
+       7 |   const box = await header.boundingBox();
+       8 |   console.log('Header height:', box?.height);
+    >  9 |   expect(box?.height).toBe(64);
+         |                       ^
+      10 | });
+      11 |
+      12 | test('AC-9b: Logo shows gold square + QUAN/QN dual-line', async ({ page }) => {
+        at /Users/return/Desktop/QuanQn/tests/e2e/validator-us002-browser.spec.ts:9:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/validator-us002-browser-AC-9a-Header-height-is-64px-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/validator-us002-browser-AC-9a-Header-height-is-64px-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/validator-us002-browser-AC-9a-Header-height-is-64px-chromium/error-context.md
+
+
+[1A[2K[2/5] [chromium] › tests/e2e/validator-us002-browser.spec.ts:12:1 › AC-9b: Logo shows gold square + QUAN/QN dual-line
+[1A[2K[3/5] [chromium] › tests/e2e/validator-us002-browser.spec.ts:26:1 › AC-9c: ChevronDown rotates 180 on dropdown open
+[1A[2K[chromium] › tests/e2e/validator-us002-browser.spec.ts:26:1 › AC-9c: ChevronDown rotates 180 on dropdown open
+Dropdown data-state: open
+
+[1A[2KChevron computed transform: matrix(-1, 0, 0, -1, 0, 0)
+
+[1A[2K[4/5] [chromium] › tests/e2e/validator-us002-browser.spec.ts:42:1 › AC-9d: backdrop-blur-2xl class on header
+[1A[2K[chromium] › tests/e2e/validator-us002-browser.spec.ts:42:1 › AC-9d: backdrop-blur-2xl class on header
+Header class: sticky top-0 z-40 w-full border-b border-border bg-surface-container-low/90 backdrop-blur-2xl
+
+[1A[2K[5/5] [chromium] › tests/e2e/validator-us002-browser.spec.ts:50:1 › AC-10: No console errors
+[1A[2K[chromium] › tests/e2e/validator-us002-browser.spec.ts:50:1 › AC-10: No console errors
+Console errors: []
+
+[1A[2K  1 failed
+    [chromium] › tests/e2e/validator-us002-browser.spec.ts:3:1 › AC-9a: Header height is 64px ──────
+  4 passed (39.0s)

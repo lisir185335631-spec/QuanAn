@@ -1,16 +1,17 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-18T12:55:00",
-  "validator_end_ts": "2026-05-18T13:02:00",
-  "test_command": "OPENAI_API_KEY=$ANTHROPIC_API_KEY cd apps/api && pnpm vitest run src/specialists/__tests__/PositioningAgent.real-llm.test.ts",
+  "validator_start_ts": "2026-05-20T16:48:00",
+  "validator_end_ts": "2026-05-20T16:55:00",
+  "test_command": "pnpm --filter @quanan/web test + pnpm --filter @quanan/web typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "10 tests passed, 0 failed, 2 skipped (PositioningAgent real-llm tests correctly skipIf no API keys). Typecheck clean. All code-level ACs verified via inspection.",
+  "notes": "348 vitest tests passed (44 files). DailyTasks.test.tsx: 11 tests. Typecheck: 0 errors. AC-COMMON lint: 183 pre-existing errors across unrelated files (router.tsx import order from c5c26b5, etc.) — confirmed pre-date US-003; DailyTasks.tsx + DailyTasks.test.tsx lint=0. apiKey grep 0 hits. AC-13 screenshot verified (49194 bytes). All 14 ACs + AC-COMMON confirmed PASS.",
   "artifacts": [
-    "pytest-full.xml",
-    "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
+    "manifest.json",
+    "vitest-story.stdout.txt",
+    "typecheck.stdout.txt",
+    "daily-tasks-loaded.png"
   ]
 }

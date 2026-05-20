@@ -1,0 +1,180 @@
+
+Running 64 tests using 1 worker
+
+[1A[2K[1/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:24:3 › PRD-22 Visual Baseline › /generate fullPage inline matches prd22-generate.png
+[1A[2K[2/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:35:3 › PRD-22 Visual Baseline › /boom-generate fullPage inline matches prd22-boom-generate.png
+[1A[2K[3/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:47:3 › PRD-22 Visual Baseline › /ai-video fullPage inline matches prd22-ai-video.png
+[1A[2K[4/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:59:3 › PRD-22 Visual Baseline › /knowledge desktop fullPage matches prd22-knowledge.png
+[1A[2K[5/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:71:3 › PRD-22 Visual Baseline › /knowledge mobile fullPage matches prd22-knowledge-mobile.png
+[1A[2K[6/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:83:3 › PRD-22 Visual Baseline › /step/1 fullPage inline matches prd22-step1.png
+[1A[2K[7/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:95:3 › PRD-22 Visual Baseline › /step/3 fullPage inline matches prd22-step3.png
+[1A[2K[8/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:107:3 › PRD-22 Visual Baseline › /step/3b fullPage inline matches prd22-step3b.png
+[1A[2K[9/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:119:3 › PRD-22 Visual Baseline › /step/4 fullPage inline matches prd22-step4.png
+[1A[2K[10/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:131:3 › PRD-22 Visual Baseline › /step/4b fullPage inline matches prd22-step4b.png
+[1A[2K[11/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:143:3 › PRD-22 Visual Baseline › /step/5 fullPage inline matches prd22-step5.png
+[1A[2K[12/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:155:3 › PRD-22 Visual Baseline › /step/6 fullPage inline matches prd22-step6.png
+[1A[2K[13/64] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:167:3 › PRD-22 Visual Baseline › /step/7 fullPage inline matches prd22-step7.png
+[1A[2K[14/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:27:3 › PRD-23 Visual Baseline › /diagnosis fullPage matches prd23-diagnosis.png
+[1A[2K[15/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:42:3 › PRD-23 Visual Baseline › /accounts fullPage matches prd23-accounts.png
+[1A[2K[16/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:54:3 › PRD-23 Visual Baseline › /step/8 fullPage matches prd23-step8.png
+[1A[2K[17/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:71:3 › PRD-23 Visual Baseline › /diagnosis Step 8 report matches prd23-diagnosis-report.png
+[1A[2K[18/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:90:3 › PRD-23 Visual Baseline › /analysis fullPage matches prd23-analysis.png
+[1A[2K[19/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:107:3 › PRD-23 Visual Baseline › /video-analysis fullPage matches prd23-video-analysis.png
+[1A[2K[20/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:124:3 › PRD-23 Visual Baseline › /video-production fullPage matches prd23-video-production.png
+[1A[2K[21/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:141:3 › PRD-23 Visual Baseline › /acquisition-video fullPage matches prd23-acquisition-video.png
+[1A[2K[22/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:160:3 › PRD-23 Visual Baseline › /trending fullPage matches prd23-trending.png
+[1A[2K[23/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:177:3 › PRD-23 Visual Baseline › /present-styles fullPage matches prd23-present-styles.png
+[1A[2K[24/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:194:3 › PRD-23 Visual Baseline › /monetization fullPage matches prd23-monetization.png
+[1A[2K[25/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:211:3 › PRD-23 Visual Baseline › /private-domain fullPage matches prd23-private-domain.png
+[1A[2K[26/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:228:3 › PRD-23 Visual Baseline › /deep-learning fullPage matches prd23-deep-learning.png
+[1A[2K[27/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:245:3 › PRD-23 Visual Baseline › /copywriting fullPage matches prd23-copywriting.png
+[1A[2K[28/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:263:3 › PRD-23 Visual Baseline › /my-topics fullPage matches prd23-my-topics.png
+[1A[2K[29/64] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:286:3 › PRD-23 Visual Baseline › /history fullPage matches prd23-history.png
+[1A[2K[30/64] [chromium] › tests/e2e/prd24-visual-baseline.spec.ts:27:3 › PRD-24 Visual Baseline › /daily-tasks fullPage matches prd24-daily-tasks.png
+[1A[2K[31/64] [chromium] › tests/e2e/prd24-visual-baseline.spec.ts:43:3 › PRD-24 Visual Baseline › /evolution fullPage matches prd24-evolution.png
+[1A[2K[32/64] [chromium] › tests/e2e/prd24-visual-baseline.spec.ts:58:3 › PRD-24 Visual Baseline › /voice-chat fullPage matches prd24-voice-chat.png
+[1A[2K[33/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:24:3 › PRD-22 Visual Baseline › /generate fullPage inline matches prd22-generate.png
+[1A[2K[34/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:35:3 › PRD-22 Visual Baseline › /boom-generate fullPage inline matches prd22-boom-generate.png
+[1A[2K[35/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:47:3 › PRD-22 Visual Baseline › /ai-video fullPage inline matches prd22-ai-video.png
+[1A[2K[36/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:59:3 › PRD-22 Visual Baseline › /knowledge desktop fullPage matches prd22-knowledge.png
+[1A[2K  1) [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:59:3 › PRD-22 Visual Baseline › /knowledge desktop fullPage matches prd22-knowledge.png 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveScreenshot[2m([22m[32mexpected[39m[2m)[22m failed
+
+      Expected an image 1440px by 1109px, received 1440px by 1110px. 
+
+      Snapshot: prd22-knowledge.png
+
+    Call log:
+    [2m  - Expect "toHaveScreenshot(prd22-knowledge.png)" with timeout 5000ms[22m
+    [2m    - verifying given screenshot expectation[22m
+    [2m  - taking page screenshot[22m
+    [2m    - disabled all CSS animations[22m
+    [2m  - waiting for fonts to load...[22m
+    [2m  - fonts loaded[22m
+    [2m  - Expected an image 1440px by 1109px, received 1440px by 1110px.[22m
+    [2m  - waiting 100ms before taking screenshot[22m
+    [2m  - taking page screenshot[22m
+    [2m    - disabled all CSS animations[22m
+    [2m  - waiting for fonts to load...[22m
+    [2m  - fonts loaded[22m
+    [2m  - captured a stable screenshot[22m
+    [2m  - Expected an image 1440px by 1109px, received 1440px by 1110px.[22m
+
+
+       at ../../apps/web/scripts/visual-diff.ts:27
+
+      25 |   await page.setViewportSize(viewport);
+      26 |   const filename = baseline.endsWith('.png') ? baseline : `${baseline}.png`;
+    > 27 |   await expect(page).toHaveScreenshot([filename], {
+         |                      ^
+      28 |     maxDiffPixelRatio,
+      29 |     fullPage,
+      30 |     ...(clip != null ? { clip } : {}),
+        at expectVisualMatch (/Users/return/Desktop/QuanAn/apps/web/scripts/visual-diff.ts:27:22)
+        at /Users/return/Desktop/QuanAn/tests/e2e/prd22-visual-baseline.spec.ts:62:5
+
+    attachment #1: prd22-knowledge (image/png) ─────────────────────────────────────────────────────
+    Expected: ../../../../tmp/aiipznt-clone-research/screenshots/prd22-knowledge.png
+    Received: test-results/prd22-visual-baseline-PRD--67a65-matches-prd22-knowledge-png-mobile/prd22-knowledge-actual.png
+    Diff:     test-results/prd22-visual-baseline-PRD--67a65-matches-prd22-knowledge-png-mobile/prd22-knowledge-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd22-visual-baseline-PRD--67a65-matches-prd22-knowledge-png-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/prd22-visual-baseline-PRD--67a65-matches-prd22-knowledge-png-mobile/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd22-visual-baseline-PRD--67a65-matches-prd22-knowledge-png-mobile/error-context.md
+
+
+[1A[2K[37/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:71:3 › PRD-22 Visual Baseline › /knowledge mobile fullPage matches prd22-knowledge-mobile.png
+[1A[2K  2) [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:71:3 › PRD-22 Visual Baseline › /knowledge mobile fullPage matches prd22-knowledge-mobile.png 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveScreenshot[2m([22m[32mexpected[39m[2m)[22m failed
+
+      Expected an image 375px by 2405px, received 375px by 2409px. 
+
+      Snapshot: prd22-knowledge-mobile.png
+
+    Call log:
+    [2m  - Expect "toHaveScreenshot(prd22-knowledge-mobile.png)" with timeout 5000ms[22m
+    [2m    - verifying given screenshot expectation[22m
+    [2m  - taking page screenshot[22m
+    [2m    - disabled all CSS animations[22m
+    [2m  - waiting for fonts to load...[22m
+    [2m  - fonts loaded[22m
+    [2m  - Expected an image 375px by 2405px, received 375px by 2409px.[22m
+    [2m  - waiting 100ms before taking screenshot[22m
+    [2m  - taking page screenshot[22m
+    [2m    - disabled all CSS animations[22m
+    [2m  - waiting for fonts to load...[22m
+    [2m  - fonts loaded[22m
+    [2m  - captured a stable screenshot[22m
+    [2m  - Expected an image 375px by 2405px, received 375px by 2409px.[22m
+
+
+       at ../../apps/web/scripts/visual-diff.ts:27
+
+      25 |   await page.setViewportSize(viewport);
+      26 |   const filename = baseline.endsWith('.png') ? baseline : `${baseline}.png`;
+    > 27 |   await expect(page).toHaveScreenshot([filename], {
+         |                      ^
+      28 |     maxDiffPixelRatio,
+      29 |     fullPage,
+      30 |     ...(clip != null ? { clip } : {}),
+        at expectVisualMatch (/Users/return/Desktop/QuanAn/apps/web/scripts/visual-diff.ts:27:22)
+        at /Users/return/Desktop/QuanAn/tests/e2e/prd22-visual-baseline.spec.ts:74:5
+
+    attachment #1: prd22-knowledge-mobile (image/png) ──────────────────────────────────────────────
+    Expected: ../../../../tmp/aiipznt-clone-research/screenshots/prd22-knowledge-mobile.png
+    Received: test-results/prd22-visual-baseline-PRD--be788--prd22-knowledge-mobile-png-mobile/prd22-knowledge-mobile-actual.png
+    Diff:     test-results/prd22-visual-baseline-PRD--be788--prd22-knowledge-mobile-png-mobile/prd22-knowledge-mobile-diff.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/prd22-visual-baseline-PRD--be788--prd22-knowledge-mobile-png-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/prd22-visual-baseline-PRD--be788--prd22-knowledge-mobile-png-mobile/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/prd22-visual-baseline-PRD--be788--prd22-knowledge-mobile-png-mobile/error-context.md
+
+
+[1A[2K[38/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:83:3 › PRD-22 Visual Baseline › /step/1 fullPage inline matches prd22-step1.png
+[1A[2K[39/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:95:3 › PRD-22 Visual Baseline › /step/3 fullPage inline matches prd22-step3.png
+[1A[2K[40/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:107:3 › PRD-22 Visual Baseline › /step/3b fullPage inline matches prd22-step3b.png
+[1A[2K[41/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:119:3 › PRD-22 Visual Baseline › /step/4 fullPage inline matches prd22-step4.png
+[1A[2K[42/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:131:3 › PRD-22 Visual Baseline › /step/4b fullPage inline matches prd22-step4b.png
+[1A[2K[43/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:143:3 › PRD-22 Visual Baseline › /step/5 fullPage inline matches prd22-step5.png
+[1A[2K[44/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:155:3 › PRD-22 Visual Baseline › /step/6 fullPage inline matches prd22-step6.png
+[1A[2K[45/64] [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:167:3 › PRD-22 Visual Baseline › /step/7 fullPage inline matches prd22-step7.png
+[1A[2K[46/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:27:3 › PRD-23 Visual Baseline › /diagnosis fullPage matches prd23-diagnosis.png
+[1A[2K[47/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:42:3 › PRD-23 Visual Baseline › /accounts fullPage matches prd23-accounts.png
+[1A[2K[48/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:54:3 › PRD-23 Visual Baseline › /step/8 fullPage matches prd23-step8.png
+[1A[2K[49/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:71:3 › PRD-23 Visual Baseline › /diagnosis Step 8 report matches prd23-diagnosis-report.png
+[1A[2K[50/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:90:3 › PRD-23 Visual Baseline › /analysis fullPage matches prd23-analysis.png
+[1A[2K[51/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:107:3 › PRD-23 Visual Baseline › /video-analysis fullPage matches prd23-video-analysis.png
+[1A[2K[52/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:124:3 › PRD-23 Visual Baseline › /video-production fullPage matches prd23-video-production.png
+[1A[2K[53/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:141:3 › PRD-23 Visual Baseline › /acquisition-video fullPage matches prd23-acquisition-video.png
+[1A[2K[54/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:160:3 › PRD-23 Visual Baseline › /trending fullPage matches prd23-trending.png
+[1A[2K[55/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:177:3 › PRD-23 Visual Baseline › /present-styles fullPage matches prd23-present-styles.png
+[1A[2K[56/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:194:3 › PRD-23 Visual Baseline › /monetization fullPage matches prd23-monetization.png
+[1A[2K[57/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:211:3 › PRD-23 Visual Baseline › /private-domain fullPage matches prd23-private-domain.png
+[1A[2K[58/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:228:3 › PRD-23 Visual Baseline › /deep-learning fullPage matches prd23-deep-learning.png
+[1A[2K[59/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:245:3 › PRD-23 Visual Baseline › /copywriting fullPage matches prd23-copywriting.png
+[1A[2K[60/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:263:3 › PRD-23 Visual Baseline › /my-topics fullPage matches prd23-my-topics.png
+[1A[2K[61/64] [mobile] › tests/e2e/prd23-visual-baseline.spec.ts:286:3 › PRD-23 Visual Baseline › /history fullPage matches prd23-history.png
+[1A[2K[62/64] [mobile] › tests/e2e/prd24-visual-baseline.spec.ts:27:3 › PRD-24 Visual Baseline › /daily-tasks fullPage matches prd24-daily-tasks.png
+[1A[2K[63/64] [mobile] › tests/e2e/prd24-visual-baseline.spec.ts:43:3 › PRD-24 Visual Baseline › /evolution fullPage matches prd24-evolution.png
+[1A[2K[64/64] [mobile] › tests/e2e/prd24-visual-baseline.spec.ts:58:3 › PRD-24 Visual Baseline › /voice-chat fullPage matches prd24-voice-chat.png
+[1A[2K  2 failed
+    [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:59:3 › PRD-22 Visual Baseline › /knowledge desktop fullPage matches prd22-knowledge.png 
+    [mobile] › tests/e2e/prd22-visual-baseline.spec.ts:71:3 › PRD-22 Visual Baseline › /knowledge mobile fullPage matches prd22-knowledge-mobile.png 
+  1 skipped
+  61 passed (7.4m)

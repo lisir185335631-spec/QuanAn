@@ -1,0 +1,11 @@
+
+Running 6 tests using 1 worker
+
+  ✓  1 [chromium] › tests/e2e/prd23-acquisition-video-flow.spec.ts:19:3 › PRD-23 US-007 · /acquisition-video › AC-1 · H1 "获客型视频制作" + 副标题 "专为获客设计的短视频方案" (7.6s)
+  ✓  2 [chromium] › tests/e2e/prd23-acquisition-video-flow.spec.ts:24:3 › PRD-23 US-007 · /acquisition-video › AC-3 · 3 字段均填写后 CTA enabled；否则 disabled (7.6s)
+  ✓  3 [chromium] › tests/e2e/prd23-acquisition-video-flow.spec.ts:42:3 › PRD-23 US-007 · /acquisition-video › AC-4 · 提交后渲染 3 方案 grid · 每方案含 4 H4(主题角度/钩子/内容结构/CTA) (8.2s)
+  ✓  4 [mobile] › tests/e2e/prd23-acquisition-video-flow.spec.ts:19:3 › PRD-23 US-007 · /acquisition-video › AC-1 · H1 "获客型视频制作" + 副标题 "专为获客设计的短视频方案" (7.4s)
+  ✓  5 [mobile] › tests/e2e/prd23-acquisition-video-flow.spec.ts:24:3 › PRD-23 US-007 · /acquisition-video › AC-3 · 3 字段均填写后 CTA enabled；否则 disabled (7.4s)
+  ✓  6 [mobile] › tests/e2e/prd23-acquisition-video-flow.spec.ts:42:3 › PRD-23 US-007 · /acquisition-video › AC-4 · 提交后渲染 3 方案 grid · 每方案含 4 H4(主题角度/钩子/内容结构/CTA) (7.5s)
+
+  6 passed (46.2s)

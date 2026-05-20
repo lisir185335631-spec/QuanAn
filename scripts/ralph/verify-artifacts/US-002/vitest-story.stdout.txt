@@ -1,10 +1,18 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+> @quanan/web@0.1.0 test /Users/return/Desktop/QuanAn/apps/web
+> vitest run --config vitest.config.ts src/pages/tools/__tests__/VoiceChat.test.tsx
 
- ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 9ms
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+stderr | src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H1 字面锁 "VOICE CHAT"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx (13 tests) 69ms
 
  Test Files  1 passed (1)
-      Tests  11 passed (11)
-   Start at  03:32:27
-   Duration  331ms (transform 22ms, setup 20ms, collect 46ms, tests 9ms, environment 117ms, prepare 37ms)
+      Tests  13 passed (13)
+   Start at  15:59:43
+   Duration  568ms (transform 38ms, setup 21ms, collect 111ms, tests 69ms, environment 125ms, prepare 39ms)
 

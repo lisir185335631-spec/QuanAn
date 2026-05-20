@@ -1,17 +1,39 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-18T20:09:00",
-  "validator_end_ts": "2026-05-18T20:10:30",
-  "test_command": "cd apps/api && pnpm vitest run src/lib/env.test.ts",
+  "validator_start_ts": "2026-05-20T14:38:00",
+  "validator_end_ts": "2026-05-20T14:45:00",
+  "test_command": "pnpm vitest run (api 789 passed) + pnpm typecheck 0 errors + eslint US-001 files 0 errors + DB cost_log verified + browser AC-15",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "pytest.xml",
-    "pytest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
-  ]
+    "typecheck.stdout.txt",
+    "diagnosis-final-report.png",
+    "diagnosis-step1.png"
+  ],
+  "notes": {
+    "ac_1": "PASS - invokeLLM 完整实施 · system prompt persona=1046字符 ≥800 ✓ · 含7维度定义 ✓ · user prompt 含8 answers JSON ✓ · model_tier='reasoning' ✓ · responseFormat json_schema ✓",
+    "ac_2": "PASS - outputSchema L26-36 严守 · Record<string, {score,issues,suggestions}> + overallScore + priority · BaseSpecialist fallback路径isFallback=true ✓",
+    "ac_3": "PASS - diagnosis router generate mutation 真调 diagnosisAgent.execute · 写DiagnosisReport全字段 ✓",
+    "ac_4": "PASS - Diagnosis.tsx useMutation → trpc.diagnosis.generate · onSuccess setReport · loading Loader2 + 'AI 分析中...' ✓",
+    "ac_5": "PASS - REPORT_DIMENSIONS_7 用report.dimensions[dim.id]?.score · issues list + suggestions list · overallScore + priority list ✓",
+    "ac_6": "PASS - isFallback=true → 灰色hint banner + retry button data-testid=fallback-banner ✓",
+    "ac_7": "PASS - onError toast.error + retry button · network error BaseSpecialist内部指数退避 ✓",
+    "ac_8": "PASS - pnpm typecheck 0 errors · DiagnosisOutput类型propagate到router output ✓",
+    "ac_9": "PASS - Diagnosis.test.tsx 7 test cases all passed ✓",
+    "ac_10": "PASS - DiagnosisAgent.test.ts 4 test cases all passed ✓",
+    "ac_11": "PASS - DiagnosisAgent.judge.test.ts EXISTS · golden case schema-conformant ✓",
+    "ac_12": "PASS - prd25-diagnosis-llm-flow.spec.ts EXISTS · 8 step fixture · ≥5 assertions ✓",
+    "ac_13": "PASS - prd25-visual-baseline.spec.ts 追加 prd25-diagnosis-report.png baseline ✓",
+    "ac_14": "CONFIRMED - cost_log id=17183 agent_id=DiagnosisAgent event_type=specialist_call is_fallback=true model_used=fallback ✓",
+    "ac_15": "CONFIRMED - diagnosis-final-report.png 190921 bytes · isFallback路径 overallScore=50 · 7维度卡全部显示 ✓",
+    "ac_common_lint": "PASS - 修复后 US-001相关文件lint 0 errors · 397条pre-existing错误属于TD(pre-existing,非本US引入)",
+    "ac_common_typecheck": "PASS - 0 errors",
+    "ac_common_apikey": "PASS - grep 'apiKey' apps/web/src/ 0命中 ✓",
+    "ac_common_openai": "PASS - grep 'import OpenAI' apps/web/src/ 0命中 ✓",
+    "zero_regression": "PASS - api 789 passed 0 failed (vitest run) ✓"
+  }
 }

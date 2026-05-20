@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/api
+
+ ✓ src/specialists/__tests__/DiagnosisAgent.judge.test.ts > DiagnosisAgent LLM Judge — 美业账号诊断 golden case > golden case — 美业账号 7 维度完整输出 · schema 合规 · judge pass
+ ✓ src/specialists/__tests__/DiagnosisAgent.judge.test.ts > DiagnosisAgent LLM Judge — 美业账号诊断 golden case > judge runner mock · lightweight tier · judge_call event
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  14:23:49
+   Duration  334ms (transform 103ms, setup 0ms, collect 16ms, tests 167ms, environment 0ms, prepare 32ms)
+

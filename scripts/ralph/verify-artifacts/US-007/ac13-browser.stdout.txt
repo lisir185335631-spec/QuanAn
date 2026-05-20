@@ -1,0 +1,26 @@
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+[1A[2K
+Running 2 tests using 1 worker
+
+[1A[2K[1/2] [chromium] › tests/e2e/verify-us007-ac13.spec.ts:8:1 › AC-13 browser verification /step/3
+[1A[2K[chromium] › tests/e2e/verify-us007-ac13.spec.ts:8:1 › AC-13 browser verification /step/3
+H3 count: 7
+
+[1A[2KH3 texts: ["账号包装方案","视频参考案例","昵称推荐","头像设计方案","背景图设计方案","简介文案方案","整体包装策略"]
+
+[1A[2KConsole errors step3: NONE
+
+[1A[2K[2/2] [chromium] › tests/e2e/verify-us007-ac13.spec.ts:50:1 › AC-13 browser verification /step/3b
+[1A[2K[chromium] › tests/e2e/verify-us007-ac13.spec.ts:50:1 › AC-13 browser verification /step/3b
+Textarea count: 3
+
+[1A[2KH3b count: 7
+
+[1A[2KH3b texts: ["人设定制方案","人设定位","人设标签","内容方向","差异化策略","内容方向建议","IP 故事框架"]
+
+[1A[2KConsole errors step3b: NONE
+
+[1A[2K  2 passed (22.8s)

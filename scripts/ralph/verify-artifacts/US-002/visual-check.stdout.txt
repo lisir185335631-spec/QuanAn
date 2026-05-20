@@ -1,0 +1,13 @@
+
+> @quanqn/web@0.1.0 test:visual:check /Users/return/Desktop/QuanQn/apps/web
+> playwright test --config ../../playwright.config.ts --project=chromium prd21-visual-baseline
+
+
+Running 4 tests using 1 worker
+
+[1A[2K[1/4] [chromium] › ../../tests/e2e/prd21-visual-baseline.spec.ts:24:3 › PRD-21 Visual Baseline › home page / matches 00-home.png
+[1A[2K[2/4] [chromium] › ../../tests/e2e/prd21-visual-baseline.spec.ts:33:3 › PRD-21 Visual Baseline › guide page /guide matches 01-guide.png
+[1A[2K[3/4] [chromium] › ../../tests/e2e/prd21-visual-baseline.spec.ts:42:3 › PRD-21 Visual Baseline › ip-plan page /ip-plan matches 02-ip-plan.png
+[1A[2K[4/4] [chromium] › ../../tests/e2e/prd21-visual-baseline.spec.ts:51:3 › PRD-21 Visual Baseline › header desktop matches 00-home-header crop
+[1A[2K  4 passed (27.6s)
+::notice title=🎭 Playwright Run Summary::  4 passed (27.6s)

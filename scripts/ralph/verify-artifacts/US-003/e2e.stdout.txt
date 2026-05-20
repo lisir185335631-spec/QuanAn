@@ -1,0 +1,8 @@
+
+Running 4 tests using 1 worker
+
+[1A[2K[1/4] [chromium] › tests/e2e/prd21-mobile-nav.spec.ts:15:3 › PRD-21 Mobile Nav Panel › hamburger menu visible on mobile
+[1A[2K[2/4] [chromium] › tests/e2e/prd21-mobile-nav.spec.ts:19:3 › PRD-21 Mobile Nav Panel › click hamburger opens MobileNavPanel below header
+[1A[2K[3/4] [chromium] › tests/e2e/prd21-mobile-nav.spec.ts:24:3 › PRD-21 Mobile Nav Panel › panel shows 4 group labels (创作 / 策划 / 智能 / 更多)
+[1A[2K[4/4] [chromium] › tests/e2e/prd21-mobile-nav.spec.ts:33:3 › PRD-21 Mobile Nav Panel › panel shows ≥ 25 nav items
+[1A[2K  4 passed (28.6s)
