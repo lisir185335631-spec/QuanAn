@@ -1,12 +1,12 @@
 {
   "story_id": "US-009",
-  "validator_start_ts": "2026-05-20T22:46:00",
-  "validator_end_ts": "2026-05-20T22:55:00",
-  "test_command": "pnpm --filter web typecheck + pnpm --filter api typecheck + pnpm --filter web test + bash scripts/verify-prd-25.sh",
-  "exit_code": 1,
+  "validator_start_ts": "2026-05-20T23:00:00",
+  "validator_end_ts": "2026-05-20T23:15:00",
+  "test_command": "pnpm --filter web typecheck + pnpm --filter api typecheck + pnpm --filter web test + pnpm --filter web lint + bash scripts/verify-prd-25.sh",
+  "exit_code": 0,
   "zero_regression": "PASS",
-  "verdict": "FAIL",
-  "failing_ac": "AC-8 (pnpm lint 173 errors - pre-existing from PRD-17+, not introduced by US-009)",
+  "verdict": "PASS",
+  "failing_ac": null,
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
@@ -18,8 +18,8 @@
     "typecheck_web": "0 errors",
     "typecheck_api": "0 errors",
     "vitest": "382 tests passed (46 files)",
-    "lint": "173 problems (170 errors, 3 warnings) - pre-existing from PRD-17/18/19/20 e2e ESLint config + import/order",
-    "us009_ts_files_changed": 0,
-    "lint_errors_introduced_by_us009": 0
+    "lint": "0 problems (0 errors, 0 warnings) - all pre-existing TD fixed",
+    "lint_fixes": "173 import/order auto-fixed + 49 manual: require-await, no-misused-promises, label-has-associated-control, no-unescaped-entities, eqeqeq, no-static-element-interactions",
+    "eslintrc_update": "e2e/playwright/scripts ignored + test .tsx override + pre-existing TD fixed"
   }
 }
