@@ -4197,3 +4197,53 @@ PRD-23 范围:
   - no-unnecessary-type-assertion: `if (isDisabled) return` 后 TS 会通过 isDisabled 变量分析 narrowing，platform 已是 string，不需要额外断言
   - no-misused-promises: async 函数用于 onClick 需 void wrapper: `onClick={() => void handleCreate()}`
 ---
+
+--- [RALPH] Iteration 13 ended: US-007 (39分钟 33秒) ---
+
+--- [RALPH] Iteration 14 started: US-007 at 2026-05-20 21:03 ---
+
+## 2026-05-20 21:06 - US-007 (Retry 1)
+- 修复 AC-10 缺失项: 新建 apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts
+- 5 test cases: (a)正常返回{platform,followersRange,ipPositioning,rationale} (b)industry空字符串→BAD_REQUEST (c)positioningAgent.execute mode='recommend'验证 (d)activeAccountId=null→FORBIDDEN (e)isFallback透传
+- 根因: logger mock 漏 traceStore export → 改用 importOriginal 模式
+- 更改的文件: apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts (new)
+- **未来迭代的学习:**
+  - logger mock 必须用 importOriginal 保留 AsyncLocalStorage traceStore (trpc.ts 内部依赖它)
+  - 纯 vi.mock('@/lib/logger', () => ({ logger: ... })) 会触发 "No traceStore export" 运行时错误
+---
+
+--- [RALPH] Iteration 14 ended: US-007 (11分钟 24秒) ---
+
+--- [RALPH] Iteration 15 started: US-008 at 2026-05-20 21:14 ---
+
+## 2026-05-20 21:30 - US-008 [PRD-25] · TD-090/091/027/095 数据驱动重审 + ralph.py dev server + AGENTS.md §11.16
+- 实现了什么:
+  - AC-1/2/3: tests/e2e/prd25-vs-aiipznt-llm-diff.spec.ts (12 page · maxDiffPixelRatio=0.5 · dev-login auth bypass)
+    · .agents/verification/prd-25-vs-aiipznt-llm.md 决策报告 (TD-090 选项B 数据驱动 · TD-091 单列保留)
+  - AC-4/5: TD-095 创建+关闭 · ralph.py _parse_args 新增 --with-dev-server/--no-dev-server
+    · _spawn_dev_server(): 检查 :5173 就绪 → fork pnpm dev(apps/web) detached · pid→dev-server.pid · atexit SIGTERM
+    · main() 调用 _spawn_dev_server() + 标志输出
+  - AC-6: scripts/ralph/VALIDATOR.md §X dev server 健康检查 SOP (X.1~X.4 · curl retry ≤6次 · SUSPECTED:dev_server_unavailable)
+  - AC-7: TD-027 关闭 · tests/judge/voice-chat.judge.ts mock 模式修复
+    · vi.fn().mockResolvedValue 固定 pass:true → vi.hoisted() + beforeEach + 新增第4个 test
+    · pnpm test:judge 56 passed (21 files)
+  - AC-8: AGENTS.md §11.16 (v0.9) · 5 子节 PRD-25 LLM 接入全链路沉淀
+  - AC-9: sync-to-project.sh 跑成功 · ralph.py+VALIDATOR.md+CLAUDE.md diff=0
+  - AC-10: pnpm typecheck 0 errors · pnpm test:judge 56/56 pass
+  - AC-11: scripts/ralph/CLAUDE.md 新增 dev server 启动说明 + 状态检查命令
+  - tech-debt.json: TD-027/090/091 resolved + TD-095 created+resolved
+- 更改的文件:
+  - tests/judge/voice-chat.judge.ts (TD-027 mock 修复)
+  - tests/e2e/prd25-vs-aiipznt-llm-diff.spec.ts (新建 AC-1)
+  - .agents/tech-debt.json (TD-027/090/091 resolved + TD-095 new)
+  - .agents/verification/prd-25-vs-aiipznt-llm.md (新建 AC-2/3)
+  - scripts/ralph/ralph.py (TD-095 _spawn_dev_server + --with-dev-server flag)
+  - scripts/ralph/VALIDATOR.md (§X dev server 健康检查 SOP)
+  - scripts/ralph/CLAUDE.md (dev server 启动说明)
+  - AGENTS.md (§11.16 v0.9 PRD-25 沉淀)
+- **未来迭代的学习:**
+  - LLM 内容非确定性使 aiipznt 直接比对永远 fail · 双层验证体系(视觉 regression + LLM judge)更健壮
+  - judge test mock 必须用 vi.hoisted() + beforeEach 模式 · 禁止 vi.fn().mockResolvedValue 全局固定 pass:true
+  - ralph.py --with-dev-server 模式 fork 前先检查 :5173 是否就绪(避免重复 fork)
+  - VALIDATOR.md §X SOP: Validator browse 前必 curl 健康检查 + retry ≤6 · 防 connect refused 误判
+---
