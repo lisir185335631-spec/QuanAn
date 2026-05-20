@@ -5,6 +5,49 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 17:12 - US-004 [PRD-25] · /evolution 接 trpc.evolution 全套
+- 实现了什么:
+  - packages/clients/src/router-types.ts: evolution router 加 evolve + updateConfig mutations
+  - apps/api/src/trpc/routers/evolution.ts: rateableId .positive() → .min(0) 允许 0(AC-4 manual_trigger)
+  - apps/web/src/pages/modules/Evolution.tsx: 完整重写 stub → trpc 全套接入
+    · getProfile.useQuery(enabled:!!accountId) + loading spinner(AC-1) + EmptyState(null profile)
+    · LevelBadgeRow activeId = profile?.level ?? 'L1' (AC-2 D-237 字面锁继承)
+    · 4 MetricCard 真数据: feedbackCountGood / needsImprovement / deepLearningCount / satisfactionRate(AC-3)
+    · 触发进化 → evolveMutation(rateableType:'manual_trigger', rateableId:0) + invalidate + toast(AC-4)
+    · 生成洞察 button disabled(feedbackCountTotal<5, title='需 ≥ 5 反馈') · insightMutation(AC-5)
+    · latestInsight → extractInsightText → truncate 200 chars + 查看完整 btn(AC-6 D-237字面锁)
+    · 新增学习 → toast.info('新增学习功能 · 跑任意 specialist 后自动加入档案')(AC-7)
+    · 进化方向: server-source-of-truth(profile.currentDirection) + updateConfig mutation + LS 兜底(AC-8)
+  - apps/web/src/pages/__tests__/Evolution.test.tsx: 完整重写 · 12 tests(≥8 AC-10)
+    · AC-10(a) level badge L2 active · AC-10(b) 4指标真数据 · AC-10(c) evolve mutate
+    · AC-10(d/d2) disabled<5/enabled≥5 · AC-10(e/e2) latestInsight/暂无字面锁 · AC-10(f/f2) direction SoT
+    · AC-1 EmptyState · loading spinner · H1 字面锁 · AC-7 toast.info
+  - apps/web/src/test/pages.test.tsx: evolution mock 加 evolve+updateConfig useMutation + useUtils.evolution
+  - tests/e2e/prd25-evolution-llm-flow.spec.ts: 新建 · 6 assertions(AC-11)
+  - tests/e2e/prd25-visual-baseline.spec.ts: 追加 AC-12 evolution-with-profile.png baseline
+  - scripts/ralph/verify-artifacts/US-004/evolution-with-profile.png: AC-13 截图(local only · .gitignore)
+- 验证结果:
+  - typecheck: ✅ 0 errors(web + api 双通)
+  - lint: ✅ 0 new errors in changed files
+  - vitest: ✅ 351 tests pass(+3 from US-003 base of 348 · 实际+12 tests -8 old tests = net+4)
+  - browser(agent-browser): ✅ /auth/dev-login → /evolution · H1 智能体进化中心 · EmptyState 新用户可见
+- 更改的文件:
+  - packages/clients/src/router-types.ts (evolve+updateConfig mutations)
+  - apps/api/src/trpc/routers/evolution.ts (rateableId .min(0))
+  - apps/web/src/pages/modules/Evolution.tsx (完整重写)
+  - apps/web/src/pages/__tests__/Evolution.test.tsx (完整重写 12 tests)
+  - apps/web/src/test/pages.test.tsx (evolution mock 扩展)
+  - tests/e2e/prd25-evolution-llm-flow.spec.ts (新建)
+  - tests/e2e/prd25-visual-baseline.spec.ts (追加 AC-12)
+  - scripts/ralph/verify-artifacts/US-004/evolution-with-profile.png (local only)
+- **未来迭代的学习:**
+  - trpc mutation onSuccess callback 模式: useMutation({onSuccess: () => void utils.xxx.invalidate()}) — void 防 unhandled rejection
+  - router-types.ts 和 API router 的 schema 必须同步: 如果 API router 用 z.number().int().positive() 但 AC 要求 rateableId:0 → 需同步改 schema 为 .min(0) 才能 e2e 通过
+  - evolution 的 latestInsight 是 unknown type(Prisma JSON) → 需 extractInsightText helper 提取 .insights.summary 或 JSON.stringify 兜底
+  - `readonly string[]` 的 .includes() 不需要 `as string` 断言 → 直接传 string 即可(TypeScript 已收窄)
+  - vi.mock() 里引用的外部 vi.fn() 变量(如 mockGetProfileUseQuery)在 factory 外定义即可 · 不需要 await import 重复导入 useActiveAccount
+---
+
 ## 2026-05-20 16:41 - US-003 [PRD-25] · /daily-tasks 接 trpc.dailyTasks 全套
 - 实现了什么:
   - DailyTasks.tsx: 完整替换 stub → trpc.dailyTasks 全套接入
@@ -4011,3 +4054,7 @@ PRD-23 范围:
   - markCompleted optimistic UI 需要 useUtils cancel + getData + setData 全 3 个 · 缺 cancel 会导致并发 race
   - refetchInterval fn 接收 query 对象(非 data 本身) · query.state.data 才是实际值
 ---
+
+--- [RALPH] Iteration 7 ended: US-003 (38分钟 56秒) ---
+
+--- [RALPH] Iteration 8 started: US-004 at 2026-05-20 16:56 ---
