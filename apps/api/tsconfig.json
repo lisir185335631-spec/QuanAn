@@ -9,7 +9,8 @@
       "@/*": ["./src/*"],
       "@quanan/schemas": ["../../packages/schemas/src"],
       "@quanan/schemas/*": ["../../packages/schemas/src/*"],
-      "@quanan/ui/admin/pdf": ["../../packages/ui/src/admin/PdfBillTemplate.tsx"]
+      "@quanan/ui/admin/pdf": ["../../packages/ui/src/admin/PdfBillTemplate.tsx"],
+      "zod": ["./node_modules/zod"]
     }
   },
   "include": ["src", "scripts"],

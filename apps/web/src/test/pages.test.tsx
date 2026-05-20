@@ -38,7 +38,17 @@ vi.mock('@/lib/trpc', () => ({
       markCompleted: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true, completedCount: 0, totalCount: 0 }), isPending: false }) },
       regenerateToday: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
-    diagnosis: { latest: { useQuery: () => ({ data: null, isLoading: false }) } },
+    diagnosis: {
+      latest: { useQuery: () => ({ data: null, isLoading: false }) },
+      generate: {
+        useMutation: () => ({
+          mutate: vi.fn(),
+          isPending: false,
+          isError: false,
+          reset: vi.fn(),
+        }),
+      },
+    },
     evolution: {
       getProfile: { useQuery: () => ({ data: null, isLoading: false }) },
       getInsightHistory: { useQuery: () => ({ data: [], isLoading: false }) },

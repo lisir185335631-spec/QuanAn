@@ -97,8 +97,14 @@ export type DiagnosisReportOutput = {
   recommendedSteps: unknown[];
   agentId: string;
   traceId: string | null;
+  isFallback: boolean;
+  modelUsed: string | null;
+  tokensUsed: number | null;
+  durationMs: number | null;
   createdAt: string;
 } | null;
+
+export type DiagnosisGenerateOutput = NonNullable<DiagnosisReportOutput>;
 
 export type EvolutionInsightItem = {
   id: number;
@@ -338,6 +344,30 @@ const _shadowRouter = _t.router({
     }),
   }),
   diagnosis: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            answers: Array<{ dimension: string; score: number; comment?: string }>;
+            inferredStage?: string;
+          },
+      )
+      .mutation((): DiagnosisGenerateOutput => ({
+        id: 0,
+        answers: [],
+        dimensions: {},
+        overallScore: 0,
+        inferredStage: 'starter',
+        topPriority: '',
+        recommendedSteps: [],
+        agentId: 'DiagnosisAgent',
+        traceId: null,
+        isFallback: false,
+        modelUsed: null,
+        tokensUsed: null,
+        durationMs: null,
+        createdAt: new Date().toISOString(),
+      })),
     latest: _t.procedure.query((): DiagnosisReportOutput => null),
   }),
   evolution: _t.router({

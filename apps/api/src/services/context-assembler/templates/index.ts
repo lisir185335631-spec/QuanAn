@@ -20,6 +20,7 @@ import { TOPIC_TEMPLATE }             from './topic';
 import { VIDEO_TEMPLATE }             from './video';
 import { VIDEO_PRODUCTION_TEMPLATE }  from './video-production';
 import { VOICE_CHAT_AGENT_TEMPLATE }  from './voice-chat-agent';
+import { DIAGNOSIS_TEMPLATE }         from './diagnosis';
 
 
 export interface SpecialistTemplate {
@@ -45,6 +46,7 @@ export const SPECIALIST_TEMPLATES: Partial<Record<SpecialistId, SpecialistTempla
   EvolutionAgent:   EVOLUTION_AGENT_TEMPLATE,
   DailyTaskAgent:   DAILY_TASK_AGENT_TEMPLATE,
   VoiceChatAgent:   VOICE_CHAT_AGENT_TEMPLATE,
+  DiagnosisAgent:   DIAGNOSIS_TEMPLATE,
 };
 
 export {
@@ -62,4 +64,5 @@ export {
   EVOLUTION_AGENT_TEMPLATE,
   DAILY_TASK_AGENT_TEMPLATE,
   VOICE_CHAT_AGENT_TEMPLATE,
+  DIAGNOSIS_TEMPLATE,
 };
