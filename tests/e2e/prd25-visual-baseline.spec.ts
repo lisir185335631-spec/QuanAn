@@ -197,3 +197,45 @@ test.describe('PRD-25 US-005 AC-10 · analysis visual baseline', () => {
     expect(size).toBeGreaterThan(1000);
   });
 });
+
+// ── PRD-25 US-006 AC-10 · video-production + acquisition-video baselines ──────
+
+test.describe('PRD-25 US-006 AC-10 · video-production visual baseline', () => {
+  test('AC-10 · prd25-video-production-with-result.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/video-production`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-video-production-with-result.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+test.describe('PRD-25 US-006 AC-10 · acquisition-video visual baseline', () => {
+  test('AC-10 · prd25-acquisition-video-with-plans.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/acquisition-video`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-acquisition-video-with-plans.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
