@@ -44,7 +44,7 @@ const evolveInput = z.object({
   rating: z.enum(['good', 'bad']),
   agentId: z.string().min(1).max(64),
   rateableType: z.string().max(32).default('history'),
-  rateableId: z.number().int().positive(),
+  rateableId: z.number().int().min(0),
   historyId: z.number().int().positive().optional(),
   comment: z.string().max(200).optional(),
 });

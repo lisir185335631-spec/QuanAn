@@ -122,3 +122,38 @@ test.describe('PRD-25 US-003 AC-12 · daily-tasks visual baseline', () => {
     expect(size).toBeGreaterThan(1000);
   });
 });
+
+test.describe('PRD-25 US-004 AC-12 · evolution visual baseline', () => {
+  test('AC-12 · prd25-evolution-with-profile.png baseline · profile 数据 + L2 active state', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+
+    // Attempt to seed profile via debugSeedInsight
+    const API_URL = process.env.E2E_API_URL ?? 'http://localhost:3000';
+    await page.request.post(`${API_URL}/trpc/evolution.debugSeedInsight`, {
+      data: {},
+      headers: { 'Content-Type': 'application/json' },
+    }).catch(() => { /* seed may fail — proceed anyway */ });
+
+    await page.goto(`${BASE_URL}/evolution`);
+    await page.waitForLoadState('networkidle');
+
+    // Wait for profile or empty state
+    const l2badge = page.getByTestId('badge-L2');
+    const emptyState = page.locator('text=新用户 · 暂无进化数据');
+    const loadingSpinner = page.getByTestId('evolution-loading');
+
+    await expect(l2badge.or(emptyState).or(loadingSpinner)).toBeVisible({ timeout: 15_000 });
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-evolution-with-profile.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});

@@ -373,6 +373,12 @@ const _shadowRouter = _t.router({
   }),
   evolution: _t.router({
     getProfile: _t.procedure.query((): EvolutionProfileOutput => null),
+    evolve: _t.procedure
+      .input((x: unknown) => x as { rating: 'good' | 'bad'; agentId: string; rateableType?: string; rateableId: number; historyId?: number; comment?: string })
+      .mutation((): { ok: boolean; feedbackId: number } => ({ ok: true, feedbackId: 0 })),
+    updateConfig: _t.procedure
+      .input((x: unknown) => x as { autoEvolutionEnabled?: boolean; currentDirection?: string })
+      .mutation((): { ok: boolean; config: { autoEvolutionEnabled: boolean; currentDirection: string; level: string } } => ({ ok: true, config: { autoEvolutionEnabled: false, currentDirection: '综合', level: 'L1' } })),
     history: _t.procedure
       .input((x: unknown) => x as { limit?: number; offset?: number } | undefined)
       .query((): EvolutionInsightItem[] => []),

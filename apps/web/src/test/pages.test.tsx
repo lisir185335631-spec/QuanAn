@@ -36,6 +36,11 @@ vi.mock('@/lib/trpc', () => ({
           invalidate: vi.fn().mockResolvedValue(undefined),
         },
       },
+      evolution: {
+        getProfile: {
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+      },
     }),
     dailyTasks: {
       getToday: { useQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }) },
@@ -55,7 +60,9 @@ vi.mock('@/lib/trpc', () => ({
       },
     },
     evolution: {
-      getProfile: { useQuery: () => ({ data: null, isLoading: false }) },
+      getProfile: { useQuery: () => ({ data: null, isLoading: false, isError: false }) },
+      evolve: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      updateConfig: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       getInsightHistory: { useQuery: () => ({ data: [], isLoading: false }) },
       getFeedbackTrend: { useQuery: () => ({ data: [], isLoading: false }) },
       getModuleRanking: { useQuery: () => ({ data: { ranking: [] }, isLoading: false }) },
