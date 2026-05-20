@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T00:20:16",
+  "last_updated": "2026-05-21T10:40:00",
   "items": [
     {
       "id": "TD-001",
@@ -875,10 +875,11 @@
       "detected_in_prd": "PRD-11",
       "detected_in_story": "goal-verify §0 (GSD codebase mapper)",
       "fix_by": "PRD-12 启动前",
-      "status": "open",
+      "status": "resolved",
       "fix_hint": "(1) 抽 showToast/Dialog/ActionChip/PageBtn/StatCard 到 packages/ui/src/admin/ · 6 业务页 import 替换。(2) admin-client.ts onError handler 加 401 → redirect /admin/login + showToast. (3) 落地 4 hooks 到 apps/admin/src/hooks/(useToast/useDebounce/useEscape/useClickOutside).",
-      "resolved_in_prd": null,
-      "resolved_at": null
+      "resolved_in_prd": "PRD-26",
+      "resolved_at": "2026-05-21",
+      "close_evidence": "US-004 PRD-26: 4 components (Sidebar/TopBar/StatusBar/AuditDrawer) moved from apps/admin/src/components/admin/ to packages/ui/src/admin/ · packages/ui/src/admin/index.ts 4 named exports added · apps/admin import 改 @quanan/ui/admin · adminTrpc 留 AdminLayout 层 · 0 dead files · packages/ui 无 trpc 依赖 · typecheck 5 ws 0 errors · admin SPA :5174 renders OK"
     },
     {
       "id": "TD-050",

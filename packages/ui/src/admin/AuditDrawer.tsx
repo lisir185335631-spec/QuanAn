@@ -1,17 +1,10 @@
-// PRD-10 US-005 · AuditDrawer · React Portal slide-from-right
-// AC-4: admin.audit.listMine query + 30s polling · 50 条 row + ESC/outside click 关
+// @quanan/ui/admin · AuditDrawer — slide-from-right portal, no app-layer deps
+// logs are fetched by AdminLayout (adminTrpc.audit.listMine) and passed as props
 
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-import { adminTrpc } from '../../lib/admin-client';
-
-interface AuditDrawerProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-interface AuditRow {
+export interface AuditRow {
   id: number;
   eventType: string;
   eventCategory: string;
@@ -19,18 +12,15 @@ interface AuditRow {
   payload?: Record<string, unknown> | null;
 }
 
-export function AuditDrawer({ open, onClose }: AuditDrawerProps) {
+interface AuditDrawerProps {
+  open: boolean;
+  onClose: () => void;
+  logs: AuditRow[];
+}
+
+export function AuditDrawer({ open, onClose, logs }: AuditDrawerProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const { data } = adminTrpc.audit.listMine.useQuery(undefined, {
-    enabled: open,
-    refetchInterval: 30_000,
-    refetchIntervalInBackground: false,
-  });
-
-  const rows: AuditRow[] = data ?? [];
-
-  // ESC to close
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -69,10 +59,10 @@ export function AuditDrawer({ open, onClose }: AuditDrawerProps) {
         </div>
 
         <div className="audit-drawer__body">
-          {rows.length === 0 ? (
+          {logs.length === 0 ? (
             <div className="audit-drawer__empty">暂无审计记录</div>
           ) : (
-            rows.map((row) => (
+            logs.map((row) => (
               <div key={row.id} className="audit-drawer__row">
                 <span className="audit-drawer__event-type">{row.eventType}</span>
                 <span style={{ color: '#555', fontSize: 11 }}>

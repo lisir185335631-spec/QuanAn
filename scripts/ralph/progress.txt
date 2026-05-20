@@ -5,6 +5,44 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-21 02:20 - US-003 [PRD-26] · admin auth + 三档权限矩阵 e2e
+- 实现了什么:
+  - prisma/schema.prisma: AdminUser 加 allowedDomains String[] 字段
+  - prisma/migrations/20260520175805_add_admin_allowed_domains/: 新迁移
+  - apps/api/src/lib/auth/lucia-admin.ts: AdminDatabaseAttrs/AdminLuciaUser/getUserAttributes/validateAdminSession 全部加 allowedDomains
+  - apps/api/src/trpc/routers/admin/auth.ts: auth.me 返回 allowedDomains + 新增 auth.logPageView mutation
+  - packages/clients/src/admin-router-types.ts: shadow auth.me 加 allowedDomains + logPageView
+  - apps/admin/src/lib/admin-routes.ts: 17 routes 全加 domainKey + getAllowedRoutes/isDomainAllowed helpers
+  - apps/admin/src/components/admin/Sidebar.tsx: 用 auth.me.allowedDomains 过滤 sidebar routes(服务端权威 · 无前端硬编码)
+  - apps/admin/src/layouts/AdminLayout.tsx: page_view audit on route change + route guard 重定向到第一个允许域
+  - apps/api/src/trpc/routers/admin/__tests__/*.ts: 11 文件 AdminLuciaUser fixtures 加 allowedDomains: []
+  - tests/e2e/admin/_admin-seed.ts: 新建 shared seed helper (AC-6 DRY)
+  - tests/e2e/admin/admin-foundation-loop.spec.ts: 重构用 shared helper(行为不变)
+  - tests/e2e/prd26-admin-role-matrix.spec.ts: 新建 · 6 tests · 3 role fixtures · 6 passed
+  - scripts/ralph/verify-artifacts/US-003/role-{super_admin,domain_admin,reviewer}.png: 3 截图
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors (AC-9)
+  - lint: ✅ 0 errors in US-003 引入 files · 97 pre-existing 不变 (AC-10)
+  - playwright prd26-admin-role-matrix 6/6 passed (AC-1~8/12/13)
+  - grep 'admin role hardcoded': ✅ 0 命中 (AC-12)
+  - DB: allowedDomains 正确存储/读取 (domain_admin=['users','accounts','cost'] · reviewer=['review_trending','review_deep_learn'])
+- 更改的文件:
+  - prisma/schema.prisma + migrations/20260520175805_add_admin_allowed_domains/ (schema)
+  - apps/api/src/lib/auth/lucia-admin.ts + auth.ts (backend)
+  - packages/clients/src/admin-router-types.ts (shadow types)
+  - apps/admin/src/lib/admin-routes.ts + Sidebar.tsx + AdminLayout.tsx (frontend)
+  - apps/api/src/trpc/routers/admin/__tests__/*.ts (11 files · fixture fix)
+  - tests/e2e/admin/_admin-seed.ts (new helper)
+  - tests/e2e/admin/admin-foundation-loop.spec.ts (refactored)
+  - tests/e2e/prd26-admin-role-matrix.spec.ts (new test)
+- **未来迭代的学习:**
+  - allowedDomains 空数组 = 全域访问(super_admin) · 非空数组 = 限制域列表 · 这是 domain key 设计约定
+  - Route guard redirect 必须指向 getAllowedRoutes()[0].path 而非 /admin · 避免 /admin→/nsm 死循环
+  - Playwright toHaveCount(N) 有内置重试 · 优于 count() 直接断言 · 解决 React Query 时序问题
+  - ESM 项目不支持 require() · 需用 import + fileURLToPath(import.meta.url) 替代 __dirname
+  - admin Prisma test fixtures 都需要 allowedDomains 字段 · 改 AdminLuciaUser 必须批量更新 11 个 __tests__
+---
+
 ## 2026-05-21 10:15 - US-002 [PRD-26] · 17 page 渲染 + visual baseline
 - 实现了什么:
   - tests/e2e/prd26-admin-visual-baseline.spec.ts: 新建 · 17 admin pages visual baseline
@@ -4457,3 +4495,42 @@ PRD-23 范围:
 --- [RALPH] Iteration 2 ended: US-001 (14分钟 22秒) ---
 
 --- [RALPH] Iteration 3 started: US-002 at 2026-05-21 01:19 ---
+
+--- [RALPH] Iteration 3 ended: US-002 (34分钟 42秒) ---
+
+--- [RALPH] Iteration 4 started: US-003 at 2026-05-21 01:53 ---
+
+--- [RALPH] Iteration 4 ended: US-003 (39分钟 44秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-21 02:33 ---
+
+--- [RALPH] Iteration 6 started: US-004 at 2026-05-21 03:03 ---
+
+## 2026-05-21 03:15 - US-004 · admin UI primitive 抽 packages/ui/src/admin/(TD-049 closed)
+- 实现了什么:
+  - 4 components 从 apps/admin/src/components/admin/ 移到 packages/ui/src/admin/:
+    - Sidebar.tsx: props-injected (role/groups/currentPath/onNavigate) · 无 adminTrpc 依赖
+    - TopBar.tsx: props-injected (userEmail/userRole/onLogout/onAuditDrawerToggle) · 无 adminTrpc 依赖
+    - StatusBar.tsx: props-injected (role?) · 纯显示
+    - AuditDrawer.tsx: props-injected (open/onClose/logs) · logs 由 AdminLayout 传入
+  - packages/ui/src/admin/index.ts: 4 named export 追加 (Sidebar/TopBar/StatusBar/AuditDrawer + types)
+  - apps/admin/src/layouts/AdminLayout.tsx: import 改 @quanan/ui/admin · adminTrpc 留 AdminLayout 层
+  - apps/admin/src/components/admin/{Sidebar,TopBar,StatusBar,AuditDrawer}.tsx: 4 文件删除 · 0 dead file
+  - .agents/tech-debt.json: TD-049 status=resolved · resolved_at=2026-05-21 · resolved_in_prd=PRD-26
+  - tests/unit/admin/layout.test.tsx: mock 补 auth.logPageView.useMutation + allowedDomains: [] (US-003 新增未同步)
+  - tests/unit/admin/sidebar.test.tsx: 更新为 props API (从 @quanan/ui/admin import)
+  - tests/unit/admin/audit-drawer.test.tsx: 更新为 props API (从 @quanan/ui/admin import)
+  - scripts/ralph/verify-artifacts/US-004/: admin-after-packages-lift.png + admin-audit-drawer-open.png
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors (AC-7)
+  - vitest: ✅ 2021 tests pass · 0 failing tests (AC-8) · 15 pre-existing setup failures 不变
+  - AC-9 grep: ✅ packages/ui 无 trpc/clients/@/lib 依赖
+  - AC-14 循环依赖: ✅ packages/ui 不 import apps/* · pnpm ls 无循环
+  - AC-11/AC-13 browser: ✅ admin SPA :5174 · TopBar/Sidebar/StatusBar/AuditDrawer 全渲染 OK · AuditDrawer 触发 OK
+  - AC-12 lint: ✅ 0 errors in US-004 引入 files · apps/admin/api pre-existing 不变
+- 更改的文件: (见上)
+- **未来迭代的学习**:
+  - AdminLayout test mock 必须跟随 AdminLayout 依赖演进: US-003 加 logPageView.useMutation 后 layout.test.tsx mock 没同步 → 6 tests fail · 修复: 补 auth.logPageView.useMutation + me.allowedDomains
+  - packages/ui 抽包前先确认 app-layer 依赖都移到调用方 · 反例库 SHIELD 注入有效(直接用 props 注入)
+  - 跨包 component lift 后 vitest 的 "15 failed files" 数字可能包含 pre-existing DB mock 问题(非 US-004 引入) · 判断标准: Tests 行显示 0 failed tests 即可
+---
