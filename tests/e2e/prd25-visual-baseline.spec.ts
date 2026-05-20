@@ -1,5 +1,5 @@
 /**
- * PRD-25 US-001 AC-13 + US-002 AC-11 + US-003 AC-12 · visual diff baselines
+ * PRD-25 US-001 AC-13 + US-002 AC-11 + US-003 AC-12 + US-005 AC-10 · visual diff baselines
  * prd25-diagnosis-report.png baseline · 跑 8 步完成 → 截图 report 区域
  * prd25-voice-chat-streaming.png baseline · quick prompt + 发送 → 流式完成/error → 截图
  * prd25-daily-tasks-with-tasks.png baseline · seed 3 tasks → /daily-tasks → 截图
@@ -150,6 +150,46 @@ test.describe('PRD-25 US-004 AC-12 · evolution visual baseline', () => {
     }
 
     const baselinePath = path.join(BASELINE_DIR, 'prd25-evolution-with-profile.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+test.describe('PRD-25 US-005 AC-10 · video-analysis visual baseline', () => {
+  test('AC-10 · prd25-video-analysis-with-result.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/video-analysis`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-video-analysis-with-result.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+test.describe('PRD-25 US-005 AC-10 · analysis visual baseline', () => {
+  test('AC-10 · prd25-analysis-with-result.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/analysis`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-analysis-with-result.png');
     await page.screenshot({ path: baselinePath, fullPage: true });
 
     expect(fs.existsSync(baselinePath)).toBe(true);
