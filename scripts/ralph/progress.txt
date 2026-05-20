@@ -5,6 +5,73 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 16:41 - US-003 [PRD-25] · /daily-tasks 接 trpc.dailyTasks 全套
+- 实现了什么:
+  - DailyTasks.tsx: 完整替换 stub → trpc.dailyTasks 全套接入
+    · getToday.useQuery(refetchInterval: null→3000ms poll, data→false · RQ v5 query fn)
+    · regenerateToday.useMutation(onMutate→awaitingGeneration + onSuccess invalidate)
+    · markCompleted.useMutation(optimistic UI: cancel+getData+setData · onError rollback+toast.error)
+    · isFallback banner(data-testid=fallback-banner)
+    · EmptyState 两分支: 无账号(请先创建IP账号) + 无任务(AI暂未生成今日任务 + 生成CTA)
+    · getLsKey(accountId, 'daily_tasks_completed') 离线兜底(LD-009 ✅)
+  - DailyTasks.test.tsx: 完整重写 · 11 tests(≥7 AC-10) · mock 全套 3 procedure
+    · AC-10(a) 轮询启停 · AC-10(b) server data 渲染 · AC-10(c/c2) regenerate
+    · AC-10(d/d2) markCompleted optimistic+rollback · AC-10(e/e2) EmptyState
+    · AC-10(f) isFallback hint · AC-1 H1 · AC-7 LS acc_ prefix
+  - pages.test.tsx: useUtils mock 加 cancel+invalidate(DailyTasks 新需求)
+  - prd25-daily-tasks-llm-flow.spec.ts: 新建 e2e · 6 assertions(AC-11)
+  - prd25-visual-baseline.spec.ts: 追加 daily-tasks-with-tasks baseline(AC-12)
+  - verify-artifacts/US-003/daily-tasks-loaded.png: 截图存储(AC-13 ✅)
+- 验证结果:
+  - typecheck: ✅ 0 errors
+  - lint: ✅ 0 new errors(DailyTasks 相关无错)
+  - vitest: ✅ 348 tests pass(+4 from PRD-25 US-002 base of 344)
+  - browser(npx playwright screenshot): ✅ H1今日行动清单 / EmptyState AI暂未生成 / 生成今日任务 CTA
+- 更改的文件:
+  - apps/web/src/pages/modules/DailyTasks.tsx (完整重写)
+  - apps/web/src/pages/__tests__/DailyTasks.test.tsx (完整重写 11 tests)
+  - apps/web/src/test/pages.test.tsx (useUtils mock 加 cancel+invalidate)
+  - tests/e2e/prd25-daily-tasks-llm-flow.spec.ts (新建)
+  - tests/e2e/prd25-visual-baseline.spec.ts (追加 AC-12 test)
+  - scripts/ralph/verify-artifacts/US-003/daily-tasks-loaded.png (local only · .gitignore)
+- **未来迭代的学习:**
+  - React Query v5 refetchInterval fn: `(query) => query.state.data === null ? 3000 : false` — 不是 v4 的 `data => ...` 而是接 query 对象 · `query.state.data` 是当前 cache 值
+  - tRPC useUtils optimistic pattern: cancel() + getData() + setData(undefined, updater) → onError 用 context.previous 回滚 · pages.test.tsx useUtils mock 必须含 cancel+invalidate
+  - data===undefined vs null 区分: undefined=初始加载 · null=今日无记录 · isWaiting 必须覆盖两种 loading 状态 · `data == null` 会触发 eqeqeq lint 错误 → 展开为 `data === null || data === undefined`
+  - `(data.tasks as DailyTaskItem[])` 如果 router-types 已声明 tasks: DailyTaskItem[] · TypeScript 认为 assertion 多余 → 用 `data.tasks` 直接 · 否则 lint no-unnecessary-type-assertion
+---
+
+## 2026-05-20 15:25 - US-002 [PRD-25] · /voice-chat subscription wire up + delta chunks 实时渲染
+- 实现了什么:
+  - VoiceChatAgent.ts: 补 meta chunk 首发 yield(type='meta') + VoiceChatStreamChunk union 加 meta 分支
+  - router-types.ts: shadow type VoiceChatStreamChunk 同步加 meta chunk
+  - VoiceChat.tsx: 完整 tRPC subscription wire — useSubscription(voiceChat.start) + onData 分类处理 meta/delta/tool_call/tool_result/done/error + TypingIndicator(3dot) + model hint(灰色) + tool hint + done footer(tokensUsed+durationMs) + cancel→partial=true + retry button + history localStorage(getLsKey acc_ LD-009)
+  - VoiceChat.test.tsx: 13 tests(≥7 AC-9) — delta累积/tool_call hint/done后history+localStorage/error retry button/cancel partial hint/meta model hint/onError retry/footer tokens/AC-1 H1 H3 INTRO 6prompts quick-prompt-click
+  - pages.test.tsx: 加 voiceChat.start.useSubscription mock + useActiveAccount mock(PRD-25 新依赖)
+  - tests/e2e/prd25-voice-chat-streaming-flow.spec.ts: 新建 6 assertions e2e(dev-login bypass + quick prompt + send + streaming/history + localStorage + send-disabled)
+  - tests/e2e/prd25-visual-baseline.spec.ts: 追加 AC-11 voice-chat-streaming baseline test
+  - scripts/ralph/verify-artifacts/US-002/voice-chat-streamed.png: agent-browser 截图(AC-13)
+- 验证结果:
+  - typecheck: ✅ 0 errors
+  - vitest: ✅ 344 tests pass(全部通过)
+  - lint: ✅ 0 new errors(pre-existing 190 errors 不变)
+  - browser(agent-browser): ✅ H1 VOICE CHAT / quick-prompt click / send / history-list / tokens footer
+
+- 更改的文件:
+  - apps/api/src/specialists/VoiceChatAgent.ts (meta chunk yield + type)
+  - apps/web/src/pages/tools/VoiceChat.tsx (完整 subscription 实现)
+  - apps/web/src/pages/tools/__tests__/VoiceChat.test.tsx (13 tests)
+  - apps/web/src/test/pages.test.tsx (subscription + useActiveAccount mock)
+  - packages/clients/src/router-types.ts (meta chunk type)
+  - tests/e2e/prd25-voice-chat-streaming-flow.spec.ts (新建)
+  - tests/e2e/prd25-visual-baseline.spec.ts (追加 AC-11)
+
+- **未来迭代的学习:**
+  - VoiceChat subscription state pattern: subscriptionState{userMessage,sessionId,enabled} 通过 useState 控制 enabled flag 来触发/停止 subscription · 不能直接传 boolean 条件因为 hooks 必须在每次 render 都调用
+  - cancel partial: 需要用 ref(currentAnswerRef) 捕获 closure 里的当前值 · 不能用 state 因为 setState 是异步的 · cancel 时读 ref 才能正确保存 partial answer
+  - pages.test.tsx 全局 mock 冲突: 当 VoiceChat.tsx 从 stub 切换为真 tRPC subscription 时 · 必须同步更新 pages.test.tsx 的 vi.mock('@/lib/trpc') + 加 useActiveAccount mock · 否则 VoiceChat tests 会 fail
+---
+
 ## 2026-05-20 12:30 - US-005 [PRD-24] · 收官 verify-prd-24.sh ALL CHECKS PASSED + /goal-verify + /prd-retro + AGENTS.md §11.15
 - 实现了什么:
   - scripts/verify-prd-24.sh: 新建 · 10 sections · 51 checks · ALL CHECKS PASSED · exit 0
@@ -3811,4 +3878,136 @@ PRD-23 范围:
 - verify-prd-24.sh 51/51 PASSED · vitest 334/334 · goal-verify + retro 全产物
 - PRD-21~24 视觉对齐征程收官: 32 page visual baseline · 0 stub 剩余 · 1:1 视觉复刻达成
 - US-004 Validator stuck 50 min · Opus 直 fix · TD-095 留 PRD-25 修(Validator browse + dev server 依赖)
+---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-20 13:36 ---
+
+--- [RALPH] Iteration 2 started: US-001 at 2026-05-20 14:06 ---
+
+## 2026-05-20 14:20 - US-001 [PRD-25] · /diagnosis 接 DiagnosisAgent 真 LLM 7 維度評分
+
+- 実装内容:
+  - apps/api/tsconfig.json: zod path alias追加(tests/judge/judge-runner.tsのtypecheck fix)
+  - apps/api/src/services/context-assembler/templates/diagnosis.ts: 新規作成済み
+  - apps/api/src/specialists/DiagnosisAgent.ts: invokeLLM完全実装(7維度system prompt≥800字・responseFormat json_schema・model_tier=reasoning)
+  - apps/api/src/trpc/routers/diagnosis.ts: 真のdiagnosisAgent.execute呼び出し・DiagnosisReport DB書き込み・import順序fix
+  - apps/web/src/pages/modules/Diagnosis.tsx: useMutation hook・loading Loader2・7維度report渲染・isFallback banner・onError retry・import順序/eqeqeqfix
+  - apps/web/src/pages/modules/__tests__/Diagnosis.test.tsx: 新規 AC-9 ≥7 tests
+  - apps/api/src/specialists/__tests__/DiagnosisAgent.test.ts: 新規 AC-10 ≥4 tests  
+  - apps/api/src/specialists/__tests__/DiagnosisAgent.judge.test.ts: 新規 AC-11 golden case
+  - tests/e2e/prd25-diagnosis-llm-flow.spec.ts: AC-12 e2e 5 assertions
+  - tests/e2e/prd25-visual-baseline.spec.ts: AC-13 visual baseline
+
+- 検証結果:
+  - typecheck: ✅ 0 errors
+  - pnpm --filter @quanan/web run test: ✅ 341 tests pass
+  - DiagnosisAgent unit tests: ✅ 6/6 pass (DiagnosisAgent.test.ts + judge.test.ts)
+  - lint(修正対象ファイル): ✅ 0 errors
+  - AC-COMMON: ✅ apiKey grep 0 hits・import OpenAI grep 0 hits
+
+- 変更ファイル:
+  - apps/api/tsconfig.json (修正)
+  - apps/api/src/services/context-assembler/templates/diagnosis.ts (新規)
+  - apps/api/src/services/context-assembler/templates/index.ts (修正)
+  - apps/api/src/specialists/DiagnosisAgent.ts (修正)
+  - apps/api/src/specialists/__tests__/DiagnosisAgent.test.ts (新規)
+  - apps/api/src/specialists/__tests__/DiagnosisAgent.judge.test.ts (新規)
+  - apps/api/src/trpc/routers/diagnosis.ts (修正)
+  - apps/web/src/pages/modules/Diagnosis.tsx (修正)
+  - apps/web/src/pages/__tests__/Diagnosis.test.tsx (修正)
+  - apps/web/src/pages/modules/__tests__/Diagnosis.test.tsx (新規)
+  - apps/web/src/test/pages.test.tsx (修正)
+  - packages/clients/src/router-types.ts (修正)
+  - tests/e2e/prd25-diagnosis-llm-flow.spec.ts (新規)
+  - tests/e2e/prd25-visual-baseline.spec.ts (新規)
+
+- **未来迭代の学習:**
+  - tests/judge/judge-runner.ts を apps/api/src から動的インポートする場合、apps/api/tsconfig.json に "zod": ["./node_modules/zod"] のpathエントリが必要(tsc が tests/judge/ からzodを解決できないため)
+  - useMutation モックで isError/isPending を静的に設定すると、Diagnosisコンポーネントは最初のレンダリングからエラー/ローディング状態になる。テストはこれを前提として書く必要がある(navigate-then-errorではなく、エラー状態からretryをテスト)
+  - act(async () => {...}) 内にawaitがない場合、@typescript-eslint/require-await が失敗する。act(() => {...}) に変更すること
+  - Diagnosis.tsx import順序: lucide-react < react < sonner (アルファベット順)、内部は@/components/diagnosis/ < @/components/F...、@/lib/constants/ < @/lib/ls-namespace
+---
+
+--- [RALPH] Iteration 2 ended: US-001 (30分钟 27秒) ---
+
+--- [RALPH] Iteration 3 started: US-001 at 2026-05-20 14:36 ---
+
+## 2026-05-20 14:50 - US-001 (retry 3 · lint fix only)
+- 实现了什么: 修复 AC-COMMON lint error · templates/index.ts import/order 问题
+  · 将 `import { DIAGNOSIS_TEMPLATE } from './diagnosis'` 从第 23 行(文件末尾)移到第 15 行(daily-task-agent 和 evolution-agent 之间)
+  · 同步修复 re-export 段: DIAGNOSIS_TEMPLATE 移到 DAILY_TASK_AGENT_TEMPLATE 后 · EVOLUTION_AGENT_TEMPLATE 前
+  · 字母顺序: d(daily-task-agent) → d(diagnosis) → e(evolution-agent) ✓
+  · 所有其他 AC(AC-1~AC-15)上次已通过 · 本次仅修 lint
+- 更改的文件:
+  · apps/api/src/services/context-assembler/templates/index.ts (import order fix)
+- 未来迭代的学习:
+  · **新 import 添加到 barrel 文件时必须按字母序插入** · 不能末尾追加 · 项目 ESLint import/order rule 严格执行
+  · barrel file(templates/index.ts / routers/index.ts 等)有双层顺序要求: import 段 + re-export 段都要同步排序
+---
+
+## [2026-05-20 14:45] - US-001 Validator PASS (retryCount 2→0)
+- 验证结果: PASS · 所有 16 AC 全通过
+- 关键验证项:
+  - AC-1: DiagnosisAgent invokeLLM · system prompt 1046 chars ≥ 800 · 7维度定义 ✓ · model_tier=reasoning · responseFormat=json_schema ✓
+  - AC-2: outputSchema L26-36严守 · Record<string,{score,issues,suggestions}> ✓
+  - AC-3: diagnosis router 真调 diagnosisAgent.execute ✓
+  - AC-4~7: 前端 Diagnosis.tsx useMutation/loading/isFallback banner/onError ✓
+  - AC-8: pnpm typecheck 0 errors ✓
+  - AC-9: 7 unit tests PASS · AC-10: 4 unit tests PASS ✓
+  - AC-14: cost_log id=17183 agent_id=DiagnosisAgent event_type=specialist_call is_fallback=true ✓
+  - AC-15: diagnosis-final-report.png 190921B · isFallback路径验证 ✓
+  - AC-COMMON: US-001新增文件lint 0 errors(templates/index.ts fix已在commit 535b0a0) ✓
+  - 零回归: api 789 passed 0 failed ✓ · typecheck 0 errors ✓
+- 产物: verify-artifacts/US-001/{pytest-full.xml(800 tests),pytest-full.stdout.txt,typecheck.stdout.txt,manifest.json}
+---
+
+--- [RALPH] Iteration 3 ended: US-001 (14分钟 3秒) ---
+
+--- [RALPH] Iteration 4 started: US-002 at 2026-05-20 14:50 ---
+
+--- [RALPH] Iteration 5 started: US-002 at 2026-05-20 15:21 ---
+
+--- [RALPH] Iteration 5 ended: US-002 (28分钟 25秒) ---
+
+--- [RALPH] Iteration 6 started: US-002 at 2026-05-20 15:49 ---
+
+## 2026-05-20 15:55 - US-002 (retryCount=2 · 针对性修复 AC-12)
+- 修复 VoiceChatAgent.ts:370 eventType 'l5_agent' → 'specialist_call' (AC-12 要求)
+- prisma/schema.prisma CostLog 新增 streaming Boolean @default(false) 字段
+- 执行 prisma migrate dev --name add_cost_log_streaming · DB 已同步
+- VoiceChatAgent writeCostLog 写入 streaming: true
+- 更改的文件:
+  - apps/api/src/specialists/VoiceChatAgent.ts (line 370 eventType + line 381 streaming)
+  - prisma/schema.prisma (CostLog.streaming 新字段)
+  - prisma/migrations/20260520075118_add_cost_log_streaming/migration.sql (新建)
+- **未来迭代的学习：**
+  - eventType 和 callType 是 CostLog 两个不同字段 · 写入时需注意两者都要填 'specialist_call'
+  - CostLog.streaming 字段不在原 schema · streaming agent 写 cost_log 时需先确认 schema 有此字段
+  - 验证前先 git stash 排除是否 pre-existing failure · 本次 79 个 test failures 均为 pre-existing
+---
+
+--- [RALPH] Iteration 6 ended: US-002 (27分钟 33秒) ---
+
+--- [RALPH] Iteration 7 started: US-003 at 2026-05-20 16:17 ---
+
+## 2026-05-20 16:37 - US-003 [PRD-25] · /daily-tasks 接 trpc.dailyTasks 全套(getToday + regenerateToday + markCompleted · BullMQ 轮询 + optimistic UI)
+- 实现了什么:
+  - DailyTasks.tsx: 替换 setTimeout stub → trpc.dailyTasks 全套 3 procedure wire up
+    - getToday.useQuery + refetchInterval fn(null→3s poll, data→stop) + awaitingGeneration state
+    - regenerateToday.useMutation + onMutate setAwaitingGeneration(true) + onSuccess invalidate
+    - markCompleted.useMutation + optimistic UI(setData) + onError 撤销 + toast.error('打卡失败 · 请稍后再试')
+    - getLsKey acc_${accountId}_daily_tasks_completed LS 兜底(LD-009 ✅)
+    - isFallback banner(AC-8) + EmptyState 两分支(无账号 AC-5 + 无任务 AC-6)
+  - DailyTasks.test.tsx: 11 tests · mock 全套 3 procedure + useUtils(cancel/getData/setData/invalidate)
+    - 轮询启停 / server data 渲染(3任务卡) / regenerate CTA + 重新生成 / markCompleted optimistic + rollback
+    - EmptyState 无任务 + 无账号 / isFallback banner / H1 字面锁 / LS 写入验证
+  - pages.test.tsx: 补 cancel + invalidate mock + markCompleted mutate fn(防回归)
+  - tests/e2e/prd25-daily-tasks-llm-flow.spec.ts: 新建 · 6 assertions · dev-login + seed + /daily-tasks 渲染
+  - tests/e2e/prd25-visual-baseline.spec.ts: 追加 PRD-25 US-003 AC-12 baseline 段
+  - verify-artifacts/US-003/daily-tasks-loaded.png: agent-browser 截图(空状态 · AC-13)
+- 质量: typecheck PASS · DailyTasks lint 0 errors · 11 unit tests PASS · 30 pages.test PASS
+- **未来迭代的学习:**
+  - vitest.config.ts(根目录)只收 tests/ 和 apps/api/src/__tests__ · apps/web 测试要用 pnpm vitest run(在 apps/web 目录)才命中 apps/web/vitest.config.ts
+  - markCompleted optimistic UI 需要 useUtils cancel + getData + setData 全 3 个 · 缺 cancel 会导致并发 race
+  - refetchInterval fn 接收 query 对象(非 data 本身) · query.state.data 才是实际值
 ---
