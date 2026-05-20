@@ -250,37 +250,32 @@ describe('IpPlan page (US-010)', () => {
   });
 });
 
-describe('VoiceChat page (US-012)', () => {
-  it('renders record button and turn list area', () => {
+describe('VoiceChat page (PRD-24 US-003)', () => {
+  it('H1 字面锁 VOICE CHAT', () => {
     render(
       <MemoryRouter>
         <VoiceChat />
       </MemoryRouter>,
     );
-    // AC-1: heading visible
-    expect(screen.getByText('语音对话')).toBeInTheDocument();
-    // AC-1: record button visible (data-testid)
-    expect(screen.getByTestId('record-button')).toBeInTheDocument();
-    // AC-1: turn list area visible (empty state)
-    expect(screen.getByTestId('turn-list')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('VOICE CHAT');
   });
 
-  it('shows idle status bar', () => {
+  it('H3 模块标题 你的专属 IP 变现顾问', () => {
     render(
       <MemoryRouter>
         <VoiceChat />
       </MemoryRouter>,
     );
-    expect(screen.getByText('就绪 · 按住录音')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('你的专属 IP 变现顾问');
   });
 
-  it('shows hang up button', () => {
+  it('input placeholder 有什么问题尽管问我...', () => {
     render(
       <MemoryRouter>
         <VoiceChat />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('button', { name: '挂掉' })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('有什么问题尽管问我...')).toBeInTheDocument();
   });
 });
 
