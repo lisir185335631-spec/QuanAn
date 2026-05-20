@@ -1,8 +1,8 @@
 // PRD-14 US-001 · ab-experiment.service unit tests
 // AC-12: ≥ 3 new tests · pnpm test ≥ 1730 pass · 0 fail
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 

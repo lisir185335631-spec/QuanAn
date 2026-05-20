@@ -11,6 +11,7 @@ import {
   TopicOutputSchema,
   TOPIC_CATEGORIES,
 } from '../TopicAgent';
+
 import type { TopicStreamChunk } from '../TopicAgent';
 
 // ── Mock modules (vi.mock hoisted — no outer variable references) ─────────────

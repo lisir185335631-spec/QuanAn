@@ -60,11 +60,12 @@ vi.mock('@/lib/prisma', () => ({
 }));
 
 // ── Imports (after mocks) ──────────────────────────────────────────────────
-import { adminAuditRouter } from '@/trpc/routers/admin/audit';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+import { adminAuditRouter } from '@/trpc/routers/admin/audit';
+
+
 
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
@@ -99,7 +100,7 @@ function makeCtx(
   overrides: Partial<AdminTRPCContext> = {},
 ): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
+    prisma: prisma,
     traceId: 'ctx-trace-001',
     req: makeRequest(),
     resHeaders: new Headers(),

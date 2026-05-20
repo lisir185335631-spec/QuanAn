@@ -9,7 +9,7 @@ import { createHash } from 'node:crypto';
 import { Prisma } from '@prisma/client';
 
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
+import type { prisma } from '@/lib/prisma';
 
 export interface ForceRebuildEvolutionParams {
   accountId: number;

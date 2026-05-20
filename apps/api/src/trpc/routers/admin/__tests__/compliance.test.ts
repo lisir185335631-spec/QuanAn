@@ -34,11 +34,13 @@ void mockExecuteRawUnsafe;
 
 // ── Router imports ────────────────────────────────────────────────────────
 
-import { complianceRouter } from '../compliance';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+
+import { complianceRouter } from '../compliance';
+
+
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -66,8 +68,8 @@ const MOCK_SESSION = {
 
 function makeCtx(user: AdminLuciaUser | null = SUPER_ADMIN): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
-    adminPrisma: prisma as PrismaClient,
+    prisma: prisma,
+    adminPrisma: prisma,
     traceId: 'trace-compliance-test',
     req: new Request('http://localhost/trpc/admin/compliance', {
       headers: { 'x-forwarded-for': '10.0.0.1', 'user-agent': 'test/1.0' },

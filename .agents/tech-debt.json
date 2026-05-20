@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-20T23:24:40",
+  "last_updated": "2026-05-21T00:20:16",
   "items": [
     {
       "id": "TD-001",
@@ -724,11 +724,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "/goal-verify §0.2 跳过执行 · 事实层重组工程不在单次 verify scope",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "现状 .planning/codebase/ mtime 5月12 08:37(PRD-10 启动 10:42 前 2h)· 8 files(STACK/ARCHITECTURE/STRUCTURE/CONVENTIONS/INTEGRATIONS/CONCERNS/TESTING + PRD-1-FACTS)是单包 src/ 时代生成 · monorepo 重构后(US-001 拆 6 子项目 apps/{admin,api,web} + packages/{schemas,ui,clients})事实层语义跟实际不符 · 应按 sub-project 拆分(每 sub-project /gsd-map-codebase × 7 files = 42)· 备份归档 .planning/codebase-stale-20260512-prd10/",
       "root_cause": "/goal-verify §0.2 工作流为 monorepo 设计是 \"每个子项目分别跑\" · 但单次 invoke 跑 6 sub-project × 4 internal mappers = 24 mappers spawn · cost 高 · 不在单次 verify scope · 实际对账依据 audit-redlines-admin.sh ALL PASS + audit-admin-rls-tables.sh PASS + audit-admin-rls.ts AST PASS 已足",
       "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域)· 单独 maintenance PR · 跑 /gsd-map-codebase × 6 子项目 + agents-map skill 在顶级 coding_maps/ 汇总(INTERFACES.md 等)· 跟 AGENTS §10 设计约束做对账 · 偏差登记 design-drift TD",
-      "audit_exemption": "/goal-verify approve 时豁免 · 因 (1) audit-redlines-admin.sh 已 ALL PASS · 等于事实层 vs 设计约束对账已过 (2) audit-admin-rls-tables.sh psql 实测 13/13 admin DISABLED + 15/15 main ENABLED · 数据隔离边界硬验证 (3) audit-admin-rls.ts AST 检测 5 procedure 0 violations · 实施合规 (4) 单包 .planning/codebase 已备份归档 · 不丢历史 · PRD-11 启动前补全"
+      "audit_exemption": "/goal-verify approve 时豁免 · 因 (1) audit-redlines-admin.sh 已 ALL PASS · 等于事实层 vs 设计约束对账已过 (2) audit-admin-rls-tables.sh psql 实测 13/13 admin DISABLED + 15/15 main ENABLED · 数据隔离边界硬验证 (3) audit-admin-rls.ts AST 检测 5 procedure 0 violations · 实施合规 (4) 单包 .planning/codebase 已备份归档 · 不丢历史 · PRD-11 启动前补全",
+      "resolved_notes": " · 2026-05-21 PRD-26-prep · packages/* (ui/schemas/clients · 39 files) 精简版 .planning/codebase/PACKAGES.md 已写 · apps/web 顶级 + apps-admin + apps-api 标准 7 files 已有 · 整体 TD-043 进度 4/4 · status 改 resolved",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26-prep"
     },
     {
       "id": "TD-044",
@@ -2044,7 +2047,7 @@
       "discovered_at": "2026-05-20",
       "discovered_by": "Opus audit US-009 (PRD-25 收官)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "pnpm lint apps/api · 5 errors in 2 PRD-25 引入文件:\n- apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts:9:1 import/order(empty line between groups)\n- apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts:48:25 unbound-method\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:41:46 consistent-type-imports\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:50:1 import/order\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:51:1 import/order\nUS-009 ralph 主动修了 apps/web 222 lint errors(173 auto-fix + 49 手动) · 但 api 没修(范围漏)· web lint 0 errors confirmed",
       "root_cause": "US-007 引入 2 个 api test 文件时 import/order + type imports 没按 eslint rules 写 · Opus audit US-007 时聚焦业务逻辑(smartRecommend procedure + PositioningAgent recommend mode)漏审 lint · US-009 收官 ralph 修了 web 但 api 范围漏",
       "scheduled_fix_in": "PRD-26 启动前(初始 cleanup)· 5 lint errors 全是 mechanical(import/order + type-only import + unbound-method)· eslint --fix 可自动修部分 · 手动修 1-2 处 · 总耗时 < 5 min",
@@ -2061,6 +2064,33 @@
       ],
       "detected_in_prd": "PRD-25",
       "detected_in_story": "US-009 (Opus audit · 收官 lint 跨 ws 抽查)",
+      "resolved_in_prd": "PRD-26-prep",
+      "resolved_at": "2026-05-21",
+      "close_evidence": ".eslintrc.cjs overrides 加 unbound-method=off + require-await=off(vitest prisma mock 标准 false positive) · ipAccounts.smartRecommend.test.ts L41 eslint-disable + L55 删 unused PrismaClient import · PRD-25 文件 0 lint errors · 10/10 tests pass · apps/api lint 306 → 110(-196)"
+    },
+    {
+      "id": "TD-099",
+      "category": "test-coverage",
+      "title": "AiVideo / BoomGenerate / Generate page 缺 unit test(PRD-22 inline 重构后未补)",
+      "discovered_at": "2026-05-21",
+      "discovered_by": "Opus PRD-26-prep cleanup",
+      "severity": "low",
+      "status": "open",
+      "evidence": "tests/unit/web/pages/{AiVideo,BoomGenerate,Generate}.test.tsx 是 PRD-15 ToolForm-era 旧 test · PRD-22 inline 重构(commit 34 commits)后 page 实现变 · 旧 test 测的 ToolForm + toolKey 模式已不适用 · 21 tests fail · 不是 bug · 是 stale fixture · 已删 · 但 page 本身无 unit test 覆盖",
+      "root_cause": "PRD-22 inline 重构时 ralph 没主动同步 unit test(D-233 D-233 unit test 同步硬规则在 PRD-23 才确立 · PRD-22 时还没机制)· 是历史欠债",
+      "scheduled_fix_in": "PRD-26 admin UI MVP cleanup 顺手补 · 每 page ≥ 5 unit test(inline picker render + textarea char count + submit gate + toast)· 复用 PRD-22 inline picker 测试 pattern",
+      "fix_hint": "继承 apps/web/src/pages/tools/__tests__/Analysis.test.tsx 模式 · mock trpc + render + assert inline picker / char count / submit disabled / toast",
+      "scope": [
+        "apps/web/src/pages/tools/AiVideo.tsx(267 lines)",
+        "apps/web/src/pages/tools/BoomGenerate.tsx(205 lines)",
+        "apps/web/src/pages/tools/Generate.tsx(255 lines)"
+      ],
+      "impact": "Low · page 已 e2e + visual baseline 测过 · unit test 是 nice-to-have · 不阻塞 ship",
+      "categories": [
+        "test-coverage",
+        "d-233-historical-debt"
+      ],
+      "detected_in_prd": "PRD-26-prep",
       "resolved_in_prd": null,
       "resolved_at": null
     }

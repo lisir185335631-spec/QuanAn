@@ -1,8 +1,8 @@
 // PRD-11 US-003 · NSM router unit tests — 5 procedures × auth boundaries + data correctness
 // AC-13: ≥ 15 tests
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks (vi.mock factories cannot access outer variables) ────────
 
@@ -51,11 +51,12 @@ vi.mock('@/lib/prisma', () => {
 });
 
 // ── Imports (after mocks) ──────────────────────────────────────────────────
-import { nsmRouter } from '@/trpc/routers/admin/nsm';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+import { nsmRouter } from '@/trpc/routers/admin/nsm';
+
+
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -130,8 +131,8 @@ function makeCtx(
   overrides: Partial<AdminTRPCContext> = {},
 ): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
-    adminPrisma: prisma as PrismaClient,
+    prisma: prisma,
+    adminPrisma: prisma,
     traceId: 'trace-nsm-test',
     req: new Request('http://localhost/trpc/admin/nsm', {
       headers: {

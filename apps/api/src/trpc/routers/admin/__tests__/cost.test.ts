@@ -1,8 +1,8 @@
 // PRD-11 US-012 · cost router unit tests — 27 tests
 // aggregate(4 dim × 3 groupBy + edge cases) / top10 / specialistBreakdown / alerts / exportCsv
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Prisma } from '@prisma/client';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 
@@ -54,11 +54,12 @@ vi.mock('@/lib/prisma', () => {
 });
 
 // ── Imports (after mocks) ──────────────────────────────────────────────────
-import { costRouter } from '@/trpc/routers/admin/cost';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+import { costRouter } from '@/trpc/routers/admin/cost';
+
+
 
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
@@ -77,8 +78,8 @@ const MOCK_SESSION: AdminLuciaSession = {
 
 function makeCtx(user: AdminLuciaUser | null, overrides: Partial<AdminTRPCContext> = {}): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
-    adminPrisma: prisma as PrismaClient,
+    prisma: prisma,
+    adminPrisma: prisma,
     traceId: 'trace-cost-test',
     req: new Request('http://localhost/trpc/admin/cost', {
       headers: { 'x-forwarded-for': '10.0.0.1', 'user-agent': 'test/1.0' },

@@ -16,9 +16,9 @@ import { createHash } from 'node:crypto';
 
 import { piiMask } from '@/lib/compliance/pii-mask';
 import { prisma } from '@/lib/prisma';
-import { getActivePromptVersion } from '@/services/admin/prompt-version/prompt-version.service';
-import { getSystemConfigValue } from '@/services/admin/feature-flag/feature-flag.service';
 import { getLatestInsight } from '@/memory/l4-profile';
+import { getSystemConfigValue } from '@/services/admin/feature-flag/feature-flag.service';
+import { getActivePromptVersion } from '@/services/admin/prompt-version/prompt-version.service';
 import { methodologyQueryWorker } from '@/workers/methodology-query';
 import { ragRetrieveWorker } from '@/workers/rag';
 

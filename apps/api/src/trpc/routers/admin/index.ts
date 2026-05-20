@@ -5,23 +5,23 @@
 // PRD-11 US-020: real inviteCodes router
 import { adminTrpcRouter, publicAdminProcedure } from '@/trpc/trpc-admin';
 
+import { abExperimentsRouter } from './abExperiments';
 import { accountsRouter } from './accounts';
+import { approvalsRouter } from './approvals';
 import { adminAuditRouter } from './audit';
 import { adminAuthRouter } from './auth';
+import { complianceRouter } from './compliance';
+import { constantsRouter } from './constants';
 import { costRouter } from './cost';
+import { evolutionHealthRouter } from './evolutionHealth';
+import { featureFlagsRouter } from './featureFlags';
 import { invitesRouter } from './invites';
 import { nsmRouter } from './nsm';
+import { promptsRouter } from './prompts';
+import { quotaRouter } from './quota';
 import { reviewDeepLearnRouter } from './review-deep-learn';
 import { reviewTrendingRouter } from './review-trending';
 import { usersRouter } from './users';
-import { approvalsRouter } from './approvals';
-import { complianceRouter } from './compliance';
-import { evolutionHealthRouter } from './evolutionHealth';
-import { quotaRouter } from './quota';
-import { promptsRouter } from './prompts';
-import { abExperimentsRouter } from './abExperiments';
-import { constantsRouter } from './constants';
-import { featureFlagsRouter } from './featureFlags';
 
 export const adminRouter = adminTrpcRouter({
   /** Health check — no auth required */

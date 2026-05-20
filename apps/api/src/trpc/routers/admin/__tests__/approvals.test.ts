@@ -2,8 +2,8 @@
 // AC-14: ≥ 8 tests · covers getKpiStats, listPending, listDecided, approveRequest,
 //        rejectRequest, emergencyApprove, postReviewApprove, listPostReview
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────
 
@@ -54,11 +54,13 @@ vi.mock('@/lib/prisma', () => ({
 
 // ── Router imports (after mocks) ──────────────────────────────────────────
 
-import { approvalsRouter } from '../approvals';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+
+import { approvalsRouter } from '../approvals';
+
+
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -94,8 +96,8 @@ const MOCK_SESSION: AdminLuciaSession = {
 
 function makeCtx(user: AdminLuciaUser = SUPER_ADMIN): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
-    adminPrisma: prisma as PrismaClient,
+    prisma: prisma,
+    adminPrisma: prisma,
     traceId: 'trace-approvals-test',
     req: new Request('http://localhost/trpc/admin/approvals', {
       headers: { 'x-forwarded-for': '10.0.0.1', 'user-agent': 'test/1.0' },

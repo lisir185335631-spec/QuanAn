@@ -291,7 +291,7 @@ export const adminAuditRouter = adminTrpcRouter({
       for (const log of logs) {
         const cat = log.eventCategory;
         if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat]!.push(log);
+        grouped[cat].push(log);
       }
 
       return { timeline: logs, grouped, total, page, pageSize };

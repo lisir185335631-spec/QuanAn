@@ -10,11 +10,12 @@ import { createHash } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import type { PrismaClient } from '@prisma/client';
 
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
+
+import type { PrismaClient } from '@prisma/client';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 

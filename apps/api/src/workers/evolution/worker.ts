@@ -10,9 +10,9 @@
 
 import { Worker } from 'bullmq';
 
+import { evolutionAgent } from '@/agents/evolution/EvolutionAgent';
 import { logger } from '@/lib/logger';
 import { redis } from '@/lib/redis';
-import { evolutionAgent } from '@/agents/evolution/EvolutionAgent';
 
 import { EVOLUTION_QUEUE_NAME } from './queue';
 

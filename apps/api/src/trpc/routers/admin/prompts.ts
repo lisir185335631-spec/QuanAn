@@ -7,11 +7,11 @@ import { createHash } from 'node:crypto';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { prisma } from '@/lib/prisma';
 import { requestApproval } from '@/services/admin/approval/approvalGateService';
 import { evaluatePromptVersion } from '@/services/admin/prompt-version/llm-judge.service';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
-import { prisma } from '@/lib/prisma';
 
 function guardMutation(ctx: { activeAdminUser?: { role?: string; id: number } | null }): void {
   if (ctx.activeAdminUser?.role === 'readonly_admin') {

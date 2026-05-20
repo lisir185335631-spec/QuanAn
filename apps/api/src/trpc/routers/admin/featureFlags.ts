@@ -6,17 +6,19 @@
 
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
 
-import { adminProcedure } from '@/trpc/procedures/admin';
-import { adminTrpcRouter } from '@/trpc/trpc-admin';
+
+import { prisma } from '@/lib/prisma';
+import { requestApproval } from '@/services/admin/approval/approvalGateService';
 import {
   emergencyToggleSystemConfig,
   toggleFeatureFlag,
   rolloutConfigSchema,
 } from '@/services/admin/feature-flag/feature-flag.service';
-import { prisma } from '@/lib/prisma';
-import { requestApproval } from '@/services/admin/approval/approvalGateService';
+import { adminProcedure } from '@/trpc/procedures/admin';
+import { adminTrpcRouter } from '@/trpc/trpc-admin';
+
+import type { Prisma } from '@prisma/client';
 
 // 3 关键紧急开关 keys · US-011 seed
 const EMERGENCY_SWITCH_KEYS = [

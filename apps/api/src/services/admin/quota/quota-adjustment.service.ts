@@ -7,12 +7,12 @@
 // SHIELD: whitelist_add 触发 whitelistExpiresAt = now() + 24h (AC-4)
 import { randomBytes } from 'node:crypto';
 
-import { TRPCError } from '@trpc/server';
 import { Prisma } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 
+import { prisma } from '@/lib/prisma';
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 import { requestApproval } from '@/services/admin/approval/approvalGateService';
-import { prisma } from '@/lib/prisma';
 
 export type QuotaAdjustmentType = 'increase_daily' | 'increase_monthly' | 'whitelist_add';
 

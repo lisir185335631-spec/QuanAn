@@ -1,8 +1,8 @@
 // PRD-11 US-014 · pdf-bill.service.ts unit tests
 // Tests: generateMonthlyBill (empty month, non-empty, hash verification, error handling)
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Prisma } from '@prisma/client';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 

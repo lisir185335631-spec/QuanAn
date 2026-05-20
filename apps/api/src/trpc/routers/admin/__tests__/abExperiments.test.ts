@@ -4,8 +4,8 @@
 // US-005: +5 tests · getDetailByKey, getVariantMetrics, getCumulativeTimeline,
 //         promoteWinner (running), promoteWinner (non-running BAD_REQUEST)
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────
 
@@ -89,11 +89,13 @@ vi.mock('@/lib/prisma', () => ({
 
 // ── Router imports (after mocks) ──────────────────────────────────────────
 
-import { abExperimentsRouter } from '../abExperiments';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+
+import { abExperimentsRouter } from '../abExperiments';
+
+
 
 // ── Context helpers ───────────────────────────────────────────────────────
 
@@ -121,8 +123,8 @@ function makeCtx(role: string = 'admin'): AdminTRPCContext {
       lastLoginIp: null,
       name: null,
     } as unknown as AdminLuciaUser,
-    adminPrisma: prisma as PrismaClient,
-    prisma: prisma as PrismaClient,
+    adminPrisma: prisma,
+    prisma: prisma,
     traceId: 'trace-test',
   };
 }

@@ -4,12 +4,13 @@
 // SHIELD: PDF footer must contain SHA-256 hash (anti_patterns: LD-A-3)
 
 import { createHash } from 'node:crypto';
-import React from 'react';
-import { renderToBuffer } from '@react-pdf/renderer';
-import type { PrismaClient } from '@prisma/client';
-import { Prisma } from '@prisma/client';
 
+import { Prisma } from '@prisma/client';
 import { PdfBillTemplate } from '@quanan/ui/admin/pdf';
+import { renderToBuffer } from '@react-pdf/renderer';
+import React from 'react';
+
+import type { PrismaClient } from '@prisma/client';
 import type { PdfBillData, PdfBillLineItem } from '@quanan/ui/admin/pdf';
 
 // Fields to redact when computing payloadHash (SHIELD: anti_pattern PRD-9+LD-A-3)

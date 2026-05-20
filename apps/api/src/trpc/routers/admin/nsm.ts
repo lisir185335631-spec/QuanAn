@@ -32,7 +32,7 @@ const NSM_METRICS: Array<keyof Pick<
 
 function getMetricValue(snapshot: KpiSnapshot, metric: (typeof NSM_METRICS)[number]): number {
   const v = snapshot[metric];
-  return typeof v === 'object' ? Number(v) : (v as number);
+  return typeof v === 'object' ? Number(v) : (v);
 }
 
 function alertSeverity(deltaPct: number): AlertSeverity {
@@ -53,7 +53,7 @@ function calculateAlerts(snapshots: KpiSnapshot[]): Alert[] {
     const isDet01 = v0 < v1;
 
     // Require consecutive deterioration when 3 snapshots available
-    const isConsecutive = s2 ? isDet01 && getMetricValue(s1!, metric) < getMetricValue(s2!, metric) : isDet01;
+    const isConsecutive = s2 ? isDet01 && getMetricValue(s1!, metric) < getMetricValue(s2, metric) : isDet01;
 
     if (isConsecutive && v1 > 0) {
       const deltaPct = Math.round(((v0 - v1) / v1) * 10000) / 100;

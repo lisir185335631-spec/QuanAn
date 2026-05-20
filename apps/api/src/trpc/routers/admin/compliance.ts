@@ -4,12 +4,13 @@
 // SHIELD: payload redacted (LD-A-3) — only expose eventType + industry, never raw content/PII
 // SHIELD: no raw payload fields that may contain user-generated text or PII
 
-import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
+import { prisma } from '@/lib/prisma';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
-import { prisma } from '@/lib/prisma';
+
+import type { Prisma } from '@prisma/client';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -339,7 +340,7 @@ export const complianceRouter = adminTrpcRouter({
         const key =
           input.grouping === 'eventType' ? item.eventType : (item.industry ?? 'unknown');
         if (!grouped[key]) grouped[key] = [];
-        grouped[key]!.push(item);
+        grouped[key].push(item);
       }
 
       return { items, nextCursor, grouped };

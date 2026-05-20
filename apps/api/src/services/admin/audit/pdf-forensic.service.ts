@@ -4,10 +4,12 @@
 // SHIELD: PDF footer must contain SHA-256 hash on every page (anti_patterns: LD-A-3)
 
 import { createHash } from 'node:crypto';
-import React from 'react';
-import { renderToBuffer } from '@react-pdf/renderer';
 
 import { PdfForensicTemplate } from '@quanan/ui/admin/forensic-pdf';
+import { renderToBuffer } from '@react-pdf/renderer';
+import React from 'react';
+
+
 import type { ForensicPdfData, ForensicTimelineEntry } from '@quanan/ui/admin/forensic-pdf';
 
 // ── Constants ──────────────────────────────────────────────────────────────

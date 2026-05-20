@@ -1,8 +1,8 @@
 // PRD-13 US-005 · adminRouter.quota unit tests — 10 procedures (US-005 + US-009)
 // AC-13: ≥ 6 tests (US-005) · US-009: + 4 new procedures
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks (vi.hoisted must be at module level) ────────────────────
 
@@ -80,11 +80,12 @@ vi.mock('@/lib/prisma', () => {
 
 // ── Imports (after mocks) ──────────────────────────────────────────────────
 
-import { quotaRouter } from '@/trpc/routers/admin/quota';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+import { quotaRouter } from '@/trpc/routers/admin/quota';
+
+
 
 // ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -133,8 +134,8 @@ function makeCtx(
   overrides: Partial<AdminTRPCContext> = {},
 ): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
-    adminPrisma: prisma as PrismaClient,
+    prisma: prisma,
+    adminPrisma: prisma,
     traceId: 'trace-quota-test',
     req: new Request('http://localhost/trpc/admin/quota', {
       headers: {

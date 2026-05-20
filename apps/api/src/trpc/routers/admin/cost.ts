@@ -3,9 +3,9 @@
 // SHIELD: Prisma.Decimal 全程 · 不允许 .toNumber() 精度丢失
 // SHIELD: Prisma.raw 限白名单 + template literal 防注入 · 不允许字符串拼接 raw SQL
 
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 import { generateMonthlyBill } from '@/services/admin/cost/pdf-bill.service';
@@ -259,7 +259,7 @@ export const costRouter = adminTrpcRouter({
       const traceId = ctx.traceId;
 
       try {
-        const result = await generateMonthlyBill(input.month, actorId, db as Parameters<typeof generateMonthlyBill>[2]);
+        const result = await generateMonthlyBill(input.month, actorId, db);
         const data = result.buffer.toString('base64');
 
         void logAdminAction({

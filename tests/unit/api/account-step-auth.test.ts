@@ -100,6 +100,7 @@ describe('ipAccounts.active', () => {
     expect(result).toBeNull();
   });
 
+  // PRD-23 d1dbfc1 改 globalProcedure · findUnique → findFirst with explicit where:{id, userId}(PRD-26-prep 2026-05-21 同步)
   it('returns account data when found', async () => {
     const { ctx, ipAccount } = makeCtx();
     const mockAccount = {
@@ -111,7 +112,7 @@ describe('ipAccounts.active', () => {
       followersRange: '10k-50k',
       isActive: true,
     };
-    ipAccount.findUnique.mockResolvedValueOnce(mockAccount);
+    ipAccount.findFirst.mockResolvedValueOnce(mockAccount);
     const caller = ipAccountsRouter.createCaller(ctx);
     const result = await caller.active();
     expect(result).toMatchObject({ id: 1, name: 'Test Account', platform: 'douyin' });
@@ -121,8 +122,8 @@ describe('ipAccounts.active', () => {
     const { ctx, ipAccount } = makeCtx({ activeAccountId: 42 });
     const caller = ipAccountsRouter.createCaller(ctx);
     await caller.active();
-    expect(ipAccount.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 42 } }),
+    expect(ipAccount.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 42, userId: expect.any(Number) } }),
     );
   });
 });

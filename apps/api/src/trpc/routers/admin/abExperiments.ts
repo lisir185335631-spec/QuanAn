@@ -6,16 +6,16 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { stopAbExperimentManual } from '@/jobs/admin/ab-stop-loss.job';
+import { prisma } from '@/lib/prisma';
 import {
   createAbExperiment,
   startAbExperiment,
 } from '@/services/admin/ab-experiment/ab-experiment.service';
-import { stopAbExperimentManual } from '@/jobs/admin/ab-stop-loss.job';
 import { computeExperimentSignificance } from '@/services/admin/ab-experiment/significance.service';
 import { requestApproval } from '@/services/admin/approval/approvalGateService';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
-import { prisma } from '@/lib/prisma';
 
 // Wilson score 95% CI for binomial proportion
 function wilsonCI(n: number, k: number): { low: number; high: number } {

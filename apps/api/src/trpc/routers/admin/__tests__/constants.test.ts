@@ -2,9 +2,9 @@
 // 8 procedures: listKeys · getActiveVersion · listVersions · saveDraft · submitForReview
 //               rollbackVersion · updateCanary · runLlmJudge
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
-import type { PrismaClient } from '@prisma/client';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────
 
@@ -88,10 +88,11 @@ vi.mock('@/lib/prisma', () => ({
 
 // ── Import after mocks ────────────────────────────────────────────────────
 
-import { constantsRouter } from '../constants';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+
+import { constantsRouter } from '../constants';
 
 // ── Context builder ───────────────────────────────────────────────────────
 
@@ -119,8 +120,8 @@ function makeCtx(role: 'super_admin' | 'admin' | 'readonly_admin' = 'admin'): Ad
       lastLoginIp: null,
       name: null,
     } as unknown as AdminLuciaUser,
-    adminPrisma: prisma as PrismaClient,
-    prisma: prisma as PrismaClient,
+    adminPrisma: prisma,
+    prisma: prisma,
     traceId: 'trace-test',
   };
 }

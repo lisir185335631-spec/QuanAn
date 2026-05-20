@@ -1,8 +1,8 @@
 // PRD-13 US-005 · quota-adjustment.service unit tests
 // AC-13: ≥ 10 tests covering _adjustQuotaInTx + adjustUserQuota + listUserQuotas + getUserQuotaTimeline
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks (vi.hoisted must be at module level) ────────────────────
 

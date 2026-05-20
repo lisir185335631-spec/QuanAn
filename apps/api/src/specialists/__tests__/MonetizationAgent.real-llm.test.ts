@@ -10,7 +10,7 @@ import {
   MonetizationAgent,
   Step4bOutputSchema,
 } from '../MonetizationAgent';
-import type { Step4bOutput } from '../MonetizationAgent';
+
 
 // ── Mock modules (vi.mock hoisted — no outer variable references) ─────────────
 
@@ -64,7 +64,7 @@ describe.skipIf(skipIfNoKey)('MonetizationAgent real LLM', () => {
     expect(result.tokensUsed.total).toBeGreaterThan(0);
     expect(result.durationMs).toBeLessThan(60_000);
 
-    const output = result.result as Step4bOutput;
+    const output = result.result;
 
     // AC-4: Schema drift defense — ladder.length strictly === 3 (三阶梯)
     expect(output.ladder).toHaveLength(3);

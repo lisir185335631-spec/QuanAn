@@ -38,6 +38,7 @@ vi.mock('@/lib/prisma', () => ({
 }));
 
 vi.mock('@/lib/logger', async (importOriginal) => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await importOriginal<typeof import('@/lib/logger')>();
   return {
     ...actual,
@@ -47,10 +48,11 @@ vi.mock('@/lib/logger', async (importOriginal) => {
 
 // ── Router + context helpers ──────────────────────────────────────────────────
 
-import { ipAccountsRouter } from '../ipAccounts';
-import type { TRPCContext } from '@/trpc/context';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { TRPCContext } from '@/trpc/context';
+
+import { ipAccountsRouter } from '../ipAccounts';
+
 
 const MOCK_USER = {
   id: 42,
@@ -64,7 +66,7 @@ const MOCK_USER = {
 
 function makeCtx(overrides: Partial<TRPCContext> = {}): TRPCContext {
   return {
-    prisma: prisma as PrismaClient,
+    prisma: prisma,
     traceId: 'trace-smart-recommend-test',
     req: new Request('http://localhost/trpc/ipAccounts.smartRecommend'),
     user: MOCK_USER,

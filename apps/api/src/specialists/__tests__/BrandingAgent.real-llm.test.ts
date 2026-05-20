@@ -11,6 +11,7 @@ import {
   Step3OutputSchema,
   Step3bOutputSchema,
 } from '../BrandingAgent';
+
 import type { Step3Output, Step3bOutput } from '../BrandingAgent';
 
 // ── Mock modules (vi.mock hoisted — no outer variable references) ─────────────

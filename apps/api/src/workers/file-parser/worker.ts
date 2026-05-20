@@ -11,7 +11,8 @@
 
 import { createHash, randomBytes } from 'node:crypto';
 
-import { Prisma, type PrismaClient } from '@prisma/client';
+import type { Prisma} from '@prisma/client';
+import { type PrismaClient } from '@prisma/client';
 import { Worker } from 'bullmq';
 
 import { logger } from '@/lib/logger';

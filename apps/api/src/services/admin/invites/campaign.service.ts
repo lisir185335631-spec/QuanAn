@@ -116,7 +116,7 @@ async function withAdminRole<T>(fn: () => Promise<T>): Promise<T> {
     await (tx as unknown as { $executeRawUnsafe: (s: string) => Promise<unknown> })
       .$executeRawUnsafe("SET LOCAL app.role = 'admin'");
     return fn();
-  }) as Promise<T>;
+  });
 }
 
 // ---------------------------------------------------------------------------

@@ -10,10 +10,10 @@ import { createHash } from 'node:crypto';
 
 import { TRPCError } from '@trpc/server';
 
+import { scheduleConstantEmbedRebuild } from '@/jobs/admin/constant-embed-rebuild.job';
 import { prisma } from '@/lib/prisma';
 import { requestApproval } from '@/services/admin/approval/approvalGateService';
 import { evaluateConstantVersion } from '@/services/admin/constant-version/llm-judge-constant.service';
-import { scheduleConstantEmbedRebuild } from '@/jobs/admin/constant-embed-rebuild.job';
 
 import type { Prisma, ConstantVersion } from '@prisma/client';
 

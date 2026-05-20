@@ -6,11 +6,12 @@
 
 import { createHash, randomBytes } from 'node:crypto';
 
-import { Prisma } from '@prisma/client';
 
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import { DingtalkService } from '@/services/admin/notifications/dingtalk.service';
+
+import type { Prisma } from '@prisma/client';
 
 export interface ViolationDetectionResult {
   warned: number;

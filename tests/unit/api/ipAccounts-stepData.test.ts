@@ -95,7 +95,8 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
 // ─── ipAccounts router ────────────────────────────────────────────────────────
 
 describe('ipAccounts.list', () => {
-  it('AC-5: calls findMany without explicit where:{userId} (RLS handles it)', async () => {
+  // PRD-23 d1dbfc1 改 protectedProcedure → globalProcedure(TD-094 e2e auth bypass)· 显式 where:{userId} 替代 RLS auto-filter · D-233 unit test 同步(PRD-26-prep 2026-05-21 cleanup)
+  it('AC-5: calls findMany with explicit where:{userId} (globalProcedure · D-094 PRD-23)', async () => {
     const { ctx, prisma } = makeCtx();
     prisma.ipAccount.findMany.mockResolvedValueOnce([
       { id: 1, name: 'Test IP', industry: 'beauty', platform: 'douyin', stage: 'starter', isActive: true, followersRange: '0-1000' },
@@ -103,22 +104,23 @@ describe('ipAccounts.list', () => {
     const caller = ipAccountsRouter.createCaller(ctx);
     const result = await caller.list();
     expect(prisma.ipAccount.findMany).toHaveBeenCalledOnce();
-    // Must NOT pass where:{userId} — RLS handles it
-    const callArgs = prisma.ipAccount.findMany.mock.calls[0]?.[0] as { where?: unknown } | undefined;
-    expect(callArgs?.where).toBeUndefined();
+    // globalProcedure bypasses RLS · explicit where:{userId} required
+    const callArgs = prisma.ipAccount.findMany.mock.calls[0]?.[0] as { where?: { userId: number } } | undefined;
+    expect(callArgs?.where).toEqual({ userId: 42 });
     expect(result).toHaveLength(1);
   });
 });
 
 describe('ipAccounts.active', () => {
+  // PRD-23 d1dbfc1 改 globalProcedure · findUnique → findFirst with explicit where:{id, userId}(PRD-26-prep 2026-05-21 同步)
   it('returns the active account by activeAccountId', async () => {
     const { ctx, prisma } = makeCtx({ activeAccountId: 7 });
     const mockAccount = { id: 7, name: 'IP 7', industry: 'food', platform: 'kuaishou', stage: 'growth', isActive: true, followersRange: '1k-10k' };
-    prisma.ipAccount.findUnique.mockResolvedValueOnce(mockAccount);
+    prisma.ipAccount.findFirst.mockResolvedValueOnce(mockAccount);
     const caller = ipAccountsRouter.createCaller(ctx);
     const result = await caller.active();
-    expect(prisma.ipAccount.findUnique).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id: 7 },
+    expect(prisma.ipAccount.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: 7, userId: 42 },
     }));
     expect(result).toEqual(mockAccount);
   });

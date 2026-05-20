@@ -7,6 +7,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 import { logAdminAction } from '@/services/admin/admin-audit-service';
 import {
   approveRequest as approveRequestSvc,
@@ -15,8 +17,6 @@ import {
 } from '@/services/admin/approval/approvalGateService';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
-import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

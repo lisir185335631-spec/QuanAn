@@ -1,8 +1,9 @@
 // PRD-11 US-018 · pdf-forensic.service unit tests (AC-16: ≥ 7 tests)
 // Tests: buffer output / empty timeline / 1000 items / footer hash / admin info / redact / 50MB reject
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createHash } from 'node:crypto';
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 

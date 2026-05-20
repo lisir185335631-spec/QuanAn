@@ -70,6 +70,10 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',
         'no-console': 'off',
+        // PRD-25 prep cleanup(2026-05-21): vitest prisma mock pattern 用 vi.fn() reference · unbound-method false positive
+        '@typescript-eslint/unbound-method': 'off',
+        // vitest async mock factory 标记 async 但内部不 await · 标准 vitest 用法
+        '@typescript-eslint/require-await': 'off',
       },
     },
     {

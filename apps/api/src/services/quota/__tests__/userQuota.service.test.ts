@@ -9,9 +9,10 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
+import { checkAndDeductQuota } from '../userQuota.service';
+
 import type { PrismaClient } from '@prisma/client';
 
-import { checkAndDeductQuota } from '../userQuota.service';
 
 function makeQuotaRow(overrides: {
   userId?: number;

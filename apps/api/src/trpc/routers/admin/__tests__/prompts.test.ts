@@ -1,8 +1,8 @@
 // PRD-13 US-008 · adminRouter.prompts unit tests — 3 new procedures
 // updateCanary · rollback · runLlmJudge
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 
@@ -87,11 +87,12 @@ vi.mock('@/lib/prisma', () => ({
 
 // ── Imports ────────────────────────────────────────────────────────────────
 
-import { promptsRouter } from '@/trpc/routers/admin/prompts';
-import type { AdminTRPCContext } from '@/server/context-admin';
 import type { AdminLuciaSession, AdminLuciaUser } from '@/lib/auth/lucia-admin';
-import type { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { AdminTRPCContext } from '@/server/context-admin';
+import { promptsRouter } from '@/trpc/routers/admin/prompts';
+
+
 
 // ── Fixtures ───────────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ const MOCK_SESSION: AdminLuciaSession = {
 
 function makeCtx(user: AdminLuciaUser | null): AdminTRPCContext {
   return {
-    prisma: prisma as PrismaClient,
+    prisma: prisma,
     traceId: 'ctx-trace-prompts',
     req: { headers: new Headers() } as unknown as Request,
     resHeaders: new Headers(),

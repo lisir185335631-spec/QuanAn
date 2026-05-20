@@ -2,8 +2,9 @@
 // 专注测试 rolloutConfig zod schema + percentage hash 确定性 + _toggleFeatureFlagInTx upsert
 // SHIELD: hash 用 userId:flagKey (AC-1) · rolloutConfig discriminatedUnion (AC-3)
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createHash } from 'node:crypto';
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Hoisted mocks ──────────────────────────────────────────────────────────
 
