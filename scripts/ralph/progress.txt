@@ -4158,3 +4158,42 @@ PRD-23 范围:
 --- [RALPH] Iteration 12 ended: US-006 (45分钟 52秒) ---
 
 --- [RALPH] Iteration 13 started: US-007 at 2026-05-20 20:23 ---
+
+## 2026-05-20 20:48 - US-007 [PRD-25] · /step/8 LivestreamAgent + /accounts smartRecommend
+- 实现了什么:
+  - apps/api/src/trpc/routers/stepData.ts: 修复 step8 handler — 删除 legacy transform (PRD-19 遗留，错误映射 LivestreamOutput fields)，改为直接 pass-through agentRes.result (LivestreamAgent 已直接输出正确的 sub_function schema)
+  - apps/api/src/specialists/PositioningAgent.ts: 新增 recommend mode · outputSchema getter 覆盖 · 使用 model_tier='lightweight' timeout_ms=15000 · fallbackTemplate.recommend · _validateMode 扩展
+  - apps/api/src/trpc/routers/ipAccounts.ts: 新增 smartRecommend protectedProcedure(SHIELD 严守: 不用 publicProcedure) · 扩展 createIpAccountInput 加 followersRange/ipPositioning 可选字段
+  - packages/clients/src/router-types.ts: SmartRecommendOutput 类型 + ipAccounts.smartRecommend shadow + create input 扩展
+  - apps/web/src/components/step8/Step8GeneratePlan.tsx: 替换 stub → trpc.stepData.save.useMutation · onSuccess 渲染 6 模块(opening/warmup/product/conversion/faq/closing) · isFallback banner · loading text
+  - apps/web/src/components/step8/Step8OptimizeScript.tsx: 替换 stub → trpc.stepData.save.useMutation · onSuccess 渲染 2 InfoCard(optimized_text + optimization_notes) · isFallback banner
+  - apps/web/src/components/accounts/CreateAccountModal.tsx: 「智能推荐」button(industry 旁) · smartRecommend.useMutation · onSuccess 自动填 platform/followersRange/ipPositioning · rationale hint(灰色)
+  - 新建: Step8GeneratePlan.test.tsx (6 tests) · Step8OptimizeScript.test.tsx (6 tests) · PositioningAgent.test.ts (5 tests) · prd25-step8-smart-recommend-flow.spec.ts (9 assertions)
+  - 更新: Accounts.test.tsx + Step8.test.tsx + pages.test.tsx 加 smartRecommend mock
+  - prd25-visual-baseline.spec.ts: 追加 3 baselines
+  - AC-13: 3 screenshots taken (step8-generate-plan.png + step8-optimize-script.png + accounts-smart-recommend.png)
+- 验证结果:
+  - typecheck: ✅ 0 errors (web + api 双通)
+  - lint: ✅ 0 new errors in changed files
+  - vitest: ✅ 382 tests pass (web all passed, +17 new tests)
+  - backend tests: ✅ 5 PositioningAgent.test.ts pass
+  - browser: ✅ 3 AC-13 screenshots taken
+- 更改的文件:
+  - apps/api/src/specialists/PositioningAgent.ts (recommend mode 新增)
+  - apps/api/src/trpc/routers/ipAccounts.ts (smartRecommend + create 扩展)
+  - apps/api/src/trpc/routers/stepData.ts (step8 legacy transform 修复)
+  - apps/web/src/components/step8/Step8GeneratePlan.tsx (stub → real LLM)
+  - apps/web/src/components/step8/Step8OptimizeScript.tsx (stub → real LLM)
+  - apps/web/src/components/accounts/CreateAccountModal.tsx (智能推荐)
+  - packages/clients/src/router-types.ts (SmartRecommendOutput)
+  - tests/e2e/prd25-step8-smart-recommend-flow.spec.ts (new)
+  - apps/api/src/specialists/__tests__/PositioningAgent.test.ts (new)
+  - apps/web/src/components/step8/Step8GeneratePlan.test.tsx (new)
+  - apps/web/src/components/step8/Step8OptimizeScript.test.tsx (new)
+- **未来迭代的学习:**
+  - stepData step8 handler: PRD-19 时期 legacy transform 会在 LivestreamAgent 升级后静默失效(undefined 覆盖真实 result)。新 sub_function discriminator 直接 pass-through agentRes.result 最干净
+  - PositioningAgent recommend mode: outputSchema getter 需在 invokeLLM 前 set _mode, 否则 BaseSpecialist 调 safeParse 时 getter 返回错误 schema
+  - act() 在 sync callback 时: await act(() => {...}) → act 返回 void(非 Promise) → lint 报 await-thenable。直接 act(() => {...}) 即可
+  - no-unnecessary-type-assertion: `if (isDisabled) return` 后 TS 会通过 isDisabled 变量分析 narrowing，platform 已是 string，不需要额外断言
+  - no-misused-promises: async 函数用于 onClick 需 void wrapper: `onClick={() => void handleCreate()}`
+---
