@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import {
   STEP7_SUBTITLE,
   STEP7_SCRIPT_TYPES_20,
@@ -14,6 +15,7 @@ import {
   STEP7_BUTTON_GO_STEP5,
   STEP7_TEXTAREA,
 } from '../step7';
+
 import type { Step7DebateResult, Step7Result } from '../step7';
 
 describe('STEP7 constants', () => {

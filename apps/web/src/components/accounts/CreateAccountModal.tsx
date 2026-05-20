@@ -1,6 +1,9 @@
 /**
- * CreateAccountModal — PRD-23 US-002 AC-3/4
+ * CreateAccountModal — PRD-23 US-002 AC-3/4 + PRD-25 US-007 AC-7
  * '新建账号' 按钮 + Dialog modal · 4 字段 · tRPC ipAccounts.create · redirect /step/1
+ * US-007 AC-7: 「智能推荐」 button (industry 旁) · trpc.ipAccounts.smartRecommend
+ *              onSuccess 自动填 platform/followersRange/ipPositioning + rationale hint
+ * SHIELD ANTI-PATTERN: smartRecommend is protectedProcedure (requires auth · not public)
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -27,8 +30,25 @@ export function CreateAccountModal() {
   const [industry, setIndustry] = useState('');
   const [platform, setPlatform] = useState<string | null>(null);
   const [description, setDescription] = useState('');
+  // US-007 AC-7: auto-filled by smartRecommend
+  const [followersRange, setFollowersRange] = useState('');
+  const [ipPositioning, setIpPositioning] = useState('');
+  const [rationale, setRationale] = useState('');
 
   const createMutation = trpc.ipAccounts.create.useMutation();
+
+  // US-007 AC-7: smartRecommend mutation
+  const smartRecommendMutation = trpc.ipAccounts.smartRecommend.useMutation({
+    onSuccess(data) {
+      setPlatform(data.platform);
+      setFollowersRange(data.followersRange);
+      setIpPositioning(data.ipPositioning);
+      setRationale(data.rationale);
+    },
+    onError() {
+      toast.error('智能推荐失败 · 请稍后重试');
+    },
+  });
 
   const isDisabled = !name.trim() || !industry.trim() || !platform;
 
@@ -37,12 +57,19 @@ export function CreateAccountModal() {
     await createMutation.mutateAsync({
       name: name.trim(),
       industry: industry.trim(),
-      platform: platform!,
+      platform: platform ?? '',
       ...(description.trim() ? { personalInfo: description.trim() } : {}),
+      ...(followersRange ? { followersRange } : {}),
+      ...(ipPositioning ? { ipPositioning } : {}),
     });
     toast.success('账号创建成功');
     setOpen(false);
     navigate('/step/1');
+  }
+
+  function handleSmartRecommend() {
+    if (!industry.trim() || smartRecommendMutation.isPending) return;
+    smartRecommendMutation.mutate({ industry: industry.trim() });
   }
 
   function handleCancel() {
@@ -51,6 +78,9 @@ export function CreateAccountModal() {
     setIndustry('');
     setPlatform(null);
     setDescription('');
+    setFollowersRange('');
+    setIpPositioning('');
+    setRationale('');
   }
 
   function handleOpenChange(v: boolean) {
@@ -76,10 +106,11 @@ export function CreateAccountModal() {
 
           <div className="flex flex-col gap-4 py-2">
             <div>
-              <label className="text-body-sm font-medium text-on-surface mb-1.5 block">
+              <label htmlFor="ca-name" className="text-body-sm font-medium text-on-surface mb-1.5 block">
                 IP 账号名 <span className="text-destructive">*</span>
               </label>
               <Input
+                id="ca-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="如：赵语AI"
@@ -87,22 +118,47 @@ export function CreateAccountModal() {
               />
             </div>
 
+            {/* US-007 AC-7: industry + 智能推荐 button */}
             <div>
-              <label className="text-body-sm font-medium text-on-surface mb-1.5 block">
+              <label htmlFor="ca-industry" className="text-body-sm font-medium text-on-surface mb-1.5 block">
                 行业 <span className="text-destructive">*</span>
               </label>
-              <Input
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                placeholder="如：企业服务"
-                data-testid="create-account-industry"
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="ca-industry"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  placeholder="如：企业服务"
+                  data-testid="create-account-industry"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!industry.trim() || smartRecommendMutation.isPending}
+                  onClick={handleSmartRecommend}
+                  data-testid="create-account-smart-recommend"
+                >
+                  {smartRecommendMutation.isPending ? '推荐中…' : '智能推荐'}
+                </Button>
+              </div>
+              {/* AC-7: rationale hint (gray) */}
+              {rationale && (
+                <p
+                  className="mt-1.5 text-body-xs text-muted-foreground"
+                  data-testid="create-account-rationale-hint"
+                >
+                  {rationale}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="text-body-sm font-medium text-on-surface mb-1.5 block">
+              {/* PlatformInlineRadio uses radio group — label acts as group label */}
+              <p className="text-body-sm font-medium text-on-surface mb-1.5">
                 平台 <span className="text-destructive">*</span>
-              </label>
+              </p>
               <PlatformInlineRadio
                 value={platform}
                 onChange={setPlatform}
@@ -111,10 +167,11 @@ export function CreateAccountModal() {
             </div>
 
             <div>
-              <label className="text-body-sm font-medium text-on-surface mb-1.5 block">
+              <label htmlFor="ca-description" className="text-body-sm font-medium text-on-surface mb-1.5 block">
                 业务描述
               </label>
               <Textarea
+                id="ca-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="如：定制智能体和 opc 培训"
@@ -130,7 +187,7 @@ export function CreateAccountModal() {
             </Button>
             <Button
               disabled={isDisabled || createMutation.isPending}
-              onClick={handleCreate}
+              onClick={() => void handleCreate()}
               data-testid="create-account-submit"
             >
               {createMutation.isPending ? '创建中…' : '创建并开始'}

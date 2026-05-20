@@ -1,0 +1,9 @@
+
+Running 5 tests using 1 worker
+
+[1A[2K[1/5] [chromium] › tests/e2e/prd17-step3b-flow.spec.ts:19:3 › prd17-step3b · /step/3b 人设定制方案 › AC-4 · H1 字面锁 "人设定制方案" + 副标签 STEP 03B
+[1A[2K[2/5] [chromium] › tests/e2e/prd17-step3b-flow.spec.ts:25:3 › prd17-step3b · /step/3b 人设定制方案 › AC-4 · 3 textarea 存在 + 无平台 radio
+[1A[2K[3/5] [chromium] › tests/e2e/prd17-step3b-flow.spec.ts:35:3 › prd17-step3b · /step/3b 人设定制方案 › AC-4 · textarea labels 字面锁
+[1A[2K[4/5] [chromium] › tests/e2e/prd17-step3b-flow.spec.ts:43:3 › prd17-step3b · /step/3b 人设定制方案 › AC-5 · 输出区 6 H3 字面锁 · DOM H1+6H3=7
+[1A[2K[5/5] [chromium] › tests/e2e/prd17-step3b-flow.spec.ts:64:3 › prd17-step3b · /step/3b 人设定制方案 › AC-5 · 复制 + 重新生成 buttons per H3 block
+[1A[2K  5 passed (45.9s)

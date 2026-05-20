@@ -1,8 +1,8 @@
 /**
- * CreateAccountModal unit tests — PRD-23 US-002 AC-9
- * ≥ 5 tests: modal 弹/关 / 4 字段填写 / disabled 条件 / 取消关闭 / 创建成功 mutation 触发 + redirect
+ * CreateAccountModal unit tests — PRD-23 US-002 AC-9 + PRD-25 US-007 AC-9
+ * ≥ 5 original tests + ≥ 3 smartRecommend tests (US-007)
  */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -19,11 +19,28 @@ const mockMutateAsync = vi.fn().mockResolvedValue({
 });
 const mockNavigate = vi.fn();
 
+// smartRecommend mock control
+const mockSmartRecommendCtrl = vi.hoisted(() => ({
+  onSuccess: undefined as ((data: unknown) => void) | undefined,
+  onError: undefined as (() => void) | undefined,
+}));
+
 vi.mock('@/lib/trpc', () => ({
   trpc: {
     ipAccounts: {
       create: {
         useMutation: () => ({ mutateAsync: mockMutateAsync, isPending: false }),
+      },
+      // US-007 AC-7: smartRecommend mock
+      smartRecommend: {
+        useMutation: (opts?: { onSuccess?: (data: unknown) => void; onError?: () => void }) => {
+          mockSmartRecommendCtrl.onSuccess = opts?.onSuccess;
+          mockSmartRecommendCtrl.onError = opts?.onError;
+          return {
+            mutate: vi.fn(),
+            isPending: false,
+          };
+        },
       },
     },
   },
@@ -34,8 +51,8 @@ vi.mock('sonner', () => ({
 }));
 
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return { ...actual, useNavigate: () => mockNavigate };
+  const actual = await vi.importActual('react-router-dom');
+  return { ...(actual as object), useNavigate: () => mockNavigate };
 });
 
 function renderModal() {
@@ -122,5 +139,39 @@ describe('CreateAccountModal', () => {
     fireEvent.change(screen.getByTestId('create-account-industry'), { target: { value: '企业服务' } });
     fireEvent.click(screen.getByText('抖音'));
     expect(screen.getByTestId('create-account-submit')).not.toBeDisabled();
+  });
+
+  // ── US-007 AC-7: smartRecommend tests ────────────────────────────────────────
+
+  it('US-007 AC-7: 「智能推荐」button 渲染且 industry 为空时 disabled', () => {
+    renderModal();
+    fireEvent.click(screen.getByTestId('create-account-trigger'));
+    const recommendBtn = screen.getByTestId('create-account-smart-recommend');
+    expect(recommendBtn).toBeInTheDocument();
+    expect(recommendBtn).toBeDisabled();
+  });
+
+  it('US-007 AC-7: 填写 industry 后「智能推荐」button enabled', () => {
+    renderModal();
+    fireEvent.click(screen.getByTestId('create-account-trigger'));
+    fireEvent.change(screen.getByTestId('create-account-industry'), { target: { value: '美妆' } });
+    const recommendBtn = screen.getByTestId('create-account-smart-recommend');
+    expect(recommendBtn).not.toBeDisabled();
+  });
+
+  it('US-007 AC-7: smartRecommend onSuccess 后显示 rationale hint', () => {
+    renderModal();
+    fireEvent.click(screen.getByTestId('create-account-trigger'));
+    act(() => {
+      mockSmartRecommendCtrl.onSuccess?.({
+        platform: 'xiaohongshu',
+        followersRange: '0-1k',
+        ipPositioning: '美妆测评博主',
+        rationale: '小红书是美妆类内容流量最大的平台，适合0-1k阶段深耕垂直内容，建立美妆种草账号权威性。',
+        isFallback: false,
+      });
+    });
+    expect(screen.getByTestId('create-account-rationale-hint')).toBeInTheDocument();
+    expect(screen.getByText(/小红书是美妆类内容/)).toBeInTheDocument();
   });
 });

@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { stepLsKey } from '@/lib/ls-namespace';
-import { trpc } from '@/lib/trpc';
 import {
   STEP5_BUTTON_GENERATE,
   STEP5_FILE_UPLOADS_2,
@@ -20,6 +18,8 @@ import {
   type Step5Result,
   type Step5Topic,
 } from '@/lib/constants/step5';
+import { stepLsKey } from '@/lib/ls-namespace';
+import { trpc } from '@/lib/trpc';
 
 export interface Step5FormData {
   industry: string;
@@ -133,7 +133,7 @@ export default function Step5() {
         if (data.type === 'started') {
           setStreamStatuses((prev) => ({ ...prev, [cat]: 'loading' }));
         } else if (data.type === 'done') {
-          const result = data.result as Record<string, unknown>;
+          const result = data.result;
           const topics = adaptTopicResult(result, cat);
           setCategoryResults((prev) => ({ ...prev, [cat]: topics }));
           setStreamStatuses((prev) => ({ ...prev, [cat]: 'done' }));

@@ -1,18 +1,17 @@
 {
   "story_id": "US-004",
-  "validator_start_ts": "2026-05-18T05:09:00",
-  "validator_end_ts": "2026-05-18T05:12:00",
-  "test_command": "cd apps/api && pnpm vitest run src/specialists/__tests__/BrandingAgent.real-llm.test.ts",
+  "validator_start_ts": "2026-05-20T17:31:00",
+  "validator_end_ts": "2026-05-20T17:36:54",
+  "test_command": "pnpm vitest run (apps/web, 44 files) + pnpm typecheck + agent-browser screenshot",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "AC-1 PASS: invokeLLM real call implemented · SYSTEM_PROMPT_PREFIX[mode] strictly separated (packaging vs persona) · responseFormat uses double schema (Step3BaseSchema/Step3bBaseSchema for JSON serialization, Step3OutputSchema/Step3bOutputSchema for safeParse) · model_tier='reasoning' no hardcode. AC-2 PASS: test file exists with describe.skipIf(skipIfNoKey) · 2 tests (packaging + persona) · isFallback=false + tokensUsed.total>0 assertions. AC-3 PASS: Step3OutputSchema.safeParse strict validation in tests + double schema strategy (base schema for responseFormat, strict schema for safeParse). AC-4 PASS: BaseSpecialist._writeCostLog() writes agentMode=req.mode · packaging agentMode='packaging' · persona agentMode='persona' · agentId='BrandingAgent'. AC-5 PASS: tests skipped (no API keys configured in .env - expected per '若 key 在 env' qualifier). AC-6 PASS: typecheck 0 errors across 6 workspaces · zero-regression 14 tests 0 failures 0 errors.",
+  "notes": "AC-1 PASS: trpc.evolution.getProfile.useQuery(undefined,{enabled:!!accountId}) · loading spinner (data-testid=evolution-loading) · useEffect error toast · null profile → EmptyState '新用户 · 暂无进化数据 / 跑任意 specialist 后生成' (confirmed in browser screenshot). AC-2 PASS: level = profile?.level ?? 'L1' · no hardcoded stubLevel='L2' (D-237 字面锁). AC-3 PASS: MetricCard uses feedbackCountGood / (feedbackCountTotal-feedbackCountGood) / deepLearningCount / satisfactionRate from profile (real data). AC-4 PASS: evolveMutation.mutate({rating:'good', agentId:'EvolutionAgent', rateableType:'manual_trigger', rateableId:0}) · onSuccess invalidate + toast.success. AC-5 PASS: isInsightDisabled=feedbackCountTotal<5 · title='需 ≥ 5 反馈' · separate insightMutation(rateableType='insight_trigger'). AC-6 PASS: extractInsightText helper · truncate 200 chars + '查看完整' → /evolution/insights · fallback '暂无洞察 · 累计 5+ 反馈后自动生成偏好画像洞察' (D-237 module 2 字面锁). AC-7 PASS: toast.info('新增学习功能 · 跑任意 specialist 后自动加入档案') · deepLearningCount real data. AC-8 PASS: getLsKey(accountId,'evolution_settings') per anti-pattern · server-source-of-truth useEffect · updateConfig.mutate() + LS offline fallback. AC-9 PASS: typecheck exit 0 (apps/web tsc --noEmit). AC-10 PASS: 13 unit tests (>8 required) all pass (vitest 351/351 zero failures). AC-11 PASS: prd25-evolution-llm-flow.spec.ts · 1 fixture × 6 tests in file. AC-12 PASS: prd25-visual-baseline.spec.ts AC-12 test added (L2 badge or EmptyState baseline). AC-13 PASS: browser screenshot evolution-with-profile.png · 45KB · EmptyState path correct (no seeded profile in dev session). AC-COMMON: typecheck 0 errors · grep apiKey apps/web/src = 0 hits · pnpm lint 185 errors are pre-existing in other files (router.tsx, tools/ components) NOT in Evolution.tsx or Evolution.test.tsx (confirmed: npx eslint Evolution.tsx = 0 errors). Zero-regression: 44 test files 351 tests PASS.",
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "vitest.xml",
-    "vitest.stdout.txt"
+    "evolution-with-profile.png"
   ]
 }

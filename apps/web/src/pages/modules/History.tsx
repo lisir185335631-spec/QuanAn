@@ -162,7 +162,7 @@ function getToolInfo(row: HistoryListRow) {
   if (mode === 'acquisition') return TOOL_DEFS.find((d) => d.slug === 'copywriting')!;
 
   const byAgentId = TOOL_DEFS.find((d) => d.agentIds.includes(agentId as never));
-  return byAgentId ?? TOOL_DEFS[0]!;
+  return byAgentId ?? TOOL_DEFS[0];
 }
 
 function getToolRestoreUrl(row: HistoryListRow): string | null {

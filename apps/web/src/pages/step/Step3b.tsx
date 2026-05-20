@@ -1,11 +1,11 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import Step3bOutputContent, {
   type Step3bResult,
 } from '@/components/step3b/Step3bOutputContent';
-import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
@@ -130,7 +130,7 @@ export default function Step3b() {
   // Sync result from DB
   useEffect(() => {
     if (!dbQuery.data?.result) return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
+    const raw = dbQuery.data.result;
     setResult(adaptStep3bResult(raw));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbQuery.data?.result]);
@@ -139,7 +139,7 @@ export default function Step3b() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isCtaDisabled) return;
     save(formData as unknown as Record<string, unknown>);
@@ -264,7 +264,7 @@ export default function Step3b() {
         ) : dbQuery.isError ? (
           <ErrorState
             message={dbQuery.error instanceof Error ? dbQuery.error.message : '加载失败'}
-            onRetry={dbQuery.refetch}
+            onRetry={() => { void dbQuery.refetch(); }}
           />
         ) : result ? (
           <section id="step3b-output" className="mt-2 max-w-4xl">
@@ -272,10 +272,10 @@ export default function Step3b() {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-display text-on-surface">人设定制方案</h3>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleRegenAll} disabled={regenAllLoading}>
+                <Button variant="outline" size="sm" onClick={() => { void handleRegenAll(); }} disabled={regenAllLoading}>
                   {STEP3B_BUTTON_REGEN_ALL}
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleCopyAll}>
+                <Button variant="outline" size="sm" onClick={() => { void handleCopyAll(); }}>
                   {STEP3B_BUTTON_COPY_ALL}
                 </Button>
               </div>
@@ -289,13 +289,13 @@ export default function Step3b() {
                     <div className="flex items-start justify-between mb-4 gap-4">
                       <h3 className="font-display text-2xl text-on-surface">{block.h3Label}</h3>
                       <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
-                        <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
+                        <Button variant="outline" size="sm" onClick={() => { void handleCopy(block.id); }}>
                           {STEP3B_BUTTON_COPY}
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleRegen(block.id)}
+                          onClick={() => { void handleRegen(block.id); }}
                           disabled={regenLoadingBlocks.includes(block.id)}
                         >
                           {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3B_BUTTON_REGENERATE}

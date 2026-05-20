@@ -73,7 +73,19 @@ scripts/ralph/verify-artifacts/
 *.tmp
 .cache
 scripts/ralph/prd.json.bak.*
-scripts/ralph/cost-log-*.jsonl  # 多 PRD cost-log · 跨 PRD 不入库
-scripts/ralph/progress.txt.bak.*  # progress.txt 手动备份(/goal-verify 等触发)
-screenshots/                      # validator / agent-browser 自动截图(大文件 · 不入库 · 需要时 git add -f)
+# 多 PRD cost-log · 跨 PRD 不入库
+scripts/ralph/cost-log-*.jsonl
+# progress.txt 手动备份
+scripts/ralph/progress.txt.bak.*
+# validator / agent-browser 自动截图(大文件 · 不入库 · 需要时 git add -f)
+screenshots/
 .gstack/
+# Claude Code 内存文件
+.claude/
+# ralph 专用 prd 备份 · 非 prd.json 主副本
+scripts/ralph/prd-*.json
+# 调试截图/诊断产物
+apps/api/*.png
+apps/web/diagnosis-us002/
+# apps/scripts 临时工具脚本
+apps/scripts/ralph/

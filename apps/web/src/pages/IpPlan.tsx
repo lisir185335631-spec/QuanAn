@@ -1,6 +1,5 @@
-import { useState } from 'react';
-
 import { ArrowLeft, FileText, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { IpPlanStepGrid } from '@/components/ip-plan/IpPlanStepGrid';
@@ -32,7 +31,7 @@ export default function IpPlan() {
         <Button
           variant="outline"
           size="sm"
-          onClick={handleRefresh}
+          onClick={() => { void handleRefresh(); }}
           disabled={isRefreshing}
           className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
         >

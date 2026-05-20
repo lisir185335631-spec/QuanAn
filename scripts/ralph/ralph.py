@@ -86,12 +86,13 @@ MAX_PROGRESS_BYTES = 512 * 1024    # progress.txt 最大保留 512KB（超出时
 
 # 参数解析：正确处理 --key value 格式，防止 value 被当作位置参数
 def _parse_args():
-    """解析命令行参数，返回 (agent, model, no_audit_gate, daemon)"""
+    """解析命令行参数，返回 (agent, model, no_audit_gate, daemon, with_dev_server)"""
     args = sys.argv[1:]
     agent = "claude"
     model = "sonnet"
     no_audit_gate = False
     daemon = False
+    with_dev_server = True  # TD-095: 默认开启 dev server 管理
     i = 0
     while i < len(args):
         if args[i] == "--model" and i + 1 < len(args):
@@ -103,14 +104,20 @@ def _parse_args():
         elif args[i] == "--daemon":
             daemon = True
             i += 1
+        elif args[i] == "--with-dev-server":
+            with_dev_server = True
+            i += 1
+        elif args[i] == "--no-dev-server":
+            with_dev_server = False
+            i += 1
         elif not args[i].startswith("--"):
             agent = args[i]  # 真正的位置参数：agent 类型
             i += 1
         else:
             i += 1  # 跳过未知 flag
-    return agent, model, no_audit_gate, daemon
+    return agent, model, no_audit_gate, daemon, with_dev_server
 
-AGENT, MODEL, NO_AUDIT_GATE, DAEMON_MODE = _parse_args()
+AGENT, MODEL, NO_AUDIT_GATE, DAEMON_MODE, WITH_DEV_SERVER = _parse_args()
 
 # ─────────────────────────────────────────────
 # 路径配置
@@ -124,6 +131,9 @@ PROGRESS_FILE = SCRIPT_DIR / "progress.txt"
 LOCK_FILE = SCRIPT_DIR / "ralph-lock.json"
 AUDIT_GATE_FILE = SCRIPT_DIR / "audit-gate.json"
 COST_LOG_FILE = SCRIPT_DIR / "cost-log.jsonl"  # M-4 fallback · 实际写入用 _get_cost_log_path()
+# TD-095: dev server pid/log 文件
+DEV_SERVER_PID_FILE = SCRIPT_DIR / "dev-server.pid"
+DEV_SERVER_LOG_FILE = SCRIPT_DIR / "dev-server.log"
 BACKUP_DIR = SCRIPT_DIR / "backups"
 
 
@@ -1574,6 +1584,13 @@ def _daemon_relaunch():
     # 系统通知 audit pending → 不再依赖用户记得跑 /monitor-ralph (PRD-3 US-001 教训)
     _spawn_watch_audit_gate()
 
+    # TD-095(2026-05-20): 自动 fork pnpm dev 子进程, 供 Validator e2e/browse 使用
+    # 父进程(--daemon)调用后 sys.exit(0), 所以在父进程注册 _spawn_dev_server 并无意义
+    # 实际在子进程(去掉 --daemon 后启动的真正 ralph 主进程)里调用 — 见 main() 入口
+    # 这里仅打印提示, 让用户知道 dev server 会被管理
+    dev_flag = "--with-dev-server" if WITH_DEV_SERVER else "--no-dev-server"
+    print(f"  dev-server: {'auto-fork pnpm dev (可用 --no-dev-server 禁用)' if WITH_DEV_SERVER else '已禁用 (--no-dev-server)'}")
+
     print(f"  停止: taskkill /PID {proc.pid} /T /F" if platform.system() == "Windows"
           else f"  停止: kill {proc.pid}")
     sys.exit(0)
@@ -1615,6 +1632,100 @@ def _spawn_watch_audit_gate() -> None:
         print(f"  [WARN] watch-audit-gate 启动失败 (不影响 Ralph): {e}")
 
 
+def _spawn_dev_server() -> None:
+    """TD-095(2026-05-20): daemon 启动时 fork pnpm dev 子进程.
+    - detached: 不随 ralph 父进程退出
+    - pid 写 dev-server.pid
+    - output redirect dev-server.log
+    - atexit: daemon 退出时 SIGTERM dev server
+    - 仅当 WITH_DEV_SERVER=True 且未检测到已有 dev server 时启动
+    """
+    import platform as _plat
+
+    if not WITH_DEV_SERVER:
+        return
+
+    # 检查端口 5173 (vite 默认) 是否已占用 — 复用已有 dev server
+    import socket
+    try:
+        with socket.create_connection(("localhost", 5173), timeout=2):
+            print("  [dev-server] 已检测到 localhost:5173 就绪 · 复用现有实例")
+            return
+    except OSError:
+        pass  # 未启动 → 继续 fork
+
+    # 查找 pnpm 可执行文件
+    pnpm_candidates = ["pnpm", "pnpm.cmd", "pnpm.exe"]
+    pnpm_bin = shutil.which("pnpm") or next(
+        (shutil.which(c) for c in pnpm_candidates if shutil.which(c)), None
+    )
+    if pnpm_bin is None:
+        print("  [WARN] pnpm not found · skip dev server fork (TD-095)")
+        return
+
+    try:
+        log_handle = open(DEV_SERVER_LOG_FILE, "a", encoding="utf-8")
+    except OSError as e:
+        print(f"  [WARN] 无法打开 dev-server.log: {e}")
+        return
+
+    # fork apps/web dev server
+    web_dir = PROJECT_ROOT / "apps" / "web"
+    if not web_dir.exists():
+        log_handle.close()
+        print("  [WARN] apps/web 不存在 · skip dev server fork")
+        return
+
+    cmd = [pnpm_bin, "dev"]
+    try:
+        if _plat.system() == "Windows":
+            DETACHED_PROCESS = 0x00000008
+            CREATE_NEW_PROCESS_GROUP = 0x00000200
+            proc = subprocess.Popen(
+                cmd,
+                cwd=str(web_dir),
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL,
+                creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,
+            )
+        else:
+            proc = subprocess.Popen(
+                cmd,
+                cwd=str(web_dir),
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+        log_handle.close()
+
+        # 写 pid 文件
+        DEV_SERVER_PID_FILE.write_text(str(proc.pid), encoding="utf-8")
+        print(f"  [dev-server] pnpm dev 已启动 (PID: {proc.pid} · log: {DEV_SERVER_LOG_FILE})")
+
+        # atexit: daemon 退出时 SIGTERM dev server
+        def _stop_dev_server():
+            try:
+                pid = int(DEV_SERVER_PID_FILE.read_text(encoding="utf-8").strip())
+                import signal as _sig
+                if _plat.system() == "Windows":
+                    subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"],
+                                   capture_output=True)
+                else:
+                    os.kill(pid, _sig.SIGTERM)
+                DEV_SERVER_PID_FILE.unlink(missing_ok=True)
+                print(f"  [dev-server] SIGTERM sent (PID: {pid})")
+            except Exception:
+                pass  # best-effort — don't block daemon exit
+
+        atexit.register(_stop_dev_server)
+
+    except Exception as e:
+        log_handle.close()
+        print(f"  [WARN] dev server fork 失败 (不影响 Ralph): {e}")
+
+
 # ─────────────────────────────────────────────
 # 主循环
 # ─────────────────────────────────────────────
@@ -1640,7 +1751,11 @@ def main():
 
     print(f"启动 Ralph v2 - 最大迭代次数: {MAX_ITERATIONS}")
     audit_label = "启用" if not NO_AUDIT_GATE else "禁用(--no-audit-gate)"
-    print(f"  Agent: {AGENT} | Model: {MODEL} | 开发超时: {TIMEOUT_SECONDS//60}min | 验证超时: {VALIDATOR_TIMEOUT_SECONDS//60}min | 审计门禁: {audit_label}")
+    dev_label = "启用" if WITH_DEV_SERVER else "禁用(--no-dev-server)"
+    print(f"  Agent: {AGENT} | Model: {MODEL} | 开发超时: {TIMEOUT_SECONDS//60}min | 验证超时: {VALIDATOR_TIMEOUT_SECONDS//60}min | 审计门禁: {audit_label} | dev-server: {dev_label}")
+
+    # TD-095(2026-05-20): 自动 fork pnpm dev 子进程, 供 Validator e2e/browse 使用
+    _spawn_dev_server()
 
     # 崩溃恢复检查
     start_iteration = check_crash_recovery()

@@ -50,7 +50,7 @@ export default function Accounts() {
           className="text-body-md text-muted-foreground"
           data-testid="accounts-empty"
         >
-          暂无 IP 账号 · 点击"新建账号"开始
+          暂无 IP 账号 · 点击&quot;新建账号&quot;开始
         </p>
       )}
     </main>

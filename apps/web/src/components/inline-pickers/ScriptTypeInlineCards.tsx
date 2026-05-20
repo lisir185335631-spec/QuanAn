@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
 import { SCRIPT_TYPES } from '@/lib/constants/scripts';
+import { cn } from '@/lib/utils';
 
 export interface ScriptTypeInlineCardsProps {
   value: string | null;

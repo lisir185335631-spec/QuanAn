@@ -205,6 +205,44 @@ Opus 审查时, 对以下**运行时验证**类 AC, **必须亲跑**命令并记
 
 ---
 
+## §0.5 TD 豁免必填证据模板(QuanQn PRD-20 retro M-3 固化 · 2026-05-18 新增)
+
+ralph 申请 TD-XX 豁免时(pytest-full FAIL / e2e FAIL / 集成测试 FAIL 等被判 pre-existing 申请豁免) · 在 `scripts/ralph/progress.txt` 必须按以下模板填证据 · 缺一项 Opus reject 豁免 · ralph 必须补全证据。
+
+```
+## TD-XX 豁免申请
+- **fail 类别**: <ECONNREFUSED / FK violation / schema drift / e2e timeout / fetch failed / ...>
+- **fail 数量**: N 个 testcase / log error
+- **commit hash 历史**: <commit hash + PRD-N 时期建立 + 修复 commit 链>
+- **git log scope 验证**: `git log <prd-start-commit>..HEAD -- <test files>` 0 行(本 PRD 0 改动这些文件)
+- **跨 PRD 累积证据**: PRD-2~N 累积 N 次相同 fail · 跨 K 个 PRD
+- **不豁免后果**: <BLOCK ralph + retry · 但实际 0 用户 impact / 0 deliverable 缺失>
+- **豁免后 TD 登记**: TD-XX 类目 = "pre-existing/test-infra/integration-flake/..."
+- **fix_by 建议 PRD**: PRD-N+1 / maintenance / wontfix
+```
+
+**Opus verify 流程**:
+
+1. 看 progress.txt 该段 7 字段 · 缺一项 reject 豁免
+2. 逐条 verify · 实跑 `git log <commit-range> -- <files>` + grep + commit hash 历史
+3. 7 字段 + verify 全 PASS · 才登记 .agents/tech-debt.json 状态(open / wontfix / resolved)
+4. progress.txt + .agents/tech-debt.json 双源记账 · 跨 PRD 累积
+
+**反例**(禁止 · Opus reject 豁免):
+
+```
+❌ ralph 写: "9 ECONNREFUSED · pre-existing 跳过"
+   缺少 7 字段中的 6 项 · Opus 无法 verify
+   
+✅ ralph 写完整 7 字段如上模板
+```
+
+**判定**: ralph 缺一字段 → Opus reject 豁免 + 让 ralph 补全 · 不接受口头"pre-existing"。
+
+**ROI 估算**(基于 QuanQn PRD-20 US-006 实证): 防 ralph 把新引入 bug 错归因 pre-existing · 5 PRD 累积避免 1-2 次错豁免
+
+---
+
 ## §Z 风险分档(2026-04-21 新增 — 审计强度差异化)
 
 每个 story 在 prd.json 生成时标 `risk_level: "low" | "medium" | "high"`。ralph skill 按下列规则打标,Opus 审计按分档分配强度:
@@ -425,7 +463,7 @@ pytest --collect-only -q backend/tests/ | tail -1
 
 ---
 
-### H. Frontend list/dropdown PRD(2026-05-08 · QuanAn PRD-3 US-006 经验)
+### H. Frontend list/dropdown PRD(2026-05-08 · QuanQn PRD-3 US-006 经验)
 
 > **背景**: PRD-3 US-006 实证 — `AccountDropdown` 漏写 `<ScrollArea>`,DB 累积 30+ accounts 时新建 item 在 dropdown viewport 外,playwright click 56 × retry 30s timeout。**ralph 12 iter blocked,Opus 接管 30min 才发现真根因**。`ToolsDropdown` 同 codebase 内有正确模式(`<ScrollArea className="h-52">`),但被遗漏。
 >
@@ -466,7 +504,7 @@ grep -E "workers" playwright.config.ts apps/web/playwright.config.ts 2>/dev/null
 
 ---
 
-### I. Multi-mode Specialist race window(2026-05-09 · QuanAn PRD-4 TD-014 经验)
+### I. Multi-mode Specialist race window(2026-05-09 · QuanQn PRD-4 TD-014 经验)
 
 > **背景**: PRD-4 7 Specialist 中 4 个用 multi-mode(`PositioningAgent` industry/execution · `BrandingAgent` packaging/persona · `VideoAgent` 4 mode · `CopywritingAgent` 4 mode)。ralph 用 `private _mode` instance state + `outputSchema` getter 按 mode 返回 schema · `invokeLLM` 改 _mode → BaseSpecialist safeParse 读 _mode · **await 间隙其他 execute() 切入 race window**。P3 单 user 串行不触发 · 但**架构层 design smell**。
 >
@@ -506,7 +544,7 @@ grep -E "export const \w+Agent" apps/api/src/specialists/<Agent>.ts
 
 ---
 
-### J. Cross-cut router coverage(2026-05-09 · QuanAn PRD-4 US-017 经验)
+### J. Cross-cut router coverage(2026-05-09 · QuanQn PRD-4 US-017 经验)
 
 > **背景**: PRD-4 US-017 9 步 e2e 才发现 stepData.save handler 漏 step5/7 · UI skeleton 永挂 · 浪费 1 次 e2e 跑(~30 min)。原因是 Specialist Wave 4 时各 US 只加自己的 step branch · **没人负责"全 N step coverage"的 cross-cut audit**。
 >

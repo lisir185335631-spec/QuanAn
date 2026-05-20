@@ -1,14 +1,16 @@
 /**
- * QuanAn · PRD-4 US-004
- * PositioningAgent — step1(industry mode) + step4(execution mode)
- * 两个 mode 共用一个 Specialist · outputSchema getter 按 mode 返回对应 schema(REJ-007)
+ * QuanAn · PRD-4 US-004 + PRD-25 US-007
+ * PositioningAgent — step1(industry mode) + step4(execution mode) + recommend mode
+ * 三个 mode 共用一个 Specialist · outputSchema getter 按 mode 返回对应 schema(REJ-007)
  * US-015: fallbackTemplate static property for each mode
+ * US-007 AC-6: recommend mode → {platform, followersRange, ipPositioning, rationale}
+ *              model_tier='lightweight' · timeout 15s · outputSchema getter per mode
  *
  * AC-1: 五层配置完整(persona/memory/knowledge/tools/execution)
  * AC-2: Step1OutputSchema — { industry, marketAnalysis, competitionLevel, recommendation }
  * AC-3: Step4OutputSchema — { markdown }.refine(必含 '# 执行计划' heading)
  * AC-4: outputSchema getter 按 this._mode 返回对应 schema
- * AC-8: mode 不在 ['industry','execution'] → runtime throw
+ * AC-8: mode 不在 ['industry','execution','recommend'] → runtime throw
  */
 
 import { z } from 'zod';
@@ -45,12 +47,30 @@ export const Step4OutputSchema = z
 // Base schema for JSON responseFormat (without refine — LLM enforces structure only)
 const Step4BaseSchema = z.object({ markdown: z.string() });
 
+// ── US-007 AC-6: recommend output schema ─────────────────────────────────────
+// SHIELD(ANTI-PATTERN → AC-5/AC-6 字段名): {platform, followersRange, ipPositioning, rationale}
+
+export const RecommendOutputSchema = z.object({
+  platform: z.enum(['douyin', 'xiaohongshu', 'kuaishou']),
+  followersRange: z.enum(['0-1k', '1k-10k', '10k+']),
+  ipPositioning: z.string().min(10),
+  rationale: z.string().min(50),
+});
+
+const RecommendBaseSchema = z.object({
+  platform: z.string(),
+  followersRange: z.string(),
+  ipPositioning: z.string(),
+  rationale: z.string(),
+});
+
 export type Step1Output = z.infer<typeof Step1OutputSchema>;
 export type Step4Output = z.infer<typeof Step4OutputSchema>;
-export type PositioningOutput = Step1Output | Step4Output;
+export type RecommendOutput = z.infer<typeof RecommendOutputSchema>;
+export type PositioningOutput = Step1Output | Step4Output | RecommendOutput;
 
-// AC-8: compile-time union
-type Mode = 'industry' | 'execution';
+// AC-8: compile-time union (US-007: added 'recommend')
+type Mode = 'industry' | 'execution' | 'recommend';
 type PositioningInput = Record<string, unknown>;
 
 // ── AC-1: 五层配置 ─────────────────────────────────────────────────────────────
@@ -101,6 +121,9 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     if (this._mode === 'execution') {
       return Step4OutputSchema as unknown as z.ZodType<PositioningOutput>;
     }
+    if (this._mode === 'recommend') {
+      return RecommendOutputSchema as unknown as z.ZodType<PositioningOutput>;
+    }
     return Step1OutputSchema as unknown as z.ZodType<PositioningOutput>;
   }
 
@@ -117,6 +140,13 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     execution: {
       markdown: `# 执行计划\n\n> ⚠️ 系统繁忙，以下为通用备用执行计划，请稍后重试获取针对您 IP 定位的个性化方案。\n\n## 第一阶段：账号冷启动（第 1-30 天）\n\n**核心目标：** 完成账号基础建设，发布首批优质内容，建立初步粉丝基础。\n\n### 1. 每日任务表\n\n| 时段 | 任务 | 时长 |\n|------|------|------|\n| 早 08:00 | 刷同行热门内容 · 记录选题灵感 | 15 分钟 |\n| 午 12:00 | 回复昨日评论 · 互动维护 | 10 分钟 |\n| 晚 20:00 | 发布当日内容 · 观察数据 | 20 分钟 |\n\n- **内容生产**：每日至少准备 1 条内容素材（文案/脚本/拍摄素材）\n- **账号运营**：积极回复评论，建立早期粉丝关系\n- **竞品监测**：每日浏览 3-5 个同领域账号，记录爆款特征\n\n### 2. 每周里程碑\n\n| 周次 | 里程碑目标 | 验收标准 |\n|------|-----------|----------|\n| 第 1 周 | 账号资料 100% 完善 | 头像/简介/背景图全部就位 |\n| 第 2 周 | 首批 5 条内容发布 | 平均播放 ≥ 500 |\n| 第 3 周 | 粉丝突破 100 | 自然增粉（非买粉）|\n| 第 4 周 | 爆款内容 1 条 | 播放 ≥ 5000 |\n\n- 每周复盘数据，调整内容方向与发布策略\n- 与同领域创作者建立互推关系，扩大曝光\n\n### 3. 阶段 KPI\n\n| 指标 | 第 1 月目标 | 第 3 月目标 | 第 6 月目标 |\n|------|------------|------------|------------|\n| 粉丝数 | 500 | 5,000 | 30,000 |\n| 月均播放量 | 5 万 | 50 万 | 500 万 |\n| 爆款率 | ≥ 10% | ≥ 20% | ≥ 30% |\n| 变现收入 | 0 | 试水期 | ≥ 1 万/月 |\n\n---\n\n## 第二阶段：内容矩阵搭建（第 31-90 天）\n\n**核心目标：** 建立稳定内容输出体系，实现自然增粉。\n\n- 建立固定内容栏目（系列感增强用户黏性）\n- 开发爆款选题公式（结合热点 + 垂直领域）\n- 打造个人 IP 标签，强化用户记忆点\n\n## 第三阶段：商业化启动（第 91-180 天）\n\n**核心目标：** 粉丝达到变现门槛，启动初步商业合作。\n\n- 粉丝突破 1 万里程碑，解锁直播、橱窗等功能\n- 品牌合作：主动对接品牌方，提供数据报告\n- 私域沉淀：将粉丝引导至微信社群，建立会员体系\n\n---\n\n> 💡 以上为通用备用执行计划，实际执行计划需结合您的行业特点与个人资源定制。请稍后重试获取个性化方案。`,
     } satisfies Step4Output,
+    // US-007 AC-6: recommend fallback
+    recommend: {
+      platform: 'douyin' as const,
+      followersRange: '0-1k' as const,
+      ipPositioning: '系统繁忙，建议选择专注垂直领域的内容方向，围绕自身专业优势建立差异化 IP 定位。',
+      rationale: '系统繁忙，以下为通用备用推荐。抖音是目前覆盖面最广的平台，0-1k 粉丝阶段适合深耕垂直内容积累基础用户，建议从最擅长的领域入手，稳步建立账号权威性。请稍后重试获取基于您行业的个性化推荐。',
+    } satisfies RecommendOutput,
   };
 
   constructor(gateway?: ILLMGateway) {
@@ -131,6 +161,10 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     const mode = this._validateMode(req.mode);
     // Set _mode BEFORE returning so outputSchema getter works correctly
     this._mode = mode;
+
+    if (mode === 'recommend') {
+      return this._invokeRecommend(ctx, req);
+    }
 
     const userPrompt = this._buildUserPrompt(mode, req.userInput, ctx.userPrompt);
     const responseFormat =
@@ -154,11 +188,55 @@ export class PositioningAgent extends BaseSpecialist<PositioningInput, Positioni
     });
   }
 
+  // US-007 AC-6: recommend mode — lightweight · 15s timeout
+  private async _invokeRecommend(
+    ctx: AssembledContext,
+    req: SpecialistRequest<PositioningInput>,
+  ): Promise<InvokeLLMResult> {
+    const industry = String(req.userInput['industry'] ?? '内容创作');
+
+    const userPrompt = [
+      ctx.userPrompt,
+      '',
+      '[IP 账号智能推荐任务 · recommend]',
+      `用户行业: ${industry}`,
+      '',
+      '请根据行业特点，为该用户推荐最适合的 IP 账号起号参数，以 JSON 格式返回:',
+      '{',
+      '  "platform": "推荐平台(必须是 douyin / xiaohongshu / kuaishou 其中之一)",',
+      '  "followersRange": "推荐粉丝量级(必须是 0-1k / 1k-10k / 10k+ 其中之一)",',
+      '  "ipPositioning": "推荐 IP 定位描述(中文 20-50 字 · 描述账号定位核心方向)",',
+      '  "rationale": "推荐理由(中文 100-200 字 · 说明为什么适合该平台+量级+定位)"',
+      '}',
+      '',
+      '⚠️ 约束:',
+      '- platform 必须严格是 douyin | xiaohongshu | kuaishou 之一(英文小写)',
+      '- followersRange 必须严格是 0-1k | 1k-10k | 10k+ 之一',
+      '- 根据行业特性客观推荐: 美妆/生活 → 小红书优先; 带货/企业服务 → 抖音优先; 农产品/本地生活 → 快手优先',
+      '- rationale 100-200 字，具体说明推荐理由',
+    ].join('\n');
+
+    return this.llmGateway.complete({
+      model_tier: 'lightweight',
+      systemPrompt: ctx.systemPrompt,
+      userPrompt,
+      responseFormat: { type: 'json_schema' as const, schema: RecommendBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: 0,
+      },
+      timeout_ms: 15_000,
+      retry: 1,
+    });
+  }
+
   // AC-8: runtime check — throws if mode is not a valid union member
   private _validateMode(mode?: string): Mode {
-    if (mode === 'industry' || mode === 'execution') return mode;
+    if (mode === 'industry' || mode === 'execution' || mode === 'recommend') return mode;
     throw new Error(
-      `PositioningAgent: invalid mode '${mode}' · expected 'industry' | 'execution'`,
+      `PositioningAgent: invalid mode '${mode}' · expected 'industry' | 'execution' | 'recommend'`,
     );
   }
 

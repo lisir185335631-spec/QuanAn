@@ -1,31 +1,27 @@
+/**
+ * Step8OptimizeScript — PRD-25 US-007 AC-3/AC-4
+ * AC-3: useMutation → trpc.stepData.save · sub_function='optimize_script'
+ *       2 InfoCard 渲染(optimized_text + optimization_notes)
+ * AC-4: isFallback hint + error handling
+ */
 import { type FormEvent, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useStepData } from '@/hooks/useStepData';
 import {
   STEP8_BUTTON_OPTIMIZE_SCRIPT,
   STEP8_OPTIMIZE_INPUT,
+  STEP8_OPTIMIZE_LOADING_TEXT,
   STEP8_OPTIMIZE_MIN_CHARS,
-  STEP8_OPTIMIZE_OUTPUT_MODULES_4,
+  STEP8_OPTIMIZE_OUTPUT_LABELS_2,
   STEP8_OPTIMIZE_TEXTAREA,
 } from '@/lib/constants/step8';
+import { trpc } from '@/lib/trpc';
 
-const STUB_OPTIMIZED_SCRIPT = `## 优化后话术示例
-
-欢迎来到直播间，我是你们的老朋友！今天带来了一个超级实用的分享，很多朋友都在问这个问题，
-今天我们好好聊聊。大家先点个关注，这样就不会错过我们的精彩内容了！
-
-先来个小互动，评论区告诉我你目前最大的困惑是什么？我来一一解答！
-
-好了，话不多说，我们直接进入今天的主题...`;
-
-const STUB_OPTIMIZE_DETAILS: Record<string, string> = {
-  highlight: '话术表达更自然流畅，口语化程度提升，去掉了生硬的书面语，更贴近观众日常交流习惯。',
-  interaction: '在开场和中场各增加了 2 处高互动节点，引导评论区互动，预计提升互动率 25%。',
-  conversion: '加强了价值主张表达，增加了稀缺性和紧迫感钩子，成交话术更清晰直接。',
-  notes: '保持真实自然的表达风格，避免过度销售感；互动频率控制在每 10-15 分钟一次为宜。',
+type OptimizeScriptResult = {
+  optimized_text: string;
+  optimization_notes: string;
 };
 
 interface Props {
@@ -35,20 +31,49 @@ interface Props {
 export function Step8OptimizeScript({ accountId }: Props) {
   const [scriptText, setScriptText] = useState('');
   const [optimizeGoal, setOptimizeGoal] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const { save, isSaving } = useStepData(accountId, 'step8');
+  const [result, setResult] = useState<OptimizeScriptResult | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
 
   const charCount = scriptText.length;
-  // AC-6 · disabled if text.length < 10
-  const submitDisabled = isSaving || charCount < STEP8_OPTIMIZE_MIN_CHARS;
+
+  // AC-3: useMutation → trpc.stepData.save
+  const saveMutation = trpc.stepData.save.useMutation({
+    onSuccess(data) {
+      const raw = data.data.result as OptimizeScriptResult | null;
+      if (raw?.optimized_text) {
+        setResult(raw);
+        setIsFallback(data.data.isFallback);
+        document.getElementById('step8-optimize-output')?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        toast.error('AI 返回格式错误 · 请稍后重试');
+      }
+    },
+    onError() {
+      toast.error('优化失败 · 请稍后重试');
+    },
+  });
+
+  const submitDisabled = saveMutation.isPending || charCount < STEP8_OPTIMIZE_MIN_CHARS;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (submitDisabled) return;
-    save({ sub_function: 'optimize_script', scriptText, optimizeGoal });
-    setSubmitted(true);
-    document.getElementById('step8-optimize-output')?.scrollIntoView({ behavior: 'smooth' });
+    if (submitDisabled || !accountId) return;
+    setResult(null);
+    setIsFallback(false);
+    saveMutation.mutate({
+      stepKey: 'step8',
+      inputs: { sub_function: 'optimize_script', scriptText, optimizeGoal },
+    });
+  }
+
+  function handleRetry() {
+    if (!accountId || charCount < STEP8_OPTIMIZE_MIN_CHARS) return;
+    setResult(null);
+    setIsFallback(false);
+    saveMutation.mutate({
+      stepKey: 'step8',
+      inputs: { sub_function: 'optimize_script', scriptText, optimizeGoal },
+    });
   }
 
   return (
@@ -58,7 +83,7 @@ export function Step8OptimizeScript({ accountId }: Props) {
         onSubmit={handleSubmit}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
-        {/* Script textarea · AC-6 required ≥ 10 chars */}
+        {/* Script textarea */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_OPTIMIZE_TEXTAREA.label}
@@ -73,7 +98,7 @@ export function Step8OptimizeScript({ accountId }: Props) {
           <p className="text-body-xs text-muted-foreground mt-1">已输入 {charCount} 字</p>
         </div>
 
-        {/* Optimize goal input · AC-6 optional */}
+        {/* Optimize goal input */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_OPTIMIZE_INPUT.label}
@@ -85,31 +110,42 @@ export function Step8OptimizeScript({ accountId }: Props) {
           />
         </div>
 
-        {/* CTA · AC-6 disabled if text.length < 10 */}
         <Button type="submit" disabled={submitDisabled} className="w-full sm:w-auto">
-          {STEP8_BUTTON_OPTIMIZE_SCRIPT}
+          {saveMutation.isPending ? STEP8_OPTIMIZE_LOADING_TEXT : STEP8_BUTTON_OPTIMIZE_SCRIPT}
         </Button>
       </form>
 
-      {/* AC-7 · stub output: ReactMarkdown + 4 H3 blocks */}
-      {submitted && (
-        <div id="step8-optimize-output" className="space-y-6">
-          {/* ReactMarkdown stub optimized script */}
-          <div className="glass-card rounded-xl p-6">
-            <ReactMarkdown className="prose prose-sm text-on-surface max-w-none">
-              {STUB_OPTIMIZED_SCRIPT}
-            </ReactMarkdown>
-          </div>
+      {/* AC-4: isFallback banner */}
+      {result && isFallback && (
+        <div
+          data-testid="step8-optimize-fallback-banner"
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-body-sm text-amber-600"
+        >
+          AI 服务繁忙，以下为备用内容 · 建议稍后
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="ml-2 underline hover:no-underline"
+          >
+            重试
+          </button>
+        </div>
+      )}
 
-          {/* 4 H3 analysis blocks */}
-          {STEP8_OPTIMIZE_OUTPUT_MODULES_4.map((module) => (
-            <div key={module.id} className="glass-card rounded-xl p-6">
-              <h3 className="text-h3 font-display text-on-surface mb-3">{module.h3Label}</h3>
-              <p className="text-body-sm text-muted-foreground">
-                {STUB_OPTIMIZE_DETAILS[module.id] ?? ''}
+      {/* AC-3: 2 InfoCard output */}
+      {result && (
+        <div id="step8-optimize-output" className="space-y-6" data-testid="step8-optimize-output">
+          {STEP8_OPTIMIZE_OUTPUT_LABELS_2.map((item) => (
+            <div key={item.id} className="glass-card rounded-xl p-6">
+              <h3 className="text-h3 font-display text-on-surface mb-3">{item.label}</h3>
+              <p className="text-body-sm text-muted-foreground whitespace-pre-wrap">
+                {result[item.id]}
               </p>
             </div>
           ))}
+          <Button variant="outline" type="button" onClick={handleRetry}>
+            重新优化
+          </Button>
         </div>
       )}
     </div>

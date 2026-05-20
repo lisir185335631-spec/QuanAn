@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { adaptStep4bResult } from '../Step4b';
 
 describe('adaptStep4bResult', () => {

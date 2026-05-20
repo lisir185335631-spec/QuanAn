@@ -87,6 +87,15 @@ export type IpAccountSwitchOutput = { ok: boolean; activeAccountId: number };
 export type IpAccountListOutput = NonNullable<IpAccountOutput>[];
 export type StepDataListOutput = NonNullable<StepDataOutput>[];
 
+// US-007 AC-5/AC-6: smartRecommend output
+export type SmartRecommendOutput = {
+  platform: string;
+  followersRange: string;
+  ipPositioning: string;
+  rationale: string;
+  isFallback: boolean;
+};
+
 export type DiagnosisReportOutput = {
   id: number;
   answers: unknown;
@@ -97,8 +106,14 @@ export type DiagnosisReportOutput = {
   recommendedSteps: unknown[];
   agentId: string;
   traceId: string | null;
+  isFallback: boolean;
+  modelUsed: string | null;
+  tokensUsed: number | null;
+  durationMs: number | null;
   createdAt: string;
 } | null;
+
+export type DiagnosisGenerateOutput = NonNullable<DiagnosisReportOutput>;
 
 export type EvolutionInsightItem = {
   id: number;
@@ -263,6 +278,7 @@ export type DailyTaskListOutput = DailyTaskHistoryRow[];
 // ── Voice Chat types (PRD-8 US-012) ───────────────────────────────────────────
 
 export type VoiceChatStreamChunk =
+  | { type: 'meta'; meta: { model: string } }
   | { type: 'delta'; delta: string }
   | { type: 'tool_call'; toolName: string; args: Record<string, unknown> }
   | { type: 'tool_result'; toolName: string; result: string }
@@ -338,10 +354,40 @@ const _shadowRouter = _t.router({
     }),
   }),
   diagnosis: _t.router({
+    generate: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            answers: Array<{ dimension: string; score: number; comment?: string }>;
+            inferredStage?: string;
+          },
+      )
+      .mutation((): DiagnosisGenerateOutput => ({
+        id: 0,
+        answers: [],
+        dimensions: {},
+        overallScore: 0,
+        inferredStage: 'starter',
+        topPriority: '',
+        recommendedSteps: [],
+        agentId: 'DiagnosisAgent',
+        traceId: null,
+        isFallback: false,
+        modelUsed: null,
+        tokensUsed: null,
+        durationMs: null,
+        createdAt: new Date().toISOString(),
+      })),
     latest: _t.procedure.query((): DiagnosisReportOutput => null),
   }),
   evolution: _t.router({
     getProfile: _t.procedure.query((): EvolutionProfileOutput => null),
+    evolve: _t.procedure
+      .input((x: unknown) => x as { rating: 'good' | 'bad'; agentId: string; rateableType?: string; rateableId: number; historyId?: number; comment?: string })
+      .mutation((): { ok: boolean; feedbackId: number } => ({ ok: true, feedbackId: 0 })),
+    updateConfig: _t.procedure
+      .input((x: unknown) => x as { autoEvolutionEnabled?: boolean; currentDirection?: string })
+      .mutation((): { ok: boolean; config: { autoEvolutionEnabled: boolean; currentDirection: string; level: string } } => ({ ok: true, config: { autoEvolutionEnabled: false, currentDirection: '综合', level: 'L1' } })),
     history: _t.procedure
       .input((x: unknown) => x as { limit?: number; offset?: number } | undefined)
       .query((): EvolutionInsightItem[] => []),
@@ -390,7 +436,7 @@ const _shadowRouter = _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),
     active: _t.procedure.query((): ActiveAccountOutput => null),
     create: _t.procedure
-      .input((x: unknown) => x as { name: string; industry: string; platform: string; stage?: string; personalInfo?: string })
+      .input((x: unknown) => x as { name: string; industry: string; platform: string; stage?: string; personalInfo?: string; followersRange?: string; ipPositioning?: string })
       .mutation((): NonNullable<IpAccountOutput> => ({
         id: 0,
         name: '',
@@ -421,6 +467,16 @@ const _shadowRouter = _t.router({
     switchActive: _t.procedure
       .input((x: unknown) => x as SwitchActiveInput)
       .mutation((): IpAccountSwitchOutput => ({ ok: true, activeAccountId: 0 })),
+    // US-007 AC-5: smartRecommend — protectedProcedure (requires auth · not public)
+    smartRecommend: _t.procedure
+      .input((x: unknown) => x as { industry: string })
+      .mutation((): SmartRecommendOutput => ({
+        platform: 'douyin',
+        followersRange: '0-1k',
+        ipPositioning: '',
+        rationale: '',
+        isFallback: false,
+      })),
   }),
   stepData: _t.router({
     get: _t.procedure

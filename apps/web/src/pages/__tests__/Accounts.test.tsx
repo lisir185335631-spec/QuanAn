@@ -44,6 +44,10 @@ vi.mock('@/lib/trpc', () => ({
       create: {
         useMutation: () => ({ mutateAsync: mockMutateAsync, isPending: false }),
       },
+      // US-007 AC-7: smartRecommend mock (required by CreateAccountModal)
+      smartRecommend: {
+        useMutation: () => ({ mutate: vi.fn(), isPending: false }),
+      },
     },
   },
 }));
@@ -62,6 +66,7 @@ vi.mock('sonner', () => ({
 }));
 
 vi.mock('react-router-dom', async () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return { ...actual, useNavigate: () => vi.fn() };
 });

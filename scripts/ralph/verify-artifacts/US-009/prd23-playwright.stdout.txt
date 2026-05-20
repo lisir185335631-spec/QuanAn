@@ -1,0 +1,21 @@
+
+Running 16 tests using 1 worker
+
+[1A[2K[1/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:27:3 › PRD-23 Visual Baseline › /diagnosis fullPage matches prd23-diagnosis.png
+[1A[2K[2/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:42:3 › PRD-23 Visual Baseline › /accounts fullPage matches prd23-accounts.png
+[1A[2K[3/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:54:3 › PRD-23 Visual Baseline › /step/8 fullPage matches prd23-step8.png
+[1A[2K[4/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:71:3 › PRD-23 Visual Baseline › /diagnosis Step 8 report matches prd23-diagnosis-report.png
+[1A[2K[5/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:90:3 › PRD-23 Visual Baseline › /analysis fullPage matches prd23-analysis.png
+[1A[2K[6/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:107:3 › PRD-23 Visual Baseline › /video-analysis fullPage matches prd23-video-analysis.png
+[1A[2K[7/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:124:3 › PRD-23 Visual Baseline › /video-production fullPage matches prd23-video-production.png
+[1A[2K[8/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:141:3 › PRD-23 Visual Baseline › /acquisition-video fullPage matches prd23-acquisition-video.png
+[1A[2K[9/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:160:3 › PRD-23 Visual Baseline › /trending fullPage matches prd23-trending.png
+[1A[2K[10/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:177:3 › PRD-23 Visual Baseline › /present-styles fullPage matches prd23-present-styles.png
+[1A[2K[11/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:194:3 › PRD-23 Visual Baseline › /monetization fullPage matches prd23-monetization.png
+[1A[2K[12/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:211:3 › PRD-23 Visual Baseline › /private-domain fullPage matches prd23-private-domain.png
+[1A[2K[13/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:228:3 › PRD-23 Visual Baseline › /deep-learning fullPage matches prd23-deep-learning.png
+[1A[2K[14/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:245:3 › PRD-23 Visual Baseline › /copywriting fullPage matches prd23-copywriting.png
+[1A[2K[15/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:263:3 › PRD-23 Visual Baseline › /my-topics fullPage matches prd23-my-topics.png
+[1A[2K[16/16] [chromium] › tests/e2e/prd23-visual-baseline.spec.ts:286:3 › PRD-23 Visual Baseline › /history fullPage matches prd23-history.png
+[1A[2K  16 passed (2.2m)
+::notice title=🎭 Playwright Run Summary::  16 passed (2.2m)

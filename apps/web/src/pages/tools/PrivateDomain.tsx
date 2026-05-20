@@ -21,14 +21,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc, trpcClient } from '@/lib/trpc';
 
-import type { Unsubscribable } from '@trpc/server/observable';
 
-import type { PhaseData } from './components/PhaseCard';
-import type { PrivateDomainFormValues } from './components/PrivateDomainConfigView';
 import { DEFAULT_FORM, PrivateDomainConfigView } from './components/PrivateDomainConfigView';
 import { PrivateDomainFlowView } from './components/PrivateDomainFlowView';
 import { PrivateDomainHistoryView } from './components/PrivateDomainHistoryView';
 import { PrivateDomainResultView } from './components/PrivateDomainResultView';
+
+import type { PhaseData } from './components/PhaseCard';
+import type { PrivateDomainFormValues } from './components/PrivateDomainConfigView';
+import type { Unsubscribable } from '@trpc/server/observable';
 
 // ── 6-stage private domain funnel constants ──────────────────────────────────
 

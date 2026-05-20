@@ -1,14 +1,17 @@
 /**
- * ipAccounts router — PRD-2 US-003
+ * ipAccounts router — PRD-2 US-003 + PRD-25 US-007
  * AC-1: 6 procedures (list/active/create/update/delete/switchActive) · all pass RLS middleware
  * AC-5: list returns all user-owned accounts (ip_accounts RLS uses user_id isolation)
  * AC-6: switchActive writes audit_log 'account.switch' + updates user.activeAccountId
+ * US-007 AC-5: smartRecommend procedure · input {industry} · calls PositioningAgent recommend mode
+ *              protectedProcedure (SHIELD ANTI-PATTERN: not publicProcedure · requires auth)
  * Note: Zod schemas inlined — @quanan/schemas/entities has the canonical definition for client use
  */
 
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { positioningAgent } from '@/specialists/PositioningAgent';
 import { protectedProcedure, globalProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -33,6 +36,9 @@ const createIpAccountInput = z.object({
   platform: z.string().min(1).max(32),
   stage: z.string().min(1).max(32).default('starter'),
   personalInfo: z.string().max(500).optional(),
+  // US-007 AC-7: optional fields auto-filled by smartRecommend
+  followersRange: z.string().max(32).optional(),
+  ipPositioning: z.string().max(255).optional(),
 });
 
 const updateIpAccountInput = createIpAccountInput.partial();
@@ -185,5 +191,30 @@ export const ipAccountsRouter = router({
 
       // Return new activeAccountId so client can refresh middleware (AC-6)
       return { ok: true, activeAccountId: input.accountId };
+    }),
+
+  /**
+   * US-007 AC-5/AC-6: smartRecommend — PositioningAgent recommend mode
+   * SHIELD ANTI-PATTERN: must be protectedProcedure (not publicProcedure · requires auth)
+   * Input: {industry: string} · Output: {platform, followersRange, ipPositioning, rationale}
+   */
+  smartRecommend: protectedProcedure
+    .input(z.object({ industry: z.string().min(1).max(64) }))
+    .mutation(async ({ ctx, input }) => {
+      const { activeAccountId, traceId } = ctx;
+      const agentRes = await positioningAgent.execute({
+        accountId: activeAccountId!,
+        mode: 'recommend',
+        userInput: { industry: input.industry },
+        traceId: traceId ?? undefined,
+      });
+      const result = agentRes.result as { platform: string; followersRange: string; ipPositioning: string; rationale: string };
+      return {
+        platform: result.platform,
+        followersRange: result.followersRange,
+        ipPositioning: result.ipPositioning,
+        rationale: result.rationale,
+        isFallback: agentRes.isFallback,
+      };
     }),
 });

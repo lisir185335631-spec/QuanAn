@@ -20,12 +20,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { trpc } from '@/lib/trpc';
 
-import type { TrendingListItem } from '@quanan/clients/router-types';
-
-import type { TrendingFilterState, TrendingPlatform, TimeRange, SortField } from './components/TrendingFilters';
+import { TrendingDetailDrawer } from './components/TrendingDetailDrawer';
 import { TrendingFilters } from './components/TrendingFilters';
 import { TrendingTable } from './components/TrendingTable';
-import { TrendingDetailDrawer } from './components/TrendingDetailDrawer';
+
+import type { TrendingFilterState, TrendingPlatform, TimeRange, SortField } from './components/TrendingFilters';
+import type { TrendingListItem } from '@quanan/clients/router-types';
+
 
 // ── URL state helpers ─────────────────────────────────────────────────────────
 

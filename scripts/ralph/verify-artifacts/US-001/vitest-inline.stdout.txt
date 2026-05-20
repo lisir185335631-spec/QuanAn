@@ -1,0 +1,16 @@
+
+> @quanan/web@0.1.0 test /Users/return/Desktop/QuanAn/apps/web
+> vitest run --config vitest.config.ts inline-pickers
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx (7 tests) 42ms
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx (7 tests) 72ms
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx (7 tests) 58ms
+
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Start at  11:35:36
+   Duration  562ms (transform 89ms, setup 81ms, collect 242ms, tests 172ms, environment 413ms, prepare 101ms)
+

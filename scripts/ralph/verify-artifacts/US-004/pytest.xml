@@ -1,69 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="31" failures="0" errors="0" time="0.108">
-    <testsuite name="tests/unit/web/pages/Monetization.test.tsx" timestamp="2026-05-15T18:28:08.285Z" hostname="returndeMacBook-Pro.local" tests="14" failures="0" errors="0" skipped="0" time="0.000807708">
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; has 100+ lines (stub replaced)" time="0.000089583">
+<testsuites name="vitest tests" tests="13" failures="0" errors="0" time="0.515">
+    <testsuite name="src/pages/__tests__/Evolution.test.tsx" timestamp="2026-05-20T09:20:47.883Z" hostname="returndeMacBook-Pro.local" tests="13" failures="0" errors="0" skipped="0" time="0.081775375">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)" time="0.019110875">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; uses StepForm with stepKey step4b" time="0.000051042">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(b) · 4 指标真数据 · feedbackCountGood=6 / needsImprovement=2 / deepLearning=3 / satisfactionRate=0.75" time="0.005511041">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; imports and uses MonetizationInputSchema" time="0.000049917">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(c) · 触发进化 button → evolve.mutate(rateableType=manual_trigger)" time="0.027493125">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx page structure &gt; calls trpc.monetization.generate.useMutation" time="0.000051">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(d) · 生成洞察 button · feedbackCountTotal&lt;5 → disabled + title=需 ≥ 5 反馈" time="0.003941125">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx URL state + localStorage (AC-3) &gt; uses useSearchParams for URL state" time="0.000043167">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(d2) · 生成洞察 button · feedbackCountTotal&gt;=5 → enabled" time="0.002844042">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx URL state + localStorage (AC-3) &gt; uses getToolLsKey for monetization draft LS key" time="0.000059083">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(e) · 进化洞察模块 · latestInsight summary 渲染" time="0.002266625">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx URL state + localStorage (AC-3) &gt; persists done state to URL (?done=1)" time="0.000045291">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(e2) · 进化洞察模块 · null latestInsight → 暂无洞察 D-237 字面锁" time="0.002822916">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx result display &gt; renders StepResult with stepKey step4b" time="0.000042125">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(f) · 进化方向 · profile.currentDirection=创意性优先 → 初始 selected" time="0.004193166">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx result display &gt; StepResult step4b renders currentAnalysis ladder revenueStructure successCases" time="0.000054583">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-10(f2) · 进化方向 change → updateConfig.mutate({currentDirection})" time="0.00321975">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="Monetization.tsx result display &gt; supports onRetry to clear result" time="0.000044292">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-1 · null profile → EmptyState 新用户 · 暂无进化数据" time="0.001268625">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; monetization.schema.ts exports MonetizationInputSchema" time="0.000056541">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-1 · isLoading → Loader2 spinner visible" time="0.000395375">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; MonetizationInputSchema re-exports Step4bInputSchema fields" time="0.000031875">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; H1 · 智能体进化中心" time="0.003286417">
         </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; monetization router generate procedure exists" time="0.000038833">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/Monetization.test.tsx" name="MonetizationInputSchema schema &gt; monetization router registered in app router" time="0.000038291">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/unit/web/pages/PresentStyles.test.tsx" timestamp="2026-05-15T18:28:08.286Z" hostname="returndeMacBook-Pro.local" tests="17" failures="0" errors="0" skipped="0" time="0.002166542">
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; has 80+ lines (stub replaced)" time="0.000379042">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; has textarea for 文案内容" time="0.000109666">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; has platform select (平台)" time="0.0000815">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx page structure &gt; calls trpc.presentStyles.recommend.useMutation" time="0.000049917">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx URL state + localStorage (AC-3) &gt; uses useSearchParams for URL state" time="0.000049209">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx URL state + localStorage (AC-3) &gt; uses getToolLsKey for presentStyles draft LS key" time="0.000064583">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx URL state + localStorage (AC-3) &gt; persists text and platform to URL params" time="0.000064541">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; shows 图文/短视频/直播口播/长图文/漫画 style types" time="0.000067541">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; shows result container after submission" time="0.000051375">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; has example text in style cards" time="0.000052125">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStyles.tsx style cards display (AC-2) &gt; supports 重新分析 retry button" time="0.000050583">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; text &lt; 10 chars → zod fail with Chinese error" time="0.000434583">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; valid input → zod pass" time="0.000046875">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; invalid platform → zod fail" time="0.000137084">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; presentStyles router registered in app router" time="0.00005625">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; presentStyles router has recommend procedure" time="0.000045041">
-        </testcase>
-        <testcase classname="tests/unit/web/pages/PresentStyles.test.tsx" name="PresentStylesInputSchema schema &gt; presentStyles.schema.ts defines PRESENT_STYLE_TYPES with 5 types" time="0.000066625">
+        <testcase classname="src/pages/__tests__/Evolution.test.tsx" name="Evolution page · PRD-25 US-004 &gt; AC-7 · 新增学习 button → toast.info 正确文案" time="0.004933958">
         </testcase>
     </testsuite>
 </testsuites>

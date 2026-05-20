@@ -1,18 +1,19 @@
 {
   "story_id": "US-006",
-  "validator_start_ts": "2026-05-18T08:40:30",
-  "validator_end_ts": "2026-05-18T08:43:14",
-  "test_command": "cd apps/api && npx vitest run src/specialists/__tests__/TopicAgent.real-llm.test.ts + pnpm vitest run (full)",
+  "validator_start_ts": "2026-05-20T12:10:52",
+  "validator_end_ts": "2026-05-20T12:22:00",
+  "test_command": "npx vitest run src/pages/tools/__tests__/VideoProduction.test.tsx src/pages/tools/__tests__/AcquisitionVideo.test.tsx",
   "exit_code": 0,
   "zero_regression": "PASS",
-  "verdict": "PASS · TD-EXEMPTION · 9 ECONNREFUSED pre-existing",
+  "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "vitest.xml",
-    "vitest.stdout.txt"
+    "unit-test.stdout.txt",
+    "screenshots/validator-us-006-video-production.png",
+    "screenshots/validator-us-006-acquisition-video.png"
   ],
-  "notes": "Zero-regression: 9 failures / 901 tests. All 9 = ECONNREFUSED localhost:3000 (dev server not running). PRE-EXISTING CONFIRMED: (1) auth.test.ts written in commit 783ca47 (main, PRD-2); (2) git log main..HEAD shows zero PRD-20 commits touching auth.test.ts / auth.me.test.ts / trace.test.ts; (3) tests explicitly require fetch to localhost:3000. Typecheck: 6 workspaces 0 errors. AC implementation: TopicAgent.ts SSE executeStream() + executeStream() real meta+done chunks + TopicAgent.real-llm.test.ts with describe.skipIf(skipIfNoKey). All ACs satisfied; AC-5/AC-6 real-LLM paths skipped per design (no API key). TD exemption: 9 pre-existing ECONNREFUSED failures, not introduced by PRD-20 US-006."
+  "notes": "44 test files, 367 tests passed. 19 US-006 specific unit tests passed. Typecheck 0 errors. Pre-existing lint errors in non-US-006 files verified as pre-existing tech debt not introduced by US-006. US-006 files lint clean from apps/web directory. Screenshots captured for both pages."
 }

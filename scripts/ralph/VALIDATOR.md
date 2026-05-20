@@ -314,6 +314,52 @@ grep -A3 "default:" apps/api/src/trpc/routers/<router>.ts >> router-coverage.txt
 
 ---
 
+## §X · Dev Server 健康检查 SOP (TD-095 · 2026-05-20 新增)
+
+> 当 story 涉及 e2e playwright 测试 / agent-browser 截图 / HTTP 请求到 localhost:5173 时, 必须先确认 dev server 就绪.
+
+### X.1 调浏览器前必做健康检查
+
+```bash
+# Validator 调 playwright / agent-browser-skill / curl 前, 先检查 dev server
+curl -s http://localhost:5173 > /dev/null && echo "dev server OK" || echo "dev server NOT READY"
+```
+
+### X.2 Retry SOP (最多 6 次, 每次 sleep 5s)
+
+```bash
+for i in 1 2 3 4 5 6; do
+    curl -s http://localhost:5173 > /dev/null && break
+    echo "[WAIT] dev server not ready (attempt $i/6) · sleep 5s ..."
+    sleep 5
+done
+curl -s http://localhost:5173 > /dev/null || {
+    echo "## SUSPECTED · dev server 不可达"
+    echo "SUSPECTED:dev_server_unavailable"
+    echo "建议: 手工启动 'cd apps/web && pnpm dev' 或确认 ralph --with-dev-server 模式"
+    # 不 fail validation 立刻 — 写入 notes 供 ralph 修复
+}
+```
+
+### X.3 dev server 未就绪时 notes 格式
+
+```
+## SUSPECTED · dev server 不可达
+- curl localhost:5173 失败 (timeout/refused)
+- 建议验证命令: curl -s http://localhost:5173 -o /dev/null -w "%{http_code}"
+- ralph daemon 是否用 --with-dev-server 启动? 检查 scripts/ralph/dev-server.pid
+- 验证结论: e2e browse 类 AC 无法验证 · 暂标 passes=false · notes 写 SUSPECTED:dev_server_unavailable
+```
+
+### X.4 ralph daemon dev server 检查
+
+```bash
+# 检查 ralph 是否已 fork dev server
+cat scripts/ralph/dev-server.pid 2>/dev/null && echo "dev server PID 存在" || echo "无 dev-server.pid · ralph 可能用 --no-dev-server 启动"
+```
+
+---
+
 ## 重要约束
 
 - 你只负责验证，不负责修复代码

@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
+
 import {
   STEP4_PLATFORMS_5,
   STEP4_INPUTS_3,
   STEP4_OUTPUT_H3_3,
   STEP4_SUBTITLE_TEMPLATE,
 } from '../step4';
+
 import type { Step4Result } from '../step4';
 
 describe('STEP4 constants', () => {

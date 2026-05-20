@@ -62,6 +62,58 @@ grep filename scripts/ralph/verify-artifacts/US-XXX/ruff.json | head -5
 - 错误在本 story 文件 → **reject** (本 story 引入的问题)
 - 错误在其他文件 → **pre-existing TD**, 登记到 tech-debt.json 后继续 (见 Step 5 TD 留痕)
 
+### Step 1.6.b — pre-existing 强 confirm(QuanQn PRD-11 retro M-2 固化 · 2026-05-13 新增)
+
+> **来源** · QuanQn PRD-11 US-008 + US-013 多次触发 audit-artifacts `pytest-full FAKE: 3 failed` · Sonnet manifest 自宣 `zero_regression: FAIL, pre-existing TD` · Opus approve 时全部豁免。**问题** · 单向信任链 · 若 Sonnet 偷懒说 pre-existing 实际不是 · 没人会发现 · TD-046 audit-artifacts 单向信任漏洞。
+
+**触发条件** · Step 1 audit-artifacts 报 `pytest-full FAIL: N failed`(或等价 lint/typecheck 失败)且 Sonnet manifest 标:
+```json
+{
+  "zero_regression": "FAIL",
+  "zero_regression_note": "pre-existing TD - N integration tests fail ... CONFIRMED pre-existing via git stash in retryCount=1. NOT caused by US-XXX. Opus TD豁免 required."
+}
+```
+
+**强制流程**(Opus 必跑 · 不信 Sonnet 自宣):
+
+```bash
+# 1. 找出哪些 test 失败(读 pytest-full.stdout.txt 或 pytest-full.xml)
+cd <project-root>
+cat scripts/ralph/verify-artifacts/US-XXX/pytest-full.stdout.txt | head -80
+# 或 grep 失败 test 文件名
+grep -E "FAIL|×|✗" scripts/ralph/verify-artifacts/US-XXX/pytest-full.stdout.txt | head -10
+
+# 2. git stash 当前 US 改动(临时回滚到 HEAD~1)
+git stash push -m "audit-confirm-pre-existing US-XXX"
+
+# 3. 跑相同失败 test
+pnpm vitest run <failing-test-pattern> 2>&1 | tail -10
+# 或 .venv/Scripts/pytest <failing-test-path> -v 2>&1 | tail -10
+
+# 4. 看是否 stash 前后失败一致
+#    一致 = pre-existing 确认 · git stash pop · 继续 approve + 登 TD
+#    不一致 = US 引入 · git stash pop · reject 让 ralph 修
+
+git stash pop
+```
+
+**判决表**:
+
+| stash 前 | stash 后 | 结论 | 动作 |
+|---|---|---|---|
+| FAIL | FAIL(同样 N test fail) | ✅ pre-existing 确认 | approve + 登 TD + Approve 报告标 "Opus git stash confirmed pre-existing · stash 前后 X failed 一致" |
+| FAIL | PASS(stash 后 0 fail) | 🔴 US 引入 | reject · Sonnet 自宣 pre-existing 是错误 · feedback 标 "git stash 前后失败数 N → 0 · 本 US 引入 · 必修" |
+| FAIL | FAIL 但 N 不同 | 🟡 部分 pre-existing + 部分本 US | reject 让 ralph 修 US 引入部分 · 复杂场景 |
+
+**若跳过此 confirm 步骤 approve**(allowed 但需留痕):
+- approve 报告必须写: "Opus 跳过 git stash confirm · 接受 Sonnet 自宣 pre-existing"
+- + 风险评估(为什么不需 stash · 例如):
+  - "test 文件 mtime 远早于 validator_start_ts(明显 pre-existing)"
+  - "失败 test 路径与本 US files_to_create/modify 完全无交集 grep verified"
+  - "已有 TD-046 类记录 + 已知 pre-existing"
+
+**ROI**(基于 QuanQn PRD-11 retro 量化): TD-046 audit-artifacts 单向信任漏洞 · 每 2-3 PRD 防 1 次 Sonnet 偷懒误标 pre-existing(若发生会污染下游 PRD 累积虚假绿灯). 每次 git stash confirm ~60-90s · 防 1 次大灾难 ROI 极高.
+
 ### Step 1.7 — Partial FAKE 补跑实测 (60-90s, 仅 manifest 缺但 pytest-full 存在)
 
 **触发场景**: `audit-artifacts.py` 报 `ARTIFACTS FAKE or INVALID: ['manifest']`, 但 `pytest-full.xml` 实际存在且 550+ passed. 这是 Validator 流程残缺 (meta-story / 零回归 story 常见), 不是核心 artifact 伪造.
@@ -211,6 +263,17 @@ for downstream in <反向依赖列表>; do
   python3 scripts/ralph/ralph-tools.py story $downstream | grep -A 5 "acceptanceCriteria"
 done
 
+# F2 增强 (2026-05-15 PRD-14 retro 固化 · Diff-2 · 跨 story 函数路由一致性):
+# 列出本 story 改的所有公开符号 (函数名 + 表名 + 字段名) 然后 grep 下游 AC 是否字面一致
+# 反例: 本 story 实现 getSystemConfigValue(查 system_config 表) · 但下游 story AC 文本写
+#       getFeatureFlagValue('stop_trending_scraper')(查 feature_flags 表)· 跨 story 路由漂移
+# 若下游 AC 用错函数 / 错表名 → 必须在 audit 报告提及 + 登记 TD
+# 实证 (PRD-14 US-011 audit) · F2 提前 catch TD-69 · 即便没防住 dev · reject 时 REJECT-TEMPLATE
+# 直接引用 TD-69 + 4 反例 · ralph 一次修对(11 min)· 估省 22-30 min retry hell
+for downstream in <反向依赖列表>; do
+  python3 scripts/ralph/ralph-tools.py story $downstream | grep -E "<本 story 函数名 / 表名>"
+done
+
 # F3. shared 文件读全
 cat backend/tests/conftest.py
 cat backend/app/<本 story 改动的 __init__.py>
@@ -219,7 +282,7 @@ cat backend/app/<本 story 改动的 __init__.py>
 sqlite3 backend/data/test.db ".schema <table_name>"
 # 对照 prd 定义, 字段类型 / NOT NULL / FK ondelete / 索引 全部核对
 
-# F5. 协议锁与既有代码现状双对账 (2026-05-09 · QuanAn PRD-4 TD-012 经验)
+# F5. 协议锁与既有代码现状双对账 (2026-05-09 · QuanQn PRD-4 TD-012 经验)
 # 防止 PRD 协议锁锁定新路径 · 但既有代码已有 stub 在旧路径 · 双路径并存
 # 提取 PRD §1.5 / §7.5 协议锁锁定的所有新文件路径
 grep -E "^\| .*\.(ts|tsx|py|sql|prisma|json)" tasks/prd-N.md | head -20
@@ -238,7 +301,7 @@ done
 - **F5 命中既有 stub** (协议锁路径与既有代码冲突) → **reject 给 prd skill 修锁**, feedback 模板:
   > "PRD §1.5 协议锁路径 `<新锁定路径>` 与既有代码 `<既有 stub 路径>` 冲突 · 选 A 复用既有 / B 改协议锁文件名 / C 删旧 stub · 修后重提"
   >
-  > **实证** (QuanAn PRD-4 US-001) · 协议锁锁 `apps/api/src/specialists/base/BaseSpecialist.ts` · 但 PRD-2 stub 在 `apps/api/src/agents/base/BaseSpecialist.ts` · ralph 选 import 既有 stub 产生 TD-012 · US-002 retry 1 才闭环。**F5 在 audit US-001 时跑会一次拦下,省 1 retry (~30 min)**。
+  > **实证** (QuanQn PRD-4 US-001) · 协议锁锁 `apps/api/src/specialists/base/BaseSpecialist.ts` · 但 PRD-2 stub 在 `apps/api/src/agents/base/BaseSpecialist.ts` · ralph 选 import 既有 stub 产生 TD-012 · US-002 retry 1 才闭环。**F5 在 audit US-001 时跑会一次拦下,省 1 retry (~30 min)**。
 
 ---
 
@@ -262,9 +325,9 @@ done
 
 ---
 
-## Step 4.5 — Opus 直 fix mechanical 错路径(2026-05-12 · QuanAn PRD-9 US-002 新增)
+## Step 4.5 — Opus 直 fix mechanical 错路径(2026-05-12 · QuanQn PRD-9 US-002 新增)
 
-> **来源** · QuanAn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错全 mechanical · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min vs reject 让 ralph 又一轮 30 min retry hell
+> **来源** · QuanQn PRD-9 US-002 (commit 3d26b92) · 19 lint+typecheck 错全 mechanical · ralph 已 5 retry + 3 ECONNRESET 死锁 · Opus 直 fix 5 min vs reject 让 ralph 又一轮 30 min retry hell
 > **哲学** · 当错误是 mechanical 且 ralph 已陷入 infrastructure 死锁 · Opus 直 fix 比 reject 更经济 · 但**必须严守边界**防越界
 
 ### 触发条件(必须全部满足)
@@ -317,13 +380,13 @@ python3 scripts/ralph/ralph-tools.py approve
 
 ### 实证案例
 
-**QuanAn PRD-9 US-002 (2026-05-11 commit 3d26b92)**:
+**QuanQn PRD-9 US-002 (2026-05-11 commit 3d26b92)**:
 - 触发 · scripts/ 目录不在 apps/api/tsconfig.json include · seed-knowledge-chunk.ts 静默漏审
 - Fix · 改 include 加 "scripts" + 删未用 Decimal import + import order 重排 + 顶部加 `/* eslint-disable no-console */`
 - 体量 · 2 files · +7/-6 lines · 0 逻辑改
 - ralph 状态 · 5 retry + 3 ECONNRESET 死锁 · audit-gate blocked_needs_attention
 - ROI · 5 min Opus 直 fix vs 预估 30+ min reject + 又一轮 retry(撞 ECONNRESET 概率高)
-- 结果 · approve · 详 audit-log-QuanAn.jsonl US-002
+- 结果 · approve · 详 audit-log-QuanQn.jsonl US-002
 
 ---
 
@@ -432,6 +495,64 @@ TD-X 豁免 approve: <理由>, 证据: <file:line>, 不影响本 story 功能
 5. **high 档不读测试代码**: pytest.xml 显示 "passed" 不等于测试覆盖 AC 原意, 必须读 test 函数
 6. **SQL 约束跳过实测**: partial unique / check constraint 可能写对了 SQL 但 SQLite NULL 语义陷阱 (见 TD-9)
 7. **跨 story 协议命名漂移**: US-022 定义 `request.state.chosen_channel_id`, US-024 消费必须逐字一致, 不是"类似名字"
+
+---
+
+## ⚡ Retry ≥ 3 主动介入(QuanQn PRD-19 retro M-1 固化 · 2026-05-18 新增)
+
+> **背景** · QuanQn PRD-19 US-008 5 retry 浪费 ~5h daemon time · ralph 自己 chain-of-evidence 写 notes 但 daemon 不主动通知 Opus · 必须 retry=5 max 才 block · 浪费 2-5h/PRD
+>
+> **核心** · Opus 收到 `PENDING_DETECTED: US-XXX` 时 · **必查 retryCount** · 若 ≥ 3 走特殊路径
+
+### 触发条件(Opus 主动检查)
+
+```bash
+# Step 1.b · 查 retryCount(在 Step 1 audit-artifacts 之后立即查)
+python3 scripts/ralph/ralph-tools.py story US-XXX | grep -E "retryCount|notes"
+```
+
+### 判决表(retry ≥ 3 时)
+
+| retryCount | ralph notes 模式 | Opus 路径 |
+|:-:|---|---|
+| 0-2 | 任意 | 正常 Step 1-5 audit |
+| **3-4** | **同模式失败** | **触发评估** · 检查 ralph notes 是否含 `pre-existing` / `CONFIRMED` / `git log commit X 创建时已存在` 类自证据 · 走 Step 1.6.b pre-existing TD 豁免快速路径(15 min vs 又 1-2 retry ~60 min) |
+| **3-4** | **不同模式失败** | 正常 Step 1-5 audit · 但 reject feedback 要明确"已 retry N 次 · 这是最后机会 · 必须修对 5 反例"|
+| **5 (max)** | 任意 | **必走 unblock 决策**(approve TD 豁免 / force-reject 拆 story / block + maintenance commit fix)· 不允许"等 retry=6"(MAX_RETRIES = 5) |
+
+### 操作模板(retry ≥ 3 + pre-existing 自证据 → TD 豁免 unblock)
+
+```bash
+# 1. 验证 pre-existing 证据(ralph notes 通常含)
+git log --oneline <claimed-introduce-commit> | head -3
+cat scripts/ralph/verify-artifacts/US-XXX/<failure-log> | head -20
+
+# 2. 跳过 git stash confirm(理由要写 approve 报告)
+# 理由模板 · "ralph 已 N retry 同模式 FAIL + commit X stdout.txt 历史证据完整 · 跳过 git stash 直接 TD 豁免"
+
+# 3. atomic mutate prd.json + 登记 TD(因 audit-gate=blocked_needs_attention · ralph-tools.py approve 拒绝 · 必手工 mutate)
+python3 << 'PYEOF'
+import json
+prd = json.load(open('scripts/ralph/prd.json'))
+for s in prd['userStories']:
+    if s['id'] == 'US-XXX':
+        s['passes'] = True
+        s['blocked'] = False
+        s['retryCount'] = 0
+        s['notes'] = '[TD-XX 豁免 approve · Opus audit · pre-existing 非 US-XXX 引入 · ...]'
+    elif s['id'] in cascade_blocked_us_ids:
+        s['blocked'] = False
+        s['retryCount'] = 0
+json.dump(prd, open('scripts/ralph/prd.json', 'w'), ensure_ascii=False, indent=2)
+PYEOF
+
+# 4. 登记 TD + rm audit-gate.json + 重启 daemon
+# 详 Step 5 TD 免罪三联动 + §9.6.5 失败 → 重启 daemon 流程
+```
+
+### ROI(基于 QuanQn PRD-19 US-008 实证)
+
+预计避免每 PRD 平均 1 次 retry hell 浪费 · ~3-5h/PRD · 5 PRD 累计 ~15-25h 节省
 
 ---
 

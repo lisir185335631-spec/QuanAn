@@ -80,6 +80,7 @@ export type VoiceChatToolName = (typeof VOICE_CHAT_TOOLS)[number]['name'];
 // ── Streaming chunk types (AC-4) ──────────────────────────────────────────────
 
 export type VoiceChatStreamChunk =
+  | { type: 'meta'; meta: { model: string } }
   | { type: 'delta'; delta: string }
   | { type: 'tool_call'; toolName: string; args: Record<string, unknown> }
   | { type: 'tool_result'; toolName: string; result: string }
@@ -272,6 +273,7 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
 
         if (c.type === 'meta' && c.meta) {
           modelUsed = c.meta.model;
+          yield { type: 'meta' as const, meta: { model: c.meta.model } };
         } else if (c.type === 'delta' && c.delta) {
           assistantText += c.delta;
           yield { type: 'delta', delta: c.delta };
@@ -365,8 +367,8 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
           agentId: this.config.agentId,
           accountId: data.accountId,
           traceId: data.traceId,
-          eventType: 'l5_agent', // AC-6
-          agentMode: null,       // AC-6: agentMode=null for VoiceChatAgent
+          eventType: 'specialist_call', // AC-12
+          agentMode: null,
           callType: 'specialist_call',
           modelTier: this.config.execution.model_tier,
           modelUsed: data.modelUsed,
@@ -377,6 +379,7 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
           costUsd: new Decimal('0.000000'),
           durationMs: data.durationMs,
           success: true,
+          streaming: true,
           isFallback: false,
           target: { agentId: this.config.agentId },
         },

@@ -10,14 +10,14 @@ import { useSearchParams } from 'react-router-dom';
 import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { FeedbackButton } from '@/components/FeedbackButton';
 // PRD-22 US-002: inline 重构后弃用 ToolForm · 但保留 import 防 PRD-15 沉淀回滚
-import { ToolForm } from '@/components/ToolForm/ToolForm';
-import { ToolResult } from '@/components/ToolResult/ToolResult';
 import {
   ElementsInlineMultiPicker,
   ScriptTypeInlineCards,
 } from '@/components/inline-pickers';
-import { cn } from '@/lib/utils';
+import { ToolForm } from '@/components/ToolForm/ToolForm';
+import { ToolResult } from '@/components/ToolResult/ToolResult';
 import { trpc } from '@/lib/trpc';
+import { cn } from '@/lib/utils';
 
 import type { FreeGenerateHistoryRow } from '@quanan/clients/router-types';
 
@@ -63,13 +63,13 @@ export default function Generate() {
       const row =
         mode === 'acquisition'
           ? await acquisitionMutation.mutateAsync({
-              scriptType: scriptType!,
+              scriptType: scriptType,
               elements,
               conversionGoal,
               topic,
             })
           : await freeMutation.mutateAsync({
-              scriptType: scriptType!,
+              scriptType: scriptType,
               elements,
               topic,
             });
@@ -167,10 +167,11 @@ export default function Generate() {
       {/* Acquisition mode extra field */}
       {mode === 'acquisition' && (
         <div className="space-y-2">
-          <label className="block text-body-md font-medium text-on-surface">
+          <label htmlFor="gen-conversion-goal" className="block text-body-md font-medium text-on-surface">
             转化目标
           </label>
           <input
+            id="gen-conversion-goal"
             type="text"
             placeholder="例如：引导添加微信、预约到店、购买课程..."
             value={conversionGoal}
@@ -183,9 +184,10 @@ export default function Generate() {
       {/* AC-2(4): textarea 文案主题 max 500 + 字符计数 */}
       <FadeInWrapper delay={0.2} from="up">
         <div className="space-y-2">
-          <label className="block text-body-md font-medium text-on-surface">文案主题</label>
+          <label htmlFor="gen-topic-textarea" className="block text-body-md font-medium text-on-surface">文案主题</label>
           <div className="relative">
             <textarea
+              id="gen-topic-textarea"
               maxLength={500}
               placeholder="输入你的文案主题，如：美容院如何用抖音获客100个精准客户..."
               value={topic}

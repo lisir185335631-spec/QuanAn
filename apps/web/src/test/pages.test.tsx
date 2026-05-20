@@ -29,18 +29,40 @@ vi.mock('@/lib/trpc', () => ({
     costLog: { logFeedback: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) } },
     useUtils: () => ({
       dailyTasks: {
-        getToday: { getData: vi.fn(() => null), setData: vi.fn() },
+        getToday: {
+          getData: vi.fn(() => null),
+          setData: vi.fn(),
+          cancel: vi.fn().mockResolvedValue(undefined),
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      evolution: {
+        getProfile: {
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
       },
     }),
     dailyTasks: {
       getToday: { useQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }) },
       getHistory: { useQuery: () => ({ data: [], isLoading: false }) },
-      markCompleted: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true, completedCount: 0, totalCount: 0 }), isPending: false }) },
+      markCompleted: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({ ok: true, completedCount: 0, totalCount: 0 }), isPending: false }) },
       regenerateToday: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
-    diagnosis: { latest: { useQuery: () => ({ data: null, isLoading: false }) } },
+    diagnosis: {
+      latest: { useQuery: () => ({ data: null, isLoading: false }) },
+      generate: {
+        useMutation: () => ({
+          mutate: vi.fn(),
+          isPending: false,
+          isError: false,
+          reset: vi.fn(),
+        }),
+      },
+    },
     evolution: {
-      getProfile: { useQuery: () => ({ data: null, isLoading: false }) },
+      getProfile: { useQuery: () => ({ data: null, isLoading: false, isError: false }) },
+      evolve: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      updateConfig: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       getInsightHistory: { useQuery: () => ({ data: [], isLoading: false }) },
       getFeedbackTrend: { useQuery: () => ({ data: [], isLoading: false }) },
       getModuleRanking: { useQuery: () => ({ data: { ranking: [] }, isLoading: false }) },
@@ -51,6 +73,9 @@ vi.mock('@/lib/trpc', () => ({
       active: { useQuery: () => ({ data: null, isLoading: false }) },
       switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       create: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ id: 1, name: 'test', industry: 'tech', platform: 'douyin', stage: 'starter', isActive: true, followersRange: '0-1000' }), isPending: false }) },
+      delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      // US-007 AC-7: smartRecommend mock
+      smartRecommend: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({ platform: 'douyin', followersRange: '0-1k', ipPositioning: '测试定位', rationale: '测试推荐理由', isFallback: false }), isPending: false }) },
     },
     knowledge: {
       getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -96,6 +121,7 @@ vi.mock('@/lib/trpc', () => ({
     },
     voiceChat: {
       clearSession: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ ok: true }), isPending: false }) },
+      start: { useSubscription: vi.fn() },
     },
   },
   queryClient: {},
@@ -106,6 +132,15 @@ vi.mock('@/lib/trpc', () => ({
       },
     },
   },
+}));
+
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({
+    account: { id: 1, name: 'Test', platform: 'douyin', stage: 'starter', industry: '科技', followersRange: '0-1000' },
+    isLoading: false,
+    isSwitching: false,
+    switchTo: vi.fn(),
+  }),
 }));
 
 // Component that throws on render for ErrorBoundary testing

@@ -1,0 +1,18 @@
+
+Running 13 tests using 1 worker
+
+[1A[2K[1/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:24:3 › PRD-22 Visual Baseline › /generate fullPage inline matches prd22-generate.png
+[1A[2K[2/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:35:3 › PRD-22 Visual Baseline › /boom-generate fullPage inline matches prd22-boom-generate.png
+[1A[2K[3/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:47:3 › PRD-22 Visual Baseline › /ai-video fullPage inline matches prd22-ai-video.png
+[1A[2K[4/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:59:3 › PRD-22 Visual Baseline › /knowledge desktop fullPage matches prd22-knowledge.png
+[1A[2K[5/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:71:3 › PRD-22 Visual Baseline › /knowledge mobile fullPage matches prd22-knowledge-mobile.png
+[1A[2K[6/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:83:3 › PRD-22 Visual Baseline › /step/1 fullPage inline matches prd22-step1.png
+[1A[2K[7/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:95:3 › PRD-22 Visual Baseline › /step/3 fullPage inline matches prd22-step3.png
+[1A[2K[8/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:107:3 › PRD-22 Visual Baseline › /step/3b fullPage inline matches prd22-step3b.png
+[1A[2K[9/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:119:3 › PRD-22 Visual Baseline › /step/4 fullPage inline matches prd22-step4.png
+[1A[2K[10/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:131:3 › PRD-22 Visual Baseline › /step/4b fullPage inline matches prd22-step4b.png
+[1A[2K[11/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:143:3 › PRD-22 Visual Baseline › /step/5 fullPage inline matches prd22-step5.png
+[1A[2K[12/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:155:3 › PRD-22 Visual Baseline › /step/6 fullPage inline matches prd22-step6.png
+[1A[2K[13/13] [chromium] › tests/e2e/prd22-visual-baseline.spec.ts:167:3 › PRD-22 Visual Baseline › /step/7 fullPage inline matches prd22-step7.png
+[1A[2K  13 passed (1.6m)
+::notice title=🎭 Playwright Run Summary::  13 passed (1.6m)

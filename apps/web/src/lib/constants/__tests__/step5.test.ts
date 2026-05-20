@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import {
   STEP5_SUBTITLE,
   STEP5_CATEGORIES_5,
@@ -8,6 +9,7 @@ import {
   STEP5_BUTTON_GENERATE,
   STEP5_TOTAL_TOPICS,
 } from '../step5';
+
 import type { Step5Topic } from '../step5';
 
 describe('STEP5 constants', () => {

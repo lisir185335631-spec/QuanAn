@@ -1,0 +1,313 @@
+
+> @quanqn/web@0.1.0 test:e2e /Users/return/Desktop/QuanQn/apps/web
+> playwright test --config ../../playwright.config.ts -- --project\=chromium tests/e2e/header.spec.ts tests/e2e/routes-34.spec.ts tests/e2e/prd21-mobile-nav.spec.ts
+
+
+Running 86 tests using 1 worker
+
+[1A[2K[1/86] [chromium] › ../../tests/e2e/header.spec.ts:9:3 › Header 三 dropdown › Header 可见
+[1A[2K[2/86] [chromium] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock)
+[1A[2K  1) [chromium] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('header-user-trigger')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByTestId('header-user-trigger')[22m
+
+
+      23 |
+      24 |     const trigger = page.getByTestId('header-user-trigger');
+    > 25 |     await expect(trigger).toBeVisible();
+         |                           ^
+      26 |     // Verify AC-3: email shown in user menu
+      27 |     await trigger.click();
+      28 |     const menu = page.getByTestId('header-user-menu');
+        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:25:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-auth-me-mock--chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-auth-me-mock--chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-auth-me-mock--chromium/error-context.md
+
+
+[1A[2K[3/86] [chromium] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开
+[1A[2K  2) [chromium] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ─
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('header-account-trigger')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByTestId('header-account-trigger')[22m
+
+
+      35 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile
+      36 |     const trigger = page.getByTestId('header-account-trigger');
+    > 37 |     await expect(trigger).toBeVisible();
+         |                           ^
+      38 |     await trigger.click();
+      39 |     const menu = page.getByTestId('header-account-menu');
+      40 |     await expect(menu).toBeVisible();
+        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:37:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-chromium/error-context.md
+
+
+[1A[2K[4/86] [chromium] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开
+[1A[2K  3) [chromium] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ──
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('header-tools-trigger')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByTestId('header-tools-trigger')[22m
+
+
+      46 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile
+      47 |     const trigger = page.getByTestId('header-tools-trigger');
+    > 48 |     await expect(trigger).toBeVisible();
+         |                           ^
+      49 |     await trigger.click();
+      50 |     const menu = page.getByTestId('header-tools-menu');
+      51 |     await expect(menu).toBeVisible();
+        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:48:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-chromium/error-context.md
+
+
+[1A[2K[5/86] [chromium] › ../../tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏
+[1A[2K[6/86] [chromium] › ../../tests/e2e/header.spec.ts:65:3 › Header 三 dropdown › 移动端 hamburger 点开 panel
+[1A[2K[7/86] [chromium] › ../../tests/e2e/prd21-mobile-nav.spec.ts:15:3 › PRD-21 Mobile Nav Panel › hamburger menu visible on mobile
+[1A[2K[8/86] [chromium] › ../../tests/e2e/prd21-mobile-nav.spec.ts:19:3 › PRD-21 Mobile Nav Panel › click hamburger opens MobileNavPanel below header
+[1A[2K[9/86] [chromium] › ../../tests/e2e/prd21-mobile-nav.spec.ts:24:3 › PRD-21 Mobile Nav Panel › panel shows 4 group labels (创作 / 策划 / 智能 / 更多)
+[1A[2K[10/86] [chromium] › ../../tests/e2e/prd21-mobile-nav.spec.ts:33:3 › PRD-21 Mobile Nav Panel › panel shows ≥ 25 nav items
+[1A[2K[11/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/1 可达 · 无 error boundary
+[1A[2K[12/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/2 可达 · 无 error boundary
+[1A[2K[13/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/3 可达 · 无 error boundary
+[1A[2K[14/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/4 可达 · 无 error boundary
+[1A[2K[15/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/5 可达 · 无 error boundary
+[1A[2K[16/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/6 可达 · 无 error boundary
+[1A[2K[17/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/7 可达 · 无 error boundary
+[1A[2K[18/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/8 可达 · 无 error boundary
+[1A[2K[19/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/9 可达 · 无 error boundary
+[1A[2K[20/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /trending 可达 · 无 error boundary
+[1A[2K[21/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /copywriting 可达 · 无 error boundary
+[1A[2K[22/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /present-styles 可达 · 无 error boundary
+[1A[2K[23/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /monetization 可达 · 无 error boundary
+[1A[2K[24/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /private-domain 可达 · 无 error boundary
+[1A[2K[25/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /boom-generate 可达 · 无 error boundary
+[1A[2K[26/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /generate 可达 · 无 error boundary
+[1A[2K[27/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /analysis 可达 · 无 error boundary
+[1A[2K[28/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /video-production 可达 · 无 error boundary
+[1A[2K[29/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /acquisition-video 可达 · 无 error boundary
+[1A[2K[30/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ai-video 可达 · 无 error boundary
+[1A[2K[31/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /voice-chat 可达 · 无 error boundary
+[1A[2K[32/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /deep-learning 可达 · 无 error boundary
+[1A[2K[33/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /knowledge 可达 · 无 error boundary
+[1A[2K[34/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /diagnosis 可达 · 无 error boundary
+[1A[2K[35/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /daily-tasks 可达 · 无 error boundary
+[1A[2K[36/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /evolution 可达 · 无 error boundary
+[1A[2K[37/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /accounts 可达 · 无 error boundary
+[1A[2K[38/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /my-topics 可达 · 无 error boundary
+[1A[2K[39/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /history 可达 · 无 error boundary
+[1A[2K[40/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ip-plan 可达 · 无 error boundary
+[1A[2K[41/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /settings 可达 · 无 error boundary
+[1A[2K[42/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /login 可达 · 无 error boundary
+[1A[2K[43/86] [chromium] › ../../tests/e2e/routes-34.spec.ts:43:3 › 34 路由可访问性 › 总路由数覆盖 32 命名路由(34 含 index redirect + catch-all)
+[1A[2K[44/86] [mobile] › ../../tests/e2e/header.spec.ts:9:3 › Header 三 dropdown › Header 可见
+[1A[2K[45/86] [mobile] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock)
+[1A[2K  4) [mobile] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('header-user-trigger')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByTestId('header-user-trigger')[22m
+
+
+      23 |
+      24 |     const trigger = page.getByTestId('header-user-trigger');
+    > 25 |     await expect(trigger).toBeVisible();
+         |                           ^
+      26 |     // Verify AC-3: email shown in user menu
+      27 |     await trigger.click();
+      28 |     const menu = page.getByTestId('header-user-menu');
+        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:25:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-auth-me-mock--mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-auth-me-mock--mobile/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/header-Header-三-dropdown-用户头像-dropdown-可见-点开-auth-me-mock--mobile/error-context.md
+
+
+[1A[2K[46/86] [mobile] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开
+[1A[2K  5) [mobile] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ───
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('header-account-trigger')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByTestId('header-account-trigger')[22m
+
+
+      35 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile
+      36 |     const trigger = page.getByTestId('header-account-trigger');
+    > 37 |     await expect(trigger).toBeVisible();
+         |                           ^
+      38 |     await trigger.click();
+      39 |     const menu = page.getByTestId('header-account-menu');
+      40 |     await expect(menu).toBeVisible();
+        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:37:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-mobile/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/header-Header-三-dropdown-IP-账号-dropdown-可见-点开-mobile/error-context.md
+
+
+[1A[2K[47/86] [mobile] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开
+[1A[2K  6) [mobile] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByTestId('header-tools-trigger')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByTestId('header-tools-trigger')[22m
+
+
+      46 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile
+      47 |     const trigger = page.getByTestId('header-tools-trigger');
+    > 48 |     await expect(trigger).toBeVisible();
+         |                           ^
+      49 |     await trigger.click();
+      50 |     const menu = page.getByTestId('header-tools-menu');
+      51 |     await expect(menu).toBeVisible();
+        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:48:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-mobile/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/header-Header-三-dropdown-工具入口-dropdown-可见-点开-mobile/error-context.md
+
+
+[1A[2K[48/86] [mobile] › ../../tests/e2e/header.spec.ts:56:3 › Header 三 dropdown › 移动端 ≤640px 显示 hamburger · 三 dropdown 隐藏
+[1A[2K[49/86] [mobile] › ../../tests/e2e/header.spec.ts:65:3 › Header 三 dropdown › 移动端 hamburger 点开 panel
+[1A[2K[50/86] [mobile] › ../../tests/e2e/prd21-mobile-nav.spec.ts:15:3 › PRD-21 Mobile Nav Panel › hamburger menu visible on mobile
+[1A[2K[51/86] [mobile] › ../../tests/e2e/prd21-mobile-nav.spec.ts:19:3 › PRD-21 Mobile Nav Panel › click hamburger opens MobileNavPanel below header
+[1A[2K[52/86] [mobile] › ../../tests/e2e/prd21-mobile-nav.spec.ts:24:3 › PRD-21 Mobile Nav Panel › panel shows 4 group labels (创作 / 策划 / 智能 / 更多)
+[1A[2K[53/86] [mobile] › ../../tests/e2e/prd21-mobile-nav.spec.ts:33:3 › PRD-21 Mobile Nav Panel › panel shows ≥ 25 nav items
+[1A[2K[54/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/1 可达 · 无 error boundary
+[1A[2K[55/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/2 可达 · 无 error boundary
+[1A[2K[56/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/3 可达 · 无 error boundary
+[1A[2K[57/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/4 可达 · 无 error boundary
+[1A[2K[58/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/5 可达 · 无 error boundary
+[1A[2K[59/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/6 可达 · 无 error boundary
+[1A[2K[60/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/7 可达 · 无 error boundary
+[1A[2K[61/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/8 可达 · 无 error boundary
+[1A[2K[62/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /step/9 可达 · 无 error boundary
+[1A[2K[63/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /trending 可达 · 无 error boundary
+[1A[2K[64/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /copywriting 可达 · 无 error boundary
+[1A[2K[65/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /present-styles 可达 · 无 error boundary
+[1A[2K[66/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /monetization 可达 · 无 error boundary
+[1A[2K[67/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /private-domain 可达 · 无 error boundary
+[1A[2K[68/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /boom-generate 可达 · 无 error boundary
+[1A[2K[69/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /generate 可达 · 无 error boundary
+[1A[2K[70/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /analysis 可达 · 无 error boundary
+[1A[2K[71/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /video-production 可达 · 无 error boundary
+[1A[2K[72/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /acquisition-video 可达 · 无 error boundary
+[1A[2K[73/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ai-video 可达 · 无 error boundary
+[1A[2K[74/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /voice-chat 可达 · 无 error boundary
+[1A[2K[75/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /deep-learning 可达 · 无 error boundary
+[1A[2K[76/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /knowledge 可达 · 无 error boundary
+[1A[2K[77/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /diagnosis 可达 · 无 error boundary
+[1A[2K[78/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /daily-tasks 可达 · 无 error boundary
+[1A[2K[79/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /evolution 可达 · 无 error boundary
+[1A[2K[80/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /accounts 可达 · 无 error boundary
+[1A[2K[81/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /my-topics 可达 · 无 error boundary
+[1A[2K[82/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /history 可达 · 无 error boundary
+[1A[2K[83/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /ip-plan 可达 · 无 error boundary
+[1A[2K[84/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /settings 可达 · 无 error boundary
+[1A[2K[85/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:32:5 › 34 路由可访问性 › /login 可达 · 无 error boundary
+[1A[2K[86/86] [mobile] › ../../tests/e2e/routes-34.spec.ts:43:3 › 34 路由可访问性 › 总路由数覆盖 32 命名路由(34 含 index redirect + catch-all)
+[1A[2K  6 failed
+    [chromium] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) 
+    [chromium] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ──
+    [chromium] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ───
+    [mobile] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) 
+    [mobile] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ────
+    [mobile] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ─────
+  80 passed (11.3m)
+::error file=../../tests/e2e/header.spec.ts,title=[chromium] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock),line=25,col=27::  1) [chromium] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) %0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: getByTestId('header-user-trigger')%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for getByTestId('header-user-trigger')%0A%0A%0A      23 |%0A      24 |     const trigger = page.getByTestId('header-user-trigger');%0A    > 25 |     await expect(trigger).toBeVisible();%0A         |                           ^%0A      26 |     // Verify AC-3: email shown in user menu%0A      27 |     await trigger.click();%0A      28 |     const menu = page.getByTestId('header-user-menu');%0A        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:25:27
+::error file=../../tests/e2e/header.spec.ts,title=[chromium] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开,line=37,col=27::  2) [chromium] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ─%0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: getByTestId('header-account-trigger')%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for getByTestId('header-account-trigger')%0A%0A%0A      35 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile%0A      36 |     const trigger = page.getByTestId('header-account-trigger');%0A    > 37 |     await expect(trigger).toBeVisible();%0A         |                           ^%0A      38 |     await trigger.click();%0A      39 |     const menu = page.getByTestId('header-account-menu');%0A      40 |     await expect(menu).toBeVisible();%0A        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:37:27
+::error file=../../tests/e2e/header.spec.ts,title=[chromium] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开,line=48,col=27::  3) [chromium] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ──%0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: getByTestId('header-tools-trigger')%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for getByTestId('header-tools-trigger')%0A%0A%0A      46 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile%0A      47 |     const trigger = page.getByTestId('header-tools-trigger');%0A    > 48 |     await expect(trigger).toBeVisible();%0A         |                           ^%0A      49 |     await trigger.click();%0A      50 |     const menu = page.getByTestId('header-tools-menu');%0A      51 |     await expect(menu).toBeVisible();%0A        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:48:27
+::error file=../../tests/e2e/header.spec.ts,title=[mobile] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock),line=25,col=27::  4) [mobile] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) %0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: getByTestId('header-user-trigger')%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for getByTestId('header-user-trigger')%0A%0A%0A      23 |%0A      24 |     const trigger = page.getByTestId('header-user-trigger');%0A    > 25 |     await expect(trigger).toBeVisible();%0A         |                           ^%0A      26 |     // Verify AC-3: email shown in user menu%0A      27 |     await trigger.click();%0A      28 |     const menu = page.getByTestId('header-user-menu');%0A        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:25:27
+::error file=../../tests/e2e/header.spec.ts,title=[mobile] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开,line=37,col=27::  5) [mobile] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ───%0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: getByTestId('header-account-trigger')%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for getByTestId('header-account-trigger')%0A%0A%0A      35 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile%0A      36 |     const trigger = page.getByTestId('header-account-trigger');%0A    > 37 |     await expect(trigger).toBeVisible();%0A         |                           ^%0A      38 |     await trigger.click();%0A      39 |     const menu = page.getByTestId('header-account-menu');%0A      40 |     await expect(menu).toBeVisible();%0A        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:37:27
+::error file=../../tests/e2e/header.spec.ts,title=[mobile] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开,line=48,col=27::  6) [mobile] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ────%0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: getByTestId('header-tools-trigger')%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for getByTestId('header-tools-trigger')%0A%0A%0A      46 |     await page.setViewportSize({ width: 1280, height: 720 }); // desktop — element hidden on mobile%0A      47 |     const trigger = page.getByTestId('header-tools-trigger');%0A    > 48 |     await expect(trigger).toBeVisible();%0A         |                           ^%0A      49 |     await trigger.click();%0A      50 |     const menu = page.getByTestId('header-tools-menu');%0A      51 |     await expect(menu).toBeVisible();%0A        at /Users/return/Desktop/QuanQn/tests/e2e/header.spec.ts:48:27
+::notice title=🎭 Playwright Run Summary::  6 failed%0A    [chromium] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) %0A    [chromium] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ──%0A    [chromium] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ───%0A    [mobile] › ../../tests/e2e/header.spec.ts:13:3 › Header 三 dropdown › 用户头像 dropdown 可见 + 点开 (auth.me mock) %0A    [mobile] › ../../tests/e2e/header.spec.ts:34:3 › Header 三 dropdown › IP 账号 dropdown 可见 + 点开 ────%0A    [mobile] › ../../tests/e2e/header.spec.ts:45:3 › Header 三 dropdown › 工具入口 dropdown 可见 + 点开 ─────%0A  80 passed (11.3m)
+ ELIFECYCLE  Command failed with exit code 1.

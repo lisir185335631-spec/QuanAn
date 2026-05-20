@@ -12,6 +12,7 @@ import { ANALYSIS_TEMPLATE }          from './analysis';
 import { BRANDING_TEMPLATE }          from './branding';
 import { COPYWRITING_TEMPLATE }       from './copywriting';
 import { DAILY_TASK_AGENT_TEMPLATE }  from './daily-task-agent';
+import { DIAGNOSIS_TEMPLATE }         from './diagnosis';
 import { EVOLUTION_AGENT_TEMPLATE }   from './evolution-agent';
 import { LIVESTREAM_TEMPLATE }        from './livestream';
 import { MONETIZATION_TEMPLATE }      from './monetization';
@@ -45,6 +46,7 @@ export const SPECIALIST_TEMPLATES: Partial<Record<SpecialistId, SpecialistTempla
   EvolutionAgent:   EVOLUTION_AGENT_TEMPLATE,
   DailyTaskAgent:   DAILY_TASK_AGENT_TEMPLATE,
   VoiceChatAgent:   VOICE_CHAT_AGENT_TEMPLATE,
+  DiagnosisAgent:   DIAGNOSIS_TEMPLATE,
 };
 
 export {
@@ -59,7 +61,8 @@ export {
   VIDEO_PRODUCTION_TEMPLATE,
   ACQUISITION_VIDEO_TEMPLATE,
   AI_VIDEO_TEMPLATE,
-  EVOLUTION_AGENT_TEMPLATE,
   DAILY_TASK_AGENT_TEMPLATE,
+  DIAGNOSIS_TEMPLATE,
+  EVOLUTION_AGENT_TEMPLATE,
   VOICE_CHAT_AGENT_TEMPLATE,
 };

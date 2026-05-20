@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { STEP1_INDUSTRIES_56, STEP1_TABS } from '../industries';
 
 describe('STEP1_INDUSTRIES_56', () => {

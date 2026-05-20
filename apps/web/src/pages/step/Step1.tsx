@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FadeInWrapper } from '@/components/FadeInWrapper';
-
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
 import { IndustryEmojiGrid } from '@/components/industry/IndustryEmojiGrid';
 import { EmptyState } from '@/components/states';

@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+stderr | src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(b) · 4 指标真数据 · feedbackCountGood=6 / needsImprovement=2 / deepLearning=3 / satisfactionRate=0.75
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(c) · 触发进化 button → evolve.mutate(rateableType=manual_trigger)
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(d) · 生成洞察 button · feedbackCountTotal<5 → disabled + title=需 ≥ 5 反馈
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(d2) · 生成洞察 button · feedbackCountTotal>=5 → enabled
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(e) · 进化洞察模块 · latestInsight summary 渲染
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(e2) · 进化洞察模块 · null latestInsight → 暂无洞察 D-237 字面锁
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(f) · 进化方向 · profile.currentDirection=创意性优先 → 初始 selected
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(f2) · 进化方向 change → updateConfig.mutate({currentDirection})
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-1 · null profile → EmptyState 新用户 · 暂无进化数据
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-1 · isLoading → Loader2 spinner visible
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > H1 · 智能体进化中心
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-7 · 新增学习 button → toast.info 正确文案
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  17:16:32
+   Duration  507ms (transform 37ms, setup 22ms, collect 111ms, tests 78ms, environment 126ms, prepare 35ms)
+

@@ -2,6 +2,8 @@ import { Menu, LogOut, ChevronDown, LogIn, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { AccountSwitcher } from '@/components/AccountSwitcher';
+import { MobileNavPanel } from '@/components/header/MobileNavPanel';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,8 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { AccountSwitcher } from '@/components/AccountSwitcher';
-import { MobileNavPanel } from '@/components/header/MobileNavPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { HEADER_NAV } from '@/lib/constants/header-nav';
 

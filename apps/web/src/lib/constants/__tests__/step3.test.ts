@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { STEP3_PLATFORMS_5, STEP3_OUTPUT_H3_6 } from '../step3';
 
 describe('STEP3 constants', () => {

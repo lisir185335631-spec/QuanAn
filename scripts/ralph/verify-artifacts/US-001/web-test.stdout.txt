@@ -1,0 +1,20 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+stderr | src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (b) 报告渲染 dimensions[dim.id].score — 7 维度得分从 LLM 结果来
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (c) isFallback=true 时显示灰色 hint banner + retry button
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (d) onError 时显示 retry button + toast.error
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (e) mutation pending 时显示 Loader2 spinner + "AI 分析中..."
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > 每维度卡显示 issues 和 suggestions 列表
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > 优先改进项 priority list 渲染
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  14:23:54
+   Duration  489ms (transform 41ms, setup 20ms, collect 146ms, tests 57ms, environment 117ms, prepare 30ms)
+

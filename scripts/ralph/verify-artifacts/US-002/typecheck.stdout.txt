@@ -1,4 +1,4 @@
 
-> @quanqn/web@0.1.0 typecheck /Users/return/Desktop/QuanQn/apps/web
+> @quanan/web@0.1.0 typecheck /Users/return/Desktop/QuanAn/apps/web
 > tsc --noEmit
 

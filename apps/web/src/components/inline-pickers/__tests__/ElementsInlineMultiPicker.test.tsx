@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
-import { ElementsInlineMultiPicker } from '../ElementsInlineMultiPicker';
 import { ALL_ELEMENTS, HOT_ELEMENT_GROUPS } from '@/lib/constants/elements';
+
+import { ElementsInlineMultiPicker } from '../ElementsInlineMultiPicker';
 
 describe('ElementsInlineMultiPicker', () => {
   it('renders all elements in 4 groups (grouped layout)', () => {

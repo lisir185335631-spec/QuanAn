@@ -225,11 +225,14 @@ describe('ContextAssembler', () => {
     );
   });
 
-  // 未知 agentId → fallback persona · 不抛出
-  it('无模板的 agentId(DiagnosisAgent) → fallback persona · 不抛出', async () => {
+  // DiagnosisAgent 现有专属模板 · persona 来自 DIAGNOSIS_TEMPLATE
+  it('DiagnosisAgent → 使用专属 DIAGNOSIS_TEMPLATE persona · 含 7 维度定义 · 不抛出', async () => {
     const ctx = await assembler.assemble(makeReq({ agentId: 'DiagnosisAgent' }));
 
     expect(ctx.systemPrompt).toBeTruthy();
-    expect(ctx.systemPrompt).toContain('DiagnosisAgent');
+    // DiagnosisAgent 现已有专属模板 · persona 包含 IP 顾问描述 + 7 维度关键词
+    expect(ctx.systemPrompt).toContain('IP 起号顾问');
+    expect(ctx.systemPrompt).toContain('positioning');
+    expect(ctx.systemPrompt).toContain('authentic');
   });
 });

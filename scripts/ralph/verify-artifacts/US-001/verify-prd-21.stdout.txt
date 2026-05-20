@@ -1,0 +1,21 @@
+
+═══════════════════════════════════════════════════════════
+  PRD-21 Visual Alignment Foundation — verify script
+═══════════════════════════════════════════════════════════
+
+§1  Visual diff infrastructure
+─────────────────────────────────────────────────────────────
+  ✅ ok   1.1  apps/web/scripts/visual-diff.ts exists
+  ✅ ok   1.2  expectVisualMatch exported from visual-diff.ts
+  ✅ ok   1.3  tests/e2e/prd21-visual-baseline.spec.ts exists
+  ✅ ok   1.4  expectVisualMatch calls: 4 (>= 4)
+  ✅ ok   1.5  maxDiffPixelRatio: 0.05 locked (D-206)
+  ✅ ok   1.6  baseline dir exists: /tmp/aiipznt-clone-research/screenshots
+  ✅ ok   1.7  baseline PNG count: 33 (>= 32)
+  ✅ ok   1.8  animations:disabled configured in apps/web/playwright.config.ts
+
+─────────────────────────────────────────────────────────────
+  §1 结果: 8 通过 · 0 失败 · 0 跳过 (共 8 项)
+─────────────────────────────────────────────────────────────
+
+✅ PRD-21 §1 CI gate PASSED

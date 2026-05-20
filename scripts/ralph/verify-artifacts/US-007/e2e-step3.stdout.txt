@@ -1,0 +1,9 @@
+
+Running 5 tests using 1 worker
+
+[1A[2K[1/5] [chromium] › tests/e2e/prd17-step3-flow.spec.ts:19:3 › prd17-step3 · /step/3 账号包装方案 › AC-1 · H1 字面锁 "账号包装方案" + 副标签 STEP 03
+[1A[2K[2/5] [chromium] › tests/e2e/prd17-step3-flow.spec.ts:25:3 › prd17-step3 · /step/3 账号包装方案 › AC-2 · 5 平台 radio 存在
+[1A[2K[3/5] [chromium] › tests/e2e/prd17-step3-flow.spec.ts:31:3 › prd17-step3 · /step/3 账号包装方案 › AC-2 · 目标受众 + 现有账号情况 input 存在
+[1A[2K[4/5] [chromium] › tests/e2e/prd17-step3-flow.spec.ts:37:3 › prd17-step3 · /step/3 账号包装方案 › AC-3 · 输出区 7 H3 字面锁 · DOM H1+7H3=8
+[1A[2K[5/5] [chromium] › tests/e2e/prd17-step3-flow.spec.ts:62:3 › prd17-step3 · /step/3 账号包装方案 › AC-3 · 顶部 [一键重新生成] + [复制全部] button 显示
+[1A[2K  5 passed (45.2s)
