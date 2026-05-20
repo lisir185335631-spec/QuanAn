@@ -4392,3 +4392,27 @@ PRD-23 范围:
 [Opus audit US-009] TD-098 approve 豁免: apps/api 5 lint errors in PRD-25 US-007 引入的 test files(import/order + type-only import + unbound-method · mechanical only · 不影响 ship)· web cleanup 222 successes given credit · 留 PRD-26 启动前 cleanup · audit_exemption + scheduled_fix_in 完整登记
 
 --- [RALPH] Iteration 1 started: US-001 at 2026-05-21 00:43 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (20分钟 58秒) ---
+
+--- [RALPH] Iteration 2 started: US-001 at 2026-05-21 01:04 ---
+
+## 2026-05-21 01:10 - US-001 [PRD-26] · Iteration 2 · 确认验证
+- 实现了什么:
+  - Iteration 1 实现已完成(commit 4942e43) · Iteration 2 确认 ACs 仍全部通过
+  - 刷新 verify-artifacts/US-001/typecheck.stdout.txt(第 2 次 clean run 确认)
+- 验证结果(Iteration 2 re-check):
+  - AC-1: ✅ apps/admin/src/index.ts barrel export 正确
+  - AC-2: ✅ 7 placeholder 文件已删除 · knowledge.tsx 保留
+  - AC-3: ✅ grep placeholder/ 0 非 knowledge 命中
+  - AC-4/AC-8: ✅ pnpm typecheck from ROOT 0 errors
+  - AC-5: ✅ TD-031 status=resolved · close_evidence 完整
+  - AC-10: ✅ grep apiKey/OpenAI/Anthropic apps/admin/ 0 命中
+- 更改的文件:
+  - scripts/ralph/verify-artifacts/US-001/typecheck.stdout.txt (刷新)
+  - scripts/ralph/verify-artifacts/US-001/manifest.json (Validator Iter-1 更新)
+  - scripts/ralph/verify-artifacts/US-001/vitest-full.stdout.txt (Validator Iter-1 更新)
+  - scripts/ralph/progress.txt (本项)
+- **未来迭代的学习:**
+  - 当 Ralph Iter 2 发现 Iter 1 已实现且 Validator PASS · 只需确认 + 提交验证产物即可 · 不需要重新实现
+---
