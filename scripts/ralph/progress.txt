@@ -5,6 +5,36 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-20 09:01 - US-001 [PRD-24] · /daily-tasks 完整化(3-5 stub 任务卡 + loading + EmptyState + ls-namespace)
+- 实现了什么:
+  - apps/web/src/lib/constants/daily-tasks.ts: 新建 · DAILY_TASKS_STUB(3 任务 spec §8.5.2 字面 line 2438-2440) + LOADING_TEXT + EMPTY_TITLE/DESC/CTA
+  - apps/web/src/pages/modules/DailyTasks.tsx: 完整重写 · H1 '今日行动清单' + 智能菜单标识 + 3 H3 任务卡(glass-card) + EmptyState(无 account → 添加账号 CTA) + Loader2 800ms loading + getLsKey acc_ 前缀 localStorage 打卡 ids
+  - apps/web/src/pages/__tests__/DailyTasks.test.tsx: 新建 · 7 tests(H1/stub/complete/EmptyState/loading/localStorage/navigate)
+  - apps/web/src/lib/constants/__tests__/daily-tasks.test.ts: 新建 · 5 tests(长度/字面/LOADING_TEXT/EMPTY/字段)
+  - apps/web/src/test/pages.test.tsx: 更新 DailyTasks H1 期望 '每日任务' → '今日行动清单'(AC-1 重写)
+  - tests/e2e/prd24-daily-tasks-flow.spec.ts: 新建 · 3 tests · 6/6 pass(chromium+mobile)
+  - tests/e2e/prd24-visual-baseline.spec.ts: 新建 · prd24-daily-tasks.png baseline written
+- 验证结果:
+  - AC-9 typecheck: ✅ 0 errors
+  - AC-9 vitest: ✅ 299 tests pass (≥ 293 ✓)
+  - AC-10 e2e: ✅ 6/6 pass (3 chromium + 3 mobile)
+  - AC-11 visual: ✅ prd24-daily-tasks.png baseline written · 1440x900 · 0.05 threshold
+  - AC-12 browser: ✅ via e2e Playwright · H1/副标/智能标识/3 H3 任务卡 verified
+- 更改的文件:
+  - apps/web/src/lib/constants/daily-tasks.ts (新建)
+  - apps/web/src/pages/modules/DailyTasks.tsx (重写)
+  - apps/web/src/pages/__tests__/DailyTasks.test.tsx (新建)
+  - apps/web/src/lib/constants/__tests__/daily-tasks.test.ts (新建)
+  - apps/web/src/test/pages.test.tsx (更新 H1 期望)
+  - tests/e2e/prd24-daily-tasks-flow.spec.ts (新建)
+  - tests/e2e/prd24-visual-baseline.spec.ts (新建)
+- **未来迭代的学习:**
+  - vi.mock 模块级 mock 用 vi.fn() 而非工厂函数固定值 · 在 beforeEach 用 vi.mocked().mockReturnValue() 设默认 · 测内用 .mockReturnValue() override(同步调用 render 前) · dynamic await import() 内 mockReturnValueOnce 有时序问题
+  - useActiveAccount 的 account===null 检查要在 isLoading 检查之前(先判空态再判 loading · 否则 null account 也会显示 spinner)
+  - pages.test.tsx 是全局组件兼容性测试 · 重写 page H1 时必须同步更新该文件对应断言
+  - prd24 e2e 用根级 playwright.config.ts(testDir=tests/e2e) · 命令: pnpm exec playwright test --config playwright.config.ts "prd24" · apps/web playwright.config.ts 只覆盖 apps/web/e2e/
+---
+
 ## 2026-05-20 03:50 - US-005 [PRD-23] · /analysis 真表单 + 5 H3 stub 输出(文案结构分析)
 - 实现了什么:
   - apps/web/src/pages/tools/Analysis.tsx: 完整重写 · 去除 tRPC/ToolForm 依赖 · 本地 state(text/submitted) · 字符计数右下角(`{text.length} 字`) · CTA disabled(text<10) · 提交→5 H3 stub 输出
@@ -3632,4 +3662,13 @@ PRD-23 范围:
 - 29 visual baseline(PRD-22 13 + PRD-23 16)
 - 7 stub page 完整化(/diagnosis · /accounts · /step/8 · /video-analysis · /analysis · /video-production · /acquisition-video)
 - D-226~D-235 全 10 LD 落实 · 1 TD 新登 TD-094 + 2 TD closed (TD-092/093)
+---
+
+--- [RALPH] Iteration 17 ended: US-010 (7分钟 7秒) ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-20 08:44 ---
+
+## 2026-05-20 09:43 - US-001 [PRD-24] Opus audit approve · high 1st pass
+- AC 15/15 PASS · vitest 299/299 zero-regression · 字面锁全 6/6(今日行动清单 H1 + 3 stub 任务 + AI loading + 添加账号)
+- 注: Validator 32 min 因 dev server 没启(gstack browse goto http://localhost:5173 等连接) · Opus 启 dev server 后立即完成 · 留 TD-095 'Validator browse 前先确认 dev server up'
 ---
