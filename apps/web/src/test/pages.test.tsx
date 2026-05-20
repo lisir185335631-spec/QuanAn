@@ -215,7 +215,7 @@ describe('Module pages render', () => {
 
   it('DailyTasks renders h1 heading', () => {
     render(<MemoryRouter><DailyTasks /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('每日任务');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('今日行动清单');
   });
 
   it('MyTopics renders h1 heading', () => {
