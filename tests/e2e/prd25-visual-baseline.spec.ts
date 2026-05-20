@@ -1,8 +1,9 @@
 /**
- * PRD-25 US-001 AC-13 + US-002 AC-11 + US-003 AC-12 + US-005 AC-10 · visual diff baselines
+ * PRD-25 US-001 AC-13 + US-002 AC-11 + US-003 AC-12 + US-005 AC-10 + US-007 AC-12 · visual diff baselines
  * prd25-diagnosis-report.png baseline · 跑 8 步完成 → 截图 report 区域
  * prd25-voice-chat-streaming.png baseline · quick prompt + 发送 → 流式完成/error → 截图
  * prd25-daily-tasks-with-tasks.png baseline · seed 3 tasks → /daily-tasks → 截图
+ * US-007 AC-12: prd25-step8-generate-plan-result.png + prd25-step8-optimize-script-result.png + prd25-accounts-smart-recommend.png
  */
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
@@ -232,6 +233,68 @@ test.describe('PRD-25 US-006 AC-10 · acquisition-video visual baseline', () => 
     }
 
     const baselinePath = path.join(BASELINE_DIR, 'prd25-acquisition-video-with-plans.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+// ── PRD-25 US-007 AC-12 · step8 + accounts baselines ─────────────────────────
+
+test.describe('PRD-25 US-007 AC-12 · step8 generate_plan visual baseline', () => {
+  test('AC-12 · prd25-step8-generate-plan-result.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/step/8`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-step8-generate-plan-result.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+test.describe('PRD-25 US-007 AC-12 · step8 optimize_script visual baseline', () => {
+  test('AC-12 · prd25-step8-optimize-script-result.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/step/8`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-step8-optimize-script-result.png');
+    await page.screenshot({ path: baselinePath, fullPage: true });
+
+    expect(fs.existsSync(baselinePath)).toBe(true);
+    const size = fs.statSync(baselinePath).size;
+    expect(size).toBeGreaterThan(1000);
+  });
+});
+
+test.describe('PRD-25 US-007 AC-12 · accounts smart recommend visual baseline', () => {
+  test('AC-12 · prd25-accounts-smart-recommend.png baseline', async ({ page }) => {
+    await page.goto(`${BASE_URL}/auth/dev-login`);
+    await page.waitForLoadState('networkidle');
+    await page.goto(`${BASE_URL}/accounts`);
+    await page.waitForLoadState('networkidle');
+
+    if (!fs.existsSync(BASELINE_DIR)) {
+      fs.mkdirSync(BASELINE_DIR, { recursive: true });
+    }
+
+    const baselinePath = path.join(BASELINE_DIR, 'prd25-accounts-smart-recommend.png');
     await page.screenshot({ path: baselinePath, fullPage: true });
 
     expect(fs.existsSync(baselinePath)).toBe(true);

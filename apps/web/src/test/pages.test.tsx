@@ -73,6 +73,9 @@ vi.mock('@/lib/trpc', () => ({
       active: { useQuery: () => ({ data: null, isLoading: false }) },
       switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       create: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ id: 1, name: 'test', industry: 'tech', platform: 'douyin', stage: 'starter', isActive: true, followersRange: '0-1000' }), isPending: false }) },
+      delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      // US-007 AC-7: smartRecommend mock
+      smartRecommend: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn().mockResolvedValue({ platform: 'douyin', followersRange: '0-1k', ipPositioning: '测试定位', rationale: '测试推荐理由', isFallback: false }), isPending: false }) },
     },
     knowledge: {
       getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) },

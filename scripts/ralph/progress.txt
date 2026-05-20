@@ -4073,3 +4073,88 @@ PRD-23 范围:
 - **未来迭代的学习:**
   - Validator 写 PASS verdict 后若 orchestrator 中断 · prd.json passes 不更新 · ralph 会重启同 story 的新 iteration · Iteration N+1 检查 manifest.json 可快速判断是 re-verification
 ---
+
+--- [RALPH] Iteration 9 ended: US-004 (51分钟 0秒) ---
+
+--- [RALPH] Iteration 10 started: US-005 at 2026-05-20 18:15 ---
+
+--- [RALPH] Iteration 11 started: US-005 at 2026-05-20 18:45 ---
+
+--- [RALPH] Iteration 2 started: US-005 at 2026-05-20 18:53 ---
+
+## 2026-05-20 18:54 - US-005
+- VideoAnalysis.tsx + Analysis.tsx 已接 trpc mutation(全套 viral/structural)- 前次 iteration 超时时组件和 e2e 骨架都已到位
+- 修复点: test files 12 个 lint 错误(async arrow no-await + import() type annotation 禁用)
+  - `vi.importActual<typeof import('...'))>` → `vi.importActual('...') as Record<string, unknown>` (参 DailyTasks 模式)
+  - `await act(async () => {...})` → `act(() => {...})` + 移除 outer async(内部无真正 await)
+- 更改的文件:
+  - apps/web/src/pages/tools/__tests__/VideoAnalysis.test.tsx (9 tests · lint clean)
+  - apps/web/src/pages/tools/__tests__/Analysis.test.tsx (11 tests · lint clean)
+  - tests/e2e/prd25-content-tools-flow.spec.ts (AC-9 · 新建)
+  - tests/e2e/prd25-visual-baseline.spec.ts (AC-10 · append)
+- 质量: typecheck 0 · eslint(changed files) 0 · 20/20 unit tests · browser: /video-analysis + /analysis 均正常渲染
+- **未来迭代的学习:**
+  - `vi.importActual` without generic type param + cast to `Record<string, unknown>` 是本 codebase 的通用 pattern(见 DailyTasks/Evolution tests)
+  - test 中 `act(() => {...})` sync 版本不返回 Promise(void) → 不能 await · 若 outer fn 只用 act sync 则去掉 async
+  - lint rule `@typescript-eslint/await-thenable`: await void 触发 error · `@typescript-eslint/require-await`: async fn without await 触发 error · 两个规则组合 → 只需去掉 async 即可
+---
+
+--- [RALPH] Iteration 11 ended: US-005 (52分钟 34秒) ---
+
+--- [RALPH] Iteration 12 started: US-006 at 2026-05-20 19:37 ---
+
+## 2026-05-20 19:52 - US-006 [PRD-25] · /video-production + /acquisition-video 接 VideoAgent 真 LLM
+- 实现了什么:
+  - apps/web/src/pages/tools/VideoProduction.tsx: 完整替换 stub → trpc.videoProduction.generate.useMutation
+    · generateMutation.mutate({ sourceCopy: text }) + loading spinner(AC-1)
+    · onSuccess: JSON.parse(data.content) → ProductionOutput → 4 H3 区块渲染(AC-2)
+    · H3-1: 分镜脚本 → shotList 每 shot 显示 scene/duration/angle/movement/action(data-testid=vp-shot-list)
+    · H3-2: 拍摄方案 → equipment chip list + schedule(data-testid=vp-equipment, vp-schedule)
+    · H3-3: 口播提词器 → shotList.filter(s.dialogue||s.voiceover)(data-testid=vp-teleprompter)
+    · H3-4: 剪辑指导 → shotList.filter(s.transition||s.sfx||s.bgm)(data-testid=vp-edit-guide)
+    · isFallback banner + retry(AC-5) · onError toast(AC-6)
+    · 修复 label 无障碍: htmlFor="vp-source-copy" + id="vp-source-copy"
+  - apps/web/src/pages/tools/AcquisitionVideo.tsx: 完整替换 stub → trpc.acquisitionVideo.generate.useMutation
+    · 保留原有表单(industry/audience/sellingPoints) + buildInput() 合成 sourceCopy + conversionGoal
+    · sourceCopy = "行业: ${industry}\n目标客户: ${audience}\n产品卖点: ${sellingPoints}"(min10 满足)
+    · onSuccess: JSON.parse(data.content) → AcquisitionContent → 4 H4 sections 单卡片(AC-3/4)
+    · SHIELD: router renames cta→ctaScript · 字段映射 1:1 (主题角度/钩子/内容结构/CTA)
+    · isFallback banner + retry(AC-5) · onError toast(AC-6)
+    · 修复 useEffect deps: [accountIndustry, industry]
+  - apps/web/src/pages/tools/__tests__/VideoProduction.test.tsx: 完整重写 · 9 tests(≥5 AC-8)
+    · mock trpc.videoProduction.generate.useMutation · vi.hoisted MOCK_PRODUCTION_ROW/FALLBACK_ROW
+    · 验证 4 H3 区块渲染真数据 + vp-shot-list/equipment/schedule/teleprompter testid
+    · isFallback=true/false · onError toast.error
+  - apps/web/src/pages/tools/__tests__/AcquisitionVideo.test.tsx: 完整重写 · 9 tests(≥5 AC-8)
+    · mock trpc.acquisitionVideo.generate.useMutation · vi.hoisted mock data
+    · 验证 4 H4 区块真数据(acq-theme-angle/hook/content-structure/cta testid)
+    · isFallback=true/false · onError toast.error
+  - tests/e2e/prd25-content-tools-flow.spec.ts: 追加 6 tests AC-9(1-6)
+    · /video-production: H1字面锁 + CTA disabled + 提交→loading/output/fallback
+    · /acquisition-video: H1字面锁 + CTA disabled + 填表→enabled + 提交→loading/output/fallback
+  - tests/e2e/prd25-visual-baseline.spec.ts: 追加 2 baselines AC-10
+    · prd25-video-production-with-result.png · prd25-acquisition-video-with-plans.png
+  - scripts/ralph/verify-artifacts/US-006/: 2 browser screenshots(AC-12)
+- 验证结果:
+  - typecheck: ✅ 0 errors(web + api 双通)
+  - lint: ✅ 0 errors in changed files
+  - vitest: ✅ 367 tests pass(44 test files)
+  - browser: ✅ /video-production H1"短视频一键制作" · form · disabled CTA
+  - browser: ✅ /acquisition-video H1"获客型视频制作" · 三字段表单 · disabled CTA
+- 更改的文件:
+  - apps/web/src/pages/tools/VideoProduction.tsx (完整重写)
+  - apps/web/src/pages/tools/AcquisitionVideo.tsx (完整重写)
+  - apps/web/src/pages/tools/__tests__/VideoProduction.test.tsx (完整重写 9 tests)
+  - apps/web/src/pages/tools/__tests__/AcquisitionVideo.test.tsx (完整重写 9 tests)
+  - tests/e2e/prd25-content-tools-flow.spec.ts (追加 US-006 6 tests)
+  - tests/e2e/prd25-visual-baseline.spec.ts (追加 2 baselines)
+- **未来迭代的学习:**
+  - acquisitionVideo router 存 content 时 cta → ctaScript 重命名(acquisitionVideo.ts AC-4 注释) · 前端 parse 时用 ctaScript 不要用 cta
+  - VideoAgent.ts production mode 返回 { shotList, equipment, schedule } · 没有独立"口播"/"剪辑"字段 · 需从 shotList items 的 dialogue/voiceover/transition/sfx/bgm 字段提取
+  - getByText(/pattern/) 匹配多节点时 → 用 within(getByTestId('container')).getAllByText() 避免 "multiple elements found" 错误
+  - 表单字段 → API input 映射: 当 form fields 与 API input schema 不匹配时，buildInput() helper 合成多字段为 sourceCopy 是干净的解决方案
+---
+
+--- [RALPH] Iteration 12 ended: US-006 (45分钟 52秒) ---
+
+--- [RALPH] Iteration 13 started: US-007 at 2026-05-20 20:23 ---

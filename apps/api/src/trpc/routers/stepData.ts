@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { getProgress } from '@/services/ip-progress/IPProgressService';
 import { brandingAgent } from '@/specialists/BrandingAgent';
 import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
-import { livestreamAgent, type LivestreamOutput } from '@/specialists/LivestreamAgent';
+import { livestreamAgent } from '@/specialists/LivestreamAgent';
 import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { positioningAgent } from '@/specialists/PositioningAgent';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
@@ -266,53 +266,25 @@ export const stepDataRouter = router({
         return { ok: true, data: updatedRow };
       }
 
-      // AC-3(US-010): call LivestreamAgent for step8 · sub_function discriminator (US-007)
+      // AC-3(US-010/US-007): call LivestreamAgent for step8 · sub_function discriminator
+      // LivestreamAgent outputs sub_function schema directly (generate_plan or optimize_script)
       if (input.stepKey === 'step8') {
-        const sub_function = String(input.inputs['sub_function'] ?? 'generate_plan');
         const agentRes = await livestreamAgent.execute({
           accountId: activeAccountId!,
-          // Runtime inputSchema.parse validates experience enum; cast here for TS only
           userInput: input.inputs as Parameters<typeof livestreamAgent.execute>[0]['userInput'],
           traceId: traceId ?? undefined,
           stepKey: input.stepKey,
         });
 
-        // Transform result based on sub_function discriminator
-        // PRD-20 merge note: LivestreamAgent 现在支持 sub_function discriminator 直接输出 dual schema
-        // 但 stepData router 这段 transform 是 PRD-19 时期写的 · 基于 legacy LivestreamOutput
-        // cast 通过 TS · runtime 兼容(若 LivestreamAgent legacy fallback path)· PRD-21 可清理
-        const legacyResult = agentRes.result as LivestreamOutput;
-        let transformedResult: Record<string, unknown>;
-        if (sub_function === 'optimize_script') {
-          // optimize_script: lastResult → optimized_text, lastOptimizedResult → optimization_notes
-          transformedResult = {
-            sub_function: 'optimize_script',
-            optimized_text: legacyResult.lastResult,
-            optimization_notes: legacyResult.lastOptimizedResult,
-          };
-        } else {
-          // generate_plan: split lastResult into 6 labeled sections
-          const sections = legacyResult.lastResult.split(/\n{2,}/).filter((s: string) => s.trim());
-          const getSection = (i: number): string =>
-            sections[i] ?? sections[0] ?? legacyResult.lastResult;
-          transformedResult = {
-            sub_function: 'generate_plan',
-            opening: getSection(0),
-            interaction: getSection(1),
-            deal: getSection(2),
-            closing: getSection(3),
-            traffic: getSection(4),
-            engagement:
-              sections.length > 5 ? getSection(5) : legacyResult.lastOptimizedResult,
-          };
-        }
-
+        // Direct pass-through: LivestreamAgent sub_function discriminator outputs correct schema
+        // generate_plan → {opening, warmup, product, conversion, faq, closing}
+        // optimize_script → {optimized_text, optimization_notes}
         const updatedRow = await prisma.stepData.update({
           where: {
             accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
           },
           data: {
-            result: transformedResult as Prisma.InputJsonValue,
+            result: agentRes.result as Prisma.InputJsonValue,
             isFallback: agentRes.isFallback,
             status: agentRes.isFallback ? 'fallback' : 'completed',
             durationMs: agentRes.durationMs,

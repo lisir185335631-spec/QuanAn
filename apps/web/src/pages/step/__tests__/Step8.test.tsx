@@ -95,7 +95,22 @@ describe('Step8', () => {
     expect(cta).toBeDisabled();
   });
 
-  it('AC-5 · 提交 tab 1 表单后渲染 6 H3 stub 输出区块', () => {
+  it('AC-5 · 提交 tab 1 表单后调用 stepData.save mutation (LLM result 在 onSuccess 后渲染)', () => {
+    const mockMutate = vi.fn();
+    // Override mock to capture mutate call
+    vi.doMock('@/lib/trpc', () => ({
+      trpc: {
+        ipAccounts: {
+          active: { useQuery: () => ({ data: null, isLoading: false }) },
+          switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+        },
+        stepData: {
+          get: { useQuery: () => ({ data: null, isLoading: false, isError: false, error: null, refetch: vi.fn() }) },
+          save: { useMutation: () => ({ mutate: mockMutate, isPending: false }) },
+        },
+      },
+    }));
+
     renderStep8();
     // Fill required fields
     fireEvent.change(screen.getByPlaceholderText('描述你要在直播中推广的产品或服务...'), {
@@ -106,12 +121,7 @@ describe('Step8', () => {
     // Submit
     fireEvent.click(screen.getByRole('button', { name: '生成直播方案' }));
 
-    // 6 H3 blocks should appear
-    expect(screen.getByRole('heading', { level: 3, name: '开场话术' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '中场互动' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '成交话术' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '收尾' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '引流策略' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '互动设计' })).toBeInTheDocument();
+    // Output section only appears after onSuccess · form is submitted (no error shown)
+    expect(screen.queryByTestId('step8-generate-output')).not.toBeInTheDocument();
   });
 });

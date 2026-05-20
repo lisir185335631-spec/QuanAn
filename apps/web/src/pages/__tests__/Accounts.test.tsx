@@ -44,6 +44,10 @@ vi.mock('@/lib/trpc', () => ({
       create: {
         useMutation: () => ({ mutateAsync: mockMutateAsync, isPending: false }),
       },
+      // US-007 AC-7: smartRecommend mock (required by CreateAccountModal)
+      smartRecommend: {
+        useMutation: () => ({ mutate: vi.fn(), isPending: false }),
+      },
     },
   },
 }));

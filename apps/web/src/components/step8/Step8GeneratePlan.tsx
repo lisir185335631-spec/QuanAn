@@ -1,33 +1,44 @@
+/**
+ * Step8GeneratePlan — PRD-25 US-007 AC-1/AC-2/AC-4
+ * AC-1: useMutation → trpc.stepData.save · payload {stepKey:'step8', inputs:{sub_function:'generate_plan',...}}
+ * AC-2: 6 模块渲染 result.opening / .warmup / .product / .conversion / .faq / .closing
+ * AC-4: isFallback hint + error handling
+ */
 import { type FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 
 import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useStepData } from '@/hooks/useStepData';
 import {
   STEP8_BUTTON_GENERATE_PLAN,
   STEP8_EXPERIENCE_RADIO_LABEL,
   STEP8_EXPERIENCES_3,
+  STEP8_GENERATE_LOADING_TEXT,
   STEP8_GENERATE_PLAN_INPUT,
   STEP8_GENERATE_PLAN_TEXTAREA,
-  STEP8_OUTPUT_MODULES_6,
   STEP8_PLATFORM_RADIO_LABEL,
 } from '@/lib/constants/step8';
+import { trpc } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 
-// Static stub content for 6 output modules (AC-5)
-const STUB_PLAN: Record<string, string> = {
-  opening:
-    '大家好！欢迎来到今天的直播间，我是你们的主播小Q，今天将为大家带来超值分享，记得点关注不迷路！',
-  interaction:
-    '现在来个小互动！评论区扣 1 告诉我你最想了解哪个方面，我会在直播中逐一为大家解答，最积极的朋友会有惊喜～',
-  deal: '现在下单享受直播间专属价格，比日常价优惠 30%，今天仅限直播间！手速快的朋友赶紧下单，库存有限哦！',
-  closing:
-    '感谢大家今天的陪伴，你们的支持是我最大的动力！记得关注主页，明天同一时间我们继续，爱你们！',
-  traffic:
-    '点击主页置顶链接获取完整资料包，扫码加入粉丝专属群，第一时间获取优惠信息和福利活动通知！',
-  engagement:
-    '每 15 分钟进行一次抽奖互动，参与方式：评论区留言 + 转发直播，获奖名单将在直播结束后公布！',
+// 6 modules matching LivestreamAgent generate_plan output schema (D-248 字面锁)
+const GENERATE_PLAN_MODULES = [
+  { id: 'opening',    label: '开场话术' },
+  { id: 'warmup',     label: '暖场互动' },
+  { id: 'product',    label: '产品介绍' },
+  { id: 'conversion', label: '转化促单' },
+  { id: 'faq',        label: '常见问题' },
+  { id: 'closing',    label: '收尾' },
+] as const;
+
+type GeneratePlanResult = {
+  opening: string;
+  warmup: string;
+  product: string;
+  conversion: string;
+  faq: string;
+  closing: string;
 };
 
 interface Props {
@@ -39,25 +50,54 @@ export function Step8GeneratePlan({ accountId }: Props) {
   const [targetAudience, setTargetAudience] = useState('');
   const [platform, setPlatform] = useState<string | null>(null);
   const [experience, setExperience] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState<GeneratePlanResult | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
 
-  const { save, isSaving } = useStepData(accountId, 'step8');
+  // AC-1: useMutation → trpc.stepData.save
+  const saveMutation = trpc.stepData.save.useMutation({
+    onSuccess(data) {
+      const raw = data.data.result as GeneratePlanResult | null;
+      if (raw?.opening) {
+        setResult(raw);
+        setIsFallback(data.data.isFallback);
+        document.getElementById('step8-generate-output')?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        toast.error('AI 返回格式错误 · 请稍后重试');
+      }
+    },
+    onError() {
+      toast.error('生成失败 · 请稍后重试');
+    },
+  });
 
-  // AC-4 · disabled if !product || !platform || !experience
-  const submitDisabled = !productInfo || !platform || !experience || isSaving;
+  // AC-1: disabled if !product || !platform || !experience
+  const submitDisabled = !productInfo || !platform || !experience || saveMutation.isPending;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (submitDisabled) return;
-    save({
-      sub_function: 'generate_plan',
-      productInfo,
-      targetAudience,
-      platform,
-      experience,
+    if (submitDisabled || !accountId) return;
+    setResult(null);
+    setIsFallback(false);
+    saveMutation.mutate({
+      stepKey: 'step8',
+      inputs: {
+        sub_function: 'generate_plan',
+        productInfo,
+        targetAudience,
+        platform,
+        experience,
+      },
     });
-    setSubmitted(true);
-    document.getElementById('step8-generate-output')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function handleRetry() {
+    if (!accountId || !productInfo || !platform || !experience) return;
+    setResult(null);
+    setIsFallback(false);
+    saveMutation.mutate({
+      stepKey: 'step8',
+      inputs: { sub_function: 'generate_plan', productInfo, targetAudience, platform, experience },
+    });
   }
 
   return (
@@ -67,7 +107,7 @@ export function Step8GeneratePlan({ accountId }: Props) {
         onSubmit={handleSubmit}
         className="glass-card rounded-xl p-6 space-y-4 max-w-2xl"
       >
-        {/* (1) Product textarea — AC-4 required */}
+        {/* (1) Product textarea */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_GENERATE_PLAN_TEXTAREA.label}
@@ -92,7 +132,7 @@ export function Step8GeneratePlan({ accountId }: Props) {
           />
         </div>
 
-        {/* (3) Platform radio — AC-4 use <PlatformInlineRadio> */}
+        {/* (3) Platform radio */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_PLATFORM_RADIO_LABEL}
@@ -100,7 +140,7 @@ export function Step8GeneratePlan({ accountId }: Props) {
           <PlatformInlineRadio value={platform} onChange={setPlatform} />
         </div>
 
-        {/* (4) Experience radio — AC-4 3 buttons dual-line label+subtitle */}
+        {/* (4) Experience radio — 3 buttons dual-line label+subtitle */}
         <div>
           <label className="block text-body-sm font-label text-on-surface mb-2">
             {STEP8_EXPERIENCE_RADIO_LABEL}
@@ -125,32 +165,41 @@ export function Step8GeneratePlan({ accountId }: Props) {
           </div>
         </div>
 
-        {/* CTA · AC-4 disabled if !product || !platform || !experience */}
         <Button type="submit" disabled={submitDisabled} className="w-full sm:w-auto">
-          {STEP8_BUTTON_GENERATE_PLAN}
+          {saveMutation.isPending ? STEP8_GENERATE_LOADING_TEXT : STEP8_BUTTON_GENERATE_PLAN}
         </Button>
       </form>
 
-      {/* AC-5 · stub 6 H3 output after form submit */}
-      {submitted && (
-        <div id="step8-generate-output" className="space-y-6">
-          {STEP8_OUTPUT_MODULES_6.map((module) => (
+      {/* AC-4: isFallback banner */}
+      {result && isFallback && (
+        <div
+          data-testid="step8-generate-fallback-banner"
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-body-sm text-amber-600"
+        >
+          AI 服务繁忙，以下为备用内容 · 建议稍后
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="ml-2 underline hover:no-underline"
+          >
+            重试
+          </button>
+        </div>
+      )}
+
+      {/* AC-2: 6 模块输出 */}
+      {result && (
+        <div id="step8-generate-output" className="space-y-6" data-testid="step8-generate-output">
+          {GENERATE_PLAN_MODULES.map((module) => (
             <div key={module.id} className="glass-card rounded-xl p-6">
-              <h3 className="text-h3 font-display text-on-surface mb-3">{module.h3Label}</h3>
+              <h3 className="text-h3 font-display text-on-surface mb-3">{module.label}</h3>
               <p className="text-body-sm text-muted-foreground whitespace-pre-wrap">
-                {STUB_PLAN[module.id] ?? ''}
+                {result[module.id]}
               </p>
             </div>
           ))}
-          {/* AC-9 · 3 stub action buttons */}
           <div className="flex flex-wrap gap-3">
-            <Button variant="outline" type="button">
-              复制全部
-            </Button>
-            <Button variant="outline" type="button">
-              导出 PDF
-            </Button>
-            <Button variant="outline" type="button" onClick={() => setSubmitted(false)}>
+            <Button variant="outline" type="button" onClick={handleRetry}>
               重新生成
             </Button>
           </div>

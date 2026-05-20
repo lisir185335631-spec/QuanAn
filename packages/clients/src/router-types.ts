@@ -87,6 +87,15 @@ export type IpAccountSwitchOutput = { ok: boolean; activeAccountId: number };
 export type IpAccountListOutput = NonNullable<IpAccountOutput>[];
 export type StepDataListOutput = NonNullable<StepDataOutput>[];
 
+// US-007 AC-5/AC-6: smartRecommend output
+export type SmartRecommendOutput = {
+  platform: string;
+  followersRange: string;
+  ipPositioning: string;
+  rationale: string;
+  isFallback: boolean;
+};
+
 export type DiagnosisReportOutput = {
   id: number;
   answers: unknown;
@@ -427,7 +436,7 @@ const _shadowRouter = _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),
     active: _t.procedure.query((): ActiveAccountOutput => null),
     create: _t.procedure
-      .input((x: unknown) => x as { name: string; industry: string; platform: string; stage?: string; personalInfo?: string })
+      .input((x: unknown) => x as { name: string; industry: string; platform: string; stage?: string; personalInfo?: string; followersRange?: string; ipPositioning?: string })
       .mutation((): NonNullable<IpAccountOutput> => ({
         id: 0,
         name: '',
@@ -458,6 +467,16 @@ const _shadowRouter = _t.router({
     switchActive: _t.procedure
       .input((x: unknown) => x as SwitchActiveInput)
       .mutation((): IpAccountSwitchOutput => ({ ok: true, activeAccountId: 0 })),
+    // US-007 AC-5: smartRecommend — protectedProcedure (requires auth · not public)
+    smartRecommend: _t.procedure
+      .input((x: unknown) => x as { industry: string })
+      .mutation((): SmartRecommendOutput => ({
+        platform: 'douyin',
+        followersRange: '0-1k',
+        ipPositioning: '',
+        rationale: '',
+        isFallback: false,
+      })),
   }),
   stepData: _t.router({
     get: _t.procedure
