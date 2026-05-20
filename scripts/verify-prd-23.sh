@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/verify-prd-23.sh
-# PRD-23 Stubs & Tools Polish — CI gate (complete · 10 sections · 66 checks)
+# PRD-23 Stubs & Tools Polish — CI gate (complete · 10 sections · 60 checks)
 # Usage: bash scripts/verify-prd-23.sh
 
 set -euo pipefail
@@ -251,11 +251,18 @@ else
   fail "4.4  VideoAnalysis.tsx: '爆款元素识别' H3 stub missing"
 fi
 
-# 4.5  "一键仿写" H3 stub output (unique to video-analysis)
-if grep -q "一键仿写" "$VIDEO_ANALYSIS" 2>/dev/null; then
-  ok "4.5  VideoAnalysis.tsx: '一键仿写' H3 stub present"
+# 4.5  "多维评分" H3 stub
+if grep -q "多维评分" "$VIDEO_ANALYSIS" 2>/dev/null; then
+  ok "4.5  VideoAnalysis.tsx: '多维评分' H3 stub present"
 else
-  fail "4.5  VideoAnalysis.tsx: '一键仿写' H3 stub missing"
+  fail "4.5  VideoAnalysis.tsx: '多维评分' H3 stub missing"
+fi
+
+# 4.6  "一键仿写" H3 stub output (unique to video-analysis)
+if grep -q "一键仿写" "$VIDEO_ANALYSIS" 2>/dev/null; then
+  ok "4.6  VideoAnalysis.tsx: '一键仿写' H3 stub present"
+else
+  fail "4.6  VideoAnalysis.tsx: '一键仿写' H3 stub missing"
 fi
 
 echo ""
@@ -282,25 +289,32 @@ else
   fail "5.2  Analysis.tsx: '结构拆解' H3 stub missing"
 fi
 
-# 5.3  "节奏分析" H3 stub
+# 5.3  "爆款元素识别" H3 stub
+if grep -q "爆款元素识别" "$ANALYSIS" 2>/dev/null; then
+  ok "5.3  Analysis.tsx: '爆款元素识别' H3 stub present"
+else
+  fail "5.3  Analysis.tsx: '爆款元素识别' H3 stub missing"
+fi
+
+# 5.4  "节奏分析" H3 stub
 if grep -q "节奏分析" "$ANALYSIS" 2>/dev/null; then
-  ok "5.3  Analysis.tsx: '节奏分析' H3 stub present"
+  ok "5.4  Analysis.tsx: '节奏分析' H3 stub present"
 else
-  fail "5.3  Analysis.tsx: '节奏分析' H3 stub missing"
+  fail "5.4  Analysis.tsx: '节奏分析' H3 stub missing"
 fi
 
-# 5.4  "优化建议" H3 stub
+# 5.5  "优化建议" H3 stub
 if grep -q "优化建议" "$ANALYSIS" 2>/dev/null; then
-  ok "5.4  Analysis.tsx: '优化建议' H3 stub present"
+  ok "5.5  Analysis.tsx: '优化建议' H3 stub present"
 else
-  fail "5.4  Analysis.tsx: '优化建议' H3 stub missing"
+  fail "5.5  Analysis.tsx: '优化建议' H3 stub missing"
 fi
 
-# 5.5  char-count testid (字符计数标准 hook)
+# 5.6  char-count testid (字符计数标准 hook)
 if grep -q "char-count" "$ANALYSIS" 2>/dev/null; then
-  ok "5.5  Analysis.tsx: char-count data-testid present (字符计数标准 hook)"
+  ok "5.6  Analysis.tsx: char-count data-testid present (字符计数标准 hook)"
 else
-  fail "5.5  Analysis.tsx: char-count data-testid missing"
+  fail "5.6  Analysis.tsx: char-count data-testid missing"
 fi
 
 echo ""
