@@ -3,32 +3,32 @@
  * PRD-3 US-001: removes step/account alias routers (TD-012) → canonical ipAccounts/stepData only
  */
 
-import { acquisitionVideoRouter } from '@/trpc/routers/acquisitionVideo';
-import { aiVideoRouter } from '@/trpc/routers/aiVideo';
-import { analysisRouter } from '@/trpc/routers/analysis';
-import { authRouter } from '@/trpc/routers/auth';
-import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
-import { copywritingRouter } from '@/trpc/routers/copywriting';
-import { costLogRouter } from '@/trpc/routers/costLog';
-import { dailyTasksRouter } from '@/trpc/routers/dailyTasks';
-import { deepLearningRouter } from '@/trpc/routers/deepLearning';
-import { diagnosisRouter } from '@/trpc/routers/diagnosis';
-import { evolutionRouter } from '@/trpc/routers/evolution';
-import { historyRouter } from '@/trpc/routers/history';
-import { inviteRouter } from '@/trpc/routers/invite';
-import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
-import { knowledgeRouter } from '@/trpc/routers/knowledge';
-import { monetizationRouter } from '@/trpc/routers/monetization';
-import { myTopicsRouter } from '@/trpc/routers/myTopics';
-import { presentStylesRouter } from '@/trpc/routers/presentStyles';
-import { privateDomainRouter } from '@/trpc/routers/privateDomain';
-import { stepDataRouter } from '@/trpc/routers/stepData';
-import { sttRouter } from '@/trpc/routers/stt';
-import { trendingRouter } from '@/trpc/routers/trending';
-import { ttsRouter } from '@/trpc/routers/tts';
-import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
-import { videoProductionRouter } from '@/trpc/routers/videoProduction';
-import { voiceChatRouter } from '@/trpc/routers/voiceChat';
+import { acquisitionVideoRouter } from '@/trpc/routers/app/acquisitionVideo';
+import { aiVideoRouter } from '@/trpc/routers/app/aiVideo';
+import { analysisRouter } from '@/trpc/routers/app/analysis';
+import { authRouter } from '@/trpc/routers/app/auth';
+import { boomGenerateRouter } from '@/trpc/routers/app/boomGenerate';
+import { copywritingRouter } from '@/trpc/routers/app/copywriting';
+import { costLogRouter } from '@/trpc/routers/app/costLog';
+import { dailyTasksRouter } from '@/trpc/routers/app/dailyTasks';
+import { deepLearningRouter } from '@/trpc/routers/app/deepLearning';
+import { diagnosisRouter } from '@/trpc/routers/app/diagnosis';
+import { evolutionRouter } from '@/trpc/routers/app/evolution';
+import { historyRouter } from '@/trpc/routers/app/history';
+import { inviteRouter } from '@/trpc/routers/app/invite';
+import { ipAccountsRouter } from '@/trpc/routers/app/ipAccounts';
+import { knowledgeRouter } from '@/trpc/routers/app/knowledge';
+import { monetizationRouter } from '@/trpc/routers/app/monetization';
+import { myTopicsRouter } from '@/trpc/routers/app/myTopics';
+import { presentStylesRouter } from '@/trpc/routers/app/presentStyles';
+import { privateDomainRouter } from '@/trpc/routers/app/privateDomain';
+import { stepDataRouter } from '@/trpc/routers/app/stepData';
+import { sttRouter } from '@/trpc/routers/app/stt';
+import { trendingRouter } from '@/trpc/routers/app/trending';
+import { ttsRouter } from '@/trpc/routers/app/tts';
+import { videoAnalysisRouter } from '@/trpc/routers/app/videoAnalysis';
+import { videoProductionRouter } from '@/trpc/routers/app/videoProduction';
+import { voiceChatRouter } from '@/trpc/routers/app/voiceChat';
 import { router } from '@/trpc/trpc';
 
 export const appRouter = router({

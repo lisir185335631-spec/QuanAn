@@ -8,7 +8,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../../../');
-const ROUTER = `${ROOT}/apps/api/src/trpc/routers/myTopics.ts`;
+const ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/myTopics.ts`;
 const APP_ROUTER = `${ROOT}/apps/api/src/trpc/routers/_app.ts`;
 
 function src(path: string): string {
@@ -20,7 +20,7 @@ function src(path: string): string {
 describe('Router registration', () => {
   it('myTopicsRouter is imported in _app.ts', () => {
     const app = src(APP_ROUTER);
-    expect(app).toContain("from '@/trpc/routers/myTopics'");
+    expect(app).toContain("from '@/trpc/routers/app/myTopics'");
     expect(app).toContain('myTopicsRouter');
   });
 

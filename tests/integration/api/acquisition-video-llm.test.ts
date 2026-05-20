@@ -40,7 +40,7 @@ vi.mock('@/services/context-assembler/ContextAssembler', () => ({
 
 // ── Router import (after mocks) ───────────────────────────────────────────────
 
-import { acquisitionVideoRouter } from '@/trpc/routers/acquisitionVideo';
+import { acquisitionVideoRouter } from '@/trpc/routers/app/acquisitionVideo';
 
 // ── Mock Anthropic response fixture ──────────────────────────────────────────
 

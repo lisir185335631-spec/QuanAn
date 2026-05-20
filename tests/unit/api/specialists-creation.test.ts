@@ -155,11 +155,11 @@ vi.mock('bullmq', () => ({
   })),
 }));
 
-import { copywritingRouter } from '@/trpc/routers/copywriting';
-import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
-import { videoProductionRouter } from '@/trpc/routers/videoProduction';
-import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
-import { monetizationRouter } from '@/trpc/routers/monetization';
+import { copywritingRouter } from '@/trpc/routers/app/copywriting';
+import { videoAnalysisRouter } from '@/trpc/routers/app/videoAnalysis';
+import { videoProductionRouter } from '@/trpc/routers/app/videoProduction';
+import { boomGenerateRouter } from '@/trpc/routers/app/boomGenerate';
+import { monetizationRouter } from '@/trpc/routers/app/monetization';
 
 // ─── Shared mock history row ─────────────────────────────────────────────────
 

@@ -18,7 +18,7 @@ vi.mock('@/specialists/AnalysisAgent', () => ({
   },
 }));
 
-import { videoAnalysisRouter } from '@/trpc/routers/videoAnalysis';
+import { videoAnalysisRouter } from '@/trpc/routers/app/videoAnalysis';
 import { analysisAgent as _mockedAgent } from '@/specialists/AnalysisAgent';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────

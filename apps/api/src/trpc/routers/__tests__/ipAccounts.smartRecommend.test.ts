@@ -51,7 +51,7 @@ vi.mock('@/lib/logger', async (importOriginal) => {
 import { prisma } from '@/lib/prisma';
 import type { TRPCContext } from '@/trpc/context';
 
-import { ipAccountsRouter } from '../ipAccounts';
+import { ipAccountsRouter } from '../app/ipAccounts';
 
 
 const MOCK_USER = {

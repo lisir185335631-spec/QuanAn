@@ -11,7 +11,7 @@ import { resolve } from 'path';
 const ROOT = resolve(__dirname, '../../../../');
 const DEEP_LEARNING_PAGE = `${ROOT}/apps/web/src/pages/tools/DeepLearning.tsx`;
 const DEEP_LEARNING_TABS = `${ROOT}/apps/web/src/pages/tools/components/DeepLearningTabs.tsx`;
-const DEEP_LEARNING_ROUTER = `${ROOT}/apps/api/src/trpc/routers/deepLearning.ts`;
+const DEEP_LEARNING_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/deepLearning.ts`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');

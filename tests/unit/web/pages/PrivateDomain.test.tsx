@@ -17,7 +17,7 @@ const CONFIG_VIEW = `${ROOT}/apps/web/src/pages/tools/components/PrivateDomainCo
 const RESULT_VIEW = `${ROOT}/apps/web/src/pages/tools/components/PrivateDomainResultView.tsx`;
 const HISTORY_VIEW = `${ROOT}/apps/web/src/pages/tools/components/PrivateDomainHistoryView.tsx`;
 const PHASE_CARD = `${ROOT}/apps/web/src/pages/tools/components/PhaseCard.tsx`;
-const API_ROUTER = `${ROOT}/apps/api/src/trpc/routers/privateDomain.ts`;
+const API_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/privateDomain.ts`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');

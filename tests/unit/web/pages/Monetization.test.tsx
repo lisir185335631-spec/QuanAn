@@ -11,7 +11,7 @@ const ROOT = resolve(__dirname, '../../../../');
 const MONETIZATION_PAGE = `${ROOT}/apps/web/src/pages/tools/Monetization.tsx`;
 const MONETIZATION_SCHEMA = `${ROOT}/packages/schemas/src/specialist-io/monetization.schema.ts`;
 const STEP4B_RESULT = `${ROOT}/apps/web/src/components/StepResult/Step4bResult.tsx`;
-const API_ROUTER = `${ROOT}/apps/api/src/trpc/routers/monetization.ts`;
+const API_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/monetization.ts`;
 const APP_ROUTER = `${ROOT}/apps/api/src/trpc/routers/_app.ts`;
 
 function src(path: string): string {

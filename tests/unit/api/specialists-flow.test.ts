@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { privateDomainRouter } from '@/trpc/routers/privateDomain';
-import { diagnosisRouter } from '@/trpc/routers/diagnosis';
-import { evolutionRouter } from '@/trpc/routers/evolution';
-import { deepLearningRouter } from '@/trpc/routers/deepLearning';
+import { privateDomainRouter } from '@/trpc/routers/app/privateDomain';
+import { diagnosisRouter } from '@/trpc/routers/app/diagnosis';
+import { evolutionRouter } from '@/trpc/routers/app/evolution';
+import { deepLearningRouter } from '@/trpc/routers/app/deepLearning';
 
 // ─── Mock data fixtures ───────────────────────────────────────────────────────
 

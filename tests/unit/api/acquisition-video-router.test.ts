@@ -19,7 +19,7 @@ vi.mock('@/specialists/VideoAgent', () => ({
   },
 }));
 
-import { acquisitionVideoRouter } from '@/trpc/routers/acquisitionVideo';
+import { acquisitionVideoRouter } from '@/trpc/routers/app/acquisitionVideo';
 import { videoAgent as _mockedAgent } from '@/specialists/VideoAgent';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────

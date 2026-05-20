@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { trendingRouter } from '@/trpc/routers/trending';
+import { trendingRouter } from '@/trpc/routers/app/trending';
 
 // ─── Helper: minimal context for globalProcedure (no $transaction needed) ─────
 

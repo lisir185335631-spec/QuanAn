@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T10:40:00",
+  "last_updated": "2026-05-21T00:00:00",
   "items": [
     {
       "id": "TD-001",
@@ -650,11 +650,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F5 协议锁双对账)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "ls apps/api/src/trpc/routers/ · 26 主应用 router .ts 文件平铺(_app.ts + acquisitionVideo.ts + ... + voiceChat.ts)+ admin/ 子目录(仅 index.ts)· ADMIN-ARCHITECTURE.md §2.2 + AGENTS.md §10.1 LD-A2 期望 'appRouter 在 routers/app/ 树下(13 子树)' · 实际未对称拆 · LD-A2 grep `from.*routers/app` apps/api/src/trpc/routers/admin/ = 0 命中精神遵守(admin 不 import 主应用 routers)· 但结构层面对称漂移",
       "root_cause": "PRD-10 US-001 §1 只明确要求建 routers/admin/ 子目录 · 没强制要求把主应用 26 routers mv 到 routers/app/ 子目录 · ralph 合理选择保留主应用 routers 平铺 · admin/ 单独建",
       "scheduled_fix_in": "PRD-11 启动前(P9.1 6 P0 业务核心域)· 或 PRR 一次性 mv 26 routers 到 routers/app/ 子目录 · 加 git mv + 更新 _app.ts import + run audit-redlines-admin.sh 验 0 漂移",
-      "audit_exemption": "US-001 approve 时豁免 · 因 LD-A2 精神(admin/app 严格分离)已遵守(admin/ 子目录独立 + admin 不 import 主应用)· 仅结构层面对称未落 · 不影响 PRD-10 US-002~007 落地 · 也不影响后续 PRD-11+ 加业务 router(到时再统一 mv)"
+      "audit_exemption": "US-001 approve 时豁免 · 因 LD-A2 精神(admin/app 严格分离)已遵守(admin/ 子目录独立 + admin 不 import 主应用)· 仅结构层面对称未落 · 不影响 PRD-10 US-002~007 落地 · 也不影响后续 PRD-11+ 加业务 router(到时再统一 mv)",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26",
+      "close_evidence": "git mv 26 main app routers to apps/api/src/trpc/routers/app/ · _app.ts imports updated to @/trpc/routers/app/... · admin/ stays at @/trpc/routers/admin/ · symmetric AGENTS §10.1 LD-A-2"
     },
     {
       "id": "TD-038",
@@ -663,11 +666,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F4 SQL schema 完整审)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "PRD-10 §0 引用清单 + §1 US-001 描述写 '13 admin model' · 实际 grep -cE '^model (Admin|Approval|Prompt|UserQuota|Quota|Trending|DeepLearn)' prisma/schema.prisma = 14 个 · @rls(disabled) 注释 14 处 · audit-admin-rls-tables.sh 实测 14 admin tables DISABLED PASS · ralph 实施按 PRD §0 列表(14 个名字)落地 · 跟数字 '13' 文字不一致",
       "root_cause": "prd skill 写 PRD 时 §0 列表数错 · 14 个 model 名字写全但数字算 '13' · 跟列表实际数量不符 · doc-only typo 不影响功能",
       "scheduled_fix_in": "下次 review 时改 tasks/prd-10.md §0 + §1 US-001 描述 '13 admin model' → '14 admin model' · 或下一 PRD-9-retro 类活动一次性 doc fix · 不阻塞 PRD-10 实施",
-      "audit_exemption": "US-001 approve 时豁免 · 因 ralph 按 PRD §0 列表 14 个名字实施 + Validator 14 表实测 PASS + audit-admin-rls-tables.sh 14 表验证 PASS · 功能 0 影响 · 仅 PRD 文字 typo"
+      "audit_exemption": "US-001 approve 时豁免 · 因 ralph 按 PRD §0 列表 14 个名字实施 + Validator 14 表实测 PASS + audit-admin-rls-tables.sh 14 表验证 PASS · 功能 0 影响 · 仅 PRD 文字 typo",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26",
+      "close_evidence": "tasks/prd-10.md line 3 派生 section: \"13 表 schema\" → \"14 表 schema\" · line 35: \"13 admin model\" → \"14 admin model\""
     },
     {
       "id": "TD-039",
@@ -676,11 +682,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-001(PRD-10 foundation 档 F4 SQL schema 完整审 + 跑 audit-admin-rls-tables.sh)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "prisma/migrations/manual_admin_rls.sql 93 行 · 实际 ALTER TABLE DISABLE 26+ 表(16 P0-P9 admin + 6 新增 US-001 + 4 P9.4 P2 后续 ab_experiments/ab_assignments/feature_flags/system_config)· scripts/audit-admin-rls-tables.sh 仅验 14 admin tables PASS(剩 12 表未在 audit script 列表)· 实际功能 OK 但 audit coverage 不全 · future-proof SQL 但 script 没同步升级",
       "root_cause": "PRD-10 US-001 audit-admin-rls-tables.sh 只列 P0 实施期 14 个 admin model · ralph 写 manual_admin_rls.sql 时多写了 P2 后续 4 张 + 6 张其他 admin notes/anomaly/takedown tables(都是 DATA-MODEL §13.6/§13.7 含的辅助表)· audit script 没同步升级 · 形式上 PRD §1 列 14 表 · 实际 SQL DISABLE 26 表 · script 验 14 表",
       "scheduled_fix_in": "PRD-14(P9.4)启动前 · 升级 audit-admin-rls-tables.sh 列表加 4 P2 表(ab_experiments + ab_assignments + feature_flags + system_config)+ 6 辅助表(kpi_snapshots + ip_account_admin_notes + ip_account_anomaly_flags + invite_campaigns + trending_takedown + auto_review_rules + user_violation_log + evolution_anomaly_flags · 实际 8 张)· 即升级到 22 表覆盖",
-      "audit_exemption": "US-001 approve 时豁免 · 因(1)PRD §1 US-001 14 表实测 PASS(scope 范围正确)(2)SQL 多写 12 表是 future-proof · 不影响 PRD-10 实施 · 反而方便 PRD-11~14 落地 (3)audit script 升级是下游 PRD 任务 · 不阻塞本 PRD"
+      "audit_exemption": "US-001 approve 时豁免 · 因(1)PRD §1 US-001 14 表实测 PASS(scope 范围正确)(2)SQL 多写 12 表是 future-proof · 不影响 PRD-10 实施 · 反而方便 PRD-11~14 落地 (3)audit script 升级是下游 PRD 任务 · 不阻塞本 PRD",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26",
+      "close_evidence": "scripts/audit-admin-rls-tables.sh already contains all 8 admin models (admin_users/admin_sessions/admin_invite_campaign/admin_constants/admin_config/admin_ab_experiment/prompt_canary_config/quota_adjustment_log) · 26 ADMIN_TABLES verified"
     },
     {
       "id": "TD-040",
@@ -689,11 +698,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-004(PRD-10 medium 档 · manifest verdict note 标记 functional equivalent)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "PRD-10 §1 US-001 AC-13 写 @@index([adminUserId, createdAt(sort: Desc)]) · 实际 prisma admin_audit_log model 字段 actorAdminId(US-001 实施时统一选择 actor* 前缀防跟 main-app userId 混淆)· Validator manifest.notes 标记 functional equivalent · 14 ACs functionally satisfied",
       "root_cause": "PRD-10 写 PRD 时引用 DATA-MODEL §13.2 描述用 adminUserId 通用名称 · 但 prisma model 实施时改用 actorAdminId 更明确区分 actor(发起人 admin)vs target(被操作 admin)· PRD AC 文字跟 schema 字段名不一致 · 索引功能等价",
       "scheduled_fix_in": "下次 PRD review 时改 tasks/prd-10.md §1 US-001 AC-13 + §2 US-001-AC-001-B-B2 adminUserId 改 actorAdminId · 或 PRD-9 retro 类活动一次性 doc fix · 不阻塞 PRD-10 实施",
-      "audit_exemption": "US-004 approve 时豁免 · 因 (1) Validator manifest verdict=PASS + all 14 ACs functionally satisfied (2) 索引功能等价(actorAdminId+createdAt DESC 服务于查特定 admin 的最近 audit)(3) admin_audit_log 实际跨 schema 字段命名采用 actor*/target* 模式更清晰 · 比 PRD 通用 adminUserId 更好"
+      "audit_exemption": "US-004 approve 时豁免 · 因 (1) Validator manifest verdict=PASS + all 14 ACs functionally satisfied (2) 索引功能等价(actorAdminId+createdAt DESC 服务于查特定 admin 的最近 audit)(3) admin_audit_log 实际跨 schema 字段命名采用 actor*/target* 模式更清晰 · 比 PRD 通用 adminUserId 更好",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26",
+      "close_evidence": "tasks/prd-10.md line 491 AC-001-B scenario B2: @@index([adminUserId, createdAt]) → @@index([actorAdminId, createdAt]) · aligns with actual prisma schema admin_audit_log.actorAdminId field"
     },
     {
       "id": "TD-041",
@@ -702,11 +714,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-007(收官 verify e2e 路径)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "PRD-10 §1 US-007 描述 files_to_create 写 tests/e2e/admin-foundation-loop.spec.ts(flat 路径)· 实际 ralph 实施在 tests/e2e/admin/admin-foundation-loop.spec.ts(子目录)· playwright.config.ts admin project testMatch=tests/e2e/admin/**/*.spec.ts 跟实际路径对齐 · 测试跑通 · 1/1 passed",
       "root_cause": "PRD 写时没考虑后续 PRD-11+ 加 admin 业务 e2e 命名空间 · ralph 实施时合理选择 tests/e2e/admin/ 子目录集中 · doc-vs-impl drift · 实施更好",
       "scheduled_fix_in": "下次 PRD review 时改 tasks/prd-10.md §1 US-007 files_to_create + §2 AC-007 paths · 加 admin/ 子目录前缀 · 或 PRD-10 retro 类活动一次性 doc fix · PRD-11+ 加 admin e2e 时跟随 admin/ 子目录约定",
-      "audit_exemption": "US-007 approve 时豁免 · 因 (1) Validator verdict=PASS + admin e2e 1/1 passed (2) 实施更好(admin 类 e2e 集中放子目录 · 跟 admin/ 子目录 router/middleware 命名空间一致) (3) playwright.config.ts admin project testMatch 跟实际路径对齐 · 不影响功能"
+      "audit_exemption": "US-007 approve 时豁免 · 因 (1) Validator verdict=PASS + admin e2e 1/1 passed (2) 实施更好(admin 类 e2e 集中放子目录 · 跟 admin/ 子目录 router/middleware 命名空间一致) (3) playwright.config.ts admin project testMatch 跟实际路径对齐 · 不影响功能",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26",
+      "close_evidence": "tasks/prd-10.md US-007 e2e path updated: tests/e2e/admin-foundation-loop.spec.ts → tests/e2e/admin/admin-foundation-loop.spec.ts (2 occurrences in Part 4 and files_to_create)"
     },
     {
       "id": "TD-042",
@@ -715,11 +730,14 @@
       "discovered_at": "2026-05-12",
       "discovered_by": "Opus audit US-007(收官 verify · admin tables 13 vs prisma 14 model 数字差异)",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
       "evidence": "(1) US-001 时 audit-admin-rls-tables.sh 验 14 admin tables = prisma 14 model 一致 (2) US-007 ralph 改 audit script 列表 · 现 audit script 验 13 admin tables(admin_audit_log/approval_requests/prompt_versions/user_quota/kpi_snapshots/ip_account_admin_notes/ip_account_anomaly_flags/invite_campaigns/trending_review_queue/trending_takedown/auto_review_rules/deep_learn_review_queue/user_violation_log)· 漏验 8 个 admin model · (3) psql 实测 8 漏的 model 全 relrowsecurity=f (RLS DISABLED) · 功能 OK · manual_admin_rls.sql 已 DISABLE 全部 26 admin 表 · 仅 audit script 漏验",
       "root_cause": "US-007 ralph 实施 scripts/audit-admin-rls-tables.sh 时 · 把 list 改成 manual_admin_rls.sql 部分表(前 13 个 P0 + 辅助)· 但漏掉 US-001 新增的 6 admin model(admin_users/admin_sessions/admin_invite_campaign/admin_constants/admin_config/admin_ab_experiment) + 2 个 P0 model(prompt_canary_config/quota_adjustment_log)· 实际 manual_admin_rls.sql DISABLE 26 表 · audit script 只覆盖 13 · TD-039 (前已登记 coverage 不全)是 superset · 但 US-007 partial fix 方向错",
       "scheduled_fix_in": "PRD-11 启动前升级 scripts/audit-admin-rls-tables.sh · 加 8 漏 model 到 admin tables list · 或扩展到 manual_admin_rls.sql DISABLE 全部 26 表 audit · TD-039 同步关闭",
-      "audit_exemption": "US-007 approve 时豁免 · 因 (1) psql 实测 8 漏 model 全 RLS DISABLED 功能 OK(manual_admin_rls.sql 真生效)(2) audit script PASS 13/13 + 15/15 不报假阴性(没说 0 admin tables 验证 · 是验 13 表全 PASS)(3) US-001 时 14 admin model 已 verify · 实际功能不退化 · 仅 audit coverage 漏"
+      "audit_exemption": "US-007 approve 时豁免 · 因 (1) psql 实测 8 漏 model 全 RLS DISABLED 功能 OK(manual_admin_rls.sql 真生效)(2) audit script PASS 13/13 + 15/15 不报假阴性(没说 0 admin tables 验证 · 是验 13 表全 PASS)(3) US-001 时 14 admin model 已 verify · 实际功能不退化 · 仅 audit coverage 漏",
+      "resolved_at": "2026-05-21",
+      "resolved_in_prd": "PRD-26",
+      "close_evidence": "audit-admin-rls-tables.sh ADMIN_TABLES covers 26 tables including all 8 previously missing admin models · package.json adds test:rls-tables and audit:rls-tables scripts as AC-11 aliases"
     },
     {
       "id": "TD-043",

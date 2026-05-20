@@ -38,6 +38,8 @@
     "audit:approval-gates": "tsx scripts/audit-approval-gates.ts",
     "audit:admin-rls-tables": "bash scripts/audit-admin-rls-tables.sh",
     "audit:admin-rls": "bash scripts/audit-admin-rls-tables.sh",
+    "audit:rls-tables": "bash scripts/audit-admin-rls-tables.sh",
+    "test:rls-tables": "bash scripts/audit-admin-rls-tables.sh",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",

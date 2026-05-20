@@ -86,7 +86,7 @@ vi.mock('@/workers/llm-gateway', () => {
 
 // ── Router import (after mocks are declared) ──────────────────────────────────
 
-import { analysisRouter } from '@/trpc/routers/analysis';
+import { analysisRouter } from '@/trpc/routers/app/analysis';
 
 // ── Test fixtures ─────────────────────────────────────────────────────────────
 
