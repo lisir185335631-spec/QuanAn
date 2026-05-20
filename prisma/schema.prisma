@@ -613,6 +613,7 @@ model CostLog {
   durationMs Int     @map("duration_ms")
 
   success        Boolean @default(true)
+  streaming      Boolean @default(false)
   errorCode      String? @map("error_code") @db.VarChar(32)
   isFallback     Boolean @default(false) @map("is_fallback")
   fallbackFrom   String? @map("fallback_from") @db.VarChar(64)

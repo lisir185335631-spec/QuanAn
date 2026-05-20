@@ -367,8 +367,8 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
           agentId: this.config.agentId,
           accountId: data.accountId,
           traceId: data.traceId,
-          eventType: 'l5_agent', // AC-6
-          agentMode: null,       // AC-6: agentMode=null for VoiceChatAgent
+          eventType: 'specialist_call', // AC-12
+          agentMode: null,
           callType: 'specialist_call',
           modelTier: this.config.execution.model_tier,
           modelUsed: data.modelUsed,
@@ -379,6 +379,7 @@ export class VoiceChatAgent extends BaseSpecialist<VoiceChatAgentInput, VoiceCha
           costUsd: new Decimal('0.000000'),
           durationMs: data.durationMs,
           success: true,
+          streaming: true,
           isFallback: false,
           target: { agentId: this.config.agentId },
         },
