@@ -1,8 +1,8 @@
 {
   "story_id": "US-005",
-  "validator_start_ts": "2026-05-18T07:45:00",
-  "validator_end_ts": "2026-05-18T07:47:00",
-  "test_command": "cd apps/api && pnpm vitest run src/specialists/__tests__/MonetizationAgent.real-llm.test.ts src/specialists/__tests__/VideoAgent.real-llm.test.ts",
+  "validator_start_ts": "2026-05-20T18:54:00",
+  "validator_end_ts": "2026-05-20T19:37:00",
+  "test_command": "pnpm vitest run (all 359 tests) + pnpm typecheck + browser screenshots + DB cost_log verification",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
@@ -10,10 +10,10 @@
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "pytest.xml",
-    "pytest.stdout.txt",
     "typecheck.stdout.txt",
+    "validator-us-005-pass-1.png",
+    "validator-us-005-pass-2.png",
     "manifest.json"
   ],
-  "notes": "Zero-regression: 10 passed, 6 skipped (4 real-LLM tests skipped by skipIfNoKey — expected). Typecheck: clean (exit 0). AC-6 tests properly skipped by describe.skipIf(skipIfNoKey) — no API key in CI env. All 7 ACs verified: AC-1 MonetizationAgent invokeLLM real call confirmed, ladder.length(3)+revenueStructure+successCases[2] schema enforced. AC-2 VideoAgent shooting mode _invokeShooting dispatched, Storyboard8ColItemSchema 8 cols (duration/scene/shotType/angle/movement/emotion/dialogue/action). AC-3 both *.real-llm.test.ts with describe.skipIf, 1 test each. AC-4 EXPECTED_8_COLS enforced + safeParse in tests. AC-5 cost_log write confirmed via BaseSpecialist._writeCostLog(prisma.costLog.create). AC-6 skipped correctly. AC-7 typecheck pass + vitest 0 failures."
+  "notes": "Zero-regression: 44 test files, 359 tests passed (exit 0). Typecheck: 0 errors (exit 0). AC-1: VideoAnalysis.tsx useMutation trpc.videoAnalysis.analyze.useMutation confirmed, loading spinner + 'AI 深度解析中...' present. AC-2: 5 H3 blocks (结构拆解/节奏分析/爆款元素识别/多维评分/优化建议) using correct viral mode fields (analysis.structure/hookType/viralFormula/elements, insights, rewriteVersion). AC-3: 一键仿写 button confirmed with navigate('/generate', {state:{title,copy}}). AC-4: Analysis.tsx trpc.analysis.analyze.useMutation confirmed, structural 5 H3 blocks. AC-5: isFallback banner 'AI 暂未生成深度分析 · 显示规则评分' + retry button in both pages. AC-6: onError toast.error confirmed. AC-7: typecheck 0 errors. AC-8: VideoAnalysis.test.tsx 9 tests + Analysis.test.tsx 11 tests, all PASS, mock trpc, H3 real data render + isFallback + retry verified. AC-9: prd25-content-tools-flow.spec.ts 8 tests covering both pages. AC-10: prd25-visual-baseline.spec.ts has 2 suites for prd25-video-analysis-with-result.png + prd25-analysis-with-result.png baselines. AC-11: DB CONFIRMED - cost_log has 2 AnalysisAgent records: id=17586 (viral/fallback) + id=17587 (structural/fallback), both created by real API calls via session cookie. AC-12: 2 browser screenshots taken via gstack browse - validator-us-005-pass-1.png (/video-analysis H1 爆款文案解析) + validator-us-005-pass-2.png (/analysis H1 文案结构分析). AC-COMMON: US-005 files 0 lint errors (182 pre-existing errors in non-US-005 files excluded), grep 'apiKey' in apps/web 0 hits, typecheck PASS, tests PASS. Lint pre-existing issues confirmed in PrivateDomainFlowView.tsx/TrendingTable.tsx/router.tsx - not introduced by US-005."
 }

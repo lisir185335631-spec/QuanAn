@@ -110,7 +110,7 @@ export function CopywritingPreview({
           <Button
             size="sm"
             variant="outline"
-            onClick={copyAll}
+            onClick={() => { void copyAll(); }}
             data-testid="copy-all-btn"
           >
             复制全文

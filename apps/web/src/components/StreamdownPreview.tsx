@@ -7,9 +7,9 @@
  * AC-9: lazy import + Suspense — consumer 端使用 const StreamdownPreview = lazy(() => import('@/components/StreamdownPreview'))
  */
 
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useEffect, useRef, useState } from 'react';
 
 interface StreamdownPreviewProps {
   /** 完整 markdown 内容 */

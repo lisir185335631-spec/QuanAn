@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
+
 import {
   STEP8_EXPERIENCES_3,
   STEP8_OPTIMIZE_OUTPUT_MODULES_4,
@@ -12,6 +13,7 @@ import {
   STEP8_PLATFORMS_5,
   STEP8_SUBTITLE_TEMPLATE,
 } from '../step8';
+
 import type { Step8Result } from '../step8';
 
 describe('STEP8 constants', () => {

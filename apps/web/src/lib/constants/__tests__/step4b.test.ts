@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import {
   STEP4B_THREE_STAGES,
   STEP4B_PRODUCT_TYPES_4,
@@ -10,6 +11,7 @@ import {
   STEP4B_BUTTON_OPTIMIZE,
   STEP4B_BUTTON_REGENERATE,
 } from '../step4b';
+
 import type { Step4bResult } from '../step4b';
 
 describe('STEP4B constants', () => {

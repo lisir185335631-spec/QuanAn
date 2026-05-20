@@ -9,8 +9,8 @@
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 
 import { trpc } from '@/lib/trpc';
-import type { Platform } from './CopywritingForm';
-import type { CopywritingFormValues } from './CopywritingForm';
+
+import type { Platform , CopywritingFormValues } from './CopywritingForm';
 
 interface HistoryEntry {
   id: number;

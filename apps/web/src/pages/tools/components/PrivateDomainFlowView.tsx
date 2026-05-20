@@ -8,6 +8,7 @@ import { ArrowRight, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { PhaseCard } from './PhaseCard';
+
 import type { PhaseData } from './PhaseCard';
 
 const DEFAULT_PHASES: PhaseData[] = [

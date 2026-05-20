@@ -85,7 +85,7 @@ export default function Step6() {
 
   useEffect(() => {
     if (!dbQuery.data?.result) return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
+    const raw = dbQuery.data.result;
     if (Array.isArray(raw['shotList']) && raw['shotList'].length > 0) {
       setResult({
         shotList: raw['shotList'] as ShotListItem[],

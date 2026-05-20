@@ -87,13 +87,14 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
   }
 
   function handleApply() {
-    if (!analysis || savedQueueId == null) return;
+    if (!analysis || savedQueueId === null || savedQueueId === undefined) return;
     onApply(analysis, savedQueueId);
   }
 
   return (
     <div className="space-y-4 max-w-2xl" data-testid="learn-tab">
       <div className="space-y-2">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className="text-label-sm font-label text-on-surface-variant">来源平台</label>
         <Select value={platform} onValueChange={setPlatform}>
           <SelectTrigger className="w-48 bg-surface-variant/20" data-testid="platform-select">
@@ -110,10 +111,11 @@ export function LearnTab({ onSaved, onApply }: LearnTabProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-label-sm font-label text-on-surface-variant">
+        <label htmlFor="dlt-sample" className="text-label-sm font-label text-on-surface-variant">
           粘贴优秀文案（≥100 字）
         </label>
         <textarea
+          id="dlt-sample"
           value={sample}
           onChange={(e) => setSample(e.target.value)}
           placeholder="粘贴您想学习的文案内容…"
@@ -317,7 +319,7 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
   });
 
   const [selectedQueueId, setSelectedQueueId] = useState<string>(
-    preselectedQueueId != null ? String(preselectedQueueId) : '',
+    preselectedQueueId !== null && preselectedQueueId !== undefined ? String(preselectedQueueId) : '',
   );
   const [newTopic, setNewTopic] = useState('');
   const [result, setResult] = useState<string | null>(null);
@@ -346,6 +348,7 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
   return (
     <div className="space-y-4 max-w-2xl" data-testid="apply-formula-tab">
       <div className="space-y-2">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className="text-label-sm font-label text-on-surface-variant">选择公式</label>
         {(items as QueueItem[]).length === 0 ? (
           <p className="text-body-sm text-muted-foreground">暂无学习记录，请先在「学习」标签提交文案</p>
@@ -372,8 +375,9 @@ export function ApplyFormulaTab({ preselectedQueueId }: ApplyFormulaTabProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-label-sm font-label text-on-surface-variant">新主题</label>
+        <label htmlFor="dlt-new-topic" className="text-label-sm font-label text-on-surface-variant">新主题</label>
         <input
+          id="dlt-new-topic"
           value={newTopic}
           onChange={(e) => setNewTopic(e.target.value)}
           placeholder="输入您想要创作的主题…"

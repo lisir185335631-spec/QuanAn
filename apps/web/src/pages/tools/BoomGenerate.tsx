@@ -8,16 +8,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { BoomGenerateResult } from '@/components/ToolResult/BoomGenerateResult';
 import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { ElementsInlineMultiPicker } from '@/components/inline-pickers';
+import { BoomGenerateResult } from '@/components/ToolResult/BoomGenerateResult';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { ALL_ELEMENTS } from '@/lib/constants/elements';
-import { cn } from '@/lib/utils';
 import { trpc } from '@/lib/trpc';
+import { cn } from '@/lib/utils';
 
-import type { BoomGenerateHistoryRow } from '@quanan/clients/router-types';
-import type { ActiveAccountOutput } from '@quanan/clients/router-types';
+import type { BoomGenerateHistoryRow , ActiveAccountOutput } from '@quanan/clients/router-types';
 
 export default function BoomGenerate() {
   const { account } = useActiveAccount();

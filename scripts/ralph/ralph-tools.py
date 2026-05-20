@@ -891,6 +891,72 @@ def cmd_check_risk():
         print(f"  [OK] risk_level 分档合理, 无需升档")
 
 
+def cmd_mutate_prd(story_id: str, kv_pairs: list[str]):
+    """QuanQn PRD-20 retro M-2 固化 · 2026-05-18 新增
+
+    安全 mutate prd.json runtime · 不接受 source 参数 · 防 Opus 介入误用 prd-N.json 作 source.
+    自动 atomic write + backup.
+
+    用法 · ralph-tools.py mutate-prd US-008 passes=true blocked=false notes="Opus unblock 理由"
+
+    背景 · QuanQn PRD-20 US-008 unblock 时 · Opus 误用 atomic mutate prd-N.json 后 sync 回 prd.json · 覆盖了
+    daemon runtime passes=true 状态 · daemon 重启从 US-001 重跑. memory feedback ralph-prd-json-source-truth.md
+    已入档. 本命令机械化阻止此类错误.
+    """
+    import json
+    from datetime import datetime
+
+    prd_path = Path("scripts/ralph/prd.json")
+    if not prd_path.exists():
+        print(f"[FAIL] {prd_path} 不存在 · 必须先有 runtime prd.json (daemon 运行后会自动创建)", file=sys.stderr)
+        print("[FAIL] 本命令不接受 source 参数 · 仅 mutate 现有 prd.json · 防误覆盖", file=sys.stderr)
+        sys.exit(1)
+
+    # parse k=v pairs
+    kwargs: dict = {}
+    for pair in kv_pairs:
+        if "=" not in pair:
+            print(f"[FAIL] 参数格式错误: '{pair}' · 应为 key=value", file=sys.stderr)
+            sys.exit(1)
+        key, _, value = pair.partition("=")
+        # 自动 type coerce
+        if value.lower() == "true":
+            kwargs[key] = True
+        elif value.lower() == "false":
+            kwargs[key] = False
+        elif value.isdigit():
+            kwargs[key] = int(value)
+        else:
+            kwargs[key] = value  # str
+
+    data = json.loads(prd_path.read_text(encoding="utf-8"))
+    found = False
+    for s in data.get("userStories", []):
+        if s.get("id") == story_id:
+            old_state = {k: s.get(k) for k in kwargs}
+            s.update(kwargs)
+            new_state = {k: s.get(k) for k in kwargs}
+            found = True
+            print(f"[OK] {story_id} mutate 成功")
+            print(f"  before: {old_state}")
+            print(f"  after:  {new_state}")
+            break
+
+    if not found:
+        print(f"[FAIL] {story_id} 不存在 in prd.json (现有 stories: {[s.get('id') for s in data.get('userStories', [])]})", file=sys.stderr)
+        sys.exit(1)
+
+    # atomic write
+    prd_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # 自动 backup(retention 不限 · Opus 介入快照)
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup_path = Path(f"scripts/ralph/backups/prd.json.bak.opus-mutate.{timestamp}")
+    backup_path.parent.mkdir(parents=True, exist_ok=True)
+    backup_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[OK] backup → {backup_path}")
+
+
 # ─── 入口 ─────────────────────────────────────
 
 def main():
@@ -939,6 +1005,14 @@ def main():
         cmd_audit_health(threshold)
     elif cmd == "check-risk":
         cmd_check_risk()
+    elif cmd == "mutate-prd":
+        # QuanQn PRD-20 retro M-2 固化 · 2026-05-18 · 防 Opus 介入 mutate prd.json 时误用 prd-N.json 作 source
+        # 用法: ralph-tools.py mutate-prd US-008 passes=true blocked=false notes="..."
+        if len(sys.argv) < 4:
+            print("用法: ralph-tools.py mutate-prd <story_id> <key=value>...", file=sys.stderr)
+            print("示例: ralph-tools.py mutate-prd US-008 passes=true blocked=false notes='Opus unblock'", file=sys.stderr)
+            sys.exit(1)
+        cmd_mutate_prd(sys.argv[2], sys.argv[3:])
     elif cmd == "force-reject":
         if len(sys.argv) < 3:
             print("用法: ralph-tools.py force-reject <feedback>", file=sys.stderr)

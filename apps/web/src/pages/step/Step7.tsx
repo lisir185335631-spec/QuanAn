@@ -1,12 +1,10 @@
-import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-
-import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { useNavigate } from 'react-router-dom';
 import { Copy, RefreshCw } from 'lucide-react';
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { ScriptTypeInlineCards } from '@/components/inline-pickers';
-import { ElementsInlineMultiPicker } from '@/components/inline-pickers';
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { ScriptTypeInlineCards , ElementsInlineMultiPicker } from '@/components/inline-pickers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
@@ -58,14 +56,14 @@ export default function Step7() {
   // AC-3 · D-219: prefill from DB stepData on mount
   useEffect(() => {
     if (!dbQuery.data) return;
-    const inputs = dbQuery.data.inputs as Record<string, unknown>;
+    const inputs = dbQuery.data.inputs;
     if (typeof inputs?.scriptType === 'string') setScriptType(inputs.scriptType);
     if (Array.isArray(inputs?.elements)) setElements(inputs.elements as string[]);
     if (typeof inputs?.topic === 'string') setTopic((prev) => prev || (inputs.topic as string));
-    if (typeof inputs?.optimizeDirection === 'string') setOptimizeDirection(inputs.optimizeDirection as string);
+    if (typeof inputs?.optimizeDirection === 'string') setOptimizeDirection(inputs.optimizeDirection);
     // Sync result from DB (CopywritingAgent output)
-    const res = dbQuery.data.result as Record<string, unknown> | null;
-    if (res && typeof res['markdown'] === 'string' && (res['markdown'] as string).length > 0) {
+    const res = dbQuery.data.result;
+    if (res && typeof res['markdown'] === 'string' && (res['markdown']).length > 0) {
       setResult(res);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,8 +119,8 @@ export default function Step7() {
   function handleCopyAll() {
     if (!result) return;
     const parts: string[] = [];
-    if (typeof result['markdown'] === 'string') parts.push(result['markdown'] as string);
-    if (typeof result['cta'] === 'string') parts.push(result['cta'] as string);
+    if (typeof result['markdown'] === 'string') parts.push(result['markdown']);
+    if (typeof result['cta'] === 'string') parts.push(result['cta']);
     if (Array.isArray(result['hooks'])) {
       parts.push((result['hooks'] as string[]).map((h) => `#${h}`).join(' '));
     }

@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
-import { ScriptTypeInlineCards } from '../ScriptTypeInlineCards';
 import { SCRIPT_TYPES } from '@/lib/constants/scripts';
+
+import { ScriptTypeInlineCards } from '../ScriptTypeInlineCards';
 
 describe('ScriptTypeInlineCards', () => {
   it('renders all 20 script type cards', () => {

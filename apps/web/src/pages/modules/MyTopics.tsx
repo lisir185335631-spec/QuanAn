@@ -16,6 +16,7 @@ import { useCallback, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { IndustryDropdown } from '@/components/IndustryDropdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -26,7 +27,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { IndustryDropdown } from '@/components/IndustryDropdown';
 import { trpc } from '@/lib/trpc';
 
 import type { MyTopicItem, MyTopicSource } from '@quanan/clients/router-types';
@@ -115,8 +115,9 @@ function AddTopicModal({ open, onClose, onAdded }: AddTopicModalProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">选题标题 *</label>
+            <label htmlFor="add-topic-title" className="text-sm text-muted-foreground mb-1 block">选题标题 *</label>
             <Input
+              id="add-topic-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="输入选题标题"
@@ -125,6 +126,7 @@ function AddTopicModal({ open, onClose, onAdded }: AddTopicModalProps) {
             />
           </div>
           <div>
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label className="text-sm text-muted-foreground mb-1 block">行业</label>
             <IndustryDropdown
               value={industry}
@@ -133,8 +135,9 @@ function AddTopicModal({ open, onClose, onAdded }: AddTopicModalProps) {
             />
           </div>
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">平台</label>
+            <label htmlFor="add-topic-platform" className="text-sm text-muted-foreground mb-1 block">平台</label>
             <Input
+              id="add-topic-platform"
               value={platform}
               onChange={(e) => setPlatform(e.target.value)}
               placeholder="如：抖音、小红书（可选）"
@@ -189,16 +192,17 @@ function EditTopicModal({ item, onClose }: EditTopicModalProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">选题标题 *</label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} required data-testid="edit-topic-title-input" />
+            <label htmlFor="edit-topic-title" className="text-sm text-muted-foreground mb-1 block">选题标题 *</label>
+            <Input id="edit-topic-title" value={title} onChange={(e) => setTitle(e.target.value)} required data-testid="edit-topic-title-input" />
           </div>
           <div>
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label className="text-sm text-muted-foreground mb-1 block">行业</label>
             <IndustryDropdown value={industry} onValueChange={setIndustry} />
           </div>
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">平台</label>
-            <Input value={platform} onChange={(e) => setPlatform(e.target.value)} data-testid="edit-topic-platform-input" />
+            <label htmlFor="edit-topic-platform" className="text-sm text-muted-foreground mb-1 block">平台</label>
+            <Input id="edit-topic-platform" value={platform} onChange={(e) => setPlatform(e.target.value)} data-testid="edit-topic-platform-input" />
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={onClose}>取消</Button>

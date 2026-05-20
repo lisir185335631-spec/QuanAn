@@ -1,18 +1,19 @@
 {
   "story_id": "US-007",
-  "validator_start_ts": "2026-05-18T17:04:00",
-  "validator_end_ts": "2026-05-18T17:07:00",
-  "test_command": "pnpm vitest run CopywritingAgent.real-llm.test.ts LivestreamAgent.real-llm.test.ts + pnpm vitest run (full zero-reg) + pnpm typecheck",
+  "validator_start_ts": "2026-05-20T13:20:00",
+  "validator_end_ts": "2026-05-20T13:30:00",
+  "test_command": "apps/api: npx vitest run (53 files, 799 tests) + apps/web: vitest run Step8GeneratePlan/OptimizeScript/CreateAccountModal (22 tests) + pnpm typecheck",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
   "artifacts": [
-    "vitest.xml",
-    "vitest.stdout.txt",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt"
+    "typecheck.stdout.txt",
+    "step8-generate-plan.png",
+    "step8-optimize-script.png",
+    "accounts-smart-recommend.png"
   ],
-  "notes": "AC-1 PASS: CopywritingAgent.ts invokeLLM() dispatches to _invokeStep7() using gateway.stream() → _consumeStream() for real SSE. model captured from meta chunk (not hardcoded). history.create wired at stepData.ts:255 (brownfield). AC-2 PASS: LivestreamAgent.ts invokeLLM() resolves sub_function from req.mode → 2 distinct paths: _invokeGeneratePlan() (6-module GeneratePlanBaseSchema) and _invokeOptimizeScript() (2-field OptimizeScriptBaseSchema). SYSTEM_PROMPT_GENERATE_PLAN / SYSTEM_PROMPT_OPTIMIZE_SCRIPT are strictly separate. experience enum ['新手','有经验','资深'] zod validated at line 97-102. AC-3 PASS: CopywritingAgent.real-llm.test.ts + LivestreamAgent.real-llm.test.ts both exist. describe.skipIf(skipIfNoKey) on real-LLM suites. Always-run fallback schema alignment tests pass (CopywritingAgent: 1 test, LivestreamAgent: 3 tests). AC-4 PASS: CopywritingOutputSchema has refine (markdown must start with # heading, min 500 chars); GeneratePlanOutputSchema 6 fields with min constraints; OptimizeScriptOutputSchema 2 fields with min constraints. Fallback templates validated against schemas in always-run tests (all pass). No 'body.text' nesting — AC description refers to markdown body text content, implementation uses top-level 'markdown' field. AC-5 PASS: BaseSpecialist._writeCostLog called at line 139 with agentMode=req.mode. CopywritingAgent mode='step7' → agentMode='step7'. LivestreamAgent mode='generate_plan'/'optimize_script' → agentMode wired accordingly. AC-6 PASS: vitest run (2 files) → 8 tests, 4 skipped (no API key), 4 always-run passed, 0 failed. AC-7 PASS: typecheck clean (exit 0, no errors). Zero-regression: 14 passed, 0 failed, 11 skipped (4 test files passed, 5 skipped no-key suites)."
+  "notes": "AC-10 CONFIRMED PASS: ipAccounts.smartRecommend.test.ts (5 cases: a-正常返回, b-BAD_REQUEST, c-mode=recommend, d-FORBIDDEN, e-isFallback透传) + PositioningAgent.test.ts (5 cases: a-execute成功, b-lightweight+timeout, c-invalid mode throws, d-fallback template, e-RecommendOutputSchema). Zero regression: 53 files passed, 799 tests passed, 0 failures. Typecheck: 0 errors. AC-COMMON: 0 apiKey, 0 import OpenAI in apps/web. All 14 ACs PASS."
 }

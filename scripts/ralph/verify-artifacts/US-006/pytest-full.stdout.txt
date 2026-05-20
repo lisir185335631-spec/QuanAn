@@ -1,52 +1,474 @@
-{"level":"info","time":"2026-05-18T08:33:34.687Z","pid":90272,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-18","msg":"daily_tasks.regenerate_today.triggered"}
-{"level":"info","time":"2026-05-18T08:33:34.688Z","pid":90272,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-18","msg":"daily_tasks.regenerate_today.triggered"}
-{"level":"error","time":"2026-05-18T08:33:34.688Z","pid":90272,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","err":{"type":"Error","message":"Redis connection failed","stack":"Error: Redis connection failed\n    at /Users/return/Desktop/QuanQn/tests/unit/api/daily-tasks-router.test.ts:261:40\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"accountId":1,"msg":"daily_tasks.regenerate_today.enqueue_failed"}
-{"level":"info","time":"2026-05-18T08:33:34.690Z","pid":90272,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":42,"scheduledDate":"2026-05-18","msg":"daily_tasks.regenerate_today.triggered"}
-{"level":"warn","time":"2026-05-18T08:33:34.691Z","pid":90272,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","msg":"no_active_account"}
-{"level":"info","time":"2026-05-18T08:33:34.902Z","pid":90270,"hostname":"returndeMacBook-Pro.local","accountId":1,"traceId":"tr_1_DailyTaskAgent_1779093214901_a58s","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-18T08:33:34.905Z","pid":90270,"hostname":"returndeMacBook-Pro.local","accountId":2,"traceId":"tr_2_DailyTaskAgent_1779093214905_g6jv","msg":"daily_task.cold_start"}
-{"level":"warn","time":"2026-05-18T08:33:34.907Z","pid":90270,"hostname":"returndeMacBook-Pro.local","agentId":"DailyTaskAgent","traceId":"tr_4_DailyTaskAgent_1779093214906_uqvh","issues":"[\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 3,\n    \"type\": \"array\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Array must contain at least 3 element(s)\",\n    \"path\": [\n      \"tasks\"\n    ]\n  }\n]","msg":"daily_task.schema_validation.retry"}
-{"level":"info","time":"2026-05-18T08:33:34.907Z","pid":90270,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-18T08:33:34.907Z","pid":90270,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-18T08:33:34.907Z","pid":90270,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-18T08:33:34.907Z","pid":90270,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"error","time":"2026-05-18T08:33:35.921Z","pid":90347,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1779093215896","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/videoProduction.ts:77:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
-{"level":"error","time":"2026-05-18T08:33:36.022Z","pid":90359,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/video-agent-llm.test.ts:186:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_video_agent_int_1779093215997","msg":"cost_log.write_failed"}
-{"level":"error","time":"2026-05-18T08:33:36.329Z","pid":90375,"hostname":"returndeMacBook-Pro.local","traceId":"tr_acq_video_int_1779093216284","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanQn/apps/api/src/trpc/routers/acquisitionVideo.ts:49:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
-{"level":"warn","time":"2026-05-18T08:33:36.575Z","pid":90402,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-18T08:33:36.575Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-18T08:33:36.576Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
-{"level":"warn","time":"2026-05-18T08:33:36.578Z","pid":90402,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-18T08:33:36.578Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
-{"level":"warn","time":"2026-05-18T08:33:36.578Z","pid":90402,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
-{"level":"warn","time":"2026-05-18T08:33:36.578Z","pid":90402,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
-{"level":"error","time":"2026-05-18T08:33:36.740Z","pid":90408,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanQn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanQn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1779093216719","msg":"cost_log.write_failed"}
-{"level":"info","time":"2026-05-18T08:33:36.809Z","pid":90414,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-18T08:33:36.810Z","pid":90414,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-18T08:33:36.812Z","pid":90414,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-18T08:33:36.812Z","pid":90414,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-18T08:33:36.812Z","pid":90414,"hostname":"returndeMacBook-Pro.local","accountId":10,"traceId":"tr_10_DailyTaskAgent_1779093216812_scyl","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-18T08:33:36.813Z","pid":90414,"hostname":"returndeMacBook-Pro.local","accountId":11,"traceId":"tr_11_DailyTaskAgent_1779093216812_5wqt","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-18T08:33:36.813Z","pid":90414,"hostname":"returndeMacBook-Pro.local","accountId":12,"traceId":"tr_12_DailyTaskAgent_1779093216813_bm6e","msg":"daily_task.cold_start"}
-{"level":"info","time":"2026-05-18T08:33:36.813Z","pid":90414,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-18T08:33:36.813Z","pid":90414,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"info","time":"2026-05-18T08:33:36.813Z","pid":90414,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
-{"level":"info","time":"2026-05-18T08:33:36.813Z","pid":90414,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
-{"level":"error","time":"2026-05-18T08:33:36.895Z","pid":90425,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanQn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
-{"level":"warn","time":"2026-05-18T08:33:37.088Z","pid":90442,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
-{"level":"warn","time":"2026-05-18T08:33:37.090Z","pid":90442,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
-{"level":"error","time":"2026-05-18T08:33:37.371Z","pid":90464,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
-{"level":"error","time":"2026-05-18T08:33:37.372Z","pid":90464,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
-{"level":"error","time":"2026-05-18T08:33:37.372Z","pid":90464,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
-{"level":"info","time":"2026-05-18T08:33:37.627Z","pid":90475,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1779093217627_n3g6","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
-{"level":"error","time":"2026-05-18T08:33:37.627Z","pid":90475,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1779093217627_n3g6","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:68:57)\n    at TestAgent.run (/Users/return/Desktop/QuanQn/apps/api/src/agents/base/BaseSpecialist.ts:37:12)\n    at /Users/return/Desktop/QuanQn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":0,"msg":"specialist.failed"}
-{"level":"error","time":"2026-05-18T08:33:37.665Z","pid":90469,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:323:7)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1779093217641_sul5","msg":"voice_chat.cost_log.write_failed"}
-{"level":"error","time":"2026-05-18T08:33:37.670Z","pid":90469,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:323:7)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1779093217667_xa6v","msg":"voice_chat.cost_log.write_failed"}
-{"level":"error","time":"2026-05-18T08:33:37.677Z","pid":90469,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:29\n\n  360     ? 'openai'\n  361     : 'none';\n  362 try {\n→ 363   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanQn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:363:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanQn/apps/api/src/specialists/VoiceChatAgent.ts:323:7)\n    at /Users/return/Desktop/QuanQn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanQn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1779093217673_ga0j","msg":"voice_chat.cost_log.write_failed"}
-JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-006/pytest-full.xml
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+stderr | src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · 副标题包含 "AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导"
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · CTA "生成制作方案" 初始 disabled (text < 10 字)
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · text ≥ 10 字 → CTA enabled
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-2 · onSuccess → 4 H3 区块渲染
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-2 · production output 真实数据内容渲染 (shotList/equipment/schedule)
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-5 · isFallback=true → 显示 fallback banner + retry button
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-5 · isFallback=false → 不显示 fallback banner
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-6 · onError → toast.error 被调用
+stderr | src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · H1 字面锁 "爆款文案解析"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · H1 字面锁 "爆款文案解析"
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · 副标题包含 "AI 将深度拆解爆款密码，支持一键仿写"
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-4 · CTA "开始深度解析" 初始 disabled (copy < 10 字)
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-4 · copy ≥ 10 字 → CTA enabled
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-2 · onSuccess → 5 H3 区块渲染真数据
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-2 · viral output 真实数据内容渲染
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-5 · isFallback=true → 显示 fallback banner + retry button
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-5 · isFallback=false → 不显示 fallback banner
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-3 · 一键仿写 button 在结果区块中存在
+stderr | src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · H1 字面锁 "文案结构分析"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · H1 字面锁 "文案结构分析"
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · 副标题包含"多维度深度分析"
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-2 · 初始字符计数显示 "0 字"
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-2 · 输入后字符计数更新
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-3 · CTA "开始分析" 初始 disabled (text < 10 字)
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-3 · text ≥ 10 字 → CTA enabled
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-4 · onSuccess → 5 H3 区块渲染
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-4 · structural output 真实数据渲染
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-5 · isFallback=true → 显示 fallback banner + retry button
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-5 · isFallback=false → 不显示 fallback banner
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-4 · 一键仿写 button 存在于结果区块
+stderr | src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(a) · 轮询启停 · data=null 时 refetchInterval fn 返回 3000
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(a) · 轮询启停 · data=null 时 refetchInterval fn 返回 3000
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(b) · server data 渲染 · 3 任务卡 h3 标题
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(c) · 生成今日任务 button → regenerateToday.mutate 调用
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(c2) · 重新生成 button(有任务时) → regenerateToday.mutate 调用
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(d) · markCompleted optimistic · mutate 调用 + useUtils.setData 调用
+stderr | src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(b) · 4 指标真数据 · feedbackCountGood=6 / needsImprovement=2 / deepLearning=3 / satisfactionRate=0.75
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · 副标题字面锁 "专为获客设计的短视频方案，让精准客户主动找上门"
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-3 · CTA "生成获客方案" 初始 disabled (audience + sellingPoints 为空)
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-3 · 填写 audience + sellingPoints → CTA enabled
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-4 · onSuccess → 4 H4 区块渲染真数据
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-4 · acquisition output 真实内容渲染 (script/ctaScript/conversionPath/keyMessages)
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · isFallback=true → 显示 fallback banner + retry button
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · isFallback=false → 不显示 fallback banner
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-6 · onError → toast.error 被调用
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · industry select 有 "企业服务" 选项可被选中
+stderr | src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H1 字面锁 "VOICE CHAT"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H1 字面锁 "VOICE CHAT"
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H3 模块标题 "你的专属 IP 变现顾问"
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-3 · 自我介绍字面锁 (VOICE_CHAT_INTRO)
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-7 · 6 quick prompts 全部渲染(字面对照)
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-7 · quick prompt click → 填到 input(不直接发送)
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (a) AC-2 · delta chunks 累积到 currentAnswer
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (b) AC-2 · tool_call hint 显示
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (c) AC-4 · done 后 history append + localStorage
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (d) AC-5 · error → retry button 显示
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (e) AC-6 · cancel → partial=true hint in history
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-3 · done 후 tokensUsed footer 显示
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-2 · meta chunk → model hint 显示
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-5 · onError callback → retry button 显示
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(d2) · markCompleted onError → toast.error + setData 回滚
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(e) · EmptyState 无今日任务 · "AI 暂未生成今日任务" + "生成今日任务" button
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(e2) · 无 account → EmptyState "请先创建 IP 账号"
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(f) · isFallback=true → 灰色 banner "AI 暂未生成 · 显示规则建议"
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-1 · H1 字面锁 "今日行动清单"
+ ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-7 · 打卡 → localStorage acc_ prefix getLsKey 写入
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(c) · 触发进化 button → evolve.mutate(rateableType=manual_trigger)
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(d) · 生成洞察 button · feedbackCountTotal<5 → disabled + title=需 ≥ 5 反馈
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(d2) · 生成洞察 button · feedbackCountTotal>=5 → enabled
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(e) · 进化洞察模块 · latestInsight summary 渲染
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(e2) · 进化洞察模块 · null latestInsight → 暂无洞察 D-237 字面锁
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(f) · 进化方向 · profile.currentDirection=创意性优先 → 初始 selected
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(f2) · 进化方向 change → updateConfig.mutate({currentDirection})
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-1 · null profile → EmptyState 新用户 · 暂无进化数据
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-1 · isLoading → Loader2 spinner visible
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > H1 · 智能体进化中心
+ ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-7 · 新增学习 button → toast.info 正确文案
+stderr | src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (b) 报告渲染 dimensions[dim.id].score — 7 维度得分从 LLM 结果来
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (c) isFallback=true 时显示灰色 hint banner + retry button
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (d) onError 时显示 retry button + toast.error
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (e) mutation pending 时显示 Loader2 spinner + "AI 分析中..."
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > 每维度卡显示 issues 和 suggestions 列表
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > 优先改进项 priority list 渲染
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_TYPES_20 长度 === 20
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_TYPES_20 第 1 = debate · 字面 1:1
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENTS_22 长度 === 22
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > 4 分组累加严格 6+5+6+5 = 22
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > DEBATE_H4_4 4 个 h4Label 字面 1:1 · 严禁 H4. 前缀 · 严禁英文
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SEARCH_PLACEHOLDER 字面 1:1 spec line 1679
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENT_COUNTER_TEMPLATE 含全角括号 · 字面 1:1 spec line 1693
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_DISPLAY_TEMPLATE 含全角冒号 + 半角 hyphen · 字面 1:1 spec line 1701
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > BUTTONS 4 字面 1:1 spec §7.8 line 1710-1712
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SUBTITLE 字面 1:1 spec §7.8 line 1671
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > Step7DebateResult interface 字段结构
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > Step7Result interface 字段结构 · body 默认为 Step7DebateResult
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > TEXTAREA id/label/placeholder 字面 1:1 spec §7.8 line 1699
+ ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENT_GROUPS_4 length === 4 · 4 个 label 字面 1:1
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > returns { migrated:0, skipped:0 } when accountId is null
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > returns migrated=0 skipped=10 and writes FLAG when no legacy keys exist
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > returns { migrated:0, skipped:10 } on subsequent calls due to FLAG
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > migrates all 10 legacy keys when all have data
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > does not overwrite existing new key but still removes old key
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > migrates only keys that have old data and no new key conflict
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > migrates acc_step5_selected_topic to selected_topic suffix
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > handles QuotaExceededError gracefully: warns and continues
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (a) save() writes LS then calls trpc mutation
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (b) load() reads synchronously from localStorage
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (b) load() returns null when key absent
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (c) dbQuery enabled=true when accountId !== null
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (c) dbQuery enabled=false when accountId === null
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (c) dbQuery has staleTime 30000 and retry false
+ ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > return shape includes save, load, isSaving, dbQuery
+ ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (d) returns null when accountId is null
+ ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (d) returns null when LS key absent
+ ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (d) returns parsed value when key present
+ ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (e) JSON.parse failure → console.warn + return null
+stderr | src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · H1 字面锁 "7 维度 IP 诊断报告"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · H1 字面锁 "7 维度 IP 诊断报告"
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · 副标题字面锁
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > Step 1 渲染: "步骤 1 / 8 · 基本信息" + 行业/产品 input
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 8 step 切换: 点下一步进入 Step 2
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > checkbox 多选 toggle: 选中后再次点击取消
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > Step 8 报告显示: 7 维度评分 + 导出 PDF button
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-7 · localStorage save: 进入 step 2 后 LS 有记录
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 导出 PDF button 点击: toast.info 调用
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 上一步 disabled on Step 1
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 上一步 enabled after step 2
+ ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 最后一步 CTA 文字改 "生成诊断报告"
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > props 渲染: 步骤指示器 + H2 + 副标
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > checkbox 列渲染: 3 checkboxes for positioning
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > checkbox toggle 调用 onCheckboxToggle
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 下一步 click 调用 onNext
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 上一步 click 调用 onPrev
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > isFirst=true: 上一步 button disabled
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > isFirst=false: 上一步 button enabled
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 最后一步 CTA 变化: isLast=true → "生成诊断报告"
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 非最后步: 下一步 button text "下一步"
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > Step 1 (basic): 渲染行业/产品 input + 4 stage radio
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > selected checkbox 状态: border-primary class 应用
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > modal 弹: 点击"新建账号" button dialog 打开
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 4 字段渲染: name / industry / description input + platform radio
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 空 name 时 submit disabled
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 填写 name+industry 但无 platform 时仍 disabled
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 取消关闭: 点击取消按钮关闭 modal
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 创建成功: 填完 name+industry+platform → submit → mutateAsync + navigate(/step/1)
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · H1 字面锁 "IP 账号管理"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+stderr | src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-3 · 新建账号 button 点击弹 modal
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · H1 字面锁 "IP 账号管理"
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · 副标题字面锁
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · 账号列表渲染: 3 张卡片显示
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-2 · ACTIVE 标显示: id=1 卡片显示 ACTIVE chip
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · 切换 active: 点击非 active 卡调 switchTo
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · 新建账号 trigger button 存在
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-3 · 新建账号 button 点击弹 modal
+ ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · personalInfo 显示: 账号3 description 渲染
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 全部填完后 submit enabled
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > modal 弹: 点击"新建账号" button dialog 打开
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 4 字段渲染: name / industry / description input + platform radio
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 空 name 时 submit disabled
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 填写 name+industry 但无 platform 时仍 disabled
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 取消关闭: 点击取消按钮关闭 modal
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 创建成功: 填完 name+industry+platform → submit → mutateAsync + navigate(/step/1)
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 全部填完后 submit enabled
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > 8 dimensions 数量
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > first dimension is basic (Step 1 基本信息)
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > 19 checkbox 总数 (spec §8.5.1 实际: 3+3+2+2+3+3+3=19)
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > positioning 3 checkboxes · 字面 1:1 spec §8.5.1
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > branding 3 checkboxes · 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > traffic 2 checkboxes · 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > value 2 checkboxes · 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > case 3 checkboxes · 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > persona 3 checkboxes · 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > authentic 3 checkboxes · 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_STAGES_4 > 4 阶段字面 · 含中点 · · spec §8.5.1
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_STAGES_4 > 4 阶段 value 字段存在且唯一
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > REPORT_DIMENSIONS_7 > 7 report dimensions (slice off basic)
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > Literal strings > H1 字面锁
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts > Literal strings > subtitle 字面锁
+stderr | src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-1 · H1 字面锁 "直播策划"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-1 · H1 字面锁 "直播策划"
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-1 · STEP_TAG "STEP 08 · 直播策划" 顶部副标签
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-2 · 2 tabs 字面锁 "生成直播方案" + "AI 优化话术" (shadcn Tabs)
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-3/4 · 3 经验 radio dual-line: label + subtitle 均渲染
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-4 · "生成直播方案" CTA 初始 disabled (product 为空)
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-4 · 填写 product + 选 platform + 选 experience → CTA enabled
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-6 · 切换到 tab 2 → "AI 优化话术" CTA 初始 disabled (< 10 字)
+ ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-5 · 提交 tab 1 表单后渲染 6 H3 stub 输出区块
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > props 渲染: name / industry / platform 显示
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > ACTIVE 标条件: isActive=true 显示 chip
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > ACTIVE 标条件: isActive=false 不显示 chip
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > 圆形头像首字符: 显示 name[0]
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > onActivate: 点击卡片主体触发
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > onEdit click: 编辑 button 触发
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > onDelete click: 删除 button 触发
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > personalInfo + ipPositioning: 有值时渲染
+ ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_EXPERIENCES_3 · 3 entries · id/label/subtitle 字面锁 (AC-3)
+ ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_OUTPUT_MODULES_6 · plain labels no numbers · length === 6 (AC-5)
+ ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_PLATFORMS_5 · length === 5 · PlatformInlineRadio import 合法
+ ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号
+ ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_OPTIMIZE_OUTPUT_MODULES_4 · 4 H3 labels 字面锁 (AC-7)
+ ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > Step8Result interface · generate_plan + optimize_script 两分支
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > 三阶梯 range 字面 1:1 spec §7.5 line 1546-1564
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > 4 产品类型字面 1:1 spec §7.5 line 1551
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > SUBTITLE 字面严格 1:1 spec §7.5 line 1521
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > OUTPUT_H3_5 数量锁 · length === 5
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > INPUTS_3 数量锁 · length === 1 · PRD-22 US-008 行业领域 1 项
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > TEXTAREA required === true · id === product_description
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > BUTTONS 3 字面 1:1 spec §7.5 line 1532
+ ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > Step4bResult interface 字段结构
+ ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > SUBTITLE 字面严格 1:1 spec §7.7 line 1639
+ ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号
+ ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > TEXTAREA_MIN_CHARS === 10
+ ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647
+ ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1
+ ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > Step6Result interface 字段结构
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps currentAnalysis to market_analysis
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps ladder to three_stages with STEP4B_THREE_STAGES ranges
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps ladder[i].action to coreStrategy
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps revenueStructure primary at 60% and secondary at 25%/15%
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps successCases title/summary to name/result fields
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > handles empty ladder gracefully
+ ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > revenue_structure uses simple percent numbers · 0 recharts dependency
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > renders all 20 script type cards
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > controlled: calls onChange with key when card clicked
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > controlled: selected card has border-primary styling
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > disabled: does not call onChange when clicked
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > showSearch=true: renders search input and filters cards
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > showMethodology=true: renders methodology text for each card
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > SCRIPT_TYPES has exactly 20 items
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders thumbs-up and thumbs-down buttons
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders helper text
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with good type and agentId on thumbs-up click
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with bad type and agentId on thumbs-down click
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > passes stepKey and agentId correctly for ip-plan
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-buttons wrapper
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-good on thumbs-up button
+ ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-bad on thumbs-down button
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/test/pages.test.tsx > stepConfig > has all 9 step keys
+ ✓ src/test/pages.test.tsx > stepConfig > step1 has non-empty title and description
+ ✓ src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step2 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step5 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step8 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Step pages render > Step9 renders h1 with correct title
+ ✓ src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
+ ✓ src/test/pages.test.tsx > Tool pages render > Trending renders h1 heading
+ ✓ src/test/pages.test.tsx > Tool pages render > Copywriting renders h1 heading
+ ✓ src/test/pages.test.tsx > Tool pages render > Knowledge renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > Diagnosis renders h1 字面锁 "7 维度 IP 诊断报告" (PRD-23 US-001 完整化)
+ ✓ src/test/pages.test.tsx > Module pages render > Diagnosis shows 8-step wizard (Step 1 · 基本信息)
+ ✓ src/test/pages.test.tsx > Module pages render > Evolution renders h1 heading (PRD-24 US-002 · 智能体进化中心)
+ ✓ src/test/pages.test.tsx > Module pages render > Evolution shows spec §8.5.3 subtitle
+ ✓ src/test/pages.test.tsx > Module pages render > Accounts renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > Accounts shows empty state when no data
+ ✓ src/test/pages.test.tsx > Module pages render > DailyTasks renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > MyTopics renders h1 heading
+ ✓ src/test/pages.test.tsx > Module pages render > History renders h1 heading
+ ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders ip-plan-page with h1 我的IP方案
+ ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders 9 step cards with 查看详情 buttons
+ ✓ src/test/pages.test.tsx > IpPlan page (US-010) > shows 已完成 0 / 9 步 with empty completedSteps
+ ✓ src/test/pages.test.tsx > VoiceChat page (PRD-24 US-003) > H1 字面锁 VOICE CHAT
+ ✓ src/test/pages.test.tsx > VoiceChat page (PRD-24 US-003) > H3 模块标题 你的专属 IP 变现顾问
+ ✓ src/test/pages.test.tsx > VoiceChat page (PRD-24 US-003) > input placeholder 有什么问题尽管问我...
+ ✓ src/test/pages.test.tsx > ErrorBoundary > renders children when no error
+ ✓ src/test/pages.test.tsx > ErrorBoundary > renders fallback UI when child throws
+ ✓ src/test/pages.test.tsx > ErrorBoundary > renders custom fallback when provided
+ ✓ src/test/pages.test.tsx > ErrorBoundary > resets error state on button click
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > renders all 5 platform buttons
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > controlled: calls onChange with platform key when clicked
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > controlled: selected platform button has border-primary
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > disabled: does not call onChange when clicked
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > size=sm: applies sm padding class
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > size=lg: applies lg padding class
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > renders emoji for each platform (by label presence)
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > SUBTITLE 字面严格 1:1 spec §7.6 line 1595
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > INPUTS_2 数量锁 · length === 2
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > FILE_UPLOADS_2 数量锁 · length === 2
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > FILE_MAX_MB === 20
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > TOTAL_TOPICS === 100
+ ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > Step5Topic interface 字段结构
+ ✓ src/test/step-progress.test.tsx > StepProgress > renders 0/9 when completedSteps is empty
+ ✓ src/test/step-progress.test.tsx > StepProgress > renders 9/9 when all steps completed
+ ✓ src/test/step-progress.test.tsx > StepProgress > renders 3/9 when 3 steps completed
+ ✓ src/test/step-progress.test.tsx > StepProgress > shows loading skeleton when isLoading=true
+ ✓ src/test/step-progress.test.tsx > StepProgress > renders all 9 step items
+ ✓ src/test/step-progress.test.tsx > StepProgress > marks completed step with data-status=completed
+ ✓ src/test/step-progress.test.tsx > StepProgress > marks first incomplete step with data-status=current
+ ✓ src/test/step-progress.test.tsx > StepProgress > marks later steps as pending
+ ✓ src/test/step-progress.test.tsx > StepProgress > STEP_ORDER_KEYS has exactly 9 entries
+ ✓ src/test/step-progress.test.tsx > StepProgress > accepts optional className prop without error
+stderr | src/pages/step/__tests__/Step7.test.tsx > Step7 > renders H1 字面锁 "文案生成"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders H1 字面锁 "文案生成"
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders STEP_TAG 字面锁 (AC-1 · D-224)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 选择脚本类型 label (AC-2)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 生成爆款文案 CTA button (AC-2)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders navigation buttons (AC-2)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders AI 优化文案 secondary button (AC-2)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 4 H4 debate output sections in DOM by default (AC-4 · AC-7)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 评论区引导 and 话题标签 H4 sections (AC-4)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 优化方向 input (AC-2)
+ ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders subtitle 字面锁 (AC-1)
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > renders all elements in 4 groups (grouped layout)
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > controlled: adds key when unselected element clicked
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > controlled: removes key when selected element clicked
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > showCount=true: displays selected count text
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > layout=compact: renders flat list without group headings
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > disabled: does not call onChange when clicked
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > HOT_ELEMENT_GROUPS has exactly 4 groups
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-2 · EVOLUTION_LEVELS_5 长度为 5
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-2 · EVOLUTION_LEVELS_5 字面 1:1 spec §8.5.3 (完整字面对照)
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-3 · EVOLUTION_MODULES_5 长度为 5
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-3 · EVOLUTION_MODULES_5 字面锁(顺序 + 全量)
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-4 · EVOLUTION_DIRECTIONS_4 长度为 4
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-4 · EVOLUTION_DIRECTIONS_4 字面锁(全量字面对照)
+ ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-1 · EVOLUTION_SUBTITLE spec §8.5.3 字面对照
+ ✓ src/components/StepProgress.test.tsx > StepProgress > renders loading skeleton when isLoading=true
+ ✓ src/components/StepProgress.test.tsx > StepProgress > renders 9 step items when loaded
+ ✓ src/components/StepProgress.test.tsx > StepProgress > marks completed steps with status=completed
+ ✓ src/components/StepProgress.test.tsx > StepProgress > marks first incomplete step as current, rest as pending
+ ✓ src/components/StepProgress.test.tsx > StepProgress > shows 0/9 progress text when no steps completed
+ ✓ src/components/StepProgress.test.tsx > StepProgress > STEP_ORDER_KEYS contains 9 keys
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_STUB 长度 3-5
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_STUB 字面包含 spec §8.5.2 line 2438-2440 示例
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_LOADING_TEXT 字面锁 "AI 老师正在为你制定今日任务..."
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_EMPTY_* 字面锁
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > 每项 stub 任务包含 id/title/hint 字段且类型正确
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > exactly 6 prompts (D-239)
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[0] 字面锁
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[1] 字面锁
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[2] 字面锁
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[3] 字面锁
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[4] 字面锁
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[5] 字面锁
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_INTRO > 自我介绍字面锁 (AC-3)
+ ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > SUBTITLE 字面严格 1:1 spec §7.4 line 1492
+ ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > INPUTS_3 数量锁 · length === 3
+ ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > OUTPUT_H3_3 数量锁 · length === 3
+ ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > PLATFORMS_5 re-export · length === 5
+ ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > Step4Result interface 字段结构
+stderr | src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
+ ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders EmptyState when no result
+ ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders CTA button 一键生成
+ ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders industry input placeholder
+ ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders STEP_TAG
+stderr | src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
+ ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders STEP_TAG
+ ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders EmptyState when no result
+ ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders generate button
+ ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > generate button is disabled when textarea is empty
+ ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 3 textareas
+ ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 6 H3 output blocks
+ ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > first textarea (personalInfo) is required
+ ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > advantages and story are not required
+ ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > H3 labels match D-220 字面锁
+stderr | src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
+ ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > renders EmptyState when no result
+ ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > renders CTA button with new label
+ ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > CTA label uses constant not hardcoded string
+stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
+ ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders EmptyState when no result
+ ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders CTA button
+ ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders personal info textarea label
+ ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > total count is 56
+ ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 生活服务 count is 18
+ ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 电商零售 count is 13
+ ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_TABS > non-all tab counts sum to 56
+ ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 5 platforms
+ ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 6 H3 output blocks
+ ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > all platforms have emoji prefix
+ ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > output H3 labels match D-220 字面锁 (no number prefix)
+stderr | src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
+ ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > renders EmptyState when no result
+ ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > renders CTA button
+ ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > shows industry prefill subtitle
+ ✓ src/components/states/__tests__/states.test.tsx > LoadingState > renders custom text
+ ✓ src/components/states/__tests__/states.test.tsx > ErrorState > shows 重试 button when onRetry is provided
+ ✓ src/components/states/__tests__/states.test.tsx > EmptyState > renders default title '暂无数据'
+
+ Test Files  44 passed (44)
+      Tests  367 passed (367)
+   Start at  20:11:38
+   Duration  3.95s (transform 1.53s, setup 2.12s, collect 8.90s, tests 4.30s, environment 11.32s, prepare 1.90s)
+

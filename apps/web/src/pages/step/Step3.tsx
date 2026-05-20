@@ -2,16 +2,14 @@ import { Copy, ImagePlus, RefreshCw } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { readOtherStep, useStepData } from '@/hooks/useStepData';
 
+import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { PlatformInlineRadio } from '@/components/inline-pickers';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import Step3OutputContent, {
   getBlockText,
   type Step3Result,
 } from '@/components/step3/Step3OutputContent';
-import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { PlatformInlineRadio } from '@/components/inline-pickers';
-import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -22,6 +20,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep, useStepData } from '@/hooks/useStepData';
 import {
   STEP3_BUTTON_COPY,
   STEP3_BUTTON_GEN_IMAGE,
@@ -209,12 +209,12 @@ export default function Step3() {
   // Sync result from DB
   useEffect(() => {
     if (!dbQuery.data?.result) return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
+    const raw = dbQuery.data.result;
     setResult(adaptStep3Result(raw));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbQuery.data?.result]);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isCtaDisabled) return;
     save({ personalInfo, platform, audience, accountStatus });
@@ -373,7 +373,7 @@ export default function Step3() {
         ) : dbQuery.isError ? (
           <ErrorState
             message={dbQuery.error instanceof Error ? dbQuery.error.message : '加载失败'}
-            onRetry={dbQuery.refetch}
+            onRetry={() => { void dbQuery.refetch(); }}
           />
         ) : result ? (
           <section id="step3-output" className="mt-2 max-w-4xl">
@@ -384,13 +384,13 @@ export default function Step3() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleRegenAll}
+                  onClick={() => { void handleRegenAll(); }}
                   disabled={regenAllLoading}
                 >
                   <RefreshCw className="h-4 w-4" />
                   {STEP3_HEADER_BUTTON_REGEN_ALL}
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleCopyAll}>
+                <Button variant="outline" size="sm" onClick={() => { void handleCopyAll(); }}>
                   <Copy className="h-4 w-4" />
                   {STEP3_HEADER_BUTTON_COPY_ALL}
                 </Button>
@@ -408,13 +408,13 @@ export default function Step3() {
                         <p className="text-sm text-muted-foreground mt-1">{block.hint}</p>
                       </div>
                       <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
-                        <Button variant="outline" size="sm" onClick={() => handleCopy(block.id)}>
+                        <Button variant="outline" size="sm" onClick={() => { void handleCopy(block.id); }}>
                           {STEP3_BUTTON_COPY}
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleRegen(block.id)}
+                          onClick={() => { void handleRegen(block.id); }}
                           disabled={regenLoadingBlocks.includes(block.id)}
                         >
                           {regenLoadingBlocks.includes(block.id) ? '生成中...' : STEP3_BUTTON_REGENERATE}
@@ -459,7 +459,7 @@ export default function Step3() {
             <Button variant="outline" onClick={() => setOptimizeOpen(false)}>
               取消
             </Button>
-            <Button onClick={handleOptimizeSubmit}>确认优化</Button>
+            <Button onClick={() => { void handleOptimizeSubmit(); }}>确认优化</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

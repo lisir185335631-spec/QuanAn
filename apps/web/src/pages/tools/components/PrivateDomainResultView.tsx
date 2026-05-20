@@ -8,8 +8,9 @@ import { ArrowDown, CheckCircle2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import type { PhaseData } from './PhaseCard';
 import { PhaseCard } from './PhaseCard';
+
+import type { PhaseData } from './PhaseCard';
 
 interface PrivateDomainResultViewProps {
   phases: PhaseData[];

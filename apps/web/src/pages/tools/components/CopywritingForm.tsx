@@ -95,12 +95,13 @@ export function CopywritingForm({ values, onChange, onSubmit, isPending }: Copyw
         <div className="space-y-5 p-1">
           {/* Topic */}
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="cf-topic-textarea" className="text-body-sm font-medium text-on-surface">
               主题 / 话题
               <span className="text-error ml-0.5">*</span>
               <span className="ml-1 text-body-xs text-muted-foreground">（≥10 字）</span>
             </label>
             <textarea
+              id="cf-topic-textarea"
               ref={topicRef}
               rows={3}
               className={`w-full rounded-md border bg-surface-container-lowest px-3 py-2 text-body-sm text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none ${topicError ? 'border-error focus:ring-error' : 'border-border'}`}
@@ -116,6 +117,7 @@ export function CopywritingForm({ values, onChange, onSubmit, isPending }: Copyw
 
           {/* Platform */}
           <div className="space-y-1.5">
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label className="text-body-sm font-medium text-on-surface">
               目标平台
               <span className="text-error ml-0.5">*</span>
@@ -161,6 +163,7 @@ export function CopywritingForm({ values, onChange, onSubmit, isPending }: Copyw
 
           {/* Elements */}
           <div className="space-y-2">
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
             <label className="text-body-sm font-medium text-on-surface">
               核心元素
               <span className="text-error ml-0.5">*</span>
@@ -197,11 +200,12 @@ export function CopywritingForm({ values, onChange, onSubmit, isPending }: Copyw
 
           {/* Additional Context */}
           <div className="space-y-1.5">
-            <label className="text-body-sm font-medium text-on-surface">
+            <label htmlFor="cf-additional-context" className="text-body-sm font-medium text-on-surface">
               补充说明
               <span className="ml-1 text-body-xs text-muted-foreground">（可选）</span>
             </label>
             <textarea
+              id="cf-additional-context"
               rows={2}
               className="w-full rounded-md border border-border bg-surface-container-lowest px-3 py-2 text-body-sm text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               placeholder="品牌调性、目标用户、特别要求…"

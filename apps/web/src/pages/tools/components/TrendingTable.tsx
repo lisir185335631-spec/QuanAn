@@ -5,8 +5,8 @@
  */
 
 import { Bookmark, BookmarkCheck, Eye, PlusCircle, Zap } from 'lucide-react';
-import { List, AutoSizer } from 'react-virtualized';
 import { useNavigate } from 'react-router-dom';
+import { List, AutoSizer } from 'react-virtualized';
 
 import { Button } from '@/components/ui/button';
 

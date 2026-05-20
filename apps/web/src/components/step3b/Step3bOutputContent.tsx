@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import type { Step3bOutputBlock } from '@/lib/constants/step3b';
+import { cn } from '@/lib/utils';
 
 // Step3bResult — 6 块结构对应 D-220 字面锁
 export interface Step3bResult {

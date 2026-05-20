@@ -66,7 +66,9 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
       )}
       data-testid={`phase-card-${phase.key}`}
       onClick={handleToggle}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleToggle(); }}
       role={isGenerated ? 'button' : undefined}
+      tabIndex={isGenerated ? 0 : undefined}
       aria-expanded={expanded}
     >
       {/* Card header */}
@@ -104,6 +106,7 @@ export function PhaseCard({ phase, index, isGenerated, isStreaming, onClick }: P
         <div
           className="px-4 pb-4 space-y-3 border-t border-border/40 pt-3"
           data-testid={`phase-detail-${phase.key}`}
+          role="none"
           onClick={(e) => e.stopPropagation()}
         >
           {phase.tactics.length > 0 && (

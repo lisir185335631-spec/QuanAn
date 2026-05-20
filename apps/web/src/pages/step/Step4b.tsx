@@ -1,13 +1,12 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 
 import { FadeInWrapper } from '@/components/FadeInWrapper';
-
+import { PlatformInlineRadio } from '@/components/inline-pickers';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import Step4bOutputContent from '@/components/step4b/Step4bOutputContent';
 import type { Step4bResult } from '@/components/step4b/Step4bOutputContent';
-import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { PlatformInlineRadio } from '@/components/inline-pickers';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
 import {
@@ -206,7 +205,7 @@ export default function Step4b() {
   // Sync result from DB
   useEffect(() => {
     if (!dbQuery.data?.result) return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
+    const raw = dbQuery.data.result;
     setResult(adaptStep4bResult(raw, industryLabel));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbQuery.data?.result]);
@@ -284,6 +283,7 @@ export default function Step4b() {
 
         {/* PlatformInlineRadio — US-001 utility */}
         <div>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className="block text-body-sm font-label text-on-surface mb-2">
             平台选择
           </label>
@@ -328,7 +328,7 @@ export default function Step4b() {
           {!isSaving && dbQuery.isError && (
             <ErrorState
               message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
-              onRetry={dbQuery.refetch}
+              onRetry={() => { void dbQuery.refetch(); }}
             />
           )}
           {!isSaving && !dbQuery.isError && !hasResult && (

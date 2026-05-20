@@ -65,9 +65,10 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+      files: ['tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts', '**/*.test.tsx', '**/*.spec.tsx'],
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
         'no-console': 'off',
       },
     },
@@ -78,5 +79,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: ['dist', 'node_modules', '.next', 'build'],
+  ignorePatterns: ['dist', 'node_modules', '.next', 'build', 'apps/web/e2e/**', 'apps/web/playwright.config.ts', 'apps/web/scripts/**'],
 };

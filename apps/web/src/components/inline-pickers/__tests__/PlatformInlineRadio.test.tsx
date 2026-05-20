@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
-import { PlatformInlineRadio } from '../PlatformInlineRadio';
 import { PLATFORMS } from '@/lib/constants/platforms';
+
+import { PlatformInlineRadio } from '../PlatformInlineRadio';
 
 describe('PlatformInlineRadio', () => {
   it('renders all 5 platform buttons', () => {

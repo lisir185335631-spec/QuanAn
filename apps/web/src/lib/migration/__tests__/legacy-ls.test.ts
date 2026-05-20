@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { stepLsKey } from '@/lib/ls-namespace';
+
 import {
   LEGACY_KEYS,
   MIGRATION_FLAG_KEY,

@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-
 import { Toaster } from 'sonner';
 
 import { Header } from '@/components/Header';
@@ -12,7 +11,7 @@ export function App() {
   useEffect(() => {
     if (isLoading || account === null) return;
     migrateLegacyLs(localStorage, account.id);
-  }, [account?.id, isLoading]);
+  }, [account, isLoading]);
 
   return (
     <>

@@ -1,8 +1,8 @@
 // D-226 · 通用 8 step 向导组件 · controlled props · 不 hardcode 维度
 
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { type DiagnosisDimension, DIAGNOSIS_STAGES_4, DIAGNOSIS_NOTES_PLACEHOLDER } from '@/lib/constants/diagnosis';
+import { cn } from '@/lib/utils';
 
 export interface DiagnosisStepCardProps {
   stepIndex: number;        // 1-8

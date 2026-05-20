@@ -1,5 +1,5 @@
-import { type PropsWithChildren } from 'react';
 import { motion } from 'framer-motion';
+import { type PropsWithChildren } from 'react';
 
 export interface FadeInWrapperProps extends PropsWithChildren {
   delay?: number;

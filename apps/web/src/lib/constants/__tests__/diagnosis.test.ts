@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import {
   DIAGNOSIS_DIMENSIONS_8,
   DIAGNOSIS_STAGES_4,
@@ -72,10 +73,10 @@ describe('DIAGNOSIS_DIMENSIONS_8', () => {
 describe('DIAGNOSIS_STAGES_4', () => {
   it('4 阶段字面 · 含中点 · · spec §8.5.1', () => {
     expect(DIAGNOSIS_STAGES_4).toHaveLength(4);
-    expect(DIAGNOSIS_STAGES_4[0]!.label).toBe('起步期 · 刚开始做 IP，还在摸索中');
-    expect(DIAGNOSIS_STAGES_4[1]!.label).toBe('成长期 · 有一定内容了，但变现不稳定');
-    expect(DIAGNOSIS_STAGES_4[2]!.label).toBe('爆发期 · 内容有爆款，正在放大变现');
-    expect(DIAGNOSIS_STAGES_4[3]!.label).toBe('瓶颈期 · 遇到增长瓶颈，需要突破');
+    expect(DIAGNOSIS_STAGES_4[0].label).toBe('起步期 · 刚开始做 IP，还在摸索中');
+    expect(DIAGNOSIS_STAGES_4[1].label).toBe('成长期 · 有一定内容了，但变现不稳定');
+    expect(DIAGNOSIS_STAGES_4[2].label).toBe('爆发期 · 内容有爆款，正在放大变现');
+    expect(DIAGNOSIS_STAGES_4[3].label).toBe('瓶颈期 · 遇到增长瓶颈，需要突破');
   });
 
   it('4 阶段 value 字段存在且唯一', () => {

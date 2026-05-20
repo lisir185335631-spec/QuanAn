@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import { PLATFORMS } from '@/lib/constants/platforms';
+import { cn } from '@/lib/utils';
 
 export interface PlatformInlineRadioProps {
   value: string | null;

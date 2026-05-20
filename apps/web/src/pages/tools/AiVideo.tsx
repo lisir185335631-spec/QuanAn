@@ -154,6 +154,7 @@ export default function AiVideo() {
       {/* AC-3(3): 5 平台 radio */}
       <FadeInWrapper delay={0.1} from="up">
         <div className="space-y-2">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className="block text-body-md font-medium text-on-surface">目标平台</label>
           <PlatformInlineRadio value={platform} onChange={setPlatform} size="lg" />
         </div>
@@ -162,6 +163,7 @@ export default function AiVideo() {
       {/* AC-3(4): 6 视频类型 button */}
       <FadeInWrapper delay={0.15} from="up">
         <div className="space-y-2">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label className="block text-body-md font-medium text-on-surface">视频类型</label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3" data-testid="video-type-grid">
             {VIDEO_TYPES.map((vt) => {

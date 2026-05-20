@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
-import { DiagnosisStepCard } from '../DiagnosisStepCard';
 import { DIAGNOSIS_DIMENSIONS_8 } from '@/lib/constants/diagnosis';
+
+import { DiagnosisStepCard } from '../DiagnosisStepCard';
 
 const basicDimension = DIAGNOSIS_DIMENSIONS_8[0]!;        // basic (Step 1)
 const positioningDimension = DIAGNOSIS_DIMENSIONS_8[1]!;  // positioning (Step 2)

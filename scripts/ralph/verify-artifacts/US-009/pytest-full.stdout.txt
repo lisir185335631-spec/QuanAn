@@ -1,1 +1,59 @@
-JUNIT report written to /Users/return/Desktop/QuanQn/scripts/ralph/verify-artifacts/US-009/pytest-full.xml
+
+> @quanan/web@0.1.0 test /Users/return/Desktop/QuanAn/apps/web
+> vitest run --config vitest.config.ts
+
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx (9 tests) 81ms
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx (9 tests) 122ms
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx (11 tests) 114ms
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx (10 tests) 237ms
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx (13 tests) 170ms
+ ✓ src/pages/__tests__/DailyTasks.test.tsx (11 tests) 187ms
+ ✓ src/pages/__tests__/Evolution.test.tsx (13 tests) 200ms
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx (7 tests) 265ms
+ ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 6ms
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 5ms
+ ✓ src/components/step8/Step8GeneratePlan.test.tsx (6 tests) 76ms
+ ✓ src/components/step8/Step8OptimizeScript.test.tsx (6 tests) 66ms
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx (10 tests) 253ms
+ ✓ src/pages/__tests__/Diagnosis.test.tsx (11 tests) 189ms
+ ✓ src/pages/step/__tests__/Step8.test.tsx (8 tests) 252ms
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 12ms
+ ✓ src/pages/__tests__/Accounts.test.tsx (8 tests) 152ms
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx (11 tests) 89ms
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts (15 tests) 13ms
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx (8 tests) 42ms
+ ✓ src/lib/constants/__tests__/step8.test.ts (6 tests) 4ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 2ms
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 1ms
+ ✓ src/pages/step/__tests__/Step4b.test.tsx (7 tests) 1ms
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx (7 tests) 155ms
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx (7 tests) 63ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 121ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 5ms
+ ✓ src/test/pages.test.tsx (30 tests) 469ms
+ ✓ src/pages/step/__tests__/Step7.test.tsx (10 tests) 213ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 60ms
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx (7 tests) 218ms
+ ✓ src/lib/constants/__tests__/evolution.test.ts (7 tests) 5ms
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts (5 tests) 4ms
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts (8 tests) 3ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 39ms
+ ✓ src/pages/step/__tests__/Step5.test.tsx (5 tests) 67ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 1ms
+ ✓ src/pages/step/__tests__/Step6.test.tsx (5 tests) 145ms
+ ✓ src/pages/step/__tests__/Step1.test.tsx (4 tests) 215ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 3ms
+ ✓ src/pages/step/__tests__/Step3.test.tsx (4 tests) 84ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 46ms
+ ✓ src/pages/step/__tests__/Step3b.test.tsx (4 tests) 59ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
+
+ Test Files  46 passed (46)
+      Tests  382 passed (382)
+   Start at  22:50:29
+   Duration  4.15s (transform 1.78s, setup 1.91s, collect 8.98s, tests 4.52s, environment 11.74s, prepare 1.99s)
+

@@ -14,11 +14,11 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { STEP1_CTA_LABEL } from '@/lib/constants/industries';
 import { stepLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 import { cn } from '@/lib/utils';
 
-import { STEP1_CTA_LABEL } from '@/lib/constants/industries';
 
 import { CategorySelect } from './CategorySelect';
 import { IndustrySelect } from './IndustrySelect';

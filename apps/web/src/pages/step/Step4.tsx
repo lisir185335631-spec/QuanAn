@@ -82,7 +82,7 @@ export default function Step4() {
   // Sync result from DB
   useEffect(() => {
     if (!dbQuery.data?.result) return;
-    const raw = dbQuery.data.result as Record<string, unknown>;
+    const raw = dbQuery.data.result;
     setResult(adaptKpiResult(raw));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbQuery.data?.result]);
@@ -166,7 +166,7 @@ export default function Step4() {
         {!isSaving && dbQuery.isError && (
           <ErrorState
             message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
-            onRetry={dbQuery.refetch}
+            onRetry={() => { void dbQuery.refetch(); }}
           />
         )}
         {!isSaving && !dbQuery.isError && !result && (

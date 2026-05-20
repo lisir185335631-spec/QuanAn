@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
+
 import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { Input } from '@/components/ui/input';
 import { FUNCTION_MATRIX, FUNCTION_MATRIX_FOOTER } from '@/lib/constants/function-matrix';
 import { GUIDE_FAQ_5 } from '@/lib/constants/guide-faq';
 

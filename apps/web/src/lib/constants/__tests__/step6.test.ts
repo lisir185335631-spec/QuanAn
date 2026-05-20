@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import {
   STEP6_SUBTITLE,
   STEP6_TEXTAREA,
@@ -6,6 +7,7 @@ import {
   STEP6_CHAR_COUNTER_TEMPLATE,
   STEP6_OUTPUT_MODULES_3,
 } from '../step6';
+
 import type { Step6Result, Step6StoryboardScene } from '../step6';
 
 describe('STEP6 constants', () => {

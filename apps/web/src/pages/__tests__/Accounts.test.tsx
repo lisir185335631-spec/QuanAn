@@ -66,6 +66,7 @@ vi.mock('sonner', () => ({
 }));
 
 vi.mock('react-router-dom', async () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return { ...actual, useNavigate: () => vi.fn() };
 });

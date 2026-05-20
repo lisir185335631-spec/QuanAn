@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+
+import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { StepProgress, STEP_ORDER_KEYS } from '@/components/StepProgress';
-import { trpc } from '@/lib/trpc';
+import { Button } from '@/components/ui/button';
 import { FUNCTION_MATRIX, FUNCTION_MATRIX_FOOTER } from '@/lib/constants/function-matrix';
 import { WORKFLOW_STEPS } from '@/lib/constants/workflow';
-import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { trpc } from '@/lib/trpc';
 
 function HeroSection() {
   return (
@@ -21,7 +22,7 @@ function HeroSection() {
       <p className="font-cn text-lg text-muted-foreground mb-2">全链路变现</p>
 
       <p className="font-cn italic text-sm text-muted-foreground/70 mb-8">
-        "重新构造一个人是怎样不变形的"
+        &quot;重新构造一个人是怎样不变形的&quot;
       </p>
 
       <div className="flex gap-4 flex-wrap justify-center">
@@ -48,7 +49,7 @@ function IpProgressSection() {
   const completed = progress?.completedSteps ?? [];
   const percent = Math.round((completed.length / 9) * 100);
 
-  const nextStepKey = STEP_ORDER_KEYS.find((k) => !(completed as string[]).includes(k));
+  const nextStepKey = STEP_ORDER_KEYS.find((k) => !(completed).includes(k));
   const nextStepNum = nextStepKey?.replace('step', '');
 
   return (
