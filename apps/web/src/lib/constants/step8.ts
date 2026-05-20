@@ -29,8 +29,21 @@ export interface Step8Experience {
   label: string;
 }
 
+// AC-3 · STEP8_EXPERIENCES_3 · id/label/subtitle dual-line format
+export interface Step8Experience3 {
+  id: 'novice' | 'experienced' | 'senior';
+  label: string;
+  subtitle: string;
+}
+
 export interface Step8OutputModule {
   id: 'opening' | 'interaction' | 'deal' | 'closing' | 'traffic' | 'engagement';
+  h3Label: string;
+}
+
+// AC-7 · tab 2 optimize output 4 H3 blocks
+export interface Step8OptimizeOutputModule {
+  id: 'highlight' | 'interaction' | 'conversion' | 'notes';
   h3Label: string;
 }
 
@@ -105,6 +118,13 @@ export const STEP8_EXPERIENCE_3: readonly Step8Experience[] = [
   { key: 'expert',      label: '资深 · 直播经验丰富' },
 ] as const;
 
+// STEP8_EXPERIENCES_3 · AC-3 · id/label/subtitle format · dual-line display
+export const STEP8_EXPERIENCES_3: readonly Step8Experience3[] = [
+  { id: 'novice',      label: '新手',    subtitle: '刚开始做直播' },
+  { id: 'experienced', label: '有经验',  subtitle: '有一定直播经验' },
+  { id: 'senior',      label: '资深',    subtitle: '直播经验丰富' },
+] as const;
+
 export const STEP8_EXPERIENCE_RADIO_LABEL = '直播经验';
 export const STEP8_BUTTON_GENERATE_PLAN = '生成直播方案';
 
@@ -139,14 +159,22 @@ export const STEP8_OPTIMIZE_LOADING_TEXT = 'AI 正在优化话术，预计 30-60
 
 // ─── Output Modules (6) ───────────────────────────────────────────────────────
 
-// STEP8_OUTPUT_MODULES_6 · 6 项严格 · spec §7.9 line 1782 字面 1:1
+// STEP8_OUTPUT_MODULES_6 · 6 项严格 · spec §7.9 line 1782 字面 1:1 · AC-5 plain labels
 export const STEP8_OUTPUT_MODULES_6: readonly Step8OutputModule[] = [
-  { id: 'opening',     h3Label: '1. 开场话术' },
-  { id: 'interaction', h3Label: '2. 中场互动' },
-  { id: 'deal',        h3Label: '3. 成交话术' },
-  { id: 'closing',     h3Label: '4. 收尾' },
-  { id: 'traffic',     h3Label: '5. 引流策略' },
-  { id: 'engagement',  h3Label: '6. 互动设计' },
+  { id: 'opening',     h3Label: '开场话术' },
+  { id: 'interaction', h3Label: '中场互动' },
+  { id: 'deal',        h3Label: '成交话术' },
+  { id: 'closing',     h3Label: '收尾' },
+  { id: 'traffic',     h3Label: '引流策略' },
+  { id: 'engagement',  h3Label: '互动设计' },
+] as const;
+
+// STEP8_OPTIMIZE_OUTPUT_MODULES_4 · AC-7 · tab 2 stub output 4 H3 blocks
+export const STEP8_OPTIMIZE_OUTPUT_MODULES_4: readonly Step8OptimizeOutputModule[] = [
+  { id: 'highlight',   h3Label: '优化亮点' },
+  { id: 'interaction', h3Label: '互动设计' },
+  { id: 'conversion',  h3Label: '转化关键' },
+  { id: 'notes',       h3Label: '注意事项' },
 ] as const;
 
 // ─── Optimize Script Output Labels (2) ── TD-77 fix · 常量化防 hardcode ────────

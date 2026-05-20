@@ -268,7 +268,7 @@ function HistoryTimeline({
 }: TimelineProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 text-muted-foreground py-12">
+      <div className="flex items-center gap-2 text-muted-foreground py-12" data-testid="history-loading">
         <Loader2 className="h-5 w-5 animate-spin" />
         <span>加载中…</span>
       </div>
@@ -276,12 +276,12 @@ function HistoryTimeline({
   }
 
   if (error) {
-    return <p className="text-destructive py-12">加载失败，请刷新重试</p>;
+    return <p className="text-destructive py-12" data-testid="history-error">加载失败，请刷新重试</p>;
   }
 
   if (!rows || rows.length === 0) {
     return (
-      <div className="rounded-lg border border-border py-16 text-center text-body-md text-muted-foreground">
+      <div className="rounded-lg border border-border py-16 text-center text-body-md text-muted-foreground" data-testid="history-empty">
         暂无历史记录
       </div>
     );

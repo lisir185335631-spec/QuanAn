@@ -1,96 +1,77 @@
+/**
+ * PRD-23 US-003 · step8 constants unit tests
+ * AC-12: ≥ 3 tests · STEP8_EXPERIENCES_3 字面 / 6 H3 输出常量 / PlatformInlineRadio import
+ */
 import { describe, it, expect } from 'vitest';
+
+import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
 import {
-  STEP8_SUBTITLE_TEMPLATE,
-  STEP8_SUBFUNCTIONS_2,
-  STEP8_EXPERIENCE_3,
+  STEP8_EXPERIENCES_3,
+  STEP8_OPTIMIZE_OUTPUT_MODULES_4,
   STEP8_OUTPUT_MODULES_6,
-  STEP8_OPTIMIZE_OUTPUT_LABELS_2,
   STEP8_PLATFORMS_5,
-  STEP8_BUTTON_GENERATE_PLAN,
-  STEP8_BUTTON_OPTIMIZE_SCRIPT,
-  STEP8_OPTIMIZE_MIN_CHARS,
+  STEP8_SUBTITLE_TEMPLATE,
 } from '../step8';
 import type { Step8Result } from '../step8';
 
 describe('STEP8 constants', () => {
+  it('STEP8_EXPERIENCES_3 · 3 entries · id/label/subtitle 字面锁 (AC-3)', () => {
+    expect(STEP8_EXPERIENCES_3.length).toBe(3);
+    expect(STEP8_EXPERIENCES_3[0]).toMatchObject({ id: 'novice', label: '新手', subtitle: '刚开始做直播' });
+    expect(STEP8_EXPERIENCES_3[1]).toMatchObject({ id: 'experienced', label: '有经验', subtitle: '有一定直播经验' });
+    expect(STEP8_EXPERIENCES_3[2]).toMatchObject({ id: 'senior', label: '资深', subtitle: '直播经验丰富' });
+  });
+
+  it('STEP8_OUTPUT_MODULES_6 · plain labels no numbers · length === 6 (AC-5)', () => {
+    expect(STEP8_OUTPUT_MODULES_6.length).toBe(6);
+    expect(STEP8_OUTPUT_MODULES_6[0]!.h3Label).toBe('开场话术');
+    expect(STEP8_OUTPUT_MODULES_6[1]!.h3Label).toBe('中场互动');
+    expect(STEP8_OUTPUT_MODULES_6[2]!.h3Label).toBe('成交话术');
+    expect(STEP8_OUTPUT_MODULES_6[3]!.h3Label).toBe('收尾');
+    expect(STEP8_OUTPUT_MODULES_6[4]!.h3Label).toBe('引流策略');
+    expect(STEP8_OUTPUT_MODULES_6[5]!.h3Label).toBe('互动设计');
+    // 严禁数字前缀
+    STEP8_OUTPUT_MODULES_6.forEach((m) => expect(m.h3Label).not.toMatch(/^\d/));
+  });
+
+  it('STEP8_PLATFORMS_5 · length === 5 · PlatformInlineRadio import 合法', () => {
+    expect(STEP8_PLATFORMS_5.length).toBe(5);
+    expect(STEP8_PLATFORMS_5[0]!.id).toBe('douyin');
+    expect(typeof PlatformInlineRadio).toBe('function');
+  });
+
   it('SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号', () => {
     expect(STEP8_SUBTITLE_TEMPLATE).toBe(
       '当前行业：{industry}。AI 将生成完整的直播方案，包含详细话术、引流策略、互动设计，并支持 AI 优化直播脚本。',
     );
   });
 
-  it('SUBFUNCTIONS_2 · 2 个 h3Label 字面 1:1 · 含全角冒号', () => {
-    expect(STEP8_SUBFUNCTIONS_2.length).toBe(2);
-    expect(STEP8_SUBFUNCTIONS_2[0]!.key).toBe('generate_plan');
-    expect(STEP8_SUBFUNCTIONS_2[0]!.h3Label).toBe('子功能 1：生成直播方案');
-    expect(STEP8_SUBFUNCTIONS_2[1]!.key).toBe('optimize_script');
-    expect(STEP8_SUBFUNCTIONS_2[1]!.h3Label).toBe('子功能 2：AI 优化直播话术');
-  });
-
-  it('EXPERIENCE_3 · 3 个 label 含中点 · · 严禁 hyphen 或逗号', () => {
-    expect(STEP8_EXPERIENCE_3.length).toBe(3);
-    expect(STEP8_EXPERIENCE_3[0]!.label).toBe('新手 · 刚开始做直播');
-    expect(STEP8_EXPERIENCE_3[1]!.label).toBe('有经验 · 有一定直播经验');
-    expect(STEP8_EXPERIENCE_3[2]!.label).toBe('资深 · 直播经验丰富');
-    // 严禁 hyphen
-    STEP8_EXPERIENCE_3.forEach(e => expect(e.label).not.toContain(' - '));
-  });
-
-  it('OUTPUT_MODULES_6 · 6 个 h3Label 字面 1:1 spec §7.9 line 1782', () => {
-    expect(STEP8_OUTPUT_MODULES_6.length).toBe(6);
-    expect(STEP8_OUTPUT_MODULES_6[0]!.h3Label).toBe('1. 开场话术');
-    expect(STEP8_OUTPUT_MODULES_6[1]!.h3Label).toBe('2. 中场互动');
-    expect(STEP8_OUTPUT_MODULES_6[2]!.h3Label).toBe('3. 成交话术');
-    expect(STEP8_OUTPUT_MODULES_6[3]!.h3Label).toBe('4. 收尾');
-    expect(STEP8_OUTPUT_MODULES_6[4]!.h3Label).toBe('5. 引流策略');
-    expect(STEP8_OUTPUT_MODULES_6[5]!.h3Label).toBe('6. 互动设计');
-  });
-
-  it('PLATFORMS_5 re-export from step3 · length === 5', () => {
-    expect(STEP8_PLATFORMS_5.length).toBe(5);
-    expect(STEP8_PLATFORMS_5[0]!.id).toBe('douyin');
-  });
-
-  it('BUTTON_GENERATE_PLAN + BUTTON_OPTIMIZE_SCRIPT 字面 1:1', () => {
-    expect(STEP8_BUTTON_GENERATE_PLAN).toBe('生成直播方案');
-    expect(STEP8_BUTTON_OPTIMIZE_SCRIPT).toBe('AI 优化话术');
-  });
-
-  it('OPTIMIZE_MIN_CHARS === 10', () => {
-    expect(STEP8_OPTIMIZE_MIN_CHARS).toBe(10);
-  });
-
-  it('STEP8_OPTIMIZE_OUTPUT_LABELS_2 · TD-77 fix · length === 2 · 禁 hardcode', () => {
-    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2.length).toBe(2);
-    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[0]!.id).toBe('optimized_text');
-    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[0]!.label).toBe('优化后文案');
-    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[1]!.id).toBe('optimization_notes');
-    expect(STEP8_OPTIMIZE_OUTPUT_LABELS_2[1]!.label).toBe('优化说明');
+  it('STEP8_OPTIMIZE_OUTPUT_MODULES_4 · 4 H3 labels 字面锁 (AC-7)', () => {
+    expect(STEP8_OPTIMIZE_OUTPUT_MODULES_4.length).toBe(4);
+    expect(STEP8_OPTIMIZE_OUTPUT_MODULES_4[0]!.h3Label).toBe('优化亮点');
+    expect(STEP8_OPTIMIZE_OUTPUT_MODULES_4[1]!.h3Label).toBe('互动设计');
+    expect(STEP8_OPTIMIZE_OUTPUT_MODULES_4[2]!.h3Label).toBe('转化关键');
+    expect(STEP8_OPTIMIZE_OUTPUT_MODULES_4[3]!.h3Label).toBe('注意事项');
   });
 
   it('Step8Result interface · generate_plan + optimize_script 两分支', () => {
     const r1: Step8Result = {
       sub_function: 'generate_plan',
       generate_plan: {
-        opening: '开场话术内容',
-        interaction: '中场互动内容',
-        deal: '成交话术内容',
-        closing: '收尾内容',
-        traffic: '引流策略内容',
-        engagement: '互动设计内容',
+        opening: '开场话术',
+        interaction: '中场互动',
+        deal: '成交话术',
+        closing: '收尾',
+        traffic: '引流策略',
+        engagement: '互动设计',
       },
     };
     expect(r1.sub_function).toBe('generate_plan');
-    expect(r1.generate_plan?.opening).toBeTruthy();
 
     const r2: Step8Result = {
       sub_function: 'optimize_script',
-      optimize_script: {
-        optimized_text: '优化后话术',
-        optimization_notes: '优化说明',
-      },
+      optimize_script: { optimized_text: '优化后话术', optimization_notes: '说明' },
     };
     expect(r2.sub_function).toBe('optimize_script');
-    expect(r2.optimize_script?.optimized_text).toBeTruthy();
   });
 });

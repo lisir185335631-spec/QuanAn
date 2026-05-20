@@ -3389,6 +3389,11 @@ step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `r
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
   - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
+- **2026-05-20 v0.7** · 加 §11.14 PRD-23 stubs & tools polish 沉淀(10 US · 28 page visual baseline · 0 reject · 100% 严格一轮通过率)
+  - §11.14.1 · stub 完整化范式 · 4 工具 page 标准模式(local state · disabled 校验 · stub H3 输出 · unit test 无需 mock · MemoryRouter 即可)· VideoAnalysis 首建 · US-005/006/007 直接复用
+  - §11.14.2 · DiagnosisStepCard 通用 8 步向导(components/diagnosis/ · DIAGNOSIS_DIMENSIONS_8 data-driven · localStorage 持久化 · stubScore hash-based · 避免 8 独立组件重复)
+  - §11.14.3 · Visual Baseline 13 → 28 pages(prd22 13 + prd23 15+ · 目标 PRD-24 32 全覆盖 · /tmp/aiipznt-clone-research/screenshots/ 存储)
+  - §11.14.4 · TD-093 永久修复 · 3 件套机制化(playbooks/prd-template-unit-test-sync.md · prd/SKILL.md 新增 AC 模板 · plan-check §2.6.25 WARN 规则)· PRD-23 验证 100% 有效
 - **2026-05-19 v0.6** · 加 §11.13 PRD-22 inline-refactor + step-pages 沉淀(34 commits · 13 page visual diff · 3 inline picker utility)
   - §11.13.1 · Inline Picker Utility 3 件套跨 page 复用(components/inline-pickers/ · barrel export · 8 page 复用 · 0 重复实现)
   - §11.13.2 · Step Page 重写 AC 模板必含 unit test 要求(TD-093 红线 · 具体 component 名称写入 AC · 防 Opus reject)

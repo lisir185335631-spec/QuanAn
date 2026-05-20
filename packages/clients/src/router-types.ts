@@ -64,6 +64,8 @@ export type IpAccountOutput = {
   stage: string;
   isActive: boolean;
   followersRange: string;
+  personalInfo?: string | null;
+  ipPositioning?: string | null;
 } | null;
 
 export type StepDataOutput = {
@@ -388,26 +390,30 @@ const _shadowRouter = _t.router({
     list: _t.procedure.query((): IpAccountListOutput => []),
     active: _t.procedure.query((): ActiveAccountOutput => null),
     create: _t.procedure
-      .input((x: unknown) => x as { name: string; industry: string; platform: string; stage: string })
+      .input((x: unknown) => x as { name: string; industry: string; platform: string; stage?: string; personalInfo?: string })
       .mutation((): NonNullable<IpAccountOutput> => ({
         id: 0,
         name: '',
         industry: '',
         platform: '',
-        stage: '',
+        stage: 'starter',
         isActive: true,
         followersRange: '0-1000',
+        personalInfo: null,
+        ipPositioning: null,
       })),
     update: _t.procedure
-      .input((x: unknown) => x as Partial<{ name: string; industry: string; platform: string; stage: string }>)
+      .input((x: unknown) => x as Partial<{ name: string; industry: string; platform: string; stage: string; personalInfo?: string }>)
       .mutation((): NonNullable<IpAccountOutput> => ({
         id: 0,
         name: '',
         industry: '',
         platform: '',
-        stage: '',
+        stage: 'starter',
         isActive: true,
         followersRange: '0-1000',
+        personalInfo: null,
+        ipPositioning: null,
       })),
     delete: _t.procedure
       .input((x: unknown) => x as { accountId: number })

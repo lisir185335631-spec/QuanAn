@@ -1,0 +1,454 @@
+{
+  "project": "QuanAn",
+  "branchName": "ralph/prd-23-stubs-and-tools-polish",
+  "description": "3 stub 完整化(/diagnosis 8 步问卷 + 7 维度报告 · /accounts IP 账号管理 + 新建账号 modal · /step/8 直播策划 2 子功能) + 4 内容创作工具 stub 完整化(/video-analysis · /analysis · /video-production · /acquisition-video) + 18 page visual baseline 验证 + TD-092/093 PRD AC 模板修复 · 10 US · 3 high + 6 medium + 1 收官 · 10 Locked Decisions D-226~D-235 · 25 page visual baseline · D1=A + D4=B 严锁 · 不接 LLM(D-234 · 留 PRD-25+) · D-233 unit test 同步硬规则(PRD-22 TD-093 教训机制化)",
+  "lockedDecisions": [
+    {"id": "D-226", "decision": "/diagnosis 8 步问卷向导用通用 DiagnosisStepCard 组件驱动 · 路径 apps/web/src/components/diagnosis/ · 8 step 共用 layout(顶部步骤 N/8 + 大标题 + 副标 + checkbox 列 + 补充说明 textarea + 上/下一步)", "rationale": "spec §8.5.1 8 步 UI 模式相同 · 通用组件避免重复"},
+    {"id": "D-227", "decision": "/diagnosis 8 步自评项字面锁 · DIAGNOSIS_DIMENSIONS_8 常量 · 8 dimensions × 2-3 checkbox · 16 self-eval items 字面 1:1 spec §8.5.1 line 2392-2425", "rationale": "D1A 严守 · 防 ralph 创意改写 checkbox 文字"},
+    {"id": "D-228", "decision": "/accounts IP 账号卡片用 IpAccountCard 组件 + 新建账号 modal 用 CreateAccountModal · 路径 apps/web/src/components/accounts/ · ACTIVE 标 + 圆形头像首字符 + 行业/平台/粉丝量 + 业务描述 + [删除][编辑] button", "rationale": "spec §8.5.4 line 2518-2531"},
+    {"id": "D-229", "decision": "/step/8 2 子功能用 Tabs 切换 · 生成直播方案 / AI 优化话术 · 用 <Tabs> from shadcn · 每子功能独立表单 + CTA", "rationale": "spec §7.9 双子功能架构"},
+    {"id": "D-230", "decision": "/step/8 直播经验 radio 字面锁 · 新手 · 刚开始做直播 / 有经验 · 有一定直播经验 / 资深 · 直播经验丰富 · 完整字面 spec §7.9 line 1762", "rationale": "D1A 严守"},
+    {"id": "D-231", "decision": "4 stub 工具(/video-analysis · /analysis · /video-production · /acquisition-video) 用 ToolForm 抽象(PRD-15 沉淀 · 跟 /generate inline 不同 · 因为这 4 page aiipznt 实测就是简单 form)· 表单字段从 constants import", "rationale": "spec §8.1.2 / §8.3.2-3.4 4 page 都是简单 textarea + CTA 模式"},
+    {"id": "D-232", "decision": "14 page visual baseline 验证矩阵 · prd23-visual-baseline.spec.ts · baseline 名 prd23-XXX(本 PRD 内部 regression baseline · 不切 aiipznt 实拍 · TD-090 defer)", "rationale": "继承 PRD-22 visual baseline 模式 · 不切 aiipznt 实拍(Step D 量化数据决策)"},
+    {"id": "D-233", "decision": "unit test 同步硬规则 · 每个 US 重写 page/常量时 · 必须同步更新对应 apps/web/src/pages/**/__tests__/*.test.tsx 期望对齐新字面 · 不破 vitest 零回归 · PRD-22 TD-093 教训机制化", "rationale": "防 PRD-22 US-006/009 同模式 reject 重演"},
+    {"id": "D-234", "decision": "PRD-23 不接 LLM(D-225 同延续)· 4 工具 stub 完整化 = UI 骨架 + 表单 + stub 输出区(静态示例数据)· LLM 集成留 PRD-25+", "rationale": "基于 Step D 数据 · LLM 接入是大工程 · 留独立 PRD"},
+    {"id": "D-235", "decision": "TD-092 + TD-093 修复机制 · /step/3 PRD-22 AC 误算 H3 数 + PRD AC 模板漏写 unit test 同步 · 本 PRD US-010 收官时统一修 PRD 文档 + plan-check 加规则", "rationale": "跨 PRD 改进 · 让 PRD-24 启动时 plan-check 自动 catch"}
+  ],
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "high · /diagnosis 8 步问卷向导 + 16 自评项 + 7 维度诊断报告(stub)",
+      "description": "作为 QuanAn 用户 · 当我访问 /diagnosis · 我看到 H1 \"7 维度 IP 诊断报告\" + 副标 + 8 步问卷向导(每步通用 layout · 顶部步骤 N/8 + 维度名大标题 + 副标 + 自评 checkbox 列 + 补充说明 textarea + 上/下一步) · Step 1 表单(行业 + 产品 + 4 阶段 radio) · Step 2-8 checkbox 多选 · 第 8 步生成 7 维度 IP 健康度报告(每维度评分 + 改进建议 · stub data) · 表单状态走 localStorage save(acc_{accountId} 前缀 LD-009 多账号隔离) · D-226/D-227 严守 · 影响下游 PRD-24 6 modules 视觉精修 · risk_level high。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '7 维度 IP 诊断报告' · 副标题字面锁 '像老师一样诊断你的 IP，找出问题，给出具体可执行的改进方案'(spec §8.5.1 + D1A)",
+        "AC-2 · 新建 apps/web/src/lib/constants/diagnosis.ts · 导出 DIAGNOSIS_DIMENSIONS_8 数组 · 8 项 · 每项 { id, label, subtitle, checkboxes: string[] } · 字面 1:1 spec §8.5.1 line 2392-2425 · 完整 16 self-eval checkbox 字面(basic/positioning/branding/traffic/value/case/persona/authentic 8 dimensions)",
+        "AC-3 · 新建 apps/web/src/components/diagnosis/DiagnosisStepCard.tsx 通用 step 组件 · API · interface DiagnosisStepCardProps { stepIndex: number; totalSteps: number; dimension: DiagnosisDimension; selectedCheckboxes: string[]; onCheckboxToggle: (item: string) => void; notes: string; onNotesChange: (notes: string) => void; onPrev: () => void; onNext: () => void; isFirst: boolean; isLast: boolean; } · 渲染顶部 `步骤 ${N} / 8 · ${dimension.label}` + H2 + 副标 + checkbox 列 + 补充说明 textarea + 上/下一步 button(最后一步 CTA 改 '生成诊断报告')",
+        "AC-4 · Step 1 阶段 radio 4 选 1 字面锁 spec §8.5.1 line 2353-2359 · '起步期 · 刚开始做 IP，还在摸索中' / '成长期 · 有一定内容了，但变现不稳定' / '爆发期 · 内容有爆款，正在放大变现' / '瓶颈期 · 遇到增长瓶颈，需要突破'",
+        "AC-5 · 重写 apps/web/src/pages/Diagnosis.tsx · useState 管理 8 step 状态(currentStep + selectedAnswers Record<dimensionId, string[]> + notesPerStep) · 渲染 <DiagnosisStepCard {...props} />",
+        "AC-6 · Step 8 提交后 · 渲染 stub '7 维度 IP 健康度报告' · 7 维度评分(stub random 60-95) + 改进建议(stub 静态文本) + '导出诊断报告 PDF' button(stub onClick toast '导出功能 PRD-25+')",
+        "AC-7 · 表单状态走 localStorage save · 字面 acc_ 前缀 · 用 import { getLsKey } from '@/lib/ls-namespace' · key 形如 acc_{accountId}_diagnosis_progress · 多账号隔离 R-5 LD-009",
+        "AC-8 · DOM button 数 ≥ 12(8 步导航 button × 2 prev/next + 4 阶段 radio · 接近 aiipznt 12)",
+        "AC-9 · D-233 unit test 同步硬规则 · 新建 apps/web/src/pages/__tests__/Diagnosis.test.tsx · ≥ 5 test(H1 字面 / 8 step 切换 / checkbox 多选 / Step 8 报告显示 / localStorage save)",
+        "AC-10 · 新建 apps/web/src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx · ≥ 5 test(props 渲染 / 上/下一步 click / 最后一步 CTA 变化 / disabled isFirst / checkbox toggle)",
+        "AC-11 · 新建 apps/web/src/lib/constants/__tests__/diagnosis.test.ts · ≥ 3 test(8 dimensions 数量 / 16 checkbox 总数 / 4 阶段字面)",
+        "AC-12 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-13 · cd apps/web && pnpm exec vitest run → 总 ≥ 219 test pass(基线 PRD-22 206 + 新增 ≥ 13)",
+        "AC-14 · 新增 e2e tests/e2e/prd23-diagnosis-flow.spec.ts · ≥ 4 test(H1 命中 / 8 step 切换流畅 / Step 1 表单填写 / Step 8 报告显示)",
+        "AC-15 · 新增 visual baseline · tests/e2e/prd23-visual-baseline.spec.ts /diagnosis · baseline 'prd23-diagnosis.png' · viewport 1440x900 · 阈值 0.05 · 首跑 --update-snapshots + Read confirm",
+        "AC-16 · 用 agent-browser 打开 http://localhost:5173/diagnosis · 验证 (a) H1 + 副标字面 · (b) 8 step 切换流畅 · (c) Step 1 表单 4 字段 + 4 阶段 radio 选中态 · (d) Step 2-7 checkbox 多选 toggle · (e) Step 8 报告显示 7 维度评分 + 改进建议 + 导出 PDF button · (f) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 1,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope(apps/web/src/pages/Diagnosis.tsx, apps/web/src/components/diagnosis/, apps/web/src/lib/constants/diagnosis.ts)涉及的 TD · 主动 fix · commit message 加 [TD-XXX resolved] tag",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/diagnosis.ts",
+        "apps/web/src/components/diagnosis/DiagnosisStepCard.tsx",
+        "apps/web/src/pages/__tests__/Diagnosis.test.tsx",
+        "apps/web/src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx",
+        "apps/web/src/lib/constants/__tests__/diagnosis.test.ts",
+        "tests/e2e/prd23-diagnosis-flow.spec.ts",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Diagnosis.tsx"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run Diagnosis",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages",
+          "source_story": "US-006/US-009 unit test 同步教训",
+          "lesson": "重写 page/常量时 · 必须同步更新对应 __tests__/*.test.tsx unit test 期望对齐新字面 · 否则 vitest 零回归 fail · 触发 reject",
+          "antipattern": "改完 Diagnosis.tsx + diagnosis.ts 常量 · 不同步更新 Diagnosis.test.tsx 期望 → pnpm exec vitest run 6 fail · audit 阶段 reject(同 PRD-22 US-006/009)",
+          "correct": "AC-9/10/11 必须新建 3 个 test 文件 + 改完 Diagnosis.tsx 后 cd apps/web && pnpm exec vitest run Diagnosis 验证 0 fail · D-233 硬规则"
+        },
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish (self-injected)",
+          "source_story": "US-001 DiagnosisStepCard 通用化风险",
+          "lesson": "8 step UI 模式相同但 props 不同 · 必须用 props 接受 DIAGNOSIS_DIMENSIONS_8(每 step 不同) · 不能 hardcode 8 维度在组件内",
+          "antipattern": "在 DiagnosisStepCard.tsx 内 hardcode 8 维度 switch (dimension.id) { case 'basic': render(...); case 'positioning': ... } · 组件膨胀且违反 controlled component 设计",
+          "correct": "DiagnosisStepCard 是纯渲染组件 · 接收 dimension prop(单 step 数据) + selectedCheckboxes/onCheckboxToggle controlled value/onChange · Diagnosis.tsx 主 page 管理 8 step 状态 · D-226/215 锁"
+        },
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages",
+          "source_story": "US-005 D-217 4 tab 字面锁",
+          "lesson": "checkbox/radio 选项字面必须 1:1 spec · 不允许创意改写或合并语义",
+          "antipattern": "spec '已确定赛道方向' 改写为 '确定赛道方向' · 或 '产品定位明确，知道卖什么' 改写为 '产品定位清晰' · 违反 D1A 字面锁",
+          "correct": "DIAGNOSIS_DIMENSIONS_8 常量必须从 spec §8.5.1 line 2392-2425 字面 1:1 复制 · grep 验证 · 测试 'AC-2 字面对照' 必须命中完整字符"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "high · /accounts IP 账号管理 + 新建账号 modal · tRPC ipAccounts.create 集成",
+      "description": "作为 QuanAn 用户 · 当我访问 /accounts · 我看到 H1 'IP 账号管理' + 副标 + '新建账号' button(顶部右侧) + IP 账号列表(卡片 grid · 每卡含 ACTIVE 标 + 圆形头像首字符 + 行业/平台 + 粉丝量 + 业务描述 + [删除][编辑] button) · 点其他账号切换 ACTIVE · 点'新建账号'弹 modal 填 4 字段后 tRPC ipAccounts.create 调用成功后 redirect /step/1。modal 流程 + tRPC 集成 + 全局 useActiveAccount hook 影响所有 page · risk_level high。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 'IP 账号管理' · 副标题字面锁 '管理多个 IP 账号，每个账号独立配置行业、定位和人设'(spec §8.5.4 + D1A)",
+        "AC-2 · 新建 apps/web/src/components/accounts/IpAccountCard.tsx · API · interface IpAccountCardProps { account: IpAccount; isActive: boolean; onActivate: () => void; onEdit: () => void; onDelete: () => void; } · 渲染 ACTIVE 标(若 isActive · 右上角 chip · bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full) + 圆形头像首字符(d-12 · rounded-full bg-primary/15 · 显示 account.name[0]) + H3 account.name + text industry + platform + followerCount + tagline + description + [删除][编辑] button(stub onClick toast '功能 PRD-25+')",
+        "AC-3 · 新建 apps/web/src/components/accounts/CreateAccountModal.tsx · 用 <Dialog> from shadcn · trigger button '新建账号'(顶部右侧 · bg-gradient-to-r from-primary to-primary/60) · modal 含 4 字段 · input 'IP 账号名'(必填 placeholder '如：赵语AI') + input '行业'(必填 placeholder '如：企业服务') + radio 5 平台(<PlatformInlineRadio> 复用 PRD-22 US-001) + textarea '业务描述'(选填 placeholder '如：定制智能体和 opc 培训') + 底部 [取消][创建并开始] button",
+        "AC-4 · CreateAccountModal CTA '创建并开始' disabled 条件 · !name || !industry || !platform · onClick 调 trpc.ipAccounts.create.useMutation() · 成功 → toast '账号创建成功' + close modal + redirect /step/1(useNavigate)",
+        "AC-5 · 重写 apps/web/src/pages/Accounts.tsx · 渲染 grid <IpAccountCard> × N · 用 trpc.ipAccounts.list.useQuery() 拉所有账号 · click 其他卡 → trpc.ipAccounts.setActive.useMutation() 切 active · 顶部右侧 <CreateAccountModal trigger>",
+        "AC-6 · DOM button 数 ≥ 7(2 button per active account + 2 button per inactive × N + 1 新建账号 · 接近 aiipznt 实测 7)",
+        "AC-7 · D-233 unit test 同步 · 新建 apps/web/src/pages/__tests__/Accounts.test.tsx · ≥ 5 test(H1 字面 / 账号列表渲染 / ACTIVE 标显示 / 切换 active 调 setActive / 新建账号 modal 弹)",
+        "AC-8 · 新建 apps/web/src/components/accounts/__tests__/IpAccountCard.test.tsx · ≥ 5 test(props 渲染 / ACTIVE 标条件 / 圆形头像首字符 / onActivate/onEdit/onDelete click 触发 / stub button toast)",
+        "AC-9 · 新建 apps/web/src/components/accounts/__tests__/CreateAccountModal.test.tsx · ≥ 5 test(modal 弹/关 / 4 字段填写 / disabled 条件 / 取消关闭 / 创建成功 mutation 触发 + redirect)",
+        "AC-10 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-11 · cd apps/web && pnpm exec vitest run → 总 ≥ 234 test pass(基线 219 + US-002 新增 ≥ 15)",
+        "AC-12 · 新增 e2e tests/e2e/prd23-accounts-flow.spec.ts · ≥ 5 test(H1 / 账号列表 / ACTIVE 切换 / 新建 modal 弹/创建后跳 /step/1 闭环)",
+        "AC-13 · visual baseline 加 /accounts · baseline 'prd23-accounts.png' · viewport 1440x900 · 阈值 0.05",
+        "AC-14 · 用 agent-browser 打开 http://localhost:5173/accounts · 验证 (a) H1 + 副标 · (b) 账号列表渲染(至少 1 个账号) · (c) ACTIVE 标显示 · (d) 新建账号 button click · (e) modal 弹 + 4 字段 · (f) 填写完整 + 点'创建并开始' · (g) toast '账号创建成功' · (h) redirect /step/1 · (i) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 2,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope(apps/web/src/pages/Accounts.tsx, apps/web/src/components/accounts/)涉及的 TD · 主动 fix",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/components/accounts/IpAccountCard.tsx",
+        "apps/web/src/components/accounts/CreateAccountModal.tsx",
+        "apps/web/src/pages/__tests__/Accounts.test.tsx",
+        "apps/web/src/components/accounts/__tests__/IpAccountCard.test.tsx",
+        "apps/web/src/components/accounts/__tests__/CreateAccountModal.test.tsx",
+        "tests/e2e/prd23-accounts-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/Accounts.tsx",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run Accounts IpAccountCard CreateAccountModal",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages",
+          "source_story": "US-006/US-009 unit test 同步教训",
+          "lesson": "重写 page/常量时 · 必须同步更新对应 __tests__/*.test.tsx unit test 期望 · 否则 vitest 零回归 fail · 触发 reject",
+          "antipattern": "改完 Accounts.tsx + 新建 IpAccountCard/CreateAccountModal · 不同步更新 Accounts.test.tsx 期望 · vitest fail",
+          "correct": "AC-7/8/9 必须新建 3 个 test 文件 + 改完后 cd apps/web && pnpm exec vitest run Accounts 验证 0 fail · D-233 硬规则"
+        },
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish (self-injected)",
+          "source_story": "US-002 modal Dialog 风险",
+          "lesson": "CreateAccountModal 必须用 shadcn <Dialog> · 不要自己 implement modal · controlled state via open/onOpenChange · disabled 条件用 props 控制 · 不能在 onClick 内直接调 trpc.create 不验证 disabled",
+          "antipattern": "<div className='fixed inset-0 z-50 bg-black/50'>...自己 implement modal</div> · 或 onClick 内不验证 disabled 条件 · 用户填空白后点击 trpc.create 报错",
+          "correct": "import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog' · 用 controlled state open + setOpen + onCreate 调 trpc.ipAccounts.create.useMutation · disabled if !name || !industry || !platform"
+        },
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish (self-injected)",
+          "source_story": "US-002 tRPC create + redirect 闭环风险",
+          "lesson": "新建账号后必须 close modal + redirect /step/1 · 不能只 close 不 redirect 让用户卡在 /accounts · 也不能不 close 让 modal 留着新账号在列表 + modal 双显",
+          "antipattern": "mutation.mutateAsync(...) 成功后只 setOpen(false) 不 navigate · 或不 close modal 直接 navigate · UX 不连贯",
+          "correct": "await mutation.mutateAsync(input) · toast.success('账号创建成功') · setOpen(false) · navigate('/step/1') · 闭环验证 e2e 必须 expect URL = /step/1"
+        }
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "high · /step/8 直播策划 2 子功能 tabs(生成直播方案 / AI 优化话术)",
+      "description": "作为 QuanAn 用户 · 当我访问 /step/8 · 我看到 H1 '直播策划' + 副标 + 2 子功能 tabs · 子功能 1 4 字段表单(产品描述 + 受众 + 5 平台 PlatformInlineRadio + 3 直播经验 radio) + '生成直播方案' CTA + stub 输出 6 H3 区块 · 子功能 2 textarea + 优化目标 input + 'AI 优化话术' CTA + stub 输出 4 H3 · D-229/D-230 字面锁严守 · 表单状态 stepData.save(step8) · risk_level high。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '直播策划' · 副标题字面锁 '当前行业：{industry}。AI 将生成完整的直播方案，包含详细话术、引流策略、互动设计，并支持 AI 优化直播脚本。'(spec §7.9 line 1753 + D1A) · 顶部副标签 'STEP 08 · 直播策划'(D-224)",
+        "AC-2 · 2 子功能 tabs 用 <Tabs> from shadcn · TabsList + 2 TabsTrigger · 顺序固定 · tab 1 '生成直播方案'(默认 active) · tab 2 'AI 优化话术'",
+        "AC-3 · 新建 apps/web/src/lib/constants/step8.ts · 导出 STEP8_PLATFORMS_5(复用 PRD-22 PLATFORMS 5 平台) + STEP8_EXPERIENCES_3 字面锁 spec §7.9 line 1762 · const STEP8_EXPERIENCES_3 = [{ id: 'novice', label: '新手', subtitle: '刚开始做直播' }, { id: 'experienced', label: '有经验', subtitle: '有一定直播经验' }, { id: 'senior', label: '资深', subtitle: '直播经验丰富' }] as const",
+        "AC-4 · tab 1 '生成直播方案' 表单 · (1) textarea '产品/服务信息' 必填 placeholder '描述你要在直播中推广的产品或服务...' · (2) input '目标受众' placeholder '如：25-40岁女性...' · (3) radio 5 平台(<PlatformInlineRadio> 复用 PRD-22) · (4) radio 3 直播经验(自定义 3 button · 每 button label + subtitle 双行 · 选中态 border-primary bg-primary/10) · CTA button '生成直播方案'(disabled if !product || !platform || !experience)",
+        "AC-5 · tab 1 stub 输出 spec §7.9 line 1782 · 6 H3 区块字面锁 顺序固定 · H3 '开场话术' / '中场互动' / '成交话术' / '收尾' / '引流策略' / '互动设计' · 每 H3 块 glass-card wrapper + stub markdown 内容(可静态 placeholder text)",
+        "AC-6 · tab 2 'AI 优化话术' 表单 · textarea '直播话术脚本' 必填 ≥ 10 字 placeholder '粘贴你的直播话术脚本（至少 10 个字），AI 将深度优化话术表达、互动设计和转化逻辑...' · input '优化目标'(可选) placeholder '优化目标（可选），如：提升互动率、增强转化、更有感染力...' · CTA button 'AI 优化话术'(disabled if text.length < 10)",
+        "AC-7 · tab 2 stub 输出 · 简单 markdown 渲染(<ReactMarkdown>) 显示优化后话术 + 4 H3 区块 · H3 '优化亮点' / '互动设计' / '转化关键' / '注意事项'",
+        "AC-8 · 表单状态 stepData.save(step8) · 用 useStepData hook · 字段保留(子功能 1 form state + 子功能 2 form state 独立 useState 管理) · 切换 tab 不丢状态",
+        "AC-9 · DOM button 数 ≥ 15(2 tabs + 5 平台 + 3 经验 + 2 CTA + 3 stub action button · 接近 aiipznt 16)",
+        "AC-10 · DOM H 标签 ≥ 7(H1 + 6 H3 tab 1 输出 · 接近 aiipznt 3 标准 stub 输出后变 9)",
+        "AC-11 · D-233 unit test 同步 · 重写 apps/web/src/pages/step/__tests__/Step8.test.tsx 期望对齐新字面(2 tabs / 6 H3 输出 / 3 经验 radio / disabled 条件) · ≥ 6 test",
+        "AC-12 · 新建 apps/web/src/lib/constants/__tests__/step8.test.ts · ≥ 3 test(STEP8_EXPERIENCES_3 字面 / 6 H3 输出常量 / PlatformInlineRadio import 验证)",
+        "AC-13 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-14 · cd apps/web && pnpm exec vitest run → 总 ≥ 243 test pass(基线 234 + 新增 ≥ 9)",
+        "AC-15 · e2e tests/e2e/prd18-step8-flow.spec.ts(如不存在则新建) · ≥ 5 test(H1 / 2 tabs 切换 / tab 1 4 字段填写 / tab 2 textarea + 优化目标 / CTA disabled 条件)",
+        "AC-16 · visual baseline 加 /step/8 · baseline 'prd23-step8.png' · viewport 1440x900 · 阈值 0.05",
+        "AC-17 · agent-browser 验证 · (a) H1 + 副标 · (b) 2 tabs 切换流畅 不丢状态 · (c) tab 1 4 字段 + 5 平台 + 3 经验 radio · (d) tab 2 textarea + 优化目标 · (e) CTA disabled→enabled · (f) stub 输出 6 H3 渲染 · (g) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 3,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · 列本 story scope(apps/web/src/pages/step/Step8.tsx, apps/web/src/lib/constants/step8.ts, tests/e2e/prd18-step8-flow.spec.ts)涉及的 TD · 主动 fix",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/lib/constants/step8.ts",
+        "apps/web/src/lib/constants/__tests__/step8.test.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/step/Step8.tsx",
+        "apps/web/src/pages/step/__tests__/Step8.test.tsx",
+        "tests/e2e/prd18-step8-flow.spec.ts",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run Step8 step8",
+      "size_hint": "medium",
+      "risk_level": "high",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages",
+          "source_story": "US-006/US-009 unit test 同步教训",
+          "lesson": "重写 page/常量必须同步 unit test · D-233 硬规则",
+          "antipattern": "改完 Step8.tsx + step8.ts · 不同步更新 Step8.test.tsx 期望 'STEP 08 · 直播策划' / 2 tabs / 6 H3 · vitest fail · reject",
+          "correct": "AC-11/12 必须同步更新 + cd apps/web && pnpm exec vitest run Step8 验证 0 fail · D-233 硬规则"
+        },
+        {
+          "source_prd": "prd-23-stubs-and-tools-polish (self-injected)",
+          "source_story": "US-003 tabs 状态独立性风险",
+          "lesson": "2 子功能 tab 切换时子功能 1 + 子功能 2 form state 必须独立 · 不能共用 state · 切换 tab 不丢之前填写的数据",
+          "antipattern": "useState 共用 state · 切到 tab 2 + 填写 textarea + 切回 tab 1 后产品描述被清空 · UX 破坏",
+          "correct": "useState 分子功能独立 · const [tab1State, setTab1State] = useState({ product, audience, platform, experience }) · const [tab2State, setTab2State] = useState({ script, optimizeGoal }) · tabs 切换不影响"
+        },
+        {
+          "source_prd": "prd-22-inline-refactor-step-pages",
+          "source_story": "US-005 D-217 4 tab 字面锁",
+          "lesson": "tab 标题字面必须 1:1 spec · 不允许改写或合并",
+          "antipattern": "tab 1 写 '生成方案' 而非 '生成直播方案' · 或 tab 2 写 'AI 优化' 而非 'AI 优化话术' · 违反 D-229 字面锁",
+          "correct": "tabs config = [{ value: 'generate', label: '生成直播方案' }, { value: 'optimize', label: 'AI 优化话术' }] 字面 1:1 spec §7.9"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "medium · /video-analysis 真表单 + 5 H3 stub 输出(爆款文案解析)",
+      "description": "作为 QuanAn 用户 · 当我访问 /video-analysis · 我看到 H1 '爆款文案解析' + 副标 + 使用方法提示 + 真表单(视频标题 input 选填 + 视频文案 textarea ≥ 10 字) + '开始深度解析' CTA + stub 输出 5 H3 区块(钩子拆解 + 结构分析 + 爆款元素识别 + 多维评分 + 一键仿写跳 /generate)。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '爆款文案解析' · 副标题字面锁 '粘贴爆款视频的完整文案/口播稿，AI 将深度拆解爆款密码，支持一键仿写'(spec §8.1.2 + D1A)",
+        "AC-2 · 使用方法提示 infobox 字面 '打开抖音/小红书/快手等 APP → 找到爆款视频 → 复制视频的完整口播文案/文字内容 → 粘贴到下方输入框 → 点击「开始深度解析」'",
+        "AC-3 · 表单字段 · input '视频标题'(选填 placeholder '视频标题（选填）') + textarea '视频文案'(必填 ≥ 10 字 placeholder '粘贴爆款视频的完整文案/口播稿（至少 10 个字）...')",
+        "AC-4 · CTA button '开始深度解析'(disabled if text.length < 10)",
+        "AC-5 · stub 输出 5 H3 区块字面锁 顺序固定 · H3 '钩子拆解' desc '开头 3 秒为什么留人' / H3 '结构分析' desc '起承转合' / H3 '爆款元素识别' desc '用了贪念/恐惧/反差等中的哪几个' / H3 '多维评分'(10 维度 stub) / H3 '一键仿写' button → 跳 /generate(prefill scriptType)",
+        "AC-6 · D-233 unit test 同步 · 新建 apps/web/src/pages/tools/__tests__/VideoAnalysis.test.tsx · ≥ 4 test(H1 字面 / 表单 disabled / ≥ 10 字 enabled / 输出 5 H3)",
+        "AC-7 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 247",
+        "AC-8 · 新增 e2e tests/e2e/prd23-video-analysis-flow.spec.ts · ≥ 3 test(H1 / 表单 disabled→enabled / 5 H3 输出)",
+        "AC-9 · visual baseline 加 /video-analysis · baseline 'prd23-video-analysis.png' · 阈值 0.05",
+        "AC-10 · agent-browser 验证 (a) H1 + 提示 · (b) 表单 disabled · (c) ≥ 10 字 enabled · (d) stub 5 H3 输出 · (e) 一键仿写 click 跳 /generate · (f) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 4,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/tools/VideoAnalysis.tsx",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/__tests__/VideoAnalysis.test.tsx",
+        "tests/e2e/prd23-video-analysis-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/VideoAnalysis.tsx",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run VideoAnalysis",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-005",
+      "title": "medium · /analysis 真表单 + 5 H3 stub 输出(文案结构分析)",
+      "description": "作为 QuanAn 用户 · 当我访问 /analysis · 我看到 H1 '文案结构分析' + 副标 + 真表单(文案 textarea ≥ 10 字 + 字符计数 `${text.length} 字`) + '开始分析' CTA + stub 输出 5 H3 区块(结构拆解 + 节奏分析 + 爆款元素识别 + 多维评分 + 优化建议)。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '文案结构分析' · 副标题字面锁 '粘贴任意短视频文案，AI 将从结构、节奏、爆款元素等多维度深度分析'(spec §8.3.2 + D1A)",
+        "AC-2 · 表单字段 · textarea '文案'(必填 ≥ 10 字 placeholder '粘贴需要分析的短视频文案（至少 10 个字）...') · 字符计数 '{text.length} 字' 右下角",
+        "AC-3 · CTA button '开始分析'(disabled if text.length < 10)",
+        "AC-4 · stub 输出 5 H3 区块字面锁 顺序固定 · H3 '结构拆解' desc '起承转合 / 起转合 / hook-body-cta 等' / H3 '节奏分析' desc '每段时长 / 留人率预测' / H3 '爆款元素识别' / H3 '多维评分' / H3 '优化建议'",
+        "AC-5 · D-233 unit test 同步 · 新建 apps/web/src/pages/tools/__tests__/Analysis.test.tsx · ≥ 4 test",
+        "AC-6 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 251",
+        "AC-7 · 新增 e2e tests/e2e/prd23-analysis-flow.spec.ts · ≥ 3 test",
+        "AC-8 · visual baseline 加 /analysis · baseline 'prd23-analysis.png' · 阈值 0.05",
+        "AC-9 · agent-browser 验证 (a) H1 + 副标 · (b) 字符计数 0 字 → N 字 · (c) disabled→enabled · (d) 5 H3 stub · (e) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 5,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/tools/Analysis.tsx",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/__tests__/Analysis.test.tsx",
+        "tests/e2e/prd23-analysis-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/Analysis.tsx",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run Analysis",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-006",
+      "title": "medium · /video-production 真表单 + 4 H3 stub 输出(短视频一键制作)",
+      "description": "作为 QuanAn 用户 · 当我访问 /video-production · 我看到 H1 '短视频一键制作' + 副标 + 真表单(文案 textarea ≥ 10 字) + '生成制作方案' CTA + stub 输出 4 H3 区块(分镜脚本 + 拍摄方案 + 口播提词器 + 剪辑指导)。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '短视频一键制作' · 副标题字面锁 '输入文案，AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导'(spec §8.3.3 + D1A)",
+        "AC-2 · 表单字段 · textarea '文案'(必填 ≥ 10 字 placeholder '粘贴你的短视频文案（至少 10 个字），AI 将为你生成完整的制作方案...')",
+        "AC-3 · CTA button '生成制作方案'(disabled if text.length < 10)",
+        "AC-4 · stub 输出 4 H3 区块字面锁 顺序固定 · H3 '分镜脚本' desc '同 step/6' / H3 '拍摄方案' desc '设备 / 灯光 / 服装' / H3 '口播提词器' desc '断句 / 重音' / H3 '剪辑指导' desc '卡点 / 特效 / 字幕样式'",
+        "AC-5 · D-233 unit test 同步 · 新建 apps/web/src/pages/tools/__tests__/VideoProduction.test.tsx · ≥ 4 test",
+        "AC-6 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 255",
+        "AC-7 · 新增 e2e tests/e2e/prd23-video-production-flow.spec.ts · ≥ 3 test",
+        "AC-8 · visual baseline 加 /video-production · baseline 'prd23-video-production.png' · 阈值 0.05",
+        "AC-9 · agent-browser 验证 (a) H1 + 副标 · (b) 文案 textarea · (c) disabled→enabled · (d) 4 H3 stub · (e) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 6,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/tools/VideoProduction.tsx",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/__tests__/VideoProduction.test.tsx",
+        "tests/e2e/prd23-video-production-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/VideoProduction.tsx",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run VideoProduction",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-007",
+      "title": "medium · /acquisition-video 真表单 + 3 方案 grid stub(获客型视频)",
+      "description": "作为 QuanAn 用户 · 当我访问 /acquisition-video · 我看到 H1 '获客型视频制作' + 副标 + 真表单(行业 dropdown + 客户画像 textarea + 卖点 textarea) + '生成获客方案' CTA + stub 输出 3 方案 grid(每方案含 4 H4:主题角度/钩子/内容结构/CTA)。",
+      "acceptanceCriteria": [
+        "AC-1 · H1 字面锁 '获客型视频制作' · 副标题字面锁 '专为获客设计的短视频方案，让精准客户主动找上门'(spec §8.3.4 + D1A)",
+        "AC-2 · 表单字段 · (1) dropdown '选择行业'(必填 默认当前账号行业 placeholder '📲 自媒体运营') · (2) textarea '目标客户画像'(必填 placeholder '描述您的理想客户，例如：想要创业的30-45岁宝妈群体，有一定积蓄但缺乏方向...') · (3) textarea '产品/服务卖点'(必填 placeholder '描述您的核心卖点，例如：0基础可学、3个月回本、一对一指导...')",
+        "AC-3 · CTA button '生成获客方案'(disabled if !industry || !audience || !sellingPoints)",
+        "AC-4 · stub 输出 3 方案 grid · 每方案 glass-card · 含 4 H4 字面锁顺序固定 · H4 '主题角度' / H4 '钩子' / H4 '内容结构' / H4 'CTA'",
+        "AC-5 · 行业 dropdown 默认值 · 取 useActiveAccount().industry · 用户可手动改 dropdown 覆盖",
+        "AC-6 · D-233 unit test 同步 · 新建 apps/web/src/pages/tools/__tests__/AcquisitionVideo.test.tsx · ≥ 4 test",
+        "AC-7 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 259",
+        "AC-8 · 新增 e2e tests/e2e/prd23-acquisition-video-flow.spec.ts · ≥ 3 test(H1 / 3 字段填写 / 3 方案 grid stub 显示)",
+        "AC-9 · visual baseline 加 /acquisition-video · baseline 'prd23-acquisition-video.png' · 阈值 0.05",
+        "AC-10 · agent-browser 验证 (a) H1 + 副标 · (b) 行业 dropdown 默认账号行业 · (c) 2 textarea 字面 placeholder · (d) disabled→enabled · (e) 3 方案 grid + 每方案 4 H4 · (f) console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 7,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: apps/web/src/pages/tools/AcquisitionVideo.tsx",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "apps/web/src/pages/tools/__tests__/AcquisitionVideo.test.tsx",
+        "tests/e2e/prd23-acquisition-video-flow.spec.ts"
+      ],
+      "files_to_modify": [
+        "apps/web/src/pages/tools/AcquisitionVideo.tsx",
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd apps/web && pnpm typecheck && pnpm exec vitest run AcquisitionVideo",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-008",
+      "title": "medium · 6 PRD-15 沉淀工具 page visual baseline 验证 + 修复",
+      "description": "作为 QuanAn 视觉一致性 owner · 我需要把 PRD-15 沉淀的 6 工具 page + 2 衍生 page(my-topics/history)加入 visual baseline 体系 · 跟 PRD-22 + PRD-23 新建 page 一致 · 跑 visual diff 5% threshold 检测 regression。",
+      "acceptanceCriteria": [
+        "AC-1 · prd23-visual-baseline.spec.ts 加 8 fixture · /trending · /present-styles · /monetization · /private-domain · /deep-learning · /copywriting · /my-topics · /history · 每 fixture baseline 'prd23-{name}.png' · viewport 1440x900 · fullPage · 阈值 0.05",
+        "AC-2 · 复用 PRD-21 expectVisualMatch helper · animations:disabled · transitions:disabled",
+        "AC-3 · 首跑 cd apps/web && pnpm exec playwright test prd23-visual-baseline --update-snapshots 生成 baseline · Read confirm 每张图肉眼无明显错误(无 broken page / 无 console error · grid/layout 正常)",
+        "AC-4 · 如发现 page 有视觉问题(font/spacing/color 偏差) · 修小问题(scope ≤ 50 LOC) · 不重写代码",
+        "AC-5 · D-233 unit test 同步(如有改动 page · 同步更新对应 tests)",
+        "AC-6 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 259(不增加新 test · 仅验证 regression)",
+        "AC-7 · cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd23-visual-baseline 全 pass · 阈值 0.05",
+        "AC-8 · agent-browser 抽查 3 page(/trending · /copywriting · /my-topics) · 验证 (a) page 渲染正常 · (b) console 无 error · (c) 视觉跟 baseline 一致",
+        "Typecheck passes"
+      ],
+      "depends_on": [],
+      "priority": 8,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: tests/e2e/prd23-visual-baseline.spec.ts + 6 PRD-15 page",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd23-visual-baseline",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-009",
+      "title": "medium · PRD-22 13 visual baseline 验证 + regression 修复",
+      "description": "作为 QuanAn 视觉一致性 owner · 我需要验证 PRD-22 已建 13 visual baseline(prd22-visual-baseline.spec.ts)在 main 上仍 pass · 跑 prd23-visual-baseline 8(US-008)+ 7(US-001~007 新加)= 15 fixture 全 pass · 总 28 baseline。",
+      "acceptanceCriteria": [
+        "AC-1 · 跑 cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd22-visual-baseline · 13 fixture 全 pass · 阈值 0.05",
+        "AC-2 · 跑 cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd23-visual-baseline · 15 fixture(US-001~007 新加 7 + US-008 加 8)· 全 pass · 阈值 0.05",
+        "AC-3 · 总 visual baseline 数 · 13(PRD-22) + 15(PRD-23) = 28 baseline · 全部存在于 /tmp/aiipznt-clone-research/screenshots/ · 命名 prd22-*.png + prd23-*.png",
+        "AC-4 · 任一 fixture fail · 修复或登记 TD(scope ≤ 100 LOC)",
+        "AC-5 · D-233 unit test 同步(如有 page 改动)",
+        "AC-6 · cd apps/web && pnpm typecheck → 0 error · vitest 总 ≥ 259",
+        "AC-7 · agent-browser 抽查 2 PRD-22 inline page(/generate · /knowledge) · 验证渲染正常 · console 无 error",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006", "US-007", "US-008"],
+      "priority": 9,
+      "passes": false,
+      "notes": "[TD-HINT] 执行前 grep .agents/tech-debt.json status=open · scope: tests/e2e/prd22-visual-baseline.spec.ts + prd23-visual-baseline.spec.ts",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "tests/e2e/prd23-visual-baseline.spec.ts"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm exec playwright test prd22-visual-baseline prd23-visual-baseline",
+      "size_hint": "small",
+      "risk_level": "medium"
+    },
+    {
+      "id": "US-010",
+      "title": "收官 · verify-prd-23.sh 60+ checks + /goal-verify + /prd-retro + TD-092/093 修复",
+      "description": "作为 PRD-23 收官 owner · 我需要 verify-prd-23.sh 完整 10 section · 60+ checks + /goal-verify §0 跑 gsd-map-codebase + /prd-retro 反哺 reject-examples.jsonl + 修复 TD-092(PRD AC 误算 H3) + TD-093(PRD AC 模板加 unit test 同步规则) · 这样 PRD-23 ship 后下游 PRD-24 能正确启动。",
+      "acceptanceCriteria": [
+        "AC-1 · 新建 scripts/verify-prd-23.sh · 复用 PRD-22 10 section 结构 · ≥ 60 checks · §1 /diagnosis(grep 7 维度 IP 诊断报告 H1 + 16 self-eval checkbox 字面 + DiagnosisStepCard 组件存在) · §2 /accounts(grep IP 账号管理 H1 + IpAccountCard + CreateAccountModal) · §3 /step/8(grep 直播策划 H1 + 2 tabs 字面 + 6 H3 输出区) · §4 /video-analysis(grep 爆款文案解析 H1 + 5 H3) · §5 /analysis(grep 文案结构分析 H1 + 5 H3) · §6 /video-production(grep 短视频一键制作 H1 + 4 H3) · §7 /acquisition-video(grep 获客型视频制作 H1 + 4 H4 × 3 方案) · §8 跨 page(typecheck 0 + vitest ≥ 259) · §9 visual baseline(prd23 15 + prd22 13 = 28 baseline 全 pass) · §10 unit test 同步规则验证(7 page 都有 __tests__ 文件)",
+        "AC-2 · 修复 PRD AC 模板 · 新建 ~/.claude/playbooks/prd-template-unit-test-sync.md · 写 D-233 unit test 同步硬规则 · 给下次 prd skill 写 PRD 时显式列必加",
+        "AC-3 · 更新 ~/.claude/skills/prd/SKILL.md AC template · 加 '## 必加 unit test 同步 AC'(对应 TD-093 修复)",
+        "AC-4 · 更新 ~/.claude/skills/plan-check/SKILL.md §2.6.X 加 'unit test 同步检测规则' · 对应 page 重写 + __tests__ 文件不同步 · WARN(对应 TD-093 自动 catch)",
+        "AC-5 · /goal-verify 跑 §0 · apps/web/.planning/codebase/ 7 文件 gsd-map-codebase 重新生成 · D1=A 字面对账(7 new page H1/副标/H3/H4 + DIAGNOSIS_DIMENSIONS_8 + STEP8_EXPERIENCES_3 + 4 工具 placeholder)",
+        "AC-6 · /goal-verify §1+ · 对比 PRD-23 §2 目标 10 项 vs 10 US 交付 · 全 10 项 ✅ 才算 PASS · 输出 .agents/goal-verify/prd-23-goal-verify.md",
+        "AC-7 · /prd-retro · 跨 PRD-22 vs PRD-23 复盘 · 反哺 ~/.claude/playbooks/reject-examples.jsonl · 输出 .agents/retros/prd-23-vs-prd-22-retrospective.md",
+        "AC-8 · 更新 .agents/tech-debt.json · 关 TD-092 + TD-093(status=closed 因为 AC-2/3/4 修了 PRD 模板和 plan-check)",
+        "AC-9 · 更新 AGENTS.md §11.14 · 加 PRD-23 沉淀(stub 完整化 pattern + DiagnosisStepCard 通用组件 + visual baseline 28 page · 准备 PRD-24 32 page 收官)",
+        "AC-10 · 更新 scripts/ralph/progress.txt · ship summary 模板(Ship date + Branch + Final commit + 10 US 全 audit approved 状态 + 28 visual baseline + Vitest test 数 + TypeScript errors + verify-prd-23.sh checks 数 + PRD-23 → PRD-24 Handoff)",
+        "AC-11 · cd apps/web && pnpm typecheck → 0 error",
+        "AC-12 · bash scripts/verify-prd-23.sh · 全 PASS · 退出码 0",
+        "Typecheck passes"
+      ],
+      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006", "US-007", "US-008", "US-009"],
+      "priority": 10,
+      "passes": false,
+      "notes": "[TD-HINT] 收官 · 关 TD-092/093 · 反哺全局 ~/.claude/ skill 模板",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [
+        "scripts/verify-prd-23.sh",
+        ".agents/goal-verify/prd-23-goal-verify.md",
+        ".agents/retros/prd-23-vs-prd-22-retrospective.md"
+      ],
+      "files_to_modify": [
+        ".agents/tech-debt.json",
+        "AGENTS.md",
+        "scripts/ralph/progress.txt"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && bash scripts/verify-prd-23.sh",
+      "size_hint": "medium",
+      "risk_level": "medium"
+    }
+  ]
+}

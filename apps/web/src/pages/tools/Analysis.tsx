@@ -1,90 +1,79 @@
 /**
- * Analysis.tsx — /analysis 工具页 · PRD-5 US-008
- * 真表单: ToolForm(toolKey=analysis) + copy textarea min 10 + 字符计数(react-hook-form watch)
- * LS-first dual-write: getToolLsKey(accountId, "analysis", "input") — handled by ToolForm (D-031 · AC-4)
- * submit → trpc.analysis.analyze.mutate({ copy }) → onSuccess setResult → <AnalysisResult>
- * <AnalysisResult> JSON.parse(data.content) → 5 维度 Progress bar
- * FeedbackButton: agentId=AnalysisAgent
- * AbortController on unmount
- * US-011: ?historyId → trpc.history.detail.useQuery → 预填 copy(inputSummary) + setResult(历史 content)
+ * Analysis.tsx — /analysis · PRD-23 US-005
+ * Stub: local state form + 5 H3 output sections (no tRPC)
+ * AC-1: H1 '文案结构分析' + subtitle 字面锁
+ * AC-2: textarea '文案' placeholder + 字符计数 right-aligned
+ * AC-3: CTA '开始分析' disabled if text.length < 10
+ * AC-4: stub 5 H3: 结构拆解/节奏分析/爆款元素识别/多维评分/优化建议
  */
+import { useState } from 'react';
 
-import { analysisStructuralInput } from '@quanan/schemas/specialist-io';
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+const SUBTITLE = '粘贴任意短视频文案，AI 将从结构、节奏、爆款元素等多维度深度分析';
 
-import { FeedbackButton } from '@/components/FeedbackButton';
-import { ToolForm } from '@/components/ToolForm/ToolForm';
-import { AnalysisResult } from '@/components/ToolResult/AnalysisResult';
-import { trpc } from '@/lib/trpc';
-
-import type { AnalysisHistoryRow } from '@quanan/clients/router-types';
+const OUTPUT_SECTIONS = [
+  { h3: '结构拆解', desc: '起承转合 / 起转合 / hook-body-cta 等' },
+  { h3: '节奏分析', desc: '每段时长 / 留人率预测' },
+  { h3: '爆款元素识别', desc: null },
+  { h3: '多维评分', desc: null },
+  { h3: '优化建议', desc: null },
+] as const;
 
 export default function Analysis() {
-  const [result, setResult] = useState<AnalysisHistoryRow | null>(null);
-  const [searchParams] = useSearchParams();
-  const historyId = searchParams.get('historyId') ? parseInt(searchParams.get('historyId')!, 10) : undefined;
+  const [text, setText] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
-  const abortRef = useRef<AbortController>(null!);
-  useEffect(() => {
-    abortRef.current = new AbortController();
-    return () => { abortRef.current.abort(); };
-  }, []);
-
-  // US-011: ?historyId pre-fill
-  const { data: historyDetail } = trpc.history.detail.useQuery(
-    { id: historyId! },
-    { enabled: !!historyId },
-  );
-
-  useEffect(() => {
-    if (historyDetail) {
-      setResult(historyDetail as unknown as AnalysisHistoryRow);
-    }
-  }, [historyDetail]);
-
-  const historyDefaults = historyDetail
-    ? { copy: historyDetail.inputSummary }
-    : undefined;
-
-  const mutation = trpc.analysis.analyze.useMutation();
-
-  async function handleSubmit(data: Record<string, unknown>) {
-    if (abortRef.current.signal.aborted) throw new Error('aborted');
-
-    const row = await mutation.mutateAsync(
-      data as { copy: string },
-    );
-
-    if (abortRef.current.signal.aborted) throw new Error('aborted');
-    return row;
-  }
-
-  function handleSuccess(row: unknown) {
-    setResult(row as AnalysisHistoryRow);
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (text.length < 10) return;
+    setSubmitted(true);
   }
 
   return (
     <main className="flex-1 container py-8 space-y-8">
+      {/* Header — AC-1 */}
       <div>
         <span className="text-label-sm font-label text-primary uppercase tracking-wide">内容创作</span>
         <h1 className="mt-1 text-h1 font-display text-on-surface">文案结构分析</h1>
-        <p className="mt-2 text-body-md text-muted-foreground">拆解爆款文案结构，提炼可复用写作框架</p>
+        <p className="mt-2 text-body-md text-muted-foreground">{SUBTITLE}</p>
       </div>
 
-      <ToolForm
-        toolKey="analysis"
-        schema={analysisStructuralInput}
-        onSubmit={handleSubmit}
-        onSuccess={handleSuccess}
-        submitLabel="开始分析"
-        defaultValues={historyDefaults}
-      />
+      {/* Form — AC-2/3 */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-1.5">
+          <label className="text-label-sm font-label text-on-surface">文案</label>
+          <textarea
+            placeholder="粘贴需要分析的短视频文案（至少 10 个字）..."
+            value={text}
+            onChange={e => setText(e.target.value)}
+            rows={8}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-body-md placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+          />
+          {/* AC-2 字符计数 right-aligned */}
+          <div className="flex justify-end">
+            <span className="text-body-sm text-muted-foreground" data-testid="char-count">
+              {text.length} 字
+            </span>
+          </div>
+        </div>
+        <button
+          type="submit"
+          disabled={text.length < 10}
+          className="w-full rounded-md bg-primary text-primary-foreground py-2.5 text-label-md font-label disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+        >
+          开始分析
+        </button>
+      </form>
 
-      {result && (
-        <div className="space-y-4">
-          <AnalysisResult data={result} />
-          <FeedbackButton stepKey="analysis" agentId="AnalysisAgent" />
+      {/* Stub output — AC-4 */}
+      {submitted && (
+        <div className="space-y-4" data-testid="analysis-output">
+          {OUTPUT_SECTIONS.map(({ h3, desc }) => (
+            <div key={h3} className="rounded-lg border border-border p-4 space-y-2">
+              <h3 className="text-h3 font-display text-on-surface">{h3}</h3>
+              {desc && <p className="text-body-sm text-muted-foreground">{desc}</p>}
+              <p className="text-body-md text-muted-foreground italic">AI 分析中…</p>
+            </div>
+          ))}
         </div>
       )}
     </main>

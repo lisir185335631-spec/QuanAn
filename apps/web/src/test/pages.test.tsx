@@ -50,6 +50,7 @@ vi.mock('@/lib/trpc', () => ({
       list: { useQuery: () => ({ data: [], isLoading: false }) },
       active: { useQuery: () => ({ data: null, isLoading: false }) },
       switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      create: { useMutation: () => ({ mutateAsync: vi.fn().mockResolvedValue({ id: 1, name: 'test', industry: 'tech', platform: 'douyin', stage: 'starter', isActive: true, followersRange: '0-1000' }), isPending: false }) },
     },
     knowledge: {
       getRecommendations: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -182,14 +183,14 @@ describe('Tool pages render', () => {
 });
 
 describe('Module pages render', () => {
-  it('Diagnosis renders h1 heading', () => {
+  it('Diagnosis renders h1 字面锁 "7 维度 IP 诊断报告" (PRD-23 US-001 完整化)', () => {
     render(<Diagnosis />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 诊断');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('7 维度 IP 诊断报告');
   });
 
-  it('Diagnosis shows empty state when no data', () => {
+  it('Diagnosis shows 8-step wizard (Step 1 · 基本信息)', () => {
     render(<Diagnosis />);
-    expect(screen.getByText('暂无诊断记录 · 请先完成 IP 诊断问卷')).toBeInTheDocument();
+    expect(screen.getByText('步骤 1 / 8 · 基本信息')).toBeInTheDocument();
   });
 
   it('Evolution renders h1 heading', () => {
@@ -203,13 +204,13 @@ describe('Module pages render', () => {
   });
 
   it('Accounts renders h1 heading', () => {
-    render(<Accounts />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 账号');
+    render(<MemoryRouter><Accounts /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 账号管理');
   });
 
   it('Accounts shows empty state when no data', () => {
-    render(<Accounts />);
-    expect(screen.getByText('暂无 IP 账号 · 请先完成 Step 1 创建')).toBeInTheDocument();
+    render(<MemoryRouter><Accounts /></MemoryRouter>);
+    expect(screen.getByText(/暂无 IP 账号/)).toBeInTheDocument();
   });
 
   it('DailyTasks renders h1 heading', () => {

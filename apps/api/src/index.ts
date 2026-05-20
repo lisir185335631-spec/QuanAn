@@ -19,7 +19,7 @@ import { cors } from 'hono/cors';
 import { lucia } from '@/lib/auth/lucia';
 import { validateAdminStartupConfig } from '@/lib/auth/oauth-admin-factory';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
-import { updateLastLogin } from '@/middleware/auth';
+import { updateLastLogin, DEV_MOCK_USER_EMAIL } from '@/middleware/auth';
 import { validateEnv } from '@/lib/env';
 import { logger, traceStore } from '@/lib/logger';
 import { checkDbConnection , prisma } from '@/lib/prisma';
@@ -250,6 +250,65 @@ app.get('/auth/callback', async (c) => {
 
   return c.redirect(allowedOrigin + '/');
 });
+
+// ── Dev-only instant login (NODE_ENV=development) ─────────────────────────────
+// GET /auth/dev-login — creates or reuses the mock dev user session without OAuth.
+// Used by e2e tests and agent-browser validation to bootstrap auth quickly.
+// Guard: only registered when NODE_ENV=development so it can never run in prod.
+if (process.env.NODE_ENV === 'development') {
+  app.get('/auth/dev-login', async (c) => {
+    const devEmail = DEV_MOCK_USER_EMAIL;
+    let devUser = await prisma.user.upsert({
+      where: { email: devEmail },
+      update: { lastSignedIn: new Date() },
+      create: {
+        openId: 'dev-mock-001',
+        email: devEmail,
+        name: 'Dev User',
+        loginMethod: 'mock',
+        lastSignedIn: new Date(),
+      },
+    });
+    // Ensure dev user has an activeAccountId so protectedProcedure works
+    if (!devUser.activeAccountId) {
+      let firstAccount = await prisma.ipAccount.findFirst({
+        where: { userId: devUser.id },
+        orderBy: { createdAt: 'asc' },
+        select: { id: true },
+      });
+      // Create a default mock account if user has none (e2e bootstrap)
+      if (!firstAccount) {
+        firstAccount = await prisma.ipAccount.create({
+          data: {
+            userId: devUser.id,
+            name: 'AI 创业者小张',
+            industry: 'enterprise',
+            platform: 'douyin',
+            stage: 'starter',
+            followersRange: '0-1000',
+            ipPositioning: 'ip-creator',
+          },
+          select: { id: true },
+        });
+      }
+      devUser = await prisma.user.update({
+        where: { id: devUser.id },
+        data: { activeAccountId: firstAccount.id },
+      });
+    }
+    const session = await lucia.createSession(devUser.id, {});
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    setCookie(c, sessionCookie.name, sessionCookie.value, {
+      path: '/',
+      httpOnly: true,
+      maxAge: sessionCookie.attributes.maxAge,
+      sameSite: 'Lax',
+      secure: false,
+    });
+    const next = c.req.query('next') ?? '/';
+    return c.redirect(allowedOrigin + next);
+  });
+}
 
 app.get('/auth/logout', async (c) => {
   const sessionId = lucia.readSessionCookie(c.req.header('cookie') ?? '');
