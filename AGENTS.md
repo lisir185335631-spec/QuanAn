@@ -3389,6 +3389,11 @@ step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `r
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
   - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
+- **2026-05-20 v0.8** · 加 §11.15 PRD-24 modules final polish 沉淀(3 module 完整化 + 32 page visual baseline 收官 · 连续 2 PRD 100% 严格一轮通过率 · 1:1 视觉复刻里程碑达成)
+  - §11.15.1 · stub 完整化 3件套范式已稳固(constants → page → __tests__ 顺序不可调 · PRD-24 3 pages 全严守 · constants first 迫使字面锁优先)· DailyTasks(3 任务 DAILY_TASKS_STUB) · Evolution(5 badge + 4 metrics + 5 H3 + 4 radio) · VoiceChat(VOICE CHAT H1 + 6 prompts + 历史 LS)
+  - §11.15.2 · D= 字面锁 LD 必须在 PRD 写作时确定(D-237/238/239 字面锁 · 实现前锁好 → Opus audit D1=A 100% · 反例: PRD-22 事后锁 → reject → 80min 浪费)· 字面锁命名规则: PAGENAME_ITEMS_N as const readonly
+  - §11.15.3 · 1:1 视觉复刻达成 · 32 page visual baseline 收官(prd22 13 + prd23 16 + prd24 3 · /tmp/aiipznt-clone-research/screenshots/ · threshold 0.05 · 1440×900 · 目标 PRD-21~24 视觉对齐征程完结)· LLM 接入留 PRD-25+
+  - §11.15.4 · TD-094 关闭 · e2e auth bypass 模板内化(prd24 3 flow specs 全显式 GET /auth/dev-login → 不再是 ralph 自主改动 · 是 PRD AC 预定义 · PRD-25+ prd skill 写 AC 时自动加 e2e auth bypass 要求)
 - **2026-05-20 v0.7** · 加 §11.14 PRD-23 stubs & tools polish 沉淀(10 US · 28 page visual baseline · 0 reject · 100% 严格一轮通过率)
   - §11.14.1 · stub 完整化范式 · 4 工具 page 标准模式(local state · disabled 校验 · stub H3 输出 · unit test 无需 mock · MemoryRouter 即可)· VideoAnalysis 首建 · US-005/006/007 直接复用
   - §11.14.2 · DiagnosisStepCard 通用 8 步向导(components/diagnosis/ · DIAGNOSIS_DIMENSIONS_8 data-driven · localStorage 持久化 · stubScore hash-based · 避免 8 独立组件重复)

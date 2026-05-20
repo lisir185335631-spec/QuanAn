@@ -1,307 +1,73 @@
 /**
- * PRD-8 US-008: /daily-tasks 页面
- * 今日任务 + 完成进度条 + 历史 7/30 天 · markCompleted optimistic update · regenerateToday polling
+ * DailyTasks.tsx — PRD-24 US-001
+ * /daily-tasks · 今日行动清单 · stub 3 任务卡 + loading + EmptyState
+ * AC-1: H1 '今日行动清单' + 副标 + '智能' 菜单分类标识
+ * AC-3: 3 H3 任务卡 (glass-card) + 完成打卡 button + 前往 button
+ * AC-4: useActiveAccount → null → EmptyState + 添加账号 CTA
+ * AC-5: stub 800ms loading → Loader2 spinner + DAILY_TASKS_LOADING_TEXT
+ * AC-6: getLsKey(accountId, 'daily_tasks_completed') → localStorage
+ * PRD-25+: 接 LLM 时替换 isLoading stub 为 trpc.dailyTasks.list.useQuery()
  */
-
-import { CheckCircle2, Circle, RefreshCw } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { EmptyState } from '@/components/states/EmptyState';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { trpc } from '@/lib/trpc';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import {
+  DAILY_TASKS_EMPTY_CTA,
+  DAILY_TASKS_EMPTY_DESC,
+  DAILY_TASKS_EMPTY_TITLE,
+  DAILY_TASKS_LOADING_TEXT,
+  DAILY_TASKS_STUB,
+} from '@/lib/constants/daily-tasks';
+import { getLsKey } from '@/lib/ls-namespace';
 
-import type { DailyTaskHistoryRow, DailyTaskItem } from '@quanan/clients/router-types';
-
-// ── helpers ───────────────────────────────────────────────────────────────────
-
-function formatDate(d: Date | string): string {
-  const date = typeof d === 'string' ? new Date(d) : d;
-  return new Intl.DateTimeFormat('zh-CN', { month: '2-digit', day: '2-digit' }).format(date);
-}
-
-const DIFFICULTY_LABEL: Record<DailyTaskItem['difficulty'], string> = {
-  easy: '简单',
-  medium: '中等',
-  hard: '困难',
-};
-
-const DIFFICULTY_COLOR: Record<DailyTaskItem['difficulty'], string> = {
-  easy: 'text-green-400',
-  medium: 'text-yellow-400',
-  hard: 'text-red-400',
-};
-
-// ── CompletionBar ─────────────────────────────────────────────────────────────
-
-function CompletionBar({ completed, total }: { completed: number; total: number }) {
-  const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
-  return (
-    <div className="flex items-center gap-3">
-      <div className="h-2 flex-1 rounded-full bg-surface-variant overflow-hidden">
-        <div
-          className="h-full rounded-full bg-primary transition-all duration-300"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className="text-label-sm font-label text-on-surface-variant w-14 text-right shrink-0">
-        {completed}/{total}
-      </span>
-    </div>
-  );
-}
+import type { DailyTask } from '@/lib/constants/daily-tasks';
 
 // ── TaskCard ──────────────────────────────────────────────────────────────────
 
 function TaskCard({
   task,
+  isCompleted,
   onComplete,
-  disabled,
 }: {
-  task: DailyTaskItem;
-  onComplete: (taskId: string) => void;
-  disabled?: boolean;
+  task: DailyTask;
+  isCompleted: boolean;
+  onComplete: (id: string) => void;
 }) {
   const navigate = useNavigate();
 
   return (
     <div
-      className={`flex gap-3 p-4 rounded-lg border transition-opacity ${
-        task.completed
-          ? 'border-outline-variant/40 bg-surface-variant/20 opacity-60'
-          : 'border-outline-variant bg-surface-variant/10'
-      }`}
+      className={`bg-card/40 backdrop-blur-md border border-border/40 rounded-lg p-6 space-y-3 transition-opacity ${isCompleted ? 'opacity-60' : ''}`}
     >
-      <button
-        className="mt-0.5 shrink-0 disabled:cursor-not-allowed"
-        onClick={() => !task.completed && onComplete(task.id)}
-        disabled={disabled || task.completed}
-        aria-label={task.completed ? '已完成' : '标记完成'}
-      >
-        {task.completed ? (
-          <CheckCircle2 className="w-5 h-5 text-primary" />
-        ) : (
-          <Circle className="w-5 h-5 text-on-surface-variant hover:text-primary transition-colors" />
-        )}
-      </button>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span
-            className={`text-body-md font-medium text-on-surface ${task.completed ? 'line-through' : ''}`}
-          >
-            {task.title}
-          </span>
-          <span className={`text-label-xs font-label shrink-0 ${DIFFICULTY_COLOR[task.difficulty]}`}>
-            {DIFFICULTY_LABEL[task.difficulty]}
-          </span>
-          <span className="text-label-xs font-label text-muted-foreground shrink-0">
-            {task.estimatedMinutes}min
-          </span>
-        </div>
-        <p className="text-body-sm text-on-surface-variant mb-2">{task.description}</p>
-        <button
-          className="text-label-sm font-label text-primary hover:underline"
-          onClick={() => navigate(task.ctaUrl)}
+      <div className="flex items-start gap-3">
+        {isCompleted && <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />}
+        <h3 className="text-body-md font-display text-on-surface leading-snug">{task.title}</h3>
+      </div>
+      <p className="text-body-sm text-muted-foreground">{task.hint}</p>
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant={isCompleted ? 'outline' : 'default'}
+          onClick={() => onComplete(task.id)}
+          disabled={isCompleted}
         >
-          {task.ctaText} →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ── TodaySection ──────────────────────────────────────────────────────────────
-
-function TodaySection() {
-  const utils = trpc.useUtils();
-  const [isRegenerating, setIsRegenerating] = useState(false);
-  const regenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const { data: today, refetch: refetchToday } = trpc.dailyTasks.getToday.useQuery(undefined, {
-    refetchInterval: isRegenerating ? 3000 : false,
-  });
-
-  const markCompleted = trpc.dailyTasks.markCompleted.useMutation({
-    onError: (_err, _variables, context) => {
-      // rollback optimistic update
-      if (context && 'previousToday' in (context as Record<string, unknown>)) {
-        const ctx = context as { previousToday: typeof today };
-        utils.dailyTasks.getToday.setData(undefined, ctx.previousToday);
-      }
-      toast.error('标记失败，请稍后再试');
-    },
-  });
-
-  const regenerate = trpc.dailyTasks.regenerateToday.useMutation({
-    onSuccess: () => {
-      setIsRegenerating(true);
-      regenTimerRef.current = setTimeout(() => setIsRegenerating(false), 30_000);
-    },
-    onError: () => {
-      toast.error('任务重新生成失败，请稍后再试');
-    },
-  });
-
-  // Stop polling once new tasks arrive
-  useEffect(() => {
-    if (isRegenerating && today && today.tasks.length > 0) {
-      setIsRegenerating(false);
-      if (regenTimerRef.current) clearTimeout(regenTimerRef.current);
-    }
-  }, [isRegenerating, today]);
-
-  useEffect(() => () => { if (regenTimerRef.current) clearTimeout(regenTimerRef.current); }, []);
-
-  async function handleComplete(taskId: string) {
-    if (!today) return;
-
-    // Optimistic update
-    const previousToday = utils.dailyTasks.getToday.getData();
-    utils.dailyTasks.getToday.setData(undefined, {
-      ...today,
-      tasks: today.tasks.map((t) =>
-        t.id === taskId ? { ...t, completed: true } : t,
-      ),
-      completedCount: today.completedCount + 1,
-    });
-
-    try {
-      await markCompleted.mutateAsync({ dailyTaskId: today.id, taskId });
-      void refetchToday();
-    } catch {
-      // onError handles rollback
-      utils.dailyTasks.getToday.setData(undefined, previousToday ?? null);
-    }
-  }
-
-  if (!today) {
-    return (
-      <Card>
-        <CardContent className="pt-6 pb-6">
-          {isRegenerating ? (
-            <div className="flex items-center gap-3 py-4">
-              <RefreshCw className="w-4 h-4 animate-spin text-primary" />
-              <p className="text-body-md text-on-surface-variant">正在生成今日任务…</p>
-            </div>
-          ) : (
-            <div className="text-center py-6">
-              <p className="text-body-md text-muted-foreground mb-4">今日任务尚未生成</p>
-              <Button
-                onClick={() => regenerate.mutate()}
-                disabled={regenerate.isPending || isRegenerating}
-                variant="outline"
-                size="sm"
-              >
-                {regenerate.isPending ? (
-                  <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                ) : null}
-                立即生成
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-            今日任务 · {formatDate(today.taskDate)}
-          </span>
+          {isCompleted ? '✓ 已打卡' : '完成打卡'}
+        </Button>
+        {task.link && (
           <Button
-            onClick={() => regenerate.mutate()}
-            disabled={regenerate.isPending || isRegenerating}
-            variant="ghost"
             size="sm"
-            className="text-muted-foreground hover:text-on-surface"
+            variant="ghost"
+            onClick={() => navigate(task.link!)}
           >
-            <RefreshCw className={`w-4 h-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+            前往 →
           </Button>
-        </div>
-        <CompletionBar completed={today.completedCount} total={today.totalCount} />
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {isRegenerating && (
-          <div className="flex items-center gap-2 text-body-sm text-muted-foreground py-2">
-            <RefreshCw className="w-4 h-4 animate-spin" />
-            正在重新生成…
-          </div>
         )}
-        {today.tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onComplete={(taskId) => void handleComplete(taskId)}
-            disabled={markCompleted.isPending || isRegenerating}
-          />
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── HistorySection ────────────────────────────────────────────────────────────
-
-function HistorySection() {
-  const [limit, setLimit] = useState<7 | 30>(7);
-  const { data: history, isLoading } = trpc.dailyTasks.getHistory.useQuery(
-    { limit, offset: 0 },
-    { staleTime: 60_000 },
-  );
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <p className="text-label-sm font-label text-on-surface-variant uppercase tracking-wide">
-          历史记录
-        </p>
-        <div className="flex gap-2">
-          {([7, 30] as const).map((d) => (
-            <button
-              key={d}
-              onClick={() => setLimit(d)}
-              className={`text-label-sm font-label px-2 py-1 rounded transition-colors ${
-                limit === d
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground hover:text-on-surface'
-              }`}
-            >
-              {d} 天
-            </button>
-          ))}
-        </div>
       </div>
-
-      {isLoading ? (
-        <p className="text-body-sm text-muted-foreground py-2">加载中…</p>
-      ) : !history || history.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-center">
-            <p className="text-body-sm text-muted-foreground">暂无历史记录</p>
-          </CardContent>
-        </Card>
-      ) : (
-        (history as DailyTaskHistoryRow[]).map((row) => (
-          <Card key={row.id}>
-            <CardContent className="pt-4 pb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-label-sm font-label text-on-surface-variant">
-                  {formatDate(row.taskDate)}
-                </span>
-                <span className="text-body-sm text-on-surface">
-                  {row.completedCount}/{row.totalCount} 完成
-                </span>
-              </div>
-              <CompletionBar completed={row.completedCount} total={row.totalCount} />
-            </CardContent>
-          </Card>
-        ))
-      )}
     </div>
   );
 }
@@ -309,11 +75,106 @@ function HistorySection() {
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function DailyTasks() {
+  const { account } = useActiveAccount();
+  const navigate = useNavigate();
+  const accountId = account?.id ?? null;
+
+  // PRD-25+: replace with trpc.dailyTasks.list.useQuery()
+  const [isLoading, setIsLoading] = useState(true);
+  const [completed, setCompleted] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (accountId === null) {
+      setIsLoading(false);
+      return;
+    }
+    const key = getLsKey(accountId, 'daily_tasks_completed');
+    try {
+      setCompleted(JSON.parse(localStorage.getItem(key) ?? '[]') as string[]);
+    } catch { /* ignore malformed JSON */ }
+    setIsLoading(true);
+    const t = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(t);
+  }, [accountId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleComplete(taskId: string) {
+    if (!accountId) return;
+    const next = [...completed, taskId];
+    setCompleted(next);
+    localStorage.setItem(getLsKey(accountId, 'daily_tasks_completed'), JSON.stringify(next));
+    toast.success('打卡功能 PRD-25+');
+  }
+
   return (
     <main className="flex-1 container py-8 space-y-6 max-w-2xl">
-      <h1 className="text-h1 font-display text-on-surface">每日任务</h1>
-      <TodaySection />
-      <HistorySection />
+      {/* AC-1: header */}
+      <div>
+        <span className="text-label-sm font-label text-primary uppercase tracking-wide">智能</span>
+        <h1 className="mt-1 text-h1 font-display text-on-surface">今日行动清单</h1>
+        <p className="mt-2 text-body-md text-muted-foreground">
+          AI 根据你的账号状态每日生成 3-5 个行动建议，完成打卡积累进化经验
+        </p>
+      </div>
+
+      {/* AC-4: no account → EmptyState */}
+      {!account ? (
+        <EmptyState
+          title={DAILY_TASKS_EMPTY_TITLE}
+          description={DAILY_TASKS_EMPTY_DESC}
+          action={
+            <Button onClick={() => navigate('/accounts')}>
+              {DAILY_TASKS_EMPTY_CTA}
+            </Button>
+          }
+        />
+      ) : isLoading ? (
+        /* AC-5: loading state */
+        <div className="flex flex-col items-center gap-4 py-16 text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-body-md text-muted-foreground">{DAILY_TASKS_LOADING_TEXT}</p>
+        </div>
+      ) : (
+        /* AC-3: task cards */
+        <>
+          <div className="flex items-center justify-between">
+            <span className="text-label-sm font-label text-on-surface-variant uppercase tracking-wide">
+              今日任务 · {DAILY_TASKS_STUB.length} 项
+            </span>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-muted-foreground"
+                onClick={() => {
+                  setIsLoading(true);
+                  setTimeout(() => setIsLoading(false), 800);
+                }}
+              >
+                <RefreshCw className="w-4 h-4 mr-1" />
+                重新生成
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-muted-foreground"
+                onClick={() => navigate('/evolution')}
+              >
+                查看进化
+              </Button>
+            </div>
+          </div>
+          <div className="space-y-4">
+            {DAILY_TASKS_STUB.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                isCompleted={completed.includes(task.id)}
+                onComplete={handleComplete}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </main>
   );
 }
