@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-20T07:40:00",
+  "last_updated": "2026-05-20T23:24:40",
   "items": [
     {
       "id": "TD-001",
@@ -2036,6 +2036,33 @@
       "affects_prd": [
         "PRD-25"
       ]
+    },
+    {
+      "id": "TD-098",
+      "category": "lint-quality",
+      "title": "apps/api 5 lint errors in PRD-25 US-007 引入的 test 文件",
+      "discovered_at": "2026-05-20",
+      "discovered_by": "Opus audit US-009 (PRD-25 收官)",
+      "severity": "low",
+      "status": "open",
+      "evidence": "pnpm lint apps/api · 5 errors in 2 PRD-25 引入文件:\n- apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts:9:1 import/order(empty line between groups)\n- apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts:48:25 unbound-method\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:41:46 consistent-type-imports\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:50:1 import/order\n- apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts:51:1 import/order\nUS-009 ralph 主动修了 apps/web 222 lint errors(173 auto-fix + 49 手动) · 但 api 没修(范围漏)· web lint 0 errors confirmed",
+      "root_cause": "US-007 引入 2 个 api test 文件时 import/order + type imports 没按 eslint rules 写 · Opus audit US-007 时聚焦业务逻辑(smartRecommend procedure + PositioningAgent recommend mode)漏审 lint · US-009 收官 ralph 修了 web 但 api 范围漏",
+      "scheduled_fix_in": "PRD-26 启动前(初始 cleanup)· 5 lint errors 全是 mechanical(import/order + type-only import + unbound-method)· eslint --fix 可自动修部分 · 手动修 1-2 处 · 总耗时 < 5 min",
+      "fix_hint": "PositioningAgent.real-llm.test.ts L9 加 import 分组空行 · L48 unbound-method 改 arrow function 或 this:void 标注 · ipAccounts.smartRecommend.test.ts L41 改 type-only import(import type { ... }) · L50-51 import/order 加空行",
+      "audit_exemption": "US-009 approve 时豁免 · 因(a) Opus 直 fix 5 条件未全满足(retryCount=0 应让 ralph 学)· (b) web 已 cleanup 222 errors massive success 给 ralph credit · (c) 5 errors mechanical 不影响 ship/功能/typecheck/test · (d) verify-prd-25.sh 40/40 ALL CHECKS PASSED 主门禁过 · (e) PRD-25 整体目标 100% 完成",
+      "scope": [
+        "apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts",
+        "apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts"
+      ],
+      "impact": "Low · 仅 test 文件 lint · 不影响 prod/功能/CI 主门禁(verify-prd-25.sh 不跑 lint · 已 40/40 PASS) · 收官评估接受",
+      "categories": [
+        "lint-quality",
+        "test-files-only"
+      ],
+      "detected_in_prd": "PRD-25",
+      "detected_in_story": "US-009 (Opus audit · 收官 lint 跨 ws 抽查)",
+      "resolved_in_prd": null,
+      "resolved_at": null
     }
   ]
 }

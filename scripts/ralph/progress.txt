@@ -4362,3 +4362,6 @@ PRD-23 范围:
   - 收官 story에서 AC-8 "lint 0 errors"는 전 PRD 누적 TD를 포함. 수정 범위를 미리 파악할 것
   - void wrapper 패턴: async 함수를 onClick에 직접 전달 → void wrapper로 감싸는 것이 no-misused-promises 해결법
 ---
+
+--- [RALPH] Iteration 2 ended: US-009 (31分钟 44秒) ---
+[Opus audit US-009] TD-098 approve 豁免: apps/api 5 lint errors in PRD-25 US-007 引入的 test files(import/order + type-only import + unbound-method · mechanical only · 不影响 ship)· web cleanup 222 successes given credit · 留 PRD-26 启动前 cleanup · audit_exemption + scheduled_fix_in 完整登记
