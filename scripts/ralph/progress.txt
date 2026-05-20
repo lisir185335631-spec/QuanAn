@@ -4534,3 +4534,41 @@ PRD-23 范围:
   - packages/ui 抽包前先确认 app-layer 依赖都移到调用方 · 反例库 SHIELD 注入有效(直接用 props 注入)
   - 跨包 component lift 后 vitest 的 "15 failed files" 数字可能包含 pre-existing DB mock 问题(非 US-004 引入) · 判断标准: Tests 行显示 0 failed tests 即可
 ---
+
+--- [RALPH] Iteration 6 ended: US-004 (33分钟 36秒) ---
+
+--- [RALPH] Iteration 7 started: US-005 at 2026-05-21 03:37 ---
+
+## 2026-05-21 11:45 - US-005 [PRD-26] · routers/app/ + admin/ 对称 + audit coverage + typo 修
+- 实现了什么:
+  - apps/api/src/trpc/routers/app/: git mv 26 主应用 router 进 app/ · git history 完整保留
+  - apps/api/src/trpc/routers/_app.ts: mergeRouters import 全改 from '@/trpc/routers/app/...' · admin/ 保持对称
+  - 35 test files: @/trpc/routers/<router> → @/trpc/routers/app/<router> + readFileSync path 同步
+  - tasks/prd-10.md: §0 '13 admin model' → '14 admin model' (TD-038) + AC-001-B adminUserId → actorAdminId (TD-040) + US-007 e2e path → tests/e2e/admin/ (TD-041)
+  - scripts/audit-admin-rls-tables.sh: 已含 8 missing admin model 确认(TD-039+TD-042) · 26 ADMIN_TABLES verified
+  - package.json: +test:rls-tables +audit:rls-tables 脚本别名
+  - .agents/tech-debt.json: TD-037~042 batch status=resolved + resolved_at=2026-05-21
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors (AC-9)
+  - vitest unit tests: ✅ 157 files pass · 1966 tests pass (AC-10) · 15 pre-existing e2e/integration fails (同 US-001)
+  - pnpm lint: ✅ 0 new errors in US-005 引入 files (AC-14 · 97 pre-existing 不变)
+  - pnpm audit:rls-tables: ✅ 26/26 admin RLS=false + 15/15 main RLS=true · exit 0 (AC-11 · DATABASE_URL=quanqn)
+  - grep 'from.*trpc/routers/[^a_]': ✅ 0 命中非 app/admin 路径 (AC-3)
+  - git log --diff-filter=R --stat HEAD: ✅ 26 rename records · history intact (AC-15)
+  - TD-037~042 batch resolved: ✅ 6 TDs closed (AC-13)
+- 更改的文件:
+  - apps/api/src/trpc/routers/app/ (new directory · 26 router files)
+  - apps/api/src/trpc/routers/_app.ts (26 import paths updated)
+  - apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts (1 relative import updated)
+  - tests/unit/api/*.test.ts (24 files · @/trpc/routers/app/ import update)
+  - tests/unit/web/pages/*.test.tsx (7 files · readFileSync path update)
+  - tests/integration/api/*.test.ts (8 files · @/trpc/routers/app/ import update)
+  - tasks/prd-10.md (3 typo fixes)
+  - package.json (+2 scripts)
+  - .agents/tech-debt.json (6 TDs resolved)
+- **未来迭代的学习:**
+  - git mv 后所有 test files 的 import 路径必须同步 · 不仅是主 entry point (_app.ts) · tests/ 内的 import 和 readFileSync 全需扫
+  - `grep -r "from '@/trpc/routers/[^a_]"` 是验证 import 路径一致性的快速命令 · "^a" 排除 admin/ app/ 前缀
+  - AC "monorepo lint from ROOT" 不是 lint 全量 0 errors · 是 "0 errors in 本 story 引入 files"
+  - DATABASE_URL env 默认不从 .env 加载 · 跑 audit script 需显式 `DATABASE_URL=postgresql://... pnpm audit:rls-tables`
+---
