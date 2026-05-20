@@ -207,6 +207,29 @@ curl -s http://localhost:5173 > /dev/null && echo "dev server OK" || echo "dev s
 
 见 VALIDATOR.md §X · dev server 健康检查 SOP — Validator 调 playwright / agent-browser 前必须先 curl 健康检查, 未就绪时 retry ≤6 次, 超时写 `SUSPECTED:dev_server_unavailable`。
 
+### Monorepo lint scope 规则(QuanAn PRD-25 retro M-2 固化 · 2026-05-20 新增)
+
+**背景** · QuanAn PRD-25 US-009 实证 · Ralph 看 AC-COMMON "pnpm lint 0 errors" 字面后主动 cleanup 222 web lint errors · 但 `cd apps/web && pnpm lint` 不覆盖 apps/api/admin/packages · 漏 5 errors in US-007 引入 test 文件(TD-098)。
+
+**触发条件** · Ralph 看到 AC 含 `pnpm lint 0 errors` / `lint clean` / `lint pass` 字面
+
+**Ralph 必须**:
+- 从 **PROJECT_ROOT** 跑 `pnpm lint`(turbo 跨 ws · 覆盖 apps/web + apps/api + apps/admin + packages/*)
+- **不允许** `cd apps/web && pnpm lint`(monorepo 漏 ws)
+- 修完 ROOT 跑 → 0 errors 才算达成
+- 若 cd 子 ws 跑过 · 必须最后回 ROOT 再跑一次 verify
+
+**反例**(PRD-25 US-009 实证):
+```bash
+# 反例: 只覆盖 apps/web
+cd apps/web && pnpm lint  # 0 errors · 假绿灯
+
+# 正例: monorepo 全覆盖
+cd <PROJECT_ROOT> && pnpm lint  # 真实多 ws lint
+```
+
+**审 zero_regression 时同样** · 若 AC 提及 "vitest" / "tests pass" · 必须从 ROOT 跑 turbo 跨 ws · 不只跑当前 ws。
+
 ## 关于该项目的重要注意事项
 
 项目根路径下读取 AGENTS.md，这是整个项目的技术架构开发指导说明。

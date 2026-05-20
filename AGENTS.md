@@ -3388,7 +3388,7 @@ step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `r
   - §11.6.4 · SSE Specialist 模式 + stream meta chunk(`{type:'meta',meta:{model:actualModel}}` 首 chunk · cost_log.modelUsed 反映真 model · D-019 闭环 · invokeLLM 不 throw 改返回 isFallback 让 BaseSpecialist retry)
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
-  - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)
+  - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)— 2026-05-20 升级 · `vi.hoisted() + beforeEach` 模式正确(PRD-25 TD-027 修复)· 不用 `vi.fn().mockResolvedValue({pass:true})` 固定值(永远 PASS 失效)
 - **2026-05-20 v0.9** · 加 §11.16 PRD-25 LLM 接入全链路沉淀(7 US · 8 Specialist 真 LLM · 0 reject 首轮通过 · TD-027/090/091/095 关闭)
   - §11.16.1 · LLM 接入 useMutation 模式 · trpc mutation 标准范式 `useMutation({onSuccess: () => void utils.xxx.invalidate()})` — `void` 防 unhandled rejection · isFallback banner = `data-testid=fallback-banner` · fallback 时 UI 正常渲染(不 throw · graceful degradation) · US-001~007 全严守此模式
   - §11.16.2 · isFallback 处理标准 · agent 返回 `isFallback=true` 时前端渲染 fallback hint banner + 正常展示 stub 数据(不隐藏 · 不 error toast) · 测试必含 `data-testid=fallback-banner` 显示断言 · Opus audit D1=A 必查 isFallback banner 是否出现

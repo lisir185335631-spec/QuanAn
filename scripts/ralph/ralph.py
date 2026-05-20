@@ -1857,9 +1857,10 @@ def main():
                 s_check = get_story_by_id(prd_check, current_story)
                 if s_check and s_check.get("retryCount", 0) >= MAX_RETRIES and not s_check.get("blocked", False):
                     # TD-006 PATH-B: 先检查 git log 是否已有该 story 的 commit
+                    # PRD-25 retro M-1 升级(2026-05-20) · since 窗口 30min → 2h · 防 5 retry × 17min hang 累计超窗漏检 · US-008 实证 47 min commit-to-block 时差
                     existing_notes = s_check.get("notes", "") or ""
                     path_b_tried = "[PATH-B]" in existing_notes
-                    commit_hash = _check_existing_commit(current_story) if not path_b_tried else None
+                    commit_hash = _check_existing_commit(current_story, since="2 hours ago") if not path_b_tried else None
                     if commit_hash:
                         print(f"  [PATH-B] story={current_story} retry={s_check.get('retryCount', 0)} git_log_hit={commit_hash} · 自动 audit-gate(pending)")
                         # 设 passes=True: 代码已提交, 让 Opus 审查判断质量
@@ -1908,8 +1909,9 @@ def main():
 
             # RCA-006 (2026-05-12 · QuanQn PRD-9 US-002) · 跨 PRD-4/8/9 3 次同模式: dev 异常退出但 commit 已落地 · daemon 误 SKIP validator 累计 retryCount→BLOCKED
             # 修法 · 若 crashed/timed_out 且 git log 内 (since iter_start) 已有 [<story>] commit · 强制跑 validator 让产物说话 · 不允许 SKIP
+            # PRD-25 retro M-1 升级(2026-05-20) · since 窗口 20min → 90min · 防 claude CLI health check 累计 hang 长时间 commit 已超窗 · US-008 实证 47min
             if (crashed or timed_out) and current_story:
-                _commit_hash_force = _check_existing_commit(current_story, since="20 minutes ago")
+                _commit_hash_force = _check_existing_commit(current_story, since="90 minutes ago")
                 if _commit_hash_force:
                     _reason = "crashed" if crashed else "timed_out"
                     print(f"  [RCA-006] dev {_reason} but commit {_commit_hash_force} 落地 · 强制跑 Validator 不 SKIP")
