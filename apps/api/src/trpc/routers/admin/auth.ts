@@ -144,7 +144,28 @@ export const adminAuthRouter = adminTrpcRouter({
       id: ctx.activeAdminUser.id,
       email: ctx.activeAdminUser.email,
       role: ctx.activeAdminUser.role,
+      allowedDomains: ctx.activeAdminUser.allowedDomains,
       sessionId: ctx.adminSession.id,
     };
   }),
+
+  /** Log a page_view audit event for the current admin session. */
+  logPageView: publicAdminProcedure
+    .input(z.object({ path: z.string().max(200) }))
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.activeAdminUser || !ctx.adminSession) return { ok: true };
+      await logAdminAction({
+        actorAdminId: ctx.activeAdminUser.id,
+        actorRole: ctx.activeAdminUser.role,
+        eventCategory: 'page_view',
+        eventType: 'page_view',
+        payload: { path: input.path },
+        traceId: ctx.traceId,
+        ip: ctx.req.headers.get('x-forwarded-for') ?? '0.0.0.0',
+        userAgent: ctx.req.headers.get('user-agent') ?? '',
+        sessionId: ctx.adminSession.id,
+        success: true,
+      });
+      return { ok: true };
+    }),
 });

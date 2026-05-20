@@ -71,12 +71,15 @@ import { adminAuditRouter } from '@/trpc/routers/admin/audit';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: false, isActive: true,
+  allowedDomains: [],
 };
 const REGULAR_ADMIN: AdminLuciaUser = {
   id: 2, email: 'admin@quanan.com', role: 'admin', isMock: false, isActive: true,
+  allowedDomains: [],
 };
 const READONLY_ADMIN: AdminLuciaUser = {
   id: 3, email: 'readonly@quanan.com', role: 'readonly_admin', isMock: false, isActive: true,
+  allowedDomains: [],
 };
 
 const MOCK_SESSION: AdminLuciaSession = {

@@ -65,9 +65,11 @@ import { costRouter } from '@/trpc/routers/admin/cost';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true,
+  allowedDomains: [],
 };
 const ADMIN_USER: AdminLuciaUser = {
   id: 2, email: 'admin@quanan.com', role: 'admin', isMock: true, isActive: true,
+  allowedDomains: [],
 };
 
 const MOCK_SESSION: AdminLuciaSession = {

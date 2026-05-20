@@ -1,14 +1,18 @@
 // PRD-10 US-005 · Sidebar 240px · 16 域 4 组
-// AC-3: NavLink + isActive highlight · ScrollArea + h-[calc(100vh-60px-48px)]
+// PRD-26 US-003: filter by allowedDomains from auth.me (server-authoritative · no frontend hardcoding)
 
 import { NavLink, useLocation } from 'react-router-dom';
 
-import { ADMIN_ROUTES, ROUTE_GROUP_LABELS, type AdminRouteItem } from '../../lib/admin-routes';
+import { adminTrpc } from '../../lib/admin-client';
+import { getAllowedRoutes, ROUTE_GROUP_LABELS, type AdminRouteItem } from '../../lib/admin-routes';
 
 const GROUPS: Array<AdminRouteItem['group']> = ['p0-core', 'p0-review', 'p1-health', 'p2-advanced'];
 
 export function Sidebar() {
   const location = useLocation();
+  const { data: me } = adminTrpc.auth.me.useQuery(undefined, { retry: false });
+  const allowedDomains = me?.allowedDomains ?? [];
+  const visibleRoutes = getAllowedRoutes(allowedDomains);
 
   return (
     <nav
@@ -19,7 +23,8 @@ export function Sidebar() {
       }}
     >
       {GROUPS.map((group) => {
-        const items = ADMIN_ROUTES.filter((r) => r.group === group);
+        const items = visibleRoutes.filter((r) => r.group === group);
+        if (items.length === 0) return null;
         return (
           <div key={group} role="group" aria-label={ROUTE_GROUP_LABELS[group]}>
             <div className="admin-sidebar__group-label">{ROUTE_GROUP_LABELS[group]}</div>
