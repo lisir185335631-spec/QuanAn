@@ -3672,3 +3672,38 @@ PRD-23 范围:
 - AC 15/15 PASS · vitest 299/299 zero-regression · 字面锁全 6/6(今日行动清单 H1 + 3 stub 任务 + AI loading + 添加账号)
 - 注: Validator 32 min 因 dev server 没启(gstack browse goto http://localhost:5173 等连接) · Opus 启 dev server 后立即完成 · 留 TD-095 'Validator browse 前先确认 dev server up'
 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (58分钟 29秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-20 09:43 ---
+
+## 2026-05-20 09:55 - US-002 [PRD-24] · /evolution 完整化(5 级进化 badge + 4 指标仪表盘 + 5 H3 模块 + 进化方向 radio · D-237/D-238 字面锁)
+- 实现了什么:
+  - apps/web/src/lib/constants/evolution.ts: 新建 · EVOLUTION_LEVELS_5(D-237 字面锁 5 级) + EVOLUTION_MODULES_5(D-237 5 H3 字面) + EVOLUTION_DIRECTIONS_4(D-238 4 进化方向) + EVOLUTION_SUBTITLE(spec §8.5.3)
+  - apps/web/src/pages/modules/Evolution.tsx: 完整重写 · 去除 tRPC/Recharts 依赖 · H1 '智能体进化中心' + '智能' 分类标识 + 5 badge 卡(stub L2 active) + 4 指标仪表盘(grid-cols-4) + 5 H3 模块 grid + 进化方向 4 button radio(aria-pressed) + localStorage acc_{accountId}_evolution_settings via getLsKey
+  - apps/web/src/pages/__tests__/Evolution.test.tsx: 新建 · 10 tests(H1/副标/智能标识/5 badge/4 指标/5 H3 字面/4 进化方向/aria-pressed 切换/localStorage save/DOM button ≥ 9)
+  - apps/web/src/lib/constants/__tests__/evolution.test.ts: 新建 · 7 tests(字面锁全量验证 EVOLUTION_LEVELS_5/MODULES_5/DIRECTIONS_4/SUBTITLE)
+  - apps/web/src/test/pages.test.tsx: 更新 Evolution H1 期望 '进化中心' → '智能体进化中心' + 更新 cold-start → 副标字面验证
+  - tests/e2e/prd24-evolution-flow.spec.ts: 新建 · 6 tests(H1/副标/5 badge+4 指标/5 H3+4 radio/radio click/console clean) · 12/12 pass(chromium+mobile)
+  - tests/e2e/prd24-visual-baseline.spec.ts: 追加 /evolution baseline 'prd24-evolution.png'
+- 验证结果:
+  - AC-9 typecheck: ✅ 0 errors
+  - AC-9 vitest: ✅ 316 tests pass (≥ 301 ✓)
+  - AC-10 e2e: ✅ 12/12 pass (6 chromium + 6 mobile)
+  - AC-11 visual: ✅ prd24-evolution.png baseline written · 1440x900 · 0.05 threshold
+  - AC-12 browser: ✅ via e2e Playwright · H1/副标/5 badge/4 指标/5 H3/4 radio/console clean all verified
+- 更改的文件:
+  - apps/web/src/lib/constants/evolution.ts (新建)
+  - apps/web/src/pages/modules/Evolution.tsx (重写 · 去除 tRPC+Recharts)
+  - apps/web/src/pages/__tests__/Evolution.test.tsx (新建)
+  - apps/web/src/lib/constants/__tests__/evolution.test.ts (新建)
+  - apps/web/src/test/pages.test.tsx (更新 Evolution H1/cold-start 断言)
+  - tests/e2e/prd24-evolution-flow.spec.ts (新建)
+  - tests/e2e/prd24-visual-baseline.spec.ts (追加)
+- **未来迭代的学习:**
+  - Evolution.tsx 原用 tRPC(getProfile/getInsightHistory/getFeedbackTrend/getModuleRanking + Recharts) · 完整化后全部用 stub 常量替换 · PRD-25+ 接 LLM 时按注释替换
+  - `role="radio"` 在 button 元素上会覆盖默认 `role="button"` · `getAllByRole('button')` 不会找到 role="radio" 的元素 · 如果 AC 要求 DOM button 数计数 · 应用 aria-pressed 替代 role="radio"
+  - EVOLUTION_MODULES_5 是 readonly string[] · 下标访问返回 string | undefined · 必须用 `arr[i]!` 非空断言或类型收窄才能赋给 string prop
+  - pages.test.tsx 是全组件兼容性测试 · 重写 page 时必须同步更新 H1 断言 · Evolution 从无 MemoryRouter 改为有 MemoryRouter(因 useNavigate 依赖)
+## 2026-05-20 10:11 - US-002 [PRD-24] approve · high 1st pass · 字面 100% · vitest 316/316
+---
