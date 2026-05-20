@@ -4062,3 +4062,14 @@ PRD-23 范围:
 --- [RALPH] Iteration 8 ended: US-004 (28分钟 0秒) ---
 
 --- [RALPH] Iteration 9 started: US-004 at 2026-05-20 17:24 ---
+
+## 2026-05-20 17:28 - US-004 [PRD-25] · Iteration 9 · Re-verification(无新实现)
+- 状况: Validator 已在 Iteration 8 写入 manifest.json(verdict=PASS · 全 AC+COMMON) 但 orchestrator 未更新 prd.json passes 字段 · ralph.py 重启 Iteration 9
+- 操作:
+  - typecheck: ✅ 0 errors(全 6 workspace)
+  - Evolution.test.tsx: ✅ 13 tests pass
+  - 提交未提交的 verify-artifacts(US-001~004) + progress.txt 迭代标记(e710610)
+- 无新代码改动 · 实现与 Iteration 8 相同
+- **未来迭代的学习:**
+  - Validator 写 PASS verdict 后若 orchestrator 中断 · prd.json passes 不更新 · ralph 会重启同 story 的新 iteration · Iteration N+1 检查 manifest.json 可快速判断是 re-verification
+---
