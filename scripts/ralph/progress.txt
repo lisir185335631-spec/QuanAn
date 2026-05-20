@@ -5,6 +5,43 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-21 10:15 - US-002 [PRD-26] · 17 page 渲染 + visual baseline
+- 实现了什么:
+  - tests/e2e/prd26-admin-visual-baseline.spec.ts: 新建 · 17 admin pages visual baseline
+    · beforeAll seed super_admin + login + storageState(/tmp/prd26-admin-visual-auth.json)
+    · 17 test 每 page: animate disable → goto → networkidle → main[role="main"] visible → expectVisualMatch
+    · viewport 1440x900 · fullPage true · threshold 0.05 (AC-1~3)
+    · 首跑 --update-snapshots 生成 17 baselines → 复跑 17 passed (AC-3)
+  - tests/e2e/prd26-admin-pages-smoke.spec.ts: 新建 · 17 admin pages smoke tests
+    · 每 page: HTTP 200 + main[role="main"] visible + 0 console errors + domcontentloaded→visible < 3s
+    · 失败时输出 page url + first 3 console errors (AC-12)
+    · 17 passed
+  - package.json: 加 test:visual:prd26 / test:visual:prd26:check / test:smoke:prd26 scripts (AC-4)
+  - scripts/ralph/verify-artifacts/US-002/admin-pages-{slug}.png: 17 张 1440x900 截图 (AC-13)
+  - scripts/ralph/verify-artifacts/US-002/take-screenshots.ts: 截图辅助脚本
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors (AC-9)
+  - lint: ✅ 0 errors in US-002 引入 files (tests/e2e/ 非 ws · 预存 eslint 排除 · pre-existing) (AC-10)
+  - pnpm test:visual:prd26 (--update-snapshots): ✅ 17 baselines generated
+  - pnpm test:visual:prd26:check: ✅ 17 passed (AC-3)
+  - pnpm test:smoke:prd26: ✅ 17 passed (AC-5/6)
+  - grep apiKey/OpenAI/Anthropic prd26-*: ✅ 0 hits (AC-11)
+  - 17 verify-artifacts screenshots: ✅ admin-pages-{slug}.png 17 张 (AC-13)
+- 更改的文件:
+  - tests/e2e/prd26-admin-visual-baseline.spec.ts (新建)
+  - tests/e2e/prd26-admin-pages-smoke.spec.ts (新建)
+  - package.json (+3 scripts)
+  - scripts/ralph/verify-artifacts/US-002/admin-pages-*.png (17 张 · local only · gitignored)
+  - scripts/ralph/verify-artifacts/US-002/take-screenshots.ts (辅助脚本)
+- **未来迭代的学习:**
+  - Playwright test.use({ storageState }) 在 describe 内需要先在 module level 创建空文件(existsSync/writeFileSync), 否则 beforeAll 里 browser.newContext() 也会尝试读取该文件并报 ENOENT
+  - admin-foundation-loop pattern 复用: 直接复用 admin-foundation-loop 的 seed + mock OAuth login 流程; admin session 基于 cookie, storageState 可跨 test 共享
+  - 项目数据库名是 quanqn(非 quanan) · CLAUDE.md §3 描述有拼写差异 · 真实 .env DATABASE_URL 才是准确来源
+  - 3 个 admin 页面(invites/prompts/constants)无 h1/h2 heading · AdminLayout main[role="main"] 是唯一可靠渲染信号
+  - Monaco editor 页面(prompts/constants) networkidle 触发慢(6-7s) · 渲染 < 3s 测量必须从 domcontentloaded 后才开始计时
+  - 14/17 baselines 第一轮就生成成功 · 只有 invites/prompts/constants 因 h1/h2 selector 问题失败 · main[role="main"] 修复后全过
+---
+
 ## 2026-05-21 00:50 - US-001 [PRD-26] · admin index + 7 unused placeholder cleanup(TD-031 closed)
 - 实现了什么:
   - apps/admin/src/index.ts: placeholder 注释 → barrel export (AdminRoutes from ./router + AdminLayout from ./layouts/AdminLayout)
@@ -4416,3 +4453,7 @@ PRD-23 范围:
 - **未来迭代的学习:**
   - 当 Ralph Iter 2 发现 Iter 1 已实现且 Validator PASS · 只需确认 + 提交验证产物即可 · 不需要重新实现
 ---
+
+--- [RALPH] Iteration 2 ended: US-001 (14分钟 22秒) ---
+
+--- [RALPH] Iteration 3 started: US-002 at 2026-05-21 01:19 ---
