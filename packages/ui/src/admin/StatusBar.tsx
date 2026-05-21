@@ -1,5 +1,4 @@
-// PRD-10 US-005 · StatusBar · 底部 1 行 24px
-// AC-5: ENV / RLS / WAF / MFA / Role 5 字段显示 · stub 状态全黄
+// @quanan/ui/admin · StatusBar — 24px bottom bar, no app-layer deps
 
 interface StatusBarProps {
   role?: string;

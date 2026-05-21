@@ -98,9 +98,11 @@ import { promptsRouter } from '@/trpc/routers/admin/prompts';
 
 const SUPER_ADMIN: AdminLuciaUser = {
   id: 1, email: 'super@quanan.com', role: 'super_admin', isMock: true, isActive: true,
+  allowedDomains: [],
 };
 const REGULAR_ADMIN: AdminLuciaUser = {
   id: 2, email: 'admin@quanan.com', role: 'admin', isMock: true, isActive: true,
+  allowedDomains: [],
 };
 
 const MOCK_SESSION: AdminLuciaSession = {

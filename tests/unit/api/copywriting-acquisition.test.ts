@@ -17,7 +17,7 @@ vi.mock('@/specialists/CopywritingAgent', () => ({
   },
 }));
 
-import { copywritingRouter } from '@/trpc/routers/copywriting';
+import { copywritingRouter } from '@/trpc/routers/app/copywriting';
 import { copywritingAgent as _mockedAgent } from '@/specialists/CopywritingAgent';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────

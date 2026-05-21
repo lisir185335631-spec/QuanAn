@@ -20,7 +20,7 @@ vi.mock('@/specialists/CopywritingAgent', () => ({
 }));
 
 // Import router and mocked agent AFTER vi.mock declaration (vi.mock is hoisted, imports resolve after)
-import { copywritingRouter } from '@/trpc/routers/copywriting';
+import { copywritingRouter } from '@/trpc/routers/app/copywriting';
 import { copywritingAgent as _mockedAgent } from '@/specialists/CopywritingAgent';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────

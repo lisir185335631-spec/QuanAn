@@ -15,26 +15,16 @@
 
 import { test, expect, type Page } from '@playwright/test';
 import { PrismaClient } from '@prisma/client';
+import { createPrismaClient, seedAdminUser } from './_admin-seed';
 
 const ADMIN_EMAIL = 'e2e-foundation@quanan.com';
-const DB_URL = process.env.DATABASE_URL ?? 'postgresql://return@localhost:5432/quanan';
 
 let prisma: PrismaClient;
 
 test.beforeAll(async () => {
-  // Step 1: seed admin_user via direct prisma
-  prisma = new PrismaClient({ datasources: { db: { url: DB_URL } } });
-  await prisma.adminUser.upsert({
-    where: { email: ADMIN_EMAIL },
-    create: { email: ADMIN_EMAIL, role: 'super_admin', isMock: true, isActive: true },
-    update: { role: 'super_admin', isMock: true, isActive: true },
-  });
-  // Clean up any stale sessions/audit logs from previous runs
-  const user = await prisma.adminUser.findUnique({ where: { email: ADMIN_EMAIL }, select: { id: true } });
-  if (user) {
-    await prisma.adminAuditLog.deleteMany({ where: { actorAdminId: user.id } }).catch(() => undefined);
-    await prisma.adminSession.deleteMany({ where: { adminUserId: user.id } }).catch(() => undefined);
-  }
+  // Step 1: seed admin_user via shared helper (AC-6: DRY · refactor behavior unchanged)
+  prisma = createPrismaClient();
+  await seedAdminUser(prisma, { email: ADMIN_EMAIL, role: 'super_admin' });
   process.env.OAUTH_PROVIDER = 'mock';
 });
 
@@ -85,7 +75,7 @@ test('admin-foundation-loop: 7 steps · login → layout → nsm → audit → l
   await nsmLink.click();
   await page.waitForURL(/\/admin\/nsm/, { timeout: 10_000 });
   // Verify placeholder content (heading in nsm placeholder)
-  await expect(page.locator('main h2').first()).toBeVisible({ timeout: 5_000 });
+  await expect(page.locator('main h1').first()).toBeVisible({ timeout: 5_000 });
 
   // ── Step 6: click 🔔 → AuditDrawer slide-in + admin_login row visible ──────
   const bellBtn = page.locator('button[aria-label="审计记录"]');

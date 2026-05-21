@@ -1,25 +1,25 @@
-// PRD-10 US-005 · TopBar 60px
-// AC-2: 品牌 + activeAdminUser badge + role badge + logout dropdown + 🔔 audit drawer toggle
+// @quanan/ui/admin · TopBar — 60px header, no app-layer deps
+// Props-injected: userEmail, userRole, onLogout from AdminLayout
 
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { adminTrpc } from '../../lib/admin-client';
 
 interface TopBarProps {
+  userEmail: string;
+  userRole: string;
   onAuditDrawerToggle: () => void;
   auditDrawerOpen: boolean;
+  onLogout: () => void;
 }
 
-export function TopBar({ onAuditDrawerToggle, auditDrawerOpen }: TopBarProps) {
-  const navigate = useNavigate();
+export function TopBar({
+  userEmail,
+  userRole,
+  onAuditDrawerToggle,
+  auditDrawerOpen,
+  onLogout,
+}: TopBarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const { data: me } = adminTrpc.auth.me.useQuery();
-  const logout = adminTrpc.auth.logout.useMutation({
-    onSuccess: () => navigate('/login'),
-  });
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -37,10 +37,10 @@ export function TopBar({ onAuditDrawerToggle, auditDrawerOpen }: TopBarProps) {
 
       <div className="admin-topbar__spacer" />
 
-      {me && (
+      {userEmail && (
         <>
-          <span className="admin-badge admin-badge--email">{me.email}</span>
-          <span className="admin-badge admin-badge--role">{me.role}</span>
+          <span className="admin-badge admin-badge--email">{userEmail}</span>
+          <span className="admin-badge admin-badge--role">{userRole}</span>
         </>
       )}
 
@@ -98,7 +98,7 @@ export function TopBar({ onAuditDrawerToggle, auditDrawerOpen }: TopBarProps) {
               }}
               onClick={() => {
                 setDropdownOpen(false);
-                logout.mutate();
+                onLogout();
               }}
             >
               退出登录

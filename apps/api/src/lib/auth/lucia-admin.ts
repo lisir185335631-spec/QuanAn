@@ -17,6 +17,7 @@ const IDLE_TTL_SEC = 30 * 60;
 interface AdminDatabaseAttrs {
   email: string;
   role: string;
+  allowedDomains: string[];
   isMock: boolean;
   isActive: boolean;
 }
@@ -41,6 +42,7 @@ const adminPrismaAdapter: Adapter = {
     const adminAttrs: AdminDatabaseAttrs = {
       email: row.adminUser.email,
       role: row.adminUser.role,
+      allowedDomains: row.adminUser.allowedDomains,
       isMock: row.adminUser.isMock,
       isActive: row.adminUser.isActive,
     };
@@ -112,7 +114,7 @@ export const luciaAdmin = new Lucia(adminPrismaAdapter, {
   getUserAttributes(attrs) {
     // Cast via unknown: luciaAdmin uses AdminDatabaseAttrs at runtime, not main-app Register.
     const a = attrs as unknown as AdminDatabaseAttrs;
-    return { email: a.email, role: a.role, isMock: a.isMock, isActive: a.isActive };
+    return { email: a.email, role: a.role, allowedDomains: a.allowedDomains, isMock: a.isMock, isActive: a.isActive };
   },
 });
 
@@ -120,6 +122,7 @@ export interface AdminLuciaUser {
   id: number;
   email: string;
   role: string;
+  allowedDomains: string[];
   isMock: boolean;
   isActive: boolean;
 }
@@ -171,6 +174,7 @@ export async function validateAdminSession(sessionId: string): Promise<{
     id: user.id,
     email: u.email,
     role: u.role,
+    allowedDomains: u.allowedDomains,
     isMock: u.isMock,
     isActive: u.isActive,
   };

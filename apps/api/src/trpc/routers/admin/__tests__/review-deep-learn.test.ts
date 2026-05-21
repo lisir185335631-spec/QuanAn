@@ -85,6 +85,7 @@ const SUPER_ADMIN: AdminLuciaUser = {
   role: 'super_admin',
   isMock: true,
   isActive: true,
+  allowedDomains: [],
 };
 
 const ADMIN_USER: AdminLuciaUser = {
@@ -93,6 +94,7 @@ const ADMIN_USER: AdminLuciaUser = {
   role: 'admin',
   isMock: true,
   isActive: true,
+  allowedDomains: [],
 };
 
 const READONLY_ADMIN: AdminLuciaUser = {
@@ -101,6 +103,7 @@ const READONLY_ADMIN: AdminLuciaUser = {
   role: 'readonly_admin',
   isMock: true,
   isActive: true,
+  allowedDomains: [],
 };
 
 const SESSION: AdminLuciaSession = {

@@ -13,11 +13,14 @@ vi.mock('../../../apps/admin/src/lib/admin-client', () => ({
     auth: {
       me: {
         useQuery: () => ({
-          data: { id: 1, email: 'super@quanan.com', role: 'super_admin' },
+          data: { id: 1, email: 'super@quanan.com', role: 'super_admin', allowedDomains: [] },
         }),
       },
       logout: {
         useMutation: () => ({ mutate: vi.fn(), isPending: false }),
+      },
+      logPageView: {
+        useMutation: () => ({ mutate: vi.fn() }),
       },
     },
     audit: {

@@ -15,7 +15,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
 
-import { historyRouter } from '@/trpc/routers/history';
+import { historyRouter } from '@/trpc/routers/app/history';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 

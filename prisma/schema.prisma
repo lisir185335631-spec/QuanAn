@@ -1297,12 +1297,13 @@ model SystemConfig {
 /// admin 用户表(与主应用 users 隔离 · lucia-admin adapter · LD-A1)
 // @rls(disabled)
 model AdminUser {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique @db.VarChar(255)
-  role      String   @db.VarChar(32) // 'super_admin' | 'admin' | 'readonly_admin'
-  isMock    Boolean  @default(false) // dev mock OAuth 标志
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  email          String   @unique @db.VarChar(255)
+  role           String   @db.VarChar(32) // 'super_admin' | 'domain_admin' | 'reviewer' | 'admin' | 'readonly_admin'
+  allowedDomains String[] // empty = all domains (super_admin); specific list for domain_admin/reviewer
+  isMock         Boolean  @default(false) // dev mock OAuth 标志
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
 
   sessions AdminSession[]
 

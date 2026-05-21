@@ -1,72 +1,1644 @@
 
-> @quanan/web@0.1.0 test /Users/return/Desktop/QuanAn/apps/web
-> vitest run --config vitest.config.ts
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts (43 tests) 10ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit.test.ts (39 tests) 6ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/accounts.test.ts (36 tests) 5ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts (44 tests) 5ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.getKpiStats > returns 4 KPI numbers
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.getKpiStats > returns zeros when no data
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.getKpiStats > allows readonly_admin to view KPI stats
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.getKpiStats > queries featureFlag.count twice (total and enabled)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listEmergencySwitches > returns emergency configs with admin emails
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listEmergencySwitches > queries with isEmergency=true filter
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listEmergencySwitches > returns empty array when no emergency configs
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listEmergencySwitches > handles null admin email gracefully
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listFeatureFlags > returns feature flags with admin emails
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listFeatureFlags > orders by updatedAt desc
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listFeatureFlags > allows readonly_admin to list feature flags
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listFeatureFlags > returns rolloutConfig when present
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listSystemConfig > returns non-emergency system configs
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listSystemConfig > queries with isEmergency=false filter
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listSystemConfig > allows readonly_admin to list system config
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.toggle > calls toggleFeatureFlag service and returns approvalRequestId
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.toggle > passes rolloutConfig to toggleFeatureFlag
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.toggle > allows admin to toggle feature flags
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.toggle > rejects input without flagKey
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.updateSystemConfig > creates approval request for system config update
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.updateSystemConfig > throws NOT_FOUND for unknown configKey
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.updateSystemConfig > includes configKey and configValue in approval payload
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.updateSystemConfig > rejects empty configKey
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listPostReview > super_admin can list post-review items
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listPostReview > throws FORBIDDEN for non-super_admin
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listPostReview > throws FORBIDDEN for readonly_admin
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listPostReview > queries with correct filters
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listPostReview > includes firstApproverEmail in result
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.listPostReview > limits to 50 results
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > super_admin can trigger emergency toggle
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > throws FORBIDDEN for admin role
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > throws FORBIDDEN for readonly_admin
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > rejects non-emergency configKey
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > rejects empty incidentId
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts (36 tests) 9ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > rejects empty reason
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts > featureFlagsRouter.emergencyToggleSystemConfig > supports all 3 emergency switch keys
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts (34 tests) 7ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts (27 tests) 9ms
+{"level":"warn","time":"2026-05-20T16:51:30.268Z","pid":41850,"hostname":"returndeMacBook-Pro.local","userId":42,"email":"u@example.com","tempPasswordHashPrefix":"e365baed","msg":"[ADMIN RESET PASSWORD] temp password issued"}
+{"level":"warn","time":"2026-05-20T16:51:30.268Z","pid":41850,"hostname":"returndeMacBook-Pro.local","userId":42,"email":"u@example.com","tempPasswordHashPrefix":"39c05a69","msg":"[ADMIN RESET PASSWORD] temp password issued"}
+{"level":"warn","time":"2026-05-20T16:51:30.268Z","pid":41850,"hostname":"returndeMacBook-Pro.local","userId":42,"email":"u@example.com","tempPasswordHashPrefix":"51352e76","msg":"[ADMIN RESET PASSWORD] temp password issued"}
+ ✓ apps/api/src/trpc/routers/admin/__tests__/users.test.ts (25 tests) 5ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getKpiStats: returns 4 KPI fields
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getKpiStats: avgSampleSize=0 when no running experiments
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > list: returns paginated items
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > list: cursor-based pagination returns nextCursor when hasMore
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getDetail: returns experiment with timeline
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > create: creates experiment when trafficAllocation sums to 100
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > create: throws BAD_REQUEST when trafficAllocation does not sum to 100
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > start: creates dual approval request
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > stop: super_admin can stop experiment without approval
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > stop: admin (non-super_admin) gets FORBIDDEN
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getMultiMetric: returns significance results
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getDetailByKey: returns experiment by experimentKey
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getVariantMetrics: returns per-variant metrics with correct structure
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > getCumulativeTimeline: returns cumulative timeline per variant
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > promoteWinner: creates approval request for running experiment
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts (16 tests) 9ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts > abExperimentsRouter > promoteWinner: throws BAD_REQUEST when experiment is not running
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+{"level":"warn","time":"2026-05-20T16:51:30.493Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-005","userId":0,"msg":"rate_limit.upstash_not_configured_skipping"}
+{"level":"warn","time":"2026-05-20T16:51:30.493Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-005","agentId":"DiagnosisAgent","err":"ANTHROPIC_API_KEY missing for reasoning tier","msg":"specialist.fallback_triggered"}
+{"level":"error","time":"2026-05-20T16:51:30.498Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-005","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:269:28\n\n  266     : 'none';\n  267 \n  268 try {\n→ 269   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:269:28\n\n  266     : 'none';\n  267 \n  268 try {\n→ 269   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at DiagnosisAgent._writeCostLog (/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:269:7)\n    at DiagnosisAgent.execute (/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:188:7)\n    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/diagnosis.ts:58:29\n    at resolveMiddleware (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)\n    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"msg":"specialist.cost_log.write_failed"}
+{"level":"error","time":"2026-05-20T16:51:30.501Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-005","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.$queryRaw()` invocation:\n\n\nRaw query failed. Code: `23503`. Message: `insert or update on table \"evolution_profiles\" violates foreign key constraint \"evolution_profiles_account_id_fkey\"`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.$queryRaw()` invocation:\n\n\nRaw query failed. Code: `23503`. Message: `insert or update on table \"evolution_profiles\" violates foreign key constraint \"evolution_profiles_account_id_fkey\"`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.enqueueIfThresholdMet (/Users/return/Desktop/QuanAn/apps/api/src/lib/evolution/trigger.ts:25:16)","name":"PrismaClientKnownRequestError","code":"P2010","clientVersion":"5.22.0","meta":{"type":"Object","message":"insert or update on table \"evolution_profiles\" violates foreign key constraint \"evolution_profiles_account_id_fkey\"","stack":"","code":"23503"}},"accountId":1,"msg":"evolution.evolve.trigger_failed"}
+ ✓ tests/unit/api/specialists-flow.test.ts (20 tests) 28ms
+ ✓ tests/unit/api/ai-video-router.test.ts (10 tests) 3ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts (23 tests) 4ms
+ ✓ tests/unit/specialists/__tests__/VideoAgent.test.ts (14 tests) 2ms
+ ✓ tests/unit/api/specialists-creation.test.ts (10 tests) 1ms
+ ✓ tests/unit/specialists/__tests__/CopywritingAgent.test.ts (17 tests) 4ms
+{"level":"info","time":"2026-05-20T16:51:30.622Z","pid":41850,"hostname":"returndeMacBook-Pro.local","accountId":1,"traceId":"tr_1_DailyTaskAgent_1779295890622_qhaa","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-20T16:51:30.623Z","pid":41850,"hostname":"returndeMacBook-Pro.local","accountId":2,"traceId":"tr_2_DailyTaskAgent_1779295890623_rblg","msg":"daily_task.cold_start"}
+{"level":"warn","time":"2026-05-20T16:51:30.623Z","pid":41850,"hostname":"returndeMacBook-Pro.local","agentId":"DailyTaskAgent","traceId":"tr_4_DailyTaskAgent_1779295890623_zisv","issues":"[\n  {\n    \"code\": \"too_small\",\n    \"minimum\": 3,\n    \"type\": \"array\",\n    \"inclusive\": true,\n    \"exact\": false,\n    \"message\": \"Array must contain at least 3 element(s)\",\n    \"path\": [\n      \"tasks\"\n    ]\n  }\n]","msg":"daily_task.schema_validation.retry"}
+{"level":"info","time":"2026-05-20T16:51:30.624Z","pid":41850,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-20T16:51:30.624Z","pid":41850,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-20T16:51:30.624Z","pid":41850,"hostname":"returndeMacBook-Pro.local","count":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-20T16:51:30.624Z","pid":41850,"hostname":"returndeMacBook-Pro.local","enqueued":5,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+ ✓ tests/unit/api/daily-task-agent.test.ts (12 tests) 3ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/quota.test.ts (15 tests) 4ms
+{"level":"info","time":"2026-05-20T16:51:30.657Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"[STUB] Notify requester 3: request 1 approved"}
+{"level":"info","time":"2026-05-20T16:51:30.657Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"[STUB] Notify requester 3: request 1 rejected"}
+{"level":"info","time":"2026-05-20T16:51:30.658Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"[STUB] Emergency approval 5 notified (isMock=true · D-077)"}
+ ✓ apps/api/src/trpc/routers/admin/__tests__/approvals.test.ts (16 tests) 4ms
+ ✓ tests/unit/specialists/fallback.test.ts (10 tests) 2ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > listKeys: case → 67 keys
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > listKeys: formula → 23 keys
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > listKeys: element → 22 or 23 keys
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > getActiveVersion: returns null version when none exists
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > getActiveVersion: returns active version + canary config
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > listVersions: returns empty array when no versions
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > listVersions: returns versions sorted by version desc
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > saveDraft: creates draft with version = 1 when no prior versions
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > saveDraft: increments version when prior version exists
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > saveDraft: readonly_admin gets FORBIDDEN
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > submitForReview: transitions draft → pending_review and calls requestApproval
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > submitForReview: rejects non-draft version with BAD_REQUEST
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > rollbackVersion: super_admin can rollback
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > rollbackVersion: non-super_admin gets FORBIDDEN
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > updateCanary: super_admin can set canary pct
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > updateCanary: non-super_admin gets FORBIDDEN
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > updateCanary: rejects invalid canaryPct
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > runLlmJudge: super_admin can run judge (isMock=true)
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/constants.test.ts (19 tests) 5ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/constants.test.ts > constantsRouter > runLlmJudge: non-super_admin gets FORBIDDEN
+[ADMIN AUDIT WRITE FAILED] TypeError: Cannot read properties of undefined (reading 'findFirst')
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ tests/unit/api/history-router.test.ts (16 tests) 5ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getKpiStats > returns zeroed KPIs when no compliance events exist
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getKpiStats > aggregates todayDisclaimerCount from disclaimer rows
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getKpiStats > returns piiHitRate=0 when totalParsed=0 (no division by zero)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getKpiStats > allows readonly_admin access
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getIndustryBreakdown > returns empty when no events
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getIndustryBreakdown > splits top 10 + other bucket when >10 industries
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getIndustryBreakdown > accepts optional date range input
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getTrend > returns empty trend when no events
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getTrend > returns aggregated trend rows with day groupBy
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getTrend > filters by industries when provided
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > getTrend > allows readonly_admin access
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > returns empty list when no events
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > returns items with masked userId (SHIELD: LD-A-3 redacted)
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > applies eventType filter correctly
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > groups by eventType when grouping=eventType
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > groups by industry when grouping=industry
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts (18 tests) 6ms
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > handles null industry in payload gracefully
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+stderr | apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts > listEvents > paginates with cursor correctly
+[ADMIN AUDIT WRITE FAILED] TypeError: __vite_ssr_import_2__.prisma.adminAuditLog.findFirst is not a function
+    at Module.logAdminAction (/Users/return/Desktop/QuanAn/apps/api/src/services/admin/admin-audit-service.ts:38:49)
+    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/middleware/admin/auditLog.ts:33:13
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)
+
+ ✓ apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts (13 tests) 4ms
+ ✓ tests/unit/web/pages/PrivateDomain.test.tsx (40 tests) 2ms
+ ❯ tests/e2e/admin/prd14-ab-experiment-e2e.test.ts (11 tests | 11 skipped) 5ms
+ ❯ tests/e2e/admin/prd14-cross-domain-e2e.test.ts (6 tests | 6 skipped)
+ ❯ tests/e2e/admin/prd14-cross-domain-e2e.test.ts (6 tests | 6 skipped) 20ms
+ ❯ tests/e2e/admin/prd13-dual-approval-e2e.test.ts (8 tests | 8 skipped) 6ms
+{"level":"info","time":"2026-05-20T16:51:30.906Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-21","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"info","time":"2026-05-20T16:51:30.906Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":1,"scheduledDate":"2026-05-21","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"error","time":"2026-05-20T16:51:30.906Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","err":{"type":"Error","message":"Redis connection failed","stack":"Error: Redis connection failed\n    at /Users/return/Desktop/QuanAn/tests/unit/api/daily-tasks-router.test.ts:261:40\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"accountId":1,"msg":"daily_tasks.regenerate_today.enqueue_failed"}
+{"level":"info","time":"2026-05-20T16:51:30.907Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","accountId":42,"scheduledDate":"2026-05-21","msg":"daily_tasks.regenerate_today.triggered"}
+{"level":"warn","time":"2026-05-20T16:51:30.907Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us-008","msg":"no_active_account"}
+ ✓ tests/unit/api/daily-tasks-router.test.ts (14 tests) 4ms
+ ✓ tests/unit/api/ipAccounts-stepData.test.ts (15 tests) 2ms
+ ✓ tests/unit/lib/compliance.test.ts (21 tests) 3ms
+ ✓ tests/unit/api/admin/ab-stop-loss.test.ts (12 tests) 1ms
+ ✓ tests/unit/specialists/EvolutionAgent.test.ts (10 tests) 4ms
+ ✓ tests/unit/api/history.test.ts (14 tests) 4ms
+ ✓ apps/api/src/services/admin/content-review/__tests__/violation-detection.service.test.ts (14 tests) 1ms
+ ❯ tests/e2e/admin/prd14-constant-version-e2e.test.ts (8 tests | 8 skipped)
+ ❯ tests/e2e/admin/prd14-constant-version-e2e.test.ts (8 tests | 8 skipped) 20ms
+ ✓ tests/unit/specialists/base.test.ts (16 tests) 1ms
+ ✓ tests/unit/api/admin/approval-gate-dual.test.ts (17 tests) 1ms
+ ❯ tests/e2e/admin/prd14-emergency-switch-e2e.test.ts (7 tests | 7 skipped) 14ms
+ ✓ tests/unit/agents/specialists/DailyTaskAgent.test.ts (10 tests) 3ms
+ ✓ tests/unit/specialists/VoiceChatAgent.test.ts (13 tests) 6ms
+ ✓ tests/unit/api/acquisition-video-router.test.ts (7 tests) 3ms
+ ✓ tests/integration/admin/rls-bypass-cross-account.test.ts (8 tests) 81ms
+ ✓ apps/api/src/services/admin/ab-experiment/__tests__/ab-experiment.service.test.ts (12 tests) 4ms
+ ✓ tests/unit/schemas/specialist-io.test.ts (26 tests) 1ms
+ ✓ tests/unit/api/image-gen-dall-e-3.test.ts (6 tests) 3012ms
+   ✓ US-009 AC-12-3: network failure retry 3 times → failed result > retries 3 times on network error, returns { error: image_gen_failed, sceneImageUrl: placeholder } 3003ms
+ ✓ tests/unit/web/pages/Trending.test.tsx (29 tests) 3ms
+ ✓ tests/unit/api/schemas/video-schemas.test.ts (24 tests) 1ms
+ ✓ apps/api/src/services/admin/quota/__tests__/quota-adjustment.test.ts (13 tests) 5ms
+ ✓ tests/integration/api/boom-generate-llm.test.ts (1 test) 31ms
+{"level":"info","time":"2026-05-20T16:51:34.409Z","pid":41850,"hostname":"returndeMacBook-Pro.local","versionId":1,"constantType":"case","constantKey":"positioning-case-001","msg":"constant_embed_job.scheduled"}
+ ✓ apps/api/src/services/admin/constant-version/__tests__/constant-version.service.test.ts (15 tests) 6ms
+{"level":"info","time":"2026-05-20T16:51:34.409Z","pid":41850,"hostname":"returndeMacBook-Pro.local","versionId":1,"constantType":"case","constantKey":"positioning-case-001","msg":"constant_embed_job.scheduled"}
+ ✓ apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts (23 tests) 19ms
+{"level":"warn","time":"2026-05-20T16:51:34.448Z","pid":41850,"hostname":"returndeMacBook-Pro.local","content":"[紧急开关触发] configKey=stop_trending_scraper · incidentId=INC-001 · adminId=1 · approvalRequestId=77","msg":"[dingtalk-mock] webhook would send:"}
+ ✓ apps/api/src/services/admin/feature-flag/__tests__/feature-flag.service.test.ts (15 tests) 5ms
+ ✓ apps/api/src/services/admin/accounts/__tests__/anomaly-detection.service.test.ts (10 tests) 4ms
+ ✓ tests/unit/web/pages/History.test.tsx (27 tests) 2ms
+ ✓ tests/integration/api/copywriting-free-llm.test.ts (1 test) 9ms
+ ✓ tests/unit/api/admin/emergency-switch.test.ts (14 tests) 4ms
+ ✓ tests/unit/specialists/__tests__/BrandingAgent.test.ts (8 tests) 1ms
+ ✓ tests/unit/api/account-step-auth.test.ts (15 tests) 2ms
+ ✓ tests/unit/api/copywriting-acquisition.test.ts (4 tests) 2ms
+ ✓ tests/unit/api/workers/stt.test.ts (8 tests) 1650ms
+   ✓ US-009 AC-7.3: timeout — Whisper API timeout → INTERNAL_SERVER_ERROR > nock delays 500ms · worker timeout=100ms → INTERNAL_SERVER_ERROR 1607ms
+ ✓ tests/integration/api/video-analysis-viral-llm.test.ts (1 test) 13ms
+ ✓ tests/unit/api/image-gen-queue.test.ts (8 tests) 5ms
+ ✓ apps/api/src/services/admin/ab-experiment/__tests__/significance.service.test.ts (16 tests) 6ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts (9 tests) 11ms
+ ✓ tests/unit/api/workers/tts.test.ts (9 tests) 1592ms
+   ✓ US-010 AC-7.3: timeout — TTS API timeout → INTERNAL_SERVER_ERROR > nock delays 500ms · worker timeout=100ms → INTERNAL_SERVER_ERROR 1556ms
+ ✓ tests/unit/services/context-assembler.test.ts (16 tests) 5027ms
+   ✓ ContextAssembler > L2 stepData fetch timeout → 占位注入 · constants 层不受影响 5000ms
+ ✓ tests/unit/web/pages/Copywriting.test.tsx (29 tests) 2ms
+ ✓ tests/unit/specialists/__tests__/AnalysisAgent.test.ts (8 tests) 5ms
+ ❯ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts (6 tests | 6 skipped) 6ms
+ ❯ tests/e2e/prd15-copywriting-flow-e2e.test.ts (8 tests | 8 skipped) 13ms
+ ✓ tests/unit/api/boom-generate-router.test.ts (4 tests) 3ms
+ ❯ tests/e2e/admin/prd13-emergency-flow.test.ts (7 tests | 7 skipped) 7ms
+ ✓ tests/unit/api/video-analysis-router.test.ts (4 tests) 3ms
+ ✓ tests/unit/api/admin/feature-flag-routing.test.ts (17 tests) 5ms
+ ✓ apps/api/src/workers/file-parser/__tests__/worker.test.ts (16 tests) 5ms
+ ✓ apps/api/src/services/admin/prompt-version/__tests__/prompt-version.service.test.ts (13 tests) 5ms
+ ✓ tests/unit/api/rate-limit-image-gen.test.ts (9 tests) 8ms
+ ✓ tests/integration/api/copywriting-acquisition-llm.test.ts (1 test) 10ms
+ ✓ tests/unit/api/video-production-router.test.ts (6 tests) 3ms
+{"level":"error","time":"2026-05-20T16:51:43.213Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"tr_video_prod_int_1779295903205","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/videoProduction.ts:77:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/video-production-llm.test.ts (1 test) 18ms
+ ✓ tests/unit/specialists/__tests__/MonetizationAgent.test.ts (5 tests) 1ms
+ ✓ tests/integration/api/analysis-structural-llm.test.ts (1 test) 9ms
+ ✓ tests/integration/api/ai-video-flow.test.ts (2 tests) 12ms
+ ✓ apps/api/src/jobs/admin/__tests__/cost-anomaly.job.test.ts (11 tests) 1ms
+ ✓ tests/unit/web/pages/MyTopics.test.tsx (27 tests) 1ms
+ ✓ apps/api/src/services/admin/invites/__tests__/campaign.test.ts (18 tests) 5ms
+ ✓ tests/unit/api/workers/embedding.test.ts (9 tests) 122ms
+ ✓ apps/api/src/services/admin/nsm/__tests__/kpi-snapshot.test.ts (6 tests) 4ms
+{"level":"error","time":"2026-05-20T16:51:43.470Z","pid":41850,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanAn/tests/integration/api/video-agent-llm.test.ts:186:20\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_video_agent_int_1779295903463","msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/video-agent-llm.test.ts (1 test) 12ms
+ ❯ tests/e2e/prd15-mock-auth-e2e.test.ts (6 tests | 6 skipped)
+ ❯ tests/e2e/prd15-mock-auth-e2e.test.ts (6 tests | 6 skipped) 20ms
+ ✓ tests/integration/api/insight-injection.test.ts (17 tests) 8ms
+ ✓ tests/integration/api/image-gen-bullmq.test.ts (1 test) 19ms
+ ❯ tests/e2e/prd15-trending-to-step7-e2e.test.ts (7 tests | 7 skipped) 14ms
+ ✓ tests/unit/specialists/__tests__/PositioningAgent.test.ts (8 tests) 1ms
+ ❯ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts (4 tests | 4 skipped) 7ms
+ ✓ apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts (19 tests) 2ms
+{"level":"error","time":"2026-05-20T16:51:43.635Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"tr_acq_video_int_1779295903630","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at VideoAgent.execute (/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/acquisitionVideo.ts:49:24\n    at resolveMiddleware (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:576:22)\n    at callRecursive (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@trpc+server@11.17.0_typescript@5.9.3/node_modules/@trpc/server/src/unstable-core-do-not-import/procedureBuilder.ts:642:20)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/acquisition-video-llm.test.ts (1 test) 12ms
+ ✓ tests/unit/specialists/__tests__/TopicAgent.test.ts (11 tests) 4ms
+ ❯ tests/e2e/prd15-private-domain-e2e.test.ts (8 tests | 8 skipped) 13ms
+ ✓ tests/unit/specialists/base.llm.test.ts (8 tests) 4ms
+ ✓ apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts (11 tests) 13ms
+ ✓ tests/unit/web/StepForm.test.tsx (19 tests) 1ms
+ ✓ apps/api/src/services/admin/cost/__tests__/detect-anomalies.service.test.ts (10 tests) 1ms
+ ✓ tests/unit/web/hooks.test.ts (16 tests) 1ms
+ ✓ tests/unit/specialists/__tests__/LivestreamAgent.test.ts (5 tests) 1ms
+ ✓ tests/unit/api/analysis-router.test.ts (4 tests) 3ms
+ ✓ tests/unit/web/StepResult.test.tsx (10 tests) 1ms
+{"level":"error","time":"2026-05-20T16:51:43.769Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAUTH_PROVIDER for admin: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-20T16:51:43.770Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production (admin)"}
+ ✓ tests/unit/admin/auth-lucia.test.ts (17 tests) 7ms
+ ✓ tests/unit/api/copywriting-router.test.ts (4 tests) 3ms
+ ✓ tests/unit/api/knowledge.test.ts (7 tests) 1ms
+{"level":"warn","time":"2026-05-20T16:51:43.803Z","pid":41850,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic 503","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-20T16:51:43.803Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic 503","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-20T16:51:43.804Z","pid":41850,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: transient 500","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-20T16:51:43.804Z","pid":41850,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: anthropic down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-20T16:51:43.804Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: anthropic down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-20T16:51:43.804Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: openai down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-20T16:51:43.805Z","pid":41850,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: down","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-20T16:51:43.805Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: down","msg":"llm.primary_failed_fallback"}
+{"level":"error","time":"2026-05-20T16:51:43.805Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","primary":"claude-sonnet-4-6","fallback":"gpt-4o","err":"Error: down","msg":"llm.both_failed"}
+{"level":"warn","time":"2026-05-20T16:51:43.806Z","pid":41850,"hostname":"returndeMacBook-Pro.local","model":"claude-sonnet-4-6","attempt":0,"err":"Error: fail","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-20T16:51:43.806Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-sonnet-4-6","err":"Error: fail","msg":"llm.primary_failed_fallback"}
+{"level":"warn","time":"2026-05-20T16:51:43.806Z","pid":41850,"hostname":"returndeMacBook-Pro.local","model":"claude-haiku-4-5","attempt":0,"err":"Error: haiku 403","trace_id":"tr-001","msg":"llm.retry"}
+{"level":"warn","time":"2026-05-20T16:51:43.806Z","pid":41850,"hostname":"returndeMacBook-Pro.local","trace_id":"tr-001","model":"claude-haiku-4-5","err":"Error: haiku 403","msg":"llm.primary_failed_fallback"}
+ ✓ tests/unit/api/llm-gateway-fallback.test.ts (9 tests) 5ms
+ ✓ tests/integration/api/rag-injection.test.ts (3 tests) 3ms
+ ✓ tests/unit/services/context-assembler-rag.test.ts (5 tests) 4ms
+ ✓ apps/api/src/specialists/__tests__/LivestreamAgent.real-llm.test.ts (5 tests | 2 skipped) 0ms
+{"level":"error","time":"2026-05-20T16:51:43.862Z","pid":41850,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:26\n\n  54 const costUsd = estimateCostUsd(res.model, res.tokens);\n  55 \n  56 try {\n→ 57   await prisma.costLog.create(\nForeign key constraint violated: `cost_log_user_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at Module.writeCostLog (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/cost-logger.ts:57:5)\n    at LLMGateway.complete (/Users/return/Desktop/QuanAn/apps/api/src/workers/llm-gateway/index.ts:157:5)\n    at IntegrationSpecialist.execute (/Users/return/Desktop/QuanAn/apps/api/src/specialists/base/BaseSpecialist.ts:106:15)\n    at /Users/return/Desktop/QuanAn/tests/integration/api/specialist-llm.test.ts:171:20\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_user_id_fkey (index)"}},"traceId":"tr_specialist_int_1779295903857","msg":"cost_log.write_failed"}
+ ✓ tests/integration/api/specialist-llm.test.ts (1 test) 9ms
+ ✓ tests/unit/api/seed.test.ts (7 tests) 2ms
+ ✓ apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts (26 tests) 1ms
+ ✓ apps/api/src/workers/trending-scraper/__tests__/worker-review-queue.test.ts (9 tests) 5ms
+ ✓ tests/integration/api/image-gen-flow.test.ts (1 test) 9ms
+ ✓ tests/unit/admin/auth-router.test.ts (8 tests) 4ms
+{"level":"info","time":"2026-05-20T16:51:43.934Z","pid":41850,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-20T16:51:43.934Z","pid":41850,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-20T16:51:43.934Z","pid":41850,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-20T16:51:43.934Z","pid":41850,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","accountId":10,"traceId":"tr_10_DailyTaskAgent_1779295903934_e9qo","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","accountId":11,"traceId":"tr_11_DailyTaskAgent_1779295903935_2aud","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","accountId":12,"traceId":"tr_12_DailyTaskAgent_1779295903935_9oti","msg":"daily_task.cold_start"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","count":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_start"}
+{"level":"info","time":"2026-05-20T16:51:43.935Z","pid":41850,"hostname":"returndeMacBook-Pro.local","enqueued":3,"taskDate":"2026-05-11","msg":"daily_task_cron.fan_out_done"}
+ ✓ tests/unit/api/daily-task-integration.test.ts (3 tests) 1ms
+ ✓ apps/api/src/jobs/admin/__tests__/kpi-snapshot.job.test.ts (7 tests) 1ms
+ ✓ tests/unit/api/workers/rag-retrieve.test.ts (5 tests) 3ms
+ ✓ apps/api/src/services/admin/constant-version/__tests__/constant-embed.service.test.ts (8 tests) 4ms
+ ❯ tests/integration/api/rls-isolation.test.ts (4 tests | 4 skipped) 13ms
+ ✓ tests/integration/api/auth.test.ts (6 tests | 1 skipped) 49ms
+{"level":"error","time":"2026-05-20T16:51:44.051Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-us014","err":{"type":"Error","message":"DB connection lost","stack":"Error: DB connection lost\n    at /Users/return/Desktop/QuanAn/tests/unit/api/feedback-log.test.ts:127:42\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"costLog.logFeedback.db_error"}
+ ✓ tests/unit/api/feedback-log.test.ts (8 tests) 1ms
+ ✓ apps/api/src/services/admin/content-review/__tests__/deep-learn-auto-verdict.service.test.ts (10 tests) 4ms
+ ✓ apps/api/src/specialists/__tests__/DiagnosisAgent.test.ts (4 tests) 1ms
+ ✓ apps/api/src/specialists/__tests__/DiagnosisAgent.judge.test.ts (2 tests) 12ms
+ ❯ tests/integration/api/evolution-threshold.test.ts (3 tests | 3 skipped) 13ms
+ ✓ apps/api/src/schemas/admin/__tests__/deep-learn-review.schema.test.ts (22 tests) 1ms
+ ✓ tests/unit/web/ToolForm.test.tsx (20 tests) 1ms
+ ✓ apps/api/src/jobs/admin/__tests__/violation-detection.job.test.ts (7 tests) 0ms
+ ✓ tests/unit/web/pages/PresentStyles.test.tsx (17 tests) 1ms
+ ✓ apps/api/src/trpc/routers/__tests__/ipAccounts.smartRecommend.test.ts (5 tests) 3ms
+ ↓ apps/api/src/specialists/__tests__/BrandingAgent.real-llm.test.ts (2 tests | 2 skipped)
+{"level":"warn","time":"2026-05-20T16:51:44.167Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
+{"level":"warn","time":"2026-05-20T16:51:44.167Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"test-trace-001","msg":"no_active_account"}
+ ✓ tests/unit/api/account-isolation.test.ts (9 tests) 1ms
+ ✓ tests/integration/api/stt-whisper.test.ts (2 tests | 1 skipped) 12ms
+ ✓ tests/unit/web/ls-namespace.test.ts (18 tests) 0ms
+ ✓ tests/unit/web/pages/DeepLearning.test.tsx (18 tests) 1ms
+ ↓ apps/api/src/specialists/__tests__/PositioningAgent.real-llm.test.ts (2 tests | 2 skipped)
+ ✓ tests/unit/agents/evolution/EvolutionAgent.test.ts (4 tests) 2ms
+stderr | tests/unit/admin/auditLog-middleware.test.ts > auditLogMiddleware — cross_account_query branch > audit write failure does not block business operation
+[ADMIN AUDIT WRITE FAILED] Error: audit DB down
+    at /Users/return/Desktop/QuanAn/tests/unit/admin/auditLog-middleware.test.ts:92:42
+    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+ ✓ tests/unit/admin/auditLog-middleware.test.ts (10 tests) 1ms
+ ✓ apps/api/src/services/quota/__tests__/userQuota.service.test.ts (5 tests) 1ms
+ ✓ tests/unit/web/pages/Knowledge.test.tsx (25 tests) 1ms
+ ✓ apps/api/src/specialists/__tests__/CopywritingAgent.real-llm.test.ts (3 tests | 2 skipped) 0ms
+ ✓ tests/integration/admin/auth-flow.test.ts (1 test) 28ms
+ ✓ tests/unit/api/myTopics.test.ts (18 tests) 1ms
+ ✓ apps/api/src/specialists/__tests__/PositioningAgent.test.ts (5 tests) 1ms
+ ✓ tests/unit/api/invite.test.ts (4 tests) 1ms
+ ✓ tests/unit/admin/admin-schema.test.ts (12 tests) 30ms
+ ✓ tests/integration/api/tts-openai.test.ts (2 tests | 1 skipped) 13ms
+ ✓ tests/unit/admin/adminRLS.test.ts (8 tests) 1ms
+ ✓ tests/unit/web/pages/Monetization.test.tsx (14 tests) 1ms
+ ✓ tests/unit/api/schemas/memory-schemas.test.ts (8 tests) 0ms
+ ✓ tests/unit/api/memory/l1-buffer.test.ts (5 tests) 0ms
+{"level":"warn","time":"2026-05-20T16:51:44.403Z","pid":41850,"hostname":"returndeMacBook-Pro.local","hits":["网络赌博"],"mock":true,"msg":"[banned-word-mock] scan result:"}
+{"level":"warn","time":"2026-05-20T16:51:44.403Z","pid":41850,"hostname":"returndeMacBook-Pro.local","hits":[],"mock":true,"msg":"[banned-word-mock] scan result:"}
+{"level":"warn","time":"2026-05-20T16:51:44.403Z","pid":41850,"hostname":"returndeMacBook-Pro.local","hits":["色情内容"],"mock":true,"msg":"[banned-word-mock] scan result:"}
+{"level":"warn","time":"2026-05-20T16:51:44.403Z","pid":41850,"hostname":"returndeMacBook-Pro.local","hits":[],"mock":true,"msg":"[banned-word-mock] scan result:"}
+{"level":"warn","time":"2026-05-20T16:51:44.403Z","pid":41850,"hostname":"returndeMacBook-Pro.local","hits":["色情内容","网络赌博"],"mock":true,"msg":"[banned-word-mock] scan result:"}
+{"level":"warn","time":"2026-05-20T16:51:44.404Z","pid":41850,"hostname":"returndeMacBook-Pro.local","err":{"type":"Error","message":"network error","stack":"Error: network error\n    at /Users/return/Desktop/QuanAn/apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts:69:44\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runFiles (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)\n    at startTests (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3)"},"msg":"[banned-word] API call failed, falling back to needs_review"}
+ ✓ apps/api/src/services/admin/content-review/__tests__/banned-word.service.test.ts (12 tests) 1ms
+ ✓ tests/unit/api/llm-gateway-rate.test.ts (6 tests) 3ms
+ ↓ apps/api/src/specialists/__tests__/VideoAgent.real-llm.test.ts (1 test | 1 skipped)
+ ✓ tests/unit/web/router.test.ts (12 tests) 0ms
+ ✓ tests/unit/parseDesignTokens.test.ts (10 tests) 2ms
+ ↓ apps/api/src/specialists/__tests__/MonetizationAgent.real-llm.test.ts (1 test | 1 skipped)
+{"level":"error","time":"2026-05-20T16:51:44.467Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"SESSION_SECRET must be at least 32 characters"}
+{"level":"error","time":"2026-05-20T16:51:44.469Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"unknown OAuth provider: facebook · expected mock|google"}
+{"level":"error","time":"2026-05-20T16:51:44.470Z","pid":41850,"hostname":"returndeMacBook-Pro.local","msg":"OAUTH_PROVIDER=mock not allowed in production"}
+ ✓ tests/unit/auth/providers.test.ts (9 tests) 4ms
+{"level":"error","time":"2026-05-20T16:51:44.496Z","pid":41850,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:29\n\n  362     ? 'openai'\n  363     : 'none';\n  364 try {\n→ 365   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:29\n\n  362     ? 'openai'\n  363     : 'none';\n  364 try {\n→ 365   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:325:7)\n    at /Users/return/Desktop/QuanAn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1779295904494_ehjg","msg":"voice_chat.cost_log.write_failed"}
+{"level":"error","time":"2026-05-20T16:51:44.498Z","pid":41850,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:29\n\n  362     ? 'openai'\n  363     : 'none';\n  364 try {\n→ 365   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:29\n\n  362     ? 'openai'\n  363     : 'none';\n  364 try {\n→ 365   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:325:7)\n    at /Users/return/Desktop/QuanAn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1779295904496_niez","msg":"voice_chat.cost_log.write_failed"}
+{"level":"error","time":"2026-05-20T16:51:44.499Z","pid":41850,"hostname":"returndeMacBook-Pro.local","err":{"type":"PrismaClientKnownRequestError","message":"\nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:29\n\n  362     ? 'openai'\n  363     : 'none';\n  364 try {\n→ 365   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`","stack":"PrismaClientKnownRequestError: \nInvalid `_prisma.costLog.create()` invocation in\n/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:29\n\n  362     ? 'openai'\n  363     : 'none';\n  364 try {\n→ 365   await _prisma.costLog.create(\nForeign key constraint violated: `cost_log_account_id_fkey (index)`\n    at $n.handleRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7315)\n    at $n.handleAndLogRequestError (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623)\n    at $n.request (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307)\n    at l (/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633)\n    at VoiceChatAgent._writeL5CostLog (/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:365:7)\n    at VoiceChatAgent.executeStream (/Users/return/Desktop/QuanAn/apps/api/src/specialists/VoiceChatAgent.ts:325:7)\n    at /Users/return/Desktop/QuanAn/tests/integration/api/voice-chat-flow.test.ts:66:24\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:11)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)","name":"PrismaClientKnownRequestError","code":"P2003","clientVersion":"5.22.0","meta":{"modelName":"CostLog","field_name":"cost_log_account_id_fkey (index)"}},"traceId":"tr_99901_VoiceChatAgent_1779295904498_48qh","msg":"voice_chat.cost_log.write_failed"}
+ ✓ tests/integration/api/voice-chat-flow.test.ts (2 tests) 17ms
+ ✓ tests/unit/web/ToolResult.test.tsx (13 tests) 0ms
+ ❯ tests/integration/api/ip-progress-integration.test.ts (3 tests | 3 skipped) 12ms
+ ↓ apps/api/src/specialists/__tests__/TopicAgent.real-llm.test.ts (1 test | 1 skipped)
+{"level":"info","time":"2026-05-20T16:51:44.562Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1779295904561_6fxc","agentId":"CopywritingAgent","accountId":0,"msg":"specialist.start"}
+{"level":"error","time":"2026-05-20T16:51:44.562Z","pid":41850,"hostname":"returndeMacBook-Pro.local","traceId":"tr_0_CopywritingAgent_1779295904561_6fxc","agentId":"CopywritingAgent","err":{"type":"Error","message":"Invalid accountId","stack":"Error: Invalid accountId\n    at TestAgent.validateInput (/Users/return/Desktop/QuanAn/apps/api/src/agents/base/BaseSpecialist.ts:68:57)\n    at TestAgent.run (/Users/return/Desktop/QuanAn/apps/api/src/agents/base/BaseSpecialist.ts:37:12)\n    at /Users/return/Desktop/QuanAn/tests/unit/agents/base.test.ts:46:13\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14\n    at file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11\n    at runWithTimeout (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)\n    at runTest (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)\n    at runSuite (file:///Users/return/Desktop/QuanAn/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)"},"durationMs":1,"msg":"specialist.failed"}
+ ✓ tests/unit/agents/base.test.ts (7 tests) 1ms
+ ✓ apps/api/src/services/admin/content-review/__tests__/pii-detection.service.test.ts (14 tests) 1ms
+ ✓ tests/unit/api/ip-progress.test.ts (7 tests) 0ms
+ ✓ tests/integration/admin/audit-log-write.test.ts (1 test) 22ms
+ ✓ tests/unit/admin/admin-audit-service.test.ts (6 tests) 0ms
+ ✓ tests/unit/admin/ipWhitelist.test.ts (6 tests) 1ms
+ ✓ tests/unit/admin/mfaCheck.test.ts (6 tests) 0ms
+ ✓ tests/unit/admin/approvalGateCheck.test.ts (5 tests) 3ms
+ ✓ tests/unit/admin/procedures-admin.test.ts (1 test) 0ms
+ ✓ tests/unit/admin/middleware-stubs.test.ts (5 tests) 0ms
+ ✓ tests/unit/admin/roleCheck.test.ts (6 tests) 0ms
+ ✓ apps/api/src/middleware/__tests__/auth-lastlogin.test.ts (4 tests) 5ms
+ ✓ tests/unit/api/trending.test.ts (3 tests) 0ms
+ ✓ tests/integration/api/llm-gateway-real.test.ts (1 test) 4ms
+ ✓ tests/unit/admin/admin-constants.test.ts (9 tests) 0ms
+ ✓ apps/api/src/services/admin/content-review/__tests__/trending-auto-verdict.test.ts (7 tests) 0ms
+ ✓ apps/api/src/services/admin/constant-version/__tests__/llm-judge-constant.test.ts (4 tests) 3ms
+ ✓ apps/api/src/services/admin/prompt-version/__tests__/llm-judge.service.test.ts (4 tests) 3ms
+ ✓ tests/unit/web/step-config.test.ts (9 tests) 0ms
+ ✓ tests/integration/api/trace.test.ts (2 tests) 1ms
+ ↓ tests/integration/api/auth.me.test.ts (1 test | 1 skipped)
+ ✓ tests/unit/admin/evolutionHealth/EvolutionHealthDrawer.test.tsx (13 tests) 72ms
+ ✓ tests/unit/admin/constants/ConstantsPage.test.tsx (10 tests) 31ms
+ ✓ tests/unit/admin/evolutionHealth/EvolutionHealthPage.test.tsx (10 tests) 25ms
+ ✓ tests/unit/admin/abExperiments/AbExperimentDrawer.test.tsx (8 tests) 42ms
+ ✓ tests/unit/admin/constants/CanarySlider.test.tsx (11 tests) 20ms
+ ✓ tests/unit/admin/abExperiments/AbExperimentsPage.test.tsx (7 tests) 32ms
+ ✓ tests/unit/admin/constants/ConstantKeyDropdown.test.tsx (7 tests) 7ms
+ ✓ tests/unit/admin/layout.test.tsx (6 tests) 24ms
+ ✓ tests/unit/admin/prompts/CanarySlider.test.tsx (7 tests) 15ms
+ ✓ tests/unit/admin/constants/LlmJudgeCard.test.tsx (7 tests) 5ms
+ ✓ tests/unit/admin/audit-drawer.test.tsx (6 tests) 13ms
+ ✓ tests/unit/admin/sidebar.test.tsx (6 tests) 11ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 15 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/api/evolution-threshold.test.ts [ tests/integration/api/evolution-threshold.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.user.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/integration/api/evolution-threshold.test.ts:52:38
+
+  49 let testAccountId = 0;
+  50 
+  51 beforeAll(async () => {
+→ 52   const user = await testPrisma.user.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/integration/api/evolution-threshold.test.ts:52:16
+     50| 
+     51| beforeAll(async () => {
+     52|   const user = await testPrisma.user.create({
+       |                ^
+     53|     data: {
+     54|       openId: `${RUN_ID}_user`,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/30]⎯
+
+ FAIL  tests/integration/api/evolution-threshold.test.ts [ tests/integration/api/evolution-threshold.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.evolutionProfile.deleteMany()` invocation in
+/Users/return/Desktop/QuanAn/tests/integration/api/evolution-threshold.test.ts:72:37
+
+  69 }, 30_000);
+  70 
+  71 afterAll(async () => {
+→ 72   await testPrisma.evolutionProfile.deleteMany(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/integration/api/evolution-threshold.test.ts:72:3
+     70| 
+     71| afterAll(async () => {
+     72|   await testPrisma.evolutionProfile.deleteMany({ where: { accountId: t…
+       |   ^
+     73|   const accounts = await testPrisma.ipAccount.findMany({ where: { id: …
+     74|   if (accounts.length > 0) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/30]⎯
+
+ FAIL  tests/integration/api/ip-progress-integration.test.ts [ tests/integration/api/ip-progress-integration.test.ts ]
+PrismaClientInitializationError: 
+Invalid `prisma.user.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/integration/api/ip-progress-integration.test.ts:24:34
+
+  21 let accountId: number;
+  22 
+  23 beforeAll(async () => {
+→ 24   const user = await prisma.user.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/integration/api/ip-progress-integration.test.ts:24:16
+     22| 
+     23| beforeAll(async () => {
+     24|   const user = await prisma.user.create({
+       |                ^
+     25|     data: {
+     26|       openId: `${RUN_ID}_u`,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/30]⎯
+
+ FAIL  tests/integration/api/ip-progress-integration.test.ts [ tests/integration/api/ip-progress-integration.test.ts ]
+PrismaClientInitializationError: 
+Invalid `prisma.stepData.deleteMany()` invocation in
+/Users/return/Desktop/QuanAn/tests/integration/api/ip-progress-integration.test.ts:41:25
+
+  38 });
+  39 
+  40 afterAll(async () => {
+→ 41   await prisma.stepData.deleteMany(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/integration/api/ip-progress-integration.test.ts:41:3
+     39| 
+     40| afterAll(async () => {
+     41|   await prisma.stepData.deleteMany({ where: { accountId } });
+       |   ^
+     42|   await prisma.ipAccount.deleteMany({ where: { userId } });
+     43|   await prisma.user.deleteMany({ where: { id: userId } });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/30]⎯
+
+ FAIL  tests/integration/api/rls-isolation.test.ts [ tests/integration/api/rls-isolation.test.ts ]
+PrismaClientInitializationError: 
+Invalid `prisma.$executeRaw()` invocation:
 
 
- RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/integration/api/rls-isolation.test.ts:32:3
+     30| beforeAll(async () => {
+     31|   // ── 1. Ensure quanan_app role exists (idempotent) ────────────────…
+     32|   await prisma.$executeRaw`
+       |   ^
+     33|     DO $$ BEGIN
+     34|       IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'quanan_ap…
 
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 2ms
- ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 3ms
- ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 2ms
- ✓ src/lib/constants/__tests__/step8.test.ts (9 tests) 2ms
- ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 17ms
- ✓ src/pages/step/__tests__/Step4b.test.tsx (7 tests) 7ms
-stderr | src/pages/step/__tests__/Step8.test.tsx > Step8 > renders h1 with 直播策划
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/30]⎯
 
- ✓ src/pages/step/__tests__/Step8.test.tsx (7 tests) 128ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 113ms
- ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 5ms
- ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 5ms
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx (7 tests) 127ms
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx (7 tests) 195ms
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx (7 tests) 90ms
- ✓ src/test/step-progress.test.tsx (10 tests) 50ms
- ✓ src/components/StepProgress.test.tsx (6 tests) 28ms
-stderr | src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+ FAIL  tests/integration/api/rls-isolation.test.ts [ tests/integration/api/rls-isolation.test.ts ]
+PrismaClientInitializationError: 
+Invalid `prisma.$executeRaw()` invocation:
 
- ✓ src/pages/step/__tests__/Step5.test.tsx (5 tests) 72ms
-stderr | src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step6.test.tsx (5 tests) 75ms
-stderr | src/pages/step/__tests__/Step7.test.tsx > Step7 > renders h1 with 文案生成
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/integration/api/rls-isolation.test.ts:92:3
+     90| afterAll(async () => {
+     91|   // Superuser can delete without RLS
+     92|   await prisma.$executeRaw`DELETE FROM step_data WHERE account_id = ${…
+       |   ^
+     93|   await prisma.ipAccount.deleteMany({ where: { id: { in: [accountAId, …
+     94|   await prisma.user.deleteMany({ where: { id: { in: [userAId, userBId]…
 
- ✓ src/pages/step/__tests__/Step7.test.tsx (6 tests) 130ms
- ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 3ms
-stderr | src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/30]⎯
 
- ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 2ms
- ✓ src/pages/step/__tests__/Step1.test.tsx (4 tests) 140ms
-stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+ FAIL  tests/e2e/prd15-copywriting-flow-e2e.test.ts [ tests/e2e/prd15-copywriting-flow-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.user.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-copywriting-flow-e2e.test.ts:77:38
 
- ✓ src/pages/step/__tests__/Step3b.test.tsx (4 tests) 51ms
- ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 2ms
-stderr | src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+  74 ].join('\n\n')}`;
+  75 
+  76 beforeAll(async () => {
+→ 77   const user = await testPrisma.user.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-copywriting-flow-e2e.test.ts:77:16
+     75| 
+     76| beforeAll(async () => {
+     77|   const user = await testPrisma.user.create({
+       |                ^
+     78|     data: { email: `${RUN_ID}@test.com`, name: 'E2E Copywriting User',…
+     79|   });
 
- ✓ src/pages/step/__tests__/Step3.test.tsx (4 tests) 61ms
- ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
- ✓ src/components/states/__tests__/states.test.tsx (3 tests) 39ms
-stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/30]⎯
 
- ✓ src/test/pages.test.tsx (30 tests) 255ms
+ FAIL  tests/e2e/prd15-copywriting-flow-e2e.test.ts [ tests/e2e/prd15-copywriting-flow-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.costLog.deleteMany()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-copywriting-flow-e2e.test.ts:95:28
 
- Test Files  27 passed (27)
-      Tests  202 passed (202)
-   Start at  11:35:56
-   Duration  2.49s (transform 1.35s, setup 1.16s, collect 5.51s, tests 1.61s, environment 6.95s, prepare 1.15s)
+  92 });
+  93 
+  94 afterAll(async () => {
+→ 95   await testPrisma.costLog.deleteMany(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-copywriting-flow-e2e.test.ts:95:3
+     93| 
+     94| afterAll(async () => {
+     95|   await testPrisma.costLog.deleteMany({ where: { accountId } });
+       |   ^
+     96|   await testPrisma.history.deleteMany({ where: { accountId } });
+     97|   if (deepLearnQueueId) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/30]⎯
+
+ FAIL  tests/e2e/prd15-mock-auth-e2e.test.ts [ tests/e2e/prd15-mock-auth-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.user.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-mock-auth-e2e.test.ts:67:38
+
+  64 
+  65 beforeAll(async () => {
+  66   // Create a dev user matching the seeded mock user email pattern
+→ 67   const user = await testPrisma.user.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-mock-auth-e2e.test.ts:67:16
+     65| beforeAll(async () => {
+     66|   // Create a dev user matching the seeded mock user email pattern
+     67|   const user = await testPrisma.user.create({
+       |                ^
+     68|     data: {
+     69|       email: `${DEV_MOCK_USER_EMAIL.replace('@', `-${RUN_ID}@`)}`,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/30]⎯
+
+ FAIL  tests/e2e/prd15-mock-auth-e2e.test.ts [ tests/e2e/prd15-mock-auth-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.ipAccount.deleteMany()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-mock-auth-e2e.test.ts:97:30
+
+  94 
+  95 afterAll(async () => {
+  96   await testPrisma.auditLog.deleteMany({ where: { userId: devUserId } }).catch(() => {});
+→ 97   await testPrisma.ipAccount.deleteMany(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-mock-auth-e2e.test.ts:97:3
+     95| afterAll(async () => {
+     96|   await testPrisma.auditLog.deleteMany({ where: { userId: devUserId } …
+     97|   await testPrisma.ipAccount.deleteMany({ where: { userId: devUserId }…
+       |   ^
+     98|   await testPrisma.user.deleteMany({ where: { id: devUserId } });
+     99|   await testPrisma.$disconnect();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/30]⎯
+
+ FAIL  tests/e2e/prd15-private-domain-e2e.test.ts [ tests/e2e/prd15-private-domain-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.user.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-private-domain-e2e.test.ts:81:38
+
+  78 let historyId2: number;
+  79 
+  80 beforeAll(async () => {
+→ 81   const user = await testPrisma.user.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-private-domain-e2e.test.ts:81:16
+     79| 
+     80| beforeAll(async () => {
+     81|   const user = await testPrisma.user.create({
+       |                ^
+     82|     data: { email: `${RUN_ID}@test.com`, name: 'E2E PrivateDomain User…
+     83|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/30]⎯
+
+ FAIL  tests/e2e/prd15-private-domain-e2e.test.ts [ tests/e2e/prd15-private-domain-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.costLog.deleteMany()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-private-domain-e2e.test.ts:99:28
+
+  96 });
+  97 
+  98 afterAll(async () => {
+→ 99   await testPrisma.costLog.deleteMany(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-private-domain-e2e.test.ts:99:3
+     97| 
+     98| afterAll(async () => {
+     99|   await testPrisma.costLog.deleteMany({ where: { accountId } });
+       |   ^
+    100|   await testPrisma.history.deleteMany({ where: { accountId } });
+    101|   await testPrisma.ipAccount.deleteMany({ where: { id: accountId } });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/30]⎯
+
+ FAIL  tests/e2e/prd15-trending-to-step7-e2e.test.ts [ tests/e2e/prd15-trending-to-step7-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.user.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-trending-to-step7-e2e.test.ts:56:38
+
+  53 const TRENDING_TOPIC = `3分钟看懂！小红书爆款内容的底层逻辑-${RUN_ID}`;
+  54 
+  55 beforeAll(async () => {
+→ 56   const user = await testPrisma.user.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-trending-to-step7-e2e.test.ts:56:16
+     54| 
+     55| beforeAll(async () => {
+     56|   const user = await testPrisma.user.create({
+       |                ^
+     57|     data: { email: `${RUN_ID}@test.com`, name: 'E2E Trending User', op…
+     58|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/30]⎯
+
+ FAIL  tests/e2e/prd15-trending-to-step7-e2e.test.ts [ tests/e2e/prd15-trending-to-step7-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.stepData.deleteMany()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/prd15-trending-to-step7-e2e.test.ts:93:29
+
+  90 });
+  91 
+  92 afterAll(async () => {
+→ 93   await testPrisma.stepData.deleteMany(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/prd15-trending-to-step7-e2e.test.ts:93:3
+     91| 
+     92| afterAll(async () => {
+     93|   await testPrisma.stepData.deleteMany({ where: { accountId } });
+       |   ^
+     94|   await testPrisma.trendingFavorite.deleteMany({ where: { accountId } …
+     95|   await testPrisma.trendingItem.deleteMany({ where: { id: trendingItem…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-dual-approval-e2e.test.ts [ tests/e2e/admin/prd13-dual-approval-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd13-dual-approval-e2e.test.ts:79:44
+
+  76 
+  77 beforeAll(async () => {
+  78   // Seed 3 admin users
+→ 79   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd13-dual-approval-e2e.test.ts:79:17
+     77| beforeAll(async () => {
+     78|   // Seed 3 admin users
+     79|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+     80|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+     81|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-dual-approval-e2e.test.ts [ tests/e2e/admin/prd13-dual-approval-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd13-dual-approval-e2e.test.ts:124:61
+    122|   // Clean up in dependency order
+    123|   await testPrisma.adminAuditLog
+    124|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+    125|     .catch(() => undefined);
+    126|   await testPrisma.approvalRequest
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-emergency-flow.test.ts [ tests/e2e/admin/prd13-emergency-flow.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd13-emergency-flow.test.ts:60:44
+
+  57 let superAdmin2: { id: number };
+  58 
+  59 beforeAll(async () => {
+→ 60   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd13-emergency-flow.test.ts:60:17
+     58| 
+     59| beforeAll(async () => {
+     60|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+     61|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+     62|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-emergency-flow.test.ts [ tests/e2e/admin/prd13-emergency-flow.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd13-emergency-flow.test.ts:71:61
+     69|   vi.useRealTimers();
+     70|   await testPrisma.adminAuditLog
+     71|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+     72|     .catch(() => undefined);
+     73|   await testPrisma.approvalRequest
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts [ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts:66:44
+
+  63 let accountId: number;
+  64 
+  65 beforeAll(async () => {
+→ 66   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts:66:17
+     64| 
+     65| beforeAll(async () => {
+     66|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+     67|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts [ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd13-evolution-rebuild-e2e.test.ts:124:61
+    122| afterAll(async () => {
+    123|   await testPrisma.adminAuditLog
+    124|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+    125|     .catch(() => undefined);
+    126|   await testPrisma.adminAuditLog
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-quota-expiry-e2e.test.ts [ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd13-quota-expiry-e2e.test.ts:58:42
+
+  55 let adjustmentId: number;
+  56 
+  57 beforeAll(async () => {
+→ 58   adminUser = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts:58:15
+     56| 
+     57| beforeAll(async () => {
+     58|   adminUser = await testPrisma.adminUser.create({
+       |               ^
+     59|     data: { email: `${RUN_ID}-admin@test.com`, role: 'admin', isMock: …
+     60|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/30]⎯
+
+ FAIL  tests/e2e/admin/prd13-quota-expiry-e2e.test.ts [ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd13-quota-expiry-e2e.test.ts:97:52
+     95|   vi.useRealTimers();
+     96|   await testPrisma.adminAuditLog
+     97|     .deleteMany({ where: { actorAdminId: adminUser.id } })
+       |                                                    ^
+     98|     .catch(() => undefined);
+     99|   await testPrisma.quotaAdjustmentLog
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-ab-experiment-e2e.test.ts [ tests/e2e/admin/prd14-ab-experiment-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd14-ab-experiment-e2e.test.ts:78:44
+
+  75 let approvalRequestId: number;
+  76 
+  77 beforeAll(async () => {
+→ 78   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd14-ab-experiment-e2e.test.ts:78:17
+     76| 
+     77| beforeAll(async () => {
+     78|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+     79|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+     80|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-ab-experiment-e2e.test.ts [ tests/e2e/admin/prd14-ab-experiment-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd14-ab-experiment-e2e.test.ts:99:61
+     97|   }
+     98|   await testPrisma.adminAuditLog
+     99|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+    100|     .catch(() => undefined);
+    101|   await testPrisma.approvalRequest
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-constant-version-e2e.test.ts [ tests/e2e/admin/prd14-constant-version-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd14-constant-version-e2e.test.ts:84:44
+
+  81 const TEST_USER_ID = 12345;
+  82 
+  83 beforeAll(async () => {
+→ 84   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd14-constant-version-e2e.test.ts:84:17
+     82| 
+     83| beforeAll(async () => {
+     84|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+     85|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+     86|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-constant-version-e2e.test.ts [ tests/e2e/admin/prd14-constant-version-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd14-constant-version-e2e.test.ts:105:61
+    103|     .catch(() => undefined);
+    104|   await testPrisma.adminAuditLog
+    105|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+    106|     .catch(() => undefined);
+    107|   await testPrisma.approvalRequest
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-cross-domain-e2e.test.ts [ tests/e2e/admin/prd14-cross-domain-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd14-cross-domain-e2e.test.ts:102:44
+
+   99 const TEST_USER_ID = 99999;
+  100 
+  101 beforeAll(async () => {
+→ 102   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd14-cross-domain-e2e.test.ts:102:17
+    100| 
+    101| beforeAll(async () => {
+    102|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+    103|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+    104|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-cross-domain-e2e.test.ts [ tests/e2e/admin/prd14-cross-domain-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd14-cross-domain-e2e.test.ts:148:61
+    146| 
+    147|   await testPrisma.adminAuditLog
+    148|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+    149|     .catch(() => undefined);
+    150|   await testPrisma.approvalRequest
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-emergency-switch-e2e.test.ts [ tests/e2e/admin/prd14-emergency-switch-e2e.test.ts ]
+PrismaClientInitializationError: 
+Invalid `testPrisma.adminUser.create()` invocation in
+/Users/return/Desktop/QuanAn/tests/e2e/admin/prd14-emergency-switch-e2e.test.ts:78:44
+
+  75 let systemConfigId: number;
+  76 
+  77 beforeAll(async () => {
+→ 78   superAdmin1 = await testPrisma.adminUser.create(
+Database `quanan_test` does not exist on the database server at `localhost:5432`.
+ ❯ $n.handleRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:7615
+ ❯ $n.handleAndLogRequestError node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/e2e/admin/prd14-emergency-switch-e2e.test.ts:78:17
+     76| 
+     77| beforeAll(async () => {
+     78|   superAdmin1 = await testPrisma.adminUser.create({
+       |                 ^
+     79|     data: { email: `${RUN_ID}-sa1@test.com`, role: 'super_admin', isMo…
+     80|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/30]⎯
+
+ FAIL  tests/e2e/admin/prd14-emergency-switch-e2e.test.ts [ tests/e2e/admin/prd14-emergency-switch-e2e.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/e2e/admin/prd14-emergency-switch-e2e.test.ts:120:61
+    118| 
+    119|   await testPrisma.adminAuditLog
+    120|     .deleteMany({ where: { actorAdminId: { in: [superAdmin1.id, superA…
+       |                                                             ^
+    121|     .catch(() => undefined);
+    122|   await testPrisma.approvalRequest
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/30]⎯
+
+ Test Files  15 failed | 180 passed | 6 skipped (201)
+      Tests  2021 passed | 111 skipped (2132)
+   Start at  00:51:29
+   Duration  15.58s (transform 983ms, setup 49ms, collect 2.06s, tests 12.75s, environment 119ms, prepare 38ms)
 

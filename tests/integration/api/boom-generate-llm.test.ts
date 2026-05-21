@@ -90,7 +90,7 @@ vi.mock('@/workers/llm-gateway', () => {
   };
 });
 
-import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
+import { boomGenerateRouter } from '@/trpc/routers/app/boomGenerate';
 
 // ── Test fixtures ─────────────────────────────────────────────────────────────
 

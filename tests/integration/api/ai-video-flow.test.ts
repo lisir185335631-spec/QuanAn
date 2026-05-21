@@ -36,7 +36,7 @@ vi.mock('@/lib/logger', async (importOriginal) => {
 
 // ── Router import (after mocks) ───────────────────────────────────────────────
 
-import { aiVideoRouter } from '@/trpc/routers/aiVideo';
+import { aiVideoRouter } from '@/trpc/routers/app/aiVideo';
 import { videoAgent as _mockedAgent } from '@/specialists/VideoAgent';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────

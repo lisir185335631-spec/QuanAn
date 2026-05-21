@@ -1,24 +1,32 @@
 
- RUN  v2.1.9 /Users/return/Desktop/QuanQn/apps/web
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn
 
- ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 1ms
- ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 3ms
- ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 4ms
- ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 3ms
- ✓ src/components/StepProgress.test.tsx (6 tests) 42ms
- ✓ src/test/step-progress.test.tsx (10 tests) 63ms
- ✓ src/components/states/__tests__/states.test.tsx (3 tests) 57ms
- ✓ src/test/feedback-button.test.tsx (8 tests) 111ms
- ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 1ms
- ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
-stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts (43 tests) 10ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit.test.ts (39 tests) 6ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/accounts.test.ts (36 tests) 5ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/review-trending.test.ts (44 tests) 5ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts (36 tests) 9ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/cost.test.ts (34 tests) 9ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/invites.test.ts (27 tests) 8ms
+{"level":"warn","time":"2026-05-20T18:30:26.949Z","pid":65460,"hostname":"returndeMacBook-Pro.local","userId":42,"email":"u@example.com","tempPasswordHashPrefix":"2159b8bc","msg":"[ADMIN RESET PASSWORD] temp password issued"}
+{"level":"warn","time":"2026-05-20T18:30:26.949Z","pid":65460,"hostname":"returndeMacBook-Pro.local","userId":42,"email":"u@example.com","tempPasswordHashPrefix":"23bccac8","msg":"[ADMIN RESET PASSWORD] temp password issued"}
+{"level":"warn","time":"2026-05-20T18:30:26.949Z","pid":65460,"hostname":"returndeMacBook-Pro.local","userId":42,"email":"u@example.com","tempPasswordHashPrefix":"36b9bd99","msg":"[ADMIN RESET PASSWORD] temp password issued"}
+ ✓ apps/api/src/trpc/routers/admin/__tests__/users.test.ts (25 tests) 5ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts (16 tests) 8ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts (23 tests) 4ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/quota.test.ts (15 tests) 3ms
+{"level":"info","time":"2026-05-20T18:30:27.024Z","pid":65460,"hostname":"returndeMacBook-Pro.local","msg":"[STUB] Notify requester 3: request 1 approved"}
+{"level":"info","time":"2026-05-20T18:30:27.024Z","pid":65460,"hostname":"returndeMacBook-Pro.local","msg":"[STUB] Notify requester 3: request 1 rejected"}
+{"level":"info","time":"2026-05-20T18:30:27.025Z","pid":65460,"hostname":"returndeMacBook-Pro.local","msg":"[STUB] Emergency approval 5 notified (isMock=true · D-077)"}
+ ✓ apps/api/src/trpc/routers/admin/__tests__/approvals.test.ts (16 tests) 3ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/compliance.test.ts (18 tests) 4ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/constants.test.ts (19 tests) 4ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/prompts.test.ts (13 tests) 3ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/users-export.test.ts (23 tests) 19ms
+ ✓ apps/api/src/trpc/routers/admin/__tests__/audit-forensic.test.ts (9 tests) 7ms
 
- ✓ src/test/pages.test.tsx (30 tests) 172ms
-
- Test Files  11 passed (11)
-      Tests  91 passed (91)
-   Start at  18:55:32
-   Duration  1.52s (transform 507ms, setup 500ms, collect 1.55s, tests 457ms, environment 3.04s, prepare 493ms)
+ Test Files  17 passed (17)
+      Tests  436 passed (436)
+   Start at  02:30:26
+   Duration  605ms (transform 198ms, setup 8ms, collect 380ms, tests 111ms, environment 0ms, prepare 21ms)
 

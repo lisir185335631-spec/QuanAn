@@ -24,13 +24,17 @@ const _shadowAdminRouter = _t.router({
       ),
     logout: _t.procedure.mutation((): { ok: boolean } => ({ ok: true })),
     me: _t.procedure.query(
-      (): { id: number; email: string; role: string; sessionId: string } => ({
+      (): { id: number; email: string; role: string; allowedDomains: string[]; sessionId: string } => ({
         id: 0,
         email: '',
         role: '',
+        allowedDomains: [],
         sessionId: '',
       }),
     ),
+    logPageView: _t.procedure
+      .input((x: unknown) => x as { path: string })
+      .mutation((): { ok: boolean } => ({ ok: true })),
   }),
   users: _t.router({
     list: _t.procedure

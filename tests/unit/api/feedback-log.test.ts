@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { costLogRouter } from '@/trpc/routers/costLog';
+import { costLogRouter } from '@/trpc/routers/app/costLog';
 
 // ─── Helper: build minimal tRPC context matching protectedProcedure expectations ─
 

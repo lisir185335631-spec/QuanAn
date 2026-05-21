@@ -11,7 +11,7 @@ import { resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../../../../');
 const HISTORY_PAGE = `${ROOT}/apps/web/src/pages/modules/History.tsx`;
-const HISTORY_ROUTER = `${ROOT}/apps/api/src/trpc/routers/history.ts`;
+const HISTORY_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/history.ts`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');

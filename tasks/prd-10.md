@@ -1,6 +1,6 @@
 # PRD-10 · P9.0 admin 基础设施(monorepo workspace + 独立 lucia session + 6 闸鉴权链 + admin_audit_log + Layout 骨架)
 
-> **派生** · ADMIN-ARCHITECTURE §1 系统总览(line 43-191)+ §2 部署形态(line 192-380)+ §4 数据访问与隔离(line 660-916)+ §5 接口契约 adminRouter(line 917-1014)+ §7 鉴权审计安全(line 1269-1459)+ §8.2 P9.0 实施路线(line 1493-1503)+ ARCHITECTURE §1.4b 主-admin 边界声明(line 143-247)+ AGENTS §10 admin 子系统宪法(line 2313-2570)+ DATA-MODEL §13 admin 13 表 schema(line 2856-3543)
+> **派生** · ADMIN-ARCHITECTURE §1 系统总览(line 43-191)+ §2 部署形态(line 192-380)+ §4 数据访问与隔离(line 660-916)+ §5 接口契约 adminRouter(line 917-1014)+ §7 鉴权审计安全(line 1269-1459)+ §8.2 P9.0 实施路线(line 1493-1503)+ ARCHITECTURE §1.4b 主-admin 边界声明(line 143-247)+ AGENTS §10 admin 子系统宪法(line 2313-2570)+ DATA-MODEL §13 admin 14 表 schema(line 2856-3543)
 > **风险** · **foundation**(下游 PRD-11 / PRD-12 / PRD-13 / PRD-14 共 4 PRD 全 depends_on 此 · downstream count = 4 admin PRDs · 升档自 high)
 > **依赖** · PRD-1 ✅(P0 基础设施 · 单包 src/ 骨架就位)· PRD-9 ✅(主应用 P8 收官 · 5/5 PASSED · main commit 1a1300f)· 主应用 P0-P8 收官触发 admin P9 启动(ADMIN §8.7 严格串行 · 方案 A)
 > **预估** · 1 周(7 stories · 同 ADMIN §8.2)· **branch** · 沿用 main(== ralph/prd-9-p8-knowledge-base-rag · 同 commit · D10 决策)· progress.txt 继续累积
@@ -32,7 +32,7 @@
 
 ★ **继承 PRD-1 / PRD-2**(主应用 P0 / P1 已就位)·
 - src/ 单包骨架 → 本 PRD US-001 拆 monorepo(apps/web / apps/admin / apps/api / packages/{schemas,ui,clients})
-- prisma/schema.prisma 18 主应用 model 已就位(PRD-1)· 本 PRD US-001 加 13 admin model(DATA-MODEL §13.2~§13.7)
+- prisma/schema.prisma 18 主应用 model 已就位(PRD-1)· 本 PRD US-001 加 14 admin model(DATA-MODEL §13.2~§13.7)
 - lucia-auth 主应用 session(`apps/api/src/lib/auth/lucia.ts`)· 本 PRD US-002 复用 lib · 新建 `lucia-admin.ts` 独立 Redis namespace `admin:session:*`
 - RLS 主应用 18 表 ENABLED(PRD-2 跑 LD-009)· 本 PRD US-001 manual_admin_rls.sql DISABLE RLS for 13 admin 表(LD-A3 · DATA-MODEL §13.8)
 - accountIsolationMiddleware pattern(`apps/api/src/trpc/middleware/account-isolation.ts` · PRD-2 落地)· 本 PRD US-003 adminRLS middleware 类比此模式(C7 假设)
@@ -405,7 +405,7 @@
 - R-A5 · admin 不调 LLM · `grep -rn "import.*LLMGateway\|llmGateway" apps/admin/ apps/api/src/trpc/routers/admin/` = 0
 - R-A6 · admin 不用 raw SQL 绕过 · `grep -rn "\\\$executeRawUnsafe\|\\\$queryRawUnsafe" apps/api/src/trpc/routers/admin/` = 0(adminRLS middleware 内部例外 · 不在 routers/admin/)
 
-**Part 4 · 1 new e2e 闭环**(`tests/e2e/admin-foundation-loop.spec.ts`)·
+**Part 4 · 1 new e2e 闭环**(`tests/e2e/admin/admin-foundation-loop.spec.ts`)·
 - playwright project `quanan-admin` baseURL `http://localhost:5174`
 - workers=1 + fullyParallel=false(继承 PRD-4 US-018 教训)
 - 路径 · seed admin_user via API helper → goto `/login` → 输 email super@quanan.com → 点 "mock OAuth 登录" → 跳 `/admin` → 看到 TopBar(super_admin badge)+ Sidebar(16 域 4 分组)+ StatusBar(ENV=dev / RLS=ON / WAF=stub / MFA=stub / Role=super_admin)→ 点 sidebar "NSM 仪表盘" → 跳 `/admin/nsm` → 看到 placeholder "PRD-11 · 域 ① NSM 仪表盘 · 待落地" → 点 topbar 🔔 audit drawer 展开 → 看到 1 条 audit_log "admin_login · 2026-MM-DD HH:MM" → drawer 关闭 → 点 logout → 跳 `/login` → expect API admin_audit_log 表有 ≥ 2 rows(admin_login + admin_logout)+ admin_sessions 表 isActive=false
@@ -423,7 +423,7 @@
   - 主应用 18 表 RLS state(全 true · 0 副作用验证)
 
 **files_to_create** ·
-- `tests/e2e/admin-foundation-loop.spec.ts`(★ ~280 行 · 收官 e2e · 7 个 step · seed → login → layout → sidebar → placeholder → audit drawer → logout · 含 helper functions)
+- `tests/e2e/admin/admin-foundation-loop.spec.ts`(★ ~280 行 · 收官 e2e · 7 个 step · seed → login → layout → sidebar → placeholder → audit drawer → logout · 含 helper functions)
 - `tests/e2e/helpers/admin-mock-oauth.ts`(~80 行 · `mockAdminLogin(page, { email, role })` · UI 自动化 · 等待 redirect)
 - `tests/e2e/helpers/admin-db-seed.ts`(~60 行 · 通过 admin API endpoint `/__test__/seed` 或直接 prisma · seed 1 admin_user 测试用)
 - `scripts/audit-redlines-admin.sh`(★ ~120 行 · 5 LD-A + 6 R-A 一键 grep · 输出 PASS / FAIL · 收官 must 全 PASS)
@@ -488,7 +488,7 @@
 - **场景 B2** · 13 admin model 中 admin_audit_log 必含 createdAt 索引(IO 性能)
   - Given · prisma schema 13 admin model
   - When · `pnpm prisma format && grep -A 5 "model AdminAuditLog" prisma/schema.prisma`
-  - Then · `@@index([createdAt(sort: Desc)])` 存在(高频查最近 audit)+ `@@index([adminUserId, createdAt(sort: Desc)])` 存在(查特定 admin 的 audit)
+  - Then · `@@index([createdAt(sort: Desc)])` 存在(高频查最近 audit)+ `@@index([actorAdminId, createdAt(sort: Desc)])` 存在(查特定 admin 的 audit)
 
 #### AC-001-P(performance)
 - **场景 P1** · monorepo 重构后 pnpm install 时长

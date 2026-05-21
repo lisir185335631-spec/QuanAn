@@ -79,7 +79,7 @@ vi.mock('@/workers/llm-gateway', () => {
 });
 
 // Import router AFTER mocks
-import { copywritingRouter } from '@/trpc/routers/copywriting';
+import { copywritingRouter } from '@/trpc/routers/app/copywriting';
 
 // ── Test fixtures ─────────────────────────────────────────────────────────────
 

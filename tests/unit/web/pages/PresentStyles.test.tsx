@@ -12,7 +12,7 @@ import { PresentStylesInputSchema } from '../../../../packages/schemas/src/speci
 const ROOT = resolve(__dirname, '../../../../');
 const PRESENT_STYLES_PAGE = `${ROOT}/apps/web/src/pages/tools/PresentStyles.tsx`;
 const PRESENT_STYLES_SCHEMA = `${ROOT}/packages/schemas/src/specialist-io/presentStyles.schema.ts`;
-const PRESENT_STYLES_ROUTER = `${ROOT}/apps/api/src/trpc/routers/presentStyles.ts`;
+const PRESENT_STYLES_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/presentStyles.ts`;
 const APP_ROUTER = `${ROOT}/apps/api/src/trpc/routers/_app.ts`;
 
 function src(path: string): string {

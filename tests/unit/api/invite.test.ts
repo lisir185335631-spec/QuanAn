@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { inviteRouter } from '@/trpc/routers/invite';
+import { inviteRouter } from '@/trpc/routers/app/invite';
 // Note: @trpc/server lives in apps/api/node_modules — cannot import directly in root vitest.
 // Check TRPCError fields via toMatchObject instead.
 

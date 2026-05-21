@@ -25,7 +25,7 @@ vi.mock('@/lib/redis', () => ({
   redis: { duplicate: vi.fn(() => ({ on: vi.fn() })), on: vi.fn() },
 }));
 
-import { dailyTasksRouter } from '@/trpc/routers/dailyTasks';
+import { dailyTasksRouter } from '@/trpc/routers/app/dailyTasks';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 

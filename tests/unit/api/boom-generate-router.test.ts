@@ -17,7 +17,7 @@ vi.mock('@/specialists/CopywritingAgent', () => ({
   },
 }));
 
-import { boomGenerateRouter } from '@/trpc/routers/boomGenerate';
+import { boomGenerateRouter } from '@/trpc/routers/app/boomGenerate';
 import { copywritingAgent as _mockedAgent } from '@/specialists/CopywritingAgent';
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────

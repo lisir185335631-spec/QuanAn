@@ -13,7 +13,7 @@ const TRENDING_PAGE     = `${ROOT}/apps/web/src/pages/tools/Trending.tsx`;
 const TRENDING_FILTERS  = `${ROOT}/apps/web/src/pages/tools/components/TrendingFilters.tsx`;
 const TRENDING_TABLE    = `${ROOT}/apps/web/src/pages/tools/components/TrendingTable.tsx`;
 const TRENDING_DRAWER   = `${ROOT}/apps/web/src/pages/tools/components/TrendingDetailDrawer.tsx`;
-const TRENDING_ROUTER   = `${ROOT}/apps/api/src/trpc/routers/trending.ts`;
+const TRENDING_ROUTER   = `${ROOT}/apps/api/src/trpc/routers/app/trending.ts`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');

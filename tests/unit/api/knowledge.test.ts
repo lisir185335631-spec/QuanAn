@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { knowledgeRouter } from '@/trpc/routers/knowledge';
+import { knowledgeRouter } from '@/trpc/routers/app/knowledge';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 

@@ -7,8 +7,8 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TRPCError } from '@trpc/server';
-import { ipAccountsRouter } from '@/trpc/routers/ipAccounts';
-import { stepDataRouter } from '@/trpc/routers/stepData';
+import { ipAccountsRouter } from '@/trpc/routers/app/ipAccounts';
+import { stepDataRouter } from '@/trpc/routers/app/stepData';
 
 // Mock PositioningAgent so stepData.save tests don't hit real LLM (US-004 integration)
 vi.mock('@/specialists/PositioningAgent', () => ({

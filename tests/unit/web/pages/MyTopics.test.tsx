@@ -10,7 +10,7 @@ import { resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../../../../');
 const MY_TOPICS_PAGE  = `${ROOT}/apps/web/src/pages/modules/MyTopics.tsx`;
-const MY_TOPICS_ROUTER = `${ROOT}/apps/api/src/trpc/routers/myTopics.ts`;
+const MY_TOPICS_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/myTopics.ts`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');
