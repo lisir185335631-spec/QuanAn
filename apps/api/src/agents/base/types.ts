@@ -14,7 +14,7 @@ export type SpecialistId =
   | 'VoiceChatAgent' | 'EvolutionAgent' | 'DailyTaskAgent';
 
 /** LLM tier(ADR-013) */
-export type ModelTier = 'reasoning' | 'lightweight';
+export type ModelTier = 'reasoning' | 'lightweight' | 'balanced';
 
 /** 输入(全 Specialist 共用) */
 export interface SpecialistInput<P = unknown> {

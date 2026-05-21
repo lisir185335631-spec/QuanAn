@@ -4,6 +4,12 @@
  * AC-8: ≥ 16 unit tests · ≥ 1 per procedure
  */
 
+// PRD-27 US-004: deepLearning.learn now uses BullMQ — mock to avoid real Redis
+vi.mock('@/jobs/deep-learning.job', () => ({
+  deepLearningQueue: { add: vi.fn().mockResolvedValue({}) },
+  DEEP_LEARNING_QUEUE_NAME: 'deep-learning',
+}));
+
 import { describe, it, expect, vi } from 'vitest';
 import { privateDomainRouter } from '@/trpc/routers/app/privateDomain';
 import { diagnosisRouter } from '@/trpc/routers/app/diagnosis';
@@ -163,6 +169,7 @@ describe('privateDomain.generate', () => {
     const { ctx, prisma } = makeCtx();
     const caller = privateDomainRouter.createCaller(ctx);
     const result = await caller.generate({
+      phase: 'welcome',
       productDescription: '1对1职业规划咨询',
       productPrice: 2980,
       targetAudience: '25-35岁职场女性',
@@ -409,16 +416,18 @@ describe('deepLearning.createFromFile', () => {
 });
 
 // ─── deepLearning.learn ──────────────────────────────────────────────────────
+// PRD-27 US-004: schema 改 {archiveId} → {samples} + BullMQ enqueue (D-262)
 
 describe('deepLearning.learn', () => {
-  it('updates archive learningStatus to pending and returns {ok:true, status:"queued"}', async () => {
+  it('enqueues BullMQ job and returns {jobId, status:"queued"}', async () => {
     const { ctx, prisma } = makeCtx();
     const caller = deepLearningRouter.createCaller(ctx);
-    const result = await caller.learn({ archiveId: 30 });
-    expect(result).toEqual({ ok: true, status: 'queued' });
-    expect(prisma.deepLearningArchive.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 30 }, data: { learningStatus: 'pending' } }),
-    );
+    const result = await caller.learn({
+      samples: [{ text: '十字以上的样本文案内容测试用途', source: 'test-src' }],
+    });
+    expect(result.status).toBe('queued');
+    expect(result.jobId).toBeTruthy();
+    expect(prisma.history.create).toHaveBeenCalled();
   });
 });
 
