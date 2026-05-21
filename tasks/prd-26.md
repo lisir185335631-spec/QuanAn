@@ -644,14 +644,91 @@ git branch backup/before-prd-26 main
 
 ---
 
-## §9 PRD-27+ Handoff(收官时填)
+## §9 PRD-27+ Handoff(US-007 收官填写 · 2026-05-21)
 
-留 US-007 收官时基于 retro 数据写入。预期方向:
-- **PRD-27** · evaluation 完整化(LLM Judge staging 真调 · 多 agent 跨场景测试 · admin evaluation UI 完整化)
-- **PRD-28** · 多用户压测 + 性能 baseline(100/1k 用户 · LLM Gateway 限流 · BullMQ 饱和)
-- **PRD-29** · 移动端响应式 polish + native App 评估
-- **PRD-30** · 海外版评估(英文版 + 多供应商海外节点)
-- **PRR** · 法务/部署 prep(域名/ICP/OAuth/Sentry 配置 · 主开发完成后)
+> **数据基础** · PRD-26 6/6 dev US 100% 1iter PASS · -8 TD 净减 · 33 verify checks ALL PASS
+> **状态** · admin UI MVP 100% 达成 · LLM 接入 100% · 视觉对齐 100% · 三层 e2e 防护建立
+
+### §9.1 PRD-27 · evaluation 完整化
+
+**核心目标**: LLM Judge 从"本地 mock"升级为"staging 真调" + admin evaluation UI 完整展示
+
+- **LLM Judge staging 真调**: DiagnosisAgent/AnalysisAgent/VideoAgent/LivestreamAgent/VoiceChatAgent × 完整 e2e · 需 OPENAI_API_KEY + ANTHROPIC_API_KEY staging 配置
+- **多 agent 跨场景测试**: 14 Specialist 组合场景 · 评估链路完整性 · LLM Gateway 限流边界
+- **admin evaluation UI**: admin SPA /admin/evaluations 新页 · Judge 结果展示 · 历史对比
+- **TD-099 web 部分**: AiVideo/BoomGenerate/Generate page unit test 补全(PRD-26 partial)
+- **依赖**: PRD-26 done · staging 环境就位 · API key 申请
+
+**估期**: 8-10 medium US · 25-35h daemon · ≈ 1 周
+
+### §9.2 PRD-28 · 多用户压测 + 性能 baseline
+
+**核心目标**: 系统在 100/1000 并发用户下的稳定性验证 + 瓶颈发现
+
+- **并发测试**: k6 或 Locust · 100 用户(基准)/ 1k 用户(饱和测试)
+- **LLM Gateway 限流**: BASE_LLM_URL 速率限制测试 · 降级策略验证
+- **BullMQ 饱和**: 队列积压 + worker 扩容边界 · Redis 内存峰值
+- **DB 连接池**: Prisma connection pool 在高并发下的行为 · pgBouncer 评估
+- **性能 baseline**: Lighthouse CI / k6 trend · LCP/FID/CLS 基线建立
+- **依赖**: PRD-27 done(evaluation 稳定) · 本地 docker-compose 压测环境
+
+**估期**: 6-8 medium US · 20-28h daemon · ≈ 1 周
+
+### §9.3 PRD-29 · 移动端响应式 polish
+
+**核心目标**: apps/web 在手机端完整可用 + native App 评估报告
+
+- **响应式 polish**: 18 个 page 移动端 breakpoint · Tailwind mobile-first 检查
+- **TD-099 web tools**: AiVideo/BoomGenerate/Generate 移动端布局
+- **visual baseline 扩展**: mobile viewport(390×844)× 18 pages baseline 新建
+- **native App 评估**: React Native(Expo)vs PWA vs 响应式 Web Only · 一页决策文档
+- **依赖**: PRD-26 done · 视觉设计确认响应式优先级
+
+**估期**: 5-7 medium US · 18-24h daemon · ≈ 1 周
+
+### §9.4 PRD-30 · 海外版评估
+
+**核心目标**: 英文版可行性验证 + 多供应商海外节点接入
+
+- **i18n 框架**: next-intl 或 react-i18next 选型 · namespace 设计 · 中/英 toggle
+- **多供应商海外节点**: Anthropic US node + OpenAI US node · LLMGateway 路由规则
+- **海外合规**: 数据本地化评估 · GDPR 基础 · Cookie consent
+- **依赖**: PRD-28(压测 baseline) · 海外节点 API 账号就位
+
+**估期**: 6-8 medium US · 20-28h daemon · ≈ 1 周
+
+### §9.5 PRR · 法务/部署 prep
+
+**前置条件**: PRD-27~30 全 ship · 内测用户 ≥ 10 活跃 · 技术指标稳定
+
+- **域名**: quanan.com ICP 备案 · 增值电信经营许可证(ICP-VAS)· 2-3 月流程
+- **OAuth 生产**: Google OAuth(Google Cloud Console) · 微信 OAuth(微信开放平台)
+- **部署**: Vercel(apps/web + apps/admin) + Railway(apps/api) + 阿里云 RDS · staging → prod 迁移
+- **监控**: Sentry 接入(error tracking) · OTel(性能) · Plausible(访问统计)
+- **内容合规**: 内容审核员招聘(1-2 人) · 用户协议 · 隐私政策 文案
+- **Trending 三方授权**: 新榜/蝉妈妈/飞瓜 API 签约(P5 启动前必签)
+
+**注意**: PRR 不是一个 PRD · 是工程外事项清单 · 由用户主导 · 不走 ralph daemon。
+
+---
+
+### §9.6 路线图总览
+
+```
+PRD-26 ✅ admin MVP · 9 TD 清 · 四层 e2e
+  ↓
+PRD-27 📋 evaluation 完整化 (8-10 US · staging 真调)
+  ↓
+PRD-29 📋 移动端 (5-7 US · 响应式 + native 评估)
+  ↓
+PRD-28 📋 压测 (6-8 US · 性能 baseline)
+  ↓
+PRD-30 📋 海外版 (6-8 US · i18n + 多节点)
+  ↓
+PRR 📋 法务/部署 (domain · ICP · OAuth · Sentry · 内容合规)
+  ↓
+[邀请制内测 1.0 上线]
+```
 
 ---
 

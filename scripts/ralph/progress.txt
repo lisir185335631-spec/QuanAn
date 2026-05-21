@@ -5,6 +5,33 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-21 14:00 - US-007 [PRD-26] · 收官 verify-prd-26.sh + /goal-verify + /prd-retro
+[PRD-26 retro] 6-PRD 复盘 · 严格通过率 100% · 9 TD closed(8 fully + 1 partial) · admin UI 95% → 100% · lazy load + 4 chunks · 17 e2e smoke + 17 unit test(51 cases) + 17 visual baseline · L4 进化 M-1/M-2/M-3: 4/4 注入命中 · 连续 4 PRD 100%(PRD-23~26)
+
+- 实现了什么:
+  - scripts/verify-prd-26.sh: 33 checks · 7 sections · ALL CHECKS PASSED
+  - .agents/verification/prd-26-goal-backward.md: /goal-verify §0+§1+ Goal-backward · VERDICT PASS
+  - .agents/retros/prd-26-vs-prd-25-retrospective.md: 跨 PRD-21~26 8 sections 复盘 · 6 Playbook 提炼
+  - tasks/prd-26.md §9: PRD-27~30 + PRR handoff 详情写入
+  - .gitignore: dist-admin/ 加入(避免 build 产物进 git)
+- 验证结果:
+  - typecheck: ✅ 5 ws 0 errors
+  - pnpm lint: ✅ 0 errors in US-007 引入 files(shell/markdown 不在 lint scope)
+  - vitest: ✅ 15 failed pre-existing · 180 passed · 6 skipped — 0 new regression
+  - bash scripts/verify-prd-26.sh: ✅ 33/33 ALL CHECKS PASSED
+- 更改的文件:
+  - scripts/verify-prd-26.sh (new · 33 checks)
+  - .agents/verification/prd-26-goal-backward.md (new · goal-backward report)
+  - .agents/retros/prd-26-vs-prd-25-retrospective.md (new · 6-PRD retro)
+  - tasks/prd-26.md §9 (modified · PRD-27+ handoff)
+  - .gitignore (+dist-admin/)
+- **未来迭代的学习:**
+  - verify script 的 `grep | wc -l` 模式在 `set -euo pipefail` 下要用 `(grep ... || true) | wc -l` — grep 无匹配 exit 1 + pipefail → 脚本提前退出
+  - DATABASE_URL 在 CLAUDE.md 写的是 quanan · 实际 .env 是 quanqn · verify script 必须从 .env 读取
+  - dist-admin 不在 gitignore 的 `dist` pattern 内(名字不同) · 需单独加
+  - admin-foundation-loop e2e 的 pass state 不每次 US 都重跑 · verify script §3 只检查 spec 文件存在
+---
+
 ## 2026-05-21 02:20 - US-003 [PRD-26] · admin auth + 三档权限矩阵 e2e
 - 实现了什么:
   - prisma/schema.prisma: AdminUser 加 allowedDomains String[] 字段
@@ -4615,3 +4642,11 @@ PRD-23 范围:
   - playwright headless 登录 admin · fill email input + click submit · 等 waitForURL '**/admin/**'
   - 截图从 login redirect 到 nsm 约 2s · waitForTimeout(2000) 足够
 ---
+
+## 2026-05-21 08:03 - US-006 · [RCA-006 DAEMON EXIT]
+- audit timeout(主审计触发) · daemon 已退出
+- 详见 .agents/rca/RCA-006-audit-timeout-bypass.md
+---
+
+
+--- [RALPH] Iteration 1 started: US-007 at 2026-05-21 09:31 ---
