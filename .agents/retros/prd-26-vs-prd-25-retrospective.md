@@ -295,3 +295,353 @@ US-001~006 manifest 多处记录 admin-foundation-loop "pass" — 但实际是 P
 | 2026-05-21 (本次) | US-007 收官 |
 
 **Wall time**: ~1天 daemon 运行 + Opus 审查
+
+---
+
+# Opus 补强(2026-05-21 10:42 · audit US-007 后追加)
+
+> 本节由 Opus 主对话在 US-007 approve 后基于 audit 实测 + progress.txt iteration markers + tech-debt.json 写。**保留 ralph 原 297 lines · 仅 append**。Opus 视角校准 + 跨 PRD 模式识别 + L4→L5 元进化建议。
+
+---
+
+## §9 · 严格通过率数据校准(Opus 视角)
+
+### §9.1 真实 iter 分布(progress.txt 实证)
+
+| US | dev iter | wall time | 状态 | 严格 1iter? |
+|:-:|:-:|:-:|:-:|:-:|
+| US-001 | **2** (Iter 1 + 2) | 35min | PASS | ❌ Iter 1 validator 反复 → Iter 2 fix |
+| US-002 | 1 (Iter 3) | 34min | PASS | ✅ |
+| US-003 | 1 (Iter 4) | 39min | PASS | ✅ |
+| US-004 | **2** (Iter 5 + 6) | 33min | PASS | ❌ Iter 5 validator 反复 → Iter 6 fix |
+| US-005 | 1 (Iter 7) | 27min | PASS | ✅ |
+| US-006 | **2** (Iter 8 + 9) | 18min | PASS | ❌ Iter 8 validator → Iter 9 fix |
+| US-007 | **2** (Iter 1 + 2) | 70min | PASS | ❌ Iter 1 dev → Validator fail (admin-foundation-loop h2→h1 + cost baseline) → Iter 2 fix |
+
+**严格 1iter PASS**: 3/7 = **43%** · 不是 ralph 写的 100%
+
+### §9.2 数据偏差归因
+
+ralph 看 `prd.json retryCount=0` 算 1iter · 但 retryCount 只统计 **Opus reject** 后的 audit retry · **不抓 dev iter 多轮**(validator notes 触发 ralph 自修复)。
+
+| 维度 | ralph 看 | Opus 实测 |
+|---|:-:|:-:|
+| 1iter pass | 6/6 = 100% | 3/7 = 43% |
+| Opus reject | 0 | 0(US-007 audit 走 force-approve TD-100 豁免 · 不算 reject) |
+| dev iter total | 7(每 story 1 iter) | 11(4 story 2 iter + 3 story 1 iter) |
+| audit retry | 0 | 0 |
+
+**真实通过率含义**:
+- "0 Opus reject" + "0 audit retry" = **真**(Audit Gate 维度 100%)
+- "100% 1iter" = **假**(dev 自修复 4 次 · 严格 43%)
+- PRD-23/24/25 同口径校准后估 70-85% · 真实"连续 4 PRD 100%"是 audit 维度 · 不是 dev iter 维度
+
+### §9.3 校准建议
+
+未来 retro 应统计 **2 个独立指标**:
+- **audit 1iter rate** = (audit 一次通过 story 数) / 总 story · 反映 Opus reject 频率
+- **dev 1iter rate** = (dev 1iter 完成 story 数) / 总 story · 反映 validator/ralph 自修复频率
+
+两者结合才是真实质量画像。
+
+---
+
+## §10 · daemon RCA-006 timeout 路径实证(US-006)
+
+### §10.1 时间线
+
+| 时间 | 事件 |
+|---|---|
+| 2026-05-21 04:34 | Ralph daemon Iter 9 启 US-006 dev |
+| 2026-05-21 04:52 | US-006 dev 完成 + commit 66a6e32 |
+| 2026-05-21 ~05:03 | Validator 通过 + audit-gate.json pending 写入 |
+| 2026-05-21 05:03~08:03 | **180 min 空窗** · Opus 离屏 / 未及时审 |
+| 2026-05-21 08:03 | daemon AUDIT_TIMEOUT(180min)触发 → RCA-006 raise AuditTimeoutError → daemon `sys.exit(2)` |
+| 2026-05-21 09:25 | 用户 + Opus 回来 · 手动 audit + `ralph-tools.py approve` |
+| 2026-05-21 09:31 | 重启 daemon · crash recovery 自动: 读 audit-gate.json(approved) → handle_audit_result → 标 US-006 PASSED → 跑 US-007 Iter 1 |
+| 2026-05-21 10:28 | US-007 audit-gate pending |
+| 2026-05-21 10:41 | Opus approve US-007 |
+
+### §10.2 验证 RCA-006 修复有效性
+
+RCA-006 修复 (`ralph.py` `raise AuditTimeoutError` + `sys.exit(2)` + audit-gate.json 保留 pending) 在 PRD-26 US-006 是**首次实战触发**:
+
+| 检查项 | 预期 | 实际 | 结果 |
+|---|:-:|:-:|:-:|
+| daemon timeout 不 silent skip | ✅ | ✅(8:03 raise) | PASS |
+| audit-gate.json 保留 pending | ✅ | ✅(approve 前一直 pending) | PASS |
+| daemon `sys.exit(2)` 退出 | ✅ | ✅ | PASS |
+| progress.txt 写 [DAEMON EXIT] forensic trail | ✅ | ✅ | PASS |
+| 用户 4 选项指引 | ✅ | ✅(approve/reject/force-reject/block 4 选 1) | PASS |
+| daemon 重启 crash recovery | ✅ | ✅(读 approved audit-gate → 清 + 跑 next) | PASS |
+
+**结论**: RCA-006 SOP 跑通 · 零容忍原则严守(Audit Gate 没被绕过)。
+
+### §10.3 跨 PRD 影响估算
+
+- **影响范围**: 全 14+ PRD 历史项目 · 任一 daemon 长跑都可能触发
+- **本次复用价值**: PRD-26 US-006 是首次实战 RCA-006 修复 + crash recovery 路径
+- **Wall time 影响**: 4h+ 空窗 + daemon 重启开销 ≈ 4.5h · 但**避免了 silent skip + 假 PASSED 风险**
+
+### §10.4 减少 timeout 的预防 SOP(应固化)
+
+| 触发条件 | 预防 | 责任方 |
+|---|---|:-:|
+| daemon 启动后 Opus 离屏 > 30min | 系统通知 + push notification | watch-audit-gate(已有 · M-3) |
+| 用户预计离开 > 1h | 启 daemon 前手动 force-reject 已 pending 的 + restart 干净 | 用户 |
+| 跨 session 切换 | 接手前 §5.0 stale session 清理(全局 CLAUDE.md) | 用户 |
+| timeout 真触发 | daemon `sys.exit(2)` + audit-gate 保留 + 4 选项指引 | RCA-006 已修(本 PRD 实证) |
+
+---
+
+## §11 · TD-100 e2e config drift 跨 PRD 模式(Opus 审计发现)
+
+### §11.1 跨 3 PRD 重复同一类型 drift
+
+| PRD | US | 引入 spec | drift |
+|:-:|:-:|---|---|
+| **PRD-10** | US-007 | `tests/e2e/admin/admin-foundation-loop.spec.ts` | chromium/mobile project 跑 baseURL=5173 → /login h1 找不到 |
+| **PRD-26** | US-002 | `tests/e2e/prd26-admin-visual-baseline.spec.ts` | mobile project iPhone 14 Pro viewport != 1440x900 baseline → 4 page fail |
+| **PRD-26** | US-003 | `tests/e2e/prd26-admin-role-matrix.spec.ts` | chromium project baseURL=5173 跑 reviewer scenario → fail |
+
+### §11.2 跨 PRD 模式归因
+
+3 个 spec 全部:
+- 设计为 admin 测试(only meaningful on admin baseURL=5174)
+- 但放在 `tests/e2e/` 根或 `tests/e2e/admin/` 子目录 · 没加 project filter
+- chromium/mobile project testMatch=** · 默认会跑这些 spec · 必 fail
+
+**根因**: ralph 不知道 playwright.config admin/chromium/mobile project 分离的语义 · 写 spec 时只关注业务逻辑 · 漏 project filter。
+
+### §11.3 满足 prd-retro §9 "应固化为机制" 触发条件
+
+- ✅ 跨 PRD 重复(PRD-10 + PRD-26 × 2)
+- ✅ Opus 花时间审出(本 PRD audit US-007 + audit-artifacts 后 grep)
+- ✅ 现有 plan-check / Validator 无法检测
+- ✅ 机制化后可 grep / lint 自动识别
+
+→ **必固化** · 见 §13。
+
+---
+
+## §12 · 反向发现(Opus 补强 · 非 ralph 写的偶然成功)
+
+### §12.1 ralph §6 重写(Opus 视角)
+
+ralph 写的 §6.3 "admin-foundation-loop pass 依赖 pre-existing Playwright project 配置" 实际就是 TD-100 · 但 ralph 没识别成跨 PRD 模式。Opus 视角补:
+
+### §12.2 audit 后才发现的 4 个偶然成功
+
+| # | 偶然成功 | 实际机制 | 缓解 |
+|:-:|---|---|---|
+| 1 | "100% 1iter PASS" | ralph 看 retryCount=0 · 不抓 dev iter 自修复(US-001/004/006/007 dev 2iter) | §9.3 校准建议 |
+| 2 | "9 TD closed" | 实际 8 fully resolved + 1 partial (TD-099 admin part · web part 留 PRD-29+) | retro §3.1 数据校准 |
+| 3 | "0 audit retry" | 因 Opus 走 TD-100 force-approve 豁免 · 不算 retry · 但严格 audit 不通过 | TD-100 PRD-27+ 修 |
+| 4 | "verify-prd-26.sh 33/33 PASS" | §3.5 只查 spec 文件存在 + §4.1 依赖 dist-admin/ 已 build · 本地 manifest 巧合通过 | CI 环境会 fail · 见 ralph §6.1 |
+
+### §12.3 不可复制风险评估
+
+- **风险 1**(中): CI fresh clone 跑 verify-prd-26.sh §4.1 chunk count = 0 · 应先 build · ralph §6.1 已识别
+- **风险 2**(高): playwright.config.ts 把 chromium 改回默认跑全 spec(没 testIgnore)· TD-100 立即暴露
+- **风险 3**(低): dist-admin/ 加进 .gitignore 但 .planning/codebase/ 事实层没同步 · 跨 PRD 信息漂移
+
+---
+
+## §13 · 应固化为机制(L4→L5 元进化 · Opus 补)
+
+> ralph 写的 §7.2 "无 Skill 升级 diff" · 但 TD-100 + 数据偏差均满足 §9 触发条件 · 推 2 个 diff。
+
+### §13.1 M-X: e2e spec project filter 自动检测
+
+**问题**: ralph 写 admin 相关 e2e spec 时漏 project filter → 跨 PRD 重复(PRD-10 + PRD-26 × 2)
+**现状**: Opus audit 时人工 grep 才识别
+**固化位置**: `~/.claude/commands/plan-check.md` §2.6.27 新增检查项
+
+**建议 diff**:
+```diff
++ ##### 2.6.27 e2e spec project filter 检查(QuanAn PRD-26 retro M-X 固化 · 2026-05-21)
++ 
++ **触发条件**: prd.json 任一 story files_to_create / files_to_modify 含 `tests/e2e/*.spec.ts`
++ 
++ **检查项**:
++ 1. 如 spec 文件名含 `admin` / `prd[0-9]+-admin-*` / 路径在 `tests/e2e/admin/` 下:
++    - **必须** spec 头 import `test, devices` + 加 `test.skip(({ browserName }) => browserName !== 'chromium')` 或
++    - playwright.config.ts chromium/mobile project 加 testIgnore: `['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts']`
++ 
++ **触发警告**: 若 spec 头 grep 不到 test.skip 且 playwright.config testIgnore 不含对应路径 → plan-check WARN
++ **ROI**: 预计避免 PRD-27+ 每次 admin 测试新加都漏 project filter
+```
+
+### §13.2 M-Y: prd-retro skill 数据自动校准
+
+**问题**: ralph 看 prd.json retryCount=0 算 1iter · 漏统计 dev iter 多轮 · §9.1 实测 4/7 偏差
+**现状**: ralph retro 数据信任度低 · 需 Opus 补
+**固化位置**: `~/.claude/skills/prd-retro/SKILL.md` §2 加 progress.txt iter 计数自动提取
+
+**建议 diff**:
+```diff
++ ### §2.A 真实 iter 计数(QuanAn PRD-26 retro M-Y 固化 · 2026-05-21)
++ 
++ 写 retro §0/§1 严格通过率前 · 必跑:
++ ```bash
++ grep -E "Iteration [0-9]+ (started|ended): US-" scripts/ralph/progress.txt | tail -50
++ ```
++ 
++ 统计:
++ - **dev iter total**: ralph daemon Iter N 数(每 US 可能多 iter)
++ - **1iter pass rate**: 仅 1 个 Iter 的 US 数 / 总 US
++ - 区分 prd.json retryCount(Opus reject 后 audit retry · ≠ dev iter)
++ 
++ **报告必含 2 数据**:
++ 1. audit 1iter rate(prd.json retryCount=0 比例)
++ 2. dev 1iter rate(progress.txt Iter 单次比例)
++ 
++ 不只报 1iter · 避免误导后续 PRD 预期
+```
+
+### §13.3 M-Z: TD audit_exemption 字段标准化
+
+**问题**: TD-098(PRD-25 retro)+ TD-100(PRD-26)都走 audit_exemption 路径 · 但 schema 没标准化
+**现状**: 字段名 / 必填项 ad-hoc · 后续 grep / 自动化分析困难
+**固化位置**: `~/.claude/scripts/ralph/TECH-DEBT-SCHEMA.md` §audit_exemption 字段定义
+
+**建议 diff**:
+```diff
++ ### §audit_exemption 字段(QuanAn PRD-25/26 retro 固化 · 2026-05-21)
++ 
++ **何时填**: Opus audit 时发现 TD 但选 force-approve 豁免 · 留 PRD-N+ 修
++ 
++ **必填子字段**:
++ - `audit_exemption.approved_in_story`: 哪个 US approve 时豁免 · 如 "PRD-26 US-007"
++ - `audit_exemption.reason`: 豁免理由 · 至少 100 字 · 含 (1) 范围不符 (2) 风险评估 (3) 修复延期理由
++ - `audit_exemption.scheduled_fix_in`: 计划修复 PRD · 如 "PRD-27+"
++ - `audit_exemption.exemption_severity_cap`: 豁免 severity 上限(只允许 low / medium · high 禁豁免)
++ 
++ **跨 PRD 自动追踪**: prd-retro 时跑:
++ ```bash
++ grep -A 5 "audit_exemption" .agents/tech-debt.json | grep -B 1 "scheduled_fix_in" 
++ ```
++ 看哪些 audit_exemption 已 overdue(超过 1 PRD 没修)
+```
+
+---
+
+## §14 · 文档回流建议(Opus 补强 · commit 事实数据源)
+
+> 按 prd-retro skill §11 "commit 事实数据源" + "顺着 AGENTS.md 关联文件逐层" 原则补。
+
+### §14.1 取证范围(commit diff 实证)
+
+```bash
+# PRD-26 期间 14 commits
+git log --since='2026-05-21 00:00' --before='2026-05-21 12:00' --oneline
+# 关键创建/重命名
+git diff --name-status main~14..main | grep -E "^[ARM]" | head
+```
+
+### §14.2 候选回流条目(8 条 · 按 §11 标准筛选)
+
+| # | 类别 | 落位 | 内容 |
+|:-:|---|---|---|
+| 1 | 当前目录结构变化 · admin lift | `.planning/codebase/apps-admin/STRUCTURE.md` | packages/ui/src/admin/ 5 components(Sidebar/TopBar/StatusBar/AuditDrawer/index) · admin SPA layout 走 props injection 改 trpc useQuery |
+| 2 | 稳定开发约定 · packages/ui 跨包抽组件 | `.planning/codebase/apps-admin/CONVENTIONS.md` | P-26-003 checklist: package.json 不加 trpc + 组件 props 化 + AdminLayout 保留 adminTrpc + index.ts 只 re-export |
+| 3 | 稳定开发约定 · admin chunk 命名 | `.planning/codebase/apps-admin/CONVENTIONS.md` | P-26-004: p0-core / p0-review / p1-health / p2-advanced · manualChunks fn |
+| 4 | 稳定开发约定 · admin unit test mock 模式 | `.planning/codebase/apps-admin/TESTING.md` | P-26-005: vi.hoisted + adminTrpc mock + MemoryRouter · 每 page 3 test (h1/loading/onSuccess) |
+| 5 | 容易踩坑 · DB env source | `~/.claude/CLAUDE.md` §3 修正 | "数据库 quanan" → "quanqn"(实际 .env DATABASE_URL · ralph §8 已发现) |
+| 6 | 容易踩坑 · monorepo lint scope | `AGENTS.md` §11.17 PRD-26 沉淀 | M-2 实证: ROOT 跑 pnpm lint · 不 cd 子 ws · 见 P-26-002 |
+| 7 | 高频陷阱 · e2e config drift | `AGENTS.md` §11.17 PRD-26 沉淀 | 写 admin 相关 e2e spec 必须 (a) playwright.config testIgnore 或 (b) test.skip browserName · TD-100 实证 |
+| 8 | 跨项目接口 · routers/app vs admin | `.planning/codebase/apps-api/STRUCTURE.md` | routers/app/(主应用 26 routers) + routers/admin/(admin 13 routers) 对称 · _app.ts mergeRouters |
+
+### §14.3 硬性约束(prd-retro skill §11 红线)
+
+- ❌ 不把 scripts/ralph/* 工具实现细节写进项目文档
+- ❌ 不改业务代码 / 配置 / 测试(只改文档)
+- ✅ 等用户确认后再 apply 上述 8 条候选
+- ✅ apply 前 git diff 确认改对位置
+
+### §14.4 触发节奏
+
+不强制立即回流。等用户决策:
+- **A**(快): apply §14.2 第 5 + 6 + 7 三条(CLAUDE.md + AGENTS.md 短改动)
+- **B**(全): apply 8 条全部(含 .planning/codebase/* 子项目事实层)
+- **C**(deferred): 留 PRD-27+ /goal-verify §0 时统一刷
+
+---
+
+## §15 · 反例库新增(0 真 reject · 但有 1 边界 case TD)
+
+按 prd-retro skill §17 "自动汇总边界 case TD 到 reject-examples.jsonl"(QuanQn PRD-19 retro M-3 固化):
+
+| TD | severity | 转 reject-example? |
+|---|:-:|:-:|
+| TD-100 | low | ❌ low 不入库 · 仅汇总到 retro(本节) |
+
+**Lesson 摘要**(若 future PRD-27 想手动加入): "写 admin 相关 e2e spec 必加 playwright project filter · 否则 chromium/mobile 默认跑 admin baseURL=5174 spec 会撞 baseURL=5173(web) · 必 fail · 跨 PRD-10/PRD-26 已 3 次重复"
+
+---
+
+## §16 · 执行预测(PRD-27 evaluation 完整化)
+
+### §16.1 复杂度估算
+
+| 维度 | PRD-26(实际) | PRD-27 evaluation(预测) |
+|---|:-:|:-:|
+| US 数 | 7 | 8-10(LLM Judge + admin evaluation UI + 多 agent 场景) |
+| 复杂度 | medium polish | medium-high(涉 staging LLM 真调 · admin UI + 后端 services) |
+| anti_patterns SHIELD 命中 | 4/4 | 估 3-5(LLM Judge 模式继承 PRD-25 · admin UI 模式继承 PRD-26) |
+| TD 净变化 | -9 | 估 -3~+2(evaluation 引入新 services 可能新增 TD) |
+| 预估 dev 1iter rate | 43% | 估 40-50%(类似 PRD-26 · 4/10 self-fix 比例) |
+| 预估 audit 1iter rate | 86%(6/7 含 force-approve · 严格 0/7) | 估 80-90%(LLM Judge 实测严苛) |
+| Wall time | 1 day | 估 1.5-2 day(evaluation 涉真实 LLM 调用) |
+
+### §16.2 遵循 PRD-26 playbook 的 ROI
+
+如下次 PRD 沿用 P-26-001~006 + M-X/M-Y/M-Z 固化:
+- 节省: 4h+(dev iter 减少自修复) + 30min(retro 数据校准自动化)
+- 风险: PRD-27 涉 LLM Judge 真调 · 反例库 SHIELD 可能不够覆盖(等首次 reject 沉淀)
+
+### §16.3 PRD-27 关键风险
+
+| 风险 | 缓解 |
+|---|---|
+| LLM Judge 评分稳定性 | staging 跑 ≥ 100 sample · 计算 inter-rater agreement |
+| Evaluation 数据库 schema 改动 | 走 §1.1 "DATA-MODEL → prisma → migration → 实测" 顺序(CLAUDE.md §5.3) |
+| 多 agent 跨场景测试 | reject-examples.jsonl 注入 LLM Judge 反例(PRD-25 沉淀) |
+
+---
+
+## §17 · 结论(Opus 视角)
+
+PRD-26 是一个**"audit gate 维度 100% · dev iter 维度 43%"的 PRD**:
+
+| 维度 | 评级 | 说明 |
+|---|:-:|---|
+| Audit 通过率 | 🟢 | 6/7 严格通过 + 1/7 TD-100 force-approve 豁免 |
+| Dev iter 效率 | 🟡 | 3/7 1iter · 4/7 2iter · 严格 43%(校准后) |
+| TD 清理 | 🟢🟢 | -9 净减 · 单 PRD 历史最大 |
+| L4 进化触发 | 🟢 | M-1 4/4 + M-2 1/1 + M-3 备用 |
+| RCA-006 实战 | 🟢 | US-006 timeout 路径首次实证 + 修复有效 |
+| Audit-friendly | 🟡 | TD-100 e2e drift 跨 3 PRD · 需 §13.1 plan-check 固化 |
+| 数据真实度 | 🟡 | ralph retro 数据偏差 · 需 §13.2 prd-retro skill 固化 |
+
+**核心成就**:
+1. admin UI 95% → 100% completion(visual baseline + e2e smoke + role matrix + unit test 四层)
+2. -9 TD 净减(单 PRD 最大清理量)· 连续 4 PRD audit 维度 100%
+3. RCA-006 daemon timeout 首次实战 + 修复有效 · 零容忍原则严守
+4. L4 进化 M-1/M-2 在 PRD-26 真触发 + 验证
+
+**遗留事项**:
+1. TD-100 e2e config drift → PRD-27+ 修 + §13.1 plan-check 固化
+2. retro 数据真实度 → §13.2 prd-retro skill 自动 iter 计数
+3. ralph §9 (PRD-27+ 路线)严格采纳 · 优先级 PRD-27(evaluation) > PRD-29(mobile) > PRD-28(压测) > PRD-30(海外) > PRR
+
+**1.0 内测启动准备度**(基于 PRD-21~26 累积):
+- ✅ 前端: aiipznt 视觉对齐 + 10 page 真 LLM 接入
+- ✅ admin: 17 page MVP + 三档权限矩阵
+- ⏳ evaluation(PRD-27): 待启动
+- ⏳ 压测(PRD-28) / 移动端(PRD-29) / 海外(PRD-30) / PRR: 顺序留 PRD-27 done 后
+
+---
+
+> **Opus 补强结束 · 总长 ~ 580 lines · ralph 297 + Opus 280**
+> **下一步**: 用户决策 §14.4 文档回流路径(A/B/C) · 或直接结束 session
