@@ -374,6 +374,11 @@ async function start(): Promise<void> {
     const { dailyTaskWorker } = await import('./workers/daily-task/worker');
     dailyTaskWorker.on('error', (err) => logger.error({ err }, 'daily_task_worker.error'));
     logger.info('daily_task_worker.started_in_process');
+
+    // PRD-27 US-004: deep-learning worker in-process (dev mode)
+    const { deepLearningWorker } = await import('./jobs/deep-learning.job');
+    deepLearningWorker.on('error', (err) => logger.error({ err }, 'deep_learning_worker.error'));
+    logger.info('deep_learning_worker.started_in_process');
   }
 
   // AC-3 US-007: start daily-task cron (0 0 * * * Asia/Shanghai)

@@ -1,13 +1,16 @@
 /**
- * deepLearning router — PRD-2 US-005, PRD-15 US-003
- * AC-4: procedures (list/create/createFromFile/learn/delete/parse/applyFormula)
- * PRD-15 US-003 AC-6: parse + applyFormula (mock — DeepLearnAgent 留 PRD-7+)
+ * deepLearning router — PRD-2 US-005, PRD-15 US-003, PRD-27 US-004
+ * AC-4: procedures (list/create/createFromFile/learn/learnStatus/delete/parse/applyFormula)
+ * PRD-27 US-004: learn (BullMQ enqueue) + learnStatus (polling) — real DeepLearnAgent
+ * PRD-15 US-003 AC-6: parse + applyFormula (mock — LD-A-5: no direct archive.create)
  * PRD-15 US-003: list returns DeepLearnReviewQueue entries for immediate UI visibility
- * LD-A-5: no direct archive create — only admin review flow may create archive entries
  */
 
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { deepLearningQueue, type DeepLearningJobContent } from '@/jobs/deep-learning.job';
+import { logger } from '@/lib/logger';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -30,10 +33,6 @@ const createFromFileInput = z.object({
   userTags: z.array(z.string().max(32)).max(10).default([]),
 });
 
-const learnInput = z.object({
-  archiveId: z.number().int().positive(),
-});
-
 const deleteInput = z.object({
   archiveId: z.number().int().positive(),
 });
@@ -49,7 +48,24 @@ const applyFormulaInput = z.object({
   newTopic: z.string().min(1).max(500),
 });
 
-/** Mock DeepLearnAgent analysis — PRD-15 P1, real agent留 PRD-7+ */
+// PRD-27 US-004: learn + learnStatus
+const learnInput = z.object({
+  samples: z
+    .array(
+      z.object({
+        text: z.string().min(10).max(20000),
+        source: z.string().min(1).max(200),
+      }),
+    )
+    .min(1)
+    .max(20),
+});
+
+const learnStatusInput = z.object({
+  jobId: z.string().min(1).max(64),
+});
+
+/** Mock DeepLearnAgent analysis — PRD-15 P1 */
 function mockAnalysis(sample: string) {
   const words = sample.slice(0, 200);
   return {
@@ -153,16 +169,96 @@ export const deepLearningRouter = router({
       return { ok: true as const, queueId: queue.id, status: queue.status };
     }),
 
-  /** Trigger learning for an archive entry (P1 mock — DeepLearnAgent 留 PRD-7+) */
+  /**
+   * PRD-27 US-004 AC-1: learn mutation — BullMQ enqueue + return jobId
+   * D-262: text input only, no file upload in P1
+   * SHIELD: must not await deepLearnAgent.execute synchronously (anti-pattern from prd-25 US-003)
+   */
   learn: protectedProcedure
     .input(learnInput)
     .mutation(async ({ ctx, input }) => {
-      const { prisma } = ctx;
-      await prisma.deepLearningArchive.update({
-        where: { id: input.archiveId },
-        data: { learningStatus: 'pending' },
+      const { prisma, activeAccountId, user, traceId } = ctx;
+
+      const jobId = traceId ?? `dl-${activeAccountId!}-${Date.now()}`;
+
+      const initialContent: DeepLearningJobContent = { status: 'queued' };
+
+      const historyRow = await prisma.history.create({
+        data: {
+          accountId: activeAccountId!,
+          agentId: 'DeepLearnAgent',
+          agentMode: 'analyze-batch',
+          sourceType: 'user',
+          inputSummary: `深度学习 ${input.samples.length} 篇样本`,
+          content: JSON.stringify(initialContent),
+          contentType: 'json',
+          traceId: jobId,
+        },
+        select: { id: true },
       });
-      return { ok: true, status: 'queued' as const };
+
+      try {
+        await deepLearningQueue.add(
+          'analyze-batch',
+          {
+            historyId: historyRow.id,
+            accountId: activeAccountId!,
+            samples: input.samples,
+            traceId: jobId,
+          },
+          { jobId: `dl-${historyRow.id}` },
+        );
+      } catch (err) {
+        logger.error({ err, accountId: activeAccountId }, 'deep_learning.learn.enqueue_failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: '深度学习任务启动失败，请稍后再试',
+        });
+      }
+
+      logger.info(
+        { historyId: historyRow.id, accountId: activeAccountId, jobId, sampleCount: input.samples.length },
+        'deep_learning.learn.enqueued',
+      );
+
+      void user; // suppress unused warning — available if needed for future enrich
+
+      return { jobId, status: 'queued' as const };
+    }),
+
+  /**
+   * PRD-27 US-004 AC-2: learnStatus query — poll job status + result
+   * Reads History row by traceId + accountId for security
+   */
+  learnStatus: protectedProcedure
+    .input(learnStatusInput)
+    .query(async ({ ctx, input }) => {
+      const { prisma, activeAccountId } = ctx;
+
+      const row = await prisma.history.findFirst({
+        where: {
+          traceId: input.jobId,
+          accountId: activeAccountId!,
+          agentId: 'DeepLearnAgent',
+        },
+        select: { content: true },
+      });
+
+      if (!row) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: '任务不存在或已过期' });
+      }
+
+      let parsed: DeepLearningJobContent;
+      try {
+        parsed = JSON.parse(row.content) as DeepLearningJobContent;
+      } catch {
+        parsed = { status: 'failed', error: '状态解析失败' };
+      }
+
+      return {
+        status: parsed.status,
+        result: parsed.result ?? null,
+      };
     }),
 
   /** Soft-cancel a deep learn queue entry */

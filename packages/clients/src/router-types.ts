@@ -383,6 +383,30 @@ export type DeepLearningParseResult = {
   analysis: DeepLearningParseAnalysis;
 };
 
+export type DeepLearnDimensions = {
+  tone: string;
+  structure: string;
+  hook: string;
+  transition: string;
+  closing: string;
+};
+
+export type DeepLearnResult = {
+  summary: string;
+  dimensions: DeepLearnDimensions;
+  isFallback: boolean;
+  tokensUsed: number;
+  modelUsed: string;
+  durationMs: number;
+};
+
+export type DeepLearnLearnOutput = { jobId: string; status: 'queued' };
+
+export type DeepLearnStatusOutput = {
+  status: 'queued' | 'processing' | 'completed' | 'failed';
+  result: DeepLearnResult | null;
+};
+
 const _t = initTRPC.create();
 
 // Shadow router — never invoked; exists solely for type inference.
@@ -962,6 +986,17 @@ const _shadowRouter = _t.router({
     applyFormula: _t.procedure
       .input((x: unknown) => x as { queueId: number; newTopic: string })
       .mutation((): { content: string } => ({ content: '' })),
+    learn: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            samples: Array<{ text: string; source: string }>;
+          },
+      )
+      .mutation((): DeepLearnLearnOutput => ({ jobId: '', status: 'queued' })),
+    learnStatus: _t.procedure
+      .input((x: unknown) => x as { jobId: string })
+      .query((): DeepLearnStatusOutput => ({ status: 'queued', result: null })),
   }),
 });
 
