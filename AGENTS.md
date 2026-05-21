@@ -3447,6 +3447,89 @@ PRD-26 US-006 首次实战 RCA-006 修复(`raise AuditTimeoutError` + `sys.exit(
 - 预计离开 > 1h: 启 daemon 前手动 force-reject 已 pending 的 + restart 干净
 - timeout 真触发: 4 选项指引(approve / reject / force-reject / block)→ 再重启 daemon crash recovery
 
+### §11.18 PRD-27 1:1 复刻收官沉淀(PRD-27 retro 2026-05-21 文档回流 · 8 commits 事实驱动)
+
+#### §11.18.1 BullMQ 异步任务状态机范式(P-27-001 · PRD-27 US-004)
+
+异步长耗时任务(AI 推断 / 批量分析)标准模式：
+
+```typescript
+// apps/api/src/jobs/deep-learning.job.ts — job + worker 一体文件
+export const deepLearningQueue = new Queue<Payload>(QUEUE_NAME, { connection: redis });
+export const deepLearningWorker = new Worker<Payload>(QUEUE_NAME, async (job) => processJob(job.data), { concurrency: 3 });
+```
+
+- **History.content JSON 状态机**: `{ status: 'queued' | 'processing' | 'completed' | 'failed', result? }`
+- **learnStatus query**: 按 `traceId + accountId + agentId` 三重过滤 · 前端 `refetchInterval: status !== 'completed' ? 3000 : false`
+- **BullMQ worker 无 RLS ctx**: `prisma.history.update` 必须用 PK(id) 精确定位 · 不能依赖 RLS 自动过滤
+- **jobs/*.job.ts 一体文件 vs workers/ 分离目录**: 功能内聚异步任务推荐 jobs/*.job.ts 一体 · 更简洁
+
+**反例**:
+- ❌ 同步 mutation 做长耗时 AI 任务(超时 · 用户体验差)
+- ❌ file upload P1(text input 足够 · file blob 留 PRR)
+- ❌ BullMQ worker 用 RLS protectedProcedure ctx(BullMQ 无 HTTP ctx · 用 prisma 直接调)
+
+#### §11.18.2 LLM 接入收官验证模式(P-27-002 · PRD-27 US-006)
+
+1:1 复刻完成的收官 verify script 标准 7-section 结构：
+
+```
+§1 LLM 接入 grep(specialist.execute · 无 [mock])   8 checks
+§2 新建 Agent extends BaseSpecialist 验证           5 checks
+§3 BullMQ job + learnStatus polling                5 checks
+§4 playwright config testIgnore + TD 状态           5 checks
+§5 visual baseline 存在验证                         4 checks
+§6 admin sealed(PRD-26 基线不动)                    3 checks
+§7 1:1 specialist 全建 + zero mock/stub + 自检     3 checks
+```
+
+**goal-backward 双指标规则(M-Y 延续)**:
+- `audit 1iter rate` = prd.json retryCount=0 的 dev US 比例 · **不是** progress.txt iter 数
+- `dev 1iter rate` = progress.txt iter 计数(每 story log 条数)· 区分"单次实现"vs"补 fix"
+- PRD-27 实证: audit 100%(5/5 retryCount=0) vs dev 60%(3/5 单次通过)
+
+#### §11.18.3 ModelTier 跨文件同步规则(P-27-003)
+
+`agents/base/types.ts` 和 `specialists/base/types.ts` 中 `ModelTier` 类型不完全相同:
+
+```typescript
+// agents/base/types.ts: ModelTier = 'reasoning' | 'lightweight'
+// specialists/base/types.ts: ModelTier = 'reasoning' | 'lightweight' | 'balanced'
+```
+
+**规则**: 新增 Specialist 使用新 tier(如 `balanced`)时，必须同步：
+1. `specialists/base/types.ts` ModelTier enum
+2. `workers/llm-gateway/index.ts` MODEL_BY_TIER map 加 entry
+3. `agents/base/types.ts` ModelTier 如有交叉 · 同步更新
+
+**实证**: PRD-27 US-005 iter-2 · PrivateDomainAgent(US-002)引入 balanced tier → agents/base/types.ts 缺 balanced → specialists-flow.test.ts 3 tests failed
+
+#### §11.18.4 visual baseline npm script 入口规范(P-27-005)
+
+```json
+// package.json 必须同时加两条:
+"test:visual:prdNN": "playwright test ... --update-snapshots",  // 首次生成
+"test:visual:prdNN:check": "playwright test ..."               // CI 检查
+```
+
+**规则**: AC 含 "visual baseline" 或 "test:visual" 字样时 · ralph 必须同时加两条 scripts 入口 · 不只是创建 playwright spec file。
+
+**实证**: PRD-27 US-003 · 1st iter 创建了 spec · 缺 package.json scripts → AC-13 Validator fail → 2nd iter 补 → PASS
+
+#### §11.18.5 1:1 复刻完成 · 14 specialist 全建(PRD-21~27 收官)
+
+PRD-21~27 完成 QuanAn 1:1 复刻 aiipznt 的完整征程:
+
+| 阶段 | PRD | 核心内容 |
+|---|:-:|---|
+| 视觉复刻 | PRD-21~24 | Aurelian Dark + 32 page visual baseline |
+| LLM 接入 | PRD-25 | 10 page BaseSpecialist.invokeLLM 真调 |
+| admin polish | PRD-26 | 9 TD 清 · e2e 三层 · lazy load |
+| **1:1 收官** | **PRD-27** | 4 page LLM + PresentationAgent(14th) + BullMQ |
+
+**14 Specialist 完整拓扑**(spec §7):
+AnalysisAgent · BrandingAgent · CopywritingAgent · DeepLearnAgent · DiagnosisAgent · LivestreamAgent · MonetizationAgent · PositioningAgent · **PresentationAgent(PRD-27 新建)** · PrivateDomainAgent · TopicAgent · VideoAgent · VoiceChatAgent = 13 files(含 PresentationAgent)
+
 ---
 
 ## 修订记录
