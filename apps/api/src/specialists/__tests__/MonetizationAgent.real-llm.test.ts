@@ -9,6 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   MonetizationAgent,
   Step4bOutputSchema,
+  type Step4bOutput,
 } from '../MonetizationAgent';
 
 
@@ -64,7 +65,8 @@ describe.skipIf(skipIfNoKey)('MonetizationAgent real LLM', () => {
     expect(result.tokensUsed.total).toBeGreaterThan(0);
     expect(result.durationMs).toBeLessThan(60_000);
 
-    const output = result.result;
+    // step4b mode: cast to Step4bOutput for type-safe assertions
+    const output = result.result as Step4bOutput;
 
     // AC-4: Schema drift defense — ladder.length strictly === 3 (三阶梯)
     expect(output.ladder).toHaveLength(3);

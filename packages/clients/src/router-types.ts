@@ -96,6 +96,19 @@ export type SmartRecommendOutput = {
   isFallback: boolean;
 };
 
+export type MonetizationGenerateOutput = {
+  id: number;
+  content: string;
+  agentId: string;
+  agentMode: string | null;
+  traceId: string | null;
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  createdAt: Date;
+};
+
 export type DiagnosisReportOutput = {
   id: number;
   answers: unknown;
@@ -829,13 +842,18 @@ const _shadowRouter = _t.router({
     generate: _t.procedure
       .input(
         (x: unknown) =>
-          x as { stepKey?: string; industryContext?: Record<string, unknown>; audienceProfile?: Record<string, unknown> },
+          x as { industryContext?: string; audienceProfile?: string; ipPositioning?: string; productDescription?: string },
       )
-      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+      .mutation((): MonetizationGenerateOutput => ({
         id: 0,
         content: '',
         agentId: 'MonetizationAgent',
+        agentMode: 'monetization-tool',
         traceId: null,
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
         createdAt: new Date(),
       })),
   }),

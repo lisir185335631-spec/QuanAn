@@ -1,11 +1,12 @@
 /**
- * QuanAn · PRD-4 US-006
- * MonetizationAgent — step4b(变现路径 · 单 mode · 8KB)
+ * QuanAn · PRD-4 US-006 + PRD-27 US-001
+ * MonetizationAgent — step4b(变现路径 · 单 mode · 8KB) + monetization-tool(工具 page · D-259)
  *
- * AC-1: 五层配置完整(persona/memory/knowledge/tools/execution) · model_tier='reasoning' timeout_ms=45000
- * AC-2: outputSchema — { currentAnalysis, ladder[3], revenueStructure, successCases[2] }
- * AC-5: currentRevenue 字段可选 · 缺失时 prompt 注入 '用户未填当前营收 · 按零基础推断'
- * AC-6: cold start(无 step1/step3) → prompt 注入 '[首次接触变现 · 暂无 IP 定位上下文]'
+ * AC-1(PRD-4): 五层配置完整 · model_tier='reasoning' timeout_ms=45000
+ * AC-2(PRD-4): outputSchema — { currentAnalysis, ladder[3], revenueStructure, successCases[2] }
+ * AC-5(PRD-4): currentRevenue 字段可选 · 缺失时 prompt 注入 '用户未填当前营收 · 按零基础推断'
+ * AC-6(PRD-4): cold start(无 step1/step3) → prompt 注入 '[首次接触变现 · 暂无 IP 定位上下文]'
+ * AC-2(PRD-27): monetization-tool mode · spec §8.2.1 4 字段 → 3 字段 schema · model_tier='balanced' 30s
  */
 
 import { z } from 'zod';
@@ -20,7 +21,7 @@ import type {
   ILLMGateway,
 } from './base/types';
 
-// ── AC-2: step4b output schema ─────────────────────────────────────────────────
+// ── step4b output schema ───────────────────────────────────────────────────────
 
 export const Step4bOutputSchema = z.object({
   currentAnalysis: z.string(),
@@ -47,7 +48,6 @@ export const Step4bOutputSchema = z.object({
     .length(2),
 });
 
-// Base schema for responseFormat (without .length() — avoids JSON schema serialization issues)
 const Step4bBaseSchema = z.object({
   currentAnalysis: z.string(),
   ladder: z.array(
@@ -62,7 +62,25 @@ const Step4bBaseSchema = z.object({
 
 export type Step4bOutput = z.infer<typeof Step4bOutputSchema>;
 
-// AC-5: typed input — currentRevenue optional
+// ── monetization-tool output schema (PRD-27 US-001 · spec §8.2.1) ─────────────
+
+export const MonetizationToolOutputSchema = z.object({
+  productMatrix: z.array(z.string()),
+  pricingStrategy: z.string(),
+  conversionFunnel: z.array(z.string()),
+});
+
+const MonetizationToolBaseSchema = z.object({
+  productMatrix: z.array(z.string()),
+  pricingStrategy: z.string(),
+  conversionFunnel: z.array(z.string()),
+});
+
+export type MonetizationToolOutput = z.infer<typeof MonetizationToolOutputSchema>;
+
+// ── input schemas ──────────────────────────────────────────────────────────────
+
+// step4b input (AC-5: currentRevenue optional)
 const MonetizationInputSchema = z
   .object({
     currentRevenue: z.string().optional(),
@@ -71,7 +89,7 @@ const MonetizationInputSchema = z
 
 type MonetizationInput = z.infer<typeof MonetizationInputSchema>;
 
-// ── AC-1: 五层配置 ─────────────────────────────────────────────────────────────
+// ── 五层配置 ─────────────────────────────────────────────────────────────────
 
 const MONETIZATION_CONFIG: SpecialistConfig = {
   agentId: 'MonetizationAgent',
@@ -101,13 +119,25 @@ const MONETIZATION_CONFIG: SpecialistConfig = {
 
 // ── MonetizationAgent ──────────────────────────────────────────────────────────
 
-export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bOutput> {
+export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bOutput | MonetizationToolOutput> {
   readonly config: SpecialistConfig = MONETIZATION_CONFIG;
-  readonly inputSchema = MonetizationInputSchema;
-  readonly outputSchema = Step4bOutputSchema;
 
-  // US-015 AC-2: fallback template (single mode → 'default' key)
-  static override readonly fallbackTemplate = {
+  // TD-014 pattern: _mode set in invokeLLM · P3 single-user serial calls safe
+  private _mode: 'default' | 'monetization-tool' = 'default';
+
+  get inputSchema(): z.ZodType<MonetizationInput> {
+    return MonetizationInputSchema;
+  }
+
+  get outputSchema(): z.ZodType<Step4bOutput | MonetizationToolOutput> {
+    if (this._mode === 'monetization-tool') {
+      return MonetizationToolOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput>;
+    }
+    return Step4bOutputSchema as z.ZodType<Step4bOutput | MonetizationToolOutput>;
+  }
+
+  // US-015 AC-2: fallback template per mode
+  static override readonly fallbackTemplate: Record<string, unknown> = {
     default: {
       currentAnalysis:
         '系统繁忙，暂时无法完成当前变现阶段分析。建议稍后重试以获取针对您 IP 定位的精准变现路径规划。',
@@ -145,6 +175,21 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
         },
       ],
     } satisfies Step4bOutput,
+    'monetization-tool': {
+      productMatrix: [
+        '知识付费课程（系统化体系课 · 199-599 元）',
+        '私域社群会员（高价值社区 · 999-2999 元/年）',
+        '1 对 1 咨询服务（高客单价 · 3000-9800 元/次）',
+      ],
+      pricingStrategy:
+        '采用价格锚点策略：入门课 99 元引流 → 进阶课 599 元主销 → VIP 社群 2999 元/年高客单，阶梯递进提升客单价。系统暂时繁忙，以上为通用备用方案，请稍后重试获取个性化定价建议。',
+      conversionFunnel: [
+        '免费内容 · 公域引流建立认知',
+        '低价产品 · 筛选意向用户进私域',
+        '高价产品 · 服务精准付费客户',
+        '售后跟进 · 促进复购与转介绍',
+      ],
+    } satisfies MonetizationToolOutput,
   };
 
   constructor(gateway?: ILLMGateway) {
@@ -155,8 +200,13 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
     ctx: AssembledContext,
     req: SpecialistRequest<MonetizationInput>,
   ): Promise<InvokeLLMResult> {
-    const userPrompt = this._buildUserPrompt(req.userInput, ctx);
+    this._mode = req.mode === 'monetization-tool' ? 'monetization-tool' : 'default';
 
+    if (this._mode === 'monetization-tool') {
+      return this._invokeLLMToolMode(req);
+    }
+
+    const userPrompt = this._buildUserPrompt(req.userInput, ctx);
     return this.llmGateway.complete({
       model_tier: this.config.execution.model_tier,
       systemPrompt: ctx.systemPrompt,
@@ -166,23 +216,74 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
         accountId: req.accountId,
-        userId: 0, // TODO: P1 — thread userId through SpecialistRequest
+        userId: 0,
       },
       timeout_ms: this.config.execution.timeout_ms,
       retry: this.config.execution.retry,
     });
   }
 
+  private _invokeLLMToolMode(req: SpecialistRequest<MonetizationInput>): Promise<InvokeLLMResult> {
+    const input = req.userInput as Record<string, unknown>;
+    const systemPrompt = this._buildToolSystemPrompt();
+    const userPrompt = this._buildToolUserPrompt(input);
+
+    return this.llmGateway.complete({
+      model_tier: 'balanced',
+      systemPrompt,
+      userPrompt,
+      responseFormat: { type: 'json_schema' as const, schema: MonetizationToolBaseSchema },
+      metadata: {
+        trace_id: req.traceId ?? '',
+        agentId: this.config.agentId,
+        accountId: req.accountId,
+        userId: 0,
+      },
+      timeout_ms: 30_000,
+      retry: 1,
+    });
+  }
+
+  private _buildToolSystemPrompt(): string {
+    return [
+      '你是专业的商业变现顾问，擅长为 IP 博主和内容创作者设计变现模型。',
+      '',
+      '根据用户提供的行业背景(industry)、产品描述(productDescription)、目标受众(audience)和 IP 定位(ipPositioning)，',
+      '输出一套完整的变现方案，包含：',
+      '- productMatrix: 产品矩阵（3-5 个具体产品/服务，每条 20-60 字）',
+      '- pricingStrategy: 定价策略（100-200 字，说明价格带、锚点策略、阶梯定价逻辑）',
+      '- conversionFunnel: 转化漏斗（3-5 个步骤，每步 15-40 字）',
+      '',
+      '请以 JSON 格式返回，严格遵循以下 schema：',
+      '{"productMatrix": ["产品1", "产品2", ...], "pricingStrategy": "定价策略说明...", "conversionFunnel": ["步骤1", "步骤2", ...]}',
+    ].join('\n');
+  }
+
+  private _buildToolUserPrompt(input: Record<string, unknown>): string {
+    const industry = String(input.industryContext ?? input.industry ?? '未指定行业');
+    const productDescription = String(input.productDescription ?? '未填写产品描述');
+    const audience = String(input.audienceProfile ?? input.audience ?? '未指定受众');
+    const ipPositioning = String(input.ipPositioning ?? '未指定 IP 定位');
+
+    return [
+      '请根据以下信息设计变现模型：',
+      `行业(industry): ${industry}`,
+      `产品描述(productDescription): ${productDescription}`,
+      `目标受众(audience): ${audience}`,
+      `IP 定位(ipPositioning): ${ipPositioning}`,
+      '',
+      '请以 JSON 格式返回变现方案 {productMatrix, pricingStrategy, conversionFunnel}',
+    ].join('\n');
+  }
+
   private _buildUserPrompt(userInput: MonetizationInput, ctx: AssembledContext): string {
     const inputStr = JSON.stringify(userInput);
 
-    // AC-5: missing currentRevenue → inject fallback note
     const revenueNote =
       !userInput.currentRevenue
         ? '注意: 用户未填当前营收 · 按零基础推断变现起点'
         : `当前营收: ${userInput.currentRevenue}`;
 
-    // AC-6: cold start — no step data in context
     const coldStartNote = ctx.systemPrompt.includes('[新用户 · 暂无 step 数据]')
       ? '[首次接触变现 · 暂无 IP 定位上下文]'
       : '';
@@ -209,5 +310,5 @@ export class MonetizationAgent extends BaseSpecialist<MonetizationInput, Step4bO
   }
 }
 
-// REJ-004: 单例 export — tRPC router 直接用此实例, 不在 router 内 new
+// REJ-004: 单例 export
 export const monetizationAgent = new MonetizationAgent();
