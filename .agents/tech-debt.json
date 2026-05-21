@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T04:29:15",
+  "last_updated": "2026-05-21T10:40:22",
   "items": [
     {
       "id": "TD-001",
@@ -2118,6 +2118,28 @@
       "resolved_at": null,
       "notes_by_us006": "Admin 17 page unit test 已补(PRD-26 US-006 · 2026-05-21) · 剩余 web 部分(AiVideo/BoomGenerate/Generate)留 PRD-27",
       "resolved_at_partial": "2026-05-21"
+    },
+    {
+      "id": "TD-100",
+      "category": "design-drift",
+      "title": "playwright config drift · admin specs 在 chromium/mobile project 跑 baseURL 错 + mobile viewport 错",
+      "discovered_at": "2026-05-21",
+      "discovered_by": "Opus audit US-007",
+      "severity": "low",
+      "status": "open",
+      "detected_in_prd": "PRD-26",
+      "detected_in_story": "US-007",
+      "evidence": "1) tests/e2e/admin/admin-foundation-loop.spec.ts 在 chromium/mobile project 跑 baseURL=5173(web) 而非 5174(admin) · login h1 找不到 · 2) tests/e2e/prd26-admin-role-matrix.spec.ts 在 chromium project reviewer scenario fail 同理 · 3) tests/e2e/prd26-admin-visual-baseline.spec.ts 在 mobile project 4 page fail · iPhone 14 Pro viewport != 1440x900 baseline viewport",
+      "root_cause": "playwright.config.ts chromium/mobile project 默认 testMatch=** · 没 testIgnore 排除 admin specs · admin project testMatch='**/tests/e2e/admin/**' 限定 admin/ 子目录但 prd26-admin-* spec 在 tests/e2e/ 根 · PRD-10 US-007(admin-foundation-loop) + PRD-26 US-002(visual-baseline)/US-003(role-matrix) 引入 spec 时都没加 project filter",
+      "scheduled_fix_in": "PRD-27+ · 两个修复路径任选: (a) playwright.config chromium/mobile 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts']  (b) 各 spec 头 test.skip(({ browserName }, testInfo) => testInfo.project.name !== 'admin' && testInfo.project.name !== 'chromium')",
+      "audit_exemption": "US-007 approve 豁免 · 理由: (1) admin project 单跑 admin-foundation-loop + role-matrix + visual baseline chromium 全 PASS · 实际 admin UI 行为验证通过 · (2) chromium/mobile 跑 admin specs 是 historical config TD(自 PRD-10 US-007 起一直存在) · 不是 PRD-26 引入新行为 bug · (3) 修复需 playwright config 重设 · 跨 spec 文件 · 不属 US-007 收官范围(US-007 不动业务代码)",
+      "scope": [
+        "playwright.config.ts",
+        "tests/e2e/admin/admin-foundation-loop.spec.ts",
+        "tests/e2e/prd26-admin-role-matrix.spec.ts",
+        "tests/e2e/prd26-admin-visual-baseline.spec.ts"
+      ],
+      "fix_hint": "playwright.config.ts chromium project 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] · mobile project 同 · admin project 已限定 admin/ 子目录 · prd26-admin-* spec 可考虑 git mv 进 tests/e2e/admin/"
     }
   ]
 }
