@@ -96,6 +96,19 @@ export type SmartRecommendOutput = {
   isFallback: boolean;
 };
 
+export type PrivateDomainGenerateOutput = {
+  id: number;
+  content: string;
+  agentId: string;
+  agentMode: string | null;
+  traceId: string | null;
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  createdAt: Date;
+};
+
 export type MonetizationGenerateOutput = {
   id: number;
   content: string;
@@ -804,38 +817,48 @@ const _shadowRouter = _t.router({
       .input(
         (x: unknown) =>
           x as {
+            phase: 'welcome' | 'warmup' | 'trust' | 'discover' | 'close' | 'follow';
             productDescription: string;
             productPrice: number;
             targetAudience: string;
             ipPositioning: string;
             currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
             monthlyTraffic: number;
+            scene?: string;
           },
       )
-      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+      .mutation((): PrivateDomainGenerateOutput => ({
         id: 0,
         content: '',
         agentId: 'PrivateDomainAgent',
+        agentMode: 'phase-generate',
         traceId: null,
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
         createdAt: new Date(),
       })),
     generateStream: _t.procedure
       .input(
         (x: unknown) =>
           x as {
+            phase: 'welcome' | 'warmup' | 'trust' | 'discover' | 'close' | 'follow';
             productDescription: string;
             productPrice: number;
             targetAudience: string;
             ipPositioning: string;
             currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
             monthlyTraffic: number;
+            scene?: string;
           },
       )
       // eslint-disable-next-line require-yield
       .subscription(async function* () {
         yield {} as
-          | { type: 'phase'; data: { key: string; name: string; goal: string; tactics: string[]; scripts: string[]; metrics: string[] } }
-          | { type: 'done'; summary: string };
+          | { type: 'meta'; meta: { model: string } }
+          | { type: 'delta'; delta: string }
+          | { type: 'done'; result: { phaseScript: string; variants: { professional: string; friendly: string; sales: string } } | null };
       }),
   }),
   monetization: _t.router({
