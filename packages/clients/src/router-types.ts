@@ -122,6 +122,19 @@ export type MonetizationGenerateOutput = {
   createdAt: Date;
 };
 
+export type PresentationRecommendOutput = {
+  id: number;
+  content: string;
+  agentId: string;
+  agentMode: string | null;
+  traceId: string | null;
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  createdAt: Date;
+};
+
 export type DiagnosisReportOutput = {
   id: number;
   answers: unknown;
@@ -883,11 +896,16 @@ const _shadowRouter = _t.router({
   presentStyles: _t.router({
     recommend: _t.procedure
       .input((x: unknown) => x as { text: string; platform: string })
-      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+      .mutation((): PresentationRecommendOutput => ({
         id: 0,
         content: '',
         agentId: 'PresentationAgent',
+        agentMode: 'recommend',
         traceId: null,
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
         createdAt: new Date(),
       })),
   }),

@@ -1,18 +1,10 @@
 /**
- * PresentStyles.tsx — /tools/present-styles 呈现风格选择 · PRD-15 US-004
- * AC-2: 输入 textarea 文案 + select platform
- *       → trpc.presentStyles.recommend.useMutation()
- *       → PresentationAgent 推荐 3-5 种呈现风格(图文/短视频/直播口播/长图文/漫画)
- * AC-3: URL state useSearchParams + localStorage draft getToolLsKey(accountId,'presentStyles','draft')
+ * PresentStyles.tsx — /tools/present-styles 呈现风格选择 · PRD-27 US-003
+ * AC-6: 接 trpc.presentStyles.recommend.useMutation · 14 style card 显示
+ *       推荐 3-5 高亮(matchScore + rationale 显示) · isFallback banner
  */
 
-import {
-  PRESENT_STYLE_LABELS,
-  PRESENT_STYLE_TYPES,
-  PRESENT_STYLE_PLATFORMS,
-  type PresentStyleType,
-  type PresentStylePlatform,
-} from '@quanan/schemas/specialist-io';
+import { PRESENT_STYLE_PLATFORMS, type PresentStylePlatform } from '@quanan/schemas/specialist-io';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -27,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { PRESENT_STYLES } from '@/lib/constants/present-styles';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
 
@@ -42,34 +35,22 @@ const PLATFORM_LABELS: Record<PresentStylePlatform, string> = {
   wechat: '公众号',
 };
 
-// Mock style cards shown after submission (stub — PresentationAgent 留 PRD-16+)
-const MOCK_STYLES: Array<{ type: PresentStyleType; example: string; description: string }> = [
-  {
-    type: 'graphic_text',
-    example: '图片+文字组合，适合知识科普和产品展示',
-    description: '视觉信息密度高，便于用户保存转发',
-  },
-  {
-    type: 'short_video',
-    example: '15-60秒短视频，hook前3秒抓住注意力',
-    description: '适合展示过程、对比和变身类内容',
-  },
-  {
-    type: 'live_stream',
-    example: '直播口播模式，边讲边互动',
-    description: '实时互动转化率高，适合产品讲解',
-  },
-  {
-    type: 'long_article',
-    example: '长篇图文，深度内容输出，建立专业权威',
-    description: 'SEO 友好，适合教程和深度分析',
-  },
-  {
-    type: 'comic',
-    example: '漫画/插图风格，趣味性强易于传播',
-    description: '年轻用户偏爱，适合生活类和教育类',
-  },
-];
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+interface RecommendedStyle {
+  id: string;
+  label: string;
+  description: string;
+  tips: string;
+  matchScore: number;
+  rationale: string;
+}
+
+interface PresentationResult {
+  recommendedStyles: RecommendedStyle[];
+}
+
+// ── Draft helpers ──────────────────────────────────────────────────────────────
 
 interface DraftData {
   text: string;
@@ -96,32 +77,45 @@ function saveDraft(accountId: number | null, data: DraftData): void {
   }
 }
 
+// ── Component ──────────────────────────────────────────────────────────────────
+
 export default function PresentStyles() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Initialise from URL → localStorage → defaults
   const [text, setText] = useState<string>(() => {
     const urlText = searchParams.get('text') ?? '';
     if (urlText) return urlText;
-    const draft = readDraft(accountId);
-    return draft?.text ?? '';
+    return readDraft(accountId)?.text ?? '';
   });
 
   const [platform, setPlatform] = useState<string>(() => {
     const urlPlatform = searchParams.get('platform') ?? '';
     if (urlPlatform) return urlPlatform;
-    const draft = readDraft(accountId);
-    return draft?.platform ?? '';
+    return readDraft(accountId)?.platform ?? '';
   });
 
   const [textError, setTextError] = useState<string | null>(null);
   const [platformError, setPlatformError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState<PresentationResult | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
 
-  const recommendMutation = trpc.presentStyles.recommend.useMutation();
+  const recommendMutation = trpc.presentStyles.recommend.useMutation({
+    onSuccess(data) {
+      try {
+        const parsed = JSON.parse(data.content) as PresentationResult;
+        setResult(parsed);
+        setIsFallback(data.isFallback);
+      } catch {
+        toast.error('推荐失败 · 请重试');
+      }
+    },
+    onError() {
+      toast.error('推荐失败 · 请重试');
+    },
+  });
 
   const abortRef = useRef<AbortController>(null!);
   useEffect(() => {
@@ -129,7 +123,7 @@ export default function PresentStyles() {
     return () => { abortRef.current.abort(); };
   }, []);
 
-  // Sync form values to URL state (AC-3)
+  // Sync form values to URL state
   useEffect(() => {
     setSearchParams((prev) => {
       if (text) prev.set('text', text); else prev.delete('text');
@@ -138,7 +132,7 @@ export default function PresentStyles() {
     }, { replace: true });
   }, [text, platform]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced LS draft write (AC-3)
+  // Debounced LS draft write
   useEffect(() => {
     const timer = setTimeout(() => {
       saveDraft(accountId, { text, platform });
@@ -146,7 +140,7 @@ export default function PresentStyles() {
     return () => clearTimeout(timer);
   }, [text, platform, accountId]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setTextError(null);
     setPlatformError(null);
@@ -162,31 +156,19 @@ export default function PresentStyles() {
     }
     if (!valid) return;
 
-    if (abortRef.current.signal.aborted) return;
-
-    try {
-      await recommendMutation.mutateAsync({ text, platform });
-      if (!abortRef.current.signal.aborted) {
-        setSubmitted(true);
-        setSearchParams((prev) => {
-          prev.set('done', '1');
-          return prev;
-        });
-      }
-    } catch {
-      if (!abortRef.current.signal.aborted) {
-        toast.error('推荐失败 · 请重试');
-      }
-    }
+    setResult(null);
+    setIsFallback(false);
+    recommendMutation.mutate({ text, platform });
   }
 
   function handleRetry() {
-    setSubmitted(false);
-    setSearchParams((prev) => {
-      prev.delete('done');
-      return prev;
-    });
+    setResult(null);
+    setIsFallback(false);
+    recommendMutation.mutate({ text, platform });
   }
+
+  // Determine recommended IDs for highlighting
+  const recommendedIds = new Set(result?.recommendedStyles.map((s) => s.id) ?? []);
 
   return (
     <main className="flex-1 container py-8 space-y-8">
@@ -200,102 +182,156 @@ export default function PresentStyles() {
         </p>
       </div>
 
-      {submitted ? (
-        <div className="space-y-4 max-w-2xl">
+      {/* Form */}
+      <form
+        className="max-w-2xl space-y-6"
+        onSubmit={(e) => { void handleSubmit(e); }}
+        data-testid="present-styles-form"
+        noValidate
+      >
+        {/* Textarea: 文案内容 */}
+        <div className="space-y-1.5">
+          <label htmlFor="ps-text" className="text-body-sm font-medium text-on-surface">
+            文案内容<span className="text-error ml-0.5">*</span>
+          </label>
+          <textarea
+            id="ps-text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={6}
+            className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
+            placeholder="粘贴你的文案内容（至少10字）"
+          />
+          <div className="flex justify-between items-center">
+            {textError ? (
+              <p className="text-body-xs text-error" role="alert">{textError}</p>
+            ) : (
+              <span />
+            )}
+            <span className="text-body-xs text-muted-foreground">{text.length} / 2000</span>
+          </div>
+        </div>
+
+        {/* Select: 平台 */}
+        <div className="space-y-1.5">
+          <label htmlFor="ps-platform" className="text-body-sm font-medium text-on-surface">
+            发布平台<span className="text-error ml-0.5">*</span>
+          </label>
+          <Select
+            value={platform || undefined}
+            onValueChange={(v) => setPlatform(v)}
+          >
+            <SelectTrigger
+              id="ps-platform"
+              className={platformError ? 'border-error' : ''}
+              data-testid="platform-select"
+            >
+              <SelectValue placeholder="请选择目标平台" />
+            </SelectTrigger>
+            <SelectContent>
+              {PRESENT_STYLE_PLATFORMS.map((p) => (
+                <SelectItem key={p} value={p}>
+                  {PLATFORM_LABELS[p]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {platformError && (
+            <p className="text-body-xs text-error" role="alert">{platformError}</p>
+          )}
+        </div>
+
+        <Button
+          type="submit"
+          disabled={recommendMutation.isPending}
+          className="w-full sm:w-auto"
+          data-testid="present-styles-submit"
+        >
+          {recommendMutation.isPending ? '分析中…' : '推荐呈现形式'}
+        </Button>
+      </form>
+
+      {/* isFallback banner */}
+      {result && isFallback && (
+        <div
+          className="max-w-2xl p-3 rounded-md bg-muted text-muted-foreground text-body-sm flex items-center gap-2"
+          data-testid="present-styles-fallback-banner"
+        >
+          <span>⚠️ AI 暂时繁忙 · 显示备用推荐方案</span>
+          <Button variant="ghost" size="sm" onClick={handleRetry} data-testid="present-styles-retry">
+            重试
+          </Button>
+        </div>
+      )}
+
+      {/* Results: 14 style cards with recommended highlighted */}
+      {result && (
+        <div
+          className="space-y-4 max-w-2xl"
+          data-testid="present-styles-result"
+        >
           <p className="text-body-sm text-muted-foreground">
-            根据你的文案和平台，AI 推荐以下呈现风格：
+            根据你的文案和平台，AI 推荐以下呈现形式（
+            <span className="text-primary font-medium">{result.recommendedStyles.length} 个高亮推荐</span>
+            ，其余供参考）：
           </p>
-          <div className="space-y-3" data-testid="present-styles-result">
-            {MOCK_STYLES.map((style) => (
-              <Card key={style.type} className="border border-border">
+
+          {/* Recommended styles (highlighted) */}
+          <div className="space-y-3" data-testid="present-styles-recommended">
+            {result.recommendedStyles.map((style, idx) => (
+              <Card
+                key={style.id}
+                className="border-2 border-primary bg-primary/5"
+                data-testid={`recommended-style-${idx}`}
+              >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-body-lg flex items-center gap-2">
-                    <span className="text-primary font-semibold">
-                      {PRESENT_STYLE_LABELS[style.type]}
-                    </span>
-                    <span className="text-body-xs text-muted-foreground font-normal">
-                      {PRESENT_STYLE_TYPES.indexOf(style.type) === 0 ? '推荐' : ''}
+                    <span className="text-primary font-semibold">{style.label}</span>
+                    <span className="text-body-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
+                      匹配度 {style.matchScore}%
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-1">
+                <CardContent className="space-y-2">
                   <p className="text-body-sm text-on-surface">{style.description}</p>
-                  <p className="text-body-xs text-muted-foreground">示例：{style.example}</p>
+                  <p className="text-body-xs text-muted-foreground">💡 {style.tips}</p>
+                  <p className="text-body-xs text-primary/80 bg-primary/5 px-2 py-1 rounded">
+                    推荐理由：{style.rationale}
+                  </p>
                 </CardContent>
               </Card>
             ))}
           </div>
-          <Button variant="outline" onClick={handleRetry}>
-            重新分析
-          </Button>
-        </div>
-      ) : (
-        <form
-          className="max-w-2xl space-y-6"
-          onSubmit={(e) => { void handleSubmit(e); }}
-          data-testid="present-styles-form"
-          noValidate
-        >
-          {/* Textarea: 文案内容 */}
-          <div className="space-y-1.5">
-            <label htmlFor="ps-text" className="text-body-sm font-medium text-on-surface">
-              文案内容<span className="text-error ml-0.5">*</span>
-            </label>
-            <textarea
-              id="ps-text"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              rows={6}
-              className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
-              placeholder="粘贴你的文案内容（至少10字）"
-            />
-            <div className="flex justify-between items-center">
-              {textError ? (
-                <p className="text-body-xs text-error" role="alert">{textError}</p>
-              ) : (
-                <span />
-              )}
-              <span className="text-body-xs text-muted-foreground">{text.length} / 2000</span>
+
+          {/* All 14 styles for reference */}
+          <div className="mt-6">
+            <h2 className="text-body-sm font-medium text-muted-foreground mb-3">全部 14 种呈现形式</h2>
+            <div className="space-y-2" data-testid="present-styles-all">
+              {PRESENT_STYLES.map((style) => {
+                const isRecommended = recommendedIds.has(style.id);
+                if (isRecommended) return null; // already shown above
+                return (
+                  <Card
+                    key={style.id}
+                    className="border border-border opacity-70"
+                    data-testid={`style-card-${style.id}`}
+                  >
+                    <CardHeader className="pb-1 pt-3">
+                      <CardTitle className="text-body-md text-on-surface">{style.label}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pb-3">
+                      <p className="text-body-xs text-muted-foreground">{style.description}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
 
-          {/* Select: 平台 */}
-          <div className="space-y-1.5">
-            <label htmlFor="ps-platform" className="text-body-sm font-medium text-on-surface">
-              发布平台<span className="text-error ml-0.5">*</span>
-            </label>
-            <Select
-              value={platform || undefined}
-              onValueChange={(v) => setPlatform(v)}
-            >
-              <SelectTrigger
-                id="ps-platform"
-                className={platformError ? 'border-error' : ''}
-                data-testid="platform-select"
-              >
-                <SelectValue placeholder="请选择目标平台" />
-              </SelectTrigger>
-              <SelectContent>
-                {PRESENT_STYLE_PLATFORMS.map((p) => (
-                  <SelectItem key={p} value={p}>
-                    {PLATFORM_LABELS[p]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {platformError && (
-              <p className="text-body-xs text-error" role="alert">{platformError}</p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            disabled={recommendMutation.isPending}
-            className="w-full sm:w-auto"
-          >
-            {recommendMutation.isPending ? '分析中…' : '推荐呈现风格'}
+          <Button variant="outline" onClick={handleRetry} data-testid="present-styles-retry-bottom">
+            重新分析
           </Button>
-        </form>
+        </div>
       )}
     </main>
   );
