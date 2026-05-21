@@ -3354,6 +3354,99 @@ E2E 默认走 fallback 路径(D-187)· 但**必须**考虑 SSE chunks 模拟(参
 
 step page 输出区 H3/H4 字面必须在 `constants/step{N}.ts` 中定义为 `readonly Block[]` · h3Label/h4Label 1:1 来源 spec · 禁止在 JSX 直接写字面。`STORYBOARD_COLUMNS` 13 列同理。PRD-22 全 11 dev US 严守 · 0 字面漂移。
 
+### §11.17 PRD-26 admin polish 沉淀(PRD-26 retro 2026-05-21 文档回流 · 14 commits 事实驱动)
+
+#### §11.17.1 packages/ui 跨包抽组件 checklist · 红线级(P-26-003 固化)
+
+新组件从 `apps/admin/src/components/admin/` lift 到 `packages/ui/src/admin/` 时必须满足 6 项(违反任意一条 = LD-A-1 reject):
+
+1. `packages/ui/package.json` 不加 trpc 依赖(LD-A-1 隔离)
+2. 组件接受 props 不内部 `useQuery` · trpc 调用留 AdminLayout 层
+3. `AdminLayout` 保留 `adminTrpc` · 传 props 给 ui components
+4. `packages/ui/src/admin/index.ts` 只 re-export 不 import 业务 hook
+5. `apps/admin/package.json` `@quanan/ui` 已在 dependencies(workspace dep)
+6. `vite.config.ts` alias 映射 `@quanan/ui/admin → packages/ui/src/admin/index.ts`
+
+**反例**: `import { trpc } from '@quanan/clients';` in `packages/ui/src/admin/*.tsx` → 立即 reject。
+
+#### §11.17.2 admin chunk 命名约定(P-26-004 · admin SPA 性能基线)
+
+`apps/admin/vite.config.ts` `manualChunks` fn 4 chunk groups:
+- `p0-core`(6 page): 核心管理页 · 用户量最大 · 最早下载
+- `p0-review`(2 page): 内容审核 · 运营重度使用
+- `p1-health`(5 page): 健康度/运维 · admin 专项使用
+- `p2-advanced`(4 page): 高级配置 · 低频
+
+**规则**: 命名 `p<priority>-<theme>` · priority ∈ {0,1,2} · 新 admin 页面归入对应 chunk · 不创建新 chunk(除非页面重要性独立)。
+
+#### §11.17.3 routers/app vs admin 子目录对称(TD-037~042 固化 · PRD-26 US-005)
+
+`apps/api/src/trpc/routers/` 强制 2 子目录:
+- `app/` · 主应用 routers(26 个 · publicProcedure / protectedProcedure / globalProcedure)
+- `admin/` · admin routers(13 个 · adminProcedure / superAdminProcedure)
+- `_app.ts` `mergeRouters` 导入 `@/trpc/routers/app/...` + `@/trpc/routers/admin/...`
+
+**禁止**:
+- 主应用 router 平铺在 `apps/api/src/trpc/routers/` 根
+- 跨子目录 procedure type 混用(`app/` 用 `adminProcedure` / `admin/` 用 `protectedProcedure`)
+
+#### §11.17.4 monorepo lint scope · M-2 固化(继承 PRD-25 L4 进化)
+
+`pnpm lint` **必须从 PROJECT_ROOT 跑**(turbo 跨 ws):
+```bash
+# ✅ 对: 跨 apps + packages 全覆盖
+pnpm lint
+
+# ❌ 错: 只覆盖 apps/web · monorepo 漏 ws lint errors(QuanAn PRD-25 US-009 TD-098 实证)
+cd apps/web && pnpm lint
+```
+
+**强制**: AC 含 "pnpm lint 0 errors" / "lint clean" / "lint pass" 时 · 必须 ROOT 跑。Ralph 在子 ws 改完后 · 最后回 ROOT 再跑一次 verify。
+
+#### §11.17.5 e2e config drift · admin spec 必加 project filter(TD-100 固化)
+
+写 admin 相关 e2e spec 时必须 (a) 或 (b) 二选一:
+
+**(a) playwright.config.ts chromium/mobile project 加 testIgnore**:
+```typescript
+{ name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] },
+{ name: 'mobile', use: { ...devices['iPhone 14 Pro'] }, testIgnore: [...同上] },
+```
+
+**(b) 各 spec 头 test.skip browserName**:
+```typescript
+test.skip(({ browserName }, testInfo) => testInfo.project.name !== 'admin' && testInfo.project.name !== 'chromium');
+// 必须 spec 自己 override baseURL=5174
+test.use({ baseURL: 'http://localhost:5174' });
+```
+
+**实证**: TD-100 跨 PRD-10 US-007(admin-foundation-loop) + PRD-26 US-002(visual-baseline) + PRD-26 US-003(role-matrix) 共 3 次重复 · 满足 L4→L5 触发条件 · 已在 `~/.claude/commands/plan-check.md §2.6.27` 机制化。
+
+#### §11.17.6 admin unit test mock 模式(P-26-005 固化)
+
+admin page 单测 = `vi.hoisted` + `adminTrpc mock` + `MemoryRouter` wrap · 每 page 3 test minimum:
+1. **AC-1**: 渲染不崩溃 + h1 文字锁(`getByRole('heading', { level: 1 })`)
+2. **AC-2**: loading state(`isPending: true` → loading UI 出现)
+3. **AC-3**: onSuccess 数据渲染(`data: [...]` → 数据可见)
+
+**反例**(违反则 reject):
+- ❌ 不用 `vi.hoisted` · mock 在 import 后定义 → mock 失效
+- ❌ render 不 wrap `MemoryRouter` · Route hooks 抛错
+- ❌ 测试用 `waitFor` 等 async · 改用 `mockReturnValue` 同步设 `isPending`
+
+#### §11.17.7 RCA-006 daemon timeout 路径首次实证(US-006 · 跨项目 SOP)
+
+PRD-26 US-006 首次实战 RCA-006 修复(`raise AuditTimeoutError` + `sys.exit(2)` + audit-gate.json 保留 pending):
+- US-006 audit-gate pending 05:03 → Opus 离屏 180 min → 08:03 daemon timeout exit
+- 用户 09:25 手动 approve · daemon 已死
+- 09:31 重启 daemon → crash recovery 自动: 读 approved gate → 标 PASSED → 跑 next story
+- **验证零容忍原则严守**(audit 没被 silent skip)
+
+**SOP**(项目 CLAUDE.md §9.1 + RCA-006 §5.5+.4 已固化):
+- daemon 启动后 Opus 必须在屏 / 用 Monitor 工具 + watch-audit-gate 系统通知双层
+- 预计离开 > 1h: 启 daemon 前手动 force-reject 已 pending 的 + restart 干净
+- timeout 真触发: 4 选项指引(approve / reject / force-reject / block)→ 再重启 daemon crash recovery
+
 ---
 
 ## 修订记录

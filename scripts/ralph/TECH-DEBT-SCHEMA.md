@@ -73,6 +73,55 @@
 | `resolved_at` | string \| null | ISO 8601 UTC; 未修填 `null` |
 | `resolution_notes` | string \| null | 修复摘要 (+ 零回归验证) |
 
+### audit_exemption 字段(QuanAn PRD-25/26 retro M-Z 固化 · 2026-05-21 新增)
+
+**何时填**: Opus audit 时发现 TD 但选 `force-approve` 豁免 · 留 PRD-N+ 修。该字段记录豁免的完整链路 · 跨 PRD 自动追踪 overdue 状态。
+
+**必填子字段**:
+
+| 字段 | 类型 | 规则 |
+|------|------|------|
+| `audit_exemption.approved_in_story` | string | 哪个 US approve 时豁免 · 如 `"PRD-26 US-007"` |
+| `audit_exemption.reason` | string | 豁免理由 · 至少 100 字 · 必含 3 要素: (1) 范围不符 (2) 风险评估 (3) 修复延期理由 |
+| `audit_exemption.scheduled_fix_in` | string | 计划修复 PRD · 如 `"PRD-27+"` / `"PRR"` |
+| `audit_exemption.exemption_severity_cap` | string | 豁免 severity 上限 · 只允许 `low` / `medium` · `High` / `Critical` **禁豁免** |
+
+**示例**(PRD-26 TD-100 实证):
+
+```json
+{
+  "id": "TD-100",
+  "title": "playwright config drift · admin specs 在 chromium/mobile project 跑 baseURL 错",
+  "severity": "low",
+  "status": "open",
+  "audit_exemption": {
+    "approved_in_story": "PRD-26 US-007",
+    "reason": "US-007 approve 豁免 · 理由: (1) admin project 单跑 admin-foundation-loop + role-matrix + visual baseline chromium 全 PASS · 实际 admin UI 行为验证通过 · (2) chromium/mobile 跑 admin specs 是 historical config TD(自 PRD-10 US-007 起一直存在) · 不是 PRD-26 引入新行为 bug · (3) 修复需 playwright config 重设 · 跨 spec 文件 · 不属 US-007 收官范围",
+    "scheduled_fix_in": "PRD-27+",
+    "exemption_severity_cap": "low"
+  }
+}
+```
+
+**跨 PRD 自动追踪**(/prd-retro 时跑):
+
+```bash
+# 找所有 audit_exemption · 看哪些已 overdue(超过 1 PRD 没修)
+python3 -c "
+import json
+data = json.load(open('.agents/tech-debt.json'))
+for it in data.get('items', []):
+    ex = it.get('audit_exemption')
+    if ex and it.get('status') == 'open':
+        print(f\"TD-{it['id']:>3} [{ex.get('exemption_severity_cap', '?')}] approved_in={ex.get('approved_in_story', '?')} fix_in={ex.get('scheduled_fix_in', '?')}\")
+"
+```
+
+**红线**:
+- ❌ severity ≥ `High` 不允许走 audit_exemption · 必须当前 PRD 修
+- ❌ reason < 100 字符不被接受(确保 Opus 真审过 · 不是 rubber-stamp 豁免)
+- ❌ scheduled_fix_in 为空 / 写"未来" / 写"长期延后" · 必须明确 PRD slug
+
 ## severity 分级规则
 
 | severity | 定义 | 示例 | 触发行为 |

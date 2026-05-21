@@ -302,3 +302,65 @@ apps/api/
 ---
 
 *Structure analysis: 2026-05-13*
+
+---
+
+## PRD-26 Update (2026-05-21)
+
+### routers/app vs admin 子目录对称 (US-005 · TD-037~042 batch)
+
+`apps/api/src/trpc/routers/` 拆为 2 子目录:
+
+```
+apps/api/src/trpc/routers/
+├── _app.ts                   # ★ entry · mergeRouters({ ...app, ...admin })
+├── app/                       # PRD-26 US-005 新建 · 26 主应用 routers (git mv 保留 history)
+│   ├── auth.ts                # publicProcedure(login) + protectedProcedure(me/logout)
+│   ├── ipAccounts.ts          # globalProcedure(list/active) + protectedProcedure(switch/smartRecommend)
+│   ├── diagnosis.ts           # DiagnosisAgent.execute (PRD-25 US-001 真启用)
+│   ├── positioning.ts         # PositioningAgent.execute (mode: recommend/refine)
+│   ├── strategy.ts            # StrategyAgent.execute
+│   ├── persona.ts             # PersonaAgent.execute
+│   ├── copywriting.ts         # CopywritingAgent.execute (PRD-25 US-002)
+│   ├── analysis.ts            # AnalysisAgent.execute (PRD-25 US-005)
+│   ├── video.ts               # VideoAgent.execute (production/acquisition · PRD-25 US-006)
+│   ├── topic.ts               # TopicAgent.execute
+│   ├── livestream.ts          # LivestreamAgent.execute (PRD-25 US-007)
+│   ├── monetization.ts        # MonetizationAgent.execute
+│   ├── evolution.ts           # EvolutionAgent (getProfile + evolve · PRD-25 US-004)
+│   ├── dailyTasks.ts          # DailyTaskAgent (cron · PRD-25 US-003)
+│   ├── stepData.ts            # 9 step jsonb save/load (LD-A-1 边界 · 主应用专属)
+│   ├── intent.ts              # 意图识别
+│   ├── inputs.ts              # 用户输入持久化
+│   ├── memory.ts              # 5 层记忆
+│   ├── compose.ts             # 组合编排
+│   ├── feedback.ts            # 反馈采集
+│   ├── trending.ts            # 热点(留 PRD-5+)
+│   ├── chat.ts                # 通用对话
+│   ├── search.ts              # 搜索
+│   ├── settings.ts            # 用户设置
+│   ├── notification.ts        # 通知中心
+│   └── playback.ts            # 播放历史
+└── admin/                     # PRD-10~14 admin core · 13 routers (保持对称)
+    ├── auth.ts                # adminProcedure (lucia-auth admin session)
+    ├── users.ts               # super_admin only
+    ├── accounts.ts            # admin 视角 ipAccount 跨 user 查
+    ├── audit.ts               # admin_audit_log append-only (LD-A-3)
+    ├── nsm.ts                 # NSM 指标聚合
+    ├── cost.ts                # 成本仪表盘
+    ├── compliance.ts          # 合规审查
+    ├── approvals.ts           # 双审批工作流 (PRD-13)
+    ├── invites.ts             # 邀请码管理
+    ├── quota.ts               # 配额管理
+    ├── constants.ts           # 常量版本管理 (PRD-14 canary)
+    ├── featureFlags.ts        # 功能开关
+    └── abExperiments.ts       # A/B 实验
+```
+
+**关键设计**:
+- 主应用 routers 全在 `app/` · admin routers 全在 `admin/` · 0 交叉
+- LD-A 5 红线: 主应用代码不允许直接读 admin 表 · 反之亦然
+- procedure type 严守: app/ 用 protectedProcedure/globalProcedure · admin/ 用 adminProcedure/superAdminProcedure
+- import path 一律 `@/trpc/routers/app/<name>` 或 `@/trpc/routers/admin/<name>`
+
+*PRD-26 Update: 2026-05-21*

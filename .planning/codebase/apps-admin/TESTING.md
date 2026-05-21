@@ -256,3 +256,98 @@ render(
 ---
 
 *Testing analysis: 2026-05-13*
+
+---
+
+## PRD-26 Update (2026-05-21 · TESTING 重大改动)
+
+> **状态变化** · 2026-05-13 文件写 "0 测试文件 0 测试框架" · PRD-26 US-006 + US-002/003 后完全改观
+
+### Test Framework (PRD-26 后实际状态)
+
+**Runner**: vitest 3.x (apps/admin/vitest.config.ts · jsdom environment)
+
+**Assertion**: @testing-library/jest-dom (apps/admin/src/test/setup.ts)
+
+**Run Commands**:
+```bash
+# Unit test (apps/admin · PRD-26 US-006)
+cd apps/admin && pnpm vitest run               # 17 files · 51 tests
+cd apps/admin && pnpm vitest run --reporter=basic
+
+# E2E (root · PRD-26 US-002/003)
+pnpm playwright test --project=admin           # admin SPA · baseURL=5174
+pnpm playwright test admin-foundation-loop --project=admin
+pnpm playwright test prd26-admin-visual-baseline --project=chromium
+pnpm playwright test prd26-admin-role-matrix --project=admin
+```
+
+### Test Coverage (PRD-26 后)
+
+**Unit test layer (US-006)**:
+- 17 page __tests__/*.test.tsx · 每 page 3 test minimum
+- AC-1: 渲染不崩溃 + h1/h2 文字锁
+- AC-2: loading state (isPending=true → loading UI 出现)
+- AC-3: onSuccess 数据渲染
+
+**E2E layer (US-002 + US-003)**:
+- Visual baseline 17 page (chromium 1440x900 · prd26-admin-visual-baseline.spec.ts)
+- Smoke 17 page (HTTP 200 + 无 console error + 3s 可见性 · prd26-admin-pages-smoke.spec.ts)
+- Role matrix (super_admin/domain_admin/reviewer 三档 · prd26-admin-role-matrix.spec.ts)
+- Foundation loop (login → layout → nsm → audit → logout · admin-foundation-loop.spec.ts · PRD-10 sealed)
+
+### admin unit test 的正确 mock 模式 (P-26-005)
+
+```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+
+// vi.hoisted 必须在 vi.mock 前 · 确保 mock 先于 import hoisting
+const mockTrpcQuery = vi.hoisted(() => vi.fn());
+
+vi.mock('@/lib/admin-client', () => ({
+  adminTrpc: {
+    accounts: { list: { useQuery: mockTrpcQuery } },
+  },
+}));
+
+import { AccountsPage } from '../index';
+
+describe('AccountsPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockTrpcQuery.mockReturnValue({ data: undefined, isPending: true });
+  });
+
+  it('renders without crash', () => {
+    render(<MemoryRouter><AccountsPage /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
+
+  it('shows loading state', () => {
+    mockTrpcQuery.mockReturnValue({ data: undefined, isPending: true });
+    render(<MemoryRouter><AccountsPage /></MemoryRouter>);
+    expect(screen.getByText(/加载|Loading/i)).toBeInTheDocument();
+  });
+
+  it('renders data on success', () => {
+    mockTrpcQuery.mockReturnValue({ data: [{ id: 1, name: 'test' }], isPending: false });
+    render(<MemoryRouter><AccountsPage /></MemoryRouter>);
+    expect(screen.getByText('test')).toBeInTheDocument();
+  });
+});
+```
+
+**反例**(违反则 reject):
+- ❌ 不用 vi.hoisted · mock 在 import 后定义 → mock 失效
+- ❌ render 不 wrap MemoryRouter · Route hooks 抛错
+- ❌ 测试用 waitFor 等 async · 改用 mockReturnValue 同步设 isPending
+
+### TD-100 e2e config drift (新发现 · 留 PRD-27+)
+
+playwright.config.ts chromium/mobile project 默认跑 admin specs 但 baseURL=5173(web)→ 失败。修复路径:
+- (a) playwright.config 加 testIgnore: `['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts']`
+- (b) 各 spec 头 `test.skip(({ browserName }) => browserName !== 'chromium')` + spec 自己 override baseURL=5174
+
+*PRD-26 Update: 2026-05-21*

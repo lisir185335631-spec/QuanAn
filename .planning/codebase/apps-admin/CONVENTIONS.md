@@ -256,3 +256,64 @@ function showToast(msg: string, type: 'ok' | 'warn' | 'err'): void
 ---
 
 *Convention analysis: 2026-05-13*
+
+---
+
+## PRD-26 Update (2026-05-21 · admin polish 沉淀)
+
+### Convention 1: packages/ui 跨包抽组件 checklist (P-26-003)
+
+新组件从 `apps/admin/src/components/admin/` lift 到 `packages/ui/src/admin/` 时:
+
+1. **packages/ui/package.json 不加 trpc 依赖** (LD-A-1 红线 · admin/web 隔离)
+2. **组件接受 props 不内部 useQuery** · trpc 调用留 AdminLayout 层
+3. **AdminLayout 保留 adminTrpc** · 传 props 给 ui components
+4. **packages/ui/src/admin/index.ts 只 re-export** · 不 import 业务 hook
+5. **apps/admin/package.json `@quanan/ui` 已在 dependencies** (workspace dep)
+6. **vite.config.ts alias 映射**: `@quanan/ui/admin → packages/ui/src/admin/index.ts`
+
+**反例**(违反任意一条 = LD-A 红线 reject):
+```typescript
+// ❌ 错: packages/ui 组件 import trpc
+import { trpc } from '@quanan/clients';
+function Sidebar() { const { data } = trpc.admin.me.useQuery(); }
+
+// ✅ 对: props 注入
+function Sidebar({ role, groups, currentPath, onNavigate }: SidebarProps) { ... }
+```
+
+### Convention 2: admin chunk 命名约定 (P-26-004)
+
+manualChunks fn 在 `apps/admin/vite.config.ts`:
+- `p0-core`: 核心管理页(用户量最大 · 最早下载)· 6 page
+- `p0-review`: 内容审核(运营重度使用)· 2 page
+- `p1-health`: 健康度/运维(admin 专项使用)· 5 page
+- `p2-advanced`: 高级配置(低频)· 4 page
+
+**规则**:
+- 新 admin 页面按优先级归入对应 chunk · 不创建新 chunk(除非页面重要性独立)
+- chunk 命名: `p<priority>-<theme>` · priority ∈ {0, 1, 2}
+- p0 chunks 应能 cold start 即 prefetch · p1/p2 lazy load
+
+### Convention 3: routers/app vs admin 子目录对称 (P-26-005)
+
+`apps/api/src/trpc/routers/` 强制 2 个子目录:
+- `app/` · 主应用 routers (26 个 · publicProcedure / protectedProcedure / globalProcedure)
+- `admin/` · admin routers (13 个 · adminProcedure / superAdminProcedure)
+- `_app.ts` mergeRouters 导入 `@/trpc/routers/app/...` + `@/trpc/routers/admin/...`
+
+**禁止**:
+- 主应用 router 平铺在 `apps/api/src/trpc/routers/` 根 (TD-037 修)
+- 主应用 router 用 adminProcedure / admin router 用 protectedProcedure (procedure type 严守)
+
+### Convention 4: monorepo lint scope (M-2 固化)
+
+`pnpm lint` 必须从 **PROJECT_ROOT** 跑(turbo 跨 ws):
+```bash
+pnpm lint   # ✅ 跨 apps + packages
+cd apps/admin && pnpm lint                      # ❌ 只覆盖 admin · 漏其他 ws
+```
+
+**强制**: AC 含 "pnpm lint 0 errors" 时 · 必须 ROOT 跑(避免 monorepo 漏 ws)。
+
+*PRD-26 Update: 2026-05-21*

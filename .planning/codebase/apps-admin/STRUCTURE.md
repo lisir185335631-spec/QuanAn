@@ -280,3 +280,46 @@ apps/admin/
 ---
 
 *Structure analysis: 2026-05-13*
+
+---
+
+## PRD-26 Update (2026-05-21)
+
+> admin lift 后结构变化 · apps/admin lift packages/ui · React.lazy chunking · 17 page unit test
+
+### 新增 / 改动
+
+**`apps/admin/src/router.tsx` (PRD-26 US-006 · D-256 lazy load):**
+- 18 React.lazy() import · Suspense fallback={<AdminLoading />} 包裹
+- webpackChunkName comment 标 chunk 名 · ≤ 30 LOC AdminLoading 组件
+- Route 表 17 + /login · 默认 redirect /admin → /admin/nsm
+
+**`apps/admin/vite.config.ts` (US-006 manualChunks):**
+- 4 chunk groups · p0-core(6 page · users/cost/nsm/featureFlags/audit/quota) · p0-review(2 page · reviewTrending/reviewDeepLearn) · p1-health(5 page · approvals/evolutionHealth/invites/compliance/prompts) · p2-advanced(4 page · abExperiments/constants/knowledge/accounts)
+- 命名约定: `p<priority>-<theme>` · 优先级最高 = 最早下载
+
+**`apps/admin/vitest.config.ts` + `apps/admin/src/test/setup.ts` (US-006 新建):**
+- jsdom environment + @testing-library/jest-dom setup
+- 独立 config(跟 apps/api / apps/web 隔离)
+
+**`apps/admin/src/pages/<domain>/__tests__/<Page>.test.tsx` × 17 (US-006 新建):**
+- 每 page 3 test minimum: AC-1 渲染不崩溃 · AC-2 loading state · AC-3 onSuccess 数据
+- vi.hoisted + adminTrpc mock + MemoryRouter wrap
+- 总 51 unit tests · vitest run ws 1.5s 全 PASS
+
+### 抽包 (PRD-26 US-004 · TD-049)
+
+**4 components lift from `apps/admin/src/components/admin/` → `packages/ui/src/admin/`:**
+- Sidebar.tsx · TopBar.tsx · StatusBar.tsx · AuditDrawer.tsx
+- props-injected · 0 trpc 依赖 · 由 AdminLayout 传 props
+- `packages/ui/src/admin/index.ts` re-export 4 components + types
+- `@quanan/ui/admin` alias 跨 apps 共享(packages/ui/package.json 不加 trpc 依赖严守)
+
+### routers/app 拆分 (PRD-26 US-005 · TD-037 batch)
+
+主应用 26 routers `git mv` 进 `apps/api/src/trpc/routers/app/` 子目录:
+- `_app.ts` mergeRouters import 全改 from `@/trpc/routers/app/...`
+- `admin/` 保持对称(13 admin routers)
+- 35 test files import path 同步 · `readFileSync` path 同步
+
+*PRD-26 Update: 2026-05-21*
