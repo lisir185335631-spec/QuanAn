@@ -75,7 +75,7 @@ test('admin-foundation-loop: 7 steps · login → layout → nsm → audit → l
   await nsmLink.click();
   await page.waitForURL(/\/admin\/nsm/, { timeout: 10_000 });
   // Verify placeholder content (heading in nsm placeholder)
-  await expect(page.locator('main h2').first()).toBeVisible({ timeout: 5_000 });
+  await expect(page.locator('main h1').first()).toBeVisible({ timeout: 5_000 });
 
   // ── Step 6: click 🔔 → AuditDrawer slide-in + admin_login row visible ──────
   const bellBtn = page.locator('button[aria-label="审计记录"]');
