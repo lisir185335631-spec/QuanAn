@@ -30,13 +30,24 @@ export default defineConfig({
   },
 
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone 14 Pro'] } },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+      // D-263: exclude admin specs that use relative URLs (baseURL=5173 wrong) or mobile-incompatible viewports
+      testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'],
+    },
+    {
+      name: 'mobile',
+      use: { ...devices['iPhone 14 Pro'] },
+      // D-263: exclude admin specs — iPhone 14 Pro viewport incompatible with 1440x900 admin baselines
+      testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'],
+    },
     // AC-8(US-007): admin SPA project · baseURL=5174 · workers=1 + fullyParallel=false
     // Follows anti-pattern REJ-D061: admin shared user must run serially
     {
       name: 'admin',
-      testMatch: '**/tests/e2e/admin/**/*.spec.ts',
+      // TD-100 fix: extend testMatch to cover prd*-admin-*.spec.ts in tests/e2e/ root
+      testMatch: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'http://localhost:5174',

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T10:40:22",
+  "last_updated": "2026-05-21T13:00:37",
   "items": [
     {
       "id": "TD-001",
@@ -2126,7 +2126,10 @@
       "discovered_at": "2026-05-21",
       "discovered_by": "Opus audit US-007",
       "severity": "low",
-      "status": "open",
+      "status": "resolved",
+      "resolved_in_prd": "PRD-27",
+      "resolved_at": "2026-05-21",
+      "resolution_notes": "playwright.config.ts chromium + mobile project 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] · admin project testMatch 扩展为数组 ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] 覆盖 root 级 prd26-admin-* specs · D-263 config-level fix · 不改 spec 头",
       "detected_in_prd": "PRD-26",
       "detected_in_story": "US-007",
       "evidence": "1) tests/e2e/admin/admin-foundation-loop.spec.ts 在 chromium/mobile project 跑 baseURL=5173(web) 而非 5174(admin) · login h1 找不到 · 2) tests/e2e/prd26-admin-role-matrix.spec.ts 在 chromium project reviewer scenario fail 同理 · 3) tests/e2e/prd26-admin-visual-baseline.spec.ts 在 mobile project 4 page fail · iPhone 14 Pro viewport != 1440x900 baseline viewport",
@@ -2140,6 +2143,23 @@
         "tests/e2e/prd26-admin-visual-baseline.spec.ts"
       ],
       "fix_hint": "playwright.config.ts chromium project 加 testIgnore: ['**/tests/e2e/admin/**', '**/tests/e2e/prd*-admin-*.spec.ts'] · mobile project 同 · admin project 已限定 admin/ 子目录 · prd26-admin-* spec 可考虑 git mv 进 tests/e2e/admin/"
+    },
+    {
+      "id": "TD-101",
+      "category": "tooling",
+      "title": "test:visual:prd23:check script 缺 from apps/web/package.json (PRD-27 US-001 audit 发现)",
+      "discovered_at": "2026-05-21",
+      "discovered_by": "Opus audit US-001 (PRD-27)",
+      "severity": "low",
+      "status": "resolved",
+      "evidence": "apps/web/package.json scripts 仅含 test:visual / test:visual:check / test:visual:prd22 / test:visual:prd22:check · prd23 script 未补 · Validator 跑 AC-7 时 fallback 直跑 `playwright test --config ../../playwright.config.ts --project=chromium prd23-visual-baseline` workaround",
+      "root_cause": "PRD-23 (visual baseline) 引入 prd23-visual-baseline 测试集时 package.json scripts 未同步 · 持续遗漏到 PRD-27",
+      "scheduled_fix_in": "PRD-27 US-005 (mobile baseline 修 + playwright config testIgnore) 或 US-006 (收官 verify) 时补 script · 一行 add 即可",
+      "audit_exemption": "US-001 approve 时豁免 · Validator 直跑 playwright verify baseline unchanged · 不影响本 story 功能",
+      "fix_hint": "在 apps/web/package.json scripts 加 'test:visual:prd23' / 'test:visual:prd23:check' 两个 script · 类比 prd22 写法",
+      "resolved_at": "2026-05-21",
+      "resolved_by": "Opus audit US-003 (PRD-27)",
+      "resolve_evidence": "commit 0ffc86e (US-003 iter-2 AC-13 fix) · apps/web/package.json 加 test:visual:prd23 + test:visual:prd23:check 2 scripts · Validator 不再 fallback 直跑 playwright"
     }
   ]
 }
