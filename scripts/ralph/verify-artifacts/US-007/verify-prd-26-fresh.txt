@@ -1,0 +1,67 @@
+
+═══════════════════════════════════════════════════════════
+  PRD-26 admin UI MVP — verify script
+═══════════════════════════════════════════════════════════
+
+§1  TD closed verification · 8 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   1.x  TD-031 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-037 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-038 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-039 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-040 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-041 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-042 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+  ✅ ok   1.x  TD-049 status=resolved + close_evidence 存在 (.agents/tech-debt.json)
+
+§2  visual baseline matrix · 5 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   2.1        17 prd26-admin-*.png baselines in /tmp/aiipznt-clone-research/screenshots (≥17)
+  ✅ ok   2.2  maxDiffPixelRatio: 0.05 in playwright.config.ts
+  ✅ ok   2.3  viewport 1440x900 in apps/web/scripts/visual-diff.ts
+  ✅ ok   2.4  fullPage: true default in visual-diff.ts
+  ✅ ok   2.5  test:visual:prd26 script in package.json
+
+§3  e2e smoke · 5 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   3.1  prd26-admin-pages-smoke.spec.ts exists
+  ✅ ok   3.2  prd26-admin-role-matrix.spec.ts exists
+  ✅ ok   3.3  三档角色 fixture (super_admin/domain_admin/reviewer) in role matrix spec
+  ✅ ok   3.4  admin_audit_log ≥ 9 rows 验证 (spec assertion 或 US-003 manifest PASS)
+  ✅ ok   3.5  admin-foundation-loop.spec.ts exists (PRD-10 sealed)
+
+§4  lazy load + chunking · 3 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   4.1         6 JS chunks in dist-admin/assets/ (≥5)
+  ✅ ok   4.2  18 React.lazy() calls in router.tsx (≥17)
+  ✅ ok   4.3  manualChunks 已配置 in apps/admin/vite.config.ts
+
+§5  admin unit tests · 5 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   5.1        17 admin page unit test files (≥17)
+  ✅ ok   5.2        16 test files use vi.hoisted() (≥10)
+  ✅ ok   5.3        51 total it() test cases in admin pages (≥51)
+  ✅ ok   5.4  test script in apps/admin/package.json
+  ✅ ok   5.5  全部       17 test files 在 __tests__/ 目录
+
+§6  packages/ui/src/admin · 5 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   6.1         7 tsx component files in packages/ui/src/admin/ (≥5)
+  ✅ ok   6.2  10 export lines in packages/ui/src/admin/index.ts (≥5)
+  ✅ ok   6.3        15 apps/admin files import from @quanan/ui/admin (≥3)
+  ✅ ok   6.4  packages/ui/package.json has no trpc dependency (LD-A-1 隔离)
+  ✅ ok   6.5  packages/ui/src/admin/*.tsx 无 trpc import (props injection 正确)
+
+§7  audit coverage · 2 checks
+─────────────────────────────────────────────────────────────
+  ✅ ok   7.1        26 ADMIN_TABLES in audit-admin-rls-tables.sh (≥22 · TD-039 closed)
+  ⏳ running pnpm audit:admin-rls...
+  ✅ ok   7.2  pnpm audit:admin-rls exit 0 (DB RLS 状态全正确)
+
+═══════════════════════════════════════════════════════════
+  PRD-26 RESULT: 33 通过 · 0 失败 · 0 跳过 (共 33 项)
+═══════════════════════════════════════════════════════════
+
+✅ PRD-26 CI gate PASSED (全 33 项通过)
+
+PRD-26 RESULT: 30+ 通过 · 0 失败 · ALL CHECKS PASSED

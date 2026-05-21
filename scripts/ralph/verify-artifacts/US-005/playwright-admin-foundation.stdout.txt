@@ -1,0 +1,127 @@
+npm warn Unknown project config "public-hoist-pattern". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+Running 3 tests using 1 worker
+
+[1A[2K[1/3] [chromium] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout
+[1A[2K  1) [chromium] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('h1')
+    Expected: [32m"QuanAn Admin"[39m
+    Received: [31m"登录"[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveText" with timeout 10000ms[22m
+    [2m  - waiting for locator('h1')[22m
+    [2m    14 × locator resolved to <h1 class="text-h1 font-display text-on-surface">登录</h1>[22m
+    [2m       - unexpected value "登录"[22m
+
+
+      43 |   await page.goto('/login');
+      44 |   await page.waitForLoadState('networkidle');
+    > 45 |   await expect(page.locator('h1')).toHaveText('QuanAn Admin', { timeout: 10_000 });
+         |                                    ^
+      46 |   await expect(page.locator('#admin-email')).toBeVisible();
+      47 |
+      48 |   // ── Step 3: fill email + click mock OAuth → redirect to /admin ─────────────
+        at /Users/return/Desktop/QuanAn/tests/e2e/admin/admin-foundation-loop.spec.ts:45:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-chromium/error-context.md
+
+    Error Context: test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-chromium/error-context.md
+
+
+[1A[2K[2/3] [mobile] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout
+[1A[2K  2) [mobile] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoHaveText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator:  locator('h1')
+    Expected: [32m"QuanAn Admin"[39m
+    Received: [31m"登录"[39m
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toHaveText" with timeout 10000ms[22m
+    [2m  - waiting for locator('h1')[22m
+    [2m    14 × locator resolved to <h1 class="text-h1 font-display text-on-surface">登录</h1>[22m
+    [2m       - unexpected value "登录"[22m
+
+
+      43 |   await page.goto('/login');
+      44 |   await page.waitForLoadState('networkidle');
+    > 45 |   await expect(page.locator('h1')).toHaveText('QuanAn Admin', { timeout: 10_000 });
+         |                                    ^
+      46 |   await expect(page.locator('#admin-email')).toBeVisible();
+      47 |
+      48 |   // ── Step 3: fill email + click mock OAuth → redirect to /admin ─────────────
+        at /Users/return/Desktop/QuanAn/tests/e2e/admin/admin-foundation-loop.spec.ts:45:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-mobile/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-mobile/error-context.md
+
+    Error Context: test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-mobile/error-context.md
+
+
+[1A[2K[3/3] [admin] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout
+[1A[2K  3) [admin] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('main h2').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('main h2').first()[22m
+
+
+      76 |   await page.waitForURL(/\/admin\/nsm/, { timeout: 10_000 });
+      77 |   // Verify placeholder content (heading in nsm placeholder)
+    > 78 |   await expect(page.locator('main h2').first()).toBeVisible({ timeout: 5_000 });
+         |                                                 ^
+      79 |
+      80 |   // ── Step 6: click 🔔 → AuditDrawer slide-in + admin_login row visible ──────
+      81 |   const bellBtn = page.locator('button[aria-label="审计记录"]');
+        at /Users/return/Desktop/QuanAn/tests/e2e/admin/admin-foundation-loop.spec.ts:78:49
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-admin/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-admin/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-admin/error-context.md
+
+    Error Context: test-results/admin-admin-foundation-loo-2865c-yout-→-nsm-→-audit-→-logout-admin/error-context.md
+
+
+[1A[2K  3 failed
+    [chromium] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 
+    [mobile] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 
+    [admin] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 
+::error file=tests/e2e/admin/admin-foundation-loop.spec.ts,title=[chromium] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout,line=45,col=36::  1) [chromium] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout %0A    Error: expect(locator).toHaveText(expected) failed%0A%0A    Locator:  locator('h1')%0A    Expected: "QuanAn Admin"%0A    Received: "登录"%0A    Timeout:  10000ms%0A%0A    Call log:%0A      - Expect "toHaveText" with timeout 10000ms%0A      - waiting for locator('h1')%0A        14 × locator resolved to <h1 class="text-h1 font-display text-on-surface">登录</h1>%0A           - unexpected value "登录"%0A%0A%0A      43 |   await page.goto('/login');%0A      44 |   await page.waitForLoadState('networkidle');%0A    > 45 |   await expect(page.locator('h1')).toHaveText('QuanAn Admin', { timeout: 10_000 });%0A         |                                    ^%0A      46 |   await expect(page.locator('#admin-email')).toBeVisible();%0A      47 |%0A      48 |   // ── Step 3: fill email + click mock OAuth → redirect to /admin ─────────────%0A        at /Users/return/Desktop/QuanAn/tests/e2e/admin/admin-foundation-loop.spec.ts:45:36
+::error file=tests/e2e/admin/admin-foundation-loop.spec.ts,title=[mobile] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout,line=45,col=36::  2) [mobile] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout %0A    Error: expect(locator).toHaveText(expected) failed%0A%0A    Locator:  locator('h1')%0A    Expected: "QuanAn Admin"%0A    Received: "登录"%0A    Timeout:  10000ms%0A%0A    Call log:%0A      - Expect "toHaveText" with timeout 10000ms%0A      - waiting for locator('h1')%0A        14 × locator resolved to <h1 class="text-h1 font-display text-on-surface">登录</h1>%0A           - unexpected value "登录"%0A%0A%0A      43 |   await page.goto('/login');%0A      44 |   await page.waitForLoadState('networkidle');%0A    > 45 |   await expect(page.locator('h1')).toHaveText('QuanAn Admin', { timeout: 10_000 });%0A         |                                    ^%0A      46 |   await expect(page.locator('#admin-email')).toBeVisible();%0A      47 |%0A      48 |   // ── Step 3: fill email + click mock OAuth → redirect to /admin ─────────────%0A        at /Users/return/Desktop/QuanAn/tests/e2e/admin/admin-foundation-loop.spec.ts:45:36
+::error file=tests/e2e/admin/admin-foundation-loop.spec.ts,title=[admin] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout,line=78,col=49::  3) [admin] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout %0A    Error: expect(locator).toBeVisible() failed%0A%0A    Locator: locator('main h2').first()%0A    Expected: visible%0A    Timeout: 5000ms%0A    Error: element(s) not found%0A%0A    Call log:%0A      - Expect "toBeVisible" with timeout 5000ms%0A      - waiting for locator('main h2').first()%0A%0A%0A      76 |   await page.waitForURL(/\/admin\/nsm/, { timeout: 10_000 });%0A      77 |   // Verify placeholder content (heading in nsm placeholder)%0A    > 78 |   await expect(page.locator('main h2').first()).toBeVisible({ timeout: 5_000 });%0A         |                                                 ^%0A      79 |%0A      80 |   // ── Step 6: click 🔔 → AuditDrawer slide-in + admin_login row visible ──────%0A      81 |   const bellBtn = page.locator('button[aria-label="审计记录"]');%0A        at /Users/return/Desktop/QuanAn/tests/e2e/admin/admin-foundation-loop.spec.ts:78:49
+::notice title=🎭 Playwright Run Summary::  3 failed%0A    [chromium] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout %0A    [mobile] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout %0A    [admin] › tests/e2e/admin/admin-foundation-loop.spec.ts:41:1 › admin-foundation-loop: 7 steps · login → layout → nsm → audit → logout 

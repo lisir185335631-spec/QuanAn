@@ -1,17 +1,8 @@
 
-> quanan@0.1.0 typecheck /Users/return/Desktop/QuanAn
-> pnpm -r typecheck
+> @quanan/web@0.1.0 typecheck /Users/return/Desktop/QuanAn/apps/web
+> tsc --noEmit
 
-Scope: 6 of 7 workspace projects
-packages/schemas typecheck$ tsc --noEmit
-packages/ui typecheck$ tsc --noEmit
-packages/ui typecheck: Done
-packages/schemas typecheck: Done
-apps/api typecheck$ tsc --noEmit
-packages/clients typecheck$ tsc --noEmit
-packages/clients typecheck: Done
-apps/api typecheck: Done
-apps/admin typecheck$ tsc --noEmit
-apps/web typecheck$ tsc --noEmit
-apps/admin typecheck: Done
-apps/web typecheck: Done
+
+> @quanan/api@0.1.0 typecheck /Users/return/Desktop/QuanAn/apps/api
+> tsc --noEmit
+

@@ -1,0 +1,5 @@
+
+> @quanan/web@0.1.0 test /Users/return/Desktop/QuanAn/apps/web
+> vitest run --config vitest.config.ts --reporter\=junit --outputFile\=../../scripts/ralph/verify-artifacts/US-003/pytest-full.xml
+
+JUNIT report written to /Users/return/Desktop/QuanAn/scripts/ralph/verify-artifacts/US-003/pytest-full.xml

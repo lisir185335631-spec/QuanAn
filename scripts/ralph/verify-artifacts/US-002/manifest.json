@@ -1,59 +1,28 @@
 {
   "story_id": "US-002",
-  "validator_start_ts": "2026-05-21T01:40:00",
-  "validator_end_ts": "2026-05-21T02:05:00",
-  "test_command": "pnpm exec vitest run (full suite) + pnpm run test:visual:prd26 (--update-snapshots) + pnpm run test:visual:prd26:check + npx playwright test prd26-admin-pages-smoke.spec.ts + pnpm run typecheck + playwright screenshot 17 pages",
+  "validator_start_ts": "2026-05-21T12:23:00",
+  "validator_end_ts": "2026-05-21T12:27:00",
+  "test_command": "pnpm vitest run + pnpm typecheck (web + api)",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "pre_existing_issues": {
-    "vitest_15_file_setup_fails": {
-      "note": "15 test file setup-fails (prd13/14/15 admin/integration e2e needing dev server + real DB) — pre-existing TD-083, confirmed in US-001 manifest. Tests: 2021 passed, 0 actual test failures.",
-      "introduced_by_us002": false
-    },
-    "apps_api_lint_97_errors": {
-      "note": "97 pre-existing ESLint errors in apps/api — from PRD-26-prep commit 2ea9e17 (306→97). US-002 only added files to tests/e2e/ which are not in any workspace eslint scope.",
-      "introduced_by_us002": false
-    }
-  },
   "artifacts": [
     "pytest-full.xml",
     "pytest-full.stdout.txt",
     "typecheck.stdout.txt",
-    "lint.stdout.txt",
-    "admin-pages-nsm.png",
-    "admin-pages-users.png",
-    "admin-pages-accounts.png",
-    "admin-pages-cost.png",
-    "admin-pages-audit.png",
-    "admin-pages-invites.png",
-    "admin-pages-reviewTrending.png",
-    "admin-pages-reviewDeepLearn.png",
-    "admin-pages-evolutionHealth.png",
-    "admin-pages-prompts.png",
-    "admin-pages-quota.png",
-    "admin-pages-compliance.png",
-    "admin-pages-approvals.png",
-    "admin-pages-abExperiments.png",
-    "admin-pages-constants.png",
-    "admin-pages-knowledge.png",
-    "admin-pages-feature-flags.png"
+    "manifest.json"
   ],
-  "ac_results": {
-    "AC-1": "PASS — tests/e2e/prd26-admin-visual-baseline.spec.ts: test.beforeAll seed super_admin + login + storageState. Pattern matches admin-foundation-loop.",
-    "AC-2": "PASS — 17-page matrix defined: P0 core 6 (nsm/users/accounts/cost/audit/invites) + P0 review 2 (reviewTrending/reviewDeepLearn) + P1 health 5 (evolutionHealth/prompts/quota/compliance/approvals) + P2 advanced 4 (abExperiments/constants/knowledge/feature-flags).",
-    "AC-3": "PASS — First run (--update-snapshots) 17/17 passed (28s). Second run (check) 17/17 passed (27s). Viewport 1440x900, fullPage true, threshold 0.05 confirmed in source.",
-    "AC-4": "PASS — package.json scripts: test:visual:prd26 (--update-snapshots), test:visual:prd26:check, test:smoke:prd26 all present.",
-    "AC-5": "PASS — tests/e2e/prd26-admin-pages-smoke.spec.ts: 17 smoke tests, each validates (a) HTTP 200 (b) main[role='main'] visible (c) 0 console errors (d) render < 3s.",
-    "AC-6": "PASS — All 17 smoke tests passed: 17/17 (5.4s total). Zero routing failures, render crashes, or console errors.",
-    "AC-7": "PASS — curl http://localhost:5174 returned HTTP 200 before browser validation. TD-095 health check compliance confirmed.",
-    "AC-8": "PASS — No unit tests required for this story (e2e coverage via AC-3/5/6).",
-    "AC-9": "PASS — pnpm typecheck: 6 workspaces (packages/schemas, packages/ui, packages/clients, apps/api, apps/admin, apps/web) all 0 errors.",
-    "AC-10": "PASS — US-002 introduced files (tests/e2e/prd26-*.spec.ts) are outside any workspace eslint scope; apps/api 97 errors are pre-existing TD. No new lint errors from US-002.",
-    "AC-11": "PASS — grep 'apiKey|import OpenAI|import Anthropic' tests/e2e/prd26-*: 0 matches.",
-    "AC-12": "PASS — Smoke test failure messages include: 'AC-12 | page: ${ADMIN_BASE_URL}${path}' + 'first 3 console errors:' + error list.",
-    "AC-13": "PASS — 17 playwright screenshots taken and saved to verify-artifacts/US-002/admin-pages-{slug}.png and screenshots/validator-us-002-pass-{slug}.png. Visual confirmation: all pages render with sidebar nav, main content area, and Aurelian Dark theme.",
-    "AC-COMMON": "PASS — typecheck 0 errors (6 ws), vitest 2021 tests pass, playwright 17/17 smoke + 17/17 visual, apiKey grep 0 hits."
+  "ac_summary": {
+    "AC-1": "PASS — buildPhases() 0残留; generate mutation → privateDomainAgent.execute({mode:'phase-generate',...}); history row 返回",
+    "AC-2": "PASS — generateStream subscription 保留; chunk-level yield (meta+delta+done); 无 phase-level yield",
+    "AC-3": "PASS — PRIVATE_DOMAIN_PHASE_ENUM=['welcome','warmup','trust','discover','close','follow']; 6 phase PHASE_TEMPLATES 各含 goal+tactics+outputHint; system prompt 含目标+策略+输出格式",
+    "AC-4": "PASS — privateDomainPhaseGenerateOutput schema: {phaseScript:string, variants:{professional,friendly,sales}}; fallbackTemplate 同结构",
+    "AC-5": "PASS — apps/web/src/lib/constants/private-domain.ts 存在; PRIVATE_DOMAIN_STAGES 6项 as const; 字段完全匹配 spec §27.7",
+    "AC-6": "PASS — PrivateDomain.tsx 引入 PRIVATE_DOMAIN_STAGES; 6 tab grid UI (data-testid='phase-tabs'); trpc.privateDomain.generate.useMutation 含 phase 字段",
+    "AC-7": "PASS — isFallback banner; agentRes.isFallback/tokensUsed/modelUsed/durationMs 写入 history; toast.error error handle",
+    "AC-8": "PASS — 6 tests in PrivateDomain.test.tsx; mock privateDomainAgent.execute; 验证 phase enum + output schema + fallback + D-261 字面锁",
+    "AC-9": "PASS — grep icebreak|build_trust|find_need: 0命中; grep welcome|warmup|trust|discover|close|follow in constants: 8命中",
+    "AC-COMMON": "PASS — web typecheck: 0 errors; api typecheck: 0 errors; vitest: 394 passed 0 failed"
   }
 }

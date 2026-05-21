@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T13:00:37",
+  "last_updated": "2026-05-21T14:51:03",
   "items": [
     {
       "id": "TD-001",
@@ -2160,6 +2160,28 @@
       "resolved_at": "2026-05-21",
       "resolved_by": "Opus audit US-003 (PRD-27)",
       "resolve_evidence": "commit 0ffc86e (US-003 iter-2 AC-13 fix) · apps/web/package.json 加 test:visual:prd23 + test:visual:prd23:check 2 scripts · Validator 不再 fallback 直跑 playwright"
+    },
+    {
+      "id": "TD-102",
+      "category": "test-stale",
+      "title": "15 vitest file-level collection errors in prd13/14/15/25 e2e/integration tests (PRD-27 US-005 audit 发现)",
+      "discovered_at": "2026-05-21",
+      "discovered_by": "Opus audit US-005 (PRD-27 iter-3) via ROOT vitest",
+      "severity": "low",
+      "status": "open",
+      "evidence": "ROOT pnpm test 输出 'Test Files  15 failed | 176 passed | 6 skipped (197)' · 0 it failed · 全是 collection 阶段 module resolution / SyntaxError · 累计来源 PRD-13/14/15/25",
+      "root_cause": "tests/e2e/admin/prd13-* + tests/e2e/admin/prd14-* 用 `@/services` import alias · vitest config 没识别(@/= apps/api/src/services 但 vitest root 是 monorepo)· tests/e2e/prd15-* 用 `@/middleware` 同性质 · tests/e2e/prd25-content-tools SyntaxError · tests/e2e/prd25-visual-baseline __dirname error",
+      "scheduled_fix_in": "PRD-28+ (test infra 修复) · 或 US-006 收官 verify-prd-27.sh 时把 ROOT pnpm test 改 --reporter=line --bail=false + 接受 file-level collection error",
+      "audit_exemption": "US-005 approve 时豁免 · 全 pre-existing · US-005 改 6 file 与 15 file 完全无交集",
+      "fix_hint": "选项 A · vitest.config.ts 加 alias resolution · 选项 B · 删除 prd13/14/15/25 e2e stub tests(playwright e2e 已覆盖)· 选项 C · skip 这些 file 直到 PRD-28 修",
+      "impact_count": 15,
+      "files_affected": [
+        "tests/e2e/admin/prd13-*.test.ts (4 files)",
+        "tests/e2e/admin/prd14-*.test.ts (6 files)",
+        "tests/e2e/prd15-*-e2e.test.ts (5 files)",
+        "tests/e2e/prd25-content-tools-flow.test.ts",
+        "tests/e2e/prd25-visual-baseline.test.ts"
+      ]
     }
   ]
 }

@@ -1,0 +1,153 @@
+
+> quanan@0.1.0 lint /Users/return/Desktop/QuanAn
+> pnpm -r lint
+
+Scope: 6 of 7 workspace projects
+packages/schemas lint$ eslint . --ext ts --max-warnings=0
+packages/schemas lint: Done
+apps/api lint$ eslint . --ext ts --max-warnings=0
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/jobs/admin/ab-stop-loss.job.ts
+apps/api lint:   123:42  error  `import()` type annotations are forbidden                               @typescript-eslint/consistent-type-imports
+apps/api lint:   191:31  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint:   210:40  error  `import()` type annotations are forbidden                               @typescript-eslint/consistent-type-imports
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/jobs/admin/cost-anomaly.job.ts
+apps/api lint:   38:32  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/jobs/admin/emergency-post-review.job.ts
+apps/api lint:    95:40  error  `import()` type annotations are forbidden                               @typescript-eslint/consistent-type-imports
+apps/api lint:   130:40  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint:   149:40  error  `import()` type annotations are forbidden                               @typescript-eslint/consistent-type-imports
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/jobs/admin/kpi-snapshot.job.ts
+apps/api lint:   45:32  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/jobs/admin/quota-expiry.job.ts
+apps/api lint:   101:32  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint:   101:49  error  Async arrow function has no 'await' expression                          @typescript-eslint/require-await
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/jobs/admin/violation-detection.job.ts
+apps/api lint:   42:39  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/lib/env.ts
+apps/api lint:   33:3  error  Unexpected console statement  no-console
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/schemas/admin/__tests__/deep-learn-review.schema.test.ts
+apps/api lint:   152:21  error  '_omit' is assigned a value but never used  @typescript-eslint/no-unused-vars
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/schemas/admin/__tests__/trending-review.schema.test.ts
+apps/api lint:    65:29  error  '_omit' is assigned a value but never used  @typescript-eslint/no-unused-vars
+apps/api lint:   167:31  error  '_omit' is assigned a value but never used  @typescript-eslint/no-unused-vars
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/accounts/__tests__/anomaly-detection.service.test.ts
+apps/api lint:   208:20  error  Unsafe member access .data on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   212:31  error  Unsafe member access .data on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/audit/pdf-forensic.service.ts
+apps/api lint:    62:22  error    Expected '!==' and instead saw '!='                                                                                                  eqeqeq
+apps/api lint:    68:26  error    Expected '!==' and instead saw '!='                                                                                                  eqeqeq
+apps/api lint:    75:20  error    Expected '!==' and instead saw '!='                                                                                                  eqeqeq
+apps/api lint:   153:5   warning  Caution: `React` also has a named export `createElement`. Check if you meant to write `import {createElement} from 'react'` instead  import/no-named-as-default-member
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/constant-version/__tests__/constant-version.service.test.ts
+apps/api lint:    75:35  error  Unsafe argument of type `any` assigned to a parameter of type `TransactionClient`  @typescript-eslint/no-unsafe-argument
+apps/api lint:    86:35  error  Unsafe argument of type `any` assigned to a parameter of type `TransactionClient`  @typescript-eslint/no-unsafe-argument
+apps/api lint:   104:39  error  Unsafe argument of type `any` assigned to a parameter of type `TransactionClient`  @typescript-eslint/no-unsafe-argument
+apps/api lint:   129:39  error  Unsafe argument of type `any` assigned to a parameter of type `TransactionClient`  @typescript-eslint/no-unsafe-argument
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/content-review/pii-detection.service.ts
+apps/api lint:   19:35  error  Unnecessary escape character: \-  no-useless-escape
+apps/api lint:   19:51  error  Unnecessary escape character: \-  no-useless-escape
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/cost/__tests__/pdf-bill.test.ts
+apps/api lint:   52:37  error  `import()` type annotations are forbidden  @typescript-eslint/consistent-type-imports
+apps/api lint:   58:35  error  `import()` type annotations are forbidden  @typescript-eslint/consistent-type-imports
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/cost/detect-anomalies.service.ts
+apps/api lint:   110:100  error  Invalid type "Decimal" of template literal expression  @typescript-eslint/restrict-template-expressions
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/cost/pdf-bill.service.ts
+apps/api lint:   153:39  error    Unsafe argument of type `any` assigned to a parameter of type `ReactElement<DocumentProps, string | JSXElementConstructor<any>>`     @typescript-eslint/no-unsafe-argument
+apps/api lint:   153:39  warning  Caution: `React` also has a named export `createElement`. Check if you meant to write `import {createElement} from 'react'` instead  import/no-named-as-default-member
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/feature-flag/__tests__/feature-flag-rollout.test.ts
+apps/api lint:   177:20  error  Unsafe member access .create on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   178:20  error  Unsafe member access .create on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   179:20  error  Unsafe member access .where on an `any` value   @typescript-eslint/no-unsafe-member-access
+apps/api lint:   198:20  error  Unsafe member access .create on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   199:20  error  Unsafe member access .update on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/nsm/__tests__/kpi-snapshot.test.ts
+apps/api lint:   134:24  error  Unsafe member access .where on an `any` value   @typescript-eslint/no-unsafe-member-access
+apps/api lint:   139:24  error  Unsafe member access .update on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   140:24  error  Unsafe member access .create on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/services/admin/prompt-version/__tests__/prompt-version.service.test.ts
+apps/api lint:    82:37  error  Unsafe argument of type `any` assigned to a parameter of type `TransactionClient`  @typescript-eslint/no-unsafe-argument
+apps/api lint:   107:37  error  Unsafe argument of type `any` assigned to a parameter of type `TransactionClient`  @typescript-eslint/no-unsafe-argument
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/__tests__/abExperiments.test.ts
+apps/api lint:   140:10  error  Unsafe call of an `any` typed value            @typescript-eslint/no-unsafe-call
+apps/api lint:   140:26  error  Unsafe member access [path] on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/__tests__/featureFlags.test.ts
+apps/api lint:   30:12  error  `import()` type annotations are forbidden  @typescript-eslint/consistent-type-imports
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/__tests__/nsm.test.ts
+apps/api lint:   178:69  error  Unsafe member access .eventType on an `any` value      @typescript-eslint/no-unsafe-member-access
+apps/api lint:   180:26  error  Unsafe member access .eventCategory on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   181:26  error  Unsafe member access .payload on an `any` value        @typescript-eslint/no-unsafe-member-access
+apps/api lint:   225:69  error  Unsafe member access .eventType on an `any` value      @typescript-eslint/no-unsafe-member-access
+apps/api lint:   227:26  error  Unsafe member access .eventCategory on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   228:26  error  Unsafe member access .success on an `any` value        @typescript-eslint/no-unsafe-member-access
+apps/api lint:   255:22  error  Unsafe member access .where on an `any` value          @typescript-eslint/no-unsafe-member-access
+apps/api lint:   256:22  error  Unsafe member access .where on an `any` value          @typescript-eslint/no-unsafe-member-access
+apps/api lint:   289:22  error  Unsafe member access .where on an `any` value          @typescript-eslint/no-unsafe-member-access
+apps/api lint:   341:71  error  Unsafe member access .eventType on an `any` value      @typescript-eslint/no-unsafe-member-access
+apps/api lint:   343:28  error  Unsafe member access .eventCategory on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   371:18  error  Unsafe member access .eventType on an `any` value      @typescript-eslint/no-unsafe-member-access
+apps/api lint:   372:18  error  Unsafe member access .eventCategory on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   373:18  error  Unsafe member access .success on an `any` value        @typescript-eslint/no-unsafe-member-access
+apps/api lint:   374:18  error  Unsafe member access .payload on an `any` value        @typescript-eslint/no-unsafe-member-access
+apps/api lint:   418:20  error  Unsafe member access .eventType on an `any` value      @typescript-eslint/no-unsafe-member-access
+apps/api lint:   421:31  error  Unsafe member access .eventCategory on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   422:31  error  Unsafe member access .success on an `any` value        @typescript-eslint/no-unsafe-member-access
+apps/api lint:   423:31  error  Unsafe member access .actorAdminId on an `any` value   @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/__tests__/review-deep-learn.test.ts
+apps/api lint:   368:89  error  Unsafe return of an `any` typed value            @typescript-eslint/no-unsafe-return
+apps/api lint:   369:18  error  Unsafe member access .message on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   455:23  error  Unsafe return of an `any` typed value            @typescript-eslint/no-unsafe-return
+apps/api lint:   456:18  error  Unsafe member access .message on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   519:23  error  Unsafe return of an `any` typed value            @typescript-eslint/no-unsafe-return
+apps/api lint:   520:18  error  Unsafe member access .message on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/__tests__/users.test.ts
+apps/api lint:   458:71  error  Unsafe member access .eventType on an `any` value  @typescript-eslint/no-unsafe-member-access
+apps/api lint:   460:37  error  Unsafe member access .payload on an `any` value    @typescript-eslint/no-unsafe-member-access
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/accounts.ts
+apps/api lint:   25:1  error  Async function 'guardMutation' has no 'await' expression  @typescript-eslint/require-await
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/approvals.ts
+apps/api lint:    55:69  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint:    98:45  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint:   100:33  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint:   174:38  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint:   290:42  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/compliance.ts
+apps/api lint:   316:34  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/cost.ts
+apps/api lint:    69:13  error  Expected '===' and instead saw '=='  eqeqeq
+apps/api lint:   332:12  error  Unexpected constant condition        no-constant-condition
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/featureFlags.ts
+apps/api lint:    38:69  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint:   230:45  error  Expected '!==' and instead saw '!='  eqeqeq
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/invites.ts
+apps/api lint:    37:1   error    Async function 'guardMutation' has no 'await' expression                                                                @typescript-eslint/require-await
+apps/api lint:   212:20  warning  Caution: `Papa` also has a named export `parse`. Check if you meant to write `import {parse} from 'papaparse'` instead  import/no-named-as-default-member
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/review-deep-learn.ts
+apps/api lint:   35:1  error  Async function 'guardMutation' has no 'await' expression  @typescript-eslint/require-await
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/review-trending.ts
+apps/api lint:   34:1  error  Async function 'guardMutation' has no 'await' expression    @typescript-eslint/require-await
+apps/api lint:   53:1  error  Async function 'guardSuperAdmin' has no 'await' expression  @typescript-eslint/require-await
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/trpc/routers/admin/users.ts
+apps/api lint:   112:13  error  Expected '===' and instead saw '=='  eqeqeq
+apps/api lint:   213:16  error  Unexpected constant condition        no-constant-condition
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/workers/file-parser/worker.ts
+apps/api lint:    14:1   error  There should be at least one empty line between import groups                                                                                           import/order
+apps/api lint:    14:1   error  `@prisma/client` type import should occur after type import of `./queue`                                                                                import/order
+apps/api lint:    14:28  error  '/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/default.d.ts' imported multiple times  import/no-duplicates
+apps/api lint:    15:35  error  '/Users/return/Desktop/QuanAn/node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client/default.d.ts' imported multiple times  import/no-duplicates
+apps/api lint:   160:31  error  Promise returned in function argument where a void return was expected                                                                                  @typescript-eslint/no-misused-promises
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/src/workers/trending-scraper/worker.ts
+apps/api lint:   131:36  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises
+apps/api lint: /Users/return/Desktop/QuanAn/apps/api/vitest.config.ts
+apps/api lint:   0:0  error  Parsing error: ESLint was configured to run on `<tsconfigRootDir>/vitest.config.ts` using `parserOptions.project`: /users/return/desktop/quanan/apps/api/tsconfig.json
+apps/api lint: However, that TSConfig does not include this file. Either:
+apps/api lint: - Change ESLint's list of included files to not include this file
+apps/api lint: - Change that TSConfig to include this file
+apps/api lint: - Create a new TSConfig that includes this file and include it in your parserOptions.project
+apps/api lint: See the typescript-eslint docs for more info: https://typescript-eslint.io/linting/troubleshooting#i-get-errors-telling-me-eslint-was-configured-to-run--however-that-tsconfig-does-not--none-of-those-tsconfigs-include-this-file
+apps/api lint: ✖ 97 problems (94 errors, 3 warnings)
+apps/api lint:   3 errors and 0 warnings potentially fixable with the `--fix` option.
+apps/api lint: Failed
+/Users/return/Desktop/QuanAn/apps/api:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @quanan/api@0.1.0 lint: `eslint . --ext ts --max-warnings=0`
+Exit status 1
+ ELIFECYCLE  Command failed with exit code 1.
