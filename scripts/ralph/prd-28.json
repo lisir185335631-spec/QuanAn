@@ -1,25 +1,23 @@
 {
   "project": "QuanAn",
   "branchName": "ralph/prd-28-evaluation",
-  "description": "PRD-28 · evaluation 完整化 · TD-027 真闭环修复(跨 PRD-2~8 8 PRD 历史欠债)+ PRD-MASTER §4.4 100 金标准延迟交付补做 + admin /admin/evaluation UI MVP + /goal-verify §evaluation 集成 · 6 US(1 foundation US-001 21 judge file mock 拆除 + 1 high US-003 prisma+CLI+4 维度评分 + 4 medium dev/UI/inter-rater/收官)· D-265~D-272 8 锁(真闭环锁/100 金标准锁/evaluation 表 RLS DISABLE锁/eval-run CLI锁/admin UI 路由锁/inter-rater 30 sample 锁/goal-verify 辅助维度锁/verify-prd-28.sh 7 sections ≥ 25 checks 锁)· 继承 PRD-25 真 LLM 接入 + PRD-26 admin polish + PRD-27 BullMQ 状态机 + visual baseline npm script + ModelTier 跨文件同步 + M-2 ROOT scope vitest 教训",
+  "description": "PRD-28 · evaluation 完整化 · TD-027 真闭环修复 + PRD-MASTER §4.4 100 金标准 + admin /admin/evaluation UI MVP + /goal-verify §evaluation · 8 US(US-001 foundation infra+7 file batch 1 / US-002 medium 7 file batch 2 / US-003 medium 7 file batch 3 + ROOT test / US-004 medium 100 dataset / US-005 high prisma+CLI / US-006 medium admin UI / US-007 medium inter-rater / US-008 medium 收官)· RCA-007 拆分版(原 6 US 拆为 8 US · 防 prompt 膨胀)· D-265~D-272 8 决策锁不变",
   "userStories": [
     {
       "id": "US-001",
-      "title": "21 judge file mock 拆除 + describe.skipIf + ANTHROPIC_API_KEY 注入(D-265 foundation 档 downstream count=5)",
-      "description": "As Coding 3.0 项目 · I want 21 tests/judge/*.judge.ts 全部移除 vi.mock('@/workers/llm-gateway') + 加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) + tests/setup.ts 加 dotenv 注入 · so that pnpm test:judge 在无 KEY 时优雅 skip(21 file 全 skipped)· 有 KEY 时真调 claude-haiku-4-5 grade(56 sample · 5-8 min · cost ≈ $0.1-0.2)· TD-027 真闭环 · 不再 fake-pass · 区分 PRD-25 假闭环(只改 voice-chat.judge.ts 一个文件 · 模式升级但仍是 mock) · [risk-upgrade] medium → foundation due to downstream=5 (US-002/003/004/005/006 全部依赖 · AUDIT-CHECKLIST-TEMPLATE.md §Z 升档规则)",
+      "title": "judge tests 基础设施 + 7 judge file mock 拆除 batch 1(D-265 foundation · RCA-007 拆分)",
+      "description": "As Coding 3.0 项目 · I want tests/setup.ts + .env.example + vitest.judge.config.ts 基础设施就位 + 7 judge file batch 1(analysis-structural/analysis-viral/branding/copywriting/copywriting-acquisition/copywriting-boom/copywriting-free)移除 vi.mock('@/workers/llm-gateway') + 加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · so that 后续 US-002/003 7 file × 2 batch 可继承模板 · TD-027 真闭环模板建立",
       "acceptanceCriteria": [
-        "AC-1: 21 tests/judge/*.judge.ts 全部移除 vi.mock('@/workers/llm-gateway', () => (...)) 调用 · grep 验证 grep -rn 'vi.mock.*llm-gateway' tests/judge/ 命中 **0**",
-        "AC-2: 21 tests/judge/*.judge.ts 全部移除 mockComplete / mockResolvedValue.*pass 等 mock 助手 · grep 验证 grep -rn 'mockComplete\\|mockResolvedValue.*pass' tests/judge/ 命中 **0**",
-        "AC-3: 21 tests/judge/*.judge.ts 全部在 describe 最外层加 describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {...}) 限定 · grep 验证 grep -rn 'describe.skipIf.*ANTHROPIC_API_KEY' tests/judge/ | wc -l ≥ 21",
-        "AC-4: tests/setup.ts 存在 · 内含 import * as dotenv from 'dotenv'; dotenv.config(); 或等价 ESM import · 验证 head -10 tests/setup.ts 含 dotenv",
-        "AC-5: .env.example 加 ANTHROPIC_API_KEY= 行(带注释 '# PRD-28 LLM Judge real-call mode')· 验证 grep 'ANTHROPIC_API_KEY' .env.example 命中",
-        "AC-6: vitest.judge.config.ts setupFiles 含 'tests/setup.ts' · 验证 grep 'setupFiles' vitest.judge.config.ts 含 setup.ts",
-        "AC-7: 在**无 ANTHROPIC_API_KEY env**条件下 · pnpm test:judge 输出全部 21 file skipped(无 hard fail · 0 test 跑)· 验证 unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10 含 '21 skipped' 或等价",
-        "AC-8: 在**有 ANTHROPIC_API_KEY env**条件下(用户 export 真 KEY)· pnpm test:judge 跑 21 file 真调 LLM · 56 test 全 pass(score ≥ 6 + JSON schema valid)· 验证 pnpm test:judge 2>&1 | tail -20 含 '21 passed' + 时长 ≥ 60s(真 LLM call latency)",
-        "AC-9: **ROOT scope pnpm test 必跑**(M-2 PRD-27 US-005 60 min 救火教训 · 类比扩展到 vitest)· 零回归 · 1925 passed + 118 skipped(baseline 2026-05-22)· 验证 cd /Users/return/Desktop/QuanAn && pnpm test 2>&1 | tail -10 含 '1925 passed | 118 skipped'(±10 容忍)",
-        "AC-10: pnpm typecheck 6 workspace 全 Done · 0 error · 验证 pnpm typecheck 2>&1 | tail -5 含 'Done' × 6",
-        "AC-11: pnpm lint --max-warnings=0 0 warning · 验证 lint clean",
-        "AC-COMMON: ROOT scope vitest 必跑(不是 apps/api scope · 不是 packages/* scope · 是项目根目录 cd /Users/return/Desktop/QuanAn && pnpm test)· typecheck + tests pass + lint 0 errors"
+        "AC-1: tests/setup.ts 新建 · 含 `import * as dotenv from 'dotenv'; dotenv.config();` 或等价 ESM import · 验证 head tests/setup.ts 含 dotenv",
+        "AC-2: .env.example 加 ANTHROPIC_API_KEY= 行(带注释 '# PRD-28 LLM Judge real-call mode')· 验证 grep 'ANTHROPIC_API_KEY' .env.example 命中",
+        "AC-3: vitest.judge.config.ts setupFiles 含 'tests/setup.ts' · 验证 grep 'setupFiles' vitest.judge.config.ts 含 setup.ts",
+        "AC-4: 7 judge file batch 1 全部移除 `vi.mock('@/workers/llm-gateway', () => (...))` + mockComplete/mockResolvedValue 等 mock 助手 · 验证 grep -rn 'vi.mock.*llm-gateway' tests/judge/{analysis-structural,analysis-viral,branding,copywriting,copywriting-acquisition,copywriting-boom,copywriting-free}.judge.ts 命中 0",
+        "AC-5: 7 judge file batch 1 全部在 describe 最外层加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {...})` · 验证 grep -c 'describe.skipIf.*ANTHROPIC_API_KEY' 在 7 file 各 ≥ 1",
+        "AC-6: 无 ANTHROPIC_API_KEY env 下跑 pnpm test:judge tests/judge/branding.judge.ts smoke · 输出 'skipped' · 0 hard fail",
+        "AC-7: ROOT scope cd /Users/return/Desktop/QuanAn && pnpm test 维持 baseline 1925 passed | 118 skipped(±10 容忍) · 零回归",
+        "AC-8: pnpm typecheck 6 ws 全 Done · 0 error",
+        "AC-9: pnpm lint --max-warnings=0 0 warning",
+        "AC-COMMON: ROOT scope vitest 必跑(M-2 教训)· typecheck + tests pass + lint 0 errors"
       ],
       "depends_on": [],
       "priority": 1,
@@ -34,73 +32,139 @@
         "tests/judge/analysis-structural.judge.ts",
         "tests/judge/analysis-viral.judge.ts",
         "tests/judge/branding.judge.ts",
+        "tests/judge/copywriting.judge.ts",
         "tests/judge/copywriting-acquisition.judge.ts",
         "tests/judge/copywriting-boom.judge.ts",
         "tests/judge/copywriting-free.judge.ts",
-        "tests/judge/copywriting.judge.ts",
+        ".env.example",
+        "vitest.judge.config.ts"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm typecheck && pnpm test 2>&1 | tail -10",
+      "size_hint": "medium",
+      "risk_level": "foundation",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-25-llm-integration",
+          "source_story": "US-008 TD-027 假闭环",
+          "lesson": "PRD-25 US-008 只改 voice-chat.judge.ts 一个文件 · 用 vi.hoisted+beforeEach 仍是 mock pass:true 固定值 · 21 file 假闭环 · 必须完全删 vi.mock · 不允许 vi.hoisted controlled mock 模式",
+          "antipattern": "const { mockComplete } = vi.hoisted(() => ({ mockComplete: vi.fn() })); vi.mock('@/workers/llm-gateway', () => ({ llmGateway: { complete: mockComplete } }));  beforeEach(() => mockComplete.mockResolvedValue({content:{pass:true,score:8}}));  // 反例: 仍是 mock",
+          "correct": "describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => { it('真调测试', async () => { const result = await runJudge(case_); /* runJudge 内部走 llmGateway.complete 真调 */ }); });  // 完全删 vi.mock"
+        },
+        {
+          "source_prd": "prd-27-clone-completion",
+          "source_story": "US-005 M-2 ROOT vitest 教训",
+          "lesson": "ROOT scope vitest 必跑(cd /Users/return/Desktop/QuanAn && pnpm test)· 不是 apps/api scope · 不是 packages/* scope · PRD-27 US-005 因仅跑 apps/api 漏跨 ws 测试 60 min 救火",
+          "antipattern": "cd apps/api && pnpm test  // 反例: 仅 apps/api scope",
+          "correct": "cd /Users/return/Desktop/QuanAn && pnpm test  // ROOT scope · 1925 passed baseline 维持 ±10"
+        }
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "7 judge file mock 拆除 batch 2(继承 US-001 模板)",
+      "description": "As Coding 3.0 项目 · I want 7 judge file batch 2(daily-task-agent/evolution-agent/feedback-evolution-loop/insight-injection/livestream/monetization/positioning)移除 vi.mock('@/workers/llm-gateway') + 加 describe.skipIf · so that 继续 21 judge file 拆除进程",
+      "acceptanceCriteria": [
+        "AC-1: 7 judge file batch 2 全部移除 vi.mock('@/workers/llm-gateway') + mock 助手 · 验证 grep -rn 'vi.mock.*llm-gateway' tests/judge/{daily-task-agent,evolution-agent,feedback-evolution-loop,insight-injection,livestream,monetization,positioning}.judge.ts 命中 0",
+        "AC-2: 7 judge file batch 2 全部加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · 验证 grep -c 'describe.skipIf.*ANTHROPIC_API_KEY' 各 ≥ 1",
+        "AC-3: 无 KEY env 下跑 pnpm test:judge tests/judge/livestream.judge.ts smoke · 输出 'skipped'",
+        "AC-4: 模板严格继承 US-001 voice-chat 例(已修)+ branding.judge.ts(US-001 修)· 不重新发明 mock 删除方式",
+        "AC-5: ROOT scope cd /Users/return/Desktop/QuanAn && pnpm test 维持 baseline · 零回归",
+        "AC-6: pnpm typecheck 6 ws 全 Done · 0 error",
+        "AC-7: pnpm lint --max-warnings=0 0 warning",
+        "AC-COMMON: ROOT scope vitest 必跑(M-2 教训)· typecheck pass"
+      ],
+      "depends_on": ["US-001"],
+      "priority": 2,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
         "tests/judge/daily-task-agent.judge.ts",
         "tests/judge/evolution-agent.judge.ts",
         "tests/judge/feedback-evolution-loop.judge.ts",
         "tests/judge/insight-injection.judge.ts",
         "tests/judge/livestream.judge.ts",
         "tests/judge/monetization.judge.ts",
-        "tests/judge/positioning.judge.ts",
-        "tests/judge/rag-injection.judge.ts",
-        "tests/judge/topic.judge.ts",
-        "tests/judge/video-acquisition.judge.ts",
-        "tests/judge/video-production.judge.ts",
-        "tests/judge/video-storyboard.judge.ts",
-        "tests/judge/video.judge.ts",
-        "tests/judge/voice-chat.judge.ts",
-        ".env.example",
-        "vitest.judge.config.ts"
+        "tests/judge/positioning.judge.ts"
       ],
-      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm typecheck && pnpm test 2>&1 | tail -10 && unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10",
-      "size_hint": "medium",
-      "risk_level": "foundation",
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm typecheck && pnpm test 2>&1 | tail -10",
+      "size_hint": "small",
+      "risk_level": "medium",
       "anti_patterns": [
         {
-          "source_prd": "prd-25-llm-integration",
-          "source_story": "US-008 (TD-027 假闭环 · 2026-05-20)",
-          "lesson": "TD-027 假闭环只改了 voice-chat.judge.ts 一个文件 · 用 vi.hoisted() + beforeEach 模式可控 mock · 但仍 mockResolvedValue({pass:true,score:8}) 固定值 · 21/21 file 仍是 fake-pass · 必须**完全移除 vi.mock 调用**(0 命中 grep `vi.mock.*llm-gateway`)· 不允许 vi.hoisted+mockResolvedValue 'controlled mock' 模式继续",
-          "antipattern": "const { mockComplete } = vi.hoisted(() => ({ mockComplete: vi.fn() })); vi.mock('@/workers/llm-gateway', () => ({ llmGateway: { complete: mockComplete } })); beforeEach(() => { mockComplete.mockResolvedValue({content:{pass:true,score:8}}); });  // 反例: 仍是 mock · TD-027 真闭环 = 完全删 vi.mock",
-          "correct": "// describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {  // 无 KEY skip · 有 KEY 真调 LLM · runJudge 直接调 llmGateway.complete real call (无 mock)"
-        },
-        {
           "source_prd": "prd-27-clone-completion",
-          "source_story": "US-005 (M-2 ROOT vitest 60 min 救火教训)",
-          "lesson": "Validator + Opus audit 跑 vitest 必须 ROOT scope (cd /Users/return/Desktop/QuanAn && pnpm test) · 不是 apps/api scope · 不是 packages/* scope · 否则错过跨 ws 测试 · PRD-27 US-005 实证因仅跑 apps/api scope 漏了 specialists-flow.test.ts 失败 60 min 救火",
-          "antipattern": "cd apps/api && pnpm test  // 反例: 仅 apps/api scope · 漏跨 ws 测试",
-          "correct": "cd /Users/return/Desktop/QuanAn && pnpm test  // ROOT scope · 1925 passed baseline 必跑 · ±10 容忍 · 否则零回归不可证伪"
-        },
-        {
-          "source_prd": "QuanQn-base",
-          "source_story": "REJ-001 LLMGateway 抽象层",
-          "lesson": "R-001 红线 · LLM API_KEY 不暴露前端 · 真调路径必须通过 LLMGateway.complete() · 不允许 tests/judge/ 直接 import @anthropic-ai/sdk 调 anthropic.messages.create(绕 Gateway)",
-          "antipattern": "import Anthropic from '@anthropic-ai/sdk'; const client = new Anthropic({apiKey: process.env.ANTHROPIC_API_KEY}); await client.messages.create({...})  // 反例: 绕 Gateway",
-          "correct": "// runJudge() 内部已走 llmGateway.complete() · tests/judge/ 不需要 import SDK · 仅调 runJudge(case_) 即真闭环"
+          "source_story": "US-005 M-2 ROOT vitest 教训",
+          "lesson": "ROOT scope vitest 必跑 · 不允许 cd packages/* 或 cd apps/api scope",
+          "antipattern": "cd packages/schemas && pnpm test  // 反例",
+          "correct": "cd /Users/return/Desktop/QuanAn && pnpm test  // ROOT scope"
         }
       ]
     },
     {
-      "id": "US-002",
-      "title": "100 金标准 dataset 准备(双轨 sally-30 + custom-70 · D-266 字面锁)",
-      "description": "As Coding 3.0 项目 · I want tests/fixtures/judge-goldens/sally-30.json + custom-70.json 准备好 · 总 100 条 · 14 specialist 按 PRD-MASTER §4.4-B 配额(CopywritingAgent 12 + BrandingAgent 10 + TopicAgent 8 + PositioningAgent 6 + MonetizationAgent 6 + VideoAgent 8 + AnalysisAgent 6 + 其他 7 specialist 44 · 总 70 custom + 30 sally) · so that US-003 evaluation pipeline 有真数据集可跑 · 100 sample 评估覆盖 14 specialist 全主流 mode",
+      "id": "US-003",
+      "title": "7 judge file mock 拆除 batch 3 + ROOT test 验证(收尾)",
+      "description": "As Coding 3.0 项目 · I want 7 judge file batch 3(rag-injection/topic/video/video-acquisition/video-production/video-storyboard/voice-chat)移除 vi.mock · 完成 21 judge file 真闭环 + 验证 pnpm test:judge 全 21 file 优雅 skip 或真调 · so that TD-027 真闭环完整完成",
       "acceptanceCriteria": [
-        "AC-1: tests/fixtures/judge-goldens/sally-30.json 存在 · valid JSON array · length=30 · 验证 cat tests/fixtures/judge-goldens/sally-30.json | jq 'length' → 30",
-        "AC-2: tests/fixtures/judge-goldens/custom-70.json 存在 · valid JSON array · length=70 · 验证 cat tests/fixtures/judge-goldens/custom-70.json | jq 'length' → 70",
-        "AC-3: 100 条 entry 全部符合 schema · zod safeParse 验证: GoldenSample = z.object({id: z.string().regex(/^(sally|custom)-\\d{3}$/), specialistId: z.enum([14个具体id]), mode: z.string().optional(), input: z.record(z.unknown()), expectedOutputPattern: z.record(z.unknown()).nullable(), criteria: z.array(z.string()).min(2), expectedKeyFields: z.array(z.string()).min(1), source: z.enum(['sally','custom']), tags: z.array(z.string()).optional()}) · pnpm vitest run tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts 全 pass",
-        "AC-4: 14 specialist 配额验证(custom-70.json)· CopywritingAgent ≥ 12 · BrandingAgent ≥ 10 · TopicAgent ≥ 8 · 其他按 D-266 表 · 验证 cat custom-70.json | jq '[.[] | .specialistId] | group_by(.) | map({key: .[0], count: length})' 命中所有 14 specialist · 总 70",
-        "AC-5: sally-30.json 来源真实 · 含 source='sally' 标记 · 每条 input 是真 sally 步骤 input(从 /tmp/aiipznt-clone-research 抓)· 验证 cat sally-30.json | jq '.[] | select(.source != \"sally\")' 命中 0",
-        "AC-6: packages/schemas/src/judge-golden.schema.ts 导出 GoldenSample + GoldenDataset · 含 z.infer<typeof GoldenSample> 类型导出 · packages/schemas barrel export 加 entry",
-        "AC-7: SCHEMA.md 含 GoldenSample TypeScript interface + 2 JSON example(1 sally + 1 custom)· ≥ 50 行",
-        "AC-8: pnpm typecheck 6 workspace 全 Done · 0 error",
-        "AC-9: pnpm test tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts ≥ 4 test all pass",
-        "AC-10: 新建 tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts · ≥ 4 tests · schema 验证 / count 验证 / specialistId 合法验证 / source 标记验证 · pnpm test 全 pass",
-        "AC-COMMON: ROOT scope vitest 必跑 cd /Users/return/Desktop/QuanAn && pnpm test 1925+118 baseline ±10 · 零回归"
+        "AC-1: 7 judge file batch 3 全部移除 vi.mock('@/workers/llm-gateway') · 验证 grep -rn 'vi.mock.*llm-gateway' tests/judge/{rag-injection,topic,video,video-acquisition,video-production,video-storyboard,voice-chat}.judge.ts 命中 0",
+        "AC-2: 21 judge file 全部加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · 验证 grep -rn 'describe.skipIf.*ANTHROPIC_API_KEY' tests/judge/ | wc -l ≥ 21",
+        "AC-3: 21 judge file 全部 0 mockResolvedValue.*pass · 验证 grep -rn 'mockComplete\\|mockResolvedValue.*pass' tests/judge/ 命中 0",
+        "AC-4: 全局 grep -rn 'vi.mock.*llm-gateway' tests/judge/ 命中 **0**(TD-027 真闭环硬验证)",
+        "AC-5: 无 KEY env 下跑 pnpm test:judge · 输出 '21 skipped'(全部优雅 skip · 0 hard fail)· 验证 unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10 含 '21 skipped'",
+        "AC-6: ROOT scope cd /Users/return/Desktop/QuanAn && pnpm test 维持 baseline 1925 passed | 118 skipped(±10 容忍) · 零回归",
+        "AC-7: pnpm typecheck 6 ws 全 Done · 0 error",
+        "AC-8: pnpm lint --max-warnings=0 0 warning",
+        "AC-COMMON: ROOT scope vitest 必跑(M-2 教训) · 21 judge file 真闭环验证"
       ],
-      "depends_on": ["US-001"],
-      "priority": 2,
+      "depends_on": ["US-001", "US-002"],
+      "priority": 3,
+      "passes": false,
+      "notes": "",
+      "retryCount": 0,
+      "blocked": false,
+      "files_to_create": [],
+      "files_to_modify": [
+        "tests/judge/rag-injection.judge.ts",
+        "tests/judge/topic.judge.ts",
+        "tests/judge/video.judge.ts",
+        "tests/judge/video-acquisition.judge.ts",
+        "tests/judge/video-production.judge.ts",
+        "tests/judge/video-storyboard.judge.ts",
+        "tests/judge/voice-chat.judge.ts"
+      ],
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm typecheck && pnpm test 2>&1 | tail -10 && unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10",
+      "size_hint": "small",
+      "risk_level": "medium",
+      "anti_patterns": [
+        {
+          "source_prd": "prd-27-clone-completion",
+          "source_story": "US-005 M-2 ROOT vitest 教训",
+          "lesson": "ROOT scope vitest 必跑 + 21 file 完整验证",
+          "antipattern": "cd apps/api && pnpm test:judge  // 反例: apps/api scope",
+          "correct": "cd /Users/return/Desktop/QuanAn && pnpm test:judge  // ROOT scope · 21 file 全验证"
+        }
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "100 金标准 dataset 准备(双轨 sally-30 + custom-70 · D-266 字面锁)",
+      "description": "As Coding 3.0 项目 · I want tests/fixtures/judge-goldens/sally-30.json + custom-70.json 准备好 · 总 100 条 · 14 specialist 按 PRD-MASTER §4.4-B 配额(CopywritingAgent 12 + BrandingAgent 10 + TopicAgent 8 + PositioningAgent 6 + MonetizationAgent 6 + VideoAgent 8 + AnalysisAgent 6 + 其他 7 specialist 44 · 总 70 custom + 30 sally) · so that US-005 evaluation pipeline 有真数据集可跑",
+      "acceptanceCriteria": [
+        "AC-1: tests/fixtures/judge-goldens/sally-30.json 存在 · valid JSON array · length=30 · 验证 jq 'length' = 30",
+        "AC-2: tests/fixtures/judge-goldens/custom-70.json 存在 · valid JSON array · length=70 · 验证 jq 'length' = 70",
+        "AC-3: 100 条 entry 全部符合 GoldenSample zod schema · {id: regex /^(sally|custom)-\\d{3}$/, specialistId: enum 14 个, mode?, input, expectedOutputPattern?, criteria: array.min(2), expectedKeyFields: array.min(1), source: enum sally|custom, tags?}",
+        "AC-4: 14 specialist 配额验证(custom-70.json)· CopywritingAgent ≥ 12 · BrandingAgent ≥ 10 · TopicAgent ≥ 8 · MonetizationAgent + PositioningAgent + VideoAgent + AnalysisAgent 按表 · 总 70",
+        "AC-5: sally-30.json 来源真实 · 含 source='sally' 标记 · 每条 input 是 sally step3/3b/4b/5/7 实测样本(从 /tmp/aiipznt-clone-research/api/* 抓)",
+        "AC-6: packages/schemas/src/judge-golden.schema.ts 导出 GoldenSample + GoldenDataset zod schema + z.infer 类型",
+        "AC-7: tests/fixtures/judge-goldens/SCHEMA.md ≥ 50 行 · 含 GoldenSample TypeScript interface + 2 JSON example(1 sally + 1 custom)",
+        "AC-8: tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts ≥ 4 tests · schema 验证 / count 验证 / specialistId 合法 / source 标记 · pnpm test 全 pass",
+        "AC-9: pnpm typecheck 6 ws 全 Done · 0 error",
+        "AC-10: ROOT scope cd /Users/return/Desktop/QuanAn && pnpm test 维持 baseline · 零回归",
+        "AC-COMMON: ROOT scope vitest 必跑 · packages/schemas barrel export 加 GoldenSample entry"
+      ],
+      "depends_on": ["US-003"],
+      "priority": 4,
       "passes": false,
       "notes": "",
       "retryCount": 0,
@@ -121,43 +185,34 @@
       "anti_patterns": [
         {
           "source_prd": "prd-27-clone-completion",
-          "source_story": "US-003 (PresentationAgent 14 enum schema 严守)",
-          "lesson": "schema enum 严守 spec 字面 · 14 specialist id 必须严格按 ARCHITECTURE.md §7 拓扑(AnalysisAgent / BrandingAgent / CopywritingAgent / DeepLearnAgent / DiagnosisAgent / LivestreamAgent / MonetizationAgent / PositioningAgent / PresentationAgent / PrivateDomainAgent / TopicAgent / VideoAgent / VoiceChatAgent + DailyTaskAgent + EvolutionAgent 系统 specialist · 业务 13 个 + 系统 2 个)· 不允许大小写不一 / 复数 / 缩写",
-          "antipattern": "z.enum(['analysis', 'brand', 'copy'])  // 反例: 缩写 + 小写 · 偏离 ARCHITECTURE §7",
-          "correct": "z.enum(['AnalysisAgent', 'BrandingAgent', 'CopywritingAgent', 'DeepLearnAgent', 'DiagnosisAgent', 'LivestreamAgent', 'MonetizationAgent', 'PositioningAgent', 'PresentationAgent', 'PrivateDomainAgent', 'TopicAgent', 'VideoAgent', 'VoiceChatAgent', 'DailyTaskAgent', 'EvolutionAgent'])  // ARCHITECTURE §7 严守"
-        },
-        {
-          "source_prd": "prd-27-clone-completion",
-          "source_story": "US-005 M-2 教训",
-          "lesson": "ROOT scope vitest 必跑 · 不是 apps/api scope · 不是 packages/* scope · 是项目根目录 pnpm test 1925 passed baseline 维持 ±10 容忍",
-          "antipattern": "cd packages/schemas && pnpm test  // 反例: 仅 packages/schemas scope",
-          "correct": "cd /Users/return/Desktop/QuanAn && pnpm test  // ROOT scope · 1925 passed baseline 必跑"
+          "source_story": "US-003 14 specialist enum 严守",
+          "lesson": "specialistId 严守 ARCHITECTURE.md §7 拓扑(AnalysisAgent/BrandingAgent/CopywritingAgent/DeepLearnAgent/DiagnosisAgent/LivestreamAgent/MonetizationAgent/PositioningAgent/PresentationAgent/PrivateDomainAgent/TopicAgent/VideoAgent/VoiceChatAgent/DailyTaskAgent/EvolutionAgent)· 不允许大小写不一/复数/缩写",
+          "antipattern": "z.enum(['analysis','brand','copy'])  // 反例: 缩写小写",
+          "correct": "z.enum(['AnalysisAgent','BrandingAgent','CopywritingAgent',...])"
         }
       ]
     },
     {
-      "id": "US-003",
+      "id": "US-005",
       "title": "evaluation pipeline · prisma schema + eval-run.ts CLI + 4 维度评分(D-267 + D-268 字面锁 · high)",
-      "description": "As ops/admin · I want pnpm --filter @quanan/api eval:run CLI 命令跑 100 sample 真调 specialist · 写库 + 4 维度评分(结构 zod + 内容 LLM Judge + duration + cost) · so that evaluation_runs + evaluation_samples 表持久化每次跑批结果 · 为 admin UI + inter-rater + /goal-verify 提供数据基础 · 含 prisma migration RLS DISABLE 系统级表 + tsx CLI 入口 + 7 步流程",
+      "description": "As ops/admin · I want pnpm --filter @quanan/api eval:run CLI 命令跑 100 sample 真调 specialist · 写库 + 4 维度评分(结构 zod + 内容 LLM Judge + duration + cost) · so that evaluation_runs + evaluation_samples 表持久化每次跑批结果 · 为 admin UI + inter-rater + /goal-verify 提供数据基础",
       "acceptanceCriteria": [
-        "AC-1: prisma/schema.prisma 加 EvaluationRun model · 字段严格按 D-267: model EvaluationRun { id Int @id @default(autoincrement()), runId String @unique @db.VarChar(36)(UUID), startedAt DateTime @default(now()), finishedAt DateTime?, totalSamples Int @default(0), passedSamples Int @default(0), failedSamples Int @default(0), skippedSamples Int @default(0), avgScore Decimal? @db.Decimal(3,2), modelTier String @default(\"lightweight\"), model String, totalTokens Int @default(0), totalCostUsd Decimal @default(0) @db.Decimal(8,4), status String @default(\"running\"), metadata Json?, samples EvaluationSample[] @@index([startedAt(sort: Desc)]) @@map(\"evaluation_runs\") } · 验证 grep 'model EvaluationRun' prisma/schema.prisma 命中",
-        "AC-2: prisma/schema.prisma 加 EvaluationSample model · model EvaluationSample { id Int @id @default(autoincrement()), runId String @db.VarChar(36), goldenId String @db.VarChar(20)(e.g., 'sally-001'/'custom-001'), specialistId String, mode String?, input Json, actualOutput Json, judgeScore Int @db.SmallInt(0-10), judgePass Boolean, judgeReason String @db.Text, structurePass Boolean, durationMs Int, tokensUsed Int, costUsd Decimal @db.Decimal(8,6), humanScore Int? @db.SmallInt, humanScoreBy Int?, humanScoredAt DateTime?, createdAt DateTime @default(now()), run EvaluationRun @relation(fields: [runId], references: [runId]) @@index([runId]) @@index([specialistId]) @@index([createdAt(sort: Desc)]) @@map(\"evaluation_samples\") }",
-        "AC-3: prisma migration 生成 + applied · pnpm prisma migrate dev --name add_evaluation_tables 成功 · psql -d quanqn -c '\\dt evaluation_*' 命中 2 表",
-        "AC-4: evaluation_runs + evaluation_samples 表 **RLS DISABLE**(LD-A-1 区分主应用 RLS · admin/系统级表 RLS 关) · 验证 psql -d quanqn -c \"SELECT relrowsecurity FROM pg_class WHERE relname IN ('evaluation_runs','evaluation_samples')\" 全 false",
-        "AC-5: pnpm --filter @quanan/api eval:run --samples=5 smoke 跑(取 5 sample 真调) · 无 KEY 时优雅 fail 提示 'ANTHROPIC_API_KEY required' exit 1 · 有 KEY 时跑通 · 写 1 row evaluation_runs(status='completed')+ 5 row evaluation_samples · 验证 psql -d quanqn -c 'SELECT count(*) FROM evaluation_samples WHERE run_id = <uuid>' = 5",
-        "AC-6: pnpm --filter @quanan/api eval:run --specialist=PositioningAgent --samples=10 取 10 PositioningAgent sample · 跑批 · 验证 evaluation_samples.specialist_id 全 'PositioningAgent'",
-        "AC-7: pnpm --filter @quanan/api eval:run --source=sally 仅跑 sally-30 dataset · 不跑 custom-70 · 验证 evaluation_samples.goldenId 全 'sally-*'",
-        "AC-8: 4 维度评分逻辑 · evaluator.ts runSampleEvaluation 返回 {structurePass, judgeScore, judgePass, durationMs, tokensUsed, costUsd} · structurePass=specialist.outputSchema.safeParse(actualOutput).success · judgeScore=runJudge() · judgePass=score>=6 · durationMs=execute end-start · tokensUsed=specialist result tokens · costUsd 按 modelTier 估算 · 验证 evaluator.test.ts ≥ 4 case",
-        "AC-9: eval-run.ts CLI 错误处理 · ANTHROPIC_API_KEY 缺失 → exit 1 + 提示 · LLM call 单 sample 失败 → 写 evaluation_samples judgePass=false structurePass=false + judgeReason='LLM call failed: <reason>' · 不阻塞整 run · 整 run 全失败 → status='failed'",
-        "AC-10: pnpm typecheck 6 workspace 全 Done · 0 error",
-        "AC-11: pnpm lint --max-warnings=0 0 warning",
-        "AC-12: ROOT scope pnpm test baseline 维持 1925+118(±10 · 加新 test 增加 passed count · skipped 不变)· 零回归",
-        "AC-13: eval-run.test.ts ≥ 6 tests · 单元覆盖 CLI 参数解析 / dataset 加载 / 写库流程 / 错误处理 · 全 pass",
-        "AC-14: evaluator.test.ts ≥ 4 tests · 单元覆盖 4 维度评分 / structurePass / judgeScore / cost 计算 · 全 pass",
-        "AC-COMMON: ROOT scope vitest 必跑(M-2 PRD-27 US-005 教训)· prisma migration 必须先 apply 再跑 test(integration test 走真 DB)"
+        "AC-1: prisma/schema.prisma 加 EvaluationRun model · 字段: id Int @id @default(autoincrement()) · runId String @unique @db.VarChar(36)(UUID) · startedAt DateTime · finishedAt? · totalSamples/passedSamples/failedSamples/skippedSamples Int · avgScore Decimal? @db.Decimal(3,2) · modelTier String · model String · totalTokens Int · totalCostUsd Decimal @db.Decimal(8,4) · status String('running'/'completed'/'failed') · metadata Json? · @@index([startedAt(sort: Desc)]) @@map('evaluation_runs')",
+        "AC-2: prisma/schema.prisma 加 EvaluationSample model · 字段: id · runId @db.VarChar(36) FK · goldenId String @db.VarChar(20) · specialistId/mode · input/actualOutput Json · judgeScore Int @db.SmallInt · judgePass Boolean · judgeReason @db.Text · structurePass Boolean · durationMs/tokensUsed Int · costUsd @db.Decimal(8,6) · humanScore/humanScoreBy/humanScoredAt(US-007 写)· @@index([runId][specialistId][createdAt desc])",
+        "AC-3: prisma migration · pnpm prisma migrate dev --name add_evaluation_tables 成功 · psql '\\dt evaluation_*' 命中 2 表",
+        "AC-4: evaluation_runs + evaluation_samples 表 **RLS DISABLE**(LD-A-1 系统级)· 验证 psql 'SELECT relrowsecurity FROM pg_class WHERE relname IN (...)' 全 false · **不引入 accountId 字段**",
+        "AC-5: pnpm --filter @quanan/api eval:run --samples=5 smoke · 无 KEY 提示 exit 1 · 有 KEY 写 1 run + 5 sample · psql count = 5",
+        "AC-6: --specialist=PositioningAgent --samples=10 跑 10 个 · evaluation_samples.specialist_id 全 PositioningAgent",
+        "AC-7: --source=sally 仅跑 sally-30 · evaluation_samples.goldenId 全 'sally-*'",
+        "AC-8: evaluator.ts runSampleEvaluation 返 {structurePass(zod.safeParse), judgeScore(runJudge), judgePass(score>=6), durationMs, tokensUsed, costUsd} · evaluator.test.ts ≥ 4 case",
+        "AC-9: eval-run.ts 错误处理 · 缺 KEY exit 1 · 单 sample fail 写 judgePass=false 不阻塞 · 全 fail status='failed'",
+        "AC-10: eval-run.test.ts ≥ 6 tests · CLI 参数/dataset 加载/写库/错误处理 · 全 pass",
+        "AC-11: pnpm typecheck 6 ws 全 Done · 0 error · pnpm lint 0 warning",
+        "AC-12: ROOT scope cd /Users/return/Desktop/QuanAn && pnpm test baseline 维持(±10 · 加新 test 增加 passed count)· 零回归",
+        "AC-COMMON: ROOT scope vitest 必跑(M-2 教训)· prisma migration 必先 apply 再跑 integration test"
       ],
-      "depends_on": ["US-001", "US-002"],
-      "priority": 3,
+      "depends_on": ["US-003", "US-004"],
+      "priority": 5,
       "passes": false,
       "notes": "",
       "retryCount": 0,
@@ -174,55 +229,45 @@
         "apps/api/package.json",
         "package.json"
       ],
-      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm prisma migrate dev --name add_evaluation_tables && pnpm typecheck && pnpm test 2>&1 | tail -10 && pnpm --filter @quanan/api eval:run --samples=2 2>&1 | tail -10",
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm prisma migrate dev --name add_evaluation_tables && pnpm typecheck && pnpm test 2>&1 | tail -10",
       "size_hint": "medium",
       "risk_level": "high",
       "anti_patterns": [
         {
           "source_prd": "QuanQn-base",
-          "source_story": "REJ-008 + REJ-009 数据隔离",
-          "lesson": "evaluation_runs + evaluation_samples 是**系统级**表 · 不是用户数据 · 跟 admin 一样 RLS DISABLE · 但**不挂 accountId 字段**(LD-A-1) · CLI eval-run.ts 走 prisma 直连(无 RLS ctx) · 不能假设有 trpc ctx · 不能用 ctx.activeAccountId · 不引入 accountId 字段到 evaluation_runs/samples",
-          "antipattern": "model EvaluationRun { ... accountId Int  // 反例: 加 accountId · evaluation 是系统级 · 不属任何 account ... }",
-          "correct": "model EvaluationRun { ...  // 无 accountId · 系统级表 · RLS DISABLE · 走 admin RBAC + AuditLog 保护 }"
+          "source_story": "REJ-008 + REJ-009 数据隔离 + RLS",
+          "lesson": "evaluation_runs/samples 是**系统级**表 · 跟 admin 一样 RLS DISABLE · 但**不挂 accountId 字段**(LD-A-1)· CLI eval-run.ts 走 prisma 直连(无 RLS ctx)· 不能假设有 trpc ctx · 不能用 ctx.activeAccountId",
+          "antipattern": "model EvaluationRun { ... accountId Int  // 反例: 加 accountId }",
+          "correct": "model EvaluationRun { ...  // 无 accountId · 系统级 · RLS DISABLE }"
         },
         {
           "source_prd": "QuanQn-base",
           "source_story": "REJ-001 LLMGateway 抽象层",
-          "lesson": "R-001 红线 · eval-run.ts 跑真 LLM 必须走 LLMGateway 抽象层 · 不允许 CLI 内 import @anthropic-ai/sdk 直接调 · evaluator.ts runSampleEvaluation 调 specialist.execute() · specialist 内部走 llmGateway.complete() · 链路必须保持",
-          "antipattern": "import Anthropic from '@anthropic-ai/sdk'; ... await anthropic.messages.create({...})  // 反例: 绕 Gateway · 失去限流/降级/审计",
-          "correct": "const agent = new PositioningAgent(); const result = await agent.execute({...});  // 通过 specialist.execute → BaseSpecialist.invokeLLM → llmGateway.complete · 链路完整"
-        },
-        {
-          "source_prd": "prd-27-clone-completion",
-          "source_story": "US-005 M-2 教训 + ModelTier 跨文件同步",
-          "lesson": "evaluator.ts 用 modelTier='lightweight' · 必须严格按 specialists/base/types.ts ModelTier enum('reasoning'|'lightweight'|'balanced')· 同步检查 agents/base/types.ts ModelTier · 不允许 'fast' / 'cheap' / 'haiku' 等字面 hardcoded · 跨文件同步规则继承 §11.18.3",
-          "antipattern": "modelTier: 'fast'  // 反例: 不在 ModelTier enum · 跨文件不同步",
-          "correct": "modelTier: 'lightweight'  // ModelTier enum 严守 · llm-gateway/index.ts MODEL_BY_TIER map 命中"
+          "lesson": "eval-run.ts 跑真 LLM 必须走 LLMGateway 抽象层 · 不允许 CLI 内 import @anthropic-ai/sdk 直接调 · evaluator.ts 调 specialist.execute 链路保持",
+          "antipattern": "import Anthropic from '@anthropic-ai/sdk'; ... await anthropic.messages.create({...})  // 反例: 绕 Gateway",
+          "correct": "const agent = new PositioningAgent(); await agent.execute({...});  // specialist.execute → BaseSpecialist.invokeLLM → llmGateway.complete"
         }
       ]
     },
     {
-      "id": "US-004",
+      "id": "US-006",
       "title": "admin /admin/evaluation UI · 评分历史 + 跨 specialist × 场景对比矩阵(D-269 字面锁)",
-      "description": "As ops/admin · I want /admin/evaluation 页面看 evaluation runs 历史列表 + drill-down 单 run 详情 + 跨 specialist × 场景对比矩阵 · so that 直观查看 LLM Judge 评分质量 · 识别哪些 specialist 表现差 · 哪些 mode 不达标 · 含 admin trpc router admin.evaluation.{listRuns/getRun/listSamples} + 3 路由 + 矩阵热力图组件 + SampleDetailDrawer",
+      "description": "As ops/admin · I want /admin/evaluation 页面看 evaluation runs 历史列表 + drill-down 单 run 详情 + 跨 specialist × mode 矩阵热力图 · so that 直观查看 LLM Judge 评分质量",
       "acceptanceCriteria": [
-        "AC-1: apps/admin/src/pages/evaluation/EvaluationPage.tsx 存在 · 显示 evaluation_runs 列表(分页 · 每页 20) · 列: runId / startedAt / status / totalSamples / passedSamples / avgScore / totalCostUsd · 点 row 跳 /evaluation/:runId",
-        "AC-2: EvaluationDetailPage.tsx 单 run 详情 · 100 sample 列表(分页 · 每页 50) · 列: goldenId / specialistId / mode / structurePass / judgeScore / judgePass / durationMs · 点 row 弹 SampleDetailDrawer",
-        "AC-3: EvaluationMatrixChart.tsx 跨 specialist × mode 矩阵热力图 · X 轴 specialist 14 · Y 轴 mode(平均 4-5 mode) · cell 显示 avgScore (color: red < 4 / yellow 4-6 / green 6-8 / blue > 8) · Tailwind grid 实现 · 不引 chart 库",
-        "AC-4: admin trpc router admin.evaluation.{listRuns, getRun, listSamples} 3 procedures · listRuns({page,pageSize})→ {runs, total} · getRun({runId})→ run + summary · listSamples({runId, page, pageSize, filterSpecialist?})→ {samples, total} · 全部 require ctx.adminUser.role IN ['ops','admin'](LD-A-1 RBAC · 走 PRD-13 adminProtectedProcedure)",
-        "AC-5: admin layout nav 加 'Evaluation' entry · href='/evaluation' · icon='chart-bar' (lucide-react) · role 限制(ops|admin 可见)",
-        "AC-6: 3 路由 lazy load · React.lazy + webpackChunkName='admin-evaluation' · 跟 PRD-26 lazy load 模式一致",
-        "AC-7: admin /admin/evaluation 页面用 packages/ui/admin 现有 Table / Card / Pagination 组件 · 不重写 base 组件(LD-A-1 admin/web 共享 ui 包)",
-        "AC-8: visual baseline 3 张 · /admin/evaluation 列表 + /admin/evaluation/:runId 详情 + /admin/evaluation/:runId 矩阵 chart · tests/e2e/admin/prd28-evaluation-baseline.spec.ts 跑过 pnpm test:visual:prd28 生成 baseline",
-        "AC-9: package.json 加两条 scripts(继承 P-27-005 visual baseline npm script 入口规范): 'test:visual:prd28': 'playwright test --project=chromium tests/e2e/admin/prd28-evaluation-baseline.spec.ts --update-snapshots' + 'test:visual:prd28:check': 'playwright test --project=chromium tests/e2e/admin/prd28-evaluation-baseline.spec.ts'",
-        "AC-10: admin /admin/evaluation 全部 role=ops/admin 可访问 · role=reviewer/finance/super_admin 走 PRD-13 RBAC 表(super_admin 通常也可访问) · 验证 e2e test 使用 ops/admin role auth",
-        "AC-11: pnpm typecheck 6 workspace 全 Done · 0 error",
-        "AC-12: pnpm lint --max-warnings=0 0 warning",
-        "AC-13: ROOT scope pnpm test baseline 维持(M-2 教训)",
-        "AC-COMMON: ROOT scope vitest 必跑 · admin RLS DISABLE 验证(继承 PRD-13 LD-A-1) · 使用 agent-browser 打开 http://localhost:5173/admin/evaluation · 验证 evaluation 表显示 + 跨 specialist 矩阵渲染 + 无 console error"
+        "AC-1: apps/admin/src/pages/evaluation/EvaluationPage.tsx · evaluation_runs 列表(分页 20)· 列 runId/startedAt/status/totalSamples/passedSamples/avgScore/totalCostUsd · 点 row 跳 /evaluation/:runId",
+        "AC-2: EvaluationDetailPage.tsx 单 run 详情 · 100 sample 列表(分页 50)· 列 goldenId/specialistId/mode/structurePass/judgeScore/judgePass · 点 row 弹 SampleDetailDrawer",
+        "AC-3: EvaluationMatrixChart.tsx 跨 specialist × mode 矩阵热力图 · X 轴 14 specialist · Y 轴 mode · cell 显示 avgScore(red<4/yellow 4-6/green 6-8/blue>8) · Tailwind grid 实现 · 不引 chart 库",
+        "AC-4: admin trpc admin.evaluation.{listRuns/getRun/listSamples} 3 procedures · 全部 require ctx.adminUser.role IN ['ops','admin'](LD-A-1 + PRD-13 adminProtectedProcedure)",
+        "AC-5: admin layout nav 加 'Evaluation' entry · href='/evaluation' · icon='chart-bar' · role ops|admin 可见",
+        "AC-6: 3 路由 lazy load · React.lazy + webpackChunkName='admin-evaluation' · 继承 PRD-26 模式",
+        "AC-7: package.json 加 test:visual:prd28 + test:visual:prd28:check 2 scripts(继承 P-27-005 visual baseline 入口规范)",
+        "AC-8: visual baseline 3 张 · tests/e2e/admin/prd28-evaluation-baseline.spec.ts · pnpm test:visual:prd28 生成 baseline",
+        "AC-9: 使用 agent-browser 打开 http://localhost:5173/admin/evaluation · 验证 evaluation 表显示 + 矩阵渲染 + 无 console error",
+        "AC-10: pnpm typecheck 6 ws 全 Done · pnpm lint 0 warning · ROOT scope pnpm test baseline 维持",
+        "AC-COMMON: ROOT scope vitest 必跑 · admin RLS DISABLE 验证 · packages/ui/admin 共享组件不重写"
       ],
-      "depends_on": ["US-003"],
-      "priority": 4,
+      "depends_on": ["US-005"],
+      "priority": 6,
       "passes": false,
       "notes": "",
       "retryCount": 0,
@@ -244,46 +289,37 @@
         "apps/api/src/trpc/routers/admin/index.ts",
         "package.json"
       ],
-      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm typecheck && pnpm test 2>&1 | tail -10 && pnpm test:visual:prd28:check 2>&1 | tail -10",
+      "test_command": "cd /Users/return/Desktop/QuanAn && pnpm typecheck && pnpm test 2>&1 | tail -10",
       "size_hint": "medium",
       "risk_level": "medium",
       "anti_patterns": [
         {
           "source_prd": "QuanQn-base",
-          "source_story": "REJ-019 + REJ-020 admin/app 严格隔离 + RBAC 6 闸",
-          "lesson": "admin /admin/evaluation 必须在 apps/admin · 不允许在 apps/web · admin trpc 不允许调 appRouter procedure(LD-A-1 严格隔离) · admin procedure 走 adminProtectedProcedure(自带 6 闸 adminAuth + roleCheck + ipWhitelist + mfaCheck + adminRLS + approvalGateCheck) · 不能漏闸 · admin RBAC role=ops/admin 必须 explicit 验证",
-          "antipattern": "// 反例 1: apps/web/src/pages/evaluation/EvaluationPage.tsx (admin 页面写在 web)\n// 反例 2: trpc.useQuery (走主应用 trpc · 不走 admin trpc)\n// 反例 3: procedure.input(...).query (漏 adminProtectedProcedure · 6 闸全漏)",
-          "correct": "// 正例: apps/admin/src/pages/evaluation/EvaluationPage.tsx + adminTrpc.evaluation.listRuns.useQuery + adminProtectedProcedure (6 闸全过)"
-        },
-        {
-          "source_prd": "prd-26-admin-ui-mvp",
-          "source_story": "US-001~006 (admin lazy load + packages/ui/admin)",
-          "lesson": "admin /admin/evaluation 3 路由必须 lazy load(React.lazy + webpackChunkName='admin-evaluation') · 共享组件用 packages/ui/admin/* · 不在 apps/admin 内重写 Table/Card/Pagination · 不在 apps/web/src/components 重用 admin 组件",
-          "antipattern": "import { Table } from '@/components/Table';  // 反例: 重写 + 偏离共享 ui 包\nconst EvaluationPage = () => {...};  // 反例: 不 lazy load",
-          "correct": "import { Table, Card, Pagination } from '@quanan/ui/admin';  // 共享组件\nconst EvaluationPage = React.lazy(() => import(/* webpackChunkName: 'admin-evaluation' */ './pages/evaluation/EvaluationPage'));"
+          "source_story": "REJ-019 + REJ-020 admin/app 隔离 + RBAC 6 闸",
+          "lesson": "admin /admin/evaluation 必须在 apps/admin · 不允许 apps/web · admin trpc 不调 appRouter procedure(LD-A-1)· adminProtectedProcedure 6 闸完整(adminAuth+roleCheck+ipWhitelist+mfaCheck+adminRLS+approvalGateCheck) · 不能漏",
+          "antipattern": "// apps/web/src/pages/evaluation/EvaluationPage.tsx  // 反例: admin 页面在 web\n// trpc.useQuery (主应用 · 不是 admin)\n// procedure.input(...).query (漏 adminProtectedProcedure 6 闸)",
+          "correct": "// apps/admin/src/pages/evaluation/EvaluationPage.tsx + adminTrpc.evaluation.listRuns.useQuery + adminProtectedProcedure (6 闸全过)"
         }
       ]
     },
     {
-      "id": "US-005",
+      "id": "US-007",
       "title": "inter-rater agreement subset(30 sample · seeded by runId hash · Cohen's kappa + Pearson · D-270 字面锁)",
-      "description": "As ops/admin · I want /admin/evaluation/inter-rater/:runId 页面手工评 0-10 分 30 sample(从 evaluation_samples 按 runId hash seed 固定取 30) · 提交后自动计算 Cohen's kappa + Pearson correlation · so that 评估 LLM Judge 评分 vs 人工评分一致性 · 阈值 kappa ≥ 0.4 moderate agreement · 通过 → LLM Judge 可信",
+      "description": "As ops/admin · I want /admin/evaluation/inter-rater/:runId 页面手工评 0-10 分 30 sample(seeded by runId hash) · 提交后自动计算 Cohen's kappa + Pearson · so that 评估 LLM Judge 评分 vs 人工评分一致性 · 阈值 kappa ≥ 0.4 moderate",
       "acceptanceCriteria": [
-        "AC-1: InterRaterPage 显示 30 sample(seeded random by runId · 同一 runId 永远取同 30 · reproducible) · 每 sample 卡片含 input(JSON pretty)/ actualOutput(JSON pretty)/ criteria(列表)/ LLM judge score & reason / 0-10 评分 slider + 注释 textarea",
-        "AC-2: 用户评完单 sample · 点'提交' · trpc admin.evaluation.submitHumanScore({sampleId, humanScore: 0-10, humanComment?}) · 写 EvaluationSample.humanScore + humanScoreBy(当前 adminUserId) + humanScoredAt",
-        "AC-3: 30 sample 全评完后 · 页面自动计算 Cohen's kappa(分类型 · LLM Judge score 0-5→fail 6-10→pass vs humanScore 同分类)+ Pearson correlation(连续型 0-10 vs 0-10) · 调 trpc admin.evaluation.computeAgreement({runId}) 返 {kappa, pearson, interpretation: 'almost-perfect' | 'substantial' | 'moderate' | 'fair' | 'slight' | 'poor'}",
-        "AC-4: inter-rater.ts Cohen's kappa 实现正确 · κ = (Po - Pe) / (1 - Pe) · Po 是 observed agreement 比例 · Pe 是 expected by chance · 单元测试覆盖: 全一致→κ=1 / 完全随机→κ=0 / 完全反向→κ=负 · 验证 inter-rater.test.ts ≥ 4 case",
-        "AC-5: 30 sample subset 选择算法 · seeded random by runId hash · 用 Math.sin(seed) * 10000 % 1 或 mulberry32 PRNG · 同 runId 永远取同 30 · 验证 listInterRaterSubset 调 2 次返同 30 sample ids",
-        "AC-6: admin /admin/evaluation/:runId 详情页加 'Inter-rater agreement' 子区域 · 显示 kappa + pearson + interpretation · 若未评完显示进度('12/30 评完') + 链接到 /admin/evaluation/inter-rater/:runId",
-        "AC-7: admin /admin/evaluation/inter-rater/:runId 路由加 + nav 不显示(只能 click-through from detail page)",
-        "AC-8: pnpm typecheck 6 workspace 全 Done · 0 error",
-        "AC-9: pnpm lint --max-warnings=0 0 warning",
-        "AC-10: ROOT scope pnpm test baseline 维持(M-2 教训)",
-        "AC-11: inter-rater.test.ts ≥ 4 case · kappa = 1 / kappa = 0.5(moderate)/ kappa ≈ 0(random)/ kappa < 0(negative agreement)全 verify expected",
-        "AC-COMMON: ROOT scope vitest 必跑 · 使用 agent-browser 打开 http://localhost:5173/admin/evaluation/inter-rater/<runId> · 评 5 个 sample · 验证 progress 5/30 + 提交后跳下一 sample · 无 console error"
+        "AC-1: InterRaterPage 显示 30 sample(seeded random by runId hash · reproducible)· 每 sample 卡片含 input/actualOutput(JSON pretty)/criteria/LLM judge score & reason/0-10 slider + 注释 textarea",
+        "AC-2: 用户提交单 sample · trpc admin.evaluation.submitHumanScore({sampleId, humanScore, humanComment?}) · 写 EvaluationSample.humanScore + humanScoreBy + humanScoredAt",
+        "AC-3: 30 sample 全评完后自动计算 Cohen's kappa(分类型 LLM score 0-5/6-10 vs human 同分)+ Pearson correlation(连续 0-10 vs 0-10)· trpc admin.evaluation.computeAgreement 返 {kappa, pearson, interpretation}",
+        "AC-4: inter-rater.ts Cohen's kappa 实现 κ = (Po - Pe) / (1 - Pe) · 单元测试覆盖: 全一致κ=1 / 随机κ≈0 / 反向κ<0 · inter-rater.test.ts ≥ 4 case",
+        "AC-5: 30 sample subset 选择 · seeded random by runId hash · mulberry32 PRNG 或 Math.sin · 同 runId 永远取同 30 · listInterRaterSubset 调 2 次返同 ids",
+        "AC-6: admin /admin/evaluation/:runId 详情页加 'Inter-rater agreement' 子区域 · 显示 kappa + pearson + interpretation · 进度未完显示 'X/30 评完'",
+        "AC-7: /admin/evaluation/inter-rater/:runId 路由 + nav 不显示(仅 click-through)",
+        "AC-8: 使用 agent-browser 打开 inter-rater 页面 · 评 5 sample · 验证 progress 5/30 + 提交跳下一 sample + 无 console error",
+        "AC-9: pnpm typecheck 6 ws 全 Done · pnpm lint 0 warning · ROOT scope pnpm test 维持 baseline",
+        "AC-COMMON: ROOT scope vitest 必跑(M-2 教训) · admin/app 严格隔离(LD-A-1)"
       ],
-      "depends_on": ["US-003", "US-004"],
-      "priority": 5,
+      "depends_on": ["US-005", "US-006"],
+      "priority": 7,
       "passes": false,
       "notes": "",
       "retryCount": 0,
@@ -305,39 +341,30 @@
         {
           "source_prd": "QuanQn-base",
           "source_story": "REJ-019 admin/app 严格隔离",
-          "lesson": "/admin/evaluation/inter-rater/:runId 必须在 apps/admin · 不允许在 apps/web · trpc 走 adminTrpc 不是 trpc · adminProtectedProcedure(role=ops/admin) · 写库走 adminPrisma 不是 prisma",
-          "antipattern": "// apps/web/src/pages/evaluation/InterRaterPage.tsx  // 反例: 写在 web\n// trpc.evaluation.submitHumanScore.useMutation()  // 反例: 走主应用 trpc",
-          "correct": "// apps/admin/src/pages/evaluation/InterRaterPage.tsx + adminTrpc.evaluation.submitHumanScore.useMutation() + adminProtectedProcedure"
-        },
-        {
-          "source_prd": "prd-27-clone-completion",
-          "source_story": "US-005 M-2 教训",
-          "lesson": "Cohen's kappa unit test 必须 ROOT scope 跑 · 不是 apps/api scope · pnpm test tests/unit/api/inter-rater.test.ts 命中",
-          "antipattern": "cd apps/api && pnpm test src/lib/evaluation/__tests__/inter-rater.test.ts  // 反例: apps/api scope",
-          "correct": "cd /Users/return/Desktop/QuanAn && pnpm test apps/api/src/lib/evaluation/__tests__/inter-rater.test.ts  // ROOT scope"
+          "lesson": "/admin/evaluation/inter-rater 必须 apps/admin · trpc 走 adminTrpc · 写库走 adminPrisma",
+          "antipattern": "// apps/web/src/pages/evaluation/InterRaterPage.tsx  // 反例\n// trpc.evaluation.submitHumanScore.useMutation()  // 反例: 主应用 trpc",
+          "correct": "// apps/admin/src/pages/evaluation/InterRaterPage.tsx + adminTrpc.evaluation.submitHumanScore.useMutation()"
         }
       ]
     },
     {
-      "id": "US-006",
+      "id": "US-008",
       "title": "/goal-verify §evaluation 集成 + verify-prd-28.sh + retro 收官(D-271 + D-272 字面锁)",
-      "description": "As Coding 3.0 项目 · I want /goal-verify §evaluation 维度集成(Step 7 收官跑评估) + verify-prd-28.sh 7 sections ≥ 25 checks 全 PASS + /prd-retro 跨 PRD-21~28 8 PRD 趋势 + AGENTS.md §11.19 沉淀 + tech-debt.json TD-027 真闭环关闭 · so that PRD-28 evaluation 完整化收官 · 移交 PRD-29 多用户压测",
+      "description": "As Coding 3.0 项目 · I want /goal-verify §evaluation 维度集成(Step 7 收官跑评估) + verify-prd-28.sh 7 sections ≥ 25 checks 全 PASS + /prd-retro 跨 PRD-21~28 8 PRD 趋势 + AGENTS.md §11.19 沉淀 + tech-debt.json TD-027 真闭环关闭 · so that PRD-28 evaluation 完整化收官 · 移交 PRD-29",
       "acceptanceCriteria": [
-        "AC-1: scripts/verify-prd-28.sh chmod +x · 7 sections · ≥ 25 checks (§1 21 judge file mock 拆除 ≥ 3 · §2 100 金标准 fixtures 文件 + count ≥ 4 · §3 prisma evaluation 表存在 + RLS DISABLE ≥ 3 · §4 eval-run.ts CLI 可加载 ≥ 3 · §5 admin /admin/evaluation 3 路由 visual baseline ≥ 4 · §6 inter-rater Cohen's kappa unit test passed ≥ 4 · §7 /goal-verify §evaluation 集成 + retro ≥ 4)",
-        "AC-2: .agents/verification/prd-28-evaluation.md ≥ 200 行 · §0 GSD codebase mapper 事实层对账 + §1+ Goal-backward 11 验收锚点全 PASS + §evaluation 维度报告",
-        "AC-3: .agents/retros/prd-28-vs-prd-27-retrospective.md ≥ 250 行 · 跨 PRD-21~28 8 PRD 趋势对比 · §2.A 双指标统计(audit 1iter / dev 1iter) · §5 Playbook ≥ 5 条新提炼 · §7 PRD-29+ 建议",
-        "AC-4: AGENTS.md 加 §11.19 PRD-28 evaluation 完整化沉淀 · ≥ 5 sub-sections(judge mock 真闭环 + 100 金标准双轨 + evaluation pipeline + admin evaluation UI + inter-rater Cohen's kappa)",
-        "AC-5: tech-debt.json TD-027 status='resolved' 加 PRD-28 close_evidence + 区分 PRD-25 假闭环(2026-05-20 PRD-25 US-008 只改 voice-chat.judge.ts 一个文件 · 模式升级但仍是 mock · 2026-05-22 PRD-28 真闭环 · 21 file 全部移除 mock · 真调 LLM grade)",
-        "AC-6: ~/.claude/commands/goal-verify.md 修改 · 加 §evaluation 维度规约 · 集成 evaluation pipeline 检测逻辑",
-        "AC-7: pnpm typecheck 6 workspace 全 Done · 0 error",
-        "AC-8: pnpm lint --max-warnings=0 0 warning",
-        "AC-9: ROOT scope pnpm test 1925+118 baseline 维持(M-2 教训)",
-        "AC-10: bash scripts/verify-prd-28.sh ≥ 25 checks ALL PASS · 退出码 0",
-        "AC-11: progress.txt 追加 [PRD-28 retro] 摘要 · 含 audit 1iter rate + dev 1iter rate 双指标 + TD 净变化 + Playbook ≥ 5 条",
-        "AC-COMMON: ROOT scope vitest 必跑 · git log 验证 6 US 全 commit · /prd-retro 后 reject-examples.jsonl 累积反例不丢失"
+        "AC-1: scripts/verify-prd-28.sh chmod +x · 7 sections · ≥ 25 checks(§1 21 file mock 拆除验证≥3 · §2 100 fixtures 文件+count≥4 · §3 evaluation 表 RLS DISABLE≥3 · §4 eval-run CLI 可加载≥3 · §5 admin 3 路由 visual baseline≥4 · §6 inter-rater Cohen's kappa unit test≥4 · §7 /goal-verify §evaluation 集成+retro≥4)",
+        "AC-2: .agents/verification/prd-28-evaluation.md ≥ 200 行 · §0 GSD 事实层对账 + §1+ Goal-backward 11 验收锚点全 PASS + §evaluation 维度报告",
+        "AC-3: .agents/retros/prd-28-vs-prd-27-retrospective.md ≥ 250 行 · 跨 PRD-21~28 8 PRD 趋势 · §2.A 双指标统计 · §5 Playbook ≥ 5 条 · §7 PRD-29+ 建议 · RCA-007 拆分版数据(8 US instead of 6)",
+        "AC-4: AGENTS.md 加 §11.19 PRD-28 evaluation 完整化沉淀 ≥ 5 sub-sections(judge mock 真闭环 + 100 金标准双轨 + evaluation pipeline + admin evaluation UI + inter-rater Cohen's kappa)",
+        "AC-5: tech-debt.json TD-027 status='resolved' 加 PRD-28 close_evidence + 区分 PRD-25 假闭环 + 加 TD-103 ralph.py prompt size abort 没实施(留 PRD-29+)",
+        "AC-6: ~/.claude/commands/goal-verify.md 修改 · 加 §evaluation 维度规约 · 集成 evaluation pipeline 检测",
+        "AC-7: pnpm typecheck 6 ws 全 Done · pnpm lint 0 warning · ROOT scope pnpm test 1925+118 baseline 维持",
+        "AC-8: bash scripts/verify-prd-28.sh ≥ 25 checks ALL PASS · 退出码 0",
+        "AC-9: progress.txt 追加 [PRD-28 retro] 摘要 · 含 audit 1iter rate + dev 1iter rate 双指标 + TD 净变化 + Playbook ≥ 5 条 + RCA-007 教训",
+        "AC-COMMON: ROOT scope vitest 必跑 · git log 验证 7 dev US 全 commit · /prd-retro 后 reject-examples.jsonl 累积反例不丢失"
       ],
-      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005"],
-      "priority": 6,
+      "depends_on": ["US-001", "US-002", "US-003", "US-004", "US-005", "US-006", "US-007"],
+      "priority": 8,
       "passes": false,
       "notes": "",
       "retryCount": 0,
@@ -359,17 +386,10 @@
       "anti_patterns": [
         {
           "source_prd": "prd-27-clone-completion",
-          "source_story": "US-006 (收官 verify-prd-27.sh 33/33 + retro 7 PRD)",
-          "lesson": "PRD 收官 US 必须 7 section verify script + .agents/verification/ + .agents/retros/ + AGENTS §11.N + tech-debt.json + ~/.claude/commands/goal-verify.md 全部产出 · 不允许仅写 verify script 不写 retro · 不允许仅改 tech-debt.json 不更新 AGENTS.md · 跨 PRD 沉淀必须完整 5 件套(verify/verification/retro/AGENTS/tech-debt)",
-          "antipattern": "// 反例 1: 仅写 verify-prd-28.sh 不写 retro / AGENTS / tech-debt\n// 反例 2: 写 retro 只 100 行 (PRD-27 retro 296 行 baseline)\n// 反例 3: tech-debt.json TD-027 不区分 PRD-25 假闭环 + PRD-28 真闭环",
-          "correct": "// 收官 5 件套全产出:\n// 1. scripts/verify-prd-28.sh 7 sections >= 25 checks\n// 2. .agents/verification/prd-28-evaluation.md >= 200 lines\n// 3. .agents/retros/prd-28-vs-prd-27-retrospective.md >= 250 lines\n// 4. AGENTS.md §11.19 PRD-28 沉淀 >= 5 sub-sections\n// 5. tech-debt.json TD-027 close_evidence 含 PRD-28 区分 PRD-25 假闭环"
-        },
-        {
-          "source_prd": "prd-27-clone-completion",
-          "source_story": "US-005 + US-006 (ROOT scope vitest 教训 + zero_regression 累计回归)",
-          "lesson": "PRD 收官 US 必须验证 ROOT scope pnpm test 维持 baseline · 不允许仅查 apps/api scope · 不允许 ralph 跑 zero_regression 检查时 silently fail · M-2 教训 + zero_regression hard gate",
-          "antipattern": "// 反例: cd apps/api && pnpm test 跑 baseline (漏跨 ws)",
-          "correct": "// 正例: cd /Users/return/Desktop/QuanAn && pnpm test 跑 baseline + 验证 1925+118 ±10 容忍 · pre_existing_td_files 显式标记"
+          "source_story": "US-006 收官 5 件套",
+          "lesson": "PRD 收官 US 5 件套必须全产出 · verify script + verification.md + retro + AGENTS §11.N + tech-debt 关闭 · 不允许仅写 verify script 不写 retro",
+          "antipattern": "// 反例: 仅写 verify-prd-28.sh 不写 retro / AGENTS / tech-debt",
+          "correct": "// 5 件套全产出: verify-prd-28.sh + verification.md + retro.md + AGENTS §11.19 + tech-debt TD-027 close"
         }
       ]
     }
