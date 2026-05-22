@@ -6,10 +6,8 @@
 
 import { z } from 'zod';
 
-import type { GoldenSample } from '@quanan/schemas';
-
-import { dailyTaskAgent } from '@/agents/specialists/DailyTaskAgent';
 import { evolutionAgent } from '@/agents/evolution/EvolutionAgent';
+import { dailyTaskAgent } from '@/agents/specialists/DailyTaskAgent';
 import { analysisAgent } from '@/specialists/AnalysisAgent';
 import { brandingAgent } from '@/specialists/BrandingAgent';
 import { copywritingAgent } from '@/specialists/CopywritingAgent';
@@ -24,6 +22,8 @@ import { topicAgent } from '@/specialists/TopicAgent';
 import { videoAgent } from '@/specialists/VideoAgent';
 import { voiceChatAgent } from '@/specialists/VoiceChatAgent';
 import { llmGateway } from '@/workers/llm-gateway';
+
+import type { GoldenSample } from '@quanan/schemas';
 
 // ── Specialist registry ───────────────────────────────────────────────────────
 
@@ -152,6 +152,15 @@ export interface SampleResult {
   actualOutput: Record<string, unknown>;
 }
 
+// ── SpecialistResponse — shape of specialist.execute() return value ───────────
+
+interface SpecialistResponse {
+  result: unknown;
+  modelUsed: string;
+  tokensUsed: { prompt: number; completion: number; total: number };
+  durationMs: number;
+}
+
 // ── runSampleEvaluation (AC-8) ────────────────────────────────────────────────
 
 export async function runSampleEvaluation(sample: GoldenSample): Promise<SampleResult> {
@@ -161,12 +170,12 @@ export async function runSampleEvaluation(sample: GoldenSample): Promise<SampleR
   }
 
   // 1. Call specialist.execute() — respects BaseSpecialist chain (anti-pattern: no direct SDK)
-  const response = await specialist.execute({
+  const response = (await specialist.execute({
     accountId: 0,
     mode: sample.mode,
     userInput: sample.input,
     traceId: `eval-${sample.id}-${Date.now()}`,
-  });
+  })) as unknown as SpecialistResponse;
 
   const actualOutput = response.result as Record<string, unknown>;
 

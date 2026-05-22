@@ -7,18 +7,18 @@
  * AC-9: missing KEY → exit 1; single sample fail → judgePass=false, no block; all fail → status='failed'
  */
 
+import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { randomUUID } from 'node:crypto';
 
 import { Decimal } from '@prisma/client/runtime/library';
-
-import type { GoldenSample } from '@quanan/schemas';
 import { goldenDatasetSchema } from '@quanan/schemas';
 
 import { runSampleEvaluation } from '@/evaluation/evaluator';
 import { logger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
+
+import type { GoldenSample } from '@quanan/schemas';
 
 // ── Parse CLI args ────────────────────────────────────────────────────────────
 
@@ -181,8 +181,9 @@ async function main(): Promise<void> {
       },
     });
 
-    console.log(
-      `[eval:run] ${sample.id} | ${sample.specialistId} | score=${result.judgeScore} | pass=${result.judgePass}`,
+    logger.info(
+      { goldenId: sample.id, specialistId: sample.specialistId, judgeScore: result.judgeScore, judgePass: result.judgePass },
+      'eval:run sample done',
     );
   }
 
@@ -207,7 +208,10 @@ async function main(): Promise<void> {
     },
   });
 
-  console.log(`\n[eval:run] Done — runId=${runId} | status=${status} | passed=${passedSamples}/${selected.length} | avgScore=${avgScore ?? 'n/a'}`);
+  logger.info(
+    { runId, status, passedSamples, totalSamples: selected.length, avgScore: avgScore?.toString() ?? 'n/a' },
+    'eval:run done',
+  );
 }
 
 main().catch((err) => {
