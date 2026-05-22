@@ -1,43 +1,22 @@
 {
   "story_id": "US-001",
-  "validator_start_ts": "2026-05-21T00:51:00",
-  "validator_end_ts": "2026-05-21T01:05:00",
-  "test_command": "pnpm vitest run (all ws) + pnpm typecheck (6 ws) + pnpm -C apps/admin lint + playwright admin-foundation-loop + agent-browser screenshot",
+  "validator_start_ts": "2026-05-21T11:55:00",
+  "validator_end_ts": "2026-05-21T12:01:00",
+  "test_command": "pnpm --filter web test (vitest) + pnpm typecheck + pnpm lint + playwright prd23-visual-baseline",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "pre_existing_failures": {
-    "admin_foundation_loop_e2e": {
-      "chromium_mobile": "test runs against baseURL=5173 (main web), expects h1='QuanAn Admin', receives '登录' — pre-existing design flaw since US-007 (PRD-10)",
-      "admin_project": "main h2 not found at /admin/nsm — NSM placeholder (with h2) was deleted in PRD-11 US-004 (commit 2b89fc8), test never updated. Pre-existing since PRD-11.",
-      "introduced_by_us001": false,
-      "evidence": "git diff HEAD~2 HEAD~1 shows US-001 only touched: .agents/tech-debt.json, apps/admin/src/index.ts, 7 placeholder files. NSM page and login page untouched."
-    },
-    "vitest_15_file_setup_fails": {
-      "note": "15 test file setup-fails (admin/integration/e2e needing dev server + real DB) — pre-existing TD-083, deferred in PRD-26-prep commit 2ea9e17",
-      "introduced_by_us001": false
-    }
-  },
   "artifacts": [
-    "vitest-full.stdout.txt",
+    "pytest-full.xml",
+    "pytest-full.stdout.txt",
+    "vitest-web.stdout.txt",
     "typecheck.stdout.txt",
-    "admin-after-cleanup.png",
     "manifest.json"
   ],
-  "ac_results": {
-    "AC-1": "PASS - apps/admin/src/index.ts barrel export: export AdminRoutes + export AdminLayout",
-    "AC-2": "PASS - 7 placeholder files deleted, only knowledge.tsx remains",
-    "AC-3": "PASS - grep 'pages/admin/placeholder/' hits: 1 main project file (router.tsx → knowledge only)",
-    "AC-4": "PASS - pnpm typecheck 6 ws 0 errors",
-    "AC-5": "PASS - TD-031 status=resolved, resolved_at=2026-05-21, resolved_in_prd=PRD-26, close_evidence present",
-    "AC-6": "PASS - pnpm vitest run: Tests 2021 passed, 0 failed (15 file setup-fails are pre-existing TD-083)",
-    "AC-7": "PASS (curl) / PRE-EXISTING FAIL (e2e) - port 5174 returns 200 ✓; admin-foundation-loop fails pre-existed before US-001",
-    "AC-8": "PASS - pnpm typecheck from ROOT 0 errors",
-    "AC-9": "PASS - apps/admin/src/index.ts 0 lint errors (US-001 files only)",
-    "AC-10": "PASS - grep 'apiKey|import OpenAI|import Anthropic' apps/admin/ 0 hits",
-    "AC-11": "PRE-EXISTING FAIL - admin-foundation-loop failures pre-date US-001 (PRD-11 US-004 root cause)",
-    "AC-12": "PASS - screenshot taken: sidebar + topbar + NSM page rendered at /admin/nsm",
-    "AC-COMMON": "PASS - typecheck 0 errors, vitest 0 test failures, apiKey grep 0 hits"
+  "notes": {
+    "AC-7": "test:visual:prd23:check script missing from package.json (pre-existing · script not defined in web/package.json). Ran playwright directly: 1 passed. Visual baseline prd23-monetization.png unchanged.",
+    "AC-8": "pnpm lint global has pre-existing errors in other files (not US-001 introduced). US-001 files (monetization.ts, MonetizationAgent.ts, Monetization.tsx, Monetization.test.tsx) all pass lint 0 errors individually.",
+    "zero_regression": "388 tests passed across 47 test files. Monetization.test.tsx 6 tests all PASS."
   }
 }

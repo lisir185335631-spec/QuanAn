@@ -96,6 +96,45 @@ export type SmartRecommendOutput = {
   isFallback: boolean;
 };
 
+export type PrivateDomainGenerateOutput = {
+  id: number;
+  content: string;
+  agentId: string;
+  agentMode: string | null;
+  traceId: string | null;
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  createdAt: Date;
+};
+
+export type MonetizationGenerateOutput = {
+  id: number;
+  content: string;
+  agentId: string;
+  agentMode: string | null;
+  traceId: string | null;
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  createdAt: Date;
+};
+
+export type PresentationRecommendOutput = {
+  id: number;
+  content: string;
+  agentId: string;
+  agentMode: string | null;
+  traceId: string | null;
+  isFallback: boolean;
+  tokensUsed: number | null;
+  modelUsed: string | null;
+  durationMs: number | null;
+  createdAt: Date;
+};
+
 export type DiagnosisReportOutput = {
   id: number;
   answers: unknown;
@@ -342,6 +381,30 @@ export type DeepLearningParseAnalysis = {
 export type DeepLearningParseResult = {
   queueId: number;
   analysis: DeepLearningParseAnalysis;
+};
+
+export type DeepLearnDimensions = {
+  tone: string;
+  structure: string;
+  hook: string;
+  transition: string;
+  closing: string;
+};
+
+export type DeepLearnResult = {
+  summary: string;
+  dimensions: DeepLearnDimensions;
+  isFallback: boolean;
+  tokensUsed: number;
+  modelUsed: string;
+  durationMs: number;
+};
+
+export type DeepLearnLearnOutput = { jobId: string; status: 'queued' };
+
+export type DeepLearnStatusOutput = {
+  status: 'queued' | 'processing' | 'completed' | 'failed';
+  result: DeepLearnResult | null;
 };
 
 const _t = initTRPC.create();
@@ -791,62 +854,82 @@ const _shadowRouter = _t.router({
       .input(
         (x: unknown) =>
           x as {
+            phase: 'welcome' | 'warmup' | 'trust' | 'discover' | 'close' | 'follow';
             productDescription: string;
             productPrice: number;
             targetAudience: string;
             ipPositioning: string;
             currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
             monthlyTraffic: number;
+            scene?: string;
           },
       )
-      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+      .mutation((): PrivateDomainGenerateOutput => ({
         id: 0,
         content: '',
         agentId: 'PrivateDomainAgent',
+        agentMode: 'phase-generate',
         traceId: null,
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
         createdAt: new Date(),
       })),
     generateStream: _t.procedure
       .input(
         (x: unknown) =>
           x as {
+            phase: 'welcome' | 'warmup' | 'trust' | 'discover' | 'close' | 'follow';
             productDescription: string;
             productPrice: number;
             targetAudience: string;
             ipPositioning: string;
             currentChannel: 'wechat' | 'douyin' | 'xiaohongshu' | 'weibo' | 'other';
             monthlyTraffic: number;
+            scene?: string;
           },
       )
       // eslint-disable-next-line require-yield
       .subscription(async function* () {
         yield {} as
-          | { type: 'phase'; data: { key: string; name: string; goal: string; tactics: string[]; scripts: string[]; metrics: string[] } }
-          | { type: 'done'; summary: string };
+          | { type: 'meta'; meta: { model: string } }
+          | { type: 'delta'; delta: string }
+          | { type: 'done'; result: { phaseScript: string; variants: { professional: string; friendly: string; sales: string } } | null };
       }),
   }),
   monetization: _t.router({
     generate: _t.procedure
       .input(
         (x: unknown) =>
-          x as { stepKey?: string; industryContext?: Record<string, unknown>; audienceProfile?: Record<string, unknown> },
+          x as { industryContext?: string; audienceProfile?: string; ipPositioning?: string; productDescription?: string },
       )
-      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+      .mutation((): MonetizationGenerateOutput => ({
         id: 0,
         content: '',
         agentId: 'MonetizationAgent',
+        agentMode: 'monetization-tool',
         traceId: null,
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
         createdAt: new Date(),
       })),
   }),
   presentStyles: _t.router({
     recommend: _t.procedure
       .input((x: unknown) => x as { text: string; platform: string })
-      .mutation((): { id: number; content: string; agentId: string; traceId: string | null; createdAt: Date } => ({
+      .mutation((): PresentationRecommendOutput => ({
         id: 0,
         content: '',
         agentId: 'PresentationAgent',
+        agentMode: 'recommend',
         traceId: null,
+        isFallback: false,
+        tokensUsed: null,
+        modelUsed: null,
+        durationMs: null,
         createdAt: new Date(),
       })),
   }),
@@ -903,6 +986,17 @@ const _shadowRouter = _t.router({
     applyFormula: _t.procedure
       .input((x: unknown) => x as { queueId: number; newTopic: string })
       .mutation((): { content: string } => ({ content: '' })),
+    learn: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            samples: Array<{ text: string; source: string }>;
+          },
+      )
+      .mutation((): DeepLearnLearnOutput => ({ jobId: '', status: 'queued' })),
+    learnStatus: _t.procedure
+      .input((x: unknown) => x as { jobId: string })
+      .query((): DeepLearnStatusOutput => ({ status: 'queued', result: null })),
   }),
 });
 

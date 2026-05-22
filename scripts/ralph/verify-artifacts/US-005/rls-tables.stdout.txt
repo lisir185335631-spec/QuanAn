@@ -1,0 +1,54 @@
+
+> quanan@0.1.0 test:rls-tables /Users/return/Desktop/QuanAn
+> bash scripts/audit-admin-rls-tables.sh
+
+=== admin tables (26): expect RLS DISABLED ===
+  ? admin_audit_log NOT FOUND (table may not exist yet)
+  ? approval_requests NOT FOUND (table may not exist yet)
+  ? prompt_versions NOT FOUND (table may not exist yet)
+  ? user_quota NOT FOUND (table may not exist yet)
+  ? kpi_snapshots NOT FOUND (table may not exist yet)
+  ? ip_account_admin_notes NOT FOUND (table may not exist yet)
+  ? ip_account_anomaly_flags NOT FOUND (table may not exist yet)
+  ? invite_campaigns NOT FOUND (table may not exist yet)
+  ? trending_review_queue NOT FOUND (table may not exist yet)
+  ? trending_takedown NOT FOUND (table may not exist yet)
+  ? auto_review_rules NOT FOUND (table may not exist yet)
+  ? deep_learn_review_queue NOT FOUND (table may not exist yet)
+  ? user_violation_log NOT FOUND (table may not exist yet)
+  ? evolution_anomaly_flags NOT FOUND (table may not exist yet)
+  ? prompt_canary_config NOT FOUND (table may not exist yet)
+  ? quota_adjustment_log NOT FOUND (table may not exist yet)
+  ? admin_users NOT FOUND (table may not exist yet)
+  ? admin_sessions NOT FOUND (table may not exist yet)
+  ? admin_invite_campaign NOT FOUND (table may not exist yet)
+  ? admin_constants NOT FOUND (table may not exist yet)
+  ? admin_config NOT FOUND (table may not exist yet)
+  ? admin_ab_experiment NOT FOUND (table may not exist yet)
+  ? feature_flags NOT FOUND (table may not exist yet)
+  ? system_config NOT FOUND (table may not exist yet)
+  ? ab_experiments NOT FOUND (table may not exist yet)
+  ? ab_assignments NOT FOUND (table may not exist yet)
+
+=== main-app account tables (15): expect RLS ENABLED ===
+  ? ip_accounts NOT FOUND
+  ? step_data NOT FOUND
+  ? histories NOT FOUND
+  ? topics NOT FOUND
+  ? assets NOT FOUND
+  ? diagnosis_reports NOT FOUND
+  ? feedback_logs NOT FOUND
+  ? evolution_profiles NOT FOUND
+  ? evolution_insights NOT FOUND
+  ? deep_learning_archives NOT FOUND
+  ? knowledge_favorites NOT FOUND
+  ? knowledge_notes NOT FOUND
+  ? daily_tasks NOT FOUND
+  ? cost_log NOT FOUND
+  ? trending_items NOT FOUND
+
+=== Summary ===
+  Admin tables verified (RLS=false): 0/26
+  Main tables verified  (RLS=true):  0/15
+FAIL: one or more RLS states incorrect
+ ELIFECYCLE  Command failed with exit code 1.

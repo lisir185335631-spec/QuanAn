@@ -1,103 +1,68 @@
 
  RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
 
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_TYPES_20 长度 === 20
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_TYPES_20 第 1 = debate · 字面 1:1
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENTS_22 长度 === 22
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > 4 分组累加严格 6+5+6+5 = 22
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > DEBATE_H4_4 4 个 h4Label 字面 1:1 · 严禁 H4. 前缀 · 严禁英文
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SEARCH_PLACEHOLDER 字面 1:1 spec line 1679
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENT_COUNTER_TEMPLATE 含全角括号 · 字面 1:1 spec line 1693
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SCRIPT_DISPLAY_TEMPLATE 含全角冒号 + 半角 hyphen · 字面 1:1 spec line 1701
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > BUTTONS 4 字面 1:1 spec §7.8 line 1710-1712
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > SUBTITLE 字面 1:1 spec §7.8 line 1671
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > Step7DebateResult interface 字段结构
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > Step7Result interface 字段结构 · body 默认为 Step7DebateResult
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > TEXTAREA id/label/placeholder 字面 1:1 spec §7.8 line 1699
- ✓ src/lib/constants/__tests__/step7.test.ts > STEP7 constants > ELEMENT_GROUPS_4 length === 4 · 4 个 label 字面 1:1
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > returns { migrated:0, skipped:0 } when accountId is null
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > returns migrated=0 skipped=10 and writes FLAG when no legacy keys exist
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > returns { migrated:0, skipped:10 } on subsequent calls due to FLAG
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > migrates all 10 legacy keys when all have data
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > does not overwrite existing new key but still removes old key
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > migrates only keys that have old data and no new key conflict
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > migrates acc_step5_selected_topic to selected_topic suffix
- ✓ src/lib/migration/__tests__/legacy-ls.test.ts > migrateLegacyLs > handles QuotaExceededError gracefully: warns and continues
+stderr | src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx (9 tests) 81ms
+stderr | src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · H1 字面锁 "爆款文案解析"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx (9 tests) 110ms
+stderr | src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · H1 字面锁 "文案结构分析"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/Analysis.test.tsx (11 tests) 137ms
 stderr | src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(a) · LevelBadgeRow · profile.level=L2 active 高亮(D-237)
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(b) · 4 指标真数据 · feedbackCountGood=6 / needsImprovement=2 / deepLearning=3 / satisfactionRate=0.75
 stderr | src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(a) · 轮询启停 · data=null 时 refetchInterval fn 返回 3000
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(a) · 轮询启停 · data=null 时 refetchInterval fn 返回 3000
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(b) · server data 渲染 · 3 任务卡 h3 标题
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(c) · 生成今日任务 button → regenerateToday.mutate 调用
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(c2) · 重新生成 button(有任务时) → regenerateToday.mutate 调用
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(d) · markCompleted optimistic · mutate 调用 + useUtils.setData 调用
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(d2) · markCompleted onError → toast.error + setData 回滚
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(e) · EmptyState 无今日任务 · "AI 暂未生成今日任务" + "生成今日任务" button
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(e2) · 无 account → EmptyState "请先创建 IP 账号"
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-10(f) · isFallback=true → 灰色 banner "AI 暂未生成 · 显示规则建议"
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-1 · H1 字面锁 "今日行动清单"
- ✓ src/pages/__tests__/DailyTasks.test.tsx > DailyTasks PRD-25 US-003 > AC-7 · 打卡 → localStorage acc_ prefix getLsKey 写入
+ ✓ src/pages/__tests__/DailyTasks.test.tsx (11 tests) 161ms
 stderr | src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H1 字面锁 "VOICE CHAT"
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H1 字面锁 "VOICE CHAT"
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-1 · H3 模块标题 "你的专属 IP 变现顾问"
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-3 · 自我介绍字面锁 (VOICE_CHAT_INTRO)
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-7 · 6 quick prompts 全部渲染(字面对照)
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-7 · quick prompt click → 填到 input(不直接发送)
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (a) AC-2 · delta chunks 累积到 currentAnswer
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (b) AC-2 · tool_call hint 显示
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (c) AC-4 · done 后 history append + localStorage
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (d) AC-5 · error → retry button 显示
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > (e) AC-6 · cancel → partial=true hint in history
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-3 · done 후 tokensUsed footer 显示
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-2 · meta chunk → model hint 显示
- ✓ src/pages/tools/__tests__/VoiceChat.test.tsx > VoiceChat PRD-25 streaming > AC-5 · onError callback → retry button 显示
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(c) · 触发进化 button → evolve.mutate(rateableType=manual_trigger)
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(d) · 生成洞察 button · feedbackCountTotal<5 → disabled + title=需 ≥ 5 反馈
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(d2) · 生成洞察 button · feedbackCountTotal>=5 → enabled
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(e) · 进化洞察模块 · latestInsight summary 渲染
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(e2) · 进化洞察模块 · null latestInsight → 暂无洞察 D-237 字面锁
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(f) · 进化方向 · profile.currentDirection=创意性优先 → 初始 selected
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-10(f2) · 进化方向 change → updateConfig.mutate({currentDirection})
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-1 · null profile → EmptyState 新用户 · 暂无进化数据
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-1 · isLoading → Loader2 spinner visible
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > H1 · 智能体进化中心
- ✓ src/pages/__tests__/Evolution.test.tsx > Evolution page · PRD-25 US-004 > AC-7 · 新增学习 button → toast.info 正确文案
+ ✓ src/pages/tools/__tests__/VoiceChat.test.tsx (13 tests) 174ms
+stderr | src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx (10 tests) 265ms
+ ✓ src/pages/__tests__/Evolution.test.tsx (13 tests) 223ms
+stderr | src/pages/tools/__tests__/PresentStyles.test.tsx > PresentStyles > AC-6 · H1 字面锁 "14 呈现形式"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/PresentStyles.test.tsx (7 tests) 308ms
+ ✓ src/lib/constants/__tests__/step7.test.ts (14 tests) 2ms
+stderr | src/pages/tools/__tests__/DeepLearning.test.tsx > DeepLearning > AC-9 · H1 字面锁 "文案深度学习"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/DeepLearning.test.tsx (6 tests) 72ms
+stderr | src/pages/tools/__tests__/Monetization.test.tsx > Monetization > AC-3 · H1 字面锁 "IP 变现模型"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/Monetization.test.tsx (6 tests) 88ms
+stderr | src/pages/tools/__tests__/PrivateDomain.test.tsx > PrivateDomain page > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/lib/migration/__tests__/legacy-ls.test.ts (8 tests) 5ms
 stderr | src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (b) 报告渲染 dimensions[dim.id].score — 7 维度得分从 LLM 结果来
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (c) isFallback=true 时显示灰色 hint banner + retry button
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (d) onError 时显示 retry button + toast.error
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > (e) mutation pending 时显示 Loader2 spinner + "AI 分析中..."
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > 每维度卡显示 issues 和 suggestions 列表
- ✓ src/pages/modules/__tests__/Diagnosis.test.tsx > Diagnosis · PRD-25 US-001 AC-9 > 优先改进项 priority list 渲染
-stderr | src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · H1 字面锁 "7 维度 IP 诊断报告"
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · H1 字面锁 "7 维度 IP 诊断报告"
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · 副标题字面锁
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > Step 1 渲染: "步骤 1 / 8 · 基本信息" + 行业/产品 input
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 8 step 切换: 点下一步进入 Step 2
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > checkbox 多选 toggle: 选中后再次点击取消
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > Step 8 报告显示: 7 维度评分 + 导出 PDF button
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-7 · localStorage save: 进入 step 2 后 LS 有记录
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 导出 PDF button 点击: toast.info 调用
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 上一步 disabled on Step 1
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 上一步 enabled after step 2
- ✓ src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > 最后一步 CTA 文字改 "生成诊断报告"
+ ✓ src/pages/modules/__tests__/Diagnosis.test.tsx (7 tests) 236ms
+ ✓ src/pages/tools/__tests__/PrivateDomain.test.tsx (6 tests) 195ms
 stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > modal 弹: 点击"新建账号" button dialog 打开
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
@@ -118,73 +83,48 @@ Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogCont
 stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 创建成功: 填完 name+industry+platform → submit → mutateAsync + navigate(/step/1)
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > modal 弹: 点击"新建账号" button dialog 打开
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 4 字段渲染: name / industry / description input + platform radio
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 空 name 时 submit disabled
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 填写 name+industry 但无 platform 时仍 disabled
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 取消关闭: 点击取消按钮关闭 modal
+stderr | src/pages/__tests__/Diagnosis.test.tsx > Diagnosis > AC-1 · H1 字面锁 "7 维度 IP 诊断报告"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/__tests__/Diagnosis.test.tsx (11 tests) 231ms
 stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 全部填完后 submit enabled
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > 创建成功: 填完 name+industry+platform → submit → mutateAsync + navigate(/step/1)
- ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > disabled 条件: 全部填完后 submit enabled
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (a) save() writes LS then calls trpc mutation
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (b) load() reads synchronously from localStorage
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (b) load() returns null when key absent
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (c) dbQuery enabled=true when accountId !== null
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (c) dbQuery enabled=false when accountId === null
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > (c) dbQuery has staleTime 30000 and retry false
- ✓ src/hooks/__tests__/useStepData.test.tsx > useStepData > return shape includes save, load, isSaving, dbQuery
- ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (d) returns null when accountId is null
- ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (d) returns null when LS key absent
- ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (d) returns parsed value when key present
- ✓ src/hooks/__tests__/useStepData.test.tsx > readOtherStep > (e) JSON.parse failure → console.warn + return null
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > 8 dimensions 数量
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > first dimension is basic (Step 1 基本信息)
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > 19 checkbox 总数 (spec §8.5.1 实际: 3+3+2+2+3+3+3=19)
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > positioning 3 checkboxes · 字面 1:1 spec §8.5.1
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > branding 3 checkboxes · 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > traffic 2 checkboxes · 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > value 2 checkboxes · 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > case 3 checkboxes · 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > persona 3 checkboxes · 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_DIMENSIONS_8 > authentic 3 checkboxes · 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_STAGES_4 > 4 阶段字面 · 含中点 · · spec §8.5.1
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > DIAGNOSIS_STAGES_4 > 4 阶段 value 字段存在且唯一
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > REPORT_DIMENSIONS_7 > 7 report dimensions (slice off basic)
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > Literal strings > H1 字面锁
- ✓ src/lib/constants/__tests__/diagnosis.test.ts > Literal strings > subtitle 字面锁
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > US-007 AC-7: 「智能推荐」button 渲染且 industry 为空时 disabled
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > US-007 AC-7: 填写 industry 后「智能推荐」button enabled
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+stderr | src/components/accounts/__tests__/CreateAccountModal.test.tsx > CreateAccountModal > US-007 AC-7: smartRecommend onSuccess 后显示 rationale hint
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+ ✓ src/components/accounts/__tests__/CreateAccountModal.test.tsx (10 tests) 293ms
+stderr | src/components/step8/Step8GeneratePlan.test.tsx > Step8GeneratePlan > AC-1: 表单字段渲染 — textarea + audience input + platform radio + experience 3 buttons
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/components/step8/Step8GeneratePlan.test.tsx (6 tests) 112ms
+stderr | src/components/step8/Step8OptimizeScript.test.tsx > Step8OptimizeScript > AC-3: 表单渲染 — textarea + 优化目标 input + submit button
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/components/step8/Step8OptimizeScript.test.tsx (6 tests) 82ms
+ ✓ src/lib/constants/__tests__/diagnosis.test.ts (15 tests) 5ms
+ ✓ src/hooks/__tests__/useStepData.test.tsx (11 tests) 20ms
+ ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx (11 tests) 111ms
+ ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx (8 tests) 84ms
 stderr | src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-1 · H1 字面锁 "直播策划"
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-1 · H1 字面锁 "直播策划"
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-1 · STEP_TAG "STEP 08 · 直播策划" 顶部副标签
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-2 · 2 tabs 字面锁 "生成直播方案" + "AI 优化话术" (shadcn Tabs)
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-3/4 · 3 经验 radio dual-line: label + subtitle 均渲染
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-4 · "生成直播方案" CTA 初始 disabled (product 为空)
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-4 · 填写 product + 选 platform + 选 experience → CTA enabled
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-6 · 切换到 tab 2 → "AI 优化话术" CTA 初始 disabled (< 10 字)
- ✓ src/pages/step/__tests__/Step8.test.tsx > Step8 > AC-5 · 提交 tab 1 表单后渲染 6 H3 stub 输出区块
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > props 渲染: name / industry / platform 显示
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > ACTIVE 标条件: isActive=true 显示 chip
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > ACTIVE 标条件: isActive=false 不显示 chip
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > 圆形头像首字符: 显示 name[0]
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > onActivate: 点击卡片主体触发
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > onEdit click: 编辑 button 触发
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > onDelete click: 删除 button 触发
- ✓ src/components/accounts/__tests__/IpAccountCard.test.tsx > IpAccountCard > personalInfo + ipPositioning: 有值时渲染
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > props 渲染: 步骤指示器 + H2 + 副标
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > checkbox 列渲染: 3 checkboxes for positioning
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > checkbox toggle 调用 onCheckboxToggle
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 下一步 click 调用 onNext
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 上一步 click 调用 onPrev
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > isFirst=true: 上一步 button disabled
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > isFirst=false: 上一步 button enabled
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 最后一步 CTA 变化: isLast=true → "生成诊断报告"
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > 非最后步: 下一步 button text "下一步"
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > Step 1 (basic): 渲染行业/产品 input + 4 stage radio
- ✓ src/components/diagnosis/__tests__/DiagnosisStepCard.test.tsx > DiagnosisStepCard > selected checkbox 状态: border-primary class 应用
+ ✓ src/pages/step/__tests__/Step8.test.tsx (8 tests) 251ms
+stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/test/pages.test.tsx (30 tests) 400ms
 stderr | src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · H1 字面锁 "IP 账号管理"
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
@@ -192,267 +132,59 @@ stderr | src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · H1 字�
 stderr | src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-3 · 新建账号 button 点击弹 modal
 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · H1 字面锁 "IP 账号管理"
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-1 · 副标题字面锁
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · 账号列表渲染: 3 张卡片显示
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-2 · ACTIVE 标显示: id=1 卡片显示 ACTIVE chip
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · 切换 active: 点击非 active 卡调 switchTo
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · 新建账号 trigger button 存在
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-3 · 新建账号 button 点击弹 modal
- ✓ src/pages/__tests__/Accounts.test.tsx > Accounts page > AC-5 · personalInfo 显示: 账号3 description 渲染
-stderr | src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
- ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · 副标题字面锁 "专为获客设计的短视频方案，让精准客户主动找上门"
- ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-3 · CTA "生成获客方案" 初始 disabled (audience + sellingPoints 为空)
- ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-3 · 填写 audience + sellingPoints → CTA enabled
- ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-4 · 提交后渲染 3 方案 grid · 每方案含 4 H4 字面锁
- ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · industry select 有 "企业服务" 选项可被选中
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps currentAnalysis to market_analysis
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps ladder to three_stages with STEP4B_THREE_STAGES ranges
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps ladder[i].action to coreStrategy
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps revenueStructure primary at 60% and secondary at 25%/15%
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > maps successCases title/summary to name/result fields
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > handles empty ladder gracefully
- ✓ src/pages/step/__tests__/Step4b.test.tsx > adaptStep4bResult > revenue_structure uses simple percent numbers · 0 recharts dependency
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > 三阶梯 range 字面 1:1 spec §7.5 line 1546-1564
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > 4 产品类型字面 1:1 spec §7.5 line 1551
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > SUBTITLE 字面严格 1:1 spec §7.5 line 1521
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > OUTPUT_H3_5 数量锁 · length === 5
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > INPUTS_3 数量锁 · length === 1 · PRD-22 US-008 行业领域 1 项
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > TEXTAREA required === true · id === product_description
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > BUTTONS 3 字面 1:1 spec §7.5 line 1532
- ✓ src/lib/constants/__tests__/step4b.test.ts > STEP4B constants > Step4bResult interface 字段结构
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_EXPERIENCES_3 · 3 entries · id/label/subtitle 字面锁 (AC-3)
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_OUTPUT_MODULES_6 · plain labels no numbers · length === 6 (AC-5)
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_PLATFORMS_5 · length === 5 · PlatformInlineRadio import 合法
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > SUBTITLE_TEMPLATE 字面 1:1 spec §7.9 line 1753 · 含全角中文冒号
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > STEP8_OPTIMIZE_OUTPUT_MODULES_4 · 4 H3 labels 字面锁 (AC-7)
- ✓ src/lib/constants/__tests__/step8.test.ts > STEP8 constants > Step8Result interface · generate_plan + optimize_script 两分支
+ ✓ src/pages/__tests__/Accounts.test.tsx (8 tests) 159ms
+ ✓ src/lib/constants/__tests__/step4b.test.ts (8 tests) 1ms
+ ✓ src/lib/constants/__tests__/step8.test.ts (6 tests) 9ms
+ ✓ src/lib/constants/__tests__/step6.test.ts (6 tests) 1ms
+ ✓ src/pages/step/__tests__/Step4b.test.tsx (7 tests) 1ms
+ ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx (7 tests) 74ms
+ ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx (7 tests) 164ms
+ ✓ src/lib/constants/__tests__/step5.test.ts (8 tests) 3ms
+ ✓ src/test/feedback-button.test.tsx (8 tests) 165ms
 stderr | src/pages/step/__tests__/Step7.test.tsx > Step7 > renders H1 字面锁 "文案生成"
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders H1 字面锁 "文案生成"
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders STEP_TAG 字面锁 (AC-1 · D-224)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 选择脚本类型 label (AC-2)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 生成爆款文案 CTA button (AC-2)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders navigation buttons (AC-2)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders AI 优化文案 secondary button (AC-2)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 4 H4 debate output sections in DOM by default (AC-4 · AC-7)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 评论区引导 and 话题标签 H4 sections (AC-4)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders 优化方向 input (AC-2)
- ✓ src/pages/step/__tests__/Step7.test.tsx > Step7 > renders subtitle 字面锁 (AC-1)
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > SUBTITLE 字面严格 1:1 spec §7.7 line 1639
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > TEXTAREA placeholder 含 \n\n 两段换行 · 「文案生成」全角引号 · 全角括号
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > TEXTAREA_MIN_CHARS === 10
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > CHAR_COUNTER_TEMPLATE 字面严格 1:1 spec §7.7 line 1647
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > OUTPUT_MODULES_3 length === 3 · 3 个 h3Label 字面 1:1
- ✓ src/lib/constants/__tests__/step6.test.ts > STEP6 constants > Step6Result interface 字段结构
-stderr | src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · H1 字面锁 "文案结构分析"
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · H1 字面锁 "文案结构分析"
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-1 · 副标题包含"多维度深度分析"
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-2 · 初始字符计数显示 "0 字"
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-2 · 输入后字符计数更新
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-3 · CTA "开始分析" 初始 disabled (text < 10 字)
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-3 · text ≥ 10 字 → CTA enabled
- ✓ src/pages/tools/__tests__/Analysis.test.tsx > Analysis > AC-4 · 提交后渲染 5 H3 stub 区块(字面锁)
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders thumbs-up and thumbs-down buttons
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > renders helper text
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with good type and agentId on thumbs-up click
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > calls mutate with bad type and agentId on thumbs-down click
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > passes stepKey and agentId correctly for ip-plan
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-buttons wrapper
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-good on thumbs-up button
- ✓ src/test/feedback-button.test.tsx > FeedbackButton > has data-testid feedback-bad on thumbs-down button
-stderr | src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/test/pages.test.tsx > stepConfig > has all 9 step keys
- ✓ src/test/pages.test.tsx > stepConfig > step1 has non-empty title and description
- ✓ src/test/pages.test.tsx > Step pages render > Step1 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step2 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step5 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step8 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Step pages render > Step9 renders h1 with correct title
- ✓ src/test/pages.test.tsx > Tool pages render > Generate renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Trending renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Copywriting renders h1 heading
- ✓ src/test/pages.test.tsx > Tool pages render > Knowledge renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Diagnosis renders h1 字面锁 "7 维度 IP 诊断报告" (PRD-23 US-001 完整化)
- ✓ src/test/pages.test.tsx > Module pages render > Diagnosis shows 8-step wizard (Step 1 · 基本信息)
- ✓ src/test/pages.test.tsx > Module pages render > Evolution renders h1 heading (PRD-24 US-002 · 智能体进化中心)
- ✓ src/test/pages.test.tsx > Module pages render > Evolution shows spec §8.5.3 subtitle
- ✓ src/test/pages.test.tsx > Module pages render > Accounts renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > Accounts shows empty state when no data
- ✓ src/test/pages.test.tsx > Module pages render > DailyTasks renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > MyTopics renders h1 heading
- ✓ src/test/pages.test.tsx > Module pages render > History renders h1 heading
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders ip-plan-page with h1 我的IP方案
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > renders 9 step cards with 查看详情 buttons
- ✓ src/test/pages.test.tsx > IpPlan page (US-010) > shows 已完成 0 / 9 步 with empty completedSteps
- ✓ src/test/pages.test.tsx > VoiceChat page (PRD-24 US-003) > H1 字面锁 VOICE CHAT
- ✓ src/test/pages.test.tsx > VoiceChat page (PRD-24 US-003) > H3 模块标题 你的专属 IP 变现顾问
- ✓ src/test/pages.test.tsx > VoiceChat page (PRD-24 US-003) > input placeholder 有什么问题尽管问我...
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders children when no error
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders fallback UI when child throws
- ✓ src/test/pages.test.tsx > ErrorBoundary > renders custom fallback when provided
- ✓ src/test/pages.test.tsx > ErrorBoundary > resets error state on button click
-stderr | src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · H1 字面锁 "爆款文案解析"
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · H1 字面锁 "爆款文案解析"
- ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-1 · 副标题包含 "AI 将深度拆解爆款密码，支持一键仿写"
- ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-4 · CTA "开始深度解析" 初始 disabled (copy < 10 字)
- ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-4 · copy ≥ 10 字 → CTA enabled
- ✓ src/pages/tools/__tests__/VideoAnalysis.test.tsx > VideoAnalysis > AC-5 · 提交后渲染 5 H3 stub 输出区块
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > renders all 20 script type cards
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > controlled: calls onChange with key when card clicked
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > controlled: selected card has border-primary styling
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > disabled: does not call onChange when clicked
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > showSearch=true: renders search input and filters cards
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > showMethodology=true: renders methodology text for each card
- ✓ src/components/inline-pickers/__tests__/ScriptTypeInlineCards.test.tsx > ScriptTypeInlineCards > SCRIPT_TYPES has exactly 20 items
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > renders all 5 platform buttons
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > controlled: calls onChange with platform key when clicked
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > controlled: selected platform button has border-primary
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > disabled: does not call onChange when clicked
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > size=sm: applies sm padding class
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > size=lg: applies lg padding class
- ✓ src/components/inline-pickers/__tests__/PlatformInlineRadio.test.tsx > PlatformInlineRadio > renders emoji for each platform (by label presence)
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > SUBTITLE 字面严格 1:1 spec §7.6 line 1595
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > 5 类 label 数组字面 1:1 spec §7.6 line 1626-1630
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > INPUTS_2 数量锁 · length === 2
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > FILE_UPLOADS_2 数量锁 · length === 2
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > FILE_MAX_MB === 20
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > BUTTON_GENERATE 字面严格 1:1 spec §7.6 line 1606
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > TOTAL_TOPICS === 100
- ✓ src/lib/constants/__tests__/step5.test.ts > STEP5 constants > Step5Topic interface 字段结构
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > renders all elements in 4 groups (grouped layout)
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > controlled: adds key when unselected element clicked
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > controlled: removes key when selected element clicked
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > showCount=true: displays selected count text
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > layout=compact: renders flat list without group headings
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > disabled: does not call onChange when clicked
- ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx > ElementsInlineMultiPicker > HOT_ELEMENT_GROUPS has exactly 4 groups
-stderr | src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
- ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · 副标题包含 "AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导"
- ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-3 · CTA "生成制作方案" 初始 disabled (text < 10 字)
- ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-3 · text ≥ 10 字 → CTA enabled
- ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-4 · 提交后渲染 4 H3 stub 区块(字面锁)
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-2 · EVOLUTION_LEVELS_5 长度为 5
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-2 · EVOLUTION_LEVELS_5 字面 1:1 spec §8.5.3 (完整字面对照)
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-3 · EVOLUTION_MODULES_5 长度为 5
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-3 · EVOLUTION_MODULES_5 字面锁(顺序 + 全量)
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-4 · EVOLUTION_DIRECTIONS_4 长度为 4
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-4 · EVOLUTION_DIRECTIONS_4 字面锁(全量字面对照)
- ✓ src/lib/constants/__tests__/evolution.test.ts > evolution constants · D-237/D-238 字面锁 > AC-1 · EVOLUTION_SUBTITLE spec §8.5.3 字面对照
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 0/9 when completedSteps is empty
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 9/9 when all steps completed
- ✓ src/test/step-progress.test.tsx > StepProgress > renders 3/9 when 3 steps completed
- ✓ src/test/step-progress.test.tsx > StepProgress > shows loading skeleton when isLoading=true
- ✓ src/test/step-progress.test.tsx > StepProgress > renders all 9 step items
- ✓ src/test/step-progress.test.tsx > StepProgress > marks completed step with data-status=completed
- ✓ src/test/step-progress.test.tsx > StepProgress > marks first incomplete step with data-status=current
- ✓ src/test/step-progress.test.tsx > StepProgress > marks later steps as pending
- ✓ src/test/step-progress.test.tsx > StepProgress > STEP_ORDER_KEYS has exactly 9 entries
- ✓ src/test/step-progress.test.tsx > StepProgress > accepts optional className prop without error
- ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_STUB 长度 3-5
- ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_STUB 字面包含 spec §8.5.2 line 2438-2440 示例
- ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_LOADING_TEXT 字面锁 "AI 老师正在为你制定今日任务..."
- ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > DAILY_TASKS_EMPTY_* 字面锁
- ✓ src/lib/constants/__tests__/daily-tasks.test.ts > daily-tasks constants > 每项 stub 任务包含 id/title/hint 字段且类型正确
- ✓ src/components/StepProgress.test.tsx > StepProgress > renders loading skeleton when isLoading=true
- ✓ src/components/StepProgress.test.tsx > StepProgress > renders 9 step items when loaded
- ✓ src/components/StepProgress.test.tsx > StepProgress > marks completed steps with status=completed
- ✓ src/components/StepProgress.test.tsx > StepProgress > marks first incomplete step as current, rest as pending
- ✓ src/components/StepProgress.test.tsx > StepProgress > shows 0/9 progress text when no steps completed
- ✓ src/components/StepProgress.test.tsx > StepProgress > STEP_ORDER_KEYS contains 9 keys
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > exactly 6 prompts (D-239)
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[0] 字面锁
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[1] 字面锁
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[2] 字面锁
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[3] 字面锁
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[4] 字面锁
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_QUICK_PROMPTS_6 > prompt[5] 字面锁
- ✓ src/lib/constants/__tests__/voice-chat.test.ts > VOICE_CHAT_INTRO > 自我介绍字面锁 (AC-3)
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > SUBTITLE 字面严格 1:1 spec §7.4 line 1492
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > INPUTS_3 数量锁 · length === 3
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > OUTPUT_H3_3 数量锁 · length === 3
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > PLATFORMS_5 re-export · length === 5
- ✓ src/lib/constants/__tests__/step4.test.ts > STEP4 constants > Step4Result interface 字段结构
+ ✓ src/pages/step/__tests__/Step7.test.tsx (10 tests) 291ms
+ ✓ src/components/inline-pickers/__tests__/ElementsInlineMultiPicker.test.tsx (7 tests) 209ms
+ ✓ src/lib/constants/__tests__/evolution.test.ts (7 tests) 2ms
+ ✓ src/test/step-progress.test.tsx (10 tests) 90ms
+ ✓ src/lib/constants/__tests__/daily-tasks.test.ts (5 tests) 3ms
+ ✓ src/lib/constants/__tests__/voice-chat.test.ts (8 tests) 3ms
+ ✓ src/components/StepProgress.test.tsx (6 tests) 27ms
 stderr | src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders h1 with 爆款选题库
- ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders EmptyState when no result
- ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders CTA button 一键生成
- ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders industry input placeholder
- ✓ src/pages/step/__tests__/Step5.test.tsx > Step5 > renders STEP_TAG
+ ✓ src/pages/step/__tests__/Step5.test.tsx (5 tests) 77ms
+ ✓ src/lib/constants/__tests__/step4.test.ts (5 tests) 2ms
 stderr | src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders h1 with 拍摄计划
- ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders STEP_TAG
- ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders EmptyState when no result
- ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > renders generate button
- ✓ src/pages/step/__tests__/Step6.test.tsx > Step6 > generate button is disabled when textarea is empty
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 3 textareas
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > 6 H3 output blocks
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > first textarea (personalInfo) is required
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > advantages and story are not required
- ✓ src/lib/constants/__tests__/step3b.test.ts > STEP3B constants > H3 labels match D-220 字面锁
+ ✓ src/pages/step/__tests__/Step6.test.tsx (5 tests) 111ms
 stderr | src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > renders h1 with correct title
- ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > renders EmptyState when no result
- ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > renders CTA button with new label
- ✓ src/pages/step/__tests__/Step1.test.tsx > Step1 > CTA label uses constant not hardcoded string
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 5 platforms
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > 6 H3 output blocks
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > all platforms have emoji prefix
- ✓ src/lib/constants/__tests__/step3.test.ts > STEP3 constants > output H3 labels match D-220 字面锁 (no number prefix)
-stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
-⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
- ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders EmptyState when no result
- ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders CTA button
- ✓ src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders personal info textarea label
+ ✓ src/pages/step/__tests__/Step1.test.tsx (4 tests) 164ms
 stderr | src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > renders h1 with correct title
- ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > renders EmptyState when no result
- ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > renders CTA button
- ✓ src/pages/step/__tests__/Step3.test.tsx > Step3 > shows industry prefill subtitle
- ✓ src/components/states/__tests__/states.test.tsx > LoadingState > renders custom text
- ✓ src/components/states/__tests__/states.test.tsx > ErrorState > shows 重试 button when onRetry is provided
- ✓ src/components/states/__tests__/states.test.tsx > EmptyState > renders default title '暂无数据'
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > total count is 56
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 生活服务 count is 18
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_INDUSTRIES_56 > 电商零售 count is 13
- ✓ src/lib/constants/__tests__/industries.test.ts > STEP1_TABS > non-all tab counts sum to 56
+ ✓ src/pages/step/__tests__/Step3.test.tsx (4 tests) 98ms
+ ✓ src/lib/constants/__tests__/step3b.test.ts (5 tests) 2ms
+stderr | src/pages/step/__tests__/Step3b.test.tsx > Step3b > renders h1 with correct title
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
 
- Test Files  44 passed (44)
-      Tests  351 passed (351)
-   Start at  17:31:08
-   Duration  4.39s (transform 1.67s, setup 1.94s, collect 9.28s, tests 4.56s, environment 13.08s, prepare 2.14s)
+ ✓ src/pages/step/__tests__/Step3b.test.tsx (4 tests) 65ms
+ ✓ src/lib/constants/__tests__/step3.test.ts (4 tests) 2ms
+ ✓ src/lib/constants/__tests__/industries.test.ts (4 tests) 1ms
+ ✓ src/components/states/__tests__/states.test.tsx (3 tests) 33ms
+
+ Test Files  50 passed (50)
+      Tests  407 passed (407)
+   Start at  13:18:26
+   Duration  4.58s (transform 1.78s, setup 2.37s, collect 9.57s, tests 5.40s, environment 13.09s, prepare 2.04s)
 

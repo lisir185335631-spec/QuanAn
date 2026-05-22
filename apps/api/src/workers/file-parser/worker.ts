@@ -11,7 +11,6 @@
 
 import { createHash, randomBytes } from 'node:crypto';
 
-import type { Prisma} from '@prisma/client';
 import { type PrismaClient } from '@prisma/client';
 import { Worker } from 'bullmq';
 
@@ -23,6 +22,7 @@ import { computeDeepLearnAutoVerdict } from '@/services/admin/content-review/dee
 import { FILE_PARSER_QUEUE_NAME } from './queue';
 
 import type { FileParserJobPayload } from './queue';
+import type { Prisma} from '@prisma/client';
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
 

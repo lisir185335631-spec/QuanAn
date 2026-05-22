@@ -60,6 +60,8 @@ scripts/ralph/backups/
 scripts/ralph/__pycache__/
 # scripts/ralph/verify-artifacts/ · audit-artifacts.py 产物 · 历史一次入库 · 新生成不入
 scripts/ralph/verify-artifacts/
+# apps/web 下的 ralph 运行时产物(validate ws 创建) · 不入库
+apps/web/scripts/ralph/
 .agents/tech-debt.json.bak
 .agents/plans/
 

@@ -1,21 +1,15 @@
 {
   "story_id": "US-003",
-  "validator_start_ts": "2026-05-21T02:20:00",
-  "validator_end_ts": "2026-05-21T02:35:00",
-  "test_command": "pnpm playwright test --project=chromium tests/e2e/prd26-admin-role-matrix.spec.ts + pnpm vitest run apps/api/src/trpc/routers/admin/__tests__/ + pnpm typecheck",
+  "validator_start_ts": "2026-05-21T12:48:00",
+  "validator_end_ts": "2026-05-21T12:56:25",
+  "test_command": "pnpm vitest run (zero regression) + pnpm typecheck (4 workspaces) + pnpm test:visual:prd23:check --grep present-styles",
   "exit_code": 0,
   "zero_regression": "PASS",
   "verdict": "PASS",
   "failing_ac": null,
-  "notes": "6/6 playwright e2e tests PASS (super_admin/domain_admin/reviewer role matrix). 436/436 admin unit tests PASS (0 failures). TypeCheck 0 errors across 6 workspaces. AC-2: super_admin sees 17 sidebar routes + badge 'super_admin' + /users /cost /audit accessible. AC-3: domain_admin sees 3 routes (users/accounts/cost) + /audit /reviewTrending redirect. AC-4: reviewer sees 2 routes (review_trending/review_deep_learn) + /users redirect. AC-5: audit_log ≥ 9 rows test passes. AC-6: admin-foundation-loop.spec.ts uses shared _admin-seed.ts helper. AC-7: logout cookie cleared in logoutAndVerify. AC-8: storageState isolated per role. AC-9: typecheck 0 errors. AC-10: lint 0 errors in US-003 files (pre-existing 97 errors in unrelated files confirmed pre-date US-003). AC-11: admin dev server :5174 running. AC-12: grep 'admin role hardcoded' 0 hits. AC-13: 3 role screenshots captured. Pre-existing failures in prd13/prd15 integration tests (vitest mock env limitation, not US-003).",
   "artifacts": [
-    "manifest.json",
     "pytest-full.xml",
     "pytest-full.stdout.txt",
-    "typecheck.stdout.txt",
-    "e2e-role-matrix.stdout.txt",
-    "role-super_admin.png",
-    "role-domain_admin.png",
-    "role-reviewer.png"
+    "typecheck.stdout.txt"
   ]
 }

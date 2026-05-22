@@ -81,6 +81,7 @@ export interface ToolDef {
 const MODEL_BY_TIER = {
   reasoning:   { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
   lightweight: { primary: 'claude-haiku-4-5',  fallback: 'gpt-4o-mini' },
+  balanced:    { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
 } as const satisfies Record<ModelTier, { primary: string; fallback: string }>;
 
 // Lazy-created SDK clients (API keys never logged — AC-9)

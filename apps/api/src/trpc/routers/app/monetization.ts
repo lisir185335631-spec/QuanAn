@@ -1,49 +1,70 @@
 /**
- * monetization router — PRD-2 US-004
- * AC-5: 1 procedure (generate) · mock
- * AC-7: mutation writes History row with trace_id
- * AC-8: no LLM call — MonetizationAgent 留 PRD-3+
- * Note: Zod schemas inlined — @quanan/schemas/specialist-io has canonical definition for client use
+ * monetization router — PRD-27 US-001 (D-259)
+ * AC-1: generate mutation 改 mock → 真调 monetizationAgent.execute('monetization-tool')
+ * AC-5: cost_log 由 BaseSpecialist 自动处理(eventType: specialist_call)
  */
 
 import { z } from 'zod';
 
+import { monetizationAgent } from '@/specialists/MonetizationAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
 import type { Prisma } from '@prisma/client';
 
 const generateMonetizationInput = z.object({
-  stepKey: z.string().min(1).max(64).default('step4b'),
-  industryContext: z.record(z.unknown()).optional(),
-  audienceProfile: z.record(z.unknown()).optional(),
+  industryContext: z.string().max(500).optional(),
+  audienceProfile: z.string().max(500).optional(),
+  ipPositioning: z.string().max(500).optional(),
+  productDescription: z.string().max(1000).optional(),
 });
 
 const HISTORY_SELECT = {
   id: true,
   content: true,
   agentId: true,
+  agentMode: true,
   traceId: true,
+  isFallback: true,
+  tokensUsed: true,
+  modelUsed: true,
+  durationMs: true,
   createdAt: true,
 } satisfies Prisma.HistorySelect;
 
 export const monetizationRouter = router({
-  /** Generate monetization strategy (P1 mock) */
+  /** Generate monetization model via MonetizationAgent (monetization-tool mode · AC-1) */
   generate: protectedProcedure
     .input(generateMonetizationInput)
-    .mutation(async ({ ctx, input: _input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { prisma, activeAccountId, traceId } = ctx;
+
+      const agentRes = await monetizationAgent.execute({
+        accountId: activeAccountId!,
+        mode: 'monetization-tool',
+        userInput: input,
+        traceId: traceId ?? undefined,
+        stepKey: 'tool-monetization',
+      });
+
       const row = await prisma.history.create({
         data: {
           accountId: activeAccountId!,
           agentId: 'MonetizationAgent',
+          agentMode: 'monetization-tool',
           sourceType: 'user',
-          inputSummary: '[mock]',
-          content: '[mock]',
+          inputSummary: input.productDescription?.substring(0, 100) ?? '[monetization-tool]',
+          content: JSON.stringify(agentRes.result),
+          contentType: 'json',
+          isFallback: agentRes.isFallback,
+          tokensUsed: agentRes.tokensUsed.total,
+          modelUsed: agentRes.modelUsed,
+          durationMs: agentRes.durationMs,
           traceId: traceId ?? null,
         },
         select: HISTORY_SELECT,
       });
+
       return row;
     }),
 });

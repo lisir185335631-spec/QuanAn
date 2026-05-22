@@ -13,7 +13,7 @@ export interface PrivateDomainStage {
 
 export const PRIVATE_DOMAIN_STAGES: readonly PrivateDomainStage[] = [
   { key: 'welcome',  label: '欢迎话术', desc: '新好友添加后的第一印象话术', coreGoal: '自我介绍 + 1 个具体价值 · 让对方留下' },
-  { key: 'icebreak', label: '破冰暖场', desc: '第 1-2 天 · 让对方主动聊',     coreGoal: '提具体问题 / 分享干货 · 不推产品' },
+  { key: 'warmup',   label: '破冰暖场', desc: '第 1-2 天 · 让对方主动聊',     coreGoal: '提具体问题 / 分享干货 · 不推产品' },
   { key: 'trust',    label: '信任建立', desc: '第 3-7 天 · 建立专业信任',     coreGoal: '真实案例 / 用户证明 / 个人故事' },
   { key: 'discover', label: '需求挖掘', desc: '探索用户痛点',                 coreGoal: '5W1H 提问 / 倾听 · 找到真需求' },
   { key: 'close',    label: '成交话术', desc: '临门一脚 · 转化',              coreGoal: 'FABE 介绍 + 限时(合规)+ 案例' },

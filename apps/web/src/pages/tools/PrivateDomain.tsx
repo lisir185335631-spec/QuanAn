@@ -1,13 +1,8 @@
 /**
- * PrivateDomain.tsx — /tools/private-domain 私域成交流程工具 · PRD-15 US-005
- * 1:1 实现 ui/_1/_5/_7/_14 4 设计稿(4 view mode)
- * AC-1: 400+ 行完整实现(18 行 stub → 全功能页面)
- * AC-6: URL state ?view=flow|config|result|history 切换
- * AC-7: localStorage draft private_domain_draft_${userId} debounce 1s 持久化
- * AC-3: 配置表单 6 字段 productDescription/productPrice/targetAudience/ipPositioning/currentChannel/monthlyTraffic
- * AC-4: 提交后调 trpc.privateDomain.generate.useMutation() · 渲染 6 阶段完整 SOP
- * AC-5: 历史回看 · DenseTable + 点击恢复 View 1-3 状态
- * AC-8: PrivateDomainAgent SSE 流式输出 · 每阶段独立 chunk · cost_log 写入
+ * PrivateDomain.tsx — /tools/private-domain 私域成交流程工具 · PRD-27 US-002
+ * AC-5: PRIVATE_DOMAIN_STAGES 引自 constants
+ * AC-6: 6 tab UI · tab click → onPhaseChange → state · generate → trpc.privateDomain.generate.useMutation
+ * AC-7: isFallback hint + cost_log + error handle 同 US-001
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,41 +13,29 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { useAuth } from '@/hooks/useAuth';
+import { PRIVATE_DOMAIN_STAGES } from '@/lib/constants/private-domain';
 import { getToolLsKey } from '@/lib/ls-namespace';
 import { trpc, trpcClient } from '@/lib/trpc';
-
 
 import { DEFAULT_FORM, PrivateDomainConfigView } from './components/PrivateDomainConfigView';
 import { PrivateDomainFlowView } from './components/PrivateDomainFlowView';
 import { PrivateDomainHistoryView } from './components/PrivateDomainHistoryView';
-import { PrivateDomainResultView } from './components/PrivateDomainResultView';
 
-import type { PhaseData } from './components/PhaseCard';
 import type { PrivateDomainFormValues } from './components/PrivateDomainConfigView';
 import type { Unsubscribable } from '@trpc/server/observable';
 
-// ── 6-stage private domain funnel constants ──────────────────────────────────
+// ── Phase result types (AC-4) ─────────────────────────────────────────────────
 
-/** 6 core stages of the private domain conversion funnel */
-export const PRIVATE_DOMAIN_STAGES = [
-  'attract',    // 引流获客: content attracts target audience
-  'add_wechat', // 加微转化: platform fans → WeChat private domain
-  'trust',      // 信任建立: professional trust + purchase intent
-  'moments',    // 朋友圈打造: persona building via Moments (3:4:3 rule)
-  'convert',    // 成交转化: final sales conversion
-  'repurchase', // 复购裂变: repeat purchase + referral flywheel
-] as const;
+interface PhaseVariants {
+  professional: string;
+  friendly: string;
+  sales: string;
+}
 
-export type PrivateDomainStage = typeof PRIVATE_DOMAIN_STAGES[number];
-
-/** Channel labels for UI display */
-export const CHANNEL_LABELS: Record<string, string> = {
-  wechat: '微信视频号',
-  douyin: '抖音',
-  xiaohongshu: '小红书',
-  weibo: '微博',
-  other: '其他平台',
-};
+interface PhaseResult {
+  phaseScript: string;
+  variants: PhaseVariants;
+}
 
 // ── View type ─────────────────────────────────────────────────────────────────
 
@@ -67,46 +50,21 @@ const VIEW_LABELS: Record<ViewMode, string> = {
 
 const VIEWS: ViewMode[] = ['flow', 'config', 'result', 'history'];
 
-// ── localStorage draft (AC-7) ─────────────────────────────────────────────────
+// ── localStorage draft ────────────────────────────────────────────────────────
 
-function readDraft(
-  userId: number | null,
-  accountId: number | null,
-): Partial<PrivateDomainFormValues> {
+function readDraft(userId: number | null, accountId: number | null): Partial<PrivateDomainFormValues> {
   if (!userId || !accountId) return {};
   try {
     const raw = localStorage.getItem(getToolLsKey(accountId, 'private_domain', `draft_${userId}`));
     if (raw) return JSON.parse(raw) as Partial<PrivateDomainFormValues>;
-  } catch {
-    // ignore corrupt JSON
-  }
+  } catch { /* ignore */ }
   return {};
 }
 
-function writeDraft(
-  userId: number,
-  accountId: number,
-  values: PrivateDomainFormValues,
-): void {
+function writeDraft(userId: number, accountId: number, values: PrivateDomainFormValues): void {
   try {
     localStorage.setItem(getToolLsKey(accountId, 'private_domain', `draft_${userId}`), JSON.stringify(values));
-  } catch {
-    // storage full — ignore
-  }
-}
-
-// ── SOP parser ────────────────────────────────────────────────────────────────
-
-function parseSop(content: string): { phases: PhaseData[]; summary: string } | null {
-  try {
-    const parsed = JSON.parse(content) as { phases?: PhaseData[]; summary?: string };
-    if (parsed.phases && Array.isArray(parsed.phases) && parsed.phases.length > 0) {
-      return { phases: parsed.phases, summary: parsed.summary ?? '' };
-    }
-  } catch {
-    // invalid JSON
-  }
-  return null;
+  } catch { /* storage full */ }
 }
 
 // ── Stats bar ─────────────────────────────────────────────────────────────────
@@ -123,7 +81,7 @@ function StatsBar() {
     <div className="grid grid-cols-3 gap-4" data-testid="stats-bar">
       <Card className="border-outline-variant bg-surface-variant/10">
         <CardContent className="pt-4 pb-3">
-          <p className="text-label-xs text-on-surface-variant">已生成方案</p>
+          <p className="text-label-xs text-on-surface-variant">已生成话术</p>
           <p className="text-h2 font-display text-on-surface" data-testid="stat-total">{total}</p>
         </CardContent>
       </Card>
@@ -135,22 +93,128 @@ function StatsBar() {
       </Card>
       <Card className="border-outline-variant bg-surface-variant/10">
         <CardContent className="pt-4 pb-3">
-          <p className="text-label-xs text-on-surface-variant">话术模板</p>
-          <p className="text-h2 font-display text-on-surface">12+</p>
+          <p className="text-label-xs text-on-surface-variant">风格变体</p>
+          <p className="text-h2 font-display text-on-surface">3</p>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-// ── View description ──────────────────────────────────────────────────────────
+// ── Phase result view (AC-4 output schema) ────────────────────────────────────
 
-const VIEW_DESCRIPTIONS: Record<ViewMode, string> = {
-  flow: '查看完整的 6 阶段私域成交流程，了解每个阶段的目标与策略',
-  config: '填写产品信息、目标受众和 IP 定位，AI 将生成专属成交方案',
-  result: '查看 AI 生成的完整 6 阶段执行 SOP、话术模板和关键指标',
-  history: '浏览历史生成记录，点击恢复之前的方案',
-};
+function PhaseResultView({
+  result,
+  isFallback,
+  isStreaming,
+  streamDelta,
+  phase,
+  onRetry,
+}: {
+  result: PhaseResult | null;
+  isFallback: boolean;
+  isStreaming: boolean;
+  streamDelta: string;
+  phase: string;
+  onRetry: () => void;
+}) {
+  const stage = PRIVATE_DOMAIN_STAGES.find(s => s.value === phase);
+  const [activeVariant, setActiveVariant] = useState<keyof PhaseVariants>('professional');
+
+  if (isStreaming && !result) {
+    return (
+      <div className="space-y-4" data-testid="private-domain-streaming">
+        <div className="flex items-center gap-2">
+          <span className="text-label-sm text-primary animate-pulse">AI 生成中…</span>
+        </div>
+        {streamDelta && (
+          <div className="rounded-lg border border-border bg-card p-5">
+            <p className="text-body-md text-on-surface whitespace-pre-wrap">{streamDelta}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (!result) return null;
+
+  return (
+    <div className="space-y-6" data-testid="private-domain-result">
+      {/* isFallback banner — AC-7 */}
+      {isFallback && (
+        <div
+          className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3"
+          data-testid="private-domain-fallback-banner"
+        >
+          <p className="text-body-sm text-muted-foreground">AI 暂时繁忙 · 显示备用话术</p>
+          <button
+            type="button"
+            onClick={onRetry}
+            className="rounded-md border border-border px-3 py-1.5 text-label-sm font-label text-muted-foreground hover:bg-muted/50 transition-colors"
+            data-testid="private-domain-retry"
+          >
+            重试
+          </button>
+        </div>
+      )}
+
+      {/* Phase label */}
+      {stage && (
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-label-sm text-primary" data-testid="result-phase-label">{stage.label}</span>
+          <span className="text-body-sm text-muted-foreground">{stage.desc}</span>
+        </div>
+      )}
+
+      {/* Main script */}
+      <section className="rounded-lg border border-border bg-card p-5 space-y-3">
+        <h3 className="text-h3 font-display text-on-surface">主话术</h3>
+        <p
+          className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed"
+          data-testid="private-domain-phase-script"
+        >
+          {result.phaseScript}
+        </p>
+      </section>
+
+      {/* 3 style variants */}
+      <section className="rounded-lg border border-border bg-card p-5 space-y-4">
+        <h3 className="text-h3 font-display text-on-surface">风格变体</h3>
+        <div className="flex gap-2">
+          {(['professional', 'friendly', 'sales'] as const).map(v => (
+            <button
+              key={v}
+              onClick={() => setActiveVariant(v)}
+              className={`rounded-md px-3 py-1.5 text-label-sm font-label transition-colors ${
+                activeVariant === v
+                  ? 'bg-primary text-primary-foreground'
+                  : 'border border-border text-muted-foreground hover:bg-muted/50'
+              }`}
+              data-testid={`variant-tab-${v}`}
+            >
+              {{ professional: '专业版', friendly: '亲切版', sales: '销售版' }[v]}
+            </button>
+          ))}
+        </div>
+        <p
+          className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed"
+          data-testid={`variant-content-${activeVariant}`}
+        >
+          {result.variants[activeVariant]}
+        </p>
+      </section>
+
+      <button
+        type="button"
+        onClick={onRetry}
+        className="rounded-md border border-border px-4 py-2 text-label-sm font-label text-muted-foreground hover:bg-muted/50 transition-colors"
+        data-testid="private-domain-regenerate"
+      >
+        重新生成
+      </button>
+    </div>
+  );
+}
 
 // ── PrivateDomain page ────────────────────────────────────────────────────────
 
@@ -165,43 +229,41 @@ export default function PrivateDomain() {
   const activeView: ViewMode =
     rawView && VIEWS.includes(rawView as ViewMode) ? (rawView as ViewMode) : 'flow';
 
-  // Form state — initialised from URL params then LS draft (AC-7)
+  // Phase selection state (AC-6)
+  const [activePhase, setActivePhase] = useState<typeof PRIVATE_DOMAIN_STAGES[number]['value']>('welcome');
+
+  // Form state — initialised from LS draft
   const [form, setForm] = useState<PrivateDomainFormValues>(() => ({
     ...DEFAULT_FORM,
     ...readDraft(userId, accountId),
   }));
 
-  // Generated SOP state
-  const [phases, setPhases] = useState<PhaseData[] | null>(null);
-  const [sopSummary, setSopSummary] = useState<string>('');
+  // Result state
+  const [result, setResult] = useState<PhaseResult | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [streamDelta, setStreamDelta] = useState('');
 
-  // AC-8: SSE streaming subscription ref (imperative, like VoiceChat pattern)
   const subRef = useRef<Unsubscribable | null>(null);
-  const streamAccumRef = useRef<PhaseData[]>([]);
 
-  // Draft restoration indicator (AC-7)
+  // Draft restoration indicator
   const [hasDraft, setHasDraft] = useState(false);
   useEffect(() => {
     const draft = readDraft(userId, accountId);
-    const hasMeaningfulContent = Boolean(
+    const hasMeaningful = Boolean(
       draft.productDescription?.trim() ||
       draft.targetAudience?.trim() ||
       draft.ipPositioning?.trim(),
     );
-    setHasDraft(hasMeaningfulContent);
+    setHasDraft(hasMeaningful);
   }, [userId, accountId]);
 
-  // Debounce draft save (AC-7: 1s)
   const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const saveDraft = useCallback(
     (values: PrivateDomainFormValues) => {
       if (!userId || !accountId) return;
       if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
-      draftTimerRef.current = setTimeout(() => {
-        writeDraft(userId, accountId, values);
-      }, 1000);
+      draftTimerRef.current = setTimeout(() => writeDraft(userId, accountId, values), 1000);
     },
     [userId, accountId],
   );
@@ -211,7 +273,6 @@ export default function PrivateDomain() {
     saveDraft(values);
   }
 
-  // Navigate to a view by setting ?view= URL param (AC-6)
   function navigateTo(view: ViewMode) {
     setSearchParams(
       (prev) => {
@@ -223,24 +284,20 @@ export default function PrivateDomain() {
     );
   }
 
-  // AC-4: tRPC mutation — writes History row + costLog (AC-8 cost_log)
-  // onSuccess: history is saved; SSE subscription handles phase streaming
+  // AC-6: generate mutation with phase
   const generateMutation = trpc.privateDomain.generate.useMutation({
     onSuccess(data) {
-      // History saved — if SSE stream hasn't populated phases yet (e.g. in test env),
-      // fall back to parsing the mutation response
-      if (streamAccumRef.current.length === 0) {
-        const content = (data as { content?: string }).content ?? '';
-        const parsed = parseSop(content);
-        if (parsed) {
-          setPhases(parsed.phases);
-          setSopSummary(parsed.summary);
-        } else {
-          setPhases([]);
-          setSopSummary('');
-        }
-        setIsStreaming(false);
+      const content = (data as { content?: string; isFallback?: boolean }).content ?? '';
+      const fallback = (data as { isFallback?: boolean }).isFallback ?? false;
+      setIsFallback(fallback);
+      try {
+        const parsed = JSON.parse(content) as PhaseResult;
+        setResult(parsed);
+      } catch {
+        setResult(null);
+        toast.error('话术解析失败 · 请重试');
       }
+      setIsStreaming(false);
     },
     onError(err) {
       setIsStreaming(false);
@@ -250,60 +307,50 @@ export default function PrivateDomain() {
     },
   });
 
-  // Handle form submit (AC-3/4 + AC-8)
   function handleSubmit(values: PrivateDomainFormValues) {
     const mutationInput = {
+      phase: activePhase,
       productDescription: values.productDescription.trim(),
       productPrice: parseFloat(values.productPrice),
       targetAudience: values.targetAudience.trim(),
       ipPositioning: values.ipPositioning.trim(),
       currentChannel: values.currentChannel,
       monthlyTraffic: parseInt(values.monthlyTraffic, 10),
+      scene: (values as PrivateDomainFormValues & { scene?: string }).scene?.trim() || undefined,
     };
 
     setIsStreaming(true);
-    setPhases([]);
-    setSopSummary('');
-    streamAccumRef.current = [];
+    setResult(null);
+    setIsFallback(false);
+    setStreamDelta('');
     navigateTo('result');
 
-    // AC-4: mutation to write History row + costLog
     generateMutation.mutate(mutationInput);
 
-    // AC-8: SSE subscription — yields each of the 6 phases as independent chunks
+    // AC-2: SSE streaming for live UX — chunk-level (meta + delta + done)
     subRef.current?.unsubscribe();
     subRef.current = trpcClient.privateDomain.generateStream.subscribe(mutationInput, {
       onData(chunk) {
-        if (chunk.type === 'phase') {
-          streamAccumRef.current = [...streamAccumRef.current, chunk.data as PhaseData];
-          setPhases([...streamAccumRef.current]);
+        if (chunk.type === 'delta' && (chunk as { type: string; delta?: string }).delta) {
+          const delta = (chunk as { type: string; delta?: string }).delta ?? '';
+          setStreamDelta(prev => prev + delta);
         } else if (chunk.type === 'done') {
-          setSopSummary(chunk.summary);
+          const doneChunk = chunk as { type: string; result?: PhaseResult | null };
+          if (doneChunk.result) {
+            setResult(doneChunk.result);
+          }
           setIsStreaming(false);
         }
       },
-      onError() {
-        setIsStreaming(false);
-      },
-      onComplete() {
-        setIsStreaming(false);
-      },
+      onError() { setIsStreaming(false); },
+      onComplete() { setIsStreaming(false); },
     });
   }
 
-  // Restore from history (AC-5)
-  function handleRestore(
-    restoredPhases: PhaseData[],
-    summary: string,
-    _inputSummary: string,
-  ) {
-    setPhases(restoredPhases);
-    setSopSummary(summary);
-    setIsStreaming(false);
-    navigateTo('result');
+  function handleRetry() {
+    handleSubmit(form);
   }
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
@@ -319,11 +366,11 @@ export default function PrivateDomain() {
           <span className="text-label-sm font-label text-primary uppercase tracking-wide">
             变现设计
           </span>
-          <h1 className="mt-1 text-h1 font-display text-on-surface">私域成交流程</h1>
+          <h1 className="mt-1 text-h1 font-display text-on-surface">私域成交话术</h1>
           <p className="mt-2 text-body-md text-muted-foreground">
-            6 阶段私域成交 SOP · 引流 → 加微 → 信任 → 朋友圈 → 成交 → 复购
+            6 阶段私域运营话术 · 选择当前阶段 · AI 生成专属话术 + 3 种风格变体
           </p>
-          {hasDraft && !phases && (
+          {hasDraft && !result && (
             <p className="mt-1 text-body-xs text-muted-foreground" data-testid="draft-indicator">
               已恢复上次填写草稿
             </p>
@@ -337,7 +384,7 @@ export default function PrivateDomain() {
       {/* Stats bar */}
       <StatsBar />
 
-      {/* View tabs (AC-6: URL state ?view=flow|config|result|history) */}
+      {/* View tabs */}
       <div>
         <Tabs
           value={activeView}
@@ -352,30 +399,43 @@ export default function PrivateDomain() {
             ))}
           </TabsList>
         </Tabs>
-
-        <p
-          className="text-body-sm text-on-surface-variant"
-          data-testid="view-description"
-          aria-live="polite"
-        >
-          {VIEW_DESCRIPTIONS[activeView]}
-        </p>
       </div>
 
       {/* View content */}
       <div data-testid="view-content">
-        {/* View 1: ui/_1 流程图 */}
         {activeView === 'flow' && (
           <PrivateDomainFlowView
-            phases={phases}
-            isStreaming={isStreaming}
+            phases={null}
+            isStreaming={false}
             onStartConfig={() => navigateTo('config')}
           />
         )}
 
-        {/* View 2: ui/_5 配置参数 */}
         {activeView === 'config' && (
-          <div className="max-w-2xl">
+          <div className="space-y-6 max-w-2xl">
+            {/* AC-6: 6 phase tabs */}
+            <div>
+              <p className="text-label-sm font-label text-on-surface mb-3">选择话术阶段</p>
+              <div className="grid grid-cols-3 gap-2" data-testid="phase-tabs">
+                {PRIVATE_DOMAIN_STAGES.map((stage) => (
+                  <button
+                    key={stage.value}
+                    type="button"
+                    onClick={() => setActivePhase(stage.value)}
+                    data-testid={`phase-tab-${stage.value}`}
+                    className={`rounded-lg border p-3 text-left transition-colors ${
+                      activePhase === stage.value
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-on-surface hover:bg-muted/50'
+                    }`}
+                  >
+                    <p className="text-label-sm font-label">{stage.label}</p>
+                    <p className="text-body-xs text-muted-foreground mt-0.5 line-clamp-2">{stage.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <PrivateDomainConfigView
               values={form}
               onChange={handleFormChange}
@@ -385,49 +445,51 @@ export default function PrivateDomain() {
           </div>
         )}
 
-        {/* View 3: ui/_7 生成结果 */}
         {activeView === 'result' && (
-          phases !== null ? (
-            <PrivateDomainResultView
-              phases={phases}
+          result !== null || isStreaming ? (
+            <PhaseResultView
+              result={result}
+              isFallback={isFallback}
               isStreaming={isStreaming}
-              summary={sopSummary}
-              onRetry={() => navigateTo('config')}
-              onViewHistory={() => navigateTo('history')}
+              streamDelta={streamDelta}
+              phase={activePhase}
+              onRetry={handleRetry}
             />
           ) : (
             <div
               className="text-center py-12 text-body-sm text-muted-foreground"
               data-testid="result-empty"
             >
-              {isStreaming ? (
-                <div className="space-y-2">
-                  <p className="text-primary animate-pulse text-body-md">
-                    AI 正在生成 6 阶段 SOP…
-                  </p>
-                  <p className="text-body-sm text-muted-foreground">
-                    通常需要 10-30 秒，请稍候
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p>尚未生成 SOP，请先完成配置</p>
-                  <button
-                    onClick={() => navigateTo('config')}
-                    className="text-primary underline text-body-sm"
-                    data-testid="go-config-link"
-                  >
-                    前往配置
-                  </button>
-                </div>
-              )}
+              <div className="space-y-2">
+                <p>尚未生成话术，请先选择阶段并完成配置</p>
+                <button
+                  onClick={() => navigateTo('config')}
+                  className="text-primary underline text-body-sm"
+                  data-testid="go-config-link"
+                >
+                  前往配置
+                </button>
+              </div>
             </div>
           )
         )}
 
-        {/* View 4: ui/_14 历史回看 */}
         {activeView === 'history' && (
-          <PrivateDomainHistoryView onRestore={handleRestore} />
+          <PrivateDomainHistoryView
+            onRestore={(phases, _summary, _inputSummary) => {
+              // Try new schema first (phaseScript + variants)
+              const firstPhase = phases[0] as unknown as Record<string, unknown> | undefined;
+              if (firstPhase && typeof firstPhase.phaseScript === 'string') {
+                setResult(firstPhase as unknown as PhaseResult);
+                setIsFallback(false);
+                setIsStreaming(false);
+                navigateTo('result');
+              } else {
+                setResult(null);
+                navigateTo('result');
+              }
+            }}
+          />
         )}
       </div>
     </main>

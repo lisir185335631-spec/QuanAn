@@ -1,133 +1,168 @@
 /**
- * DeepLearning.tsx — /tools/deep-learning 文案深度学习中心 · PRD-15 US-003
- * 1:1 实现 ui/_8/screen.png 视觉(3-tab: 学习/我的库/公式应用)
- * AC-1~8: 3 tabs + URL state ?tab=learn|library|apply + tRPC parse/list/delete/applyFormula
- * SHIELD #2: URL state for tabs
+ * DeepLearning.tsx — /tools/deep-learning · PRD-27 US-004
+ * AC-5: textarea + '添加这篇' → samples state · '开始深度学习' → learn mutation
+ * AC-6: result.summary + 5维度(tone/structure/hook/transition/closing) · spinner · error toast
+ * AC-7: file upload 不在 P1 范围(留 PRR · D-262)
+ * AC-8: isFallback hint + error handle
  */
 
-import { useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/lib/trpc';
 
-import {
-  ApplyFormulaTab,
-  LearnTab,
-  LibraryTab,
-} from './components/DeepLearningTabs';
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-import type { ParseAnalysis, QueueItem } from './components/DeepLearningTabs';
+interface Sample {
+  text: string;
+  source: string;
+}
 
-// ── Tab types ─────────────────────────────────────────────────────────────────
+interface DeepLearnDimensions {
+  tone: string;
+  structure: string;
+  hook: string;
+  transition: string;
+  closing: string;
+}
 
-type TabValue = 'learn' | 'library' | 'apply';
+interface DeepLearnResult {
+  summary: string;
+  dimensions: DeepLearnDimensions;
+  isFallback: boolean;
+  tokensUsed: number;
+  modelUsed: string;
+  durationMs: number;
+}
 
-const TAB_LABELS: Record<TabValue, string> = {
-  learn: '学习',
-  library: '我的库',
-  apply: '公式应用',
-};
+// ── Dimension labels ──────────────────────────────────────────────────────────
 
-const TABS: TabValue[] = ['learn', 'library', 'apply'];
+const DIMENSION_LABELS: Array<{ key: keyof DeepLearnDimensions; label: string; cn: string }> = [
+  { key: 'tone', label: 'Tone', cn: '语气' },
+  { key: 'structure', label: 'Structure', cn: '结构' },
+  { key: 'hook', label: 'Hook', cn: '钩子' },
+  { key: 'transition', label: 'Transition', cn: '转折' },
+  { key: 'closing', label: 'Closing', cn: '收尾' },
+];
 
-const TAB_DESCRIPTIONS: Record<TabValue, string> = {
-  learn: '粘贴优秀文案，AI 自动解析公式、结构与情绪弧线',
-  library: '查看所有已保存的文案学习记录，应用或删除',
-  apply: '选择已学习的公式，输入新主题，生成符合公式的文案',
-};
+// ── Result view ───────────────────────────────────────────────────────────────
 
-// ── Stats bar ─────────────────────────────────────────────────────────────────
-
-function StatsBar() {
-  const { data: items = [] } = trpc.deepLearning.list.useQuery({
-    limit: 50,
-    offset: 0,
-    onlyActive: true,
-  });
-
-  const total = (items as unknown[]).length;
-  const platforms = new Set(
-    (items as { sourcePlatform: string }[]).map((i) => i.sourcePlatform),
-  ).size;
-
+function ResultView({ result }: { result: DeepLearnResult }) {
   return (
-    <div className="grid grid-cols-3 gap-4 mb-6" data-testid="stats-bar">
-      <Card className="border-outline-variant bg-surface-variant/10">
-        <CardContent className="pt-4 pb-3">
-          <p className="text-label-xs text-on-surface-variant">已学习文案</p>
-          <p className="text-h2 font-display text-on-surface" data-testid="stat-total">{total}</p>
+    <div className="space-y-4" data-testid="deep-learn-result">
+      {result.isFallback && (
+        <div
+          className="rounded-md border border-yellow-200 bg-yellow-50 px-4 py-2 text-sm text-yellow-800"
+          data-testid="fallback-banner"
+        >
+          ⚠️ AI 服务繁忙，当前为备用结果，建议稍后重试以获取精准分析。
+        </div>
+      )}
+
+      <Card className="border-primary/20 bg-surface-variant/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-body-md font-semibold">总体特征摘要</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-body-sm text-on-surface" data-testid="result-summary">
+            {result.summary}
+          </p>
         </CardContent>
       </Card>
-      <Card className="border-outline-variant bg-surface-variant/10">
-        <CardContent className="pt-4 pb-3">
-          <p className="text-label-xs text-on-surface-variant">覆盖平台</p>
-          <p className="text-h2 font-display text-on-surface" data-testid="stat-platforms">{platforms}</p>
-        </CardContent>
-      </Card>
-      <Card className="border-outline-variant bg-surface-variant/10">
-        <CardContent className="pt-4 pb-3">
-          <p className="text-label-xs text-on-surface-variant">公式库</p>
-          <p className="text-h2 font-display text-on-surface" data-testid="stat-formulas">{total}</p>
-        </CardContent>
-      </Card>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {DIMENSION_LABELS.map(({ key, cn }) => (
+          <Card key={key} className="border-outline-variant">
+            <CardHeader className="pb-1 pt-3 px-4">
+              <CardTitle className="text-label-sm font-label text-primary uppercase tracking-wide">
+                {cn}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-3">
+              <p
+                className="text-body-sm text-on-surface leading-relaxed"
+                data-testid={`result-dimension-${key}`}
+              >
+                {result.dimensions[key]}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <p className="text-label-xs text-on-surface-variant text-right">
+        {result.modelUsed} · {result.tokensUsed} tokens · {result.durationMs}ms
+      </p>
     </div>
   );
 }
 
-// ── DeepLearning page ─────────────────────────────────────────────────────────
+// ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function DeepLearning() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const rawTab = searchParams.get('tab') as TabValue | null;
-  const activeTab: TabValue = rawTab && TABS.includes(rawTab) ? rawTab : 'learn';
+  const [textInput, setTextInput] = useState('');
+  const [sourceInput, setSourceInput] = useState('');
+  const [samples, setSamples] = useState<Sample[]>([]);
+  const [jobId, setJobId] = useState<string | null>(null);
 
-  const handleTabChange = useCallback(
-    (val: string) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        next.set('tab', val);
-        return next;
-      });
+  const learnMutation = trpc.deepLearning.learn.useMutation({
+    onSuccess(data) {
+      setJobId(data.jobId);
     },
-    [setSearchParams],
+    onError(err) {
+      toast.error(`启动深度学习失败: ${err.message}`);
+    },
+  });
+
+  const { data: statusData } = trpc.deepLearning.learnStatus.useQuery(
+    { jobId: jobId ?? '' },
+    {
+      enabled: !!jobId,
+      refetchInterval: (query) => {
+        const status = (query.state.data as { status: string } | undefined)?.status;
+        return !!jobId && status !== 'completed' && status !== 'failed' ? 3000 : false;
+      },
+    },
   );
 
-  // After saving to library → switch to library tab
-  const handleSaved = useCallback(() => {
-    handleTabChange('library');
-  }, [handleTabChange]);
+  function handleAddSample() {
+    if (textInput.trim().length < 10) {
+      toast.error('文案内容至少 10 字');
+      return;
+    }
+    if (!sourceInput.trim()) {
+      toast.error('请填写来源名称');
+      return;
+    }
+    if (samples.length >= 20) {
+      toast.error('最多添加 20 篇样本');
+      return;
+    }
+    setSamples((prev) => [...prev, { text: textInput.trim(), source: sourceInput.trim() }]);
+    setTextInput('');
+    setSourceInput('');
+  }
 
-  // After clicking apply from learn tab → switch to apply tab
-  const handleApplyFromLearn = useCallback(
-    (_analysis: ParseAnalysis, queueId: number) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        next.set('tab', 'apply');
-        next.set('queueId', String(queueId));
-        return next;
-      });
-    },
-    [setSearchParams],
-  );
+  function handleRemoveSample(index: number) {
+    setSamples((prev) => prev.filter((_, i) => i !== index));
+  }
 
-  // After clicking apply from library tab → switch to apply tab
-  const handleApplyFromLibrary = useCallback(
-    (item: QueueItem) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        next.set('tab', 'apply');
-        next.set('queueId', String(item.id));
-        return next;
-      });
-    },
-    [setSearchParams],
-  );
+  function handleStartLearning() {
+    if (samples.length === 0) {
+      toast.error('请先添加至少 1 篇文案样本');
+      return;
+    }
+    setJobId(null);
+    learnMutation.mutate({ samples });
+  }
 
-  const preselectedQueueId = searchParams.get('queueId')
-    ? parseInt(searchParams.get('queueId')!, 10)
-    : null;
+  const isProcessing =
+    learnMutation.isPending ||
+    (!!jobId && (statusData?.status === 'queued' || statusData?.status === 'processing'));
 
   return (
     <main className="flex-1 container py-8" data-testid="deep-learning-page">
@@ -135,47 +170,138 @@ export default function DeepLearning() {
         <span className="text-label-sm font-label text-primary uppercase tracking-wide">
           智能工具
         </span>
-        <h1 className="text-h1 font-display text-on-surface mt-1">文案深度学习中心</h1>
+        <h1 className="text-h1 font-display text-on-surface mt-1">文案深度学习</h1>
         <p className="text-body-md text-muted-foreground mt-2">
-          上传优秀文案，让 AI 解析公式与模式，构建专属学习库
+          添加优秀文案样本，AI 深度分析共性规律，总结 5 个核心写作维度
         </p>
       </div>
 
-      <StatsBar />
+      {/* Input section */}
+      <Card className="mb-6 border-outline-variant">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-body-md font-semibold">添加文案样本</CardTitle>
+          <p className="text-body-sm text-on-surface-variant">
+            仅支持文字输入（P1）· file upload 留 PRR(D-262)
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-1.5">
+            <label htmlFor="source-input" className="text-body-sm font-medium">来源名称</label>
+            <Input
+              id="source-input"
+              data-testid="source-input"
+              placeholder="例如：小红书爆文 #1、抖音热门文案"
+              value={sourceInput}
+              onChange={(e) => setSourceInput(e.target.value)}
+              maxLength={200}
+            />
+          </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        data-testid="deep-learning-tabs"
-      >
-        <TabsList className="mb-2">
-          {TABS.map((t) => (
-            <TabsTrigger key={t} value={t} data-testid={`tab-${t}`}>
-              {TAB_LABELS[t]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+          <div className="space-y-1.5">
+            <label htmlFor="text-input" className="text-body-sm font-medium">文案内容</label>
+            <Textarea
+              id="text-input"
+              data-testid="text-input"
+              placeholder="粘贴优秀文案内容（10-20000 字）"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              rows={6}
+              className="resize-none"
+            />
+            <p className="text-label-xs text-on-surface-variant text-right">
+              {textInput.length}/20000
+            </p>
+          </div>
 
-        <p
-          className="text-body-sm text-on-surface-variant mb-4"
-          data-testid="tab-description"
-          aria-live="polite"
+          <Button
+            data-testid="add-sample-btn"
+            variant="outline"
+            onClick={handleAddSample}
+            disabled={isProcessing}
+          >
+            添加这篇
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Samples list */}
+      {samples.length > 0 && (
+        <Card className="mb-6 border-outline-variant">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-body-md font-semibold">
+              待学习样本
+              <span className="ml-2 inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-label-xs">
+                {samples.length}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2" data-testid="samples-list">
+              {samples.map((s, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3 rounded-md border border-outline-variant/50 p-3"
+                  data-testid={`sample-item-${i}`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-label-sm font-label text-primary">{s.source}</p>
+                    <p className="text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
+                      {s.text.slice(0, 120)}{s.text.length > 120 ? '...' : ''}
+                    </p>
+                    <p className="text-label-xs text-on-surface-variant mt-1">
+                      {s.text.length} 字
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveSample(i)}
+                    disabled={isProcessing}
+                    data-testid={`remove-sample-${i}`}
+                  >
+                    移除
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Start button */}
+      <div className="mb-6">
+        <Button
+          data-testid="start-learning-btn"
+          onClick={handleStartLearning}
+          disabled={samples.length === 0 || isProcessing}
+          size="lg"
+          className="w-full sm:w-auto"
         >
-          {TAB_DESCRIPTIONS[activeTab]}
-        </p>
+          {isProcessing ? (
+            <>
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              {statusData?.status === 'processing' ? '分析中...' : '排队中...'}
+            </>
+          ) : (
+            '开始深度学习'
+          )}
+        </Button>
+      </div>
 
-        <TabsContent value="learn" data-testid="tab-content-learn">
-          <LearnTab onSaved={handleSaved} onApply={handleApplyFromLearn} />
-        </TabsContent>
+      {/* Status / Result */}
+      {jobId && statusData && (
+        <div data-testid="status-section">
+          {statusData.status === 'failed' && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+              分析失败，请检查样本内容后重试。
+            </div>
+          )}
 
-        <TabsContent value="library" data-testid="tab-content-library">
-          <LibraryTab onApply={handleApplyFromLibrary} />
-        </TabsContent>
-
-        <TabsContent value="apply" data-testid="tab-content-apply">
-          <ApplyFormulaTab preselectedQueueId={preselectedQueueId} />
-        </TabsContent>
-      </Tabs>
+          {statusData.status === 'completed' && statusData.result && (
+            <ResultView result={statusData.result as DeepLearnResult} />
+          )}
+        </div>
+      )}
     </main>
   );
 }

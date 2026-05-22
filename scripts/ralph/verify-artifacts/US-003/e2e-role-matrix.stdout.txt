@@ -1,0 +1,11 @@
+
+Running 6 tests using 1 worker
+
+[1A[2K[1/6] [chromium] › tests/e2e/prd26-admin-role-matrix.spec.ts:115:3 › prd26-admin-role-matrix › super_admin: sidebar 全显 + 核心页面可访问 + StatusBar badge
+[1A[2K[2/6] [chromium] › tests/e2e/prd26-admin-role-matrix.spec.ts:158:3 › prd26-admin-role-matrix › domain_admin: sidebar 3 domains + unauthorized redirect
+[1A[2K[3/6] [chromium] › tests/e2e/prd26-admin-role-matrix.spec.ts:196:3 › prd26-admin-role-matrix › reviewer: sidebar 2 review domains + /users redirect
+[1A[2K[4/6] [chromium] › tests/e2e/prd26-admin-role-matrix.spec.ts:237:3 › prd26-admin-role-matrix › audit_log ≥ 9 rows across 3 roles
+[1A[2K[5/6] [chromium] › tests/e2e/prd26-admin-role-matrix.spec.ts:255:3 › prd26-admin-role-matrix › storageState files are isolated per role
+[1A[2K[6/6] [chromium] › tests/e2e/prd26-admin-role-matrix.spec.ts:276:3 › prd26-admin-role-matrix › AC-12: no frontend hardcoded role checks
+[1A[2K  6 passed (12.5s)
+::notice title=🎭 Playwright Run Summary::  6 passed (12.5s)

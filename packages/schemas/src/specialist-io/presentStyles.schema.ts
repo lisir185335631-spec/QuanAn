@@ -1,25 +1,36 @@
 /**
- * PresentStyles Specialist I/O schemas — PRD-15 US-004
- * PresentationAgent: recommend 3-5 presentation styles for given content
+ * PresentStyles Specialist I/O schemas — PRD-27 US-003
+ * PresentationAgent: recommend 3-5 presentation styles from 14 spec §27.5 keys
+ *
+ * AC-2: PresentationOutput zod schema with recommendedStyles
+ * AC-3: 14 enum keys strict per spec §27.5 (lowercase + underscore)
+ * AC-8: PresentationInput + PresentationOutput shared across frontend/backend
  */
 
 import { z } from 'zod';
 
-export const PRESENT_STYLE_TYPES = [
-  'graphic_text',
-  'short_video',
-  'live_stream',
-  'long_article',
-  'comic',
+// ── 14 enum keys (spec §27.5 · 0 字面漂移) ────────────────────────────────────
+
+export const PRESENTATION_STYLE_IDS = [
+  'talking_head',
+  'drama',
+  'tutorial',
+  'vlog',
+  'street_interview',
+  'comparison',
+  'list_style',
+  'mashup',
+  'screen_record',
+  'animation',
+  'reaction',
+  'before_after',
+  'pov',
+  'qa',
 ] as const;
 
-export const PRESENT_STYLE_LABELS: Record<(typeof PRESENT_STYLE_TYPES)[number], string> = {
-  graphic_text: '图文',
-  short_video: '短视频',
-  live_stream: '直播口播',
-  long_article: '长图文',
-  comic: '漫画',
-};
+export type PresentationStyleId = (typeof PRESENTATION_STYLE_IDS)[number];
+
+// ── Platform constants (kept for form UI) ────────────────────────────────────
 
 export const PRESENT_STYLE_PLATFORMS = [
   'douyin',
@@ -31,26 +42,43 @@ export const PRESENT_STYLE_PLATFORMS = [
   'wechat',
 ] as const;
 
-export type PresentStyleType = (typeof PRESENT_STYLE_TYPES)[number];
 export type PresentStylePlatform = (typeof PRESENT_STYLE_PLATFORMS)[number];
 
-export const PresentStylesInputSchema = z.object({
+// ── Input schema ──────────────────────────────────────────────────────────────
+
+export const PresentationInputSchema = z.object({
   text: z.string().min(10, { message: '文案至少10字' }).max(2000),
-  platform: z.enum(PRESENT_STYLE_PLATFORMS, { errorMap: () => ({ message: '请选择平台' }) }),
+  platform: z.string().min(1).max(50),
 });
 
-export const PresentStyleItemSchema = z.object({
-  type: z.enum(PRESENT_STYLE_TYPES),
+export type PresentationInput = z.infer<typeof PresentationInputSchema>;
+
+// ── Output schema ─────────────────────────────────────────────────────────────
+
+export const PresentationOutputItemSchema = z.object({
+  id: z.enum(PRESENTATION_STYLE_IDS),
   label: z.string(),
   description: z.string(),
-  example: z.string(),
-  fitScore: z.number().int().min(0).max(100).optional(),
+  tips: z.string(),
+  matchScore: z.number().min(0).max(100),
+  rationale: z.string(),
 });
 
-export const PresentStylesResultSchema = z.object({
-  styles: z.array(PresentStyleItemSchema).min(3).max(5),
+export const PresentationOutputSchema = z.object({
+  recommendedStyles: z.array(PresentationOutputItemSchema).min(3).max(5),
 });
 
-export type PresentStylesInput = z.infer<typeof PresentStylesInputSchema>;
-export type PresentStyleItem = z.infer<typeof PresentStyleItemSchema>;
-export type PresentStylesResult = z.infer<typeof PresentStylesResultSchema>;
+export type PresentationOutputItem = z.infer<typeof PresentationOutputItemSchema>;
+export type PresentationOutput = z.infer<typeof PresentationOutputSchema>;
+
+// ── Legacy exports (backward compat — PRD-15 US-004 remaining refs) ───────────
+
+/** @deprecated Use PRESENTATION_STYLE_IDS */
+export const PRESENT_STYLE_TYPES = PRESENTATION_STYLE_IDS;
+/** @deprecated Use PresentationStyleId */
+export type PresentStyleType = PresentationStyleId;
+
+// ── Input schema (legacy alias) ───────────────────────────────────────────────
+
+export const PresentStylesInputSchema = PresentationInputSchema;
+export type PresentStylesInput = PresentationInput;

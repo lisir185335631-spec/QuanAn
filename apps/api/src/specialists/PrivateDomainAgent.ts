@@ -1,36 +1,121 @@
 /**
- * QuanAn · PRD-9+ (留 PRR)
- * PrivateDomainAgent — /private-domain 私域运营文案
- * 本期骨架 · 真实 LLM 接入留 PRD-9
+ * QuanAn · PRD-27 US-002
+ * PrivateDomainAgent — /private-domain 私域话术生成
+ * mode='phase-generate' · 单 phase LLM 调用 · 输出 phaseScript + 3 风格变体
+ *
+ * AC-3: phase z.enum([welcome,warmup,trust,discover,close,follow]) + 6 phase 各 prompt template
+ * AC-4: 输出 schema {phaseScript, variants{professional, friendly, sales}}
+ * [SHIELD] D-261 字面锁: welcome/warmup/trust/discover/close/follow 严守
  */
 
 import { z } from 'zod';
 
 import { BaseSpecialist } from './base/BaseSpecialist';
 
-import type { AssembledContext, ILLMGateway, InvokeLLMResult, SpecialistConfig, SpecialistRequest } from './base/types';
+import type {
+  AssembledContext,
+  ILLMGateway,
+  InvokeLLMResult,
+  SpecialistConfig,
+  SpecialistRequest,
+} from './base/types';
+
+// ── Phase enum (D-261 字面锁) ─────────────────────────────────────────────────
+
+export const PRIVATE_DOMAIN_PHASE_ENUM = ['welcome', 'warmup', 'trust', 'discover', 'close', 'follow'] as const;
+export type PrivateDomainPhase = (typeof PRIVATE_DOMAIN_PHASE_ENUM)[number];
 
 // ── I/O ──────────────────────────────────────────────────────────────────────
 
-export const privateDomainInput = z.object({
-  stage: z.enum(['welcome', 'icebreak', 'trust', 'discover', 'close', 'follow']),
-  product: z.string().min(1).max(200),
-  targetUser: z.string().min(1).max(200),
-  scenario: z.string().max(300).optional(),
+export const privateDomainPhaseGenerateInput = z.object({
+  phase: z.enum(PRIVATE_DOMAIN_PHASE_ENUM),
+  productDescription: z.string().min(1).max(1000),
+  productPrice: z.number().positive(),
+  targetAudience: z.string().min(1).max(500),
+  ipPositioning: z.string().min(1).max(500),
+  currentChannel: z.enum(['wechat', 'douyin', 'xiaohongshu', 'weibo', 'other']),
+  monthlyTraffic: z.number().int().min(0),
+  scene: z.string().max(300).optional(),
 });
 
-export const privateDomainOutput = z.object({
-  stage: z.string(),
-  scripts: z.array(
-    z.object({
-      title: z.string(),
-      content: z.string(),
-    }),
-  ),
+export const privateDomainPhaseGenerateOutput = z.object({
+  phaseScript: z.string(),
+  variants: z.object({
+    professional: z.string(),
+    friendly: z.string(),
+    sales: z.string(),
+  }),
 });
 
-type PrivateDomainInput = z.infer<typeof privateDomainInput>;
-type PrivateDomainOutput = z.infer<typeof privateDomainOutput>;
+const privateDomainPhaseGenerateBaseSchema = z.object({
+  phaseScript: z.string(),
+  variants: z.object({
+    professional: z.string(),
+    friendly: z.string(),
+    sales: z.string(),
+  }),
+});
+
+export type PrivateDomainPhaseGenerateInput = z.infer<typeof privateDomainPhaseGenerateInput>;
+export type PrivateDomainPhaseGenerateOutput = z.infer<typeof privateDomainPhaseGenerateOutput>;
+
+// ── 6 phase prompt templates ──────────────────────────────────────────────────
+
+interface PhaseTemplate {
+  goal: string;
+  tactics: string;
+  outputHint: string;
+}
+
+const PHASE_TEMPLATES: Record<PrivateDomainPhase, PhaseTemplate> = {
+  welcome: {
+    goal: '新好友添加后建立第一印象 · 让对方感受到价值和温度 · 提升留存率',
+    tactics: '自我介绍+价值主张 · 福利钩子 · 引导对方表达需求 · 避免硬推销',
+    outputHint: '友好开场白 + 自我介绍 + 价值说明 + 福利引导',
+  },
+  warmup: {
+    goal: '通过日常互动破冰 · 朋友圈评论 · 私聊暖场 · 建立熟悉感',
+    tactics: '共情话题 · 朋友圈互动 · 生活化聊天切入 · 建立情感连接',
+    outputHint: '轻松自然的互动话术 · 不涉及产品 · 以聊天为主',
+  },
+  trust: {
+    goal: '通过专业内容和案例建立信任感 · 强化 IP 权威性',
+    tactics: '价值输出 · 客户成功案例分享 · 专业知识展示 · 社会认证',
+    outputHint: '专业干货分享 + 客户见证 + 权威背书',
+  },
+  discover: {
+    goal: '引导客户主动表达需求和痛点 · 完成需求摸底',
+    tactics: '开放式提问 · 场景化引导 · 痛点触发 · 倾听反馈',
+    outputHint: '提问话术 + 场景引导 · 让客户说出自己的需求',
+  },
+  close: {
+    goal: '临门一脚促成成交 · 处理价格异议 · 降低决策风险',
+    tactics: '稀缺性 · 社会证明 · 风险反转 · 价格锚点 · 限时优惠',
+    outputHint: '成交话术 + 异议处理 + 限时报价',
+  },
+  follow: {
+    goal: '售后维护 · 复购唤醒 · 转介绍激励 · 流失客户挽回',
+    tactics: '关怀回访 · 满意度确认 · 复购优惠 · 裂变奖励',
+    outputHint: '回访问候 + 满意度跟进 + 复购/转介绍激励',
+  },
+};
+
+const CHANNEL_LABEL: Record<string, string> = {
+  wechat: '微信视频号',
+  douyin: '抖音',
+  xiaohongshu: '小红书',
+  weibo: '微博',
+  other: '其他平台',
+};
+
+const PHASE_LABEL: Record<PrivateDomainPhase, string> = {
+  welcome: '欢迎话术',
+  warmup: '破冰暖场',
+  trust: '信任建立',
+  discover: '需求挖掘',
+  close: '成交话术',
+  follow: '售后跟进',
+};
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -38,21 +123,40 @@ const PRIVATE_DOMAIN_CONFIG: SpecialistConfig = {
   agentId: 'PrivateDomainAgent',
   persona: {
     role: 'PrivateDomainAgent',
-    goal: '生成针对私域运营场景的对话脚本',
-    boundaries: ['仅生成站内跳转脚本 · 不涉及外链'],
+    goal: '生成针对私域运营特定阶段的高转化话术 · 包含主稿和三种风格变体',
+    boundaries: ['仅生成私域运营话术 · 不涉及违法违规内容', '不承诺具体成交率数字'],
   },
   memory: { l1_readonly: ['account'], l2_read: ['stepData'], l2_write: [] },
   knowledge: { constants: [], rag: [], refresh_interval_sec: 86400 },
   tools: [],
-  execution: { timeout_ms: 60_000, retry: 1, model_tier: 'reasoning', streaming: false },
+  execution: { timeout_ms: 60_000, retry: 1, model_tier: 'balanced', streaming: false },
 };
 
 // ── PrivateDomainAgent ────────────────────────────────────────────────────────
 
-export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainInput, PrivateDomainOutput> {
+export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainPhaseGenerateInput, PrivateDomainPhaseGenerateOutput> {
   readonly config = PRIVATE_DOMAIN_CONFIG;
-  readonly inputSchema = privateDomainInput;
-  readonly outputSchema = privateDomainOutput;
+  readonly inputSchema = privateDomainPhaseGenerateInput;
+  readonly outputSchema = privateDomainPhaseGenerateOutput;
+
+  static override readonly fallbackTemplate: Record<string, unknown> = {
+    'phase-generate': {
+      phaseScript:
+        '系统繁忙，暂时无法生成话术。请稍后重试，或参考以下通用话术：您好，感谢关注！我专注于[您的领域]，定期分享干货内容，欢迎随时交流。',
+      variants: {
+        professional:
+          '您好，非常感谢您的关注。作为[领域]专家，我致力于为您提供专业价值。如有任何问题，欢迎随时沟通。',
+        friendly:
+          '哈喽～很高兴认识你！我平时分享很多[领域]干货，有什么想了解的随时找我聊，不用客气哦～',
+        sales:
+          '感谢关注！现在加我还有专属福利等你领取，点击了解详情，名额有限，先到先得！',
+      },
+    } satisfies PrivateDomainPhaseGenerateOutput,
+    default: {
+      phaseScript: '系统繁忙，请稍后重试。',
+      variants: { professional: '系统繁忙，请稍后重试。', friendly: '系统繁忙，请稍后重试。', sales: '系统繁忙，请稍后重试。' },
+    } satisfies PrivateDomainPhaseGenerateOutput,
+  };
 
   constructor(gateway?: ILLMGateway) {
     super(gateway);
@@ -60,13 +164,17 @@ export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainInput, Priva
 
   protected async invokeLLM(
     _ctx: AssembledContext,
-    req: SpecialistRequest<PrivateDomainInput>,
+    req: SpecialistRequest<PrivateDomainPhaseGenerateInput>,
   ): Promise<InvokeLLMResult> {
-    // 留 PRD-9 · 当前路由 privateDomain.ts 直接调 LLM · 此 Specialist 骨架为 AC-14 计数用
+    const input = req.userInput;
+    const systemPrompt = this._buildSystemPrompt(input.phase, input);
+    const userPrompt = this._buildUserPrompt(input.phase, input);
+
     return this.llmGateway.complete({
       model_tier: this.config.execution.model_tier,
-      systemPrompt: _ctx.systemPrompt,
-      userPrompt: `生成 ${req.userInput.stage} 阶段私域脚本`,
+      systemPrompt,
+      userPrompt,
+      responseFormat: { type: 'json_schema' as const, schema: privateDomainPhaseGenerateBaseSchema },
       metadata: {
         trace_id: req.traceId ?? '',
         agentId: this.config.agentId,
@@ -75,7 +183,49 @@ export class PrivateDomainAgent extends BaseSpecialist<PrivateDomainInput, Priva
         eventType: 'specialist_call',
       },
       timeout_ms: this.config.execution.timeout_ms,
+      retry: this.config.execution.retry,
     });
+  }
+
+  _buildSystemPrompt(phase: PrivateDomainPhase, input: PrivateDomainPhaseGenerateInput): string {
+    const tmpl = PHASE_TEMPLATES[phase];
+    const channel = CHANNEL_LABEL[input.currentChannel] ?? input.currentChannel;
+    return [
+      '你是专业的私域运营话术策划专家，擅长为 IP 博主生成高转化私域话术。',
+      '',
+      `## 当前阶段：${PHASE_LABEL[phase]}(${phase})`,
+      `**目标**：${tmpl.goal}`,
+      `**核心策略**：${tmpl.tactics}`,
+      `**输出期望**：${tmpl.outputHint}`,
+      '',
+      `## 产品背景`,
+      `- 产品/服务：${input.productDescription}`,
+      `- 价格：¥${input.productPrice}`,
+      `- 目标受众：${input.targetAudience}`,
+      `- IP 定位：${input.ipPositioning}`,
+      `- 主渠道：${channel}（月流量 ${input.monthlyTraffic}）`,
+      ...(input.scene ? [`- 具体场景：${input.scene}`] : []),
+      '',
+      '## 输出要求',
+      '请以 JSON 格式返回话术，包含：',
+      '- phaseScript: 主话术全文（200-400 字，自然流畅，适合私域场景）',
+      '- variants.professional: 专业版变体（语气专业权威，适合 B 端或高客单价场景）',
+      '- variants.friendly: 亲切版变体（语气温暖亲切，适合 C 端或情感消费场景）',
+      '- variants.sales: 销售版变体（直接促成转化，包含行动号召和稀缺性元素）',
+      '',
+      '⚠️ 严格约束：仅返回 JSON，禁止添加额外说明文字。',
+    ].join('\n');
+  }
+
+  _buildUserPrompt(phase: PrivateDomainPhase, input: PrivateDomainPhaseGenerateInput): string {
+    return [
+      `请为以下产品生成「${PHASE_LABEL[phase]}」阶段的私域话术：`,
+      `产品：${input.productDescription}（¥${input.productPrice}）`,
+      `受众：${input.targetAudience}`,
+      ...(input.scene ? [`场景：${input.scene}`] : []),
+      '',
+      '请返回 JSON 格式：{"phaseScript": "...", "variants": {"professional": "...", "friendly": "...", "sales": "..."}}',
+    ].join('\n');
   }
 }
 

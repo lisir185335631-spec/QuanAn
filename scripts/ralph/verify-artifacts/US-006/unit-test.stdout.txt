@@ -1,0 +1,36 @@
+
+ RUN  v2.1.9 /Users/return/Desktop/QuanAn/apps/web
+
+stderr | src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · H1 字面锁 "短视频一键制作"
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · 副标题包含 "AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导"
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · CTA "生成制作方案" 初始 disabled (text < 10 字)
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-1 · text ≥ 10 字 → CTA enabled
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-2 · onSuccess → 4 H3 区块渲染
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-2 · production output 真实数据内容渲染 (shotList/equipment/schedule)
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-5 · isFallback=true → 显示 fallback banner + retry button
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-5 · isFallback=false → 不显示 fallback banner
+ ✓ src/pages/tools/__tests__/VideoProduction.test.tsx > VideoProduction > AC-6 · onError → toast.error 被调用
+stderr | src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · H1 字面锁 "获客型视频制作"
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-1 · 副标题字面锁 "专为获客设计的短视频方案，让精准客户主动找上门"
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-3 · CTA "生成获客方案" 初始 disabled (audience + sellingPoints 为空)
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-3 · 填写 audience + sellingPoints → CTA enabled
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-4 · onSuccess → 4 H4 区块渲染真数据
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-4 · acquisition output 真实内容渲染 (script/ctaScript/conversionPath/keyMessages)
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · isFallback=true → 显示 fallback banner + retry button
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · isFallback=false → 不显示 fallback banner
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-6 · onError → toast.error 被调用
+ ✓ src/pages/tools/__tests__/AcquisitionVideo.test.tsx > AcquisitionVideo > AC-5 · industry select 有 "企业服务" 选项可被选中
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  20:11:28
+   Duration  478ms (transform 57ms, setup 52ms, collect 151ms, tests 151ms, environment 259ms, prepare 62ms)
+

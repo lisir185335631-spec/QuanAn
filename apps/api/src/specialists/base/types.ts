@@ -7,7 +7,7 @@
 import type { ZodTypeAny } from 'zod';
 
 /** LLM tier(ADR-013) */
-export type ModelTier = 'reasoning' | 'lightweight';
+export type ModelTier = 'reasoning' | 'lightweight' | 'balanced';
 
 /** 五层 Specialist 配置 */
 export interface SpecialistConfig {
