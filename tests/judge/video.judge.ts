@@ -5,19 +5,11 @@
  * AC-11: quantifiable criteria (shotList ≥ 1, 13 fields/shot)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -81,16 +73,7 @@ const goldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('VideoAgent LLM Judge — shooting/food/douyin golden case', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'shotList 2条均含13字段✓；equipment 4项✓；schedule 包含具体时间规划✓；每个字段非空✓' },
-      tokens: { prompt: 250, completion: 85, total: 335 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1150,
-      trace_id: 'judge-VideoAgent-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('VideoAgent LLM Judge — shooting/food/douyin golden case', () => {
 
   it('golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCase);
@@ -112,15 +95,4 @@ describe('VideoAgent LLM Judge — shooting/food/douyin golden case', () => {
     expect(result.score).toBeGreaterThanOrEqual(PASS_SCORE_THRESHOLD);
   });
 
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(goldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
-  });
 });

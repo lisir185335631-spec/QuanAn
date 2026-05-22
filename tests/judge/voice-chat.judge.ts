@@ -4,23 +4,11 @@
  * Judge 评估: 回复是否简洁(≤80字) / 工具是否被正确调用 / 语气是否口语化
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: {
-    complete: mockComplete,
-    stream: vi.fn(),
-  },
-  RateLimitError: class RateLimitError extends Error {},
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -121,20 +109,7 @@ const case2Tool: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('VoiceChatAgent LLM Judge (AC-12)', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 8,
-        reason: 'assistantText ≤80字✓; 口语化语气✓; toolCalls 结构正确✓; type=conversation✓',
-      },
-      tokens: { prompt: 180, completion: 60, total: 240 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 900,
-      trace_id: 'judge-VoiceChatAgent-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('VoiceChatAgent LLM Judge (AC-12)', () => {
 
   it('0-tool case: score ≥ threshold', async () => {
     const result = await runJudge(case0Tool);
@@ -154,14 +129,4 @@ describe('VoiceChatAgent LLM Judge (AC-12)', () => {
     expect(result.pass).toBe(true);
   });
 
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(case0Tool);
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
-  });
 });
