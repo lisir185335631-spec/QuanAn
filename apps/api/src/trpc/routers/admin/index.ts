@@ -13,6 +13,7 @@ import { adminAuthRouter } from './auth';
 import { complianceRouter } from './compliance';
 import { constantsRouter } from './constants';
 import { costRouter } from './cost';
+import { evaluationRouter } from './evaluation';
 import { evolutionHealthRouter } from './evolutionHealth';
 import { featureFlagsRouter } from './featureFlags';
 import { invitesRouter } from './invites';
@@ -64,6 +65,8 @@ export const adminRouter = adminTrpcRouter({
   constants: constantsRouter,
   // PRD-14 US-012: real featureFlags router
   featureFlags: featureFlagsRouter,
+  // PRD-28 US-006: evaluation router
+  evaluation: evaluationRouter,
 });
 
 export type AdminRouter = typeof adminRouter;

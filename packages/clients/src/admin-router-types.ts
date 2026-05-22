@@ -1643,6 +1643,79 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
+  evaluation: _t.router({
+    listRuns: _t.procedure
+      .input((x: unknown) => x as { page?: number; pageSize?: number })
+      .query(
+        (): {
+          items: Array<{
+            runId: string;
+            startedAt: Date;
+            finishedAt: Date | null;
+            status: string;
+            totalSamples: number;
+            passedSamples: number;
+            avgScore: string | null;
+            totalCostUsd: string;
+          }>;
+          count: number;
+        } => ({ items: [], count: 0 }),
+      ),
+    getRun: _t.procedure
+      .input((x: unknown) => x as { runId: string })
+      .query(
+        (): {
+          runId: string;
+          startedAt: Date;
+          finishedAt: Date | null;
+          status: string;
+          totalSamples: number;
+          passedSamples: number;
+          failedSamples: number;
+          skippedSamples: number;
+          avgScore: string | null;
+          modelTier: string;
+          model: string;
+          totalTokens: number;
+          totalCostUsd: string;
+          metadata: unknown;
+        } => ({
+          runId: '',
+          startedAt: new Date(),
+          finishedAt: null,
+          status: 'completed',
+          totalSamples: 0,
+          passedSamples: 0,
+          failedSamples: 0,
+          skippedSamples: 0,
+          avgScore: null,
+          modelTier: '',
+          model: '',
+          totalTokens: 0,
+          totalCostUsd: '0',
+          metadata: null,
+        }),
+      ),
+    listSamples: _t.procedure
+      .input((x: unknown) => x as { runId: string; page?: number; pageSize?: number })
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            goldenId: string;
+            specialistId: string;
+            mode: string | null;
+            structurePass: boolean;
+            judgeScore: number;
+            judgePass: boolean;
+            judgeReason: string;
+            costUsd: string;
+            durationMs: number;
+          }>;
+          count: number;
+        } => ({ items: [], count: 0 }),
+      ),
+  }),
   featureFlags: _t.router({
     getKpiStats: _t.procedure.query(
       (): { totalFlags: number; enabledFlags: number; recentChanges: number; emergencyActivations: number } => ({

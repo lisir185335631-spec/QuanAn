@@ -28,6 +28,10 @@ const QuotaPage = lazy(/* webpackChunkName: "p1-health" */ () => import('./pages
 const CompliancePage = lazy(/* webpackChunkName: "p1-health" */ () => import('./pages/compliance/index'));
 const ApprovalGatesPage = lazy(/* webpackChunkName: "p1-health" */ () => import('./pages/approvals/index'));
 
+// PRD-28 Evaluation
+const EvaluationPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationPage'));
+const EvaluationDetailPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationDetailPage'));
+
 // P2 高级
 const AbExperimentsPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/abExperiments/AbExperimentsPage'));
 const ExperimentDetailPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/abExperiments/ExperimentDetailPage'));
@@ -63,6 +67,10 @@ export function AdminRoutes() {
           <Route path="quota" element={<QuotaPage />} />
           <Route path="compliance" element={<CompliancePage />} />
           <Route path="approvals" element={<ApprovalGatesPage />} />
+
+          {/* PRD-28 Evaluation */}
+          <Route path="evaluation" element={<EvaluationPage />} />
+          <Route path="evaluation/:runId" element={<EvaluationDetailPage />} />
 
           {/* P2 高级 */}
           <Route path="ab-experiments" element={<AbExperimentsPage />} />

@@ -29,13 +29,13 @@ function buildGroups(currentPath?: string): SidebarGroup[] {
 }
 
 describe('Sidebar', () => {
-  it('renders exactly 17 domain links', () => {
+  it('renders exactly 18 domain links', () => {
     const groups = buildGroups();
     render(
       <Sidebar role="super_admin" groups={groups} currentPath="/admin/nsm" onNavigate={vi.fn()} />,
     );
     const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(17);
+    expect(links).toHaveLength(18);
   });
 
   it('renders 4 group labels', () => {
@@ -72,10 +72,10 @@ describe('Sidebar', () => {
     expect(p0Core).toHaveLength(6);
   });
 
-  it('all 4 groups have correct counts: 6 + 2 + 5 + 4', () => {
+  it('all 4 groups have correct counts: 6 + 2 + 6 + 4', () => {
     const counts = ALL_GROUPS.map(
       (g) => ADMIN_ROUTES.filter((r) => r.group === g).length,
     );
-    expect(counts).toEqual([6, 2, 5, 4]);
+    expect(counts).toEqual([6, 2, 6, 4]);
   });
 });

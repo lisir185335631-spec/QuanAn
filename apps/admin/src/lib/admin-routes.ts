@@ -150,6 +150,17 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     group: 'p1-health',
     domainKey: 'approvals',
   },
+  // PRD-28 Evaluation
+  {
+    path: '/admin/evaluation',
+    label: 'Evaluation',
+    emoji: '📈',
+    prd: 28,
+    requiredRole: 'admin',
+    summary: 'LLM Judge Evaluation Runs · 评分历史 + Specialist × Mode 矩阵热力图',
+    group: 'p1-health',
+    domainKey: 'evaluation',
+  },
   // P2 高级 4
   {
     path: '/admin/ab-experiments',

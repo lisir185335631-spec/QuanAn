@@ -27,6 +27,8 @@
     "test:e2e": "playwright test",
     "test:visual:prd26": "playwright test --project=chromium tests/e2e/prd26-admin-visual-baseline.spec.ts --update-snapshots",
     "test:visual:prd26:check": "playwright test --project=chromium tests/e2e/prd26-admin-visual-baseline.spec.ts",
+    "test:visual:prd28": "playwright test --project=chromium tests/e2e/admin/prd28-evaluation-baseline.spec.ts --update-snapshots",
+    "test:visual:prd28:check": "playwright test --project=chromium tests/e2e/admin/prd28-evaluation-baseline.spec.ts",
     "test:smoke:prd26": "playwright test --project=chromium tests/e2e/prd26-admin-pages-smoke.spec.ts",
     "test:llm-judge": "tsx tests/llm-judge/runner.ts",
     "test:judge": "vitest run --config vitest.judge.config.ts",
