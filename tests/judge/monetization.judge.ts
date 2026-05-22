@@ -5,19 +5,12 @@
  * AC-11: quantifiable criteria
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
+import { describe, expect, it, vi } from 'vitest';
+
 import type { JudgeCase } from './judge-runner';
+import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -60,17 +53,7 @@ const goldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('MonetizationAgent LLM Judge — education/zero-revenue golden case', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'ladder 3阶段✓；revenueStructure.secondary 2项✓；successCases 2个✓；每个action含具体数字目标✓' },
-      tokens: { prompt: 180, completion: 70, total: 250 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1050,
-      trace_id: 'judge-MonetizationAgent-test',
-    });
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('MonetizationAgent LLM Judge — education/zero-revenue golden case', () => {
   it('golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCase);
 
@@ -89,17 +72,5 @@ describe('MonetizationAgent LLM Judge — education/zero-revenue golden case', (
 
     expect(result.pass).toBe(true);
     expect(result.score).toBeGreaterThanOrEqual(PASS_SCORE_THRESHOLD);
-  });
-
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(goldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
   });
 });

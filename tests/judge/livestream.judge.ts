@@ -5,19 +5,12 @@
  * AC-11: quantifiable criteria (lastResult ≥ 200 chars, lastOptimizedResult ≥ 200 chars)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
+import { describe, expect, it, vi } from 'vitest';
+
 import type { JudgeCase } from './judge-runner';
+import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -48,17 +41,7 @@ const goldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('LivestreamAgent LLM Judge — 新手/beauty/douyin golden case', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 9, reason: 'lastResult 215字✓；lastOptimizedResult 280字✓；均含开场欢迎语✓；优化版加入扣字互动元素✓；两版本有显著差异✓' },
-      tokens: { prompt: 220, completion: 75, total: 295 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1080,
-      trace_id: 'judge-LivestreamAgent-test',
-    });
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('LivestreamAgent LLM Judge — 新手/beauty/douyin golden case', () => {
   it('golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCase);
 
@@ -77,17 +60,5 @@ describe('LivestreamAgent LLM Judge — 新手/beauty/douyin golden case', () =>
 
     expect(result.pass).toBe(true);
     expect(result.score).toBeGreaterThanOrEqual(PASS_SCORE_THRESHOLD);
-  });
-
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(goldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
   });
 });

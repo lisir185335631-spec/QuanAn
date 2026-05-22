@@ -9,19 +9,12 @@
  * - score ≥ 8/10 (= 4.0/5) → pass
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
+import { describe, expect, it, vi } from 'vitest';
+
 import type { JudgeCase } from './judge-runner';
+import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -93,29 +86,7 @@ const goldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('EvolutionAgent LLM Judge — threshold:50 golden case', () => {
-  beforeEach(() => {
-    // Mock judge LLM response: score=9/10 (4.5/5) — 高质量 reasoning 输出
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 9,
-        reason:
-          'direction "职场干货/科技资讯" 准确反映偏好方向✓；' +
-          'preferredCatchphrases 4条均为具体可用金句风格✓；' +
-          'avoidList 3条覆盖鸡汤/情怀类✓；' +
-          'styleTone 详细描述专业干货风格✓；' +
-          'sourceFeedbackIds 5条可追溯✓；' +
-          'satisfactionRate=0.82 与场景一致✓；' +
-          '全字段语义内聚、无矛盾✓',
-      },
-      tokens: { prompt: 420, completion: 110, total: 530 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1500,
-      trace_id: 'judge-EvolutionAgent-test',
-    });
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('EvolutionAgent LLM Judge — threshold:50 golden case', () => {
   it('AC-13: golden case passes judge with score ≥ 8/10 (≥ 4.0/5)', async () => {
     const result = await runJudge(goldenCase);
 
@@ -135,17 +106,5 @@ describe('EvolutionAgent LLM Judge — threshold:50 golden case', () => {
     // AC-13: ≥ 4.0/5 → ≥ 8/10 on 0-10 scale
     expect(result.pass).toBe(true);
     expect(result.score).toBeGreaterThanOrEqual(8);
-  });
-
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(goldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
   });
 });

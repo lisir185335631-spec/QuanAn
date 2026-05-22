@@ -8,20 +8,12 @@
  * 下次 ContextAssembler 注入 → Specialist 收到 [Section 4]
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { JudgeCase } from './judge-runner';
 import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -94,28 +86,7 @@ const feedbackEvolutionLoopCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('feedback-evolution-loop LLM Judge — threshold:20 end-to-end', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 9,
-        reason:
-          'direction "干货教程/职场提升" 与 topPositive 一致✓；' +
-          'preferredCatchphrases 4 条覆盖用户偏好✓；' +
-          'avoidList 2 条与 topNegative 完全对应✓；' +
-          'section4Present=true 注入成功✓；' +
-          'catchphrasesInjected=4 充分✓；' +
-          'directionAligned=true✓；' +
-          '全链路 feedback→insight→injection 语义一致✓',
-      },
-      tokens: { prompt: 450, completion: 120, total: 570 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1600,
-      trace_id: 'judge-feedback-evolution-loop-test',
-    });
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('feedback-evolution-loop LLM Judge — threshold:20 end-to-end', () => {
   it('AC-1: feedback-evolution-loop golden case passes judge with score ≥ 8/10', async () => {
     const result = await runJudge(feedbackEvolutionLoopCase);
 

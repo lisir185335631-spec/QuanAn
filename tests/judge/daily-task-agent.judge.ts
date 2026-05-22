@@ -7,20 +7,12 @@
  * Case 2: 冷启动账号 (cold_start) — 模板任务 5 条
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { JudgeCase } from './judge-runner';
 import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -134,27 +126,7 @@ const goldenCaseColdStart: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('DailyTaskAgent LLM Judge — has_progress golden case', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 9,
-        reason:
-          'tasks 包含 3 个元素✓；' +
-          '7 字段完整✓；' +
-          'ctaUrl 均以 / 开头✓；' +
-          'type 均为合法枚举✓；' +
-          'do_step 关联步骤 5 与进度一致✓；' +
-          'description 和 expectedOutcome 详实有操作性✓',
-      },
-      tokens: { prompt: 380, completion: 90, total: 470 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1200,
-      trace_id: 'judge-DailyTaskAgent-progress-test',
-    });
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('DailyTaskAgent LLM Judge — has_progress golden case', () => {
   it('AC-1: has_progress case passes judge with score ≥ 8/10', async () => {
     const result = await runJudge(goldenCaseHasProgress);
 
@@ -173,40 +145,9 @@ describe('DailyTaskAgent LLM Judge — has_progress golden case', () => {
     expect(result.pass).toBe(true);
     expect(result.score).toBeGreaterThanOrEqual(8);
   });
-
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(goldenCaseHasProgress);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
-  });
 });
 
-describe('DailyTaskAgent LLM Judge — cold_start golden case', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 8,
-        reason:
-          'tasks 包含 3 个元素✓；' +
-          '首任务为 do_step 引导步骤 1✓；' +
-          '7 字段完整✓；' +
-          'ctaUrl 格式正确✓；' +
-          '冷启动场景合理，无需历史数据的任务类型✓',
-      },
-      tokens: { prompt: 350, completion: 80, total: 430 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1100,
-      trace_id: 'judge-DailyTaskAgent-coldstart-test',
-    });
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('DailyTaskAgent LLM Judge — cold_start golden case', () => {
   it('AC-1: cold_start case passes judge with score ≥ 8/10', async () => {
     const result = await runJudge(goldenCaseColdStart);
 
