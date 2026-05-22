@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-23T04:46:22",
+  "last_updated": "2026-05-23T07:49:27",
   "items": [
     {
       "id": "TD-001",
@@ -2258,6 +2258,19 @@
         "TD-103"
       ],
       "additional_finding": "ralph-tools.py check-risk 命令 (2026-05-04 新增) 可检测 risk_level=large 但无法检测 prompt 字节数 · 两者互补"
+    },
+    {
+      "id": "TD-109",
+      "category": "tooling",
+      "title": ".planning/codebase/ stale(1-3 day)· PRD-28 /goal-verify §0 GSD mapper 重跑跳过",
+      "discovered_at": "2026-05-23",
+      "discovered_by": "Opus /goal-verify PRD-28 §0.2",
+      "severity": "low",
+      "status": "open",
+      "evidence": "1) 根 .planning/codebase 3 files mtime 2026-05-21(2 day stale) 2) apps/api/.planning/codebase 7 files mtime 2026-05-22 23:19(PRD-28 启动前 · 缺 evaluation pipeline 新代码)3) apps/web/.planning/codebase 7 files mtime 2026-05-20(3 day stale)4) apps/admin/.planning/codebase 7 files mtime 2026-05-22 23:19(缺 evaluation pages)5) packages/* 无 .planning/codebase",
+      "root_cause": "PRD-28 daemon 期间 ralph 写了大量新代码(evaluation pipeline + admin UI + judge tests refactor)· US-008 /goal-verify §0 仅基于现有 .planning + 实测 grep 对账 · 跳过重跑 /gsd-map-codebase × N(为节省 30+ min)",
+      "scheduled_fix_in": "PRD-29 启动前 · 跑 /gsd-map-codebase × 4(apps/api + apps/admin + apps/web + 可选 packages/*)· 同步 .planning/codebase/ 反映 PRD-28 新代码事实层",
+      "audit_exemption": "PRD-28 /goal-verify approve 时豁免 · US-008 已基于现有 .planning + 实测 grep 完成 AGENTS.md 对账 · 0 High 偏差 · LD-001/004/009/A-1/A-3 全 ✅ · GSD refresh 是 doc-only · 不影响 PRD-28 goal-backward 验证结论"
     }
   ]
 }
