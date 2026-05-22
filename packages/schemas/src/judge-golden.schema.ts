@@ -19,7 +19,7 @@ export const SPECIALIST_IDS = [
   'AnalysisAgent',
   'DiagnosisAgent',
   'DeepLearnAgent',
-  'VoiceChatAgent',
+  'PresentationAgent',
   'EvolutionAgent',
   'DailyTaskAgent',
 ] as const;

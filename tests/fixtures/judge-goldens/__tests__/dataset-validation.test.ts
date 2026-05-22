@@ -84,6 +84,7 @@ describe('specialistId validity', () => {
     expect(SPECIALIST_IDS).toContain('BrandingAgent');
     expect(SPECIALIST_IDS).toContain('EvolutionAgent');
     expect(SPECIALIST_IDS).toContain('DailyTaskAgent');
+    expect(SPECIALIST_IDS).toContain('PresentationAgent');
   });
 });
 
@@ -118,6 +119,18 @@ describe('source field marking', () => {
     const parsed = goldenDatasetSchema.parse(customRaw);
     const count = parsed.filter(e => e.specialistId === 'TopicAgent').length;
     expect(count).toBeGreaterThanOrEqual(8);
+  });
+
+  it('custom-70 PresentationAgent quota >= 4', () => {
+    const parsed = goldenDatasetSchema.parse(customRaw);
+    const count = parsed.filter(e => e.specialistId === 'PresentationAgent').length;
+    expect(count).toBeGreaterThanOrEqual(4);
+  });
+
+  it('custom-70 has 14 unique specialist IDs (all spec §7 specialists represented)', () => {
+    const parsed = goldenDatasetSchema.parse(customRaw);
+    const unique = new Set(parsed.map(e => e.specialistId));
+    expect(unique.size).toBe(14);
   });
 
   it('id format matches (sally|custom)-NNN pattern', () => {

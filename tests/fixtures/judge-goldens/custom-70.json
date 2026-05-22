@@ -5,7 +5,10 @@
     "mode": "free",
     "input": {
       "scriptType": "tutorial",
-      "elements": ["curiosity", "authority"],
+      "elements": [
+        "curiosity",
+        "authority"
+      ],
       "topic": "皮肤科医生的日常护肤步骤"
     },
     "criteria": [
@@ -13,9 +16,16 @@
       "内容包含权威信息来源背书",
       "步骤清晰可操作"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "beauty", "tutorial"]
+    "tags": [
+      "copywriting",
+      "beauty",
+      "tutorial"
+    ]
   },
   {
     "id": "custom-002",
@@ -23,7 +33,10 @@
     "mode": "free",
     "input": {
       "scriptType": "storytelling",
-      "elements": ["transformation", "social_proof"],
+      "elements": [
+        "transformation",
+        "social_proof"
+      ],
       "topic": "我是如何从月薪 3000 到月薪 30000 的"
     },
     "criteria": [
@@ -31,16 +44,26 @@
       "包含明确的时间线和转折点",
       "结尾有激励性行动号召"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "career", "storytelling"]
+    "tags": [
+      "copywriting",
+      "career",
+      "storytelling"
+    ]
   },
   {
     "id": "custom-003",
     "specialistId": "CopywritingAgent",
     "mode": "boom",
     "input": {
-      "elements": ["fear", "scarcity"],
+      "elements": [
+        "fear",
+        "scarcity"
+      ],
       "referenceTitle": "再不看你就亏大了"
     },
     "criteria": [
@@ -48,9 +71,16 @@
       "每个标题使用紧迫性词汇",
       "标题长度在 10-30 个字符"
     ],
-    "expectedKeyFields": ["candidates", "metadata"],
+    "expectedKeyFields": [
+      "candidates",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "boom-title", "finance"]
+    "tags": [
+      "copywriting",
+      "boom-title",
+      "finance"
+    ]
   },
   {
     "id": "custom-004",
@@ -58,7 +88,10 @@
     "mode": "free",
     "input": {
       "scriptType": "comparison",
-      "elements": ["contrast", "low_cost_high"],
+      "elements": [
+        "contrast",
+        "low_cost_high"
+      ],
       "topic": "500 元平替 vs 5000 元大牌，差距究竟在哪里"
     },
     "criteria": [
@@ -66,9 +99,16 @@
       "至少提及 2 个具体对比维度",
       "markdown 字数 ≥ 400"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "beauty", "comparison"]
+    "tags": [
+      "copywriting",
+      "beauty",
+      "comparison"
+    ]
   },
   {
     "id": "custom-005",
@@ -84,9 +124,15 @@
       "文案风格适配小红书平台",
       "含明确的评论区互动引导"
     ],
-    "expectedKeyFields": ["scripts"],
+    "expectedKeyFields": [
+      "scripts"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "fitness", "acquisition"]
+    "tags": [
+      "copywriting",
+      "fitness",
+      "acquisition"
+    ]
   },
   {
     "id": "custom-006",
@@ -94,7 +140,10 @@
     "mode": "free",
     "input": {
       "scriptType": "list",
-      "elements": ["list", "curiosity"],
+      "elements": [
+        "list",
+        "curiosity"
+      ],
       "topic": "程序员必备的 10 个效率工具"
     },
     "criteria": [
@@ -102,16 +151,26 @@
       "每个工具有简要说明",
       "markdown ≥ 400 字"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "tech", "list"]
+    "tags": [
+      "copywriting",
+      "tech",
+      "list"
+    ]
   },
   {
     "id": "custom-007",
     "specialistId": "CopywritingAgent",
     "mode": "boom",
     "input": {
-      "elements": ["reveal", "curiosity"],
+      "elements": [
+        "reveal",
+        "curiosity"
+      ],
       "referenceTitle": "没人告诉你的真相"
     },
     "criteria": [
@@ -119,9 +178,16 @@
       "标题含揭秘/真相类词汇",
       "每个标题能引发点击欲望"
     ],
-    "expectedKeyFields": ["candidates", "metadata"],
+    "expectedKeyFields": [
+      "candidates",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "boom-title", "revelation"]
+    "tags": [
+      "copywriting",
+      "boom-title",
+      "revelation"
+    ]
   },
   {
     "id": "custom-008",
@@ -129,7 +195,10 @@
     "mode": "free",
     "input": {
       "scriptType": "tutorial",
-      "elements": ["social_proof", "low_cost_unknown"],
+      "elements": [
+        "social_proof",
+        "low_cost_unknown"
+      ],
       "topic": "新手摄影：用手机拍出大片感"
     },
     "criteria": [
@@ -137,9 +206,16 @@
       "markdown ≥ 400 字",
       "内容有用户证言或案例"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "photography", "tutorial"]
+    "tags": [
+      "copywriting",
+      "photography",
+      "tutorial"
+    ]
   },
   {
     "id": "custom-009",
@@ -147,7 +223,10 @@
     "mode": "free",
     "input": {
       "scriptType": "duo_chat",
-      "elements": ["empathy", "resonance"],
+      "elements": [
+        "empathy",
+        "resonance"
+      ],
       "topic": "职场新人和老员工关于加班的对话"
     },
     "criteria": [
@@ -155,16 +234,26 @@
       "情感共鸣感强，触动职场人",
       "markdown ≥ 400 字"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "workplace", "duo_chat"]
+    "tags": [
+      "copywriting",
+      "workplace",
+      "duo_chat"
+    ]
   },
   {
     "id": "custom-010",
     "specialistId": "CopywritingAgent",
     "mode": "boom",
     "input": {
-      "elements": ["greed", "trend"],
+      "elements": [
+        "greed",
+        "trend"
+      ],
       "referenceTitle": "2025 年最赚钱的副业"
     },
     "criteria": [
@@ -172,9 +261,16 @@
       "标题含时间/年份元素增强时效感",
       "传达财富/机遇主题"
     ],
-    "expectedKeyFields": ["candidates", "metadata"],
+    "expectedKeyFields": [
+      "candidates",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "finance", "boom-title"]
+    "tags": [
+      "copywriting",
+      "finance",
+      "boom-title"
+    ]
   },
   {
     "id": "custom-011",
@@ -182,7 +278,10 @@
     "mode": "free",
     "input": {
       "scriptType": "vlog",
-      "elements": ["curiosity", "small_big"],
+      "elements": [
+        "curiosity",
+        "small_big"
+      ],
       "topic": "花 200 元改造出租屋的一天"
     },
     "criteria": [
@@ -190,9 +289,16 @@
       "体现低成本高回报主题",
       "markdown ≥ 400 字"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "lifestyle", "vlog"]
+    "tags": [
+      "copywriting",
+      "lifestyle",
+      "vlog"
+    ]
   },
   {
     "id": "custom-012",
@@ -200,7 +306,10 @@
     "mode": "free",
     "input": {
       "scriptType": "review",
-      "elements": ["authority", "social_proof"],
+      "elements": [
+        "authority",
+        "social_proof"
+      ],
       "topic": "用了半年的洗发水，真实测评"
     },
     "criteria": [
@@ -208,9 +317,16 @@
       "有具体使用体验描述",
       "markdown ≥ 400 字"
     ],
-    "expectedKeyFields": ["markdown", "metadata"],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
     "source": "custom",
-    "tags": ["copywriting", "beauty", "review"]
+    "tags": [
+      "copywriting",
+      "beauty",
+      "review"
+    ]
   },
   {
     "id": "custom-013",
@@ -226,9 +342,18 @@
       "bio 包含 bilibili 平台版本",
       "overallStrategy 有明确内容差异化策略"
     ],
-    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "tech", "bilibili"]
+    "tags": [
+      "branding",
+      "tech",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-014",
@@ -244,9 +369,18 @@
       "avatar.style 温暖亲切",
       "bio 有抖音和微信公众号版本"
     ],
-    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "parenting", "douyin"]
+    "tags": [
+      "branding",
+      "parenting",
+      "douyin"
+    ]
   },
   {
     "id": "custom-015",
@@ -262,9 +396,18 @@
       "background.platformVersions 3 种比例",
       "overallStrategy 强调旅行内容垂直定位"
     ],
-    "expectedKeyFields": ["nickname", "background", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "background",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "travel", "xiaohongshu"]
+    "tags": [
+      "branding",
+      "travel",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-016",
@@ -280,9 +423,18 @@
       "bio 有 douyin 和 xiaohongshu 版本",
       "avatar 描述专业形象"
     ],
-    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "health", "douyin"]
+    "tags": [
+      "branding",
+      "health",
+      "douyin"
+    ]
   },
   {
     "id": "custom-017",
@@ -298,9 +450,17 @@
       "overallStrategy 强调信任建立",
       "bio 体现专业背景"
     ],
-    "expectedKeyFields": ["nickname", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "finance", "bilibili"]
+    "tags": [
+      "branding",
+      "finance",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-018",
@@ -316,9 +476,18 @@
       "avatar 描述美食创作者形象",
       "bio 包含多平台版本"
     ],
-    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "food", "douyin"]
+    "tags": [
+      "branding",
+      "food",
+      "douyin"
+    ]
   },
   {
     "id": "custom-019",
@@ -334,9 +503,18 @@
       "avatar.style 描述亲切可爱风格",
       "overallStrategy 针对宠物爱好者群体"
     ],
-    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "pets", "xiaohongshu"]
+    "tags": [
+      "branding",
+      "pets",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-020",
@@ -352,9 +530,17 @@
       "bio 有 bilibili 版本",
       "overallStrategy 描述游戏内容垂类策略"
     ],
-    "expectedKeyFields": ["nickname", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "gaming", "bilibili"]
+    "tags": [
+      "branding",
+      "gaming",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-021",
@@ -370,9 +556,18 @@
       "background.platformVersions 3 种比例",
       "overallStrategy 聚焦摄影教学垂类"
     ],
-    "expectedKeyFields": ["nickname", "background", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "background",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "photography", "douyin"]
+    "tags": [
+      "branding",
+      "photography",
+      "douyin"
+    ]
   },
   {
     "id": "custom-022",
@@ -388,9 +583,18 @@
       "avatar.style 温暖治愈型",
       "bio 有小红书版本，语气温和专业"
     ],
-    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
     "source": "custom",
-    "tags": ["branding", "mental_health", "xiaohongshu"]
+    "tags": [
+      "branding",
+      "mental_health",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-023",
@@ -406,9 +610,16 @@
       "每个 scene 有 description 和 duration",
       "totalDuration 接近 120 秒"
     ],
-    "expectedKeyFields": ["scenes", "totalDuration"],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
     "source": "custom",
-    "tags": ["video", "food", "storyboard"]
+    "tags": [
+      "video",
+      "food",
+      "storyboard"
+    ]
   },
   {
     "id": "custom-024",
@@ -424,9 +635,16 @@
       "每个 scene 描述具体动作",
       "totalDuration 与输入匹配"
     ],
-    "expectedKeyFields": ["scenes", "totalDuration"],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
     "source": "custom",
-    "tags": ["video", "fitness", "storyboard"]
+    "tags": [
+      "video",
+      "fitness",
+      "storyboard"
+    ]
   },
   {
     "id": "custom-025",
@@ -440,9 +658,16 @@
       "insights 至少 3 条",
       "analysis.hookType 有值"
     ],
-    "expectedKeyFields": ["analysis", "insights"],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
     "source": "custom",
-    "tags": ["video", "psychology", "analysis"]
+    "tags": [
+      "video",
+      "psychology",
+      "analysis"
+    ]
   },
   {
     "id": "custom-026",
@@ -459,9 +684,16 @@
       "每个分镜有画面描述和时长",
       "总时长接近 90 秒"
     ],
-    "expectedKeyFields": ["scenes", "totalDuration"],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
     "source": "custom",
-    "tags": ["video", "lifestyle", "production"]
+    "tags": [
+      "video",
+      "lifestyle",
+      "production"
+    ]
   },
   {
     "id": "custom-027",
@@ -477,9 +709,16 @@
       "scene 描述教学进程和节点",
       "totalDuration ≈ 180 秒"
     ],
-    "expectedKeyFields": ["scenes", "totalDuration"],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
     "source": "custom",
-    "tags": ["video", "sports", "tutorial"]
+    "tags": [
+      "video",
+      "sports",
+      "tutorial"
+    ]
   },
   {
     "id": "custom-028",
@@ -493,9 +732,16 @@
       "insights 识别 contrast 或 surprise 元素",
       "analysis.hookType 识别叙事类型"
     ],
-    "expectedKeyFields": ["analysis", "insights"],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
     "source": "custom",
-    "tags": ["video", "lifestyle", "humor"]
+    "tags": [
+      "video",
+      "lifestyle",
+      "humor"
+    ]
   },
   {
     "id": "custom-029",
@@ -511,9 +757,16 @@
       "每 scene 有镜头描述",
       "totalDuration 合理"
     ],
-    "expectedKeyFields": ["scenes", "totalDuration"],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
     "source": "custom",
-    "tags": ["video", "food", "xiaohongshu"]
+    "tags": [
+      "video",
+      "food",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-030",
@@ -529,9 +782,15 @@
       "每个方向有明确的内容钩子",
       "针对目标平台风格优化"
     ],
-    "expectedKeyFields": ["scripts"],
+    "expectedKeyFields": [
+      "scripts"
+    ],
     "source": "custom",
-    "tags": ["video", "tech", "acquisition"]
+    "tags": [
+      "video",
+      "tech",
+      "acquisition"
+    ]
   },
   {
     "id": "custom-031",
@@ -547,9 +806,16 @@
       "每个含 title/hook/structure/formula/viralPotential",
       "内容贴合 B 站科技区受众"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "tech", "bilibili"]
+    "tags": [
+      "topic",
+      "tech",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-032",
@@ -565,9 +831,16 @@
       "viralPotential 字段合法",
       "内容聚焦宠物产品推荐"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "pets", "douyin"]
+    "tags": [
+      "topic",
+      "pets",
+      "douyin"
+    ]
   },
   {
     "id": "custom-033",
@@ -583,9 +856,16 @@
       "formula 描述财经类爆款公式",
       "viralPotential 取 low/medium/high"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "finance", "douyin"]
+    "tags": [
+      "topic",
+      "finance",
+      "douyin"
+    ]
   },
   {
     "id": "custom-034",
@@ -601,9 +881,16 @@
       "hook 吸引游戏玩家",
       "structure 描述合理叙述结构"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "gaming", "bilibili"]
+    "tags": [
+      "topic",
+      "gaming",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-035",
@@ -619,9 +906,16 @@
       "内容适配小红书家居/装修受众",
       "viralPotential 合法值"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "home_decor", "xiaohongshu"]
+    "tags": [
+      "topic",
+      "home_decor",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-036",
@@ -637,9 +931,16 @@
       "hook 激发旅行欲望",
       "formula 描述旅游类爆款模式"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "travel", "xiaohongshu"]
+    "tags": [
+      "topic",
+      "travel",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-037",
@@ -655,9 +956,16 @@
       "内容聚焦职场/求职主题",
       "viralPotential 包含 high 级别选题"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "career", "douyin"]
+    "tags": [
+      "topic",
+      "career",
+      "douyin"
+    ]
   },
   {
     "id": "custom-038",
@@ -673,9 +981,16 @@
       "每个 topic 与摄影器材/技巧相关",
       "viralPotential 字段合法"
     ],
-    "expectedKeyFields": ["category", "topics"],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
     "source": "custom",
-    "tags": ["topic", "photography", "bilibili"]
+    "tags": [
+      "topic",
+      "photography",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-039",
@@ -690,9 +1005,16 @@
       "contentPillars 至少 3 个内容支柱",
       "定位表述精准聚焦垂类"
     ],
-    "expectedKeyFields": ["positioning", "contentPillars"],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
     "source": "custom",
-    "tags": ["positioning", "tech", "b-end"]
+    "tags": [
+      "positioning",
+      "tech",
+      "b-end"
+    ]
   },
   {
     "id": "custom-040",
@@ -707,9 +1029,16 @@
       "contentPillars 含旅行内容维度",
       "受众描述精准"
     ],
-    "expectedKeyFields": ["positioning", "contentPillars"],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
     "source": "custom",
-    "tags": ["positioning", "travel", "niche"]
+    "tags": [
+      "positioning",
+      "travel",
+      "niche"
+    ]
   },
   {
     "id": "custom-041",
@@ -724,9 +1053,16 @@
       "contentPillars 含情绪/压力管理维度",
       "受众痛点明确"
     ],
-    "expectedKeyFields": ["positioning", "contentPillars"],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
     "source": "custom",
-    "tags": ["positioning", "mental_health", "wellness"]
+    "tags": [
+      "positioning",
+      "mental_health",
+      "wellness"
+    ]
   },
   {
     "id": "custom-042",
@@ -741,9 +1077,16 @@
       "contentPillars 至少 3 个",
       "差异化卖点清晰"
     ],
-    "expectedKeyFields": ["positioning", "contentPillars"],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
     "source": "custom",
-    "tags": ["positioning", "gaming", "strategy"]
+    "tags": [
+      "positioning",
+      "gaming",
+      "strategy"
+    ]
   },
   {
     "id": "custom-043",
@@ -758,9 +1101,16 @@
       "contentPillars 包含装修各阶段内容",
       "受众需求痛点准确"
     ],
-    "expectedKeyFields": ["positioning", "contentPillars"],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
     "source": "custom",
-    "tags": ["positioning", "home_decor", "renovation"]
+    "tags": [
+      "positioning",
+      "home_decor",
+      "renovation"
+    ]
   },
   {
     "id": "custom-044",
@@ -775,9 +1125,16 @@
       "contentPillars 3+ 个维度",
       "定位有明确的信任背书方向"
     ],
-    "expectedKeyFields": ["positioning", "contentPillars"],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
     "source": "custom",
-    "tags": ["positioning", "pets", "cats"]
+    "tags": [
+      "positioning",
+      "pets",
+      "cats"
+    ]
   },
   {
     "id": "custom-045",
@@ -792,9 +1149,18 @@
       "revenueStructure.secondary 恰好 2 个",
       "successCases 含 2 个健身类案例"
     ],
-    "expectedKeyFields": ["currentAnalysis", "ladder", "revenueStructure", "successCases"],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure",
+      "successCases"
+    ],
     "source": "custom",
-    "tags": ["monetization", "fitness", "douyin"]
+    "tags": [
+      "monetization",
+      "fitness",
+      "douyin"
+    ]
   },
   {
     "id": "custom-046",
@@ -809,9 +1175,17 @@
       "ladder 3 阶段路线图",
       "action 每步含可量化目标"
     ],
-    "expectedKeyFields": ["currentAnalysis", "ladder", "revenueStructure"],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
     "source": "custom",
-    "tags": ["monetization", "beauty", "xiaohongshu"]
+    "tags": [
+      "monetization",
+      "beauty",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-047",
@@ -826,9 +1200,17 @@
       "revenueStructure 区分主次收入",
       "每个 action 有数字目标"
     ],
-    "expectedKeyFields": ["currentAnalysis", "ladder", "revenueStructure"],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
     "source": "custom",
-    "tags": ["monetization", "tech", "bilibili"]
+    "tags": [
+      "monetization",
+      "tech",
+      "bilibili"
+    ]
   },
   {
     "id": "custom-048",
@@ -843,9 +1225,17 @@
       "revenueStructure.secondary 2 个来源",
       "successCases 含美食类参考案例"
     ],
-    "expectedKeyFields": ["currentAnalysis", "ladder", "successCases"],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "successCases"
+    ],
     "source": "custom",
-    "tags": ["monetization", "food", "douyin"]
+    "tags": [
+      "monetization",
+      "food",
+      "douyin"
+    ]
   },
   {
     "id": "custom-049",
@@ -860,9 +1250,17 @@
       "ladder 提出旅游类变现路径",
       "action 含粉丝量化目标"
     ],
-    "expectedKeyFields": ["currentAnalysis", "ladder", "revenueStructure"],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
     "source": "custom",
-    "tags": ["monetization", "travel", "xiaohongshu"]
+    "tags": [
+      "monetization",
+      "travel",
+      "xiaohongshu"
+    ]
   },
   {
     "id": "custom-050",
@@ -877,9 +1275,17 @@
       "ladder 规划进阶到 10 万的路径",
       "revenueStructure 有详细结构拆分"
     ],
-    "expectedKeyFields": ["currentAnalysis", "ladder", "revenueStructure"],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
     "source": "custom",
-    "tags": ["monetization", "finance", "scale-up"]
+    "tags": [
+      "monetization",
+      "finance",
+      "scale-up"
+    ]
   },
   {
     "id": "custom-051",
@@ -893,9 +1299,17 @@
       "optimizations 至少 3 条优化建议",
       "rewriteSnippet 长度 ≥ 50 字符"
     ],
-    "expectedKeyFields": ["scores", "optimizations", "rewriteSnippet"],
+    "expectedKeyFields": [
+      "scores",
+      "optimizations",
+      "rewriteSnippet"
+    ],
     "source": "custom",
-    "tags": ["analysis", "structural", "career"]
+    "tags": [
+      "analysis",
+      "structural",
+      "career"
+    ]
   },
   {
     "id": "custom-052",
@@ -910,9 +1324,17 @@
       "insights 至少 3 条含 element/explanation/impact",
       "rewriteVersion 长度 ≥ 50 字"
     ],
-    "expectedKeyFields": ["analysis", "insights", "rewriteVersion"],
+    "expectedKeyFields": [
+      "analysis",
+      "insights",
+      "rewriteVersion"
+    ],
     "source": "custom",
-    "tags": ["analysis", "viral", "lifestyle"]
+    "tags": [
+      "analysis",
+      "viral",
+      "lifestyle"
+    ]
   },
   {
     "id": "custom-053",
@@ -926,9 +1348,17 @@
       "optimizations ≥ 3 条",
       "rewriteSnippet ≥ 50 字符"
     ],
-    "expectedKeyFields": ["scores", "optimizations", "rewriteSnippet"],
+    "expectedKeyFields": [
+      "scores",
+      "optimizations",
+      "rewriteSnippet"
+    ],
     "source": "custom",
-    "tags": ["analysis", "structural", "education"]
+    "tags": [
+      "analysis",
+      "structural",
+      "education"
+    ]
   },
   {
     "id": "custom-054",
@@ -943,9 +1373,16 @@
       "insights 识别 social_proof 元素",
       "analysis.elements 含 low_cost_unknown 或类似元素"
     ],
-    "expectedKeyFields": ["analysis", "insights"],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
     "source": "custom",
-    "tags": ["analysis", "viral", "health"]
+    "tags": [
+      "analysis",
+      "viral",
+      "health"
+    ]
   },
   {
     "id": "custom-055",
@@ -959,9 +1396,17 @@
       "optimizations 3 条明确改进建议",
       "rewriteSnippet 提供有价值的改写示例"
     ],
-    "expectedKeyFields": ["scores", "optimizations", "rewriteSnippet"],
+    "expectedKeyFields": [
+      "scores",
+      "optimizations",
+      "rewriteSnippet"
+    ],
     "source": "custom",
-    "tags": ["analysis", "structural", "career"]
+    "tags": [
+      "analysis",
+      "structural",
+      "career"
+    ]
   },
   {
     "id": "custom-056",
@@ -976,9 +1421,16 @@
       "insights 3+ 条详细解析",
       "analysis.hookType 准确识别"
     ],
-    "expectedKeyFields": ["analysis", "insights"],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
     "source": "custom",
-    "tags": ["analysis", "viral", "self-media"]
+    "tags": [
+      "analysis",
+      "viral",
+      "self-media"
+    ]
   },
   {
     "id": "custom-057",
@@ -993,9 +1445,15 @@
       "话术覆盖开播/互动/促单环节",
       "语气亲切符合直播场景"
     ],
-    "expectedKeyFields": ["scripts"],
+    "expectedKeyFields": [
+      "scripts"
+    ],
     "source": "custom",
-    "tags": ["livestream", "beauty", "douyin"]
+    "tags": [
+      "livestream",
+      "beauty",
+      "douyin"
+    ]
   },
   {
     "id": "custom-058",
@@ -1010,9 +1468,15 @@
       "至少 3 段不同场景话术",
       "语言通俗易懂适合快手受众"
     ],
-    "expectedKeyFields": ["scripts"],
+    "expectedKeyFields": [
+      "scripts"
+    ],
     "source": "custom",
-    "tags": ["livestream", "food", "kuaishou"]
+    "tags": [
+      "livestream",
+      "food",
+      "kuaishou"
+    ]
   },
   {
     "id": "custom-059",
@@ -1027,9 +1491,15 @@
       "话术场景覆盖初次接触",
       "内容自然不硬推销"
     ],
-    "expectedKeyFields": ["scripts"],
+    "expectedKeyFields": [
+      "scripts"
+    ],
     "source": "custom",
-    "tags": ["private_domain", "education", "cold-start"]
+    "tags": [
+      "private_domain",
+      "education",
+      "cold-start"
+    ]
   },
   {
     "id": "custom-060",
@@ -1044,12 +1514,68 @@
       "内容体现专业价值感",
       "包含明确的下一步行动引导"
     ],
-    "expectedKeyFields": ["scripts"],
+    "expectedKeyFields": [
+      "scripts"
+    ],
     "source": "custom",
-    "tags": ["private_domain", "health", "warm-lead"]
+    "tags": [
+      "private_domain",
+      "health",
+      "warm-lead"
+    ]
   },
   {
     "id": "custom-061",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
+    "input": {
+      "text": "我是美妆博主主打粉底测评，想在抖音做短视频",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum(talking_head/drama/tutorial/vlog/street_interview/comparison/list_style/mashup/screen_record/animation/reaction/before_after/pov/qa)",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
+    ],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
+    "source": "custom",
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "beauty",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-062",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
+    "input": {
+      "text": "我做教育领域职场技能课，目标平台小红书",
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
+    ],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
+    "source": "custom",
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "education",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-062",
     "specialistId": "DiagnosisAgent",
     "input": {
       "answers": {
@@ -1068,33 +1594,16 @@
       "每个维度有具体建议",
       "输出有明确优先级排序"
     ],
-    "expectedKeyFields": ["diagnosis", "recommendations"],
-    "source": "custom",
-    "tags": ["diagnosis", "beauty", "evaluation"]
-  },
-  {
-    "id": "custom-062",
-    "specialistId": "DiagnosisAgent",
-    "input": {
-      "answers": {
-        "q1": "财经理财",
-        "q2": "抖音+B站",
-        "q3": "25-40岁上班族",
-        "q4": "基金定投教程",
-        "q5": "每周1条",
-        "q6": "1000粉",
-        "q7": "知识付费课程",
-        "q8": "缺乏专业背书"
-      }
-    },
-    "criteria": [
-      "7 维度诊断覆盖内容/变现/账号",
-      "针对财经类账号给出专项建议",
-      "recommendations 有可行的行动方案"
+    "expectedKeyFields": [
+      "diagnosis",
+      "recommendations"
     ],
-    "expectedKeyFields": ["diagnosis", "recommendations"],
     "source": "custom",
-    "tags": ["diagnosis", "finance", "evaluation"]
+    "tags": [
+      "diagnosis",
+      "beauty",
+      "evaluation"
+    ]
   },
   {
     "id": "custom-063",
@@ -1107,9 +1616,16 @@
       "识别文字风格特征（口语化/叙述性等）",
       "为账号 IP 风格建立记忆标签"
     ],
-    "expectedKeyFields": ["styleVector", "styleProfile"],
+    "expectedKeyFields": [
+      "styleVector",
+      "styleProfile"
+    ],
     "source": "custom",
-    "tags": ["deep_learn", "food", "style"]
+    "tags": [
+      "deep_learn",
+      "food",
+      "style"
+    ]
   },
   {
     "id": "custom-064",
@@ -1122,63 +1638,104 @@
       "styleProfile 含情感色调标签",
       "输出可用于后续内容个性化生成"
     ],
-    "expectedKeyFields": ["styleVector", "styleProfile"],
+    "expectedKeyFields": [
+      "styleVector",
+      "styleProfile"
+    ],
     "source": "custom",
-    "tags": ["deep_learn", "travel", "style"]
+    "tags": [
+      "deep_learn",
+      "travel",
+      "style"
+    ]
   },
   {
     "id": "custom-065",
-    "specialistId": "VoiceChatAgent",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
     "input": {
-      "userMessage": "我的视频播放量一直很低，怎么办？",
-      "context": {
-        "stage": "cold_start",
-        "industry": "fitness",
-        "platform": "douyin"
-      }
+      "text": "我是职场 HR 博主分享求职面试技巧，主平台微信视频号",
+      "platform": "wechat-video"
     },
     "criteria": [
-      "回复自然流畅，符合对话场景",
-      "给出 1-2 个具体可行建议",
-      "回复长度适中（50-200字）"
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
     ],
-    "expectedKeyFields": ["reply"],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
     "source": "custom",
-    "tags": ["voice_chat", "fitness", "cold-start-problem"]
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "career",
+      "wechat-video"
+    ]
   },
   {
     "id": "custom-066",
-    "specialistId": "VoiceChatAgent",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
     "input": {
-      "userMessage": "我想涨粉 10 万，现在只有 500 粉，需要多久？",
-      "context": {
-        "stage": "growth",
-        "industry": "beauty",
-        "platform": "xiaohongshu"
-      }
+      "text": "我是健身博主做减脂训练内容，目标平台快手",
+      "platform": "kuaishou"
     },
     "criteria": [
-      "回复诚实客观，不夸大承诺",
-      "给出时间范围和影响因素",
-      "自然对话语气，非 AI 腔"
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
     ],
-    "expectedKeyFields": ["reply"],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
     "source": "custom",
-    "tags": ["voice_chat", "beauty", "growth"]
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "fitness",
+      "kuaishou"
+    ]
   },
   {
     "id": "custom-067",
     "specialistId": "EvolutionAgent",
     "input": {
       "feedbackLog": [
-        { "contentId": "v001", "type": "low_retention", "value": 0.3 },
-        { "contentId": "v002", "type": "high_like_rate", "value": 0.15 },
-        { "contentId": "v003", "type": "comment_sentiment", "value": "positive" }
+        {
+          "contentId": "v001",
+          "type": "low_retention",
+          "value": 0.3
+        },
+        {
+          "contentId": "v002",
+          "type": "high_like_rate",
+          "value": 0.15
+        },
+        {
+          "contentId": "v003",
+          "type": "comment_sentiment",
+          "value": "positive"
+        }
       ],
       "samples": [
-        { "id": "v001", "topic": "护肤步骤教程", "engagement": "low" },
-        { "id": "v002", "topic": "产品测评推荐", "engagement": "high" },
-        { "id": "v003", "topic": "成分科普解析", "engagement": "medium" }
+        {
+          "id": "v001",
+          "topic": "护肤步骤教程",
+          "engagement": "low"
+        },
+        {
+          "id": "v002",
+          "topic": "产品测评推荐",
+          "engagement": "high"
+        },
+        {
+          "id": "v003",
+          "topic": "成分科普解析",
+          "engagement": "medium"
+        }
       ]
     },
     "criteria": [
@@ -1186,33 +1743,15 @@
       "每条 insight 有 element 和 explanation",
       "输出可指导下一期内容方向"
     ],
-    "expectedKeyFields": ["insights"],
-    "source": "custom",
-    "tags": ["evolution", "beauty", "feedback-loop"]
-  },
-  {
-    "id": "custom-068",
-    "specialistId": "EvolutionAgent",
-    "input": {
-      "feedbackLog": [
-        { "contentId": "f001", "type": "drop_off_point", "value": "0:15" },
-        { "contentId": "f002", "type": "share_rate", "value": 0.08 },
-        { "contentId": "f003", "type": "follow_rate", "value": 0.03 }
-      ],
-      "samples": [
-        { "id": "f001", "topic": "健身打卡 Day 30", "engagement": "low" },
-        { "id": "f002", "topic": "减脂餐食谱", "engagement": "high" },
-        { "id": "f003", "topic": "跑步技巧纠错", "engagement": "medium" }
-      ]
-    },
-    "criteria": [
-      "识别高分享内容的共性特征",
-      "insights 含具体优化方向",
-      "建议可直接指导选题规划"
+    "expectedKeyFields": [
+      "insights"
     ],
-    "expectedKeyFields": ["insights"],
     "source": "custom",
-    "tags": ["evolution", "fitness", "feedback-loop"]
+    "tags": [
+      "evolution",
+      "beauty",
+      "feedback-loop"
+    ]
   },
   {
     "id": "custom-069",
@@ -1220,14 +1759,27 @@
     "input": {
       "progress": {
         "currentStage": "growth",
-        "completedSteps": ["positioning", "branding"],
-        "pendingSteps": ["topic", "copywriting", "video"]
+        "completedSteps": [
+          "positioning",
+          "branding"
+        ],
+        "pendingSteps": [
+          "topic",
+          "copywriting",
+          "video"
+        ]
       },
       "diagnosis": {
-        "weakAreas": ["内容频率不够", "缺乏爆款选题"]
+        "weakAreas": [
+          "内容频率不够",
+          "缺乏爆款选题"
+        ]
       },
       "history": {
-        "lastWeekTasks": ["发布 2 条视频", "回复评论 20 条"],
+        "lastWeekTasks": [
+          "发布 2 条视频",
+          "回复评论 20 条"
+        ],
         "completionRate": 0.8
       }
     },
@@ -1236,9 +1788,15 @@
       "任务有优先级排序",
       "每个任务可量化完成状态"
     ],
-    "expectedKeyFields": ["tasks"],
+    "expectedKeyFields": [
+      "tasks"
+    ],
     "source": "custom",
-    "tags": ["daily_task", "fitness", "growth-stage"]
+    "tags": [
+      "daily_task",
+      "fitness",
+      "growth-stage"
+    ]
   },
   {
     "id": "custom-070",
@@ -1247,10 +1805,17 @@
       "progress": {
         "currentStage": "cold_start",
         "completedSteps": [],
-        "pendingSteps": ["positioning", "branding", "topic"]
+        "pendingSteps": [
+          "positioning",
+          "branding",
+          "topic"
+        ]
       },
       "diagnosis": {
-        "weakAreas": ["账号定位不清", "内容方向分散"]
+        "weakAreas": [
+          "账号定位不清",
+          "内容方向分散"
+        ]
       },
       "history": {
         "lastWeekTasks": [],
@@ -1262,8 +1827,14 @@
       "任务聚焦定位和账号搭建",
       "任务描述具体可操作"
     ],
-    "expectedKeyFields": ["tasks"],
+    "expectedKeyFields": [
+      "tasks"
+    ],
     "source": "custom",
-    "tags": ["daily_task", "general", "cold-start"]
+    "tags": [
+      "daily_task",
+      "general",
+      "cold-start"
+    ]
   }
 ]
