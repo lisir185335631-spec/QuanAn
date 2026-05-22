@@ -4,19 +4,11 @@
  * criteria: elements 数组非空 + insights ≥ 3
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -118,16 +110,7 @@ const goldenCaseFood: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('AnalysisAgent viral mode LLM Judge — 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 9, reason: 'elements非空✓；insights≥3条✓；每条含element/explanation/impact✓；impact值合法✓；rewriteVersion超50字✓；structure非空✓' },
-      tokens: { prompt: 300, completion: 90, total: 390 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1200,
-      trace_id: 'judge-AnalysisAgent-viral-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('AnalysisAgent viral mode LLM Judge — 2 golden cases', () => {
 
   it('美妆 golden case(平价粉底液平替) passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseBeauty);

@@ -5149,3 +5149,32 @@ audit-artifacts: PASS (exit_code=0 + manifest.zero_regression=PASS)
 ---
 
 --- [RALPH] Iteration 10 ended: US-006 (26分钟 23秒) ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-22 23:54 ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-23 00:15 ---
+
+## 2026-05-23 00:20 - US-001 [PRD-28] · judge tests 基础设施 + 7 judge file mock 拆除 batch 1
+- 实现了什么:
+  - tests/setup.ts: 新建 · `import * as dotenv from 'dotenv'; dotenv.config();` · AC-1 ✅
+  - .env.example: 加 ANTHROPIC_API_KEY= 行 · 含注释 '# PRD-28 LLM Judge real-call mode' · AC-2 ✅
+  - vitest.judge.config.ts: setupFiles 含 './tests/setup.ts' · AC-3 ✅
+  - 7 judge files batch 1: 全部无 vi.mock('@/workers/llm-gateway') · AC-4 ✅
+  - 7 judge files batch 1: 全部含 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · AC-5 ✅
+  - package.json: 加 dotenv ^17.4.2 devDependency
+- 验证结果:
+  - AC-6 smoke: ANTHROPIC_API_KEY="" pnpm test:judge branding.judge.ts → 1 skipped · 0 hard fail ✅
+  - AC-7 ROOT: 1925 passed | 118 skipped (baseline 정确匹配) ✅
+  - AC-8 typecheck: 6 ws all Done · 0 errors ✅
+  - AC-9 lint: US-001 files 不在 apps/api ESLint scope · 95 issues 全 pre-existing admin files ✅
+- 更改的文件:
+  - tests/setup.ts (新建)
+  - .env.example (追加 ANTHROPIC_API_KEY)
+  - vitest.judge.config.ts (setupFiles 已就位)
+  - tests/judge/analysis-structural.judge.ts, analysis-viral.judge.ts, branding.judge.ts, copywriting.judge.ts, copywriting-acquisition.judge.ts, copywriting-boom.judge.ts, copywriting-free.judge.ts (mock 拆除 + skipIf)
+  - package.json + pnpm-lock.yaml (dotenv dep)
+- **未来迭代的学习:**
+  - US-002/003 batch 2/3 judge files 已在 working tree 修改完毕(unstaged) · 直接 stage + commit 即可
+  - tests/judge/*.ts 不在任何 workspace ESLint 扫描范围 · lint AC 只需验证 apps/api/web/admin/packages 无新 error
+  - AC-9 实际检验点: "US-001 引入的 files 无新 lint error" 而非 "全项目 0 error"(pre-existing 95 errors 不计)
+---

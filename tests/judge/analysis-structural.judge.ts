@@ -4,19 +4,11 @@
  * criteria: overall = 5 维度均分附近
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -120,16 +112,7 @@ const goldenCaseParenting: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('AnalysisAgent structural mode LLM Judge — 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'scores含6字段✓；分值0-100✓；overall与5维均分差<20✓；optimizations 3条✓；每条含3字段✓；rewriteSnippet 50-200字✓' },
-      tokens: { prompt: 350, completion: 95, total: 445 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1300,
-      trace_id: 'judge-AnalysisAgent-structural-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('AnalysisAgent structural mode LLM Judge — 2 golden cases', () => {
 
   it('减肥文案 golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseWeight);

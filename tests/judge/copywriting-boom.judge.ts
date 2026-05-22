@@ -3,19 +3,11 @@
  * AC-2: 2 golden cases — 育儿(5候选) + 理财(5候选) · 检查 5 篇风格差异
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -89,16 +81,7 @@ const goldenCaseFinance: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('CopywritingAgent boom mode LLM Judge — 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'candidates恰好5条✓；每条超200字✓；5篇风格有差异✓；metadata.count=5✓；elements非空✓' },
-      tokens: { prompt: 280, completion: 80, total: 360 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1180,
-      trace_id: 'judge-CopywritingAgent-boom-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('CopywritingAgent boom mode LLM Judge — 2 golden cases', () => {
 
   it('育儿 golden case(专注力培养) passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseParenting);
