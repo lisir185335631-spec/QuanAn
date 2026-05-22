@@ -21,6 +21,13 @@ describe('cohenKappa', () => {
     expect(cohenKappa(llm, human)).toBeLessThan(0.4);
   });
 
+  it('κ ≈ 0 for raters with chance-level agreement', () => {
+    // po=0.5, pe=0.5*0.5+0.5*0.5=0.5 → κ=(0.5-0.5)/(1-0.5)=0
+    const llm   = [2, 2, 2, 2, 2, 8, 8, 8, 8, 8];
+    const human = [2, 2, 8, 8, 8, 2, 8, 8, 2, 8];
+    expect(cohenKappa(llm, human)).toBeCloseTo(0, 1);
+  });
+
   it('κ in valid range [−1, 1] for mixed data', () => {
     const llm = [3, 7, 5, 8, 2, 9, 4, 6, 1, 10];
     const human = [4, 6, 5, 7, 3, 8, 4, 7, 2, 9];
