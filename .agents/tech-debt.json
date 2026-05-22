@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-23T01:23:43",
+  "last_updated": "2026-05-23T03:38:17",
   "items": [
     {
       "id": "TD-001",
@@ -2196,6 +2196,19 @@
       "scheduled_fix_in": "PRD-29+ admin lint cleanup story · 或 PRR 上线前修(估时 1-2 day 修 134 problems · 主要是加 keyboard listener + 替换 div 为 button + ?? '' default 等机械改)",
       "audit_exemption": "PRD-28 US-001 approve 时豁免 · US-001 commit a1bb6f1 改动文件全在 tests/judge/* + tests/setup.ts + .env.example + vitest.judge.config.ts + package.json + pnpm-lock.yaml + progress.txt(grep verify: git show a1bb6f1 --stat 0 命中 apps/admin/apps/api)· lint 失败 134 problems 完全 pre-existing apps/admin · 实测 ROOT vitest 1925 passed | 118 skipped 精准 baseline 维持 + typecheck 6 ws 0 error 零回归 · 不阻塞 US-001",
       "additional_finding": "Validator iter 1 manifest 误把 'apps/admin 95 problems' 写成 'apps/api 95 problems' (manifest.json notes 字面错)· 实际 lint Done in apps/api · 仅 apps/admin fail · Validator artifact 信息精度有 gap · 留 PRD-29+ Validator template 修"
+    },
+    {
+      "id": "TD-105",
+      "category": "design-drift",
+      "title": "PRD-28 US-005 D-267 字面锁 3 minor 偏差(路径 + humanScoreBy type) · functional 等价",
+      "discovered_at": "2026-05-23",
+      "discovered_by": "Opus audit PRD-28 US-005",
+      "severity": "low",
+      "status": "scheduled",
+      "evidence": "1) D-267 锁 evaluator.ts 在 apps/api/src/lib/evaluation/ · 实际 apps/api/src/evaluation/(无 lib/ 层) 2) D-267 锁 test files 在 colocated apps/api/src/*/__tests__/ · 实际 tests/unit/api/evaluation/(项目 convention 一致 PRD-1~27) 3) D-267 锁 humanScoreBy Int?(admin_user_id) · 实际 String?(留 US-007 inter-rater 实施时定)",
+      "root_cause": "ralph 选项目 convention 更合理(tests/unit/api/* + apps/api/src/<domain>/ 无 lib/ 中间层)· humanScoreBy type 留 US-007 决定(admin_user PK 是 Int 还是 String UUID 没明确)",
+      "scheduled_fix_in": "US-007 inter-rater 实施时决定 humanScoreBy type · 或 PRD-29+ retro 时修 D-267 字面对齐实际路径(类似 TD-015 接受 pattern)",
+      "audit_exemption": "US-005 approve 时豁免 · 3 偏差全 functional 等价: (1) evaluator.ts 路径仅命名 · 不影响 import 链 (2) test files 在 tests/unit/api/ 跟项目 80+ 测试文件 convention 一致(更合理 · D-267 锁的 colocated __tests__/ 是 minority pattern)(3) humanScoreBy String? 留 US-007 定 · 不阻塞 US-005 核心 evaluation pipeline · runSampleEvaluation + CLI + 4 维度 + RLS DISABLE + 2 tables 全 PASS"
     }
   ]
 }
