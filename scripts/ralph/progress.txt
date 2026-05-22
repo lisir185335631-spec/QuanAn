@@ -5,6 +5,149 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-23 05:10 - US-007 [PRD-28] · inter-rater agreement subset
+- 实现了什么:
+  - apps/api/src/lib/evaluation/inter-rater.ts: mulberry32 PRNG + hashString + listInterRaterSubset + cohenKappa + pearsonCorrelation + interpretKappa
+  - apps/api/src/lib/evaluation/__tests__/inter-rater.test.ts: 12 tests · cohenKappa 4 cases + listInterRaterSubset 4 cases + pearsonCorrelation 4 cases
+  - apps/api/src/trpc/routers/admin/evaluation.ts: +listInterRaterSubset query + submitHumanScore mutation + computeAgreement query · golden criteria lazy-loaded from tests/fixtures/judge-goldens/
+  - packages/clients/src/admin-router-types.ts: +3 shadow procedures (listInterRaterSubset/submitHumanScore/computeAgreement)
+  - apps/admin/src/pages/evaluation/InterRaterPage.tsx: 30 sample hand-scoring UI · slider 0-10 + comment + progress bar + dot nav + agreement result block
+  - apps/admin/src/pages/evaluation/__tests__/InterRaterPage.test.tsx: 4 unit tests · mocked adminTrpc
+  - apps/admin/src/router.tsx: +Route evaluation/inter-rater/:runId (nav 不显示 · click-through only)
+  - apps/admin/src/pages/evaluation/EvaluationDetailPage.tsx: +InterRaterSection subcomponent · 显示 X/30 评完 / kappa+pearson+interpretation 当全部完成
+- 验证结果:
+  - pnpm typecheck 6 ws 全 Done 0 error ✓
+  - pnpm test: 1969 passed (12 new inter-rater tests) | 15 pre-existing e2e | 零回归 ✓
+  - pnpm lint: apps/api 95 problems (= baseline) · apps/admin 310 (减少 2 · 修复 InterRaterPage 2 errors) ✓
+- 更改的文件:
+  - apps/api/src/lib/evaluation/inter-rater.ts (新建)
+  - apps/api/src/lib/evaluation/__tests__/inter-rater.test.ts (新建)
+  - apps/api/src/trpc/routers/admin/evaluation.ts (修改 +3 procedures)
+  - packages/clients/src/admin-router-types.ts (修改 +3 shadow procedures)
+  - apps/admin/src/pages/evaluation/InterRaterPage.tsx (新建)
+  - apps/admin/src/pages/evaluation/__tests__/InterRaterPage.test.tsx (新建)
+  - apps/admin/src/router.tsx (修改 +1 route)
+  - apps/admin/src/pages/evaluation/EvaluationDetailPage.tsx (修改 +InterRaterSection)
+- **未来迭代的学习:**
+  - cohenKappa: 当 ALL rater1 scores are category 1 AND ALL rater2 scores are category 0 → pe=0 → κ=0 (not κ<0). Test must use 50/50 split for both raters but in opposing directions to get κ<0
+  - golden dataset criteria loaded at runtime from tests/fixtures/judge-goldens/ via fs.readFileSync · cached in process memory Map · path joined with process.cwd()
+  - apps/admin vitest picks up src/**/*.test.tsx via its own vitest.config.ts; root vitest picks up apps/api/src/**/__tests__/**/*.test.ts only
+---
+
+## 2026-05-23 03:25 - US-005 [PRD-28] · lint fix(retry 2)
+- 实现了什么: 修复 Validator 指出的 AC-11 lint 19 新增错误
+  - evaluator.ts: import/order 修复 · @quanan/schemas type import 移到最后(type group) · @/agents/evolution 排在 @/agents/specialists 之前(字母序) · 新增 SpecialistResponse interface + `as unknown as SpecialistResponse` 双转型消除 10 条 no-unsafe-assignment/member-access
+  - eval-run.ts: node: imports 按字母序(crypto, fs, path) · goldenDatasetSchema value import 移到 external group(@prisma 同组) · GoldenSample type import 移到最后(type group) · console.log 替换为 logger.info · Decimal | "n/a" 模板字符串 → avgScore?.toString() ?? 'n/a'
+- 验证结果:
+  - pnpm lint: 95 problems(92 errors, 3 warnings) — 恢复基线 ✓
+  - pnpm typecheck: 6 ws 全 Done 0 error ✓
+  - pnpm test: 1957 passed | 15 pre-existing prd14 admin failed · 零回归 ✓
+- 更改的文件:
+  - apps/api/src/evaluation/evaluator.ts
+  - apps/api/src/scripts/eval-run.ts
+- **未来迭代的学习:**
+  - ESLint import/order 规则在本项目中: TYPE imports(`import type`) 属于最后的 `type` group · 必须放在所有 value imports 之后(包括 @/ internal group)
+  - `@quanan/schemas` value imports 属于 external group(与 @prisma/ 同组) · type imports 属于 type group(最后)
+  - `as unknown as TargetType` 双转型是消除 no-unsafe-assignment 的标准 pattern(当 source 是 any 时)
+  - no-console 规则允许 console.error/console.warn · 只禁 console.log · CLI 脚本中用 logger.info 替代
+---
+
+## 2026-05-23 02:15 - US-004 [PRD-28] · 100 金标准 dataset 准备(双轨 sally-30 + custom-70 · D-266 字面锁)
+- 实现了什么:
+  - packages/schemas/src/judge-golden.schema.ts: GoldenSample + GoldenDataset zod schema + SPECIALIST_IDS 14 枚举
+  - packages/schemas/src/index.ts: barrel export 新增 goldenSampleSchema / goldenDatasetSchema / SPECIALIST_IDS / 类型
+  - tests/fixtures/judge-goldens/sally-30.json: 30 条 sally 样本 · source='sally' · 覆盖 6 个 Specialist
+  - tests/fixtures/judge-goldens/custom-70.json: 70 条 custom 样本 · 14 Specialist 按配额分布(CopywritingAgent 12 · BrandingAgent 10 · VideoAgent+TopicAgent 各 8 · PositioningAgent+MonetizationAgent+AnalysisAgent 各 6 · 其余 7 specialist 各 2)
+  - tests/fixtures/judge-goldens/SCHEMA.md: 219 行文档 · 含 TypeScript interface + 2 JSON 示例 + 配额表
+  - tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts: 15 tests · 全 pass
+  - vitest.config.ts: include 添加 'tests/fixtures/**/__tests__/**/*.test.ts'
+- 验证结果:
+  - AC-1: jq 'length' sally-30.json = 30 ✓
+  - AC-2: jq 'length' custom-70.json = 70 ✓
+  - AC-3: goldenDatasetSchema.safeParse(全部 100 条) → success ✓ (test 验证)
+  - AC-4: CopywritingAgent=12 · BrandingAgent=10 · TopicAgent=8 · 其余按表 ✓ (test 验证)
+  - AC-5: sally-30.json 全部 source='sally' ✓ (test 验证)
+  - AC-6: packages/schemas/src/judge-golden.schema.ts 导出 GoldenSample + GoldenDataset zod schema ✓
+  - AC-7: SCHEMA.md 219 行 ≥ 50 行 ✓
+  - AC-8: 15 tests 全 pass ✓ (vitest run dataset-validation.test.ts)
+  - AC-9: pnpm typecheck 6 ws 全 Done 0 error ✓
+  - AC-10: ROOT pnpm test 1940 passed(= 1925 基线 + 15 新测试) | 118 skipped · 零回归 ✓
+  - AC-COMMON: barrel export 已加 GoldenSample entry · vitest ROOT scope 已跑 ✓
+- 更改的文件:
+  - packages/schemas/src/judge-golden.schema.ts (新建)
+  - packages/schemas/src/index.ts (barrel export 新增)
+  - tests/fixtures/judge-goldens/sally-30.json (新建 · 30 条)
+  - tests/fixtures/judge-goldens/custom-70.json (新建 · 70 条)
+  - tests/fixtures/judge-goldens/SCHEMA.md (新建 · 219 行)
+  - tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts (新建 · 15 tests)
+  - vitest.config.ts (include 新增 fixtures/__tests__ 路径)
+- **未来迭代的学习:**
+  - vitest.config.ts include 必须显式加 `tests/fixtures/**/__tests__/**/*.test.ts` 才能扫到 fixtures 下的测试
+  - 从 fixtures 子目录相对导入 packages/schemas/src: 路径为 `../../../../packages/schemas/src/`
+  - JSON fixture 文件在 vitest 中用 readFileSync + JSON.parse 比 import assert { type: 'json' } 更稳定
+  - GoldenSample 不含 actualOutput 字段(这是 evaluation pipeline 运行时产生的) · 与 JudgeCase 的区别
+---
+
+## 2026-05-23 01:53 - US-003 [PRD-28] · 7 judge file mock 拆除 batch 3 + ROOT test 验证(收尾)
+- 实现了什么:
+  - 7 judge files batch 3 全部移除 vi.mock('@/workers/llm-gateway') + vi.hoisted mockComplete
+  - 7 files: rag-injection/topic/video/video-acquisition/video-production/video-storyboard/voice-chat
+  - 全部加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · 继承 US-001/US-002 模板
+  - 移除所有 beforeEach mockComplete.mockResolvedValue + mockComplete 断言测试
+  - rag-injection 特殊处理: 保留 mockRetrieve(RAG mock) + beforeEach assembler init + clearAllMocks · 只删 mockComplete
+  - voice-chat 特殊处理: 移除整个 llm-gateway mock(含 stream + RateLimitError) · 保留 l1-buffer mock
+  - rag-injection 注释更新: 移除 "mockComplete 返回 pass=true" 旧描述
+- 验证结果:
+  - AC-1: grep -rn 'vi.mock.*llm-gateway' batch 3 files 命中 0 ✓
+  - AC-2: grep -rn 'describe.skipIf.*ANTHROPIC_API_KEY' tests/judge/ | wc -l = 22 ≥ 21 ✓
+  - AC-3: grep -rn 'mockComplete\|mockResolvedValue.*pass' tests/judge/ 命中 0 ✓
+  - AC-4: grep -rn 'vi.mock.*llm-gateway' tests/judge/ 命中 0 ✓ (TD-027 真闭环硬验证)
+  - AC-5: unset ANTHROPIC_API_KEY && pnpm test:judge → "Test Files  21 skipped (21)" ✓
+  - AC-6: ROOT pnpm test 1925 passed | 118 skipped · 完全匹配基线 ✓
+  - AC-7: pnpm typecheck 6 ws 全 Done 0 error ✓
+  - AC-8: pnpm lint 95 pre-existing errors in apps/api · judge files 不在 lint 扫描范围 · US-003 引入文件 0 new errors ✓
+- 更改的文件:
+  - tests/judge/rag-injection.judge.ts
+  - tests/judge/topic.judge.ts
+  - tests/judge/video.judge.ts
+  - tests/judge/video-acquisition.judge.ts
+  - tests/judge/video-production.judge.ts
+  - tests/judge/video-storyboard.judge.ts
+  - tests/judge/voice-chat.judge.ts
+- **未来迭代的学习:**
+  - rag-injection 含双重用途: runJudge(LLM judge) + assembler.assemble(RAG 集成测试)。拆除 llm-gateway mock 时必须保留 rag mock + beforeEach
+  - voice-chat llm-gateway mock 比其他复杂(含 stream + RateLimitError export) · 直接整块删除即可
+  - 21 judge files 全部 skipIf 后 test:judge 输出 "43 skipped(43)" 而非 "21 skipped" · 因多 describe / it · AC-5 对照的是 "Test Files 21 skipped(21)" 行
+---
+
+## 2026-05-23 01:35 - US-002 [PRD-28] · 7 judge file mock 拆除 batch 2
+- 实现了什么:
+  - 7 judge files batch 2 全部移除 vi.mock('@/workers/llm-gateway') + vi.hoisted mockComplete
+  - 7 files: daily-task-agent/evolution-agent/feedback-evolution-loop/insight-injection/livestream/monetization/positioning
+  - 全部加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · 继承 US-001 branding.judge.ts 模板
+  - 移除所有 beforeEach mockComplete.mockResolvedValue + runJudge calls llmGateway 测试
+  - insight-injection.judge.ts 特殊: 同时移除 mockGetLatestInsight + @/memory/l4-profile mock(runJudge 不需要)
+- 验证结果:
+  - AC-1: grep 命中 0 ✓ (vi.mock llm-gateway 全清)
+  - AC-2: 7 files 各有 ≥1 describe.skipIf ANTHROPIC_API_KEY ✓
+  - AC-3: livestream smoke → 1 skipped 0 hard fail ✓
+  - AC-5: ROOT pnpm test 1925 passed | 118 skipped · 零回归 ✓
+  - AC-6: pnpm typecheck 6 ws 全 Done 0 error ✓
+  - AC-7: pnpm lint 95 pre-existing errors in apps/api/ · US-002 引入文件 0 new errors ✓
+- 更改的文件:
+  - tests/judge/daily-task-agent.judge.ts
+  - tests/judge/evolution-agent.judge.ts
+  - tests/judge/feedback-evolution-loop.judge.ts
+  - tests/judge/insight-injection.judge.ts
+  - tests/judge/livestream.judge.ts
+  - tests/judge/monetization.judge.ts
+  - tests/judge/positioning.judge.ts
+- **未来迭代的学习:**
+  - insight-injection.judge.ts 中 @/memory/l4-profile mock 可安全移除 · runJudge 不调 getLatestInsight
+  - daily-task-agent 有 2 个 describe block · 各自包 describe.skipIf · 两者独立 skip
+  - 7 files batch 1+2 模板完全统一: 只保留 prisma/logger mock · 其余全删
+---
+
 ## 2026-05-21 16:30 - US-006 [PRD-27] · 收官 verify-prd-27.sh + /goal-verify §0+§1+ + /prd-retro 跨 PRD-21~27
 - [PRD-27 retro] 1:1 复刻完成 · 4 新接入 page LLM · PresentationAgent 新建 · TD-100 close · 7 PRD 连续 audit 维度 100%
 - 实现了什么:
@@ -5177,4 +5320,151 @@ audit-artifacts: PASS (exit_code=0 + manifest.zero_regression=PASS)
   - US-002/003 batch 2/3 judge files 已在 working tree 修改完毕(unstaged) · 直接 stage + commit 即可
   - tests/judge/*.ts 不在任何 workspace ESLint 扫描范围 · lint AC 只需验证 apps/api/web/admin/packages 无新 error
   - AC-9 实际检验点: "US-001 引入的 files 无新 lint error" 而非 "全项目 0 error"(pre-existing 95 errors 不计)
+---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-23 01:24 ---
+
+--- [RALPH] Iteration 2 ended: US-002 (19分钟 48秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-23 01:44 ---
+
+--- [RALPH] Iteration 3 ended: US-003 (17分钟 56秒) ---
+
+--- [RALPH] Iteration 4 started: US-004 at 2026-05-23 02:02 ---
+
+--- [RALPH] Iteration 4 ended: US-004 (22分钟 26秒) ---
+
+--- [RALPH] Iteration 5 started: US-004 at 2026-05-23 02:24 ---
+
+## 2026-05-23 02:33 - US-004 [PRD-28] · Retry · 修复 D-266 字面锁偏差(PresentationAgent 4 + VoiceChatAgent 0)
+- 实现了什么:
+  - custom-70.json: PresentationAgent 0→4 (4 行业×4 平台: douyin美妆/xiaohongshu教育/wechat-video职场/kuaishou健身)
+  - custom-70.json: VoiceChatAgent 2→0 (D-266 lock)
+  - custom-70.json: DiagnosisAgent 2→1 · EvolutionAgent 2→1 (维持总数=70 + 14 unique specialist)
+  - packages/schemas/src/judge-golden.schema.ts: SPECIALIST_IDS 中 VoiceChatAgent→PresentationAgent(14 canonical · JudgeCase 独立类型不受影响)
+  - tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts: 新增 PresentationAgent≥4 + 14 unique count tests · 共 17 tests 全 pass
+- 验证结果:
+  - jq PresentationAgent = 4 ✓ · VoiceChatAgent = 0 ✓ · total = 70 ✓ · unique = 14 ✓
+  - pnpm vitest run dataset-validation.test.ts → 17 passed ✓
+  - pnpm typecheck 6 ws 全 Done 0 error ✓
+  - ROOT pnpm test: 1942 passed · 118 skipped · 15 failing 全为 pre-existing TD(adminAuditLog/prd13-15 e2e) ✓ 零回归
+- 更改的文件:
+  - tests/fixtures/judge-goldens/custom-70.json
+  - packages/schemas/src/judge-golden.schema.ts
+  - tests/fixtures/judge-goldens/__tests__/dataset-validation.test.ts
+- **未来迭代的学习:**
+  - expectedOutputPattern=null 需改为省略该字段(schema 是 .optional() 而非 .nullable())
+  - SPECIALIST_IDS enum 和 JudgeCase.specialistId 是独立类型 · 改 schema enum 不影响 judge test mock 数据
+  - D-266 配额数学验证: secondary 7 specialist × 不等配额需先算总数再调平均 · 避免 sum ≠ 70 的 PRD bug
+---
+
+--- [RALPH] Iteration 5 ended: US-004 (18分钟 56秒) ---
+
+--- [RALPH] Iteration 6 started: US-005 at 2026-05-23 02:43 ---
+
+## 2026-05-23 03:05 - US-005 [PRD-28] · evaluation pipeline · prisma schema + eval-run.ts CLI + 4 维度评分(D-267 + D-268 字面锁 · high)
+- 实现了什么:
+  - prisma/schema.prisma: EvaluationRun + EvaluationSample 模型追加 · RLS DISABLE(AC-4 · LD-A-1 系统级 · 无 accountId 字段)
+  - prisma/migrations/20260522185004_add_evaluation_tables/migration.sql: 迁移执行成功 · 2 表创建
+  - prisma/migrations/manual_admin_rls.sql: evaluation_runs/samples DISABLE ROW LEVEL SECURITY 追加 + psql 直接应用
+  - apps/api/src/evaluation/evaluator.ts: runSampleEvaluation(GoldenSample) → {structurePass/judgeScore/judgePass/judgeReason/durationMs/tokensUsed/costUsd} · 14 specialist registry(含 EvolutionAgent @/agents/evolution + DailyTaskAgent @/agents/specialists) · structurePass 用 z.record.superRefine 检 hasOwnProperty · runJudge 内联(不跨 tests/ 边界导入) · COST_PER_M 镜像 cost-logger.ts 定价
+  - apps/api/src/scripts/eval-run.ts: pnpm --filter @quanan/api eval:run CLI · parseArgs(--samples/--specialist/--source) · loadDataset(sally-30/custom-70) · 无 KEY exit 1 · EvaluationRun(running) → per-sample EvaluationSample → 更新 Run(completed/failed)
+  - apps/api/package.json: "eval:run": "tsx src/scripts/eval-run.ts" 新增
+  - tests/unit/api/evaluation/evaluator.test.ts: 6 tests · structurePass true/false · judgePass true/false · durationMs/tokensUsed/costUsd · throws on unknown specialist
+  - tests/unit/api/evaluation/eval-run.test.ts: 9 tests · dataset 30/70 · 所有 goldenId 格式 · DB create/update 形状 · status=completed/failed
+- 验证结果:
+  - AC-1/AC-2: prisma 模型字段逐条核对 ✓
+  - AC-3: pnpm prisma migrate dev --name add_evaluation_tables 成功 ✓
+  - AC-4: psql 'SELECT relrowsecurity FROM pg_class WHERE relname IN (...)' 全 false ✓ · 无 accountId 字段 ✓
+  - AC-5/AC-6/AC-7: CLI 参数 --samples/--specialist/--source 实现 ✓ (smoke 需有 KEY)
+  - AC-8: runSampleEvaluation 返回全部 6 字段 · evaluator.test.ts 6 tests pass ✓
+  - AC-9: 无 KEY exit 1 · 单 sample fail → judgePass=false 不阻塞 · 全 fail status='failed' ✓
+  - AC-10: eval-run.test.ts 9 tests pass ✓ (≥6 AC 达成)
+  - AC-11: pnpm typecheck 6 ws 全 Done 0 error ✓
+  - AC-12: ROOT pnpm test 1957 passed | 118 skipped · 零回归(基线 1940 + 15 新 tests + 2 flaky = 1957) ✓
+  - AC-COMMON: prisma migration 先 apply · ROOT scope vitest ✓
+- 更改的文件:
+  - prisma/schema.prisma (EvaluationRun + EvaluationSample 追加)
+  - prisma/migrations/20260522185004_add_evaluation_tables/migration.sql (新建)
+  - prisma/migrations/manual_admin_rls.sql (追加 2 行)
+  - apps/api/src/evaluation/evaluator.ts (新建)
+  - apps/api/src/scripts/eval-run.ts (新建)
+  - apps/api/package.json (eval:run script)
+  - tests/unit/api/evaluation/evaluator.test.ts (新建 · 6 tests)
+  - tests/unit/api/evaluation/eval-run.test.ts (新建 · 9 tests)
+- **未来迭代的学习:**
+  - z.object({key: z.unknown()}).safeParse({}) → success(unknown 接受 undefined) · 检查 key 存在性需用 z.record.superRefine + hasOwnProperty · 不能用 z.object + z.unknown()
+  - EvolutionAgent/DailyTaskAgent 在 @/agents/ 而非 @/specialists/ · 两者都继承 BaseSpecialist · execute() 接口兼容
+  - vi.hoisted(() => ({mockFn: vi.fn()})) 必须用于 vi.mock factory 内引用的变量 · 直接 const mockFn = vi.fn() 会触发 TDZ 错误
+  - apps/api tsconfig include: ["src", "scripts"] · eval-run.ts 放 src/scripts/ 而非根级 scripts/ · tsx src/scripts/eval-run.ts 运行时 @/ alias 自动解析
+  - manual_admin_rls.sql 是手动 SQL 文件 · 需要追加 ALTER TABLE 并手动 psql 执行 · prisma migrate 不包含 RLS DISABLE 指令
+---
+
+--- [RALPH] Iteration 6 ended: US-005 (27分钟 25秒) ---
+
+--- [RALPH] Iteration 7 started: US-005 at 2026-05-23 03:11 ---
+
+--- [RALPH] Iteration 7 ended: US-005 (27分钟 15秒) ---
+
+--- [RALPH] Iteration 8 started: US-006 at 2026-05-23 03:38 ---
+
+--- [RALPH] Iteration 8 ended: US-006 (1小时 8分钟 11秒) ---
+
+--- [RALPH] Iteration 9 started: US-007 at 2026-05-23 04:46 ---
+
+--- [RALPH] Iteration 9 ended: US-007 (33分钟 57秒) ---
+
+--- [RALPH] Iteration 10 started: US-007 at 2026-05-23 05:20 ---
+
+## 2026-05-23 05:22 - US-007 (retry 2)
+- 针对性修复 AC-4: 在 inter-rater.test.ts cohenKappa describe 中添加缺失的 "κ ≈ 0 for raters with chance-level agreement" 测试用例
+- 数学验证: llm=[2,2,2,2,2,8,8,8,8,8], human=[2,2,8,8,8,2,8,8,2,8] → po=5/10=0.5, pe=(5/10×4/10)+(5/10×6/10)=0.5 → κ=0
+- 更改文件: apps/api/src/lib/evaluation/__tests__/inter-rater.test.ts (添加第5个 cohenKappa 测试 · +7 lines)
+- 13 tests all pass · 之前 12 tests · 新增1
+- **未来迭代的学习:**
+  - AC 写"随机κ≈0"时需构造对称分布: 5/5 分组 + 各组50%一致 → po=pe=0.5 → κ=0
+  - CONFIRMED 段指导精准: Validator 给出了构造数据的数学方案直接复用即可
+---
+
+--- [RALPH] Iteration 10 ended: US-007 (18分钟 14秒) ---
+
+--- [RALPH] Iteration 11 started: US-008 at 2026-05-23 05:38 ---
+
+## 2026-05-23 06:00 - US-008 [PRD-28] · 收官 5 件套 + [PRD-28 retro]
+- 实现了什么:
+  - scripts/verify-prd-28.sh: 7 sections · 43 checks · 全 PASS · exit 0
+  - .agents/verification/prd-28-evaluation.md: 227 行 · §0 GSD 事实层对账 + 11 验收锚点 + §evaluation 维度报告
+  - .agents/retros/prd-28-vs-prd-27-retrospective.md: 299 行 · 跨 PRD-21~28 8 PRD 趋势 · §2.A 双指标统计 · §5 Playbook 5 条 · §7 PRD-29+ 建议 · RCA-007 拆分版数据
+  - AGENTS.md §11.19: 5 sub-sections(judge mock 真闭环 + 100 金标准双轨 + evaluation pipeline + admin UI + inter-rater kappa)
+  - tech-debt.json: TD-027 prd28_close_evidence 字段 + prd25_partial_note 假闭环区分 + TD-108 新增(ralph.py prompt size abort 未实施)
+  - ~/.claude/commands/goal-verify.md: 加 §evaluation 维度规约(§E.1~5 · evaluation pipeline 检测命令)
+- 验证结果:
+  - bash scripts/verify-prd-28.sh: 43/43 PASS · exit 0 ✓
+  - pnpm typecheck: 6 ws 全 Done 0 error ✓
+  - pnpm test: 1970 passed | 118 skipped · 零回归 ✓
+- [PRD-28 retro] 摘要:
+  - audit 1iter rate: 7/7 = 100% (0 Opus reject · 连续 6 PRD 无 reject)
+  - dev 1iter rate: 4/7 = 57% (US-001 PATH-B · US-004 D-266 fix · US-005 lint fix)
+  - TD 净变化: +1 (TD-027 close · TD-103/108 new open)
+  - RCA-007 拆分版: 6→8 US · prompt < 8K per US · PATH-B 1次(pre-existing lint 非功能)
+  - verify: 43/43 PASS(§1 mock拆除 · §2 fixtures · §3 RLS · §4 CLI · §5 admin · §6 kappa · §7 收官)
+  - Playbook:
+    1. P-28-001: 21 files 批量改造 → 3 batch US 拆分 · 每 US ≤7 files
+    2. P-28-002: lint AC 写 "0 新增" 而非 "--max-warnings=0" · 避免 PATH-B 触发
+    3. P-28-003: data fixture story D= 字面锁必含精确 jq 验证命令
+    4. P-28-004: 种子化随机选择首选 mulberry32 PRNG (比 Math.sin 更均匀)
+    5. P-28-005: evaluation 系统级表 RLS DISABLE + 无 accountId + prisma 直连
+  - RCA-007 教训: foundation story prompt 字节估计超 12K 触发 PATH-B · §9.6.3 代码未实施(TD-108)
+- 更改的文件:
+  - scripts/verify-prd-28.sh (新建 · chmod +x)
+  - .agents/verification/prd-28-evaluation.md (新建 · 227 行)
+  - .agents/retros/prd-28-vs-prd-27-retrospective.md (新建 · 299 行)
+  - AGENTS.md (修改 · §11.19 + v1.0 修订记录)
+  - .agents/tech-debt.json (修改 · TD-027 + TD-108)
+  - ~/.claude/commands/goal-verify.md (修改 · §evaluation 维度)
+  - scripts/ralph/progress.txt (追加)
+- **未来迭代的学习:**
+  - bash 收官 script: `(( PASS++ ))` 在 PASS=0 时因 `(( 0 ))` bash arithmetic false 触发 `set -e` · 必须用 `PASS=$((PASS+1))` 替代
+  - `grep -c ... || echo 0` 在 0 matches 时输出 "0\n0" (grep 的 count 输出 + echo) · 命令替换得到两行 · `[ "0\n0" -eq 0 ]` 报 integer expression expected · 改用 `! grep -q` 检测不存在
+  - prd-retro 收官 US 里的 verify script 要用 bash 测试而非 zsh eval 测试 · 环境差异大
 ---

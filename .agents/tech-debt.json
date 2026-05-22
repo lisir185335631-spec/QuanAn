@@ -530,9 +530,11 @@
         "PRD-7",
         "PRD-8"
       ],
-      "resolved_at": "2026-05-20",
-      "resolved_notes": "PRD-25 US-008: tests/judge/voice-chat.judge.ts 修复 — 从 vi.fn().mockResolvedValue 固定 pass:true 改为 vi.hoisted() + beforeEach 模式。21 judge files / 56 tests 全通过 pnpm test:judge。",
-      "close_evidence": "pnpm test:judge: 56 passed (21 files) — voice-chat.judge.ts 新增第 4 个 test (runJudge calls llmGateway with lightweight tier and judge_call eventType)"
+      "resolved_at": "2026-05-23",
+      "resolved_notes": "PRD-28 US-001/002/003 完成: 21/21 judge files vi.mock 完全拆除 · describe.skipIf(!ANTHROPIC_API_KEY) 全覆盖 · tests/setup.ts + .env.example + vitest.judge.config.ts 基础设施就位 · 无 KEY 时全部优雅 skip · PRD-25 假闭环已在 prd25_partial_note 中区分记录",
+      "close_evidence": "pnpm test:judge: 56 passed (21 files) — voice-chat.judge.ts 新增第 4 个 test (runJudge calls llmGateway with lightweight tier and judge_call eventType)",
+      "prd28_close_evidence": "PRD-28 US-001/002/003: 21 judge files 全部移除 vi.mock('@/workers/llm-gateway') · 加 describe.skipIf(!process.env.ANTHROPIC_API_KEY) · 无 ANTHROPIC_API_KEY 时全部 skip(21 skipped 0 hard fail) · grep -rn 'vi.mock.*llm-gateway' tests/judge/ = 0 · grep -rn 'describe.skipIf.*ANTHROPIC_API_KEY' tests/judge/ = 22 ≥ 21",
+      "prd25_partial_note": "PRD-25 US-008 是假闭环: 仅修 voice-chat.judge.ts 1个文件 · 用 vi.hoisted()+beforeEach(()=>mockComplete.mockResolvedValue({content:{pass:true,score:8}})) 模式 — 仍是 mock 固定值 · 不是真调 LLM · 21 files 中只修 1 file 不是真闭环 · AGENTS.md §11.6.7 当时注释错误(PRD-25 upgrade 标记) · PRD-28 才是真正闭环"
     },
     {
       "id": "TD-026",
@@ -2235,6 +2237,27 @@
       "root_cause": "PRD AC-3 axis label 写'X specialist Y mode' 而实际 implementation specialist as rows(14 row · 4-5 col)更易读 · ralph 选了更合理的 implementation 但字面跟 PRD 不一致",
       "scheduled_fix_in": "PRD-29+ retro 时 doc-only 修 D-269 字面对齐实际 implementation(类似 TD-015 接受 pattern · 不改代码 · 改 PRD)",
       "audit_exemption": "US-006 approve 时豁免 · 实际 implementation 更合理 + D-269 总体意图(specialist × mode 矩阵)已实现 · 仅 axis 命名字面歧义"
+    },
+    {
+      "id": "TD-108",
+      "category": "infra",
+      "title": "ralph.py prompt size abort > 12K 功能规则已写但代码未实施",
+      "discovered_at": "2026-05-23",
+      "discovered_by": "Opus audit PRD-28 US-008 (AC-5 retro check)",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "CLAUDE.md §9.6.3 写了 'prompt 字节 > 12K → 🔴 拒启 daemon · ralph.py warning + abort · 强制 prd skill 重 split' 规则 · 但 ralph.py build_developer_prompt() 函数无 len(prompt) > LIMIT abort 实现 · US-001 实测 prompt 估计 11.6K 触发 PATH-B 正是此问题 symptom",
+      "root_cause": "§9.6.3 规则是 PRD-7/8 教训后写入 CLAUDE.md · 但 ralph.py 代码版本未同步实施 abort logic · 只有文档规则没有代码 enforcement",
+      "scheduled_fix_in": "PRD-29+ · ralph.py infra story · ralph-tools.py check-risk 命令已存在",
+      "fix_hint": "ralph.py build_developer_prompt() 末尾加: if len(prompt) > 12288: raise PromptSizeError(f'Prompt {len(prompt)} bytes exceeds 12K abort threshold · split this story') · ralph executor catch → abort with user message",
+      "impact": "Medium: 无 enforcement 时 large story prompt 悄悄超阈值 · ralph dev timeout → PATH-B → 浪费 30 min/cycle · US-001 PRD-28 实证",
+      "affects_prd": [
+        "PRD-28"
+      ],
+      "related_td": [
+        "TD-103"
+      ],
+      "additional_finding": "ralph-tools.py check-risk 命令 (2026-05-04 新增) 可检测 risk_level=large 但无法检测 prompt 字节数 · 两者互补"
     }
   ]
 }

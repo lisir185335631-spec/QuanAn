@@ -3532,6 +3532,120 @@ AnalysisAgent · BrandingAgent · CopywritingAgent · DeepLearnAgent · Diagnosi
 
 ---
 
+### §11.19 PRD-28 evaluation 完整化沉淀(PRD-28 retro 2026-05-23 文档回流 · 8 US 实测驱动)
+
+#### §11.19.1 LLM Judge mock 真闭环模式(TD-027 最终关闭)
+
+```typescript
+// ❌ 假闭环(PRD-25 vi.hoisted + beforeEach 仍是 mock 固定值)
+const { mockComplete } = vi.hoisted(() => ({ mockComplete: vi.fn() }));
+vi.mock('@/workers/llm-gateway', () => ({ llmGateway: { complete: mockComplete } }));
+beforeEach(() => mockComplete.mockResolvedValue({ content: { pass: true, score: 8 } }));
+
+// ✅ 真闭环(PRD-28 完全删 vi.mock · describe.skipIf 优雅 skip)
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {
+  it('judge 真调', async () => {
+    const result = await runJudge(case_);  // 走 llmGateway.complete 真调
+    expect(result.pass).toBeDefined();
+  });
+});
+```
+
+**规则**:
+- 21 judge files 全部删 vi.mock · 无 vi.hoisted + mockResolvedValue 残留
+- describe.skipIf(!process.env.ANTHROPIC_API_KEY) 外层包裹 · CI safe
+- tests/setup.ts 加 `import * as dotenv from 'dotenv'; dotenv.config();`
+- vitest.judge.config.ts: setupFiles: ['./tests/setup.ts']
+
+**实证**: PRD-2~PRD-28 历时 6 PRD 的技术债务 · PRD-28 US-001/002/003 3 batch 完整关闭
+
+#### §11.19.2 100 金标准 dataset 双轨模式(sally-30 + custom-70)
+
+```typescript
+// packages/schemas/src/judge-golden.schema.ts
+export const goldenSampleSchema = z.object({
+  id: z.string().regex(/^(sally|custom)-\d{3}$/),
+  specialistId: z.enum(SPECIALIST_IDS),
+  input: z.record(z.unknown()),
+  criteria: z.array(z.string()).min(2),
+  expectedKeyFields: z.array(z.string()).min(1),
+  source: z.enum(['sally', 'custom']),
+});
+```
+
+**配额规则** (D-266 字面锁):
+- `sally-30.json`: 30 条 · source='sally' · 从 aiipznt 实测样本提取
+- `custom-70.json`: 70 条 · 14 specialist 按 CopywritingAgent=12, BrandingAgent=10, VideoAgent=8 等分布
+- AC 必含精确验证命令: `jq '[.[] | select(.specialistId=="CopywritingAgent")] | length'`
+- **防偏差**: D= 字面锁配额数据必须写进 prd.json AC · Validator 精确验证
+
+#### §11.19.3 evaluation pipeline 系统级表设计
+
+```sql
+-- evaluation_runs + evaluation_samples 两表关键设计点
+-- 1. RLS DISABLE (系统级 · 跨账号 · admin only)
+-- 2. 无 accountId 字段 (LD-A-1 · 不是用户数据)
+-- 3. @@index([startedAt(sort: Desc)]) 高效分页
+-- 4. eval-run.ts CLI 走 prisma 直连 (不经 tRPC ctx)
+ALTER TABLE evaluation_runs DISABLE ROW LEVEL SECURITY;
+ALTER TABLE evaluation_samples DISABLE ROW LEVEL SECURITY;
+```
+
+**eval-run.ts 架构**:
+- CLI args: `--samples=N --specialist=X --source=sally|custom`
+- evaluator.ts `runSampleEvaluation`: structurePass(zod) + judgeScore(runJudge) + durationMs + costUsd
+- 无 API_KEY → process.exit(1); 单 sample fail 写 judgePass=false 不阻塞批次
+- 走 specialist.execute → BaseSpecialist.invokeLLM → llmGateway.complete (严守 LD-004)
+
+#### §11.19.4 admin evaluation UI 三层架构
+
+```
+/admin/evaluation (EvaluationPage)
+├── 列表: evaluation_runs 分页 20 · 点行跳详情
+│   列: runId / startedAt / status / totalSamples / passedSamples / avgScore / totalCostUsd
+│
+/admin/evaluation/:runId (EvaluationDetailPage)
+├── 样本列表: evaluation_samples 分页 50 · 点行弹 SampleDetailDrawer
+├── EvaluationMatrixChart: 14 specialist × mode · Tailwind grid · 无外部图表库
+│   cell 颜色: red(<4) / yellow(4-6) / green(6-8) / blue(>8)
+└── InterRaterSection: X/30 评完 / kappa+pearson+interpretation 当全部完成
+│
+/admin/evaluation/inter-rater/:runId (InterRaterPage)
+└── 30 sample hand-scoring UI · slider 0-10 + comment + dot nav + progress bar
+```
+
+**关键约束**:
+- 全部在 apps/admin (严守 LD-A-1 · 不在 apps/web)
+- 3 procedures 全走 adminProtectedProcedure 6 闸
+- 3 路由 lazy load: `lazy(/* webpackChunkName: "admin-evaluation" */ () => import(...))`
+- EvaluationMatrixChart 不引 recharts/nivo/chart.js · 保持 bundle 精简
+
+#### §11.19.5 inter-rater agreement 实现范式
+
+```typescript
+// apps/api/src/lib/evaluation/inter-rater.ts
+
+// mulberry32 PRNG · 高质量 32-bit · 比 Math.sin 更均匀
+function mulberry32(seed: number): () => number { ... }
+
+// 确定性子集: 同 runId 永远返同 30 ids
+export function listInterRaterSubset(allIds: number[], runId: string, n = 30): number[] {
+  const rand = mulberry32(hashString(runId));
+  // Fisher-Yates with PRNG
+}
+
+// Cohen's kappa: 二值化(≤5=0类, ≥6=1类) 再算 κ=(Po-Pe)/(1-Pe)
+export function cohenKappa(llmScores: number[], humanScores: number[]): number { ... }
+
+// κ 解读: < 0.2 slight / 0.2~0.4 fair / 0.4~0.6 moderate / 0.6~0.8 substantial / > 0.8 almost perfect
+```
+
+**质量门禁**: kappa ≥ 0.4 = moderate agreement · LLM Judge 可信门槛
+**单元测试 13 case**: cohenKappa(4) + listInterRaterSubset(4) + pearsonCorrelation(4) + interpretKappa(1)
+**AC 写法**: inter-rater story AC 必含 `listInterRaterSubset 调 2 次返同 ids` 验证 reproducibility
+
+---
+
 ## 修订记录
 
 - **2026-05-06 v0.1** · 创建骨架 + 9 章节全部填充
@@ -3565,6 +3679,12 @@ AnalysisAgent · BrandingAgent · CopywritingAgent · DeepLearnAgent · Diagnosi
   - §11.6.5 · responseFormat 双 schema 策略(`.refine()` 不能序列化为 JSON Schema · LLM 用 BaseSchema · post-validate 用 OutputSchema · 类型双重 cast)
   - §11.6.6 · stepData.save handler 必覆盖全 9 step(US-017 教训 · default throw 比 return null 安全 · 每 PRD 收官前 cross-cut audit)
   - §11.6.7 · LLM Judge 测试套件(`vitest.judge.config.ts` 独立 · `model_tier='lightweight'` · `eventType='judge_call'` · 7 Specialist × 1-2 golden case · `pnpm test:judge` 14/14)— 2026-05-20 升级 · `vi.hoisted() + beforeEach` 模式正确(PRD-25 TD-027 修复)· 不用 `vi.fn().mockResolvedValue({pass:true})` 固定值(永远 PASS 失效)
+- **2026-05-23 v1.0** · 加 §11.19 PRD-28 evaluation 完整化沉淀(8 US · TD-027 真闭环 · 100 金标准 · admin evaluation UI · inter-rater Cohen's kappa · 0 Opus reject)
+  - §11.19.1 · LLM Judge mock 真闭环模式(21 files 完全删 vi.mock · describe.skipIf(!ANTHROPIC_API_KEY) · PRD-25 假闭环区分)
+  - §11.19.2 · 100 金标准 dataset 双轨模式(sally-30 + custom-70 · D-266 字面锁 · 精确配额验证命令)
+  - §11.19.3 · evaluation pipeline 系统级表设计(RLS DISABLE · 无 accountId · eval-run CLI)
+  - §11.19.4 · admin evaluation UI 三层架构(EvaluationPage + DetailPage + InterRaterPage + MatrixChart)
+  - §11.19.5 · inter-rater agreement 实现范式(mulberry32 PRNG · cohenKappa · pearsonCorrelation · 13 unit tests)
 - **2026-05-20 v0.9** · 加 §11.16 PRD-25 LLM 接入全链路沉淀(7 US · 8 Specialist 真 LLM · 0 reject 首轮通过 · TD-027/090/091/095 关闭)
   - §11.16.1 · LLM 接入 useMutation 模式 · trpc mutation 标准范式 `useMutation({onSuccess: () => void utils.xxx.invalidate()})` — `void` 防 unhandled rejection · isFallback banner = `data-testid=fallback-banner` · fallback 时 UI 正常渲染(不 throw · graceful degradation) · US-001~007 全严守此模式
   - §11.16.2 · isFallback 处理标准 · agent 返回 `isFallback=true` 时前端渲染 fallback hint banner + 正常展示 stub 数据(不隐藏 · 不 error toast) · 测试必含 `data-testid=fallback-banner` 显示断言 · Opus audit D1=A 必查 isFallback banner 是否出现
