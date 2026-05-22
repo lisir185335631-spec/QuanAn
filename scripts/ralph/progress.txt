@@ -5116,3 +5116,36 @@ audit-artifacts: PASS (exit_code=0 + manifest.zero_regression=PASS)
 ---
 
 --- [RALPH] Iteration 10 ended: US-006 (26分钟) ---
+
+## 2026-05-21 15:55 - US-006 (PRD-27 · Opus audit · APPROVED · 收官)
+- APPROVED · risk_level=medium · 12 AC + AC-COMMON 全 PASS · iter-1 一次过
+- verify-prd-27.sh 实跑: **33/33 PASSED** · "PRD-27 RESULT: 30+ 通过 · 0 失败 · 1:1 复刻完成 100% · ALL CHECKS PASSED"
+- 收官产物全建:
+  - scripts/verify-prd-27.sh (428 行 · 7 sections · 33 checks · chmod+x)
+  - .agents/verification/prd-27-goal-backward.md (178 行 · 7 sections · 含 §0 4 sub-project 事实层 + AGENTS.md 5 LD 对账)
+  - .agents/retros/prd-27-vs-prd-26-retrospective.md (296 行 · 10 sections · 跨 PRD-21~27 7 PRD 征程 · M-Y §2.A 双指标统计)
+  - tasks/prd-27.md §9 PRD-28+ Handoff(PRD-28~32 + PRR · 6 sub-sections)
+  - AGENTS.md §11.18 PRD-27 沉淀(5 sub-sections: BullMQ 状态机 + LLM 接入收官 + ModelTier 跨文件 + baseline npm script + 14 specialist)
+  - progress.txt [PRD-27 retro] 摘要
+- 实测: typecheck 6 ws Done · vitest LLM Judge 56/56 PASS · 1932 passed | 0 failed | 111 skipped(US-005 修后 zero regression baseline)
+- 14 specialist 解读: EXPECTED 13 业务 specialist + 1 worker DailyTaskAgent (Heartbeat in workers/cron · 不在 specialists/) = spec §7 14 topology · 实际 specialists/ 13 .ts file ≥ 13 阈值 PASS · "/14" 字面是 PRD 设计目标(13 业务 + 1 Heartbeat 合计)
+- 1:1 复刻完成 100% 定义: PresentationAgent 新建填齐 13→14 specialist topology + 4 工具 page LLM 真接入(monetization/private-domain/present-styles/deep-learning) + 0 mock/stub 残留 in PRD-27 routers
+- 4 维度: AC ✅ · AGENTS.md(LD-001/004/009/A-1/R-001 全对账)✅ · 安全 ✅ · D-264 字面锁 ✅
+- 跨 PRD 沉淀(L4 进化 · 8 commits 事实驱动):
+  - §11.18.1 BullMQ 异步任务状态机范式(US-004 实证)
+  - §11.18.2 LLM 接入收官验证模式(US-006 7 section 标准)
+  - §11.18.3-5 其他 3 sub-sections
+- TD baseline 继承(US-005 修后干净):
+  - TD-100 resolved · TD-101 resolved · TD-102 open(15 file collection · prd13/14/15/25 pre-existing · 留 PRD-28+)
+- PRD-27 = 1:1 复刻完成征程的最后一站 · 7 PRD(21~27)征程闭环
+---
+
+## [PRD-27 retro] 1:1 复刻完成 · 4 新接入 page LLM · PresentationAgent 新建 · TD-100 close · 7 PRD 连续 audit 维度 100%
+- PRD-27 严格通过率: audit 100% (5/5 retryCount=0) + dev 60% strict (3/5 single iter)
+- US-003 2iter (AC-13 script 补加) · US-005 3iter (zero_regression 累计回归补救)
+- 跨 PRD-21~27 7 PRD 趋势: 视觉对齐 → LLM 接入 → admin polish → 1:1 收官 闭环
+- TD 净变化 PRD-27: -1 (TD-100/101 closed · TD-102 added)
+- 关键教训: M-2 lint scope 类比扩展到 vitest · ROOT vitest 必跑防 stale test 漏审
+---
+
+--- [RALPH] Iteration 10 ended: US-006 (26分钟 23秒) ---
