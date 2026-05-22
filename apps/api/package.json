@@ -8,7 +8,8 @@
     "start": "tsx src/index.ts",
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext ts --max-warnings=0"
+    "lint": "eslint . --ext ts --max-warnings=0",
+    "eval:run": "tsx src/scripts/eval-run.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.30.0",

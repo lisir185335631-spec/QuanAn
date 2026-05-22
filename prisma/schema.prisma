@@ -1421,3 +1421,63 @@ model KnowledgeChunk {
   @@index([type])
   @@map("knowledge_chunk")
 }
+
+// ============================================================
+// §PRD-28 · Evaluation Pipeline(D-267 + D-268)
+// ============================================================
+
+/// EvaluationRun · 单次批跑记录 · 系统级 · RLS DISABLE(AC-4 · LD-A-1)
+// @rls(disabled)
+model EvaluationRun {
+  id             Int       @id @default(autoincrement())
+  runId          String    @unique @db.VarChar(36)
+  startedAt      DateTime
+  finishedAt     DateTime?
+  totalSamples   Int
+  passedSamples  Int
+  failedSamples  Int
+  skippedSamples Int
+  avgScore       Decimal?  @db.Decimal(3, 2)
+  modelTier      String
+  model          String
+  totalTokens    Int
+  totalCostUsd   Decimal   @db.Decimal(8, 4)
+  status         String    // 'running' | 'completed' | 'failed'
+  metadata       Json?
+
+  samples EvaluationSample[]
+
+  @@index([startedAt(sort: Desc)])
+  @@map("evaluation_runs")
+}
+
+/// EvaluationSample · 单样本评分记录 · 系统级 · RLS DISABLE(AC-4 · LD-A-1)
+/// humanScore / humanScoreBy / humanScoredAt 由 US-007 写
+// @rls(disabled)
+model EvaluationSample {
+  id            Int       @id @default(autoincrement())
+  runId         String    @db.VarChar(36)
+  goldenId      String    @db.VarChar(20)
+  specialistId  String
+  mode          String?
+  input         Json
+  actualOutput  Json
+  judgeScore    Int       @db.SmallInt
+  judgePass     Boolean
+  judgeReason   String    @db.Text
+  structurePass Boolean
+  durationMs    Int
+  tokensUsed    Int
+  costUsd       Decimal   @db.Decimal(8, 6)
+  humanScore    Int?      @db.SmallInt
+  humanScoreBy  String?
+  humanScoredAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  run EvaluationRun @relation(fields: [runId], references: [runId], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([specialistId])
+  @@index([createdAt(sort: Desc)])
+  @@map("evaluation_samples")
+}

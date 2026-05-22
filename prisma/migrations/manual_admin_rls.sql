@@ -91,3 +91,5 @@ $$;
 --     'admin_invite_campaign','admin_constants','admin_config','admin_ab_experiment'
 --   ) ORDER BY tablename;
 -- 期望 · 全部 rowsecurity = false
+ALTER TABLE evaluation_runs DISABLE ROW LEVEL SECURITY;
+ALTER TABLE evaluation_samples DISABLE ROW LEVEL SECURITY;
