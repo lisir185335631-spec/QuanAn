@@ -31,6 +31,7 @@ const ApprovalGatesPage = lazy(/* webpackChunkName: "p1-health" */ () => import(
 // PRD-28 Evaluation
 const EvaluationPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationPage'));
 const EvaluationDetailPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationDetailPage'));
+const InterRaterPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/InterRaterPage'));
 
 // P2 高级
 const AbExperimentsPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/abExperiments/AbExperimentsPage'));
@@ -71,6 +72,8 @@ export function AdminRoutes() {
           {/* PRD-28 Evaluation */}
           <Route path="evaluation" element={<EvaluationPage />} />
           <Route path="evaluation/:runId" element={<EvaluationDetailPage />} />
+          {/* AC-7: inter-rater route · nav 不显示(仅 click-through) */}
+          <Route path="evaluation/inter-rater/:runId" element={<InterRaterPage />} />
 
           {/* P2 高级 */}
           <Route path="ab-experiments" element={<AbExperimentsPage />} />

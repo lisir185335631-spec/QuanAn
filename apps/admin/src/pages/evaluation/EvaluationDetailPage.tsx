@@ -1,4 +1,5 @@
 // PRD-28 US-006 AC-2 · EvaluationDetailPage · 单 run 详情 + 矩阵热力图
+// PRD-28 US-007 AC-6 · +Inter-rater agreement 子区域
 import { useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
@@ -275,8 +276,109 @@ export default function EvaluationDetailPage() {
         </div>
       )}
 
+      {/* Inter-rater agreement subregion (AC-6) */}
+      <InterRaterSection runId={runId} />
+
       {/* Sample detail drawer */}
       <SampleDetailDrawer sample={selectedSample} onClose={() => setSelectedSample(null)} />
+    </div>
+  );
+}
+
+// ── Inter-rater Agreement section ────────────────────────────────────────────
+function InterRaterSection({ runId }: { runId: string }) {
+  const navigate = useNavigate();
+
+  const { data: subsetData } = adminTrpc.evaluation.listInterRaterSubset.useQuery(
+    { runId },
+    { retry: false },
+  );
+
+  const totalRated = subsetData
+    ? (subsetData.samples as Array<{ humanScore: number | null }>).filter(
+        (s) => s.humanScore !== null,
+      ).length
+    : null;
+  const totalSubset = subsetData?.totalSubset ?? 30;
+  const allDone = totalRated !== null && totalRated >= totalSubset && totalSubset > 0;
+
+  const { data: agreement } = adminTrpc.evaluation.computeAgreement.useQuery(
+    { runId },
+    { enabled: allDone, retry: false },
+  );
+
+  return (
+    <div
+      style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: 6,
+        padding: 16,
+        marginBottom: 20,
+        marginTop: 4,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 10,
+        }}
+      >
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>
+          Inter-rater agreement
+        </span>
+        <button
+          type="button"
+          onClick={() => navigate(`/admin/evaluation/inter-rater/${runId}`)}
+          style={{
+            background: 'none',
+            border: '1px solid var(--border)',
+            color: 'var(--text-muted)',
+            padding: '3px 10px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontSize: 11,
+          }}
+        >
+          手工评分 →
+        </button>
+      </div>
+
+      {totalRated === null ? (
+        <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>加载中...</div>
+      ) : allDone && agreement ? (
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', fontSize: 12 }}>
+          <div>
+            <span style={{ color: 'var(--text-dim)' }}>κ: </span>
+            <span
+              style={{
+                color: agreement.kappa >= 0.4 ? '#86efac' : '#fca5a5',
+                fontWeight: 700,
+              }}
+            >
+              {agreement.kappa.toFixed(3)}
+            </span>
+          </div>
+          <div>
+            <span style={{ color: 'var(--text-dim)' }}>Pearson r: </span>
+            <span style={{ color: 'var(--gold)', fontWeight: 700 }}>
+              {agreement.pearson.toFixed(3)}
+            </span>
+          </div>
+          <div>
+            <span style={{ color: 'var(--text-dim)' }}>interpretation: </span>
+            <span style={{ color: 'var(--text-muted)', textTransform: 'capitalize' }}>
+              {agreement.interpretation}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>
+          {totalRated}/{totalSubset} 评完
+        </div>
+      )}
     </div>
   );
 }

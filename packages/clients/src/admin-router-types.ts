@@ -1715,6 +1715,50 @@ const _shadowAdminRouter = _t.router({
           count: number;
         } => ({ items: [], count: 0 }),
       ),
+    listInterRaterSubset: _t.procedure
+      .input((x: unknown) => x as { runId: string })
+      .query(
+        (): {
+          samples: Array<{
+            id: number;
+            goldenId: string;
+            specialistId: string;
+            mode: string | null;
+            input: unknown;
+            actualOutput: unknown;
+            criteria: string[];
+            judgeScore: number;
+            judgeReason: string;
+            humanScore: number | null;
+            humanScoredAt: Date | null;
+          }>;
+          totalSubset: number;
+          totalRated: number;
+        } => ({ samples: [], totalSubset: 0, totalRated: 0 }),
+      ),
+    submitHumanScore: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { sampleId: number; humanScore: number; humanComment?: string },
+      )
+      .mutation((): { ok: boolean } => ({ ok: true })),
+    computeAgreement: _t.procedure
+      .input((x: unknown) => x as { runId: string })
+      .query(
+        (): {
+          kappa: number;
+          pearson: number;
+          interpretation: string;
+          ratedCount: number;
+          totalSubset: number;
+        } => ({
+          kappa: 0,
+          pearson: 0,
+          interpretation: 'slight',
+          ratedCount: 0,
+          totalSubset: 0,
+        }),
+      ),
   }),
   featureFlags: _t.router({
     getKpiStats: _t.procedure.query(
