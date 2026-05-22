@@ -16,6 +16,10 @@ export * from './specialist-io/aiVideo.schema';
 export * from './specialist-io/acquisitionCopywriting.schema';
 export * from './specialist-io/imageGen.schema';
 
+// PRD-28 US-004 · GoldenSample + GoldenDataset (100 条金标准 dataset)
+export { goldenSampleSchema, goldenDatasetSchema, SPECIALIST_IDS } from './judge-golden.schema';
+export type { GoldenSample, GoldenDataset, SpecialistId } from './judge-golden.schema';
+
 // PRD-9 US-001 · RAG 知识库 schemas
 export type {
   KnowledgeChunkContent,

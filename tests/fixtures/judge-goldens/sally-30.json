@@ -1,0 +1,661 @@
+[
+  {
+    "id": "sally-001",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "tutorial",
+      "elements": ["curiosity", "social_proof"],
+      "topic": "护肤品正确使用顺序"
+    },
+    "expectedOutputPattern": {
+      "markdown": "string",
+      "metadata": "object"
+    },
+    "criteria": [
+      "markdown 输出不少于 400 个字符",
+      "metadata 对象包含 scriptType / elements / structureSummary / estimatedDuration 字段",
+      "文案包含清晰的开头钩子句"
+    ],
+    "expectedKeyFields": ["markdown", "metadata"],
+    "source": "sally",
+    "tags": ["step4b", "beauty", "tutorial"]
+  },
+  {
+    "id": "sally-002",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "storytelling",
+      "elements": ["fear", "transformation"],
+      "topic": "脱发逆转真实案例"
+    },
+    "expectedOutputPattern": {
+      "markdown": "string",
+      "metadata": "object"
+    },
+    "criteria": [
+      "markdown 输出不少于 400 个字符",
+      "metadata.estimatedDuration 为有效时长字符串如 '60s'",
+      "文案包含情节转折或对比"
+    ],
+    "expectedKeyFields": ["markdown", "metadata"],
+    "source": "sally",
+    "tags": ["step4b", "health", "storytelling"]
+  },
+  {
+    "id": "sally-003",
+    "specialistId": "CopywritingAgent",
+    "mode": "boom",
+    "input": {
+      "elements": ["greed", "scarcity"],
+      "referenceTitle": "99%的人不知道的省钱秘籍"
+    },
+    "expectedOutputPattern": {
+      "candidates": "array",
+      "metadata": "object"
+    },
+    "criteria": [
+      "candidates 数组恰好包含 5 个候选标题",
+      "每个候选标题长度在 10-50 个字符之间",
+      "metadata.elements 包含输入的元素"
+    ],
+    "expectedKeyFields": ["candidates", "metadata"],
+    "source": "sally",
+    "tags": ["step5", "finance", "boom-title"]
+  },
+  {
+    "id": "sally-004",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "duo_chat",
+      "elements": ["empathy", "contrast"],
+      "topic": "妈妈和孩子的早餐争吵"
+    },
+    "expectedOutputPattern": {
+      "markdown": "string",
+      "metadata": "object"
+    },
+    "criteria": [
+      "markdown 包含两个角色的对话轮次",
+      "markdown 字数不少于 400 个字符",
+      "内容体现 contrast 元素的戏剧张力"
+    ],
+    "expectedKeyFields": ["markdown", "metadata"],
+    "source": "sally",
+    "tags": ["step4b", "parenting", "duo_chat"]
+  },
+  {
+    "id": "sally-005",
+    "specialistId": "CopywritingAgent",
+    "mode": "acquisition",
+    "input": {
+      "platform": "douyin",
+      "productCategory": "skincare",
+      "targetAudience": "25-35岁女性"
+    },
+    "expectedOutputPattern": {
+      "scripts": "array"
+    },
+    "criteria": [
+      "scripts 数组包含至少 2 条引流文案",
+      "每条文案包含明确的行动号召",
+      "针对目标受众使用合适的语气"
+    ],
+    "expectedKeyFields": ["scripts"],
+    "source": "sally",
+    "tags": ["step4b", "acquisition", "douyin"]
+  },
+  {
+    "id": "sally-006",
+    "specialistId": "CopywritingAgent",
+    "mode": "boom",
+    "input": {
+      "elements": ["controversy", "reveal"],
+      "referenceTitle": "你一直以为对的习惯其实在伤害你"
+    },
+    "expectedOutputPattern": {
+      "candidates": "array",
+      "metadata": "object"
+    },
+    "criteria": [
+      "candidates 恰好 5 个候选标题",
+      "标题包含悬念或反常识表达",
+      "metadata.count 等于 5"
+    ],
+    "expectedKeyFields": ["candidates", "metadata"],
+    "source": "sally",
+    "tags": ["step5", "health", "boom-title"]
+  },
+  {
+    "id": "sally-007",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "list",
+      "elements": ["list", "authority"],
+      "topic": "健身房新手必知的 5 个错误"
+    },
+    "expectedOutputPattern": {
+      "markdown": "string",
+      "metadata": "object"
+    },
+    "criteria": [
+      "markdown 包含有序列表结构",
+      "markdown 字数不少于 400 个字符",
+      "内容有权威性信息背书"
+    ],
+    "expectedKeyFields": ["markdown", "metadata"],
+    "source": "sally",
+    "tags": ["step4b", "fitness", "list"]
+  },
+  {
+    "id": "sally-008",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "tutorial",
+      "elements": ["curiosity", "small_big"],
+      "topic": "每天 5 分钟提高英语听力的方法"
+    },
+    "expectedOutputPattern": {
+      "markdown": "string",
+      "metadata": "object"
+    },
+    "criteria": [
+      "markdown 包含具体可操作步骤",
+      "metadata.estimatedDuration 有效",
+      "内容体现 small_big 元素（小投入大回报）"
+    ],
+    "expectedKeyFields": ["markdown", "metadata"],
+    "source": "sally",
+    "tags": ["step4b", "education", "tutorial"]
+  },
+  {
+    "id": "sally-009",
+    "specialistId": "CopywritingAgent",
+    "mode": "boom",
+    "input": {
+      "elements": ["anger", "challenge"],
+      "referenceTitle": "凭什么你的努力没有回报"
+    },
+    "expectedOutputPattern": {
+      "candidates": "array",
+      "metadata": "object"
+    },
+    "criteria": [
+      "candidates 恰好 5 个候选标题",
+      "标题传达愤怒或挑战情绪",
+      "每个候选标题均非空且长度 > 5"
+    ],
+    "expectedKeyFields": ["candidates", "metadata"],
+    "source": "sally",
+    "tags": ["step5", "motivation", "boom-title"]
+  },
+  {
+    "id": "sally-010",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "review",
+      "elements": ["social_proof", "low_cost_high"],
+      "topic": "平价好用的平替护肤品推荐"
+    },
+    "expectedOutputPattern": {
+      "markdown": "string",
+      "metadata": "object"
+    },
+    "criteria": [
+      "markdown 提及至少 2 个具体产品",
+      "内容包含价格对比信息",
+      "markdown 字数不少于 400 个字符"
+    ],
+    "expectedKeyFields": ["markdown", "metadata"],
+    "source": "sally",
+    "tags": ["step4b", "beauty", "review"]
+  },
+  {
+    "id": "sally-011",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "health",
+      "platform": "douyin"
+    },
+    "expectedOutputPattern": {
+      "category": "string",
+      "topics": "array"
+    },
+    "criteria": [
+      "topics 数组恰好包含 20 个元素",
+      "每个 topic 含 title/hook/structure/formula/viralPotential 五个字段",
+      "viralPotential 值为 low/medium/high 之一"
+    ],
+    "expectedKeyFields": ["category", "topics"],
+    "source": "sally",
+    "tags": ["step3", "health", "traffic"]
+  },
+  {
+    "id": "sally-012",
+    "specialistId": "TopicAgent",
+    "mode": "product",
+    "input": {
+      "category": "product",
+      "industry": "beauty",
+      "platform": "xiaohongshu"
+    },
+    "expectedOutputPattern": {
+      "category": "string",
+      "topics": "array"
+    },
+    "criteria": [
+      "topics 数组恰好 20 个元素",
+      "每个 topic 包含 title 和 hook",
+      "topic 内容与美妆产品相关"
+    ],
+    "expectedKeyFields": ["category", "topics"],
+    "source": "sally",
+    "tags": ["step3", "beauty", "product"]
+  },
+  {
+    "id": "sally-013",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "food",
+      "platform": "douyin"
+    },
+    "expectedOutputPattern": {
+      "category": "string",
+      "topics": "array"
+    },
+    "criteria": [
+      "topics 包含 20 个元素",
+      "viralPotential 字段值合法",
+      "topic 与食品/餐饮主题相关"
+    ],
+    "expectedKeyFields": ["category", "topics"],
+    "source": "sally",
+    "tags": ["step3", "food", "traffic"]
+  },
+  {
+    "id": "sally-014",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "fitness",
+      "platform": "kuaishou"
+    },
+    "expectedOutputPattern": {
+      "category": "string",
+      "topics": "array"
+    },
+    "criteria": [
+      "topics 数组 20 个元素",
+      "formula 字段描述爆款公式",
+      "内容适配快手平台风格"
+    ],
+    "expectedKeyFields": ["category", "topics"],
+    "source": "sally",
+    "tags": ["step3", "fitness", "kuaishou"]
+  },
+  {
+    "id": "sally-015",
+    "specialistId": "TopicAgent",
+    "mode": "product",
+    "input": {
+      "category": "product",
+      "industry": "education",
+      "platform": "bilibili"
+    },
+    "expectedOutputPattern": {
+      "category": "string",
+      "topics": "array"
+    },
+    "criteria": [
+      "topics 包含 20 个元素",
+      "每个 topic 有具体的 structure 描述",
+      "内容适合 B 站知识类创作者"
+    ],
+    "expectedKeyFields": ["category", "topics"],
+    "source": "sally",
+    "tags": ["step3", "education", "bilibili"]
+  },
+  {
+    "id": "sally-016",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "parenting",
+      "platform": "xiaohongshu"
+    },
+    "expectedOutputPattern": {
+      "category": "string",
+      "topics": "array"
+    },
+    "criteria": [
+      "topics 恰好 20 个元素",
+      "内容紧扣育儿/亲子主题",
+      "hook 字段包含情绪激发词汇"
+    ],
+    "expectedKeyFields": ["category", "topics"],
+    "source": "sally",
+    "tags": ["step3", "parenting", "xiaohongshu"]
+  },
+  {
+    "id": "sally-017",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "beauty",
+      "platform": "xiaohongshu",
+      "followerGoal": 10000
+    },
+    "expectedOutputPattern": {
+      "nickname": "array",
+      "avatar": "object",
+      "background": "object",
+      "bio": "array",
+      "overallStrategy": "string"
+    },
+    "criteria": [
+      "nickname 恰好 5 个候选名称",
+      "avatar 含 prompt 和 style 字段",
+      "bio 数组恰好 6 个平台版本"
+    ],
+    "expectedKeyFields": ["nickname", "avatar", "background", "bio", "overallStrategy"],
+    "source": "sally",
+    "tags": ["step7", "beauty", "packaging"]
+  },
+  {
+    "id": "sally-018",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "fitness",
+      "platform": "douyin",
+      "followerGoal": 50000
+    },
+    "expectedOutputPattern": {
+      "nickname": "array",
+      "bio": "array",
+      "overallStrategy": "string"
+    },
+    "criteria": [
+      "nickname 5 个候选，每个含健身相关关键词",
+      "bio 包含 douyin 平台版本",
+      "overallStrategy 描述健身类账号定位"
+    ],
+    "expectedKeyFields": ["nickname", "avatar", "bio", "overallStrategy"],
+    "source": "sally",
+    "tags": ["step7", "fitness", "douyin"]
+  },
+  {
+    "id": "sally-019",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "food",
+      "platform": "kuaishou",
+      "followerGoal": 20000
+    },
+    "expectedOutputPattern": {
+      "nickname": "array",
+      "background": "object",
+      "overallStrategy": "string"
+    },
+    "criteria": [
+      "nickname 5 个候选名称",
+      "background.platformVersions 含 3 个版本",
+      "内容定位与美食分享相关"
+    ],
+    "expectedKeyFields": ["nickname", "background", "overallStrategy"],
+    "source": "sally",
+    "tags": ["step7", "food", "kuaishou"]
+  },
+  {
+    "id": "sally-020",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "education",
+      "platform": "bilibili",
+      "followerGoal": 100000
+    },
+    "expectedOutputPattern": {
+      "nickname": "array",
+      "bio": "array",
+      "overallStrategy": "string"
+    },
+    "criteria": [
+      "nickname 5 个候选，体现知识型 IP 定位",
+      "bio 有 bilibili 平台版本",
+      "overallStrategy 提及内容差异化策略"
+    ],
+    "expectedKeyFields": ["nickname", "bio", "overallStrategy"],
+    "source": "sally",
+    "tags": ["step7", "education", "bilibili"]
+  },
+  {
+    "id": "sally-021",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "finance",
+      "platform": "douyin",
+      "followerGoal": 30000
+    },
+    "expectedOutputPattern": {
+      "nickname": "array",
+      "bio": "array",
+      "overallStrategy": "string"
+    },
+    "criteria": [
+      "nickname 5 个候选名称体现财经/理财主题",
+      "bio 含 douyin 和 xiaohongshu 版本",
+      "overallStrategy 强调专业信任感建立"
+    ],
+    "expectedKeyFields": ["nickname", "bio", "overallStrategy"],
+    "source": "sally",
+    "tags": ["step7", "finance", "douyin"]
+  },
+  {
+    "id": "sally-022",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "parenting",
+      "platform": "xiaohongshu",
+      "followerGoal": 15000
+    },
+    "expectedOutputPattern": {
+      "nickname": "array",
+      "avatar": "object",
+      "bio": "array"
+    },
+    "criteria": [
+      "nickname 5 个候选，亲子/育儿相关",
+      "avatar.style 描述温暖亲切风格",
+      "bio 面向宝妈受众定制"
+    ],
+    "expectedKeyFields": ["nickname", "avatar", "bio"],
+    "source": "sally",
+    "tags": ["step7", "parenting", "xiaohongshu"]
+  },
+  {
+    "id": "sally-023",
+    "specialistId": "VideoAgent",
+    "mode": "storyboard",
+    "input": {
+      "topic": "3步学会居家整理收纳",
+      "duration": 60,
+      "platform": "douyin"
+    },
+    "expectedOutputPattern": {
+      "scenes": "array",
+      "totalDuration": "number"
+    },
+    "criteria": [
+      "scenes 数组包含至少 3 个场景",
+      "每个 scene 含 description/duration 字段",
+      "totalDuration 接近输入 duration 值"
+    ],
+    "expectedKeyFields": ["scenes", "totalDuration"],
+    "source": "sally",
+    "tags": ["step3b", "lifestyle", "storyboard"]
+  },
+  {
+    "id": "sally-024",
+    "specialistId": "VideoAgent",
+    "mode": "storyboard",
+    "input": {
+      "topic": "新手化妆入门教程",
+      "duration": 90,
+      "platform": "xiaohongshu"
+    },
+    "expectedOutputPattern": {
+      "scenes": "array",
+      "totalDuration": "number"
+    },
+    "criteria": [
+      "scenes 包含至少 4 个场景",
+      "scene 包含镜头角度或画面描述",
+      "整体结构符合美妆教程节奏"
+    ],
+    "expectedKeyFields": ["scenes", "totalDuration"],
+    "source": "sally",
+    "tags": ["step3b", "beauty", "tutorial"]
+  },
+  {
+    "id": "sally-025",
+    "specialistId": "VideoAgent",
+    "mode": "analysis",
+    "input": {
+      "lastCopy": "减肥这件事，99%的人都做错了方向。我见过太多人每天跑步两小时，结果三个月体重纹丝不动。今天我来告诉你，真正让你瘦下来的不是运动，是这个被大家忽视的关键。"
+    },
+    "expectedOutputPattern": {
+      "analysis": "object",
+      "insights": "array"
+    },
+    "criteria": [
+      "analysis 包含 elements/structure/hookType/viralFormula 字段",
+      "insights 至少 3 条，每条有 element/explanation/impact",
+      "hookType 识别正确"
+    ],
+    "expectedKeyFields": ["analysis", "insights"],
+    "source": "sally",
+    "tags": ["step3b", "health", "analysis"]
+  },
+  {
+    "id": "sally-026",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "beauty",
+      "targetAudience": "25-35岁都市女性",
+      "uniqueValue": "成分党护肤科普"
+    },
+    "expectedOutputPattern": {
+      "positioning": "object",
+      "contentPillars": "array"
+    },
+    "criteria": [
+      "positioning 包含核心差异化描述",
+      "contentPillars 列出至少 3 个内容支柱",
+      "定位语言简洁有力，10 字以内可概括"
+    ],
+    "expectedKeyFields": ["positioning", "contentPillars"],
+    "source": "sally",
+    "tags": ["step2", "beauty", "positioning"]
+  },
+  {
+    "id": "sally-027",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "fitness",
+      "targetAudience": "30-45岁上班族",
+      "uniqueValue": "碎片时间健身方案"
+    },
+    "expectedOutputPattern": {
+      "positioning": "object",
+      "contentPillars": "array"
+    },
+    "criteria": [
+      "positioning 明确目标人群",
+      "contentPillars 含 3+ 个具体方向",
+      "差异化卖点清晰可量化"
+    ],
+    "expectedKeyFields": ["positioning", "contentPillars"],
+    "source": "sally",
+    "tags": ["step2", "fitness", "positioning"]
+  },
+  {
+    "id": "sally-028",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "food",
+      "targetAudience": "18-28岁学生/年轻人",
+      "uniqueValue": "10元以内平价美食探店"
+    },
+    "expectedOutputPattern": {
+      "positioning": "object",
+      "contentPillars": "array"
+    },
+    "criteria": [
+      "positioning 体现低价高性价比核心卖点",
+      "contentPillars 至少 3 个",
+      "受众描述精准聚焦"
+    ],
+    "expectedKeyFields": ["positioning", "contentPillars"],
+    "source": "sally",
+    "tags": ["step2", "food", "positioning"]
+  },
+  {
+    "id": "sally-029",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "0",
+      "industry": "education",
+      "platform": "douyin"
+    },
+    "expectedOutputPattern": {
+      "currentAnalysis": "string",
+      "ladder": "array",
+      "revenueStructure": "object"
+    },
+    "criteria": [
+      "ladder 恰好 3 个阶段，每个含 stage/revenue/action",
+      "revenueStructure.secondary 恰好 2 个收入来源",
+      "action 包含可量化目标"
+    ],
+    "expectedKeyFields": ["currentAnalysis", "ladder", "revenueStructure"],
+    "source": "sally",
+    "tags": ["step6", "education", "monetization"]
+  },
+  {
+    "id": "sally-030",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "5000",
+      "industry": "beauty",
+      "platform": "xiaohongshu"
+    },
+    "expectedOutputPattern": {
+      "currentAnalysis": "string",
+      "ladder": "array",
+      "successCases": "array"
+    },
+    "criteria": [
+      "currentAnalysis 描述 5000 元月收入现状",
+      "ladder 3 阶段路线图",
+      "successCases 含 2 个美妆类案例"
+    ],
+    "expectedKeyFields": ["currentAnalysis", "ladder", "successCases"],
+    "source": "sally",
+    "tags": ["step6", "beauty", "monetization"]
+  }
+]

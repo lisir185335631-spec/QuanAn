@@ -92,6 +92,7 @@ export default defineConfig({
       'tests/unit/**/*.{test.ts,test.tsx}',
       'tests/integration/**/*.test.ts',
       'tests/e2e/**/*.test.ts',
+      'tests/fixtures/**/__tests__/**/*.test.ts',
       'apps/api/src/**/__tests__/**/*.test.ts',
     ],
     passWithNoTests: true,
