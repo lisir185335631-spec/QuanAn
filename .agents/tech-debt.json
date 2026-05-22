@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-21T14:51:03",
+  "last_updated": "2026-05-23T01:23:43",
   "items": [
     {
       "id": "TD-001",
@@ -2182,6 +2182,20 @@
         "tests/e2e/prd25-content-tools-flow.test.ts",
         "tests/e2e/prd25-visual-baseline.test.ts"
       ]
+    },
+    {
+      "id": "TD-103",
+      "category": "lint-quality",
+      "title": "apps/admin 134 lint problems · PRD-26 累积 + ESLint strict 暴露(jsx-a11y + @typescript-eslint/no-unsafe-*)",
+      "discovered_at": "2026-05-23",
+      "discovered_by": "Opus audit PRD-28 US-001",
+      "severity": "medium",
+      "status": "open",
+      "evidence": "pnpm lint --max-warnings=0 from ROOT scope: apps/admin ✖ 134 problems (95 errors + 48 warnings · 含 jsx-a11y/no-static-element-interactions + click-events-have-key-events + anchor-is-valid + @typescript-eslint/no-unsafe-assignment/no-unsafe-member-access/no-unsafe-return 等)· apps/api/web/packages 全 lint Done",
+      "root_cause": "PRD-26 admin UI MVP polish 期间 jsx-a11y 规则 + TS @typescript-eslint/no-unsafe-* 错误未审计 · PRD-27 收官只跑 typecheck + vitest 没跑 ROOT lint · 累积到 PRD-28 启动 ralph US-001 validator 加 'pnpm lint --max-warnings=0' 才暴露",
+      "scheduled_fix_in": "PRD-29+ admin lint cleanup story · 或 PRR 上线前修(估时 1-2 day 修 134 problems · 主要是加 keyboard listener + 替换 div 为 button + ?? '' default 等机械改)",
+      "audit_exemption": "PRD-28 US-001 approve 时豁免 · US-001 commit a1bb6f1 改动文件全在 tests/judge/* + tests/setup.ts + .env.example + vitest.judge.config.ts + package.json + pnpm-lock.yaml + progress.txt(grep verify: git show a1bb6f1 --stat 0 命中 apps/admin/apps/api)· lint 失败 134 problems 完全 pre-existing apps/admin · 实测 ROOT vitest 1925 passed | 118 skipped 精准 baseline 维持 + typecheck 6 ws 0 error 零回归 · 不阻塞 US-001",
+      "additional_finding": "Validator iter 1 manifest 误把 'apps/admin 95 problems' 写成 'apps/api 95 problems' (manifest.json notes 字面错)· 实际 lint Done in apps/api · 仅 apps/admin fail · Validator artifact 信息精度有 gap · 留 PRD-29+ Validator template 修"
     }
   ]
 }
