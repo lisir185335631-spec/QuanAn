@@ -225,7 +225,18 @@ export default function Step3() {
     },
   });
 
-  const isLoading = generateMutation.isPending || isSaving;
+  // AC-4: trpc.step3.optimizeSection mutation
+  const optimizeMutation = trpc.step3.optimizeSection.useMutation({
+    onSuccess: () => {
+      void dbQuery.refetch();
+      toast.success('已智能优化');
+    },
+    onError: (err) => {
+      toast.error(err.message || '智能优化失败，请重试');
+    },
+  });
+
+  const isLoading = generateMutation.isPending || optimizeMutation.isPending || isSaving;
 
   // AC-5: adapt backend result with stub parsing + mock fallback
   // PRD-29.5 · default 用 mock data render(真 1:1 复刻 · 跟 aiipznt sally 默认看到内容一致)
@@ -243,12 +254,19 @@ export default function Step3() {
     generateMutation.mutate({ personalInfo, platform, audience, accountStatus });
   }
 
+  // AC-4: optimize button handler
+  function handleOptimize() {
+    if (!canBulkActions || isLoading) return;
+    optimizeMutation.mutate({ currentResult: generated as unknown as Record<string, unknown> });
+  }
+
   return (
     <main className="flex-1 container py-8 space-y-8">
       {/* 1. Step3PageHeader · canBulkActions controls 3 toolbar buttons */}
       <Step3PageHeader
         industry={industry}
         canBulkActions={canBulkActions}
+        onOptimize={handleOptimize}
       />
 
       {/* 2. Step3Form */}

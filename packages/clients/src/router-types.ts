@@ -551,6 +551,13 @@ const _shadowRouter = _t.router({
         ok: true,
         data: { stepKey: 'step3', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
       })),
+    optimizeSection: _t.procedure
+      .input((x: unknown) => x as { currentResult: Record<string, unknown> })
+      .mutation((): { ok: boolean; data: NonNullable<StepDataOutput>; isFallback: boolean } => ({
+        ok: true,
+        data: { stepKey: 'step3', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
+        isFallback: false,
+      })),
   }),
   stepData: _t.router({
     get: _t.procedure
