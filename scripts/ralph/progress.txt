@@ -5,6 +5,46 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-23 16:45 - US-001c [PRD-29] · cross-PRD verify · verify-prd-27 + e2e smoke 确认金色 token 无跨 PRD 回归
+- 实现了什么:
+  - 无代码变更 · 纯验证 story
+  - 验证 PRD-29 US-001a(金色 OKLCH token 切换) + US-001b(4 共享 component) 切金色后跨 PRD 零回归
+- 验证结果:
+  - AC-1: bash scripts/verify-prd-27.sh ✓ (33/33 pass · 选 prd-27 替代 prd-25 · AC 允许 或)
+  - AC-2: bash scripts/verify-prd-28.sh ✓ (43/43 pass · PRD-28 evaluation 完整化全通过)
+  - AC-3: pnpm test:e2e prd21~prd25 visual-baseline.spec.ts --project=chromium · 46/47 pass · 1 fail=pre-existing(见 AC-4)
+  - AC-4: visual baseline 0 增量 fail ✓ · 1 fail(prd24-evolution.png 900px vs 1215px)经 git stash 验证为 PRD-29 前就存在的 pre-existing issue · PRD-29 color token 切换未引入任何新 visual 回归
+  - AC-5: playwright 抽样 5 page(/ /step/3 /private-domain /trending /admin) ✓ · 5/5 zero console error · admin(port 5174) 也 pass
+  - AC-6: pnpm typecheck 6 ws 全 Done 0 error ✓
+- 更改的文件:
+  - scripts/ralph/progress.txt (追加本记录)
+- **未来迭代的学习:**
+  - prd24-evolution baseline 是 pre-existing issue(page 900→1215px · 与 CSS color change 无关) · 已有 TD 记录 · 不要在 PRD-29 fix
+  - verify-prd-25.sh 有 6 pre-existing LLM wire-up 失败(voiceChat/diagnosisAgent/smartRecommend) · 选 verify-prd-27 替代(0 fail) · 符合 AC 的 "或" 条件
+  - cross-PRD verify story 策略: 跑 verify-prd-N.sh(快 grep-based) + visual baseline subset + 5 page smoke · 不需要跑全 68 spec(太慢 · LLM-heavy tests 不受 CSS change 影响)
+---
+
+## 2026-05-23 15:15 - US-001a [PRD-29] · globals.css :root + .dark 切 aiipznt 金色 OKLCH(168 vars)
+- 实现了什么:
+  - apps/web/src/styles/globals.css: 替换 :root block(原 HSL 12 vars → aiipznt OKLCH 168 vars) · 新增 .dark block(同 :root · aiipznt 是 dark-only site) · 保留 data-grid-bg + animate-ping-primary utilities
+  - 168 vars 来源: docs/research/aiipznt/step-3/deeper/root-css-variables.json
+  - 关键切换: --primary: oklch(82% .14 85) / --background: oklch(7% .005 75) / --accent: oklch(72% .13 85) 金色系 · 无紫色残留
+- 验证结果:
+  - AC-1: :root 168 OKLCH vars ✓(分 4 组: design tokens / chart / sidebar / color palette + tw utils)
+  - AC-2: .dark 同 :root 完全同步 ✓(110 oklch occurrences in file)
+  - AC-3: cd apps/web && pnpm typecheck 0 error ✓(CSS change 不影响 TS)
+  - AC-4: pnpm lint 0 新增 problem ✓(ESLint 只扫 .ts/.tsx · CSS 文件不受影响)
+  - AC-5: pnpm test 1977 passed · 15 pre-existing adminAuditLog failures(从 main 继承 · CSS 无关) ✓ 零回归
+  - AC-6: browser smoke · localhost:5173 · Header logo 可见 · FUNCTION MATRIX 15 卡渲染 · primary 色 golden/amber(非紫) ✓
+  - AC-7: typecheck passes ✓
+- 更改的文件:
+  - apps/web/src/styles/globals.css (351 insertions / 21 deletions)
+- **未来迭代的学习:**
+  - aiipznt OKLCH 变量源: root-css-variables.json(168 vars flat object) + dark-css-variables.json(nested {vars:{}, isDarkMode:true} · 值相同)
+  - 168 vars 包含 shadcn/ui tokens + Tailwind v4 内部 vars(--tw-*, --text-*, --container-*) · 在 Tailwind v3 项目里全放 :root 是安全的 · tw 内部 vars 是 fallback
+  - .dark block 必须与 :root 完全相同 · aiipznt 是 dark-only · 不允许 .dark 留 HSL 紫色
+---
+
 ## 2026-05-23 05:10 - US-007 [PRD-28] · inter-rater agreement subset
 - 实现了什么:
   - apps/api/src/lib/evaluation/inter-rater.ts: mulberry32 PRNG + hashString + listInterRaterSubset + cohenKappa + pearsonCorrelation + interpretKappa
@@ -5468,3 +5508,35 @@ audit-artifacts: PASS (exit_code=0 + manifest.zero_regression=PASS)
   - `grep -c ... || echo 0` 在 0 matches 时输出 "0\n0" (grep 的 count 输出 + echo) · 命令替换得到两行 · `[ "0\n0" -eq 0 ]` 报 integer expression expected · 改用 `! grep -q` 检测不存在
   - prd-retro 收官 US 里的 verify script 要用 bash 测试而非 zsh eval 测试 · 环境差异大
 ---
+
+--- [RALPH] Iteration 11 ended: US-008 (26分钟 53秒) ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-23 14:58 ---
+
+--- [RALPH] Iteration 1 started: US-001a at 2026-05-23 15:04 ---
+
+--- [RALPH] Iteration 1 ended: US-001a (25分钟 46秒) ---
+
+--- [RALPH] Iteration 2 started: US-001b at 2026-05-23 15:30 ---
+
+## 2026-05-23 15:33 - US-001b
+- 新建 4 个共享 component 供 PRD-29 US-002~014 复用
+- 更改的文件:
+  - apps/web/src/components/icons/aiipznt-icons.tsx: 新建 · 重导 Flame/Sparkles + FlameIcon/SparkleIcon 别名(text-primary/80 h-5 w-5)
+  - apps/web/src/components/ui/sub-card.tsx: 新建 · SubCardProps + glass-card style + variant=default|highlighted(border-primary/40)
+  - apps/web/src/components/ui/golden-highlight.tsx: 新建 · 内联金色 span(text-primary font-bold)
+  - apps/web/src/lib/constants/platforms.ts: 未动 · grep verify 5 emoji 全部正确(📱/📕/📺/🎬/📺)
+- 质量检查: typecheck 0 errors · vitest 407 tests 全 pass(50 files)
+- **未来迭代的学习:**
+  - FlameIcon/SparkleIcon 浅金色用 text-primary/80 而非 text-yellow-500 · 保持 design token 一致
+  - aiipznt-icons.tsx 同时 export 原始 Flame/Sparkles 和项目别名 · 下游可按需选用
+  - SubCard variant=highlighted 用 border-primary/40 · 与 GlassCard 基础 border-border/40 有明确区分
+---
+
+--- [RALPH] Iteration 2 ended: US-001b (7分钟 6秒) ---
+
+--- [RALPH] Iteration 3 started: US-001c at 2026-05-23 15:37 ---
+
+--- [RALPH] Iteration 4 started: US-001c at 2026-05-23 16:07 ---
+
+--- [RALPH] Iteration 5 started: US-001c at 2026-05-23 16:37 ---
