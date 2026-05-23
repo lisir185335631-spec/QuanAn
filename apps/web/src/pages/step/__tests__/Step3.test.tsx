@@ -1,8 +1,10 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import Step3 from '@/pages/step/Step3';
+
+const mockGenerateMutate = vi.fn();
 
 vi.mock('@/lib/trpc', () => ({
   trpc: {
@@ -13,6 +15,18 @@ vi.mock('@/lib/trpc', () => ({
     stepData: {
       get: { useQuery: () => ({ data: null, isLoading: false, isError: false, error: null, refetch: vi.fn() }) },
       save: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+    step3: {
+      generatePackage: {
+        useMutation: (opts?: { onSuccess?: () => void; onError?: (err: { message: string }) => void }) => ({
+          mutate: (input: unknown) => {
+            mockGenerateMutate(input);
+            // simulate success for basic tests
+            opts?.onSuccess?.();
+          },
+          isPending: false,
+        }),
+      },
     },
   },
 }));
@@ -25,15 +39,15 @@ function renderStep3() {
   );
 }
 
-describe('Step3 integration', () => {
-  // ── 9 sub-component presence ──────────────────────────────────────────────
+describe('Step3 integration (US-010b)', () => {
+  // ── 6 H3 sections presence ────────────────────────────────────────────────
 
   it('renders Step3PageHeader H1 with "账号包装方案"', () => {
     renderStep3();
     expect(screen.getByRole('heading', { level: 1, name: /账号包装方案/ })).toBeInTheDocument();
   });
 
-  it('renders hardcoded industry "美业" in header subtitle', () => {
+  it('renders default industry "美业" in header subtitle (no step1 data)', () => {
     renderStep3();
     expect(screen.getByText('美业')).toBeInTheDocument();
   });
@@ -43,7 +57,7 @@ describe('Step3 integration', () => {
     expect(screen.getByText('生成账号包装方案')).toBeInTheDocument();
   });
 
-  it('renders Step3SectionDivider H2 "账号包装方案"', () => {
+  it('renders Step3SectionDivider H2', () => {
     renderStep3();
     expect(screen.getByRole('heading', { level: 2, name: /账号包装方案/ })).toBeInTheDocument();
   });
@@ -78,9 +92,9 @@ describe('Step3 integration', () => {
     expect(screen.getByRole('heading', { level: 3, name: /整体包装策略/ })).toBeInTheDocument();
   });
 
-  // ── AC-4: all 6 H3 sections always render (no conditional skip) ───────────
+  // ── AC-4: all 6 H3 sections always render simultaneously ─────────────────
 
-  it('renders all 6 H3 section headings simultaneously without any result data', () => {
+  it('renders all 6 H3 section headings simultaneously in default state (empty data)', () => {
     renderStep3();
     const h3Headings = screen.getAllByRole('heading', { level: 3 });
     const h3Texts = h3Headings.map((h) => h.textContent ?? '');
@@ -92,7 +106,16 @@ describe('Step3 integration', () => {
     expect(h3Texts.some((t) => /整体包装策略/.test(t))).toBe(true);
   });
 
-  // ── AC-3: form basic interactions ────────────────────────────────────────
+  // ── empty state: canBulkActions=false when no data ───────────────────────
+
+  it('toolbar bulk action buttons are disabled when no generated data (empty state)', () => {
+    renderStep3();
+    expect(screen.getByRole('button', { name: /智能优化/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /一键重新生成/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /复制全部/ })).toBeDisabled();
+  });
+
+  // ── form interactions ────────────────────────────────────────────────────
 
   it('CTA button is disabled when personalInfo is empty', () => {
     renderStep3();
@@ -103,7 +126,6 @@ describe('Step3 integration', () => {
     renderStep3();
     const textarea = screen.getByPlaceholderText(/详细描述你的个人背景/);
     fireEvent.change(textarea, { target: { value: '我是美容师' } });
-    // click 抖音 platform button
     const platformBtns = screen.getAllByRole('button').filter(
       (b) => b.textContent?.includes('抖音') && !b.textContent?.includes('副'),
     );
@@ -111,12 +133,31 @@ describe('Step3 integration', () => {
     expect(screen.getByText('生成账号包装方案').closest('button')).not.toBeDisabled();
   });
 
-  // ── AC-5: canBulkActions hardcoded false ──────────────────────────────────
+  // ── AC-1: form submit calls generatePackage mutation ─────────────────────
 
-  it('toolbar bulk action buttons are disabled (canBulkActions=false)', () => {
+  it('submitting form calls trpc.step3.generatePackage.mutate', async () => {
+    mockGenerateMutate.mockClear();
     renderStep3();
-    expect(screen.getByRole('button', { name: /智能优化/ })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /一键重新生成/ })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /复制全部/ })).toBeDisabled();
+    const textarea = screen.getByPlaceholderText(/详细描述你的个人背景/);
+    fireEvent.change(textarea, { target: { value: '我是10年经验美容师' } });
+    const platformBtns = screen.getAllByRole('button').filter(
+      (b) => b.textContent?.includes('抖音') && !b.textContent?.includes('副'),
+    );
+    if (platformBtns[0]) fireEvent.click(platformBtns[0]);
+    const submitBtn = screen.getByText('生成账号包装方案').closest('button');
+    if (submitBtn) fireEvent.click(submitBtn);
+    await waitFor(() => {
+      expect(mockGenerateMutate).toHaveBeenCalledWith(
+        expect.objectContaining({ personalInfo: '我是10年经验美容师' }),
+      );
+    });
+  });
+
+  // ── AC-4: industry from step1 (default '美业' when no step1 data) ─────────
+
+  it('uses "美业" as default industry when step1 has no industry', () => {
+    renderStep3();
+    // GoldenHighlight renders industry text
+    expect(screen.getByText('美业')).toBeInTheDocument();
   });
 });

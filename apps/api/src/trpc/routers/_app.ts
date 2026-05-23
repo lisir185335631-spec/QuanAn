@@ -22,6 +22,7 @@ import { monetizationRouter } from '@/trpc/routers/app/monetization';
 import { myTopicsRouter } from '@/trpc/routers/app/myTopics';
 import { presentStylesRouter } from '@/trpc/routers/app/presentStyles';
 import { privateDomainRouter } from '@/trpc/routers/app/privateDomain';
+import { step3Router } from '@/trpc/routers/app/step3';
 import { stepDataRouter } from '@/trpc/routers/app/stepData';
 import { sttRouter } from '@/trpc/routers/app/stt';
 import { trendingRouter } from '@/trpc/routers/app/trending';
@@ -38,6 +39,7 @@ export const appRouter = router({
   dailyTasks: dailyTasksRouter,
   evolution: evolutionRouter,
   ipAccounts: ipAccountsRouter,
+  step3: step3Router,
   stepData: stepDataRouter,
   stt: sttRouter,
   tts: ttsRouter,

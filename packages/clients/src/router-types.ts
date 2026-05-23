@@ -541,6 +541,17 @@ const _shadowRouter = _t.router({
         isFallback: false,
       })),
   }),
+  step3: _t.router({
+    generatePackage: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { personalInfo: string; platform: string; audience?: string; accountStatus?: string },
+      )
+      .mutation((): { ok: boolean; data: NonNullable<StepDataOutput> } => ({
+        ok: true,
+        data: { stepKey: 'step3', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
+      })),
+  }),
   stepData: _t.router({
     get: _t.procedure
       .input((x: unknown) => x as { stepKey: string })
