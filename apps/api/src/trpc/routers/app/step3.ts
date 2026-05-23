@@ -26,6 +26,7 @@ const generatePackageInput = z.object({
   platform: z.string().min(1).max(64),
   audience: z.string().max(500).optional(),
   accountStatus: z.string().max(500).optional(),
+  force: z.boolean().optional(),
 });
 
 const optimizeSectionInput = z.object({

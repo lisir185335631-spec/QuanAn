@@ -212,15 +212,18 @@ export default function Step3() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSaving]);
 
+  const isForceRegenerateRef = useRef(false);
+
   // AC-1: trpc.step3.generatePackage mutation
   const generateMutation = trpc.step3.generatePackage.useMutation({
     onSuccess: () => {
-      // AC-2: persist form inputs via useStepData
       save({ personalInfo, platform, audience, accountStatus });
       void dbQuery.refetch();
-      toast.success('生成完成');
+      toast.success(isForceRegenerateRef.current ? '已重新生成全部' : '生成完成');
+      isForceRegenerateRef.current = false;
     },
     onError: (err) => {
+      isForceRegenerateRef.current = false;
       toast.error(err.message || '生成失败，请重试');
     },
   });
@@ -254,6 +257,13 @@ export default function Step3() {
     generateMutation.mutate({ personalInfo, platform, audience, accountStatus });
   }
 
+  // AC-2 + AC-3: shared handler for toolbar "一键重新生成" + form副 button
+  function handleRegenerateAll() {
+    if (isLoading || !personalInfo.trim() || !platform) return;
+    isForceRegenerateRef.current = true;
+    generateMutation.mutate({ personalInfo, platform, audience, accountStatus, force: true });
+  }
+
   // AC-4: optimize button handler
   function handleOptimize() {
     if (!canBulkActions || isLoading) return;
@@ -267,6 +277,7 @@ export default function Step3() {
         industry={industry}
         canBulkActions={canBulkActions}
         onOptimize={handleOptimize}
+        onRegenerateAll={handleRegenerateAll}
       />
 
       {/* 2. Step3Form */}
@@ -280,6 +291,7 @@ export default function Step3() {
         accountStatus={accountStatus}
         onAccountStatusChange={setAccountStatus}
         onSubmit={handleSubmit}
+        onRegenerate={handleRegenerateAll}
         isLoading={isLoading}
         isDisabled={!personalInfo.trim() || !platform || isLoading}
       />

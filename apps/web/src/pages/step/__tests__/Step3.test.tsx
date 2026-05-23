@@ -21,11 +21,13 @@ vi.mock('@/lib/trpc', () => ({
         useMutation: (opts?: { onSuccess?: () => void; onError?: (err: { message: string }) => void }) => ({
           mutate: (input: unknown) => {
             mockGenerateMutate(input);
-            // simulate success for basic tests
             opts?.onSuccess?.();
           },
           isPending: false,
         }),
+      },
+      optimizeSection: {
+        useMutation: () => ({ mutate: vi.fn(), isPending: false }),
       },
     },
   },

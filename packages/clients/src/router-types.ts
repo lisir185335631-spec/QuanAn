@@ -545,7 +545,7 @@ const _shadowRouter = _t.router({
     generatePackage: _t.procedure
       .input(
         (x: unknown) =>
-          x as { personalInfo: string; platform: string; audience?: string; accountStatus?: string },
+          x as { personalInfo: string; platform: string; audience?: string; accountStatus?: string; force?: boolean },
       )
       .mutation((): { ok: boolean; data: NonNullable<StepDataOutput> } => ({
         ok: true,
