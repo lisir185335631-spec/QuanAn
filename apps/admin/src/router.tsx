@@ -33,6 +33,9 @@ const EvaluationPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => imp
 const EvaluationDetailPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationDetailPage'));
 const InterRaterPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/InterRaterPage'));
 
+// PRD-29.6 LLM Config
+const LlmConfigPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/llmConfig/LlmConfigPage'));
+
 // P2 高级
 const AbExperimentsPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/abExperiments/AbExperimentsPage'));
 const ExperimentDetailPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/abExperiments/ExperimentDetailPage'));
@@ -81,6 +84,9 @@ export function AdminRoutes() {
           <Route path="constants" element={<ConstantsPage />} />
           <Route path="knowledge" element={<KnowledgePlaceholder />} />
           <Route path="feature-flags" element={<FeatureFlagsPage />} />
+
+          {/* PRD-29.6 LLM Config */}
+          <Route path="llm-config" element={<LlmConfigPage />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/login" replace />} />

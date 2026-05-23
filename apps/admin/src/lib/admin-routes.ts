@@ -202,6 +202,17 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     group: 'p2-advanced',
     domainKey: 'feature_flags',
   },
+  // PRD-29.6 US-001 · LLM API Key 配置
+  {
+    path: '/admin/llm-config',
+    label: 'LLM 配置',
+    emoji: '🔑',
+    prd: 29,
+    requiredRole: 'super_admin',
+    summary: 'LLM API Key 管理 · Anthropic + OpenAI · 加密存储 · 双审批 · super_admin only',
+    group: 'p2-advanced',
+    domainKey: 'llm_config',
+  },
 ];
 
 export const ROUTE_GROUP_LABELS: Record<AdminRouteItem['group'], string> = {
