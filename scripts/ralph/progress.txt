@@ -5,6 +5,53 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-24 00:33 - US-002 [PRD-29.6] · llm-gateway SystemConfig 优先 + 5min cache + invalidate hook
+- 实现了什么:
+  - apps/api/src/workers/llm-gateway/index.ts: 加 loadLlmKey(provider) · prisma.systemConfig.findUnique(LLM_ANTHROPIC_API_KEY / LLM_OPENAI_API_KEY) → string | undefined · fallback process.env · 5min cache(Map<provider, {value, expiresAt}>) · export invalidateLlmKeyCache(provider?) · getAnthropicClient/getOpenAIClient 改 async + await loadLlmKey · _callAnthropic/_callOpenAI await client · AC-5 fail-fast 改 await loadLlmKey
+  - apps/api/src/services/admin/feature-flag/feature-flag.service.ts: import invalidateLlmKeyCache · _updateSystemConfigInTx 写入后 invalidateLlmKeyCache('anthropic'/'openai') · admin 改 LLM key 时自动 clear gateway cache
+  - apps/api/src/workers/llm-gateway/__tests__/verify-prd-29.6-llm-key.test.ts: 新建 · 11 tests · loadLlmKey DB优先 + env fallback + DB异常fallback + cache命中 + per-provider独立cache + invalidate(单provider/全清)
+- 验证结果:
+  - AC-1: loadLlmKey(provider) · DB findUnique → fallback env ✓
+  - AC-2: getAnthropicClient/getOpenAIClient 改 async + await loadLlmKey · 不再直接读 process.env ✓
+  - AC-3: 5min cache(LLM_KEY_CACHE_TTL_MS=5*60*1000) + invalidateLlmKeyCache · _updateSystemConfigInTx invalidate hook ✓
+  - AC-4: 11/11 vitest pass · DB优先 + env fallback + cache + invalidate ✓
+  - AC-5: verify-prd-27.sh 33/33 PASS · verify-prd-25.sh 6失败为pre-existing(与本次无关) · 0 新增回归 ✓
+  - AC-6/AC-7: pnpm typecheck 0 error ✓
+- 更改的文件:
+  - apps/api/src/workers/llm-gateway/index.ts (loadLlmKey + cache + invalidate + async clients)
+  - apps/api/src/services/admin/feature-flag/feature-flag.service.ts (invalidate hook)
+  - apps/api/src/workers/llm-gateway/__tests__/verify-prd-29.6-llm-key.test.ts (新建 · 11 tests)
+- **未来迭代的学习:**
+  - loadLlmKey DB→env fallback 顺序: prisma.findUnique → typeof raw === 'string' && raw.length > 0 → process.env[key] ?? undefined(三层保险 · 空字符串视为未设置)
+  - 5min cache(getAnthropicClient lazy cached) + invalidate 时同步 null client · 否则旧 client 持有旧 key 继续使用
+  - feature-flag.service._updateSystemConfigInTx import llm-gateway/index · 测试用 vi.resetAllMocks(不是 clearAllMocks) · 防 mockResolvedValueOnce 队列跨测试泄漏
+---
+
+## 2026-05-23 22:53 - US-001 [PRD-29.6] · admin /admin/llm-config page
+- 实现了什么:
+  - apps/admin/src/pages/llmConfig/LlmConfigPage.tsx: 新建 · 2 Input(type=password) + 各 Save button · Anthropic API Key + OpenAI API Key · listSystemConfig wire + masked display(sk-ant-***xxx pattern) + 已设置/未设置 状态 indicator(绿点/灰点) · updateSystemConfig Save 写入(走 _updateSystemConfigInTx 自动加密)
+  - apps/admin/src/pages/llmConfig/__tests__/LlmConfigPage.test.tsx: 新建 · 9 tests(render + 2 Save buttons + labels + type=password + masked + 已设置 + 未设置 + mutate call)
+  - apps/admin/src/router.tsx: 加 lazy LlmConfigPage import + /admin/llm-config Route
+  - apps/admin/src/lib/admin-routes.ts: 加 llm-config 条目 · label='LLM 配置' · emoji='🔑' · group=p2-advanced · requiredRole=super_admin
+- 验证结果:
+  - AC-1~3: LlmConfigPage 2 Input + 各 Save + listSystemConfig/updateSystemConfig wire ✓
+  - AC-4: router.tsx 路由 + admin-routes.ts 侧边栏 'LLM 配置' ✓
+  - AC-5: _updateSystemConfigInTx 内置 audit log(无需额外代码) ✓
+  - AC-6: 已设置/未设置 indicator(绿点/灰点)+ status-label ✓
+  - AC-7/AC-9: cd apps/admin && pnpm typecheck 0 error ✓
+  - AC-8: vitest 9/9 pass ✓
+  - AC-10: browser 截图 · 页面渲染 + 2 Save buttons + 未设置 indicator ✓
+- 更改的文件:
+  - apps/admin/src/pages/llmConfig/LlmConfigPage.tsx (新建)
+  - apps/admin/src/pages/llmConfig/__tests__/LlmConfigPage.test.tsx (新建)
+  - apps/admin/src/router.tsx (加 lazy import + Route)
+  - apps/admin/src/lib/admin-routes.ts (加 llm-config 条目)
+- **未来迭代的学习:**
+  - admin sidebar 由 admin-routes.ts ADMIN_ROUTES 数组驱动(getAllowedRoutes) · 新增页面只需加 routes.ts 条目 · 不需改 AdminLayout.tsx 模板
+  - updateSystemConfig 接受 configValue: unknown · 直接传 string API key 即可(不需 JSON.stringify)
+  - Record<string, string> 索引访问在 strict mode 返回 string|undefined · 必须用 `?? ''` 兜底
+---
+
 ## 2026-05-23 22:50 - US-014 [PRD-29] · 收官 /goal-verify + /prd-retro + ADR-022 + ROADMAP-PRD-29-35
 - 实现了什么:
   - .agents/verification/prd-29-step-3-foundation.md: 新建 · §0 代码事实层同步 + §1 Goal-backward 7 锚点对账 + §2 决策锁 D-273~D-297 + §3 零回归验证 + §4 结论(全 PASS)
@@ -5937,3 +5984,146 @@ audit-artifacts: PASS (exit_code=0 + manifest.zero_regression=PASS)
 --- [RALPH] Iteration 7 ended: US-013 (49分钟 11秒) ---
 
 --- [RALPH] Iteration 8 started: US-014 at 2026-05-23 21:08 ---
+
+--- [RALPH] Iteration 8 ended: US-014 (19分钟 42秒) ---
+
+--- [RALPH] Iteration 1 started: US-001 at 2026-05-23 22:42 ---
+
+--- [RALPH] Iteration 1 ended: US-001 (1小时 39分钟 37秒) ---
+
+--- [RALPH] Iteration 2 started: US-002 at 2026-05-24 00:22 ---
+
+--- [RALPH] Iteration 2 ended: US-002 (17分钟 33秒) ---
+
+--- [RALPH] Iteration 3 started: US-003 at 2026-05-24 00:39 ---
+
+## 2026-05-24 00:52 - US-003 [PRD-29.6] · optimizeSection mutation + Step3.tsx wire
+- 实现了什么:
+  - apps/api/src/trpc/routers/app/step3.ts: 加 optimizeSection mutation · input { currentResult: z.record(z.unknown()) } · 构建 [智能优化模式] prompt(含 currentResult JSON 摘要 ≤1500 chars) · 调 brandingAgent.execute(mode='packaging') · 同 generatePackage 一样 upsert stepData · output { ok, data, isFallback } · LLM key 未设时 BrandingAgent 返 fallbackTemplate + isFallback=true(AC-3) · 抽取 upsertStepData helper 消除重复代码
+  - packages/clients/src/router-types.ts: step3 router 加 optimizeSection 过程类型 stub
+  - apps/web/src/pages/step/Step3.tsx: 加 optimizeMutation(trpc.step3.optimizeSection.useMutation) · onSuccess: dbQuery.refetch + toast.success('已智能优化') · onError: toast.error · handleOptimize() · isLoading 加 optimizeMutation.isPending · Step3PageHeader onOptimize={handleOptimize}
+  - apps/api/src/trpc/routers/app/__tests__/step3.optimizeSection.test.ts: 新建 · 4 tests · mode=packaging + optimize prompt + isFallback=true + currentResult context in prompt
+- 验证结果:
+  - AC-1: optimizeSection mutation · input/output 类型定义 ✓
+  - AC-2: brandingAgent.execute(mode='packaging', userInput={...optimize prompt}) ✓
+  - AC-3: fallback 由 BrandingAgent.fallbackTemplate.packaging 处理 · isFallback=true 返回前端 ✓ 不阻塞
+  - AC-4: Step3.tsx toolbar 智能优化 button onClick → trpc.step3.optimizeSection.useMutation ✓
+  - AC-5: sonner toast '已智能优化' · 失败 toast err.message ✓
+  - AC-6: pnpm typecheck 6 ws 0 error ✓
+  - AC-7: 4/4 vitest pass ✓
+  - AC-8: typecheck passes ✓
+- 更改的文件:
+  - apps/api/src/trpc/routers/app/step3.ts (optimizeSection mutation + upsertStepData helper)
+  - packages/clients/src/router-types.ts (optimizeSection stub)
+  - apps/web/src/pages/step/Step3.tsx (optimizeMutation + handleOptimize)
+  - apps/api/src/trpc/routers/app/__tests__/step3.optimizeSection.test.ts (新建 · 4 tests)
+- **未来迭代的学习:**
+  - step3Router 里 ctx.prisma 已是 PrismaClient(account-isolation.ts 在事务内传 tx as PrismaClient) · 不需要 Prisma.TransactionClient cast
+  - router-types.ts stub 需手动同步 · 加新 mutation 必须同步加 stub 否则 apps/web typecheck 报 "Property 不存在"
+  - tRPC router 内部 procedure 通过 _def.procedures[name]._def.resolver 访问做单元测试 · 用 getMutation() 包一层防 undefined 类型错误
+---
+
+--- [RALPH] Iteration 3 ended: US-003 (19分钟 49秒) ---
+
+--- [RALPH] Iteration 4 started: US-004 at 2026-05-24 00:59 ---
+
+## 2026-05-24 01:05 - US-004
+- 实现了 generatePackage input 加 force?: boolean · Step3.tsx 双 button 共用 handleRegenerateAll handler · toast '已重新生成全部'
+- 更改的文件:
+  - apps/api/src/trpc/routers/app/step3.ts: generatePackageInput 加 force: z.boolean().optional()
+  - packages/clients/src/router-types.ts: shadow router generatePackage input type 加 force?: boolean
+  - apps/web/src/pages/step/Step3.tsx: 加 isForceRegenerateRef · handleRegenerateAll · onRegenerateAll/onRegenerate 两处 wire
+  - apps/api/src/trpc/routers/app/__tests__/step3.generatePackage.test.ts: 新建 5 条 force flag 集成测试
+  - apps/web/src/pages/step/__tests__/Step3.test.tsx: 补 optimizeSection mock(pre-existing 缺失导致 16 tests 失败)
+- 质量: api typecheck PASS · web typecheck PASS · api vitest 832 passed · web vitest 558 passed
+- **未来迭代的学习:**
+  - router-types.ts 的 shadow router 必须同步 API router 的 input type 变更, 否则 web typecheck 报 unknown property
+  - tRPC mutation 有两种 toast 时用 useRef 追踪 force mode, 不要 fork 两个 useMutation
+  - Step3.test.tsx 的 trpc mock 需覆盖 step3 下所有 useMutation namespace(generatePackage + optimizeSection), 缺一个就整个测试文件崩
+---
+
+--- [RALPH] Iteration 4 ended: US-004 (13分钟 40秒) ---
+
+--- [RALPH] Iteration 5 started: US-005 at 2026-05-24 01:13 ---
+
+## 2026-05-24 01:17 - US-005 [PRD-29.6] · /step/3 复制 button 全 wire
+- 实现了什么:
+  - apps/web/src/pages/step/Step3.tsx: handleCopyAll() · JSON.stringify(generated, null, 2) → navigator.clipboard.writeText → toast.success('已复制全部到剪贴板') + .catch toast.error · onCopyAll={handleCopyAll} 传给 Step3PageHeader
+  - apps/web/src/pages/step/Step3.tsx: canBulkActions 改为 `!isLoading`(去掉 hasRealData 限制 · D-302 锁) · 同时删除 hasRealData const(unused TS-6133)
+  - apps/web/src/pages/step/__tests__/Step3.test.tsx: 更新"toolbar buttons disabled"测试 → 反映 AC-4 新行为(enabled) · 加 beforeEach clipboard mock · 加 AC-6 clipboard test(17/17 pass)
+- 验证结果:
+  - AC-1: handleCopyAll JSON.stringify → clipboard.writeText → toast.success('已复制全部到剪贴板') ✓
+  - AC-2: NicknameCard.tsx handleCopy 仍 wire(PRD-29 US-005 未改) · NicknameCard.test.tsx 20/20 pass ✓
+  - AC-3: IntroCopyPlatformCard.tsx handleCopy 仍 wire · IntroCopyPlatformCard.test.tsx 全 pass ✓
+  - AC-4: canBulkActions = !isLoading · mock 时 3 button enabled · Step3.test.tsx 测试更新到位 ✓
+  - AC-5/AC-7: pnpm --filter @quanan/web typecheck 0 error ✓
+  - AC-6: Step3.test.tsx "toolbar 复制全部 onClick triggers clipboard.writeText" pass ✓ · 17/17 tests pass ✓
+- 更改的文件:
+  - apps/web/src/pages/step/Step3.tsx (handleCopyAll + canBulkActions + onCopyAll wire + rm hasRealData)
+  - apps/web/src/pages/step/__tests__/Step3.test.tsx (update disabled test + beforeEach clipboard + AC-6 test)
+- **未来迭代的学习:**
+  - canBulkActions = hasRealData && !isLoading 让 mock 状态 button disabled · 影响预览/复制体验 · 改为 !isLoading 后 mock 也可 click(D-302 锁)
+  - hasRealData 移除后 TS 严格模式会报 TS6133 unused var error · 必须同步删除
+  - Step3 integration test 中 clipboard mock 要放 beforeEach · 与组件级 test(NicknameCard 等)用同样的 Object.assign(navigator, { clipboard: { writeText: vi.fn() } }) 模式
+---
+
+--- [RALPH] Iteration 5 ended: US-005 (12分钟 32秒) ---
+
+--- [RALPH] Iteration 6 started: US-006 at 2026-05-24 01:25 ---
+
+## 2026-05-24 01:30 - US-006
+- 实现了 /step/3 三个图片生成/查看 button 的 stub toast wire
+- 更改的文件:
+  - apps/web/src/pages/step/Step3.tsx: 新增 handleImageGenStub + onGenerate/onViewImage props 传递给 3 个 section 组件
+  - apps/web/src/pages/step/__tests__/Step3.test.tsx: 新增 vi.hoisted mockToastInfo + 3 个 toast.info 集成测试
+- 质量: typecheck PASS · 20/20 tests PASS
+- **未来迭代的学习:**
+  - vi.hoisted(() => vi.fn()) 是 Vitest 中解决 vi.mock factory 引用 top-level 变量被 hoist 前初始化问题的标准方案
+  - canGenerate/canViewImage 在 US-005 已改为 !isLoading(D-302) · US-006 只需加 handler 即可
+  - 两个 section 共享同一 button label "生成参考图" · 测试用 getAllByRole + index 区分
+---
+
+--- [RALPH] Iteration 6 ended: US-006 (9分钟 53秒) ---
+
+--- [RALPH] Iteration 7 started: US-007 at 2026-05-24 01:35 ---
+
+## 2026-05-24 - US-007 [PRD-29.6] · 收官 verify + e2e + retro + ADR-022 补 + git tag
+- 实现了什么:
+  - scripts/verify-prd-29.6.sh: 新建 · 29 checks · 6 sections(typecheck/lint/vitest/playwright e2e/cross-PRD verify-prd-27/artifacts)
+  - tests/e2e/prd-29.6-step-3-buttons.spec.ts: 新建 · 5 tests(image gen stub toast / 查看图标 / 复制全部 / 智能优化+重新生成 / 6 H3 sections) · dev-login auth bypass + fetch mock · all pass
+  - .agents/retros/prd-29.6-vs-prd-29-retrospective.md: 新建 · 5 维度成绩(layout/字面/interaction/默认内容/真实LLM) · 100% dev 1iter rate · 5 条 Playbook · PRD-30 提示
+  - ADR.md: ADR-022 index 行 + Status 段补 PRD-29.6 实施完成标注
+  - ROADMAP-PRD-29-35.md: 新增 PRD-29.6 SHIPPED section(29/29 checks) + 路线图表格 + PRD-30 双维度提示(真实可用+默认内容)
+  - git tag: prd-29.6-complete · message 'PRD-29.6 /step/3 全 button 真实可用 + admin LLM Config 模块'
+- 验证结果:
+  - AC-1: scripts/verify-prd-29.6.sh 新建 · 6 sections · typecheck/lint/vitest/playwright/cross-PRD/artifacts ✓
+  - AC-2: 29/29 ALL PASS · 0 typecheck error · lint 93(0 新增) · 0 vitest fail · e2e 5/5 pass ✓
+  - AC-3: git tag prd-29.6-complete ✓
+  - AC-4: prd-29.6-vs-prd-29-retrospective.md · 5维度 + 100% 1iter + 5 Playbook ✓
+  - AC-5: ADR.md ADR-022 补 PRD-29.6 实施完成标注(索引行+Status段) ✓
+  - AC-6: ROADMAP-PRD-29-35.md 加 PRD-29.6 SHIPPED + PRD-30 双维度提示 ✓
+  - AC-7: pnpm -r typecheck 6 workspaces 0 error ✓
+  - AC-8: browser 验证 · /step/3 生成参考图 click → toast '图片生成功能需 admin 配置 OpenAI DALL-E key' ✓ · 查看图标 ✓ · 截图保存 ✓
+- 更改的文件:
+  - scripts/verify-prd-29.6.sh (新建 · 29 checks · exit 0)
+  - tests/e2e/prd-29.6-step-3-buttons.spec.ts (新建 · 5 tests)
+  - .agents/retros/prd-29.6-vs-prd-29-retrospective.md (新建)
+  - ADR.md (ADR-022 补注)
+  - ROADMAP-PRD-29-35.md (PRD-29.6 SHIPPED section)
+- **未来迭代的学习:**
+  - verify script lint 检查: ROOT `pnpm lint` 总数对比基线(93)比 per-file eslint 或 per-workspace 更可靠(workspace 路径配置导致 eslint parse error · ROOT turbo 才是真正的 monorepo-wide lint)
+  - playwright e2e fetch mock 用 `page.addInitScript` + `new Function('return ' + fn.toString())()` 可跨 initScript 边界传递 helper function
+  - canBulkActions = !isLoading(D-302) 使 e2e 无需先 trigger mutation · 初始渲染即可测 button 交互 · 简化测试
+  - git tag -a 需要 message(-m) · 否则交互式编辑器 · 脚本化 must use `-a -m "..."`
+---
+
+=== PRD-29.6 完整执行摘要 ===
+  Branch: ralph/prd-29.6-step3-buttons-llm-config
+  总 US: 7(6 dev + 1 retro)
+  dev 1iter rate: 100%(6/6)
+  audit 1iter rate: 100%(6/6)
+  Opus reject: 0
+  verify checks: 29/29 ALL PASS
+  git tag: prd-29.6-complete
+  browser: /step/3 生成参考图/查看图标 stub toast 验证通过
+===================================
