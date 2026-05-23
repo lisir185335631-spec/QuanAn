@@ -4,14 +4,13 @@ import { FlameIcon, SparkleIcon } from '@/components/icons/aiipznt-icons';
 import { Button } from '@/components/ui/button';
 import { GoldenHighlight } from '@/components/ui/golden-highlight';
 import {
-  STEP3_BUTTON_OPTIMIZE,
-  STEP3_HEADER_BUTTON_COPY_ALL,
-  STEP3_HEADER_BUTTON_REGEN_ALL,
+  STEP3_BREADCRUMB,
+  STEP3_CTA_BULK_COPY,
+  STEP3_CTA_BULK_OPTIMIZE,
+  STEP3_CTA_BULK_REGENERATE,
   STEP3_H1,
   STEP3_RESULT_H2,
 } from '@/lib/constants/step3';
-
-const STEP3_BREADCRUMB = 'STEP 03 › 账号包装方案';
 
 export interface Step3PageHeaderProps {
   industry?: string;
@@ -54,7 +53,7 @@ export function Step3PageHeader({
             onClick={onOptimize}
           >
             <Sparkles className="mr-1 h-4 w-4" />
-            {STEP3_BUTTON_OPTIMIZE}
+            {STEP3_CTA_BULK_OPTIMIZE}
           </Button>
           <Button
             variant="outline"
@@ -63,7 +62,7 @@ export function Step3PageHeader({
             onClick={onRegenerateAll}
           >
             <RefreshCw className="mr-1 h-4 w-4" />
-            {STEP3_HEADER_BUTTON_REGEN_ALL}
+            {STEP3_CTA_BULK_REGENERATE}
           </Button>
           <Button
             variant="outline"
@@ -72,7 +71,7 @@ export function Step3PageHeader({
             onClick={onCopyAll}
           >
             <Copy className="mr-1 h-4 w-4" />
-            {STEP3_HEADER_BUTTON_COPY_ALL}
+            {STEP3_CTA_BULK_COPY}
           </Button>
         </div>
       </div>

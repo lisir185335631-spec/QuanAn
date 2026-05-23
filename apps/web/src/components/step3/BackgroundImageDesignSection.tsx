@@ -1,24 +1,16 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
 import { Button } from '@/components/ui/button';
 import { SubCard } from '@/components/ui/sub-card';
-import { STEP3_BUTTON_GEN_IMAGE, STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
+import {
+  STEP3_BACKGROUND_SUB_SECTIONS,
+  STEP3_CTA_GENERATE_REFERENCE,
+  STEP3_OUTPUT_H3_6,
+} from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
 import { PlatformColumnCard, type BgPlatformKey } from './PlatformColumnCard';
 
-// AC-3 字面锁: 8 sub-section 顺序不可改
-const BG_SUB_SECTIONS = [
-  '风格理念',
-  '布局结构',
-  '色调',
-  '主色调',
-  '辅色调',
-  '品牌元素',
-  '字体/icon',
-  '分镜建议',
-] as const;
-
-export type BgSubSectionKey = (typeof BG_SUB_SECTIONS)[number];
+export type BgSubSectionKey = (typeof STEP3_BACKGROUND_SUB_SECTIONS)[number];
 
 // D-288 锁: 只 3 平台, 快手/B站不在背景图区
 const BG_PLATFORM_KEYS: BgPlatformKey[] = ['douyin', 'xiaohongshu', 'shipinhao'];
@@ -87,14 +79,14 @@ export function BackgroundImageDesignSection({
           disabled={content === null || !canGenerate}
           onClick={onGenerate}
         >
-          {STEP3_BUTTON_GEN_IMAGE}
+          {STEP3_CTA_GENERATE_REFERENCE}
         </Button>
       </div>
 
       {/* 8 sub-sections */}
       <SubCard>
         <div className="space-y-4">
-          {BG_SUB_SECTIONS.map((label) => (
+          {STEP3_BACKGROUND_SUB_SECTIONS.map((label) => (
             <SubSection
               key={label}
               label={label}

@@ -1,17 +1,13 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
 import { SubCard } from '@/components/ui/sub-card';
-import { STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
+import {
+  STEP3_EMPTY_PLACEHOLDER,
+  STEP3_OUTPUT_H3_6,
+  STEP3_OVERALL_STRATEGY_SUB_SECTIONS,
+} from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
-// D-290 锁: 4 strategic sub-section 字面顺序不可改
-const OVERALL_STRATEGY_SUB_SECTIONS = [
-  '视觉统一性',
-  '第一印象设计',
-  '内容封面与简介公益策略',
-  '内容创意建议',
-] as const;
-
-export type OverallStrategySubSectionKey = (typeof OVERALL_STRATEGY_SUB_SECTIONS)[number];
+export type OverallStrategySubSectionKey = (typeof STEP3_OVERALL_STRATEGY_SUB_SECTIONS)[number];
 
 export interface OverallStrategyContent {
   视觉统一性?: string;
@@ -59,7 +55,7 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
         </h3>
         <SubCard>
           <p className="text-xs text-muted-foreground text-center py-4">
-            暂无内容 · 点击"生成账号包装方案"开始
+            {STEP3_EMPTY_PLACEHOLDER}
           </p>
         </SubCard>
       </div>
@@ -79,7 +75,7 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
       {/* 4 strategic sub-sections — AC-3: 无 action button */}
       <SubCard>
         <div className="space-y-4">
-          {OVERALL_STRATEGY_SUB_SECTIONS.map((label) => (
+          {STEP3_OVERALL_STRATEGY_SUB_SECTIONS.map((label) => (
             <SubSection
               key={label}
               label={label}

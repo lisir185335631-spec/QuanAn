@@ -3,22 +3,15 @@ import { Eye } from 'lucide-react';
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
 import { Button } from '@/components/ui/button';
 import { SubCard } from '@/components/ui/sub-card';
-import { STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
+import {
+  STEP3_AVATAR_SUB_SECTIONS,
+  STEP3_CTA_VIEW_ICON,
+  STEP3_EMPTY_PLACEHOLDER,
+  STEP3_OUTPUT_H3_6,
+} from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
-// 8 sub-section labels — D-286 锁: 严守字面顺序, 禁止改写
-const AVATAR_SUB_SECTIONS = [
-  '风格',
-  '配色方案',
-  '主色调',
-  '辅色调',
-  '心理学依据',
-  '表情/姿态',
-  '服装/造型',
-  '背景设计',
-] as const;
-
-export type AvatarSubSectionKey = (typeof AVATAR_SUB_SECTIONS)[number];
+export type AvatarSubSectionKey = (typeof STEP3_AVATAR_SUB_SECTIONS)[number];
 
 export interface AvatarDesignContent {
   风格?: string;
@@ -78,7 +71,7 @@ export function AvatarDesignSection({
         </h3>
         <SubCard>
           <p className="text-xs text-muted-foreground text-center py-4">
-            暂无内容 · 点击"生成账号包装方案"开始
+            {STEP3_EMPTY_PLACEHOLDER}
           </p>
         </SubCard>
       </div>
@@ -98,7 +91,7 @@ export function AvatarDesignSection({
       {/* 8 sub-sections */}
       <SubCard>
         <div className="space-y-4">
-          {AVATAR_SUB_SECTIONS.map((label) => (
+          {STEP3_AVATAR_SUB_SECTIONS.map((label) => (
             <SubSection
               key={label}
               label={label}
@@ -131,7 +124,7 @@ export function AvatarDesignSection({
               onClick={onViewImage}
             >
               <Eye className="h-3.5 w-3.5 mr-1" />
-              查看图标
+              {STEP3_CTA_VIEW_ICON}
             </Button>
           </div>
         </div>

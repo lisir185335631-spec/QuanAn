@@ -1,7 +1,7 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
 import { SubCard } from '@/components/ui/sub-card';
 import { Button } from '@/components/ui/button';
-import { STEP3_BUTTON_GEN_IMAGE, STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
+import { STEP3_CTA_GENERATE_REFERENCE, STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
 export interface VideoReferenceCase {
@@ -66,7 +66,7 @@ export function VideoReferenceCaseSection({
           disabled={!canGenerate}
           onClick={onGenerate}
         >
-          {STEP3_BUTTON_GEN_IMAGE}
+          {STEP3_CTA_GENERATE_REFERENCE}
         </Button>
       </div>
 
