@@ -279,6 +279,11 @@ export default function Step3() {
     optimizeMutation.mutate({ currentResult: generated as unknown as Record<string, unknown> });
   }
 
+  // AC-1 (US-006): stub handler for image generation buttons — no real DALL-E integration yet
+  function handleImageGenStub() {
+    toast.info('图片生成功能需 admin 配置 OpenAI DALL-E key · 当前请使用文字描述参考');
+  }
+
   return (
     <main className="flex-1 container py-8 space-y-8">
       {/* 1. Step3PageHeader · canBulkActions controls 3 toolbar buttons */}
@@ -316,6 +321,7 @@ export default function Step3() {
       <VideoReferenceCaseSection
         cases={generated?.videoReferences ?? []}
         canGenerate={canBulkActions}
+        onGenerate={handleImageGenStub}
       />
 
       <NicknameRecommendSection
@@ -326,11 +332,13 @@ export default function Step3() {
       <AvatarDesignSection
         content={generated?.avatar ?? null}
         canViewImage={canBulkActions}
+        onViewImage={handleImageGenStub}
       />
 
       <BackgroundImageDesignSection
         content={generated?.background ?? null}
         canGenerate={canBulkActions}
+        onGenerate={handleImageGenStub}
       />
 
       <IntroCopySection

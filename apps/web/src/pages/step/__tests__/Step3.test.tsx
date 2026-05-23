@@ -4,6 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Step3 from '@/pages/step/Step3';
 
+const mockToastInfo = vi.hoisted(() => vi.fn());
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    info: mockToastInfo,
+  },
+}));
+
 const mockGenerateMutate = vi.fn();
 
 vi.mock('@/lib/trpc', () => ({
@@ -37,6 +46,7 @@ const mockClipboardWriteText = vi.fn().mockResolvedValue(undefined);
 
 beforeEach(() => {
   mockClipboardWriteText.mockClear();
+  mockToastInfo.mockClear();
   Object.assign(navigator, {
     clipboard: { writeText: mockClipboardWriteText },
   });
@@ -183,5 +193,36 @@ describe('Step3 integration (US-010b)', () => {
     renderStep3();
     // GoldenHighlight renders industry text
     expect(screen.getByText('美业')).toBeInTheDocument();
+  });
+});
+
+// ── US-006 AC-1 + AC-4: image gen stub buttons → toast.info ─────────────────
+
+describe('Step3 image gen stub toast (US-006)', () => {
+  it('VideoReferenceCaseSection "生成参考图" click triggers toast.info with DALL-E message', () => {
+    renderStep3();
+    const generateBtns = screen.getAllByRole('button', { name: /生成参考图/ });
+    fireEvent.click(generateBtns[0]!);
+    expect(mockToastInfo).toHaveBeenCalledWith(
+      '图片生成功能需 admin 配置 OpenAI DALL-E key · 当前请使用文字描述参考',
+    );
+  });
+
+  it('AvatarDesignSection "查看图标" click triggers toast.info with DALL-E message', () => {
+    renderStep3();
+    fireEvent.click(screen.getByRole('button', { name: /查看图标/ }));
+    expect(mockToastInfo).toHaveBeenCalledWith(
+      '图片生成功能需 admin 配置 OpenAI DALL-E key · 当前请使用文字描述参考',
+    );
+  });
+
+  it('BackgroundImageDesignSection "生成参考图" click triggers toast.info with DALL-E message', () => {
+    renderStep3();
+    const generateBtns = screen.getAllByRole('button', { name: /生成参考图/ });
+    // BackgroundImageDesignSection is the second "生成参考图" button (after VideoReferenceCaseSection)
+    fireEvent.click(generateBtns[1]!);
+    expect(mockToastInfo).toHaveBeenCalledWith(
+      '图片生成功能需 admin 配置 OpenAI DALL-E key · 当前请使用文字描述参考',
+    );
   });
 });
