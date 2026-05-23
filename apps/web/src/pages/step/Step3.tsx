@@ -7,6 +7,7 @@ import { IntroCopySection, type IntroCopyEntry } from '@/components/step3/IntroC
 import { NicknameRecommendSection, type NicknameEvaluation, type NicknameSelectionStrategy } from '@/components/step3/NicknameRecommendSection';
 import { OverallStrategySection, type OverallStrategyContent } from '@/components/step3/OverallStrategySection';
 import { Step3Form } from '@/components/step3/Step3Form';
+import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
 import { Step3PageHeader, Step3SectionDivider } from '@/components/step3/Step3PageHeader';
 import { VideoReferenceCaseSection, type VideoReferenceCase } from '@/components/step3/VideoReferenceCaseSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
@@ -262,7 +263,10 @@ export default function Step3() {
         isDisabled={!personalInfo.trim() || !platform || isLoading}
       />
 
-      {/* 3. Step3SectionDivider */}
+      {/* 3. Step3LoadingState — inline notification when isLoading=true (AC-3) */}
+      {isLoading && <Step3LoadingState />}
+
+      {/* 4. Step3SectionDivider */}
       <Step3SectionDivider />
 
       {/* 4-9. 6 H3 sections — D-292 锁: always render, skeleton when no data */}
