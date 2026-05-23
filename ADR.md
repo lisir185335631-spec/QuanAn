@@ -32,7 +32,7 @@
 | ADR-019 | **前后端分离 + monorepo workspace**(2026-05-07 v0.2 新增 · 对应 REVIEW P0-3 + P1-7) | — | 工程 | Accepted |
 | ADR-020 | **Approval Gates 高风险操作两步审批**(2026-05-07 v0.2 新增 · 对应 REVIEW P1-4) | — | 安全 | Accepted |
 | ADR-021 | **管理后台独立 first-class 子系统**(2026-05-07 v0.2 新增 · 对应 REVIEW P0-1 根因 + 硬约束#2 #3) | — | 拓扑 | Accepted |
-| ADR-022 | **globals.css 全量 OKLCH token 切换路 α**(2026-05-23 · D4=B 推翻 · PRD-29 US-001a · commit 4dc30f2 · **实施完成**) | PRD-29 | 视觉 token | Accepted |
+| ADR-022 | **globals.css 全量 OKLCH token 切换路 α**(2026-05-23 · D4=B 推翻 · PRD-29 US-001a · commit 4dc30f2 · **实施完成** · PRD-29.6 button wiring 验证) | PRD-29/29.6 | 视觉 token | Accepted |
 
 ---
 
@@ -1784,6 +1784,7 @@ REVIEW 指出三个根因:
 ## ADR-022 · globals.css 全量 OKLCH token 切换路 α(D4=B 推翻)
 
 > **Status** · Accepted · 2026-05-22 · **实施完成 2026-05-23 · commit 4dc30f2 · visual diff 8.03%(form-state vs result-state · 预期内)**
+> **PRD-29.6 补注** · 2026-05-24 · /step/3 全 button wiring 完成 · admin LLM Config 接入 · OKLCH token 系统在 button 交互层得到验证 · 全 5 e2e 用例通过
 > **关联 PRD** · PRD-29 US-001a(Foundation · globals.css)
 > **范畴** · 视觉 token 系统(CSS Custom Properties)
 > **派生自** · PRD-29 D4=B 决策 · 路 α vs 路 β 权衡
