@@ -73,12 +73,12 @@ describe('AdminLayout', () => {
     expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders Sidebar with 17 navigation links', () => {
+  it('renders Sidebar with 18 navigation links', () => {
     renderLayout();
-    // sidebar nav has 17 domain links (PRD-14 US-009 adds /admin/constants)
+    // sidebar nav has 18 domain links (PRD-28 US-006 adds /admin/evaluation)
     const nav = screen.getByRole('navigation', { name: '管理导航' });
     const links = nav.querySelectorAll('a');
-    expect(links.length).toBe(17);
+    expect(links.length).toBe(18);
   });
 
   it('clicking 🔔 opens AuditDrawer', async () => {

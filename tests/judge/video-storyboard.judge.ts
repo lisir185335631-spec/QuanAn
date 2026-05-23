@@ -4,20 +4,12 @@
  * criteria: 5-8 scenes + imagePromptEn 全 ASCII 英文 regex /^[\x20-\x7E\t\n\r]+$/
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -90,16 +82,7 @@ const goldenCaseTravel: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 9, reason: 'scenes 5-8范围✓；index/description/imagePromptEn/duration✓；imagePromptEn全ASCII✓；title非空✓；totalDuration非空✓' },
-      tokens: { prompt: 300, completion: 95, total: 395 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1300,
-      trace_id: 'judge-VideoAgent-storyboard-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('VideoAgent storyboard mode LLM Judge — 美食 + 旅游 2 golden cases', () => {
 
   it('美食探店 golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseFood);

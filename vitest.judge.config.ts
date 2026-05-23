@@ -26,8 +26,10 @@ export default defineConfig({
       '**/node_modules/**',
     ],
     passWithNoTests: true,
-    // AC-13: single judge < 10s, add buffer for test overhead
-    testTimeout: 15_000,
+    // PRD-28 US-001: load .env for ANTHROPIC_API_KEY · skipIf no key
+    setupFiles: ['./tests/setup.ts'],
+    // AC-13: single judge < 10s · real LLM latency needs longer timeout
+    testTimeout: 120_000,
     hookTimeout: 30_000,
     // AC-8: sequential to surface which specific case fails
     sequence: { concurrent: false },

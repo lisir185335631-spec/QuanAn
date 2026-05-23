@@ -4,20 +4,12 @@
  * criteria: ctaScript 必含 CTA 关键词 + conversionPath 长度 ≥1
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -77,16 +69,7 @@ const goldenCaseEducation: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('VideoAgent acquisition mode LLM Judge — 理财 + 教育 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'script≥100字✓；ctaScript含CTA关键词✓；conversionPath≥1✓；keyMessages≥1✓' },
-      tokens: { prompt: 260, completion: 88, total: 348 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1100,
-      trace_id: 'judge-VideoAgent-acquisition-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('VideoAgent acquisition mode LLM Judge — 理财 + 教育 2 golden cases', () => {
 
   it('理财引流 golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseFinance);

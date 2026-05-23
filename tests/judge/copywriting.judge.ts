@@ -5,19 +5,11 @@
  * AC-11: quantifiable criteria (markdown ≥ 500 chars, ≥1 # heading, hooks ≥ 1)
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -87,16 +79,7 @@ const goldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 9, reason: 'markdown 超过500字✓；含# heading✓；structure完整✓；hooks 3条✓；cta有行动引导✓' },
-      tokens: { prompt: 350, completion: 95, total: 445 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1300,
-      trace_id: 'judge-CopywritingAgent-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case', () => {
 
   it('golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCase);
@@ -118,15 +101,4 @@ describe('CopywritingAgent LLM Judge — step7/fitness/xiaohongshu golden case',
     expect(result.score).toBeGreaterThanOrEqual(PASS_SCORE_THRESHOLD);
   });
 
-  it('runJudge calls llmGateway with lightweight tier and judge_call eventType', async () => {
-    await runJudge(goldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
-  });
 });

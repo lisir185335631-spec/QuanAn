@@ -9,7 +9,7 @@
  * (d) 无 RAG 时 fallback OK — ragChunks=[] 时 systemPrompt 不含 [Section 6]
  * (e) 5 chunks 总长不超 systemPrompt budget — contextTokens ≤ 合理上限
  *
- * 沿用 18/18 judge mock pattern(TD-027 PRR 修): mockComplete 返回 pass=true · score=9
+ * TD-027 真闭环: llm-gateway mock 已拆除 · 无 KEY 时 skipIf 优雅跳过
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -18,13 +18,8 @@ import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-const { mockComplete, mockRetrieve } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
+const { mockRetrieve } = vi.hoisted(() => ({
   mockRetrieve: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
 }));
 
 vi.mock('@/workers/rag', () => ({
@@ -115,30 +110,12 @@ const ragInjectionGoldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('RAG 注入 LLM Judge — AC-8', () => {
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('RAG 注入 LLM Judge — AC-8', () => {
   let assembler: ContextAssembler;
 
   beforeEach(() => {
     assembler = new ContextAssembler();
     vi.clearAllMocks();
-
-    // Mock judge LLM response: score=9/10 · pass=true
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 9,
-        reason:
-          '(a) case title "知识型IP从0到百万粉全路径案例" 出现在 [Section 6] ✓；' +
-          '(b) formula title "黄金3秒钩子公式：问题-悬念-承诺" 出现在 [Section 6] ✓；' +
-          '(c) element title "数字具体化：精确数字vs模糊数字" 出现在 [Section 6] ✓；' +
-          '(d) ragChunks=[] → 无 [Section 6] 正确降级 ✓；' +
-          '(e) 5 chunks contextTokens ≈800 < 合理 2000 上限 ✓',
-      },
-      tokens: { prompt: 420, completion: 110, total: 530 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1300,
-      trace_id: 'judge-rag-injection-test',
-    });
   });
 
   it('AC-8: CopywritingAgent RAG 注入 → LLM Judge 5 维度评分 ≥ 8/10 (≥ 4.0/5)', async () => {
@@ -192,15 +169,4 @@ describe('RAG 注入 LLM Judge — AC-8', () => {
     expect(ctx.metadata.layersUsed).not.toContain('L5_rag');
   });
 
-  it('runJudge 调用 llmGateway lightweight tier + judge_call eventType', async () => {
-    await runJudge(ragInjectionGoldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
-  });
 });

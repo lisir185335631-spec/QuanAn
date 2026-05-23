@@ -4,20 +4,12 @@
  * criteria: markdown 200-500 字 + 末尾 CTA
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -116,16 +108,7 @@ const goldenCaseMedicalBeauty: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('CopywritingAgent acquisition mode LLM Judge — 育儿 + 医美 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'markdown 200-500字✓；末尾含CTA关键词✓；含#标题✓；elements非空✓' },
-      tokens: { prompt: 310, completion: 92, total: 402 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1180,
-      trace_id: 'judge-CopywritingAgent-acquisition-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('CopywritingAgent acquisition mode LLM Judge — 育儿 + 医美 2 golden cases', () => {
 
   it('育儿睡眠训练 golden case passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseParenting);

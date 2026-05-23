@@ -1,0 +1,1840 @@
+[
+  {
+    "id": "custom-001",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "tutorial",
+      "elements": [
+        "curiosity",
+        "authority"
+      ],
+      "topic": "皮肤科医生的日常护肤步骤"
+    },
+    "criteria": [
+      "markdown 输出不少于 400 个字符",
+      "内容包含权威信息来源背书",
+      "步骤清晰可操作"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "beauty",
+      "tutorial"
+    ]
+  },
+  {
+    "id": "custom-002",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "storytelling",
+      "elements": [
+        "transformation",
+        "social_proof"
+      ],
+      "topic": "我是如何从月薪 3000 到月薪 30000 的"
+    },
+    "criteria": [
+      "markdown 字数不少于 400",
+      "包含明确的时间线和转折点",
+      "结尾有激励性行动号召"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "career",
+      "storytelling"
+    ]
+  },
+  {
+    "id": "custom-003",
+    "specialistId": "CopywritingAgent",
+    "mode": "boom",
+    "input": {
+      "elements": [
+        "fear",
+        "scarcity"
+      ],
+      "referenceTitle": "再不看你就亏大了"
+    },
+    "criteria": [
+      "candidates 恰好 5 个候选标题",
+      "每个标题使用紧迫性词汇",
+      "标题长度在 10-30 个字符"
+    ],
+    "expectedKeyFields": [
+      "candidates",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "boom-title",
+      "finance"
+    ]
+  },
+  {
+    "id": "custom-004",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "comparison",
+      "elements": [
+        "contrast",
+        "low_cost_high"
+      ],
+      "topic": "500 元平替 vs 5000 元大牌，差距究竟在哪里"
+    },
+    "criteria": [
+      "markdown 包含明确的对比结构",
+      "至少提及 2 个具体对比维度",
+      "markdown 字数 ≥ 400"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "beauty",
+      "comparison"
+    ]
+  },
+  {
+    "id": "custom-005",
+    "specialistId": "CopywritingAgent",
+    "mode": "acquisition",
+    "input": {
+      "platform": "xiaohongshu",
+      "productCategory": "fitness_equipment",
+      "targetAudience": "20-30岁女性健身爱好者"
+    },
+    "criteria": [
+      "scripts 包含至少 2 条引流文案",
+      "文案风格适配小红书平台",
+      "含明确的评论区互动引导"
+    ],
+    "expectedKeyFields": [
+      "scripts"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "fitness",
+      "acquisition"
+    ]
+  },
+  {
+    "id": "custom-006",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "list",
+      "elements": [
+        "list",
+        "curiosity"
+      ],
+      "topic": "程序员必备的 10 个效率工具"
+    },
+    "criteria": [
+      "markdown 包含 10 个工具的有序列表",
+      "每个工具有简要说明",
+      "markdown ≥ 400 字"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "tech",
+      "list"
+    ]
+  },
+  {
+    "id": "custom-007",
+    "specialistId": "CopywritingAgent",
+    "mode": "boom",
+    "input": {
+      "elements": [
+        "reveal",
+        "curiosity"
+      ],
+      "referenceTitle": "没人告诉你的真相"
+    },
+    "criteria": [
+      "candidates 恰好 5 个",
+      "标题含揭秘/真相类词汇",
+      "每个标题能引发点击欲望"
+    ],
+    "expectedKeyFields": [
+      "candidates",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "boom-title",
+      "revelation"
+    ]
+  },
+  {
+    "id": "custom-008",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "tutorial",
+      "elements": [
+        "social_proof",
+        "low_cost_unknown"
+      ],
+      "topic": "新手摄影：用手机拍出大片感"
+    },
+    "criteria": [
+      "包含至少 3 个具体拍摄技巧",
+      "markdown ≥ 400 字",
+      "内容有用户证言或案例"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "photography",
+      "tutorial"
+    ]
+  },
+  {
+    "id": "custom-009",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "duo_chat",
+      "elements": [
+        "empathy",
+        "resonance"
+      ],
+      "topic": "职场新人和老员工关于加班的对话"
+    },
+    "criteria": [
+      "包含两个角色清晰的对话",
+      "情感共鸣感强，触动职场人",
+      "markdown ≥ 400 字"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "workplace",
+      "duo_chat"
+    ]
+  },
+  {
+    "id": "custom-010",
+    "specialistId": "CopywritingAgent",
+    "mode": "boom",
+    "input": {
+      "elements": [
+        "greed",
+        "trend"
+      ],
+      "referenceTitle": "2025 年最赚钱的副业"
+    },
+    "criteria": [
+      "candidates 恰好 5 个候选标题",
+      "标题含时间/年份元素增强时效感",
+      "传达财富/机遇主题"
+    ],
+    "expectedKeyFields": [
+      "candidates",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "finance",
+      "boom-title"
+    ]
+  },
+  {
+    "id": "custom-011",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "vlog",
+      "elements": [
+        "curiosity",
+        "small_big"
+      ],
+      "topic": "花 200 元改造出租屋的一天"
+    },
+    "criteria": [
+      "markdown 包含按时间线的 vlog 叙述",
+      "体现低成本高回报主题",
+      "markdown ≥ 400 字"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "lifestyle",
+      "vlog"
+    ]
+  },
+  {
+    "id": "custom-012",
+    "specialistId": "CopywritingAgent",
+    "mode": "free",
+    "input": {
+      "scriptType": "review",
+      "elements": [
+        "authority",
+        "social_proof"
+      ],
+      "topic": "用了半年的洗发水，真实测评"
+    },
+    "criteria": [
+      "包含使用前后对比",
+      "有具体使用体验描述",
+      "markdown ≥ 400 字"
+    ],
+    "expectedKeyFields": [
+      "markdown",
+      "metadata"
+    ],
+    "source": "custom",
+    "tags": [
+      "copywriting",
+      "beauty",
+      "review"
+    ]
+  },
+  {
+    "id": "custom-013",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "tech",
+      "platform": "bilibili",
+      "followerGoal": 100000
+    },
+    "criteria": [
+      "nickname 恰好 5 个候选，体现科技/数码风格",
+      "bio 包含 bilibili 平台版本",
+      "overallStrategy 有明确内容差异化策略"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "tech",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-014",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "parenting",
+      "platform": "douyin",
+      "followerGoal": 50000
+    },
+    "criteria": [
+      "nickname 5 个候选，亲子相关",
+      "avatar.style 温暖亲切",
+      "bio 有抖音和微信公众号版本"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "parenting",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-015",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "travel",
+      "platform": "xiaohongshu",
+      "followerGoal": 20000
+    },
+    "criteria": [
+      "nickname 5 个候选含旅行/探索主题",
+      "background.platformVersions 3 种比例",
+      "overallStrategy 强调旅行内容垂直定位"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "background",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "travel",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-016",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "health",
+      "platform": "douyin",
+      "followerGoal": 80000
+    },
+    "criteria": [
+      "nickname 5 个候选体现健康/养生权威性",
+      "bio 有 douyin 和 xiaohongshu 版本",
+      "avatar 描述专业形象"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "health",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-017",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "finance",
+      "platform": "bilibili",
+      "followerGoal": 30000
+    },
+    "criteria": [
+      "nickname 5 个候选含理财/财经元素",
+      "overallStrategy 强调信任建立",
+      "bio 体现专业背景"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "finance",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-018",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "food",
+      "platform": "douyin",
+      "followerGoal": 40000
+    },
+    "criteria": [
+      "nickname 5 个候选含美食相关词汇",
+      "avatar 描述美食创作者形象",
+      "bio 包含多平台版本"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "food",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-019",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "pets",
+      "platform": "xiaohongshu",
+      "followerGoal": 25000
+    },
+    "criteria": [
+      "nickname 5 个候选体现萌宠/爱宠主题",
+      "avatar.style 描述亲切可爱风格",
+      "overallStrategy 针对宠物爱好者群体"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "pets",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-020",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "gaming",
+      "platform": "bilibili",
+      "followerGoal": 200000
+    },
+    "criteria": [
+      "nickname 5 个候选含游戏/电竞元素",
+      "bio 有 bilibili 版本",
+      "overallStrategy 描述游戏内容垂类策略"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "gaming",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-021",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "photography",
+      "platform": "douyin",
+      "followerGoal": 15000
+    },
+    "criteria": [
+      "nickname 5 个候选体现摄影/视觉艺术主题",
+      "background.platformVersions 3 种比例",
+      "overallStrategy 聚焦摄影教学垂类"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "background",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "photography",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-022",
+    "specialistId": "BrandingAgent",
+    "mode": "packaging",
+    "input": {
+      "industry": "mental_health",
+      "platform": "xiaohongshu",
+      "followerGoal": 60000
+    },
+    "criteria": [
+      "nickname 5 个候选体现心理健康/情绪主题",
+      "avatar.style 温暖治愈型",
+      "bio 有小红书版本，语气温和专业"
+    ],
+    "expectedKeyFields": [
+      "nickname",
+      "avatar",
+      "bio",
+      "overallStrategy"
+    ],
+    "source": "custom",
+    "tags": [
+      "branding",
+      "mental_health",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-023",
+    "specialistId": "VideoAgent",
+    "mode": "storyboard",
+    "input": {
+      "topic": "一日三餐健康食谱 vlog",
+      "duration": 120,
+      "platform": "douyin"
+    },
+    "criteria": [
+      "scenes 包含至少 4 个场景",
+      "每个 scene 有 description 和 duration",
+      "totalDuration 接近 120 秒"
+    ],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "food",
+      "storyboard"
+    ]
+  },
+  {
+    "id": "custom-024",
+    "specialistId": "VideoAgent",
+    "mode": "storyboard",
+    "input": {
+      "topic": "办公室快速健身 15 分钟",
+      "duration": 60,
+      "platform": "bilibili"
+    },
+    "criteria": [
+      "scenes 包含热身/正式/放松 3 个阶段",
+      "每个 scene 描述具体动作",
+      "totalDuration 与输入匹配"
+    ],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "fitness",
+      "storyboard"
+    ]
+  },
+  {
+    "id": "custom-025",
+    "specialistId": "VideoAgent",
+    "mode": "analysis",
+    "input": {
+      "lastCopy": "你知道吗？每天坚持做这一件事，三个月后你的人生会发生翻天覆地的变化。这不是鸡汤，这是心理学研究证实的习惯养成机制，今天我来给你详细讲解。"
+    },
+    "criteria": [
+      "analysis.elements 识别至少 2 个爆款元素",
+      "insights 至少 3 条",
+      "analysis.hookType 有值"
+    ],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "psychology",
+      "analysis"
+    ]
+  },
+  {
+    "id": "custom-026",
+    "specialistId": "VideoAgent",
+    "mode": "production",
+    "input": {
+      "scriptType": "tutorial",
+      "duration": 90,
+      "platform": "douyin",
+      "subject": "手冲咖啡入门"
+    },
+    "criteria": [
+      "输出包含完整分镜脚本",
+      "每个分镜有画面描述和时长",
+      "总时长接近 90 秒"
+    ],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "lifestyle",
+      "production"
+    ]
+  },
+  {
+    "id": "custom-027",
+    "specialistId": "VideoAgent",
+    "mode": "storyboard",
+    "input": {
+      "topic": "如何在 30 天内学会游泳",
+      "duration": 180,
+      "platform": "bilibili"
+    },
+    "criteria": [
+      "scenes 数量合理（至少 5 个）",
+      "scene 描述教学进程和节点",
+      "totalDuration ≈ 180 秒"
+    ],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "sports",
+      "tutorial"
+    ]
+  },
+  {
+    "id": "custom-028",
+    "specialistId": "VideoAgent",
+    "mode": "analysis",
+    "input": {
+      "lastCopy": "我妈问我为什么 30 岁了还不结婚，我给她看了我的银行账户，她立刻说没事，慢慢来。这一刻我突然懂了，有些事情不需要解释，让数字说话就够了。"
+    },
+    "criteria": [
+      "analysis.viralFormula 描述幽默/反转公式",
+      "insights 识别 contrast 或 surprise 元素",
+      "analysis.hookType 识别叙事类型"
+    ],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "lifestyle",
+      "humor"
+    ]
+  },
+  {
+    "id": "custom-029",
+    "specialistId": "VideoAgent",
+    "mode": "storyboard",
+    "input": {
+      "topic": "城市探店：北京隐藏咖啡馆",
+      "duration": 90,
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "scenes 包含外景/内景/产品特写至少 3 类",
+      "每 scene 有镜头描述",
+      "totalDuration 合理"
+    ],
+    "expectedKeyFields": [
+      "scenes",
+      "totalDuration"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "food",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-030",
+    "specialistId": "VideoAgent",
+    "mode": "acquisition",
+    "input": {
+      "platform": "douyin",
+      "productCategory": "laptop",
+      "targetAudience": "大学生/年轻白领"
+    },
+    "criteria": [
+      "输出含至少 2 个引流视频脚本方向",
+      "每个方向有明确的内容钩子",
+      "针对目标平台风格优化"
+    ],
+    "expectedKeyFields": [
+      "scripts"
+    ],
+    "source": "custom",
+    "tags": [
+      "video",
+      "tech",
+      "acquisition"
+    ]
+  },
+  {
+    "id": "custom-031",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "tech",
+      "platform": "bilibili"
+    },
+    "criteria": [
+      "topics 恰好 20 个元素",
+      "每个含 title/hook/structure/formula/viralPotential",
+      "内容贴合 B 站科技区受众"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "tech",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-032",
+    "specialistId": "TopicAgent",
+    "mode": "product",
+    "input": {
+      "category": "product",
+      "industry": "pets",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "topics 恰好 20 个元素",
+      "viralPotential 字段合法",
+      "内容聚焦宠物产品推荐"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "pets",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-033",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "finance",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "topics 20 个元素",
+      "formula 描述财经类爆款公式",
+      "viralPotential 取 low/medium/high"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "finance",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-034",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "gaming",
+      "platform": "bilibili"
+    },
+    "criteria": [
+      "topics 恰好 20 个",
+      "hook 吸引游戏玩家",
+      "structure 描述合理叙述结构"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "gaming",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-035",
+    "specialistId": "TopicAgent",
+    "mode": "product",
+    "input": {
+      "category": "product",
+      "industry": "home_decor",
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "topics 20 个元素",
+      "内容适配小红书家居/装修受众",
+      "viralPotential 合法值"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "home_decor",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-036",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "travel",
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "topics 恰好 20 个",
+      "hook 激发旅行欲望",
+      "formula 描述旅游类爆款模式"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "travel",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-037",
+    "specialistId": "TopicAgent",
+    "mode": "traffic",
+    "input": {
+      "category": "traffic",
+      "industry": "career",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "topics 20 个元素",
+      "内容聚焦职场/求职主题",
+      "viralPotential 包含 high 级别选题"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "career",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-038",
+    "specialistId": "TopicAgent",
+    "mode": "product",
+    "input": {
+      "category": "product",
+      "industry": "photography",
+      "platform": "bilibili"
+    },
+    "criteria": [
+      "topics 恰好 20 个",
+      "每个 topic 与摄影器材/技巧相关",
+      "viralPotential 字段合法"
+    ],
+    "expectedKeyFields": [
+      "category",
+      "topics"
+    ],
+    "source": "custom",
+    "tags": [
+      "topic",
+      "photography",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-039",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "tech",
+      "targetAudience": "20-35岁技术从业者",
+      "uniqueValue": "系统架构设计深度解析"
+    },
+    "criteria": [
+      "positioning 包含核心差异化描述",
+      "contentPillars 至少 3 个内容支柱",
+      "定位表述精准聚焦垂类"
+    ],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
+    "source": "custom",
+    "tags": [
+      "positioning",
+      "tech",
+      "b-end"
+    ]
+  },
+  {
+    "id": "custom-040",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "travel",
+      "targetAudience": "25-40岁独旅/自由行爱好者",
+      "uniqueValue": "小众冷门目的地深度游"
+    },
+    "criteria": [
+      "positioning 体现小众冷门定位差异化",
+      "contentPillars 含旅行内容维度",
+      "受众描述精准"
+    ],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
+    "source": "custom",
+    "tags": [
+      "positioning",
+      "travel",
+      "niche"
+    ]
+  },
+  {
+    "id": "custom-041",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "mental_health",
+      "targetAudience": "18-30岁焦虑/压力人群",
+      "uniqueValue": "10分钟正念冥想减压"
+    },
+    "criteria": [
+      "positioning 描述心理健康垂类",
+      "contentPillars 含情绪/压力管理维度",
+      "受众痛点明确"
+    ],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
+    "source": "custom",
+    "tags": [
+      "positioning",
+      "mental_health",
+      "wellness"
+    ]
+  },
+  {
+    "id": "custom-042",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "gaming",
+      "targetAudience": "16-28岁男性玩家",
+      "uniqueValue": "游戏攻略+职业选手访谈"
+    },
+    "criteria": [
+      "positioning 聚焦游戏垂类",
+      "contentPillars 至少 3 个",
+      "差异化卖点清晰"
+    ],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
+    "source": "custom",
+    "tags": [
+      "positioning",
+      "gaming",
+      "strategy"
+    ]
+  },
+  {
+    "id": "custom-043",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "home_decor",
+      "targetAudience": "25-45岁初次装修业主",
+      "uniqueValue": "10万以内装修全流程避坑指南"
+    },
+    "criteria": [
+      "positioning 体现避坑/省钱核心价值",
+      "contentPillars 包含装修各阶段内容",
+      "受众需求痛点准确"
+    ],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
+    "source": "custom",
+    "tags": [
+      "positioning",
+      "home_decor",
+      "renovation"
+    ]
+  },
+  {
+    "id": "custom-044",
+    "specialistId": "PositioningAgent",
+    "input": {
+      "industry": "pets",
+      "targetAudience": "20-35岁城市宠物主",
+      "uniqueValue": "猫咪科学喂养与疾病预防"
+    },
+    "criteria": [
+      "positioning 聚焦科学养猫细分垂类",
+      "contentPillars 3+ 个维度",
+      "定位有明确的信任背书方向"
+    ],
+    "expectedKeyFields": [
+      "positioning",
+      "contentPillars"
+    ],
+    "source": "custom",
+    "tags": [
+      "positioning",
+      "pets",
+      "cats"
+    ]
+  },
+  {
+    "id": "custom-045",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "0",
+      "industry": "fitness",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "ladder 恰好 3 个阶段",
+      "revenueStructure.secondary 恰好 2 个",
+      "successCases 含 2 个健身类案例"
+    ],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure",
+      "successCases"
+    ],
+    "source": "custom",
+    "tags": [
+      "monetization",
+      "fitness",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-046",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "10000",
+      "industry": "beauty",
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "currentAnalysis 描述万元收入阶段现状",
+      "ladder 3 阶段路线图",
+      "action 每步含可量化目标"
+    ],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
+    "source": "custom",
+    "tags": [
+      "monetization",
+      "beauty",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-047",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "0",
+      "industry": "tech",
+      "platform": "bilibili"
+    },
+    "criteria": [
+      "ladder 3 阶段，覆盖 B 站创作者变现路径",
+      "revenueStructure 区分主次收入",
+      "每个 action 有数字目标"
+    ],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
+    "source": "custom",
+    "tags": [
+      "monetization",
+      "tech",
+      "bilibili"
+    ]
+  },
+  {
+    "id": "custom-048",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "3000",
+      "industry": "food",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "ladder 3 阶段上升路径",
+      "revenueStructure.secondary 2 个来源",
+      "successCases 含美食类参考案例"
+    ],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "successCases"
+    ],
+    "source": "custom",
+    "tags": [
+      "monetization",
+      "food",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-049",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "0",
+      "industry": "travel",
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "currentAnalysis 分析旅行类 0 收入现状",
+      "ladder 提出旅游类变现路径",
+      "action 含粉丝量化目标"
+    ],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
+    "source": "custom",
+    "tags": [
+      "monetization",
+      "travel",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-050",
+    "specialistId": "MonetizationAgent",
+    "input": {
+      "currentRevenue": "20000",
+      "industry": "finance",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "currentAnalysis 描述 2 万元中等收入阶段",
+      "ladder 规划进阶到 10 万的路径",
+      "revenueStructure 有详细结构拆分"
+    ],
+    "expectedKeyFields": [
+      "currentAnalysis",
+      "ladder",
+      "revenueStructure"
+    ],
+    "source": "custom",
+    "tags": [
+      "monetization",
+      "finance",
+      "scale-up"
+    ]
+  },
+  {
+    "id": "custom-051",
+    "specialistId": "AnalysisAgent",
+    "mode": "structural",
+    "input": {
+      "copy": "失业的第三个月，我把所有积蓄都投入了这个创业项目。身边的朋友都说我疯了，但我知道，这是我最后一次机会。今天，我想把这段经历分享给同样处于低谷的你——因为我成功了。"
+    },
+    "criteria": [
+      "scores 包含 hook/structure/emotion/specificity/cta/overall 6 个维度",
+      "optimizations 至少 3 条优化建议",
+      "rewriteSnippet 长度 ≥ 50 字符"
+    ],
+    "expectedKeyFields": [
+      "scores",
+      "optimizations",
+      "rewriteSnippet"
+    ],
+    "source": "custom",
+    "tags": [
+      "analysis",
+      "structural",
+      "career"
+    ]
+  },
+  {
+    "id": "custom-052",
+    "specialistId": "AnalysisAgent",
+    "mode": "viral",
+    "input": {
+      "lastCopy": "北京一个月生活费到底要多少？作为一个在北京打拼了 5 年的外来打工人，我来给你算笔账。房租 3500，吃饭 2000，交通 500，娱乐 1000，总共 7000 起。但大多数刚来的人根本撑不到第 3 个月。",
+      "lastTitle": "北京打工人一个月最低生活费揭秘"
+    },
+    "criteria": [
+      "analysis.elements 识别至少 2 个爆款元素",
+      "insights 至少 3 条含 element/explanation/impact",
+      "rewriteVersion 长度 ≥ 50 字"
+    ],
+    "expectedKeyFields": [
+      "analysis",
+      "insights",
+      "rewriteVersion"
+    ],
+    "source": "custom",
+    "tags": [
+      "analysis",
+      "viral",
+      "lifestyle"
+    ]
+  },
+  {
+    "id": "custom-053",
+    "specialistId": "AnalysisAgent",
+    "mode": "structural",
+    "input": {
+      "copy": "很多人问我：学英语真的有用吗？我的回答是：有用，但不是你想的那种用。学英语不是为了出国，不是为了跳槽，而是为了拓宽你看世界的维度。今天我来分享一个被大家忽视的英语学习真相。"
+    },
+    "criteria": [
+      "scores 6 维度评分，值在 0-100",
+      "optimizations ≥ 3 条",
+      "rewriteSnippet ≥ 50 字符"
+    ],
+    "expectedKeyFields": [
+      "scores",
+      "optimizations",
+      "rewriteSnippet"
+    ],
+    "source": "custom",
+    "tags": [
+      "analysis",
+      "structural",
+      "education"
+    ]
+  },
+  {
+    "id": "custom-054",
+    "specialistId": "AnalysisAgent",
+    "mode": "viral",
+    "input": {
+      "lastCopy": "今天分享一个能让你瘦 10 斤的方法，不需要节食，不需要跑步，每天只需要 2 分钟。这个方法我自己亲测有效，已经帮助了我的 3000 多名学员成功减重。",
+      "lastTitle": "2分钟躺瘦法，不节食不运动真的有效"
+    },
+    "criteria": [
+      "analysis.viralFormula 识别承诺类公式",
+      "insights 识别 social_proof 元素",
+      "analysis.elements 含 low_cost_unknown 或类似元素"
+    ],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
+    "source": "custom",
+    "tags": [
+      "analysis",
+      "viral",
+      "health"
+    ]
+  },
+  {
+    "id": "custom-055",
+    "specialistId": "AnalysisAgent",
+    "mode": "structural",
+    "input": {
+      "copy": "程序员的中年危机，35 岁之后该怎么办？我采访了 50 位 35+ 的技术人，发现他们的选择分成了三类：转管理、创业、或者躺平。但还有第四种选择，很少有人提到，却是真正的出路。"
+    },
+    "criteria": [
+      "scores 覆盖 6 个维度",
+      "optimizations 3 条明确改进建议",
+      "rewriteSnippet 提供有价值的改写示例"
+    ],
+    "expectedKeyFields": [
+      "scores",
+      "optimizations",
+      "rewriteSnippet"
+    ],
+    "source": "custom",
+    "tags": [
+      "analysis",
+      "structural",
+      "career"
+    ]
+  },
+  {
+    "id": "custom-056",
+    "specialistId": "AnalysisAgent",
+    "mode": "viral",
+    "input": {
+      "lastCopy": "我用了两年时间，把自己从一个月薪 5000 的小白，做到年入百万的自媒体博主。这不是励志故事，这是一份可复制的操作手册。",
+      "lastTitle": "月薪5000到年入百万：自媒体起号真实路径"
+    },
+    "criteria": [
+      "analysis.elements 识别 transformation/social_proof 等元素",
+      "insights 3+ 条详细解析",
+      "analysis.hookType 准确识别"
+    ],
+    "expectedKeyFields": [
+      "analysis",
+      "insights"
+    ],
+    "source": "custom",
+    "tags": [
+      "analysis",
+      "viral",
+      "self-media"
+    ]
+  },
+  {
+    "id": "custom-057",
+    "specialistId": "LivestreamAgent",
+    "input": {
+      "platform": "douyin",
+      "productCategory": "skincare",
+      "targetAudience": "30-40岁女性"
+    },
+    "criteria": [
+      "输出包含至少 3 段直播话术",
+      "话术覆盖开播/互动/促单环节",
+      "语气亲切符合直播场景"
+    ],
+    "expectedKeyFields": [
+      "scripts"
+    ],
+    "source": "custom",
+    "tags": [
+      "livestream",
+      "beauty",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-058",
+    "specialistId": "LivestreamAgent",
+    "input": {
+      "platform": "kuaishou",
+      "productCategory": "food",
+      "targetAudience": "25-45岁家庭主妇"
+    },
+    "criteria": [
+      "话术覆盖产品展示和促单",
+      "至少 3 段不同场景话术",
+      "语言通俗易懂适合快手受众"
+    ],
+    "expectedKeyFields": [
+      "scripts"
+    ],
+    "source": "custom",
+    "tags": [
+      "livestream",
+      "food",
+      "kuaishou"
+    ]
+  },
+  {
+    "id": "custom-059",
+    "specialistId": "PrivateDomainAgent",
+    "input": {
+      "stage": "cold",
+      "product": "在线英语课程",
+      "targetUser": "18-30岁大学生/职场新人"
+    },
+    "criteria": [
+      "输出包含私域引流话术",
+      "话术场景覆盖初次接触",
+      "内容自然不硬推销"
+    ],
+    "expectedKeyFields": [
+      "scripts"
+    ],
+    "source": "custom",
+    "tags": [
+      "private_domain",
+      "education",
+      "cold-start"
+    ]
+  },
+  {
+    "id": "custom-060",
+    "specialistId": "PrivateDomainAgent",
+    "input": {
+      "stage": "warm",
+      "product": "健康管理服务",
+      "targetUser": "35-50岁中年人"
+    },
+    "criteria": [
+      "话术针对已有互动的温热客户",
+      "内容体现专业价值感",
+      "包含明确的下一步行动引导"
+    ],
+    "expectedKeyFields": [
+      "scripts"
+    ],
+    "source": "custom",
+    "tags": [
+      "private_domain",
+      "health",
+      "warm-lead"
+    ]
+  },
+  {
+    "id": "custom-061",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
+    "input": {
+      "text": "我是美妆博主主打粉底测评，想在抖音做短视频",
+      "platform": "douyin"
+    },
+    "criteria": [
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum(talking_head/drama/tutorial/vlog/street_interview/comparison/list_style/mashup/screen_record/animation/reaction/before_after/pov/qa)",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
+    ],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
+    "source": "custom",
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "beauty",
+      "douyin"
+    ]
+  },
+  {
+    "id": "custom-062",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
+    "input": {
+      "text": "我做教育领域职场技能课，目标平台小红书",
+      "platform": "xiaohongshu"
+    },
+    "criteria": [
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
+    ],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
+    "source": "custom",
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "education",
+      "xiaohongshu"
+    ]
+  },
+  {
+    "id": "custom-062",
+    "specialistId": "DiagnosisAgent",
+    "input": {
+      "answers": {
+        "q1": "美妆护肤",
+        "q2": "小红书+抖音",
+        "q3": "18-28岁女性",
+        "q4": "成分科普",
+        "q5": "每周3条",
+        "q6": "5000粉",
+        "q7": "品牌合作",
+        "q8": "竞品：护肤博主已饱和"
+      }
+    },
+    "criteria": [
+      "诊断报告包含 7 个维度评分",
+      "每个维度有具体建议",
+      "输出有明确优先级排序"
+    ],
+    "expectedKeyFields": [
+      "diagnosis",
+      "recommendations"
+    ],
+    "source": "custom",
+    "tags": [
+      "diagnosis",
+      "beauty",
+      "evaluation"
+    ]
+  },
+  {
+    "id": "custom-063",
+    "specialistId": "DeepLearnAgent",
+    "input": {
+      "sample": "今天做了一道番茄炒蛋，配上白米饭，简单又下饭。用了两个鸡蛋，半斤番茄，少许盐和白糖调味。翻炒的时候番茄汁水渗出来，和鸡蛋融合，颜色特别好看。这道菜从食材到上桌只要 10 分钟，是我最爱的家常菜之一。"
+    },
+    "criteria": [
+      "输出包含风格向量分析",
+      "识别文字风格特征（口语化/叙述性等）",
+      "为账号 IP 风格建立记忆标签"
+    ],
+    "expectedKeyFields": [
+      "styleVector",
+      "styleProfile"
+    ],
+    "source": "custom",
+    "tags": [
+      "deep_learn",
+      "food",
+      "style"
+    ]
+  },
+  {
+    "id": "custom-064",
+    "specialistId": "DeepLearnAgent",
+    "input": {
+      "sample": "上周末和几个朋友去爬了香山，虽然只有两小时的山路，但能量消耗完全不亚于健身房一小时。沿途看到了枫叶，拍了很多照片。现在越来越觉得，户外运动远比健身房有意思，因为你永远不知道前方有什么风景在等你。"
+    },
+    "criteria": [
+      "风格向量捕捉自然/随性风格",
+      "styleProfile 含情感色调标签",
+      "输出可用于后续内容个性化生成"
+    ],
+    "expectedKeyFields": [
+      "styleVector",
+      "styleProfile"
+    ],
+    "source": "custom",
+    "tags": [
+      "deep_learn",
+      "travel",
+      "style"
+    ]
+  },
+  {
+    "id": "custom-065",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
+    "input": {
+      "text": "我是职场 HR 博主分享求职面试技巧，主平台微信视频号",
+      "platform": "wechat-video"
+    },
+    "criteria": [
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
+    ],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
+    "source": "custom",
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "career",
+      "wechat-video"
+    ]
+  },
+  {
+    "id": "custom-066",
+    "specialistId": "PresentationAgent",
+    "mode": "recommend",
+    "input": {
+      "text": "我是健身博主做减脂训练内容，目标平台快手",
+      "platform": "kuaishou"
+    },
+    "criteria": [
+      "输出 3-5 推荐 style",
+      "style.id 严守 14 enum",
+      "matchScore 0-100",
+      "rationale 字数 ≥ 20"
+    ],
+    "expectedKeyFields": [
+      "recommendedStyles"
+    ],
+    "source": "custom",
+    "tags": [
+      "P3-IP",
+      "step5-recommend",
+      "fitness",
+      "kuaishou"
+    ]
+  },
+  {
+    "id": "custom-067",
+    "specialistId": "EvolutionAgent",
+    "input": {
+      "feedbackLog": [
+        {
+          "contentId": "v001",
+          "type": "low_retention",
+          "value": 0.3
+        },
+        {
+          "contentId": "v002",
+          "type": "high_like_rate",
+          "value": 0.15
+        },
+        {
+          "contentId": "v003",
+          "type": "comment_sentiment",
+          "value": "positive"
+        }
+      ],
+      "samples": [
+        {
+          "id": "v001",
+          "topic": "护肤步骤教程",
+          "engagement": "low"
+        },
+        {
+          "id": "v002",
+          "topic": "产品测评推荐",
+          "engagement": "high"
+        },
+        {
+          "id": "v003",
+          "topic": "成分科普解析",
+          "engagement": "medium"
+        }
+      ]
+    },
+    "criteria": [
+      "insights 至少 2 条有数据支撑的进化建议",
+      "每条 insight 有 element 和 explanation",
+      "输出可指导下一期内容方向"
+    ],
+    "expectedKeyFields": [
+      "insights"
+    ],
+    "source": "custom",
+    "tags": [
+      "evolution",
+      "beauty",
+      "feedback-loop"
+    ]
+  },
+  {
+    "id": "custom-069",
+    "specialistId": "DailyTaskAgent",
+    "input": {
+      "progress": {
+        "currentStage": "growth",
+        "completedSteps": [
+          "positioning",
+          "branding"
+        ],
+        "pendingSteps": [
+          "topic",
+          "copywriting",
+          "video"
+        ]
+      },
+      "diagnosis": {
+        "weakAreas": [
+          "内容频率不够",
+          "缺乏爆款选题"
+        ]
+      },
+      "history": {
+        "lastWeekTasks": [
+          "发布 2 条视频",
+          "回复评论 20 条"
+        ],
+        "completionRate": 0.8
+      }
+    },
+    "criteria": [
+      "输出 3-5 个今日具体任务",
+      "任务有优先级排序",
+      "每个任务可量化完成状态"
+    ],
+    "expectedKeyFields": [
+      "tasks"
+    ],
+    "source": "custom",
+    "tags": [
+      "daily_task",
+      "fitness",
+      "growth-stage"
+    ]
+  },
+  {
+    "id": "custom-070",
+    "specialistId": "DailyTaskAgent",
+    "input": {
+      "progress": {
+        "currentStage": "cold_start",
+        "completedSteps": [],
+        "pendingSteps": [
+          "positioning",
+          "branding",
+          "topic"
+        ]
+      },
+      "diagnosis": {
+        "weakAreas": [
+          "账号定位不清",
+          "内容方向分散"
+        ]
+      },
+      "history": {
+        "lastWeekTasks": [],
+        "completionRate": 0
+      }
+    },
+    "criteria": [
+      "输出 3-5 个冷启动阶段重点任务",
+      "任务聚焦定位和账号搭建",
+      "任务描述具体可操作"
+    ],
+    "expectedKeyFields": [
+      "tasks"
+    ],
+    "source": "custom",
+    "tags": [
+      "daily_task",
+      "general",
+      "cold-start"
+    ]
+  }
+]

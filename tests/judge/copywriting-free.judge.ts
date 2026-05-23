@@ -4,19 +4,11 @@
  * criteria: markdown 含 hook + 干货 + cta + 0 编造数据
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
 import type { JudgeCase } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: { costLog: { create: vi.fn().mockResolvedValue({ id: BigInt(1) }) } },
@@ -136,16 +128,7 @@ const goldenCaseFitness: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('CopywritingAgent free mode LLM Judge — 2 golden cases', () => {
-  beforeEach(() => {
-    mockComplete.mockResolvedValue({
-      content: { pass: true, score: 8, reason: 'markdown超过400字✓；含#标题✓；hook开场✓；干货内容≥2段✓；cta引导✓；elements非空✓' },
-      tokens: { prompt: 320, completion: 88, total: 408 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1250,
-      trace_id: 'judge-CopywritingAgent-free-test',
-    });
-  });
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('CopywritingAgent free mode LLM Judge — 2 golden cases', () => {
 
   it('医美自媒体 golden case(熬夜皮肤好) passes judge with score >= threshold', async () => {
     const result = await runJudge(goldenCaseMedical);

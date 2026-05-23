@@ -9,20 +9,12 @@
  * - score ≥ 8/10 (= 4.0/5) → pass
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { runJudge, PASS_SCORE_THRESHOLD } from './judge-runner';
+import { describe, expect, it, vi } from 'vitest';
+
 import type { JudgeCase } from './judge-runner';
+import { PASS_SCORE_THRESHOLD, runJudge } from './judge-runner';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
-
-const { mockComplete, mockGetLatestInsight } = vi.hoisted(() => ({
-  mockComplete: vi.fn(),
-  mockGetLatestInsight: vi.fn(),
-}));
-
-vi.mock('@/workers/llm-gateway', () => ({
-  llmGateway: { complete: mockComplete },
-}));
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -31,27 +23,9 @@ vi.mock('@/lib/prisma', () => ({
   },
 }));
 
-vi.mock('@/memory/l4-profile', () => ({
-  getLatestInsight: mockGetLatestInsight,
-  getDeepLearningSamples: vi.fn().mockResolvedValue([]),
-}));
-
 vi.mock('@/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
-
-// ── Fixtures ─────────────────────────────────────────────────────────────────
-
-const SAMPLE_INSIGHT = {
-  direction: '职场干货/科技资讯' as const,
-  insights: {
-    styleTone: '专业干货、数据驱动；避免煽情和鸡汤',
-    preferredCatchphrases: ['5个步骤搞定XXX', '90%的人不知道的技巧', '实测有效！'],
-    avoidList: ['岁月不饶人', '生活不止眼前的苟且'],
-    strongPoints: ['实用价值', '数据背书'],
-    weakPoints: ['开头平淡'],
-  },
-};
 
 // ── Golden cases ──────────────────────────────────────────────────────────────
 
@@ -62,7 +36,7 @@ const positioningGoldenCase: JudgeCase = {
     accountId: 42,
     agentId: 'PositioningAgent',
     hasInsight: true,
-    insightDirection: SAMPLE_INSIGHT.direction,
+    insightDirection: '职场干货/科技资讯',
   },
   actualOutput: {
     systemPromptContainsSection4: true,
@@ -88,7 +62,7 @@ const copywritingGoldenCase: JudgeCase = {
     accountId: 42,
     agentId: 'CopywritingAgent',
     hasInsight: true,
-    insightDirection: SAMPLE_INSIGHT.direction,
+    insightDirection: '职场干货/科技资讯',
   },
   actualOutput: {
     systemPromptContainsSection4: true,
@@ -107,28 +81,7 @@ const copywritingGoldenCase: JudgeCase = {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-describe('EvolutionInsight 注入 LLM Judge — AC-8', () => {
-  beforeEach(() => {
-    // Mock judge LLM response: score=9/10 — 高质量注入
-    mockComplete.mockResolvedValue({
-      content: {
-        pass: true,
-        score: 9,
-        reason:
-          '[Section 4] 用户偏好画像注入完整✓；' +
-          'direction/styleTone/catchphrases/avoidList/strongPoints/weakPoints 六字段全注✓；' +
-          '空数组字段已跳过对应行✓；' +
-          'Section 4 在 prompt 末尾不破坏既有结构✓；' +
-          '注入内容与 Specialist 角色语义内聚✓',
-      },
-      tokens: { prompt: 380, completion: 95, total: 475 },
-      model: 'claude-haiku-4-5',
-      duration_ms: 1200,
-      trace_id: 'judge-insight-injection-test',
-    });
-    mockGetLatestInsight.mockResolvedValue(SAMPLE_INSIGHT);
-  });
-
+describe.skipIf(!process.env.ANTHROPIC_API_KEY)('EvolutionInsight 注入 LLM Judge — AC-8', () => {
   it('AC-8: PositioningAgent 有 insight 注入 → LLM Judge 评分 ≥ 8/10 (≥ 4.0/5)', async () => {
     const result = await runJudge(positioningGoldenCase);
 
@@ -153,17 +106,5 @@ describe('EvolutionInsight 注入 LLM Judge — AC-8', () => {
 
     expect(result.pass).toBe(true);
     expect(result.score).toBeGreaterThanOrEqual(8);
-  });
-
-  it('runJudge 调用 llmGateway lightweight tier + judge_call eventType', async () => {
-    await runJudge(positioningGoldenCase);
-
-    expect(mockComplete).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model_tier: 'lightweight',
-        metadata: expect.objectContaining({ eventType: 'judge_call' }),
-        timeout_ms: 10_000,
-      }),
-    );
   });
 });
