@@ -291,9 +291,129 @@ export function listInterRaterSubset(allIds: number[], runId: string, n = 30): n
 ## §9 · 归档
 
 本 PRD-28 retrospective 完成时间: 2026-05-23 BJT
+本 retro 第 1 版由 ralph daemon US-008 写 · 第 2 版由 Opus 主对话 /prd-retro 时补 §10/11/12/13 校准 + L4 diff + §17 汇总。
 
 下一 PRD: PRD-29 (待规划 · 建议 apps/admin lint cleanup + evaluation pipeline smoke + 其他功能扩展)
 
 ---
 
+## §10 · 数据校准(Opus /prd-retro · 修 US-008 retro 偏差 · 2026-05-23)
+
+US-008 ralph 写的 §0/§1 数据存在偏差 · 校准如下:
+
+| 指标 | US-008 写 | Opus 校准 | 偏差根因 |
+|---|:-:|:-:|---|
+| audit 1iter rate | 7/7 = 100% | **7/8 = 87.5%** | US-008 漏算 US-001(force PATH-B 算 audit cycle)+ 漏算 US-004 Opus reject(我 reject 但 prd.json retryCount 不 increment · ralph 看不到) |
+| dev 1iter rate | 4/7 = 57% | **4/8 = 50%** | 同上 · 漏算 US-001 dev iter |
+| 0 reject 连续天数 | 6 PRD (PRD-23~28) | **5 PRD (PRD-23~27) · PRD-28 中断 1 次** | PRD-28 US-004 D-266 reject 1 次 |
+| TD 净变化 | +1 | **+5** | TD-027 close(-1)+ TD-103/105/106/107/108/109 6 个新登记(+6) |
+
+**真实双指标**:
+- ✅ **audit 1iter rate = 7/8 = 87.5%**(US-004 D-266 reject 1 次)
+- ⚠️ **dev 1iter rate = 4/8 = 50%**(US-001 PATH-B + US-004/005/007 各 2 dev iter)
+- ⛔ **0 Opus reject 连续 streak 中断** · PRD-23~27 5 PRD streak · PRD-28 reject 1 次 D-266
+
+---
+
+## §11 · L4 进化 diff 候选(Opus 审核 · 用户决定 apply · 2026-05-23)
+
+> PRD-28 暴露 3 个跨 PRD 反复出现的问题 · 仅生成 diff · 不自动 apply。
+
+### Diff-1: ralph.py 实施 §9.6.3 prompt size > 12K abort(TD-108 · P0)
+
+- **文件** · `~/.claude/scripts/ralph/ralph.py`
+- **原因** · PRD-28 US-001 第 1 版 prompt 19.4K · ralph daemon 没检查 · claude --print 处理 30 min stuck · 触发 RCA-007 拆分版 · 浪费 ~30+ min。`CLAUDE.md §9.6.3` 已写规则但 ralph.py 未实施。
+- **建议 diff**(伪代码):
+
+  ```diff
+  def build_developer_prompt(story, ...):
+      prompt = ...
+  +   PROMPT_ABORT_THRESHOLD = 12000
+  +   if len(prompt) > PROMPT_ABORT_THRESHOLD:
+  +       _write_path_b_audit_gate(story['id'], reason=f"prompt {len(prompt)} 超阈值 · 建议拆", ...)
+  +       return None
+  +   if len(prompt) > 10000:
+  +       print(f"[WARN] prompt size {len(prompt)} 接近 warning 区")
+      return prompt
+  ```
+
+- **ROI**:跨 PRD daemon 避免 stuck · 节省 30-60 min/PRD
+
+### Diff-2: plan-check 2.6.30 foundation 档 files_to_modify > 7 WARN(P1)
+
+- **文件** · `~/.claude/commands/plan-check.md`
+- **原因** · plan-check 未显式检查 foundation 档 + 大 files list 组合 · PRD-28 US-001 24 file 未 warn 直接进 daemon。
+- **建议 diff**(append §2.6.30):
+
+  ```diff
+  + ##### 2.6.30 foundation 档 files_to_modify 数量 WARN
+  + 触发: risk_level in (foundation, medium with downstream≥3) + (files_to_create+modify) > 7
+  + 输出: WARNING [foundation-size] US-NNN: foundation 档 N files > 7 · 建议拆 sub-story
+  ```
+
+- **ROI**:plan-check 阶段 catch · 减少 daemon 重启
+
+### Diff-3: OPUS-AUDIT-CHEATSHEET reject 时反例库检索(P2)
+
+- **文件** · `~/.claude/scripts/ralph/OPUS-AUDIT-CHEATSHEET.md`
+- **原因** · PRD-28 US-004 D-266 reject 时手写 REJECT-TEMPLATE ~500 字 · 反例库已有同模式可引用
+- **建议 diff**(Step 4 加 4.1):
+
+  ```diff
+  + #### Step 4.1: 反例库检索
+  + grep -i "<failing AC keywords>" ~/.claude/playbooks/reject-examples.jsonl | head -3
+  + 命中 ≥ 1 条 → feedback 简化为引用 + 建议 prd skill 升级 anti_patterns 注入
+  ```
+
+- **ROI**:重复模式 reject feedback 减 50%
+
+### Diff 优先级
+
+| Diff | 优先级 | 估时 | 影响 |
+|:-:|:-:|:-:|---|
+| **Diff-1** ralph.py §9.6.3 | **P0** | 30 min code | 所有 PRD daemon |
+| Diff-2 plan-check WARN | P1 | 15 min doc | plan-check 阶段 |
+| Diff-3 CHEATSHEET 反例检索 | P2 | 15 min doc | Opus reject 时 |
+
+---
+
+## §12 · §17 自动汇总 medium TD → reject-examples.jsonl
+
+(prd-retro §17 SOP · 2026-05-23 跑)
+
+| TD | severity | 是否汇总 | reject-examples.jsonl 行号 |
+|:-:|:-:|:-:|---|
+| TD-103 apps/admin lint 308 problems | medium | ✅ | 56 |
+| TD-105 D-267 3 minor 路径偏差 | low | 跳过 | — |
+| TD-106 EvaluationDetailPage 2 import/order | low | 跳过 | — |
+| TD-107 D-269 axis label 字面 | low | 跳过 | — |
+| TD-108 ralph.py prompt size abort 未实施 | medium | ✅ | 57 |
+| TD-109 .planning/codebase/ refresh | low | 跳过 | — |
+
+**汇总后总条数** · seed 35 + PRD-21~28 累积 22 = **57 条**
+
+---
+
+## §13 · 跨 PRD-21~28 8 PRD 完整趋势(校准版)
+
+| PRD | dev 1iter | audit 1iter | Opus reject | TD 净 | verify | 里程碑 |
+|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| PRD-21 | — | — | — | +3 | 45 | 视觉对齐起点 |
+| PRD-22 | 82% | — | 2 | +5 | 52 | 13 admin baselines |
+| PRD-23 | 100% | — | **0** | 0 | 58 | 0 reject 首次 |
+| PRD-24 | 100% | 100% | **0** | 0 | 51 | 32 baselines |
+| PRD-25 | 100% | 100% | **0** | -2 | 40 | LLM 接入 10 page |
+| PRD-26 | 100% | 100% | **0** | -8 | 33 | admin MVP polish |
+| PRD-27 | 60% | 100% | **0** | -1 | 33 | 1:1 复刻完成 100% |
+| **PRD-28** | **50%** | **87.5%** | **1**(D-266)| **+5** | **43** | **TD-027 真闭环 6 PRD 历史欠债清算** |
+
+**校准观察**:
+- 0 Opus reject **连续 5 PRD streak (PRD-23~27)** · PRD-28 中断 1 次(D-266 边界 case)
+- dev 1iter rate 下降:PRD-23~26 100% → PRD-27 60% → PRD-28 50% · 复杂度上升
+- audit 1iter 87.5% 仍高位 · Opus audit 标准未降
+- TD 净:PRD-26 -8 历史最大清理 · PRD-28 +5 主因 lint 历史 + ralph.py SOP gap
+
+---
+
 *PRD-28 evaluation 完整化 · Ralph v2 + Opus 4.7 · RCA-007 拆分版 8 US 数据*
+*第 1 版 ralph daemon US-008 写(2026-05-23 05:46)· 第 2 版 Opus /prd-retro 补强(2026-05-23 06:15)*
