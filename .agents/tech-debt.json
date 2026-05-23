@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-05-23T07:49:27",
+  "last_updated": "2026-05-23T11:51:09",
   "items": [
     {
       "id": "TD-001",
@@ -2245,7 +2245,7 @@
       "discovered_at": "2026-05-23",
       "discovered_by": "Opus audit PRD-28 US-008 (AC-5 retro check)",
       "severity": "medium",
-      "status": "open",
+      "status": "resolved",
       "evidence": "CLAUDE.md §9.6.3 写了 'prompt 字节 > 12K → 🔴 拒启 daemon · ralph.py warning + abort · 强制 prd skill 重 split' 规则 · 但 ralph.py build_developer_prompt() 函数无 len(prompt) > LIMIT abort 实现 · US-001 实测 prompt 估计 11.6K 触发 PATH-B 正是此问题 symptom",
       "root_cause": "§9.6.3 规则是 PRD-7/8 教训后写入 CLAUDE.md · 但 ralph.py 代码版本未同步实施 abort logic · 只有文档规则没有代码 enforcement",
       "scheduled_fix_in": "PRD-29+ · ralph.py infra story · ralph-tools.py check-risk 命令已存在",
@@ -2257,7 +2257,10 @@
       "related_td": [
         "TD-103"
       ],
-      "additional_finding": "ralph-tools.py check-risk 命令 (2026-05-04 新增) 可检测 risk_level=large 但无法检测 prompt 字节数 · 两者互补"
+      "additional_finding": "ralph-tools.py check-risk 命令 (2026-05-04 新增) 可检测 risk_level=large 但无法检测 prompt 字节数 · 两者互补",
+      "resolved_in_prd": "PRD-28 /prd-retro L4 Diff-1",
+      "resolved_at": "2026-05-23T11:51:09",
+      "close_evidence": "build_developer_prompt L1093 加 §9.6.3 size check · > 12K 写 PATH-B audit-gate + return '' · run_developer L1346 检测 empty 跳 dev iter return False,False · py_compile OK · 全局 + 项目副本同步"
     },
     {
       "id": "TD-109",

@@ -1090,7 +1090,25 @@ def build_developer_prompt(story_id: str | None) -> str:
             if dep_story and dep_story.get("passes", False):
                 context_parts.append(f"- **{dep_id}**: {dep_story.get('title')} — [OK] 已完成")
 
-    return "\n".join(context_parts)
+    final_prompt = "\n".join(context_parts)
+
+    # §9.6.3 prompt size abort (TD-108 · PRD-28 RCA-007 教训 · 2026-05-23)
+    # > 12K 自动写 PATH-B audit-gate · 跳过 dev iter · 防 claude --print stuck
+    PROMPT_ABORT_THRESHOLD = 12000
+    PROMPT_WARN_THRESHOLD = 10000
+    prompt_size = len(final_prompt)
+    if prompt_size > PROMPT_ABORT_THRESHOLD and story_id:
+        print(f"\n{'='*64}")
+        print(f"  [ABORT] §9.6.3 prompt size {prompt_size} 超 abort 阈值 {PROMPT_ABORT_THRESHOLD}")
+        print(f"  Story: {story_id} · 自动写 PATH-B audit-gate · 跳过 dev iter")
+        print(f"  建议: 拆 sub-story · files_to_modify > 7 或 AC > 10 是常见根因")
+        print(f"{'='*64}")
+        _write_path_b_audit_gate(story_id, commit_hash="size-abort-no-commit")
+        return ""  # 上层 run_developer 检测 empty 跳过 dev iter
+    if prompt_size > PROMPT_WARN_THRESHOLD:
+        print(f"  [WARN] prompt size {prompt_size} 接近 warning 区(10-12K) · 可能 stuck")
+
+    return final_prompt
 
 
 def build_validator_prompt(story_id: str | None) -> str:
@@ -1340,6 +1358,11 @@ def run_developer(iteration: int, story_id: str | None) -> tuple[bool, bool]:
     duration = 0.0
     for net_attempt in range(3):
         prompt = build_developer_prompt(story_id)
+        # §9.6.3 prompt size abort sentinel (TD-108 · PRD-28 RCA-007 教训 · 2026-05-23)
+        # build_developer_prompt 返回 "" 表示 prompt > 12K abort · 已写 PATH-B audit-gate
+        if prompt == "" and story_id:
+            print(f"  [SKIP-DEV] §9.6.3 prompt size abort · audit-gate 已写 · 等 Opus 审 + 决策(approve/reject/拆 story)")
+            return False, False  # 不算 timed_out 不算 crashed · 跳过 dev iter
         timed_out, exit_code, duration = run_agent(prompt, "开发迭代", TIMEOUT_SECONDS)
         log_cost(story_id, "developing", duration, iteration)
         crashed = (not timed_out and exit_code is not None and exit_code != 0)
