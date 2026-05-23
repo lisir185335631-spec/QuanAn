@@ -10,6 +10,7 @@ import {
   STEP3_CTA_BULK_REGENERATE,
   STEP3_H1,
   STEP3_RESULT_H2,
+  STEP3_SUBTITLE_TEMPLATE,
 } from '@/lib/constants/step3';
 
 export interface Step3PageHeaderProps {
@@ -40,7 +41,9 @@ export function Step3PageHeader({
             {STEP3_H1}
           </h1>
           <p className="text-body-sm text-muted-foreground">
-            当前行业：<GoldenHighlight industry={industry} />。输入你的个人信息，AI 将为你生成极其详细的账号包装方案。
+            {STEP3_SUBTITLE_TEMPLATE.split('{industry}')[0]}
+            <GoldenHighlight industry={industry} />
+            {STEP3_SUBTITLE_TEMPLATE.split('{industry}')[1]}
           </p>
         </div>
 
