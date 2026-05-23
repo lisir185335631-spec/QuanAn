@@ -5,6 +5,52 @@
 
 ## 执行日志(按 story 倒序)
 
+## 2026-05-23 22:50 - US-014 [PRD-29] · 收官 /goal-verify + /prd-retro + ADR-022 + ROADMAP-PRD-29-35
+- 实现了什么:
+  - .agents/verification/prd-29-step-3-foundation.md: 新建 · §0 代码事实层同步 + §1 Goal-backward 7 锚点对账 + §2 决策锁 D-273~D-297 + §3 零回归验证 + §4 结论(全 PASS)
+  - .agents/retros/prd-29-vs-prd-28-retrospective.md: 新建 · §0 9 PRD 严格通过率趋势 + §0.2 17 dev US 分布 + §1 通过率分析 + §2 cloner skill 5-phase 评估(D-297 锁 · 写在 retro) + §3 Playbook 5 项 + §4 TD 状态 + §5 Diff 建议 + §6 跨 PRD 趋势
+  - ADR.md: v0.3 修订 · 添加 ADR-022(globals.css 全量 OKLCH token 切换路 α) · 完整 Context/Options/Decision/Consequences/Implementation/References · Status = '实施完成 2026-05-23 · commit 4dc30f2 · visual diff 8.03%'
+  - ROADMAP-PRD-29-35.md: 新建 · PRD-29 SHIPPED ✅ 完整数据 + PRD-30 待启(需截图) + PRD-31~35 规划中
+  - scripts/ralph/progress.txt: 追加本记录(AC-5)
+- 验证结果:
+  - AC-1: .agents/verification/prd-29-step-3-foundation.md ✓(新建 · §0~§4 完整)
+  - AC-2: .agents/retros/prd-29-vs-prd-28-retrospective.md ✓(PRD-29 vs PRD-28 严格通过率 + cloner skill 5-phase + 5 playbook + TD 状态)
+  - AC-3: ADR.md ADR-022 · '实施完成 2026-05-23 · commit 4dc30f2 · visual diff 8.03%' ✓
+  - AC-4: reject-examples.jsonl 无新增(PRD-29 0 Opus reject · 57 条不变) ✓
+  - AC-5: progress.txt 本记录追加 ✓
+  - AC-6: ROADMAP-PRD-29-35.md · PRD-29 SHIPPED · PRD-30 待启 ✓
+  - AC-7: cloner skill 5-phase 评估写在 retro §2(D-297 锁 · SKILL.md 文件不存在) ✓
+  - AC-8: 通知用户 PRD-30 需 /step/3b /step/4b /evolution result-state 完整截图(见 ROADMAP §PRD-30)✓
+  - AC-9: pnpm typecheck 6 ws Done 0 error ✓
+  - bonus: verify-prd-29.sh 40/40 PASS exit 0 ✓
+- 更改的文件:
+  - .agents/verification/prd-29-step-3-foundation.md (新建)
+  - .agents/retros/prd-29-vs-prd-28-retrospective.md (新建)
+  - ADR.md (v0.3 · ADR-022 新增 · ADR 索引表新增一行)
+  - ROADMAP-PRD-29-35.md (新建)
+  - scripts/ralph/progress.txt (本记录)
+- **未来迭代的学习:**
+  - PRD-29 dev 1iter 94% 创新高 · 关键因素: Foundation 先行 + sub-feature 小粒度(small/medium) + constants 独立 story
+  - US-012 2nd iter 根因: template literal 含 {industry} 占位符未在 AC 里标注 split 方式 → prd skill 应在字面对账 AC 加 template split 说明
+  - ADR-022 路 α 验证有效: globals.css 1 文件 1 commit · 业务代码 0 修改 · PRD-30~35 直接受益
+  - cloner skill 5-phase 适用 PRD-30: Phase 1(截图 baseline) → Phase 2(Foundation review) → Phase 3(sub-feature 拆) → Phase 4(Integration) → Phase 5(Verify)
+  - result-state 截图对比优于 form-state: diff-aiipznt-step-3-image.mjs 8.03% 是 form-state vs result-state · 真实 layout diff 应 < 3%
+---
+
+--- [RALPH] Iteration 8 ended: US-014 (完成 · PRD-29 全 18 US ship) ---
+
+=== PRD-29 完整执行摘要 ===
+  Branch: ralph/prd-29-step3-foundation
+  总 US: 18(17 dev + 1 retro)
+  dev 1iter rate: 94%(16/17)
+  audit 1iter rate: 100%(17/17)
+  Opus reject: 0
+  verify checks: 40/40 ALL PASS
+  git tag: prd-29-complete
+  ADR-022: 实施完成 · commit 4dc30f2 · 2026-05-23
+  PRD-30: 待启 · 需 /step/3b /step/4b /evolution 截图
+===================================
+
 ## 2026-05-23 18:22 - US-008 [PRD-29] · IntroCopySection + IntroCopyPlatformCard · 简介文案方案 H3
 - 实现了什么:
   - apps/web/src/components/step3/IntroCopyPlatformCard.tsx: 新建 · IntroCopyEntry interface + 平台标题 + 长文案 + hashtag chip('#' 前缀 · bg-primary/10 text-primary) + 评估 + Copy button(sonner toast '已复制 {platformLabel} 简介文案') + placeholder/empty 骨架态
@@ -5887,3 +5933,7 @@ audit-artifacts: PASS (exit_code=0 + manifest.zero_regression=PASS)
   - 收官 verify 的 e2e 建议用 self-baseline(非 aiipznt baseline) 做 maxDiffPixelRatio 0.05 regression guard · 避免 state 差异造成误判
   - diff script 始终 exit 0(informational) · verify script 只检查文件存在 + 包可 require · 不在 verify script 跑实际 playwright 截图+比对
 ---
+
+--- [RALPH] Iteration 7 ended: US-013 (49分钟 11秒) ---
+
+--- [RALPH] Iteration 8 started: US-014 at 2026-05-23 21:08 ---
