@@ -20,6 +20,7 @@ import {
   emergencyApprove,
 } from '@/services/admin/approval/approvalGateService';
 import { DingtalkService } from '@/services/admin/notifications/dingtalk.service';
+import { invalidateLlmKeyCache } from '@/workers/llm-gateway/index';
 
 import type { Prisma } from '@prisma/client';
 
@@ -171,8 +172,11 @@ export async function _updateSystemConfigInTx(
     },
   });
 
-  // Invalidate cache after write
+  // Invalidate caches after write
   invalidateSystemConfigCache(configKey);
+  // Also invalidate LLM key cache if this config key is an LLM API key (AC-3 PRD-29.6 US-002)
+  if (configKey === 'LLM_ANTHROPIC_API_KEY') invalidateLlmKeyCache('anthropic');
+  else if (configKey === 'LLM_OPENAI_API_KEY') invalidateLlmKeyCache('openai');
 
   await logAdminAction({
     actorAdminId: adminId,
