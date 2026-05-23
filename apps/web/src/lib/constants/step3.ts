@@ -86,3 +86,11 @@ export const STEP3_LOADING_TEXT = 'AI 正在生成你的账号包装方案，预
 // PRD-20 TD-80 fix: Step3Result heading + Optimize button 常量
 export const STEP3_RESULT_H2 = '账号包装方案' as const;
 export const STEP3_OPTIMIZE_CONFIRM_BUTTON = '确认优化' as const;
+
+// PRD-29 US-002 · Step3Form 常量 · 字面锁(AC-6)
+export const STEP3_TEXTAREA_PLACEHOLDER = '详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。\n\n示例：我是一名有10年经验的美容师，擅长皮肤管理和抗衰项目...';
+export const STEP3_TARGET_AUDIENCE_PLACEHOLDER = '你想吸引什么样的粉丝？';
+export const STEP3_ACCOUNT_STATUS_PLACEHOLDER = '新账号/已有账号的粉丝量等';
+export const STEP3_CTA_PRIMARY = '生成账号包装方案';
+export const STEP3_CTA_REGENERATE = '⟲ 重新生成';
+export const STEP3_CTA_LOADING = '[⟳ 深度分析中...]';
