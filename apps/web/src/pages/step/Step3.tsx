@@ -245,11 +245,10 @@ export default function Step3() {
   // PRD-29.5 · default 用 mock data render(真 1:1 复刻 · 跟 aiipznt sally 默认看到内容一致)
   // hasRealData 区分 · canBulkActions 用 real(防 mock 数据被"复制全部"误触)
   const rawResult = dbQuery.data?.result as Record<string, unknown> | null | undefined;
-  const hasRealData = !!rawResult;
   const generated: Step3Result = rawResult ? adaptStep3Result(rawResult) : generateMockResult();
 
-  // AC-4: canBulkActions = 真数据 && 非 loading(mock 状态下 disabled · 防误复制 mock)
-  const canBulkActions = hasRealData && !isLoading;
+  // AC-4: D-302 锁 · canBulkActions = !isLoading(去掉 hasRealData 限制 · mock data 时也可 click)
+  const canBulkActions = !isLoading;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -262,6 +261,16 @@ export default function Step3() {
     if (isLoading || !personalInfo.trim() || !platform) return;
     isForceRegenerateRef.current = true;
     generateMutation.mutate({ personalInfo, platform, audience, accountStatus, force: true });
+  }
+
+  // AC-1: toolbar 复制全部 → 拼接全 6 H3 内容 → clipboard + toast
+  function handleCopyAll() {
+    const text = JSON.stringify(generated, null, 2);
+    navigator.clipboard.writeText(text).then(() => {
+      toast.success('已复制全部到剪贴板');
+    }).catch(() => {
+      toast.error('复制失败，请手动复制');
+    });
   }
 
   // AC-4: optimize button handler
@@ -278,6 +287,7 @@ export default function Step3() {
         canBulkActions={canBulkActions}
         onOptimize={handleOptimize}
         onRegenerateAll={handleRegenerateAll}
+        onCopyAll={handleCopyAll}
       />
 
       {/* 2. Step3Form */}

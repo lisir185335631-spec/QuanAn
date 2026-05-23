@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Step3 from '@/pages/step/Step3';
 
@@ -32,6 +32,15 @@ vi.mock('@/lib/trpc', () => ({
     },
   },
 }));
+
+const mockClipboardWriteText = vi.fn().mockResolvedValue(undefined);
+
+beforeEach(() => {
+  mockClipboardWriteText.mockClear();
+  Object.assign(navigator, {
+    clipboard: { writeText: mockClipboardWriteText },
+  });
+});
 
 function renderStep3() {
   return render(
@@ -108,13 +117,26 @@ describe('Step3 integration (US-010b)', () => {
     expect(h3Texts.some((t) => /整体包装策略/.test(t))).toBe(true);
   });
 
-  // ── empty state: canBulkActions=false when no data ───────────────────────
+  // ── AC-4: D-302 锁 · canBulkActions = !isLoading · mock data 时也 enabled ─
 
-  it('toolbar bulk action buttons are disabled when no generated data (empty state)', () => {
+  it('toolbar bulk action buttons are enabled with mock data (canBulkActions = !isLoading, AC-4 D-302)', () => {
     renderStep3();
-    expect(screen.getByRole('button', { name: /智能优化/ })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /一键重新生成/ })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /复制全部/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /智能优化/ })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: /一键重新生成/ })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: /复制全部/ })).not.toBeDisabled();
+  });
+
+  // ── AC-6: toolbar 复制全部 → clipboard.writeText ──────────────────────────
+
+  it('toolbar 复制全部 onClick triggers clipboard.writeText with serialized content (AC-6)', async () => {
+    renderStep3();
+    const copyAllBtn = screen.getByRole('button', { name: /复制全部/ });
+    fireEvent.click(copyAllBtn);
+    await waitFor(() => {
+      expect(mockClipboardWriteText).toHaveBeenCalledWith(expect.any(String));
+    });
+    const calledWith = mockClipboardWriteText.mock.calls[0]?.[0] as string;
+    expect(calledWith.length).toBeGreaterThan(0);
   });
 
   // ── form interactions ────────────────────────────────────────────────────
