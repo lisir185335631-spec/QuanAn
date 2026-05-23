@@ -228,11 +228,14 @@ export default function Step3() {
   const isLoading = generateMutation.isPending || isSaving;
 
   // AC-5: adapt backend result with stub parsing + mock fallback
+  // PRD-29.5 · default 用 mock data render(真 1:1 复刻 · 跟 aiipznt sally 默认看到内容一致)
+  // hasRealData 区分 · canBulkActions 用 real(防 mock 数据被"复制全部"误触)
   const rawResult = dbQuery.data?.result as Record<string, unknown> | null | undefined;
-  const generated: Step3Result | null = rawResult ? adaptStep3Result(rawResult) : null;
+  const hasRealData = !!rawResult;
+  const generated: Step3Result = rawResult ? adaptStep3Result(rawResult) : generateMockResult();
 
-  // AC-4: canBulkActions = !!generated && !isLoading
-  const canBulkActions = !!generated && !isLoading;
+  // AC-4: canBulkActions = 真数据 && 非 loading(mock 状态下 disabled · 防误复制 mock)
+  const canBulkActions = hasRealData && !isLoading;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

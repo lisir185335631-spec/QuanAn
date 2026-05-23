@@ -1093,9 +1093,11 @@ def build_developer_prompt(story_id: str | None) -> str:
     final_prompt = "\n".join(context_parts)
 
     # §9.6.3 prompt size abort (TD-108 · PRD-28 RCA-007 教训 · 2026-05-23)
-    # > 12K 自动写 PATH-B audit-gate · 跳过 dev iter · 防 claude --print stuck
-    PROMPT_ABORT_THRESHOLD = 12000
-    PROMPT_WARN_THRESHOLD = 10000
+    # > 18K 自动写 PATH-B audit-gate · 跳过 dev iter · 防 claude --print stuck
+    # PRD-29 调整 12K→18K · CLAUDE.md base 已 12K + depends_on 8 stories 让 US-010 必超
+    # 实测 US-001a~009 prompt 15-19K 跑通无 stuck · 18K 留 buffer · TD-PRD-29-prompt-abort-threshold 留 retro 讨论永久值
+    PROMPT_ABORT_THRESHOLD = 18000
+    PROMPT_WARN_THRESHOLD = 15000
     prompt_size = len(final_prompt)
     if prompt_size > PROMPT_ABORT_THRESHOLD and story_id:
         print(f"\n{'='*64}")
