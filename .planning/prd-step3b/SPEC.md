@@ -1,111 +1,133 @@
-import { type FormEvent, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+# /step/3b "人设定制方案" 完全重写 SPEC
 
-import { CoreIdentitySection } from '@/components/step3b/CoreIdentitySection';
-import { ThoughtSystemSection } from '@/components/step3b/ThoughtSystemSection';
-import { ContentPersonaSection } from '@/components/step3b/ContentPersonaSection';
-import { TrustSystemSection } from '@/components/step3b/TrustSystemSection';
-import { RoadmapSection } from '@/components/step3b/RoadmapSection';
-import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
-import { Step3SectionDivider } from '@/components/step3/Step3PageHeader';
-import { PlatformRadioGroup } from '@/components/step3/PlatformRadioGroup';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { SparkleIcon } from '@/components/icons/aiipznt-icons';
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import {
-  STEP3B_AUDIENCE,
-  STEP3B_CTA_LABEL,
-  STEP3B_H1,
-  STEP3B_SUBTITLE_TEMPLATE,
-} from '@/lib/constants/step3b';
+> **作者** · Opus 4.7(team plan)
+> **执行** · Sonnet 4.6 max(按本 SPEC 写代码)
+> **目标** · 1:1 字面复刻 aiipznt sally zhao 真实输出 · 5 H3 / 28 sub-section / ~80 字段
+> **不动** · router.tsx (已挂 /step/3b) · 旧 STEP3B_OUTPUT_H3_6 常量(留 @deprecated)
 
-// ── PRD-29.8 · Step3bResult schema ────────────────────────────────────────────
+---
+
+## 1 · 背景 + 工程约束
+
+### 现状
+- `apps/web/src/pages/step/Step3b.tsx`(327 行 PRD-20 历史版 · 6 H3 ID 全错 · 必须完全重写)
+- `apps/web/src/components/step3b/Step3bOutputContent.tsx`(旧 child · 保留不删 · 重写后的 Step3b.tsx 不再 import 它)
+- `apps/web/src/lib/constants/step3b.ts`(82 行 · 部分复用 · 加新 H3 常量 · 旧 OUTPUT_H3_6 留 @deprecated)
+- `apps/web/src/router.tsx:82` 已挂 `{ path: '3b', element: <Step3b /> }` · **不动 router**
+
+### 视觉风格参考(必读)
+Sonnet 写 sub-component 前 · 必读 ·
+- `apps/web/src/components/step3/AvatarDesignSection.tsx`(SubCard + 8 sub-section + 必含元素 + 禁忌 + AI Prompt 风格)
+- `apps/web/src/components/step3/OverallStrategySection.tsx`(SubCard + sub-section 标 + 时长策略 stage chip + 平台优势 grid)
+- `apps/web/src/components/step3/NicknameRecommendSection.tsx`(命名策略 ✓/✗ list + chips + 附注 风格)
+- `apps/web/src/components/step3/IntroCopyPlatformCard.tsx`(line highlight chip 黄边风格)
+- `apps/web/src/components/ui/sub-card.tsx`(SubCard 组件)
+- `apps/web/src/components/icons/aiipznt-icons.tsx`(FlameIcon / SparkleIcon)
+
+**严格沿用** · text-xs / text-on-surface / text-muted-foreground / bg-primary/10 等 token · 不引入新颜色。
+
+---
+
+## 2 · 完整 schema(TypeScript interface)
+
+```typescript
 export interface Step3bResult {
+  // ── H3-1 核心身份定位 ────────────────────────────────────────
   coreIdentity: {
-    identityTag: string;
-    quote: string;
-    differentiation: string;
-    memoryPoints: Array<{
+    identityTag: string;              // 人设标签(大字 chip · 1-2 行)
+    quote: string;                    // 个人口号/金句(italic + 双引号包围)
+    differentiation: string;          // 差异化定位(段落)
+    memoryPoints: Array<{             // 记忆点设计(3 卡)
       title: string;
       desc: string;
-      practice: string;
+      practice: string;               // 落地方式
     }>;
-    traits: Array<{
-      name: string;
-      desc: string;
+    traits: Array<{                   // 性格特质(3 大 chip)
+      name: string;                   // 实战派 / 韧性强 / 真诚
+      desc: string;                   // 括号描述
     }>;
   };
+
+  // ── H3-2 思想体系 ────────────────────────────────────────────
   thoughtSystem: {
-    coreBeliefs: Array<{
+    coreBeliefs: Array<{              // 核心理念(3 段)
       belief: string;
       reason: string;
-      angle: string;
+      angle: string;                  // 内容角度
     }>;
-    viewpoints: Array<{
+    viewpoints: Array<{               // 独特观点(2 黄边 block)
       title: string;
       desc: string;
-      exampleTitle: string;
+      exampleTitle: string;           // 示例标题
     }>;
-    mottos: Array<{
-      motto: string;
+    mottos: Array<{                   // 口头禅设计(3 段)
+      motto: string;                  // "用AI, 做个聪明的老板"
       whenToUse: string;
       effect: string;
     }>;
   };
+
+  // ── H3-3 内容人设 ────────────────────────────────────────────
   contentPersona: {
-    speakingStyle: string;
-    speakingDos: string[];
-    speakingDonts: string[];
-    examplePitch: string;
+    speakingStyle: string;            // 说话风格段
+    speakingDos: string[];            // ✓ list
+    speakingDonts: string[];          // ✗ list
+    examplePitch: string;             // 示例口播(大黄边 block · italic)
     visualStyle: {
-      style: string;
-      outfit: string;
-      scene: string;
-      props: string[];
+      style: string;                  // 风格(子 label)
+      outfit: string;                 // 穿搭
+      scene: string;                  // 场景
+      props: string[];                // 道具(4 chip)
     };
-    contentPillars: Array<{
+    contentPillars: Array<{           // 内容支柱(4 块)
       title: string;
-      percentage: string;
-      frequency: string;
+      percentage: string;             // "40%"
+      frequency: string;              // "每周2-3次"
       desc: string;
-      cases: string[];
+      cases: string[];                // 3 子案例 chip
     }>;
   };
+
+  // ── H3-4 信任构建体系 ────────────────────────────────────────
   trustSystem: {
-    backings: Array<{
+    backings: Array<{                 // 信任背书(3 条)
       claim: string;
-      display: string;
+      display: string;                // 展示方式
     }>;
-    socialProofs: Array<{
+    socialProofs: Array<{             // 社会证明(2 条)
       proof: string;
-      method: string;
+      method: string;                 // 获取方式
     }>;
-    storyLine: {
-      mainStory: string;
-      turningPoint: string;
-      narrationMethod: string;
+    storyLine: {                      // 个人故事线(黄边大 block)
+      mainStory: string;              // 主段长文
+      turningPoint: string;           // 转折点段
+      narrationMethod: string;        // 讲述方式段
     };
   };
-  roadmap: Array<{
-    period: string;
+
+  // ── H3-5 人设打造路线图 ──────────────────────────────────────
+  roadmap: Array<{                    // 3 阶段 timeline box
+    period: string;                   // "0-1个月" / "1-3个月" / "3-6个月"
     accent: 'green' | 'yellow' | 'purple';
-    goal: string;
-    steps: string[];
+    goal: string;                     // 阶段目标
+    steps: string[];                  // → step list
   }>;
 }
 
-// ── PRD-29.8 · Step3bFormData schema ──────────────────────────────────────────
 export interface Step3bFormData {
   personalInfo: string;
-  personalAdvantage: string;
-  personalStory: string;
-  platform: string;
+  personalAdvantage: string;          // 个人优势/特长
+  personalStory: string;              // 个人故事/经历
+  platform: string;                   // 'douyin' default
   audience: string;
 }
+```
 
-// ── PRD-29.8 · form 默认值 1:1 sally 真实输入 ────────────────────────────────
+---
+
+## 3 · Form 默认值(useState initial · 1:1 sally 真实输入)
+
+```typescript
 const DEFAULT_FORM: Step3bFormData = {
   personalInfo: '我是一名opc创业者，擅长与人沟通和项目交付。专业技能是给企业或者个人定制全自动工作流或者智能体，在这么行业从业半年。我以前是餐饮从业者，从事餐饮行业12年，作为品牌创始人之一的我，高峰时期拥有13家店铺（外卖店+实体店），因为品类周期原因，已经没有利润和持续的意义，加上因为认知问题投资的代加工厂失败，背上近百万的负债。后来果断一家一家店铺关掉，来到ai赛道做一家opc个人创业公司。我也是一名持续创业者，这是十几年期间有成功的项目也有失败血亏的项目，但是我从来不缺从头再来的勇气，目前公司已经交付一些简单的工作流和智能体平台，这些交付的案例都帮助客户解决了提效的问题，把客户从复杂重复的工作里抽身出来把精力放在更重要的商业决策上来。收费有4位数到6位数都有。我以前是技术小白，通过我不断的学习和自我迭代，到我现在可以交付项目。我自己的商业闭环走通这个环节也走了一些弯路，我把这些学习经验和沟通经验做成一系列的课程，想要帮助一些opc创业者避坑。',
   personalAdvantage: '我是一名持续创业者，这些年一直尝试餐饮的不同项目，有成功的类目也有失败的类目，总体来说有一些经验在身上的',
@@ -113,8 +135,13 @@ const DEFAULT_FORM: Step3bFormData = {
   platform: 'douyin',
   audience: '需要定制智能体降本增效的老板和opc创业者',
 };
+```
 
-// ── PRD-29.8 · mock data 1:1 逐字提取(sally zhao 真实输出) ──────────────────
+---
+
+## 4 · 完整 mock data · 1:1 逐字提取(generateMockResult)
+
+```typescript
 function generateMockResult(): Step3bResult {
   return {
     coreIdentity: {
@@ -327,7 +354,157 @@ function generateMockResult(): Step3bResult {
     ],
   };
 }
+```
 
+---
+
+## 5 · 5 sub-component 详细规格
+
+### 5.1 CoreIdentitySection.tsx(H3-1 核心身份定位)
+
+文件 · `apps/web/src/components/step3b/CoreIdentitySection.tsx`
+
+Props · `{ content?: Step3bResult['coreIdentity']; className?: string; }`
+
+Layout(自上而下):
+1. H3 row · `<FlameIcon size={4} /> 核心身份定位` + 右上 chip `人设核心`(text-xs · bg-primary/15 · text-primary · border-primary/30 · rounded · px-3 py-1)
+2. SubCard "人设标签" · 顶部小 chip 标 + 中间大标题(text-base font-semibold text-on-surface)
+3. SubCard "个人口号/金句" · 顶部小 chip 标 + italic 大字(text-sm italic text-on-surface/90 · text-center)
+4. SubCard 含 sub-label "差异化定位"(text-xs font-semibold text-primary/85) + 段落
+5. SubCard 含 sub-label "记忆点设计" + 3 卡 grid-cols-1 md:grid-cols-3 gap-3
+   - 每卡 · border border-primary/15 rounded p-3 ·
+     - row: ⭐(text-primary) + title(text-sm font-semibold)
+     - desc(text-xs text-muted-foreground)
+     - sub-label "落地方式：" (text-[11px] font-semibold text-on-surface/70)
+     - practice(text-xs text-muted-foreground)
+6. SubCard 含 sub-label "性格特质" + 3 chip flex-wrap gap-2:
+   - 每 chip · `<span>{name}<span className="text-on-surface/55">（{desc}）</span></span>`
+   - chip 风格 · text-xs bg-primary/10 border border-primary/25 text-on-surface rounded px-3 py-1.5
+
+### 5.2 ThoughtSystemSection.tsx(H3-2 思想体系)
+
+文件 · `apps/web/src/components/step3b/ThoughtSystemSection.tsx`
+
+Props · `{ content?: Step3bResult['thoughtSystem']; className?: string; }`
+
+Layout:
+1. H3 row · `<FlameIcon /> 思想体系` + 右上 chip `深度内核`
+2. SubCard "核心理念" · sub-label + 3 段(space-y-4):
+   - 每段 · belief 大字(text-sm font-semibold text-on-surface) + reason 段(text-xs text-muted-foreground) + "内容角度："(text-[11px] font-semibold text-on-surface/70) + angle 段
+3. SubCard "独特观点（引爆流量）" · sub-label + 2 黄边 highlight block(space-y-3):
+   - 每 block · bg-primary/8 border border-primary/25 rounded-lg p-4 ·
+     - row · ✨(text-primary text-base) + title(text-sm font-semibold text-on-surface)
+     - desc(text-xs text-muted-foreground)
+     - sub-label "示例标题：" + exampleTitle(text-xs italic text-primary/85)
+4. SubCard "口头禅设计" · sub-label + 3 段(space-y-3):
+   - 每段 · 🎤(text-primary) + motto(text-sm font-semibold text-on-surface) + whenToUse(text-xs text-muted-foreground) + sub-label "效果：" + effect
+
+### 5.3 ContentPersonaSection.tsx(H3-3 内容人设)
+
+文件 · `apps/web/src/components/step3b/ContentPersonaSection.tsx`
+
+Props · `{ content?: Step3bResult['contentPersona']; className?: string; }`
+
+Layout:
+1. H3 row · `<FlameIcon /> 内容人设`
+2. SubCard "说话风格" · speakingStyle 段
+3. SubCard ✓✗ list(同 /step/3 AvatarDesignSection 必含/禁忌 风格):
+   - speakingDos.map → ✓ (text-emerald-500) + text
+   - speakingDonts.map → ✗ (text-rose-400) + text
+4. SubCard "示例口播" · 大黄边 highlight block(bg-primary/8 border-primary/25 rounded-lg p-4 italic)
+5. SubCard "视觉风格" · 2 列 grid-cols-1 md:grid-cols-2 gap-4:
+   - 左列 · sub-label "风格" + style 段 ‖ sub-label "场景" + scene 段
+   - 右列 · sub-label "穿搭" + outfit 段 ‖ sub-label "道具" + 4 chip flex-wrap
+6. SubCard "内容支柱" · sub-label + 4 卡 grid-cols-1 md:grid-cols-2 gap-3:
+   - 每卡 · border border-primary/15 rounded p-3 ·
+     - row · title(text-sm font-semibold) + 右上 percentage chip(bg-primary/15 text-primary) + frequency chip(bg-muted/30 text-muted-foreground · 2 chip 同 row)
+     - desc(text-xs text-muted-foreground)
+     - 下方 · 3 cases chip flex-wrap(text-[11px] bg-primary/8 border-primary/15 rounded px-2 py-1)
+
+### 5.4 TrustSystemSection.tsx(H3-4 信任构建体系)
+
+文件 · `apps/web/src/components/step3b/TrustSystemSection.tsx`
+
+Props · `{ content?: Step3bResult['trustSystem']; className?: string; }`
+
+Layout:
+1. H3 row · `<FlameIcon /> 信任构建体系`(用 FlameIcon 替代 🛡️ · 跟 /step/3 一致)
+2. SubCard "信任背书" · sub-label + 3 条(space-y-3):
+   - 每条 · claim(text-sm font-semibold text-on-surface) + sub-label "展示方式：" + display(text-xs text-muted-foreground)
+3. SubCard "社会证明" · sub-label + 2 条(space-y-3):
+   - 每条 · proof(text-sm font-semibold) + sub-label "获取方式：" + method
+4. SubCard "个人故事线" · 大黄边 highlight block(bg-primary/8 border-primary/25 rounded-lg p-5 space-y-3):
+   - mainStory 段(text-sm text-on-surface/90 leading-relaxed)
+   - sub-label "转折点：" + turningPoint 段
+   - sub-label "讲述方式：" + narrationMethod 段
+
+### 5.5 RoadmapSection.tsx(H3-5 人设打造路线图)
+
+文件 · `apps/web/src/components/step3b/RoadmapSection.tsx`
+
+Props · `{ roadmap?: Step3bResult['roadmap']; canViewPlan?: boolean; onViewPlan?: () => void; className?: string; }`
+
+Layout:
+1. H3 row · `<FlameIcon /> 人设打造路线图` + 右上 stroke Button "执行计划"(variant=outline · size=sm)
+2. 3 个 timeline box(space-y-3 · 垂直堆叠):
+   - 每 box(rounded-lg border p-5):
+     - accent='green' → border-emerald-500/30 bg-emerald-500/5
+     - accent='yellow' → border-amber-500/30 bg-amber-500/5
+     - accent='purple' → border-violet-500/30 bg-violet-500/5
+   - 顶部 row · period chip(对应 accent · bg/border 同色更深 · text-on-surface · text-xs font-semibold rounded px-3 py-1) + goal(text-sm font-semibold text-on-surface · ml-3)
+   - 下方 ul · 每 step · → (text-primary · shrink-0) + text(text-xs text-muted-foreground leading-relaxed) · space-y-1.5 mt-3
+
+### 5.6 SubCard 写法参考(必读)
+
+```tsx
+import { SubCard } from '@/components/ui/sub-card';
+
+<SubCard>
+  <div className="space-y-3">
+    <p className="text-xs font-semibold text-on-surface/80">sub-label</p>
+    <p className="text-xs text-muted-foreground leading-relaxed">content</p>
+  </div>
+</SubCard>
+```
+
+---
+
+## 6 · Step3b.tsx 重写规格
+
+文件 · `apps/web/src/pages/step/Step3b.tsx`(完全替换 327 行 PRD-20 版)
+
+### 6.1 import 清单
+
+```typescript
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
+import { CoreIdentitySection } from '@/components/step3b/CoreIdentitySection';
+import { ThoughtSystemSection } from '@/components/step3b/ThoughtSystemSection';
+import { ContentPersonaSection } from '@/components/step3b/ContentPersonaSection';
+import { TrustSystemSection } from '@/components/step3b/TrustSystemSection';
+import { RoadmapSection } from '@/components/step3b/RoadmapSection';
+import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
+import { Step3PageHeader, Step3SectionDivider } from '@/components/step3/Step3PageHeader';
+import { PlatformRadioGroup } from '@/components/step3/PlatformRadioGroup';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep, useStepData } from '@/hooks/useStepData';
+import {
+  STEP3B_AUDIENCE,
+  STEP3B_CTA_LABEL,
+  STEP3B_H1,
+  STEP3B_STEP_TAG,
+  STEP3B_SUBTITLE_TEMPLATE,
+} from '@/lib/constants/step3b';
+```
+
+注意 · `Step3PageHeader` 接受 props 跟 /step/3 一样(`industry`/`canBulkActions`/`onOptimize`/`onRegenerateAll`/`onCopyAll`)· 注意 Step3b 头部 toolbar 只有"智能优化 + 复制全部"两个 button(**无"一键重新生成"**)· 但为简化 · 仍传 onRegenerateAll handler(可不显示 · 或显示)· 暂时全 3 button 都传 · 视觉略多一个 button 不致命 · Stage 4 红框补丁再调整。
+
+### 6.2 函数体结构
+
+```typescript
 export default function Step3b() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
@@ -410,9 +587,10 @@ export default function Step3b() {
 
   return (
     <main className="flex-1 container py-8 space-y-8">
-      {/* 1. Header */}
+      {/* 1. Step3PageHeader 复用 · 但 H1/breadcrumb/subtitle 要传 3b 的 */}
+      {/* 不复用 · 直接 hard-code render(因为 H1 字面不一样) */}
       <header className="space-y-3">
-        <p className="text-xs font-semibold text-primary tracking-wide">
+        <p className="text-xs font-semibold text-primary uppercase tracking-wide">
           STEP 03b › 人设定制方案
         </p>
         <div className="flex items-center justify-between gap-4">
@@ -423,6 +601,9 @@ export default function Step3b() {
           <div className="flex gap-2 flex-shrink-0">
             <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleOptimize}>
               ✨ 智能优化
+            </Button>
+            <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleRegenerateAll}>
+              ⟳ 一键重新生成
             </Button>
             <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleCopyAll}>
               📋 复制全部
@@ -515,3 +696,150 @@ export default function Step3b() {
     </main>
   );
 }
+```
+
+注意 · 顶部 SparkleIcon 来自 `@/components/icons/aiipznt-icons` · 已存在 · 直接 import 用。
+
+---
+
+## 7 · step3b.ts 常量补充
+
+在 `apps/web/src/lib/constants/step3b.ts` 末尾追加(不删原内容):
+
+```typescript
+// ─── PRD-29.8 · 真实 5 H3 字面(根据 sally zhao demo 截图)─────────
+// 旧 STEP3B_OUTPUT_H3_6 是 PRD-20 历史 schema · 字面跟实际 aiipznt 不符 · 保留 @deprecated
+// 实际 aiipznt sally /step/3b 输出 5 H3 · 字面如下
+export interface Step3bRealH3Block {
+  id: 'coreIdentity' | 'thoughtSystem' | 'contentPersona' | 'trustSystem' | 'roadmap';
+  h3Label: string;
+}
+
+export const STEP3B_OUTPUT_H3_5_REAL: readonly Step3bRealH3Block[] = [
+  { id: 'coreIdentity',   h3Label: '核心身份定位' },
+  { id: 'thoughtSystem',  h3Label: '思想体系' },
+  { id: 'contentPersona', h3Label: '内容人设' },
+  { id: 'trustSystem',    h3Label: '信任构建体系' },
+  { id: 'roadmap',        h3Label: '人设打造路线图' },
+] as const;
+
+// 整页顶部 H2 (输出区域)
+export const STEP3B_RESULT_H2_REAL = '专属人设方案' as const;
+
+// 顶部 toolbar 3 button(同 /step/3)
+export const STEP3B_CTA_BULK_OPTIMIZE = '智能优化';
+export const STEP3B_CTA_BULK_REGENERATE = '一键重新生成';
+export const STEP3B_CTA_BULK_COPY = '复制全部';
+
+// breadcrumb
+export const STEP3B_BREADCRUMB = 'STEP 03b › 人设定制方案';
+
+// H3-5 路线图右上 button
+export const STEP3B_BUTTON_VIEW_PLAN = '执行计划';
+```
+
+---
+
+## 8 · 文件输出 list(共 7 文件)
+
+| # | path | 操作 | 行数估 |
+|:-:|---|:-:|:-:|
+| 1 | `apps/web/src/lib/constants/step3b.ts` | Edit(末尾追加 ~30 行) | +30 |
+| 2 | `apps/web/src/components/step3b/CoreIdentitySection.tsx` | new | ~150 |
+| 3 | `apps/web/src/components/step3b/ThoughtSystemSection.tsx` | new | ~140 |
+| 4 | `apps/web/src/components/step3b/ContentPersonaSection.tsx` | new | ~180 |
+| 5 | `apps/web/src/components/step3b/TrustSystemSection.tsx` | new | ~120 |
+| 6 | `apps/web/src/components/step3b/RoadmapSection.tsx` | new | ~80 |
+| 7 | `apps/web/src/pages/step/Step3b.tsx` | rewrite(完全替换) | ~280(含 mock + form default) |
+
+**不动**:
+- router.tsx
+- step3b/Step3bOutputContent.tsx(旧 child · 留作 @deprecated · 但 Step3b.tsx 不再 import)
+- StepResult/Step3bResult.tsx(不影响 · 暂不动)
+- ip-plan/IpPlanStepGrid.tsx(暂不动 · 不影响渲染)
+
+---
+
+## 9 · 验收
+
+1. **typecheck** · `cd apps/web && pnpm typecheck` · 0 error
+2. **dev server 已启** · http://localhost:5173/step/3b 可访问
+3. **innerText 关键字 grep** · Sonnet 不跑(Opus 阶段验证)· 但 sub-component 写完后预期至少包含:
+   - "AI转型实战家" / "餐饮老板转行AI" / "百万负债逆袭" / "技术小白到交付专家"
+   - "实战派" / "韧性强" / "真诚"
+   - "AI是普通人弯道超车" / "商业的本质是解决问题" / "认知升级"
+   - "别再死磕代码了" / "我背负百万负债后"
+   - "用AI，做个聪明的老板" / "别只看热闹" / "我的坑"
+   - "AI降本增效实战案例" / "OPC创业避坑指南" / "AI工具与趋势解读"
+   - "12年餐饮创业经验" / "成功交付多项AI工作流"
+   - "0-1个月" / "1-3个月" / "3-6个月"
+
+---
+
+## 10 · Sonnet 工作流程(必须按顺序)
+
+1. **第 1 步 · 阅读参考组件**(必须先读 · 模仿风格):
+   ```
+   Read apps/web/src/components/step3/AvatarDesignSection.tsx
+   Read apps/web/src/components/step3/OverallStrategySection.tsx
+   Read apps/web/src/components/ui/sub-card.tsx
+   Read apps/web/src/components/icons/aiipznt-icons.tsx (找 FlameIcon / SparkleIcon)
+   ```
+
+2. **第 2 步 · 写 step3b.ts 常量追加**(Edit · 仅末尾追加 · 不动原有)
+
+3. **第 3 步 · 写 5 sub-component**(Write · 新文件 · 严格按 §5 规格)
+
+4. **第 4 步 · 完全重写 Step3b.tsx**(Write · 替换 327 行原内容 · 严格按 §6 规格)
+   - **包含** DEFAULT_FORM 常量(§3 真实字符)
+   - **包含** Step3bResult interface(§2)
+   - **包含** Step3bFormData interface(§2)
+   - **包含** generateMockResult() 完整函数(§4 · 逐字 · 不允许概括或省略)
+   - **包含** form 5 字段 + main CTA + 顶部 toolbar
+   - **包含** 5 H3 section 渲染调用
+
+5. **第 5 步 · 跑 typecheck**:
+   ```
+   cd apps/web && pnpm typecheck
+   ```
+   遇 error 自己 fix 直到 0 error。
+
+6. **第 6 步 · 完成报告**:
+   - 写了哪些文件
+   - typecheck 结果
+   - 任何遗漏 / 异常 / 不确定的地方明确说
+
+---
+
+## 11 · 红线(违反 = 任务失败)
+
+- ❌ 不允许动 router.tsx
+- ❌ 不允许删 step3b.ts 原有 STEP3B_OUTPUT_H3_6 / STEP3B_TEXTAREAS_3 / 等(保 @deprecated)
+- ❌ 不允许概括 / 缩短 / 改写 §3 form 默认值或 §4 mock data(必须逐字)
+- ❌ 不允许引入新 npm 依赖
+- ❌ 不允许动 /step/3 已有组件
+- ❌ 不允许使用 emoji 以外的新 icon · 风格跟 /step/3 一致
+- ❌ 不允许写不必要的 comment / docstring(只在 §2 §3 §4 §6 关键 anchor 写一行 PRD-29.8 标记)
+- ❌ 不允许尝试启 dev server / 跑 visual screenshot · 那是 Opus 阶段做的
+
+---
+
+## 12 · 我(Sonnet)做完后报告给 Opus 的格式
+
+```
+DONE / BLOCKED / NEEDS_CONTEXT
+
+写了 X 个文件:
+- path/to/file1 (XXX 行)
+- ...
+
+typecheck: PASS / FAIL(贴 error)
+
+异常 / 不确定:
+- ...
+
+下一步建议 Opus 做的事:
+- visual screenshot /step/3b
+- innerText grep 验证
+- 红框补丁
+```
