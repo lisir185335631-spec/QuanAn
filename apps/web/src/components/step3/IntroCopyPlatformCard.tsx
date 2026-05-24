@@ -14,6 +14,9 @@ export interface IntroCopyEntry {
   // 截图新增 · 结构解析 5 行 + SEO 关键词 chips
   structureExplain?: string[];
   seoKeywords?: string[];
+  // 图 10/11/12/13 红框 · 每行 copy 的亮点解读 chip(line annotation)
+  // 例: "12年餐饮老板转型AI，负债百万到智能体架构师：强烈的个人故事和转型经历..."
+  lineHighlights?: string[];
 }
 
 export interface IntroCopyPlatformCardProps {
@@ -82,17 +85,32 @@ export function IntroCopyPlatformCard({
         </div>
       )}
 
-      {/* 结构解析 (截图新增) */}
+      {/* 结构解析 (截图新增 · 通常显示一行 inline) */}
       {entry.structureExplain && entry.structureExplain.length > 0 && (
-        <div className="space-y-1.5 border-t border-border/30 pt-2">
-          <p className="text-[11px] font-semibold text-on-surface/70">结构解析</p>
-          <ul className="space-y-1">
+        <div className="space-y-1 border-t border-border/30 pt-2">
+          <p className="text-[11px] text-muted-foreground/85 leading-relaxed">
+            <span className="font-semibold text-on-surface/75">结构解析：</span>
             {entry.structureExplain.map((line, i) => (
-              <li key={i} className="text-[11px] text-muted-foreground leading-relaxed">
-                <span className="text-primary/70 mr-1">·</span>{line}
-              </li>
+              <span key={i}>
+                {i > 0 && '　'}
+                {line}
+              </span>
             ))}
-          </ul>
+          </p>
+        </div>
+      )}
+
+      {/* 行亮点解读 chips (图 10/11/12/13 红框 · 每行 copy 亮点解读) */}
+      {entry.lineHighlights && entry.lineHighlights.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {entry.lineHighlights.map((line, i) => (
+            <span
+              key={i}
+              className="inline-block text-[11px] text-on-surface/85 bg-primary/8 border border-primary/25 rounded px-2 py-1 leading-relaxed"
+            >
+              {line}
+            </span>
+          ))}
         </div>
       )}
 

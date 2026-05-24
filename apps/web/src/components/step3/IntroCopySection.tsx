@@ -20,12 +20,14 @@ const INTRO_PLATFORM_LABELS = [
 export interface IntroCopySectionProps {
   formula?: string;
   entries?: IntroCopyEntry[];
+  // 图 13 末尾 · 整个 H3-5 共享的核心关键词(无 "SEO:" 前缀的 chip)
+  coreKeywords?: string[];
   className?: string;
 }
 
 const H3_LABEL = STEP3_OUTPUT_H3_6[4]!.h3Label; // '简介文案方案'
 
-export function IntroCopySection({ formula, entries = [], className }: IntroCopySectionProps) {
+export function IntroCopySection({ formula, entries = [], coreKeywords, className }: IntroCopySectionProps) {
   const hasEntries = entries.length > 0;
 
   return (
@@ -61,6 +63,23 @@ export function IntroCopySection({ formula, entries = [], className }: IntroCopy
               <IntroCopyPlatformCard key={label} placeholderLabel={label} />
             ))}
       </div>
+
+      {/* 核心关键词 · 图 13 末尾 · 整个 H3-5 共享 chip 行(无 SEO 前缀) */}
+      {coreKeywords && coreKeywords.length > 0 && (
+        <div className="flex items-center gap-3 flex-wrap pt-2">
+          <span className="text-xs font-semibold text-on-surface/75 shrink-0">核心关键词：</span>
+          <div className="flex flex-wrap gap-2">
+            {coreKeywords.map((kw) => (
+              <span
+                key={kw}
+                className="inline-block text-xs bg-primary/10 text-primary border border-primary/25 rounded px-3 py-1"
+              >
+                {kw}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
