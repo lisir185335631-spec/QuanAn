@@ -8,7 +8,9 @@ import {
   type Step5Result,
   type Step5Topic,
 } from '@/lib/constants/step5';
-import type { CategoryKey, StreamStatus } from '@/pages/step/Step5';
+// @deprecated — these types were previously exported from Step5.tsx (PRD-29.14 rewrite removed them)
+type CategoryKey = 'traffic' | 'monetize' | 'persona' | 'cognition' | 'case';
+type StreamStatus = 'idle' | 'loading' | 'done' | 'error';
 
 interface TopicCardProps {
   topic: Step5Topic;

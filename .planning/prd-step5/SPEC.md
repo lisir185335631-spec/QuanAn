@@ -1,29 +1,64 @@
-// PRD-29.14 · Step5 爆款选题库 · 完全重写
-import { useState } from 'react';
+# /step/5 "爆款选题库" 完全重写 SPEC
 
-import { toast } from 'sonner';
+> **作者** · Opus 4.7
+> **执行** · Sonnet 4.6 max
+> **目标** · 1:1 字面复刻 aiipznt sally /step/5 · form + 5 类 chip tabs + 100 选题 list
+> **不动** · router.tsx · 旧 Step5FileUpload / Step5TopicGrid(保留 · 不再 import)
 
-import { Step5CategoryTabs } from '@/components/step5/Step5CategoryTabs';
-import { Step5TopicListItem } from '@/components/step5/Step5TopicListItem';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+---
 
-import type { Step5Category, Step5CategoryId } from '@/components/step5/Step5CategoryTabs';
-import type { Step5TopicItem } from '@/components/step5/Step5TopicListItem';
+## 1 · 现状 + 工程约束
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+- `apps/web/src/pages/step/Step5.tsx` (267 行旧版 · 完全重写)
+- `apps/web/src/lib/constants/step5.ts` (120 行 · 旧 @deprecated · 加新常量)
+- `apps/web/src/components/step5/Step5FileUpload.tsx + Step5TopicGrid.tsx`(留 @deprecated)
+- `apps/web/src/router.tsx:85` 已挂 · **不动**
 
-interface Step5FormData {
+### 视觉参考
+- `apps/web/src/components/step8/Step8PlanTabs.tsx` (chip tabs · 类似 5 大类 tabs)
+- `apps/web/src/pages/tools/components/PrivateDomainScenarioTabs.tsx` (chip tab + icon + sub)
+- `apps/web/src/components/step6/Step6StoryboardSection.tsx` (list + 数字 chip)
+- `apps/web/src/components/ui/sub-card.tsx`
+
+---
+
+## 2 · schema
+
+```typescript
+export type Step5CategoryId = 'traffic' | 'monetization' | 'persona' | 'cognition' | 'case';
+
+export interface Step5Category {
+  id: Step5CategoryId;
+  name: string;          // 流量型选题 / ...
+  subtitle: string;      // 追热点、蹭流量、快速涨粉 / ...
+  icon: string;          // 📈 / $ / 👥 / 🧠 / 📖
+  count: number;         // 20
+}
+
+export interface Step5Topic {
+  index: number;         // 1-20
+  title: string;
+  platform: string;      // 'douyin' default
+  difficulty: 'simple' | 'medium' | 'hard';
+  difficultyLabel: '简单' | '中等' | '困难';
+  rating: 4 | 5;         // 4 / 5 星
+}
+
+export interface Step5Result {
+  topics: Record<Step5CategoryId, Step5Topic[]>;  // 5 × 20 = 100
+}
+
+export interface Step5FormData {
   industry: string;
   product: string;
 }
+```
 
-interface Step5Result {
-  topics: Record<Step5CategoryId, Step5TopicItem[]>;
-}
+---
 
-// ─── Constants ─────────────────────────────────────────────────────────────────
+## 3 · Form 默认值
 
+```typescript
 const DEFAULT_FORM: Step5FormData = {
   industry: '其他行业',
   product: '定制智能体和opc培训',
@@ -36,9 +71,16 @@ const CATEGORIES: Step5Category[] = [
   { id: 'cognition',    name: '认知型选题', subtitle: '输出价值、建立专业形象',         icon: '🧠', count: 20 },
   { id: 'case',         name: '案例型选题', subtitle: '真实案例、社会证明',            icon: '📖', count: 20 },
 ];
+```
 
-// ─── Mock Data ─────────────────────────────────────────────────────────────────
+---
 
+## 4 · 完整 mock data · 100 topic
+
+> ⚠️ **流量型 20 个必须严格 1:1 截图** · 不允许改字
+> 其他 4 类 80 个 · Opus 4.7 已基于截图风格 + AI/opc/餐饮转型语料生成 · Sonnet 必须**逐字 copy** · 不允许重新生成或改写
+
+```typescript
 function generateMockResult(): Step5Result {
   return {
     topics: {
@@ -164,9 +206,43 @@ function generateMockResult(): Step5Result {
     },
   };
 }
+```
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+---
 
+## 5 · sub-component 规格
+
+### 5.1 Step5CategoryTabs.tsx(5 大类 chip)
+
+文件 · `apps/web/src/components/step5/Step5CategoryTabs.tsx`
+Props · `{ categories: Step5Category[]; activeId: Step5CategoryId; onChange: (id) => void; }`
+
+Layout · grid-cols-1 md:grid-cols-5 gap-3:
+- 每 chip `<button>` ·
+  - active · `border-primary/40 bg-primary/10 text-primary`
+  - inactive · `border-border/40 hover:text-on-surface`
+  - 内部 stack(items-start · space-y-2 · py-4 px-4):
+    - row · icon(text-lg) + name(text-sm font-semibold)
+    - subtitle(text-xs text-muted-foreground)
+    - count(text-xs text-on-surface/70) `{count} 个选题`
+
+### 5.2 Step5TopicListItem.tsx(单个 topic · list.map)
+
+文件 · `apps/web/src/components/step5/Step5TopicListItem.tsx`
+Props · `{ topic: Step5Topic; onLike?: () => void; onOptimize?: () => void; onCopy?: () => void; className?: string; }`
+
+Layout · row(border-border/40 rounded-lg p-3 grid-cols-[48px_1fr_auto] gap-3 items-center):
+- 左 · 序号 chip(`<span text-on-surface/70 bg-primary/8 border-primary/20 rounded-full w-10 h-10 flex items-center justify-center text-sm font-semibold>{index}</span>`)
+- 中 · stack(space-y-1.5):
+  - title(text-sm font-semibold text-on-surface)
+  - row · platform chip(`<span text-[11px] bg-primary/15 border-primary/30 text-primary rounded px-2 py-0.5>{platform}</span>`) + difficulty chip(简单→emerald · 中等→amber · 困难→rose) + rating(`★`.repeat(rating) · text-primary)
+- 右 · 3 button stack-row · ♡ heart / ✨ optimize / 📋 copy(variant ghost size icon · 大小 h-8 w-8)
+
+---
+
+## 6 · Step5.tsx 重写规格
+
+```typescript
 export default function Step5() {
   const [industry, setIndustry] = useState(DEFAULT_FORM.industry);
   const [product, setProduct] = useState(DEFAULT_FORM.product);
@@ -179,25 +255,11 @@ export default function Step5() {
     ? currentTopics.filter((t) => t.title.includes(searchQuery))
     : currentTopics;
 
-  function handleRegenerateAll() {
-    toast.success('已重新生成全部选题');
-  }
-
-  function handleOptimize() {
-    toast.success('已智能优化');
-  }
-
-  function handleLike(t: Step5TopicItem) {
-    toast.success(`已收藏 #${t.index} ${t.title}`);
-  }
-
-  function handleOptimizeOne(t: Step5TopicItem) {
-    toast.success(`已优化 #${t.index}`);
-  }
-
-  function handleCopy(t: Step5TopicItem) {
-    navigator.clipboard.writeText(t.title).then(() => toast.success('已复制选题')).catch(() => undefined);
-  }
+  function handleRegenerateAll() { toast.success('已重新生成全部选题'); }
+  function handleOptimize() { toast.success('已智能优化'); }
+  function handleLike(t: Step5Topic) { toast.success(`已收藏 #${t.index} ${t.title}`); }
+  function handleOptimizeOne(t: Step5Topic) { toast.success(`已优化 #${t.index}`); }
+  function handleCopy(t: Step5Topic) { navigator.clipboard.writeText(t.title).then(() => toast.success('已复制选题')); }
 
   return (
     <main className="flex-1 container py-8 space-y-6 max-w-6xl">
@@ -237,10 +299,7 @@ export default function Step5() {
             { title: '上传产品资料', desc: '产品介绍、卖点、价格体系、客户案例等' },
             { title: '上传人物介绍与行业', desc: '个人经历、行业背景、专业资质、从业故事等' },
           ].map((u, i) => (
-            <div
-              key={i}
-              className="border border-dashed border-border/50 rounded-lg p-8 text-center space-y-2 hover:border-primary/40 transition-colors cursor-pointer"
-            >
+            <div key={i} className="border border-dashed border-border/50 rounded-lg p-8 text-center space-y-2 hover:border-primary/40 transition-colors cursor-pointer">
               <p className="text-2xl text-primary">⬆</p>
               <p className="text-sm font-semibold text-primary">{u.title}</p>
               <p className="text-xs text-muted-foreground">{u.desc}</p>
@@ -276,8 +335,7 @@ export default function Step5() {
           />
         </div>
         <p className="text-xs text-muted-foreground shrink-0">
-          共 <span className="text-primary font-semibold">{filteredTopics.length}</span> 个选题{' '}
-          <span className="text-muted-foreground/70">（全部 100 个）</span>
+          共 <span className="text-primary font-semibold">{filteredTopics.length}</span> 个选题 <span className="text-muted-foreground/70">（全部 100 个）</span>
         </p>
       </div>
 
@@ -303,3 +361,84 @@ export default function Step5() {
     </main>
   );
 }
+```
+
+---
+
+## 7 · step5.ts 常量追加
+
+```typescript
+// ─── PRD-29.14 · 真实字面 ──────────────────────────────────
+export const STEP5_BREADCRUMB_REAL = 'STEP 05 › 爆款选题库' as const;
+export const STEP5_H1_REAL = '爆款选题库' as const;
+export const STEP5_SUBTITLE_REAL_PREFIX = '输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI将结合这些素材一次性生成' as const;
+export const STEP5_SUBTITLE_REAL_SUFFIX = '爆款选题（流量型/变现型/人设型/认知型/案例型），每类20个选题，共100个。' as const;
+export const STEP5_SUBTITLE_REAL_HIGHLIGHT = '5大类' as const;
+export const STEP5_FORM_INDUSTRY_LABEL = '你的行业' as const;
+export const STEP5_FORM_PRODUCT_LABEL = '你的产品/服务' as const;
+export const STEP5_UPLOAD_PRODUCT_TITLE = '上传产品资料' as const;
+export const STEP5_UPLOAD_PRODUCT_DESC = '产品介绍、卖点、价格体系、客户案例等' as const;
+export const STEP5_UPLOAD_CHARACTER_TITLE = '上传人物介绍与行业' as const;
+export const STEP5_UPLOAD_CHARACTER_DESC = '个人经历、行业背景、专业资质、从业故事等' as const;
+export const STEP5_UPLOAD_SUPPORT_HINT = '支持 PDF、Word、TXT、Markdown、CSV（最大20MB）' as const;
+export const STEP5_CTA_REGENERATE_ALL = '重新生成全部选题' as const;
+export const STEP5_CTA_OPTIMIZE = '智能优化' as const;
+export const STEP5_SEARCH_PLACEHOLDER = '搜索选题关键词...' as const;
+```
+
+---
+
+## 8 · 文件输出 list
+
+| # | path | 操作 | 行数估 |
+|:-:|---|:-:|:-:|
+| 1 | `apps/web/src/lib/constants/step5.ts` | Edit 末尾追加 ~20 行 | +20 |
+| 2 | `apps/web/src/components/step5/Step5CategoryTabs.tsx` | new | ~55 |
+| 3 | `apps/web/src/components/step5/Step5TopicListItem.tsx` | new | ~75 |
+| 4 | `apps/web/src/pages/step/Step5.tsx` | rewrite(替换 267 行 · 含 100 topic mock ~400 行) | ~700 |
+
+不动 · router.tsx · 旧常量 · 旧 Step5FileUpload / Step5TopicGrid
+
+---
+
+## 9 · 验收
+
+1. typecheck 0 error
+2. http://localhost:5173/step/5 可访问
+3. innerText 30+ key grep · 5 类切换 work · 搜索 work
+
+---
+
+## 10 · Sonnet 工作流
+
+1. Read SPEC.md
+2. Read Step8PlanTabs / PrivateDomainScenarioTabs / Step6StoryboardSection / sub-card
+3. Edit step5.ts 末尾追加
+4. Write 2 sub-component
+5. Write Step5.tsx 完全重写
+6. typecheck PASS
+
+---
+
+## 11 · 红线
+
+- ❌ 不动 router.tsx
+- ❌ 不删旧常量
+- ❌ §3 form 默认值 + §4 mock(100 topic)必须逐字 · 全角标点保留
+- ❌ 流量型 20 个**必须 sally 截图原文**(不允许任何字符改动)
+- ❌ emoji 保留: 🔥 📈 $ 👥 🧠 📖 ⟳ ✨ 🔍 ⬆ ♡ 📋 👍 👎
+- ❌ 不允许 uppercase class
+- ❌ 文件上传是 stub · 不实际处理 File
+- ❌ 不启 dev server / 不截图
+
+---
+
+## 12 · 报告格式
+
+```
+DONE / BLOCKED
+写了 X 个文件: ...
+typecheck: PASS / FAIL
+异常: ...
+下一步建议 Opus 做的事: ...
+```
