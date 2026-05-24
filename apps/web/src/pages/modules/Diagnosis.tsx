@@ -1,26 +1,32 @@
-// AC-1 · H1/subtitle 字面锁 · D-226/227 严守
+// AC-1 · H1/subtitle 字面锁 · D-226/227 严守 → Sally 1:1 重写
 // AC-4 · useMutation → trpc.diagnosis.generate · loading Loader2 + 'AI 分析中...'
-// AC-5 · 7 维度报告渲染 report.dimensions[dim.id]?.score + issues + suggestions
-// AC-6 · isFallback=true → 灰色 hint banner + retry button
 // AC-7 · onError → toast.error + retry button
+// isReportView · mock-first report 渲染(SPEC §7.1)
 
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { ActionPlanCardsSection } from '@/components/diagnosis/ActionPlanCardsSection';
+import { CoreIssuesCard } from '@/components/diagnosis/CoreIssuesCard';
+import { DetailedReportSection } from '@/components/diagnosis/DetailedReportSection';
+import { DiagnosisHeader } from '@/components/diagnosis/DiagnosisHeader';
 import { DiagnosisStepCard } from '@/components/diagnosis/DiagnosisStepCard';
+import { IPHealthScoreCard } from '@/components/diagnosis/IPHealthScoreCard';
+import { IPRadarChart } from '@/components/diagnosis/IPRadarChart';
+import { PriorityPlanSection } from '@/components/diagnosis/PriorityPlanSection';
+import { ReportFooterActions } from '@/components/diagnosis/ReportFooterActions';
+import { WeeklyTasksSection } from '@/components/diagnosis/WeeklyTasksSection';
 import { FadeInWrapper } from '@/components/FadeInWrapper';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import {
   DIAGNOSIS_H1,
-  DIAGNOSIS_SUBTITLE,
   DIAGNOSIS_DIMENSIONS_8,
-  REPORT_DIMENSIONS_7,
+  DIAGNOSIS_MOCK_REPORT,
 } from '@/lib/constants/diagnosis';
 import { getLsKey } from '@/lib/ls-namespace';
 import { trpc } from '@/lib/trpc';
-
-import type { DiagnosisGenerateOutput } from '@quanan/clients/router-types';
 
 const TOTAL_STEPS = 8;
 
@@ -44,13 +50,6 @@ function getInitialProgress(): DiagnosisProgress {
   };
 }
 
-type DimensionResult = { score: number; issues: string[]; suggestions: string[] };
-
-function getDimensions(report: DiagnosisGenerateOutput): Record<string, DimensionResult> {
-  if (!report?.dimensions || typeof report.dimensions !== 'object') return {};
-  return report.dimensions as Record<string, DimensionResult>;
-}
-
 function buildAnswers(progress: DiagnosisProgress) {
   return DIAGNOSIS_DIMENSIONS_8.map((dim) => {
     if (dim.id === 'basic') {
@@ -70,6 +69,7 @@ function buildAnswers(progress: DiagnosisProgress) {
 export default function Diagnosis() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
+  const navigate = useNavigate();
 
   const lsKey = accountId !== null ? getLsKey(accountId, 'diagnosis_progress') : null;
 
@@ -84,7 +84,8 @@ export default function Diagnosis() {
     return getInitialProgress();
   });
 
-  const [report, setReport] = useState<DiagnosisGenerateOutput | null>(null);
+  // isReportView: mock-first report 渲染(SPEC §7.1)
+  const [isReportView, setIsReportView] = useState(false);
 
   // AC-7 · Persist to localStorage on every change
   useEffect(() => {
@@ -96,10 +97,10 @@ export default function Diagnosis() {
     }
   }, [lsKey, progress]);
 
-  // AC-4: useMutation hook → trpc.diagnosis.generate
+  // AC-4: useMutation hook → trpc.diagnosis.generate (kept · but mock-first)
   const generateMutation = trpc.diagnosis.generate.useMutation({
-    onSuccess: (data) => {
-      setReport(data as DiagnosisGenerateOutput);
+    onSuccess: () => {
+      // mock-first: setIsReportView already set in handleNext
     },
     onError: () => {
       toast.error('生成报告失败 · 请稍后再试');
@@ -139,7 +140,9 @@ export default function Diagnosis() {
   const handleNext = useCallback(() => {
     const nextStep = progress.currentStep + 1;
     if (nextStep >= TOTAL_STEPS) {
-      // AC-4: 触发 LLM 生成诊断报告
+      // mock-first: skip to report view immediately
+      setIsReportView(true);
+      // Also fire mutation (backend preserved for PRR)
       const answers = buildAnswers(progress);
       generateMutation.mutate({
         answers,
@@ -161,36 +164,44 @@ export default function Diagnosis() {
 
   const handleRestartDiagnosis = useCallback(() => {
     setProgress(getInitialProgress());
-    setReport(null);
+    setIsReportView(false);
     generateMutation.reset();
   }, [generateMutation]);
 
-  // AC-4: loading state — show spinner while mutation is pending
-  if (generateMutation.isPending) {
+  const handleHistory = useCallback(() => {
+    toast.info('诊断历史 · 即将上线');
+  }, []);
+
+  const handleTodayTasks = useCallback(() => {
+    navigate('/daily-tasks');
+  }, [navigate]);
+
+  // AC-4: loading state — show spinner while mutation is pending (not blocking report since mock-first)
+  if (generateMutation.isPending && !isReportView) {
     return (
       <main className="flex-1 container py-8 max-w-3xl flex flex-col items-center justify-center gap-6" data-testid="diagnosis-loading">
         <FadeInWrapper from="up">
           <Loader2 className="w-12 h-12 animate-spin text-primary" />
-          <p className="text-body-lg text-muted-foreground mt-4">AI 分析中...</p>
-          <p className="text-body-sm text-muted-foreground">正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
+          <p className="text-lg text-muted-foreground mt-4">AI 分析中...</p>
+          <p className="text-sm text-muted-foreground">正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
         </FadeInWrapper>
       </main>
     );
   }
 
-  // AC-7: error state — show retry button
-  if (generateMutation.isError && report === null) {
+  // AC-7: error state — show retry button (only when no report at all)
+  if (generateMutation.isError && !isReportView) {
     return (
       <main className="flex-1 container py-8 max-w-3xl" data-testid="diagnosis-error">
         <FadeInWrapper from="up">
           <h1 className="text-h1 font-display text-on-surface mb-2">{DIAGNOSIS_H1}</h1>
           <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 flex flex-col gap-4 mt-8">
-            <p className="text-body-md text-on-surface">生成报告失败 · 请稍后再试</p>
+            <p className="text-base text-on-surface">生成报告失败 · 请稍后再试</p>
             <button
               type="button"
               onClick={handleRetry}
               data-testid="retry-button"
-              className="self-start rounded-md bg-primary px-5 py-2.5 text-body-md font-label text-on-primary hover:bg-primary/90 transition-colors"
+              className="self-start rounded-md bg-primary px-5 py-2.5 text-base font-label text-on-primary hover:bg-primary/90 transition-colors"
             >
               重试
             </button>
@@ -200,134 +211,70 @@ export default function Diagnosis() {
     );
   }
 
-  // AC-5: Report view (after successful mutation)
-  if (report !== null) {
-    const dimensions = getDimensions(report);
-
+  // Report view (mock-first · SPEC §7.1 · 7 sub-section)
+  if (isReportView) {
+    const MOCK = DIAGNOSIS_MOCK_REPORT;
     return (
-      <main className="flex-1 container py-8 max-w-3xl" data-testid="diagnosis-report">
+      <main className="flex-1 container py-8 max-w-5xl" data-testid="diagnosis-report">
         <FadeInWrapper from="up">
-          <h1 className="text-h1 font-display text-on-surface mb-2">{DIAGNOSIS_H1}</h1>
-          <p className="text-body-md text-muted-foreground mb-8">{DIAGNOSIS_SUBTITLE}</p>
+          {/* Shared header: report uses step 7 (0-indexed, 8/8 all lit) */}
+          <DiagnosisHeader currentStep={7} totalSteps={TOTAL_STEPS} />
 
-          {/* AC-6: isFallback hint banner */}
-          {report.isFallback && (
-            <div
-              className="mb-6 rounded-xl border border-border bg-surface-container px-4 py-3 flex items-center justify-between gap-4"
-              data-testid="fallback-banner"
-            >
-              <p className="text-body-sm text-muted-foreground">
-                AI 暂未生成深度分析 · 显示规则评分
-              </p>
-              <button
-                type="button"
-                onClick={handleRetry}
-                data-testid="fallback-retry-button"
-                className="rounded-md border border-border px-3 py-1.5 text-body-sm font-label text-on-surface hover:border-primary/40 transition-colors shrink-0"
-              >
-                重新生成
-              </button>
+          <div className="flex flex-col gap-8">
+            {/* Section A: 总分 + 雷达图 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <IPHealthScoreCard
+                scores={MOCK.dimensionScores}
+                overallScore={MOCK.overallScore}
+              />
+              <IPRadarChart scores={MOCK.dimensionScores} />
             </div>
-          )}
 
-          <h2 className="text-h2 font-display text-on-surface mb-6">7 维度 IP 健康度报告</h2>
+            {/* Section B: 核心问题 */}
+            <CoreIssuesCard issues={MOCK.coreIssues} />
 
-          {/* AC-5: overallScore */}
-          <div className="rounded-xl border border-primary/30 bg-primary/5 px-5 py-4 mb-6 flex items-center justify-between">
-            <span className="text-body-md font-label text-on-surface">整体评分</span>
-            <span className="text-h2 font-display text-primary" data-testid="overall-score">
-              {report.overallScore}
-            </span>
-          </div>
+            {/* Section C: 详细诊断报告 */}
+            <DetailedReportSection
+              intro={MOCK.intro}
+              reportH2={MOCK.reportH2}
+              verdictLead={MOCK.overallVerdictLead}
+              verdictBody={MOCK.overallVerdictBody}
+              details={MOCK.details}
+            />
 
-          {/* AC-5: 7 维度卡 */}
-          <div className="flex flex-col gap-4 mb-8">
-            {REPORT_DIMENSIONS_7.map((dim) => {
-              const dimResult = dimensions[dim.id];
-              const score = dimResult?.score ?? 0;
-              const issues = dimResult?.issues ?? [];
-              const suggestions = dimResult?.suggestions ?? [];
-              return (
-                <div
-                  key={dim.id}
-                  className="rounded-xl border border-border bg-card p-5 flex flex-col gap-3"
-                  data-testid={`report-dimension-${dim.id}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-label-md font-label text-on-surface">{dim.label}</span>
-                    <span
-                      className="text-h3 font-display text-primary"
-                      data-testid={`report-score-${dim.id}`}
-                    >
-                      {score}
-                    </span>
-                  </div>
-                  {issues.length > 0 && (
-                    <div className="flex flex-col gap-1">
-                      <p className="text-label-sm font-label text-muted-foreground">问题</p>
-                      <ul className="flex flex-col gap-1 list-disc list-inside">
-                        {issues.map((issue, i) => (
-                          <li key={i} className="text-body-sm text-on-surface">{issue}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {suggestions.length > 0 && (
-                    <div className="flex flex-col gap-1">
-                      <p className="text-label-sm font-label text-muted-foreground">建议</p>
-                      <ul className="flex flex-col gap-1 list-disc list-inside">
-                        {suggestions.map((sug, i) => (
-                          <li key={i} className="text-body-sm text-primary">{sug}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+            {/* Section D: 优先级排序及行动计划 */}
+            <PriorityPlanSection
+              intro={MOCK.priorityIntro}
+              steps={MOCK.prioritySteps}
+            />
 
-          {/* AC-5: priority list */}
-          {report.recommendedSteps.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-5 mb-8" data-testid="priority-list">
-              <p className="text-label-md font-label text-on-surface mb-3">优先改进项</p>
-              <ol className="flex flex-col gap-2 list-decimal list-inside">
-                {(report.recommendedSteps as string[]).map((step, i) => (
-                  <li key={i} className="text-body-sm text-on-surface">{step}</li>
-                ))}
-              </ol>
-            </div>
-          )}
+            {/* Section E: 本周立即行动任务清单 */}
+            <WeeklyTasksSection
+              tasks={MOCK.weeklyTasks}
+              closing={MOCK.closingNote}
+            />
 
-          <div className="flex gap-3 flex-wrap">
-            <button
-              type="button"
-              onClick={() => toast.info('导出功能 PRD-25+')}
-              data-testid="export-pdf-button"
-              className="rounded-md bg-primary px-5 py-2.5 text-body-md font-label text-on-primary hover:bg-primary/90 transition-colors"
-            >
-              导出诊断报告 PDF
-            </button>
-            <button
-              type="button"
-              onClick={handleRestartDiagnosis}
-              data-testid="restart-diagnosis-button"
-              className="rounded-md border border-border px-5 py-2.5 text-body-md font-label text-on-surface hover:border-primary/40 transition-colors"
-            >
-              重新诊断
-            </button>
+            {/* Section F: 行动计划 5 cards */}
+            <ActionPlanCardsSection plans={MOCK.actionPlans} />
+
+            {/* Section G: 底部 3 button */}
+            <ReportFooterActions
+              onRestart={handleRestartDiagnosis}
+              onHistory={handleHistory}
+              onTodayTasks={handleTodayTasks}
+            />
           </div>
         </FadeInWrapper>
       </main>
     );
   }
 
-  // Wizard view
+  // Wizard view (form)
   return (
     <main className="flex-1 container py-8 max-w-3xl">
       <FadeInWrapper from="up">
-        <h1 className="text-h1 font-display text-on-surface mb-2">{DIAGNOSIS_H1}</h1>
-        <p className="text-body-md text-muted-foreground mb-8">{DIAGNOSIS_SUBTITLE}</p>
+        {/* Shared header */}
+        <DiagnosisHeader currentStep={progress.currentStep} totalSteps={TOTAL_STEPS} />
 
         <DiagnosisStepCard
           stepIndex={progress.currentStep + 1}

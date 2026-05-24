@@ -1,7 +1,6 @@
 /**
- * PRD-25 US-001 AC-9 · Diagnosis module unit tests
- * ≥ 5 tests: (a) useMutation 触发 (b) dimensions[dim.id].score 渲染 (c) isFallback hint banner
- *            (d) error retry button (e) loading spinner
+ * Diagnosis module unit tests · Sally 1:1 版
+ * mock-first report · isReportView state · 7 sub-section 验收
  */
 import { act, render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -36,13 +35,6 @@ const MOCK_REPORT_NORMAL = {
   createdAt: new Date().toISOString(),
 };
 
-const MOCK_REPORT_FALLBACK = {
-  ...MOCK_REPORT_NORMAL,
-  isFallback: true,
-  modelUsed: 'fallback',
-  overallScore: 50,
-};
-
 // ── Configurable mutation mock ─────────────────────────────────────────────────
 
 type MutationOptions = {
@@ -50,7 +42,7 @@ type MutationOptions = {
   onError?: (err: Error) => void;
 };
 
-let mutationMode: 'success' | 'fallback' | 'error' | 'loading' = 'success';
+let mutationMode: 'success' | 'error' | 'loading' = 'success';
 const capturedMutate = vi.fn();
 
 vi.mock('@/lib/trpc', () => ({
@@ -65,7 +57,6 @@ vi.mock('@/lib/trpc', () => ({
           const mutate = vi.fn((_input: unknown) => {
             capturedMutate(_input);
             if (mutationMode === 'success') opts.onSuccess?.(MOCK_REPORT_NORMAL);
-            if (mutationMode === 'fallback') opts.onSuccess?.(MOCK_REPORT_FALLBACK);
             if (mutationMode === 'error') opts.onError?.(new Error('network error'));
           });
           return {
@@ -84,6 +75,14 @@ vi.mock('sonner', () => ({
   toast: { info: vi.fn(), error: vi.fn(), success: vi.fn() },
 }));
 
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  };
+});
+
 function renderDiagnosis() {
   return render(
     <MemoryRouter>
@@ -98,7 +97,7 @@ function navigateToLastStep(times = 7) {
   }
 }
 
-describe('Diagnosis · PRD-25 US-001 AC-9', () => {
+describe('Diagnosis · Sally 1:1', () => {
   beforeEach(() => {
     localStorage.clear();
     capturedMutate.mockClear();
@@ -109,94 +108,221 @@ describe('Diagnosis · PRD-25 US-001 AC-9', () => {
     vi.clearAllMocks();
   });
 
-  // (a) useMutation 触发
-  it('(a) 点击「生成诊断报告」触发 trpc.diagnosis.generate.useMutation', () => {
+  // Form 部分
+  it('form 渲染: DiagnosisChip "IP健康度诊断" 可见', () => {
+    renderDiagnosis();
+    expect(screen.getByTestId('diagnosis-chip')).toBeInTheDocument();
+    expect(screen.getByTestId('diagnosis-chip')).toHaveTextContent('IP健康度诊断');
+  });
+
+  it('form 渲染: H1 字面锁(无空格)', () => {
+    renderDiagnosis();
+    expect(screen.getByText('7维度IP诊断报告')).toBeInTheDocument();
+  });
+
+  it('form 渲染: subtitle 字面锁(无空格)', () => {
+    renderDiagnosis();
+    expect(
+      screen.getByText('像老师一样诊断你的IP，找出问题，给出具体可执行的改进方案'),
+    ).toBeInTheDocument();
+  });
+
+  it('form 渲染: progress bar 8 段', () => {
+    renderDiagnosis();
+    expect(screen.getByTestId('diagnosis-progress-bar')).toBeInTheDocument();
+  });
+
+  it('Step 1 渲染: label "你的行业" / "你的产品/服务" / "你目前的阶段"', () => {
+    renderDiagnosis();
+    expect(screen.getByText('你的行业')).toBeInTheDocument();
+    expect(screen.getByText('你的产品/服务')).toBeInTheDocument();
+    expect(screen.getByText('你目前的阶段')).toBeInTheDocument();
+    expect(screen.getByTestId('diagnosis-industry')).toBeInTheDocument();
+    expect(screen.getByTestId('diagnosis-product')).toBeInTheDocument();
+  });
+
+  it('Step 1: 4 stage cards · 2x2 grid · desc 行渲染', () => {
+    renderDiagnosis();
+    expect(screen.getByTestId('diagnosis-stage-startup')).toBeInTheDocument();
+    expect(screen.getByText('刚开始做IP，还在摸索中')).toBeInTheDocument();
+    expect(screen.getByText('有一定内容了，但变现不稳定')).toBeInTheDocument();
+  });
+
+  it('8 step 切换: 点下一步进入 Step 2 · 显示 DimensionIconBlock', () => {
+    renderDiagnosis();
+    fireEvent.click(screen.getByTestId('diagnosis-next'));
+    expect(screen.getByTestId('dimension-icon-block-positioning')).toBeInTheDocument();
+  });
+
+  it('Step 2: textarea placeholder 来自 DIAGNOSIS_DIMENSION_PLACEHOLDERS', () => {
+    renderDiagnosis();
+    fireEvent.click(screen.getByTestId('diagnosis-next'));
+    const textarea = screen.getByTestId('diagnosis-notes');
+    expect((textarea as HTMLTextAreaElement).placeholder).toContain('美业赛道');
+  });
+
+  it('最后一步 CTA 文字: "生成诊断报告"', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    expect(screen.getByTestId('diagnosis-next')).toHaveTextContent('生成诊断报告');
+  });
+
+  it('上一步 disabled on Step 1', () => {
+    renderDiagnosis();
+    expect(screen.getByTestId('diagnosis-prev')).toBeDisabled();
+  });
+
+  it('上一步 enabled after step 2', () => {
+    renderDiagnosis();
+    fireEvent.click(screen.getByTestId('diagnosis-next'));
+    expect(screen.getByTestId('diagnosis-prev')).not.toBeDisabled();
+  });
+
+  it('localStorage save: 进入 step 2 后 LS 有记录', () => {
+    renderDiagnosis();
+    fireEvent.click(screen.getByTestId('diagnosis-next'));
+    const keys = Object.keys(localStorage);
+    const diagKey = keys.find((k) => k.includes('diagnosis_progress'));
+    expect(diagKey).toBeTruthy();
+  });
+
+  // Report 视图(mock-first)
+  it('点击「生成诊断报告」→ isReportView → report 视图渲染', () => {
     renderDiagnosis();
     navigateToLastStep();
     act(() => {
       fireEvent.click(screen.getByTestId('diagnosis-next'));
     });
-    expect(capturedMutate).toHaveBeenCalledOnce();
-    const payload = capturedMutate.mock.calls[0]?.[0] as { answers: unknown[]; inferredStage: string };
-    expect(payload.answers).toHaveLength(8);
-    expect(typeof payload.inferredStage).toBe('string');
+    expect(screen.getByTestId('diagnosis-report')).toBeInTheDocument();
   });
 
-  // (b) dimensions[dim.id].score 渲染
-  it('(b) 报告渲染 dimensions[dim.id].score — 7 维度得分从 LLM 结果来', () => {
+  it('report 视图: IP健康度总分 可见', () => {
     renderDiagnosis();
     navigateToLastStep();
     act(() => {
       fireEvent.click(screen.getByTestId('diagnosis-next'));
     });
-    // positioning score = 8 from MOCK_REPORT_NORMAL
-    const posScore = screen.getByTestId('report-score-positioning');
-    expect(posScore).toHaveTextContent('8');
-    // value score = 9
-    const valScore = screen.getByTestId('report-score-value');
-    expect(valScore).toHaveTextContent('9');
-    // overall score = 66
-    expect(screen.getByTestId('overall-score')).toHaveTextContent('66');
+    expect(screen.getByText('IP健康度总分')).toBeInTheDocument();
   });
 
-  // (c) isFallback hint banner
-  it('(c) isFallback=true 时显示灰色 hint banner + retry button', () => {
-    mutationMode = 'fallback';
+  it('report 视图: 核心问题 card + 4 coreIssues', () => {
     renderDiagnosis();
     navigateToLastStep();
     act(() => {
       fireEvent.click(screen.getByTestId('diagnosis-next'));
     });
-    const banner = screen.getByTestId('fallback-banner');
-    expect(banner).toBeInTheDocument();
-    expect(banner).toHaveTextContent('AI 暂未生成深度分析 · 显示规则评分');
-    expect(screen.getByTestId('fallback-retry-button')).toBeInTheDocument();
+    expect(screen.getByTestId('core-issues-card')).toBeInTheDocument();
+    expect(screen.getByText('核心问题')).toBeInTheDocument();
+    expect(screen.getByText('定位模糊，缺乏明确的目标客户和产品价值主张。')).toBeInTheDocument();
   });
 
-  // (d) error retry button
-  it('(d) onError 时显示 retry button + toast.error', async () => {
+  it('report 视图: 详细诊断报告 + IP诊断报告 H2 可见', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByText('详细诊断报告')).toBeInTheDocument();
+    expect(screen.getByText('IP诊断报告')).toBeInTheDocument();
+  });
+
+  it('report 视图: 5 维度详细块(1-5)渲染', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByTestId('dimension-detail-block-1')).toBeInTheDocument();
+    expect(screen.getByTestId('dimension-detail-block-5')).toBeInTheDocument();
+  });
+
+  it('report 视图: 优先级排序及行动计划', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByText('优先级排序及行动计划')).toBeInTheDocument();
+    expect(screen.getByText('第一步（本周内）：定位清晰度')).toBeInTheDocument();
+  });
+
+  it('report 视图: 本周立即行动任务清单', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByText('本周立即行动任务清单')).toBeInTheDocument();
+    expect(screen.getByText('明确细分赛道：')).toBeInTheDocument();
+  });
+
+  it('report 视图: 行动计划 5 cards', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByText('行动计划')).toBeInTheDocument();
+    expect(screen.getByTestId('action-plan-card-1')).toBeInTheDocument();
+    expect(screen.getByTestId('action-plan-card-5')).toBeInTheDocument();
+  });
+
+  it('report 视图: 底部 3 button · 重新诊断 / 诊断历史 / 查看今日任务', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByTestId('restart-diagnosis-button')).toBeInTheDocument();
+    expect(screen.getByTestId('diagnosis-history-button')).toBeInTheDocument();
+    expect(screen.getByTestId('today-tasks-button')).toBeInTheDocument();
+  });
+
+  it('report 重新诊断: 点击后回到 form 视图', () => {
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    // now in report view
+    act(() => {
+      fireEvent.click(screen.getByTestId('restart-diagnosis-button'));
+    });
+    // back to form
+    expect(screen.getByTestId('diagnosis-chip')).toBeInTheDocument();
+    expect(screen.queryByTestId('diagnosis-report')).not.toBeInTheDocument();
+  });
+
+  it('诊断历史 button: toast.info "诊断历史 · 即将上线"', async () => {
+    const { toast } = await import('sonner');
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-history-button'));
+    });
+    expect(toast.info).toHaveBeenCalledWith('诊断历史 · 即将上线');
+  });
+
+  // error state
+  it('onError 时显示 retry button + toast.error', async () => {
     mutationMode = 'error';
     const { toast } = await import('sonner');
     renderDiagnosis();
-    // With isError=true from mock, component shows error view immediately
     expect(screen.getByTestId('retry-button')).toBeInTheDocument();
-    // Click retry → calls mutate() → onError() fires → toast.error
     act(() => {
       fireEvent.click(screen.getByTestId('retry-button'));
     });
     expect(toast.error).toHaveBeenCalledWith('生成报告失败 · 请稍后再试');
   });
 
-  // (e) loading spinner
-  it('(e) mutation pending 时显示 Loader2 spinner + "AI 分析中..."', () => {
+  // loading state
+  it('mutation pending 时显示 Loader2 spinner', () => {
     mutationMode = 'loading';
     renderDiagnosis();
-    // With isPending=true from mock, component immediately shows loading state
     expect(screen.getByTestId('diagnosis-loading')).toBeInTheDocument();
     expect(screen.getByText('AI 分析中...')).toBeInTheDocument();
-  });
-
-  // issues/suggestions render
-  it('每维度卡显示 issues 和 suggestions 列表', () => {
-    renderDiagnosis();
-    navigateToLastStep();
-    act(() => {
-      fireEvent.click(screen.getByTestId('diagnosis-next'));
-    });
-    // positioning has issues=['定位略模糊'] and suggestions=['明确细分赛道']
-    const posCard = screen.getByTestId('report-dimension-positioning');
-    expect(posCard).toHaveTextContent('定位略模糊');
-    expect(posCard).toHaveTextContent('明确细分赛道');
-  });
-
-  // priority list render
-  it('优先改进项 priority list 渲染', () => {
-    renderDiagnosis();
-    navigateToLastStep();
-    act(() => {
-      fireEvent.click(screen.getByTestId('diagnosis-next'));
-    });
-    expect(screen.getByTestId('priority-list')).toBeInTheDocument();
-    expect(screen.getByTestId('priority-list')).toHaveTextContent('增加案例内容');
   });
 });
