@@ -186,3 +186,23 @@ export const STEP7_DEBATE_H4_4: readonly Step7DebateH4[] = [
   { id: 'cons_arguments',  h4Label: '反方' },
   { id: 'my_stance',       h4Label: '我的立场' },
 ] as const;
+
+// ─── PRD-29.15 · 真实字面 ──────────────────────────────────
+export const STEP7_BREADCRUMB_REAL = 'STEP 07 › AI智能文案生成' as const;
+export const STEP7_H1_REAL = '文案生成' as const;
+export const STEP7_SUBTITLE_PREFIX = '选择脚本类型和爆款元素，输入主题，AI将基于方法论生成' as const;
+export const STEP7_SUBTITLE_HIGHLIGHT = '深度爆款文案' as const;
+export const STEP7_SUBTITLE_SUFFIX = '，支持AI智能修改优化。' as const;
+export const STEP7_LEFT_TITLE = '选择脚本类型' as const;
+export const STEP7_LEFT_SEARCH_PLACEHOLDER = '搜索脚本...' as const;
+export const STEP7_RIGHT_TITLE_PREFIX = '选择爆款元素' as const;
+export const STEP7_FORM_TOPIC_LABEL = '文案主题' as const;
+export const STEP7_CURRENT_SCRIPT_PREFIX = '当前脚本：' as const;
+export const STEP7_CTA_GENERATE = '生成爆款文案' as const;
+export const STEP7_OUTPUT_H3 = '生成结果' as const;
+export const STEP7_OPTIMIZE_H3 = 'AI智能优化' as const;
+export const STEP7_OPTIMIZE_PLACEHOLDER_REAL = '输入优化方向（可选），如：更有吸引力、增加互动感、更口语化...' as const;
+export const STEP7_OPTIMIZE_BUTTON = 'AI优化文案' as const;
+export const STEP7_FOOTER_CHANGE_TOPIC = '想换个选题继续生成文案？' as const;
+export const STEP7_FOOTER_MY_TOPICS = '我的选题库' as const;
+export const STEP7_FOOTER_HOT_TOPICS = '爆款选题' as const;

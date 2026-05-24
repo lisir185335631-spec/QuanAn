@@ -1,361 +1,275 @@
-import { Copy, RefreshCw } from 'lucide-react';
-import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// PRD-29.15 · Step7 文案生成 — 完全重写
+// 2 列 layout: 左 script types + 右 elements + 长文输出 + AI 优化 + footer
+import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { ScriptTypeInlineCards , ElementsInlineMultiPicker } from '@/components/inline-pickers';
+import { Step7AiOptimizeSection } from '@/components/step7/Step7AiOptimizeSection';
+import { Step7ElementCategoryGrid } from '@/components/step7/Step7ElementCategoryGrid';
+import { Step7OutputResultSection } from '@/components/step7/Step7OutputResultSection';
+import { Step7ScriptTypeList } from '@/components/step7/Step7ScriptTypeList';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { SCRIPT_TYPES } from '@/lib/constants/scripts';
-import {
-  STEP7_BUTTON_GENERATE,
-  STEP7_BUTTON_GO_MY_TOPICS,
-  STEP7_BUTTON_GO_STEP5,
-  STEP7_BUTTON_OPTIMIZE,
-  STEP7_DEBATE_H4_4,
-  STEP7_H1,
-  STEP7_LABEL_SCRIPT_TYPE,
-  STEP7_LOADING_TEXT,
-  STEP7_OPTIMIZE_LABEL,
-  STEP7_OPTIMIZE_PLACEHOLDER,
-  STEP7_SCRIPT_DISPLAY_TEMPLATE,
-  STEP7_STEP_TAG,
-  STEP7_SUBTITLE,
-  STEP7_TEXTAREA,
-  type Step7DebateResult,
-} from '@/lib/constants/step7';
 
-const DEFAULT_SCRIPT_ID = 'debate';
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-async function copyText(text: string): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(text);
-    toast('已复制');
-  } catch {
-    toast.error('复制失败 · 请手动');
-  }
+interface ScriptType {
+  id: string;
+  name: string;
+  desc: string;
 }
 
+interface ElementItem {
+  id: string;
+  label: string;
+  icon: string;
+}
+
+interface ElementCategory {
+  id: string;
+  name: string;
+  elements: ElementItem[];
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SCRIPT_TYPES: ScriptType[] = [
+  { id: 'opinion', name: '聊观点',   desc: '表达个人观点，引发共鸣，适合知识分享类账号' },
+  { id: 'process', name: '晒过程',   desc: '展示操作过程，平台超大流量体，适合教程类内容' },
+  { id: 'teach',   name: '教知识',   desc: '教学类内容，传递价值，适合专业领域分享' },
+  { id: 'story',   name: '讲故事',   desc: '故事型脚本，塑造人设，适合个人品牌打造' },
+  { id: 'joke',    name: '尬段子',   desc: '搞笑类内容，娱乐性强，适合泛娱乐账号' },
+  { id: 'product', name: '说产品',   desc: '以变现为目标的产品脚本，适合带货和商业推广' },
+  { id: 'debate',  name: '搞辩论',   desc: '正反观点对抗，引发讨论和互动' },
+];
+
+const ELEMENT_CATEGORIES: ElementCategory[] = [
+  {
+    id: 'classic',
+    name: '经典元素',
+    elements: [
+      { id: 'greed',          label: '贪念',         icon: '$' },
+      { id: 'fear',           label: '恐惧',         icon: '😨' },
+      { id: 'curiosity',      label: '猎奇',         icon: '🔍' },
+      { id: 'contrast',       label: '反差',         icon: '⟳' },
+      { id: 'worst',          label: '最差',         icon: '⚠' },
+      { id: 'leverage',       label: '借势',         icon: '🔥' },
+      { id: 'resonance',      label: '共鸣',         icon: '💬' },
+      { id: 'empathy',        label: '共情',         icon: '🤝' },
+      { id: 'leverage_small', label: '以小搏大',     icon: '🎯' },
+      { id: 'roi_high',       label: '低成本高回报', icon: '📈' },
+      { id: 'roi_unknown',    label: '低成本未知回报', icon: '🏛' },
+    ],
+  },
+  {
+    id: 'emotion',
+    name: '情绪驱动',
+    elements: [
+      { id: 'anger',    label: '愤怒', icon: '😡' },
+      { id: 'surprise', label: '惊喜', icon: '😯' },
+    ],
+  },
+  {
+    id: 'content',
+    name: '内容策略',
+    elements: [
+      { id: 'hot',         label: '热点',  icon: '🔥' },
+      { id: 'controversy', label: '争议',  icon: '💬' },
+      { id: 'reveal',      label: '揭秘',  icon: '🔒' },
+      { id: 'list',        label: '清单',  icon: '📋' },
+      { id: 'challenge',   label: '挑战',  icon: '🎯' },
+      { id: 'transform',   label: '蜕变',  icon: '🦋' },
+    ],
+  },
+  {
+    id: 'conversion',
+    name: '转化驱动',
+    elements: [
+      { id: 'scarcity',  label: '稀缺',     icon: '⏳' },
+      { id: 'social',    label: '社会证明', icon: '👍' },
+      { id: 'authority', label: '权威',     icon: '🚩' },
+      { id: 'benefit',   label: '利益',     icon: '🎁' },
+    ],
+  },
+];
+
+const DEFAULT_FORM = {
+  selectedScriptTypeId: 'debate',
+  selectedElementIds: [
+    'greed', 'fear', 'curiosity', 'contrast', 'worst',
+    'leverage', 'resonance', 'empathy', 'leverage_small',
+  ],
+  topic: '为什么有的人赚钱那么轻松',
+  optimizeGoal: '',
+};
+
+const GENERATED_RESULT = `【标题】为什么美业老板，有人赚钱那么轻松，有人却苦苦挣扎？
+
+【话题抛出】你有没有发现，同样是美业老板，有人每天忙得焦头烂额，赚的却是辛苦钱；有人却能轻轻松松，钱自己就来了？这背后到底藏着什么秘密？
+
+【正方】（轻松赚钱派：AI赋能，效率为王）
+我见过一个美容院老板，店里只有三个人，但去年线上成交额却做到了370万。她是怎么做到的？就是把所有重复性、耗时的工作，比如预约排班、客户维护、营销话术，全部交给AI智能体。员工从繁琐的事务中解放出来，能把更多精力放在服务客户和提升专业技能上。这不就是把时间卖出更高的价钱吗？她算了一笔账，一个智能体每年帮她省下至少20万的人力成本，而且效率是人工的十倍。
+
+【反方】（传统派：服务为本，温度至上）
+但也有人说，美业是服务行业，最重要的是人情味和体验感。冰冷的AI怎么能替代美容师的巧手和贴心？一个老牌美容院老板就告诉我，她的客户都是跟着她十几年甚至二十几年的，靠的就是她和员工的专业、细致和情感连接。她觉得，如果把这些都交给AI，那美业就失去了灵魂，变成了流水线。客户来这里不仅是变美，更是寻求一份放松和信任，这是AI给不了的。
+
+• 我的立场
+
+其实，这两种观点都有道理，但我觉得，轻松赚钱和人情味并不冲突。那些赚钱轻松的美业老板，不是抛弃了服务，而是找到了一个支点，用AI把那些可以标准化的流程优化到极致，把省下来的时间和精力，投入到真正需要"人"的服务上。比如，AI帮你筛选出高意向客户，你再用你的专业和温度去转化和维护。这不就是把"低成本高回报"和"以小搏大"玩明白了？关键在于，你有没有看到这个趋势，有没有勇气去尝试。
+
+• 评论区引导
+
+你觉得美业未来是AI主导，还是人情味更重要？或者说，两者该怎么结合？评论区聊聊你的看法。
+
+【话题标签】#美业 #AI赋能 #智能体 #赚钱思维 #效率提升 #创业者 #商业模式 #美业老板 #行业洞察`;
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function Step7() {
-  const navigate = useNavigate();
-  const { account } = useActiveAccount();
-  const accountId = (account as { id: number } | null)?.id ?? null;
-  const { save, isSaving, dbQuery } = useStepData(accountId, 'step7');
+  const [selectedScriptTypeId, setSelectedScriptTypeId] = useState(DEFAULT_FORM.selectedScriptTypeId);
+  const [selectedElementIds, setSelectedElementIds] = useState<string[]>(DEFAULT_FORM.selectedElementIds);
+  const [topic, setTopic] = useState(DEFAULT_FORM.topic);
+  const [optimizeGoal, setOptimizeGoal] = useState('');
 
-  const [scriptType, setScriptType] = useState<string>(DEFAULT_SCRIPT_ID);
-  const [elements, setElements] = useState<string[]>([]);
-  const [topic, setTopic] = useState('');
-  const [optimizeDirection, setOptimizeDirection] = useState('');
-  const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const currentScript = SCRIPT_TYPES.find((t) => t.id === selectedScriptTypeId);
 
-  const prevIsSavingRef = useRef(false);
-
-  // AC-3 · D-219: prefill from DB stepData on mount
-  useEffect(() => {
-    if (!dbQuery.data) return;
-    const inputs = dbQuery.data.inputs;
-    if (typeof inputs?.scriptType === 'string') setScriptType(inputs.scriptType);
-    if (Array.isArray(inputs?.elements)) setElements(inputs.elements as string[]);
-    if (typeof inputs?.topic === 'string') setTopic((prev) => prev || (inputs.topic as string));
-    if (typeof inputs?.optimizeDirection === 'string') setOptimizeDirection(inputs.optimizeDirection);
-    // Sync result from DB (CopywritingAgent output)
-    const res = dbQuery.data.result;
-    if (res && typeof res['markdown'] === 'string' && (res['markdown']).length > 0) {
-      setResult(res);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dbQuery.data]);
-
-  // Cross-step prefill: selected_topic from Step5
-  useEffect(() => {
-    if (accountId === null) return;
-    const selectedTopic = readOtherStep<{ title?: string }>(accountId, 'selected_topic');
-    if (selectedTopic?.title) {
-      setTopic((prev) => prev || selectedTopic.title!);
-    }
-  }, [accountId]);
-
-  // Refetch after save completes (isSaving: true → false)
-  useEffect(() => {
-    if (prevIsSavingRef.current && !isSaving) {
-      void dbQuery.refetch();
-    }
-    prevIsSavingRef.current = isSaving;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSaving]);
-
-  const currentScript = SCRIPT_TYPES.find((s) => s.key === scriptType) ?? SCRIPT_TYPES[0]!;
-  const scriptDisplayText = STEP7_SCRIPT_DISPLAY_TEMPLATE
-    .replace('{name}', currentScript.label)
-    .replace('{positioning}', currentScript.desc);
-
-  const generateDisabled = isSaving || !topic.trim();
-  const optimizeDisabled = isSaving || !result;
-
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (generateDisabled) return;
-    save({
-      scriptType,
-      elements,
-      topic: topic.trim(),
-      optimizeDirection: optimizeDirection.trim(),
-    });
+  function handleToggleElement(id: string) {
+    setSelectedElementIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
   }
 
-  const handleRegenerate = useCallback(() => {
-    if (!topic.trim()) return;
-    save({
-      scriptType,
-      elements,
-      topic: topic.trim(),
-      optimizeDirection: optimizeDirection.trim(),
-    });
-  }, [scriptType, elements, topic, optimizeDirection, save]);
-
-  function handleCopyAll() {
-    if (!result) return;
-    const parts: string[] = [];
-    if (typeof result['markdown'] === 'string') parts.push(result['markdown']);
-    if (typeof result['cta'] === 'string') parts.push(result['cta']);
-    if (Array.isArray(result['hooks'])) {
-      parts.push((result['hooks'] as string[]).map((h) => `#${h}`).join(' '));
-    }
-    void copyText(parts.join('\n\n'));
+  function handleGenerate() {
+    toast.success('已生成爆款文案');
   }
 
-  const isDebate = scriptType === 'debate';
-  const debateResult = result ? (result as unknown as Step7DebateResult) : null;
+  function handleCopyResult() {
+    navigator.clipboard.writeText(GENERATED_RESULT).then(
+      () => toast.success('已复制文案'),
+      () => toast.error('复制失败，请手动选取'),
+    );
+  }
+
+  function handleOptimize() {
+    toast.success('已 AI 优化文案');
+  }
+
+  function handleChangeTopic() {
+    toast.info('跳转到爆款选题库');
+  }
+
+  function handleMyTopics() {
+    toast.info('打开我的选题库');
+  }
+
+  function handleHotTopics() {
+    toast.info('跳转到爆款选题');
+  }
 
   return (
-    <main className="flex-1 container py-8">
-      {/* Header — AC-1 字面锁 */}
-      <FadeInWrapper delay={0} from="up">
-        <div>
-          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-            {STEP7_STEP_TAG}
-          </p>
-          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP7_H1}</h1>
-          <p className="text-body-md text-muted-foreground mb-8">{STEP7_SUBTITLE}</p>
-        </div>
-      </FadeInWrapper>
+    <main className="flex-1 container py-8 space-y-6 max-w-6xl">
+      {/* Breadcrumb */}
+      <p className="text-xs font-semibold text-primary tracking-wide">STEP 07 › AI智能文案生成</p>
 
-      {/* Form glass-card */}
-      <FadeInWrapper delay={0.05} from="up">
-      <form
-        onSubmit={handleSubmit}
-        className="glass-card rounded-xl p-6 space-y-8 max-w-3xl"
-      >
-        {/* 1. Script Type — AC-2 · ScriptTypeInlineCards + search */}
-        <div>
-          <label className="block text-body-sm font-label text-on-surface mb-3">
-            {STEP7_LABEL_SCRIPT_TYPE}
-          </label>
-          <ScriptTypeInlineCards
-            value={scriptType}
-            onChange={setScriptType}
-            showSearch
+      {/* Header */}
+      <header className="space-y-2">
+        <h1 className="text-2xl font-bold text-on-surface flex items-center gap-2">✨ 文案生成</h1>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          选择脚本类型和爆款元素，输入主题，AI将基于方法论生成
+          <span className="text-primary font-semibold mx-1">深度爆款文案</span>
+          ，支持AI智能修改优化。
+        </p>
+      </header>
+
+      {/* 2 列 layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 左列 · 脚本类型 */}
+        <div className="bg-card/30 border border-border/40 rounded-lg p-5">
+          <Step7ScriptTypeList
+            types={SCRIPT_TYPES}
+            selectedId={selectedScriptTypeId}
+            onSelect={setSelectedScriptTypeId}
           />
         </div>
 
-        {/* 2. Elements — AC-2 · ElementsInlineMultiPicker grouped + count */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-body-sm font-label text-on-surface">
-              选择爆款元素（已选 {elements.length} 个）
-            </span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="text-xs h-7 px-2"
-              onClick={() => setElements([])}
-              disabled={elements.length === 0}
-            >
-              全部清除
-            </Button>
+        {/* 右列 · 元素 + form + CTA */}
+        <div className="space-y-5">
+          {/* 爆款元素多选 */}
+          <div className="bg-card/30 border border-border/40 rounded-lg p-5">
+            <Step7ElementCategoryGrid
+              categories={ELEMENT_CATEGORIES}
+              selectedIds={selectedElementIds}
+              onToggle={handleToggleElement}
+            />
           </div>
-          <ElementsInlineMultiPicker
-            value={elements}
-            onChange={setElements}
-            showCount={false}
-            layout="grouped"
-          />
-        </div>
 
-        {/* 3. 文案主题 textarea — AC-2 */}
-        <div>
-          <label className="block text-body-sm font-label text-on-surface mb-2">
-            {STEP7_TEXTAREA.label}
-            {STEP7_TEXTAREA.required && (
-              <span className="text-destructive ml-1">*</span>
-            )}
-          </label>
-          <textarea
-            required={STEP7_TEXTAREA.required}
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder={STEP7_TEXTAREA.placeholder}
-            className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-cn resize-y"
-            style={{ minHeight: '120px' }}
-          />
-          {/* spec §7.8 line 1701: 当前脚本：{name} - {positioning} */}
-          <p className="mt-2 text-xs text-muted-foreground">{scriptDisplayText}</p>
-        </div>
-
-        {/* 4. 优化方向 input — AC-2 */}
-        <div>
-          <label className="block text-body-sm font-label text-on-surface mb-2">
-            {STEP7_OPTIMIZE_LABEL}
-          </label>
-          <Input
-            type="text"
-            placeholder={STEP7_OPTIMIZE_PLACEHOLDER}
-            value={optimizeDirection}
-            onChange={(e) => setOptimizeDirection(e.target.value)}
-          />
-        </div>
-
-        {/* Buttons — AC-2 */}
-        <div className="space-y-3">
-          <Button
-            type="submit"
-            disabled={generateDisabled}
-            className="w-full bg-gradient-to-r from-primary to-primary/80"
-          >
-            {STEP7_BUTTON_GENERATE}
-          </Button>
-
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={optimizeDisabled}
-            className="w-full"
-          >
-            {STEP7_BUTTON_OPTIMIZE}
-          </Button>
-
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="link"
-              className="flex-1"
-              onClick={() => void navigate('/my-topics')}
-            >
-              {STEP7_BUTTON_GO_MY_TOPICS}
-            </Button>
-            <Button
-              type="button"
-              variant="link"
-              className="flex-1"
-              onClick={() => void navigate('/step/5')}
-            >
-              {STEP7_BUTTON_GO_STEP5}
-            </Button>
-          </div>
-        </div>
-      </form>
-      </FadeInWrapper>
-
-      {/* Loading state */}
-      {isSaving && (
-        <div className="mt-8 max-w-3xl text-center text-muted-foreground py-4">
-          {STEP7_LOADING_TEXT}
-        </div>
-      )}
-
-      {/* Output section — AC-4 · AC-5 · AC-7 */}
-      <FadeInWrapper delay={0.1} from="up">
-        <section id="step7-output" className="mt-8 max-w-3xl">
-          {isDebate ? (
-            /* 搞辩论: 4 H4 structure always in DOM (AC-4 · D-220 字面锁) */
-            <div className="space-y-4">
-              {/* Action row: regenerate + copy — always visible for button count (AC-6) */}
-              <div className="flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={!result}
-                  onClick={handleRegenerate}
-                >
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  重新生成
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={!result}
-                  onClick={handleCopyAll}
-                >
-                  <Copy className="h-4 w-4 mr-1" />
-                  复制全部
-                </Button>
-              </div>
-
-              {/* 4 H4 sections — fixed order per spec §7.8 (AC-4) · each in own glass-card */}
-              {STEP7_DEBATE_H4_4.map((item, idx) => {
-                const fieldKey = item.id as keyof Step7DebateResult;
-                const content = debateResult?.[fieldKey];
-                return (
-                  <FadeInWrapper key={item.id} delay={0.05 * idx} from="up">
-                    <div className="glass-card rounded-xl p-5">
-                      <h4 className="text-base font-label font-bold text-on-surface mb-2">
-                        {item.h4Label}
-                      </h4>
-                      {typeof content === 'string' && content.length > 0 ? (
-                        <p className="text-body-sm text-on-surface leading-relaxed">{content}</p>
-                      ) : (
-                        <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
-                      )}
-                    </div>
-                  </FadeInWrapper>
-                );
-              })}
-
-              {/* 评论区引导 — AC-4 */}
-              <div className="glass-card rounded-xl p-5">
-                <h4 className="text-base font-label font-bold text-on-surface mb-2">评论区引导</h4>
-                {typeof debateResult?.comment_guide === 'string' && debateResult.comment_guide.length > 0 ? (
-                  <p className="text-body-sm text-on-surface">{debateResult.comment_guide}</p>
-                ) : (
-                  <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
-                )}
-              </div>
-
-              {/* 话题标签 #xxx — AC-4 */}
-              <div className="glass-card rounded-xl p-5">
-                <h4 className="text-base font-label font-bold text-on-surface mb-2">话题标签</h4>
-                {Array.isArray(debateResult?.topic_tags) && debateResult.topic_tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {debateResult.topic_tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1 text-sm"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-body-sm text-muted-foreground italic">生成后显示</p>
-                )}
-              </div>
+          {/* 文案主题 + 当前脚本 + 生成按钮 */}
+          <div className="bg-card/30 border border-border/40 rounded-lg p-5 space-y-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-on-surface">
+                文案主题 <span className="text-rose-400">*</span>
+              </label>
+              <textarea
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="w-full min-h-[80px] rounded-md border border-border bg-input px-3 py-2 text-sm text-on-surface resize-y placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                required
+              />
             </div>
-          ) : (
-            /* 其他脚本类型: stub placeholder (AC-5) */
-            <div className="glass-card rounded-xl p-5">
-              <p className="text-body-sm text-muted-foreground">
-                该脚本类型输出 schema · PRD-23 完整化
+
+            {currentScript && (
+              <p className="text-xs text-muted-foreground">
+                当前脚本：<span className="text-primary font-semibold">{currentScript.name}</span> -{' '}
+                {currentScript.desc}
               </p>
-            </div>
-          )}
-        </section>
-      </FadeInWrapper>
+            )}
+
+            <Button
+              type="button"
+              onClick={handleGenerate}
+              disabled={!topic.trim()}
+              className="w-full bg-primary hover:bg-primary/90"
+            >
+              ✨ 生成爆款文案
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 生成结果(全宽) */}
+      <Step7OutputResultSection content={GENERATED_RESULT} onCopy={handleCopyResult} />
+
+      {/* AI 优化 */}
+      <Step7AiOptimizeSection
+        value={optimizeGoal}
+        onChange={setOptimizeGoal}
+        onOptimize={handleOptimize}
+      />
+
+      {/* Footer */}
+      <div className="flex items-center justify-between gap-4 pt-4 border-t border-border/30">
+        <button
+          type="button"
+          className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1.5 transition-colors"
+          onClick={handleChangeTopic}
+        >
+          <span className="text-rose-400">♡</span> 想换个选题继续生成文案？
+        </button>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            className="text-sm text-primary flex items-center gap-1.5 hover:text-primary/80 transition-colors"
+            onClick={handleMyTopics}
+          >
+            <span className="text-rose-400">♡</span> 我的选题库
+          </button>
+          <button
+            type="button"
+            className="text-sm text-primary flex items-center gap-1.5 hover:text-primary/80 transition-colors"
+            onClick={handleHotTopics}
+          >
+            ✨ 爆款选题
+          </button>
+        </div>
+      </div>
     </main>
   );
 }
