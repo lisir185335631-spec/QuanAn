@@ -1,74 +1,136 @@
-// PRD-29.9 · Step4 执行计划 · 完全重写 · 1:1 sally zhao /step/4 demo 复刻
-import { type FormEvent, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+# /step/4 "执行计划" 完全重写 SPEC
 
-import { Step4OverviewSection } from '@/components/step4/Step4OverviewSection';
-import { Step4PhaseSection } from '@/components/step4/Step4PhaseSection';
-import type { Step4Phase } from '@/components/step4/Step4PhaseSection';
-import { Step4DailyScheduleSection } from '@/components/step4/Step4DailyScheduleSection';
-import { Step4WarningSection } from '@/components/step4/Step4WarningSection';
-import { Step4SuccessCriteriaSection } from '@/components/step4/Step4SuccessCriteriaSection';
-import { Step4FooterAction } from '@/components/step4/Step4FooterAction';
-import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
-import { PlatformRadioGroup } from '@/components/step3/PlatformRadioGroup';
-import { SparkleIcon } from '@/components/icons/aiipznt-icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { STEP4_H1, STEP4_BUTTON_GENERATE, STEP4_SUBTITLE_TEMPLATE } from '@/lib/constants/step4';
+> **作者** · Opus 4.7(team plan · /step/4 是字段密度最高的 page · ~280 字段 / 6 sub-component)
+> **执行** · Sonnet 4.6 max(按本 SPEC 写代码)
+> **目标** · 1:1 字面复刻 aiipznt sally zhao /step/4 真实输出 · form + 6 sub-component output
+> **不动** · router.tsx · `STEP4_*_5` `STEP4_INPUTS_3` `STEP4_OUTPUT_H3_3` 旧常量(留 @deprecated)
 
-// ── TypeScript interfaces ────────────────────────────────────────────────────
+---
 
-interface Step4ScheduleItem {
-  time: string;
-  title: string;
-  desc: string;
-}
+## 1 · 背景 + 工程约束
 
-interface Step4Result {
+### 现状
+- `apps/web/src/pages/step/Step4.tsx` (199 行 PRD-22 旧版 · 3 H3 schema · 跟截图完全不匹配 · 必须完全重写)
+- `apps/web/src/lib/constants/step4.ts` (85 行 · 部分复用 · 加新常量 · 旧 @deprecated)
+- `apps/web/src/components/step4/` (目录不存在 · 新建)
+- `apps/web/src/router.tsx:83` 已挂 `{ path: '4', element: <Step4 /> }` · **不动 router**
+
+### 视觉风格参考(必读)
+Sonnet 写 sub-component 前 · 必读 ·
+- `apps/web/src/components/step3b/CoreIdentitySection.tsx` (SubCard + 多 sub-card pattern 参考)
+- `apps/web/src/components/step3b/RoadmapSection.tsx` (timeline box · accent color 参考)
+- `apps/web/src/components/step3/OverallStrategySection.tsx` (stage chip + 3 列 grid 参考 · 跟"每日作息"几乎一样)
+- `apps/web/src/components/step3/NicknameRecommendSection.tsx` (highlight ✓/✗ 参考)
+- `apps/web/src/components/ui/sub-card.tsx`
+- `apps/web/src/components/icons/aiipznt-icons.tsx` (FlameIcon / SparkleIcon)
+
+**严格沿用** · text-xs / text-on-surface / text-muted-foreground / bg-primary/10 · 不引入新颜色。
+**新颜色 token** · 仅警告区用 `border-rose-500/30 bg-rose-500/5` + `text-rose-400` · 成功区用 `border-emerald-500/30 bg-emerald-500/5` + `text-emerald-400`。
+
+---
+
+## 2 · 完整 schema(TypeScript interface)
+
+```typescript
+export interface Step4Result {
+  // ── 总览 ─────────────────────────────────────────────────
   overview: {
-    currentStage: string;
-    coreGoal: string;
-    timeline: string;
-    mainPlatform: string;
-    coreAdvantages: string;
+    currentStage: string;        // 当前阶段
+    coreGoal: string;            // 核心目标
+    timeline: string;            // 总体时间线
+    mainPlatform: string;        // 主攻平台
+    coreAdvantages: string;      // 核心优势(长段)
   };
+
+  // ── 3 阶段(stage 1/2/3) ──────────────────────────────────
   phases: Step4Phase[];
+
+  // ── 每日作息(3 列 · 上午/下午/晚上)─────────────────────
   dailySchedule: {
     morning: Step4ScheduleItem[];
     afternoon: Step4ScheduleItem[];
     evening: Step4ScheduleItem[];
   };
+
+  // ── 危险信号预警(红边)──────────────────────────────────
   warnings: Array<{
-    signal: string;
-    meaning: string;
-    solution: string;
+    signal: string;              // 视频完播率低于30%
+    meaning: string;             // 内容开头不够吸引人...
+    solution: string;            // 优化前3秒内容...
   }>;
+
+  // ── 成功标准(绿边 · 3 时段)──────────────────────────────
   successCriteria: Array<{
-    period: string;
+    period: string;              // 第1周 / 第1个月 / 第3个月
     desc: string;
   }>;
 }
 
-interface Step4FormData {
-  platform: string;
-  followerCount: string;
-  goal: string;
-  personalInfo: string;
+export interface Step4Phase {
+  number: 1 | 2 | 3;
+  title: string;                 // 阶段一：战略规划与IP定位
+  weekRange: string;             // 第1周
+  goal: string;                  // 明确商业模式、双目标，完成IP基础包装，并产出首批内容策略。
+  dailyTasks: Array<{
+    day: string;                 // 周一 09:00-12:00
+    title: string;               // 商业模式梳理与目标细化
+    desc: string;
+    duration: string;            // 3小时
+  }>;
+  milestones: Array<{
+    week: string;                // 第1周 / 第2周 / 第3周 / 第4周 / 第5-8周 / 第9周+
+    goal: string;
+    criteria?: string;           // 检查标准: ...(并非所有 milestone 都有)
+  }>;
+  contentPlan: {
+    frequency: string;           // 5-7条 / 7-10条
+    categories: Array<{          // 每个 category 是黄边 highlight chip
+      name: string;              // 看见你（痛点共鸣/价值主张）（20%）
+      desc: string;              // 快速吸引目标用户停留...
+    }>;
+    bestTime: string;            // 早7:00-8:30、午休12:00-13:30、晚18:00-20:00
+  };
+  kpis: Array<{
+    name: string;                // 抖音账号粉丝数
+    target: string;              // 500 / >30% / 10000
+    baseline: string;            // 1-1000 / 未知 / 3000 / 0
+  }>;
 }
 
-// ── Form 默认值 · 1:1 sally 真实输入 ────────────────────────────────────────
+export interface Step4ScheduleItem {
+  time: string;                  // 08:30-09:00
+  title: string;                 // 数据复盘
+  desc: string;
+}
 
+export interface Step4FormData {
+  platform: string;              // 'douyin' default
+  followerCount: string;         // '1-1000'
+  goal: string;                  // 'start'
+  personalInfo: string;
+}
+```
+
+---
+
+## 3 · Form 默认值(useState initial · 1:1 sally 真实输入)
+
+```typescript
 const DEFAULT_FORM: Step4FormData = {
   platform: 'douyin',
   followerCount: '1-1000',
   goal: 'start',
   personalInfo: '我是一名opc创业者，擅长与人沟通和项目交付。专业技能是给企业或者个人定制全自动工作流或者智能体，在这么行业从业半年。我以前是餐饮从业者，从事餐饮行业12年，作为品牌创始人之一的我，高峰时期拥有13家店铺（外卖店+实体店），因为品类周期原因，已经没有利润和持续的意义，加上因为认知问题投资的代加工厂失败，背上近百万的负债。后来果断一家一家店铺关掉，来到ai赛道做一家opc个人创业公司。我也是一名持续创业者，这是十几年期间有成功的项目也有失败血亏的项目，但是我从来不缺从头再来的勇气，目前公司已经交付一些简单的工作流和智能体平台，这些交付的案例都帮助客户解决了提效的问题，把客户从复杂重复的工作里抽身出来把精力放在更重要的商业决策上来。收费有4位数到6位数都有。我以前是技术小白，通过我不断的学习和自我迭代，到我现在可以交付项目。我自己的商业闭环走通这个环节也走了一些弯路，我把这些学习经验和沟通经验做成一系列的课程，想要帮助一些opc创业者避坑。',
 };
+```
 
-// ── Mock data · 逐字提取 ─────────────────────────────────────────────────────
+---
 
+## 4 · 完整 mock data · 逐字提取(generateMockResult)
+
+> ⚠️ **Sonnet 必须逐字 copy · 不允许概括 / 删减 / 改写标点** · 全角中文标点(，。：、)严格保留
+
+```typescript
 function generateMockResult(): Step4Result {
   return {
     overview: {
@@ -434,9 +496,144 @@ function generateMockResult(): Step4Result {
     ],
   };
 }
+```
 
-// ── Main Component ───────────────────────────────────────────────────────────
+---
 
+## 5 · 6 sub-component 详细规格
+
+### 5.1 Step4OverviewSection.tsx(总览)
+
+文件 · `apps/web/src/components/step4/Step4OverviewSection.tsx`
+Props · `{ overview?: Step4Result['overview']; className?: string; }`
+
+Layout(整段一个大 SubCard 暗色背景):
+1. H3 row · `<SparkleIcon size={4} /> 📌 总览`(注意 emoji 直接放 jsx text 里)
+2. SubCard 内 · grid-cols-1 md:grid-cols-2 gap-6:
+   - 左列 · "当前阶段" + 段 / "总体时间线" + 段 / "核心优势" + 段(跨整行)
+   - 右列 · "核心目标" + 段 / "主攻平台" + 段
+3. 每 sub-section · `<p text-xs font-semibold text-primary/85>{label}</p>` + `<p text-sm text-on-surface/90 leading-relaxed>{value}</p>`
+
+**特殊处理** · "核心优势" 是长段 · 跨整行 grid-column: 1 / -1(md:col-span-2)
+
+### 5.2 Step4PhaseSection.tsx(单个 phase · 3 次)
+
+文件 · `apps/web/src/components/step4/Step4PhaseSection.tsx`
+Props · `{ phase: Step4Phase; className?: string; }`
+
+Layout:
+1. H3 row · `<span text-2xl in-circle bg-primary/15 text-primary>{number}</span>` + `<h3>{title}</h3>`
+2. `<p text-xs text-muted-foreground>🕐 {weekRange} · 目标：{goal}</p>`
+3. SubCard "📋 每日任务" · sub-label + dailyTasks.map:
+   - 每 task: 2 列 layout(grid-cols-[140px_1fr] gap-4):
+     - 左: `<p text-xs text-primary/85 font-mono>{day}</p>`
+     - 右: `<p text-sm font-semibold>{title}</p>` + `<p text-xs text-muted-foreground leading-relaxed>{desc}</p>` + `<p text-[11px] text-muted-foreground/70>🕐 {duration}</p>`
+4. SubCard "🎯 每周里程碑" · sub-label + milestones.map:
+   - 每 milestone: 2 列 layout(grid-cols-[80px_1fr] gap-4):
+     - 左: `<p text-xs text-primary font-semibold>{week}</p>`
+     - 右: `<p text-sm text-on-surface>{goal}</p>` + (criteria 存在时) `<p text-xs text-muted-foreground>检查标准：{criteria}</p>`
+5. SubCard "📝 内容计划":
+   - `<p>每周发布: <span text-primary>{frequency}</span></p>`
+   - categories.map · highlight chip(bg-primary/8 border-primary/25 rounded-lg p-3): `<span font-semibold>{name}</span> - <span text-muted-foreground>{desc}</span>`(每个 chip 独立 block · 不是 inline)
+   - `<p text-xs text-muted-foreground>最佳发布时间：{bestTime}</p>`
+6. SubCard "📊 KPI指标" · grid-cols-1 md:grid-cols-2 gap-4:
+   - 每 KPI: `<p text-xs text-muted-foreground>{name}</p>` + `<p text-2xl text-primary font-bold>{target}</p>` + `<p text-xs text-muted-foreground/70>当前基准：{baseline}</p>`
+
+### 5.3 Step4DailyScheduleSection.tsx(每日作息)
+
+文件 · `apps/web/src/components/step4/Step4DailyScheduleSection.tsx`
+Props · `{ schedule?: Step4Result['dailySchedule']; className?: string; }`
+
+Layout:
+1. H3 row · `<FlameIcon /> 🕐 每日作息安排`
+2. SubCard 内 · grid-cols-1 md:grid-cols-3 gap-6:
+   - 列 1 "☀️ 上午"(顶部小 label · text-primary text-sm font-semibold) + morning.map(每 item: time + title + desc 垂直堆叠 · 整体 space-y-1)
+   - 列 2 "☁️ 下午" + afternoon.map
+   - 列 3 "🌙 晚上" + evening.map
+3. 每 item · `<p text-xs text-primary font-mono>{time}</p>` + `<p text-sm font-semibold text-on-surface>{title}</p>` + `<p text-xs text-muted-foreground leading-relaxed>{desc}</p>`
+4. 多 item 间隔 space-y-4
+
+### 5.4 Step4WarningSection.tsx(危险信号)
+
+文件 · `apps/web/src/components/step4/Step4WarningSection.tsx`
+Props · `{ warnings?: Step4Result['warnings']; className?: string; }`
+
+Layout(整个区用红色边框):
+1. H3 row · `<span text-rose-400>⚠️</span> <span text-rose-400 font-semibold>危险信号预警</span>`
+2. 红色边框大卡(`border border-rose-500/30 bg-rose-500/5 rounded-lg p-5`):
+3. warnings.map(space-y-4):
+   - `<p text-sm font-semibold text-rose-400>{signal}</p>`(红字标题)
+   - `<p text-xs text-muted-foreground>含义：{meaning}</p>`(灰字含义)
+   - `<p text-xs text-emerald-400>解决方案：{solution}</p>`(绿字解决方案)
+
+### 5.5 Step4SuccessCriteriaSection.tsx(成功标准)
+
+文件 · `apps/web/src/components/step4/Step4SuccessCriteriaSection.tsx`
+Props · `{ criteria?: Step4Result['successCriteria']; className?: string; }`
+
+Layout(整个区用绿色边框):
+1. H3 row · `<span text-emerald-400>📊</span> <span text-emerald-400 font-semibold>成功标准</span>`
+2. 绿色边框大卡(`border border-emerald-500/30 bg-emerald-500/5 rounded-lg p-5`):
+3. criteria.map · grid-cols-1 md:grid-cols-3 gap-4:
+   - 每 criterion: `<p text-xs text-emerald-400 font-semibold>{period}</p>` + `<p text-sm text-on-surface leading-relaxed>{desc}</p>`
+
+### 5.6 Step4FooterAction.tsx(footer)
+
+文件 · `apps/web/src/components/step4/Step4FooterAction.tsx`
+Props · `{ onNextStep?: () => void; onViewIpPlan?: () => void; className?: string; }`
+
+Layout:
+1. 顶部一行 · "这个结果对你有帮助吗？" + 👍 button(variant ghost size icon) + 👎 button
+2. 下方一个 SubCard(bg-primary/8 border-primary/25):
+   - 顶部 row · `<CheckCircle text-primary />` + "执行计划 已完成 🎉"
+   - 副文 · "分析结果已保存。建议继续下一步「变现路径」，让AI为你生成更精准的方案。"
+   - 2 button · 主 "继续下一步：变现路径 >"(金背) + 次 "查看我的IP方案"(stroke)
+
+### 5.7 SubCard 写法参考(必读)
+
+```tsx
+import { SubCard } from '@/components/ui/sub-card';
+
+<SubCard>
+  <div className="space-y-3">
+    <p className="text-xs font-semibold text-on-surface/80">sub-label</p>
+    <div className="...">content</div>
+  </div>
+</SubCard>
+```
+
+---
+
+## 6 · Step4.tsx 重写规格
+
+文件 · `apps/web/src/pages/step/Step4.tsx`(完全替换 199 行 PRD-22 版)
+
+### 6.1 import 清单
+
+```typescript
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
+import { Step4OverviewSection } from '@/components/step4/Step4OverviewSection';
+import { Step4PhaseSection } from '@/components/step4/Step4PhaseSection';
+import { Step4DailyScheduleSection } from '@/components/step4/Step4DailyScheduleSection';
+import { Step4WarningSection } from '@/components/step4/Step4WarningSection';
+import { Step4SuccessCriteriaSection } from '@/components/step4/Step4SuccessCriteriaSection';
+import { Step4FooterAction } from '@/components/step4/Step4FooterAction';
+import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
+import { Step3SectionDivider } from '@/components/step3/Step3PageHeader';
+import { PlatformRadioGroup } from '@/components/step3/PlatformRadioGroup';
+import { SparkleIcon } from '@/components/icons/aiipznt-icons';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useActiveAccount } from '@/hooks/useActiveAccount';
+import { readOtherStep, useStepData } from '@/hooks/useStepData';
+import { STEP4_H1, STEP4_BUTTON_GENERATE, STEP4_SUBTITLE_TEMPLATE } from '@/lib/constants/step4';
+```
+
+### 6.2 函数体结构
+
+```typescript
 export default function Step4() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
@@ -515,7 +712,7 @@ export default function Step4() {
 
   return (
     <main className="flex-1 container py-8 space-y-8">
-      {/* 1. Header · breadcrumb + H1 + subtitle */}
+      {/* 1. Header · breadcrumb + H1 + subtitle(不含 toolbar · form 上方) */}
       <header className="space-y-3">
         <p className="text-xs font-semibold text-primary tracking-wide">
           STEP 04 › 制定执行计划
@@ -582,7 +779,6 @@ export default function Step4() {
       {/* 4. Output area: H2 + toolbar */}
       <div className="flex items-center justify-between gap-4 pt-4">
         <h2 className="text-xl font-bold text-on-surface flex items-center gap-2">
-          <SparkleIcon size={5} />
           🗺️ 你的专属执行计划
         </h2>
         <div className="flex gap-2">
@@ -619,9 +815,143 @@ export default function Step4() {
       <Step4FooterAction
         onNextStep={handleNextStep}
         onViewIpPlan={handleViewIpPlan}
-        onFeedbackUp={handleFeedbackUp}
-        onFeedbackDown={handleFeedbackDown}
       />
     </main>
   );
 }
+```
+
+---
+
+## 7 · step4.ts 常量补充
+
+在 `apps/web/src/lib/constants/step4.ts` 末尾追加(不删原有 · 老 STEP4_OUTPUT_H3_3 + STEP4_INPUTS_3 留 @deprecated):
+
+```typescript
+// ─── PRD-29.9 · 真实字面(根据 sally zhao /step/4 demo 截图)─────────
+// 旧 STEP4_OUTPUT_H3_3 / STEP4_INPUTS_3 是 PRD-22 历史 schema · 跟实际 aiipznt 不符 · 保留 @deprecated
+// 实际 aiipznt sally /step/4 输出 · form 4 字段 + 6 output sub-component
+
+// 顶部 breadcrumb + H1
+export const STEP4_BREADCRUMB_REAL = 'STEP 04 › 制定执行计划' as const;
+export const STEP4_H1_REAL = '执行计划' as const;
+export const STEP4_OUTPUT_H2 = '你的专属执行计划' as const;
+
+// CTA 字面
+export const STEP4_CTA_GENERATE = '生成执行计划' as const;
+export const STEP4_CTA_BULK_OPTIMIZE = '智能优化' as const;
+export const STEP4_CTA_BULK_REGENERATE = '重新生成' as const;  // 注意: 不是"一键重新生成"
+export const STEP4_CTA_BULK_COPY = '复制全部' as const;
+
+// footer
+export const STEP4_FOOTER_FEEDBACK_QUESTION = '这个结果对你有帮助吗？' as const;
+export const STEP4_FOOTER_COMPLETION_TITLE = '执行计划 已完成 🎉' as const;
+export const STEP4_FOOTER_COMPLETION_DESC = '分析结果已保存。建议继续下一步「变现路径」，让AI为你生成更精准的方案。' as const;
+export const STEP4_FOOTER_BUTTON_NEXT = '继续下一步：变现路径 >' as const;
+export const STEP4_FOOTER_BUTTON_VIEW_IP = '查看我的IP方案' as const;
+
+// 总览 5 字段 label
+export const STEP4_OVERVIEW_LABELS = {
+  currentStage: '当前阶段',
+  coreGoal: '核心目标',
+  timeline: '总体时间线',
+  mainPlatform: '主攻平台',
+  coreAdvantages: '核心优势',
+} as const;
+```
+
+---
+
+## 8 · 文件输出 list(共 8 文件)
+
+| # | path | 操作 | 行数估 |
+|:-:|---|:-:|:-:|
+| 1 | `apps/web/src/lib/constants/step4.ts` | Edit(末尾追加 ~25 行) | +25 |
+| 2 | `apps/web/src/components/step4/Step4OverviewSection.tsx` | new | ~60 |
+| 3 | `apps/web/src/components/step4/Step4PhaseSection.tsx` | new | ~150 |
+| 4 | `apps/web/src/components/step4/Step4DailyScheduleSection.tsx` | new | ~80 |
+| 5 | `apps/web/src/components/step4/Step4WarningSection.tsx` | new | ~65 |
+| 6 | `apps/web/src/components/step4/Step4SuccessCriteriaSection.tsx` | new | ~55 |
+| 7 | `apps/web/src/components/step4/Step4FooterAction.tsx` | new | ~60 |
+| 8 | `apps/web/src/pages/step/Step4.tsx` | rewrite(完全替换 199 行 · 含 mock 600+ 行) | ~900 |
+
+**不动**:
+- router.tsx
+- 旧 STEP4_OUTPUT_H3_3 / STEP4_INPUTS_3 等常量
+- 其他 page
+
+---
+
+## 9 · 验收
+
+1. **typecheck** · `cd apps/web && pnpm typecheck` · 0 error
+2. **dev server 已启** · http://localhost:5173/step/4 可访问
+3. **innerText 关键字 grep** · 预期至少 80 关键字命中(Opus 阶段做)
+
+---
+
+## 10 · Sonnet 工作流程
+
+1. **必读参考组件**:
+   ```
+   Read apps/web/src/components/step3b/CoreIdentitySection.tsx
+   Read apps/web/src/components/step3b/RoadmapSection.tsx
+   Read apps/web/src/components/step3/OverallStrategySection.tsx
+   Read apps/web/src/components/ui/sub-card.tsx
+   Read apps/web/src/components/icons/aiipznt-icons.tsx
+   ```
+
+2. **Edit step4.ts 末尾追加新常量**(不动旧)
+
+3. **Write 6 sub-component**(严格按 §5 规格)
+
+4. **Write Step4.tsx 完全重写**(含 §2/§3/§4 interface + DEFAULT_FORM 逐字 + generateMockResult 逐字)
+   - **mock 字段量极大** · 必须逐字 copy from §4 · 一个字符都不能改
+
+5. **跑 typecheck**:
+   ```
+   cd apps/web && pnpm typecheck
+   ```
+   遇 error 自己 fix。
+
+6. **报告**:
+   ```
+   DONE / BLOCKED / NEEDS_CONTEXT
+   写了 X 个文件: ...
+   typecheck: PASS / FAIL
+   异常: ...
+   下一步建议 Opus 做的事: ...
+   ```
+
+---
+
+## 11 · 红线(违反 = 任务失败)
+
+- ❌ 不允许动 router.tsx
+- ❌ 不允许删 step4.ts 旧 STEP4_OUTPUT_H3_3 / STEP4_INPUTS_3(留 @deprecated)
+- ❌ 不允许概括 / 缩短 / 改写 §3 form 默认值或 §4 mock data 任何字符
+- ❌ 不允许引入新 npm 依赖
+- ❌ 不允许动 /step/3 /step/3b 已有组件
+- ❌ toolbar 必须 3 button · "重新生成"(注意不是"一键重新生成")
+- ❌ 不允许 emoji 替换(🗺️ 📌 🟡 📋 🎯 📝 📊 ☀️ ☁️ 🌙 ⚠️ 🎉 · 全部保留 source)
+- ❌ 不允许尝试启 dev server / 跑 visual screenshot
+
+---
+
+## 12 · 报告格式(同 step3b)
+
+```
+DONE / BLOCKED / NEEDS_CONTEXT
+
+写了 X 个文件:
+- path/to/file1 (XXX 行)
+
+typecheck: PASS / FAIL(贴 error)
+
+异常: ...
+
+下一步建议 Opus 做的事:
+- visual screenshot /step/4
+- 字面 grep 80 key
+- 用户 review 红框补丁
+```

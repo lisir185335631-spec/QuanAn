@@ -385,15 +385,6 @@ export default function Step3b() {
     }, 1200);
   }
 
-  function handleRegenerateAll() {
-    if (isLoading) return;
-    setIsLocalGenerating(true);
-    setTimeout(() => {
-      setIsLocalGenerating(false);
-      toast.success('已重新生成');
-    }, 1200);
-  }
-
   function handleCopyAll() {
     const text = JSON.stringify(generated, null, 2);
     navigator.clipboard.writeText(text).then(() => toast.success('已复制全部'));
