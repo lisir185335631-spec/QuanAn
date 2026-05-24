@@ -14,6 +14,9 @@ export interface OverallStrategyContent {
   第一印象设计?: string;
   内容封面与简介公益策略?: string;
   内容创意建议?: string;
+  // 截图新增 sub-section · 不动 D-locks · 加 optional
+  时长策略?: { stage: string; desc: string }[];     // 第1秒/2-7秒/8-15秒/16-60秒/60秒以上
+  平台优势?: { platform: string; desc: string }[]; // 抖音/小红书/视频号
 }
 
 export interface OverallStrategySectionProps {
@@ -84,6 +87,42 @@ export function OverallStrategySection({ content, className }: OverallStrategySe
           ))}
         </div>
       </SubCard>
+
+      {/* 时长策略 sub-card · 截图新增 · 主页访客转化路径设计 5 阶段 */}
+      {hasContent && content.时长策略 && content.时长策略.length > 0 && (
+        <SubCard>
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-on-surface/80">时长策略 · 主页访客转化路径设计</p>
+            <ul className="space-y-2">
+              {content.时长策略.map((item, i) => (
+                <li key={i} className="text-xs text-muted-foreground leading-relaxed flex gap-3">
+                  <span className="shrink-0 inline-block text-[11px] font-mono bg-primary/15 text-primary border border-primary/30 rounded px-2 py-0.5 min-w-[5rem] text-center">
+                    {item.stage}
+                  </span>
+                  <span className="flex-1">{item.desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SubCard>
+      )}
+
+      {/* 平台优势 sub-card · 截图新增 · 3 平台 */}
+      {hasContent && content.平台优势 && content.平台优势.length > 0 && (
+        <SubCard>
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-on-surface/80">平台优势</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {content.平台优势.map((item, i) => (
+                <div key={i} className="space-y-1 p-3 rounded border border-border/30">
+                  <p className="text-xs font-semibold text-primary">{item.platform}</p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SubCard>
+      )}
     </div>
   );
 }

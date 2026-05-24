@@ -11,6 +11,9 @@ export interface IntroCopyEntry {
   copy: string;
   hashtags: string[];
   evaluation: string;
+  // 截图新增 · 结构解析 5 行 + SEO 关键词 chips
+  structureExplain?: string[];
+  seoKeywords?: string[];
 }
 
 export interface IntroCopyPlatformCardProps {
@@ -62,8 +65,8 @@ export function IntroCopyPlatformCard({
         </Button>
       </div>
 
-      {/* long copy text */}
-      <p className="text-xs text-muted-foreground leading-relaxed">{entry.copy}</p>
+      {/* long copy text — whitespace-pre-line 支持换行 */}
+      <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">{entry.copy}</p>
 
       {/* hashtag chips — AC-5: '#' prefix · bg-primary/10 text-primary */}
       {entry.hashtags.length > 0 && (
@@ -79,11 +82,41 @@ export function IntroCopyPlatformCard({
         </div>
       )}
 
-      {/* evaluation */}
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        <span className="font-medium text-on-surface/70">评估：</span>
-        {entry.evaluation}
-      </p>
+      {/* 结构解析 (截图新增) */}
+      {entry.structureExplain && entry.structureExplain.length > 0 && (
+        <div className="space-y-1.5 border-t border-border/30 pt-2">
+          <p className="text-[11px] font-semibold text-on-surface/70">结构解析</p>
+          <ul className="space-y-1">
+            {entry.structureExplain.map((line, i) => (
+              <li key={i} className="text-[11px] text-muted-foreground leading-relaxed">
+                <span className="text-primary/70 mr-1">·</span>{line}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* SEO 关键词 chips (截图新增) */}
+      {entry.seoKeywords && entry.seoKeywords.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {entry.seoKeywords.map((kw) => (
+            <span
+              key={kw}
+              className="inline-block text-[10px] bg-primary/8 text-primary/85 border border-primary/15 rounded px-2 py-0.5"
+            >
+              SEO {kw}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* evaluation (optional · 旧 mock 用) */}
+      {entry.evaluation && (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          <span className="font-medium text-on-surface/70">评估：</span>
+          {entry.evaluation}
+        </p>
+      )}
     </SubCard>
   );
 }

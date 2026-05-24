@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 export interface NicknameEvaluation {
   name: string;
   description: string;
-  psychology: string;
-  searchability: string;
+  psychology?: string;     // 截图无此字段 · 改 optional
+  searchability: string;   // 截图: "搜索友好度: 高/中/中高"
   tags: string[];
   hasSparkle?: boolean;
 }
@@ -48,11 +48,13 @@ export function NicknameCard({ nickname, className }: NicknameCardProps) {
       {/* description */}
       <p className="text-xs text-muted-foreground leading-relaxed">{nickname.description}</p>
 
-      {/* psychology */}
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        <span className="font-medium text-on-surface/70">心理学依据：</span>
-        {nickname.psychology}
-      </p>
+      {/* psychology (optional · 截图无) */}
+      {nickname.psychology && (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          <span className="font-medium text-on-surface/70">心理学依据：</span>
+          {nickname.psychology}
+        </p>
+      )}
 
       {/* searchability */}
       <p className="text-xs text-muted-foreground leading-relaxed">

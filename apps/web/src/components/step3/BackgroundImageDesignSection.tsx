@@ -24,6 +24,11 @@ export interface BackgroundImageContent {
   品牌元素?: string;
   '字体/icon'?: string;
   分镜建议?: string;
+  // 截图新增 sub-section · 不动 D-locks · 加 optional
+  文案内容?: { title: string; desc: string }[];   // 核心Slogan / 服务关键词 / 联系方式 / 科技感元素
+  必含元素?: { title: string; desc: string }[];   // (与 avatar.必含元素 同样结构)
+  平台适配?: { platform: string; size: string; desc: string }[]; // 抖音 1920x1080 等
+  aiPrompt?: string;                              // 背景图 AI Prompt
   platformImages?: Partial<Record<BgPlatformKey, string | null>>;
 }
 
@@ -96,16 +101,84 @@ export function BackgroundImageDesignSection({
         </div>
       </SubCard>
 
-      {/* 3 平台横向 column grid — D-288 锁: 只 douyin/xiaohongshu/shipinhao */}
-      <div className="grid grid-cols-3 gap-4">
-        {BG_PLATFORM_KEYS.map((key) => (
-          <PlatformColumnCard
-            key={key}
-            platformKey={key}
-            referenceImageUrl={hasContent ? content.platformImages?.[key] : undefined}
-          />
-        ))}
-      </div>
+      {/* 文案内容 sub-card · 截图新增 */}
+      {hasContent && content.文案内容 && content.文案内容.length > 0 && (
+        <SubCard>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-on-surface/80">文案内容</p>
+            <ul className="space-y-2">
+              {content.文案内容.map((item, i) => (
+                <li key={i} className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="text-primary mr-1">•</span>
+                  <span className="font-medium text-on-surface/85">{item.title}：</span>
+                  {item.desc}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SubCard>
+      )}
+
+      {/* 必含元素 sub-card · 截图新增 */}
+      {hasContent && content.必含元素 && content.必含元素.length > 0 && (
+        <SubCard>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-on-surface/80">必含元素</p>
+            <ul className="space-y-2">
+              {content.必含元素.map((item, i) => (
+                <li key={i} className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="text-primary mr-1">•</span>
+                  <span className="font-medium text-on-surface/85">{item.title}：</span>
+                  {item.desc}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SubCard>
+      )}
+
+      {/* 平台适配 sub-card · 截图新增 · 抖音/小红书/视频号 尺寸+内容 */}
+      {hasContent && content.平台适配 && content.平台适配.length > 0 && (
+        <SubCard>
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-on-surface/80">平台适配</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {content.平台适配.map((item, i) => (
+                <div key={i} className="space-y-1 p-3 rounded border border-border/30">
+                  <p className="text-xs font-semibold text-primary">{item.platform}</p>
+                  <p className="text-[11px] text-on-surface/65">尺寸：{item.size}</p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </SubCard>
+      )}
+
+      {/* 背景图参考图 sub-card · AI Prompt + 3 平台 grid */}
+      <SubCard>
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-on-surface/80">背景图参考图</p>
+          {hasContent && content.aiPrompt && (
+            <div className="space-y-1">
+              <p className="text-[11px] font-medium text-on-surface/60">AI Prompt</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed font-mono bg-muted/30 rounded p-2 whitespace-pre-wrap">
+                {content.aiPrompt}
+              </p>
+            </div>
+          )}
+          {/* 3 平台横向 column grid — D-288 锁: 只 douyin/xiaohongshu/shipinhao */}
+          <div className="grid grid-cols-3 gap-4">
+            {BG_PLATFORM_KEYS.map((key) => (
+              <PlatformColumnCard
+                key={key}
+                platformKey={key}
+                referenceImageUrl={hasContent ? content.platformImages?.[key] : undefined}
+              />
+            ))}
+          </div>
+        </div>
+      </SubCard>
     </div>
   );
 }

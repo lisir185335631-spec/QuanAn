@@ -8,6 +8,7 @@ export interface VideoReferenceCase {
   title: string;
   description: string;
   searchHint: string;
+  platform?: string; // 截图: 抖音 / 小红书 / 视频号 · chip label
 }
 
 export interface VideoReferenceCaseSectionProps {
@@ -32,15 +33,22 @@ function CaseSkeleton() {
   );
 }
 
-function CaseCard({ title, description, searchHint }: VideoReferenceCase) {
+function CaseCard({ title, description, searchHint, platform }: VideoReferenceCase) {
   return (
     <SubCard>
       <div className="space-y-2">
         <p className="text-sm font-semibold text-on-surface">{title}</p>
         <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
-        <span className="inline-block text-xs bg-primary/10 text-primary border border-primary/20 rounded-full px-3 py-0.5">
-          {searchHint}
-        </span>
+        <div className="flex items-center gap-2 flex-wrap">
+          {platform && (
+            <span className="inline-block text-xs bg-primary/15 text-primary border border-primary/30 rounded px-2 py-0.5 font-medium">
+              {platform}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="text-primary">⌕</span>搜索:&nbsp;{searchHint}
+          </span>
+        </div>
       </div>
     </SubCard>
   );

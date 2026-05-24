@@ -22,6 +22,10 @@ export interface AvatarDesignContent {
   '表情/姿态'?: string;
   '服装/造型'?: string;
   背景设计?: string;
+  参考案例?: string;       // 截图实际有此 sub-section
+  必含元素?: { title: string; desc: string }[];
+  禁忌?: { title: string; desc: string }[];
+  aiPrompt?: string;       // 头像 AI Prompt 文本
   referenceImageUrl?: string | null;
 }
 
@@ -35,7 +39,7 @@ export interface AvatarDesignSectionProps {
 const H3_LABEL = STEP3_OUTPUT_H3_6[2]!.h3Label; // '头像设计方案'
 
 interface SubSectionProps {
-  label: AvatarSubSectionKey;
+  label: AvatarSubSectionKey | string;
   description?: string;
 }
 
@@ -98,25 +102,56 @@ export function AvatarDesignSection({
               description={hasContent ? content[label] : undefined}
             />
           ))}
+          {/* 参考案例 · 截图实际有(D-286 锁 8 sub-section 之外补) */}
+          {hasContent && content.参考案例 && (
+            <SubSection label={'参考案例' as never} description={content.参考案例} />
+          )}
         </div>
       </SubCard>
 
-      {/* 参考图样例 sub-card — D-287 锁: button 字面 '[查看图标]' */}
+      {/* 必含元素 sub-card · 截图新增 */}
+      {hasContent && content.必含元素 && content.必含元素.length > 0 && (
+        <SubCard>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-on-surface/80">必含元素</p>
+            <ul className="space-y-2">
+              {content.必含元素.map((item, i) => (
+                <li key={i} className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="text-primary mr-1">•</span>
+                  <span className="font-medium text-on-surface/85">{item.title}：</span>
+                  {item.desc}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SubCard>
+      )}
+
+      {/* 禁忌 sub-card · 截图新增 */}
+      {hasContent && content.禁忌 && content.禁忌.length > 0 && (
+        <SubCard>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-rose-400">禁忌</p>
+            <ul className="space-y-2">
+              {content.禁忌.map((item, i) => (
+                <li key={i} className="text-xs text-muted-foreground leading-relaxed flex gap-2">
+                  <span className="text-rose-400 shrink-0">✗</span>
+                  <span>
+                    <span className="font-medium text-on-surface/85">{item.title}：</span>
+                    {item.desc}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </SubCard>
+      )}
+
+      {/* 头像参考图 sub-card · 含 AI Prompt + 生成按钮 */}
       <SubCard>
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-on-surface/80">参考图样例</p>
-          {hasContent && content.referenceImageUrl ? (
-            <img
-              src={content.referenceImageUrl}
-              alt="头像参考图"
-              className="w-full rounded-md object-cover"
-            />
-          ) : (
-            <div className="border border-dashed border-border/60 rounded-md flex items-center justify-center py-8 text-xs text-muted-foreground">
-              点击"查看图标"生成参考图
-            </div>
-          )}
-          <div className="flex justify-end">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-on-surface/80">头像参考图</p>
             <Button
               variant="outline"
               size="sm"
@@ -127,6 +162,25 @@ export function AvatarDesignSection({
               {STEP3_CTA_VIEW_ICON}
             </Button>
           </div>
+          {hasContent && content.aiPrompt && (
+            <div className="space-y-1">
+              <p className="text-[11px] font-medium text-on-surface/60">AI Prompt</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed font-mono bg-muted/30 rounded p-2 whitespace-pre-wrap">
+                {content.aiPrompt}
+              </p>
+            </div>
+          )}
+          {hasContent && content.referenceImageUrl ? (
+            <img
+              src={content.referenceImageUrl}
+              alt="头像参考图"
+              className="w-full rounded-md object-cover"
+            />
+          ) : (
+            <div className="border border-dashed border-border/60 rounded-md flex items-center justify-center py-8 text-xs text-muted-foreground">
+              基于AI设计方案生成头像参考图，帮助你直观了解效果
+            </div>
+          )}
         </div>
       </SubCard>
     </div>

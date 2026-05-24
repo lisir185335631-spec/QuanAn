@@ -10,6 +10,10 @@ export type { NicknameEvaluation } from './NicknameCard';
 export interface NicknameSelectionStrategy {
   hint: string;
   chips: string[];
+  // 截图: 命名策略 4 ✓ + 4 ✗ + 附注
+  principles?: string[];   // ✓ 4 条原则
+  avoidances?: string[];   // ✗ 4 条禁忌
+  note?: string;           // 末尾附注: 抖音昵称更强调 ... / 小红书 ... / 视频号 ...
 }
 
 export interface NicknameRecommendSectionProps {
@@ -66,13 +70,35 @@ export function NicknameRecommendSection({
         )}
       </div>
 
-      {/* 选择策略 sub-section */}
+      {/* 命名策略 sub-section */}
       {(isEmpty || strategy) && (
-        <div className="bg-muted/20 p-4 rounded-lg space-y-2">
-          <p className="text-xs font-medium text-on-surface/70">选择策略</p>
+        <div className="bg-muted/20 p-4 rounded-lg space-y-3 border border-primary/15">
+          <p className="text-sm font-semibold text-on-surface">命名策略</p>
           {strategy ? (
             <>
-              <p className="text-xs text-muted-foreground leading-relaxed">{strategy.hint}</p>
+              {strategy.hint && (
+                <p className="text-xs text-muted-foreground leading-relaxed">{strategy.hint}</p>
+              )}
+              {strategy.principles && strategy.principles.length > 0 && (
+                <ul className="space-y-1.5">
+                  {strategy.principles.map((p, i) => (
+                    <li key={`p-${i}`} className="text-xs leading-relaxed flex gap-2 text-on-surface/85">
+                      <span className="text-emerald-500 shrink-0">✓</span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {strategy.avoidances && strategy.avoidances.length > 0 && (
+                <ul className="space-y-1.5">
+                  {strategy.avoidances.map((a, i) => (
+                    <li key={`a-${i}`} className="text-xs leading-relaxed flex gap-2 text-on-surface/65">
+                      <span className="text-rose-400 shrink-0">✗</span>
+                      <span>{a}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {strategy.chips.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {strategy.chips.map((chip) => (
@@ -84,6 +110,11 @@ export function NicknameRecommendSection({
                     </span>
                   ))}
                 </div>
+              )}
+              {strategy.note && (
+                <p className="text-[11px] text-muted-foreground/80 leading-relaxed border-t border-border/30 pt-2 mt-1">
+                  {strategy.note}
+                </p>
               )}
             </>
           ) : (
