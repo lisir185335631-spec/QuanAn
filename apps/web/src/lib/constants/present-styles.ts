@@ -100,3 +100,9 @@ export const PRESENT_STYLES: readonly Style[] = [
 export const PRESENT_STYLES_MAP: Record<string, Style> = Object.fromEntries(
   PRESENT_STYLES.map((s) => [s.id, s]),
 );
+
+// ── sally 真实页字面常量 (1:1 复刻) ──────────────────────────────────────────
+export const PAGE_TITLE = '爆款呈现形式合集';
+export const PAGE_SUBTITLE = '掌握各种爆款视频的呈现形式，找到最适合你的内容表达方式';
+export const SCENE_LABEL = '适用场景';
+export const SCENE_VALUE_DEFAULT = '通用';
