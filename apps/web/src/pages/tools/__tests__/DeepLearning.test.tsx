@@ -1,108 +1,22 @@
 /**
- * PRD-27 US-004 · DeepLearning unit tests (AC-9)
- * AC-9: ≥ 3 tests · mock deepLearningAgent.execute + BullMQ enqueue + query polling
- * vi.hoisted 模式 + MemoryRouter wrap
+ * DeepLearning.test.tsx — /tools/deep-learning · 1:1 复刻单测
+ * mock-first · 0 trpc · 0 backend
  */
-import { act, render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import DeepLearning from '@/pages/tools/DeepLearning';
-
-// ── Mock control (vi.hoisted runs before vi.mock) ─────────────────────────────
-
-const mockCtrl = vi.hoisted(() => ({
-  learnOnSuccess: undefined as ((data: unknown) => void) | undefined,
-  learnOnError: undefined as ((error: unknown) => void) | undefined,
-  learnIsPending: false,
-  // learnStatus query state
-  statusQueryData: undefined as
-    | {
-        status: 'queued' | 'processing' | 'completed' | 'failed';
-        result: Record<string, unknown> | null;
-      }
-    | undefined,
-  jobId: null as string | null,
-}));
-
-// ── Mock data ─────────────────────────────────────────────────────────────────
-
-const MOCK_COMPLETED_RESULT = vi.hoisted(() => ({
-  summary: '这批文案具有强烈的情感共鸣特征，整体语气轻松温暖，结构紧凑。',
-  dimensions: {
-    tone: '语气亲切自然，带有轻微幽默感，避免说教性语言。',
-    structure: '起承转合清晰，开头悬念，中段展开，结尾号召行动。',
-    hook: '前三句必有痛点或疑问句，快速抓住读者注意力。',
-    transition: '用"但是""然而""所以"等连词自然转折，逻辑流畅。',
-    closing: '结尾通常是行动号召或开放性问题，引发互动。',
-  },
-  isFallback: false,
-  tokensUsed: 800,
-  modelUsed: 'claude-opus-4-7',
-  durationMs: 12000,
-}));
-
-const MOCK_FALLBACK_RESULT = vi.hoisted(() => ({
-  summary: '系统繁忙，暂时无法完成文案深度分析。建议稍后重试。',
-  dimensions: {
-    tone: '暂无分析结果',
-    structure: '暂无分析结果',
-    hook: '暂无分析结果',
-    transition: '暂无分析结果',
-    closing: '暂无分析结果',
-  },
-  isFallback: true,
-  tokensUsed: 0,
-  modelUsed: 'fallback',
-  durationMs: 0,
-}));
-
-// ── Mocks ─────────────────────────────────────────────────────────────────────
-
-vi.mock('@/hooks/useActiveAccount', () => ({
-  useActiveAccount: () => ({ account: null, isLoading: false }),
-}));
-
-vi.mock('@/lib/trpc', () => ({
-  trpc: {
-    deepLearning: {
-      learn: {
-        useMutation: (opts?: {
-          onSuccess?: (data: unknown) => void;
-          onError?: (error: unknown) => void;
-        }) => {
-          mockCtrl.learnOnSuccess = opts?.onSuccess;
-          mockCtrl.learnOnError = opts?.onError;
-          return {
-            mutate: vi.fn((input: unknown) => {
-              void input;
-            }),
-            isPending: mockCtrl.learnIsPending,
-            isError: false,
-          };
-        },
-      },
-      learnStatus: {
-        useQuery: (_input: unknown, _opts?: unknown) => {
-          return {
-            data: mockCtrl.statusQueryData,
-          };
-        },
-      },
-    },
-  },
-}));
 
 vi.mock('sonner', () => ({
   toast: {
     error: vi.fn(),
     success: vi.fn(),
+    info: vi.fn(),
   },
 }));
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function renderDeepLearning() {
+function renderPage() {
   return render(
     <MemoryRouter>
       <DeepLearning />
@@ -110,95 +24,95 @@ function renderDeepLearning() {
   );
 }
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
-
-describe('DeepLearning', () => {
-  beforeEach(() => {
-    mockCtrl.learnIsPending = false;
-    mockCtrl.learnOnSuccess = undefined;
-    mockCtrl.learnOnError = undefined;
-    mockCtrl.statusQueryData = undefined;
-    mockCtrl.jobId = null;
+describe('DeepLearning · header 字面锁', () => {
+  it('chip 显示 "深度学习"', () => {
+    renderPage();
+    expect(screen.getByTestId('deep-learning-chip')).toBeInTheDocument();
+    expect(screen.getByTestId('deep-learning-chip')).toHaveTextContent('深度学习');
   });
 
-  it('AC-9 · H1 字面锁 "文案深度学习"', () => {
-    renderDeepLearning();
+  it('h1 显示 "文案深度学习"', () => {
+    renderPage();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('文案深度学习');
   });
 
-  it('AC-9 · 添加样本后显示 samples list', () => {
-    renderDeepLearning();
-    const textInput = screen.getByTestId('text-input');
-    const sourceInput = screen.getByTestId('source-input');
-    const addBtn = screen.getByTestId('add-sample-btn');
+  it('subtitle 含关键词 "深度分析文案逻辑、包装风格"', () => {
+    renderPage();
+    const subtitle = screen.getByTestId('deep-learning-subtitle');
+    expect(subtitle).toHaveTextContent('深度分析文案逻辑、包装风格');
+  });
+});
 
-    fireEvent.change(textInput, { target: { value: '这是一篇超过十字的优秀文案内容样本，包含足够多的文字。' } });
-    fireEvent.change(sourceInput, { target: { value: '小红书爆文 #1' } });
-    fireEvent.click(addBtn);
-
-    expect(screen.getByTestId('samples-list')).toBeInTheDocument();
-    expect(screen.getByTestId('sample-item-0')).toBeInTheDocument();
+describe('DeepLearning · form 字面锁', () => {
+  it('2 tab "上传文件" / "粘贴文案" 均出现', () => {
+    renderPage();
+    expect(screen.getByTestId('tab-upload')).toHaveTextContent('上传文件');
+    expect(screen.getByTestId('tab-paste')).toHaveTextContent('粘贴文案');
   });
 
-  it('AC-9 · learn mutation onSuccess → jobId 设置 → processing spinner 显示', () => {
-    mockCtrl.statusQueryData = { status: 'processing', result: null };
-    renderDeepLearning();
+  it('主 CTA 含 "开始深度学习"', () => {
+    renderPage();
+    expect(screen.getByTestId('start-learning-btn')).toHaveTextContent('开始深度学习');
+  });
+});
 
-    act(() => {
-      mockCtrl.learnOnSuccess?.({ jobId: 'test-job-123', status: 'queued' });
-    });
-
-    // After job queued, status section should eventually appear (query returns processing)
-    // The start button should be in processing state
-    const startBtn = screen.getByTestId('start-learning-btn');
-    expect(startBtn).toBeDisabled();
+describe('DeepLearning · 学习档案 mock', () => {
+  it('标题 "学习档案 (1)" 出现', () => {
+    renderPage();
+    expect(screen.getByTestId('archives-heading')).toHaveTextContent('学习档案 (1)');
   });
 
-  it('AC-9 · learnStatus completed → 渲染 result.summary + 5 维度', () => {
-    mockCtrl.statusQueryData = {
-      status: 'completed',
-      result: MOCK_COMPLETED_RESULT as unknown as Record<string, unknown>,
-    };
-
-    renderDeepLearning();
-
-    act(() => {
-      mockCtrl.learnOnSuccess?.({ jobId: 'test-job-456', status: 'queued' });
-    });
-
-    expect(screen.getByTestId('deep-learn-result')).toBeInTheDocument();
-    expect(screen.getByTestId('result-summary')).toHaveTextContent(MOCK_COMPLETED_RESULT.summary);
-    expect(screen.getByTestId('result-dimension-tone')).toHaveTextContent(MOCK_COMPLETED_RESULT.dimensions.tone);
-    expect(screen.getByTestId('result-dimension-structure')).toBeInTheDocument();
-    expect(screen.getByTestId('result-dimension-hook')).toBeInTheDocument();
-    expect(screen.getByTestId('result-dimension-transition')).toBeInTheDocument();
-    expect(screen.getByTestId('result-dimension-closing')).toBeInTheDocument();
+  it('档案标题 "文案学习 2026/5/25 (1篇)" 出现', () => {
+    renderPage();
+    expect(screen.getByTestId('archive-title')).toHaveTextContent('文案学习 2026/5/25 (1篇)');
   });
 
-  it('AC-9 · isFallback=true → 显示 fallback banner', () => {
-    mockCtrl.statusQueryData = {
-      status: 'completed',
-      result: MOCK_FALLBACK_RESULT as unknown as Record<string, unknown>,
-    };
-
-    renderDeepLearning();
-
-    act(() => {
-      mockCtrl.learnOnSuccess?.({ jobId: 'test-job-789', status: 'queued' });
-    });
-
-    expect(screen.getByTestId('fallback-banner')).toBeInTheDocument();
+  it('"已完成" chip 出现', () => {
+    renderPage();
+    expect(screen.getByTestId('archive-done-chip')).toHaveTextContent('已完成');
   });
 
-  it('AC-9 · learnStatus failed → 显示错误信息', () => {
-    mockCtrl.statusQueryData = { status: 'failed', result: null };
+  it('展开状态：风格画像 / 文案逻辑 / 包装风格 / 精华片段 (4) 各出现', () => {
+    renderPage();
+    // default expanded=true in ArchiveCard
+    expect(screen.getByTestId('style-portrait-section')).toBeInTheDocument();
+    expect(screen.getByTestId('logic-grid-section')).toBeInTheDocument();
+    expect(screen.getByTestId('packaging-grid-section')).toBeInTheDocument();
+    expect(screen.getByTestId('highlights-section')).toBeInTheDocument();
+    expect(screen.getByTestId('highlights-section')).toHaveTextContent('精华片段 (4)');
+  });
 
-    renderDeepLearning();
+  it('风格画像含关键词 "智者型"', () => {
+    renderPage();
+    expect(screen.getByTestId('style-portrait-body')).toHaveTextContent('智者型');
+  });
 
-    act(() => {
-      mockCtrl.learnOnSuccess?.({ jobId: 'test-job-fail', status: 'queued' });
-    });
+  it('4 quote keyword "为什么美业老板" 出现', () => {
+    renderPage();
+    expect(screen.getByTestId('highlight-quote-0')).toHaveTextContent('为什么美业老板');
+  });
 
-    expect(screen.getByText(/分析失败/)).toBeInTheDocument();
+  it('toggle 折叠后 expanded content 消失', () => {
+    renderPage();
+    // 先确认展开
+    expect(screen.getByTestId('archive-expanded')).toBeInTheDocument();
+    // 点 toggle 折叠
+    fireEvent.click(screen.getByTestId('archive-toggle-btn'));
+    expect(screen.queryByTestId('archive-expanded')).not.toBeInTheDocument();
+  });
+});
+
+describe('DeepLearning · 使用说明 字面锁', () => {
+  it('使用说明 card 出现', () => {
+    renderPage();
+    expect(screen.getByTestId('usage-instructions')).toBeInTheDocument();
+    expect(screen.getByTestId('usage-instructions-title')).toHaveTextContent('使用说明');
+  });
+
+  it('3 section title 出现：文件上传模式 / 文案粘贴模式 / 通用说明', () => {
+    renderPage();
+    expect(screen.getByTestId('usage-section-title-0')).toHaveTextContent('文件上传模式：');
+    expect(screen.getByTestId('usage-section-title-1')).toHaveTextContent('文案粘贴模式：');
+    expect(screen.getByTestId('usage-section-title-2')).toHaveTextContent('通用说明：');
   });
 });
