@@ -285,23 +285,25 @@ describe('IpPlan page (US-010)', () => {
   });
 });
 
-describe('VoiceChat page (PRD-24 US-003)', () => {
-  it('H1 字面锁 VOICE CHAT', () => {
+describe('VoiceChat page (1:1 复刻 mock-first)', () => {
+  it('chip 标题 "VOICE CHAT" 渲染', () => {
     render(
       <MemoryRouter>
         <VoiceChat />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('VOICE CHAT');
+    expect(screen.getByTestId('voice-chat-chip-title')).toHaveTextContent('VOICE CHAT');
   });
 
-  it('H3 模块标题 你的专属 IP 变现顾问', () => {
+  it('chip subtitle "语音对话 · 你的专属IP变现顾问" 渲染', () => {
     render(
       <MemoryRouter>
         <VoiceChat />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('你的专属 IP 变现顾问');
+    expect(screen.getByTestId('voice-chat-chip-subtitle')).toHaveTextContent(
+      '语音对话 · 你的专属IP变现顾问',
+    );
   });
 
   it('input placeholder 有什么问题尽管问我...', () => {
