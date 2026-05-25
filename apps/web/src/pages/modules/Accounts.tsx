@@ -1,58 +1,49 @@
 /**
- * /accounts — PRD-23 US-002 AC-1/5
- * IP 账号管理页 · 账号 grid + 新建账号 modal
- * H1 字面锁 'IP 账号管理' · D-227 AC-1
+ * /accounts — 1:1 复刻 aiipznt.vip/accounts
+ * mock-first · 1 demo account · 无 trpc · 新建 btn toast
  */
-import { CreateAccountModal } from '@/components/accounts/CreateAccountModal';
-import { IpAccountCard } from '@/components/accounts/IpAccountCard';
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { trpc } from '@/lib/trpc';
+import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
-const PAGE_TITLE = 'IP 账号管理' as const;
-const PAGE_SUBTITLE = '管理多个 IP 账号，每个账号独立配置行业、定位和人设' as const;
+import { IpAccountCard } from '@/components/accounts/IpAccountCard';
+import { Button } from '@/components/ui/button';
+import {
+  ACCOUNTS_CREATE_BTN,
+  ACCOUNTS_H1,
+  ACCOUNTS_MOCK,
+  ACCOUNTS_SUBTITLE,
+  ACCOUNTS_TOAST_CREATE,
+} from '@/lib/constants/accounts';
 
 export default function Accounts() {
-  const { data: accounts = [], isLoading } = trpc.ipAccounts.list.useQuery();
-  const { account: activeAccount, switchTo } = useActiveAccount();
+  function handleCreate() {
+    toast.info(ACCOUNTS_TOAST_CREATE);
+  }
 
   return (
-    <main className="flex-1 container py-8">
-      {/* Header row — AC-1 */}
-      <div className="flex items-start justify-between mb-6 gap-4">
+    <main className="max-w-6xl mx-auto py-8 space-y-8">
+      {/* Header row */}
+      <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-h1 font-display text-on-surface">{PAGE_TITLE}</h1>
-          <p className="text-body-md text-muted-foreground mt-1">{PAGE_SUBTITLE}</p>
+          <h1 className="text-h1 font-display text-on-surface">{ACCOUNTS_H1}</h1>
+          <p className="text-body-md text-muted-foreground mt-1">{ACCOUNTS_SUBTITLE}</p>
         </div>
-        {/* 新建账号 button — AC-3/5 · 顶部右侧 */}
-        <CreateAccountModal />
+        <Button
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          onClick={handleCreate}
+          data-testid="create-account-trigger"
+        >
+          <Plus className="w-4 h-4 mr-1" />
+          {ACCOUNTS_CREATE_BTN}
+        </Button>
       </div>
 
-      {isLoading ? (
-        <p className="text-body-md text-muted-foreground">加载中…</p>
-      ) : accounts.length > 0 ? (
-        <div
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          data-testid="accounts-grid"
-        >
-          {accounts.map((account) => (
-            <IpAccountCard
-              key={account.id}
-              account={account}
-              isActive={account.id === (activeAccount as { id: number } | null)?.id}
-              onActivate={() => switchTo(account.id)}
-              onEdit={() => {}}
-              onDelete={() => {}}
-            />
-          ))}
-        </div>
-      ) : (
-        <p
-          className="text-body-md text-muted-foreground"
-          data-testid="accounts-empty"
-        >
-          暂无 IP 账号 · 点击&quot;新建账号&quot;开始
-        </p>
-      )}
+      {/* Account list — 单列 stack */}
+      <div className="space-y-4" data-testid="accounts-list">
+        {ACCOUNTS_MOCK.map((account) => (
+          <IpAccountCard key={account.id} account={account} />
+        ))}
+      </div>
     </main>
   );
 }

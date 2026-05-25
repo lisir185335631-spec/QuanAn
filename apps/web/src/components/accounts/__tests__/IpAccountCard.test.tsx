@@ -1,152 +1,69 @@
 /**
- * IpAccountCard unit tests — PRD-23 US-002 AC-8
- * ≥ 5 tests: props 渲染 / ACTIVE 标条件 / 圆形头像首字符 / onActivate/onEdit/onDelete click / stub toast
+ * IpAccountCard unit tests — 1:1 复刻 mock-first
+ * Tests: name / avatar / 4 chip / ACTIVE chip 条件 / desc
  */
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Building2, Globe, Target, Users } from 'lucide-react';
+import { describe, it, expect, vi } from 'vitest';
 
 import { IpAccountCard } from '@/components/accounts/IpAccountCard';
+import type { IpAccountMock } from '@/lib/constants/accounts';
 
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
-const mockAccount = {
+const mockAccount: IpAccountMock = {
   id: 1,
-  name: 'AI 创业者小张',
-  industry: '企业服务',
-  platform: 'douyin',
-  stage: 'starter',
-  isActive: true,
-  followersRange: '0-1000',
-  personalInfo: '定制智能体和 opc 培训',
-  ipPositioning: 'AI 工具达人',
+  name: '赵语AI',
+  desc: '定制智能体和opc培训',
+  active: true,
+  chips: [
+    { icon: Building2, label: '企业服务' },
+    { icon: Globe,     label: '抖音' },
+    { icon: Users,     label: '1-1000粉' },
+    { icon: Target,    label: '从零开始做IP' },
+  ],
 };
 
 describe('IpAccountCard', () => {
-  const onActivate = vi.fn();
-  const onEdit = vi.fn();
-  const onDelete = vi.fn();
-
-  beforeEach(() => {
-    onActivate.mockClear();
-    onEdit.mockClear();
-    onDelete.mockClear();
+  it('name 渲染: 赵语AI', () => {
+    render(<IpAccountCard account={mockAccount} />);
+    expect(screen.getByText('赵语AI')).toBeInTheDocument();
   });
 
-  it('props 渲染: name / industry / platform 显示', () => {
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    expect(screen.getByText('AI 创业者小张')).toBeInTheDocument();
-    expect(screen.getByText(/企业服务/)).toBeInTheDocument();
-    expect(screen.getByText(/douyin/)).toBeInTheDocument();
+  it('avatar 首字符: 赵', () => {
+    render(<IpAccountCard account={mockAccount} />);
+    const avatar = screen.getByTestId('ip-account-avatar-1');
+    expect(avatar).toHaveTextContent('赵');
   });
 
-  it('ACTIVE 标条件: isActive=true 显示 chip', () => {
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={true}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    expect(screen.getByTestId(`ip-account-active-chip-${mockAccount.id}`)).toBeInTheDocument();
+  it('4 chip 显示: 企业服务 / 抖音 / 1-1000粉 / 从零开始做IP', () => {
+    render(<IpAccountCard account={mockAccount} />);
+    expect(screen.getByText('企业服务')).toBeInTheDocument();
+    expect(screen.getByText('抖音')).toBeInTheDocument();
+    expect(screen.getByText('1-1000粉')).toBeInTheDocument();
+    expect(screen.getByText('从零开始做IP')).toBeInTheDocument();
+  });
+
+  it('ACTIVE chip: active=true 显示绿 chip', () => {
+    render(<IpAccountCard account={mockAccount} />);
+    expect(screen.getByTestId('ip-account-active-chip-1')).toBeInTheDocument();
     expect(screen.getByText('ACTIVE')).toBeInTheDocument();
   });
 
-  it('ACTIVE 标条件: isActive=false 不显示 chip', () => {
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    expect(screen.queryByTestId(`ip-account-active-chip-${mockAccount.id}`)).not.toBeInTheDocument();
+  it('ACTIVE chip: active=false 不显示 chip', () => {
+    render(<IpAccountCard account={{ ...mockAccount, active: false }} />);
+    expect(screen.queryByTestId('ip-account-active-chip-1')).not.toBeInTheDocument();
   });
 
-  it('圆形头像首字符: 显示 name[0]', () => {
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    const avatar = screen.getByTestId(`ip-account-avatar-${mockAccount.id}`);
-    expect(avatar).toHaveTextContent('A');
+  it('desc 渲染: 定制智能体和opc培训', () => {
+    render(<IpAccountCard account={mockAccount} />);
+    expect(screen.getByText('定制智能体和opc培训')).toBeInTheDocument();
   });
 
-  it('onActivate: 点击卡片主体触发', () => {
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    fireEvent.click(screen.getByTestId(`ip-account-card-${mockAccount.id}`));
-    expect(onActivate).toHaveBeenCalledOnce();
-  });
-
-  it('onEdit click: 编辑 button 触发', async () => {
-    const { toast } = await import('sonner');
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    fireEvent.click(screen.getByTestId(`ip-account-edit-${mockAccount.id}`));
-    expect(onEdit).toHaveBeenCalledOnce();
-    expect(toast.info).toHaveBeenCalledWith('功能 PRD-25+');
-  });
-
-  it('onDelete click: 删除 button 触发', async () => {
-    const { toast } = await import('sonner');
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    fireEvent.click(screen.getByTestId(`ip-account-delete-${mockAccount.id}`));
-    expect(onDelete).toHaveBeenCalledOnce();
-    expect(toast.info).toHaveBeenCalledWith('功能 PRD-25+');
-  });
-
-  it('personalInfo + ipPositioning: 有值时渲染', () => {
-    render(
-      <IpAccountCard
-        account={mockAccount}
-        isActive={false}
-        onActivate={onActivate}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />,
-    );
-    expect(screen.getByText('定制智能体和 opc 培训')).toBeInTheDocument();
-    expect(screen.getByText('AI 工具达人')).toBeInTheDocument();
+  it('card testid: ip-account-card-1', () => {
+    render(<IpAccountCard account={mockAccount} />);
+    expect(screen.getByTestId('ip-account-card-1')).toBeInTheDocument();
   });
 });
