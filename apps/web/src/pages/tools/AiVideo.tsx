@@ -1,264 +1,156 @@
 /**
- * AiVideo.tsx — /ai-video 工具页 · PRD-22 US-004
- * 完整 inline 重构: H1 STORYBOARD(Orbitron) + 5 平台 radio + 6 视频类型 + textarea 5000 + 分镜表 13 列
- * H1 字面锁: "STORYBOARD"
- * 副标题锁: "专业分镜表生成器 · 文案一键转拍摄方案"
- * 模块标题 H3: "专业分镜表生成器"
- * D-221 · 13 列表头字面锁 (header→key 1:1 对应, 防 PRD-6 US-004 教训)
- * stub 6-8 行假数据用于视觉密度对齐 · LLM 集成留 PRD-23+
+ * AiVideo.tsx — /ai-video STORYBOARD 工具页 · 1:1 sally zhao 复刻
+ * form + empty + result 三态 · mock-first 模式 · 0 backend
+ * 2026-05-25
  */
-
 import { useState } from 'react';
 
-import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { PlatformInlineRadio } from '@/components/inline-pickers';
+import { Sparkles, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { AdviceCard } from '@/components/ai-video/AdviceCard';
+import { EmptyPlaceholderCard } from '@/components/ai-video/EmptyPlaceholderCard';
+import { PlatformCard } from '@/components/ai-video/PlatformCard';
+import { ResultTitleCard } from '@/components/ai-video/ResultTitleCard';
+import { ShotCard } from '@/components/ai-video/ShotCard';
+import { StoryboardChip } from '@/components/ai-video/StoryboardChip';
+import { TimelineBar } from '@/components/ai-video/TimelineBar';
+import { VideoTypeCard } from '@/components/ai-video/VideoTypeCard';
+import {
+  AI_VIDEO_ADVICE,
+  AI_VIDEO_CTA_TEXT,
+  AI_VIDEO_DEFAULT_DEMO_SCRIPT,
+  AI_VIDEO_LABEL_PLATFORM,
+  AI_VIDEO_LABEL_TEXT,
+  AI_VIDEO_LABEL_TYPE,
+  AI_VIDEO_MOCK_SHOTS,
+  AI_VIDEO_PLATFORMS,
+  AI_VIDEO_RESTART_TEXT,
+  AI_VIDEO_RESULT_SHOT_COUNT,
+  AI_VIDEO_RESULT_TITLE,
+  AI_VIDEO_RESULT_TOTAL_DURATION,
+  AI_VIDEO_TIMELINE_SEGMENTS,
+} from '@/lib/constants/ai-video';
 import { VIDEO_TYPES } from '@/lib/constants/video-types';
-import { cn } from '@/lib/utils';
-
-// ── D-221 · 13 列分镜表定义 (header→key 1:1 对应) ────────────────────────────
-
-interface StoryboardColumn {
-  header: string;
-  key: keyof StoryboardRow;
-}
-
-interface StoryboardRow {
-  shotNumber: string;
-  framing: string;
-  angle: string;
-  movement: string;
-  duration: string;
-  visualDesc: string;
-  dialogue: string;
-  subtitle: string;
-  bgm: string;
-  sfx: string;
-  emotion: string;
-  shootingNotes: string;
-  editingNotes: string;
-}
-
-const STORYBOARD_COLUMNS: StoryboardColumn[] = [
-  { header: '镜号',    key: 'shotNumber'    },
-  { header: '景别',    key: 'framing'       },
-  { header: '角度',    key: 'angle'         },
-  { header: '运镜',    key: 'movement'      },
-  { header: '时长',    key: 'duration'      },
-  { header: '画面描述', key: 'visualDesc'   },
-  { header: '台词/解说', key: 'dialogue'   },
-  { header: '字幕',    key: 'subtitle'      },
-  { header: '背景音乐', key: 'bgm'         },
-  { header: '音效',    key: 'sfx'           },
-  { header: '情绪',    key: 'emotion'       },
-  { header: '拍摄要点', key: 'shootingNotes' },
-  { header: '剪辑建议', key: 'editingNotes'  },
-];
-
-// Stub data (6 rows for visual density) · replaced by real LLM output in PRD-23+
-const STUB_ROWS: StoryboardRow[] = [
-  { shotNumber: '01', framing: '全景',   angle: '平视', movement: '固定',     duration: '3s',  visualDesc: '博主出现在镜头前，背景整洁',      dialogue: '大家好，今天给大家带来...',  subtitle: '大家好，今天给大家带来...', bgm: '轻快背景乐',   sfx: '环境音',   emotion: '活力',   shootingNotes: '注意背景简洁',  editingNotes: '配合开场音乐剪辑' },
-  { shotNumber: '02', framing: '中景',   angle: '微俯', movement: '推进',     duration: '5s',  visualDesc: '主角走向产品，眼神坚定',           dialogue: '这款产品让我...',           subtitle: '这款产品让我...',          bgm: '渐强背景乐',   sfx: '脚步声',   emotion: '期待',   shootingNotes: '保持平稳推进',  editingNotes: '慢推配合情绪渐入' },
-  { shotNumber: '03', framing: '近景',   angle: '平视', movement: '固定',     duration: '8s',  visualDesc: '产品特写，展示核心功能',           dialogue: '你们看这里...',             subtitle: '你们看这里...',            bgm: '高潮背景乐',   sfx: '点击声',   emotion: '惊喜',   shootingNotes: '对焦清晰',      editingNotes: '配合文字特效' },
-  { shotNumber: '04', framing: '特写',   angle: '仰视', movement: '环绕',     duration: '4s',  visualDesc: '细节展示，质感突出',              dialogue: '（无对话）',               subtitle: '',                        bgm: '高潮背景乐',   sfx: '无',       emotion: '震撼',   shootingNotes: '微距镜头',      editingNotes: '慢动作处理' },
-  { shotNumber: '05', framing: '中景',   angle: '平视', movement: '摇镜',     duration: '6s',  visualDesc: '博主展示使用效果',               dialogue: '实际用起来感觉...',         subtitle: '实际用起来感觉...',        bgm: '温和背景乐',   sfx: '环境音',   emotion: '满足',   shootingNotes: '稳定器拍摄',    editingNotes: '自然剪辑' },
-  { shotNumber: '06', framing: '全景',   angle: '平视', movement: '固定',     duration: '5s',  visualDesc: '博主面对镜头，总结推荐',          dialogue: '总结来说，强烈推荐...',     subtitle: '总结来说，强烈推荐...',   bgm: '收尾背景乐',   sfx: '无',       emotion: '真诚',   shootingNotes: '注意结尾表情',  editingNotes: '渐出淡化' },
-  { shotNumber: '07', framing: '近景',   angle: '平视', movement: '固定',     duration: '3s',  visualDesc: '点赞关注引导画面',               dialogue: '如果觉得有用点个赞...',     subtitle: '点赞关注！',              bgm: '轻快结尾乐',   sfx: '提示音',   emotion: '友好',   shootingNotes: '手势配合',      editingNotes: '配合弹出引导动画' },
-  { shotNumber: '08', framing: '全景',   angle: '俯视', movement: '拉远',     duration: '2s',  visualDesc: '结尾定格画面',                   dialogue: '下次见！',                  subtitle: '下次见！',                bgm: '收尾',         sfx: '无',       emotion: '愉快',   shootingNotes: '留出片尾空间',  editingNotes: 'Logo 叠加' },
-];
-
-// ── Page component ────────────────────────────────────────────────────────────
 
 export default function AiVideo() {
-  const [platform, setPlatform] = useState<string | null>('douyin');
-  const [videoType, setVideoType] = useState<string | null>(null);
-  const [text, setText] = useState('');
-  const [showResult, setShowResult] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [text, setText] = useState(AI_VIDEO_DEFAULT_DEMO_SCRIPT);
+  const [platform, setPlatform] = useState<string>('douyin');
+  const [videoType, setVideoType] = useState<string>('monologue');
+  const [isResultShown, setIsResultShown] = useState(false);
 
-  const isDisabled = text.trim().length === 0;
-
-  async function handleGenerate() {
-    if (isDisabled || isSubmitting) return;
-    setIsSubmitting(true);
-    // Stub: show table immediately · real LLM call leaves for PRD-23+
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setShowResult(true);
-    setIsSubmitting(false);
-  }
-
-  function handleExportCsv() {
-    // Stub: real export integration leaves for PRD-23+
-    const headers = STORYBOARD_COLUMNS.map((c) => c.header).join(',');
-    const rows = STUB_ROWS.map((row) =>
-      STORYBOARD_COLUMNS.map((c) => `"${row[c.key]}"`).join(',')
-    ).join('\n');
-    const blob = new Blob([`${headers}\n${rows}`], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'storyboard.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  const handleGenerate = () => setIsResultShown(true);
+  const handleRestart = () => setIsResultShown(false);
 
   return (
-    <main className="flex-1 container py-8 space-y-8">
-      {/* AC-1: PageHeader + H1 STORYBOARD (Orbitron uppercase) */}
-      <FadeInWrapper delay={0} from="up">
-        <div>
-          <span className="text-label-sm font-label text-primary uppercase tracking-wide">
-            内容创作
-          </span>
-          <h1 className="mt-1 text-h1 font-display uppercase tracking-widest text-on-surface">
-            STORYBOARD
-          </h1>
-          <p className="mt-2 text-body-md text-muted-foreground">
-            专业分镜表生成器 · 文案一键转拍摄方案
-          </p>
-        </div>
-      </FadeInWrapper>
+    <main className="flex-1 container py-8 max-w-5xl mx-auto space-y-6">
+      <StoryboardChip />
 
-      {/* AC-3(2): textarea 文案内容 */}
-      <FadeInWrapper delay={0.05} from="up">
-        <div className="space-y-2">
-          <h3 className="text-h3 font-display text-on-surface mb-2">专业分镜表生成器</h3>
-          <label htmlFor="ai-video-text" className="block text-body-md font-medium text-on-surface">
-            文案内容
-          </label>
-          <textarea
-            id="ai-video-text"
-            value={text}
-            onChange={(e) => setText(e.target.value.slice(0, 5000))}
-            maxLength={5000}
-            placeholder="粘贴你的短视频文案，AI 将自动生成专业分镜表，可直接交给摄影师执行..."
-            rows={6}
-            className="w-full px-3 py-2 rounded-lg border border-border bg-card text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y"
-            data-testid="ai-video-textarea"
+      {/* Form · 输入文案内容 */}
+      <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+        <label className="block text-base font-medium text-on-surface" htmlFor="ai-video-text">
+          {AI_VIDEO_LABEL_TEXT}
+        </label>
+        <textarea
+          id="ai-video-text"
+          value={text}
+          onChange={(e) => setText(e.target.value.slice(0, 5000))}
+          maxLength={5000}
+          rows={12}
+          className="w-full px-3 py-2 rounded-lg border border-border bg-background text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y text-sm"
+          data-testid="ai-video-textarea"
+        />
+        <div className="flex justify-end text-sm text-muted-foreground">
+          <span data-testid="ai-video-char-count">{text.length}/5000</span>
+        </div>
+      </div>
+
+      {/* Form · 发布平台 */}
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="block text-base font-medium text-on-surface">{AI_VIDEO_LABEL_PLATFORM}</label>
+        <div className="grid grid-cols-3 gap-4" data-testid="platform-grid">
+          {AI_VIDEO_PLATFORMS.map((p) => (
+            <PlatformCard
+              key={p.key}
+              platform={p}
+              selected={p.key === platform}
+              onClick={() => setPlatform(p.key)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Form · 视频类型 */}
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="block text-base font-medium text-on-surface">{AI_VIDEO_LABEL_TYPE}</label>
+        <div className="grid grid-cols-2 gap-3" data-testid="video-type-grid">
+          {VIDEO_TYPES.map((vt) => (
+            <VideoTypeCard
+              key={vt.key}
+              type={vt}
+              selected={vt.key === videoType}
+              onClick={() => setVideoType(vt.key)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* 主 CTA */}
+      <button
+        type="button"
+        onClick={handleGenerate}
+        data-testid="ai-video-cta"
+        className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+      >
+        <Sparkles className="w-5 h-5" />
+        {AI_VIDEO_CTA_TEXT}
+      </button>
+
+      {/* Empty 态 · isResultShown=false 时显示 */}
+      {!isResultShown && <EmptyPlaceholderCard />}
+
+      {/* Result 态 · isResultShown=true 时显示 */}
+      {isResultShown && (
+        <div className="space-y-6">
+          {/* 清空记录按钮 */}
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={handleRestart}
+              data-testid="ai-video-restart"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-on-surface transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              {AI_VIDEO_RESTART_TEXT}
+            </button>
+          </div>
+
+          {/* 标题 card */}
+          <ResultTitleCard
+            title={AI_VIDEO_RESULT_TITLE}
+            duration={AI_VIDEO_RESULT_TOTAL_DURATION}
+            shotCount={AI_VIDEO_RESULT_SHOT_COUNT}
+            onCopy={() => toast.success('已复制全部')}
+            onExport={() => toast.info('CSV 导出 · 即将上线')}
           />
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              data-testid="ai-video-example"
-              onClick={() => setText('大家好！今天给大家分享一款让我爱不释手的好物。它的设计非常精致，功能也超级实用。我已经用了一个月了，真的超级好用！强烈推荐给大家，点赞收藏不迷路～')}
-              className="text-body-sm text-primary hover:underline transition-all duration-200"
-            >
-              示例文案
-            </button>
-            <span className="text-body-sm text-muted-foreground" data-testid="ai-video-char-count">
-              {text.length}/5000
-            </span>
-          </div>
-        </div>
-      </FadeInWrapper>
 
-      {/* AC-3(3): 5 平台 radio */}
-      <FadeInWrapper delay={0.1} from="up">
-        <div className="space-y-2">
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-          <label className="block text-body-md font-medium text-on-surface">目标平台</label>
-          <PlatformInlineRadio value={platform} onChange={setPlatform} size="lg" />
-        </div>
-      </FadeInWrapper>
+          {/* 时间轴 bar */}
+          <TimelineBar segments={AI_VIDEO_TIMELINE_SEGMENTS} />
 
-      {/* AC-3(4): 6 视频类型 button */}
-      <FadeInWrapper delay={0.15} from="up">
-        <div className="space-y-2">
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-          <label className="block text-body-md font-medium text-on-surface">视频类型</label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3" data-testid="video-type-grid">
-            {VIDEO_TYPES.map((vt) => {
-              const isSelected = vt.key === videoType;
-              return (
-                <button
-                  key={vt.key}
-                  type="button"
-                  onClick={() => setVideoType(isSelected ? null : vt.key)}
-                  data-testid={`video-type-${vt.key}`}
-                  className={cn(
-                    'flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-all duration-200',
-                    isSelected
-                      ? 'border-primary bg-primary/10 ring-1 ring-primary'
-                      : 'border-border bg-card hover:border-primary/40',
-                  )}
-                >
-                  <span className="text-2xl">{vt.emoji}</span>
-                  <span className="font-display font-bold text-sm text-on-surface">{vt.label}</span>
-                  <span className="text-xs text-muted-foreground">{vt.desc}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </FadeInWrapper>
-
-      {/* AC-3(5): 主 CTA */}
-      <FadeInWrapper delay={0.2} from="up">
-        <button
-          type="button"
-          onClick={() => void handleGenerate()}
-          disabled={isDisabled || isSubmitting}
-          data-testid="ai-video-cta"
-          className={cn(
-            'w-full py-3 rounded-xl font-display font-bold text-white bg-gradient-to-r from-primary to-primary/60 transition-opacity',
-            (isDisabled || isSubmitting) && 'opacity-50 cursor-not-allowed',
-          )}
-        >
-          {isSubmitting ? '生成中...' : '一键生成专业分镜表'}
-        </button>
-      </FadeInWrapper>
-
-      {/* Loading skeleton */}
-      {isSubmitting && (
-        <div className="space-y-3 animate-pulse">
-          <div className="h-4 w-3/4 rounded bg-muted" />
-          <div className="h-4 w-full rounded bg-muted" />
-          <div className="h-48 w-full rounded bg-muted" />
-        </div>
-      )}
-
-      {/* AC-3(6): 分镜表 13 列 table (AC-4 · D-221 字面锁) */}
-      {showResult && !isSubmitting && (
-        <div className="space-y-3" data-testid="ai-video-storyboard-wrapper">
-          <div className="flex items-center justify-between">
-            <h4 className="text-body-md font-medium text-on-surface">分镜表</h4>
-            {/* AC-5: 导出 CSV button */}
-            <button
-              type="button"
-              onClick={handleExportCsv}
-              data-testid="ai-video-export-csv"
-              className="px-3 py-1.5 rounded-lg border border-border bg-card text-body-sm text-on-surface hover:border-primary/40 transition-all duration-200"
-            >
-              一键导出 CSV
-            </button>
+          {/* 3 段建议 */}
+          <div className="flex flex-col gap-3">
+            {AI_VIDEO_ADVICE.map((a) => (
+              <AdviceCard key={a.id} advice={a} />
+            ))}
           </div>
 
-          {/* AC-4 · 横向滚动 · 13 列 */}
-          <div className="overflow-x-auto rounded-lg border border-border" data-testid="ai-video-storyboard-table">
-            <table className="w-full min-w-max text-body-sm">
-              <thead className="bg-muted/40">
-                <tr>
-                  {STORYBOARD_COLUMNS.map((col) => (
-                    <th
-                      key={col.key}
-                      className="font-display uppercase text-xs px-3 py-2 text-left whitespace-nowrap text-muted-foreground border-b border-border"
-                    >
-                      {col.header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {STUB_ROWS.map((row) => (
-                  <tr key={row.shotNumber} className="border-b border-border last:border-0 hover:bg-muted/20 transition-all duration-200">
-                    {STORYBOARD_COLUMNS.map((col) => (
-                      <td key={col.key} className="px-3 py-2 whitespace-nowrap text-on-surface">
-                        {row[col.key]}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* 10 SHOT cards */}
+          <div className="flex flex-col gap-4">
+            {AI_VIDEO_MOCK_SHOTS.map((shot) => (
+              <ShotCard key={shot.num} shot={shot} />
+            ))}
           </div>
         </div>
       )}
