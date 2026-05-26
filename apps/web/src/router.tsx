@@ -17,9 +17,9 @@ import Guide from '@/pages/Guide';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
 
-// ── Step pages (9 + 2 sub-steps) — one shared chunk ──────────────────────────
+// ── Step pages (8 + 2 sub-steps) — one shared chunk ──────────────────────────
+// sally aiipznt /step/2 也是 404 · 跳过 step 2 与 sally 一致(catch-all 接管)
 const Step1 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step1'));
-const Step2 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step2'));
 const Step3 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step3'));
 const Step3b = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step3b'));
 const Step4 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step4'));
@@ -77,7 +77,6 @@ export const router = createBrowserRouter([
         element: <StepLayout />,
         children: [
           { path: '1', element: <Step1 /> },
-          { path: '2', element: <Step2 /> },
           { path: '3', element: <Step3 /> },
           { path: '3b', element: <Step3b /> },
           { path: '4', element: <Step4 /> },

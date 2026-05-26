@@ -13,7 +13,6 @@ import Evolution from '@/pages/modules/Evolution';
 import History from '@/pages/modules/History';
 import MyTopics from '@/pages/modules/MyTopics';
 import Step1 from '@/pages/step/Step1';
-import Step2 from '@/pages/step/Step2';
 import Step5 from '@/pages/step/Step5';
 import Step8 from '@/pages/step/Step8';
 import Step9 from '@/pages/step/Step9';
@@ -172,11 +171,6 @@ describe('Step pages render', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选择你的行业赛道');
-  });
-
-  it('Step2 renders h1 with correct title', () => {
-    render(<Step2 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('受众研究与竞品分析');
   });
 
   it('Step5 renders h1 with correct title', () => {
