@@ -28,7 +28,7 @@ const Step5 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Ste
 const Step6 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step6'));
 const Step7 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step7'));
 const Step8 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step8'));
-const Step9 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Step9'));
+// sally aiipznt /step/9 也是 404 · 跳过 step 9 与 sally 一致(catch-all 接管)
 
 // ── Tool pages (14) — shared tools chunk ─────────────────────────────────────
 const Trending = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Trending'));
@@ -85,7 +85,6 @@ export const router = createBrowserRouter([
           { path: '6', element: <Step6 /> },
           { path: '7', element: <Step7 /> },
           { path: '8', element: <Step8 /> },
-          { path: '9', element: <Step9 /> },
         ],
       },
 

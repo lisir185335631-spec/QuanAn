@@ -15,7 +15,6 @@ import MyTopics from '@/pages/modules/MyTopics';
 import Step1 from '@/pages/step/Step1';
 import Step5 from '@/pages/step/Step5';
 import Step8 from '@/pages/step/Step8';
-import Step9 from '@/pages/step/Step9';
 import Copywriting from '@/pages/tools/Copywriting';
 import Generate from '@/pages/tools/Generate';
 import Knowledge from '@/pages/tools/Knowledge';
@@ -183,10 +182,6 @@ describe('Step pages render', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('直播策划');
   });
 
-  it('Step9 renders h1 with correct title', () => {
-    render(<Step9 />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('品牌商业化与社群运营');
-  });
 });
 
 describe('Tool pages render', () => {
