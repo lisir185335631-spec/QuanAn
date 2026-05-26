@@ -1,3 +1,5 @@
+import { CheckCircle2 } from 'lucide-react';
+
 import type { Industry } from '@/lib/constants/industries';
 
 interface IndustryEmojiGridProps {
@@ -18,14 +20,17 @@ export function IndustryEmojiGrid({ industries, value, onChange }: IndustryEmoji
           data-testid={`industry-card-${ind.id}`}
           onClick={() => onChange(ind)}
           className={[
-            'rounded-lg p-3 flex flex-col items-center text-center cursor-pointer transition-colors border',
+            'relative rounded-lg p-3 flex flex-col items-center text-center cursor-pointer transition-colors border',
             value?.id === ind.id
-              ? 'bg-primary/10 border-primary'
+              ? 'bg-primary/5 border-primary'
               : 'border-border hover:border-primary/40 bg-surface-container',
           ].join(' ')}
         >
-          <span className="text-3xl mb-2">{ind.emoji}</span>
-          <span className="text-body-sm font-cn text-on-surface">{ind.label}</span>
+          {value?.id === ind.id && (
+            <CheckCircle2 className="absolute top-1.5 right-1.5 w-5 h-5 text-primary fill-primary/10" />
+          )}
+          <span className="text-4xl mb-2">{ind.emoji}</span>
+          <span className="font-cn text-sm text-on-surface">{ind.label}</span>
         </button>
       ))}
     </div>

@@ -133,3 +133,19 @@ export const INDUSTRY_CATEGORY_EMOJI: Record<IndustryCategory, string> = {
 // PRD-20 TD-80 fix: Step1Result 结果区 heading 常量
 export const STEP1_RESULT_H2 = '行业洞察报告' as const;
 export const STEP1_RESULT_H3_3 = ['市场分析', '竞争程度', '定位建议'] as const;
+
+// /step/1 page-specific 字面常量(D1 锁 · sally aiipznt 1:1)
+export const STEP1_BREADCRUMB_CHIP = 'STEP 01' as const;
+export const STEP1_BREADCRUMB_LABEL = '选择行业赛道' as const;
+export const STEP1_PAGE_H1 = '选择你的行业赛道' as const;
+export const STEP1_PAGE_H1_EMOJI = '🌐' as const;
+export const STEP1_SUBTITLE_PART1 = '覆盖抖音、视频号等主流平台的 ' as const;
+export const STEP1_SUBTITLE_COUNT = '56+' as const;
+export const STEP1_SUBTITLE_PART2 = ' 个细分行业。 你也可以 ' as const;
+export const STEP1_SUBTITLE_CUSTOM_LINK = '自定义输入行业' as const;
+export const STEP1_SUBTITLE_PART3 = ' 。' as const;
+export const STEP1_BANNER_PREFIX = '已选择：' as const;
+export const STEP1_BANNER_KW_PREFIX = '关键词：' as const;
+export const STEP1_CUSTOM_TAG = '（自定义）' as const;
+export const STEP1_PAGE_CTA = '确认并进入下一步' as const;
+export const STEP1_STICKY_PREFIX = '已选择' as const;
