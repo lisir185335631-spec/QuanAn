@@ -15,7 +15,6 @@ import MyTopics from '@/pages/modules/MyTopics';
 import Step1 from '@/pages/step/Step1';
 import Step5 from '@/pages/step/Step5';
 import Step8 from '@/pages/step/Step8';
-import Copywriting from '@/pages/tools/Copywriting';
 import Generate from '@/pages/tools/Generate';
 import Knowledge from '@/pages/tools/Knowledge';
 import Trending from '@/pages/tools/Trending';
@@ -193,11 +192,6 @@ describe('Tool pages render', () => {
   it('Trending renders h1 heading', () => {
     render(<MemoryRouter><Trending /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款情报库');
-  });
-
-  it('Copywriting renders h1 heading', () => {
-    render(<MemoryRouter><Copywriting /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('爆款文案创作');
   });
 
   it('Knowledge renders h1 heading', () => {

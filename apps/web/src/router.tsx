@@ -32,7 +32,7 @@ const Step8 = lazy(() => import(/* webpackChunkName: "step" */ '@/pages/step/Ste
 
 // ── Tool pages (14) — shared tools chunk ─────────────────────────────────────
 const Trending = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Trending'));
-const Copywriting = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Copywriting'));
+// sally aiipznt /copywriting 也是 404 · 跳过 · catch-all 接管
 const PresentStyles = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PresentStyles'));
 const Monetization = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/Monetization'));
 const PrivateDomain = lazy(() => import(/* webpackChunkName: "tools" */ '@/pages/tools/PrivateDomain'));
@@ -90,7 +90,6 @@ export const router = createBrowserRouter([
 
       // ── Tool routes (14) ─────────────────────────────────────────────────
       { path: 'trending', element: <Trending /> },
-      { path: 'copywriting', element: <Copywriting /> },
       { path: 'present-styles', element: <PresentStyles /> },
       { path: 'monetization', element: <Monetization /> },
       { path: 'private-domain', element: <PrivateDomain /> },
