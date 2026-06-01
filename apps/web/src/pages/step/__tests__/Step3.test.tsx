@@ -153,6 +153,8 @@ describe('Step3 integration (US-010b)', () => {
 
   it('CTA button is disabled when personalInfo is empty', () => {
     renderStep3();
+    const textarea = screen.getByPlaceholderText(/详细描述你的个人背景/);
+    fireEvent.change(textarea, { target: { value: '' } });
     expect(screen.getByText('生成账号包装方案').closest('button')).toBeDisabled();
   });
 

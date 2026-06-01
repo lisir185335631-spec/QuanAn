@@ -53,7 +53,7 @@ describe('AvatarDesignSection — loading state (content=undefined)', () => {
 
   it('renders dashed border placeholder for reference image', () => {
     render(<AvatarDesignSection />);
-    expect(screen.getByText(/点击"查看图标"生成参考图/)).toBeInTheDocument();
+    expect(screen.getByText(/基于AI设计方案生成头像参考图/)).toBeInTheDocument();
   });
 
   it('[查看图标] button is disabled by default', () => {
@@ -101,7 +101,7 @@ describe('AvatarDesignSection — full content', () => {
 
   it('shows dashed placeholder when referenceImageUrl is null', () => {
     render(<AvatarDesignSection content={FULL_CONTENT} />);
-    expect(screen.getByText(/点击"查看图标"生成参考图/)).toBeInTheDocument();
+    expect(screen.getByText(/基于AI设计方案生成头像参考图/)).toBeInTheDocument();
   });
 });
 

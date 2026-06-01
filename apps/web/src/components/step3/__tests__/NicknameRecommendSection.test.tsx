@@ -76,7 +76,7 @@ describe('NicknameRecommendSection — empty state', () => {
 
   it('renders 选择策略 section in empty state', () => {
     render(<NicknameRecommendSection />);
-    expect(screen.getByText('选择策略')).toBeInTheDocument();
+    expect(screen.getByText('命名策略')).toBeInTheDocument();
   });
 });
 

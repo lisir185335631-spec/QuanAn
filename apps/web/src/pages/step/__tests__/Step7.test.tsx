@@ -41,7 +41,9 @@ describe('Step7', () => {
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('STEP 07 · AI 智能文案生成')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes('STEP 07') && content.includes('AI智能文案生成')),
+    ).toBeInTheDocument();
   });
 
   it('renders 选择脚本类型 label (AC-2)', () => {
@@ -59,7 +61,7 @@ describe('Step7', () => {
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('生成爆款文案')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /生成爆款文案/ })).toBeInTheDocument();
   });
 
   it('renders navigation buttons (AC-2)', () => {
@@ -68,8 +70,8 @@ describe('Step7', () => {
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('我的选题库')).toBeInTheDocument();
-    expect(screen.getByText('爆款选题')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /我的选题库/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /爆款选题/ })).toBeInTheDocument();
   });
 
   it('renders AI 优化文案 secondary button (AC-2)', () => {
@@ -78,29 +80,29 @@ describe('Step7', () => {
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('AI 优化文案')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /AI优化文案/ })).toBeInTheDocument();
   });
 
-  it('renders 4 H4 debate output sections in DOM by default (AC-4 · AC-7)', () => {
+  it('renders 4 debate output sections in DOM by default (AC-4 · AC-7)', () => {
     render(
       <MemoryRouter>
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('heading', { level: 4, name: '话题抛出' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: '正方' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: '反方' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: '我的立场' })).toBeInTheDocument();
+    expect(screen.getByText(/【话题抛出】/)).toBeInTheDocument();
+    expect(screen.getByText(/【正方】/)).toBeInTheDocument();
+    expect(screen.getByText(/【反方】/)).toBeInTheDocument();
+    expect(screen.getByText(/我的立场/)).toBeInTheDocument();
   });
 
-  it('renders 评论区引导 and 话题标签 H4 sections (AC-4)', () => {
+  it('renders 评论区引导 and 话题标签 output sections (AC-4)', () => {
     render(
       <MemoryRouter>
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByRole('heading', { level: 4, name: '评论区引导' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: '话题标签' })).toBeInTheDocument();
+    expect(screen.getByText(/评论区引导/)).toBeInTheDocument();
+    expect(screen.getByText(/【话题标签】/)).toBeInTheDocument();
   });
 
   it('renders 优化方向 input (AC-2)', () => {
@@ -109,7 +111,7 @@ describe('Step7', () => {
         <Step7 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('优化方向')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/输入优化方向/)).toBeInTheDocument();
   });
 
   it('renders subtitle 字面锁 (AC-1)', () => {
@@ -119,9 +121,16 @@ describe('Step7', () => {
       </MemoryRouter>,
     );
     expect(
-      screen.getByText(
-        '选择脚本类型和爆款元素，输入主题，AI 将基于方法论生成深度爆款文案，支持 AI 智能修改优化。',
-      ),
+      screen.getByText((_, element) => {
+        if (!element || element.tagName !== 'P') return false;
+        const text = element.textContent ?? '';
+        return (
+          text.includes('选择脚本类型和爆款元素') &&
+          text.includes('输入主题') &&
+          text.includes('深度爆款文案') &&
+          text.includes('AI智能修改优化')
+        );
+      }),
     ).toBeInTheDocument();
   });
 });

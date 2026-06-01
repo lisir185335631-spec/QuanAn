@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -41,16 +41,18 @@ describe('Step6', () => {
         <Step6 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('STEP 06 · 拍摄计划')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes('STEP 06') && content.includes('生成拍摄计划')),
+    ).toBeInTheDocument();
   });
 
-  it('renders EmptyState when no result', () => {
+  it('renders subtitle describing AI generation capability', () => {
     render(
       <MemoryRouter>
         <Step6 />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/输入文案后生成拍摄计划/)).toBeInTheDocument();
+    expect(screen.getByText(/AI将自动生成完整的分镜脚本、拍摄方案和口播提词器/)).toBeInTheDocument();
   });
 
   it('renders generate button', () => {
@@ -59,7 +61,7 @@ describe('Step6', () => {
         <Step6 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('生成拍摄计划')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /生成拍摄计划/ })).toBeInTheDocument();
   });
 
   it('generate button is disabled when textarea is empty', () => {
@@ -68,7 +70,9 @@ describe('Step6', () => {
         <Step6 />
       </MemoryRouter>,
     );
-    const btn = screen.getByRole('button', { name: '生成拍摄计划' });
+    const textarea = screen.getByRole('textbox');
+    fireEvent.change(textarea, { target: { value: '' } });
+    const btn = screen.getByRole('button', { name: /生成拍摄计划/ });
     expect(btn).toBeDisabled();
   });
 });

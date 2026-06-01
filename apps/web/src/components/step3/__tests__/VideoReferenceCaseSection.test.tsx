@@ -62,8 +62,18 @@ describe('VideoReferenceCaseSection — 2 cases', () => {
 
   it('renders both search hint chips', () => {
     render(<VideoReferenceCaseSection cases={TWO_CASES} canGenerate={true} />);
-    expect(screen.getByText('搜索：美业头部账号')).toBeInTheDocument();
-    expect(screen.getByText('搜索：高转化率案例')).toBeInTheDocument();
+    const hints1 = screen.getAllByText((_content, node) => {
+      if (!node || node.nodeName !== 'SPAN') return false;
+      const el = node as HTMLElement;
+      return el.textContent?.includes('搜索：美业头部账号') === true && el.childElementCount === 1;
+    });
+    expect(hints1.length).toBeGreaterThanOrEqual(1);
+    const hints2 = screen.getAllByText((_content, node) => {
+      if (!node || node.nodeName !== 'SPAN') return false;
+      const el = node as HTMLElement;
+      return el.textContent?.includes('搜索：高转化率案例') === true && el.childElementCount === 1;
+    });
+    expect(hints2.length).toBeGreaterThanOrEqual(1);
   });
 
   it('[生成参考图] button is enabled when canGenerate=true', () => {

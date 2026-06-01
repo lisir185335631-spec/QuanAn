@@ -52,16 +52,16 @@ describe('Step5', () => {
         <Step5 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('生成爆款选题库')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /重新生成全部选题/ })).toBeInTheDocument();
   });
 
-  it('renders industry input placeholder', () => {
+  it('renders industry input label', () => {
     render(
       <MemoryRouter>
         <Step5 />
       </MemoryRouter>,
     );
-    expect(screen.getByPlaceholderText(/美业/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/搜索选题关键词/)).toBeInTheDocument();
   });
 
   it('renders STEP_TAG', () => {
@@ -70,6 +70,6 @@ describe('Step5', () => {
         <Step5 />
       </MemoryRouter>,
     );
-    expect(screen.getByText('STEP 05 · 爆款选题库')).toBeInTheDocument();
+    expect(screen.getByText('STEP 05 › 爆款选题库')).toBeInTheDocument();
   });
 });

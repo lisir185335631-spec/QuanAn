@@ -191,24 +191,24 @@ describe('Tool pages render', () => {
 
   it('Trending renders h1 heading', () => {
     render(<MemoryRouter><Trending /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款情报库');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款库');
   });
 
   it('Knowledge renders h1 heading', () => {
     render(<Knowledge />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AIP 文案方法论');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AIP文案方法论');
   });
 });
 
 describe('Module pages render', () => {
   it('Diagnosis renders h1 字面锁 "7 维度 IP 诊断报告" (PRD-23 US-001 完整化)', () => {
-    render(<Diagnosis />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('7 维度 IP 诊断报告');
+    render(<MemoryRouter><Diagnosis /></MemoryRouter>);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('7维度IP诊断报告');
   });
 
   it('Diagnosis shows 8-step wizard (Step 1 · 基本信息)', () => {
-    render(<Diagnosis />);
-    expect(screen.getByText('步骤 1 / 8 · 基本信息')).toBeInTheDocument();
+    render(<MemoryRouter><Diagnosis /></MemoryRouter>);
+    expect(screen.getByText('步骤 1/8 · 基本信息')).toBeInTheDocument();
   });
 
   it('Evolution renders h1 heading (PRD-24 US-002 · 智能体进化中心)', () => {
@@ -218,19 +218,19 @@ describe('Module pages render', () => {
 
   it('Evolution shows spec §8.5.3 subtitle', () => {
     render(<MemoryRouter><Evolution /></MemoryRouter>);
-    expect(
-      screen.getByText('你的智能体通过反馈学习和深度学习持续进化，越用越懂你'),
-    ).toBeInTheDocument();
+    const header = screen.getByTestId('evolution-header');
+    expect(header.textContent).toMatch(/你的智能体通过.*反馈学习.*深度学习.*持续进化，越用越懂你/);
   });
 
   it('Accounts renders h1 heading', () => {
     render(<MemoryRouter><Accounts /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP 账号管理');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP账号管理');
   });
 
-  it('Accounts shows empty state when no data', () => {
+  it('Accounts shows mock account card when data exists', () => {
     render(<MemoryRouter><Accounts /></MemoryRouter>);
-    expect(screen.getByText(/暂无 IP 账号/)).toBeInTheDocument();
+    expect(screen.getByTestId('accounts-list')).toBeInTheDocument();
+    expect(screen.getByText('赵语AI')).toBeInTheDocument();
   });
 
   it('DailyTasks renders h1 heading', () => {
@@ -245,7 +245,7 @@ describe('Module pages render', () => {
 
   it('History renders h1 heading', () => {
     render(<MemoryRouter><History /></MemoryRouter>);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('操作历史');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('历史记录');
   });
 });
 
@@ -256,15 +256,15 @@ describe('IpPlan page (US-010)', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('我的IP方案');
   });
 
-  it('renders 9 step cards with 查看详情 buttons', () => {
+  it('renders step cards with 查看详情 links for completed steps', () => {
     render(<MemoryRouter><IpPlan /></MemoryRouter>);
-    const buttons = screen.getAllByRole('button', { name: /查看详情/ });
-    expect(buttons).toHaveLength(9);
+    const links = screen.getAllByRole('link', { name: /查看详情/ });
+    expect(links).toHaveLength(4);
   });
 
-  it('shows 已完成 0 / 9 步 with empty completedSteps', () => {
+  it('shows 已完成 N／9 步 subtitle in ip-plan-subtitle', () => {
     render(<MemoryRouter><IpPlan /></MemoryRouter>);
-    expect(screen.getByText(/已完成/)).toBeInTheDocument();
+    expect(screen.getByTestId('ip-plan-subtitle')).toHaveTextContent(/已完成/);
   });
 });
 

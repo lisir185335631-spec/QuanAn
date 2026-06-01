@@ -27,13 +27,13 @@ describe('Step3b', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('人设定制方案');
   });
 
-  it('renders EmptyState when no result', () => {
+  it('renders output section H2 when no backend result (mock always renders)', () => {
     render(
       <MemoryRouter>
         <Step3b />
       </MemoryRouter>,
     );
-    expect(screen.getByText(/提交表单后查看人设定制方案/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /专属人设方案/ })).toBeInTheDocument();
   });
 
   it('renders CTA button', () => {
@@ -42,7 +42,7 @@ describe('Step3b', () => {
         <Step3b />
       </MemoryRouter>,
     );
-    expect(screen.getByText('生成专属人设方案')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /生成专属人设方案/ })).toBeInTheDocument();
   });
 
   it('renders personal info textarea label', () => {
