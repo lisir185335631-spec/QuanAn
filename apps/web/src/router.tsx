@@ -5,7 +5,7 @@
  *   step/*      → step chunk (9 routes)
  *   tools/*     → 14 tool pages (lazy individually, shared vite chunk via webpackChunkName)
  *   modules/*   → 6 new modules
- *   auxiliary   → /ip-plan, /settings, /login, /404 catch-all
+ *   auxiliary   → /ip-plan, /404 catch-all
  */
 
 import { lazy } from 'react';
@@ -57,8 +57,6 @@ const History = lazy(() => import(/* webpackChunkName: "modules" */ '@/pages/mod
 
 // ── Auxiliary pages ───────────────────────────────────────────────────────────
 const IpPlan = lazy(() => import('@/pages/IpPlan'));
-const Settings = lazy(() => import('@/pages/Settings'));
-const Login = lazy(() => import('@/pages/Login'));
 
 export const router = createBrowserRouter([
   {
@@ -114,8 +112,6 @@ export const router = createBrowserRouter([
 
       // ── Auxiliary routes ──────────────────────────────────────────────────
       { path: 'ip-plan', element: <IpPlan /> },
-      { path: 'settings', element: <Settings /> },
-      { path: 'login', element: <Login /> },
 
       // ── 404 catch-all ─────────────────────────────────────────────────────
       { path: '*', element: <NotFound /> },
