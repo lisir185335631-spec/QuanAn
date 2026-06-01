@@ -1,7 +1,7 @@
+import { FileText, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { FileText, Shield } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,22 +11,44 @@ import {
   HOME_HERO_CTA1_HREF,
   HOME_HERO_CTA2,
   HOME_HERO_CTA2_HREF,
+  HOME_HERO_DELETE_MS,
+  HOME_HERO_HOLD_MS,
   HOME_HERO_QUOTE,
   HOME_HERO_ROTATION,
-  HOME_HERO_ROTATION_MS,
   HOME_HERO_SUBTITLE,
+  HOME_HERO_TYPE_MS,
 } from '@/lib/constants/home';
 
 export function HomeHero() {
-  const [index, setIndex] = useState<number>(0);
+  const [phraseIndex, setPhraseIndex] = useState<number>(0);
+  const [text, setText] = useState<string>('');
+  const [deleting, setDeleting] = useState<boolean>(false);
 
+  // typewriter 轮播:逐字打字 → 停留 → 逐字删除 → 切下一句
   useEffect(() => {
-    const id = setInterval(
-      () => setIndex((i) => (i + 1) % HOME_HERO_ROTATION.length),
-      HOME_HERO_ROTATION_MS,
+    const full = HOME_HERO_ROTATION[phraseIndex] ?? '';
+
+    // 打满 → 停留后开始删除
+    if (!deleting && text === full) {
+      const hold = setTimeout(() => setDeleting(true), HOME_HERO_HOLD_MS);
+      return () => clearTimeout(hold);
+    }
+    // 删空 → 切下一句重新打字
+    if (deleting && text === '') {
+      setDeleting(false);
+      setPhraseIndex((i) => (i + 1) % HOME_HERO_ROTATION.length);
+      return;
+    }
+    // 单步:打 or 删
+    const tick = setTimeout(
+      () =>
+        setText((cur) =>
+          deleting ? full.slice(0, cur.length - 1) : full.slice(0, cur.length + 1),
+        ),
+      deleting ? HOME_HERO_DELETE_MS : HOME_HERO_TYPE_MS,
     );
-    return () => clearInterval(id);
-  }, []);
+    return () => clearTimeout(tick);
+  }, [text, deleting, phraseIndex]);
 
   return (
     <section className="flex flex-col items-center justify-center text-center py-20">
@@ -36,12 +58,15 @@ export function HomeHero() {
         <span className="font-display text-sm text-primary ml-1">{HOME_HERO_CHIP}</span>
       </div>
 
-      {/* h1 typing rotation */}
+      {/* h1 typewriter rotation */}
       <h1
-        className="font-display text-7xl md:text-9xl font-black text-primary tracking-tight mb-6"
+        className="font-display text-7xl md:text-9xl font-black text-primary tracking-tight mb-6 min-h-[1.2em]"
         style={{ WebkitTextStroke: '1px var(--primary)' }}
       >
-        {HOME_HERO_ROTATION[index]}
+        {text}
+        <span className="ml-1 font-normal animate-pulse" aria-hidden="true">
+          |
+        </span>
       </h1>
 
       {/* subtitle */}

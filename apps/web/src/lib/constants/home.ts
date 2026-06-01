@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import {
   BookOpen,
   Brain,
@@ -22,15 +21,16 @@ import {
   Zap,
 } from 'lucide-react';
 
+import type { LucideIcon } from 'lucide-react';
+
 // Hero
 export const HOME_HERO_CHIP = 'SYSTEM ONLINE · AIP全案获客操盘手' as const;
+// hero 大字 typewriter 轮播 · 4 句(与副标题一致)逐字打字+删除+光标
 export const HOME_HERO_ROTATION: ReadonlyArray<string> = [
-  '从流量到',
-  '从0到1',
-  '从想法到',
-  '从内容到',
-  '从私域到',
-  '从IP到',
+  'OPC全案落地',
+  '从流量到成交',
+  'AI+短视频+IP',
+  '全链路变现',
 ];
 export const HOME_HERO_SUBTITLE = 'OPC全案落地 · 从流量到成交 · AI+短视频+IP · 全链路变现' as const;
 export const HOME_HERO_QUOTE = '"善用AI，你一个人就是千军万马！"' as const;
@@ -39,7 +39,9 @@ export const HOME_HERO_CTA1 = '启动智能分析' as const;
 export const HOME_HERO_CTA2 = '使用说明' as const;
 export const HOME_HERO_CTA1_HREF = '/step/1' as const;
 export const HOME_HERO_CTA2_HREF = '/guide' as const;
-export const HOME_HERO_ROTATION_MS = 2000 as const;
+export const HOME_HERO_TYPE_MS = 120 as const; // 每字打字间隔
+export const HOME_HERO_DELETE_MS = 55 as const; // 每字删除间隔
+export const HOME_HERO_HOLD_MS = 1400 as const; // 打满后停留
 
 // Progress block
 export const HOME_PROGRESS_TITLE = '我的IP打造进度' as const;
