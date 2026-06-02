@@ -26,16 +26,19 @@ on:
 jobs:
   admin-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 在 Playwright 官方镜像里跑:chromium + 系统依赖预装 → 免 cdn.playwright.dev 下载(慢/卡)。
+    # tag 必须 == 本仓库 @playwright/test 锁定版本(pnpm-lock:1.59.1),否则镜像内浏览器版本对不上会回退下载。
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
+    timeout-minutes: 20
 
     env:
-      # ── DB:指向下面的 postgres service 容器(非外部库)。host=localhost 正确:
-      #    job 跑在 runner 宿主机(非容器),service 通过 ports:5432:5432 映射到宿主 localhost。──
-      # prisma datasource(prisma/schema.prisma:11-15)同时声明 url=DATABASE_URL + directUrl=DIRECT_URL,
-      # `migrate deploy` 会用 DIRECT_URL,故两者都要给(此处指同一个本地容器库)。
-      DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/quanan?schema=public'
-      DIRECT_URL: 'postgresql://postgres:postgres@localhost:5432/quanan?schema=public'
-      REDIS_URL: 'redis://localhost:6379'
+      # ── DB/Redis:job 现在跑在 container 里 → service 用【网络别名(服务名)】访问,不是 localhost。──
+      # prisma datasource(prisma/schema.prisma:11-15)声明 url=DATABASE_URL + directUrl=DIRECT_URL,
+      # `migrate deploy` 用 DIRECT_URL,故两者都给(同一个 postgres service 库)。
+      DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/quanan?schema=public'
+      DIRECT_URL: 'postgresql://postgres:postgres@postgres:5432/quanan?schema=public'
+      REDIS_URL: 'redis://redis:6379'
 
       # ── dev mock-OAuth(让 admin 走无密码 mock 登录)──
       # NODE_ENV 必须 development:① production+mock 会 exit 1(oauth-admin-factory.ts:47-52 / providers.ts:146-148);
@@ -134,17 +137,7 @@ jobs:
           EOF
           npx tsx scripts/.ci/seed-admin-smoke.ts
 
-      # admin-smoke 脚本从 @playwright/test 直接 `import { chromium }`(scripts/admin-acceptance.mjs:8)。
-      # runner 自带浏览器系统库,只装 chromium 浏览器二进制(--with-deps 的 apt 易卡 dpkg lock 致 hang)。
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Install Playwright chromium
-        timeout-minutes: 18
-        run: pnpm --filter @quanan/web exec playwright install chromium
+      # (Playwright 官方镜像已预装 chromium + 系统依赖,无需 install / cache 步骤 —— 这正是改用 container 的原因)
 
       # 后台并行起 api(:3000)+ admin(:5174,必须 vite dev:mock 登录按钮受 import.meta.env.DEV 门控,Login.tsx:90,
       # build/preview 下按钮不渲染)。没有根 `dev` 脚本(已核实),故必须分别 dev:api / dev:admin。
