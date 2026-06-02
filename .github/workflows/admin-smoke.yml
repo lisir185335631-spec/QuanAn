@@ -52,11 +52,13 @@ jobs:
       # ── 前端 / 网络 ──
       # 【不设 VITE_API_BASE_URL】:admin 前端按默认直连 api :3000(admin-client.ts:21)。
       # 跨端口同 site,登录 cookie 正常携带(见上"跨端口 cookie 说明"),无需 proxy / 无需改产品代码。
-      # API 的 CORS 允许源(apps/api/src/index.ts:51 `ADMIN_BASE_URL ?? http://localhost:5174`):
+      # API 的 CORS 允许源(apps/api/src/index.ts:51 `ADMIN_BASE_URL ?? http://127.0.0.1:5174`):
       # 必须 allow admin 真实 origin :5174 才能带 credentials 跨域,故显式声明(也正是默认值)。
-      ADMIN_BASE_URL: 'http://localhost:5174'
+      ADMIN_BASE_URL: 'http://127.0.0.1:5174'
       # smoke 脚本定位 admin 用 `ADMIN_URL`(scripts/admin-acceptance.mjs:10),显式写出避免端口漂移。
-      ADMIN_URL: 'http://localhost:5174'
+      ADMIN_URL: 'http://127.0.0.1:5174'
+      # 容器内强制 IPv4(避 localhost 解析到 ::1 与服务 IPv4 绑定不一致):浏览器经此访问 api
+      VITE_API_BASE_URL: 'http://127.0.0.1:3000'
 
       # ── 启动闸门必需(providers.ts:133-138:SESSION_SECRET 长度 <32 直接 exit 1)──
       # 纯 mock 冒烟用占位假串即可(下方为 44 字符,达标)。如有真 CI secret 可换成
@@ -145,16 +147,16 @@ jobs:
       - name: Start api + admin (background)
         run: |
           pnpm dev:api  > /tmp/admin-api.log   2>&1 &
-          pnpm dev:admin > /tmp/admin-admin.log 2>&1 &
+          pnpm --filter @quanan/admin exec vite --host 0.0.0.0 --port 5174 > /tmp/admin-admin.log 2>&1 &
           # P0-2:api 没有根 `/` 路由(只有 /health,index.ts:116),wait-on 探根会一直 404 → 超时。必须探 /health。
           # P1-2:超时放宽到 120s,给 admin 编译 + api 的 checkDbConnection + ~10 个 schedule*(BullMQ)留余量。
-          npx wait-on http://localhost:3000/health http://localhost:5174 --timeout 120000
+          npx wait-on http://127.0.0.1:3000/health http://127.0.0.1:5174 --timeout 120000
 
       # 起服务后冒个烟:确认 /health 真 2xx、admin 根真出 HTML(便于把"端口开了但 500"和真就绪区分开)。
       - name: Probe endpoints
         run: |
-          curl -fsS http://localhost:3000/health && echo
-          curl -fsS -o /dev/null -w 'admin / -> %{http_code}\n' http://localhost:5174/
+          curl -fsS http://127.0.0.1:3000/health && echo
+          curl -fsS -o /dev/null -w 'admin / -> %{http_code}\n' http://127.0.0.1:5174/
 
       # 跑冒烟。脚本读 ADMIN_URL(默认 5174)定位 admin,登录依次试 ADMIN_EMAILS。
       # 退出码 1(登录失败)/ 2(有模块 FAIL)都会让本 step 失败 → job 红。
