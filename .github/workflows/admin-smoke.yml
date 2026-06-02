@@ -106,17 +106,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # P1-2 增稳:在用 service 之前,先显式确认 PG / Redis 真的 ready。
-      # 理由:dev:api 的 serve(:3000)(index.ts:431)排在 ~10 个 `await schedule*()`(BullMQ,依赖 Redis)之后,
-      #       redis.ts 用 maxRetriesPerRequest:null(命令无限重试不快速失败)→ Redis 没起好则端口 3000 迟迟不 listen。
-      # runner 宿主自带 postgres-client / redis-tools;若哪天基础镜像缺,改用 `docker exec` 打 service 容器,或仅依赖 service health-check。
-      - name: Wait for postgres + redis ready
-        run: |
-          for i in $(seq 1 60); do pg_isready -h localhost -p 5432 -U postgres -d quanan && break; sleep 2; done
-          for i in $(seq 1 60); do redis-cli -h localhost -p 6379 ping | grep -q PONG && break; sleep 2; done
-          pg_isready -h localhost -p 5432 -U postgres -d quanan
-          redis-cli -h localhost -p 6379 ping
-
       # prisma schema 在仓库根(prisma/schema.prisma)。db:generate=`prisma generate`、db:migrate=`prisma migrate deploy`
       # (package.json:49-50)。CI 用 migrate deploy(只跑已存在迁移、不交互、不生成新迁移),正确。
       - name: Prisma generate + migrate deploy
