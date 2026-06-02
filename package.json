@@ -33,6 +33,7 @@
     "test:visual:prd29:check": "playwright test --project=chromium tests/e2e/prd-29-step-3-visual.spec.ts",
     "diff:aiipznt:step3": "node scripts/diff-aiipznt-step-3-image.mjs",
     "test:smoke:prd26": "playwright test --project=chromium tests/e2e/prd26-admin-pages-smoke.spec.ts",
+    "test:admin-smoke": "node scripts/admin-acceptance.mjs",
     "test:llm-judge": "tsx tests/llm-judge/runner.ts",
     "test:judge": "vitest run --config vitest.judge.config.ts",
     "schema:diff": "tsx scripts/schema-diff.ts",

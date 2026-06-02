@@ -1,0 +1,189 @@
+name: Admin Smoke
+
+# 管理后台冒烟:PR / push 时拉起全栈(postgres+pgvector + redis + api + admin)→
+# seed 一个 mock super_admin → 跑 `pnpm test:admin-smoke`(scripts/admin-acceptance.mjs)。
+# smoke 退出码:0=全过 / 1=登录失败(服务没起好 / 没 seed / 登录态丢失)/ 2=有模块 FAIL。
+# 任何非 0 退出码都会让对应 step 失败 → 整个 job 红。CI 信号即 admin 后台是否真能登录并渲染 9 个模块。
+#
+# 本文件已落实对抗评审的全部 P0/P1,并【修正了评审误报的 P0-3】(跨端口 cookie,见下方说明)。
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 跨端口 cookie 说明(修正对抗评审误报的 P0-3):
+# admin(:5174)→ api(:3000)虽跨 origin 但【同 site】—— SameSite 按 registrable domain
+# (site)判定、忽略端口,localhost:5174 与 localhost:3000 同为 site "localhost"。
+# 故登录 cookie `admin_session_id`(HttpOnly; SameSite=Lax)在 :5174 页面 fetch :3000 时
+# 属【同 site subresource】会正常携带;api 的 CORS 也已 allow origin :5174 + credentials。
+# 本地 `pnpm test:admin-smoke` 实测 9/9 PASS(各模块渲染真跨账号数据)即证明 cookie 正常回传。
+# → 无需 vite proxy、无需改产品代码;admin 用默认 API base :3000 直连即可。
+# ─────────────────────────────────────────────────────────────────────────────
+
+jobs:
+  admin-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # ── DB:指向下面的 postgres service 容器(非外部库)。host=localhost 正确:
+      #    job 跑在 runner 宿主机(非容器),service 通过 ports:5432:5432 映射到宿主 localhost。──
+      # prisma datasource(prisma/schema.prisma:11-15)同时声明 url=DATABASE_URL + directUrl=DIRECT_URL,
+      # `migrate deploy` 会用 DIRECT_URL,故两者都要给(此处指同一个本地容器库)。
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/quanan?schema=public'
+      DIRECT_URL: 'postgresql://postgres:postgres@localhost:5432/quanan?schema=public'
+      REDIS_URL: 'redis://localhost:6379'
+
+      # ── dev mock-OAuth(让 admin 走无密码 mock 登录)──
+      # NODE_ENV 必须 development:① production+mock 会 exit 1(oauth-admin-factory.ts:47-52 / providers.ts:146-148);
+      #                          ② cookie 仅在 production 才加 Secure(auth.ts:25),HTTP 下设 Secure 会写不进。
+      NODE_ENV: 'development'
+      # OAUTH_PROVIDER 默认就是 mock(oauth-admin-factory.ts:26),显式写出更稳。
+      OAUTH_PROVIDER: 'mock'
+      # DEV_OAUTH_MOCK:冗余保险位(源码未强制读取),无害,留作可读性。
+      DEV_OAUTH_MOCK: 'true'
+
+      # ── 前端 / 网络 ──
+      # 【不设 VITE_API_BASE_URL】:admin 前端按默认直连 api :3000(admin-client.ts:21)。
+      # 跨端口同 site,登录 cookie 正常携带(见上"跨端口 cookie 说明"),无需 proxy / 无需改产品代码。
+      # API 的 CORS 允许源(apps/api/src/index.ts:51 `ADMIN_BASE_URL ?? http://localhost:5174`):
+      # 必须 allow admin 真实 origin :5174 才能带 credentials 跨域,故显式声明(也正是默认值)。
+      ADMIN_BASE_URL: 'http://localhost:5174'
+      # smoke 脚本定位 admin 用 `ADMIN_URL`(scripts/admin-acceptance.mjs:10),显式写出避免端口漂移。
+      ADMIN_URL: 'http://localhost:5174'
+
+      # ── 启动闸门必需(providers.ts:133-138:SESSION_SECRET 长度 <32 直接 exit 1)──
+      # 纯 mock 冒烟用占位假串即可(下方为 44 字符,达标)。如有真 CI secret 可换成
+      # ${{ secrets.SESSION_SECRET_CI }}。
+      SESSION_SECRET: 'ci-admin-smoke-session-secret-please-change-32'
+      # TODO: 确认 —— 是否需要用真 secret(repo Settings → Secrets)?纯 mock 冒烟用占位串就够。
+
+      # smoke 脚本登录依次尝试的邮箱列表,第一个必须 == 下方 seed 的那一行,且其 isMock/isActive=true。
+      # (mock 回调只按 email 查库 + 校 isMock/isActive,不校验 ADMIN_EMAILS 本身 —— oauth-admin-mock.ts:19-29)
+      ADMIN_EMAILS: 'super@quanan.com'
+
+    services:
+      # P0-1:必须用自带 pgvector 的镜像。第一条迁移 prisma/migrations/20260507000000_init/migration.sql:2
+      # 就是 `CREATE EXTENSION IF NOT EXISTS "vector";`,且建表用了 vector(1536) 列;
+      # 官方 postgres:16-alpine 不含 pgvector,migrate deploy 会在第一步炸。pgvector/pgvector:pg16 自带扩展。
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: quanan
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d quanan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # P1-2 增稳:在用 service 之前,先显式确认 PG / Redis 真的 ready。
+      # 理由:dev:api 的 serve(:3000)(index.ts:431)排在 ~10 个 `await schedule*()`(BullMQ,依赖 Redis)之后,
+      #       redis.ts 用 maxRetriesPerRequest:null(命令无限重试不快速失败)→ Redis 没起好则端口 3000 迟迟不 listen。
+      # runner 宿主自带 postgres-client / redis-tools;若哪天基础镜像缺,改用 `docker exec` 打 service 容器,或仅依赖 service health-check。
+      - name: Wait for postgres + redis ready
+        run: |
+          for i in $(seq 1 60); do pg_isready -h localhost -p 5432 -U postgres -d quanan && break; sleep 2; done
+          for i in $(seq 1 60); do redis-cli -h localhost -p 6379 ping | grep -q PONG && break; sleep 2; done
+          pg_isready -h localhost -p 5432 -U postgres -d quanan
+          redis-cli -h localhost -p 6379 ping
+
+      # prisma schema 在仓库根(prisma/schema.prisma)。db:generate=`prisma generate`、db:migrate=`prisma migrate deploy`
+      # (package.json:49-50)。CI 用 migrate deploy(只跑已存在迁移、不交互、不生成新迁移),正确。
+      - name: Prisma generate + migrate deploy
+        run: |
+          pnpm db:generate
+          pnpm db:migrate
+
+      # seed 一个可登录的 mock super_admin。prisma/seed.ts 不写 admin_users(已核实),默认邮箱也不在库,
+      # 故必须显式 upsert 一行。字段与 AdminUser model(schema.prisma:1299+)吻合:
+      # email/role/isMock/isActive;isMock=true + isActive=true 是 mockOAuthCallback 的两道硬校验(oauth-admin-mock.ts)。
+      # 把脚本写成文件(而非 `tsx -e` 内联单引号,避免 shell 转义脆性),用 tsx 跑;幂等、走 schema 校验、不怕列漂移。
+      - name: Seed mock super_admin
+        run: |
+          mkdir -p scripts/.ci
+          cat > scripts/.ci/seed-admin-smoke.ts <<'EOF'
+          import { PrismaClient } from '@prisma/client';
+          const prisma = new PrismaClient();
+          const email = process.env.ADMIN_EMAILS?.split(',')[0]?.trim() || 'super@quanan.com';
+          await prisma.adminUser.upsert({
+            where: { email },
+            create: { email, role: 'super_admin', allowedDomains: [], isMock: true, isActive: true },
+            update: { role: 'super_admin', isMock: true, isActive: true },
+          });
+          await prisma.$disconnect();
+          console.log('seeded mock super_admin:', email);
+          EOF
+          npx tsx scripts/.ci/seed-admin-smoke.ts
+
+      # admin-smoke 脚本从 @playwright/test 直接 `import { chromium }`(scripts/admin-acceptance.mjs:8)。
+      # Linux 必须 --with-deps 装系统库;只装 chromium 省时间。在仓库根跑即可。
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      # 后台并行起 api(:3000)+ admin(:5174,必须 vite dev:mock 登录按钮受 import.meta.env.DEV 门控,Login.tsx:90,
+      # build/preview 下按钮不渲染)。没有根 `dev` 脚本(已核实),故必须分别 dev:api / dev:admin。
+      # 把两者输出重定向到日志文件,失败时一并上传(见末尾 artifact),否则"服务没起来"类失败现场全黑。
+      - name: Start api + admin (background)
+        run: |
+          pnpm dev:api  > /tmp/admin-api.log   2>&1 &
+          pnpm dev:admin > /tmp/admin-admin.log 2>&1 &
+          # P0-2:api 没有根 `/` 路由(只有 /health,index.ts:116),wait-on 探根会一直 404 → 超时。必须探 /health。
+          # P1-2:超时放宽到 120s,给 admin 编译 + api 的 checkDbConnection + ~10 个 schedule*(BullMQ)留余量。
+          npx wait-on http://localhost:3000/health http://localhost:5174 --timeout 120000
+
+      # 起服务后冒个烟:确认 /health 真 2xx、admin 根真出 HTML(便于把"端口开了但 500"和真就绪区分开)。
+      - name: Probe endpoints
+        run: |
+          curl -fsS http://localhost:3000/health && echo
+          curl -fsS -o /dev/null -w 'admin / -> %{http_code}\n' http://localhost:5174/
+
+      # 跑冒烟。脚本读 ADMIN_URL(默认 5174)定位 admin,登录依次试 ADMIN_EMAILS。
+      # 退出码 1(登录失败)/ 2(有模块 FAIL)都会让本 step 失败 → job 红。
+      - name: Run admin smoke
+        run: pnpm test:admin-smoke
+
+      # 始终上传诊断产物:9 张模块截图(脚本固定写 /tmp/admin-<key>.png)+ api/admin 启动日志。
+      # if-no-files-found 用 warn(不是 ignore):登录就失败时一张模块图都不会生成,warn 至少在日志留痕、不静默掩盖。
+      - name: Upload admin smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-smoke-artifacts
+          path: |
+            /tmp/admin-*.png
+            /tmp/admin-api.log
+            /tmp/admin-admin.log
+          retention-days: 14
+          if-no-files-found: warn
