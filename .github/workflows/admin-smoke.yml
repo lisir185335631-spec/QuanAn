@@ -26,7 +26,7 @@ on:
 jobs:
   admin-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     env:
       # ── DB:指向下面的 postgres service 容器(非外部库)。host=localhost 正确:
@@ -136,8 +136,14 @@ jobs:
 
       # admin-smoke 脚本从 @playwright/test 直接 `import { chromium }`(scripts/admin-acceptance.mjs:8)。
       # runner 自带浏览器系统库,只装 chromium 浏览器二进制(--with-deps 的 apt 易卡 dpkg lock 致 hang)。
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Playwright chromium
-        timeout-minutes: 6
+        timeout-minutes: 18
         run: pnpm --filter @quanan/web exec playwright install chromium
 
       # 后台并行起 api(:3000)+ admin(:5174,必须 vite dev:mock 登录按钮受 import.meta.env.DEV 门控,Login.tsx:90,
