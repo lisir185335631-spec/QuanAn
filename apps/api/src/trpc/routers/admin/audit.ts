@@ -269,7 +269,7 @@ export const adminAuditRouter = adminTrpcRouter({
       };
 
       // SHIELD: Promise.all 并行 · 不串行
-      const [logs, total] = await Promise.all([
+      const [rawLogs, total] = await Promise.all([
         ctx.prisma.auditLog.findMany({
           where,
           orderBy: { createdAt: 'desc' },
@@ -287,6 +287,13 @@ export const adminAuditRouter = adminTrpcRouter({
         }),
         ctx.prisma.auditLog.count({ where }),
       ]);
+      // ★ AuditLog.id 是 BigInt + 本项目无 tRPC transformer → 原样返回会让 JSON.stringify 抛错(线上 500,
+      //   且本 proc 已接 admin 审计页)。转 Number(与 byTraceId 一致);payload 是 Json(对象)→ 收窄 Record 对齐前端。
+      const logs = rawLogs.map((r) => ({
+        ...r,
+        id: Number(r.id),
+        payload: (r.payload ?? null) as Record<string, unknown> | null,
+      }));
 
       // Group by eventCategory
       const grouped: Record<string, typeof logs> = {};

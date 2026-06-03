@@ -79,6 +79,11 @@ function serializeSnapshot(s: KpiSnapshot) {
     feedbackRate: Number(s.feedbackRate),
     evolutionUpgradeRate: Number(s.evolutionUpgradeRate),
     d30Retention: Number(s.d30Retention),
+    // Json 列 → 具体形状(与 getFunnel/getDistributions 的 cast 一致):前端图表按此索引
+    funnelData: s.funnelData as number[],
+    industryDistribution: s.industryDistribution as Record<string, number>,
+    platformDistribution: s.platformDistribution as Record<string, number>,
+    userPersonaDistribution: s.userPersonaDistribution as Record<string, number>,
   };
 }
 

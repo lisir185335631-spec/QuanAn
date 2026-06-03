@@ -11,6 +11,16 @@ import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
 import type { Prisma } from '@prisma/client';
+import type { DiagnosisAnswer } from '@quanan/schemas/specialist-io';
+
+// answers/dimensions 是 Json 列,但形状确定:answers=诊断输入(DiagnosisAnswer[]),
+// dimensions=DiagnosisAgent 输出(每维 score/issues/suggestions)。收窄回域类型,对齐前端读取。
+type DiagnosisDimensions = Record<string, { score: number; issues: string[]; suggestions: string[] }>;
+const shapeDiagnosis = <T extends { answers: unknown; dimensions: unknown }>(r: T) => ({
+  ...r,
+  answers: r.answers as DiagnosisAnswer[],
+  dimensions: r.dimensions as DiagnosisDimensions,
+});
 
 const generateDiagnosisInput = z.object({
   answers: z
@@ -85,7 +95,7 @@ export const diagnosisRouter = router({
         select: DIAGNOSIS_SELECT,
       });
 
-      return report;
+      return shapeDiagnosis(report);
     }),
 
   /** List past diagnosis reports for the current account (RLS auto-filters) */
@@ -93,20 +103,22 @@ export const diagnosisRouter = router({
     .input(historyDiagnosisInput)
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
-      return prisma.diagnosisReport.findMany({
+      const rows = await prisma.diagnosisReport.findMany({
         select: DIAGNOSIS_SELECT,
         orderBy: { createdAt: 'desc' },
         take: input.limit,
         skip: input.offset,
       });
+      return rows.map(shapeDiagnosis);
     }),
 
   /** Get the latest diagnosis report for the current account (RLS auto-filters) */
   latest: protectedProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
-    return prisma.diagnosisReport.findFirst({
+    const report = await prisma.diagnosisReport.findFirst({
       select: DIAGNOSIS_SELECT,
       orderBy: { createdAt: 'desc' },
     });
+    return report ? shapeDiagnosis(report) : null;
   }),
 });

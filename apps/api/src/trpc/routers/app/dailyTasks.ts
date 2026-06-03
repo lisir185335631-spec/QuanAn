@@ -13,6 +13,7 @@ import { router } from '@/trpc/trpc';
 import { dailyTaskQueue } from '@/workers/daily-task/queue';
 
 import type { Prisma } from '@prisma/client';
+import type { TaskItem } from '@quanan/schemas/specialist-io';
 
 const DAILY_TASK_SELECT = {
   id: true,
@@ -51,7 +52,7 @@ export const dailyTasksRouter = router({
       select: DAILY_TASK_SELECT,
     });
 
-    return record ?? null;
+    return record ? { ...record, tasks: record.tasks as TaskItem[] } : null;
   }),
 
   /** 获取历史任务记录 */
@@ -64,13 +65,14 @@ export const dailyTasksRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const { prisma: db, activeAccountId } = ctx;
-      return db.dailyTask.findMany({
+      const rows = await db.dailyTask.findMany({
         where: { accountId: activeAccountId! },
         select: DAILY_TASK_SELECT,
         orderBy: { taskDate: 'desc' },
         take: input.limit,
         skip: input.offset,
       });
+      return rows.map((r) => ({ ...r, tasks: r.tasks as TaskItem[] }));
     }),
 
   /**
