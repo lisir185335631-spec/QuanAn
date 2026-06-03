@@ -886,8 +886,8 @@ const _shadowAdminRouter = _t.router({
             totalCost: string;
             callCount: number;
           }>;
-          totalCost: string;
-        } => ({ aggregations: [], totalCost: '0' }),
+          summary: { totalCost: string };
+        } => ({ aggregations: [], summary: { totalCost: '0.00' } }),
       ),
     top10: _t.procedure.query(
       (): {

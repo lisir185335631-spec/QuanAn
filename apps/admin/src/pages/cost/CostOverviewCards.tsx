@@ -65,8 +65,8 @@ export function CostOverviewCards({ startDate, endDate, groupBy }: Props) {
     staleTime: 60_000,
   });
 
-  const mom = fmtDelta(current?.totalCost, prevMonth?.totalCost);
-  const yoy = fmtDelta(current?.totalCost, yearAgo?.totalCost);
+  const mom = fmtDelta(current?.summary?.totalCost, prevMonth?.summary?.totalCost);
+  const yoy = fmtDelta(current?.summary?.totalCost, yearAgo?.summary?.totalCost);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
@@ -75,7 +75,7 @@ export function CostOverviewCards({ startDate, endDate, groupBy }: Props) {
         <div style={cardStyle}>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>月度总成本</div>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.01em' }}>
-            {isLoading ? '—' : fmtCost(current?.totalCost)}
+            {isLoading ? '—' : fmtCost(current?.summary?.totalCost)}
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export function CostOverviewCards({ startDate, endDate, groupBy }: Props) {
             {mom ? mom.text : '—'}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
-            上月: {fmtCost(prevMonth?.totalCost)}
+            上月: {fmtCost(prevMonth?.summary?.totalCost)}
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export function CostOverviewCards({ startDate, endDate, groupBy }: Props) {
             {yoy ? yoy.text : '—'}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>
-            去年: {fmtCost(yearAgo?.totalCost)}
+            去年: {fmtCost(yearAgo?.summary?.totalCost)}
           </div>
         </div>
       </div>
