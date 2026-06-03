@@ -331,16 +331,16 @@ export const complianceRouter = adminTrpcRouter({
       if (hasMore) items.pop();
       const nextCursor = hasMore ? (items[items.length - 1]?.id ?? undefined) : undefined;
 
-      if (input.grouping === 'none') {
-        return { items, nextCursor, grouped: undefined };
-      }
-
-      const grouped: Record<string, typeof items> = {};
-      for (const item of items) {
-        const key =
-          input.grouping === 'eventType' ? item.eventType : (item.industry ?? 'unknown');
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(item);
+      // 统一形状:grouped 恒为 Record | null(不再 undefined/union)→ client 类型可直接访问 .grouped
+      let grouped: Record<string, typeof items> | null = null;
+      if (input.grouping !== 'none') {
+        grouped = {};
+        for (const item of items) {
+          const key =
+            input.grouping === 'eventType' ? item.eventType : (item.industry ?? 'unknown');
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push(item);
+        }
       }
 
       return { items, nextCursor, grouped };

@@ -75,7 +75,11 @@ export const constantsRouter = adminTrpcRouter({
         },
       });
 
-      return { version, canaryConfig };
+      return {
+        // Decimal(3,2) → string,与线上序列化一致(避免 client 收到 opaque Decimal)
+        version: version ? { ...version, judgeScore: version.judgeScore?.toString() ?? null } : null,
+        canaryConfig,
+      };
     }),
 
   // ── listVersions ─────────────────────────────────────────────────────────────
@@ -95,7 +99,7 @@ export const constantsRouter = adminTrpcRouter({
         orderBy: { version: 'desc' },
         take: input.limit,
       });
-      return { versions };
+      return { versions: versions.map((v) => ({ ...v, judgeScore: v.judgeScore?.toString() ?? null })) };
     }),
 
   // ── saveDraft ────────────────────────────────────────────────────────────────

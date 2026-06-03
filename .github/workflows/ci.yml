@@ -1,0 +1,53 @@
+name: CI
+
+# 轻量类型门禁(无需起服务/DB 运行时):全包 typecheck + shadow router 防漂移。
+# 与 admin-smoke(全栈冒烟)/ e2e-weekly(真 LLM)互补 —— 这里只做编译期校验,秒级、每 PR 必跑。
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  typecheck-and-drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # codegen 与 typecheck 都依赖 @prisma/client 生成类型(api router 的 output 类型含 Prisma 模型)。
+      - name: Prisma generate
+        run: pnpm db:generate
+
+      # ── shadow router 防漂移闸门 ──────────────────────────────────────────────
+      # client 侧 AppRouter/AdminRouter 类型(packages/clients/src/*.generated.ts)由 scripts/codegen-shadow.cjs
+      # 从真 router【自动生成】。改后端 router 后若忘记重生成,client 类型就会与后端漂移 —— 历史上
+      # cost.aggregate / judgeScore / recentFeedback.rating 等【线上真 bug】正是源于手写 shadow 漂移、
+      # 被错误类型掩盖。这里重生成一遍再 git diff:有差异即生成物过期 → job 红,提示跑 `pnpm codegen:shadow`。
+      # (生成是确定性的:同 TS 版本 + 同后端源码 → 同输出;lockfile 锁定 typescript 版本。)
+      - name: Shadow router drift check
+        run: |
+          pnpm codegen:shadow
+          if ! git diff --exit-code -- \
+            packages/clients/src/router-types.generated.ts \
+            packages/clients/src/admin-router-types.generated.ts; then
+            echo "::error::shadow 生成物已过期 —— 后端 router 改了但没重生成。请本地跑 \`pnpm codegen:shadow\` 并提交生成物。"
+            exit 1
+          fi
+          echo "✅ shadow 与后端 router 同步,无漂移。"
+
+      # 全包类型检查(turbo 缓存):web / admin / api / clients / schemas / ui。
+      - name: Typecheck (all packages)
+        run: pnpm turbo run typecheck

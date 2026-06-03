@@ -41,7 +41,11 @@ export const promptsRouter = adminTrpcRouter({
         where: { specialistId_mode: { specialistId: input.specialistId, mode: input.mode } },
       });
 
-      return { version, canaryConfig };
+      return {
+        // Decimal(3,2) → string,与线上序列化一致(避免 client 收到 opaque Decimal)
+        version: version ? { ...version, judgeScore: version.judgeScore?.toString() ?? null } : null,
+        canaryConfig,
+      };
     }),
 
   // ── listVersions ────────────────────────────────────────────────────────
@@ -75,7 +79,7 @@ export const promptsRouter = adminTrpcRouter({
         ) {
           canaryHistory.push({ canaryPct: canaryConfig.canaryPct, updatedAt: canaryConfig.updatedAt });
         }
-        return { ...v, canaryHistory };
+        return { ...v, canaryHistory, judgeScore: v.judgeScore?.toString() ?? null };
       });
 
       return { versions: versionsWithCanary };

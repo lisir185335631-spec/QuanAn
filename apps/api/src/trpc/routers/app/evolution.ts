@@ -173,12 +173,14 @@ export const evolutionRouter = router({
     .input(recentFeedbackInput)
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
-      return prisma.feedbackLog.findMany({
+      const rows = await prisma.feedbackLog.findMany({
         where: input.agentId ? { agentId: input.agentId } : undefined,
         select: FEEDBACK_LOG_SELECT,
         orderBy: { createdAt: 'desc' },
         take: input.limit,
       });
+      // rating 列是 VarChar,但写入恒经 z.enum(['good','bad']) 校验 → 收窄回域类型(对齐 client FeedbackItem)
+      return rows.map((r) => ({ ...r, rating: r.rating as 'good' | 'bad' }));
     }),
 
   /** Feedback trend by day (P1 mock — real aggregation 留 PRD-8+) */
