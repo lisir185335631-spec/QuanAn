@@ -183,7 +183,7 @@ export default function EvolutionHealthPage() {
   const role = me?.role;
 
   const { data: lDist, isLoading: lLoading } =
-    adminTrpc.evolution.getLDistribution.useQuery(undefined, { staleTime: 60_000 });
+    adminTrpc.evolution.getLDistribution.useQuery({}, { staleTime: 60_000 });
 
   const { data: flywheelHealth, isLoading: fhLoading } =
     adminTrpc.evolution.getFlywheelHealth.useQuery(undefined, { staleTime: 60_000 });

@@ -163,9 +163,9 @@ function AccountsOverviewCards() {
     { page: 1, pageSize: 1, anomalyOnly: true },
     { staleTime: 60_000 },
   );
-  // Distribution sample for top industry
+  // Distribution sample for top industry（后端 pageSize 上限 100，取样算 top 行业 100 条够用）
   const { data: sample } = adminTrpc.ipAccounts.list.useQuery(
-    { page: 1, pageSize: 200 },
+    { page: 1, pageSize: 100 },
     { staleTime: 120_000 },
   );
 
