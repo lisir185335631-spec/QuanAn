@@ -72,7 +72,7 @@ export const adminAuditRouter = adminTrpcRouter({
     const adminUserId = ctx.activeAdminUser?.id;
     if (!adminUserId) return [];
 
-    return ctx.prisma.adminAuditLog.findMany({
+    const rows = await ctx.prisma.adminAuditLog.findMany({
       where: { actorAdminId: adminUserId },
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -84,6 +84,8 @@ export const adminAuditRouter = adminTrpcRouter({
         payload: true,
       },
     });
+    // payload 是 Json(始终对象形态)→ 收窄为 Record,对齐 AuditDrawer logs 契约(避免 client 收到 opaque JsonValue)
+    return rows.map((r) => ({ ...r, payload: (r.payload ?? null) as Record<string, unknown> | null }));
   }),
 
   /**

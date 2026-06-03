@@ -47,6 +47,7 @@
     "audit:rls-tables": "bash scripts/audit-admin-rls-tables.sh",
     "test:rls-tables": "bash scripts/audit-admin-rls-tables.sh",
     "db:generate": "prisma generate",
+    "codegen:shadow": "node scripts/codegen-shadow.cjs",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
