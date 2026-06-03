@@ -9,6 +9,8 @@ import { z } from 'zod';
 import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
 
+import type { TaskItem } from '@quanan/schemas/specialist-io';
+
 // ── Input schemas ──────────────────────────────────────────────────────────
 
 const listInput = z.object({
@@ -118,7 +120,7 @@ export const dailyTasksAdminRouter = adminTrpcRouter({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'daily_task_not_found' });
       }
 
-      return record;
+      return { ...record, tasks: record.tasks as TaskItem[] };
     }),
 
   /**

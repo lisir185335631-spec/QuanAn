@@ -22,7 +22,7 @@ const PRIM =
   ts.TypeFlags.String | ts.TypeFlags.Number | ts.TypeFlags.Boolean | ts.TypeFlags.Null |
   ts.TypeFlags.Undefined | ts.TypeFlags.Void | ts.TypeFlags.StringLiteral | ts.TypeFlags.NumberLiteral |
   ts.TypeFlags.BooleanLiteral | ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.Never |
-  ts.TypeFlags.Enum | ts.TypeFlags.EnumLiteral;
+  ts.TypeFlags.Enum | ts.TypeFlags.EnumLiteral | ts.TypeFlags.BigInt | ts.TypeFlags.BigIntLiteral;
 
 const cfgPath = path.resolve('apps/api/tsconfig.json');
 const cfg = ts.readConfigFile(cfgPath, ts.sys.readFile);
@@ -52,6 +52,9 @@ function generate({ typeName, importPath, exportName, outFile }) {
     if (ck.isTupleType(type)) return `[${ck.getTypeArguments(type).map((t) => printType(t, depth + 1)).join(', ')}]`;
     const symName = type.getSymbol() && type.getSymbol().getName();
     if (symName && BUILTIN.has(symName)) return ck.typeToString(type, undefined, ts.TypeFormatFlags.NoTruncation);
+    // Prisma.Decimal:本项目无 tRPC transformer,Decimal 经 JSON 序列化为 string(decimal.js toJSON=toString)。
+    // 不收成 string 会被展开成 { toLocaleString; valueOf; ... } 方法对象或 unknown。按"线上真形态"打成 string。
+    if (symName === 'Decimal') return 'string';
     if (type.isUnion()) {
       const m = type.types;
       const has = (f) => m.some((t) => t.flags & f);
