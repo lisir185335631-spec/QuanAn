@@ -161,6 +161,28 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     group: 'p1-health',
     domainKey: 'evaluation',
   },
+  // PRD-29: 诊断报告
+  {
+    path: '/admin/diagnosis',
+    label: '诊断报告',
+    emoji: '🩺',
+    prd: 29,
+    requiredRole: 'admin',
+    summary: '诊断报告管理 · DiagnosisAgent 全账号报告 · 维度评分 / 建议步骤 / KPI 统计',
+    group: 'p1-health',
+    domainKey: 'diagnosis',
+  },
+  // PRD-29: 用户内容 (StepData)
+  {
+    path: '/admin/step-data',
+    label: '用户内容',
+    emoji: '📝',
+    prd: 29,
+    requiredRole: 'admin',
+    summary: '用户生成内容(StepData)管理 · step 类页面共用 · 按 stepKey 过滤 · KPI + 列表 + 详情抽屉',
+    group: 'p2-advanced',
+    domainKey: 'step_data',
+  },
   // P2 高级 4
   {
     path: '/admin/ab-experiments',
@@ -201,6 +223,39 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     summary: '配置中心 · Feature flags / 紧急开关(super_admin) / 全局参数 / 后置复核',
     group: 'p2-advanced',
     domainKey: 'feature_flags',
+  },
+  // PRD-29: 生成历史 (History 核心生成内容表)
+  {
+    path: '/admin/history',
+    label: '生成历史',
+    emoji: '🗂️',
+    prd: 29,
+    requiredRole: 'admin',
+    summary: '生成历史管理 · History 核心生成内容表 · 跨账号分页查询 · agentId/scriptType 过滤 · KPI + 列表 + 详情抽屉',
+    group: 'p2-advanced',
+    domainKey: 'history',
+  },
+  // PRD-29: 选题库 (Topic 表 · MyTopics manual 选题)
+  {
+    path: '/admin/topics',
+    label: '选题库',
+    emoji: '💡',
+    prd: 29,
+    requiredRole: 'admin',
+    summary: '选题库管理 · Topic 表跨账号分页查询 · sourceType/category/platform 过滤 · KPI + 列表 + 详情抽屉',
+    group: 'p2-advanced',
+    domainKey: 'topics',
+  },
+  // PRD-29: 每日任务 (DailyTask 表 · AI 每日任务)
+  {
+    path: '/admin/daily-tasks',
+    label: '每日任务',
+    emoji: '✅',
+    prd: 29,
+    requiredRole: 'admin',
+    summary: '每日任务管理 · DailyTask 表跨账号分页查询 · agentId/isFallback/dateRange 过滤 · KPI + 列表 + 详情抽屉',
+    group: 'p2-advanced',
+    domainKey: 'daily_tasks',
   },
   // PRD-29.6 US-001 · LLM API Key 配置
   {
