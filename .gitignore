@@ -92,3 +92,6 @@ apps/api/*.png
 apps/web/diagnosis-us002/
 # apps/scripts 临时工具脚本
 apps/scripts/ralph/
+
+# turbo 本地缓存
+.turbo/

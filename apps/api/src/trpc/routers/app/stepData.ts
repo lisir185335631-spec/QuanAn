@@ -6,19 +6,18 @@
  * US-007: adds saveStream SSE subscription for step5 (TopicAgent · 22KB · 5 category SSE)
  * SHIELD: do NOT add where:{accountId} to reads — RLS (account_id isolation) handles it
  * Note: Zod schemas inlined — @quanan/schemas/entities has the canonical definition for client use
+ *
+ * 热插拔:save 的 step→agent 分发已抽到 @/specialists/registry(STEP_AGENT_REGISTRY)。
+ * 新增一个 step agent 在 registry 加一条目即可,本文件分发逻辑零改动。
  */
 
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { getProgress } from '@/services/ip-progress/IPProgressService';
-import { brandingAgent } from '@/specialists/BrandingAgent';
 import { copywritingAgent, type CopywritingOutput } from '@/specialists/CopywritingAgent';
-import { livestreamAgent } from '@/specialists/LivestreamAgent';
-import { monetizationAgent } from '@/specialists/MonetizationAgent';
-import { positioningAgent } from '@/specialists/PositioningAgent';
+import { findStepAgent, persistStepAgentResult } from '@/specialists/registry';
 import { topicAgent, TOPIC_CATEGORIES } from '@/specialists/TopicAgent';
-import { videoAgent } from '@/specialists/VideoAgent';
 import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
@@ -63,7 +62,7 @@ export const stepDataRouter = router({
   /**
    * AC-7: upserts StepData for the current account
    * Returns updated row so client hook can reconcile LS optimistic write
-   * AC-5(US-004): step1 → positioningAgent(industry mode), step4 → positioningAgent(execution mode)
+   * 分发:命中 STEP_AGENT_REGISTRY 的 stepKey → 跑 agent + 统一持久化 + 可选副作用(如 step7 写 history)。
    */
   save: protectedProcedure
     .input(
@@ -95,217 +94,35 @@ export const stepDataRouter = router({
         select: STEP_DATA_SELECT,
       });
 
-      // AC-5(US-004): call PositioningAgent for step1 and step4
-      if (input.stepKey === 'step1' || input.stepKey === 'step4') {
-        const mode = input.stepKey === 'step1' ? 'industry' : 'execution';
-        const agentRes = await positioningAgent.execute({
+      // 热插拔分发:查 STEP_AGENT_REGISTRY,命中则跑对应 agent → 统一写回 → 可选副作用。
+      // 新增 step agent 只需在 registry 加一条目,这里零改动(取代原来 8 段 if(stepKey===...) 硬编码链)。
+      const entry = findStepAgent(input.stepKey);
+      if (entry) {
+        const mode = entry.resolveMode?.(input.stepKey, input.inputs);
+        const userInput = entry.buildUserInput
+          ? entry.buildUserInput(input.inputs, input.stepKey)
+          : input.inputs;
+        const agentRes = await entry.agent.execute({
           accountId: activeAccountId!,
-          mode,
-          userInput: input.inputs,
+          ...(mode !== undefined ? { mode } : {}),
+          userInput,
           traceId: traceId ?? undefined,
           stepKey: input.stepKey,
         });
-        // Persist agent result back to the same row
-        const updatedRow = await prisma.stepData.update({
-          where: {
-            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
-          },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'PositioningAgent',
-          },
-          select: STEP_DATA_SELECT,
-        });
-        return { ok: true, data: updatedRow };
-      }
-
-      // AC-4(US-005): call BrandingAgent for step3(packaging) and step3b(persona)
-      if (input.stepKey === 'step3' || input.stepKey === 'step3b') {
-        const mode = input.stepKey === 'step3' ? 'packaging' : 'persona';
-        const agentRes = await brandingAgent.execute({
+        const updatedRow = await persistStepAgentResult(
+          prisma,
+          activeAccountId!,
+          input.stepKey,
+          agentRes,
+          entry.agentId,
+          STEP_DATA_SELECT,
+        );
+        await entry.afterPersist?.({
+          prisma,
           accountId: activeAccountId!,
-          mode,
-          userInput: input.inputs,
-          traceId: traceId ?? undefined,
           stepKey: input.stepKey,
-        });
-        const updatedRow = await prisma.stepData.update({
-          where: {
-            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
-          },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'BrandingAgent',
-          },
-          select: STEP_DATA_SELECT,
-        });
-        return { ok: true, data: updatedRow };
-      }
-
-      // AC-3(US-006): call MonetizationAgent for step4b
-      if (input.stepKey === 'step4b') {
-        const agentRes = await monetizationAgent.execute({
-          accountId: activeAccountId!,
-          userInput: input.inputs,
-          traceId: traceId ?? undefined,
-          stepKey: input.stepKey,
-        });
-        const updatedRow = await prisma.stepData.update({
-          where: {
-            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
-          },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'MonetizationAgent',
-          },
-          select: STEP_DATA_SELECT,
-        });
-        return { ok: true, data: updatedRow };
-      }
-
-      // AC-4(US-008): call VideoAgent for step6 (shooting mode)
-      if (input.stepKey === 'step6') {
-        const agentRes = await videoAgent.execute({
-          accountId: activeAccountId!,
-          mode: 'shooting',
-          userInput: input.inputs,
-          traceId: traceId ?? undefined,
-          stepKey: input.stepKey,
-        });
-        const updatedRow = await prisma.stepData.update({
-          where: {
-            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
-          },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'VideoAgent',
-          },
-          select: STEP_DATA_SELECT,
-        });
-        return { ok: true, data: updatedRow };
-      }
-
-      // US-017: call TopicAgent for step5 via save (sync · 允许 e2e 走 UI form 路径)
-      // step5_<category> keys each write to their own row → no race condition across 5 categories
-      if (input.stepKey === 'step5' || input.stepKey.startsWith('step5_')) {
-        const inputs = input.inputs;
-        // Resolve category: prefer stepKey suffix (step5_traffic → traffic),
-        // fall back to inputs.lastCategory, then default 'traffic'
-        const categoryFromKey = input.stepKey.startsWith('step5_')
-          ? input.stepKey.slice('step5_'.length)
-          : undefined;
-        const category = (
-          categoryFromKey ||
-          (inputs['lastCategory'] as string) ||
-          'traffic'
-        ) as typeof TOPIC_CATEGORIES[number];
-        const agentRes = await topicAgent.execute({
-          accountId: activeAccountId!,
-          userInput: { category, ...inputs },
-          traceId: traceId ?? undefined,
-          stepKey: input.stepKey,
-        });
-        const updatedRow = await prisma.stepData.update({
-          where: { accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey } },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'TopicAgent',
-          },
-          select: STEP_DATA_SELECT,
-        });
-        return { ok: true, data: updatedRow };
-      }
-
-      // US-017: call CopywritingAgent for step7 via save (sync · 允许 e2e 走 UI form 路径)
-      if (input.stepKey === 'step7') {
-        const agentRes = await copywritingAgent.execute({
-          accountId: activeAccountId!,
-          mode: 'step7',
-          userInput: input.inputs,
-          traceId: traceId ?? undefined,
-          stepKey: input.stepKey,
-        });
-        const updatedRow = await prisma.stepData.update({
-          where: { accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey } },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'CopywritingAgent',
-          },
-          select: STEP_DATA_SELECT,
-        });
-        await prisma.history.create({
-          data: {
-            accountId: activeAccountId!,
-            agentId: 'CopywritingAgent',
-            sourceType: 'user',
-            inputSummary: input.stepKey,
-            content: (agentRes.result as CopywritingOutput).markdown,
-            traceId: traceId ?? null,
-          },
-        });
-        return { ok: true, data: updatedRow };
-      }
-
-      // AC-3(US-010/US-007): call LivestreamAgent for step8 · sub_function discriminator
-      // LivestreamAgent outputs sub_function schema directly (generate_plan or optimize_script)
-      if (input.stepKey === 'step8') {
-        const agentRes = await livestreamAgent.execute({
-          accountId: activeAccountId!,
-          // Pass mode so BaseSpecialist fallback picks the right template key
-          // (fallbackTemplate['generate_plan'] vs ['default'])
-          mode: (input.inputs['sub_function'] as string) ?? 'generate_plan',
-          userInput: input.inputs as Parameters<typeof livestreamAgent.execute>[0]['userInput'],
-          traceId: traceId ?? undefined,
-          stepKey: input.stepKey,
-        });
-
-        // Direct pass-through: LivestreamAgent sub_function discriminator outputs correct schema
-        // generate_plan → {opening, warmup, product, conversion, faq, closing}
-        // optimize_script → {optimized_text, optimization_notes}
-        const updatedRow = await prisma.stepData.update({
-          where: {
-            accountId_stepKey: { accountId: activeAccountId!, stepKey: input.stepKey },
-          },
-          data: {
-            result: agentRes.result as Prisma.InputJsonValue,
-            isFallback: agentRes.isFallback,
-            status: agentRes.isFallback ? 'fallback' : 'completed',
-            durationMs: agentRes.durationMs,
-            tokensUsed: agentRes.tokensUsed.total,
-            modelUsed: agentRes.modelUsed,
-            agentId: 'LivestreamAgent',
-          },
-          select: STEP_DATA_SELECT,
+          agentRes,
+          traceId: traceId ?? null,
         });
         return { ok: true, data: updatedRow };
       }

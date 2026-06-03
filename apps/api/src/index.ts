@@ -16,6 +16,7 @@ import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { cors } from 'hono/cors';
 
+import { registerBackgroundTasks } from '@/background-tasks';
 import { lucia } from '@/lib/auth/lucia';
 import { validateAdminStartupConfig } from '@/lib/auth/oauth-admin-factory';
 import { getProvider, validateStartupConfig, requiresCsrfCheck } from '@/lib/auth/providers';
@@ -363,70 +364,8 @@ const PORT = Number(process.env.PORT ?? 3000);
 async function start(): Promise<void> {
   await checkDbConnection();
 
-  // Dev mode: run image-gen worker in-process (AC-11 US-010)
-  // Prod: worker runs as standalone `pnpm worker:image-gen` container
-  if (process.env.NODE_ENV === 'development') {
-    const { worker: imageWorker } = await import('./workers/image-gen/worker');
-    imageWorker.on('error', (err) => logger.error({ err }, 'image_gen_worker.error'));
-    logger.info('image_gen_worker.started_in_process');
-
-    // AC-6 US-007: daily-task worker in-process (dev mode)
-    const { dailyTaskWorker } = await import('./workers/daily-task/worker');
-    dailyTaskWorker.on('error', (err) => logger.error({ err }, 'daily_task_worker.error'));
-    logger.info('daily_task_worker.started_in_process');
-
-    // PRD-27 US-004: deep-learning worker in-process (dev mode)
-    const { deepLearningWorker } = await import('./jobs/deep-learning.job');
-    deepLearningWorker.on('error', (err) => logger.error({ err }, 'deep_learning_worker.error'));
-    logger.info('deep_learning_worker.started_in_process');
-  }
-
-  // AC-3 US-007: start daily-task cron (0 0 * * * Asia/Shanghai)
-  const { dailyTaskCron } = await import('./cron/daily-task-runner');
-  dailyTaskCron.start();
-  logger.info('daily_task_cron.started');
-
-  // AC-5 US-002: register KPI snapshot BullMQ cron jobs (daily/weekly/monthly)
-  const { scheduleDailySnapshot, scheduleWeeklySnapshot, scheduleMonthlySnapshot } =
-    await import('./jobs/admin/kpi-snapshot.job');
-  await scheduleDailySnapshot();
-  await scheduleWeeklySnapshot();
-  await scheduleMonthlySnapshot();
-  logger.info('kpi_snapshot_crons.registered');
-
-  // AC-H-5 US-009: register anomaly-detection cron (0 5 * * * Asia/Shanghai)
-  const { scheduleAnomalyDetection } = await import('./jobs/admin/anomaly-detection.job');
-  await scheduleAnomalyDetection();
-  logger.info('anomaly_detection_cron.registered');
-
-  // AC-10 US-015: register cost-anomaly detection cron (15 * * * * Asia/Shanghai)
-  const { scheduleCostAnomalyDetection } = await import('./jobs/admin/cost-anomaly.job');
-  await scheduleCostAnomalyDetection();
-
-  // AC-1 US-012: register violation-detection cron (0 4 * * * Asia/Shanghai)
-  const { scheduleViolationDetection } = await import('./jobs/admin/violation-detection.job');
-  await scheduleViolationDetection();
-  logger.info('violation_detection_cron.registered');
-
-  // AC-6 US-002 PRD-13: register emergency-post-review cron (0 30 3 * * * Asia/Shanghai)
-  const { scheduleEmergencyPostReview } = await import('./jobs/admin/emergency-post-review.job');
-  await scheduleEmergencyPostReview();
-  logger.info('emergency_post_review_cron.registered');
-
-  // AC-8 US-005 PRD-13: register quota-expiry cleanup cron (0 30 0 * * * Asia/Shanghai)
-  const { scheduleQuotaCleanup } = await import('./jobs/admin/quota-expiry.job');
-  await scheduleQuotaCleanup();
-  logger.info('quota_cleanup_cron.registered');
-
-  // AC-1 US-003 PRD-14: register ab-stop-loss cron (0 0 * * * * hourly Asia/Shanghai)
-  const { scheduleAbStopLoss } = await import('./jobs/admin/ab-stop-loss.job');
-  await scheduleAbStopLoss();
-  logger.info('ab_stop_loss_cron.registered');
-
-  // AC-7 US-007 PRD-14: wire constantEmbedWorker (delayed embed rebuild after constant publish)
-  const { constantEmbedWorker } = await import('./jobs/admin/constant-embed-rebuild.job');
-  constantEmbedWorker.on('error', (err) => logger.error({ err }, 'constant_embed_worker.error'));
-  logger.info('constant_embed_worker.registered');
+  // 后台任务集中注册(dev-only worker + 常驻 cron)· 声明表见 @/background-tasks · 新增任务加一条目即可
+  await registerBackgroundTasks({ isDev: process.env.NODE_ENV === 'development' });
 
   serve({ fetch: app.fetch, port: PORT });
   logger.info({ port: PORT }, 'server.starting');
