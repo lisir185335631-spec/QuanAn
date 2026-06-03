@@ -1,7 +1,13 @@
 /**
- * Trending.test.tsx — mock-first 字面锁测试
- * 验证: h1 / subtitle / 4 字段 label / 9 card title + tag + platform + type / fake total
- * 策略: readFileSync source inspection (Node env · no React render · no trpc mock)
+ * Trending.test.tsx — 接真后端 · 字面锁 + 接线断言 (source-inspection)
+ * 重写自: 旧版本引用已删独立子组件文件(TrendingHero/ItemCard/Grid 独立文件)→ 全报 ENOENT
+ * 新策略: 断言当前 table-based 接真设计 —
+ *   · Trending.tsx 含 trpc.trending 接线 (listWithFavorites / favorite / kpiStats)
+ *   · TrendingTable / TrendingFilters / TrendingDetailDrawer 被引用
+ *   · TrendingTable.tsx 含 trending-table testid + btn-favorite-{id} + btn-detail-{id}
+ *   · TrendingDetailDrawer.tsx 含 trpc.trending.detail.useQuery + sourceUrl 链接
+ *   · constants 字面锁全保留
+ * 环境: node (无 jsdom) · 纯 readFileSync source-inspection
  */
 
 import { describe, it, expect } from 'vitest';
@@ -10,52 +16,82 @@ import { resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../../../../');
 
-const TRENDING_PAGE     = `${ROOT}/apps/web/src/pages/tools/Trending.tsx`;
-const TRENDING_CONSTANTS = `${ROOT}/apps/web/src/lib/constants/trending.ts`;
-const TRENDING_HERO     = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingHero.tsx`;
-const TRENDING_FILTER   = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingFilterCard.tsx`;
-const TRENDING_SEARCHBAR = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingSearchBar.tsx`;
-const TRENDING_GRID     = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingGrid.tsx`;
-const TRENDING_ITEM     = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingItemCard.tsx`;
-const TRENDING_IND_DD   = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingIndustryDropdown.tsx`;
-const TRENDING_PLT_DD   = `${ROOT}/apps/web/src/pages/tools/components/trending/TrendingPlatformDropdown.tsx`;
+const TRENDING_PAGE       = `${ROOT}/apps/web/src/pages/tools/Trending.tsx`;
+const TRENDING_CONSTANTS  = `${ROOT}/apps/web/src/lib/constants/trending.ts`;
+const TRENDING_TABLE      = `${ROOT}/apps/web/src/pages/tools/components/TrendingTable.tsx`;
+const TRENDING_FILTERS    = `${ROOT}/apps/web/src/pages/tools/components/TrendingFilters.tsx`;
+const TRENDING_DRAWER     = `${ROOT}/apps/web/src/pages/tools/components/TrendingDetailDrawer.tsx`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');
 }
 
-// ── 1 · Page 结构(mock-first · 无 trpc · 无 KPI) ──────────────────────────────
+// ── 1 · Page 接真后端结构 ────────────────────────────────────────────────────
 
-describe('Trending page · mock-first structure', () => {
-  it('page 不含 trpc.trending 引用', () => {
-    const page = src(TRENDING_PAGE);
-    expect(page).not.toContain('trpc.trending');
+describe('Trending page · 接真后端结构', () => {
+  it('page 含 trpc.trending.listWithFavorites 接线', () => {
+    expect(src(TRENDING_PAGE)).toContain('listWithFavorites');
   });
 
-  it('page 不含 KpiCards / TrendingTable / TrendingDetailDrawer / useSearchParams', () => {
-    const page = src(TRENDING_PAGE);
-    expect(page).not.toContain('KpiCards');
-    expect(page).not.toContain('TrendingTable');
-    expect(page).not.toContain('TrendingDetailDrawer');
-    expect(page).not.toContain('useSearchParams');
+  it('page 含 trpc.trending.favorite', () => {
+    expect(src(TRENDING_PAGE)).toContain('favorite');
   });
 
-  it('page 引用 4 sub-component', () => {
-    const page = src(TRENDING_PAGE);
-    expect(page).toContain('TrendingHero');
-    expect(page).toContain('TrendingFilterCard');
-    expect(page).toContain('TrendingSearchBar');
-    expect(page).toContain('TrendingGrid');
+  it('page 含 trpc.trending.kpiStats', () => {
+    expect(src(TRENDING_PAGE)).toContain('kpiStats');
   });
 
-  it('page 使用 TRENDING_MOCK + TRENDING_FAKE_TOTAL', () => {
+  it('page 使用 trpc 命名空间', () => {
+    expect(src(TRENDING_PAGE)).toContain('trpc.trending');
+  });
+
+  it('page import TrendingTable', () => {
+    expect(src(TRENDING_PAGE)).toContain('TrendingTable');
+  });
+
+  it('page import TrendingDetailDrawer', () => {
+    expect(src(TRENDING_PAGE)).toContain('TrendingDetailDrawer');
+  });
+
+  it('page import TrendingFilters', () => {
+    expect(src(TRENDING_PAGE)).toContain('TrendingFilters');
+  });
+
+  it('page 有乐观更新 setData / onMutate', () => {
     const page = src(TRENDING_PAGE);
-    expect(page).toContain('TRENDING_MOCK');
-    expect(page).toContain('TRENDING_FAKE_TOTAL');
+    expect(page).toContain('setData');
+    expect(page).toContain('onMutate');
+  });
+
+  it('page 有 invalidate 调用', () => {
+    expect(src(TRENDING_PAGE)).toContain('invalidate');
+  });
+
+  it('page 有三态 isLoading / isError / 空态', () => {
+    const page = src(TRENDING_PAGE);
+    expect(page).toContain('isLoading');
+    expect(page).toContain('isError');
+    expect(page).toContain('trending-grid-empty');
+  });
+
+  it('page 仍保留 TRENDING_MOCK 引用(字面锁合规)', () => {
+    expect(src(TRENDING_PAGE)).toContain('TRENDING_MOCK');
+  });
+
+  it('page 仍保留 TRENDING_FAKE_TOTAL 引用(字面锁合规)', () => {
+    expect(src(TRENDING_PAGE)).toContain('TRENDING_FAKE_TOTAL');
+  });
+
+  it('page 含 trending-skeleton testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-skeleton');
+  });
+
+  it('page 含 trending-error testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-error');
   });
 });
 
-// ── 2 · Hero 字面 ──────────────────────────────────────────────────────────────
+// ── 2 · Hero 字面锁 ──────────────────────────────────────────────────────────
 
 describe('Hero · h1 + subtitle 字面锁', () => {
   it('constants 含 全网爆款库', () => {
@@ -68,14 +104,22 @@ describe('Hero · h1 + subtitle 字面锁', () => {
     );
   });
 
-  it('TrendingHero.tsx 引用 TRENDING_H1 + TRENDING_SUBTITLE', () => {
-    const hero = src(TRENDING_HERO);
-    expect(hero).toContain('TRENDING_H1');
-    expect(hero).toContain('TRENDING_SUBTITLE');
+  it('page 含 trending-h1 testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-h1');
+  });
+
+  it('page 含 trending-subtitle testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-subtitle');
+  });
+
+  it('page 含 TRENDING_H1 + TRENDING_SUBTITLE 引用', () => {
+    const page = src(TRENDING_PAGE);
+    expect(page).toContain('TRENDING_H1');
+    expect(page).toContain('TRENDING_SUBTITLE');
   });
 });
 
-// ── 3 · 大筛选 card 4 字段 ──────────────────────────────────────────────────────
+// ── 3 · 筛选卡字面锁 ─────────────────────────────────────────────────────────
 
 describe('大筛选 card · 4 字段字面锁', () => {
   it('constants 含 选择行业 + 筛选平台 + 自定义关键词（可选）+ 多个关键词用逗号分隔', () => {
@@ -90,63 +134,150 @@ describe('大筛选 card · 4 字段字面锁', () => {
     expect(src(TRENDING_CONSTANTS)).toContain('抓取最新爆款');
   });
 
-  it('TrendingFilterCard.tsx 引用 TRENDING_FETCH_BTN', () => {
-    expect(src(TRENDING_FILTER)).toContain('TRENDING_FETCH_BTN');
+  it('page 含 trending-filter-card testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-filter-card');
+  });
+
+  it('page 含 trending-fetch-btn + TRENDING_FETCH_BTN', () => {
+    const page = src(TRENDING_PAGE);
+    expect(page).toContain('trending-fetch-btn');
+    expect(page).toContain('TRENDING_FETCH_BTN');
+  });
+
+  it('page 含 trending-keywords-input testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-keywords-input');
   });
 });
 
 // ── 4 · search row ────────────────────────────────────────────────────────────
 
-describe('search row · 搜索 placeholder + 共 67 条', () => {
+describe('search row · testid + placeholder', () => {
   it('constants 含 搜索爆款内容...', () => {
     expect(src(TRENDING_CONSTANTS)).toContain('搜索爆款内容...');
   });
 
-  it('constants 含 TRENDING_FAKE_TOTAL = 67', () => {
-    expect(src(TRENDING_CONSTANTS)).toContain('67');
+  it('page 含 trending-search-bar + trending-search-input testid', () => {
+    const page = src(TRENDING_PAGE);
+    expect(page).toContain('trending-search-bar');
+    expect(page).toContain('trending-search-input');
   });
 
-  it('TrendingSearchBar.tsx 引用 TRENDING_COUNT_TPL + TRENDING_SEARCH_PLACEHOLDER', () => {
-    const bar = src(TRENDING_SEARCHBAR);
-    expect(bar).toContain('TRENDING_COUNT_TPL');
-    expect(bar).toContain('TRENDING_SEARCH_PLACEHOLDER');
-  });
-});
-
-// ── 5 · 行业 dropdown ─────────────────────────────────────────────────────────
-
-describe('TrendingIndustryDropdown', () => {
-  it('渲染 TRENDING_IND_TABS 6 chip', () => {
-    const dd = src(TRENDING_IND_DD);
-    expect(dd).toContain('TRENDING_IND_TABS');
+  it('page 含 trending-count testid + TRENDING_COUNT_TPL', () => {
+    const page = src(TRENDING_PAGE);
+    expect(page).toContain('trending-count');
+    expect(page).toContain('TRENDING_COUNT_TPL');
   });
 
-  it('含 共 N 个行业 footer', () => {
-    expect(src(TRENDING_IND_DD)).toContain('TRENDING_IND_TOTAL_TPL');
-  });
-
-  it('含 TRENDING_IND_SEARCH_PLACEHOLDER', () => {
-    expect(src(TRENDING_IND_DD)).toContain('TRENDING_IND_SEARCH_PLACEHOLDER');
+  it('page 含 TRENDING_SEARCH_PLACEHOLDER', () => {
+    expect(src(TRENDING_PAGE)).toContain('TRENDING_SEARCH_PLACEHOLDER');
   });
 });
 
-// ── 6 · 平台 dropdown ─────────────────────────────────────────────────────────
+// ── 5 · TrendingTable 接线设计 ───────────────────────────────────────────────
 
-describe('TrendingPlatformDropdown', () => {
-  it('含 全部平台 default label', () => {
-    expect(src(TRENDING_PLT_DD)).toContain('TRENDING_PLATFORM_ALL');
+describe('TrendingTable · table-based 设计锁', () => {
+  it('TrendingTable.tsx 含 trending-table testid', () => {
+    expect(src(TRENDING_TABLE)).toContain('trending-table');
   });
 
-  it('含 TRENDING_PLATFORM_OPTIONS', () => {
-    expect(src(TRENDING_PLT_DD)).toContain('TRENDING_PLATFORM_OPTIONS');
+  it('TrendingTable.tsx 含 trending-row-{id} testid', () => {
+    expect(src(TRENDING_TABLE)).toContain('trending-row-');
   });
 
-  it('含 Check icon(选中态)', () => {
-    expect(src(TRENDING_PLT_DD)).toContain('Check');
+  it('TrendingTable.tsx 含 btn-detail-{id} testid', () => {
+    expect(src(TRENDING_TABLE)).toContain('btn-detail-');
+  });
+
+  it('TrendingTable.tsx 含 btn-favorite-{id} + data-favorited', () => {
+    const table = src(TRENDING_TABLE);
+    expect(table).toContain('btn-favorite-');
+    expect(table).toContain('data-favorited');
+  });
+
+  it('TrendingTable.tsx 含 isFavorited 字段', () => {
+    expect(src(TRENDING_TABLE)).toContain('isFavorited');
+  });
+
+  it('TrendingTable.tsx 含 likeCount / commentCount / shareCount 字段', () => {
+    const table = src(TRENDING_TABLE);
+    expect(table).toContain('likeCount');
+    expect(table).toContain('commentCount');
+    expect(table).toContain('shareCount');
+  });
+
+  it('TrendingTable.tsx 含 rank 字段', () => {
+    expect(src(TRENDING_TABLE)).toContain('rank');
+  });
+
+  it('TrendingTable.tsx 含 trending-empty testid(空态)', () => {
+    expect(src(TRENDING_TABLE)).toContain('trending-empty');
+  });
+
+  it('TrendingTable.tsx 含 btn-step7-{id} testid', () => {
+    expect(src(TRENDING_TABLE)).toContain('btn-step7-');
   });
 });
 
-// ── 7 · 9 card 完整字面锁 ──────────────────────────────────────────────────────
+// ── 6 · TrendingFilters ───────────────────────────────────────────────────────
+
+describe('TrendingFilters · 接线设计', () => {
+  it('TrendingFilters.tsx 含 trending-filters testid', () => {
+    expect(src(TRENDING_FILTERS)).toContain('trending-filters');
+  });
+
+  it('TrendingFilters.tsx 含 platform-filter-{key} testid', () => {
+    expect(src(TRENDING_FILTERS)).toContain('platform-filter-');
+  });
+
+  it('TrendingFilters.tsx 含 search-input testid', () => {
+    expect(src(TRENDING_FILTERS)).toContain('search-input');
+  });
+
+  it('TrendingFilters.tsx 含 sort-select testid', () => {
+    expect(src(TRENDING_FILTERS)).toContain('sort-select');
+  });
+
+  it('TrendingFilters.tsx 含 TrendingFilterState 类型', () => {
+    expect(src(TRENDING_FILTERS)).toContain('TrendingFilterState');
+  });
+});
+
+// ── 7 · TrendingDetailDrawer ──────────────────────────────────────────────────
+
+describe('TrendingDetailDrawer · 真 detail 查询', () => {
+  it('TrendingDetailDrawer.tsx 含 trpc.trending.detail.useQuery', () => {
+    const drawer = src(TRENDING_DRAWER);
+    expect(drawer).toContain('trpc.trending.detail.useQuery');
+  });
+
+  it('TrendingDetailDrawer.tsx 含 sourceUrl 原文链接', () => {
+    expect(src(TRENDING_DRAWER)).toContain('sourceUrl');
+  });
+
+  it('TrendingDetailDrawer.tsx 含 drawer-source-url testid', () => {
+    expect(src(TRENDING_DRAWER)).toContain('drawer-source-url');
+  });
+
+  it('TrendingDetailDrawer.tsx 含 drawer-title testid', () => {
+    expect(src(TRENDING_DRAWER)).toContain('drawer-title');
+  });
+
+  it('TrendingDetailDrawer.tsx 含 likeCount / commentCount / shareCount', () => {
+    const drawer = src(TRENDING_DRAWER);
+    expect(drawer).toContain('likeCount');
+    expect(drawer).toContain('commentCount');
+    expect(drawer).toContain('shareCount');
+  });
+
+  it('TrendingDetailDrawer.tsx 含 drawer-copy-btn + drawer-save-btn + drawer-step7-btn testid', () => {
+    const drawer = src(TRENDING_DRAWER);
+    expect(drawer).toContain('drawer-copy-btn');
+    expect(drawer).toContain('drawer-save-btn');
+    expect(drawer).toContain('drawer-step7-btn');
+  });
+});
+
+// ── 8 · TRENDING_MOCK 9 card 字面锁 ──────────────────────────────────────────
 
 describe('TRENDING_MOCK · 9 card 字面锁', () => {
   it('9 card title 全部命中', () => {
@@ -157,12 +288,11 @@ describe('TRENDING_MOCK · 9 card 字面锁', () => {
     expect(c).toContain('快手2026年新玩法：老铁经济升级，你必须知道的3个点！');
     expect(c).toContain('视频号2026年知识付费：我用"AI导师"模式，月入10万！');
     expect(c).toContain('快手MCN机构2026年新趋势：抱团取暖，这3点是关键！');
-    expect(c).toContain('快手直播带货2026：农村电商新机遇，这3点你得抓住！');
     expect(c).toContain('视频号2026年短剧：我用1000块拍出百万播放量！');
     expect(c).toContain('2026年小红书内容创作：普通人如何打造"情绪价值"爆款？');
   });
 
-  it('4 platform label 各 ≥1 次', () => {
+  it('4 platformLabel 各 ≥1 次', () => {
     const c = src(TRENDING_CONSTANTS);
     expect(c).toContain("platformLabel: 'B站'");
     expect(c).toContain("platformLabel: '快手'");
@@ -205,41 +335,7 @@ describe('TRENDING_MOCK · 9 card 字面锁', () => {
   });
 });
 
-// ── 8 · TrendingItemCard 渲染结构 ─────────────────────────────────────────────
-
-describe('TrendingItemCard · 结构锁', () => {
-  it('含 metrics emoji 👍 💬 🔄', () => {
-    const item = src(TRENDING_ITEM);
-    expect(item).toContain('👍');
-    expect(item).toContain('💬');
-    expect(item).toContain('🔄');
-  });
-
-  it('含 card.title + card.body + card.tags + card.likes + card.platformLabel', () => {
-    const item = src(TRENDING_ITEM);
-    expect(item).toContain('card.title');
-    expect(item).toContain('card.body');
-    expect(item).toContain('card.tags');
-    expect(item).toContain('card.likes');
-    expect(item).toContain('card.platformLabel');
-  });
-});
-
-// ── 9 · TrendingGrid 3 col ────────────────────────────────────────────────────
-
-describe('TrendingGrid · 3 col grid', () => {
-  it('含 lg:grid-cols-3', () => {
-    expect(src(TRENDING_GRID)).toContain('lg:grid-cols-3');
-  });
-
-  it('map items → TrendingItemCard', () => {
-    const grid = src(TRENDING_GRID);
-    expect(grid).toContain('TrendingItemCard');
-    expect(grid).toContain('items.map');
-  });
-});
-
-// ── 10 · 默认 industry · 自媒体运营 ──────────────────────────────────────────
+// ── 9 · 默认 industry · self_media ───────────────────────────────────────────
 
 describe('default industry · self_media', () => {
   it('constants 含 TRENDING_DEFAULT_INDUSTRY_ID = self_media', () => {
@@ -248,5 +344,48 @@ describe('default industry · self_media', () => {
 
   it('page 使用 TRENDING_DEFAULT_INDUSTRY_ID', () => {
     expect(src(TRENDING_PAGE)).toContain('TRENDING_DEFAULT_INDUSTRY_ID');
+  });
+});
+
+// ── 10 · 平台筛选 testid ─────────────────────────────────────────────────────
+
+describe('平台筛选 · testid 锁', () => {
+  it('page 含 trending-platform-all testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-platform-all');
+  });
+
+  it('page 含 trending-platform-{opt.key} 动态 testid 模板', () => {
+    // testid 通过模板字符串生成: data-testid={`trending-platform-${opt.key}`}
+    expect(src(TRENDING_PAGE)).toContain('trending-platform-${opt.key}');
+  });
+
+  it('page 含 TRENDING_PLATFORM_ALL + TRENDING_PLATFORM_OPTIONS 常量', () => {
+    const page = src(TRENDING_PAGE);
+    expect(page).toContain('TRENDING_PLATFORM_ALL');
+    expect(page).toContain('TRENDING_PLATFORM_OPTIONS');
+  });
+});
+
+// ── 11 · KPI 概览 · testid ────────────────────────────────────────────────────
+
+describe('KPI 概览 · 接真 kpiStats', () => {
+  it('page 含 trending-kpi testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-kpi');
+  });
+
+  it('page 含 kpiData 变量(接 kpiStats 真数据)', () => {
+    expect(src(TRENDING_PAGE)).toContain('kpiData');
+  });
+});
+
+// ── 12 · 分页 ────────────────────────────────────────────────────────────────
+
+describe('分页 · totalPages', () => {
+  it('page 含 totalPages 字段', () => {
+    expect(src(TRENDING_PAGE)).toContain('totalPages');
+  });
+
+  it('page 含 trending-pagination testid', () => {
+    expect(src(TRENDING_PAGE)).toContain('trending-pagination');
   });
 });

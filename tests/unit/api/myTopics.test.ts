@@ -131,3 +131,40 @@ describe('countBySource (AC-10)', () => {
     expect(router).toContain('topic.count');
   });
 });
+
+// ── 6 · Security: accountId isolation (TD-019) ─────────────────────────
+
+describe('accountId isolation (TD-019 · 防跨账号泄漏)', () => {
+  it('list: step5 stepData.findMany where 含 accountId (防止跨账号泄漏)', () => {
+    const router = src(ROUTER);
+    // 提取 stepData.findMany 块，断言 where 里包含 accountId
+    const findManyMatch = router.match(/stepData\.findMany\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(findManyMatch).not.toBeNull();
+    const block = findManyMatch![0];
+    expect(block).toContain('accountId');
+  });
+
+  it('countBySource: stepData.findFirst where 含 accountId (防止跨账号泄漏)', () => {
+    const router = src(ROUTER);
+    // 提取 stepData.findFirst 块，断言 where 里包含 accountId
+    const findFirstMatch = router.match(/stepData\.findFirst\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(findFirstMatch).not.toBeNull();
+    const block = findFirstMatch![0];
+    expect(block).toContain('accountId');
+  });
+
+  it('trending: trendingFavorite.findMany where 含 accountId', () => {
+    const router = src(ROUTER);
+    // trendingFavorite.findMany 同样含 accountId
+    const match = router.match(/trendingFavorite\.findMany\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(match).not.toBeNull();
+    expect(match![0]).toContain('accountId');
+  });
+
+  it('manual: topic.findMany where 含 accountId', () => {
+    const router = src(ROUTER);
+    const match = router.match(/topic\.findMany\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(match).not.toBeNull();
+    expect(match![0]).toContain('accountId');
+  });
+});
