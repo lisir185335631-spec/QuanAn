@@ -42,6 +42,7 @@ function generate({ typeName, importPath, exportName, outFile }) {
   };
 
   let capped = 0;
+  let jsonUsed = false;
   let procCount = 0;
 
   function printType(type, depth) {
@@ -51,8 +52,20 @@ function generate({ typeName, importPath, exportName, outFile }) {
     if (ck.isTupleType(type)) return `[${ck.getTypeArguments(type).map((t) => printType(t, depth + 1)).join(', ')}]`;
     const symName = type.getSymbol() && type.getSymbol().getName();
     if (symName && BUILTIN.has(symName)) return ck.typeToString(type, undefined, ts.TypeFormatFlags.NoTruncation);
-    if (type.isUnion()) return type.types.map((t) => printType(t, depth)).join(' | ');
+    if (type.isUnion()) {
+      const m = type.types;
+      const has = (f) => m.some((t) => t.flags & f);
+      // Prisma JsonValue 形状(string|number|boolean|对象|...)→ 收敛成共享别名,避免几万字符递归展开
+      if (has(ts.TypeFlags.String) && has(ts.TypeFlags.Number) && has(ts.TypeFlags.BooleanLike) && has(ts.TypeFlags.Object)) {
+        jsonUsed = true;
+        return 'JsonValue';
+      }
+      return m.map((t) => printType(t, depth)).join(' | ');
+    }
     if (type.isIntersection()) return type.types.map((t) => printType(t, depth)).join(' & ');
+    // 数组兜底:isArrayType 漏掉的 array-like(数字索引 + length)→ 当数组,别展开成 { length; pop; push; ... }
+    const numIndex = ck.getIndexTypeOfType(type, ts.IndexKind.Number);
+    if (numIndex && type.getProperty('length')) return `Array<${printType(numIndex, depth + 1)}>`;
     const strIndex = ck.getIndexTypeOfType(type, ts.IndexKind.String);
     const props = ck.getPropertiesOfType(type).filter((p) => /^[A-Za-z_$][\w$]*$/.test(p.name));
     if (props.length === 0) {
@@ -116,7 +129,7 @@ function generate({ typeName, importPath, exportName, outFile }) {
 import { initTRPC } from '@trpc/server';
 const _t = initTRPC.create();
 declare const __stub: never;
-
+${jsonUsed ? 'type JsonValue = string | number | boolean | { [k: string]: JsonValue } | JsonValue[] | null;\n' : ''}
 const _gen = _t.router({
 ${body}
 });
