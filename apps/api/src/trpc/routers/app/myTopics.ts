@@ -77,7 +77,7 @@ export const myTopicsRouter = router({
       // ── Source 1: step5 topics from step_data ──────────────────────────────
       if (source === 'all' || source === 'step5') {
         const rows = await prisma.stepData.findMany({
-          where: { stepKey: { in: ['step5', 'step5_topics_v2'] } },
+          where: { accountId, stepKey: { in: ['step5', 'step5_topics_v2'] } },
           select: { result: true, updatedAt: true },
           orderBy: { updatedAt: 'desc' },
         });
@@ -263,7 +263,7 @@ export const myTopicsRouter = router({
 
       const [step5Row, trendingCount, manualCount] = await Promise.all([
         prisma.stepData.findFirst({
-          where: { stepKey: { in: ['step5', 'step5_topics_v2'] } },
+          where: { accountId, stepKey: { in: ['step5', 'step5_topics_v2'] } },
           select: { result: true },
         }),
         prisma.trendingFavorite.count({ where: { accountId } }),

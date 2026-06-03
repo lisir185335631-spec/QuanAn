@@ -13,15 +13,20 @@ import { adminAuthRouter } from './auth';
 import { complianceRouter } from './compliance';
 import { constantsRouter } from './constants';
 import { costRouter } from './cost';
+import { dailyTasksAdminRouter } from './dailyTasks';
+import { diagnosisRouter } from './diagnosis';
 import { evaluationRouter } from './evaluation';
 import { evolutionHealthRouter } from './evolutionHealth';
 import { featureFlagsRouter } from './featureFlags';
+import { historyAdminRouter } from './history';
 import { invitesRouter } from './invites';
 import { nsmRouter } from './nsm';
 import { promptsRouter } from './prompts';
 import { quotaRouter } from './quota';
 import { reviewDeepLearnRouter } from './review-deep-learn';
 import { reviewTrendingRouter } from './review-trending';
+import { stepDataRouter } from './stepData';
+import { topicsAdminRouter } from './topics';
 import { usersRouter } from './users';
 
 export const adminRouter = adminTrpcRouter({
@@ -67,6 +72,16 @@ export const adminRouter = adminTrpcRouter({
   featureFlags: featureFlagsRouter,
   // PRD-28 US-006: evaluation router
   evaluation: evaluationRouter,
+  // PRD-29: diagnosis reports router
+  diagnosis: diagnosisRouter,
+  // PRD-29: step data (user generated content) router
+  stepData: stepDataRouter,
+  // PRD-29: history (core generation log) router
+  history: historyAdminRouter,
+  // PRD-29: topics (manual/ai topic library) router
+  topics: topicsAdminRouter,
+  // PRD-29: daily tasks (AI 每日任务表) router
+  dailyTasks: dailyTasksAdminRouter,
 });
 
 export type AdminRouter = typeof adminRouter;

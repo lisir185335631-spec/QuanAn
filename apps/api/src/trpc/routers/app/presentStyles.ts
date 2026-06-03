@@ -4,6 +4,7 @@
  *       返 history row with JSON.stringify(agentRes.result)
  */
 
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { presentationAgent } from '@/specialists/PresentationAgent';
@@ -63,6 +64,14 @@ export const presentStylesRouter = router({
         select: HISTORY_SELECT,
       });
 
-      return row;
+      // LD-009: explicit double-layer guard (TD-019 教训 · RLS-only 单层防护不够)
+      const verified = await prisma.history.findFirst({
+        where: { id: row.id, accountId: activeAccountId! },
+        select: HISTORY_SELECT,
+      });
+      if (!verified) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'history isolation check failed' });
+      }
+      return verified;
     }),
 });

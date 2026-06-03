@@ -1,6 +1,10 @@
 /**
- * QuanAn · 14 呈现形式
+ * QuanAn · 14 呈现形式 (旧 schema · 已废弃)
  * 派生自 ARCHITECTURE.md §3.6 + spec.md §Ⅹ.6 实测
+ *
+ * @deprecated 此文件的 key 集合 (oral_solo / dialogue / ...) 与 PRD-27 US-003 规范不符。
+ *   请使用 @quanan/schemas/specialist-io 的 PRESENTATION_STYLE_IDS (14 个标准 key)。
+ *   本文件暂时保留以兼容可能的历史数据，不应引入新的 import。
  */
 
 export interface PresentStyle {

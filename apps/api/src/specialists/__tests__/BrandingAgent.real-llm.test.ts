@@ -115,13 +115,30 @@ describe.skipIf(skipIfNoKey)('BrandingAgent real LLM', () => {
     expect(result.durationMs).toBeLessThan(45_000);
 
     const output = result.result as Step3bOutput;
-    expect(typeof output.coreIdentity).toBe('string');
-    expect(output.thoughtSystem.coreBeliefs).toHaveLength(3);
-    expect(output.thoughtSystem.uniqueViews).toHaveLength(2);
-    expect(output.thoughtSystem.catchphrases).toHaveLength(3);
-    expect(output.contentPersona.contentPillars).toHaveLength(4);
-    expect(typeof output.trustBuilding).toBe('string');
-    expect(typeof output.personaRoadmap.phase1).toBe('string');
+    // coreIdentity
+    expect(typeof output.coreIdentity.identityTag).toBe('string');
+    expect(typeof output.coreIdentity.quote).toBe('string');
+    expect(typeof output.coreIdentity.differentiation).toBe('string');
+    expect(output.coreIdentity.memoryPoints.length).toBeGreaterThanOrEqual(3);
+    expect(output.coreIdentity.traits.length).toBeGreaterThanOrEqual(3);
+    // thoughtSystem
+    expect(output.thoughtSystem.coreBeliefs.length).toBeGreaterThanOrEqual(3);
+    expect(output.thoughtSystem.viewpoints.length).toBeGreaterThanOrEqual(2);
+    expect(output.thoughtSystem.mottos.length).toBeGreaterThanOrEqual(3);
+    // contentPersona
+    expect(typeof output.contentPersona.speakingStyle).toBe('string');
+    expect(output.contentPersona.speakingDos.length).toBeGreaterThanOrEqual(2);
+    expect(output.contentPersona.speakingDonts.length).toBeGreaterThanOrEqual(2);
+    expect(typeof output.contentPersona.examplePitch).toBe('string');
+    expect(typeof output.contentPersona.visualStyle.style).toBe('string');
+    expect(output.contentPersona.contentPillars.length).toBeGreaterThanOrEqual(4);
+    // trustSystem
+    expect(output.trustSystem.backings.length).toBeGreaterThanOrEqual(2);
+    expect(output.trustSystem.socialProofs.length).toBeGreaterThanOrEqual(1);
+    expect(typeof output.trustSystem.storyLine.mainStory).toBe('string');
+    // roadmap
+    expect(output.roadmap).toHaveLength(3);
+    expect(['green', 'yellow', 'purple']).toContain(output.roadmap[0]?.accent);
 
     // AC-3: schema drift — real LLM output must pass strict OutputSchema validation
     const parsed = Step3bOutputSchema.safeParse(result.result);
