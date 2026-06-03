@@ -54,17 +54,19 @@ export const HOME_PROGRESS_VIEW_PLAN_HREF = '/ip-plan' as const;
 export interface HomeStep {
   label: string;
   icon: LucideIcon;
+  href: string;
 }
+// href 取自 HEADER_NAV 同一套真实路由(已在 router.tsx 逐条确认)· 不改路由号,各链各页
 export const HOME_STEPS: ReadonlyArray<HomeStep> = [
-  { label: '选择行业', icon: LayoutGrid },
-  { label: '账号包装', icon: Users },
-  { label: '人设定制', icon: Fingerprint },
-  { label: '执行计划', icon: Target },
-  { label: '变现路径', icon: DollarSign },
-  { label: '爆款选题', icon: TrendingUp },
-  { label: '拍摄计划', icon: Camera },
-  { label: '文案生成', icon: Sparkles },
-  { label: '直播策划', icon: Radio },
+  { label: '选择行业', icon: LayoutGrid, href: '/step/1' },
+  { label: '账号包装', icon: Users, href: '/step/3' },
+  { label: '人设定制', icon: Fingerprint, href: '/step/3b' },
+  { label: '执行计划', icon: Target, href: '/step/4' },
+  { label: '变现路径', icon: DollarSign, href: '/step/4b' },
+  { label: '爆款选题', icon: TrendingUp, href: '/step/5' },
+  { label: '拍摄计划', icon: Camera, href: '/step/6' },
+  { label: '文案生成', icon: Sparkles, href: '/step/7' },
+  { label: '直播策划', icon: Radio, href: '/step/8' },
 ];
 
 // Stats

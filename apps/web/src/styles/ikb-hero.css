@@ -1,0 +1,120 @@
+/* ───────────────────────────────────────────────────────────────────────────
+ * 红蓝紫渐变 · 先锋印刷 — Hero 视觉系统(独立于先锋白,不复用 PioneerLayout token)
+ * frontend-design:冷浅底场 + 红蓝紫渐变只压焦点(大字/CTA/灌注)· 独特字体 · 克制不塌成 AI-slop
+ * design-spells:磁力 / 块状光标 / 油墨揭示(hover 渐变灌注)
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* 得意黑 — 自托管(去 AI 味的关键 display 字面) */
+@font-face {
+  font-family: 'Smiley Sans';
+  src: url('/fonts/smiley-sans.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 红蓝紫主渐变(变量,hover 灌注用 3 段;焦点流光用对称 5 段无缝循环) */
+:root { --ikb-grad: linear-gradient(110deg, #2B53E6 0%, #7A3BE0 52%, #EF3E6B 100%); }
+@keyframes ikb-flow { to { background-position: -200% center; } }
+@keyframes ikb-sheen { 0% { transform: translateX(-185%) skewX(-12deg); } 26%, 100% { transform: translateX(320%) skewX(-12deg); } }
+/* 渐变文字:得意黑大字 / 100% — 背景裁切到字形 + 缓慢流光 */
+.ikb-gradtext {
+  background-image: linear-gradient(110deg, #2B53E6, #7A3BE0, #EF3E6B, #7A3BE0, #2B53E6);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: ikb-flow 7s linear infinite;
+}
+/* 渐变按钮:流光底 + 周期高光扫过(GPU transform sheen) */
+.ikb-gradbtn {
+  position: relative; overflow: hidden;
+  background-image: linear-gradient(110deg, #2B53E6, #7A3BE0, #EF3E6B, #7A3BE0, #2B53E6) !important;
+  background-size: 200% auto !important;
+  background-position: 0% center;
+  animation: ikb-flow 6s linear infinite;
+}
+.ikb-gradbtn::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 64%; z-index: 2;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+  transform: translateX(-185%) skewX(-12deg);
+  animation: ikb-sheen 4.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ikb-gradtext, .ikb-gradbtn { animation: none; }
+  .ikb-gradbtn::after { display: none; }
+}
+
+/* 键盘焦点环(a11y · :focus-visible 仅键盘 Tab 时显示,鼠标点击不显示) */
+.ikb-navtrigger:focus { outline: none; }
+.ikb-navtrigger:focus-visible,
+.ikb-navitem:focus-visible,
+.ikb-card:focus-visible,
+.ikb-step:focus-visible,
+.ikb-gradbtn:focus-visible,
+.ikb-acct:focus-visible,
+.ikb-footlink:focus-visible,
+.ikb-brand:focus-visible {
+  outline: 2px solid #2B53E6;
+  outline-offset: 2px;
+}
+
+/* 块状光标(取代细 | ) */
+@keyframes ikb-blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+.ikb-cursor { animation: ikb-blink 1.05s steps(1, end) infinite; }
+
+/* 左上角 logo:hover 微抬升 + 光晕(design-spells) */
+.ikb-brandico { filter: drop-shadow(0 5px 12px rgba(123,59,224,0.40)); transition: transform .35s cubic-bezier(.16,1,.3,1), filter .35s cubic-bezier(.16,1,.3,1); }
+.ikb-brand:hover .ikb-brandico { transform: translateY(-2px) scale(1.05); filter: drop-shadow(0 9px 18px rgba(123,59,224,0.52)); }
+
+/* 状态点呼吸 */
+@keyframes ikb-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.6); } }
+.ikb-pulse { animation: ikb-pulse 1.6s ease-in-out infinite; }
+
+/* 统一编辑卡片 — 锐角 + 墨线边 + 顶部色条;hover 红蓝紫油墨灌注(design-spells) */
+.ikb-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(22, 32, 72, 0.16);
+  color: #161D33;
+  transition: background .4s cubic-bezier(.16,1,.3,1), border-color .4s, transform .4s cubic-bezier(.16,1,.3,1);
+  will-change: transform;
+}
+.ikb-card::before {
+  content: '';
+  position: absolute; left: -1px; top: -1px; height: 3px;
+  width: var(--ikb-accent-w, 38px);
+  background: var(--ikb-accent, #2B53E6);
+}
+.ikb-card:hover { background: var(--ikb-grad); border-color: transparent; transform: translateY(-5px); }
+.ikb-card:hover .ikb-c-title { color: #ffffff !important; }
+.ikb-card:hover .ikb-c-desc { color: #ffffff !important; opacity: .82; }
+.ikb-card:hover .ikb-c-idx { color: #ffffff !important; }
+.ikb-card:hover .ikb-c-arrow { color: #ffffff !important; transform: translateX(4px); }
+.ikb-c-arrow { transition: transform .4s cubic-bezier(.16,1,.3,1); }
+
+/* ── 编辑式导航 / 页脚换皮(结构不动,仅样式) ── */
+/* 一级菜单:白底克制 · hover/当前页 = 红蓝紫渐变块白字 */
+.ikb-navtrigger { color: #161D33; transition: color .22s cubic-bezier(.16,1,.3,1), background .22s cubic-bezier(.16,1,.3,1); }
+.ikb-navtrigger:hover, .ikb-navtrigger[data-state='open'], .ikb-navtrigger[data-active='true'] { color: #ffffff !important; background: var(--ikb-grad) !important; }
+.ikb-navitem { transition: background .15s, color .15s; }
+.ikb-navitem:hover { background: #EEF1FE !important; color: #2B53E6 !important; }
+.ikb-navpanel { border-radius: 0 !important; border: 1px solid rgba(22,32,72,0.16) !important; box-shadow: 8px 8px 0 rgba(43,83,230,0.10) !important; background: #FFFFFF !important; padding: 5px !important; }
+/* 页脚链接:下划线 draw-in(渐变) */
+.ikb-footlink { position: relative; transition: color .2s; }
+.ikb-footlink::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px;
+  background: var(--ikb-grad); transform: scaleX(0); transform-origin: left;
+  transition: transform .32s cubic-bezier(.16,1,.3,1);
+}
+.ikb-footlink:hover { color: #2B53E6 !important; }
+.ikb-footlink:hover::after { transform: scaleX(1); }
+/* 账号切换器 hover 描边 */
+.ikb-acct { transition: border-color .2s, background .2s; }
+.ikb-acct:hover { border-color: #2B53E6 !important; }
+/* 进度步骤按钮:hover 红蓝紫灌注(同卡片语言) */
+.ikb-step { transition: background .3s cubic-bezier(.16,1,.3,1); }
+.ikb-step:hover { background: var(--ikb-grad); }
+.ikb-step:hover .ikb-step-idx { color: #ffffff !important; }
+.ikb-step:hover .ikb-step-ic { color: #ffffff !important; }
+.ikb-step:hover .ikb-step-lb { color: #ffffff !important; }
