@@ -5,7 +5,8 @@
  * AppRouter type lives in @quanan/clients/router-types so apps/web can import it
  * via 'import type' — Vite/esbuild erases type-only imports, keeping @trpc/server
  * out of the browser bundle.
- * TD: switch to TypeScript project references in P1.
+ * 注:shadow 为 LOAD-BEARING(不是可删的债)—— 直接 import 真 AppRouter 会因 api 的 @/ 自引用串扰失败,
+ * 真 AdminRouter 还会撞 createTRPCReact 装饰超 TS 上限。详见 packages/clients/src/router-types.ts 头注释。
  */
 
 import { QueryClient } from '@tanstack/react-query';

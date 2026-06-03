@@ -1,5 +1,8 @@
 // PRD-10 US-002 · AdminRouter type mirror for apps/admin tRPC client
 // Shadow router pattern (same as router-types.ts) — keeps @trpc/server out of browser bundle.
+// ⚠️ LOAD-BEARING,不可简单删除:真 AdminRouter(24 子 router × adminProcedure 7 道中间件类型)喂给
+// createTRPCReact 会超 TS 类型实例化上限、客户端类型被毒化报 "collides with a built-in method";
+// 叠加 api @/ 自引用串扰。删除前置条件见 packages/clients/src/router-types.ts 头注释。非机械重构。
 
 import { initTRPC } from '@trpc/server';
 
