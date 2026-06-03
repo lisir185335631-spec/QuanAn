@@ -26,16 +26,19 @@ on:
 jobs:
   admin-smoke:
     runs-on: ubuntu-latest
+    # 在 Playwright 官方镜像里跑:chromium + 系统依赖预装 → 免 cdn.playwright.dev 下载(慢/卡)。
+    # tag 必须 == 本仓库 @playwright/test 锁定版本(pnpm-lock:1.59.1),否则镜像内浏览器版本对不上会回退下载。
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-noble
     timeout-minutes: 20
 
     env:
-      # ── DB:指向下面的 postgres service 容器(非外部库)。host=localhost 正确:
-      #    job 跑在 runner 宿主机(非容器),service 通过 ports:5432:5432 映射到宿主 localhost。──
-      # prisma datasource(prisma/schema.prisma:11-15)同时声明 url=DATABASE_URL + directUrl=DIRECT_URL,
-      # `migrate deploy` 会用 DIRECT_URL,故两者都要给(此处指同一个本地容器库)。
-      DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/quanan?schema=public'
-      DIRECT_URL: 'postgresql://postgres:postgres@localhost:5432/quanan?schema=public'
-      REDIS_URL: 'redis://localhost:6379'
+      # ── DB/Redis:job 现在跑在 container 里 → service 用【网络别名(服务名)】访问,不是 localhost。──
+      # prisma datasource(prisma/schema.prisma:11-15)声明 url=DATABASE_URL + directUrl=DIRECT_URL,
+      # `migrate deploy` 用 DIRECT_URL,故两者都给(同一个 postgres service 库)。
+      DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/quanan?schema=public'
+      DIRECT_URL: 'postgresql://postgres:postgres@postgres:5432/quanan?schema=public'
+      REDIS_URL: 'redis://redis:6379'
 
       # ── dev mock-OAuth(让 admin 走无密码 mock 登录)──
       # NODE_ENV 必须 development:① production+mock 会 exit 1(oauth-admin-factory.ts:47-52 / providers.ts:146-148);
@@ -47,13 +50,15 @@ jobs:
       DEV_OAUTH_MOCK: 'true'
 
       # ── 前端 / 网络 ──
-      # 【不设 VITE_API_BASE_URL】:admin 前端按默认直连 api :3000(admin-client.ts:21)。
-      # 跨端口同 site,登录 cookie 正常携带(见上"跨端口 cookie 说明"),无需 proxy / 无需改产品代码。
-      # API 的 CORS 允许源(apps/api/src/index.ts:51 `ADMIN_BASE_URL ?? http://localhost:5174`):
+      # admin 前端 API base:容器内统一走 127.0.0.1(下方 VITE_API_BASE_URL),避免 localhost→::1 解析歧义。
+      # 同 host(127.0.0.1)跨端口仍同 site,登录 cookie `admin_session_id` 正常携带,无需 proxy / 不改产品代码。
+      # API 的 CORS 允许源(apps/api/src/index.ts:51 `ADMIN_BASE_URL ?? http://127.0.0.1:5174`):
       # 必须 allow admin 真实 origin :5174 才能带 credentials 跨域,故显式声明(也正是默认值)。
-      ADMIN_BASE_URL: 'http://localhost:5174'
+      ADMIN_BASE_URL: 'http://127.0.0.1:5174'
       # smoke 脚本定位 admin 用 `ADMIN_URL`(scripts/admin-acceptance.mjs:10),显式写出避免端口漂移。
-      ADMIN_URL: 'http://localhost:5174'
+      ADMIN_URL: 'http://127.0.0.1:5174'
+      # 容器内强制 IPv4(避 localhost 解析到 ::1 与服务 IPv4 绑定不一致):浏览器经此访问 api
+      VITE_API_BASE_URL: 'http://127.0.0.1:3000'
 
       # ── 启动闸门必需(providers.ts:133-138:SESSION_SECRET 长度 <32 直接 exit 1)──
       # 纯 mock 冒烟用占位假串即可(下方为 44 字符,达标)。如有真 CI secret 可换成
@@ -64,6 +69,13 @@ jobs:
       # smoke 脚本登录依次尝试的邮箱列表,第一个必须 == 下方 seed 的那一行,且其 isMock/isActive=true。
       # (mock 回调只按 email 查库 + 校 isMock/isActive,不校验 ADMIN_EMAILS 本身 —— oauth-admin-mock.ts:19-29)
       ADMIN_EMAILS: 'super@quanan.com'
+
+      # ── 冒烟范围限定 ──
+      # 本 admin-smoke 分支只含 4 个【复用】admin 模块;5 个 phase-2 新模块(diagnosis / step-data /
+      # history / topics / daily-tasks)的页面+后端路由在另一条 phase-2 分支,本分支 goto 这些路由会弹回 /login。
+      # 故显式把冒烟限定到本分支真实存在的 4 个模块,CI 才诚实反映"本分支可登录并渲染的模块"。
+      # phase-2 分支跑同一 workflow 时【不设】此 env → admin-acceptance.mjs 默认覆盖全部 9 个模块。
+      ADMIN_SMOKE_MODULES: 'accounts,evolution,reviewTrending,reviewDeepLearn'
 
     services:
       # P0-1:必须用自带 pgvector 的镜像。第一条迁移 prisma/migrations/20260507000000_init/migration.sql:2
@@ -97,8 +109,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -107,17 +117,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      # P1-2 增稳:在用 service 之前,先显式确认 PG / Redis 真的 ready。
-      # 理由:dev:api 的 serve(:3000)(index.ts:431)排在 ~10 个 `await schedule*()`(BullMQ,依赖 Redis)之后,
-      #       redis.ts 用 maxRetriesPerRequest:null(命令无限重试不快速失败)→ Redis 没起好则端口 3000 迟迟不 listen。
-      # runner 宿主自带 postgres-client / redis-tools;若哪天基础镜像缺,改用 `docker exec` 打 service 容器,或仅依赖 service health-check。
-      - name: Wait for postgres + redis ready
-        run: |
-          for i in $(seq 1 60); do pg_isready -h localhost -p 5432 -U postgres -d quanan && break; sleep 2; done
-          for i in $(seq 1 60); do redis-cli -h localhost -p 6379 ping | grep -q PONG && break; sleep 2; done
-          pg_isready -h localhost -p 5432 -U postgres -d quanan
-          redis-cli -h localhost -p 6379 ping
 
       # prisma schema 在仓库根(prisma/schema.prisma)。db:generate=`prisma generate`、db:migrate=`prisma migrate deploy`
       # (package.json:49-50)。CI 用 migrate deploy(只跑已存在迁移、不交互、不生成新迁移),正确。
@@ -147,10 +146,7 @@ jobs:
           EOF
           npx tsx scripts/.ci/seed-admin-smoke.ts
 
-      # admin-smoke 脚本从 @playwright/test 直接 `import { chromium }`(scripts/admin-acceptance.mjs:8)。
-      # Linux 必须 --with-deps 装系统库;只装 chromium 省时间。在仓库根跑即可。
-      - name: Install Playwright chromium
-        run: npx playwright install --with-deps chromium
+      # (Playwright 官方镜像已预装 chromium + 系统依赖,无需 install / cache 步骤 —— 这正是改用 container 的原因)
 
       # 后台并行起 api(:3000)+ admin(:5174,必须 vite dev:mock 登录按钮受 import.meta.env.DEV 门控,Login.tsx:90,
       # build/preview 下按钮不渲染)。没有根 `dev` 脚本(已核实),故必须分别 dev:api / dev:admin。
@@ -158,16 +154,16 @@ jobs:
       - name: Start api + admin (background)
         run: |
           pnpm dev:api  > /tmp/admin-api.log   2>&1 &
-          pnpm dev:admin > /tmp/admin-admin.log 2>&1 &
+          pnpm --filter @quanan/admin exec vite --host 0.0.0.0 --port 5174 > /tmp/admin-admin.log 2>&1 &
           # P0-2:api 没有根 `/` 路由(只有 /health,index.ts:116),wait-on 探根会一直 404 → 超时。必须探 /health。
           # P1-2:超时放宽到 120s,给 admin 编译 + api 的 checkDbConnection + ~10 个 schedule*(BullMQ)留余量。
-          npx wait-on http://localhost:3000/health http://localhost:5174 --timeout 120000
+          npx wait-on http://127.0.0.1:3000/health http://127.0.0.1:5174 --timeout 120000
 
       # 起服务后冒个烟:确认 /health 真 2xx、admin 根真出 HTML(便于把"端口开了但 500"和真就绪区分开)。
       - name: Probe endpoints
         run: |
-          curl -fsS http://localhost:3000/health && echo
-          curl -fsS -o /dev/null -w 'admin / -> %{http_code}\n' http://localhost:5174/
+          curl -fsS http://127.0.0.1:3000/health && echo
+          curl -fsS -o /dev/null -w 'admin / -> %{http_code}\n' http://127.0.0.1:5174/
 
       # 跑冒烟。脚本读 ADMIN_URL(默认 5174)定位 admin,登录依次试 ADMIN_EMAILS。
       # 退出码 1(登录失败)/ 2(有模块 FAIL)都会让本 step 失败 → job 红。
