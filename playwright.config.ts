@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testMatch: ['**/*.spec.ts'], // exclude *.test.ts (vitest-style files in e2e dir)
   timeout: 600_000, // AC-17 (US-017): 10 min · 真 LLM 调用慢
   fullyParallel: false,
   forbidOnly: !!process.env.CI,

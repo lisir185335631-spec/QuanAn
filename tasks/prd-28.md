@@ -185,7 +185,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 - `tests/judge/voice-chat.judge.ts` (同)
 - `tests/judge/judge-runner.ts` (不动 · 真调路径已就位)
 - `tests/setup.ts` (新建或修改 · 加 `import * as dotenv from 'dotenv'; dotenv.config({path: '.env'});`)
-- `.env.example` (加 `ANTHROPIC_API_KEY=sk-ant-...(real key for pnpm test:judge real-call mode)`)
+- `.env.example` (加 `ANTHROPIC_API_KEY=REDACTED key for pnpm test:judge real-call mode)`)
 - `vitest.judge.config.ts` (确认 setupFiles 含 tests/setup.ts · 若无加)
 - `package.json` (确认 test:judge script 不动)
 
@@ -194,7 +194,7 @@ PRD-28 是 **解决 TD-027 跨 8 PRD 历史欠债的补做 PRD** · 让 LLM Judg
 - AC-2 · 21 tests/judge/*.judge.ts 全部移除 `mockComplete`/`mockResolvedValue` 等 mock 助手 · grep 验证: `grep -rn "mockComplete\|mockResolvedValue.*pass" tests/judge/` 命中 **0**
 - AC-3 · 21 tests/judge/*.judge.ts 全部在 describe 最外层加 `describe.skipIf(!process.env.ANTHROPIC_API_KEY)` 限定: `describe.skipIf(!process.env.ANTHROPIC_API_KEY)('XYZ LLM Judge', () => {...})` · grep 验证: `grep -rn "describe.skipIf.*ANTHROPIC_API_KEY" tests/judge/ | wc -l` ≥ 21
 - AC-4 · tests/setup.ts 存在 · 内含 `import * as dotenv from 'dotenv'; dotenv.config();` 或等价 ESM import · 验证: `head -10 tests/setup.ts` 含 dotenv
-- AC-5 · .env.example 加 `ANTHROPIC_API_KEY=` 行(带注释 "# PRD-28 LLM Judge real-call mode") · 验证: `grep "ANTHROPIC_API_KEY" .env.example` 命中
+- AC-5 · .env.example 加 `ANTHROPIC_API_KEY=REDACTED 行(带注释 "# PRD-28 LLM Judge real-call mode") · 验证: `grep "ANTHROPIC_API_KEY" .env.example` 命中
 - AC-6 · vitest.judge.config.ts setupFiles 含 'tests/setup.ts'(若已含 PASS · 若无加)· 验证: `grep "setupFiles" vitest.judge.config.ts` 含 setup.ts
 - AC-7 · 在**无 ANTHROPIC_API_KEY env**条件下 · `pnpm test:judge` 输出全部 21 file `skipped`(无 hard fail · 0 test 跑)· 验证: `unset ANTHROPIC_API_KEY && pnpm test:judge 2>&1 | tail -10` 含 "21 skipped" 或等价
 - AC-8 · 在**有 ANTHROPIC_API_KEY env**条件下(用户 export 真 KEY)· `pnpm test:judge` 跑 21 file 真调 LLM · 56 test 全 pass(score ≥ 6 + JSON schema valid) · 验证: `pnpm test:judge 2>&1 | tail -20` 含 "21 passed" + 时长 ≥ 60s(真 LLM call latency)

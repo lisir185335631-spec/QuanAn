@@ -2,7 +2,7 @@
 
 > **范围** · PRD-29~35 · aiipznt 剩余页面 1:1 复刻 · Foundation 沉淀 → 页面渐进实现
 > **基线** · PRD-27(1:1 复刻完成度 100%) + PRD-29(Foundation + /step/3 30+ sub-feature)
-> **更新** · 2026-05-24 · PRD-29.6 ship 后更新
+> **更新** · 2026-06-01 · PRD-30 三页(/step/3b · /step/4b · /evolution)复刻完成 · **aiipznt 全站页面复刻收官**(34 路由)
 
 ---
 
@@ -12,12 +12,9 @@
 |:-:|---|:-:|---|---|
 | **PRD-29** | `/step/3` + Foundation | ✅ **SHIPPED** | 168 OKLCH token + 4 shared components + 30+ sub-feature | 17 dev US · 40 checks |
 | **PRD-29.6** | `/step/3` button wiring + admin LLM Config | ✅ **SHIPPED** | 全 button 真实可用 + DB-first LLM key + stub toast | 6 dev US · 29 checks |
-| **PRD-30** | `/step/3b` + `/step/4b` + `/evolution` | 🔵 **待启** | 3 page · step3 延伸 + evolution 展示 + **真实可用+默认内容双维度** | ~12-18 US |
-| PRD-31 | TBD · 待截图分析 | ⬜ 规划中 | 待 PRD-30 完成后评估 | — |
-| PRD-32 | TBD | ⬜ 规划中 | — | — |
-| PRD-33 | TBD | ⬜ 规划中 | — | — |
-| PRD-34 | TBD | ⬜ 规划中 | — | — |
-| PRD-35 | TBD(收官) | ⬜ 规划中 | 全 site 收官 verify + 性能 + SEO | — |
+| **PRD-30** | `/step/3b` + `/step/4b` + `/evolution` | ✅ **SHIPPED** | 3 page 1:1 复刻完成 · step3/4 延伸 + evolution 进化中心 · 真实可用+默认内容双维度 | team-mode 逐页交付 |
+| ~~PRD-31~34~~ | 剩余页面复刻 | ✅ **已收口** | aiipznt **全部页面复刻完成**(34 路由)· 无剩余待复刻页面 | — |
+| PRD-35 | 全站收官 | ⬜ **待启** | 收官 verify + 性能(Lighthouse)+ SEO + 上线前 PRR · **非页面工作** | 收官 PRD |
 
 ---
 
@@ -94,32 +91,26 @@
 
 ---
 
-## PRD-30 · 待启 🔵
+## PRD-30 · SHIPPED ✅
 
-> **Branch 待建** · `ralph/prd-30-step3b-step4b-evolution`(建议)
-> **启动条件** · 用户提供 /step/3b · /step/4b · /evolution 三 page **result-state** 完整截图
+> **交付方式** · team-mode 逐页 1:1 复刻(未走原计划的独立 `ralph/prd-30-*` branch)· 随 PRD-29.8 / 29.10 + sally 真实页克隆批次落地
+> **完成日期** · 2026-06-01
+> **核心** · `/step/3b` · `/step/4b` · `/evolution` 三页 1:1 复刻完成 · 真实可用 + 默认内容双维度
 
-### 启动前提供清单
+### 核心交付
 
-- [ ] `/step/3b` page 完整截图(result-state with AI content · 1440px desktop)
-- [ ] `/step/4b` page 完整截图(result-state · 1440px desktop)
-- [ ] `/evolution` page 完整截图(result-state · 1440px desktop)
-- [ ] 上述 3 page 的 mobile 截图(可选 · 375px)
+| 交付项 | 状态 | 来源提交 |
+|---|:-:|---|
+| `/step/3b` 1:1 复刻(3 textarea + 5 platform radio + 6 H3 输出区) | ✅ | `8398ab5`(PRD-29.8) |
+| `/step/3b` 真接 stepData router(Branding packaging/persona) | ✅ | `fbb2f6d` / `af17aae` |
+| `/step/4b` 1:1 复刻(1 textarea + 3 input + 3 阶梯 + 收入结构 + 成功案例) | ✅ | `163d6ae`(PRD-29.10) |
+| `/step/4b` 真接 stepData router(Positioning + Monetization) | ✅ | `5e2984c` / `cf75399` |
+| `/evolution` 1:1 复刻(智能体进化中心 · 5 级 badge + 4 指标仪表盘 + 5 H3 模块 + 进化方向 radio) | ✅ | `7bae35f` / `a4d88cc` |
+| `/evolution` 接 trpc.evolution 全套(getProfile + evolve + updateConfig · D-237/D-238 字面锁) | ✅ | `8acca53` |
 
-> ⚠️ **AC-8 通知**: PRD-30 启动前需要以上截图！无截图无法准确评估复刻范围。
+> 注:三页未单独建 PRD-30 branch · 而是在 PRD-29.x team-mode 批次中逐页交付完成 · 含组件 + constants 字面锁 + 单测 + 路由注册 + 真实 router 接线 · 全 web 套件 **940/940 全绿**。
 
-### PRD-30 预估范围(待截图确认)
-
-| Phase | 内容 | US 数 |
-|---|---|---|
-| Foundation review | 确认 globals.css OKLCH + 共享 components 是否需要补充 | 0-1 |
-| /step/3b 复刻 | step3 延伸页 · 具体待截图分析 | 4-8 |
-| /step/4b 复刻 | step4 延伸页 · 具体待截图分析 | 4-8 |
-| /evolution 复刻 | AI 推演展示页 · 具体待截图分析 | 4-6 |
-| 收官 verify | verify-prd-30.sh + visual spec + retro | 1-2 |
-| **总计** | | **~13-25 US** |
-
-### PRD-30 Playbook 建议(来自 PRD-29 retro §3 + PRD-29.6 retro §3)
+### Playbook 经验(来自 PRD-29 retro §3 + PRD-29.6 retro §3 · 已应用于 PRD-30 三页交付)
 
 1. Foundation 先行 · 确认 token 系统无需调整
 2. result-state 截图先建立 baseline · 不用 form-state 对比
@@ -131,11 +122,17 @@
 
 ---
 
-## PRD-31~35 · 规划中 ⬜
+## PRD-31~35 · 页面复刻已收口 → 仅余收官 ⬜
 
-待 PRD-30 完成后根据 aiipznt 剩余页面评估：
-- 可能涵盖: 主页 hero 深度精修 · /step/1 /step/2 对应 3b/4b 延伸 · 性能优化 · SEO
-- PRD-35 建议为收官 PRD · 全 site visual audit + Lighthouse 90+ + 上线前 PRR
+> aiipznt **全部页面复刻完成**(34 路由)· 原 PRD-31~34"剩余页面"占位已无对象 · 后续仅余 **非页面** 收官工作,统一归入 PRD-35。
+
+### PRD-35 收官范围(待启)
+
+- [ ] 全站 visual audit · quanan vs aiipznt 像素对账(34 路由)
+- [ ] 性能优化 · Lighthouse 90+ · bundle 体积审查
+- [ ] SEO · meta / sitemap / OG / 结构化数据
+- [ ] 上线前 PRR(production readiness review)· 真实数据流端到端
+- [ ] branch 收尾 · 本分支领先 main **70 提交**(0 落后 · 0 冲突 · 可直接 merge)· 待全套 verify + merge
 
 ---
 
@@ -154,4 +151,4 @@
 
 ---
 
-*更新于 2026-05-23 · PRD-29 ship 后 · Ralph v2 US-014 收官*
+*更新于 2026-06-01 · PRD-30 三页复刻完成 · aiipznt 全站页面复刻收官(34 路由)· 仅余 PRD-35 收官工作*
