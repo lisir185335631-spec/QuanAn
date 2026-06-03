@@ -1,22 +1,14 @@
-// PRD-29.9 · Step4 执行计划 · 完全重写 · 1:1 sally zhao /step/4 demo 复刻
+// PRD-29.9 · Step4 执行计划 · 先锋白 PioneerLayout · 品牌三主色重构
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { Step4OverviewSection } from '@/components/step4/Step4OverviewSection';
-import { Step4PhaseSection } from '@/components/step4/Step4PhaseSection';
 import type { Step4Phase } from '@/components/step4/Step4PhaseSection';
-import { Step4DailyScheduleSection } from '@/components/step4/Step4DailyScheduleSection';
-import { Step4WarningSection } from '@/components/step4/Step4WarningSection';
-import { Step4SuccessCriteriaSection } from '@/components/step4/Step4SuccessCriteriaSection';
-import { Step4FooterAction } from '@/components/step4/Step4FooterAction';
-import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
-import { PlatformRadioGroup } from '@/components/step3/PlatformRadioGroup';
-import { SparkleIcon } from '@/components/icons/aiipznt-icons';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { STEP4_H1, STEP4_BUTTON_GENERATE, STEP4_SUBTITLE_TEMPLATE } from '@/lib/constants/step4';
+import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { STEP4_BUTTON_GENERATE, STEP4_H1, STEP4_SUBTITLE_TEMPLATE } from '@/lib/constants/step4';
+import { breakSentences } from '@/lib/text';
 
 // ── TypeScript interfaces ────────────────────────────────────────────────────
 
@@ -435,9 +427,59 @@ function generateMockResult(): Step4Result {
   };
 }
 
+// ── Table row status helpers ──────────────────────────────────────────────────
+
+type RowStatus = 'done' | 'running' | 'pending';
+
+function getStatus(index: number): RowStatus {
+  if (index === 0) return 'done';
+  if (index === 1) return 'running';
+  return 'pending';
+}
+
+function StatusBadge({ status }: { status: RowStatus }) {
+  if (status === 'done') {
+    return (
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#d1fae5] bg-[#f0fdf4] px-2.5 py-1">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+        <span className="text-[11px] font-semibold text-[#10b981]">已完成</span>
+      </div>
+    );
+  }
+  if (status === 'running') {
+    return (
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#F3E08A] bg-[#FEFCE0] px-2.5 py-1">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8A6A00]" />
+        <span className="text-[11px] font-semibold text-[#8A6A00]">执行中</span>
+      </div>
+    );
+  }
+  return (
+    <div className="inline-flex items-center gap-1.5 rounded-md border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-1 opacity-60">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#9ca3af]" />
+      <span className="text-[11px] font-semibold text-[#9ca3af]">待命</span>
+    </div>
+  );
+}
+
+// ── Module-level constants (hoisted) ─────────────────────────────────────────
+
+const PLATFORMS = [
+  { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
+  { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
+  { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+];
+
+const GOAL_OPTIONS = [
+  { key: 'start', label: '起号期', icon: 'rocket_launch', desc: '冷启动 · 建立账号' },
+  { key: 'growth', label: '成长期', icon: 'trending_up', desc: '扩粉 · 提升影响力' },
+  { key: 'monetize', label: '变现期', icon: 'payments', desc: '转化 · 实现商业价值' },
+];
+
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function Step4() {
+  const navigate = useNavigate();
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
   const { save, isSaving, dbQuery } = useStepData(accountId, 'step4');
@@ -448,7 +490,7 @@ export default function Step4() {
   const [platform, setPlatform] = useState(DEFAULT_FORM.platform);
   const [followerCount, setFollowerCount] = useState(DEFAULT_FORM.followerCount);
   const [goal, setGoal] = useState(DEFAULT_FORM.goal);
-  const [personalInfo, setPersonalInfo] = useState(DEFAULT_FORM.personalInfo);
+  const [personalInfo, setPersonalInfo] = useState(breakSentences(DEFAULT_FORM.personalInfo));
 
   const prevIsSavingRef = useRef(false);
 
@@ -500,7 +542,7 @@ export default function Step4() {
 
   function handleCopyAll() {
     const text = JSON.stringify(generated, null, 2);
-    navigator.clipboard.writeText(text).then(() => toast.success('已复制全部'));
+    void navigator.clipboard.writeText(text).then(() => toast.success('已复制全部'));
   }
 
   function handleOptimize() {
@@ -510,118 +552,880 @@ export default function Step4() {
 
   function handleFeedbackUp() { toast.success('感谢反馈!'); }
   function handleFeedbackDown() { toast.info('我们会持续改进'); }
-  function handleNextStep() { toast.info('变现路径功能开发中'); }
+  function handleNextStep() {
+    void navigate('/step/4b');
+  }
   function handleViewIpPlan() { toast.info('IP 方案查看功能开发中'); }
+  void handleViewIpPlan;
+
+  // Flatten dailySchedule items for the table
+  const allScheduleItems: Array<{ time: string; title: string; desc: string; section: string }> = [
+    ...generated.dailySchedule.morning.map((it) => ({ ...it, section: '上午' })),
+    ...generated.dailySchedule.afternoon.map((it) => ({ ...it, section: '下午' })),
+    ...generated.dailySchedule.evening.map((it) => ({ ...it, section: '晚间' })),
+  ];
+
+  const btnSecondary =
+    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+
+  // 数据洞察雷达维度 (执行健康度)
+  const RADAR_DIMS_S4 = [
+    { label: '任务密度', value: 85, color: '#002fa7' },
+    { label: '资源投入', value: 78, color: '#781621' },
+    { label: '风险可控', value: 82, color: '#F6D300' },
+    { label: '里程碑清晰', value: 90, color: '#002fa7' },
+    { label: '依赖合理', value: 76, color: '#781621' },
+    { label: '节奏稳健', value: 88, color: '#F6D300' },
+  ];
+
+  // 趋势图数据 (累计完成度预估)
+  const TREND_DATA_S4 = [8, 18, 30, 45, 62, 75, 84, 92, 100];
+  const TREND_LABELS_S4 = ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周', '第7周', '第8周', '第9周'];
 
   return (
-    <main className="flex-1 container py-8 space-y-8">
-      {/* 1. Header · breadcrumb + H1 + subtitle */}
-      <header className="space-y-3">
-        <p className="text-xs font-semibold text-primary tracking-wide">
-          STEP 04 › 制定执行计划
-        </p>
-        <h1 className="text-2xl font-bold text-on-surface flex items-center gap-2">
-          🗺️ {STEP4_H1}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
-        </p>
+    <PioneerLayout>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <header className="mb-12 flex flex-row items-center justify-between gap-8">
+        <div className="shrink-0">
+          <div className="mb-3 flex items-center gap-3">
+            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+              执行矩阵
+            </span>
+            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              迭代规划
+            </span>
+          </div>
+          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+            STEP 04 · {STEP4_H1}
+          </h1>
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+            {STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-nowrap gap-3">
+          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            智能优化
+          </button>
+          <button type="button" onClick={handleRegenerateAll} disabled={isLoading} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
+            重新生成
+          </button>
+          <button
+            type="button"
+            onClick={handleCopyAll}
+            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            导出执行案
+          </button>
+        </div>
       </header>
 
-      {/* 2. Form · 选择平台 + 粉丝量 + 目标 + 个人信息 + main CTA */}
-      <form onSubmit={handleSubmit} className="space-y-4 bg-card/30 border border-border/40 rounded-lg p-6">
-        {/* 选择平台 (required *) */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            选择平台 <span className="text-rose-400">*</span>
-          </label>
-          <PlatformRadioGroup value={platform} onChange={setPlatform} />
+      {/* ── Loading bar ────────────────────────────────────── */}
+      {isLoading && (
+        <div className="mb-8 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#002fa7]/5 p-4 text-[14px] font-medium text-[#001e73]">
+          <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+          正在生成执行计划…
         </div>
+      )}
 
-        {/* 2 col grid: 当前粉丝量 + 目标 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-on-surface">
-              当前粉丝量 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-            </label>
-            <Input value={followerCount} onChange={(e) => setFollowerCount(e.target.value)} placeholder="如：0 / 500 / 1万 / 10万" />
+      {/* ── 输入基准参数 ─────────────────────────────────────── */}
+      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
+              <span className="material-symbols-outlined">tune</span>
+            </span>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#111827]">基准参数输入</h2>
+              <p className="text-[12px] text-[#9ca3af]">填写执行基础信息 · AI 据此生成三阶段执行计划</p>
+            </div>
           </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-on-surface">
-              目标 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-            </label>
-            <Input value={goal} onChange={(e) => setGoal(e.target.value)} placeholder="如：3个月涨粉1万、月入5万" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+            参数就绪
+          </span>
+        </div>
+        <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-7">
+            {/* 目标平台 · 可视化平台卡 */}
+            <div>
+              <span className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标平台
+              </span>
+              <div className="grid grid-cols-3 gap-4">
+                {PLATFORMS.map((p) => {
+                  const active = platform === p.key;
+                  return (
+                    <button
+                      type="button"
+                      key={p.key}
+                      onClick={() => setPlatform(p.key)}
+                      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                    >
+                      <span
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+                        style={{ backgroundColor: p.color }}
+                      >
+                        <span className="material-symbols-outlined text-[22px]">{p.icon}</span>
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-[#111827]">{p.label}</span>
+                        <span className="block text-[11px] text-[#9ca3af]">{p.desc}</span>
+                      </span>
+                      <span
+                        className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">check</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 核心转化目标 · 可视化选择卡 */}
+            <div>
+              <span className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                核心转化目标
+              </span>
+              <div className="grid grid-cols-3 gap-4">
+                {GOAL_OPTIONS.map((g) => {
+                  const active = goal === g.key;
+                  return (
+                    <button
+                      type="button"
+                      key={g.key}
+                      onClick={() => setGoal(g.key)}
+                      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                    >
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm ${active ? 'bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}>
+                        <span className="material-symbols-outlined text-[22px]">{g.icon}</span>
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-[#111827]">{g.label}</span>
+                        <span className="block text-[11px] text-[#9ca3af]">{g.desc}</span>
+                      </span>
+                      <span
+                        className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">check</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 目标体量 · 带图标输入 */}
+            <div>
+              <label htmlFor="s4-follower-count" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标体量 (关注者/用户)
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">group_add</span>
+                <input
+                  id="s4-follower-count"
+                  type="text"
+                  value={followerCount}
+                  onChange={(e) => setFollowerCount(e.target.value)}
+                  placeholder="如：1万 / 10万 / 100万"
+                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                />
+              </div>
+            </div>
+
+            {/* 个人背景 · 框式编辑器 */}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label htmlFor="s4-personal-info" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  个人背景 <span className="ml-1 text-[#9ca3af] font-normal text-[12px]">(可选)</span>
+                </label>
+                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
+                  <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+                  AI 据此定制执行策略
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+                <textarea
+                  id="s4-personal-info"
+                  value={personalInfo}
+                  onChange={(e) => setPersonalInfo(e.target.value)}
+                  rows={5}
+                  placeholder="输入你的创业经历、行业背景、擅长领域等，AI 将据此生成更精准的执行路径"
+                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                />
+                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] text-[#9ca3af]">可包含</span>
+                    {['经历', '行业', '优势', '目标', '资源'].map((t) => (
+                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{personalInfo.length} 字</span>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
+                  {isLoading ? '生成中…' : STEP4_BUTTON_GENERATE}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
+        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
+        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+          模型已就绪
+        </span>
+      </div>
+      <div className="mb-8 grid grid-cols-12 gap-6">
+        {/* 执行健康度雷达 */}
+        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+                <span className="material-symbols-outlined text-[20px]">radar</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">执行健康度雷达</h3>
+                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[26px] font-bold leading-none text-[#002fa7]">83</p>
+              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+            </div>
+          </div>
+          {(() => {
+            const dims = RADAR_DIMS_S4;
+            const cx = 130;
+            const cy = 122;
+            const R = 88;
+            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+            return (
+              <svg viewBox="0 0 260 244" className="w-full">
+                <defs>
+                  <linearGradient id="radarFillS4" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
+                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  </linearGradient>
+                </defs>
+                {[0.25, 0.5, 0.75, 1].map((f) => (
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                ))}
+                {dims.map((_, i) => {
+                  const [x, y] = pt(i, R);
+                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                })}
+                <polygon points={dataPoly} fill="url(#radarFillS4)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R * (d.value / 100));
+                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                })}
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R + 16);
+                  return (
+                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      {d.label}
+                    </text>
+                  );
+                })}
+              </svg>
+            );
+          })()}
+          <div className="mt-2 grid grid-cols-3 gap-y-2">
+            {RADAR_DIMS_S4.map((d) => (
+              <div key={d.label} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
+                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* 个人信息 (optional) textarea */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            个人信息 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-          </label>
-          <textarea
-            value={personalInfo}
-            onChange={(e) => setPersonalInfo(e.target.value)}
-            className="w-full min-h-[200px] rounded-md border border-border bg-input px-3 py-2 text-sm text-on-surface resize-y"
-          />
-        </div>
-
-        {/* Main CTA */}
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-primary hover:bg-primary/90"
-        >
-          🚀 {STEP4_BUTTON_GENERATE}
-        </Button>
-      </form>
-
-      {/* 3. Loading state */}
-      {isLoading && <Step3LoadingState />}
-
-      {/* 4. Output area: H2 + toolbar */}
-      <div className="flex items-center justify-between gap-4 pt-4">
-        <h2 className="text-xl font-bold text-on-surface flex items-center gap-2">
-          <SparkleIcon size={5} />
-          🗺️ 你的专属执行计划
-        </h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleOptimize}>
-            ✨ 智能优化
-          </Button>
-          <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleRegenerateAll}>
-            ⟳ 重新生成
-          </Button>
-          <Button variant="outline" size="icon" disabled={!canBulkActions} onClick={handleCopyAll} aria-label="复制全部">
-            📋
-          </Button>
+        {/* 累计完成度预估 */}
+        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">show_chart</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">累计完成度预估</h3>
+                <p className="text-[11px] text-[#9ca3af]">按当前执行计划测算</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {['进度', '里程碑', '复盘'].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mb-3 flex items-end gap-3">
+            <p className="text-[30px] font-bold leading-none text-[#111827]">100%</p>
+            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[14px]">trending_up</span>+{generated.phases.length * 3} 阶段
+            </span>
+            <span className="mb-1 text-[12px] text-[#9ca3af]">第9周完成</span>
+          </div>
+          {(() => {
+            const data = TREND_DATA_S4;
+            const W = 560;
+            const H = 168;
+            const padL = 6;
+            const padR = 6;
+            const padT = 12;
+            const padB = 8;
+            const innerW = W - padL - padR;
+            const innerH = H - padT - padB;
+            const max = 110;
+            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+            const y = (v: number) => padT + innerH * (1 - v / max);
+            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+            return (
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                <defs>
+                  <linearGradient id="trendFillS4" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
+                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="trendLineS4" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#002fa7" />
+                    <stop offset="100%" stopColor="#781621" />
+                  </linearGradient>
+                </defs>
+                {[0, 0.33, 0.66, 1].map((f) => (
+                  <line
+                    key={f}
+                    x1={padL}
+                    x2={W - padR}
+                    y1={(padT + innerH * f).toFixed(1)}
+                    y2={(padT + innerH * f).toFixed(1)}
+                    stroke="#f1f3f9"
+                    strokeWidth="1"
+                  />
+                ))}
+                <path d={area} fill="url(#trendFillS4)" />
+                <path d={line} fill="none" stroke="url(#trendLineS4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {data.map((v, i) =>
+                  i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                )}
+              </svg>
+            );
+          })()}
+          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            {TREND_LABELS_S4.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* 5. Overview */}
-      <Step4OverviewSection overview={generated.overview} />
+      {/* ── KPI 卡一排 ─────────────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-6">
+        {/* 任务总数 · 环形进度 · 蓝 */}
+        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">task_alt</span>
+            </span>
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[13px]">trending_up</span>全覆盖
+            </span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-[28px] font-bold leading-none text-[#111827]">
+                {allScheduleItems.length}
+                <span className="text-[15px] text-[#9ca3af]"> 项</span>
+              </p>
+              <p className="mt-1.5 text-[12px] text-[#6b7280]">任务总数</p>
+            </div>
+            <div className="h-12 w-12 shrink-0">
+              <svg viewBox="0 0 36 36" className="-rotate-90">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.915"
+                  fill="none"
+                  stroke="#002fa7"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeDasharray="83 100"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-      {/* 6. 3 Phases */}
-      {generated.phases.map((phase) => (
-        <Step4PhaseSection key={phase.number} phase={phase} />
-      ))}
+        {/* 执行周期 · 迷你柱 · 勃艮第红 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">date_range</span>
+            </span>
+            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">三阶段</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.phases.length}
+              <span className="text-[15px] text-[#9ca3af]"> 周期</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">执行周期</p>
+          </div>
+          <div className="mt-3 flex h-6 items-end gap-1">
+            {[45, 72, 60, 88, 95].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </div>
 
-      {/* 7. Daily Schedule */}
-      <Step4DailyScheduleSection schedule={generated.dailySchedule} />
+        {/* 里程碑数 · 进度条 · 黄 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
+              <span className="material-symbols-outlined text-[20px]">flag</span>
+            </span>
+            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">里程碑</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.phases.reduce((sum, ph) => sum + ph.milestones.length, 0)}
+              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">里程碑节点</p>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+            <div className="h-2 w-[78%] rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
+          </div>
+        </div>
 
-      {/* 8. Warnings */}
-      <Step4WarningSection warnings={generated.warnings} />
+        {/* 避坑预警数 · chip · 蓝 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">shield</span>
+            </span>
+            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+              {generated.warnings.length} 项
+            </span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.warnings.length}
+              <span className="text-[15px] text-[#9ca3af]"> 项</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">避坑预警</p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1">
+            {['完播率', '引流', '直播'].slice(0, 3).map((k) => (
+              <span
+                key={k}
+                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      {/* 9. Success Criteria */}
-      <Step4SuccessCriteriaSection criteria={generated.successCriteria} />
+      {/* ── 总览区块 ─────────────────────────────────────────── */}
+      <section className="mb-8">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[20px] text-[#002fa7]">summarize</span>
+          <h2 className="text-[16px] font-bold text-[#111827]">执行总览</h2>
+          <span className="text-[12px] text-[#9ca3af]">· 核心目标 · 阶段规划 · 平台策略</span>
+        </div>
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+          <div className="grid grid-cols-2 gap-6">
+            {/* 左列 */}
+            <div className="space-y-5">
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">当前阶段</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.currentStage}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">总体时间线</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.timeline}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">主攻平台</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.mainPlatform}</p>
+              </div>
+            </div>
+            {/* 右列 */}
+            <div className="space-y-5">
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#781621]">核心目标</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.coreGoal}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#781621]">核心优势</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.coreAdvantages}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* 10. Footer */}
-      <Step4FooterAction
-        onNextStep={handleNextStep}
-        onViewIpPlan={handleViewIpPlan}
-        onFeedbackUp={handleFeedbackUp}
-        onFeedbackDown={handleFeedbackDown}
-      />
-    </main>
+      {/* ── 三阶段完整展开 ────────────────────────────────────── */}
+      <section className="mb-8 space-y-6">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-[20px] text-[#002fa7]">timeline</span>
+          <h2 className="text-[16px] font-bold text-[#111827]">三阶段执行路径</h2>
+          <span className="text-[12px] text-[#9ca3af]">· 每日任务 · 里程碑 · 内容计划 · KPI</span>
+        </div>
+        {generated.phases.map((phase) => {
+          const accentBorder =
+            phase.number === 1
+              ? 'border-[#002fa7]'
+              : phase.number === 2
+                ? 'border-[#781621]'
+                : 'border-[#8a6a00]';
+          const accentBg =
+            phase.number === 1
+              ? 'bg-[#002fa7]'
+              : phase.number === 2
+                ? 'bg-[#781621]'
+                : 'bg-[#8a6a00]';
+          const accentText =
+            phase.number === 1
+              ? 'text-[#002fa7]'
+              : phase.number === 2
+                ? 'text-[#781621]'
+                : 'text-[#8a6a00]';
+          const headerBg =
+            phase.number === 1
+              ? 'from-[#002fa7] to-[#3654c8]'
+              : phase.number === 2
+                ? 'from-[#781621] to-[#a02030]'
+                : 'from-[#8a6a00] to-[#b38a00]';
+          return (
+            <div
+              key={phase.number}
+              className={`overflow-hidden rounded-xl border ${accentBorder} bg-white pw-shadow-soft`}
+            >
+              {/* Phase header */}
+              <div className={`bg-gradient-to-r ${headerBg} px-6 py-4 text-white`}>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-[16px] font-bold">
+                    {phase.number}
+                  </span>
+                  <div>
+                    <h3 className="text-[16px] font-bold">{phase.title}</h3>
+                    <p className="text-[12px] text-white/70">{phase.weekRange} · {phase.goal}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6 p-6">
+                {/* 每日任务 */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">checklist</span>
+                    每日任务
+                  </p>
+                  <div className="space-y-3">
+                    {phase.dailyTasks.map((task, ti) => (
+                      <div
+                        key={ti}
+                        className="grid grid-cols-[180px_1fr] gap-4 rounded-lg border border-[#eef1f6] bg-[#f8faff] p-3"
+                      >
+                        <div>
+                          <p className={`text-[11px] font-bold ${accentText}`}>{task.day}</p>
+                          <p className="text-[10px] text-[#9ca3af]">{task.duration}</p>
+                        </div>
+                        <div>
+                          <p className="text-[13px] font-semibold text-[#111827]">{task.title}</p>
+                          <p className="mt-0.5 text-[12px] leading-relaxed text-[#6b7280]">{task.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 里程碑 */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">flag</span>
+                    里程碑
+                  </p>
+                  <div className="space-y-3">
+                    {phase.milestones.map((m, mi) => (
+                      <div key={mi} className="rounded-lg border border-[#eef1f6] bg-[#f9fafb] p-3">
+                        <div className="flex items-start gap-3">
+                          <span className={`mt-0.5 shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold ${accentText} border-current/30 bg-white`}>
+                            {m.week}
+                          </span>
+                          <div>
+                            <p className="text-[13px] font-semibold text-[#111827]">{m.goal}</p>
+                            {m.criteria && (
+                              <p className="mt-0.5 text-[12px] text-[#6b7280]">验收：{m.criteria}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 内容计划 */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">edit_calendar</span>
+                    内容计划
+                  </p>
+                  <div className="rounded-lg border border-[#eef1f6] bg-[#f8faff] p-4">
+                    <div className="mb-3 flex flex-wrap gap-4 text-[12px]">
+                      <span className="text-[#6b7280]">
+                        每周发布：<span className={`font-bold ${accentText}`}>{phase.contentPlan.frequency}</span>
+                      </span>
+                      <span className="text-[#6b7280]">
+                        最佳时间：<span className="font-semibold text-[#374151]">{phase.contentPlan.bestTime}</span>
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {phase.contentPlan.categories.map((cat, ci) => (
+                        <div
+                          key={ci}
+                          className={`rounded-lg border p-2.5 text-[12px] ${ci % 3 === 0 ? 'border-[#dbeafe] bg-[#eff4ff]' : ci % 3 === 1 ? 'border-[#fde68a] bg-[#fefce8]' : 'border-[#fecaca] bg-[#fff8f8]'}`}
+                        >
+                          <span className="font-semibold text-[#111827]">{cat.name}</span>
+                          <span className="text-[#6b7280]"> — {cat.desc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* KPI */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">bar_chart</span>
+                    KPI 指标
+                  </p>
+                  <div className={`grid gap-3 ${phase.kpis.length > 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
+                    {phase.kpis.map((kpi, ki) => (
+                      <div
+                        key={ki}
+                        className="rounded-lg border border-[#eef1f6] bg-[#f9fafb] p-3"
+                      >
+                        <p className="text-[11px] text-[#9ca3af]">{kpi.name}</p>
+                        <p className={`text-[22px] font-bold leading-tight ${accentText}`}>{kpi.target}</p>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className={`h-1.5 w-1.5 rounded-full ${accentBg}`} />
+                          <p className="text-[10px] text-[#9ca3af]">基准：{kpi.baseline}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* ── 执行任务序列 table ──────────────────────────────── */}
+      <div className="mb-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
+        {/* 渐变蓝 header */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
+              <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
+            </span>
+            <div>
+              <h3 className="text-[16px] font-bold">执行任务序列</h3>
+              <p className="text-[11px] text-[#b8c4ff]">日程表 · 全周期 {allScheduleItems.length} 项核心动作</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[12px] font-semibold text-white">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#F6D300]" />
+            执行中
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[14px]">
+            <thead>
+              <tr className="border-b border-[#eef1f6] bg-[#f8faff]">
+                <th className="w-24 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  周期
+                </th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  核心动作
+                </th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  量化产出
+                </th>
+                <th className="w-32 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  状态
+                </th>
+                <th className="w-20 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  验收
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-[#374151]">
+              {allScheduleItems.map((item, idx) => (
+                <tr
+                  key={`${item.time}-${idx}`}
+                  className={`border-t border-[#f3f4f6] transition-colors hover:bg-[#f8faff] ${idx % 2 === 1 ? 'bg-[#fafbff]' : ''}`}
+                >
+                  <td className="px-6 py-4 text-[12px] font-bold text-[#002fa7]">
+                    {`D-${String(idx + 1).padStart(2, '0')}`}
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-[#111827]">{item.title}</td>
+                  <td className="px-6 py-4 text-[#6b7280]">{item.desc.slice(0, 60)}…</td>
+                  <td className="px-6 py-4">
+                    <StatusBadge status={getStatus(idx)} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      type="button"
+                      className="flex h-6 w-6 items-center justify-center rounded-md border border-[#e5e7eb] transition-colors hover:bg-[#002fa7] hover:text-white hover:border-[#002fa7]"
+                      aria-label="验收"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">check</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex justify-end border-t border-[#eef1f6] bg-[#f8faff] px-6 py-3">
+          <button
+            type="button"
+            className="text-[13px] font-semibold text-[#002fa7] hover:underline"
+          >
+            查看完整周期 →
+          </button>
+        </div>
+      </div>
+
+      {/* ── 避坑预警 + 成功标准 ────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* 避坑预警 · 勃艮第/黄 配色 */}
+        <section className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+          <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold text-[#111827]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">warning</span>
+            </span>
+            避坑预警
+          </h3>
+          <div className="space-y-4">
+            {generated.warnings.map((w, wi) => (
+              <div
+                key={w.signal}
+                className={`rounded-xl border p-4 ${wi % 2 === 0 ? 'border-[#e8c4c8] bg-gradient-to-r from-[#fff8f8] to-white' : 'border-[#F3E08A] bg-gradient-to-r from-[#FEFCE0] to-white'}`}
+              >
+                <div className="mb-1 flex items-start gap-2">
+                  <span className={`material-symbols-outlined mt-0.5 shrink-0 text-[16px] ${wi % 2 === 0 ? 'text-[#781621]' : 'text-[#8A6A00]'}`}>
+                    error_outline
+                  </span>
+                  <span className="text-[13px] font-bold text-[#111827]">{w.signal}</span>
+                </div>
+                <p className="mb-1 pl-6 text-[12px] text-[#6b7280]">{w.meaning}</p>
+                <p className="pl-6 text-[12px] text-[#374151]">
+                  <span className="font-semibold text-[#10b981]">方案：</span>
+                  {w.solution}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 成功标准 · 蓝/绿配色 */}
+        <section className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+          <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold text-[#111827]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#10b981]/10 text-[#10b981]">
+              <span className="material-symbols-outlined text-[20px]">check_circle</span>
+            </span>
+            成功标准
+          </h3>
+          <div className="space-y-4">
+            {generated.successCriteria.map((sc, si) => (
+              <div
+                key={sc.period}
+                className={`flex items-start gap-3 rounded-xl border p-4 ${si === 0 ? 'border-[#dbeafe] bg-gradient-to-r from-[#eff4ff] to-white' : 'border-[#d1fae5] bg-gradient-to-r from-[#f0fdf4] to-white'}`}
+              >
+                <span className={`mt-0.5 shrink-0 rounded-lg border px-2 py-0.5 text-[11px] font-bold ${si === 0 ? 'border-[#bfdbfe] bg-white text-[#002fa7]' : 'border-[#6ee7b7] bg-white text-[#10b981]'}`}>
+                  {sc.period}
+                </span>
+                <p className="text-[13px] text-[#374151]">{sc.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* ── Footer actions ──────────────────────────────────── */}
+      <div className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div className="flex flex-row items-center justify-between gap-6">
+          {/* Feedback */}
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] font-medium text-[#6b7280]">这个结果对你有帮助吗？</span>
+            <button
+              type="button"
+              onClick={handleFeedbackUp}
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#f0fdf4] hover:text-[#10b981] hover:border-[#10b981]"
+              aria-label="有帮助"
+            >
+              <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleFeedbackDown}
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#fff8f8] hover:text-[#781621] hover:border-[#781621]"
+              aria-label="没帮助"
+            >
+              <span className="material-symbols-outlined text-[18px]">thumb_down</span>
+            </button>
+          </div>
+
+          {/* Next step */}
+          <button
+            type="button"
+            onClick={handleNextStep}
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-2.5 text-[14px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            继续下一步：变现路径
+            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </PioneerLayout>
   );
 }
+
+// Suppress unused import — Step4Phase type is used in Step4Result.phases
+void (0 as unknown as Step4Phase);

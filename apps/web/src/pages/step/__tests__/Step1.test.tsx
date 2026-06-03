@@ -17,17 +17,20 @@ function renderStep1() {
 describe('Step1 · D1 字面锁', () => {
   it('breadcrumb 含 STEP 01', () => {
     renderStep1();
-    expect(screen.getByText('STEP 01')).toBeInTheDocument();
+    // H1 文本为 "STEP 01 · 选择你的行业赛道"，用 regex 匹配子串
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/STEP 01/);
   });
 
-  it('breadcrumb 含 选择行业赛道', () => {
+  it('breadcrumb 含 选择你的行业赛道', () => {
     renderStep1();
-    expect(screen.getByText('选择行业赛道')).toBeInTheDocument();
+    // H1 文本为 "STEP 01 · 选择你的行业赛道"
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('选择你的行业赛道');
   });
 
-  it('h1 含 🌐 prefix', () => {
+  it('h1 含 STEP 01 · 前缀', () => {
     renderStep1();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('🌐');
+    // 先锋白迁移后 H1 无 emoji，改为验证 STEP 01 前缀存在
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/STEP 01/);
   });
 
   it('h1 含 选择你的行业赛道', () => {
@@ -77,20 +80,28 @@ describe('Step1 · 6 tab 渲染', () => {
 });
 
 // ── 56 行业渲染(代表性抽检) ─────────────────────────────────────────────────
+// 先锋白迁移后 data-testid 改为 industry-card-${ind.label}(中文标签),不再是 id
 
 describe('Step1 · industry 渲染', () => {
-  const sampleIds = ['beauty', 'cosmetics', 'food', 'apparel', 'edu', 'other'];
+  const sampleCards = [
+    { testid: 'industry-card-美业',     label: '美业' },
+    { testid: 'industry-card-美妆护肤', label: '美妆护肤' },
+    { testid: 'industry-card-餐饮美食', label: '餐饮美食' },
+    { testid: 'industry-card-服装穿搭', label: '服装穿搭' },
+    { testid: 'industry-card-教育培训', label: '教育培训' },
+    { testid: 'industry-card-其他行业', label: '其他行业' },
+  ];
 
-  for (const id of sampleIds) {
-    it(`industry card [${id}] 渲染`, () => {
+  for (const { testid } of sampleCards) {
+    it(`industry card [${testid}] 渲染`, () => {
       renderStep1();
-      expect(screen.getByTestId(`industry-card-${id}`)).toBeInTheDocument();
+      expect(screen.getByTestId(testid)).toBeInTheDocument();
     });
   }
 
   it('美业 card 有正确 label 文字', () => {
     renderStep1();
-    expect(screen.getByTestId('industry-card-beauty')).toHaveTextContent('美业');
+    expect(screen.getByTestId('industry-card-美业')).toHaveTextContent('美业');
   });
 });
 
@@ -108,51 +119,56 @@ describe('Step1 · 搜索', () => {
   it('搜索 美容院 → 美业 card 出现', () => {
     renderStep1();
     fireEvent.change(screen.getByTestId('industry-search'), { target: { value: '美容院' } });
-    expect(screen.getByTestId('industry-card-beauty')).toBeInTheDocument();
+    expect(screen.getByTestId('industry-card-美业')).toBeInTheDocument();
   });
 });
 
-// ── 选中 美业 → banner + sticky 同时出现 ────────────────────────────────────
+// ── 选中 美业 → sticky bar 出现 ──────────────────────────────────────────────
 
 describe('Step1 · 选中行业后 banner + sticky bar', () => {
-  it('点击 美业 → banner 出现含 已选择：美业', () => {
+  it('点击 美业 → sticky bar 出现含 已选择:', () => {
     renderStep1();
-    fireEvent.click(screen.getByTestId('industry-card-beauty'));
-    expect(screen.getByText('已选择：美业')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // sticky bar 内有 "已选择:" 文字节点（来自 <span className="text-[14px] text-[#444653]">）
+    expect(screen.getByText('已选择:')).toBeInTheDocument();
   });
 
-  it('点击 美业 → banner 出现含 关键词：美容院、美发、美甲、美睫、纹绣', () => {
+  it('点击 美业 → sticky bar 内显示行业名 美业', () => {
     renderStep1();
-    fireEvent.click(screen.getByTestId('industry-card-beauty'));
-    expect(screen.getByText('关键词：美容院、美发、美甲、美睫、纹绣')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // 已选择的行业名显示在 sticky bar 的 pill 中
+    // getAllByText 防止 card 本身文字与 sticky bar 重复
+    const labels = screen.getAllByText('美业');
+    // card 1 个 + sticky pill 1 个 = 至少 2 个
+    expect(labels.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('点击 美业 → 确认并进入下一步 出现 2 次(banner + sticky)', () => {
+  it('点击 美业 → 确认并进入下一步 出现 2 次(header + sticky)', () => {
     renderStep1();
-    fireEvent.click(screen.getByTestId('industry-card-beauty'));
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
     const ctaBtns = screen.getAllByText('确认并进入下一步');
     expect(ctaBtns).toHaveLength(2);
   });
 
   it('点击 美业 → sticky bar 出现含 已选择 prefix', () => {
     renderStep1();
-    fireEvent.click(screen.getByTestId('industry-card-beauty'));
-    const stickyBar = screen.getByTestId('step1-sticky-cta');
-    expect(stickyBar).toBeInTheDocument();
-    expect(screen.getByText('已选择')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // sticky bar 的标签文字
+    expect(screen.getByText('已选择:')).toBeInTheDocument();
   });
 
-  it('点击 美业 → card 右上角 CheckCircle2 icon(aria 可检测)', () => {
+  it('点击 美业 → card 选中样式包含 border-[#002fa7]', () => {
     renderStep1();
-    fireEvent.click(screen.getByTestId('industry-card-beauty'));
-    // CheckCircle2 是 SVG, 通过 card 的 selected 样式验证
-    const card = screen.getByTestId('industry-card-beauty');
-    expect(card.className).toContain('border-primary');
+    fireEvent.click(screen.getByTestId('industry-card-美业'));
+    // 先锋白迁移后选中态使用 border-[#002fa7] 替代 border-primary
+    const card = screen.getByTestId('industry-card-美业');
+    expect(card.className).toContain('border-[#002fa7]');
   });
 
   it('默认无选中时 sticky bar 不渲染', () => {
     renderStep1();
-    expect(screen.queryByTestId('step1-sticky-cta')).not.toBeInTheDocument();
+    // sticky bar 仅在有选中时渲染，默认不应有 "已选择:" 文字
+    expect(screen.queryByText('已选择:')).not.toBeInTheDocument();
   });
 });
 

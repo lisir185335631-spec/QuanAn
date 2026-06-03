@@ -36,7 +36,6 @@ import {
   EVOLUTION_SUBTITLE_PARTS,
   EVOLUTION_TOAST_AUTO_OFF,
   EVOLUTION_TOAST_AUTO_ON,
-  EVOLUTION_TOAST_TRIGGER,
   EVOLUTION_TRIGGER_BTN,
 } from '@/lib/constants/evolution';
 
@@ -182,7 +181,6 @@ describe('evolution constants · sally 1:1 字面锁', () => {
   // ── toast strings ─────────────────────────────────────────────────────────────
 
   it('toast strings 字面(含全角中点)', () => {
-    expect(EVOLUTION_TOAST_TRIGGER).toBe('触发进化 · 即将上线');
     expect(EVOLUTION_TOAST_AUTO_ON).toBe('自动进化已开启');
     expect(EVOLUTION_TOAST_AUTO_OFF).toBe('自动进化已关闭');
   });

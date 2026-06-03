@@ -1,17 +1,20 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { AvatarDesignSection, type AvatarDesignContent } from '@/components/step3/AvatarDesignSection';
-import { BackgroundImageDesignSection, type BackgroundImageContent } from '@/components/step3/BackgroundImageDesignSection';
-import { IntroCopySection, type IntroCopyEntry } from '@/components/step3/IntroCopySection';
-import { NicknameRecommendSection, type NicknameEvaluation, type NicknameSelectionStrategy } from '@/components/step3/NicknameRecommendSection';
-import { OverallStrategySection, type OverallStrategyContent } from '@/components/step3/OverallStrategySection';
-import { Step3Form } from '@/components/step3/Step3Form';
-import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
-import { Step3PageHeader, Step3SectionDivider } from '@/components/step3/Step3PageHeader';
-import { VideoReferenceCaseSection, type VideoReferenceCase } from '@/components/step3/VideoReferenceCaseSection';
+import { type AvatarDesignContent } from '@/components/step3/AvatarDesignSection';
+import { type BackgroundImageContent } from '@/components/step3/BackgroundImageDesignSection';
+import { type IntroCopyEntry } from '@/components/step3/IntroCopySection';
+import {
+  type NicknameEvaluation,
+  type NicknameSelectionStrategy,
+} from '@/components/step3/NicknameRecommendSection';
+import { type OverallStrategyContent } from '@/components/step3/OverallStrategySection';
+import { type VideoReferenceCase } from '@/components/step3/VideoReferenceCaseSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
+import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { breakSentences } from '@/lib/text';
 import { trpc } from '@/lib/trpc';
 
 // ── AC-5: stub result shape (D-292 锁 · 6 sections always renderable) ────────
@@ -428,6 +431,7 @@ function adaptStep3Result(raw: Record<string, unknown>): Step3Result {
 }
 
 export default function Step3() {
+  const navigate = useNavigate();
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
 
@@ -438,7 +442,11 @@ export default function Step3() {
   const industry = readOtherStep<{ industry?: string }>(accountId, 'step1')?.industry ?? '美业';
 
   // PRD-29.7 · default form 1:1 复刻 aiipznt sally zhao 真实输入(空账号首次进入即看到 demo 内容)
-  const [personalInfo, setPersonalInfo] = useState('我是一家软件开发公司的负责人，我们定制企业和个人级别的智能体开发，和opc培训业务，还没有开账号，想在平台获取精准流量以及获客');
+  const [personalInfo, setPersonalInfo] = useState(
+    breakSentences(
+      '我是一家软件开发公司的负责人，我们定制企业和个人级别的智能体开发，和opc培训业务，还没有开账号，想在平台获取精准流量以及获客',
+    ),
+  );
   const [platform, setPlatform] = useState('douyin');
   const [audience, setAudience] = useState('企业老板和opc创业者');
   const [accountStatus, setAccountStatus] = useState('新账号');
@@ -498,7 +506,7 @@ export default function Step3() {
   // PRD-29.7 · default 强制 mock 1:1 复刻 aiipznt sally zhao demo
   // 仅当用户当前 session 主动 generate / optimize 成功后 · 才用 backend 返回数据
   // (老 db 残留视为 stale · 不打扰首屏 demo 视觉)
-  const rawResult = dbQuery.data?.result as Record<string, unknown> | null | undefined;
+  const rawResult = dbQuery.data?.result;
   const sessionMutationData =
     (generateMutation.data as Record<string, unknown> | undefined) ??
     (optimizeMutation.data as Record<string, unknown> | undefined);
@@ -546,72 +554,716 @@ export default function Step3() {
     toast.info('图片生成功能需 admin 配置 OpenAI DALL-E key · 当前请使用文字描述参考');
   }
 
+  function copyText(text: string) {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast.success('已复制'))
+      .catch(() => toast.error('复制失败'));
+  }
+
+  const PLATFORMS = [
+    { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
+    { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
+    { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+  ];
+  const btnSecondary =
+    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+
   return (
-    <main className="flex-1 container py-8 space-y-8">
-      {/* 1. Step3PageHeader · canBulkActions controls 3 toolbar buttons */}
-      <Step3PageHeader
-        industry={industry}
-        canBulkActions={canBulkActions}
-        onOptimize={handleOptimize}
-        onRegenerateAll={handleRegenerateAll}
-        onCopyAll={handleCopyAll}
-      />
+    <PioneerLayout>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <header className="mb-12 flex flex-row items-center justify-between gap-8">
+        <div className="shrink-0">
+          <div className="mb-3 flex items-center gap-3">
+            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+              战略节点
+            </span>
+            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              账号矩阵
+            </span>
+          </div>
+          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+            STEP 03 · 账号包装方案
+          </h1>
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+            为「{industry}」生成高度定制的自媒体账号基础包装 · 构建专业、权威的数字形象基石。
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-nowrap gap-3">
+          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            智能优化
+          </button>
+          <button
+            type="button"
+            onClick={handleRegenerateAll}
+            disabled={isLoading || !personalInfo.trim() || !platform}
+            className={btnSecondary}
+          >
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
+            重新生成
+          </button>
+          <button
+            type="button"
+            onClick={handleCopyAll}
+            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            导出方案
+          </button>
+        </div>
+      </header>
 
-      {/* 2. Step3Form */}
-      <Step3Form
-        personalInfo={personalInfo}
-        onPersonalInfoChange={setPersonalInfo}
-        platform={platform}
-        onPlatformChange={setPlatform}
-        audience={audience}
-        onAudienceChange={setAudience}
-        accountStatus={accountStatus}
-        onAccountStatusChange={setAccountStatus}
-        onSubmit={handleSubmit}
-        onRegenerate={handleRegenerateAll}
-        isLoading={isLoading}
-        isDisabled={!personalInfo.trim() || !platform || isLoading}
-      />
+      {/* ── 输入节点参数 ───────────────────────────────────── */}
+      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
+              <span className="material-symbols-outlined">tune</span>
+            </span>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#111827]">输入节点参数</h2>
+              <p className="text-[12px] text-[#9ca3af]">填写基础信息 · AI 据此生成全套账号包装矩阵</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+            参数就绪
+          </span>
+        </div>
+        <div className="relative">
+        <form onSubmit={handleSubmit} className="space-y-7">
+          {/* 目标平台 · 可视化平台卡 */}
+          <div>
+            <span className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+              目标平台
+            </span>
+            <div className="grid grid-cols-3 gap-4">
+              {PLATFORMS.map((p) => {
+                const active = platform === p.key;
+                return (
+                  <button
+                    type="button"
+                    key={p.key}
+                    onClick={() => setPlatform(p.key)}
+                    className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                  >
+                    <span
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+                      style={{ backgroundColor: p.color }}
+                    >
+                      <span className="material-symbols-outlined text-[22px]">{p.icon}</span>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[14px] font-bold text-[#111827]">{p.label}</span>
+                      <span className="block text-[11px] text-[#9ca3af]">{p.desc}</span>
+                    </span>
+                    <span
+                      className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                    >
+                      <span className="material-symbols-outlined text-[12px]">check</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* 3. Step3LoadingState — inline notification when isLoading=true (AC-3) */}
-      {isLoading && <Step3LoadingState />}
+          {/* 目标受众 + 账号状态 · 双列带图标输入 */}
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="s3-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标受众
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">groups</span>
+                <input
+                  id="s3-audience"
+                  type="text"
+                  value={audience}
+                  onChange={(e) => setAudience(e.target.value)}
+                  placeholder="例如：企业老板和创业者"
+                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="s3-account-status" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                账号状态
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">verified_user</span>
+                <input
+                  id="s3-account-status"
+                  type="text"
+                  value={accountStatus}
+                  onChange={(e) => setAccountStatus(e.target.value)}
+                  placeholder="例如：新账号 / 已有粉丝"
+                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                />
+              </div>
+            </div>
+          </div>
 
-      {/* 4. Step3SectionDivider */}
-      <Step3SectionDivider />
+          {/* 个人背景 · 框式编辑器 + 工具栏 */}
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label htmlFor="s3-personal-info" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                个人背景与核心优势提取
+              </label>
+              <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
+                <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+                AI 据此提取人设关键词
+              </span>
+            </div>
+            <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+              <textarea
+                id="s3-personal-info"
+                value={personalInfo}
+                onChange={(e) => setPersonalInfo(e.target.value)}
+                rows={6}
+                placeholder="输入过去的经历、成就、特殊技能，以及希望传达的核心人设"
+                className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+              />
+              <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] text-[#9ca3af]">可包含</span>
+                  {['经历', '成就', '技能', '人设', '价值观'].map((t) => (
+                    <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{personalInfo.length} 字</span>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                type="submit"
+                disabled={!personalInfo.trim() || !platform || isLoading}
+                className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+                {isLoading ? '生成中…' : '生成包装矩阵'}
+              </button>
+            </div>
+          </div>
+        </form>
+        </div>
+      </section>
 
-      {/* 4-9. 6 H3 sections — D-292 锁: always render, skeleton when no data */}
-      <VideoReferenceCaseSection
-        cases={generated?.videoReferences ?? []}
-        canGenerate={canBulkActions}
-        onGenerate={handleImageGenStub}
-      />
+      {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
+        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
+        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+          模型已就绪
+        </span>
+      </div>
+      <div className="mb-8 grid grid-cols-12 gap-6">
+        {/* 人设竞争力雷达 */}
+        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+                <span className="material-symbols-outlined text-[20px]">radar</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">人设竞争力雷达</h3>
+                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[26px] font-bold leading-none text-[#002fa7]">82</p>
+              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+            </div>
+          </div>
+          {(() => {
+            const dims = [
+              { label: '专业度', value: 88, color: '#002fa7' },
+              { label: '影响力', value: 76, color: '#781621' },
+              { label: '记忆点', value: 92, color: '#F6D300' },
+              { label: '转化力', value: 81, color: '#002fa7' },
+              { label: '稀缺性', value: 70, color: '#781621' },
+              { label: '一致性', value: 85, color: '#F6D300' },
+            ];
+            const cx = 130;
+            const cy = 122;
+            const R = 88;
+            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+            return (
+              <svg viewBox="0 0 260 244" className="w-full">
+                <defs>
+                  <linearGradient id="radarFillS3" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
+                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  </linearGradient>
+                </defs>
+                {[0.25, 0.5, 0.75, 1].map((f) => (
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                ))}
+                {dims.map((_, i) => {
+                  const [x, y] = pt(i, R);
+                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                })}
+                <polygon points={dataPoly} fill="url(#radarFillS3)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R * (d.value / 100));
+                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                })}
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R + 16);
+                  return (
+                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      {d.label}
+                    </text>
+                  );
+                })}
+              </svg>
+            );
+          })()}
+          <div className="mt-2 grid grid-cols-3 gap-y-2">
+            {[
+              { label: '专业度', value: 88, color: '#002fa7' },
+              { label: '影响力', value: 76, color: '#781621' },
+              { label: '记忆点', value: 92, color: '#F6D300' },
+              { label: '转化力', value: 81, color: '#002fa7' },
+              { label: '稀缺性', value: 70, color: '#781621' },
+              { label: '一致性', value: 85, color: '#F6D300' },
+            ].map((d) => (
+              <div key={d.label} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
+                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      <NicknameRecommendSection
-        nicknames={generated?.nicknames ?? []}
-        strategy={generated?.nicknameStrategy}
-      />
+        {/* 90 天曝光 / 涨粉预估 */}
+        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">show_chart</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">90 天曝光预估</h3>
+                <p className="text-[11px] text-[#9ca3af]">按当前人设矩阵测算</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {['曝光', '涨粉', '互动'].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mb-3 flex items-end gap-3">
+            <p className="text-[30px] font-bold leading-none text-[#111827]">1.24M</p>
+            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[14px]">trending_up</span>+214%
+            </span>
+            <span className="mb-1 text-[12px] text-[#9ca3af]">较冷启动基线</span>
+          </div>
+          {(() => {
+            const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
+            const W = 560;
+            const H = 168;
+            const padL = 6;
+            const padR = 6;
+            const padT = 12;
+            const padB = 8;
+            const innerW = W - padL - padR;
+            const innerH = H - padT - padB;
+            const max = 110;
+            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+            const y = (v: number) => padT + innerH * (1 - v / max);
+            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+            return (
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                <defs>
+                  <linearGradient id="trendFillS3" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
+                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="trendLineS3" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#002fa7" />
+                    <stop offset="100%" stopColor="#781621" />
+                  </linearGradient>
+                </defs>
+                {[0, 0.33, 0.66, 1].map((f) => (
+                  <line
+                    key={f}
+                    x1={padL}
+                    x2={W - padR}
+                    y1={(padT + innerH * f).toFixed(1)}
+                    y2={(padT + innerH * f).toFixed(1)}
+                    stroke="#f1f3f9"
+                    strokeWidth="1"
+                  />
+                ))}
+                <path d={area} fill="url(#trendFillS3)" />
+                <path d={line} fill="none" stroke="url(#trendLineS3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {data.map((v, i) =>
+                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                )}
+              </svg>
+            );
+          })()}
+          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
+              <span key={m}>{m}</span>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <AvatarDesignSection
-        content={generated?.avatar ?? null}
-        canViewImage={canBulkActions}
-        onViewImage={handleImageGenStub}
-      />
+      {/* ── 数据概览(KPI 仪表盘)──────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-6">
+        {/* 人设完整度 · 环形进度 */}
+        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">verified</span>
+            </span>
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[13px]">trending_up</span>+18%
+            </span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-[28px] font-bold leading-none text-[#111827]">
+                92<span className="text-[15px] text-[#9ca3af]">%</span>
+              </p>
+              <p className="mt-1.5 text-[12px] text-[#6b7280]">人设完整度</p>
+            </div>
+            <div className="h-12 w-12 shrink-0">
+              <svg viewBox="0 0 36 36" className="-rotate-90">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.915"
+                  fill="none"
+                  stroke="#002fa7"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeDasharray="92 100"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+        {/* 推荐昵称 · 数量 + 迷你柱 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">text_fields</span>
+            </span>
+            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已评估</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.nicknames.length}
+              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">推荐昵称</p>
+          </div>
+          <div className="mt-3 flex h-6 items-end gap-1">
+            {[58, 84, 70, 96, 78].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </div>
+        {/* 平台覆盖 · 进度条 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
+              <span className="material-symbols-outlined text-[20px]">hub</span>
+            </span>
+            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">全覆盖</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              5<span className="text-[15px] text-[#9ca3af]"> 平台</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">平台覆盖</p>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
+          </div>
+        </div>
+        {/* 简介方案 · 数量 + 关键词 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">edit_document</span>
+            </span>
+            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+              {generated.bioCoreKeywords?.length ?? 5} 关键词
+            </span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.bioEntries.length}
+              <span className="text-[15px] text-[#9ca3af]"> 套</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">简介文案方案</p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1">
+            {(generated.bioCoreKeywords ?? []).slice(0, 3).map((k) => (
+              <span
+                key={k}
+                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <BackgroundImageDesignSection
-        content={generated?.background ?? null}
-        canGenerate={canBulkActions}
-        onGenerate={handleImageGenStub}
-      />
+      {/* ── Results bento grid ─────────────────────────────── */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* 核心定位策略 (col-12) */}
+        <div className="relative col-span-12 overflow-hidden rounded-xl border border-[#dbe2ff] bg-gradient-to-br from-[#eff4ff] via-white to-[#f7f1ff] p-6 pw-shadow-soft">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-[#002fa7]/[0.07] blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-16 right-40 h-40 w-40 rounded-full bg-[#781621]/[0.06] blur-2xl" />
+          <div className="relative flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] shadow-lg shadow-[#002fa7]/25">
+              <span className="material-symbols-outlined icon-fill text-white">psychology</span>
+            </div>
+            <div>
+              <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full bg-[#002fa7]/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#002fa7]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#002fa7]" />
+                Core Strategy
+              </span>
+              <h3 className="mb-2 text-[20px] font-bold text-[#111827]">核心定位策略</h3>
+              <p className="text-[16px] leading-relaxed text-[#444653]">
+                {generated.overallStrategy.视觉统一性}
+              </p>
+            </div>
+          </div>
+        </div>
 
-      <IntroCopySection
-        formula={generated?.bioFormula}
-        entries={generated?.bioEntries ?? []}
-        coreKeywords={generated?.bioCoreKeywords}
-      />
+        {/* 矩阵命名 (col-4 · Module 01) */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-4">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">text_fields</span>
+              </span>
+              矩阵命名
+            </h3>
+            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
+              Module 01
+            </span>
+          </div>
+          <div className="space-y-4">
+            {generated.nicknames.slice(0, 4).map((n) => {
+              const score = n.searchability?.startsWith('高')
+                ? 92
+                : n.searchability?.startsWith('中高')
+                  ? 80
+                  : n.searchability?.startsWith('中')
+                    ? 66
+                    : 74;
+              return (
+                <div
+                  key={n.name}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => copyText(n.name)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') copyText(n.name); }}
+                  className="group cursor-pointer rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-all hover:border-[#781621] hover:bg-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-[16px] font-bold text-[#111827]">{n.name}</div>
+                    <span className="material-symbols-outlined shrink-0 text-[#9ca3af] group-hover:text-[#781621]">
+                      content_copy
+                    </span>
+                  </div>
+                  <div className="mt-1 text-[13px] leading-snug text-[#6b7280]">{n.description}</div>
+                  <div className="mt-2.5">
+                    <div className="mb-1 flex items-center justify-between text-[11px]">
+                      <span className="text-[#9ca3af]">搜索度</span>
+                      <span className="font-bold text-[#781621]">{score}%</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-[#eef2ff]">
+                      <div
+                        className="h-1.5 rounded-full bg-gradient-to-r from-[#781621] to-[#781621]"
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-      <OverallStrategySection
-        content={generated?.overallStrategy ?? null}
-      />
-    </main>
+        {/* 头像生成流 (col-4 · Module 02 · border-t red) */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-4">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">face</span>
+              </span>
+              头像生成流
+            </h3>
+            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
+              Module 02
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleImageGenStub}
+            className="mb-4 flex aspect-square w-full flex-col items-center justify-center rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] p-4 text-center transition-colors hover:border-[#002fa7]"
+          >
+            <span className="material-symbols-outlined mb-2 text-4xl text-[#757685]">image</span>
+            <p className="text-[14px] text-[#444653]">点击生成头像</p>
+          </button>
+          <div className="rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] p-3">
+            <div className="mb-2 flex justify-between text-[12px] font-bold uppercase text-[#a5383f]">
+              AI Prompt
+              <button
+                type="button"
+                aria-label="复制"
+                onClick={() => copyText(generated.avatar.aiPrompt ?? '')}
+                className="cursor-pointer text-[16px] hover:text-[#1b1b1b]"
+              >
+                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span>
+              </button>
+            </div>
+            <p className="break-words font-mono text-[13px] leading-relaxed text-[#444653]">
+              {generated.avatar.aiPrompt}
+            </p>
+          </div>
+        </div>
+
+        {/* 背景墙视觉 (col-4 · Module 03) */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-4">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">wallpaper</span>
+              </span>
+              背景墙视觉
+            </h3>
+            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
+              Module 03
+            </span>
+          </div>
+          <div className="relative mb-4 flex aspect-video items-center justify-center overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#002fa7]">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#001e73] via-[#002fa7] to-[#3654c8] opacity-80" />
+            <div className="relative z-10 px-4 text-center">
+              <div className="text-[20px] font-bold text-white">理性 · 认知 · 破局</div>
+              <div className="mt-2 text-[12px] font-bold uppercase tracking-widest text-white/80">
+                Systematic Thinking
+              </div>
+            </div>
+          </div>
+          <p className="text-[14px] leading-relaxed text-[#444653]">{generated.background.风格理念}</p>
+        </div>
+
+        {/* 简介文案公式 (col-8 · Module 04 · border-t gold) */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-8">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/10 text-[#8a6a00]">
+                <span className="material-symbols-outlined text-[20px]">edit_document</span>
+              </span>
+              简介文案公式
+            </h3>
+            <span className="rounded-full bg-[#F6D300]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#8a6a00]">
+              Module 04
+            </span>
+          </div>
+          {generated.bioFormula && (
+            <div className="mb-4 flex items-start gap-2 rounded-lg border border-[#F3E08A] bg-gradient-to-r from-[#fefce0] to-[#fefce8] p-3 text-[14px] leading-relaxed text-[#854d0e]">
+              <span className="material-symbols-outlined mt-0.5 text-[18px] text-[#8a6a00]">bolt</span>
+              <span>
+                <span className="font-bold">公式 · </span>
+                {generated.bioFormula}
+              </span>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            {generated.bioEntries.slice(0, 2).map((b) => (
+              <div key={b.platformKey} className="rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-r from-[#002fa7]/10 to-[#781621]/10 px-2.5 py-1 text-[12px] font-bold text-[#002fa7]">
+                    <span className="material-symbols-outlined text-[14px]">alternate_email</span>
+                    {b.platformLabel}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyText(b.copy)}
+                    className="material-symbols-outlined cursor-pointer text-[16px] text-[#9ca3af] transition-colors hover:text-[#002fa7]"
+                  >
+                    content_copy
+                  </button>
+                </div>
+                <div className="whitespace-pre-line text-[14px] leading-relaxed text-[#1b1b1b]">
+                  {b.copy}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 下一步执行 (col-4 · Module 05 · blue) */}
+        <div className="relative col-span-4 flex flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-[#002fa7] to-[#001952] p-6 text-white pw-shadow-soft">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#781621]/20 blur-2xl" />
+          <div className="relative">
+            <h3 className="mb-4 flex items-center gap-2.5 text-[18px] font-semibold">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
+                <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
+              </span>
+              下一步执行
+            </h3>
+            <ul className="space-y-3 text-[15px]">
+              <li className="flex items-start gap-2">
+                <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#b8c4ff]">check_box</span>
+                确认并导出全套包装物料
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#b8c4ff]">
+                  check_box_outline_blank
+                </span>
+                进入 STEP 04 进行内容选题规划
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#b8c4ff]">
+                  check_box_outline_blank
+                </span>
+                注册目标平台账号并应用配置
+              </li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/step/4')}
+            className="mt-8 w-full rounded-xl border border-[#e5e7eb] bg-white py-3 text-[12px] font-bold uppercase tracking-widest text-[#002fa7] shadow-sm transition-colors hover:bg-[#f3f3f3]"
+          >
+            进入内容系统 →
+          </button>
+        </div>
+      </div>
+    </PioneerLayout>
   );
 }

@@ -16,8 +16,16 @@ export const VOICE_CHAT_LABEL_COPY = '复制' as const;
 
 // ── toast texts (LLM 接入留 PRR) ─────────────────────────────────────────────
 export const VOICE_CHAT_TOAST_AUDIO = '音频播放 · 即将上线' as const;
+/**
+ * @deprecated mock 时代遗留 — clear 现走 trpc.voiceChat.clearSession mutation，
+ * 不再触发此 toast。保留供字面锁测试引用，不在运行时使用。
+ */
 export const VOICE_CHAT_TOAST_CLEAR = '清空对话 · 即将上线' as const;
 export const VOICE_CHAT_TOAST_VOICE = '语音输入 · 即将上线' as const;
+/**
+ * @deprecated mock 时代遗留 — send 现走 trpc.voiceChat.start subscription，
+ * 不再触发此 toast。保留供字面锁测试引用，不在运行时使用。
+ */
 export const VOICE_CHAT_TOAST_SEND = 'AI 对话 · 即将上线' as const;
 export const VOICE_CHAT_TOAST_COPIED = '已复制' as const;
 

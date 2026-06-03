@@ -10,9 +10,13 @@ import { List, AutoSizer } from 'react-virtualized';
 
 import { Button } from '@/components/ui/button';
 
-import type { TrendingListItem } from '@quanan/clients/router-types';
+import type { TrendingListItem as _TrendingListItemStrict } from '@quanan/clients/router-types';
 
 import 'react-virtualized/styles.css';
+
+// tRPC serializes Date→string on the JSON wire, so crawledAt is string at runtime.
+// Widen the type here to accept both to avoid runtime surprises.
+type TrendingListItem = Omit<_TrendingListItemStrict, 'crawledAt'> & { crawledAt: Date | string };
 
 const PLATFORM_ICONS: Record<string, string> = {
   douyin: '📱',
@@ -30,6 +34,8 @@ interface TrendingTableProps {
   onViewDetail: (id: number) => void;
   onFavorite: (id: number, isFavorited: boolean) => void;
   onSaveToTopics: (item: TrendingListItem) => void;
+  /** Pass favMutation.isPending to disable favorite button during in-flight mutation */
+  favPending?: boolean;
 }
 
 function truncate(s: string, max: number): string {
@@ -41,7 +47,7 @@ function formatCount(n: number): string {
   return String(n);
 }
 
-export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics }: TrendingTableProps) {
+export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics, favPending = false }: TrendingTableProps) {
   const navigate = useNavigate();
 
   function handleStep7(item: TrendingListItem) {
@@ -138,6 +144,7 @@ export function TrendingTable({ items, onViewDetail, onFavorite, onSaveToTopics 
             onClick={() => onFavorite(item.id, item.isFavorited)}
             data-testid={`btn-favorite-${item.id}`}
             data-favorited={item.isFavorited}
+            disabled={favPending}
           >
             {item.isFavorited ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
           </Button>

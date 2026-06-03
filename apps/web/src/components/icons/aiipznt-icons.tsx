@@ -1,5 +1,6 @@
 export { Flame, Sparkles } from 'lucide-react';
 import { Flame, Sparkles } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 
 interface IconProps {

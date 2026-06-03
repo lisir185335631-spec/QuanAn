@@ -2,8 +2,6 @@ import { FileText, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-
-import { Button } from '@/components/ui/button';
 import {
   HOME_HERO_BRAND,
   HOME_HERO_CHIP,
@@ -24,7 +22,7 @@ export function HomeHero() {
   const [text, setText] = useState<string>('');
   const [deleting, setDeleting] = useState<boolean>(false);
 
-  // typewriter 轮播:逐字打字 → 停留 → 逐字删除 → 切下一句
+  // typewriter 轮播:逐字打字 → 停留 → 逐字删除 → 切下一句(逻辑零改动)
   useEffect(() => {
     const full = HOME_HERO_ROTATION[phraseIndex] ?? '';
 
@@ -51,52 +49,67 @@ export function HomeHero() {
   }, [text, deleting, phraseIndex]);
 
   return (
-    <section className="flex flex-col items-center justify-center text-center py-20">
-      {/* chip */}
-      <div className="rounded-full border border-primary/30 px-4 py-1.5 bg-primary/5 mb-8">
-        <span className="text-green-500">●</span>
-        <span className="font-display text-sm text-primary ml-1">{HOME_HERO_CHIP}</span>
-      </div>
+    <section className="pw-shadow-soft relative flex flex-col items-center justify-center overflow-hidden rounded-3xl border border-[#e5e7eb] bg-gradient-to-b from-white to-[#f5f8ff] px-10 py-16 text-center">
+      {/* 工业精密网格背景 */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.55]"
+        style={{
+          backgroundImage:
+            'linear-gradient(#eef2ff 1px, transparent 1px), linear-gradient(90deg, #eef2ff 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%)',
+        }}
+        aria-hidden="true"
+      />
 
-      {/* h1 typewriter rotation */}
-      <h1
-        className="font-display text-7xl md:text-9xl font-black text-primary tracking-tight mb-6 min-h-[1.2em]"
-        style={{ WebkitTextStroke: '1px var(--primary)' }}
-      >
-        {text}
-        <span className="ml-1 font-normal animate-pulse" aria-hidden="true">
-          |
-        </span>
-      </h1>
+      <div className="relative">
+        {/* chip · SYSTEM ONLINE */}
+        <div className="mb-10 inline-flex items-center gap-2.5 rounded-full border border-[#002fa7]/25 bg-[#002fa7]/[0.06] px-5 py-2">
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#10b981]" aria-hidden="true" />
+          <span className="text-[15px] font-bold uppercase tracking-widest text-[#002fa7]">
+            {HOME_HERO_CHIP}
+          </span>
+        </div>
 
-      {/* subtitle */}
-      <p className="font-cn text-lg text-muted-foreground mb-4">{HOME_HERO_SUBTITLE}</p>
+        {/* h1 typewriter 轮播 · 品牌蓝→勃艮第红渐变大字 + 打字光标 */}
+        <h1 className="mb-8 min-h-[1.15em] bg-gradient-to-r from-[#002fa7] via-[#002fa7] to-[#781621] bg-clip-text text-[128px] font-black leading-none tracking-tighter text-transparent">
+          {text}
+          <span className="ml-1 animate-pulse font-normal" aria-hidden="true">
+            |
+          </span>
+        </h1>
 
-      {/* quote */}
-      <p className="font-cn italic text-sm text-muted-foreground/70 mb-4">{HOME_HERO_QUOTE}</p>
+        {/* subtitle */}
+        <p className="mx-auto max-w-[1080px] text-[23px] font-medium text-[#444653]">
+          {HOME_HERO_SUBTITLE}
+        </p>
 
-      {/* brand */}
-      <p className="font-display text-xs text-muted-foreground/50 tracking-widest mb-8">
-        {HOME_HERO_BRAND}
-      </p>
+        {/* quote · 勃艮第红点缀 */}
+        <p className="mt-5 text-[18px] font-medium italic text-[#781621]">{HOME_HERO_QUOTE}</p>
 
-      {/* 2 CTA */}
-      <div className="flex gap-4 flex-wrap justify-center">
-        <Link to={HOME_HERO_CTA1_HREF}>
-          <Button className="font-cn bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 text-base">
-            <Shield className="w-4 h-4 mr-2" />
-            {HOME_HERO_CTA1}
-          </Button>
-        </Link>
-        <Link to={HOME_HERO_CTA2_HREF}>
-          <Button
-            variant="outline"
-            className="font-cn border-primary/30 text-primary hover:bg-primary/10 px-6 py-3 text-base"
+        {/* brand */}
+        <p className="mt-4 text-[13px] font-bold uppercase tracking-[0.3em] text-[#9ca3af]">
+          {HOME_HERO_BRAND}
+        </p>
+
+        {/* 2 CTA */}
+        <div className="mt-11 flex justify-center gap-5">
+          <Link
+            to={HOME_HERO_CTA1_HREF}
+            className="inline-flex items-center gap-2.5 rounded-xl bg-[#002fa7] px-9 py-4 text-[17px] font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#001e73] hover:shadow-md"
           >
-            <FileText className="w-4 h-4 mr-2" />
+            <Shield aria-hidden className="h-5 w-5" />
+            {HOME_HERO_CTA1}
+          </Link>
+          <Link
+            to={HOME_HERO_CTA2_HREF}
+            className="inline-flex items-center gap-2.5 rounded-xl border border-[#002fa7]/30 bg-white px-9 py-4 text-[17px] font-bold text-[#002fa7] transition-all hover:-translate-y-0.5 hover:bg-[#002fa7]/[0.05]"
+          >
+            <FileText aria-hidden className="h-5 w-5" />
             {HOME_HERO_CTA2}
-          </Button>
-        </Link>
+          </Link>
+        </div>
       </div>
     </section>
   );

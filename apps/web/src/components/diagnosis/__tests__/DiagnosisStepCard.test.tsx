@@ -149,7 +149,7 @@ describe('DiagnosisStepCard', () => {
       />,
     );
     const el = screen.getByTestId('diagnosis-checkbox-已确定赛道方向');
-    expect(el.className).toContain('border-primary');
+    expect(el.className).toContain('border-[#002fa7]');
   });
 
   it('textarea placeholder 来自 DIAGNOSIS_DIMENSION_PLACEHOLDERS', () => {

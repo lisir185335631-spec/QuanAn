@@ -20,6 +20,9 @@ function polarToCartesian(cx: number, cy: number, r: number, angleRad: number) {
   };
 }
 
+// Colors for each vertex dot — rotate through brand palette
+const DOT_COLORS = ['#002fa7', '#781621', '#F6D300', '#002fa7', '#781621', '#002fa7', '#781621'];
+
 export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
   const cx = 150;
   const cy = 150;
@@ -47,7 +50,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
     const r = maxScore > 0 ? (s.score / maxScore) * maxR : 0;
     return polarToCartesian(cx, cy, r, angles[i]!);
   });
-  const dataPolygon = dataPoints.map((p) => `${p.x},${p.y}`).join(' ');
+  const dataPolygon = dataPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
   // Label positions (slightly outside maxR)
   const labelR = maxR + 22;
@@ -56,17 +59,24 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
   return (
     <div
       data-testid="ip-radar-chart"
-      className="rounded-xl border border-border bg-card p-6 flex flex-col items-center justify-center"
+      className="rounded-xl border border-[#e5e7eb] bg-white p-6 flex flex-col items-center justify-center pw-shadow-soft"
     >
       <svg width="300" height="300" viewBox="0 0 300 300">
+        <defs>
+          {/* gradient id with DX suffix to avoid conflict with Step3 radar */}
+          <linearGradient id="radarFillDX" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#002fa7" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#781621" stopOpacity="0.10" />
+          </linearGradient>
+        </defs>
         {/* Grid rings */}
         {gridRings.map((pts, ri) => (
           <polygon
             key={ri}
             points={pts}
             fill="none"
-            stroke="rgb(100,100,120)"
-            strokeWidth="0.5"
+            stroke="#eef1f6"
+            strokeWidth="1"
           />
         ))}
         {/* Axis lines */}
@@ -76,33 +86,45 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
             <line
               key={i}
               x1={cx} y1={cy}
-              x2={outer.x} y2={outer.y}
-              stroke="rgb(100,100,120)"
-              strokeWidth="0.5"
+              x2={outer.x.toFixed(1)} y2={outer.y.toFixed(1)}
+              stroke="#e8ebf2"
+              strokeWidth="1"
             />
           );
         })}
-        {/* Data polygon */}
+        {/* Data polygon — brand gradient fill */}
         <polygon
           points={dataPolygon}
-          fill="rgba(59,130,246,0.15)"
-          stroke="rgb(59,130,246)"
-          strokeWidth="1.5"
+          fill="url(#radarFillDX)"
+          stroke="#002fa7"
+          strokeWidth="2"
+          strokeLinejoin="round"
         />
-        {/* Center dot */}
-        <circle cx={cx} cy={cy} r={5} fill="rgb(34,211,238)" />
+        {/* Vertex dots — three brand colors */}
+        {dataPoints.map((p, i) => (
+          <circle
+            key={i}
+            cx={p.x.toFixed(1)}
+            cy={p.y.toFixed(1)}
+            r="3.2"
+            fill="#fff"
+            stroke={DOT_COLORS[i % DOT_COLORS.length]}
+            strokeWidth="2"
+          />
+        ))}
         {/* Labels */}
         {scores.map((s, i) => {
           const pos = labelPositions[i]!;
           return (
             <text
               key={s.id}
-              x={pos.x}
-              y={pos.y}
+              x={pos.x.toFixed(1)}
+              y={pos.y.toFixed(1)}
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize="11"
-              fill="rgb(160,160,180)"
+              fill="#6b7280"
+              fontWeight="600"
             >
               {s.radarLabel}
             </text>

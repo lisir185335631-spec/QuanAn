@@ -57,11 +57,12 @@ export const TRENDING_PLATFORM_OPTIONS: ReadonlyArray<TrendingPlatformOption> = 
   { key: 'shipinhao',   label: '视频号', emoji: '📺' },
   { key: 'kuaishou',    label: '快手',   emoji: '🎬' },
   { key: 'bilibili',    label: 'B站',    emoji: '📺' },
+  { key: 'weibo',       label: '微博',   emoji: '🌐' },
 ] as const;
 
 // ── card 数据结构 ───────────────────────────────────────────────────────────────
 export type TrendingType = '口播' | '混剪' | '剧情' | 'vlog';
-export type TrendingPlatformKey = 'douyin' | 'xiaohongshu' | 'shipinhao' | 'kuaishou' | 'bilibili';
+export type TrendingPlatformKey = 'douyin' | 'xiaohongshu' | 'shipinhao' | 'kuaishou' | 'bilibili' | 'weibo';
 
 export interface TrendingCard {
   id: string;

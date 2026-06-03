@@ -38,6 +38,25 @@ vi.mock('@/lib/trpc', () => ({
           invalidate: vi.fn().mockResolvedValue(undefined),
         },
       },
+      history: {
+        list: {
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+        count: {
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      trending: {
+        listWithFavorites: {
+          getData: vi.fn(() => null),
+          setData: vi.fn(),
+          cancel: vi.fn().mockResolvedValue(undefined),
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+        kpiStats: {
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+      },
     }),
     dailyTasks: {
       getToday: { useQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }) },
@@ -57,10 +76,11 @@ vi.mock('@/lib/trpc', () => ({
       },
     },
     evolution: {
-      getProfile: { useQuery: () => ({ data: null, isLoading: false, isError: false }) },
+      getProfile: { useQuery: () => ({ data: null, isLoading: false, isError: false, refetch: vi.fn() }) },
       evolve: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
       updateConfig: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
-      getInsightHistory: { useQuery: () => ({ data: [], isLoading: false }) },
+      getInsightHistory: { useQuery: () => ({ data: [], isLoading: false, refetch: vi.fn() }) },
+      recentFeedback: { useQuery: () => ({ data: [], isLoading: false }) },
       getFeedbackTrend: { useQuery: () => ({ data: [], isLoading: false }) },
       getModuleRanking: { useQuery: () => ({ data: { ranking: [] }, isLoading: false }) },
       history: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -83,10 +103,10 @@ vi.mock('@/lib/trpc', () => ({
     auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
     trending: {
       fetch: { useQuery: () => ({ data: [], isLoading: false }) },
-      listWithFavorites: { useQuery: () => ({ data: [], isLoading: false }) },
+      listWithFavorites: { useQuery: () => ({ data: { items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 }, isLoading: false, isError: false, refetch: vi.fn() }) },
       kpiStats: { useQuery: () => ({ data: null, isLoading: false }) },
       favorite: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
-      detail: { useQuery: () => ({ data: null, isLoading: false }) },
+      detail: { useQuery: () => ({ data: null, isLoading: false, isError: false }) },
     },
     myTopics: {
       list: { useQuery: () => ({ data: [], isLoading: false }) },
@@ -100,7 +120,8 @@ vi.mock('@/lib/trpc', () => ({
       acquisitionGenerate: { useMutation: () => ({ mutate: vi.fn(), mutateAsync: vi.fn(), isPending: false, data: null }) },
     },
     history: {
-      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      list: { useQuery: () => ({ data: [], isLoading: false, isError: false, refetch: vi.fn() }) },
+      count: { useQuery: () => ({ data: 0 }) },
       detail: { useQuery: () => ({ data: null, isLoading: false }) },
       delete: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
     },
@@ -177,7 +198,7 @@ describe('Step pages render', () => {
   });
 
   it('Step8 renders h1 with correct title', () => {
-    render(<Step8 />);
+    render(<MemoryRouter><Step8 /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('直播策划');
   });
 
@@ -194,8 +215,20 @@ describe('Tool pages render', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('全网爆款库');
   });
 
+  it('Trending renders trending-grid-empty when no items (smoke)', () => {
+    render(<MemoryRouter><Trending /></MemoryRouter>);
+    // mock returns items:[] → empty state rendered
+    expect(screen.getByTestId('trending-grid-empty')).toBeInTheDocument();
+  });
+
+  it('Trending renders trending-filter-card and trending-search-bar (smoke)', () => {
+    render(<MemoryRouter><Trending /></MemoryRouter>);
+    expect(screen.getByTestId('trending-filter-card')).toBeInTheDocument();
+    expect(screen.getByTestId('trending-search-bar')).toBeInTheDocument();
+  });
+
   it('Knowledge renders h1 heading', () => {
-    render(<Knowledge />);
+    render(<MemoryRouter><Knowledge /></MemoryRouter>);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AIP文案方法论');
   });
 });
@@ -227,10 +260,11 @@ describe('Module pages render', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('IP账号管理');
   });
 
-  it('Accounts shows mock account card when data exists', () => {
+  it('Accounts renders accounts-list (empty state under no-data mock)', () => {
     render(<MemoryRouter><Accounts /></MemoryRouter>);
     expect(screen.getByTestId('accounts-list')).toBeInTheDocument();
-    expect(screen.getByText('赵语AI')).toBeInTheDocument();
+    // 接真 tRPC 后,全局 mock 无数据 → 渲染空态
+    expect(screen.getByText('暂无账号')).toBeInTheDocument();
   });
 
   it('DailyTasks renders h1 heading', () => {

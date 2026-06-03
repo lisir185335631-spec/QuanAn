@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import {
   Brain,
   Clapperboard,
@@ -15,6 +14,8 @@ import {
   Video,
   Zap,
 } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 // ── 兼容旧接口(其他 page 可能引用) ─────────────────────────────────────────────
 export interface GuideModule {

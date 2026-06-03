@@ -1,5 +1,3 @@
-import { Stethoscope } from 'lucide-react';
-
 import type { DimensionDetailData } from '@/lib/constants/diagnosis';
 import { REPORT_HEADING_DETAILED } from '@/lib/constants/diagnosis';
 
@@ -23,16 +21,16 @@ export function DetailedReportSection({
   return (
     <div
       data-testid="detailed-report-section"
-      className="rounded-xl border border-border bg-card p-6 flex flex-col gap-6"
+      className="rounded-xl border border-[#e5e7eb] bg-white p-6 flex flex-col gap-6 pw-shadow-soft"
     >
       <div className="flex items-center gap-2">
-        <Stethoscope className="w-5 h-5 text-primary" />
-        <span className="text-base font-bold text-on-surface">{REPORT_HEADING_DETAILED}</span>
+        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">stethoscope</span>
+        <span className="text-[18px] font-bold text-[#111827]">{REPORT_HEADING_DETAILED}</span>
       </div>
-      <p className="text-base text-muted-foreground">{intro}</p>
-      <h2 className="text-2xl font-bold text-on-surface">{reportH2}</h2>
-      <p className="text-base text-muted-foreground">
-        <span className="font-bold text-on-surface">{verdictLead}</span>
+      <p className="text-[15px] text-[#444653]">{intro}</p>
+      <h2 className="text-[24px] font-bold text-[#111827]">{reportH2}</h2>
+      <p className="text-[15px] text-[#444653]">
+        <span className="font-bold text-[#111827]">{verdictLead}</span>
         {verdictBody}
       </p>
       <div className="flex flex-col gap-8">

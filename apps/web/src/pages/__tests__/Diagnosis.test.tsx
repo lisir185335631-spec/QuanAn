@@ -9,6 +9,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import Diagnosis from '@/pages/modules/Diagnosis';
 
+import type * as ReactRouterDom from 'react-router-dom';
+
 const mockReset = vi.fn();
 
 vi.mock('@/lib/trpc', () => ({
@@ -35,7 +37,7 @@ vi.mock('sonner', () => ({
 }));
 
 vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+  const actual = await importOriginal<typeof ReactRouterDom>();
   return {
     ...actual,
     useNavigate: () => vi.fn(),

@@ -1,5 +1,6 @@
 // PRD-29.13 · 私域成交流程 · 成交话术 4 sub-list · 橙边
 import { toast } from 'sonner';
+
 import { cn } from '@/lib/utils';
 
 interface SalesScripts {
@@ -16,7 +17,7 @@ interface PrivateDomainSalesScriptSectionProps {
 
 function CopyButton({ text }: { text: string }) {
   function handleCopy() {
-    navigator.clipboard.writeText(text).then(() => toast.success('已复制'));
+    void navigator.clipboard.writeText(text).then(() => toast.success('已复制'));
   }
   return (
     <button

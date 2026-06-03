@@ -31,7 +31,7 @@ describe('PrivateDomain', () => {
   it('副标题字面锁', () => {
     renderPage();
     expect(
-      screen.getByText('覆盖从加好友到成交复购的全链路话术，让私域转化率翻倍'),
+      screen.getByText(/覆盖从加好友到成交复购的全链路话术，让私域转化率翻倍/),
     ).toBeInTheDocument();
   });
 
@@ -60,9 +60,9 @@ describe('PrivateDomain', () => {
     ).toBeInTheDocument();
   });
 
-  it('CTA "生成话术" 可见且默认 enabled', () => {
+  it('CTA "生成全链路话术" 可见且默认 enabled', () => {
     renderPage();
-    const btn = screen.getByRole('button', { name: /生成话术/ });
+    const btn = screen.getByRole('button', { name: /生成全链路话术/ });
     expect(btn).toBeInTheDocument();
     expect(btn).not.toBeDisabled();
   });
@@ -83,7 +83,7 @@ describe('PrivateDomain', () => {
 
   it('复制全部话术 + 反馈 prompt', () => {
     renderPage();
-    expect(screen.getByText(/复制全部话术/)).toBeInTheDocument();
+    expect(screen.getAllByText(/复制全部话术/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('这个结果对你有帮助吗？')).toBeInTheDocument();
   });
 });

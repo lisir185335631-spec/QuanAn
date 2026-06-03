@@ -31,10 +31,10 @@ interface TrendingDetailDrawerProps {
 
 export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDetailDrawerProps) {
   const navigate = useNavigate();
-  const { data: detail, isLoading } = trpc.trending.detail.useQuery(
+  const { data: detail, isLoading, isError } = trpc.trending.detail.useQuery(
     { id: itemId! },
     { enabled: !!itemId },
-  ) as { data: TrendingDetailItem | undefined; isLoading: boolean };
+  ) as { data: TrendingDetailItem | undefined; isLoading: boolean; isError: boolean };
 
   function handleCopyContent() {
     if (!detail?.contentText) return;
@@ -56,7 +56,7 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
   function handleSaveToLibrary() {
     if (!detail) return;
     onFavorite?.(detail.id);
-    toast.success('已保存到我的选题库');
+    toast.success('已收藏');
   }
 
   return (
@@ -70,7 +70,28 @@ export function TrendingDetailDrawer({ itemId, onClose, onFavorite }: TrendingDe
           <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">加载中…</div>
         )}
 
-        {detail && !isLoading && (
+        {isError && !isLoading && (
+          <div
+            data-testid="drawer-error"
+            className="flex flex-col items-center justify-center h-40 gap-3 text-center px-6"
+          >
+            <p className="text-sm text-muted-foreground">加载失败，请重试</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(0)}
+              className="text-xs"
+            >
+              重试
+            </Button>
+          </div>
+        )}
+
+        {!isLoading && !isError && !detail && (
+          <div className="flex items-center justify-center h-40 text-muted-foreground text-sm">暂无数据</div>
+        )}
+
+        {detail && !isLoading && !isError && (
           <ScrollArea className="h-[calc(100vh-160px)]">
             <div className="px-6 py-4 space-y-4">
               {/* Platform badge */}

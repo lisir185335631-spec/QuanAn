@@ -28,11 +28,11 @@ function NicknameSkeleton() {
   return (
     <SubCard>
       <div className="space-y-3 animate-pulse">
-        <div className="h-4 bg-muted/60 rounded w-2/5" />
-        <div className="h-3 bg-muted/40 rounded w-full" />
-        <div className="h-3 bg-muted/40 rounded w-4/5" />
-        <div className="h-3 bg-muted/40 rounded w-3/4" />
-        <div className="h-6 bg-muted/30 rounded-full w-1/3" />
+        <div className="h-4 bg-[#f3f4f6] rounded w-2/5" />
+        <div className="h-3 bg-[#f3f4f6] rounded w-full" />
+        <div className="h-3 bg-[#f3f4f6] rounded w-4/5" />
+        <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
+        <div className="h-6 bg-[#f3f4f6] rounded-full w-1/3" />
       </div>
     </SubCard>
   );
@@ -48,8 +48,8 @@ export function NicknameRecommendSection({
   return (
     <div className={cn('space-y-4', className)}>
       {/* H3 row */}
-      <h3 className="flex items-center gap-2 text-base font-semibold text-on-surface">
-        <FlameIcon className="h-4 w-4 shrink-0" size={4} />
+      <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+        <FlameIcon className="h-4 w-4 shrink-0" aria-hidden="true" size={4} />
         {H3_LABEL}
       </h3>
 
@@ -72,18 +72,18 @@ export function NicknameRecommendSection({
 
       {/* 命名策略 sub-section */}
       {(isEmpty || strategy) && (
-        <div className="bg-muted/20 p-4 rounded-lg space-y-3 border border-primary/15">
-          <p className="text-sm font-semibold text-on-surface">命名策略</p>
+        <div className="bg-[#f3f4f6] p-4 rounded-lg space-y-3 border border-[#002fa7]/15">
+          <p className="text-sm font-semibold text-[#111827]">命名策略</p>
           {strategy ? (
             <>
               {strategy.hint && (
-                <p className="text-xs text-muted-foreground leading-relaxed">{strategy.hint}</p>
+                <p className="text-xs text-[#6b7280] leading-relaxed">{strategy.hint}</p>
               )}
               {strategy.principles && strategy.principles.length > 0 && (
                 <ul className="space-y-1.5">
                   {strategy.principles.map((p, i) => (
-                    <li key={`p-${i}`} className="text-xs leading-relaxed flex gap-2 text-on-surface/85">
-                      <span className="text-emerald-500 shrink-0">✓</span>
+                    <li key={`p-${i}`} className="text-xs leading-relaxed flex gap-2 text-[#1f2937]">
+                      <span className="text-[#10b981] shrink-0">✓</span>
                       <span>{p}</span>
                     </li>
                   ))}
@@ -92,8 +92,8 @@ export function NicknameRecommendSection({
               {strategy.avoidances && strategy.avoidances.length > 0 && (
                 <ul className="space-y-1.5">
                   {strategy.avoidances.map((a, i) => (
-                    <li key={`a-${i}`} className="text-xs leading-relaxed flex gap-2 text-on-surface/65">
-                      <span className="text-rose-400 shrink-0">✗</span>
+                    <li key={`a-${i}`} className="text-xs leading-relaxed flex gap-2 text-[#6b7280]">
+                      <span className="text-[#781621] shrink-0">✗</span>
                       <span>{a}</span>
                     </li>
                   ))}
@@ -104,7 +104,7 @@ export function NicknameRecommendSection({
                   {strategy.chips.map((chip) => (
                     <span
                       key={chip}
-                      className="inline-block text-xs bg-primary/10 text-primary border border-primary/20 rounded-full px-2.5 py-0.5"
+                      className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/20 rounded-full px-2.5 py-0.5"
                     >
                       {chip}
                     </span>
@@ -112,15 +112,15 @@ export function NicknameRecommendSection({
                 </div>
               )}
               {strategy.note && (
-                <p className="text-[11px] text-muted-foreground/80 leading-relaxed border-t border-border/30 pt-2 mt-1">
+                <p className="text-[11px] text-[#6b7280] leading-relaxed border-t border-[#e5e7eb]/30 pt-2 mt-1">
                   {strategy.note}
                 </p>
               )}
             </>
           ) : (
             <div className="animate-pulse space-y-2">
-              <div className="h-3 bg-muted/40 rounded w-full" />
-              <div className="h-3 bg-muted/40 rounded w-3/4" />
+              <div className="h-3 bg-[#f3f4f6] rounded w-full" />
+              <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
             </div>
           )}
         </div>

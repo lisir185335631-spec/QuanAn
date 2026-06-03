@@ -51,8 +51,8 @@ describe('historyPage constants · sally 1:1 字面锁', () => {
       '查看和管理你生成的所有文案　（共 4 条）',
     );
     expect(HISTORY_TOPIC_PREFIX).toBe('主题：');
-    expect(HISTORY_TOAST_VIEW).toBe('查看详情 · 即将上线');
+    expect(HISTORY_TOAST_VIEW).toBe('查看详情');
     expect(HISTORY_TOAST_COPY).toBe('已复制');
-    expect(HISTORY_TOAST_DELETE).toBe('删除 · 即将上线');
+    expect(HISTORY_TOAST_DELETE).toBe('已删除');
   });
 });

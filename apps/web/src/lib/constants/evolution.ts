@@ -3,8 +3,9 @@
  * PRD-25 /evolution 智能体进化中心 · mock-first
  */
 
-import type { LucideIcon } from 'lucide-react';
 import { BookOpen, Crown, Leaf, Sprout, Trees } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 // ── header ────────────────────────────────────────────────────────────────────
 export const EVOLUTION_BREADCRUMB_LEFT = 'EVOLUTION' as const;
@@ -102,6 +103,5 @@ export const EVOLUTION_DEFAULT_STATS = {
 } as const;
 
 // ── toast ────────────────────────────────────────────────────────────────────
-export const EVOLUTION_TOAST_TRIGGER = '触发进化 · 即将上线' as const;
 export const EVOLUTION_TOAST_AUTO_ON = '自动进化已开启' as const;
 export const EVOLUTION_TOAST_AUTO_OFF = '自动进化已关闭' as const;

@@ -3,13 +3,15 @@
  * D1A 字面锁 · SPEC §3 完整字面
  */
 
-import type { LucideIcon } from 'lucide-react';
 import { Copy, Eye, Trash2 } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 // ── header ─────────────────────────────────────────────────────────────────────
 
 export const HISTORY_H1 = '历史记录' as const;
 export const HISTORY_SUBTITLE_TPL = (n: number) =>
+  // eslint-disable-next-line no-irregular-whitespace -- 全角空格是 sally 设计 1:1 字面锁(historyPage.test 锁定)
   `查看和管理你生成的所有文案　（共 ${n} 条）` as const;
 
 // ── entry prefix ───────────────────────────────────────────────────────────────
@@ -18,9 +20,9 @@ export const HISTORY_TOPIC_PREFIX = '主题：' as const;
 
 // ── toast ──────────────────────────────────────────────────────────────────────
 
-export const HISTORY_TOAST_VIEW = '查看详情 · 即将上线' as const;
+export const HISTORY_TOAST_VIEW = '查看详情' as const;
 export const HISTORY_TOAST_COPY = '已复制' as const;
-export const HISTORY_TOAST_DELETE = '删除 · 即将上线' as const;
+export const HISTORY_TOAST_DELETE = '已删除' as const;
 
 // ── types ──────────────────────────────────────────────────────────────────────
 

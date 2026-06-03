@@ -2,10 +2,10 @@ import { HOME_FOOTER } from '@/lib/constants/home';
 
 export function HomeFooter() {
   return (
-    <footer className="py-8">
-      <p className="font-display text-xs text-muted-foreground/40 text-center tracking-widest">
+    <div className="pt-2 text-center">
+      <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#9ca3af]">
         {HOME_FOOTER}
       </p>
-    </footer>
+    </div>
   );
 }

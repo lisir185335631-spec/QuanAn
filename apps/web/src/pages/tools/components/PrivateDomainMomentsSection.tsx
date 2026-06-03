@@ -1,5 +1,6 @@
 // PRD-29.13 · 私域成交流程 · 朋友圈文案 4 sub-list · 绿边
 import { toast } from 'sonner';
+
 import { cn } from '@/lib/utils';
 
 interface MomentsScripts {
@@ -23,7 +24,7 @@ const SUB_LISTS: Array<{ key: keyof MomentsScripts; label: string }> = [
 
 function CopyButton({ text }: { text: string }) {
   function handleCopy() {
-    navigator.clipboard.writeText(text).then(() => toast.success('已复制'));
+    void navigator.clipboard.writeText(text).then(() => toast.success('已复制'));
   }
   return (
     <button

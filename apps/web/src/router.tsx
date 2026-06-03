@@ -1,19 +1,16 @@
 /**
- * PRD-3 US-001 · createBrowserRouter · 34 routes
- * PRD-3 US-005: step routes wrapped in StepLayout (adds FeedbackButton to all step pages)
+ * createBrowserRouter · 先锋白全站路由
+ * step/* 9 条均已迁移先锋白 · 顶层独立路由 · StepLayout 已移除
  * Route groups (chunks):
- *   step/*      → step chunk (9 routes)
+ *   step/*      → 9 条顶层独立路由(PioneerLayout 外壳，不挂 RootLayout)
  *   tools/*     → 14 tool pages (lazy individually, shared vite chunk via webpackChunkName)
  *   modules/*   → 6 new modules
  *   auxiliary   → /ip-plan, /404 catch-all
  */
 
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 
-import { RootLayout } from '@/layouts/RootLayout';
-import { StepLayout } from '@/layouts/StepLayout';
-import Guide from '@/pages/Guide';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
 
@@ -57,63 +54,284 @@ const History = lazy(() => import(/* webpackChunkName: "modules" */ '@/pages/mod
 
 // ── Auxiliary pages ───────────────────────────────────────────────────────────
 const IpPlan = lazy(() => import('@/pages/IpPlan'));
+const Guide = lazy(() => import('@/pages/Guide'));
+
+// ── 先锋白 dashboard(系统控制台 · Stitch 设计 · 新建路由)──
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
 export const router = createBrowserRouter([
+  // ── 先锋白·工业精密版 · 已迁移页面走 PioneerLayout 独立外壳(不挂 RootLayout) ──
+  {
+    path: '/step/1',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step1 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Dashboard />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/3',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step3 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/3b',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step3b />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/4',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step4 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/4b',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step4b />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/6',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step6 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/5',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step5 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/7',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step7 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/step/8',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Step8 />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/private-domain',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <PrivateDomain />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/video-analysis',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <VideoAnalysis />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/acquisition-video',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <AcquisitionVideo />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/present-styles',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <PresentStyles />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/diagnosis',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Diagnosis />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/daily-tasks',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <DailyTasks />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/ai-video',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <AiVideo />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/voice-chat',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <VoiceChat />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/deep-learning',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <DeepLearning />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/evolution',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Evolution />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/knowledge',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Knowledge />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/accounts',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Accounts />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · Guide 使用说明(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/guide',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Guide />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · IP 方案进度总览(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/ip-plan',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <IpPlan />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 爆款元素自动生成(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/boom-generate',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <BoomGenerate />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · IP变现模型定制(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/monetization',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Monetization />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 全网爆款库(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/trending',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Trending />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 我的选题库(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/my-topics',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <MyTopics />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 历史记录(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/history',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <History />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 生成爆款文案(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/generate',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Generate />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 文案结构分析(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/analysis',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Analysis />
+      </Suspense>
+    ),
+  },
+  // ── 先锋白·已迁移 · 短视频一键制作(独立顶层路由 · PioneerLayout 外壳)──
+  {
+    path: '/video-production',
+    element: (
+      <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <VideoProduction />
+      </Suspense>
+    ),
+  },
+  // ── '/' 布局路由(无外壳元素 → 渲染 Outlet)· index=首页 / '*'=404 · 均先锋白(各自内置 PioneerLayout)──
   {
     path: '/',
-    element: <RootLayout />,
     children: [
-      // Home page
       { index: true, element: <Home /> },
-
-      // Guide page
-      { path: 'guide', element: <Guide /> },
-
-      // ── Step routes (9 core + 2 sub-steps) — nested under StepLayout ──────
-      {
-        path: 'step',
-        element: <StepLayout />,
-        children: [
-          { path: '1', element: <Step1 /> },
-          { path: '3', element: <Step3 /> },
-          { path: '3b', element: <Step3b /> },
-          { path: '4', element: <Step4 /> },
-          { path: '4b', element: <Step4b /> },
-          { path: '5', element: <Step5 /> },
-          { path: '6', element: <Step6 /> },
-          { path: '7', element: <Step7 /> },
-          { path: '8', element: <Step8 /> },
-        ],
-      },
-
-      // ── Tool routes (14) ─────────────────────────────────────────────────
-      { path: 'trending', element: <Trending /> },
-      { path: 'present-styles', element: <PresentStyles /> },
-      { path: 'monetization', element: <Monetization /> },
-      { path: 'private-domain', element: <PrivateDomain /> },
-      { path: 'boom-generate', element: <BoomGenerate /> },
-      { path: 'generate', element: <Generate /> },
-      { path: 'analysis', element: <Analysis /> },
-      { path: 'video-analysis', element: <VideoAnalysis /> },
-      { path: 'video-production', element: <VideoProduction /> },
-      { path: 'acquisition-video', element: <AcquisitionVideo /> },
-      { path: 'ai-video', element: <AiVideo /> },
-      { path: 'voice-chat', element: <VoiceChat /> },
-      { path: 'deep-learning', element: <DeepLearning /> },
-      { path: 'knowledge', element: <Knowledge /> },
-
-      // ── New module routes (6) ─────────────────────────────────────────────
-      { path: 'diagnosis', element: <Diagnosis /> },
-      { path: 'daily-tasks', element: <DailyTasks /> },
-      { path: 'evolution', element: <Evolution /> },
-      { path: 'accounts', element: <Accounts /> },
-      { path: 'my-topics', element: <MyTopics /> },
-      { path: 'history', element: <History /> },
-
-      // ── Auxiliary routes ──────────────────────────────────────────────────
-      { path: 'ip-plan', element: <IpPlan /> },
-
-      // ── 404 catch-all ─────────────────────────────────────────────────────
       { path: '*', element: <NotFound /> },
     ],
   },

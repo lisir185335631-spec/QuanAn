@@ -32,6 +32,14 @@ vi.mock('sonner', () => ({
   toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
 
+// PioneerLayout uses useAuth + useActiveAccount → both call trpc → mock at module level
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ user: null, isLoading: false, login: vi.fn(), logout: vi.fn(), refetch: vi.fn() }),
+}));
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({ account: null, switchTo: vi.fn(), isSwitching: false, isLoading: false }),
+}));
+
 function renderPage() {
   return render(
     <MemoryRouter>
@@ -65,15 +73,18 @@ describe('Analysis', () => {
 
   it('综合评分 label + 92', () => {
     renderPage();
-    expect(screen.getByText(ANALYSIS_OVERALL_LABEL)).toBeInTheDocument();
+    // "综合评分" 出现在 h3 + 雷达图 label + legend → getAllByText
+    expect(screen.getAllByText(ANALYSIS_OVERALL_LABEL).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(String(ANALYSIS_OVERALL_SCORE)).length).toBeGreaterThanOrEqual(1);
   });
 
   it('多维度评分 title + 5 维度 label', () => {
     renderPage();
-    expect(screen.getByText(ANALYSIS_DIMENSIONS_TITLE)).toBeInTheDocument();
+    // "多维度评分" 出现在 h3 + 雷达图 legend → getAllByText
+    expect(screen.getAllByText(ANALYSIS_DIMENSIONS_TITLE).length).toBeGreaterThanOrEqual(1);
     ANALYSIS_DIMENSIONS.forEach((d) => {
-      expect(screen.getByText(d.label)).toBeInTheDocument();
+      // 维度 label 同时出现在雷达图 SVG 和 score bar → getAllByText
+      expect(screen.getAllByText(d.label).length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -110,7 +121,8 @@ describe('Analysis', () => {
 
   it('优化建议 title + 3 条字面', () => {
     renderPage();
-    expect(screen.getByText(ANALYSIS_SUGGESTIONS_TITLE)).toBeInTheDocument();
+    // "优化建议" 出现在 section h3 + KPI badge → getAllByText
+    expect(screen.getAllByText(ANALYSIS_SUGGESTIONS_TITLE).length).toBeGreaterThanOrEqual(1);
     ANALYSIS_SUGGESTIONS.forEach((s) => {
       expect(screen.getByText(s)).toBeInTheDocument();
     });

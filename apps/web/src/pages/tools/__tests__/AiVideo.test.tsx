@@ -2,7 +2,7 @@
  * AiVideo.test.tsx — /ai-video STORYBOARD 1:1 复刻单测
  * mock-first · 0 backend · 0 trpc mock needed
  */
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
@@ -20,8 +20,10 @@ function renderPage() {
 describe('AiVideo · form 态(default)', () => {
   it('renders STORYBOARD chip with subtitle', () => {
     renderPage();
-    expect(screen.getByText('STORYBOARD')).toBeInTheDocument();
-    expect(screen.getByText('专业分镜表生成器 · 文案一键转拍摄方案')).toBeInTheDocument();
+    // 先锋白重构后 'STORYBOARD' 同时出现在 h1 和输入卡 h2 · 用 getAllByText 确认至少一个存在
+    expect(screen.getAllByText('STORYBOARD').length).toBeGreaterThanOrEqual(1);
+    // 副标题仅在输入卡 section 内出现，用 storyboard-chip testid 定位
+    expect(within(screen.getByTestId('storyboard-chip')).getByText('专业分镜表生成器 · 文案一键转拍摄方案')).toBeInTheDocument();
   });
 
   it('renders 5 platform cards', () => {
@@ -63,7 +65,7 @@ describe('AiVideo · form 态(default)', () => {
 
   it('textarea defaults to demo script (non-empty) and shows char count', () => {
     renderPage();
-    const textarea = screen.getByTestId('ai-video-textarea') as HTMLTextAreaElement;
+    const textarea = screen.getByTestId<HTMLTextAreaElement>('ai-video-textarea');
     expect(textarea.value.length).toBeGreaterThan(0);
     // char count display
     const charCount = screen.getByTestId('ai-video-char-count');
@@ -75,10 +77,12 @@ describe('AiVideo · result 态(点 CTA 后)', () => {
   it('shows result title card + restart button after clicking CTA', () => {
     renderPage();
     fireEvent.click(screen.getByTestId('ai-video-cta'));
-    expect(screen.getByTestId('result-title-card')).toBeInTheDocument();
+    const titleCard = screen.getByTestId('result-title-card');
+    expect(titleCard).toBeInTheDocument();
     expect(screen.getByText('美业老板的秘密：AI赋能还是人情味？')).toBeInTheDocument();
-    expect(screen.getByText('110秒')).toBeInTheDocument();
-    expect(screen.getByText('10个分镜')).toBeInTheDocument();
+    // 先锋白重构后 '110秒'/'10个分镜' 同时出现在 KPI 卡和标题卡，用 within 定位标题卡节点
+    expect(within(titleCard).getByText('110秒')).toBeInTheDocument();
+    expect(within(titleCard).getByText('10个分镜')).toBeInTheDocument();
     expect(screen.getByTestId('ai-video-restart')).toBeInTheDocument();
     expect(screen.getByText('清空记录，重新开始')).toBeInTheDocument();
   });

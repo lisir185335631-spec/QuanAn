@@ -1,11 +1,40 @@
 /**
  * BoomGenerate.test.tsx — /boom-generate 字面锁测试
- * mock-first 静态 · 无 trpc mock · 验证 1:1 字面复刻
+ * mock-first 静态 · 验证 1:1 字面复刻 · PioneerLayout tRPC/useAuth/useActiveAccount mock
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// ── PioneerLayout requires trpc + useActiveAccount ───────────────────────────
+vi.mock('@/lib/trpc', () => ({
+  trpc: {
+    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+  },
+}));
+
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({
+    account: null,
+    isLoading: false,
+    isSwitching: false,
+    switchTo: vi.fn(),
+  }),
+}));
+
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
 
 import BoomGenerate from '@/pages/tools/BoomGenerate';
 
@@ -109,25 +138,25 @@ describe('BoomGenerate', () => {
 
   it('industry input default value · 美业', () => {
     renderPage();
-    const input = screen.getByTestId('boom-industry-input') as HTMLInputElement;
+    const input = screen.getByTestId<HTMLInputElement>('boom-industry-input');
     expect(input.value).toBe('美业');
   });
 
   it('topic input default value · 减肥', () => {
     renderPage();
-    const input = screen.getByTestId('boom-topic-input') as HTMLInputElement;
+    const input = screen.getByTestId<HTMLInputElement>('boom-topic-input');
     expect(input.value).toBe('减肥');
   });
 
   it('industry placeholder · 当前：美业', () => {
     renderPage();
-    const input = screen.getByTestId('boom-industry-input') as HTMLInputElement;
+    const input = screen.getByTestId<HTMLInputElement>('boom-industry-input');
     expect(input.placeholder).toBe('当前：美业');
   });
 
   it('topic placeholder · 如：减肥、理财、育儿...', () => {
     renderPage();
-    const input = screen.getByTestId('boom-topic-input') as HTMLInputElement;
+    const input = screen.getByTestId<HTMLInputElement>('boom-topic-input');
     expect(input.placeholder).toBe('如：减肥、理财、育儿...');
   });
 

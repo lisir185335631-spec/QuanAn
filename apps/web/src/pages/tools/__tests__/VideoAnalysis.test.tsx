@@ -30,8 +30,9 @@ describe('VideoAnalysis', () => {
 
   it('副标题关键词 深度拆解 + 一键仿写', () => {
     renderPage();
-    expect(screen.getByText('深度拆解')).toBeInTheDocument();
-    // "一键仿写" 同时出现在副标题 span 与仿写 section h3 → getAllByText
+    // 副标题 / section 副标题均含"深度拆解爆款密码" → getAllByText
+    expect(screen.getAllByText(/深度拆解爆款密码/).length).toBeGreaterThanOrEqual(1);
+    // "一键仿写" 出现在仿写 section h3
     expect(screen.getAllByText('一键仿写').length).toBeGreaterThanOrEqual(1);
   });
 
@@ -42,7 +43,7 @@ describe('VideoAnalysis', () => {
 
   it('表单 · 视频标题 placeholder + 默认 content 预填', () => {
     renderPage();
-    expect(screen.getByPlaceholderText('视频标题（选填）')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('粘贴视频标题（可选）')).toBeInTheDocument();
     expect(screen.getByDisplayValue(/希望了解爆款的奥秘/)).toBeInTheDocument();
   });
 
@@ -53,30 +54,34 @@ describe('VideoAnalysis', () => {
     expect(btn).not.toBeDisabled();
   });
 
-  it('解析 section · 选题策略分析 / 钩子分析 / 叙事结构', () => {
+  it('解析 section · 选题策略 / 钩子分析 / 叙事结构', () => {
     renderPage();
-    expect(screen.getByText(/选题策略分析/)).toBeInTheDocument();
-    expect(screen.getByText(/钩子分析/)).toBeInTheDocument();
-    expect(screen.getByText(/叙事结构/)).toBeInTheDocument();
+    // section headers: "选题策略" / "钩子分析" / "叙事结构"
+    expect(screen.getAllByText(/选题策略/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/钩子分析/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/叙事结构/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('选题/叙事 mock 字面 · 测试与探索 / 声明式', () => {
     renderPage();
     expect(screen.getByText('测试与探索')).toBeInTheDocument();
-    expect(screen.getByText(/声明式/)).toBeInTheDocument();
+    // "声明式" 出现在叙事结构 KPI 卡与叙事结构 section span → getAllByText
+    expect(screen.getAllByText(/声明式/).length).toBeGreaterThanOrEqual(1);
   });
 
-  it('爆款元素运用 + 爆款公式提炼 + 元素名 身份认同/好奇心', () => {
+  it('爆款元素 + 爆款公式 + 元素名 身份认同/好奇心', () => {
     renderPage();
-    expect(screen.getByText(/爆款元素运用/)).toBeInTheDocument();
-    expect(screen.getByText(/爆款公式提炼/)).toBeInTheDocument();
+    // section headers: "爆款元素" and "爆款公式"
+    expect(screen.getAllByText(/爆款元素/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/爆款公式/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('身份认同')).toBeInTheDocument();
     expect(screen.getByText('好奇心')).toBeInTheDocument();
   });
 
   it('一键仿写 section · 生成按钮 + 仿写结果 mock 字面', () => {
     renderPage();
-    expect(screen.getByText(/生成仿写文案/)).toBeInTheDocument();
+    // CTA 按钮文案是"生成仿写"(非"生成仿写文案")
+    expect(screen.getByRole('button', { name: /生成仿写/ })).toBeInTheDocument();
     // "一眼假" 出现在仿写标题与正文 body → getAllByText
     expect(screen.getAllByText(/一眼假/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/#短视频爆款/)).toBeInTheDocument();

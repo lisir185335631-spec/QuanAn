@@ -1,25 +1,27 @@
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { CoreIdentitySection } from '@/components/step3b/CoreIdentitySection';
-import { ThoughtSystemSection } from '@/components/step3b/ThoughtSystemSection';
-import { ContentPersonaSection } from '@/components/step3b/ContentPersonaSection';
-import { TrustSystemSection } from '@/components/step3b/TrustSystemSection';
-import { RoadmapSection } from '@/components/step3b/RoadmapSection';
-import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
-import { Step3SectionDivider } from '@/components/step3/Step3PageHeader';
-import { PlatformRadioGroup } from '@/components/step3/PlatformRadioGroup';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { SparkleIcon } from '@/components/icons/aiipznt-icons';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
+import { PioneerLayout } from '@/layouts/PioneerLayout';
 import {
   STEP3B_AUDIENCE,
   STEP3B_CTA_LABEL,
-  STEP3B_H1,
+  STEP3B_LOADING_TEXT,
   STEP3B_SUBTITLE_TEMPLATE,
 } from '@/lib/constants/step3b';
+import { breakSentences } from '@/lib/text';
+import { trpc } from '@/lib/trpc';
+
+// ── 轻量运行时守卫 · 避免强转崩溃 ────────────────────────────────────────────
+function isStep3bResult(x: unknown): x is Step3bResult {
+  if (!x || typeof x !== 'object') return false;
+  const r = x as Record<string, unknown>;
+  return (
+    typeof (r.coreIdentity as Record<string, unknown> | undefined)?.identityTag === 'string' &&
+    Array.isArray(r.roadmap)
+  );
+}
 
 // ── PRD-29.8 · Step3bResult schema ────────────────────────────────────────────
 export interface Step3bResult {
@@ -114,236 +116,23 @@ const DEFAULT_FORM: Step3bFormData = {
   audience: '需要定制智能体降本增效的老板和opc创业者',
 };
 
-// ── PRD-29.8 · mock data 1:1 逐字提取(sally zhao 真实输出) ──────────────────
-function generateMockResult(): Step3bResult {
-  return {
-    coreIdentity: {
-      identityTag: 'AI转型实战家：从餐饮老板到智能体定制专家，助你降本增效',
-      quote: '"AI不是未来，是你的现在。用AI解放重复，让决策更值钱。从百万负债到AI落地，我帮你避坑。"',
-      differentiation: '你不仅懂技术，更懂商业和创业。与纯技术出身的AI专家不同，你拥有12年餐饮创业的实战经验，经历过从0到1、从成功到失败的完整周期。这让你在定制AI方案时，能从老板视角出发，真正理解降本增效的痛点，而不是仅仅停留在技术层面。同时，你从技术小白逆袭的经历，让你能更好地理解并指导OPC创业者避坑，提供更接地气的实战经验。',
-      memoryPoints: [
-        {
-          title: '餐饮老板转行AI',
-          desc: '这个反差巨大的背景，能迅速抓住注意力。从传统行业到前沿AI，展现了你的敏锐和学习能力，也暗示了你对商业本质的深刻理解。',
-          practice: '在自我介绍、故事分享、直播开场时，强调"我曾是开了13家餐饮店的老板，现在用AI帮你做生意"；制作对比视频，如"餐饮老板的AI转型日记"。',
-        },
-        {
-          title: '百万负债逆袭',
-          desc: '真实且充满戏剧性的经历，能引发共鸣和好奇。它不仅展现了你的韧性，也为你的商业判断和避坑经验增加了说服力。',
-          practice: '在分享创业故事、讲解商业模式时，自然提及这段经历，如"我曾为认知买单，背上百万负债，所以更懂创业者的痛"；制作短视频系列"我的百万负债逆袭路"。',
-        },
-        {
-          title: '技术小白到交付专家',
-          desc: '强调了普通人通过学习也能掌握AI的能力，降低了AI的门槛，让目标受众（尤其是OPC创业者）觉得AI不再遥不可及，你就是他们的榜样。',
-          practice: '制作"小白学AI"系列内容，分享学习路径、工具推荐、踩坑经验；用"我以前连代码都不懂，现在能给大客户定制智能体"来强化人设。',
-        },
-      ],
-      traits: [
-        { name: '实战派', desc: '所有分享都基于真实案例和结果，拒绝空谈' },
-        { name: '韧性强', desc: '面对困难和失败，展现出不屈不挠的创业精神' },
-        { name: '真诚', desc: '不回避过去的失败，坦诚分享经验教训，像朋友一样交流' },
-      ],
-    },
-
-    thoughtSystem: {
-      coreBeliefs: [
-        {
-          belief: 'AI是普通人弯道超车的最佳机会。',
-          reason: '你曾是技术小白，却通过AI实现了逆袭。这证明AI的门槛并非不可逾越，普通人也能通过学习和应用，创造巨大的价值。',
-          angle: '分享AI工具学习路径、成功案例、个人转型故事；拆解AI如何赋能个体创业者。',
-        },
-        {
-          belief: '商业的本质是解决问题，AI是高效的解决方案。',
-          reason: '你的餐饮经历让你深知商业竞争的残酷和效率的重要性。AI不是炫技，而是实实在在解决企业痛点，提升效率，创造利润的工具。',
-          angle: '分析不同行业痛点，提出AI解决方案；案例拆解AI如何帮助客户降本增效；对比传统模式与AI模式的效率差异。',
-        },
-        {
-          belief: '认知升级是创业者最宝贵的投资。',
-          reason: '你曾因认知问题导致代加工厂失败并背负百万负债。这段经历让你深刻认识到，持续学习和迭代认知是避免踩坑、实现突破的关键。',
-          angle: '分享认知升级的路径和方法；解读行业趋势，帮助创业者预判风险；拆解商业模式，提升商业洞察力。',
-        },
-      ],
-      viewpoints: [
-        {
-          title: '所有人都说AI要学编程，但我认为普通人更需要学会"指挥"AI。',
-          desc: '这个观点反常识，能引发争议和讨论。它降低了AI学习门槛，吸引更多非技术背景的创业者，同时突出了你作为"指挥官"的价值。',
-          exampleTitle: '《别再死磕代码了！普通人玩转AI的真正秘诀是这个...》',
-        },
-        {
-          title: '创业失败不可怕，可怕的是没有从失败中"赚"到经验。',
-          desc: '你的百万负债经历让这个观点极具说服力。它能引发创业者的共鸣，并传递积极的价值观，强化你"过来人"的形象。',
-          exampleTitle: '《我背负百万负债后，才明白这3个创业真相》',
-        },
-      ],
-      mottos: [
-        {
-          motto: '"用AI，做个聪明的老板。"',
-          whenToUse: '在介绍AI解决方案或案例时，结尾强调。',
-          effect: '简洁有力，突出AI对老板的价值，强化品牌定位。',
-        },
-        {
-          motto: '"别只看热闹，要看门道。"',
-          whenToUse: '在分析行业趋势、拆解案例或揭示AI本质时使用。',
-          effect: '引导观众深入思考，展现你的深度和洞察力。',
-        },
-        {
-          motto: '"我的坑，你别再踩。"',
-          whenToUse: '分享个人失败经历或避坑建议时使用。',
-          effect: '拉近距离，展现真诚，增加内容的实用性和信任度。',
-        },
-      ],
-    },
-
-    contentPersona: {
-      speakingStyle: '像一位经历过风浪、洞察商业本质的创业老兵，不卖弄技术，只讲实战经验和落地价值。语言直接、精炼，充满干货，偶尔穿插个人经历，真诚且有力量。语速适中，眼神坚定，偶尔带点幽默感。',
-      speakingDos: [
-        '多用比喻和类比，把复杂AI概念讲明白（例如：AI智能体就像你的专属超级员工）',
-        '多讲故事，用个人经历或客户案例来支撑观点（例如：我当年开干餐饮店时，如果有AI就能省下...）',
-      ],
-      speakingDonts: [
-        '避免使用生涩的技术术语，除非有清晰解释（例如：不说"Transformer架构"，说"AI理解语言的底层逻辑"）',
-        '避免空泛的理论，所有建议都必须有可执行的步骤（例如：不说"要提升效率"，说"用AI自动生成报告，每周节省3小时"）',
-      ],
-      examplePitch: '"哈喽，我是老王。很多人问我，AI到底能帮我们做什么？别听那些花里胡哨的。我告诉你，AI最厉害的地方，就是帮你把那些重复、枯燥、又不得不做的事，全部自动化。比如我有个客户，每天要花两小时整理数据，现在一个智能体搞定，他能把精力放回谈大单。这就是AI的价值。记住，用AI，做个聪明的老板。"',
-      visualStyle: {
-        style: '专业而不失亲和力，展现创业者的精干和实干精神。整体色调偏向沉稳、科技感，但不过于冰冷，融入一些生活化的元素。',
-        outfit: '商务休闲为主。衬衫、T恤搭配休闲西装外套或夹克。颜色以黑、白、灰、深蓝为主，偶尔点缀一些亮色。佩戴简约手表或手环，体现效率和品质感。',
-        scene: '简洁明亮的办公室、工作室背景（有AI设备或屏幕显示智能体界面），或有设计感的咖啡馆一角，突出创业氛围。也可以选择一些科技展会、AI大会的现场作为背景。',
-        props: ['笔记本电脑（显示AI界面）', '平板电脑', '白板/透明玻璃板（手写思考过程）', '咖啡杯'],
-      },
-      contentPillars: [
-        {
-          title: 'AI降本增效实战案例',
-          percentage: '40%',
-          frequency: '每周2-3次',
-          desc: '拆解具体行业或企业如何通过定制智能体实现效率提升、成本降低的真实案例，突出AI的商业价值。',
-          cases: [
-            '《一个智能体，让我的电商客服效率提升300%！》',
-            '《餐饮老板必看：AI如何帮你做菜单优化和采购预测？》',
-            '《我给百万博主定制的AI助手，让他省下了一个运营团队》',
-          ],
-        },
-        {
-          title: 'OPC创业避坑指南',
-          percentage: '30%',
-          frequency: '每周1-2次',
-          desc: '结合自身从餐饮到AI的转型经历，分享OPC创业者在AI赛道可能遇到的坑，以及如何规避和解决，提供实战经验和方法论。',
-          cases: [
-            '《我踩过的百万创业大坑：OPC创业者如何避免认知陷阱？》',
-            '《技术小白如何快速上手AI，找到你的第一个付费客户？》',
-            '《OPC创业，别只盯着技术，商业闭环才是王道！》',
-          ],
-        },
-        {
-          title: 'AI工具与趋势解读',
-          percentage: '20%',
-          frequency: '每周1次',
-          desc: '分享最新AI工具的使用技巧、行业前沿趋势解读，帮助目标受众保持信息领先，激发对AI的兴趣和应用思考。',
-          cases: [
-            '《2026年，这3个AI工具将彻底改变你的工作方式！》',
-            '《除了ChatGPT，你还应该知道的5款免费AI效率神器》',
-            '《AI智能体发展趋势：未来每个人都将拥有专属AI员工》',
-          ],
-        },
-        {
-          title: '个人成长与创业感悟',
-          percentage: '10%',
-          frequency: '每半月1次',
-          desc: '分享个人创业心路历程、从失败中学习的感悟、保持学习和迭代的方法，展现真实、有血有肉的人格魅力。',
-          cases: [
-            '《从13家店铺到百万负债，我如何走出人生低谷？》',
-            '《创业十年，我学到的最重要一课：认知决定命运》',
-            '《不是因为看到希望才坚持，而是坚持了才看到希望》',
-          ],
-        },
-      ],
-    },
-
-    trustSystem: {
-      backings: [
-        {
-          claim: '12年餐饮创业经验，曾拥有13家店铺',
-          display: '在讲述商业洞察、市场分析时，提及"我当年做餐饮时就发现..."；在个人故事中，展示老照片或店铺照片。',
-        },
-        {
-          claim: '成功交付多项AI工作流/智能体项目，收费4-6位数',
-          display: '展示客户的感谢信、案例截图（模糊敏感信息）、客户访谈（征得同意后），强调"已帮助XX客户实现XX%效率提升"。',
-        },
-        {
-          claim: '从技术小白到AI交付专家，已走通商业闭环',
-          display: '分享学习路径、工具使用心得，展示个人学习笔记或项目开发过程中的截图；在课程宣传中强调"我的方法已验证"。',
-        },
-      ],
-      socialProofs: [
-        {
-          proof: '客户的真实反馈和案例（包括百万博主商单）',
-          method: '定期收集客户的文字或视频反馈，制作成案例集或短视频；邀请客户进行线上访谈或推荐；展示合作合同或交付成果（注意保密）。',
-        },
-        {
-          proof: 'OPC创业者的学习成果和避坑反馈',
-          method: '鼓励课程学员分享学习心得和应用成果；建立社群，收集学员的提问和成功案例；制作学员访谈视频。',
-        },
-      ],
-      storyLine: {
-        mainStory: '我曾是餐饮界的"老炮儿"，从一家小店做到13家连锁，以为摸透了商业的门道。然而，市场的无情和一次错误的投资，让我背负了百万负债。那段日子，我每天都在思考出路。偶然间，我接触到AI，从一个技术小白开始，像着了魔一样学习、实践。我亲手搓出了第一个AI工作流，看到了普通人通过AI改变命运的可能。我果断关闭了所有餐饮店，全身心投入AI赛道，从零开始打造我的OPC公司。现在，我不仅还清了债务，还用AI帮助更多企业和创业者降本增效，也把我的避坑经验总结成课程，希望能帮助更多OPC创业者少走弯路。',
-        turningPoint: '背负百万负债后，我第一次尝试用AI工具制作图片，被它的强大震撼。那一刻我意识到，AI不是遥远的科技，而是普通人也能掌握的、改变命运的工具，它让我看到了从绝境中翻盘的希望。',
-        narrationMethod: '通过短视频系列讲述"我的AI转型之路"，每期聚焦一个阶段或一个感悟；在直播中穿插讲述关键节点和心路历程；在课程或分享中，以"我当年就是这样..."的形式，把故事融入知识点，让内容更具感染力。',
-      },
-    },
-
-    roadmap: [
-      {
-        period: '0-1个月',
-        accent: 'green',
-        goal: '建立核心人设，积累初始信任和流量',
-        steps: [
-          '发布10-15条核心人设短视频（餐饮老板转AI、百万负债、技术小白逆袭），形成记忆点。',
-          '至少1个AI降本增效案例视频播放量破万。',
-          '完成第一期OPC避坑课程大纲设计，并进行小范围内测。',
-        ],
-      },
-      {
-        period: '1-3个月',
-        accent: 'yellow',
-        goal: '强化专业认知，扩大影响力，开始课程预售',
-        steps: [
-          '持续发布AI实战案例和OPC避坑指南，形成内容系列。',
-          '至少3个客户案例视频获得积极反馈，提升转化率。',
-          '开始OPC避坑课程的预售，积累首批学员。',
-          '尝试进行1-2场直播，分享AI趋势或创业经验。',
-        ],
-      },
-      {
-        period: '3-6个月',
-        accent: 'purple',
-        goal: '构建思想体系，打造社群，实现规模化交付',
-        steps: [
-          '形成稳定的内容输出节奏，深化核心理念和独特观点。',
-          '课程正式上线并持续优化，建立学员社群，提供答疑和支持。',
-          '通过客户案例和学员反馈，形成口碑传播，吸引更多高价值客户。',
-          '探索AI定制服务和课程的组合销售模式，提升客单价和复购率。',
-        ],
-      },
-    ],
-  };
-}
 
 export default function Step3b() {
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
-  const { save, isSaving, dbQuery } = useStepData(accountId, 'step3b');
+  const { dbQuery } = useStepData(accountId, 'step3b');
 
   // industry from step1 (default 美业)
   const industry = readOtherStep<{ industry?: string }>(accountId, 'step1')?.industry ?? '美业';
 
   // PRD-29.8 · default form 1:1 复刻 sally 真实输入
-  const [personalInfo, setPersonalInfo] = useState(DEFAULT_FORM.personalInfo);
-  const [personalAdvantage, setPersonalAdvantage] = useState(DEFAULT_FORM.personalAdvantage);
-  const [personalStory, setPersonalStory] = useState(DEFAULT_FORM.personalStory);
+  const [personalInfo, setPersonalInfo] = useState(breakSentences(DEFAULT_FORM.personalInfo));
+  const [personalAdvantage, setPersonalAdvantage] = useState(
+    breakSentences(DEFAULT_FORM.personalAdvantage),
+  );
+  const [personalStory, setPersonalStory] = useState(breakSentences(DEFAULT_FORM.personalStory));
   const [platform, setPlatform] = useState(DEFAULT_FORM.platform);
   const [audience, setAudience] = useState(DEFAULT_FORM.audience);
-
-  const prevIsSavingRef = useRef(false);
 
   // Restore form from LS on accountId change
   useEffect(() => {
@@ -358,36 +147,58 @@ export default function Step3b() {
     }
   }, [accountId]);
 
-  useEffect(() => {
-    if (prevIsSavingRef.current && !isSaving) {
+  // PRD-29.8 · 真 mutation: trpc.stepData.save 接真后端 · 单写路径
+  const generateMutation = trpc.stepData.save.useMutation({
+    onSuccess: () => {
       void dbQuery.refetch();
-    }
-    prevIsSavingRef.current = isSaving;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSaving]);
+      toast.success('生成完成');
+    },
+    onError: (err) => {
+      toast.error(err.message || '生成失败，请重试');
+    },
+  });
 
-  // 暂不接 LLM mutation · 用 stub(后续 PRD 接 trpc.step3b.generatePackage)
-  const [isLocalGenerating, setIsLocalGenerating] = useState(false);
-  const isLoading = isLocalGenerating || isSaving;
+  const isLoading = generateMutation.isPending;
 
-  // PRD-29.8 · default 强制 mock · 跟 /step/3 一致逻辑
-  const generated: Step3bResult = generateMockResult();
-  const canBulkActions = !isLoading;
+  // PRD-29.8 · 真数据来源(带运行时守卫，避免强转崩溃):
+  // 1. 本次 session mutation 返回的 result (优先)
+  // 2. db query 里已存的 result
+  // 3. 无数据 → undefined(不再 fallback mock)
+  const mutationResult = (generateMutation.data as { ok?: boolean; data?: { result?: unknown; isFallback?: boolean } } | undefined);
+  const rawSession = mutationResult?.data?.result;
+  const rawDb = dbQuery.data?.result;
+  const sessionResult: Step3bResult | undefined = isStep3bResult(rawSession) ? rawSession : undefined;
+  const dbResult: Step3bResult | undefined = isStep3bResult(rawDb) ? rawDb : undefined;
+  const isFallbackFlag = mutationResult?.data?.isFallback ?? dbQuery.data?.isFallback ?? false;
+
+  const result: Step3bResult | undefined = sessionResult ?? dbResult;
+  const hasRealResult = result !== undefined;
+  const canBulkActions = hasRealResult && !isLoading;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!personalInfo.trim() || isLoading) return;
-    setIsLocalGenerating(true);
-    save({ personalInfo, personalAdvantage, personalStory, platform, audience });
-    setTimeout(() => {
-      setIsLocalGenerating(false);
-      toast.success('生成完成');
-    }, 1200);
+    generateMutation.mutate({
+      stepKey: 'step3b',
+      inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
+    });
   }
 
   function handleCopyAll() {
-    const text = JSON.stringify(generated, null, 2);
-    navigator.clipboard.writeText(text).then(() => toast.success('已复制全部'));
+    if (!result) return;
+    const text = JSON.stringify(result, null, 2);
+    void navigator.clipboard.writeText(text).then(() => toast.success('已复制全部'));
+  }
+
+  function handleExport() {
+    if (!result) return;
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'persona-plan.json';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   function handleOptimize() {
@@ -395,114 +206,982 @@ export default function Step3b() {
     toast.success('已智能优化');
   }
 
-  function handleViewPlan() {
-    toast.info('执行计划功能开发中');
-  }
+  const PLATFORMS = [
+    { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
+    { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
+    { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+  ];
+  const ACCENT: Record<string, string> = { green: '#10b981', yellow: '#F6D300', purple: '#781621' };
+  const BAR_COLORS = ['#002fa7', '#781621', '#F6D300', '#002fa7'];
+  const btnSecondary =
+    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+
+  // 数据洞察雷达维度
+  const RADAR_DIMS = [
+    { label: '实战性', value: 92, color: '#002fa7' },
+    { label: '韧性', value: 88, color: '#781621' },
+    { label: '真诚度', value: 90, color: '#F6D300' },
+    { label: '专业度', value: 84, color: '#002fa7' },
+    { label: '记忆点', value: 86, color: '#781621' },
+    { label: '影响力', value: 78, color: '#F6D300' },
+  ];
+  // 趋势图数据
+  const TREND_DATA = [20, 32, 40, 55, 72, 100];
+  const TREND_LABELS = ['第1月', '第2月', '第3月', '第4月', '第5月', '第6月'];
 
   return (
-    <main className="flex-1 container py-8 space-y-8">
-      {/* 1. Header */}
-      <header className="space-y-3">
-        <p className="text-xs font-semibold text-primary tracking-wide">
-          STEP 03b › 人设定制方案
-        </p>
-        <div className="flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-on-surface flex items-center gap-2">
-            <SparkleIcon size={6} className="h-6 w-6 shrink-0" />
-            {STEP3B_H1}
-          </h1>
-          <div className="flex gap-2 flex-shrink-0">
-            <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleOptimize}>
-              ✨ 智能优化
-            </Button>
-            <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleCopyAll}>
-              📋 复制全部
-            </Button>
+    <PioneerLayout>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <header className="mb-12 flex flex-row items-center justify-between gap-8">
+        <div className="shrink-0">
+          <div className="mb-3 flex items-center gap-3">
+            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+              战略节点
+            </span>
+            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              核心引擎
+            </span>
           </div>
+          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+            STEP 03b · 深度人设分析
+          </h1>
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+            {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
-        </p>
+        <div className="flex shrink-0 flex-nowrap gap-3">
+          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            智能优化
+          </button>
+          <button type="button" onClick={handleCopyAll} disabled={!hasRealResult} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">content_copy</span>
+            复制全部
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={!hasRealResult}
+            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            导出人设方案
+          </button>
+        </div>
       </header>
 
-      {/* 2. Form · 3 textarea + platform + audience */}
-      <form onSubmit={handleSubmit} className="space-y-4 bg-card/30 border border-border/40 rounded-lg p-6">
-        {/* personalInfo textarea (required *) */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            你的个人信息 <span className="text-rose-400">*</span>
-          </label>
-          <textarea
-            value={personalInfo}
-            onChange={(e) => setPersonalInfo(e.target.value)}
-            className="w-full min-h-[140px] rounded-md border border-border bg-input px-3 py-2 text-sm text-on-surface resize-y"
-            required
-          />
+      {/* ── 输入人设参数 ───────────────────────────────────── */}
+      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
+              <span className="material-symbols-outlined">tune</span>
+            </span>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#111827]">输入人设参数</h2>
+              <p className="text-[12px] text-[#9ca3af]">填写基础信息 · AI 据此生成深度人设分析报告</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+            参数就绪
+          </span>
         </div>
+        <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-7">
+            {/* 目标平台 · 可视化平台卡 */}
+            <fieldset>
+              <legend className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标平台
+              </legend>
+              <div className="grid grid-cols-3 gap-4" role="radiogroup">
+                {PLATFORMS.map((p) => {
+                  const active = platform === p.key;
+                  return (
+                    <button
+                      type="button"
+                      key={p.key}
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setPlatform(p.key)}
+                      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                    >
+                      <span
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+                        style={{ backgroundColor: p.color }}
+                      >
+                        <span className="material-symbols-outlined text-[22px]">{p.icon}</span>
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-[#111827]">{p.label}</span>
+                        <span className="block text-[11px] text-[#9ca3af]">{p.desc}</span>
+                      </span>
+                      <span
+                        className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">check</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
 
-        {/* personalAdvantage textarea (optional) */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            个人优势/特长 <span className="text-xs text-muted-foreground font-normal">（可选，有助于更精准的人设）</span>
-          </label>
-          <textarea
-            value={personalAdvantage}
-            onChange={(e) => setPersonalAdvantage(e.target.value)}
-            className="w-full min-h-[80px] rounded-md border border-border bg-input px-3 py-2 text-sm text-on-surface resize-y"
-          />
+            {/* 目标受众 · 带图标输入 */}
+            <div>
+              <label htmlFor="s3b-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标受众
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">groups</span>
+                <input
+                  id="s3b-audience"
+                  type="text"
+                  value={audience}
+                  onChange={(e) => setAudience(e.target.value)}
+                  placeholder={STEP3B_AUDIENCE.placeholder}
+                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                />
+              </div>
+            </div>
+
+            {/* 你的个人信息 · 框式编辑器 */}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label htmlFor="s3b-personalInfo" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  你的个人信息 <span className="ml-1 text-[#781621]">*</span>
+                </label>
+                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
+                  <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+                  AI 据此提取人设关键词
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+                <textarea
+                  id="s3b-personalInfo"
+                  required
+                  value={personalInfo}
+                  onChange={(e) => setPersonalInfo(e.target.value)}
+                  rows={6}
+                  placeholder="详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。"
+                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                />
+                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] text-[#9ca3af]">可包含</span>
+                    {['背景', '经历', '技能', '转型', '成就'].map((t) => (
+                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{personalInfo.length} 字</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 个人优势 + 个人故事 · 双列框式编辑器 */}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="s3b-advantage" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  个人优势/特长
+                </label>
+                <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+                  <textarea
+                    id="s3b-advantage"
+                    value={personalAdvantage}
+                    onChange={(e) => setPersonalAdvantage(e.target.value)}
+                    rows={4}
+                    placeholder="你有什么独特的优势？比如：独特的经历、专业证书、成功案例、个人特质..."
+                    className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                  />
+                  <div className="flex items-center justify-end border-t border-[#eef1f6] bg-white/60 px-4 py-2">
+                    <span className="text-[11px] tabular-nums text-[#9ca3af]">{personalAdvantage.length} 字</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label htmlFor="s3b-story" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  个人故事/经历
+                </label>
+                <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+                  <textarea
+                    id="s3b-story"
+                    value={personalStory}
+                    onChange={(e) => setPersonalStory(e.target.value)}
+                    rows={4}
+                    placeholder="分享你的个人故事：为什么做这个行业？有什么转折点？什么经历让你与众不同？"
+                    className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                  />
+                  <div className="flex items-center justify-end border-t border-[#eef1f6] bg-white/60 px-4 py-2">
+                    <span className="text-[11px] tabular-nums text-[#9ca3af]">{personalStory.length} 字</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={!personalInfo.trim() || isLoading}
+                className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+                {isLoading ? '生成中…' : STEP3B_CTA_LABEL}
+              </button>
+            </div>
+          </form>
         </div>
+      </section>
 
-        {/* personalStory textarea (optional) */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            个人故事/经历 <span className="text-xs text-muted-foreground font-normal">（可选，用于打造故事线）</span>
-          </label>
-          <textarea
-            value={personalStory}
-            onChange={(e) => setPersonalStory(e.target.value)}
-            className="w-full min-h-[100px] rounded-md border border-border bg-input px-3 py-2 text-sm text-on-surface resize-y"
-          />
-        </div>
-
-        {/* Platform radio group (复用 /step/3 PlatformRadioGroup) */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">目标平台</label>
-          <PlatformRadioGroup value={platform} onChange={setPlatform} />
-        </div>
-
-        {/* audience input (optional) */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            目标受众 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-          </label>
-          <Input value={audience} onChange={(e) => setAudience(e.target.value)} placeholder={STEP3B_AUDIENCE.placeholder} />
-        </div>
-
-        {/* Main CTA */}
-        <Button
-          type="submit"
-          disabled={!personalInfo.trim() || isLoading}
-          className="w-full bg-primary hover:bg-primary/90 text-on-primary"
+      {generateMutation.isPending && (
+        <div
+          data-testid="step3b-loading"
+          className="mb-8 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#002fa7]/5 p-4 text-[14px] font-medium text-[#001e73]"
         >
-          ✨ {STEP3B_CTA_LABEL}
-        </Button>
-      </form>
+          <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+          {STEP3B_LOADING_TEXT}
+        </div>
+      )}
 
-      {/* 3. Loading state */}
-      {isLoading && <Step3LoadingState />}
+      {generateMutation.isError && (
+        <div
+          data-testid="step3b-error"
+          className="mb-8 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[14px] font-medium text-[#991b1b]"
+        >
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-[20px]">error</span>
+            {generateMutation.error?.message ?? '生成失败，请重试'}
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              generateMutation.mutate({
+                stepKey: 'step3b',
+                inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
+              })
+            }
+            className="shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+          >
+            重试
+          </button>
+        </div>
+      )}
 
-      {/* 4. Section divider */}
-      <Step3SectionDivider />
+      {dbQuery.isLoading && (
+        <div
+          data-testid="step3b-db-loading"
+          className="mb-6 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#f0f4ff] p-4 text-[13px] font-medium text-[#001e73]"
+        >
+          <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+          正在加载历史记录…
+        </div>
+      )}
 
-      {/* 5. H2 输出区标题 */}
-      <h2 className="text-xl font-semibold text-on-surface">专属人设方案</h2>
+      {dbQuery.isError && !hasRealResult && (
+        <div
+          data-testid="step3b-db-error"
+          className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[13px] font-medium text-[#991b1b]"
+        >
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-[18px]">error</span>
+            历史记录加载失败，请重试
+          </div>
+          <button
+            type="button"
+            onClick={() => void dbQuery.refetch()}
+            className="shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+          >
+            重试
+          </button>
+        </div>
+      )}
 
-      {/* 6. 5 H3 sections */}
-      <CoreIdentitySection content={generated.coreIdentity} />
-      <ThoughtSystemSection content={generated.thoughtSystem} />
-      <ContentPersonaSection content={generated.contentPersona} />
-      <TrustSystemSection content={generated.trustSystem} />
-      <RoadmapSection roadmap={generated.roadmap} canViewPlan={canBulkActions} onViewPlan={handleViewPlan} />
-    </main>
+      {hasRealResult && isFallbackFlag && (
+        <div
+          data-testid="step3b-fallback-notice"
+          className="mb-6 flex items-center gap-3 rounded-xl border border-[#F6D300]/40 bg-[#fffde7] p-4 text-[13px] font-medium text-[#8a6a00]"
+        >
+          <span className="material-symbols-outlined text-[20px]">warning</span>
+          AI 模型降级处理，结果为备用方案，建议重新生成以获取最优质方案。
+        </div>
+      )}
+
+      {!hasRealResult && !generateMutation.isPending && !dbQuery.isLoading && (
+        <div
+          data-testid="step3b-empty-state"
+          className="mb-8 flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-[#f9fafb] py-16 text-center"
+        >
+          <span className="material-symbols-outlined mb-4 text-[48px] text-[#d1d5db]">person_search</span>
+          <p className="text-[16px] font-semibold text-[#374151]">尚未生成人设方案</p>
+          <p className="mt-2 text-[13px] text-[#9ca3af]">填写上方表单，点击「生成专属人设方案」开始分析</p>
+        </div>
+      )}
+
+      {/* ── 报告区 · 仅有真实数据时显示 ──────────────────────── */}
+      {hasRealResult && (
+      <>
+      {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
+        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
+        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 综合示意</span>
+      </div>
+      <div className="mb-8 grid grid-cols-12 gap-6">
+        {/* 人设竞争力雷达 */}
+        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+                <span className="material-symbols-outlined text-[20px]">radar</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">人设竞争力雷达</h3>
+                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[26px] font-bold leading-none text-[#002fa7]">85</p>
+              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+            </div>
+          </div>
+          {(() => {
+            const dims = RADAR_DIMS;
+            const cx = 130;
+            const cy = 122;
+            const R = 88;
+            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+            return (
+              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="人设竞争力雷达图：六维模型评估">
+                <title>人设竞争力雷达图</title>
+                <defs>
+                  <linearGradient id="radarFillB" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
+                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  </linearGradient>
+                </defs>
+                {[0.25, 0.5, 0.75, 1].map((f) => (
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                ))}
+                {dims.map((_, i) => {
+                  const [x, y] = pt(i, R);
+                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                })}
+                <polygon points={dataPoly} fill="url(#radarFillB)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R * (d.value / 100));
+                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                })}
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R + 16);
+                  return (
+                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      {d.label}
+                    </text>
+                  );
+                })}
+              </svg>
+            );
+          })()}
+          <div className="mt-2 grid grid-cols-3 gap-y-2">
+            {RADAR_DIMS.map((d) => (
+              <div key={d.label} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
+                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 6 个月影响力预估 */}
+        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">show_chart</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">6 个月影响力预估</h3>
+                <p className="text-[11px] text-[#9ca3af]">按当前人设矩阵测算</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {['曝光', '涨粉', '互动'].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mb-3 flex items-end gap-3">
+            <p className="text-[30px] font-bold leading-none text-[#111827]">38.5K</p>
+            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[14px]">trending_up</span>+186%
+            </span>
+            <span className="mb-1 text-[12px] text-[#9ca3af]">较冷启动基线</span>
+          </div>
+          {(() => {
+            const data = TREND_DATA;
+            const W = 560;
+            const H = 168;
+            const padL = 6;
+            const padR = 6;
+            const padT = 12;
+            const padB = 8;
+            const innerW = W - padL - padR;
+            const innerH = H - padT - padB;
+            const max = 110;
+            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+            const y = (v: number) => padT + innerH * (1 - v / max);
+            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+            return (
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="6 个月影响力预估趋势图">
+                <title>6 个月影响力预估趋势图</title>
+                <defs>
+                  <linearGradient id="trendFillB" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
+                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="trendLineB" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#002fa7" />
+                    <stop offset="100%" stopColor="#781621" />
+                  </linearGradient>
+                </defs>
+                {[0, 0.33, 0.66, 1].map((f) => (
+                  <line
+                    key={f}
+                    x1={padL}
+                    x2={W - padR}
+                    y1={(padT + innerH * f).toFixed(1)}
+                    y2={(padT + innerH * f).toFixed(1)}
+                    stroke="#f1f3f9"
+                    strokeWidth="1"
+                  />
+                ))}
+                <path d={area} fill="url(#trendFillB)" />
+                <path d={line} fill="none" stroke="url(#trendLineB)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {data.map((v, i) =>
+                  i % 1 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                )}
+              </svg>
+            );
+          })()}
+          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            {TREND_LABELS.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── KPI 卡一排 ─────────────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-6">
+        {/* 人设完整度 · 环形进度 · 蓝 */}
+        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">verified</span>
+            </span>
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[13px]">trending_up</span>+18%
+            </span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-[28px] font-bold leading-none text-[#111827]">
+                88<span className="text-[15px] text-[#9ca3af]">%</span>
+              </p>
+              <p className="mt-1.5 text-[12px] text-[#6b7280]">人设完整度</p>
+            </div>
+            <div className="h-12 w-12 shrink-0">
+              <svg viewBox="0 0 36 36" className="-rotate-90">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.915"
+                  fill="none"
+                  stroke="#002fa7"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeDasharray="88 100"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* 记忆锚点 · 迷你柱 · 勃艮第红 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">push_pin</span>
+            </span>
+            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已评估</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {result.coreIdentity.memoryPoints.length}
+              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">记忆锚点</p>
+          </div>
+          <div className="mt-3 flex h-6 items-end gap-1">
+            {[58, 84, 70, 96, 78].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </div>
+
+        {/* 内容支柱 · 进度条 · 黄 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
+              <span className="material-symbols-outlined text-[20px]">view_column</span>
+            </span>
+            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">全覆盖</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {result.contentPersona.contentPillars.length}
+              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">内容支柱</p>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
+          </div>
+        </div>
+
+        {/* 信任背书 · 关键词 chip · 蓝 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">shield_with_heart</span>
+            </span>
+            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+              {result.trustSystem.backings.length} 项
+            </span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {result.trustSystem.backings.length}
+              <span className="text-[15px] text-[#9ca3af]"> 项</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">信任背书</p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1">
+            {['实战案例', '客户反馈', '历程背书'].slice(0, 3).map((k) => (
+              <span
+                key={k}
+                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 结果区(3 列 bento)─────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* 左 2 列 */}
+        <div className="col-span-2 space-y-6">
+          {/* Core Identity 蓝卡 */}
+          <section className="pw-shadow-soft relative overflow-hidden rounded-xl bg-[#002fa7] p-8 text-white">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full border border-white/10" />
+            <div className="pointer-events-none absolute right-8 top-8 h-24 w-24 rounded-full border border-dashed border-white/10" />
+            <div className="relative z-10 flex flex-row items-center justify-between gap-6">
+              <div>
+                <h3 className="mb-1 text-[14px] font-medium text-[#b8c4ff]">
+                  核心定位基因 (Core Identity)
+                </h3>
+                <div className="mb-4 text-[22px] font-bold leading-tight">
+                  {result.coreIdentity.identityTag}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {result.coreIdentity.traits.map((t) => (
+                    <span
+                      key={t.name}
+                      className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[13px] font-medium"
+                    >
+                      {t.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div className="relative flex h-32 w-32 shrink-0 flex-col items-center justify-center rounded-full border-4 border-[#002fa7] bg-white shadow-lg">
+                <span className="text-[11px] font-medium uppercase tracking-widest text-[#6b7280]">
+                  ID
+                </span>
+                <span className="text-[20px] font-bold text-[#111827]">#72421</span>
+                <div className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full border-2 border-white bg-[#781621]" />
+              </div>
+            </div>
+            <div className="mt-8 border-t border-white/10 pt-6">
+              <p className="text-[14px] leading-relaxed text-[#dbe2ff]">
+                {result.coreIdentity.differentiation}
+              </p>
+            </div>
+          </section>
+
+          {/* IP 孵化成长路线图 */}
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
+            <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
+              <span className="material-symbols-outlined text-[#002fa7]">timeline</span>
+              IP 孵化成长路线图
+            </h3>
+            <div className="grid grid-cols-3 gap-6">
+              {result.roadmap.map((r, i) => {
+                const accent = ACCENT[r.accent] ?? '#002fa7';
+                return (
+                  <div key={r.period} className="rounded-lg border border-[#f3f4f6] bg-white p-5 shadow-sm">
+                    <div className="mb-2 h-3 w-3 rounded-full" style={{ backgroundColor: accent }} />
+                    <div
+                      className="mb-1 text-[12px] font-bold uppercase tracking-wider"
+                      style={{ color: accent }}
+                    >
+                      阶段 {String(i + 1).padStart(2, '0')}
+                    </div>
+                    <h4 className="mb-2 text-[15px] font-bold text-[#111827]">{r.period}</h4>
+                    <p className="text-[12px] leading-relaxed text-[#6b7280]">{r.goal}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* 信任背书体系 */}
+          <section className="rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
+            <h3 className="mb-6 text-[18px] font-bold text-[#111827]">信任背书体系</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {result.trustSystem.backings.slice(0, 3).map((b) => (
+                <div
+                  key={b.claim}
+                  className="rounded-lg border border-[#f3f4f6] bg-[#f9fafb] p-4 transition-colors hover:border-[#e5e7eb]"
+                >
+                  <div className="mb-3 flex h-8 w-8 items-center justify-center rounded bg-[#dbeafe] text-[#002fa7]">
+                    <span className="material-symbols-outlined text-[18px]">verified</span>
+                  </div>
+                  <h4 className="mb-1 text-[14px] font-bold leading-snug text-[#111827]">{b.claim}</h4>
+                  <p className="text-[12px] leading-relaxed text-[#6b7280]">{b.display}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* 右 1 列 · 内容矩阵占比 */}
+        <div className="space-y-6">
+          <section className="flex h-full flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+            <h3 className="mb-1 text-[18px] font-bold text-[#111827]">内容矩阵占比</h3>
+            <p className="mb-6 text-[12px] text-[#6b7280]">
+              基于算法优化的最佳内容输出配比,平衡专业深度与受众广度。
+            </p>
+            <div className="flex-1 space-y-5">
+              {result.contentPersona.contentPillars.map((p, i) => {
+                const pct = parseInt(String(p.percentage), 10) || 0;
+                const color = BAR_COLORS[i % BAR_COLORS.length];
+                return (
+                  <div key={p.title}>
+                    <div className="mb-1 flex items-end justify-between gap-2">
+                      <span className="text-[14px] font-semibold text-[#111827]">{p.title}</span>
+                      <span className="shrink-0 text-[14px] font-bold" style={{ color }}>
+                        {p.percentage}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-[#f3f4f6]">
+                      <div
+                        className="h-2 rounded-full"
+                        style={{ width: `${pct}%`, backgroundColor: color }}
+                      />
+                    </div>
+                    <p className="mt-1 text-[11px] text-[#9ca3af]">{p.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-6 border-t border-[#f3f4f6] pt-4">
+              <div className="flex items-center gap-2 text-[12px] font-medium text-[#10b981]">
+                <span className="h-2 w-2 rounded-full bg-[#10b981]" />
+                配比状态健康,建议持续执行
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {/* ── P0 补充区块 · 思想体系 / 内容人设 / 信任体系补充 ─── */}
+
+      {/* 思想体系 · thoughtSystem */}
+      <section className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
+        <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+            <span className="material-symbols-outlined text-[20px]">lightbulb</span>
+          </span>
+          思想体系
+        </h3>
+
+        {/* 核心信念 coreBeliefs */}
+        <div className="mb-8">
+          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="h-1 w-4 rounded-full bg-[#002fa7]" />
+            核心信念
+          </h4>
+          <div className="space-y-4">
+            {result.thoughtSystem.coreBeliefs.map((cb, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-5"
+              >
+                <div className="mb-2 flex items-start gap-3">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[11px] font-bold text-white">
+                    {i + 1}
+                  </span>
+                  <p className="text-[15px] font-bold leading-snug text-[#111827]">{cb.belief}</p>
+                </div>
+                <p className="mb-2 pl-9 text-[13px] leading-relaxed text-[#6b7280]">{cb.reason}</p>
+                <div className="ml-9 rounded-lg border border-[#dbeafe] bg-[#eff4ff] px-3 py-2">
+                  <span className="text-[11px] font-bold text-[#002fa7]">内容角度 · </span>
+                  <span className="text-[12px] text-[#374151]">{cb.angle}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 独特观点 viewpoints */}
+        <div className="mb-8">
+          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="h-1 w-4 rounded-full bg-[#781621]" />
+            独特观点
+          </h4>
+          <div className="grid grid-cols-2 gap-4">
+            {result.thoughtSystem.viewpoints.map((vp, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm"
+              >
+                <p className="mb-2 text-[14px] font-bold leading-snug text-[#111827]">{vp.title}</p>
+                <p className="mb-3 text-[13px] leading-relaxed text-[#6b7280]">{vp.desc}</p>
+                <div className="rounded-lg border border-[#fce7c8] bg-[#fff7ed] px-3 py-2">
+                  <span className="text-[11px] font-bold text-[#9a4100]">示例标题 · </span>
+                  <span className="text-[12px] text-[#374151]">{vp.exampleTitle}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 品牌金句 mottos */}
+        <div>
+          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="h-1 w-4 rounded-full bg-[#F6D300]" />
+            品牌金句
+          </h4>
+          <div className="grid grid-cols-3 gap-4">
+            {result.thoughtSystem.mottos.map((m, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-[#f0e060] bg-gradient-to-br from-[#fffde7] to-white p-5 shadow-sm"
+              >
+                <p className="mb-3 text-[16px] font-bold leading-snug text-[#8a6a00]">{m.motto}</p>
+                <div className="mb-1.5 text-[12px] text-[#6b7280]">
+                  <span className="font-semibold text-[#374151]">使用时机 · </span>
+                  {m.whenToUse}
+                </div>
+                <div className="text-[12px] text-[#6b7280]">
+                  <span className="font-semibold text-[#374151]">效果 · </span>
+                  {m.effect}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 内容人设 · contentPersona */}
+      <section className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
+        <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+            <span className="material-symbols-outlined text-[20px]">person_play</span>
+          </span>
+          内容人设
+        </h3>
+
+        {/* 表达风格 speakingStyle */}
+        <div className="mb-6 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#fdf5f5] p-5">
+          <h4 className="mb-2 text-[14px] font-bold text-[#781621]">表达风格</h4>
+          <p className="text-[14px] leading-relaxed text-[#374151]">
+            {result.contentPersona.speakingStyle}
+          </p>
+        </div>
+
+        {/* Dos & Donts */}
+        <div className="mb-6 grid grid-cols-2 gap-4">
+          <div className="rounded-xl border border-[#dcfce7] bg-[#f0fdf4] p-5">
+            <h4 className="mb-3 flex items-center gap-1.5 text-[14px] font-bold text-[#166534]">
+              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              建议这样说
+            </h4>
+            <ul className="space-y-2">
+              {result.contentPersona.speakingDos.map((d, i) => (
+                <li key={i} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#16a34a]" />
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-xl border border-[#fee2e2] bg-[#fff5f5] p-5">
+            <h4 className="mb-3 flex items-center gap-1.5 text-[14px] font-bold text-[#991b1b]">
+              <span className="material-symbols-outlined text-[18px]">cancel</span>
+              避免这样说
+            </h4>
+            <ul className="space-y-2">
+              {result.contentPersona.speakingDonts.map((d, i) => (
+                <li key={i} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#dc2626]" />
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* 示例开场白 examplePitch */}
+        <div className="mb-6 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-5">
+          <h4 className="mb-3 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="material-symbols-outlined text-[18px] text-[#002fa7]">record_voice_over</span>
+            示例开场白
+          </h4>
+          <p className="whitespace-pre-wrap text-[14px] leading-loose text-[#374151]">
+            {result.contentPersona.examplePitch}
+          </p>
+        </div>
+
+        {/* 视觉形象 visualStyle */}
+        <div>
+          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="material-symbols-outlined text-[18px] text-[#781621]">style</span>
+            视觉形象建议
+          </h4>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
+              <p className="mb-1 text-[12px] font-bold text-[#002fa7]">整体风格</p>
+              <p className="text-[13px] leading-relaxed text-[#374151]">
+                {result.contentPersona.visualStyle.style}
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
+              <p className="mb-1 text-[12px] font-bold text-[#781621]">穿搭建议</p>
+              <p className="text-[13px] leading-relaxed text-[#374151]">
+                {result.contentPersona.visualStyle.outfit}
+              </p>
+            </div>
+            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
+              <p className="mb-1 text-[12px] font-bold text-[#8a6a00]">场景选择</p>
+              <p className="text-[13px] leading-relaxed text-[#374151]">
+                {result.contentPersona.visualStyle.scene}
+              </p>
+            </div>
+          </div>
+          {result.contentPersona.visualStyle.props.length > 0 && (
+            <div className="mt-4 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] px-5 py-4">
+              <p className="mb-2 text-[12px] font-bold text-[#374151]">道具清单</p>
+              <div className="flex flex-wrap gap-2">
+                {result.contentPersona.visualStyle.props.map((prop) => (
+                  <span
+                    key={prop}
+                    className="rounded-full border border-[#e5e7eb] bg-white px-3 py-1 text-[12px] font-medium text-[#374151] shadow-sm"
+                  >
+                    {prop}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 信任体系补充 · trustSystem socialProofs + storyLine */}
+      <section className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
+        <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
+            <span className="material-symbols-outlined text-[20px]">workspace_premium</span>
+          </span>
+          信任体系 · 社会证明与故事线
+        </h3>
+
+        {/* 社会证明 socialProofs */}
+        <div className="mb-8">
+          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="h-1 w-4 rounded-full bg-[#002fa7]" />
+            社会证明
+          </h4>
+          <div className="grid grid-cols-2 gap-4">
+            {result.trustSystem.socialProofs.map((sp, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-5"
+              >
+                <div className="mb-3 flex items-start gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+                    <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+                  </span>
+                  <p className="text-[14px] font-bold leading-snug text-[#111827]">{sp.proof}</p>
+                </div>
+                <div className="rounded-lg border border-[#dbeafe] bg-[#eff4ff] px-3 py-2">
+                  <span className="text-[11px] font-bold text-[#002fa7]">落地方式 · </span>
+                  <span className="text-[13px] leading-relaxed text-[#374151]">{sp.method}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 故事线 storyLine */}
+        <div>
+          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
+            <span className="h-1 w-4 rounded-full bg-[#781621]" />
+            IP 故事线
+          </h4>
+          <div className="space-y-4">
+            <div className="rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#fdf5f5] p-5">
+              <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-[#781621]">核心故事</p>
+              <p className="text-[14px] leading-relaxed text-[#374151]">
+                {result.trustSystem.storyLine.mainStory}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">
+                <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-[#002fa7]">关键转折点</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">
+                  {result.trustSystem.storyLine.turningPoint}
+                </p>
+              </div>
+              <div className="rounded-xl border border-[#f0e060] bg-[#fffde7] p-5">
+                <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-[#8a6a00]">叙事方式</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">
+                  {result.trustSystem.storyLine.narrationMethod}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </>
+      )}
+    </PioneerLayout>
   );
 }

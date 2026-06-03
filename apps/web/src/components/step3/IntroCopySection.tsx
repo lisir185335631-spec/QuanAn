@@ -33,21 +33,21 @@ export function IntroCopySection({ formula, entries = [], coreKeywords, classNam
   return (
     <div className={cn('space-y-4', className)}>
       {/* H3 row */}
-      <h3 className="flex items-center gap-2 text-base font-semibold text-on-surface">
-        <FlameIcon className="h-4 w-4 shrink-0" size={4} />
+      <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+        <FlameIcon className="h-4 w-4 shrink-0" aria-hidden="true" size={4} />
         {H3_LABEL}
       </h3>
 
       {/* ★ 简介公式 independent SubCard — AC-3 */}
       <SubCard>
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-on-surface/80">★ 简介公式</p>
+          <p className="text-xs font-semibold text-[#374151]">★ 简介公式</p>
           {formula ? (
-            <p className="text-xs text-muted-foreground leading-relaxed font-mono">{formula}</p>
+            <p className="text-xs text-[#6b7280] leading-relaxed font-mono">{formula}</p>
           ) : (
             <div className="animate-pulse space-y-1">
-              <div className="h-3 bg-muted/40 rounded w-full" />
-              <div className="h-3 bg-muted/40 rounded w-3/4" />
+              <div className="h-3 bg-[#f3f4f6] rounded w-full" />
+              <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
             </div>
           )}
         </div>
@@ -67,12 +67,12 @@ export function IntroCopySection({ formula, entries = [], coreKeywords, classNam
       {/* 核心关键词 · 图 13 末尾 · 整个 H3-5 共享 chip 行(无 SEO 前缀) */}
       {coreKeywords && coreKeywords.length > 0 && (
         <div className="flex items-center gap-3 flex-wrap pt-2">
-          <span className="text-xs font-semibold text-on-surface/75 shrink-0">核心关键词：</span>
+          <span className="text-xs font-semibold text-[#4b5563] shrink-0">核心关键词：</span>
           <div className="flex flex-wrap gap-2">
             {coreKeywords.map((kw) => (
               <span
                 key={kw}
-                className="inline-block text-xs bg-primary/10 text-primary border border-primary/25 rounded px-3 py-1"
+                className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/25 rounded px-3 py-1"
               >
                 {kw}
               </span>

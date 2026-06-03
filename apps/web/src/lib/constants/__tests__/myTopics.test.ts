@@ -1,8 +1,9 @@
 /**
- * myTopics constants unit tests · sally 1:1 복刻版
- * 4-5 it · MY_TOPICS_FILTERS 6 长度 + 字面锁
+ * myTopics constants unit tests · sally 1:1 复刻版
+ * Phase-2: 筛选维度对齐后端 source · 4 个 filter
+ * icon 字段已删(禁 lucide · 页面用 Material Symbols FILTER_ICON)
+ * 4-5 it · MY_TOPICS_FILTERS 4 长度 + 字面锁
  */
-import { BookOpen, Brain, DollarSign, Heart, TrendingUp, Users } from 'lucide-react';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -20,35 +21,34 @@ import {
   MY_TOPICS_SEARCH_PLACEHOLDER,
   MY_TOPICS_SUBTITLE,
   MY_TOPICS_TOAST_COPY,
+  MY_TOPICS_TOAST_COPY_SUCCESS,
   MY_TOPICS_TOAST_DOWNLOAD,
+  MY_TOPICS_TOAST_DOWNLOAD_SUCCESS,
 } from '@/lib/constants/myTopics';
 
 describe('myTopics constants · sally 1:1 字面锁', () => {
   // ── MY_TOPICS_FILTERS ────────────────────────────────────────────────────────
 
-  it('MY_TOPICS_FILTERS 长度为 6', () => {
-    expect(MY_TOPICS_FILTERS).toHaveLength(6);
+  it('MY_TOPICS_FILTERS 长度为 4', () => {
+    expect(MY_TOPICS_FILTERS).toHaveLength(4);
   });
 
   it('MY_TOPICS_FILTERS key 序列', () => {
     expect(MY_TOPICS_FILTERS.map((f) => f.key)).toEqual([
-      'all', 'traffic', 'monetize', 'persona', 'cognitive', 'case',
+      'all', 'step5', 'trending', 'manual',
     ]);
   });
 
   it('MY_TOPICS_FILTERS label 字面', () => {
     expect(MY_TOPICS_FILTERS.map((f) => f.label)).toEqual([
-      '全部', '流量型', '变现型', '人设型', '认知型', '案例型',
+      '全部', '选题策划', '热点收藏', '手动添加',
     ]);
   });
 
-  it('MY_TOPICS_FILTERS icon 类型映射(lucide · 6 枚)', () => {
-    expect(MY_TOPICS_FILTERS[0]!.icon).toBe(Heart);
-    expect(MY_TOPICS_FILTERS[1]!.icon).toBe(TrendingUp);
-    expect(MY_TOPICS_FILTERS[2]!.icon).toBe(DollarSign);
-    expect(MY_TOPICS_FILTERS[3]!.icon).toBe(Users);
-    expect(MY_TOPICS_FILTERS[4]!.icon).toBe(Brain);
-    expect(MY_TOPICS_FILTERS[5]!.icon).toBe(BookOpen);
+  it('MY_TOPICS_FILTERS 无 icon 字段(禁 lucide · 用 Material Symbols)', () => {
+    for (const f of MY_TOPICS_FILTERS) {
+      expect(f).not.toHaveProperty('icon');
+    }
   });
 
   // ── 字面锁 ────────────────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ describe('myTopics constants · sally 1:1 字面锁', () => {
     expect(MY_TOPICS_BREADCRUMB).toBe('MY TOPICS');
     expect(MY_TOPICS_H1).toBe('我的选题库');
     expect(MY_TOPICS_SUBTITLE).toBe('你收藏的所有爆款选题都在这里，支持按类型筛选、一键导出和生成文案。');
-    expect(MY_TOPICS_SEARCH_PLACEHOLDER).toBe('搜索选题、行业、产品...');
+    expect(MY_TOPICS_SEARCH_PLACEHOLDER).toBe('搜索选题标题...');
     expect(MY_TOPICS_COPY_ALL).toBe('复制全部');
     expect(MY_TOPICS_DOWNLOAD_TXT).toBe('下载TXT');
     expect(MY_TOPICS_EMPTY_TITLE).toBe('还没有收藏任何选题');
@@ -68,5 +68,11 @@ describe('myTopics constants · sally 1:1 字面锁', () => {
     expect(MY_TOPICS_TOAST_DOWNLOAD).toBe('暂无选题可下载');
     expect(MY_TOPICS_BACK_HREF).toBe('/step/5');
     expect(MY_TOPICS_CTA_HREF).toBe('/step/5');
+  });
+
+  it('toast success 文案 · MY_TOPICS_TOAST_COPY_SUCCESS 含计数 + DOWNLOAD_SUCCESS', () => {
+    expect(MY_TOPICS_TOAST_COPY_SUCCESS(5)).toBe('已复制 5 条选题');
+    expect(MY_TOPICS_TOAST_COPY_SUCCESS(0)).toBe('已复制 0 条选题');
+    expect(MY_TOPICS_TOAST_DOWNLOAD_SUCCESS).toBe('已下载 my-topics.txt');
   });
 });

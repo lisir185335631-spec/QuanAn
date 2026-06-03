@@ -49,13 +49,13 @@ interface SubSectionProps {
 function SubSection({ label, description }: SubSectionProps) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-on-surface/80">{label}</p>
+      <p className="text-xs font-semibold text-[#374151]">{label}</p>
       {description ? (
-        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+        <p className="text-xs text-[#6b7280] leading-relaxed">{description}</p>
       ) : (
         <div className="animate-pulse space-y-1">
-          <div className="h-3 bg-muted/40 rounded w-full" />
-          <div className="h-3 bg-muted/40 rounded w-3/4" />
+          <div className="h-3 bg-[#f3f4f6] rounded w-full" />
+          <div className="h-3 bg-[#f3f4f6] rounded w-3/4" />
         </div>
       )}
     </div>
@@ -74,8 +74,8 @@ export function BackgroundImageDesignSection({
     <div className={cn('space-y-4', className)}>
       {/* H3 row: FlameIcon + title + [生成参考图] button */}
       <div className="flex items-center justify-between gap-4">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-on-surface">
-          <FlameIcon className="h-4 w-4 shrink-0" size={4} />
+        <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+          <FlameIcon className="h-4 w-4 shrink-0" aria-hidden size={4} />
           {H3_LABEL}
         </h3>
         <Button
@@ -105,12 +105,12 @@ export function BackgroundImageDesignSection({
       {hasContent && content.文案内容 && content.文案内容.length > 0 && (
         <SubCard>
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-on-surface/80">文案内容</p>
+            <p className="text-xs font-semibold text-[#374151]">文案内容</p>
             <ul className="space-y-2">
               {content.文案内容.map((item, i) => (
-                <li key={i} className="text-xs text-muted-foreground leading-relaxed">
-                  <span className="text-primary mr-1">•</span>
-                  <span className="font-medium text-on-surface/85">{item.title}：</span>
+                <li key={i} className="text-xs text-[#6b7280] leading-relaxed">
+                  <span className="text-[#002fa7] mr-1">•</span>
+                  <span className="font-medium text-[#374151]">{item.title}：</span>
                   {item.desc}
                 </li>
               ))}
@@ -123,12 +123,12 @@ export function BackgroundImageDesignSection({
       {hasContent && content.必含元素 && content.必含元素.length > 0 && (
         <SubCard>
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-on-surface/80">必含元素</p>
+            <p className="text-xs font-semibold text-[#374151]">必含元素</p>
             <ul className="space-y-2">
               {content.必含元素.map((item, i) => (
-                <li key={i} className="text-xs text-muted-foreground leading-relaxed">
-                  <span className="text-primary mr-1">•</span>
-                  <span className="font-medium text-on-surface/85">{item.title}：</span>
+                <li key={i} className="text-xs text-[#6b7280] leading-relaxed">
+                  <span className="text-[#002fa7] mr-1">•</span>
+                  <span className="font-medium text-[#374151]">{item.title}：</span>
                   {item.desc}
                 </li>
               ))}
@@ -141,13 +141,13 @@ export function BackgroundImageDesignSection({
       {hasContent && content.平台适配 && content.平台适配.length > 0 && (
         <SubCard>
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-on-surface/80">平台适配</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <p className="text-xs font-semibold text-[#374151]">平台适配</p>
+            <div className="grid grid-cols-3 gap-3">
               {content.平台适配.map((item, i) => (
-                <div key={i} className="space-y-1 p-3 rounded border border-border/30">
-                  <p className="text-xs font-semibold text-primary">{item.platform}</p>
-                  <p className="text-[11px] text-on-surface/65">尺寸：{item.size}</p>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">{item.desc}</p>
+                <div key={i} className="space-y-1 p-3 rounded border border-[#e5e7eb]">
+                  <p className="text-xs font-semibold text-[#002fa7]">{item.platform}</p>
+                  <p className="text-[11px] text-[#4b5563]">尺寸：{item.size}</p>
+                  <p className="text-[11px] text-[#6b7280] leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -158,11 +158,11 @@ export function BackgroundImageDesignSection({
       {/* 背景图参考图 sub-card · AI Prompt + 3 平台 grid */}
       <SubCard>
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-on-surface/80">背景图参考图</p>
+          <p className="text-xs font-semibold text-[#374151]">背景图参考图</p>
           {hasContent && content.aiPrompt && (
             <div className="space-y-1">
-              <p className="text-[11px] font-medium text-on-surface/60">AI Prompt</p>
-              <p className="text-[11px] text-muted-foreground leading-relaxed font-mono bg-muted/30 rounded p-2 whitespace-pre-wrap">
+              <p className="text-[11px] font-medium text-[#9ca3af]">AI Prompt</p>
+              <p className="text-[11px] text-[#6b7280] leading-relaxed font-mono bg-[#f8f9fa] rounded p-2 whitespace-pre-wrap">
                 {content.aiPrompt}
               </p>
             </div>

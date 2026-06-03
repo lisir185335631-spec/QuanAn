@@ -1,6 +1,5 @@
 /**
- * Knowledge.test.tsx — /knowledge · 1:1 复刻单测
- * mock-first · 0 trpc · 0 backend
+ * Knowledge.test.tsx — /knowledge · 先锋白迁移后 mock-first 验证
  * SPEC §11 D1 字面锁
  */
 
@@ -17,6 +16,30 @@ vi.mock('sonner', () => ({
     success: vi.fn(),
     info: vi.fn(),
   },
+}));
+
+// trpc mock — PioneerLayout uses ipAccounts.list + auth hooks
+vi.mock('@/lib/trpc', () => ({
+  trpc: {
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+    auth: {
+      me: { useQuery: () => ({ data: null, isLoading: false }) },
+    },
+  },
+}));
+
+// useAuth hook mock — PioneerLayout HeaderRight
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ user: null, login: vi.fn(), logout: vi.fn() }),
+}));
+
+// useActiveAccount hook mock — PioneerLayout AccountSwitcherPw
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({ account: null, switchTo: vi.fn() }),
 }));
 
 function renderPage() {

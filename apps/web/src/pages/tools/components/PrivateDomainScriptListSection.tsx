@@ -1,5 +1,6 @@
 // PRD-29.13 · 私域成交流程 · 引流话术 3 sub-list
 import { toast } from 'sonner';
+
 import { SubCard } from '@/components/ui/sub-card';
 import { cn } from '@/lib/utils';
 
@@ -22,7 +23,7 @@ const SUB_LISTS: Array<{ key: keyof TrafficScripts; label: string }> = [
 
 function CopyButton({ text }: { text: string }) {
   function handleCopy() {
-    navigator.clipboard.writeText(text).then(() => toast.success('已复制'));
+    void navigator.clipboard.writeText(text).then(() => toast.success('已复制'));
   }
   return (
     <button

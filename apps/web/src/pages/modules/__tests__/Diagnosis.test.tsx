@@ -2,11 +2,13 @@
  * Diagnosis module unit tests · Sally 1:1 版
  * mock-first report · isReportView state · 7 sub-section 验收
  */
-import { act, render, screen, fireEvent } from '@testing-library/react';
+import { act, render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Diagnosis from '@/pages/modules/Diagnosis';
+
+import type * as ReactRouterDom from 'react-router-dom';
 
 // ── Shared mock data ───────────────────────────────────────────────────────────
 
@@ -43,6 +45,7 @@ type MutationOptions = {
 };
 
 let mutationMode: 'success' | 'error' | 'loading' = 'success';
+let mockReportOverride: typeof MOCK_REPORT_NORMAL | null = null;
 const capturedMutate = vi.fn();
 
 vi.mock('@/lib/trpc', () => ({
@@ -56,7 +59,7 @@ vi.mock('@/lib/trpc', () => ({
         useMutation: vi.fn().mockImplementation((opts: MutationOptions = {}) => {
           const mutate = vi.fn((_input: unknown) => {
             capturedMutate(_input);
-            if (mutationMode === 'success') opts.onSuccess?.(MOCK_REPORT_NORMAL);
+            if (mutationMode === 'success') opts.onSuccess?.(mockReportOverride ?? MOCK_REPORT_NORMAL);
             if (mutationMode === 'error') opts.onError?.(new Error('network error'));
           });
           return {
@@ -76,7 +79,7 @@ vi.mock('sonner', () => ({
 }));
 
 vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+  const actual = await importOriginal<typeof ReactRouterDom>();
   return {
     ...actual,
     useNavigate: () => vi.fn(),
@@ -102,6 +105,7 @@ describe('Diagnosis · Sally 1:1', () => {
     localStorage.clear();
     capturedMutate.mockClear();
     mutationMode = 'success';
+    mockReportOverride = null;
   });
 
   afterEach(() => {
@@ -205,15 +209,18 @@ describe('Diagnosis · Sally 1:1', () => {
     expect(screen.getByText('IP健康度总分')).toBeInTheDocument();
   });
 
-  it('report 视图: 核心问题 card + 4 coreIssues', () => {
+  it('report 视图: 核心问题 card + coreIssues 来自真实 dimensions', () => {
     renderDiagnosis();
     navigateToLastStep();
     act(() => {
       fireEvent.click(screen.getByTestId('diagnosis-next'));
     });
-    expect(screen.getByTestId('core-issues-card')).toBeInTheDocument();
+    const coreCard = screen.getByTestId('core-issues-card');
+    expect(coreCard).toBeInTheDocument();
     expect(screen.getByText('核心问题')).toBeInTheDocument();
-    expect(screen.getByText('定位模糊，缺乏明确的目标客户和产品价值主张。')).toBeInTheDocument();
+    // 真实数据: case(4分)是最低分, issues=['案例展示较少']
+    // 用 within 限定在 core-issues-card 内避免与详细报告区域重复
+    expect(within(coreCard).getByText(/案例展示较少/)).toBeInTheDocument();
   });
 
   it('report 视图: 详细诊断报告 + IP诊断报告 H2 可见', () => {
@@ -243,7 +250,8 @@ describe('Diagnosis · Sally 1:1', () => {
       fireEvent.click(screen.getByTestId('diagnosis-next'));
     });
     expect(screen.getByText('优先级排序及行动计划')).toBeInTheDocument();
-    expect(screen.getByText('第一步（本周内）：定位清晰度')).toBeInTheDocument();
+    // 真实数据: recommendedSteps[0]='增加案例内容'
+    expect(screen.getByText(/第1步.*增加案例内容/)).toBeInTheDocument();
   });
 
   it('report 视图: 本周立即行动任务清单', () => {
@@ -252,11 +260,14 @@ describe('Diagnosis · Sally 1:1', () => {
     act(() => {
       fireEvent.click(screen.getByTestId('diagnosis-next'));
     });
-    expect(screen.getByText('本周立即行动任务清单')).toBeInTheDocument();
-    expect(screen.getByText('明确细分赛道：')).toBeInTheDocument();
+    const weeklySection = screen.getByTestId('weekly-tasks-section');
+    expect(weeklySection).toBeInTheDocument();
+    expect(within(weeklySection).getByText('本周立即行动任务清单')).toBeInTheDocument();
+    // 真实数据: case(最低分) 的第一个 suggestion='整理成功案例'
+    expect(within(weeklySection).getByText(/整理成功案例/)).toBeInTheDocument();
   });
 
-  it('report 视图: 行动计划 5 cards', () => {
+  it('report 视图: 行动计划 cards(真实 recommendedSteps)', () => {
     renderDiagnosis();
     navigateToLastStep();
     act(() => {
@@ -264,7 +275,8 @@ describe('Diagnosis · Sally 1:1', () => {
     });
     expect(screen.getByText('行动计划')).toBeInTheDocument();
     expect(screen.getByTestId('action-plan-card-1')).toBeInTheDocument();
-    expect(screen.getByTestId('action-plan-card-5')).toBeInTheDocument();
+    // 真实数据: recommendedSteps 有 3 条 → card-3 存在
+    expect(screen.getByTestId('action-plan-card-3')).toBeInTheDocument();
   });
 
   it('report 视图: 底部 3 button · 重新诊断 / 诊断历史 / 查看今日任务', () => {
@@ -324,5 +336,18 @@ describe('Diagnosis · Sally 1:1', () => {
     renderDiagnosis();
     expect(screen.getByTestId('diagnosis-loading')).toBeInTheDocument();
     expect(screen.getByText('AI 分析中...')).toBeInTheDocument();
+  });
+
+  // isFallback 降级提示
+  it('isFallback: true 时报告顶部显示降级提示条', () => {
+    mockReportOverride = { ...MOCK_REPORT_NORMAL, isFallback: true };
+    renderDiagnosis();
+    navigateToLastStep();
+    act(() => {
+      fireEvent.click(screen.getByTestId('diagnosis-next'));
+    });
+    expect(screen.getByTestId('diagnosis-report')).toBeInTheDocument();
+    // 降级提示条包含 "AI 繁忙" 或 "降级" 字样
+    expect(screen.getByText(/AI 繁忙·降级结果/)).toBeInTheDocument();
   });
 });

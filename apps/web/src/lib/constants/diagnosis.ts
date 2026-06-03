@@ -96,15 +96,15 @@ export interface DiagnosisMockReport {
 }
 
 export const DIAGNOSIS_MOCK_REPORT: DiagnosisMockReport = {
-  overallScore: 0,
+  overallScore: 46,
   dimensionScores: [
-    { id: 'positioning', shortLabel: '定位清晰', radarLabel: '定位', score: 0 },
-    { id: 'branding',    shortLabel: '账号包装', radarLabel: '包装', score: 0 },
-    { id: 'traffic',     shortLabel: '流量型内', radarLabel: '流',   score: 0 },
-    { id: 'value',       shortLabel: '价值型内', radarLabel: '价值', score: 0 },
-    { id: 'case',        shortLabel: '案例型内', radarLabel: '案例', score: 0 },
-    { id: 'persona',     shortLabel: '人设型内', radarLabel: '设',   score: 0 },
-    { id: 'authentic',   shortLabel: '内容状态', radarLabel: '状态', score: 0 },
+    { id: 'positioning', shortLabel: '定位清晰', radarLabel: '定位', score: 4 },
+    { id: 'branding',    shortLabel: '账号包装', radarLabel: '包装', score: 5 },
+    { id: 'traffic',     shortLabel: '流量型内', radarLabel: '流',   score: 7 },
+    { id: 'value',       shortLabel: '价值型内', radarLabel: '价值', score: 8 },
+    { id: 'case',        shortLabel: '案例型内', radarLabel: '案例', score: 5 },
+    { id: 'persona',     shortLabel: '人设型内', radarLabel: '设',   score: 9 },
+    { id: 'authentic',   shortLabel: '内容状态', radarLabel: '状态', score: 8 },
   ],
   coreIssues: [
     '定位模糊，缺乏明确的目标客户和产品价值主张。',

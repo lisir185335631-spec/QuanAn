@@ -3,8 +3,9 @@
  * 1:1 复刻 aiipznt.vip/deep-learning · sally zhao 版
  */
 
-import type { LucideIcon } from 'lucide-react';
 import { FileText, Upload } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 // ── header ────────────────────────────────────────────────────────────────────
 export const DEEP_LEARNING_CHIP = '深度学习' as const;
@@ -29,15 +30,30 @@ export const DL_START_BTN_SUFFIX = (n: number) => `（${n}篇文案）` as const
 export const DL_TOAST_UPLOAD = '文件上传 · 即将上线' as const;
 export const DL_TOAST_BATCH = '批量粘贴 · 即将上线' as const;
 export const DL_TOAST_NEED_TEXT = '请粘贴文案后再添加' as const;
-export const DL_TOAST_START = '深度学习 · 即将上线' as const;
+export const DL_TOAST_START = '已加入深度学习队列，分析中…' as const;
 export const DL_TOAST_COPY = '复制成功' as const;
-export const DL_TOAST_DELETE = '删除 · 即将上线' as const;
+export const DL_TOAST_DELETE = '学习档案已删除' as const;
+export const DL_TOAST_LEARN_QUEUED = '样本已加入批量学习队列，分析中…' as const;
+export const DL_TOAST_LEARN_DONE = '深度学习完成' as const;
+export const DL_TOAST_LEARN_FAILED = '深度学习任务失败' as const;
 
 // ── 学习档案 ─────────────────────────────────────────────────────────────────
 export const DL_ARCHIVES_TITLE_PREFIX = '学习档案' as const;
 export const DL_EMPTY_TITLE = '还没有学习档案' as const;
 export const DL_EMPTY_DESC = '上传文件或添加文案样本，开始深度学习' as const;
 export const DL_ARCHIVE_STATUS_DONE = '已完成' as const;
+
+// ── archive status label mapping ─────────────────────────────────────────────
+export const DL_ARCHIVE_STATUS_MAP: Record<string, string> = {
+  pending: '待审核',
+  approved: '已完成',
+  rejected: '已拒绝',
+  cancelled: '已取消',
+};
+
+export function getDLArchiveStatusLabel(status: string): string {
+  return DL_ARCHIVE_STATUS_MAP[status] ?? status;
+}
 
 // ── 6 段 archive sub-section labels ──────────────────────────────────────────
 export const DL_SECTION_STYLE_PORTRAIT = '风格画像' as const;

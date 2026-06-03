@@ -1,6 +1,6 @@
 import { FlameIcon } from '@/components/icons/aiipznt-icons';
-import { SubCard } from '@/components/ui/sub-card';
 import { Button } from '@/components/ui/button';
+import { SubCard } from '@/components/ui/sub-card';
 import { STEP3_CTA_GENERATE_REFERENCE, STEP3_OUTPUT_H3_6 } from '@/lib/constants/step3';
 import { cn } from '@/lib/utils';
 
@@ -24,10 +24,10 @@ function CaseSkeleton() {
   return (
     <SubCard>
       <div className="space-y-3 animate-pulse">
-        <div className="h-4 bg-muted/60 rounded w-3/5" />
-        <div className="h-3 bg-muted/40 rounded w-full" />
-        <div className="h-3 bg-muted/40 rounded w-4/5" />
-        <div className="h-6 bg-muted/30 rounded-full w-2/5 mt-2" />
+        <div className="h-4 bg-[#f3f4f6] rounded w-3/5" />
+        <div className="h-3 bg-[#f3f4f6] rounded w-full" />
+        <div className="h-3 bg-[#f3f4f6] rounded w-4/5" />
+        <div className="h-6 bg-[#f3f4f6] rounded-full w-2/5 mt-2" />
       </div>
     </SubCard>
   );
@@ -37,16 +37,16 @@ function CaseCard({ title, description, searchHint, platform }: VideoReferenceCa
   return (
     <SubCard>
       <div className="space-y-2">
-        <p className="text-sm font-semibold text-on-surface">{title}</p>
-        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
+        <p className="text-sm font-semibold text-[#111827]">{title}</p>
+        <p className="text-xs text-[#6b7280] leading-relaxed">{description}</p>
         <div className="flex items-center gap-2 flex-wrap">
           {platform && (
-            <span className="inline-block text-xs bg-primary/15 text-primary border border-primary/30 rounded px-2 py-0.5 font-medium">
+            <span className="inline-block text-xs bg-[#002fa7]/10 text-[#002fa7] border border-[#002fa7]/30 rounded px-2 py-0.5 font-medium">
               {platform}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <span className="text-primary">⌕</span>搜索:&nbsp;{searchHint}
+          <span className="inline-flex items-center gap-1 text-xs text-[#6b7280]">
+            <span className="text-[#002fa7]">⌕</span>搜索:&nbsp;{searchHint}
           </span>
         </div>
       </div>
@@ -64,8 +64,8 @@ export function VideoReferenceCaseSection({
     <div className={cn('space-y-3', className)}>
       {/* H3 row: FlameIcon + title + [生成参考图] button */}
       <div className="flex items-center justify-between gap-4">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-on-surface">
-          <FlameIcon className="h-4 w-4 shrink-0" size={4} />
+        <h3 className="flex items-center gap-2 text-base font-semibold text-[#111827]">
+          <FlameIcon className="h-4 w-4 shrink-0" aria-hidden size={4} />
           {H3_LABEL}
         </h3>
         <Button
@@ -79,7 +79,7 @@ export function VideoReferenceCaseSection({
       </div>
 
       {/* Grid: always renders, skeleton when empty */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {cases.length === 0 ? (
           <>
             <CaseSkeleton />

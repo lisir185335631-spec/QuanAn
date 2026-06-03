@@ -106,3 +106,23 @@ export const PAGE_TITLE = '爆款呈现形式合集';
 export const PAGE_SUBTITLE = '掌握各种爆款视频的呈现形式，找到最适合你的内容表达方式';
 export const SCENE_LABEL = '适用场景';
 export const SCENE_VALUE_DEFAULT = '通用';
+
+// ── 阶段2 接真 · 表单 + 推荐 UI 字面常量 ─────────────────────────────────────
+export const PS_FORM_TITLE = '内容推荐参数';
+export const PS_LABEL_TEXT = '你的文案内容';
+export const PS_LABEL_PLATFORM = '目标平台';
+export const PS_DEFAULT_TEXT = '分享我在健身房坚持100天的真实变化，从抵触运动到爱上运动的心路历程，包括饮食调整和训练计划。';
+export const PS_DEFAULT_PLATFORM = '抖音';
+export const PS_CTA = '推荐呈现形式';
+export const PS_RESULT_TITLE = 'AI 推荐形式';
+export const PS_FEEDBACK_PROMPT = '这个推荐对你有帮助吗？';
+export const PS_TEXT_MIN = 10;
+export const PS_TEXT_MIN_MSG = `文案至少 ${PS_TEXT_MIN} 字`;
+
+export const PLATFORM_OPTIONS: { value: string; label: string }[] = [
+  { value: '抖音', label: '抖音' },
+  { value: '小红书', label: '小红书' },
+  { value: '视频号', label: '视频号' },
+  { value: '快手', label: '快手' },
+  { value: 'B站', label: 'B站' },
+];

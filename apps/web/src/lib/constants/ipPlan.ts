@@ -1,8 +1,9 @@
-import type { LucideIcon } from 'lucide-react';
 import {
   Camera, DollarSign, Fingerprint, LayoutGrid, Radio, Sparkles,
   Target, TrendingUp, Users,
 } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 export const IP_PLAN_H1 = '我的IP方案' as const;
 export const IP_PLAN_SUBTITLE_TPL = (done: number, total: number) =>

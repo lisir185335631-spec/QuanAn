@@ -22,9 +22,32 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { trpc } from '@/lib/trpc';
 
-export function CreateAccountModal() {
+interface CreateAccountModalProps {
+  /** Controlled mode: pass open+onOpenChange to suppress the built-in trigger */
+  open?: boolean;
+  onOpenChange?: (v: boolean) => void;
+  /** Called after successful creation instead of navigate('/step/1') */
+  onCreated?: () => void;
+}
+
+export function CreateAccountModal({
+  open: openProp,
+  onOpenChange: onOpenChangeProp,
+  onCreated,
+}: CreateAccountModalProps = {}) {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [openInternal, setOpenInternal] = useState(false);
+
+  // Controlled when open prop is supplied
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : openInternal;
+  function setOpen(v: boolean) {
+    if (isControlled) {
+      onOpenChangeProp?.(v);
+    } else {
+      setOpenInternal(v);
+    }
+  }
 
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
@@ -64,7 +87,11 @@ export function CreateAccountModal() {
     });
     toast.success('账号创建成功');
     setOpen(false);
-    navigate('/step/1');
+    if (onCreated) {
+      onCreated();
+    } else {
+      navigate('/step/1');
+    }
   }
 
   function handleSmartRecommend() {
@@ -90,13 +117,16 @@ export function CreateAccountModal() {
 
   return (
     <>
-      <Button
-        className="bg-gradient-to-r from-primary to-primary/60 text-primary-foreground"
-        onClick={() => setOpen(true)}
-        data-testid="create-account-trigger"
-      >
-        新建账号
-      </Button>
+      {/* Controlled mode: no built-in trigger (caller renders its own button) */}
+      {!isControlled && (
+        <Button
+          className="bg-gradient-to-r from-primary to-primary/60 text-primary-foreground"
+          onClick={() => setOpen(true)}
+          data-testid="create-account-trigger"
+        >
+          新建账号
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent data-testid="create-account-modal">

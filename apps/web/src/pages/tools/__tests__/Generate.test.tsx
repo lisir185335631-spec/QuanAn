@@ -6,7 +6,36 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// ── PioneerLayout requires trpc + useAuth + useActiveAccount ─────────────────
+vi.mock('@/lib/trpc', () => ({
+  trpc: {
+    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+  },
+}));
+
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({
+    account: null,
+    isLoading: false,
+    isSwitching: false,
+    switchTo: vi.fn(),
+  }),
+}));
+
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
 
 import Generate from '@/pages/tools/Generate';
 
@@ -182,21 +211,21 @@ describe('Generate · 交互', () => {
     renderGenerate();
     const btn = screen.getByText('晒过程').closest('button')!;
     fireEvent.click(btn);
-    expect(btn.className).toContain('border-primary');
+    expect(btn.className).toContain('border-[#002fa7]');
   });
 
   it('element click 多选', () => {
     renderGenerate();
     const btn = screen.getByText('贪念').closest('button')!;
     fireEvent.click(btn);
-    expect(btn.className).toContain('border-primary');
+    expect(btn.className).toContain('border-[#002fa7]');
   });
 
   it('textarea 改值 · count 同步', () => {
     renderGenerate();
     const ta = screen.getByDisplayValue(
       '如何在3天内涨粉1万、新手做短视频最容易犯的3个错误',
-    ) as HTMLTextAreaElement;
+    );
     fireEvent.change(ta, { target: { value: 'abc' } });
     expect(screen.getByText('3/500')).toBeInTheDocument();
   });

@@ -2,8 +2,9 @@
  * /daily-tasks · 今日行动清单 · constants
  * mock-first · 4 固定 sally task + 3 stat + progress + footer
  */
-import type { LucideIcon } from 'lucide-react';
 import { BookOpen, Settings, Zap } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 // ── Page-level constants ──────────────────────────────────────────────────────
 export const DAILY_TASKS_CHIP = '每日任务' as const;

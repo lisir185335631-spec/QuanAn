@@ -1,5 +1,6 @@
-import type { LucideIcon } from 'lucide-react';
 import { Building2, Globe, Target, Users } from 'lucide-react';
+
+import type { LucideIcon } from 'lucide-react';
 
 export const ACCOUNTS_H1 = 'IP账号管理' as const;
 export const ACCOUNTS_SUBTITLE = '管理多个IP账号，每个账号独立配置行业、定位和人设' as const;

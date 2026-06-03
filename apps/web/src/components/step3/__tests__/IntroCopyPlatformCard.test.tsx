@@ -58,10 +58,10 @@ describe('IntroCopyPlatformCard — content rendering', () => {
     expect(screen.getByText('#美容师')).toBeInTheDocument();
   });
 
-  it('hashtag chips have bg-primary/10 text-primary classes (AC-5)', () => {
-    const { container } = render(<IntroCopyPlatformCard entry={MOCK_ENTRY} />);
-    const chip = container.querySelector('.bg-primary\\/10.text-primary');
-    expect(chip).toBeTruthy();
+  it('hashtag chips use brand-blue #002fa7 (AC-5)', () => {
+    render(<IntroCopyPlatformCard entry={MOCK_ENTRY} />);
+    const chip = screen.getByText('#美容师');
+    expect(chip.className).toContain('002fa7');
   });
 
   it('renders evaluation text', () => {

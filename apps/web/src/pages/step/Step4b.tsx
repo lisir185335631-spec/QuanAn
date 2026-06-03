@@ -1,22 +1,18 @@
-// PRD-29.10 · /step/4b 变现路径 · 完全重写 · 1:1 sally zhao demo
+// PRD-29.10 · /step/4b 变现路径 · 先锋白 Pioneer 品牌风格 · PioneerLayout 独立路由
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Step4bMarketAnalysisSection } from '@/components/step4b/Step4bMarketAnalysisSection';
-import { Step4bStageSection, type Step4bStage } from '@/components/step4b/Step4bStageSection';
-import { Step4bRevenueStructureSection } from '@/components/step4b/Step4bRevenueStructureSection';
-import { Step4bSuccessCasesSection } from '@/components/step4b/Step4bSuccessCasesSection';
-import { Step3LoadingState } from '@/components/step3/Step3LoadingState';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { type Step4bStage } from '@/components/step4b/Step4bStageSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
+import { PioneerLayout } from '@/layouts/PioneerLayout';
 import {
-  STEP4B_H1,
   STEP4B_BUTTON_GENERATE_REAL,
+  STEP4B_H1,
   STEP4B_SUBTITLE_REAL,
   STEP4B_THREE_STAGES,
 } from '@/lib/constants/step4b';
+import { breakSentences } from '@/lib/text';
 
 // ── Legacy adapter types (kept for backward compat with existing tests) ───────
 
@@ -372,7 +368,105 @@ function generateMockResult(): Step4bResult {
   };
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+// ── Style tokens ──────────────────────────────────────────────────────────────
+
+const btnSecondary =
+  'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+
+// ── Case row status helpers ───────────────────────────────────────────────────
+
+type CaseStatus = 'best' | 'expanding' | 'init';
+
+function getCaseStatus(index: number): CaseStatus {
+  if (index === 0) return 'best';
+  if (index === 1) return 'expanding';
+  return 'init';
+}
+
+function CaseStatusBadge({ status }: { status: CaseStatus }) {
+  if (status === 'best') {
+    return (
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2.5 py-1">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+        <span className="text-[11px] font-semibold text-[#10b981]">最佳</span>
+      </div>
+    );
+  }
+  if (status === 'expanding') {
+    return (
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#F3E08A] bg-[#FEFCE0] px-2.5 py-1">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8A6A00]" />
+        <span className="text-[11px] font-semibold text-[#8A6A00]">扩展中</span>
+      </div>
+    );
+  }
+  return (
+    <div className="inline-flex items-center gap-1.5 rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-2.5 py-1 opacity-60">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#9ca3af]" />
+      <span className="text-[11px] font-semibold text-[#9ca3af]">初始化中</span>
+    </div>
+  );
+}
+
+// ── Stage configs · 品牌三色 ─────────────────────────────────────────────────
+
+interface StageCfg {
+  barColors: [string, string, string];
+  barHeights: [number, number, number];
+  labelColor: string;
+  valueColor: string;
+  subtitle: string;
+  accentColor: string;
+}
+
+const STAGE_CONFIGS: [StageCfg, StageCfg, StageCfg] = [
+  {
+    barColors: ['#d1d5db', '#9ca3af', '#002fa7'],
+    barHeights: [30, 45, 60],
+    labelColor: '#6b7280',
+    valueColor: '#002fa7',
+    subtitle: '初始捕获',
+    accentColor: '#002fa7',
+  },
+  {
+    barColors: ['#9ca3af', '#002fa7', '#781621'],
+    barHeights: [40, 70, 85],
+    labelColor: '#6b7280',
+    valueColor: '#002fa7',
+    subtitle: '规模与渗透',
+    accentColor: '#781621',
+  },
+  {
+    barColors: ['#002fa7', '#781621', '#F6D300'],
+    barHeights: [60, 80, 100],
+    labelColor: '#002fa7',
+    valueColor: '#781621',
+    subtitle: '生态系统主导',
+    accentColor: '#8A6A00',
+  },
+];
+
+// ── Donut chart colors · 品牌三色轮转 ────────────────────────────────────────
+
+const DONUT_COLORS = ['#002fa7', '#781621', '#F6D300', '#001E73'];
+const CIRCUMFERENCE = 440; // 2π × 70 ≈ 439.8 → 440
+
+// ── 数据洞察静态数据 S4B ─────────────────────────────────────────────────────
+
+const RADAR_DIMS_S4B = [
+  { label: '获客力', value: 85, color: '#002fa7' },
+  { label: '转化率', value: 78, color: '#781621' },
+  { label: '客单价', value: 92, color: '#F6D300' },
+  { label: '复购率', value: 70, color: '#002fa7' },
+  { label: '利润率', value: 88, color: '#781621' },
+  { label: '规模化', value: 74, color: '#F6D300' },
+];
+
+// 收入轨迹趋势 · 12个月 · 单位万
+const REVENUE_TREND_S4B = [8, 15, 22, 35, 48, 60, 80, 95, 112, 135, 158, 190];
+const REVENUE_LABELS_S4B = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+// ── Main Component ───────────────────────────────────────────────────────────
 
 export default function Step4b() {
   const { account } = useActiveAccount();
@@ -382,7 +476,7 @@ export default function Step4b() {
   const industry = readOtherStep<{ industry?: string }>(accountId, 'step1')?.industry ?? '美业';
 
   // PRD-29.10 · default form 1:1 sally
-  const [productService, setProductService] = useState(DEFAULT_FORM.productService);
+  const [productService, setProductService] = useState(breakSentences(DEFAULT_FORM.productService));
   const [targetAudience, setTargetAudience] = useState(DEFAULT_FORM.targetAudience);
   const [ipPositioning, setIpPositioning] = useState(DEFAULT_FORM.ipPositioning);
   const [currentIncome, setCurrentIncome] = useState(DEFAULT_FORM.currentIncome);
@@ -430,7 +524,7 @@ export default function Step4b() {
   }
 
   function handleCopyAll() {
-    navigator.clipboard.writeText(JSON.stringify(generated, null, 2)).then(() => toast.success('已复制全部'));
+    void navigator.clipboard.writeText(JSON.stringify(generated, null, 2)).then(() => toast.success('已复制全部'));
   }
 
   function handleOptimize() {
@@ -440,109 +534,903 @@ export default function Step4b() {
   function handleFeedbackUp() { toast.success('感谢反馈!'); }
   function handleFeedbackDown() { toast.info('我们会持续改进'); }
 
+  // ── Donut segments ────────────────────────────────────────────────────────
+  let cumulative = 0;
+  const donutSegments = generated.revenueStructure.map((item, i) => {
+    const pct = parseInt(item.percentage, 10) || 0;
+    const dash = (pct / 100) * CIRCUMFERENCE;
+    const offset = -(cumulative / 100) * CIRCUMFERENCE;
+    cumulative += pct;
+    return { ...item, pct, dash, offset, color: DONUT_COLORS[i % DONUT_COLORS.length] };
+  });
+
   return (
-    <main className="flex-1 container py-8 space-y-8">
-      {/* 1. Header · breadcrumb + H1 + subtitle */}
-      <header className="space-y-3">
-        <p className="text-xs font-semibold text-primary tracking-wide">
-          STEP 04b › 变现路径规划
-        </p>
-        <h1 className="text-2xl font-bold text-on-surface flex items-center gap-2">
-          $ {STEP4B_H1}
-        </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {STEP4B_SUBTITLE_REAL.replace('{industry}', industry)}
-        </p>
+    <PioneerLayout>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <header className="mb-12 flex flex-row items-center justify-between gap-8">
+        <div className="shrink-0">
+          <div className="mb-3 flex items-center gap-3">
+            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+              战略路径
+            </span>
+            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              增长模型
+            </span>
+          </div>
+          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+            {STEP4B_H1}
+          </h1>
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+            {STEP4B_SUBTITLE_REAL.replace('{industry}', industry)}
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-nowrap gap-3">
+          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            智能优化
+          </button>
+          <button type="button" onClick={handleRegenerateAll} disabled={isLoading} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
+            重新生成
+          </button>
+          <button
+            type="button"
+            onClick={handleCopyAll}
+            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            导出数据
+          </button>
+        </div>
       </header>
 
-      {/* 2. Form · 产品/服务 + 3 input + main CTA */}
-      <form onSubmit={handleSubmit} className="space-y-4 bg-card/30 border border-border/40 rounded-lg p-6">
-        {/* 产品/服务描述 (required *) textarea */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-on-surface">
-            产品/服务描述 <span className="text-rose-400">*</span>
-          </label>
-          <textarea
-            value={productService}
-            onChange={(e) => setProductService(e.target.value)}
-            className="w-full min-h-[120px] rounded-md border border-border bg-input px-3 py-2 text-sm text-on-surface resize-y"
-            required
-          />
+      {/* ── 输入变现参数 card ───────────────────────────────── */}
+      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
+              <span className="material-symbols-outlined">payments</span>
+            </span>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#111827]">输入变现参数</h2>
+              <p className="text-[12px] text-[#9ca3af]">填写基础信息 · AI 据此规划完整变现路径</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+            参数就绪
+          </span>
+        </div>
+        <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-7">
+            {/* 产品/服务描述 · 框式编辑器 */}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label htmlFor="s4b-product-service" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  产品/服务描述 <span className="ml-1 text-[#781621]">*</span>
+                </label>
+                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
+                  <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+                  AI 据此测算变现潜力
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+                <textarea
+                  id="s4b-product-service"
+                  required
+                  value={productService}
+                  onChange={(e) => setProductService(e.target.value)}
+                  rows={4}
+                  placeholder="描述你的产品/服务，包括定价、对象、交付形式等"
+                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                />
+                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] text-[#9ca3af]">可包含</span>
+                    {['定价', '受众', '交付', '服务范围', '培训'].map((t) => (
+                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{productService.length} 字</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 目标受众 + IP定位 · 双列带图标 */}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="s4b-target-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  目标受众
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">groups</span>
+                  <input
+                    id="s4b-target-audience"
+                    type="text"
+                    value={targetAudience}
+                    onChange={(e) => setTargetAudience(e.target.value)}
+                    placeholder="例如：25-40男性企业主"
+                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="s4b-ip-positioning" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  IP定位
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">person_pin</span>
+                  <input
+                    id="s4b-ip-positioning"
+                    type="text"
+                    value={ipPositioning}
+                    onChange={(e) => setIpPositioning(e.target.value)}
+                    placeholder="例如：AI智能体定制"
+                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 当前收入水平 + 提交按钮 */}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="s4b-current-income" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  当前收入水平
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">monetization_on</span>
+                  <input
+                    id="s4b-current-income"
+                    type="text"
+                    value={currentIncome}
+                    onChange={(e) => setCurrentIncome(e.target.value)}
+                    placeholder="例如：年入30万"
+                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                  />
+                </div>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  disabled={!productService.trim() || isLoading}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span className="material-symbols-outlined text-[18px]">payments</span>
+                  {isLoading ? '生成中…' : STEP4B_BUTTON_GENERATE_REAL}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* ── Loading bar ────────────────────────────────────── */}
+      {isLoading && (
+        <div className="mb-8 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#002fa7]/5 p-4 text-[14px] font-medium text-[#001e73]">
+          <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+          正在规划变现路径…
+        </div>
+      )}
+
+      {/* ── 数据洞察 band ──────────────────────────────────── */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
+        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
+        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+          模型已就绪
+        </span>
+      </div>
+      <div className="mb-8 grid grid-cols-12 gap-6">
+        {/* 变现能力雷达 · col-span-5 */}
+        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+                <span className="material-symbols-outlined text-[20px]">radar</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">变现能力雷达</h3>
+                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[26px] font-bold leading-none text-[#002fa7]">81</p>
+              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+            </div>
+          </div>
+          {(() => {
+            const dims = RADAR_DIMS_S4B;
+            const cx = 130;
+            const cy = 122;
+            const R = 88;
+            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+            return (
+              <svg viewBox="0 0 260 244" className="w-full">
+                <defs>
+                  <linearGradient id="radarFillS4B" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
+                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  </linearGradient>
+                </defs>
+                {[0.25, 0.5, 0.75, 1].map((f) => (
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                ))}
+                {dims.map((_, i) => {
+                  const [x, y] = pt(i, R);
+                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                })}
+                <polygon points={dataPoly} fill="url(#radarFillS4B)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R * (d.value / 100));
+                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                })}
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R + 16);
+                  return (
+                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      {d.label}
+                    </text>
+                  );
+                })}
+              </svg>
+            );
+          })()}
+          <div className="mt-2 grid grid-cols-3 gap-y-2">
+            {RADAR_DIMS_S4B.map((d) => (
+              <div key={d.label} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
+                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* 3 col grid: 目标受众 + IP定位 + 当前收入水平 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-on-surface">
-              目标受众 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-            </label>
-            <Input value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)} />
+        {/* 营收增长预估 · col-span-7 */}
+        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">show_chart</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">营收增长预估</h3>
+                <p className="text-[11px] text-[#9ca3af]">按当前变现矩阵测算</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {['营收', '增速', '复购'].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-on-surface">
-              IP定位 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-            </label>
-            <Input value={ipPositioning} onChange={(e) => setIpPositioning(e.target.value)} />
+          <div className="mb-3 flex items-end gap-3">
+            <p className="text-[30px] font-bold leading-none text-[#111827]">¥190万</p>
+            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[14px]">trending_up</span>+128%
+            </span>
+            <span className="mb-1 text-[12px] text-[#9ca3af]">同比增长</span>
           </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-on-surface">
-              当前收入水平 <span className="text-xs text-muted-foreground font-normal">（可选）</span>
-            </label>
-            <Input value={currentIncome} onChange={(e) => setCurrentIncome(e.target.value)} />
+          {(() => {
+            const data = REVENUE_TREND_S4B;
+            const W = 560;
+            const H = 168;
+            const padL = 6;
+            const padR = 6;
+            const padT = 12;
+            const padB = 8;
+            const innerW = W - padL - padR;
+            const innerH = H - padT - padB;
+            const max = 210;
+            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+            const y = (v: number) => padT + innerH * (1 - v / max);
+            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+            return (
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                <defs>
+                  <linearGradient id="trendFillS4B" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
+                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="trendLineS4B" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#002fa7" />
+                    <stop offset="100%" stopColor="#781621" />
+                  </linearGradient>
+                </defs>
+                {[0, 0.33, 0.66, 1].map((f) => (
+                  <line
+                    key={f}
+                    x1={padL}
+                    x2={W - padR}
+                    y1={(padT + innerH * f).toFixed(1)}
+                    y2={(padT + innerH * f).toFixed(1)}
+                    stroke="#f1f3f9"
+                    strokeWidth="1"
+                  />
+                ))}
+                <path d={area} fill="url(#trendFillS4B)" />
+                <path d={line} fill="none" stroke="url(#trendLineS4B)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {data.map((v, i) =>
+                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                )}
+              </svg>
+            );
+          })()}
+          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            {REVENUE_LABELS_S4B.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
           </div>
-        </div>
-
-        {/* Main CTA */}
-        <Button
-          type="submit"
-          disabled={!productService.trim() || isLoading}
-          className="w-full bg-primary hover:bg-primary/90"
-        >
-          🚀 {STEP4B_BUTTON_GENERATE_REAL}
-        </Button>
-      </form>
-
-      {/* 3. Loading state */}
-      {isLoading && <Step3LoadingState />}
-
-      {/* 4. Output area: H2 + toolbar */}
-      <div className="flex items-center justify-between gap-4 pt-4">
-        <h2 className="text-xl font-bold text-on-surface flex items-center gap-2">
-          $ 你的三阶梯变现路径
-        </h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleOptimize}>
-            ✨ 智能优化
-          </Button>
-          <Button variant="outline" size="sm" disabled={!canBulkActions} onClick={handleRegenerateAll}>
-            ⟳ 重新生成
-          </Button>
-          <Button variant="outline" size="icon" disabled={!canBulkActions} onClick={handleCopyAll} aria-label="复制全部">
-            📋
-          </Button>
         </div>
       </div>
 
-      {/* 5. Market Analysis */}
-      <Step4bMarketAnalysisSection analysis={generated.marketAnalysis} />
+      {/* ── KPI 卡一排 ─────────────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-6">
+        {/* 预估年营收 · 环形 · 蓝 */}
+        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">monitoring</span>
+            </span>
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[13px]">trending_up</span>+128%
+            </span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-[28px] font-bold leading-none text-[#111827]">
+                1,420<span className="text-[15px] text-[#9ca3af]">万</span>
+              </p>
+              <p className="mt-1.5 text-[12px] text-[#6b7280]">预估年营收(ARR)</p>
+            </div>
+            <div className="h-12 w-12 shrink-0">
+              <svg viewBox="0 0 36 36" className="-rotate-90">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.915"
+                  fill="none"
+                  stroke="#002fa7"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeDasharray="78 100"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-      {/* 6. 3 Stages */}
-      {generated.stages.map((stage) => (
-        <Step4bStageSection key={stage.number} stage={stage} />
-      ))}
+        {/* 变现渠道数 · 迷你柱 · 勃艮第 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">account_tree</span>
+            </span>
+            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已规划</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.revenueStructure.length}
+              <span className="text-[15px] text-[#9ca3af]"> 条</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">变现渠道</p>
+          </div>
+          <div className="mt-3 flex h-6 items-end gap-1">
+            {[40, 70, 85, 58, 92].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </div>
 
-      {/* 7. Revenue Structure */}
-      <Step4bRevenueStructureSection structure={generated.revenueStructure} />
+        {/* 客单价区间 · 进度条 · 黄 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
+              <span className="material-symbols-outlined text-[20px]">sell</span>
+            </span>
+            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">高客单</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              1万<span className="text-[15px] text-[#9ca3af]">-100万</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">客单价区间</p>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+            <div className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" style={{ width: '82%' }} />
+          </div>
+        </div>
 
-      {/* 8. Success Cases */}
-      <Step4bSuccessCasesSection cases={generated.successCases} />
-
-      {/* 9. footer · 反馈 */}
-      <div className="flex items-center gap-3 pt-4 border-t border-border/30">
-        <p className="text-xs text-muted-foreground">这个结果对你有帮助吗？</p>
-        <Button variant="ghost" size="icon" onClick={handleFeedbackUp} aria-label="有帮助">👍</Button>
-        <Button variant="ghost" size="icon" onClick={handleFeedbackDown} aria-label="无帮助">👎</Button>
+        {/* 综合转化率 · 关键词 chip · 蓝 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">conversion_path</span>
+            </span>
+            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+              {generated.stages.length} 阶段
+            </span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              3.8<span className="text-[15px] text-[#9ca3af]">%</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">综合转化率</p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1">
+            {['引流品', '信任品', '利润品'].map((k) => (
+              <span
+                key={k}
+                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
-    </main>
+
+      {/* ── Main grid: 收入轨迹 + 右侧 ─────────────────────── */}
+      <div className="grid grid-cols-3 gap-6">
+        {/* Left col-span-2: 收入轨迹分析 */}
+        <div className="col-span-2 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
+          <div className="flex items-center justify-between bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+                <span className="material-symbols-outlined text-[18px]">bar_chart</span>
+              </span>
+              <h3 className="text-[16px] font-bold">收入轨迹分析</h3>
+            </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+              3 阶段规划
+            </span>
+          </div>
+          <div className="space-y-6 bg-[#f9fafb] p-6">
+            {generated.stages.map((stage, idx) => {
+              const cfgIdx = (idx < 3 ? idx : 0) as 0 | 1 | 2;
+              const cfg: StageCfg = STAGE_CONFIGS[cfgIdx];
+              return (
+                <div
+                  key={stage.number}
+                  className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft"
+                >
+                  {/* Stage header */}
+                  <div className="mb-5 flex items-start justify-between gap-4">
+                    <div>
+                      <div className="mb-2 flex items-center gap-2">
+                        <span
+                          className="text-[11px] font-bold uppercase tracking-wider"
+                          style={{ color: cfg.labelColor }}
+                        >
+                          阶段 {String(stage.number).padStart(2, '0')}
+                        </span>
+                        <span className="rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-2 py-0.5 text-[10px] font-semibold text-[#6b7280]">
+                          {stage.duration}
+                        </span>
+                      </div>
+                      <div
+                        className="mb-1 text-[22px] font-bold leading-none"
+                        style={{ color: cfg.valueColor }}
+                      >
+                        {stage.range}
+                      </div>
+                      <p className="text-[13px] font-semibold text-[#111827]">{stage.title}</p>
+                      <p
+                        className="mt-0.5 text-[11px] font-semibold"
+                        style={{ color: cfg.accentColor }}
+                      >
+                        {cfg.subtitle}
+                      </p>
+                    </div>
+                    <div className="flex h-20 shrink-0 items-end gap-1.5">
+                      {cfg.barColors.map((color, bi) => (
+                        <div
+                          key={bi}
+                          className="w-4 rounded-t"
+                          style={{ height: `${cfg.barHeights[bi]}%`, backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 核心策略 */}
+                  <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                    <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                      核心策略
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-[#374151]">{stage.coreStrategy}</p>
+                  </div>
+
+                  {/* 产品矩阵 */}
+                  {stage.productMatrix.length > 0 && (
+                    <div className="mb-4">
+                      <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                        产品矩阵
+                      </p>
+                      <div className="grid grid-cols-1 gap-3">
+                        {stage.productMatrix.map((product, pi) => (
+                          <div
+                            key={pi}
+                            className="rounded-xl border border-[#e5e7eb] bg-white p-4 pw-shadow-soft"
+                          >
+                            <div className="mb-2 flex items-start justify-between gap-2">
+                              <div>
+                                <span className="rounded-md bg-[#eff4ff] px-2 py-0.5 text-[10px] font-bold text-[#002fa7]">
+                                  {product.category}
+                                </span>
+                                <p className="mt-1 text-[13px] font-semibold text-[#111827]">{product.name}</p>
+                              </div>
+                              <span className="shrink-0 rounded-lg border border-[#F6D300]/60 bg-[#FEFCE0] px-2.5 py-1 text-[12px] font-bold text-[#8a6a00]">
+                                {product.priceRange}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-[11px] text-[#6b7280]">
+                              <div>
+                                <span className="font-semibold text-[#374151]">目标客户</span>
+                                <p className="mt-0.5 leading-relaxed">{product.targetCustomer}</p>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-[#374151]">月目标</span>
+                                <p className="mt-0.5">{product.monthlyTarget}</p>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-[#374151]">月收入</span>
+                                <p className="mt-0.5 font-semibold text-[#10b981]">{product.monthlyRevenue}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 流量策略 */}
+                  {stage.trafficStrategy && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                        流量策略
+                      </p>
+                      <p className="text-[13px] leading-relaxed text-[#374151]">{stage.trafficStrategy}</p>
+                    </div>
+                  )}
+
+                  {/* 转化流程 */}
+                  {stage.conversionFlow && stage.conversionFlow.length > 0 && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                        转化流程
+                      </p>
+                      <div className="space-y-2">
+                        {stage.conversionFlow.map((step, si) => (
+                          <div key={si} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
+                            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[9px] font-bold text-white">
+                              {si + 1}
+                            </span>
+                            <span>{step}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 团队建设 */}
+                  {stage.teamBuilding && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                        团队建设
+                      </p>
+                      <p className="text-[13px] leading-relaxed text-[#374151]">{stage.teamBuilding}</p>
+                    </div>
+                  )}
+
+                  {/* 体系化建设 */}
+                  {stage.systemBuilding && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                        体系化建设
+                      </p>
+                      <p className="text-[13px] leading-relaxed text-[#374151]">{stage.systemBuilding}</p>
+                    </div>
+                  )}
+
+                  {/* 品牌化策略 */}
+                  {stage.brandStrategy && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#8a6a00] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#F6D300] before:content-['']">
+                        品牌化策略
+                      </p>
+                      <p className="text-[13px] leading-relaxed text-[#374151]">{stage.brandStrategy}</p>
+                    </div>
+                  )}
+
+                  {/* 矩阵化布局 */}
+                  {stage.matrixLayout && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#8a6a00] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#F6D300] before:content-['']">
+                        矩阵化布局
+                      </p>
+                      <p className="text-[13px] leading-relaxed text-[#374151]">{stage.matrixLayout}</p>
+                    </div>
+                  )}
+
+                  {/* 关键动作 */}
+                  {stage.keyActions.length > 0 && (
+                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f0fff4] p-4">
+                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#10b981] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#10b981] before:content-['']">
+                        关键动作
+                      </p>
+                      <ul className="space-y-1.5">
+                        {stage.keyActions.map((action, ai) => (
+                          <li key={ai} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
+                            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[14px] text-[#10b981]">check_circle</span>
+                            <span>{action}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* 风险提示 */}
+                  {stage.risks.length > 0 && (
+                    <div className="rounded-xl border border-[#fecaca] bg-[#fff5f5] p-4">
+                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                        风险提示
+                      </p>
+                      <ul className="space-y-1.5">
+                        {stage.risks.map((risk, ri) => (
+                          <li key={ri} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#781621]">
+                            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[14px] text-[#781621]">warning</span>
+                            <span>{risk}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right col-span-1 */}
+        <div className="flex flex-col gap-6">
+          {/* 收入结构模型 */}
+          <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+            <h3 className="mb-1 text-[16px] font-bold text-[#111827]">收入结构模型</h3>
+            <p className="mb-4 text-[11px] text-[#9ca3af]">三色环形占比 · 品牌三色轮转</p>
+            <div className="mb-6 flex items-center justify-center">
+              <svg className="-rotate-90" viewBox="0 0 160 160" width="160" height="160">
+                {/* track */}
+                <circle cx="80" cy="80" fill="none" r="70" stroke="#f1f5f9" strokeWidth="12" />
+                {/* segments */}
+                {donutSegments.map((seg, i) => (
+                  <circle
+                    key={i}
+                    cx="80"
+                    cy="80"
+                    fill="none"
+                    r="70"
+                    stroke={seg.color}
+                    strokeWidth="12"
+                    strokeDasharray={`${seg.dash} ${CIRCUMFERENCE}`}
+                    strokeDashoffset={seg.offset}
+                  />
+                ))}
+              </svg>
+            </div>
+            <div className="space-y-4">
+              {donutSegments.map((seg) => (
+                <div key={seg.name} className="rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-3">
+                  <div className="mb-1.5 flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: seg.color }} />
+                    <span className="flex-1 text-[12px] font-semibold text-[#374151]">{seg.name}</span>
+                    <span className="shrink-0 text-[13px] font-bold" style={{ color: seg.color }}>
+                      {seg.percentage}
+                    </span>
+                  </div>
+                  {seg.desc && (
+                    <p className="pl-4.5 text-[11px] leading-relaxed text-[#6b7280]">{seg.desc}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ARR card · 品牌蓝渐变 */}
+          <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#002fa7] to-[#001952] p-6 text-white pw-shadow-soft">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#781621]/20 blur-2xl" />
+            <div className="relative z-10">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+                  <span className="material-symbols-outlined text-[18px]">currency_yen</span>
+                </span>
+                <p className="text-[12px] font-medium text-[#b8c4ff]">预计年度经常性收入 (ARR)</p>
+              </div>
+              <div className="mb-1 text-[32px] font-bold leading-none">¥1,420万</div>
+              <div className="mt-3 flex items-center gap-2 text-[13px]">
+                <span className="material-symbols-outlined text-[16px] text-[#10b981]">trending_up</span>
+                <span className="font-semibold text-[#10b981]">同比增长 +128%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 节点性能指标 table ──────────────────────────────── */}
+      <div className="mt-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
+        <div className="flex items-center justify-between border-b border-[#eef1f6] bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+              <span className="material-symbols-outlined text-[18px]">sort</span>
+            </span>
+            <h3 className="text-[16px] font-bold">节点性能指标</h3>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold">
+            {generated.successCases.length} 条参考
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[14px]">
+            <thead>
+              <tr className="bg-[#f8faff]">
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">名称</th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">体量层级</th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">转化率</th>
+                <th className="w-32 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">状态</th>
+                <th className="w-20 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">操作</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#374151]">
+              {generated.successCases.map((sc, idx) => (
+                <tr
+                  key={sc.title}
+                  className={`border-t border-[#f3f4f6] transition-colors hover:bg-[#f8faff] ${idx % 2 === 1 ? 'bg-[#fafbff]' : ''}`}
+                >
+                  <td className="px-6 py-4 font-semibold text-[#111827]">
+                    {sc.title.length > 28 ? `${sc.title.slice(0, 28)}…` : sc.title}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="rounded-md border border-[#dbe2ff] bg-[#eff4ff] px-2 py-0.5 text-[11px] font-semibold text-[#002fa7]">
+                      {sc.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-[#6b7280]">
+                    {sc.outcome.length > 20 ? `${sc.outcome.slice(0, 20)}…` : sc.outcome}
+                  </td>
+                  <td className="px-6 py-4">
+                    <CaseStatusBadge status={getCaseStatus(idx)} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      type="button"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#6b7280] transition-colors hover:border-[#002fa7] hover:bg-[#002fa7] hover:text-white"
+                      aria-label="操作"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">more_vert</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ── 成功案例参考 cards ──────────────────────────────── */}
+      <div className="mt-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
+        <div className="flex items-center justify-between bg-gradient-to-r from-[#781621] to-[#a01e2a] px-6 py-4 text-white">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+              <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+            </span>
+            <h3 className="text-[16px] font-bold">成功案例参考</h3>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold">
+            {generated.successCases.length} 个案例
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-6 p-6">
+          {generated.successCases.map((sc, idx) => (
+            <div
+              key={sc.title}
+              className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft"
+            >
+              <div className="mb-3 flex items-start gap-3">
+                <CaseStatusBadge status={getCaseStatus(idx)} />
+                <span className="rounded-md border border-[#dbe2ff] bg-[#eff4ff] px-2 py-0.5 text-[11px] font-semibold text-[#002fa7]">
+                  {sc.category}
+                </span>
+              </div>
+              <p className="mb-3 text-[14px] font-bold text-[#111827]">{sc.title}</p>
+              {sc.journey && (
+                <div className="mb-3 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-3">
+                  <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#002fa7]">成长历程</p>
+                  <p className="text-[12px] leading-relaxed text-[#374151]">{sc.journey}</p>
+                </div>
+              )}
+              <div className="mb-3 rounded-xl border border-[#d1fae5] bg-[#f0fdf4] p-3">
+                <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#10b981]">最终成果</p>
+                <p className="text-[12px] font-semibold leading-relaxed text-[#065f46]">{sc.outcome}</p>
+              </div>
+              {sc.insight && (
+                <div className="rounded-xl border border-[#F6D300]/50 bg-[#FEFCE0] p-3">
+                  <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#8a6a00]">启示</p>
+                  <p className="text-[12px] leading-relaxed text-[#6b5a00]">{sc.insight}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 市场分析 card ───────────────────────────────────── */}
+      <div className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold text-[#111827]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+            <span className="material-symbols-outlined text-[20px]">insights</span>
+          </span>
+          市场分析
+        </h3>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { key: '行业分析', val: generated.marketAnalysis.industryAnalysis },
+            { key: '市场规模', val: generated.marketAnalysis.marketScale },
+            { key: '竞争格局', val: generated.marketAnalysis.competition },
+            { key: '变现潜力', val: generated.marketAnalysis.monetizationPotential },
+          ].map((item) => (
+            <div key={item.key} className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
+              <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                {item.key}
+              </p>
+              <p className="text-[13px] leading-relaxed text-[#374151]">{item.val}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Footer actions ──────────────────────────────────── */}
+      <div className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div className="flex flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] font-medium text-[#6b7280]">这个结果对你有帮助吗？</span>
+            <button
+              type="button"
+              onClick={handleFeedbackUp}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#f0fdf4] hover:text-[#10b981]"
+              aria-label="有帮助"
+            >
+              <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleFeedbackDown}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#fff0f2] hover:text-[#781621]"
+              aria-label="没帮助"
+            >
+              <span className="material-symbols-outlined text-[18px]">thumb_down</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </PioneerLayout>
   );
 }
