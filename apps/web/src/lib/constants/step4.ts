@@ -83,3 +83,34 @@ export interface Step4KpiResult {
   weekly_kpi: string[];
   phase_kpi: string[];
 }
+
+// ─── PRD-29.9 · 真实字面(根据 sally zhao /step/4 demo 截图)─────────
+// 旧 STEP4_OUTPUT_H3_3 / STEP4_INPUTS_3 是 PRD-22 历史 schema · 跟实际 aiipznt 不符 · 保留 @deprecated
+// 实际 aiipznt sally /step/4 输出 · form 4 字段 + 6 output sub-component
+
+// 顶部 breadcrumb + H1
+export const STEP4_BREADCRUMB_REAL = 'STEP 04 › 制定执行计划' as const;
+export const STEP4_H1_REAL = '执行计划' as const;
+export const STEP4_OUTPUT_H2 = '你的专属执行计划' as const;
+
+// CTA 字面
+export const STEP4_CTA_GENERATE = '生成执行计划' as const;
+export const STEP4_CTA_BULK_OPTIMIZE = '智能优化' as const;
+export const STEP4_CTA_BULK_REGENERATE = '重新生成' as const;  // 注意: 不是"一键重新生成"
+export const STEP4_CTA_BULK_COPY = '复制全部' as const;
+
+// footer
+export const STEP4_FOOTER_FEEDBACK_QUESTION = '这个结果对你有帮助吗？' as const;
+export const STEP4_FOOTER_COMPLETION_TITLE = '执行计划 已完成 🎉' as const;
+export const STEP4_FOOTER_COMPLETION_DESC = '分析结果已保存。建议继续下一步「变现路径」，让AI为你生成更精准的方案。' as const;
+export const STEP4_FOOTER_BUTTON_NEXT = '继续下一步：变现路径 >' as const;
+export const STEP4_FOOTER_BUTTON_VIEW_IP = '查看我的IP方案' as const;
+
+// 总览 5 字段 label
+export const STEP4_OVERVIEW_LABELS = {
+  currentStage: '当前阶段',
+  coreGoal: '核心目标',
+  timeline: '总体时间线',
+  mainPlatform: '主攻平台',
+  coreAdvantages: '核心优势',
+} as const;

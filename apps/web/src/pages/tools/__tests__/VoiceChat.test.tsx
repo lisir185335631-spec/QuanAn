@@ -1,68 +1,79 @@
 /**
- * PRD-25 US-002 · VoiceChat unit tests
- * AC-9: ≥ 7 test cases
- *  (a) delta 累积到 currentAnswer
- *  (b) tool_call hint 显示
- *  (c) done 后 history append + localStorage
- *  (d) error retry button
- *  (e) cancel partial=true hint
- *  + AC-1 H1/H3字面 · AC-7 quick prompt click → input(不发送) · AC-3 model hint
+ * VoiceChat.test.tsx — 阶段2 接真流式后端
+ * useSubscription mock 策略:
+ *   - vi.hoisted() 提升 handlers map，让测试可在渲染前/后注入 onData/onError
+ *   - useSubscription mock 在调用时保存 opts，测试通过 triggerData/triggerError 驱动
+ *   - clearSession.useMutation mock 捕获 onSuccess/onError 回调
  */
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useActiveAccount } from '@/hooks/useActiveAccount';
-import {
-  VOICE_CHAT_INTRO,
-  VOICE_CHAT_QUICK_PROMPTS_6,
-} from '@/lib/constants/voice-chat';
 import VoiceChat from '@/pages/tools/VoiceChat';
 
-// ── mock useActiveAccount ────────────────────────────────────────────────────
-vi.mock('@/hooks/useActiveAccount', () => ({
-  useActiveAccount: vi.fn(),
-}));
+// ── hoisted shared state ───────────────────────────────────────────────────────
+
+// These are hoisted so vi.mock factories can reference them
+const mockToastInfo = vi.hoisted(() => vi.fn());
+const mockToastError = vi.hoisted(() => vi.fn());
+
+// Subscription opts captured from the last useSubscription call
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const capturedSubOpts = vi.hoisted(() => ({ current: null as any }));
+
+// clearSession mutation: captured callbacks + mock mutate
+const clearMutate = vi.hoisted(() => vi.fn());
+const capturedClearOpts = vi.hoisted(() => ({ current: null as { onSuccess?: () => void; onError?: (e: Error) => void } | null }));
+
+// ── mocks ─────────────────────────────────────────────────────────────────────
 
 vi.mock('sonner', () => ({
-  toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
+  toast: { info: mockToastInfo, success: vi.fn(), error: mockToastError },
 }));
-
-// ── mock trpc ────────────────────────────────────────────────────────────────
-// Capture the latest onData/onError callbacks from useSubscription
-type OnDataFn = (chunk: Record<string, unknown>) => void;
-type OnErrorFn = (err: Error) => void;
-
-const mockSubscription = {
-  onData: null as OnDataFn | null,
-  onError: null as OnErrorFn | null,
-  enabled: false,
-};
 
 vi.mock('@/lib/trpc', () => ({
   trpc: {
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+    auth: {
+      me: { useQuery: () => ({ data: null, isLoading: false }) },
+    },
     voiceChat: {
       start: {
-        useSubscription: vi.fn((_input: unknown, opts: { enabled?: boolean; onData?: OnDataFn; onError?: OnErrorFn }) => {
-          mockSubscription.onData = opts.onData ?? null;
-          mockSubscription.onError = opts.onError ?? null;
-          mockSubscription.enabled = opts.enabled ?? false;
-        }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        useSubscription: (_input: any, opts: any) => {
+          // Capture the latest opts each render so tests can call onData / onError
+          capturedSubOpts.current = opts;
+        },
+      },
+      clearSession: {
+        useMutation: (opts: { onSuccess?: () => void; onError?: (e: Error) => void }) => {
+          capturedClearOpts.current = opts;
+          return { mutate: clearMutate, isPending: false };
+        },
       },
     },
   },
 }));
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ user: null, login: vi.fn(), logout: vi.fn() }),
+}));
 
-const mockAccount = {
-  id: 99,
-  name: 'Test',
-  platform: 'douyin' as const,
-  stage: 'starter' as const,
-  industry: '科技',
-  followersRange: '0-1000' as const,
-};
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({ account: null, switchTo: vi.fn() }),
+}));
+
+// navigator.clipboard mock
+Object.defineProperty(navigator, 'clipboard', {
+  value: { writeText: vi.fn().mockResolvedValue(undefined) },
+  writable: true,
+});
+
+// ── helpers ────────────────────────────────────────────────────────────────────
 
 function renderVC() {
   return render(
@@ -72,208 +83,390 @@ function renderVC() {
   );
 }
 
-// ── tests ────────────────────────────────────────────────────────────────────
+/** Fire a chunk through the captured subscription's onData */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function triggerData(chunk: any) {
+  act(() => {
+    capturedSubOpts.current?.onData?.(chunk);
+  });
+}
 
-describe('VoiceChat PRD-25 streaming', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    vi.mocked(useActiveAccount).mockReturnValue({
-      account: mockAccount,
-      isLoading: false,
-      isSwitching: false,
-      switchTo: vi.fn(),
+/** Fire an error through the captured subscription's onError */
+function triggerError(err: Error) {
+  act(() => {
+    capturedSubOpts.current?.onError?.(err);
+  });
+}
+
+// ── setup ──────────────────────────────────────────────────────────────────────
+
+beforeEach(() => {
+  mockToastInfo.mockClear();
+  mockToastError.mockClear();
+  clearMutate.mockClear();
+  capturedSubOpts.current = null;
+  capturedClearOpts.current = null;
+});
+
+// ── tests ─────────────────────────────────────────────────────────────────────
+
+describe('VoiceChat · 接真流式后端', () => {
+  // ── chip & subtitle 字面锁 ───────────────────────────────────────────────
+  it('chip "VOICE CHAT" 渲染', () => {
+    renderVC();
+    expect(screen.getByTestId('voice-chat-chip-title')).toHaveTextContent('VOICE CHAT');
+  });
+
+  it('chip subtitle 字面锁', () => {
+    renderVC();
+    expect(screen.getByTestId('voice-chat-chip-subtitle')).toHaveTextContent(
+      '语音对话 · 你的专属IP变现顾问',
+    );
+  });
+
+  // ── 初始状态 ─────────────────────────────────────────────────────────────
+  it('初始渲染: 欢迎语 "哈喽哈喽" 出现（来自 WELCOME_MESSAGE，不是 mock 原始数据源）', () => {
+    renderVC();
+    // welcome message is rendered as the first assistant message
+    const assistantBubbles = screen.getAllByTestId('message-bubble-assistant');
+    expect(assistantBubbles[0]?.textContent).toContain('哈喽哈喽');
+  });
+
+  it('初始渲染: input placeholder "有什么问题尽管问我..." 出现', () => {
+    renderVC();
+    expect(screen.getByTestId('voice-chat-input')).toHaveAttribute('placeholder', '有什么问题尽管问我...');
+  });
+
+  it('初始渲染: assistant bubble 底部 播放 + 复制 btn 存在', () => {
+    renderVC();
+    // Welcome message is a completed assistant bubble → should show play/copy
+    expect(screen.getByTestId('message-play-btn')).toBeInTheDocument();
+    expect(screen.getByTestId('message-copy-btn')).toBeInTheDocument();
+    expect(screen.getByTestId('message-play-btn')).toHaveTextContent('播放');
+    expect(screen.getByTestId('message-copy-btn')).toHaveTextContent('复制');
+  });
+
+  it('初始状态 status chip 显 "连接中"', () => {
+    renderVC();
+    expect(screen.getByTestId('status-online')).toHaveTextContent('连接中');
+  });
+
+  // ── 发送消息 ─────────────────────────────────────────────────────────────
+  it('send btn · 空 input 时不发消息', () => {
+    renderVC();
+    const before = screen.queryAllByTestId('message-bubble-user').length;
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    expect(screen.queryAllByTestId('message-bubble-user')).toHaveLength(before);
+  });
+
+  it('send btn · 非空 input → 用户消息渲染到 DOM', async () => {
+    renderVC();
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '你好世界' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    await waitFor(() => {
+      const userBubbles = screen.getAllByTestId('message-bubble-user');
+      const texts = userBubbles.map((b) => b.textContent);
+      expect(texts.some((t) => t?.includes('你好世界'))).toBe(true);
     });
-    mockSubscription.onData = null;
-    mockSubscription.onError = null;
-    mockSubscription.enabled = false;
-    vi.clearAllMocks();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  // ── existing AC-1 tests ───────────────────────────────────────────────────
-
-  it('AC-1 · H1 字面锁 "VOICE CHAT"', () => {
+  it('发送后 input 清空', async () => {
     renderVC();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('VOICE CHAT');
+    const inputEl = screen.getByTestId('voice-chat-input');
+    fireEvent.change(inputEl, { target: { value: '测试消息' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    await waitFor(() => {
+      expect(inputEl).toHaveValue('');
+    });
   });
 
-  it('AC-1 · H3 模块标题 "你的专属 IP 变现顾问"', () => {
+  it('发送后 status chip 变为 "回复中…"', async () => {
     renderVC();
-    expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('你的专属 IP 变现顾问');
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '开始流式' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('status-streaming')).toHaveTextContent('回复中…');
+    });
   });
 
-  it('AC-3 · 自我介绍字面锁 (VOICE_CHAT_INTRO)', () => {
+  it('Enter 键发送消息', async () => {
     renderVC();
-    expect(screen.getByText(VOICE_CHAT_INTRO)).toBeInTheDocument();
+    const inputEl = screen.getByTestId('voice-chat-input');
+    fireEvent.change(inputEl, { target: { value: '按 Enter' } });
+    fireEvent.keyDown(inputEl, { key: 'Enter', shiftKey: false });
+    await waitFor(() => {
+      const userBubbles = screen.getAllByTestId('message-bubble-user');
+      const texts = userBubbles.map((b) => b.textContent);
+      expect(texts.some((t) => t?.includes('按 Enter'))).toBe(true);
+    });
   });
 
-  it('AC-7 · 6 quick prompts 全部渲染(字面对照)', () => {
+  // ── 流式 delta 累积 ──────────────────────────────────────────────────────
+  it('delta chunk 累积到 assistant streaming 消息', async () => {
     renderVC();
-    for (const prompt of VOICE_CHAT_QUICK_PROMPTS_6) {
-      expect(screen.getByText(prompt)).toBeInTheDocument();
-    }
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '流式测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+
+    // send delta chunks
+    triggerData({ type: 'delta', delta: '你好' });
+    triggerData({ type: 'delta', delta: '，我来了' });
+
+    await waitFor(() => {
+      const assistantBubbles = screen.getAllByTestId('message-bubble-assistant');
+      // last assistant bubble is the streaming one
+      const lastBubble = assistantBubbles[assistantBubbles.length - 1];
+      expect(lastBubble?.textContent).toContain('你好，我来了');
+    });
   });
 
-  it('AC-7 · quick prompt click → 填到 input(不直接发送)', () => {
+  // ── done 后 finalize ─────────────────────────────────────────────────────
+  it('done chunk 后 streaming=false, status 恢复 "连接中"', async () => {
     renderVC();
-    const firstPrompt = VOICE_CHAT_QUICK_PROMPTS_6[0] as string;
-    fireEvent.click(screen.getByTestId('quick-prompt-0'));
-    const input = screen.getByTestId('chat-input');
-    expect((input as HTMLInputElement).value).toBe(firstPrompt);
-    // history should NOT appear yet (not sent)
-    expect(screen.queryByTestId('history-list')).toBeNull();
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '完成测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+
+    triggerData({ type: 'delta', delta: '回复内容' });
+    triggerData({
+      type: 'done',
+      sessionId: 'new-session-uuid',
+      modelUsed: 'claude-3-opus',
+      turns: 1,
+      tokensUsed: { prompt: 10, completion: 5, total: 15 },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('status-online')).toHaveTextContent('连接中');
+    });
   });
 
-  // ── new PRD-25 streaming tests ────────────────────────────────────────────
-
-  it('(a) AC-2 · delta chunks 累积到 currentAnswer', () => {
+  it('done chunk 后 model 名更新到 KPI', async () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: '你好' } });
-    fireEvent.click(screen.getByTestId('send-button'));
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '模型测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
 
+    triggerData({ type: 'meta', meta: { model: 'claude-sonnet-4' } });
+    triggerData({
+      type: 'done',
+      sessionId: 'abc-123',
+      modelUsed: 'claude-sonnet-4',
+      turns: 1,
+      tokensUsed: { prompt: 5, completion: 3, total: 8 },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kpi-model')).toHaveTextContent('claude-sonnet-4');
+    });
+  });
+
+  it('done 后 play + copy 按钮出现在 finalized 消息', async () => {
+    renderVC();
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '按钮测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+
+    triggerData({ type: 'delta', delta: '答案文本' });
+    triggerData({
+      type: 'done',
+      sessionId: 'done-session',
+      modelUsed: 'test-model',
+      turns: 1,
+      tokensUsed: { prompt: 5, completion: 3, total: 8 },
+    });
+
+    await waitFor(() => {
+      // At least one play and copy button visible (welcome + finalized assistant)
+      const playBtns = screen.getAllByTestId('message-play-btn');
+      const copyBtns = screen.getAllByTestId('message-copy-btn');
+      expect(playBtns.length).toBeGreaterThanOrEqual(2);
+      expect(copyBtns.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  // ── 对话轮次 KPI ──────────────────────────────────────────────────────────
+  it('初始 KPI 对话轮次为 0（welcome 已排除）', () => {
+    renderVC();
+    // P1-5: welcome bubble (id='welcome') is excluded from completedTurns
+    expect(screen.getByTestId('kpi-turns')).toHaveTextContent('0');
+  });
+
+  it('完成一轮后 KPI 对话轮次 +2（user + assistant）', async () => {
+    renderVC();
+    // initial: 0 (welcome excluded)
+    const initialTurns = parseInt(screen.getByTestId('kpi-turns').textContent ?? '0', 10);
+
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: 'KPI 测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    // user message is immediately added (not streaming)
+    // assistant streaming message is not counted yet
+
+    triggerData({ type: 'delta', delta: '好的' });
+    triggerData({
+      type: 'done',
+      sessionId: 'kpi-session',
+      modelUsed: 'aip',
+      turns: 1,
+      tokensUsed: { prompt: 2, completion: 1, total: 3 },
+    });
+
+    await waitFor(() => {
+      const newTurns = parseInt(screen.getByTestId('kpi-turns').textContent ?? '0', 10);
+      // +2: user + finalized assistant
+      expect(newTurns).toBe(initialTurns + 2);
+    });
+  });
+
+  // ── 错误态 ────────────────────────────────────────────────────────────────
+  it('onError: toast.error 触发, status 恢复 "连接中"', async () => {
+    renderVC();
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '错误测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+
+    triggerError(new Error('network failure'));
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalled();
+      expect(screen.getByTestId('status-online')).toHaveTextContent('连接中');
+    });
+  });
+
+  it('error chunk: toast.error 触发', async () => {
+    renderVC();
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: 'chunk 错误' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+
+    triggerData({ type: 'error', error: 'upstream_error' });
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalled();
+    });
+  });
+
+  // ── clear 清空 ────────────────────────────────────────────────────────────
+  it('clear btn 调用 clearSession mutation', async () => {
+    renderVC();
+    fireEvent.click(screen.getByTestId('voice-chat-clear-btn'));
+    expect(clearMutate).toHaveBeenCalled();
+  });
+
+  it('clearSession onSuccess 后 messages 清空 → empty-state 出现', async () => {
+    renderVC();
+    // trigger clear onSuccess callback
     act(() => {
-      mockSubscription.onData?.({ type: 'meta', meta: { model: 'claude-sonnet-4-6' } });
-      mockSubscription.onData?.({ type: 'delta', delta: '我是' });
-      mockSubscription.onData?.({ type: 'delta', delta: 'AI顾问' });
+      capturedClearOpts.current?.onSuccess?.();
     });
-
-    const answer = screen.getByTestId('current-answer');
-    expect(answer.textContent).toBe('我是AI顾问');
+    await waitFor(() => {
+      expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    });
   });
 
-  it('(b) AC-2 · tool_call hint 显示', () => {
+  it('clearSession onError 后 toast.error 触发', async () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: '查今日任务' } });
-    fireEvent.click(screen.getByTestId('send-button'));
-
     act(() => {
-      mockSubscription.onData?.({ type: 'tool_call', toolName: 'get_today_tasks', args: {} });
+      capturedClearOpts.current?.onError?.(new Error('clear failed'));
     });
-
-    expect(screen.getByTestId('tool-hint-0')).toHaveTextContent('调用工具: get_today_tasks...');
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith('清空失败: clear failed');
+    });
   });
 
-  it('(c) AC-4 · done 后 history append + localStorage', () => {
+  // ── 空态 ──────────────────────────────────────────────────────────────────
+  it('清空后 empty-state 渲染', async () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: '帮我分析IP' } });
-    fireEvent.click(screen.getByTestId('send-button'));
-
     act(() => {
-      mockSubscription.onData?.({ type: 'delta', delta: '好的，' });
-      mockSubscription.onData?.({ type: 'delta', delta: '我来帮您分析' });
-      mockSubscription.onData?.({
-        type: 'done',
-        sessionId: 'sess-1',
-        modelUsed: 'claude-sonnet-4-6',
-        turns: 1,
-        tokensUsed: { prompt: 10, completion: 20, total: 30 },
-      });
+      capturedClearOpts.current?.onSuccess?.();
     });
-
-    // history list should appear
-    expect(screen.getByTestId('history-list')).toBeInTheDocument();
-    expect(screen.getByText('帮我分析IP')).toBeInTheDocument();
-
-    // localStorage saved
-    const key = `aiip_memory_acc_${mockAccount.id}_voice_chat_history`;
-    const stored = localStorage.getItem(key);
-    expect(stored).not.toBeNull();
-    const parsed = JSON.parse(stored as string) as Array<{ question: string; answer: string }>;
-    expect(parsed[0]?.question).toBe('帮我分析IP');
-    expect(parsed[0]?.answer).toBe('好的，我来帮您分析');
+    await waitFor(() => {
+      expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    });
   });
 
-  it('(d) AC-5 · error → retry button 显示', () => {
+  // ── P2-9: 流式生命周期 disabled / 防重发 ─────────────────────────────────
+  it('流式中 send-btn + input + mic-btn 均 disabled', async () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: '错误测试' } });
-    fireEvent.click(screen.getByTestId('send-button'));
-
-    act(() => {
-      mockSubscription.onData?.({ type: 'error', error: 'api_error' });
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '流式 disabled 测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    await waitFor(() => {
+      expect(screen.getByTestId('voice-chat-send-btn')).toBeDisabled();
+      expect(screen.getByTestId('voice-chat-input')).toBeDisabled();
+      expect(screen.getByTestId('voice-chat-mic-btn')).toBeDisabled();
     });
-
-    expect(screen.getByTestId('stream-error')).toBeInTheDocument();
-    expect(screen.getByTestId('retry-button')).toBeInTheDocument();
   });
 
-  it('(e) AC-6 · cancel → partial=true hint in history', () => {
+  it('流式中再点 send 不增加新 user bubble', async () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: '取消测试' } });
-    fireEvent.click(screen.getByTestId('send-button'));
-
-    act(() => {
-      mockSubscription.onData?.({ type: 'delta', delta: '部分' });
-      mockSubscription.onData?.({ type: 'delta', delta: '内容' });
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '第一条' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    // now streaming — try to send again
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '第二条' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    await waitFor(() => {
+      const userBubbles = screen.getAllByTestId('message-bubble-user');
+      // only 1 user bubble — second send was blocked
+      expect(userBubbles).toHaveLength(1);
     });
-
-    // cancel button appears during streaming
-    const cancelBtn = screen.getByTestId('cancel-button');
-    expect(cancelBtn).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(cancelBtn);
-    });
-
-    // history entry with partial=true
-    const partialHint = screen.getByTestId('partial-hint');
-    expect(partialHint).toBeInTheDocument();
-    expect(partialHint.textContent).toContain('已取消 · 部分生成');
   });
 
-  it('AC-3 · done 후 tokensUsed footer 显示', () => {
+  it('done chunk 后 send-btn + input + mic-btn 恢复 enabled', async () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: 'footer测试' } });
-    fireEvent.click(screen.getByTestId('send-button'));
-
-    act(() => {
-      mockSubscription.onData?.({ type: 'delta', delta: '测试回答' });
-      mockSubscription.onData?.({
-        type: 'done',
-        sessionId: 'sess-2',
-        modelUsed: 'claude-sonnet-4-6',
-        turns: 1,
-        tokensUsed: { prompt: 5, completion: 15, total: 20 },
-      });
+    fireEvent.change(screen.getByTestId('voice-chat-input'), { target: { value: '恢复测试' } });
+    fireEvent.click(screen.getByTestId('voice-chat-send-btn'));
+    triggerData({
+      type: 'done',
+      sessionId: 'restore-session',
+      modelUsed: 'aip',
+      turns: 1,
+      tokensUsed: { prompt: 1, completion: 1, total: 2 },
     });
-
-    const footer = screen.getByTestId('stream-footer');
-    expect(footer.textContent).toContain('20 tokens');
+    await waitFor(() => {
+      expect(screen.getByTestId('voice-chat-send-btn')).not.toBeDisabled();
+      expect(screen.getByTestId('voice-chat-input')).not.toBeDisabled();
+      expect(screen.getByTestId('voice-chat-mic-btn')).not.toBeDisabled();
+    });
   });
 
-  it('AC-2 · meta chunk → model hint 显示', () => {
+  it('useSubscription enabled=false 时不触发 onData', () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: 'meta测试' } });
-    fireEvent.click(screen.getByTestId('send-button'));
-
-    act(() => {
-      mockSubscription.onData?.({ type: 'meta', meta: { model: 'claude-opus-4-7' } });
-    });
-
-    const hint = screen.getByTestId('model-hint');
-    expect(hint.textContent).toContain('claude-opus-4-7');
+    // Before sending, pendingUserMessage is null → enabled should be false
+    // capturedSubOpts.current.enabled is evaluated at render time
+    expect(capturedSubOpts.current?.enabled).toBe(false);
   });
 
-  it('AC-5 · onError callback → retry button 显示', () => {
+  // ── mic / audio btns ──────────────────────────────────────────────────────
+  it('mic btn · toast "语音输入 · 即将上线"', () => {
     renderVC();
-    const input = screen.getByTestId('chat-input');
-    fireEvent.change(input, { target: { value: 'network错误' } });
-    fireEvent.click(screen.getByTestId('send-button'));
+    mockToastInfo.mockClear();
+    fireEvent.click(screen.getByTestId('voice-chat-mic-btn'));
+    expect(mockToastInfo).toHaveBeenCalledWith('语音输入 · 即将上线');
+  });
 
-    act(() => {
-      mockSubscription.onError?.(new Error('network failure'));
+  it('audio btn · toast "音频播放 · 即将上线"', () => {
+    renderVC();
+    mockToastInfo.mockClear();
+    fireEvent.click(screen.getByTestId('voice-chat-audio-btn'));
+    expect(mockToastInfo).toHaveBeenCalledWith('音频播放 · 即将上线');
+  });
+
+  // ── copy 功能 ─────────────────────────────────────────────────────────────
+  it('copy btn · 调用 navigator.clipboard.writeText + toast "已复制"', async () => {
+    renderVC();
+    mockToastInfo.mockClear();
+    fireEvent.click(screen.getByTestId('message-copy-btn'));
+    await waitFor(() => {
+      expect(mockToastInfo).toHaveBeenCalledWith('已复制');
     });
+  });
 
-    expect(screen.getByTestId('stream-error')).toBeInTheDocument();
-    expect(screen.getByTestId('retry-button')).toBeInTheDocument();
+  // ── play btn (TTS toast) ──────────────────────────────────────────────────
+  it('play btn · toast "音频播放 · 即将上线"', () => {
+    renderVC();
+    mockToastInfo.mockClear();
+    fireEvent.click(screen.getByTestId('message-play-btn'));
+    expect(mockToastInfo).toHaveBeenCalledWith('音频播放 · 即将上线');
+  });
+
+  // ── MOCK_MESSAGES 常量保留供测试 ──────────────────────────────────────────
+  it('VOICE_CHAT_MOCK_MESSAGES 常量仍可从 constants 导入（供测试用）', async () => {
+    const { VOICE_CHAT_MOCK_MESSAGES } = await import('@/lib/constants/voice-chat');
+    expect(VOICE_CHAT_MOCK_MESSAGES).toHaveLength(2);
+    expect(VOICE_CHAT_MOCK_MESSAGES[0]?.content).toBe('Hello Hello你好你好');
   });
 });

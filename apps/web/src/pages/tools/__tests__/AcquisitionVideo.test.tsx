@@ -1,87 +1,74 @@
 /**
- * PRD-25 US-006 · AcquisitionVideo unit tests
- * AC-8: ≥ 5 tests · mock trpc · 验证 H4 渲染真数据 + isFallback + retry
- * SHIELD: mock data 字段从 VideoAgent.ts acquisition mode inferred
- *   router stores content as { script, ctaScript(=cta renamed), conversionPath, keyMessages }
+ * AcquisitionVideo.test.tsx — 阶段2 接真 trpc.acquisitionVideo.generate
+ * mock trpc · 断言:
+ *   - h1/subtitle/CTA 字面锁 + 3 label + 默认值
+ *   - 无真结果时:显示 av-empty-state、不显假方案(门控)
+ *   - 有真结果:映射 script/ctaScript/conversionPath/keyMessages → 渲染真数据
+ *   - loading 态:显示 av-loading-banner + CTA disabled
+ *   - error 态:显示 av-error-notice + 重试按钮调 mutate
+ *   - isFallback=true: 显示 av-fallback-notice
+ *   - CTA 调 generate 含 sourceCopy + conversionGoal(无 emoji)
+ *   - 切换行业后 sourceCopy 更新
+ *   - 最小字数校验(10 字)· 错误提示 · 提交拦截
+ *   - 复制方案 disabled={!hasResult} · 智能优化 always disabled
+ *   - malformed JSON: hasResult=false 不崩溃
  */
-import { act, render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import {
+  ACQUISITION_VIDEO_CTA_GENERATE,
+  ACQUISITION_VIDEO_CUSTOMER_LABEL,
+  ACQUISITION_VIDEO_FOOTER_FEEDBACK,
+  ACQUISITION_VIDEO_H1,
+  ACQUISITION_VIDEO_INDUSTRY_LABEL,
+  ACQUISITION_VIDEO_PRODUCT_LABEL,
+  ACQUISITION_VIDEO_SUBTITLE,
+} from '@/lib/constants/acquisition-video';
 import AcquisitionVideo from '@/pages/tools/AcquisitionVideo';
 
-// ── Mock control ──────────────────────────────────────────────────────────────
+vi.mock('sonner', () => ({
+  toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() },
+}));
 
-const mockCtrl = vi.hoisted(() => ({
-  onSuccess: undefined as ((data: unknown) => void) | undefined,
-  onError: undefined as ((error: unknown) => void) | undefined,
+// ── Mutable store: tests set state here before renderPage() ──────────────────
+const _store: {
+  isPending: boolean;
+  isError: boolean;
+  data: unknown;
+  mutate: ReturnType<typeof vi.fn>;
+} = {
   isPending: false,
-}));
+  isError: false,
+  data: undefined,
+  mutate: vi.fn(),
+};
 
-// ── Mock data (fields 1:1 from acquisitionVideo router contentData) ───────────
-
-const MOCK_ACQUISITION_ROW = vi.hoisted(() => ({
-  id: 1,
-  content: JSON.stringify({
-    // router renames: cta → ctaScript
-    script:
-      '你是否每天辛苦做内容，粉丝增长却停滞不前？今天分享一个经过验证的方法，帮助你快速突破瓶颈，实现精准涨粉。我们的体系已帮助数百位创作者从 0 到 10 万粉丝，现在这个机会也属于你，立刻行动！',
-    ctaScript: '立即扫描下方二维码，免费获取详细涨粉方案，限时名额，先到先得！',
-    conversionPath: '视频引流→扫码→咨询群→成交',
-    keyMessages: ['经验证的涨粉方法', '针对创作者的专属方案', '免费咨询了解详情'],
-  }),
-  contentType: 'json',
-  agentId: 'VideoAgent',
-  agentMode: 'acquisition',
-  scriptType: null,
-  elements: [],
-  isFallback: false,
-  tokensUsed: 150,
-  modelUsed: 'claude-sonnet-4-5',
-  durationMs: 5000,
-  traceId: null,
-  createdAt: new Date(),
-}));
-
-const MOCK_FALLBACK_ROW = vi.hoisted(() => ({
-  id: 2,
-  content: JSON.stringify({
-    script: '备用获客脚本内容（系统繁忙备用）',
-    ctaScript: '立即联系我们获取备用方案',
-    conversionPath: '备用转化路径',
-    keyMessages: ['备用卖点1', '备用卖点2'],
-  }),
-  contentType: 'json',
-  agentId: 'VideoAgent',
-  agentMode: 'acquisition',
-  scriptType: null,
-  elements: [],
-  isFallback: true,
-  tokensUsed: 0,
-  modelUsed: 'fallback',
-  durationMs: 0,
-  traceId: null,
-  createdAt: new Date(),
-}));
-
-// ── Mocks ─────────────────────────────────────────────────────────────────────
-
+// ── trpc mock — reads from _store on every useMutation() call ────────────────
 vi.mock('@/lib/trpc', () => ({
   trpc: {
+    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     acquisitionVideo: {
       generate: {
-        useMutation: (opts?: {
-          onSuccess?: (data: unknown) => void;
-          onError?: (error: unknown) => void;
-        }) => {
-          mockCtrl.onSuccess = opts?.onSuccess;
-          mockCtrl.onError = opts?.onError;
-          return {
-            mutate: vi.fn(),
-            isPending: mockCtrl.isPending,
-            isError: false,
-          };
-        },
+        useMutation: ({ onSuccess, onError }: {
+          onSuccess?: () => void;
+          onError?: (err: { message: string }) => void;
+        } = {}) => ({
+          mutate: (...args: unknown[]) => {
+            _store.mutate(...args);
+            if (!_store.isError) onSuccess?.();
+            else onError?.({ message: 'generate error' });
+          },
+          isPending: _store.isPending,
+          isError: _store.isError,
+          data: _store.data,
+        }),
       },
     },
   },
@@ -89,26 +76,59 @@ vi.mock('@/lib/trpc', () => ({
 
 vi.mock('@/hooks/useActiveAccount', () => ({
   useActiveAccount: () => ({
-    account: {
-      id: 1,
-      name: 'AI 创业者小张',
-      industry: '企业服务',
-      platform: 'douyin',
-      stage: 'starter',
-    },
-    switchTo: vi.fn(),
-    isSwitching: false,
+    account: null,
     isLoading: false,
+    isSwitching: false,
+    switchTo: vi.fn(),
   }),
 }));
 
-vi.mock('sonner', () => ({
-  toast: { error: vi.fn(), success: vi.fn(), info: vi.fn() },
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    isLoading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    refetch: vi.fn(),
+  }),
 }));
 
-// ── Helper ────────────────────────────────────────────────────────────────────
+// ── Real LLM result fixture — distinct from any hardcoded data ───────────────
+const REAL_SCRIPT =
+  '你是不是也想获得更多客户？这套方案专为你设计，帮你在30天内把获客成本降低50%！点击下方链接，免费领取《获客秘籍》，限时100份！';
+const REAL_CTA_SCRIPT = '扫码添加微信，免费领取《获客秘籍》，仅限今天！私信回复"获客"立即获取。';
+const REAL_CONVERSION_PATH = '视频曝光 → 点击主页链接 → 落地页填写信息 → 1v1咨询 → 成交';
+const REAL_KEY_MESSAGES = [
+  '30天获客成本降低50%',
+  '已服务1000+商家',
+  '一对一专属指导',
+];
 
-function renderAcquisitionVideo() {
+function makeResultRow(isFallback: boolean) {
+  return {
+    id: 42,
+    content: JSON.stringify({
+      script: REAL_SCRIPT,
+      ctaScript: REAL_CTA_SCRIPT,
+      conversionPath: REAL_CONVERSION_PATH,
+      keyMessages: REAL_KEY_MESSAGES,
+    }),
+    contentType: 'json',
+    agentId: 'VideoAgent',
+    agentMode: 'acquisition',
+    scriptType: null,
+    elements: [],
+    isFallback,
+    tokensUsed: 1200,
+    modelUsed: 'claude-3-5-sonnet',
+    durationMs: 8000,
+    traceId: 'trace-abc',
+    createdAt: new Date(),
+  };
+}
+
+// ── render helper ─────────────────────────────────────────────────────────────
+function renderPage() {
   return render(
     <MemoryRouter>
       <AcquisitionVideo />
@@ -116,126 +136,417 @@ function renderAcquisitionVideo() {
   );
 }
 
-function fillFormAndSubmit() {
-  fireEvent.change(screen.getByTestId('acq-industry-select'), {
-    target: { value: '企业服务' },
-  });
-  fireEvent.change(screen.getByTestId('acq-audience-textarea'), {
-    target: { value: '想要创业的30-45岁宝妈群体，有一定积蓄但缺乏方向' },
-  });
-  fireEvent.change(screen.getByTestId('acq-selling-points-textarea'), {
-    target: { value: '0基础可学、3个月回本、一对一指导' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: '生成获客方案' }));
-}
+// ── reset store to idle before each test ─────────────────────────────────────
+beforeEach(() => {
+  _store.isPending = false;
+  _store.isError = false;
+  _store.data = undefined;
+  _store.mutate = vi.fn();
+});
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
-describe('AcquisitionVideo', () => {
+// ── 字面锁 ────────────────────────────────────────────────────────────────────
+describe('AcquisitionVideo — 字面锁 + 常量', () => {
+  it('h1 字面锁', () => {
+    renderPage();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(ACQUISITION_VIDEO_H1);
+  });
+
+  it('subtitle 字面锁', () => {
+    renderPage();
+    expect(screen.getByText(ACQUISITION_VIDEO_SUBTITLE)).toBeInTheDocument();
+  });
+
+  it('3 label 字面锁', () => {
+    renderPage();
+    expect(screen.getByText(ACQUISITION_VIDEO_INDUSTRY_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(ACQUISITION_VIDEO_CUSTOMER_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(ACQUISITION_VIDEO_PRODUCT_LABEL)).toBeInTheDocument();
+  });
+
+  it('默认值预填 · 行业 美业 + 客户画像 + 产品亮点', () => {
+    renderPage();
+    expect(screen.getByRole('button', { name: /美业/i })).toHaveAttribute('aria-pressed', 'true');
+    expect(
+      screen.getByDisplayValue('想要创业的3-45岁宝妈群体，有一定积蓄但缺乏方向'),
+    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue('零基础可学、3个月回本、一对一指导')).toBeInTheDocument();
+  });
+
+  it('CTA 可见且默认 enabled(默认值非空)', () => {
+    renderPage();
+    const btn = screen.getByRole('button', { name: ACQUISITION_VIDEO_CTA_GENERATE });
+    expect(btn).toBeInTheDocument();
+    expect(btn).not.toBeDisabled();
+  });
+
+  it('反馈 prompt', () => {
+    renderPage();
+    expect(screen.getByText(ACQUISITION_VIDEO_FOOTER_FEEDBACK)).toBeInTheDocument();
+  });
+});
+
+// ── idle 态 · 无真结果 · 空态门控 ─────────────────────────────────────────────
+describe('AcquisitionVideo — 无真结果(idle) · 空态门控', () => {
+  it('显示 av-empty-state 占位', () => {
+    renderPage();
+    expect(screen.getByTestId('av-empty-state')).toBeInTheDocument();
+  });
+
+  it('idle 态:不显示 fallback / error / loading banner', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-fallback-notice')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('av-error-notice')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('av-loading-banner')).not.toBeInTheDocument();
+  });
+
+  it('idle 态:不显示真结果面板 av-result-panel', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-result-panel')).not.toBeInTheDocument();
+  });
+
+  it('idle 态:不显示 av-script', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-script')).not.toBeInTheDocument();
+  });
+
+  it('idle 态:不显示 av-cta-script', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-cta-script')).not.toBeInTheDocument();
+  });
+
+  it('idle 态:不显示 av-key-messages', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-key-messages')).not.toBeInTheDocument();
+  });
+});
+
+// ── loading 态 ────────────────────────────────────────────────────────────────
+describe('AcquisitionVideo — loading 态', () => {
+  it('isPending=true: 显示 av-loading-banner', () => {
+    _store.isPending = true;
+    renderPage();
+    expect(screen.getByTestId('av-loading-banner')).toBeInTheDocument();
+  });
+
+  it('isPending=true: CTA disabled', () => {
+    _store.isPending = true;
+    renderPage();
+    expect(screen.getByTestId('av-generate-btn')).toBeDisabled();
+  });
+});
+
+// ── error 态 ──────────────────────────────────────────────────────────────────
+describe('AcquisitionVideo — error 态', () => {
+  it('isError=true: 显示 av-error-notice', () => {
+    _store.isError = true;
+    renderPage();
+    expect(screen.getByTestId('av-error-notice')).toBeInTheDocument();
+  });
+
+  it('isError=true: 不显示 loading banner', () => {
+    _store.isError = true;
+    renderPage();
+    expect(screen.queryByTestId('av-loading-banner')).not.toBeInTheDocument();
+  });
+
+  it('isError=true: 重试按钮存在且触发 mutate 含入参', () => {
+    _store.isError = true;
+    renderPage();
+    const retryBtn = screen.getByRole('button', { name: '重试' });
+    expect(retryBtn).toBeInTheDocument();
+    fireEvent.click(retryBtn);
+    expect(_store.mutate).toHaveBeenCalledTimes(1);
+    expect(_store.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sourceCopy: expect.any(String),
+        conversionGoal: expect.any(String),
+      }),
+    );
+  });
+});
+
+// ── CTA 调 generate mutation · 入参 ─────────────────────────────────────────
+describe('AcquisitionVideo — CTA 调 generate mutation', () => {
+  it('点击 CTA 时调用 generateMutation.mutate 含 sourceCopy + conversionGoal', () => {
+    renderPage();
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    expect(_store.mutate).toHaveBeenCalledTimes(1);
+    expect(_store.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sourceCopy: expect.any(String),
+        conversionGoal: expect.any(String),
+      }),
+    );
+  });
+
+  it('sourceCopy 包含客户画像默认值', () => {
+    renderPage();
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    const firstCallArg = (_store.mutate.mock.calls[0] as [Record<string, unknown>])[0];
+    expect(String(firstCallArg['sourceCopy'])).toContain('宝妈群体');
+  });
+
+  it('sourceCopy 包含产品亮点默认值', () => {
+    renderPage();
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    const firstCallArg = (_store.mutate.mock.calls[0] as [Record<string, unknown>])[0];
+    expect(String(firstCallArg['sourceCopy'])).toContain('零基础可学');
+  });
+
+  it('conversionGoal 不含 emoji(💅)', () => {
+    renderPage();
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    expect(_store.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        conversionGoal: expect.not.stringContaining('💅'),
+      }),
+    );
+  });
+
+  it('conversionGoal 是干净文案(无 emoji 字符)', () => {
+    renderPage();
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    const firstCallArg = (_store.mutate.mock.calls[0] as [Record<string, unknown>])[0];
+    // 干净文案应为下拉选项之一，不含 emoji
+    expect(String(firstCallArg['conversionGoal'])).toMatch(/^[一-龥a-zA-Z0-9_\s-]+$/);
+  });
+
+  it('切换行业后 sourceCopy 包含新行业的中文名', () => {
+    renderPage();
+    // 切换到"健身"
+    fireEvent.click(screen.getByRole('button', { name: /健身/i }));
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    const firstCallArg = (_store.mutate.mock.calls[0] as [Record<string, unknown>])[0];
+    expect(String(firstCallArg['sourceCopy'])).toContain('健身');
+  });
+});
+
+// ── 有真结果 · 门控渲染真数据 ────────────────────────────────────────────────
+describe('AcquisitionVideo — 有真结果(门控)', () => {
   beforeEach(() => {
-    mockCtrl.isPending = false;
-    mockCtrl.onSuccess = undefined;
-    mockCtrl.onError = undefined;
+    _store.data = makeResultRow(false);
   });
 
-  it('AC-1 · H1 字面锁 "获客型视频制作"', () => {
-    renderAcquisitionVideo();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('获客型视频制作');
+  it('显示 av-result-panel', () => {
+    renderPage();
+    expect(screen.getByTestId('av-result-panel')).toBeInTheDocument();
   });
 
-  it('AC-1 · 副标题字面锁 "专为获客设计的短视频方案，让精准客户主动找上门"', () => {
-    renderAcquisitionVideo();
-    expect(screen.getByText(/专为获客设计的短视频方案，让精准客户主动找上门/)).toBeInTheDocument();
+  it('不显示 av-empty-state', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-empty-state')).not.toBeInTheDocument();
   });
 
-  it('AC-3 · CTA "生成获客方案" 初始 disabled (audience + sellingPoints 为空)', () => {
-    renderAcquisitionVideo();
-    expect(screen.getByRole('button', { name: '生成获客方案' })).toBeDisabled();
+  it('真 script 渲染到 av-script', () => {
+    renderPage();
+    expect(screen.getByTestId('av-script')).toBeInTheDocument();
+    expect(screen.getByText(REAL_SCRIPT)).toBeInTheDocument();
   });
 
-  it('AC-3 · 填写 audience + sellingPoints → CTA enabled', () => {
-    renderAcquisitionVideo();
-    // industry defaults from mocked account (企业服务) via useEffect
-    fireEvent.change(screen.getByTestId('acq-industry-select'), {
-      target: { value: '企业服务' },
-    });
-    fireEvent.change(screen.getByTestId('acq-audience-textarea'), {
-      target: { value: '想要创业的宝妈群体，有一定积蓄' },
-    });
-    fireEvent.change(screen.getByTestId('acq-selling-points-textarea'), {
-      target: { value: '0基础可学、3个月回本' },
-    });
-    expect(screen.getByRole('button', { name: '生成获客方案' })).not.toBeDisabled();
+  it('真 ctaScript 渲染到 av-cta-script', () => {
+    renderPage();
+    expect(screen.getByTestId('av-cta-script')).toBeInTheDocument();
+    expect(screen.getByText(REAL_CTA_SCRIPT)).toBeInTheDocument();
   });
 
-  it('AC-4 · onSuccess → 4 H4 区块渲染真数据', () => {
-    renderAcquisitionVideo();
-    fillFormAndSubmit();
-
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_ACQUISITION_ROW);
-    });
-
-    expect(screen.getByRole('heading', { level: 4, name: '主题角度' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: '钩子' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: '内容结构' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'CTA' })).toBeInTheDocument();
+  it('真 conversionPath 渲染到 av-conversion-path', () => {
+    renderPage();
+    expect(screen.getByTestId('av-conversion-path')).toBeInTheDocument();
+    expect(screen.getByText(REAL_CONVERSION_PATH)).toBeInTheDocument();
   });
 
-  it('AC-4 · acquisition output 真实内容渲染 (script/ctaScript/conversionPath/keyMessages)', () => {
-    renderAcquisitionVideo();
-    fillFormAndSubmit();
-
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_ACQUISITION_ROW);
-    });
-
-    expect(screen.getByTestId('acq-theme-angle')).toHaveTextContent(/帮助你快速突破瓶颈/);
-    expect(screen.getByTestId('acq-cta')).toHaveTextContent(/立即扫描下方二维码/);
-    expect(screen.getByTestId('acq-content-structure')).toHaveTextContent('视频引流→扫码→咨询群→成交');
-    expect(screen.getByTestId('acq-hook')).toHaveTextContent(/经验证的涨粉方法/);
+  it('真 keyMessages[0] 渲染到 av-key-messages', () => {
+    renderPage();
+    expect(screen.getByTestId('av-key-messages')).toBeInTheDocument();
+    expect(screen.getByText(REAL_KEY_MESSAGES[0]!)).toBeInTheDocument();
   });
 
-  it('AC-5 · isFallback=true → 显示 fallback banner + retry button', () => {
-    renderAcquisitionVideo();
-    fillFormAndSubmit();
-
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_FALLBACK_ROW);
-    });
-
-    expect(screen.getByTestId('acquisition-video-fallback-banner')).toBeInTheDocument();
-    expect(screen.getByText(/AI 暂未生成获客方案 · 显示备用模板/)).toBeInTheDocument();
-    expect(screen.getByTestId('acquisition-video-retry')).toBeInTheDocument();
+  it('真 keyMessages[1] 渲染到 av-key-messages', () => {
+    renderPage();
+    expect(screen.getByText(REAL_KEY_MESSAGES[1]!)).toBeInTheDocument();
   });
 
-  it('AC-5 · isFallback=false → 不显示 fallback banner', () => {
-    renderAcquisitionVideo();
-    fillFormAndSubmit();
-
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_ACQUISITION_ROW);
-    });
-
-    expect(screen.queryByTestId('acquisition-video-fallback-banner')).not.toBeInTheDocument();
+  it('真 keyMessages[2] 渲染到 av-key-messages', () => {
+    renderPage();
+    expect(screen.getByText(REAL_KEY_MESSAGES[2]!)).toBeInTheDocument();
   });
 
-  it('AC-6 · onError → toast.error 被调用', async () => {
-    const { toast } = await import('sonner');
-    renderAcquisitionVideo();
-    fillFormAndSubmit();
-
-    act(() => {
-      mockCtrl.onError?.(new Error('Server error'));
-    });
-
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('生成失败'));
+  it('有真结果(isFallback=false): 无 av-fallback-notice', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-fallback-notice')).not.toBeInTheDocument();
   });
 
-  it('AC-5 · industry select 有 "企业服务" 选项可被选中', () => {
-    renderAcquisitionVideo();
-    const select = screen.getByTestId('acq-industry-select');
-    fireEvent.change(select, { target: { value: '企业服务' } });
-    expect((select as HTMLSelectElement).value).toBe('企业服务');
+  it('反馈 prompt 可见', () => {
+    renderPage();
+    expect(screen.getByText(ACQUISITION_VIDEO_FOOTER_FEEDBACK)).toBeInTheDocument();
+  });
+});
+
+// ── isFallback 降级提示 ───────────────────────────────────────────────────────
+describe('AcquisitionVideo — isFallback 降级提示', () => {
+  it('isFallback=true 显示 av-fallback-notice', () => {
+    _store.data = makeResultRow(true);
+    renderPage();
+    expect(screen.getByTestId('av-fallback-notice')).toBeInTheDocument();
+  });
+
+  it('isFallback=false 不显示 av-fallback-notice', () => {
+    _store.data = makeResultRow(false);
+    renderPage();
+    expect(screen.queryByTestId('av-fallback-notice')).not.toBeInTheDocument();
+  });
+});
+
+// ── malformed JSON content ────────────────────────────────────────────────────
+describe('AcquisitionVideo — malformed JSON content', () => {
+  it('content 不是合法 JSON → hasResult=false，不崩溃', () => {
+    _store.data = {
+      ...makeResultRow(false),
+      content: '{not valid json!!!',
+    };
+    expect(() => renderPage()).not.toThrow();
+    expect(screen.queryByTestId('av-result-panel')).not.toBeInTheDocument();
+    expect(screen.getByTestId('av-empty-state')).toBeInTheDocument();
+  });
+
+  it('content 合法 JSON 但缺 script → hasResult=false，不崩溃', () => {
+    _store.data = {
+      ...makeResultRow(false),
+      content: JSON.stringify({ ctaScript: 'x', conversionPath: 'x', keyMessages: [] }),
+    };
+    expect(() => renderPage()).not.toThrow();
+    expect(screen.queryByTestId('av-result-panel')).not.toBeInTheDocument();
+  });
+
+  it('content 合法 JSON 但 keyMessages 非 array → hasResult=false', () => {
+    _store.data = {
+      ...makeResultRow(false),
+      content: JSON.stringify({ script: 'x', ctaScript: 'x', conversionPath: 'x', keyMessages: 'not-array' }),
+    };
+    expect(() => renderPage()).not.toThrow();
+    expect(screen.queryByTestId('av-result-panel')).not.toBeInTheDocument();
+  });
+});
+
+// ── 负向: 无真结果时不渲染真结果面板 ──────────────────────────────────────────
+describe('AcquisitionVideo — idle 不显示真结果面板(负向)', () => {
+  it('无真结果时不渲染 av-result-panel', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-result-panel')).not.toBeInTheDocument();
+  });
+
+  it('无真结果时不渲染 av-script', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-script')).not.toBeInTheDocument();
+  });
+
+  it('无真结果时不渲染 av-cta-script', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-cta-script')).not.toBeInTheDocument();
+  });
+
+  it('无真结果时不渲染 av-key-messages', () => {
+    renderPage();
+    expect(screen.queryByTestId('av-key-messages')).not.toBeInTheDocument();
+  });
+});
+
+// ── 最小字数校验(≥10 字)─────────────────────────────────────────────────────
+describe('AcquisitionVideo — 最小字数校验', () => {
+  it('客户画像少于 10 字时显示错误提示', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-customer-profile-input');
+    fireEvent.change(textarea, { target: { value: '太短' } });
+    expect(screen.getByTestId('av-customer-profile-error')).toBeInTheDocument();
+    expect(screen.getByTestId('av-customer-profile-error')).toHaveTextContent('10 字');
+  });
+
+  it('客户画像恰好 10 字时无错误提示', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-customer-profile-input');
+    fireEvent.change(textarea, { target: { value: '十个字刚好达到最低限' } });
+    expect(screen.queryByTestId('av-customer-profile-error')).not.toBeInTheDocument();
+  });
+
+  it('产品亮点少于 10 字时显示错误提示', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-product-highlights-input');
+    fireEvent.change(textarea, { target: { value: '太短了' } });
+    expect(screen.getByTestId('av-product-highlights-error')).toBeInTheDocument();
+    expect(screen.getByTestId('av-product-highlights-error')).toHaveTextContent('10 字');
+  });
+
+  it('产品亮点恰好 10 字时无错误提示', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-product-highlights-input');
+    fireEvent.change(textarea, { target: { value: '十个字刚好达到最低限' } });
+    expect(screen.queryByTestId('av-product-highlights-error')).not.toBeInTheDocument();
+  });
+
+  it('客户画像清空时(0 字)不显示错误提示(不触发校验)', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-customer-profile-input');
+    fireEvent.change(textarea, { target: { value: '' } });
+    expect(screen.queryByTestId('av-customer-profile-error')).not.toBeInTheDocument();
+  });
+
+  it('客户画像少于 10 字时生成按钮 disabled', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-customer-profile-input');
+    fireEvent.change(textarea, { target: { value: '太短' } });
+    expect(screen.getByTestId('av-generate-btn')).toBeDisabled();
+  });
+
+  it('产品亮点少于 10 字时生成按钮 disabled', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-product-highlights-input');
+    fireEvent.change(textarea, { target: { value: '太短' } });
+    expect(screen.getByTestId('av-generate-btn')).toBeDisabled();
+  });
+
+  it('两个字段都 ≥10 字时生成按钮可用', () => {
+    renderPage();
+    const cpTextarea = screen.getByTestId('av-customer-profile-input');
+    const phTextarea = screen.getByTestId('av-product-highlights-input');
+    fireEvent.change(cpTextarea, { target: { value: '十个字刚好达到最低限制目标' } });
+    fireEvent.change(phTextarea, { target: { value: '十个字刚好达到最低限制卖点' } });
+    expect(screen.getByTestId('av-generate-btn')).not.toBeDisabled();
+  });
+
+  it('少于 10 字时点击生成按钮不调用 mutate', () => {
+    renderPage();
+    const textarea = screen.getByTestId('av-customer-profile-input');
+    fireEvent.change(textarea, { target: { value: '太短' } });
+    fireEvent.click(screen.getByTestId('av-generate-btn'));
+    expect(_store.mutate).not.toHaveBeenCalled();
+  });
+});
+
+// ── 按钮 disabled 状态 ────────────────────────────────────────────────────────
+describe('AcquisitionVideo — 按钮 disabled 状态', () => {
+  it('idle 态(无结果): 复制方案按钮 disabled', () => {
+    renderPage();
+    expect(screen.getByTestId('av-copy-btn')).toBeDisabled();
+  });
+
+  it('有真结果时: 复制方案按钮 enabled', () => {
+    _store.data = makeResultRow(false);
+    renderPage();
+    expect(screen.getByTestId('av-copy-btn')).not.toBeDisabled();
+  });
+
+  it('智能优化按钮 always disabled', () => {
+    renderPage();
+    expect(screen.getByTestId('av-optimize-btn')).toBeDisabled();
+  });
+
+  it('有真结果时智能优化按钮仍然 disabled', () => {
+    _store.data = makeResultRow(false);
+    renderPage();
+    expect(screen.getByTestId('av-optimize-btn')).toBeDisabled();
   });
 });

@@ -49,7 +49,7 @@
 
 - ✅ ANTHROPIC_API_KEY 0 hardcode · 仅 process.env 读取
 - ✅ tests/setup.ts dotenv 自动加载 .env(已 .gitignore)· 不入 git
-- ✅ .env.example placeholder 仅 `ANTHROPIC_API_KEY=` 不含真实值
+- ✅ .env.example placeholder 仅 `ANTHROPIC_API_KEY=REDACTED 不含真实值
 - ✅ 21 judge file 不引入 @anthropic-ai/sdk 直接 import(runJudge 走 LLMGateway 抽象层)
 
 ### 4. PRD 一致性

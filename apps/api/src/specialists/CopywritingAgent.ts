@@ -512,9 +512,30 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
     return { accumulated, tokens, model };
   }
 
-  private _buildStep7UserPrompt(_userInput: CopywritingInput, _ctx: AssembledContext): string {
-    return [
+  private _buildStep7UserPrompt(userInput: CopywritingInput, ctx: AssembledContext): string {
+    const input = userInput as Record<string, unknown>;
+    const scriptType = String(input['scriptType'] ?? '未指定');
+    const elements = JSON.stringify(input['elements'] ?? []);
+    const topic = String(input['topic'] ?? '未指定');
+
+    const parts: string[] = [];
+
+    // Inject account-level system context (persona · memory · knowledge assembled by BaseSpecialist)
+    if (ctx.systemPrompt) {
+      parts.push(ctx.systemPrompt);
+      parts.push('');
+    }
+    if (ctx.userPrompt) {
+      parts.push(ctx.userPrompt);
+      parts.push('');
+    }
+
+    parts.push(
       '[爆款文案生成任务]',
+      '',
+      `脚本类型: ${scriptType}`,
+      `爆款元素: ${elements}`,
+      `文案主题: ${topic}`,
       '',
       '请以 JSON 格式返回完整文案方案:',
       '{',
@@ -528,7 +549,11 @@ export class CopywritingAgent extends BaseSpecialist<CopywritingInput, Copywriti
       '- markdown 第一行必须是 # 开头的标题',
       '- markdown 至少包含 3 个段落 · 总字数不少于 500 字',
       '- hooks 数组至少 1 条',
-    ].join('\n');
+      `- 内容必须围绕主题「${topic}」展开，融合所选脚本类型「${scriptType}」的叙事框架`,
+      '- 爆款元素必须自然融入文案，不得生硬堆砌',
+    );
+
+    return parts.join('\n');
   }
 
   private _buildFreeUserPrompt(userInput: CopywritingInput): string {

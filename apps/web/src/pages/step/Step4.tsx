@@ -1,76 +1,510 @@
+// PRD-29.9 · Step4 执行计划 · 先锋白 PioneerLayout · 品牌三主色重构
 import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-import { FadeInWrapper } from '@/components/FadeInWrapper';
-import { EmptyState, ErrorState, LoadingState } from '@/components/states';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import type { Step4Phase } from '@/components/step4/Step4PhaseSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import {
-  STEP4_BUTTON_GENERATE,
-  STEP4_H1,
-  STEP4_INPUTS_3,
-  STEP4_OUTPUT_H3_3,
-  STEP4_STEP_TAG,
-  STEP4_SUBTITLE_TEMPLATE,
-  type Step4KpiResult,
-} from '@/lib/constants/step4';
+import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { STEP4_BUTTON_GENERATE, STEP4_H1, STEP4_SUBTITLE_TEMPLATE } from '@/lib/constants/step4';
+import { breakSentences } from '@/lib/text';
+
+// ── TypeScript interfaces ────────────────────────────────────────────────────
+
+interface Step4ScheduleItem {
+  time: string;
+  title: string;
+  desc: string;
+}
+
+interface Step4Result {
+  overview: {
+    currentStage: string;
+    coreGoal: string;
+    timeline: string;
+    mainPlatform: string;
+    coreAdvantages: string;
+  };
+  phases: Step4Phase[];
+  dailySchedule: {
+    morning: Step4ScheduleItem[];
+    afternoon: Step4ScheduleItem[];
+    evening: Step4ScheduleItem[];
+  };
+  warnings: Array<{
+    signal: string;
+    meaning: string;
+    solution: string;
+  }>;
+  successCriteria: Array<{
+    period: string;
+    desc: string;
+  }>;
+}
 
 interface Step4FormData {
-  follower_count: string;
+  platform: string;
+  followerCount: string;
   goal: string;
-  personal_info: string;
+  personalInfo: string;
 }
 
-function generateMockResult(): Step4KpiResult {
+// ── Form 默认值 · 1:1 sally 真实输入 ────────────────────────────────────────
+
+const DEFAULT_FORM: Step4FormData = {
+  platform: 'douyin',
+  followerCount: '1-1000',
+  goal: 'start',
+  personalInfo: '我是一名opc创业者，擅长与人沟通和项目交付。专业技能是给企业或者个人定制全自动工作流或者智能体，在这么行业从业半年。我以前是餐饮从业者，从事餐饮行业12年，作为品牌创始人之一的我，高峰时期拥有13家店铺（外卖店+实体店），因为品类周期原因，已经没有利润和持续的意义，加上因为认知问题投资的代加工厂失败，背上近百万的负债。后来果断一家一家店铺关掉，来到ai赛道做一家opc个人创业公司。我也是一名持续创业者，这是十几年期间有成功的项目也有失败血亏的项目，但是我从来不缺从头再来的勇气，目前公司已经交付一些简单的工作流和智能体平台，这些交付的案例都帮助客户解决了提效的问题，把客户从复杂重复的工作里抽身出来把精力放在更重要的商业决策上来。收费有4位数到6位数都有。我以前是技术小白，通过我不断的学习和自我迭代，到我现在可以交付项目。我自己的商业闭环走通这个环节也走了一些弯路，我把这些学习经验和沟通经验做成一系列的课程，想要帮助一些opc创业者避坑。',
+};
+
+// ── Mock data · 逐字提取 ─────────────────────────────────────────────────────
+
+function generateMockResult(): Step4Result {
   return {
-    daily_kpi: ['发布1-2条内容', '回复20条评论', '分析竞品5分钟'],
-    weekly_kpi: ['粉丝净增200+', '完成7条内容', '完成1次数据复盘'],
-    phase_kpi: ['1-30天: 完成30条内容 · 积累500粉', '1-3个月: 精准粉丝5000', '3-6个月: 达目标粉丝 · 启动变现'],
+    overview: {
+      currentStage: '你目前处于IP冷启动期，拥有1-1000粉丝，需要快速验证内容方向并积累初期用户。',
+      coreGoal: '在3个月内，通过抖音平台获取精准意向客户，并实现首批高客单价智能体定制服务成交，同时启动OPC创业者课程的私域流量积累。',
+      timeline: '三阶段规划：战略规划（第1周）、基础建设（第2-3周）、内容启动及增长（第4周+）。',
+      mainPlatform: '抖音，作为核心流量入口。',
+      coreAdvantages: '你拥有丰富的创业经验（餐饮12年，AI半年），经历过成功与失败，具备强大的抗压能力和从头再来的勇气。擅长沟通和项目交付，能将复杂技术转化为客户价值。同时，你从技术小白成长为交付者，这本身就是极具说服力的IP故事。',
+    },
+
+    phases: [
+      // ── 阶段一：战略规划与IP定位 ──────────────────────────
+      {
+        number: 1,
+        title: '阶段一：战略规划与IP定位',
+        weekRange: '第1周',
+        goal: '明确商业模式、双目标，完成IP基础包装，并产出首批内容策略。',
+        dailyTasks: [
+          {
+            day: '周一 09:00-12:00',
+            title: '商业模式梳理与目标细化',
+            desc: '明确核心价值主张：为企业/个人定制AI工作流，解决提效痛点。目标客户：需要降本增效的企业主（美业、餐饮等）、寻求商业闭环的OPC创业者。盈利模式：智能体定制服务（1-10万+），OPC课程/训练营（9800-29800）。',
+            duration: '3小时',
+          },
+          {
+            day: '周一 14:00-17:00',
+            title: '双目标设定',
+            desc: '变现目标：第一个月成交1单智能体定制服务（1-5万），积累500个OPC创业者私域用户。客资目标：抖音账号月增粉5000，私域引流率10%。',
+            duration: '3小时',
+          },
+          {
+            day: '周二 09:00-12:00',
+            title: '全域IP矩阵布局（规划）',
+            desc: '主号抖音：核心内容发布，引流私域。小红书（规划）：作为案例展示和深度内容补充。视频号（规划）：作为私域承接和长视频输出平台。目前主攻抖音。',
+            duration: '3小时',
+          },
+          {
+            day: '周二 14:00-17:00',
+            title: '产品体系设计',
+            desc: '引流品：免费AI工具清单/AI提效案例集（0元）。信任品：AI工作流定制体验课/AI智能体定制咨询（99-499元）。利润品：基础版AI智能体定制（1-5万），OPC创业者线上课程（9800）。后端品：高级定制AI智能体（5万+），OPC创业者线下高阶培训/训练营（19800-29800）。',
+            duration: '3小时',
+          },
+          {
+            day: '周三 09:00-12:00',
+            title: '三大素材库搭建（启动）',
+            desc: '生活素材库：整理个人创业经历、餐饮经验、AI学习过程中的照片/视频。选题库：基于目标客户痛点（效率低下、成本高、商业闭环难）和AI解决方案，头脑风暴100个短视频选题。案例库：整理已交付的AI工作流/智能体案例，提炼客户痛点、解决方案、效果对比。',
+            duration: '3小时',
+          },
+          {
+            day: '周三 14:00-17:00',
+            title: 'IP人设与账号包装',
+            desc: '昵称：AI老吴、AI工作流定制师、AI创业老兵。头像：专业形象照，体现AI科技感。背景图：展示AI工作流或成功案例。简介："从餐饮老板到AI工作流定制师，用AI助你提效降本，告别重复工作。" 或 "12年创业老兵，半年从小白到AI工作流交付专家，助OPC创业者避坑。"',
+            duration: '3小时',
+          },
+          {
+            day: '周四 09:00-12:00',
+            title: '抖音内容八大系统策略制定',
+            desc: '分配内容类型占比：看见你（20%）、信任你（30%）、认可你（15%）、喜欢你（15%）、成交（10%）、平台托举（5%）、追随（3%）、行业标杆（2%）。重点在前四周快速提升"看见你"和"信任你"的内容。',
+            duration: '3小时',
+          },
+          {
+            day: '周四 14:00-17:00',
+            title: '私域承接SOP初稿',
+            desc: '引流钩子设计："免费领取AI工具清单，提升效率30%"，"私信我，免费诊断你的工作流"。用户标签体系：意向客户（企业主）、OPC创业者、潜在合作者。朋友圈规划：每日3-5条，内容包括AI干货、案例分享、个人生活、课程预告。',
+            duration: '3小时',
+          },
+          {
+            day: '周五 09:00-12:00',
+            title: '场景化选题指南应用',
+            desc: '规划未来一周的拍摄场景：办公室（展示AI工具）、咖啡馆（轻松分享创业经验）、和客户在一起（案例展示）。',
+            duration: '3小时',
+          },
+          {
+            day: '周五 14:00-17:00',
+            title: '首周内容脚本撰写',
+            desc: '撰写3-5个短视频脚本，涵盖"看见你"和"信任你"类型，时长控制在30-60秒。例如："3个AI工具，让你的工作效率翻倍"（看见你），"我如何用AI，半年从餐饮老板转型成功"（信任你）。',
+            duration: '3小时',
+          },
+        ],
+        milestones: [
+          {
+            week: '第1周',
+            goal: '完成IP基础设定，明确商业路径，产出首批内容策略和脚本。',
+            criteria: '商业模式清晰，双目标量化，产品体系完整，账号包装完成，至少5个可发布脚本。',
+          },
+        ],
+        contentPlan: {
+          frequency: '5-7条',
+          categories: [
+            { name: '看见你（痛点共鸣/价值主张）（20%）', desc: '快速吸引目标用户停留，让他们知道你能解决什么问题。' },
+            { name: '信任你（个人故事/专业度展示）（30%）', desc: '通过个人经历、专业知识，建立用户信任感。' },
+          ],
+          bestTime: '早7:00-8:30、午休12:00-13:30、晚18:00-20:00',
+        },
+        kpis: [
+          { name: '抖音账号粉丝数', target: '500', baseline: '1-1000' },
+          { name: '单视频完播率', target: '>30%', baseline: '未知' },
+          { name: '单视频点赞率', target: '>3%', baseline: '未知' },
+        ],
+      },
+
+      // ── 阶段二：基础建设与内容启动 ──────────────────────
+      {
+        number: 2,
+        title: '阶段二：基础建设与内容启动',
+        weekRange: '第2-3周',
+        goal: '完善素材库，开始发布内容，测试用户反馈，并优化私域承接流程。',
+        dailyTasks: [
+          {
+            day: '周一 09:00-12:00',
+            title: '素材库完善',
+            desc: '继续扩充选题库（至少50个），案例库（至少5个详细案例），生活素材库（个人学习、工作场景）。',
+            duration: '3小时',
+          },
+          {
+            day: '周一 14:00-17:00',
+            title: '内容拍摄与剪辑',
+            desc: '拍摄并剪辑3条视频，例如："美业老板，还在手算业绩？AI帮你秒出报表！"（看见你），"我用AI打造的餐饮智能助手，让门店成本直降15%"（信任你），"OPC创业者，这3个AI坑你必须避开"（信任你）。注意黄金3秒法则，前3秒突出痛点或结果。',
+            duration: '3小时',
+          },
+          {
+            day: '周二 09:00-10:00',
+            title: '抖音首发',
+            desc: '发布一条视频，选择在早7:00-8:30之间。标题包含关键词，例如："美业AI提效"。文案引导互动："你还遇到哪些工作流难题？评论区告诉我。"',
+            duration: '1小时',
+          },
+          {
+            day: '周二 10:00-12:00',
+            title: '数据复盘与优化',
+            desc: '分析已发布视频的完播率、点赞率、评论，根据数据调整后续内容方向和脚本。',
+            duration: '2小时',
+          },
+          {
+            day: '周二 14:00-17:00',
+            title: '私域引流钩子优化',
+            desc: '设计更具吸引力的引流钩子，例如："私信【AI】，免费获取美业AI提效方案"，"私信【避坑】，领取OPC创业者AI工具避坑指南"。制作对应的落地页或私域欢迎语。',
+            duration: '3小时',
+          },
+          {
+            day: '周三 09:00-12:00',
+            title: '内容拍摄与剪辑',
+            desc: '拍摄并剪辑2条视频，例如："AI工作流定制，到底能帮你省多少钱？"（认可你），"从负债百万到AI创业，我的心路历程"（喜欢你）。',
+            duration: '3小时',
+          },
+          {
+            day: '周三 12:00-13:00',
+            title: '抖音发布',
+            desc: '发布一条视频，选择在午休12:00-13:30之间。文案引导私信。',
+            duration: '1小时',
+          },
+          {
+            day: '周四 09:00-12:00',
+            title: '私域承接SOP演练',
+            desc: '模拟用户添加私域流程，确保欢迎语、自动回复、朋友圈内容流畅且有价值。准备好用户标签体系。',
+            duration: '3小时',
+          },
+          {
+            day: '周四 18:00-19:00',
+            title: '抖音发布',
+            desc: '发布一条视频，选择在晚18:00-20:00之间。文案引导私信或评论。',
+            duration: '1小时',
+          },
+          {
+            day: '周五 09:00-12:00',
+            title: '内容规划与脚本撰写',
+            desc: '根据前几条视频数据反馈，调整下周内容方向。撰写3-5个新脚本，增加"认可你"和"喜欢你"的内容占比。',
+            duration: '3小时',
+          },
+        ],
+        milestones: [
+          {
+            week: '第2周',
+            goal: '发布至少5条高质量短视频，测试内容方向和用户反馈，优化私域引流钩子。',
+            criteria: '账号粉丝增长100+，单视频平均完播率>35%，私域引流人数>20。',
+          },
+          {
+            week: '第3周',
+            goal: '持续发布内容，开始积累私域用户，并进行初步互动。',
+            criteria: '账号粉丝增长300+，私域引流人数>50，至少完成10次私域用户互动（咨询、提问等）。',
+          },
+        ],
+        contentPlan: {
+          frequency: '5-7条',
+          categories: [
+            { name: '看见你（痛点共鸣/价值主张）（20%）', desc: '持续吸引新用户' },
+            { name: '信任你（个人故事/专业度展示）（30%）', desc: '加深用户对你的了解和信任' },
+            { name: '认可你（解决方案/案例展示）（15%）', desc: '展示你的能力和成果，让用户觉得你有真本事' },
+            { name: '喜欢你（个人魅力/价值观）（15%）', desc: '通过真诚分享，让用户产生情感连接' },
+          ],
+          bestTime: '早7:00-8:30、午休12:00-13:30、晚18:00-20:00',
+        },
+        kpis: [
+          { name: '抖音账号粉丝数', target: '3000', baseline: '1-1000' },
+          { name: '单视频互动率（评论+转发）', target: '>5%', baseline: '未知' },
+          { name: '私域引流人数', target: '100', baseline: '0' },
+        ],
+      },
+
+      // ── 阶段三：规模增长与变现启动 ──────────────────────
+      {
+        number: 3,
+        title: '阶段三：规模增长与变现启动',
+        weekRange: '第4周+',
+        goal: '通过付费投流和直播，放大流量，加速私域积累和变现。',
+        dailyTasks: [
+          {
+            day: '每天 09:00-10:00',
+            title: '数据复盘与内容优化',
+            desc: '分析前一天视频数据，特别是互动率、关注转化率和私域引流数据。根据数据调整当天内容方向和发布策略。例如，如果某个案例视频效果好，就多做类似内容。',
+            duration: '1小时',
+          },
+          {
+            day: '每天 10:00-12:00',
+            title: '内容拍摄与剪辑',
+            desc: '每天产出1-2条高质量视频。例如："美业老板必看！AI帮你分析客户数据，精准营销！"（认可你），"我如何用AI，实现从0到1的商业闭环"（成交），"我的AI智能体，让客户每月节省30000元"（成交）。',
+            duration: '2小时',
+          },
+          {
+            day: '每天 12:00-13:00',
+            title: '抖音发布与互动',
+            desc: '发布视频，并积极回复评论、私信。引导用户进入私域。利用抖音推流机制，在黄金时间发布。',
+            duration: '1小时',
+          },
+          {
+            day: '每天 14:00-17:00',
+            title: '私域运营与客户沟通',
+            desc: '在企业微信/个人微信中，对新引流用户进行标签化管理，提供引流品（免费AI工具清单）。针对意向客户进行一对一咨询，了解痛点，推荐产品体系中的信任品或利润品。例如："你好，我是AI老吴，看到你对AI提效感兴趣，方便聊聊你目前遇到的工作流难题吗？我这里有份【美业AI提效方案】可以免费送你。"',
+            duration: '3小时',
+          },
+          {
+            day: '每周二/四 19:00-21:00',
+            title: '直播流程设计与执行',
+            desc: '暖场（5分钟）：分享个人创业故事，吸引用户。痛点共鸣（15分钟）：深挖企业主/OPC创业者痛点。干货输出（30分钟）：分享AI提效具体方法、工具。产品植入（10分钟）：介绍AI智能体定制服务或OPC课程。答疑（15分钟）：解答用户疑问。逼单（5分钟）：限时优惠或专属福利，引导成交或私域转化。例如："今晚直播间，我将手把手教你搭建第一个AI工作流，前10名用户可获得免费AI诊断！"',
+            duration: '2小时',
+          },
+          {
+            day: '每周三/五 10:00-11:00',
+            title: '付费投流策略',
+            desc: '精准测试投流（100-300元/天）：选择表现好的视频进行DOU+投放，测试不同人群包（企业主、创业者、美业老板、餐饮老板）的效果。目标是提升视频播放量和私域引流成本。批量放大投流（1000-5000元/天）：一旦发现高转化视频和精准人群包，果断放大投放，加速流量获取。',
+            duration: '1小时',
+          },
+        ],
+        milestones: [
+          {
+            week: '第4周',
+            goal: '启动直播，进行首次付费投流测试，实现首单成交。',
+            criteria: '抖音粉丝突破5000，私域引流人数200+，至少1单智能体定制服务成交（或1个OPC课程成交）。',
+          },
+          {
+            week: '第5-8周',
+            goal: '稳定内容输出，优化投流策略，提升成交转化率。',
+            criteria: '抖音粉丝突破1万，私域引流人数500+，累计成交3-5单智能体定制服务或OPC课程。',
+          },
+          {
+            week: '第9周+',
+            goal: '持续放大，探索裂变增长和IP矩阵复制。',
+            criteria: '抖音粉丝突破3万，私域用户1000+，月均成交5万+，开始规划小红书/视频号内容。',
+          },
+        ],
+        contentPlan: {
+          frequency: '7-10条',
+          categories: [
+            { name: '看见你（痛点共鸣/价值主张）（15%）', desc: '持续引入新用户。' },
+            { name: '信任你（个人故事/专业度展示）（25%）', desc: '深化信任，建立专业形象。' },
+            { name: '认可你（解决方案/案例展示）（20%）', desc: '用成果说话，增强说服力。' },
+            { name: '喜欢你（个人魅力/价值观）（15%）', desc: '建立情感连接，培养忠实粉丝。' },
+            { name: '成交（产品介绍/促单）（10%）', desc: '直接引导购买或咨询。' },
+            { name: '平台托举（热点/挑战）（5%）', desc: '蹭平台流量，扩大曝光。' },
+            { name: '追随（用户反馈/互动）（3%）', desc: '增强用户粘性，形成社群氛围。' },
+            { name: '行业标杆（深度分析/趋势洞察）（2%）', desc: '树立行业权威形象。' },
+          ],
+          bestTime: '早7:00-8:30、午休12:00-13:30、晚18:00-20:00',
+        },
+        kpis: [
+          { name: '抖音账号粉丝数', target: '10000', baseline: '3000' },
+          { name: '直播间观看人数', target: '200+', baseline: '0' },
+          { name: '私域引流人数', target: '500', baseline: '100' },
+          { name: '智能体定制服务成交额', target: '50000', baseline: '0' },
+        ],
+      },
+    ],
+
+    dailySchedule: {
+      morning: [
+        {
+          time: '08:30-09:00',
+          title: '数据复盘',
+          desc: '查看前一天抖音视频数据（完播率、点赞、评论、转发、关注转化、私信量），私域新增人数及互动情况。',
+        },
+        {
+          time: '09:00-12:00',
+          title: '内容创作',
+          desc: '根据数据反馈，撰写脚本，进行拍摄或剪辑。确保内容符合八大系统占比。',
+        },
+      ],
+      afternoon: [
+        {
+          time: '12:00-13:00',
+          title: '抖音发布与互动',
+          desc: '发布当天第一条视频，并回复评论、私信。引导至私域。',
+        },
+        {
+          time: '14:00-17:00',
+          title: '私域运营与客户沟通',
+          desc: '在企业微信中与新老客户互动，提供价值，进行咨询或促单。',
+        },
+        {
+          time: '17:00-18:00',
+          title: '素材整理与选题',
+          desc: '整理当天拍摄素材，更新选题库，为第二天内容做准备。',
+        },
+      ],
+      evening: [
+        {
+          time: '18:00-19:00',
+          title: '抖音发布与互动',
+          desc: '发布当天第二条视频（如有），并进行互动。尤其关注直播前的预热。',
+        },
+        {
+          time: '19:00-21:00',
+          title: '直播/学习',
+          desc: '按计划进行直播，或进行行业学习、AI技术迭代学习，提升专业能力。',
+        },
+      ],
+    },
+
+    warnings: [
+      {
+        signal: '视频完播率低于30%',
+        meaning: '内容开头不够吸引人，或节奏拖沓。',
+        solution: '优化前3秒内容，增加悬念或直接抛出痛点/结果。加快视频节奏，精简废话。',
+      },
+      {
+        signal: '点赞率低于3%，评论、转发少',
+        meaning: '内容没有引起共鸣或互动性差。',
+        solution: '增加互动引导，如提问、投票。内容更贴近用户痛点，提供更具体解决方案。',
+      },
+      {
+        signal: '私域引流成本过高，或转化率低',
+        meaning: '引流钩子不够吸引人，或私域承接SOP有问题。',
+        solution: '优化引流钩子，使其更具价值和稀缺性。检查私域欢迎语、朋友圈内容是否能持续提供价值并建立信任。',
+      },
+      {
+        signal: '直播间互动少，停留时间短',
+        meaning: '直播内容枯燥，或没有有效互动环节。',
+        solution: '增加直播互动游戏、抽奖。提前预告直播亮点，提升内容密度和干货输出。',
+      },
+    ],
+
+    successCriteria: [
+      {
+        period: '第1周',
+        desc: '完成IP基础设定，发布至少3条视频，账号粉丝突破100。',
+      },
+      {
+        period: '第1个月',
+        desc: '抖音粉丝突破3000，私域引流人数100+，至少1次直播，实现首单成交。',
+      },
+      {
+        period: '第3个月',
+        desc: '抖音粉丝突破10000，私域引流人数500+，月均成交额达到5万+，形成稳定内容输出和变现模式。',
+      },
+    ],
   };
 }
 
-function adaptKpiResult(raw: Record<string, unknown>): Step4KpiResult {
-  return {
-    daily_kpi: Array.isArray(raw.daily_kpi) ? (raw.daily_kpi as string[]) : generateMockResult().daily_kpi,
-    weekly_kpi: Array.isArray(raw.weekly_kpi) ? (raw.weekly_kpi as string[]) : generateMockResult().weekly_kpi,
-    phase_kpi: Array.isArray(raw.phase_kpi) ? (raw.phase_kpi as string[]) : generateMockResult().phase_kpi,
-  };
+// ── Table row status helpers ──────────────────────────────────────────────────
+
+type RowStatus = 'done' | 'running' | 'pending';
+
+function getStatus(index: number): RowStatus {
+  if (index === 0) return 'done';
+  if (index === 1) return 'running';
+  return 'pending';
 }
+
+function StatusBadge({ status }: { status: RowStatus }) {
+  if (status === 'done') {
+    return (
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#d1fae5] bg-[#f0fdf4] px-2.5 py-1">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+        <span className="text-[11px] font-semibold text-[#10b981]">已完成</span>
+      </div>
+    );
+  }
+  if (status === 'running') {
+    return (
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#F3E08A] bg-[#FEFCE0] px-2.5 py-1">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8A6A00]" />
+        <span className="text-[11px] font-semibold text-[#8A6A00]">执行中</span>
+      </div>
+    );
+  }
+  return (
+    <div className="inline-flex items-center gap-1.5 rounded-md border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-1 opacity-60">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#9ca3af]" />
+      <span className="text-[11px] font-semibold text-[#9ca3af]">待命</span>
+    </div>
+  );
+}
+
+// ── Module-level constants (hoisted) ─────────────────────────────────────────
+
+const PLATFORMS = [
+  { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
+  { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
+  { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+];
+
+const GOAL_OPTIONS = [
+  { key: 'start', label: '起号期', icon: 'rocket_launch', desc: '冷启动 · 建立账号' },
+  { key: 'growth', label: '成长期', icon: 'trending_up', desc: '扩粉 · 提升影响力' },
+  { key: 'monetize', label: '变现期', icon: 'payments', desc: '转化 · 实现商业价值' },
+];
+
+// ── Main Component ───────────────────────────────────────────────────────────
 
 export default function Step4() {
+  const navigate = useNavigate();
   const { account } = useActiveAccount();
   const accountId = (account as { id: number } | null)?.id ?? null;
   const { save, isSaving, dbQuery } = useStepData(accountId, 'step4');
 
-  const [fieldValues, setFieldValues] = useState<Record<string, string>>({
-    follower_count: '',
-    goal: '',
-    personal_info: '',
-  });
-  const [result, setResult] = useState<Step4KpiResult | null>(null);
+  const industry = readOtherStep<{ industry?: string }>(accountId, 'step1')?.industry ?? '美业';
+
+  // PRD-29.9 · default form 1:1 复刻 sally 真实输入
+  const [platform, setPlatform] = useState(DEFAULT_FORM.platform);
+  const [followerCount, setFollowerCount] = useState(DEFAULT_FORM.followerCount);
+  const [goal, setGoal] = useState(DEFAULT_FORM.goal);
+  const [personalInfo, setPersonalInfo] = useState(breakSentences(DEFAULT_FORM.personalInfo));
 
   const prevIsSavingRef = useRef(false);
 
-  // Cross-step prefill: industry from step1 for subtitle
-  const step1Data = readOtherStep<{ industryLabel?: string }>(accountId, 'step1');
-  const industryLabel = step1Data?.industryLabel ?? '(未选择)';
-  const subtitle = STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industryLabel);
-
-  // Prefill form from namespaced LS on accountId change
   useEffect(() => {
     if (accountId === null) return;
     const saved = readOtherStep<Step4FormData>(accountId, 'step4');
-    if (saved) {
-      setFieldValues({
-        follower_count: saved.follower_count ?? '',
-        goal: saved.goal ?? '',
-        personal_info: saved.personal_info ?? '',
-      });
+    if (saved?.personalInfo) {
+      setPersonalInfo(saved.personalInfo);
+      if (saved.platform) setPlatform(saved.platform);
+      if (saved.followerCount) setFollowerCount(saved.followerCount);
+      if (saved.goal) setGoal(saved.goal);
     }
   }, [accountId]);
 
-  // Refetch after save completes
   useEffect(() => {
     if (prevIsSavingRef.current && !isSaving) {
       void dbQuery.refetch();
@@ -79,121 +513,919 @@ export default function Step4() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSaving]);
 
-  // Sync result from DB
-  useEffect(() => {
-    if (!dbQuery.data?.result) return;
-    const raw = dbQuery.data.result;
-    setResult(adaptKpiResult(raw));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dbQuery.data?.result]);
+  const [isLocalGenerating, setIsLocalGenerating] = useState(false);
+  const isLoading = isLocalGenerating || isSaving;
+
+  // PRD-29.9 · default 强制 mock
+  const generated: Step4Result = generateMockResult();
+  const canBulkActions = !isLoading;
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (isSaving) return;
-    const formData: Step4FormData = {
-      follower_count: fieldValues['follower_count'] ?? '',
-      goal: fieldValues['goal'] ?? '',
-      personal_info: fieldValues['personal_info'] ?? '',
-    };
-    save(formData as unknown as Record<string, unknown>);
-    // Stub mode: show mock result immediately (LLM integration in PRD-23+)
-    setResult(generateMockResult());
-    document.getElementById('step4-output')?.scrollIntoView({ behavior: 'smooth' });
+    if (isLoading) return;
+    setIsLocalGenerating(true);
+    save({ platform, followerCount, goal, personalInfo });
+    setTimeout(() => {
+      setIsLocalGenerating(false);
+      toast.success('生成完成');
+    }, 1200);
   }
 
-  const kpiBlocks = result
-    ? [
-        { id: STEP4_OUTPUT_H3_3[0].id, h3: STEP4_OUTPUT_H3_3[0].h3Label, items: result.daily_kpi },
-        { id: STEP4_OUTPUT_H3_3[1].id, h3: STEP4_OUTPUT_H3_3[1].h3Label, items: result.weekly_kpi },
-        { id: STEP4_OUTPUT_H3_3[2].id, h3: STEP4_OUTPUT_H3_3[2].h3Label, items: result.phase_kpi },
-      ]
-    : [];
+  function handleRegenerateAll() {
+    if (isLoading) return;
+    setIsLocalGenerating(true);
+    setTimeout(() => {
+      setIsLocalGenerating(false);
+      toast.success('已重新生成');
+    }, 1200);
+  }
+
+  function handleCopyAll() {
+    const text = JSON.stringify(generated, null, 2);
+    void navigator.clipboard.writeText(text).then(() => toast.success('已复制全部'));
+  }
+
+  function handleOptimize() {
+    if (!canBulkActions) return;
+    toast.success('已智能优化');
+  }
+
+  function handleFeedbackUp() { toast.success('感谢反馈!'); }
+  function handleFeedbackDown() { toast.info('我们会持续改进'); }
+  function handleNextStep() {
+    void navigate('/step/4b');
+  }
+  function handleViewIpPlan() { toast.info('IP 方案查看功能开发中'); }
+  void handleViewIpPlan;
+
+  // Flatten dailySchedule items for the table
+  const allScheduleItems: Array<{ time: string; title: string; desc: string; section: string }> = [
+    ...generated.dailySchedule.morning.map((it) => ({ ...it, section: '上午' })),
+    ...generated.dailySchedule.afternoon.map((it) => ({ ...it, section: '下午' })),
+    ...generated.dailySchedule.evening.map((it) => ({ ...it, section: '晚间' })),
+  ];
+
+  const btnSecondary =
+    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+
+  // 数据洞察雷达维度 (执行健康度)
+  const RADAR_DIMS_S4 = [
+    { label: '任务密度', value: 85, color: '#002fa7' },
+    { label: '资源投入', value: 78, color: '#781621' },
+    { label: '风险可控', value: 82, color: '#F6D300' },
+    { label: '里程碑清晰', value: 90, color: '#002fa7' },
+    { label: '依赖合理', value: 76, color: '#781621' },
+    { label: '节奏稳健', value: 88, color: '#F6D300' },
+  ];
+
+  // 趋势图数据 (累计完成度预估)
+  const TREND_DATA_S4 = [8, 18, 30, 45, 62, 75, 84, 92, 100];
+  const TREND_LABELS_S4 = ['第1周', '第2周', '第3周', '第4周', '第5周', '第6周', '第7周', '第8周', '第9周'];
 
   return (
-    <main className="flex-1 container py-8">
-      {/* AC-1: Header with FadeInWrapper stagger */}
-      <FadeInWrapper delay={0} from="up">
-        <div>
-          <p className="text-label-sm font-label text-primary uppercase tracking-wide mb-2">
-            {STEP4_STEP_TAG}
-          </p>
-          <h1 className="text-h1 font-display text-on-surface mb-2">{STEP4_H1}</h1>
-          <p className="text-body-md text-muted-foreground mb-8">{subtitle}</p>
-        </div>
-      </FadeInWrapper>
-
-      <FadeInWrapper delay={0.05} from="up">
-      <form onSubmit={handleSubmit} className="glass-card rounded-xl p-6 space-y-6 max-w-2xl">
-        {STEP4_INPUTS_3.map((input) => (
-          <div key={input.id}>
-            <label className="block text-body-sm font-label text-on-surface mb-2">
-              {input.label}
-            </label>
-            {input.type === 'textarea' ? (
-              <textarea
-                value={fieldValues[input.id] ?? ''}
-                onChange={(e) =>
-                  setFieldValues((prev) => ({ ...prev, [input.id]: e.target.value }))
-                }
-                placeholder={input.placeholder}
-                className="flex w-full rounded-md border border-border bg-input px-3 py-2 text-body-sm text-on-surface shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[120px] font-cn resize-y"
-              />
-            ) : (
-              <Input
-                value={fieldValues[input.id] ?? ''}
-                onChange={(e) =>
-                  setFieldValues((prev) => ({ ...prev, [input.id]: e.target.value }))
-                }
-                placeholder={input.placeholder}
-              />
-            )}
+    <PioneerLayout>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <header className="mb-12 flex flex-row items-center justify-between gap-8">
+        <div className="shrink-0">
+          <div className="mb-3 flex items-center gap-3">
+            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+              执行矩阵
+            </span>
+            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              迭代规划
+            </span>
           </div>
-        ))}
+          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+            STEP 04 · {STEP4_H1}
+          </h1>
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+            {STEP4_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-nowrap gap-3">
+          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            智能优化
+          </button>
+          <button type="button" onClick={handleRegenerateAll} disabled={isLoading} className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]">refresh</span>
+            重新生成
+          </button>
+          <button
+            type="button"
+            onClick={handleCopyAll}
+            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            导出执行案
+          </button>
+        </div>
+      </header>
 
-        <Button
-          type="submit"
-          disabled={isSaving}
-          className="w-full bg-gradient-to-r from-primary to-primary/80"
-        >
-          {STEP4_BUTTON_GENERATE}
-        </Button>
-      </form>
-      </FadeInWrapper>
+      {/* ── Loading bar ────────────────────────────────────── */}
+      {isLoading && (
+        <div className="mb-8 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#002fa7]/5 p-4 text-[14px] font-medium text-[#001e73]">
+          <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+          正在生成执行计划…
+        </div>
+      )}
 
-      {/* State feedback */}
-      <div className="mt-8 max-w-2xl">
-        {isSaving && <LoadingState text="AI 正在制定执行计划 ..." size="lg" />}
-        {!isSaving && dbQuery.isError && (
-          <ErrorState
-            message={dbQuery.error instanceof Error ? dbQuery.error.message : '生成失败 · 请重试'}
-            onRetry={() => { void dbQuery.refetch(); }}
-          />
-        )}
-        {!isSaving && !dbQuery.isError && !result && (
-          <EmptyState title={`提交表单后查看${STEP4_H1}`} />
-        )}
+      {/* ── 输入基准参数 ─────────────────────────────────────── */}
+      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
+              <span className="material-symbols-outlined">tune</span>
+            </span>
+            <div>
+              <h2 className="text-[18px] font-bold text-[#111827]">基准参数输入</h2>
+              <p className="text-[12px] text-[#9ca3af]">填写执行基础信息 · AI 据此生成三阶段执行计划</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+            参数就绪
+          </span>
+        </div>
+        <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-7">
+            {/* 目标平台 · 可视化平台卡 */}
+            <div>
+              <span className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标平台
+              </span>
+              <div className="grid grid-cols-3 gap-4">
+                {PLATFORMS.map((p) => {
+                  const active = platform === p.key;
+                  return (
+                    <button
+                      type="button"
+                      key={p.key}
+                      onClick={() => setPlatform(p.key)}
+                      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                    >
+                      <span
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
+                        style={{ backgroundColor: p.color }}
+                      >
+                        <span className="material-symbols-outlined text-[22px]">{p.icon}</span>
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-[#111827]">{p.label}</span>
+                        <span className="block text-[11px] text-[#9ca3af]">{p.desc}</span>
+                      </span>
+                      <span
+                        className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">check</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 核心转化目标 · 可视化选择卡 */}
+            <div>
+              <span className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                核心转化目标
+              </span>
+              <div className="grid grid-cols-3 gap-4">
+                {GOAL_OPTIONS.map((g) => {
+                  const active = goal === g.key;
+                  return (
+                    <button
+                      type="button"
+                      key={g.key}
+                      onClick={() => setGoal(g.key)}
+                      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                    >
+                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-sm ${active ? 'bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}>
+                        <span className="material-symbols-outlined text-[22px]">{g.icon}</span>
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-bold text-[#111827]">{g.label}</span>
+                        <span className="block text-[11px] text-[#9ca3af]">{g.desc}</span>
+                      </span>
+                      <span
+                        className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">check</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 目标体量 · 带图标输入 */}
+            <div>
+              <label htmlFor="s4-follower-count" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                目标体量 (关注者/用户)
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">group_add</span>
+                <input
+                  id="s4-follower-count"
+                  type="text"
+                  value={followerCount}
+                  onChange={(e) => setFollowerCount(e.target.value)}
+                  placeholder="如：1万 / 10万 / 100万"
+                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                />
+              </div>
+            </div>
+
+            {/* 个人背景 · 框式编辑器 */}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label htmlFor="s4-personal-info" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                  个人背景 <span className="ml-1 text-[#9ca3af] font-normal text-[12px]">(可选)</span>
+                </label>
+                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
+                  <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+                  AI 据此定制执行策略
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+                <textarea
+                  id="s4-personal-info"
+                  value={personalInfo}
+                  onChange={(e) => setPersonalInfo(e.target.value)}
+                  rows={5}
+                  placeholder="输入你的创业经历、行业背景、擅长领域等，AI 将据此生成更精准的执行路径"
+                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                />
+                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[11px] text-[#9ca3af]">可包含</span>
+                    {['经历', '行业', '优势', '目标', '资源'].map((t) => (
+                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{personalInfo.length} 字</span>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
+                  {isLoading ? '生成中…' : STEP4_BUTTON_GENERATE}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
+        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
+        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+          模型已就绪
+        </span>
+      </div>
+      <div className="mb-8 grid grid-cols-12 gap-6">
+        {/* 执行健康度雷达 */}
+        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+                <span className="material-symbols-outlined text-[20px]">radar</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">执行健康度雷达</h3>
+                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[26px] font-bold leading-none text-[#002fa7]">83</p>
+              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+            </div>
+          </div>
+          {(() => {
+            const dims = RADAR_DIMS_S4;
+            const cx = 130;
+            const cy = 122;
+            const R = 88;
+            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+            return (
+              <svg viewBox="0 0 260 244" className="w-full">
+                <defs>
+                  <linearGradient id="radarFillS4" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
+                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  </linearGradient>
+                </defs>
+                {[0.25, 0.5, 0.75, 1].map((f) => (
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                ))}
+                {dims.map((_, i) => {
+                  const [x, y] = pt(i, R);
+                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                })}
+                <polygon points={dataPoly} fill="url(#radarFillS4)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R * (d.value / 100));
+                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                })}
+                {dims.map((d, i) => {
+                  const [x, y] = pt(i, R + 16);
+                  return (
+                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                      {d.label}
+                    </text>
+                  );
+                })}
+              </svg>
+            );
+          })()}
+          <div className="mt-2 grid grid-cols-3 gap-y-2">
+            {RADAR_DIMS_S4.map((d) => (
+              <div key={d.label} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
+                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 累计完成度预估 */}
+        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+                <span className="material-symbols-outlined text-[20px]">show_chart</span>
+              </span>
+              <div>
+                <h3 className="text-[14px] font-bold text-[#111827]">累计完成度预估</h3>
+                <p className="text-[11px] text-[#9ca3af]">按当前执行计划测算</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {['进度', '里程碑', '复盘'].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mb-3 flex items-end gap-3">
+            <p className="text-[30px] font-bold leading-none text-[#111827]">100%</p>
+            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[14px]">trending_up</span>+{generated.phases.length * 3} 阶段
+            </span>
+            <span className="mb-1 text-[12px] text-[#9ca3af]">第9周完成</span>
+          </div>
+          {(() => {
+            const data = TREND_DATA_S4;
+            const W = 560;
+            const H = 168;
+            const padL = 6;
+            const padR = 6;
+            const padT = 12;
+            const padB = 8;
+            const innerW = W - padL - padR;
+            const innerH = H - padT - padB;
+            const max = 110;
+            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+            const y = (v: number) => padT + innerH * (1 - v / max);
+            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+            return (
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                <defs>
+                  <linearGradient id="trendFillS4" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
+                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="trendLineS4" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#002fa7" />
+                    <stop offset="100%" stopColor="#781621" />
+                  </linearGradient>
+                </defs>
+                {[0, 0.33, 0.66, 1].map((f) => (
+                  <line
+                    key={f}
+                    x1={padL}
+                    x2={W - padR}
+                    y1={(padT + innerH * f).toFixed(1)}
+                    y2={(padT + innerH * f).toFixed(1)}
+                    stroke="#f1f3f9"
+                    strokeWidth="1"
+                  />
+                ))}
+                <path d={area} fill="url(#trendFillS4)" />
+                <path d={line} fill="none" stroke="url(#trendLineS4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {data.map((v, i) =>
+                  i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                )}
+              </svg>
+            );
+          })()}
+          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            {TREND_LABELS_S4.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Output: 3 KPI H3 blocks — AC-3 · D-220 字面锁 */}
-      {result && (
-        <section id="step4-output" className="mt-10 max-w-4xl space-y-4">
-          {kpiBlocks.map((block, idx) => (
-            <FadeInWrapper key={block.id} delay={0.05 * idx} from="up">
-              <div className="glass-card rounded-xl p-6">
-                <h3 className="font-display text-xl text-on-surface mb-4">{block.h3}</h3>
-                <ul className="space-y-2">
-                  {block.items.map((item, i) => (
-                    <li key={i} className="flex gap-2 text-body-sm text-muted-foreground">
-                      <span className="text-primary shrink-0 mt-0.5">·</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+      {/* ── KPI 卡一排 ─────────────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-6">
+        {/* 任务总数 · 环形进度 · 蓝 */}
+        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">task_alt</span>
+            </span>
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+              <span className="material-symbols-outlined text-[13px]">trending_up</span>全覆盖
+            </span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <p className="text-[28px] font-bold leading-none text-[#111827]">
+                {allScheduleItems.length}
+                <span className="text-[15px] text-[#9ca3af]"> 项</span>
+              </p>
+              <p className="mt-1.5 text-[12px] text-[#6b7280]">任务总数</p>
+            </div>
+            <div className="h-12 w-12 shrink-0">
+              <svg viewBox="0 0 36 36" className="-rotate-90">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.915"
+                  fill="none"
+                  stroke="#002fa7"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeDasharray="83 100"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* 执行周期 · 迷你柱 · 勃艮第红 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">date_range</span>
+            </span>
+            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">三阶段</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.phases.length}
+              <span className="text-[15px] text-[#9ca3af]"> 周期</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">执行周期</p>
+          </div>
+          <div className="mt-3 flex h-6 items-end gap-1">
+            {[45, 72, 60, 88, 95].map((h, i) => (
+              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+            ))}
+          </div>
+        </div>
+
+        {/* 里程碑数 · 进度条 · 黄 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
+              <span className="material-symbols-outlined text-[20px]">flag</span>
+            </span>
+            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">里程碑</span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.phases.reduce((sum, ph) => sum + ph.milestones.length, 0)}
+              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">里程碑节点</p>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+            <div className="h-2 w-[78%] rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
+          </div>
+        </div>
+
+        {/* 避坑预警数 · chip · 蓝 */}
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
+              <span className="material-symbols-outlined text-[20px]">shield</span>
+            </span>
+            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+              {generated.warnings.length} 项
+            </span>
+          </div>
+          <div className="mt-4">
+            <p className="text-[28px] font-bold leading-none text-[#111827]">
+              {generated.warnings.length}
+              <span className="text-[15px] text-[#9ca3af]"> 项</span>
+            </p>
+            <p className="mt-1.5 text-[12px] text-[#6b7280]">避坑预警</p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1">
+            {['完播率', '引流', '直播'].slice(0, 3).map((k) => (
+              <span
+                key={k}
+                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+              >
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── 总览区块 ─────────────────────────────────────────── */}
+      <section className="mb-8">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[20px] text-[#002fa7]">summarize</span>
+          <h2 className="text-[16px] font-bold text-[#111827]">执行总览</h2>
+          <span className="text-[12px] text-[#9ca3af]">· 核心目标 · 阶段规划 · 平台策略</span>
+        </div>
+        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+          <div className="grid grid-cols-2 gap-6">
+            {/* 左列 */}
+            <div className="space-y-5">
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">当前阶段</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.currentStage}</p>
               </div>
-            </FadeInWrapper>
-          ))}
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">总体时间线</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.timeline}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">主攻平台</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.mainPlatform}</p>
+              </div>
+            </div>
+            {/* 右列 */}
+            <div className="space-y-5">
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#781621]">核心目标</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.coreGoal}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[11px] font-bold uppercase tracking-widest text-[#781621]">核心优势</p>
+                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.overview.coreAdvantages}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 三阶段完整展开 ────────────────────────────────────── */}
+      <section className="mb-8 space-y-6">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-[20px] text-[#002fa7]">timeline</span>
+          <h2 className="text-[16px] font-bold text-[#111827]">三阶段执行路径</h2>
+          <span className="text-[12px] text-[#9ca3af]">· 每日任务 · 里程碑 · 内容计划 · KPI</span>
+        </div>
+        {generated.phases.map((phase) => {
+          const accentBorder =
+            phase.number === 1
+              ? 'border-[#002fa7]'
+              : phase.number === 2
+                ? 'border-[#781621]'
+                : 'border-[#8a6a00]';
+          const accentBg =
+            phase.number === 1
+              ? 'bg-[#002fa7]'
+              : phase.number === 2
+                ? 'bg-[#781621]'
+                : 'bg-[#8a6a00]';
+          const accentText =
+            phase.number === 1
+              ? 'text-[#002fa7]'
+              : phase.number === 2
+                ? 'text-[#781621]'
+                : 'text-[#8a6a00]';
+          const headerBg =
+            phase.number === 1
+              ? 'from-[#002fa7] to-[#3654c8]'
+              : phase.number === 2
+                ? 'from-[#781621] to-[#a02030]'
+                : 'from-[#8a6a00] to-[#b38a00]';
+          return (
+            <div
+              key={phase.number}
+              className={`overflow-hidden rounded-xl border ${accentBorder} bg-white pw-shadow-soft`}
+            >
+              {/* Phase header */}
+              <div className={`bg-gradient-to-r ${headerBg} px-6 py-4 text-white`}>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-[16px] font-bold">
+                    {phase.number}
+                  </span>
+                  <div>
+                    <h3 className="text-[16px] font-bold">{phase.title}</h3>
+                    <p className="text-[12px] text-white/70">{phase.weekRange} · {phase.goal}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6 p-6">
+                {/* 每日任务 */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">checklist</span>
+                    每日任务
+                  </p>
+                  <div className="space-y-3">
+                    {phase.dailyTasks.map((task, ti) => (
+                      <div
+                        key={ti}
+                        className="grid grid-cols-[180px_1fr] gap-4 rounded-lg border border-[#eef1f6] bg-[#f8faff] p-3"
+                      >
+                        <div>
+                          <p className={`text-[11px] font-bold ${accentText}`}>{task.day}</p>
+                          <p className="text-[10px] text-[#9ca3af]">{task.duration}</p>
+                        </div>
+                        <div>
+                          <p className="text-[13px] font-semibold text-[#111827]">{task.title}</p>
+                          <p className="mt-0.5 text-[12px] leading-relaxed text-[#6b7280]">{task.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 里程碑 */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">flag</span>
+                    里程碑
+                  </p>
+                  <div className="space-y-3">
+                    {phase.milestones.map((m, mi) => (
+                      <div key={mi} className="rounded-lg border border-[#eef1f6] bg-[#f9fafb] p-3">
+                        <div className="flex items-start gap-3">
+                          <span className={`mt-0.5 shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold ${accentText} border-current/30 bg-white`}>
+                            {m.week}
+                          </span>
+                          <div>
+                            <p className="text-[13px] font-semibold text-[#111827]">{m.goal}</p>
+                            {m.criteria && (
+                              <p className="mt-0.5 text-[12px] text-[#6b7280]">验收：{m.criteria}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 内容计划 */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">edit_calendar</span>
+                    内容计划
+                  </p>
+                  <div className="rounded-lg border border-[#eef1f6] bg-[#f8faff] p-4">
+                    <div className="mb-3 flex flex-wrap gap-4 text-[12px]">
+                      <span className="text-[#6b7280]">
+                        每周发布：<span className={`font-bold ${accentText}`}>{phase.contentPlan.frequency}</span>
+                      </span>
+                      <span className="text-[#6b7280]">
+                        最佳时间：<span className="font-semibold text-[#374151]">{phase.contentPlan.bestTime}</span>
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      {phase.contentPlan.categories.map((cat, ci) => (
+                        <div
+                          key={ci}
+                          className={`rounded-lg border p-2.5 text-[12px] ${ci % 3 === 0 ? 'border-[#dbeafe] bg-[#eff4ff]' : ci % 3 === 1 ? 'border-[#fde68a] bg-[#fefce8]' : 'border-[#fecaca] bg-[#fff8f8]'}`}
+                        >
+                          <span className="font-semibold text-[#111827]">{cat.name}</span>
+                          <span className="text-[#6b7280]"> — {cat.desc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* KPI */}
+                <div>
+                  <p className={`mb-3 flex items-center gap-1.5 text-[13px] font-bold ${accentText}`}>
+                    <span className="material-symbols-outlined text-[16px]">bar_chart</span>
+                    KPI 指标
+                  </p>
+                  <div className={`grid gap-3 ${phase.kpis.length > 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
+                    {phase.kpis.map((kpi, ki) => (
+                      <div
+                        key={ki}
+                        className="rounded-lg border border-[#eef1f6] bg-[#f9fafb] p-3"
+                      >
+                        <p className="text-[11px] text-[#9ca3af]">{kpi.name}</p>
+                        <p className={`text-[22px] font-bold leading-tight ${accentText}`}>{kpi.target}</p>
+                        <div className="mt-1 flex items-center gap-1">
+                          <span className={`h-1.5 w-1.5 rounded-full ${accentBg}`} />
+                          <p className="text-[10px] text-[#9ca3af]">基准：{kpi.baseline}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* ── 执行任务序列 table ──────────────────────────────── */}
+      <div className="mb-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
+        {/* 渐变蓝 header */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
+              <span className="material-symbols-outlined text-[20px]">format_list_numbered</span>
+            </span>
+            <div>
+              <h3 className="text-[16px] font-bold">执行任务序列</h3>
+              <p className="text-[11px] text-[#b8c4ff]">日程表 · 全周期 {allScheduleItems.length} 项核心动作</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[12px] font-semibold text-white">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#F6D300]" />
+            执行中
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[14px]">
+            <thead>
+              <tr className="border-b border-[#eef1f6] bg-[#f8faff]">
+                <th className="w-24 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  周期
+                </th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  核心动作
+                </th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  量化产出
+                </th>
+                <th className="w-32 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  状态
+                </th>
+                <th className="w-20 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#6b7280]">
+                  验收
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-[#374151]">
+              {allScheduleItems.map((item, idx) => (
+                <tr
+                  key={`${item.time}-${idx}`}
+                  className={`border-t border-[#f3f4f6] transition-colors hover:bg-[#f8faff] ${idx % 2 === 1 ? 'bg-[#fafbff]' : ''}`}
+                >
+                  <td className="px-6 py-4 text-[12px] font-bold text-[#002fa7]">
+                    {`D-${String(idx + 1).padStart(2, '0')}`}
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-[#111827]">{item.title}</td>
+                  <td className="px-6 py-4 text-[#6b7280]">{item.desc.slice(0, 60)}…</td>
+                  <td className="px-6 py-4">
+                    <StatusBadge status={getStatus(idx)} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      type="button"
+                      className="flex h-6 w-6 items-center justify-center rounded-md border border-[#e5e7eb] transition-colors hover:bg-[#002fa7] hover:text-white hover:border-[#002fa7]"
+                      aria-label="验收"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">check</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex justify-end border-t border-[#eef1f6] bg-[#f8faff] px-6 py-3">
+          <button
+            type="button"
+            className="text-[13px] font-semibold text-[#002fa7] hover:underline"
+          >
+            查看完整周期 →
+          </button>
+        </div>
+      </div>
+
+      {/* ── 避坑预警 + 成功标准 ────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* 避坑预警 · 勃艮第/黄 配色 */}
+        <section className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+          <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold text-[#111827]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
+              <span className="material-symbols-outlined text-[20px]">warning</span>
+            </span>
+            避坑预警
+          </h3>
+          <div className="space-y-4">
+            {generated.warnings.map((w, wi) => (
+              <div
+                key={w.signal}
+                className={`rounded-xl border p-4 ${wi % 2 === 0 ? 'border-[#e8c4c8] bg-gradient-to-r from-[#fff8f8] to-white' : 'border-[#F3E08A] bg-gradient-to-r from-[#FEFCE0] to-white'}`}
+              >
+                <div className="mb-1 flex items-start gap-2">
+                  <span className={`material-symbols-outlined mt-0.5 shrink-0 text-[16px] ${wi % 2 === 0 ? 'text-[#781621]' : 'text-[#8A6A00]'}`}>
+                    error_outline
+                  </span>
+                  <span className="text-[13px] font-bold text-[#111827]">{w.signal}</span>
+                </div>
+                <p className="mb-1 pl-6 text-[12px] text-[#6b7280]">{w.meaning}</p>
+                <p className="pl-6 text-[12px] text-[#374151]">
+                  <span className="font-semibold text-[#10b981]">方案：</span>
+                  {w.solution}
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
-      )}
-    </main>
+
+        {/* 成功标准 · 蓝/绿配色 */}
+        <section className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+          <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold text-[#111827]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#10b981]/10 text-[#10b981]">
+              <span className="material-symbols-outlined text-[20px]">check_circle</span>
+            </span>
+            成功标准
+          </h3>
+          <div className="space-y-4">
+            {generated.successCriteria.map((sc, si) => (
+              <div
+                key={sc.period}
+                className={`flex items-start gap-3 rounded-xl border p-4 ${si === 0 ? 'border-[#dbeafe] bg-gradient-to-r from-[#eff4ff] to-white' : 'border-[#d1fae5] bg-gradient-to-r from-[#f0fdf4] to-white'}`}
+              >
+                <span className={`mt-0.5 shrink-0 rounded-lg border px-2 py-0.5 text-[11px] font-bold ${si === 0 ? 'border-[#bfdbfe] bg-white text-[#002fa7]' : 'border-[#6ee7b7] bg-white text-[#10b981]'}`}>
+                  {sc.period}
+                </span>
+                <p className="text-[13px] text-[#374151]">{sc.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* ── Footer actions ──────────────────────────────────── */}
+      <div className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div className="flex flex-row items-center justify-between gap-6">
+          {/* Feedback */}
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] font-medium text-[#6b7280]">这个结果对你有帮助吗？</span>
+            <button
+              type="button"
+              onClick={handleFeedbackUp}
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#f0fdf4] hover:text-[#10b981] hover:border-[#10b981]"
+              aria-label="有帮助"
+            >
+              <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleFeedbackDown}
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#fff8f8] hover:text-[#781621] hover:border-[#781621]"
+              aria-label="没帮助"
+            >
+              <span className="material-symbols-outlined text-[18px]">thumb_down</span>
+            </button>
+          </div>
+
+          {/* Next step */}
+          <button
+            type="button"
+            onClick={handleNextStep}
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-2.5 text-[14px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          >
+            继续下一步：变现路径
+            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </PioneerLayout>
   );
 }
+
+// Suppress unused import — Step4Phase type is used in Step4Result.phases
+void (0 as unknown as Step4Phase);

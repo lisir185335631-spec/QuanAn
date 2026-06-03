@@ -119,14 +119,30 @@ export const ipAccountsRouter = router({
       });
     }),
 
-  /** Updates the currently active ip_account */
-  update: protectedProcedure
-    .input(updateIpAccountInput)
+  /**
+   * Updates an ip_account by id (defaults to active account if accountId omitted).
+   * globalProcedure: verifies userId ownership manually (RLS bypassed) so the
+   * /accounts management page can edit any of the user's accounts, not just the active one.
+   */
+  update: globalProcedure
+    .input(updateIpAccountInput.extend({ accountId: z.number().int().positive().optional() }))
     .mutation(async ({ ctx, input }) => {
-      const { prisma, activeAccountId } = ctx;
-      return prisma.ipAccount.update({
-        where: { id: activeAccountId! },
-        data: input,
+      const { prisma, user, activeAccountId } = ctx;
+      if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+      const { accountId, ...fields } = input;
+      const targetId = accountId ?? activeAccountId;
+      if (!targetId) throw new TRPCError({ code: 'BAD_REQUEST', message: 'no_account_id' });
+      if (Object.keys(fields).length === 0) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'no_fields_to_update' });
+      }
+      // Atomic ownership: updateMany only touches the row when userId matches (no TOCTOU window).
+      const { count } = await prisma.ipAccount.updateMany({
+        where: { id: targetId, userId: user.id },
+        data: fields,
+      });
+      if (count === 0) throw new TRPCError({ code: 'NOT_FOUND', message: 'account_not_found' });
+      return prisma.ipAccount.findFirst({
+        where: { id: targetId, userId: user.id },
         select: ACCOUNT_SELECT,
       });
     }),

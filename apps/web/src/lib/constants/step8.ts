@@ -186,3 +186,21 @@ export const STEP8_OPTIMIZE_OUTPUT_LABELS_2 = [
 ] as const;
 
 export type Step8OptimizeLabel = (typeof STEP8_OPTIMIZE_OUTPUT_LABELS_2)[number];
+
+// ─── PRD-29.12 · 真实字面 ──────────────────────────────────
+export const STEP8_BREADCRUMB_REAL = 'STEP 08 › 直播策划' as const;
+export const STEP8_H1_REAL = '直播策划' as const;
+export const STEP8_OUTPUT_H2_REAL = '直播方案（共3套）' as const;
+export const STEP8_SUBTITLE_REAL = '当前行业：{industry}。AI将生成完整的直播方案，包含详细话术、引流策略、互动设计，并支持AI优化直播脚本。' as const;
+export const STEP8_FORM_TITLE = '生成直播方案' as const;
+export const STEP8_CTA_GENERATE_REAL = '生成直播方案' as const;
+export const STEP8_CTA_BULK_REGENERATE = '重新生成' as const;
+export const STEP8_CTA_BULK_OPTIMIZE = '智能优化' as const;
+export const STEP8_CTA_BULK_COPY = '复制全部' as const;
+export const STEP8_CTA_COPY_PLAN = '复制此方案' as const;
+export const STEP8_CTA_AI_OPTIMIZE = 'AI优化话术' as const;
+export const STEP8_AI_OPTIMIZE_PLACEHOLDER = '粘贴你的直播话术脚本（至少10个字），AI将深度优化话术表达、互动设计和转化逻辑...' as const;
+export const STEP8_AI_OPTIMIZE_GOAL_PLACEHOLDER = '优化目标（可选），如：提升互动率、增强转化、更有感染力...' as const;
+export const STEP8_FOOTER_COMPLETION_TITLE = '直播策划 已完成 🎉' as const;
+export const STEP8_FOOTER_COMPLETION_DESC = '恭喜你完成了全部流程！现在可以查看完整的IP方案汇总。' as const;
+export const STEP8_FOOTER_BUTTON_VIEW_IP = '查看我的IP方案 ›' as const;

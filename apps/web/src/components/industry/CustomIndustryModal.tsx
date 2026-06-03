@@ -20,27 +20,52 @@ import {
 
 interface CustomIndustryModalProps {
   onConfirm: (value: string) => void;
+  /** controlled 模式: 由父组件管理 open state */
+  open?: boolean;
+  /** controlled 模式: open state 变化回调 */
+  onOpenChange?: (open: boolean) => void;
+  /** 隐藏内置 trigger btn(controlled 模式下设 true) */
+  hideTrigger?: boolean;
 }
 
-export function CustomIndustryModal({ onConfirm }: CustomIndustryModalProps) {
-  const [open, setOpen] = useState(false);
+export function CustomIndustryModal({
+  onConfirm,
+  open: openProp,
+  onOpenChange,
+  hideTrigger = false,
+}: CustomIndustryModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [input, setInput] = useState('');
+
+  // controlled 模式优先; 否则自管 state
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : internalOpen;
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+  }
 
   function handleConfirm() {
     const trimmed = input.trim();
     if (!trimmed) return;
     onConfirm(trimmed);
     setInput('');
-    setOpen(false);
+    handleOpenChange(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="link" data-testid="custom-industry-trigger">
-          {STEP1_CUSTOM_TRIGGER_LABEL}
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button variant="link" data-testid="custom-industry-trigger">
+            {STEP1_CUSTOM_TRIGGER_LABEL}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="glass-card">
         <DialogHeader>
           <DialogTitle className="font-display">{STEP1_CUSTOM_MODAL_TITLE}</DialogTitle>
@@ -56,7 +81,7 @@ export function CustomIndustryModal({ onConfirm }: CustomIndustryModalProps) {
           data-testid="custom-industry-input"
         />
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={() => handleOpenChange(false)}>
             {STEP1_CUSTOM_MODAL_CANCEL}
           </Button>
           <Button

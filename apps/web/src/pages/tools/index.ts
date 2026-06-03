@@ -2,7 +2,6 @@ export { default as AcquisitionVideo } from './AcquisitionVideo';
 export { default as AiVideo } from './AiVideo';
 export { default as Analysis } from './Analysis';
 export { default as BoomGenerate } from './BoomGenerate';
-export { default as Copywriting } from './Copywriting';
 export { default as DeepLearning } from './DeepLearning';
 export { default as Generate } from './Generate';
 export { default as Knowledge } from './Knowledge';

@@ -1760,6 +1760,366 @@ const _shadowAdminRouter = _t.router({
         }),
       ),
   }),
+  diagnosis: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            accountId?: number;
+            minScore?: number;
+            maxScore?: number;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            accountId: number;
+            overallScore: number;
+            inferredStage: string;
+            topPriority: string;
+            agentId: string;
+            isFallback: boolean;
+            modelUsed: string | null;
+            tokensUsed: number | null;
+            createdAt: string; // tRPC JSON 传输为 ISO string，非 Date 对象
+          }>;
+          total: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], total: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query(
+        (): {
+          id: number;
+          accountId: number;
+          overallScore: number;
+          inferredStage: string;
+          topPriority: string;
+          recommendedSteps: string[];
+          agentId: string;
+          isFallback: boolean;
+          modelUsed: string | null;
+          tokensUsed: number | null;
+          durationMs: number | null;
+          traceId: string | null;
+          createdAt: Date;
+          dimensions: unknown;
+          answers: unknown;
+        } => ({
+          id: 0, accountId: 0, overallScore: 0, inferredStage: '', topPriority: '',
+          recommendedSteps: [], agentId: '', isFallback: false, modelUsed: null,
+          tokensUsed: null, durationMs: null, traceId: null, createdAt: new Date(),
+          dimensions: null, answers: null,
+        }),
+      ),
+    kpiStats: _t.procedure.query(
+      (): {
+        total: number;
+        recentCount: number;
+        avgScore: number;
+        fallbackRate: number;
+      } => ({ total: 0, recentCount: 0, avgScore: 0, fallbackRate: 0 }),
+    ),
+  }),
+  stepData: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            accountId?: number;
+            stepKey?: string;
+            status?: string;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            accountId: number;
+            stepKey: string;
+            status: string;
+            agentId: string;
+            isFallback: boolean;
+            modelUsed: string | null;
+            tokensUsed: number | null;
+            durationMs: number | null;
+            updatedAt: string; // tRPC JSON 传输为 ISO string，非 Date 对象
+          }>;
+          total: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], total: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query(
+        (): {
+          id: number;
+          accountId: number;
+          stepKey: string;
+          status: string;
+          agentId: string;
+          isFallback: boolean;
+          modelUsed: string | null;
+          tokensUsed: number | null;
+          durationMs: number | null;
+          traceId: string | null;
+          inputs: unknown;
+          result: unknown;
+          createdAt: string;
+          updatedAt: string;
+        } => ({
+          id: 0, accountId: 0, stepKey: '', status: '', agentId: '', isFallback: false,
+          modelUsed: null, tokensUsed: null, durationMs: null, traceId: null,
+          inputs: null, result: null, createdAt: '', updatedAt: '',
+        }),
+      ),
+    kpiStats: _t.procedure.query(
+      (): {
+        total: number;
+        recentCount: number;
+        fallbackRate: number;
+        avgTokens: number;
+        stepKeyDistribution: Record<string, number>;
+      } => ({ total: 0, recentCount: 0, fallbackRate: 0, avgTokens: 0, stepKeyDistribution: {} }),
+    ),
+  }),
+  history: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            accountId?: number;
+            agentId?: string;
+            scriptType?: string;
+            sourceType?: string;
+            isFallback?: boolean;
+            dateFrom?: string;
+            dateTo?: string;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            accountId: number;
+            agentId: string;
+            agentMode: string | null;
+            sourceType: string;
+            inputSummary: string;
+            contentType: string;
+            scriptType: string | null;
+            elements: string[];
+            isFallback: boolean;
+            traceId: string | null;
+            createdAt: string; // tRPC JSON 传输为 ISO string
+          }>;
+          total: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], total: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query(
+        (): {
+          id: number;
+          accountId: number;
+          agentId: string;
+          agentMode: string | null;
+          sourceType: string;
+          inputSummary: string;
+          content: string;
+          contentType: string;
+          scriptType: string | null;
+          elements: string[];
+          isFallback: boolean;
+          traceId: string | null;
+          createdAt: string;
+          updatedAt: string;
+        } => ({
+          id: 0, accountId: 0, agentId: '', agentMode: null, sourceType: '',
+          inputSummary: '', content: '', contentType: 'markdown', scriptType: null,
+          elements: [], isFallback: false, traceId: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+        }),
+      ),
+    kpiStats: _t.procedure.query(
+      (): {
+        total: number;
+        recentCount: number;
+        fallbackRate: number;
+        agentIdDistribution: Record<string, number>;
+        scriptTypeDistribution: Record<string, number>;
+      } => ({ total: 0, recentCount: 0, fallbackRate: 0, agentIdDistribution: {}, scriptTypeDistribution: {} }),
+    ),
+  }),
+  topics: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            accountId?: number;
+            sourceType?: string;
+            category?: string;
+            platform?: string;
+            dateFrom?: string;
+            dateTo?: string;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            accountId: number;
+            title: string;
+            category: string | null;
+            platform: string | null;
+            sourceType: string;
+            createdAt: string; // tRPC JSON 传输为 ISO string
+          }>;
+          total: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], total: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query(
+        (): {
+          id: number;
+          accountId: number;
+          title: string;
+          hook: string;
+          structure: string | null;
+          formula: string | null;
+          category: string | null;
+          presentStyle: string | null;
+          platform: string | null;
+          difficulty: string | null;
+          viralPotential: string | null;
+          logicType: string | null;
+          sourceType: string;
+          sourceTrendingId: number | null;
+          userTags: string[];
+          isUsed: boolean;
+          usedAt: string | null;
+          generatedHistoryId: number | null;
+          traceId: string | null;
+          createdAt: string;
+        } => ({
+          id: 0,
+          accountId: 0,
+          title: '',
+          hook: '',
+          structure: null,
+          formula: null,
+          category: null,
+          presentStyle: null,
+          platform: null,
+          difficulty: null,
+          viralPotential: null,
+          logicType: null,
+          sourceType: '',
+          sourceTrendingId: null,
+          userTags: [],
+          isUsed: false,
+          usedAt: null,
+          generatedHistoryId: null,
+          traceId: null,
+          createdAt: new Date().toISOString(),
+        }),
+      ),
+    kpiStats: _t.procedure.query(
+      (): {
+        total: number;
+        recentCount: number;
+        sourceTypeDistribution: Record<string, number>;
+        categoryDistribution: Record<string, number>;
+      } => ({ total: 0, recentCount: 0, sourceTypeDistribution: {}, categoryDistribution: {} }),
+    ),
+  }),
+  dailyTasks: _t.router({
+    list: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            page?: number;
+            pageSize?: number;
+            accountId?: number;
+            agentId?: string;
+            isFallback?: boolean;
+            dateFrom?: string;
+            dateTo?: string;
+          },
+      )
+      .query(
+        (): {
+          items: Array<{
+            id: number;
+            accountId: number;
+            taskDate: string; // tRPC JSON 传输为 ISO string
+            completedCount: number;
+            totalCount: number;
+            agentId: string;
+            modelUsed: string | null;
+            isFallback: boolean;
+            createdAt: string; // tRPC JSON 传输为 ISO string
+          }>;
+          total: number;
+          page: number;
+          pageSize: number;
+        } => ({ items: [], total: 0, page: 1, pageSize: 20 }),
+      ),
+    detail: _t.procedure
+      .input((x: unknown) => x as { id: number })
+      .query(
+        (): {
+          id: number;
+          accountId: number;
+          taskDate: string;
+          tasks: unknown;
+          completedCount: number;
+          totalCount: number;
+          agentId: string;
+          modelUsed: string | null;
+          isFallback: boolean;
+          createdAt: string;
+          updatedAt: string;
+        } => ({
+          id: 0,
+          accountId: 0,
+          taskDate: new Date().toISOString(),
+          tasks: null,
+          completedCount: 0,
+          totalCount: 0,
+          agentId: '',
+          modelUsed: null,
+          isFallback: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }),
+      ),
+    kpiStats: _t.procedure.query(
+      (): {
+        total: number;
+        recentCount: number;
+        fallbackRate: number;
+        avgCompletionRate: number;
+        agentIdDistribution: Record<string, number>;
+      } => ({ total: 0, recentCount: 0, fallbackRate: 0, avgCompletionRate: 0, agentIdDistribution: {} }),
+    ),
+  }),
   featureFlags: _t.router({
     getKpiStats: _t.procedure.query(
       (): { totalFlags: number; enabledFlags: number; recentChanges: number; emergencyActivations: number } => ({

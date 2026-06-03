@@ -206,9 +206,19 @@ export const stepDataRouter = router({
       }
 
       // US-017: call TopicAgent for step5 via save (sync · 允许 e2e 走 UI form 路径)
-      if (input.stepKey === 'step5') {
+      // step5_<category> keys each write to their own row → no race condition across 5 categories
+      if (input.stepKey === 'step5' || input.stepKey.startsWith('step5_')) {
         const inputs = input.inputs;
-        const category = ((inputs['lastCategory'] as string) || 'traffic') as typeof TOPIC_CATEGORIES[number];
+        // Resolve category: prefer stepKey suffix (step5_traffic → traffic),
+        // fall back to inputs.lastCategory, then default 'traffic'
+        const categoryFromKey = input.stepKey.startsWith('step5_')
+          ? input.stepKey.slice('step5_'.length)
+          : undefined;
+        const category = (
+          categoryFromKey ||
+          (inputs['lastCategory'] as string) ||
+          'traffic'
+        ) as typeof TOPIC_CATEGORIES[number];
         const agentRes = await topicAgent.execute({
           accountId: activeAccountId!,
           userInput: { category, ...inputs },
@@ -271,6 +281,9 @@ export const stepDataRouter = router({
       if (input.stepKey === 'step8') {
         const agentRes = await livestreamAgent.execute({
           accountId: activeAccountId!,
+          // Pass mode so BaseSpecialist fallback picks the right template key
+          // (fallbackTemplate['generate_plan'] vs ['default'])
+          mode: (input.inputs['sub_function'] as string) ?? 'generate_plan',
           userInput: input.inputs as Parameters<typeof livestreamAgent.execute>[0]['userInput'],
           traceId: traceId ?? undefined,
           stepKey: input.stepKey,

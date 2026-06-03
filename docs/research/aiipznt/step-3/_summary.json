@@ -1,0 +1,108 @@
+{
+  "scrapedAt": "2026-05-23T05:36:48.347Z",
+  "url": "https://aiipznt.vip/step/3",
+  "viewports": [
+    {
+      "name": "desktop-1440",
+      "ok": true,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "name": "tablet-768",
+      "ok": true,
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "mobile-390",
+      "ok": true,
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "css": {
+    "main": "sections/css-main.json",
+    "h1": "sections/css-h1.json",
+    "form-container": "sections/css-form-container.json",
+    "first-textarea": "sections/css-first-textarea.json"
+  },
+  "content": {
+    "h1": [
+      "账号包装方案"
+    ],
+    "h2": [],
+    "h3": [
+      "账号包装方案",
+      "视频参考案例",
+      "昵称推荐",
+      "头像设计方案",
+      "背景图设计方案",
+      "简介文案方案",
+      "整体包装策略"
+    ],
+    "h4": [],
+    "buttons": [
+      "创作",
+      "策划",
+      "智能",
+      "更多",
+      "赵语AI",
+      "📱 抖音",
+      "📕 小红书",
+      "📺 视频号",
+      "🎬 快手",
+      "📺 B站",
+      "生成账号包装方案",
+      "重新生成",
+      "智能优化",
+      "一键重新生成",
+      "复制全部",
+      "生成参考图",
+      "生成参考图",
+      "复制",
+      "复制",
+      "复制",
+      "复制",
+      "复制",
+      "复制"
+    ],
+    "inputs": [
+      {
+        "placeholder": "你想吸引什么样的粉丝？",
+        "type": "text",
+        "name": ""
+      },
+      {
+        "placeholder": "新账号/已有账号的粉丝量等",
+        "type": "text",
+        "name": ""
+      }
+    ],
+    "textareas": [
+      {
+        "placeholder": "详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。\n\n示例：我是一名有10年经验的美容师，擅长皮肤管理和抗衰项目...",
+        "name": "",
+        "rows": 5
+      }
+    ],
+    "totalEls": 606
+  },
+  "postSubmit": {
+    "h3": [],
+    "buttons": [
+      "创作",
+      "策划",
+      "智能",
+      "更多",
+      "赵语AI",
+      "📱 抖音",
+      "📕 小红书",
+      "📺 视频号",
+      "🎬 快手",
+      "📺 B站",
+      "深度分析中..."
+    ],
+    "totalEls": 183
+  }
+}

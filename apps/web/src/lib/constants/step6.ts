@@ -85,3 +85,22 @@ export const STEP6_OUTPUT_MODULES_3: readonly Step6OutputModule[] = [
   { id: 'shooting_plan', h3Label: '2. 拍摄方案' },
   { id: 'teleprompter',  h3Label: '3. 口播提词器' },
 ] as const;
+
+// ─── PRD-29.11 · 真实字面 ──────────────────────────────────
+export const STEP6_BREADCRUMB_REAL = 'STEP 06 › 生成拍摄计划' as const;
+export const STEP6_H1_REAL = '拍摄计划' as const;
+export const STEP6_OUTPUT_H2 = '完整拍摄计划' as const;
+export const STEP6_SUBTITLE_REAL = '输入你的文案内容，AI将自动生成完整的分镜脚本、拍摄方案和口播提词器。' as const;
+export const STEP6_BUTTON_GENERATE_REAL = '生成拍摄计划' as const;
+export const STEP6_FORM_CONTENT_LABEL = '文案内容' as const;
+export const STEP6_CTA_OPTIMIZE = '智能优化' as const;
+export const STEP6_CTA_COPY = '复制全部' as const;
+export const STEP6_VOICEOVER_USABLE_CHIP = '可直接使用' as const;
+
+// 3 H3 label
+export const STEP6_H3_STORYBOARD = '分镜脚本' as const;
+export const STEP6_H3_PRODUCTION = '拍摄方案' as const;
+export const STEP6_H3_VOICEOVER = '口播提词器' as const;
+
+// production plan field keys(英文小写显示)
+export const STEP6_PRODUCTION_KEYS = ['equipment', 'location', 'lighting', 'props', 'wardrobe', 'totalDuration'] as const;

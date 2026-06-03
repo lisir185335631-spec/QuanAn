@@ -1,6 +1,6 @@
 # QuanAn · 架构决策记录(ADR.md)
 
-> **版本** · v0.2(2026-05-06 创建 · 2026-05-07 v0.2 修订:加 ADR-019 monorepo / ADR-020 双 daemon / ADR-021 admin 独立部署)
+> **版本** · v0.3(2026-05-06 创建 · 2026-05-07 v0.2 修订:加 ADR-019 monorepo / ADR-020 双 daemon / ADR-021 admin 独立部署 · 2026-05-23 v0.3 修订:加 ADR-022 OKLCH token 切换路 α)
 > **角色** · 把 [AGENTS.md §3](AGENTS.md) 的 18 条 Locked Decisions 展开成完整决策记录
 > **格式** · 每条 ADR 含 `Status / Context / Options / Decision / Consequences / Implementation / References`
 > **配套** · [ARCHITECTURE.md](ARCHITECTURE.md) · [AGENTS.md](AGENTS.md) · [DATA-MODEL.md](DATA-MODEL.md) · [PROMPTS.md](PROMPTS.md)
@@ -32,6 +32,7 @@
 | ADR-019 | **前后端分离 + monorepo workspace**(2026-05-07 v0.2 新增 · 对应 REVIEW P0-3 + P1-7) | — | 工程 | Accepted |
 | ADR-020 | **Approval Gates 高风险操作两步审批**(2026-05-07 v0.2 新增 · 对应 REVIEW P1-4) | — | 安全 | Accepted |
 | ADR-021 | **管理后台独立 first-class 子系统**(2026-05-07 v0.2 新增 · 对应 REVIEW P0-1 根因 + 硬约束#2 #3) | — | 拓扑 | Accepted |
+| ADR-022 | **globals.css 全量 OKLCH token 切换路 α**(2026-05-23 · D4=B 推翻 · PRD-29 US-001a · commit 4dc30f2 · **实施完成** · PRD-29.6 button wiring 验证) | PRD-29/29.6 | 视觉 token | Accepted |
 
 ---
 
@@ -1777,3 +1778,75 @@ REVIEW 指出三个根因:
 - ADR-019(monorepo 是本 ADR 的工程基础)
 - ADR-020(Approval Gates 是本 ADR 的安全闸门)
 - 知识库 [02 多 Agent 协作架构 §子系统拆分](../Ai_Agent/knowledge-base/02-multi-agent-collaboration-architecture/) · [reference/多租户SaaS化架构指南](../Ai_Agent/knowledge-base/reference-materials/多租户SaaS化架构指南.md)
+
+---
+
+## ADR-022 · globals.css 全量 OKLCH token 切换路 α(D4=B 推翻)
+
+> **Status** · Accepted · 2026-05-22 · **实施完成 2026-05-23 · commit 4dc30f2 · visual diff 8.03%(form-state vs result-state · 预期内)**
+> **PRD-29.6 补注** · 2026-05-24 · /step/3 全 button wiring 完成 · admin LLM Config 接入 · OKLCH token 系统在 button 交互层得到验证 · 全 5 e2e 用例通过
+> **关联 PRD** · PRD-29 US-001a(Foundation · globals.css)
+> **范畴** · 视觉 token 系统(CSS Custom Properties)
+> **派生自** · PRD-29 D4=B 决策 · 路 α vs 路 β 权衡
+
+### Context
+
+PRD-29 目标是 1:1 复刻 aiipznt /step/3 页面，前提条件是把 QuanAn 的视觉 token 系统从 HSL 紫色系切换到 aiipznt 的金色 OKLCH 系。
+
+D4=B 决策前评估了两条路径：
+- **路 α** · 一次性全量替换 `apps/web/src/styles/globals.css` 的 168 CSS Custom Properties → aiipznt OKLCH 值 · 业务组件代码不动 · 所有 `var(--primary)` 等 token 用法自动跟切金色
+- **路 β** · 保持 globals.css 不动 · 在每个业务组件 className 级别手工从 `text-violet-X` 改为 `text-amber-X / text-yellow-X`
+
+路 β 在 PRD-21~27 已大量实践 · 存在以下问题：
+1. **全局漏改风险** · 组件级改动 · 每次新增组件都要记得手工改 className · 容易漏
+2. **语义错误** · `text-amber-X / text-yellow-X` 是 Tailwind 具名色 · 不是 design token · 违反 AGENTS.md R-xxx 约束
+3. **维护成本高** · PRD-30~35 共 6 个 page · 路 β 需对每个新组件重复手工改
+4. **视觉一致性** · 路 α token 级切换 · 100% 组件自动跟色
+
+### Options
+
+| 方案 | 改动点 | 一致性 | 维护成本 | 回滚风险 |
+|---|---|:-:|:-:|:-:|
+| 路 α · globals.css 全量 OKLCH(本案) | 1 个文件 · 168 vars | 100%(自动) | 低(一次搞定) | 低(单文件 revert) |
+| 路 β · 组件级 className 修改 | N 个组件 · N×M classNames | ~85%(容易漏) | 高(每组件都改) | 高(散落各处) |
+| 路 γ · Tailwind config primary color | tailwind.config.ts | 100% | 低 | 低 |
+
+> 路 γ 被排除 · 原因: aiipznt 直接用 CSS Custom Properties OKLCH 语法 · Tailwind v4 config 映射方式不同 · 且 168 vars 中大量是非 Tailwind 内部变量(shadcn/ui tokens 等)· 直接替换 CSS 层更精确
+
+### Decision
+
+**选路 α**: 一次性全量替换 globals.css 168 CSS Custom Properties。
+
+核心理由:
+1. **最小改动面** · 1 文件 1 commit · 覆盖 100% 组件 · 符合"单点变更"原则
+2. **自动一致性** · 所有 `var(--primary) / text-primary / bg-primary` 全部自动跟切 · 0 漏改
+3. **PRD-30~35 收益** · Foundation 一次 · 6 个 page 全受益 · 无额外成本
+4. **回滚安全** · 单文件 · `git revert` 一步搞定 · 零副作用
+5. **aiipznt 1:1** · aiipznt 自身就是以 CSS Custom Properties 定义全套 token · 路 α 是原版最近路径
+
+### Consequences
+
+| 类别 | 影响 |
+|---|---|
+| ✅ 视觉一致性 100% | 所有 `var(--primary)` 等 token 自动跟切金色 OKLCH · 0 组件级漏改 |
+| ✅ PRD-30~35 零成本 | Foundation 一次 · 后续 6 个 page 直接复用金色 token · 无额外 token 修改 |
+| ✅ 跨 PRD 零回归 | US-001c verify-prd-27(33/33) + verify-prd-28(43/43) 全 pass · 1 pre-existing visual issue(prd24-evolution 非 CSS 变更) |
+| ✅ 单文件 revert | 路 α 切换风险极低 · 任何时刻 git revert 4dc30f2 即可回退 |
+| ⚠️ .dark block 同步 | aiipznt 是 dark-only 站 · :root 和 .dark 必须保持完全相同 · 任何后续改 globals.css 必须双改 |
+| ⚠️ tw 内部 vars 保留 | 168 vars 含 --tw-* / --text-* 等 Tailwind v4 内部变量 · 在 Tailwind v3 项目里全放 :root 是安全的 · 但升级 Tailwind v4 时需 review |
+
+### Implementation Notes
+
+- 源数据: `docs/research/aiipznt/step-3/deeper/root-css-variables.json`(168 vars flat object) + `dark-css-variables.json`(nested · 值相同)
+- 关键值: `--primary: oklch(82% .14 85)` / `--background: oklch(7% .005 75)` / `--foreground: oklch(92% .02 85)` / `--accent: oklch(72% .13 85)`
+- `.dark block` 与 `:root` 完全相同 · aiipznt dark-only · 不允许 `.dark` 留 HSL 紫色
+- 168 vars 分 4 组: design tokens / chart colors / sidebar colors / Tailwind utils
+- 实施 story: PRD-29 US-001a · `4dc30f2` · `apps/web/src/styles/globals.css`(351 insertions / 21 deletions)
+- visual diff: `scripts/diff-aiipznt-step-3-image.mjs` pixelmatch → 8.03%(form-state vs result-state · 预期内 · 非布局偏差)
+
+### References
+
+- [PRD-29 US-001a progress.txt entry](scripts/ralph/progress.txt)(2026-05-23 15:15)
+- [.agents/verification/prd-29-step-3-foundation.md](.agents/verification/prd-29-step-3-foundation.md) §0.3 AGENTS.md 对账
+- [.agents/retros/prd-29-vs-prd-28-retrospective.md](.agents/retros/prd-29-vs-prd-28-retrospective.md) §3.5 P-29-5 playbook
+- ADR-019(monorepo 基础)· ADR-021(admin 子系统 · 本 ADR 不影响 admin token)

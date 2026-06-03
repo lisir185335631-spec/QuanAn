@@ -118,3 +118,20 @@ export const STEP5_CATEGORIES_5: readonly Step5Category[] = [
 
 export const STEP5_TOPICS_PER_CAT = 20;
 export const STEP5_TOTAL_TOPICS = 100;
+
+// ─── PRD-29.14 · 真实字面 ──────────────────────────────────
+export const STEP5_BREADCRUMB_REAL = 'STEP 05 › 爆款选题库' as const;
+export const STEP5_H1_REAL = '爆款选题库' as const;
+export const STEP5_SUBTITLE_REAL_PREFIX = '输入你的行业和产品信息，还可以上传产品资料和人物介绍文档，AI将结合这些素材一次性生成' as const;
+export const STEP5_SUBTITLE_REAL_SUFFIX = '爆款选题（流量型/变现型/人设型/认知型/案例型），每类20个选题，共100个。' as const;
+export const STEP5_SUBTITLE_REAL_HIGHLIGHT = '5大类' as const;
+export const STEP5_FORM_INDUSTRY_LABEL = '你的行业' as const;
+export const STEP5_FORM_PRODUCT_LABEL = '你的产品/服务' as const;
+export const STEP5_UPLOAD_PRODUCT_TITLE = '上传产品资料' as const;
+export const STEP5_UPLOAD_PRODUCT_DESC = '产品介绍、卖点、价格体系、客户案例等' as const;
+export const STEP5_UPLOAD_CHARACTER_TITLE = '上传人物介绍与行业' as const;
+export const STEP5_UPLOAD_CHARACTER_DESC = '个人经历、行业背景、专业资质、从业故事等' as const;
+export const STEP5_UPLOAD_SUPPORT_HINT = '支持 PDF、Word、TXT、Markdown、CSV（最大20MB）' as const;
+export const STEP5_CTA_REGENERATE_ALL = '重新生成全部选题' as const;
+export const STEP5_CTA_OPTIMIZE = '智能优化' as const;
+export const STEP5_SEARCH_PLACEHOLDER = '搜索选题关键词...' as const;

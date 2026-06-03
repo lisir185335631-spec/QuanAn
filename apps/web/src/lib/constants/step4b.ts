@@ -166,3 +166,28 @@ export const STEP4B_STAGE_REVENUE_ESTIMATES = [
   '月收入1-5万元',
   '月收入5万元以上',
 ] as const;
+
+// ─── PRD-29.10 · 真实字面(根据 sally zhao /step/4b demo 截图)─────────
+// 旧 step4b 常量是 PRD-20 历史 schema · 跟实际 aiipznt 不符 · 保留 @deprecated
+// 实际 aiipznt sally /step/4b · form 4 字段 + 4 output sub-component
+
+// 顶部 breadcrumb + H1
+export const STEP4B_BREADCRUMB_REAL = 'STEP 04b › 变现路径规划' as const;
+export const STEP4B_H1_REAL = '变现路径' as const;
+export const STEP4B_OUTPUT_H2_REAL = '你的三阶梯变现路径' as const;
+export const STEP4B_SUBTITLE_REAL = '当前行业：{industry}。AI将为你规划三阶梯变现路径：0→90万、100万→1000万、1000万→1亿，每个阶梯有具体的产品设计、定价策略和成交流程。' as const;
+
+// CTA 字面
+export const STEP4B_BUTTON_GENERATE_REAL = '生成变现路径' as const;
+export const STEP4B_CTA_BULK_OPTIMIZE = '智能优化' as const;
+export const STEP4B_CTA_BULK_REGENERATE = '重新生成' as const;
+export const STEP4B_CTA_BULK_COPY = '复制全部' as const;
+
+// footer
+export const STEP4B_FOOTER_FEEDBACK_QUESTION = '这个结果对你有帮助吗？' as const;
+
+// form labels
+export const STEP4B_FORM_PRODUCT_LABEL = '产品/服务描述' as const;
+export const STEP4B_FORM_AUDIENCE_LABEL = '目标受众' as const;
+export const STEP4B_FORM_IP_LABEL = 'IP定位' as const;
+export const STEP4B_FORM_INCOME_LABEL = '当前收入水平' as const;

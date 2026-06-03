@@ -163,12 +163,29 @@ export abstract class BaseSpecialist<TIn, TOut> {
         traceId,
       };
     } catch (err) {
-      // US-015 AC-1: fallback path — only for LLM/schema errors, not input validation errors
-      const isFallbackable =
-        err instanceof SchemaValidationError ||
-        err instanceof LLMTimeoutError ||
-        (err instanceof Error && err.message?.includes('5xx')) ||
-        (err instanceof Error && err.message?.includes('API_KEY missing'));
+      // US-015 AC-1: fallback path — default fallbackable for all LLM/network/schema
+      // errors; only re-throw genuine programming errors (ZodError from input validation
+      // is caught at procedure layer, not here — those are non-recoverable by design).
+      //
+      // DEAD CODE FIX: the old heuristic `err.message?.includes('5xx')` and
+      // `err.message?.includes('API_KEY missing')` never matched real gateway errors
+      // like "401 {…}", "429 rate_limit_error", "529 overloaded", timeout/network
+      // failures, or SchemaValidationError — so isFallbackable was always false for
+      // real API errors → execute() threw → frontend showed "生成失败".
+      //
+      // New policy: ALL errors that escape invokeLLM() or outputSchema.safeParse()
+      // are fallbackable EXCEPT the rare programming/config bugs we explicitly list.
+      // Specifically, do NOT fall back for:
+      //   1. TypeError / ReferenceError — indicates a code bug, not a transient failure.
+      //   2. Errors thrown by _validateMode() (invalid mode string) — programming error.
+      // Everything else (HTTP 4xx/5xx, rate-limit, overload, abort, schema mismatch,
+      // network reset, JSON parse, etc.) → fallback gracefully.
+      const isNonRecoverableProgrammingError =
+        (err instanceof TypeError || err instanceof ReferenceError) &&
+        !(err instanceof SchemaValidationError) &&
+        !(err instanceof LLMTimeoutError);
+
+      const isFallbackable = !isNonRecoverableProgrammingError;
 
       if (!isFallbackable) throw err;
 

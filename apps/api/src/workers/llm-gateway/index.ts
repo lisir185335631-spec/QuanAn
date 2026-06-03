@@ -22,6 +22,7 @@ import OpenAI from 'openai';
 
 import type { ModelTier } from '@/agents/base/types';
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 
 import {
   buildAnthropicPayload,
@@ -84,18 +85,77 @@ const MODEL_BY_TIER = {
   balanced:    { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
 } as const satisfies Record<ModelTier, { primary: string; fallback: string }>;
 
+// ============== LLM Key Cache (AC-1, AC-3) ==============
+
+const LLM_KEY_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+interface LlmKeyCacheEntry {
+  value: string | undefined;
+  expiresAt: number;
+}
+
+const _llmKeyCache = new Map<'anthropic' | 'openai', LlmKeyCacheEntry>();
+
+const LLM_CONFIG_KEYS = {
+  anthropic: 'LLM_ANTHROPIC_API_KEY',
+  openai: 'LLM_OPENAI_API_KEY',
+} as const;
+
+const LLM_ENV_KEYS = {
+  anthropic: 'ANTHROPIC_API_KEY',
+  openai: 'OPENAI_API_KEY',
+} as const;
+
+/** Load LLM API key: SystemConfig DB first → fallback process.env (AC-1) */
+export async function loadLlmKey(
+  provider: 'anthropic' | 'openai',
+): Promise<string | undefined> {
+  const cached = _llmKeyCache.get(provider);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.value;
+  }
+
+  let dbValue: string | undefined;
+  try {
+    const config = await prisma.systemConfig.findUnique({
+      where: { configKey: LLM_CONFIG_KEYS[provider] },
+    });
+    const raw = config?.configValue;
+    dbValue = typeof raw === 'string' && raw.length > 0 ? raw : undefined;
+  } catch {
+    // DB unavailable — fall through to env fallback
+  }
+
+  const value = dbValue ?? process.env[LLM_ENV_KEYS[provider]] ?? undefined;
+  _llmKeyCache.set(provider, { value, expiresAt: Date.now() + LLM_KEY_CACHE_TTL_MS });
+  return value;
+}
+
+/** Invalidate LLM key cache + reset SDK client so next call gets fresh key (AC-3) */
+export function invalidateLlmKeyCache(provider?: 'anthropic' | 'openai'): void {
+  if (provider) {
+    _llmKeyCache.delete(provider);
+    if (provider === 'anthropic') _anthropicClient = null;
+    if (provider === 'openai') _openaiClient = null;
+  } else {
+    _llmKeyCache.clear();
+    _anthropicClient = null;
+    _openaiClient = null;
+  }
+}
+
 // Lazy-created SDK clients (API keys never logged — AC-9)
 let _anthropicClient: Anthropic | null = null;
 let _openaiClient: OpenAI | null = null;
 
-function getAnthropicClient(tier: string): Anthropic {
-  const key = process.env.ANTHROPIC_API_KEY;
+async function getAnthropicClient(tier: string): Promise<Anthropic> {
+  const key = await loadLlmKey('anthropic');
   if (!key) throw new Error(`ANTHROPIC_API_KEY missing for ${tier} tier`);
   return (_anthropicClient ??= new Anthropic({ apiKey: key }));
 }
 
-function getOpenAIClient(): OpenAI {
-  const key = process.env.OPENAI_API_KEY;
+async function getOpenAIClient(): Promise<OpenAI> {
+  const key = await loadLlmKey('openai');
   if (!key) throw new Error('OPENAI_API_KEY missing for fallback tier');
   return (_openaiClient ??= new OpenAI({ apiKey: key }));
 }
@@ -119,8 +179,9 @@ class LLMGateway {
     const { primary, fallback: fallbackModel } = MODEL_BY_TIER[req.model_tier];
 
     // AC-5: fail fast on missing API keys — do not fall back with a config error
-    if (isAnthropicModel(primary) && !process.env.ANTHROPIC_API_KEY) {
-      throw new Error(`ANTHROPIC_API_KEY missing for ${req.model_tier} tier`);
+    if (isAnthropicModel(primary)) {
+      const key = await loadLlmKey('anthropic');
+      if (!key) throw new Error(`ANTHROPIC_API_KEY missing for ${req.model_tier} tier`);
     }
 
     // 2. Primary call with 1 automatic retry (AC-3)
@@ -220,7 +281,7 @@ class LLMGateway {
     timeoutMs: number,
   ): Promise<CompleteResponse> {
     const startedAt = Date.now();
-    const client = getAnthropicClient(req.model_tier);
+    const client = await getAnthropicClient(req.model_tier);
     const payload = buildAnthropicPayload(model, req);
 
     const controller = new AbortController();
@@ -239,7 +300,7 @@ class LLMGateway {
     timeoutMs: number,
   ): Promise<CompleteResponse> {
     const startedAt = Date.now();
-    const client = getOpenAIClient();
+    const client = await getOpenAIClient();
     const payload = buildOpenAIPayload(model, req);
 
     const controller = new AbortController();

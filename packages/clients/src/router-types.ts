@@ -157,11 +157,26 @@ export type DiagnosisGenerateOutput = NonNullable<DiagnosisReportOutput>;
 export type EvolutionInsightItem = {
   id: number;
   triggerType: string;
-  direction: string;
-  content: string;
-  levelBefore: string;
-  levelAfter: string;
+  direction: string | null;
+  content: unknown;
+  levelBefore: string | null;
+  levelAfter: string | null;
   createdAt: string;
+};
+
+export type FeedbackLogItem = {
+  id: number;
+  rating: 'good' | 'bad';
+  agentId: string;
+  comment: string | null;
+  traceId: string | null;
+  createdAt: string;
+};
+
+export type EvolutionConfigOutput = {
+  autoEvolutionEnabled: boolean;
+  currentDirection: string;
+  level: string;
 };
 
 export type KnowledgeRecommendationItem = {
@@ -448,13 +463,17 @@ const _shadowRouter = _t.router({
     evolve: _t.procedure
       .input((x: unknown) => x as { rating: 'good' | 'bad'; agentId: string; rateableType?: string; rateableId: number; historyId?: number; comment?: string })
       .mutation((): { ok: boolean; feedbackId: number } => ({ ok: true, feedbackId: 0 })),
+    getConfig: _t.procedure.query((): EvolutionConfigOutput => ({ autoEvolutionEnabled: false, currentDirection: '综合', level: 'L1' })),
     updateConfig: _t.procedure
       .input((x: unknown) => x as { autoEvolutionEnabled?: boolean; currentDirection?: string })
-      .mutation((): { ok: boolean; config: { autoEvolutionEnabled: boolean; currentDirection: string; level: string } } => ({ ok: true, config: { autoEvolutionEnabled: false, currentDirection: '综合', level: 'L1' } })),
+      .mutation((): { ok: boolean; config: EvolutionConfigOutput } => ({ ok: true, config: { autoEvolutionEnabled: false, currentDirection: '综合', level: 'L1' } })),
     history: _t.procedure
       .input((x: unknown) => x as { limit?: number; offset?: number } | undefined)
       .query((): EvolutionInsightItem[] => []),
     getInsightHistory: _t.procedure.query((): EvolutionInsightItem[] => []),
+    recentFeedback: _t.procedure
+      .input((x: unknown) => x as { limit?: number; agentId?: string } | undefined)
+      .query((): FeedbackLogItem[] => []),
     getFeedbackTrend: _t.procedure
       .input((x: unknown) => x as { days?: number } | undefined)
       .query((): FeedbackTrendItem[] => []),
@@ -488,7 +507,7 @@ const _shadowRouter = _t.router({
       .query((): { items: TrendingListItem[]; total: number; page: number; pageSize: number; totalPages: number } => ({ items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 })),
     favorite: _t.procedure
       .input((x: unknown) => x as { trendingItemId: number; action: 'add' | 'remove' })
-      .mutation((): { favorited: boolean } => ({ favorited: false })),
+      .mutation((): { favorited: boolean; skipped?: boolean } => ({ favorited: false })),
     detail: _t.procedure
       .input((x: unknown) => x as { id: number })
       .query((): TrendingDetailItem | null => null),
@@ -512,7 +531,7 @@ const _shadowRouter = _t.router({
         ipPositioning: null,
       })),
     update: _t.procedure
-      .input((x: unknown) => x as Partial<{ name: string; industry: string; platform: string; stage: string; personalInfo?: string }>)
+      .input((x: unknown) => x as Partial<{ accountId?: number; name: string; industry: string; platform: string; stage: string; personalInfo?: string; followersRange?: string; ipPositioning?: string }>)
       .mutation((): NonNullable<IpAccountOutput> => ({
         id: 0,
         name: '',
@@ -538,6 +557,24 @@ const _shadowRouter = _t.router({
         followersRange: '0-1k',
         ipPositioning: '',
         rationale: '',
+        isFallback: false,
+      })),
+  }),
+  step3: _t.router({
+    generatePackage: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { personalInfo: string; platform: string; audience?: string; accountStatus?: string; force?: boolean },
+      )
+      .mutation((): { ok: boolean; data: NonNullable<StepDataOutput> } => ({
+        ok: true,
+        data: { stepKey: 'step3', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
+      })),
+    optimizeSection: _t.procedure
+      .input((x: unknown) => x as { currentResult: Record<string, unknown> })
+      .mutation((): { ok: boolean; data: NonNullable<StepDataOutput>; isFallback: boolean } => ({
+        ok: true,
+        data: { stepKey: 'step3', inputs: {}, result: null, isFallback: false, version: 0, updatedAt: '' },
         isFallback: false,
       })),
   }),
@@ -645,6 +682,16 @@ const _shadowRouter = _t.router({
       })),
   }),
   history: _t.router({
+    count: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as {
+            dateRange?: 'last_7d' | 'last_30d' | 'all' | 'today' | 'week' | 'month' | 'custom';
+            dateFrom?: string;
+            dateTo?: string;
+          } | undefined,
+      )
+      .query((): number => 0),
     list: _t.procedure
       .input(
         (x: unknown) =>
@@ -963,6 +1010,16 @@ const _shadowRouter = _t.router({
       .query((): DeepLearningQueueItem[] => []),
     create: _t.procedure
       .input((x: unknown) => x as { sample: string; userTitle?: string; userTags?: string[] })
+      .mutation((): { ok: true; queueId: number; status: string } => ({
+        ok: true,
+        queueId: 0,
+        status: 'pending',
+      })),
+    createFromFile: _t.procedure
+      .input(
+        (x: unknown) =>
+          x as { fileUrl: string; userTitle?: string; userTags?: string[] },
+      )
       .mutation((): { ok: true; queueId: number; status: string } => ({
         ok: true,
         queueId: 0,

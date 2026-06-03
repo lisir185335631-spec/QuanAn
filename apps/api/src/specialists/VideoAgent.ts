@@ -435,47 +435,115 @@ export class VideoAgent extends BaseSpecialist<VideoInput, VideoMultiOutput> {
   }
 
   // ── production mode ───────────────────────────────────────────────────────
+  // PRD-29.6 fix: LLM error or safeParse failure → return fallbackTemplate.production
+  // (isFallback=true) instead of throwing. Aligns with BrandingAgent/BaseSpecialist
+  // fallback contract without depending on isFallbackable string-matching heuristics.
 
   private async _invokeProduction(
     ctx: AssembledContext,
     req: SpecialistRequest<VideoInput>,
   ): Promise<InvokeLLMResult> {
-    return this.llmGateway.complete({
-      model_tier: this.config.execution.model_tier,
-      systemPrompt: ctx.systemPrompt,
-      userPrompt: this._buildUserPrompt(req.userInput, ctx, 'production'),
-      responseFormat: { type: 'json_schema' as const, schema: ProductionBaseSchema },
-      metadata: {
-        trace_id: req.traceId ?? '',
-        agentId: this.config.agentId,
-        accountId: req.accountId,
-        userId: 0,
-      },
-      timeout_ms: this.config.execution.timeout_ms,
-      retry: this.config.execution.retry,
-    });
+    try {
+      const res = await this.llmGateway.complete({
+        model_tier: this.config.execution.model_tier,
+        systemPrompt: ctx.systemPrompt,
+        userPrompt: this._buildUserPrompt(req.userInput, ctx, 'production'),
+        responseFormat: { type: 'json_schema' as const, schema: ProductionBaseSchema },
+        metadata: {
+          trace_id: req.traceId ?? '',
+          agentId: this.config.agentId,
+          accountId: req.accountId,
+          userId: 0,
+        },
+        timeout_ms: this.config.execution.timeout_ms,
+        retry: this.config.execution.retry,
+      });
+
+      // Validate the LLM response against the strict schema before returning.
+      // If the content fails safeParse (e.g. LLM returned a string error message
+      // or a malformed object), fall back rather than letting BaseSpecialist retry
+      // and eventually throw SchemaValidationError with no fallback catch.
+      const parsed = ProductionOutputSchema.safeParse(res.content);
+      if (!parsed.success) {
+        const fallback = VideoAgent.fallbackTemplate['production'] as ProductionOutput;
+        return {
+          content: fallback,
+          tokens: res.tokens,
+          model: res.model,
+          isFallback: true,
+        };
+      }
+
+      return res;
+    } catch {
+      // Any LLM gateway error (API auth failure, network error, rate-limit, etc.)
+      // → return production fallback template so execute() returns isFallback=true
+      // instead of propagating the throw through tRPC.
+      // BaseSpecialist.execute() will see isFallback=true on the InvokeLLMResult and
+      // propagate it outward; outputSchema.safeParse(fallback) will pass since the
+      // fallbackTemplate.production satisfies ProductionOutputSchema (all 13 columns set).
+      const fallback = VideoAgent.fallbackTemplate['production'] as ProductionOutput;
+      return {
+        content: fallback,
+        tokens: { prompt: 0, completion: 0, total: 0 },
+        model: 'fallback',
+        isFallback: true,
+      };
+    }
   }
 
-  // ── acquisition mode ──────────────────────────────────────────────────────
+  // ── acquisition mode ─────────────────────────────────────────────────────
+  // PRD-29.6 fix: LLM error or safeParse failure → return fallbackTemplate.acquisition
+  // (isFallback=true) instead of throwing. Mirrors _invokeProduction pattern.
 
   private async _invokeVideoAcquisition(
     ctx: AssembledContext,
     req: SpecialistRequest<VideoInput>,
   ): Promise<InvokeLLMResult> {
-    return this.llmGateway.complete({
-      model_tier: this.config.execution.model_tier,
-      systemPrompt: ctx.systemPrompt,
-      userPrompt: this._buildUserPrompt(req.userInput, ctx, 'acquisition'),
-      responseFormat: { type: 'json_schema' as const, schema: VideoAcquisitionBaseSchema },
-      metadata: {
-        trace_id: req.traceId ?? '',
-        agentId: this.config.agentId,
-        accountId: req.accountId,
-        userId: 0,
-      },
-      timeout_ms: this.config.execution.timeout_ms,
-      retry: this.config.execution.retry,
-    });
+    try {
+      const res = await this.llmGateway.complete({
+        model_tier: this.config.execution.model_tier,
+        systemPrompt: ctx.systemPrompt,
+        userPrompt: this._buildUserPrompt(req.userInput, ctx, 'acquisition'),
+        responseFormat: { type: 'json_schema' as const, schema: VideoAcquisitionBaseSchema },
+        metadata: {
+          trace_id: req.traceId ?? '',
+          agentId: this.config.agentId,
+          accountId: req.accountId,
+          userId: 0,
+        },
+        timeout_ms: this.config.execution.timeout_ms,
+        retry: this.config.execution.retry,
+      });
+
+      // Validate the LLM response against the strict schema before returning.
+      // If the content fails safeParse (e.g. LLM returned a string error message
+      // or a malformed object), fall back rather than letting BaseSpecialist retry
+      // and eventually throw SchemaValidationError with no fallback catch.
+      const parsed = VideoAcquisitionOutputSchema.safeParse(res.content);
+      if (!parsed.success) {
+        const fallback = VideoAgent.fallbackTemplate['acquisition'] as VideoAcquisitionOutput;
+        return {
+          content: fallback,
+          tokens: res.tokens,
+          model: res.model,
+          isFallback: true,
+        };
+      }
+
+      return res;
+    } catch {
+      // Any LLM gateway error (API auth failure, network error, rate-limit, etc.)
+      // → return acquisition fallback template so execute() returns isFallback=true
+      // instead of propagating the throw through tRPC.
+      const fallback = VideoAgent.fallbackTemplate['acquisition'] as VideoAcquisitionOutput;
+      return {
+        content: fallback,
+        tokens: { prompt: 0, completion: 0, total: 0 },
+        model: 'fallback',
+        isFallback: true,
+      };
+    }
   }
 
   // ── storyboard mode — AC-4 ASCII enforced via schema-level regex ─────────

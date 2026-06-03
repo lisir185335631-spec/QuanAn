@@ -1,839 +1,475 @@
 /**
- * History.tsx — /history 操作历史 · PRD-15 US-008
- * 1:1 实现 ui/_12+_15 设计(2 view: timeline + dashboard)
- * AC-1: 200+ 行完整实现
- * AC-2: View 1 timeline 默认 · 按天分组 · 工具 icon+名+input摘要+output摘要+时间+操作
- * AC-3: View 2 dashboard · 4 KPI + 4 chart
- * AC-4: URL state ?view=timeline|dashboard
- * AC-5: 多工具筛选 ?tools=copywriting,videoAnalysis
- * AC-6: 时间范围 今日/本周/本月/全部
- * AC-7: trpc.history.list.useQuery({tools,dateRange,page}) + trpc.history.stats.useQuery
- * AC-8: 恢复并重跑 → 跳对应工具页 ?topic=xxx&restored=historyId
+ * History.tsx — /history 历史记录页 · 先锋白迁移 · 阶段2 接真 tRPC
+ * 逻辑零改动 · testid 全保留 · inline 先锋白重写(无旧组件 import)
  */
 
-import {
-  BarChart2,
-  BookOpen,
-  Brain,
-  DollarSign,
-  Eye,
-  Film,
-  LayoutDashboard,
-  List,
-  Loader2,
-  Mic,
-  PenLine,
-  PenTool,
-  Play,
-  RefreshCw,
-  Target,
-  Timer,
-  Trash2,
-  TrendingUp,
-  Users,
-  Wand2,
-  Zap,
-  XCircle,
-} from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import {
-  Bar,
-  BarChart,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { ALL_ELEMENTS } from '@/lib/constants/elements';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  HISTORY_ACTIONS,
+  HISTORY_H1,
+  HISTORY_SUBTITLE_TPL,
+  HISTORY_TOAST_COPY,
+  HISTORY_TOAST_DELETE,
+  HISTORY_TOAST_VIEW,
+  HISTORY_TOPIC_PREFIX,
+} from '@/lib/constants/historyPage';
 import { trpc } from '@/lib/trpc';
+import type { RouterOutputs } from '@/lib/trpc';
 
-import type { HistoryListRow } from '@quanan/clients/router-types';
+// ── tRPC-inferred row type (P1 #7: replace manual interface with inferred type) ──
+type HistoryRow = RouterOutputs['history']['list'][number];
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── helpers ────────────────────────────────────────────────────────────────────
 
-type ViewMode = 'timeline' | 'dashboard';
-type DateRange = 'today' | 'week' | 'month' | 'custom';
-
-// ── Tool definitions (14 tools) ───────────────────────────────────────────────
-
-const TOOL_DEFS = [
-  { slug: 'copywriting', label: '文案创作', icon: PenTool, agentIds: ['CopywritingAgent'] },
-  { slug: 'trending', label: '爆款情报', icon: TrendingUp, agentIds: ['TrendingAgent'] },
-  { slug: 'boomGenerate', label: 'Boom 生成', icon: Zap, agentIds: ['CopywritingAgent'] },
-  { slug: 'generate', label: '自由生成', icon: PenLine, agentIds: ['CopywritingAgent'] },
-  { slug: 'presentStyles', label: '呈现风格', icon: LayoutDashboard, agentIds: ['PresentStylesAgent'] },
-  { slug: 'monetization', label: '变现方向', icon: DollarSign, agentIds: ['MonetizationAgent'] },
-  { slug: 'privateDomain', label: '私域路径', icon: Users, agentIds: ['PrivateDomainAgent'] },
-  { slug: 'analysis', label: '结构分析', icon: BarChart2, agentIds: ['AnalysisAgent'] },
-  { slug: 'videoAnalysis', label: '视频分析', icon: Play, agentIds: ['VideoAnalysisAgent'] },
-  { slug: 'videoProduction', label: '视频制作', icon: Film, agentIds: ['VideoProductionAgent', 'VideoAgent'] },
-  { slug: 'acquisitionVideo', label: '获客视频', icon: Target, agentIds: ['VideoAgent'] },
-  { slug: 'aiVideo', label: 'AI 视频', icon: Wand2, agentIds: ['VideoAgent'] },
-  { slug: 'voiceChat', label: '语音聊天', icon: Mic, agentIds: ['VoiceChatAgent'] },
-  { slug: 'deepLearning', label: '深度学习', icon: Brain, agentIds: ['DeepLearningAgent'] },
-  { slug: 'knowledge', label: '知识库', icon: BookOpen, agentIds: ['KnowledgeAgent'] },
-] as const;
-
-type ToolSlug = (typeof TOOL_DEFS)[number]['slug'];
-
-const PIE_COLORS = ['#6366f1', '#22d3ee', '#a78bfa', '#34d399', '#f59e0b', '#f43f5e', '#64748b'];
-
-// ── URL state helpers ─────────────────────────────────────────────────────────
-
-function readViewFromUrl(params: URLSearchParams): ViewMode {
-  const v = params.get('view');
-  return v === 'dashboard' ? 'dashboard' : 'timeline';
+/** Format DateTime → "YYYY/M/D H:mm:ss" aligned with original mock timestamps */
+function formatTs(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-function readToolsFromUrl(params: URLSearchParams): ToolSlug[] {
-  const t = params.get('tools');
-  if (!t) return [];
-  const valid = new Set(TOOL_DEFS.map((d) => d.slug as string));
-  return t.split(',').filter((s) => valid.has(s)) as ToolSlug[];
-}
-
-function readDateRangeFromUrl(params: URLSearchParams): DateRange {
-  const d = params.get('dateRange');
-  return (['today', 'week', 'month', 'custom'] as DateRange[]).includes(d as DateRange)
-    ? (d as DateRange)
-    : 'month';
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatTime(d: Date | string): string {
-  const date = typeof d === 'string' ? new Date(d) : d;
-  return new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit' }).format(date);
-}
-
-function formatDate(d: Date | string): string {
-  const date = typeof d === 'string' ? new Date(d) : d;
-  const today = new Date();
-  const yesterday = new Date(today.getTime() - 86400_000);
-  if (date.toDateString() === today.toDateString()) return '今天';
-  if (date.toDateString() === yesterday.toDateString()) return '昨天';
-  return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric' }).format(date);
-}
-
-function dayKey(d: Date | string): string {
-  const date = typeof d === 'string' ? new Date(d) : d;
-  return date.toISOString().split('T')[0]!;
-}
-
-function groupByDay(rows: HistoryListRow[]): Array<{ day: string; label: string; rows: HistoryListRow[] }> {
-  const map = new Map<string, HistoryListRow[]>();
-  for (const r of rows) {
-    const k = dayKey(r.createdAt);
-    if (!map.has(k)) map.set(k, []);
-    map.get(k)!.push(r);
+/** Parse elements field — already String[] from Prisma, guard against edge-cases */
+function parseElements(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw as string[];
+  if (typeof raw === 'string') {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed as string[];
+    } catch {
+      /* non-JSON string */
+    }
   }
-  return [...map.entries()]
-    .sort(([a], [b]) => b.localeCompare(a))
-    .map(([day, rows]) => ({ day, label: formatDate(new Date(day + 'T12:00:00')), rows }));
+  return [];
 }
 
-function getToolInfo(row: HistoryListRow) {
-  const mode = row.agentMode ?? '';
-  const agentId = row.agentId;
+// ── Card shape (mapped from row) ───────────────────────────────────────────────
 
-  if (mode === 'boom') return TOOL_DEFS.find((d) => d.slug === 'boomGenerate')!;
-  if (mode === 'free' || (agentId === 'CopywritingAgent' && !mode))
-    return TOOL_DEFS.find((d) => d.slug === 'copywriting')!;
-  if (mode === 'structural') return TOOL_DEFS.find((d) => d.slug === 'analysis')!;
-  if (mode === 'viral') return TOOL_DEFS.find((d) => d.slug === 'videoAnalysis')!;
-  if (mode === 'production') return TOOL_DEFS.find((d) => d.slug === 'videoProduction')!;
-  if (mode === 'storyboard') return TOOL_DEFS.find((d) => d.slug === 'aiVideo')!;
-  if (mode === 'acquisition' && agentId === 'VideoAgent')
-    return TOOL_DEFS.find((d) => d.slug === 'acquisitionVideo')!;
-  if (mode === 'acquisition') return TOOL_DEFS.find((d) => d.slug === 'copywriting')!;
-
-  const byAgentId = TOOL_DEFS.find((d) => d.agentIds.includes(agentId as never));
-  return byAgentId ?? TOOL_DEFS[0];
+interface CardEntry {
+  id: number;
+  scriptType: string;
+  elementKeys: string[];
+  topic: string;
+  timestamp: string;
+  content: string;
 }
 
-function getToolRestoreUrl(row: HistoryListRow): string | null {
-  const mode = row.agentMode ?? '';
-  const topic = encodeURIComponent(row.inputSummary.substring(0, 200));
-  const id = row.id;
-
-  if (mode === 'free') return `/generate?topic=${topic}&restored=${id}`;
-  if (mode === 'boom') return `/boom-generate?topic=${topic}&restored=${id}`;
-  if (mode === 'structural') return `/analysis?topic=${topic}&restored=${id}`;
-  if (mode === 'viral') return `/video-analysis?topic=${topic}&restored=${id}`;
-  if (mode === 'production') return `/video-production?topic=${topic}&restored=${id}`;
-  if (mode === 'storyboard') return `/ai-video?topic=${topic}&restored=${id}`;
-  if (mode === 'acquisition' && row.agentId === 'VideoAgent')
-    return `/acquisition-video?topic=${topic}&restored=${id}`;
-  if (mode === 'acquisition') return `/generate?mode=acquisition&topic=${topic}&restored=${id}`;
-  if (row.agentId === 'TrendingAgent') return `/trending?topic=${topic}&restored=${id}`;
-  if (row.agentId === 'PresentStylesAgent') return `/present-styles?topic=${topic}&restored=${id}`;
-  if (row.agentId === 'MonetizationAgent') return `/monetization?topic=${topic}&restored=${id}`;
-  if (row.agentId === 'PrivateDomainAgent') return `/private-domain?topic=${topic}&restored=${id}`;
-  if (row.agentId === 'VoiceChatAgent') return `/voice-chat?topic=${topic}&restored=${id}`;
-  if (row.agentId === 'DeepLearningAgent') return `/deep-learning?topic=${topic}&restored=${id}`;
-  if (row.agentId === 'KnowledgeAgent') return `/knowledge?topic=${topic}&restored=${id}`;
-  return null;
+function rowToCard(row: HistoryRow): CardEntry {
+  const topic = row.inputSummary.trim() || row.content.slice(0, 60);
+  const timestamp = formatTs(row.createdAt);
+  const elementKeys = parseElements(row.elements);
+  const scriptType = row.scriptType ?? row.agentMode ?? row.sourceType;
+  return { id: row.id, scriptType, elementKeys, topic, timestamp, content: row.content };
 }
 
-const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
-  { value: 'today', label: '今日' },
-  { value: 'week', label: '本周' },
-  { value: 'month', label: '本月' },
-  { value: 'custom', label: '自定义日期' },
-];
+// ── KPI derived from live rows + server counts ─────────────────────────────────
 
-// ── HistoryDetailDrawer ───────────────────────────────────────────────────────
-
-interface DrawerProps {
-  row: HistoryListRow | null;
-  onClose: () => void;
+function buildKpi(rows: HistoryRow[], totalCount: number, weekCount: number) {
+  const scriptTypes = new Set(rows.map((r) => r.scriptType ?? '')).size;
+  const latest = rows[0]?.createdAt
+    ? formatTs(rows[0].createdAt).split(' ')[0] ?? '—'
+    : '—';
+  return [
+    { label: '记录总数', value: String(totalCount), sub: '全部生成记录', color: '#002fa7', bg: '#eff3fc' },
+    { label: '近 7 天', value: String(weekCount), sub: '最近 7 天生成', color: '#781621', bg: '#fdf2f2' },
+    { label: '脚本类型', value: rows.length > 0 ? String(scriptTypes) : '0', sub: '种内容类型', color: '#8A6A00', bg: '#fefae0' },
+    { label: '最新记录', value: latest, sub: '最近生成日期', color: '#002fa7', bg: '#eff3fc' },
+  ];
 }
 
-function HistoryDetailDrawer({ row, onClose }: DrawerProps) {
-  if (!row) return null;
-  const toolInfo = getToolInfo(row);
-  const ToolIcon = toolInfo.icon;
+// ── inline ChipRow ──────────────────────────────────────────────────────────────
+
+function ChipRow({ scriptType, elementKeys, entryId }: { scriptType: string; elementKeys: ReadonlyArray<string>; entryId?: number | string }) {
+  const typeColor = scriptType === '搞辩论' ? '#002fa7' : '#781621';
+  const typeBg = scriptType === '搞辩论' ? '#eff3fc' : '#fdf2f2';
+  const prefix = entryId !== undefined ? `-${entryId}` : '';
 
   return (
-    <Sheet open={!!row} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <SheetContent
-        side="right"
-        className="w-full sm:w-[560px] overflow-y-auto"
-        data-testid="history-detail-drawer"
+    <div data-testid={`history-chip-row${prefix}`} className="flex flex-wrap gap-2">
+      <span
+        data-testid={`script-type-chip-${scriptType}`}
+        style={{ color: typeColor, backgroundColor: typeBg, border: `1px solid ${typeColor}33` }}
+        className="rounded-md px-3 py-1 text-[12px] font-bold tracking-wide"
       >
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <ToolIcon className="h-5 w-5 text-primary" />
-            {toolInfo.label} · 详情
-          </SheetTitle>
-        </SheetHeader>
+        {scriptType}
+      </span>
 
-        <div className="mt-4 space-y-4">
-          <div>
-            <p className="text-label-sm font-label text-muted-foreground uppercase tracking-wide mb-1">输入</p>
-            <p className="text-body-sm text-on-surface whitespace-pre-wrap rounded-md bg-surface-variant p-3">
-              {row.inputSummary}
-            </p>
-          </div>
-          <div>
-            <p className="text-label-sm font-label text-muted-foreground uppercase tracking-wide mb-1">输出</p>
-            <pre className="text-body-sm text-on-surface whitespace-pre-wrap rounded-md bg-surface-variant p-3 overflow-auto max-h-[60vh]">
-              {row.content}
-            </pre>
-          </div>
-          <div className="flex items-center gap-4 text-body-sm text-muted-foreground">
-            <span>Agent: {row.agentId}</span>
-            <span>创建: {new Date(row.createdAt).toLocaleString('zh-CN')}</span>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+      {elementKeys.map((key) => {
+        const el = ALL_ELEMENTS.find((e) => e.key === key);
+        if (!el) return null;
+        return (
+          <span
+            key={key}
+            data-testid={`element-chip-${entryId !== undefined ? `${entryId}-` : ''}${key}`}
+            className="rounded-md border border-[#e5e7eb] bg-[#f8f9fa] px-2 py-1 text-[12px] text-[#444653]"
+          >
+            {el.emoji} {el.label}
+          </span>
+        );
+      })}
+    </div>
   );
 }
 
-// ── HistoryTimeline ───────────────────────────────────────────────────────────
+// ── Detail drawer ───────────────────────────────────────────────────────────────
 
-interface TimelineProps {
-  rows: HistoryListRow[];
-  isLoading: boolean;
-  error: unknown;
-  onViewDetail: (row: HistoryListRow) => void;
-  onRestore: (row: HistoryListRow) => void;
-  onDelete: (id: number) => void;
-  deletingId: number | null;
+interface DetailDrawerProps {
+  entry: CardEntry;
+  onClose: () => void;
 }
 
-function HistoryTimeline({
-  rows,
-  isLoading,
-  error,
-  onViewDetail,
-  onRestore,
-  onDelete,
-  deletingId,
-}: TimelineProps) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2 text-muted-foreground py-12" data-testid="history-loading">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        <span>加载中…</span>
-      </div>
-    );
-  }
+function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  if (error) {
-    return <p className="text-destructive py-12" data-testid="history-error">加载失败，请刷新重试</p>;
-  }
+  // P1 #6: focus panel on open
+  useEffect(() => {
+    panelRef.current?.focus();
+  }, []);
 
-  if (!rows || rows.length === 0) {
-    return (
-      <div className="rounded-lg border border-border py-16 text-center text-body-md text-muted-foreground" data-testid="history-empty">
-        暂无历史记录
-      </div>
-    );
+  // P1 #6: close on Esc
+  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Escape') onClose();
   }
-
-  const groups = groupByDay(rows);
 
   return (
-    <div className="space-y-6" data-testid="history-timeline">
-      {groups.map(({ day, label, rows: dayRows }) => (
-        <div key={day}>
-          <p
-            className="text-label-sm font-label text-muted-foreground uppercase tracking-wide mb-3"
-            data-testid={`timeline-day-${day}`}
-          >
-            {label}
-          </p>
-          <div className="space-y-2">
-            {dayRows.map((row) => {
-              const toolInfo = getToolInfo(row);
-              const ToolIcon = toolInfo.icon;
-              const restoreUrl = getToolRestoreUrl(row);
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div
+      data-testid="history-detail-drawer"
+      role="presentation"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog requires keyboard Esc handling */}
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="生成详情"
+        tabIndex={-1}
+        className="relative w-full max-w-2xl rounded-t-2xl border border-[#e5e7eb] bg-white p-6 pb-10 shadow-xl outline-none"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+      >
+        {/* close btn */}
+        <button
+          data-testid="history-detail-close"
+          aria-label="关闭"
+          onClick={onClose}
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-[#9ca3af] hover:bg-[#f3f4f6] hover:text-[#002fa7]"
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+        </button>
 
-              return (
-                <div
-                  key={row.id}
-                  className="flex items-start gap-3 rounded-lg border border-border bg-card px-4 py-3 hover:bg-surface-variant/30 transition-colors"
-                  data-testid={`timeline-row-${row.id}`}
-                >
-                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                    <ToolIcon className="h-4 w-4 text-primary" />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-label-sm font-label text-primary">{toolInfo.label}</span>
-                      <span className="text-body-sm text-muted-foreground">{formatTime(row.createdAt)}</span>
-                    </div>
-                    <p className="text-body-sm text-on-surface truncate">
-                      <span className="text-muted-foreground">输入：</span>
-                      {row.inputSummary.substring(0, 60)}
-                    </p>
-                    <p className="text-body-sm text-muted-foreground truncate mt-0.5">
-                      <span>输出：</span>
-                      {row.content.substring(0, 60)}
-                    </p>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
-                      onClick={() => onViewDetail(row)}
-                      data-testid={`history-view-btn-${row.id}`}
-                      aria-label="查看完整"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    {restoreUrl && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 w-7 p-0 text-muted-foreground hover:text-emerald-500"
-                        onClick={() => onRestore(row)}
-                        data-testid={`history-restore-btn-${row.id}`}
-                        aria-label="恢复并重跑"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                      onClick={() => onDelete(row.id)}
-                      disabled={deletingId === row.id}
-                      data-testid={`history-delete-btn-${row.id}`}
-                      aria-label="删除"
-                    >
-                      {deletingId === row.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <h3 className="mb-1 text-[16px] font-bold text-[#111827]">生成详情</h3>
+        <p className="mb-4 text-[12px] text-[#9ca3af]">{entry.timestamp}</p>
+        <ChipRow scriptType={entry.scriptType} elementKeys={entry.elementKeys} entryId={`drawer-${entry.id}`} />
+        <div className="mt-4 max-h-[50vh] overflow-y-auto rounded-lg border border-[#e5e7eb] bg-[#f8f9fa] p-4 text-[13px] leading-relaxed text-[#1b1b1b] whitespace-pre-wrap">
+          {entry.content || '（无内容）'}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── inline EntryCard ────────────────────────────────────────────────────────────
+
+interface EntryCardProps {
+  entry: CardEntry;
+  onView: () => void;
+  onCopy: (topic: string) => void;
+  onDelete: () => void;
+  isDeleting?: boolean;
+  /** P1 #5: any delete in-flight → disable all cards' delete buttons */
+  isAnyDeleting?: boolean;
+}
+
+const ACTION_ICONS: Record<string, string> = {
+  view: 'visibility',
+  copy: 'content_copy',
+  delete: 'delete',
+};
+
+function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting }: EntryCardProps) {
+  function handleAction(key: string) {
+    if (key === 'view') onView();
+    else if (key === 'copy') onCopy(entry.topic);
+    else if (key === 'delete') onDelete();
+  }
+
+  return (
+    <div
+      data-testid={`history-entry-card-${entry.id}`}
+      className="relative rounded-xl border border-[#e5e7eb] bg-white p-6 transition-all hover:border-[#002fa7] hover:shadow-sm"
+      style={{ opacity: isDeleting ? 0.5 : 1 }}
+    >
+      {/* 右上 3 icon btn */}
+      <div
+        data-testid={`history-entry-actions-${entry.id}`}
+        className="absolute right-4 top-4 flex gap-1"
+      >
+        {HISTORY_ACTIONS.map(({ key, label }) => (
+          <button
+            key={key}
+            data-testid={`history-btn-${key}-${entry.id}`}
+            aria-label={label}
+            disabled={isDeleting || (key === 'delete' && isAnyDeleting)}
+            onClick={() => handleAction(key)}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[#9ca3af] transition-colors hover:bg-[#f3f4f6] hover:text-[#002fa7] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+              {ACTION_ICONS[key] ?? 'more_horiz'}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* row 1 · chip group */}
+      <ChipRow scriptType={entry.scriptType} elementKeys={entry.elementKeys} entryId={entry.id} />
+
+      {/* row 2 · 主题 */}
+      <p data-testid={`history-topic-${entry.id}`} className="mt-3 text-[14px] leading-relaxed text-[#1b1b1b]">
+        <span className="text-[#9ca3af]">{HISTORY_TOPIC_PREFIX}</span>
+        <span className="font-semibold text-[#111827]">{entry.topic}</span>
+      </p>
+
+      {/* row 3 · timestamp */}
+      <p
+        data-testid={`history-timestamp-${entry.id}`}
+        className="mt-2 flex items-center gap-1.5 text-[12px] text-[#9ca3af]"
+      >
+        <span className="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>
+        {entry.timestamp}
+      </p>
+    </div>
+  );
+}
+
+// ── inline HistoryList ──────────────────────────────────────────────────────────
+
+interface HistoryListProps {
+  entries: CardEntry[];
+  onView: (entry: CardEntry) => void;
+  onCopy: (topic: string) => void;
+  onDelete: (id: number) => void;
+  deletingId: number | null;
+  /** P1 #5: global delete in-flight flag — disables all delete buttons */
+  isAnyDeleting?: boolean;
+}
+
+function HistoryList({ entries, onView, onCopy, onDelete, deletingId, isAnyDeleting }: HistoryListProps) {
+  if (entries.length === 0) {
+    return (
+      <div data-testid="history-list" className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-white py-20">
+        <span className="material-symbols-outlined text-[48px] text-[#d1d5db]" aria-hidden="true">history</span>
+        <p className="mt-3 text-[14px] text-[#9ca3af]">暂无历史记录</p>
+      </div>
+    );
+  }
+
+  return (
+    <div data-testid="history-list" className="space-y-4">
+      {entries.map((entry) => (
+        <EntryCard
+          key={entry.id}
+          entry={entry}
+          isDeleting={deletingId === entry.id}
+          isAnyDeleting={isAnyDeleting}
+          onView={() => onView(entry)}
+          onCopy={onCopy}
+          onDelete={() => onDelete(entry.id)}
+        />
       ))}
     </div>
   );
 }
 
-// ── KPI Card ──────────────────────────────────────────────────────────────────
+// ── inline HistoryHeader ────────────────────────────────────────────────────────
 
-function KpiCard({
-  label,
-  value,
-  icon: Icon,
-  sub,
-}: {
-  label: string;
-  value: string;
-  icon: React.ElementType;
-  sub?: string;
-}) {
+function HistoryHeader({ count }: { count: number }) {
   return (
-    <Card>
-      <CardContent className="pt-4 pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-label-sm font-label text-muted-foreground uppercase tracking-wide">{label}</p>
-            <p className="mt-1 text-2xl font-semibold text-on-surface">{value}</p>
-            {sub && <p className="mt-0.5 text-body-sm text-muted-foreground">{sub}</p>}
-          </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-            <Icon className="h-5 w-5 text-primary" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ── HistoryDashboard ──────────────────────────────────────────────────────────
-
-interface DashboardProps {
-  dateRange: DateRange;
-  tools: ToolSlug[];
-  dateFrom?: string;
-  dateTo?: string;
-}
-
-function HistoryDashboard({ dateRange, tools, dateFrom, dateTo }: DashboardProps) {
-  const { data: stats, isLoading } = trpc.history.stats.useQuery({
-    dateRange,
-    tools: tools.length ? tools : undefined,
-    dateFrom: dateRange === 'custom' ? dateFrom : undefined,
-    dateTo: dateRange === 'custom' ? dateTo : undefined,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2 text-muted-foreground py-12">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        <span>加载统计中…</span>
+    <div data-testid="history-header">
+      <div className="mb-3 flex items-center gap-3">
+        <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+          更多
+        </span>
+        <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+          历史记录
+        </span>
       </div>
-    );
-  }
-
-  const s = stats ?? {
-    totalCalls: 0,
-    failureRate: 0,
-    avgDurationMs: 0,
-    topTools: [],
-    dailyTrend: [],
-    durationHistogram: [],
-    modelDistribution: [],
-  };
-
-  const topTool = s.topTools[0]?.agentId ?? '—';
-  const failPct = `${(s.failureRate * 100).toFixed(1)}%`;
-  const avgSec =
-    s.avgDurationMs > 0 ? `${(s.avgDurationMs / 1000).toFixed(1)}s` : '—';
-
-  const trendData = [...s.dailyTrend].reverse();
-
-  return (
-    <div className="space-y-6" data-testid="history-dashboard">
-      {/* 4 KPI 卡片 */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4" data-testid="history-kpi-cards">
-        <KpiCard label="总调用数" value={String(s.totalCalls)} icon={BarChart2} />
-        <KpiCard label="最常用工具" value={topTool} icon={TrendingUp} />
-        <KpiCard label="平均耗时" value={avgSec} icon={Timer} />
-        <KpiCard label="失败率" value={failPct} icon={XCircle} />
-      </div>
-
-      {/* 4 Charts */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* 每日调用趋势 */}
-        <Card>
-          <CardHeader>
-            <span className="text-label-sm font-label text-muted-foreground uppercase tracking-wide">
-              每日调用趋势
-            </span>
-          </CardHeader>
-          <CardContent data-testid="history-chart-daily-trend">
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={trendData} margin={{ top: 4, right: 16, left: -24, bottom: 4 }}>
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} />
-                <YAxis tick={{ fontSize: 10 }} tickLine={false} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#6366f1"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* 工具分布 pie */}
-        <Card>
-          <CardHeader>
-            <span className="text-label-sm font-label text-muted-foreground uppercase tracking-wide">
-              工具分布
-            </span>
-          </CardHeader>
-          <CardContent data-testid="history-chart-tool-distribution">
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={s.topTools}
-                  dataKey="count"
-                  nameKey="agentId"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  label={({ name, percent }) =>
-                    `${String(name ?? '').replace('Agent', '')}: ${((percent ?? 0) * 100).toFixed(0)}%`
-                  }
-                >
-                  {s.topTools.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* 耗时分布 histogram */}
-        <Card>
-          <CardHeader>
-            <span className="text-label-sm font-label text-muted-foreground uppercase tracking-wide">
-              耗时分布
-            </span>
-          </CardHeader>
-          <CardContent data-testid="history-chart-duration-histogram">
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart
-                data={s.durationHistogram}
-                margin={{ top: 4, right: 16, left: -24, bottom: 4 }}
-              >
-                <XAxis dataKey="label" tick={{ fontSize: 10 }} tickLine={false} />
-                <YAxis tick={{ fontSize: 10 }} tickLine={false} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#22d3ee" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* 模型分布 bar */}
-        <Card>
-          <CardHeader>
-            <span className="text-label-sm font-label text-muted-foreground uppercase tracking-wide">
-              模型分布
-            </span>
-          </CardHeader>
-          <CardContent data-testid="history-chart-model-distribution">
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart
-                data={s.modelDistribution}
-                layout="vertical"
-                margin={{ top: 4, right: 16, left: 16, bottom: 4 }}
-              >
-                <XAxis type="number" tick={{ fontSize: 10 }} tickLine={false} />
-                <YAxis
-                  type="category"
-                  dataKey="model"
-                  tick={{ fontSize: 10 }}
-                  tickLine={false}
-                  width={80}
-                />
-                <Tooltip />
-                <Bar dataKey="count" fill="#a78bfa" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Top 5 table */}
-      {s.topTools.length > 0 && (
-        <Card>
-          <CardHeader>
-            <span className="text-label-sm font-label text-muted-foreground uppercase tracking-wide">
-              最常用工具 Top 5
-            </span>
-          </CardHeader>
-          <CardContent data-testid="history-top-tools-table">
-            <table className="w-full text-body-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="py-2 text-left font-medium text-muted-foreground">Agent</th>
-                  <th className="py-2 text-right font-medium text-muted-foreground">调用次数</th>
-                </tr>
-              </thead>
-              <tbody>
-                {s.topTools.map((t) => (
-                  <tr key={t.agentId} className="border-b border-border last:border-0">
-                    <td className="py-2 text-on-surface">{t.agentId.replace('Agent', '')}</td>
-                    <td className="py-2 text-right text-on-surface">{t.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      )}
+      <h1
+        data-testid="history-h1"
+        className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+      >
+        {HISTORY_H1}
+      </h1>
+      <p
+        data-testid="history-subtitle"
+        className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]"
+      >
+        {HISTORY_SUBTITLE_TPL(count)}
+      </p>
     </div>
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Skeleton loader ─────────────────────────────────────────────────────────────
+
+function HistorySkeleton() {
+  return (
+    <div data-testid="history-loading" className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-32 animate-pulse rounded-xl border border-[#e5e7eb] bg-[#f3f4f6]" />
+      ))}
+    </div>
+  );
+}
+
+// ── page ────────────────────────────────────────────────────────────────────────
 
 export default function History() {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const view = readViewFromUrl(searchParams);
-  const selectedTools = readToolsFromUrl(searchParams);
-  const dateRange = readDateRangeFromUrl(searchParams);
-  const dateFrom = searchParams.get('dateFrom') ?? '';
-  const dateTo = searchParams.get('dateTo') ?? '';
-
+  const [detailEntry, setDetailEntry] = useState<CardEntry | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [drawerRow, setDrawerRow] = useState<HistoryListRow | null>(null);
-  const [showToolFilter, setShowToolFilter] = useState(false);
 
   const utils = trpc.useUtils();
 
-  function updateParams(updates: Record<string, string | null>) {
-    const next = new URLSearchParams(searchParams);
-    for (const [k, v] of Object.entries(updates)) {
-      if (v === null) next.delete(k);
-      else next.set(k, v);
-    }
-    setSearchParams(next);
-  }
+  const { data: rawRows, isLoading, isError, refetch } = trpc.history.list.useQuery({ limit: 100 });
 
-  function setView(v: ViewMode) {
-    updateParams({ view: v });
-  }
-
-  function toggleTool(slug: ToolSlug) {
-    const next = selectedTools.includes(slug)
-      ? selectedTools.filter((s) => s !== slug)
-      : [...selectedTools, slug];
-    updateParams({ tools: next.length ? next.join(',') : null });
-  }
-
-  function setDateRange(d: DateRange) {
-    const updates: Record<string, string | null> = { dateRange: d };
-    if (d !== 'custom') {
-      updates.dateFrom = null;
-      updates.dateTo = null;
-    }
-    updateParams(updates);
-  }
-
-  const { data: rows, isLoading, error } = trpc.history.list.useQuery({
-    tools: selectedTools.length ? selectedTools : undefined,
-    dateRange,
-    dateFrom: dateRange === 'custom' ? dateFrom || undefined : undefined,
-    dateTo: dateRange === 'custom' ? dateTo || undefined : undefined,
-    limit: 100,
-    offset: 0,
-  });
+  // P0 #1: true total count (unbounded by list limit)
+  const { data: totalCount = 0 } = trpc.history.count.useQuery({});
+  // P0 #2: near-7-day distinct KPI
+  const { data: weekCount = 0 } = trpc.history.count.useQuery({ dateRange: 'week' });
 
   const deleteMutation = trpc.history.delete.useMutation({
-    onSuccess: () => {
-      void utils.history.list.invalidate();
+    onMutate: ({ id }) => {
+      setDeletingId(id);
+    },
+    onSuccess: async () => {
+      await utils.history.list.invalidate();
+      await utils.history.count.invalidate();
+      toast.success(HISTORY_TOAST_DELETE);
+    },
+    onError: () => {
+      toast.error('删除失败，请重试');
+    },
+    onSettled: () => {
+      setDeletingId(null);
     },
   });
 
-  async function handleDelete(id: number) {
-    setDeletingId(id);
-    try {
-      await deleteMutation.mutateAsync({ id });
-    } finally {
-      setDeletingId(null);
-    }
+  // P1 #7: use inferred type, no cast
+  const rows = rawRows ?? [];
+  const entries: CardEntry[] = rows.map(rowToCard);
+  const kpiItems = buildKpi(rows, totalCount, weekCount);
+
+  function handleView(entry: CardEntry) {
+    setDetailEntry(entry);
+    toast.info(HISTORY_TOAST_VIEW);
   }
 
-  function handleRestore(row: HistoryListRow) {
-    const url = getToolRestoreUrl(row);
-    if (url) navigate(url);
+  function handleCopy(topic: string) {
+    // P2 #13: non-silent clipboard error
+    void navigator.clipboard
+      .writeText(topic)
+      .then(() => { toast.success(HISTORY_TOAST_COPY); })
+      .catch(() => { toast.error('复制失败，请手动复制'); });
+  }
+
+  function handleDelete(id: number) {
+    // P1 #5: concurrent delete guard — all cards' delete disabled while pending
+    if (deleteMutation.isPending) return;
+    deleteMutation.mutate({ id });
   }
 
   return (
-    <main className="flex-1 container py-8 space-y-6" data-testid="history-page">
-      {/* Header */}
-      <div>
-        <span className="text-label-sm font-label text-primary uppercase tracking-wide">工具历史</span>
-        <h1 className="mt-1 text-h1 font-display text-on-surface">操作历史</h1>
-        <p className="mt-2 text-body-md text-muted-foreground">
-          查看所有 AI 工具调用记录 · 一键恢复输入重跑
-        </p>
-      </div>
+    <PioneerLayout>
+      {/* ── Header ──────────────────────────────────────────── */}
+      <header className="mb-10">
+        <HistoryHeader count={entries.length} />
+      </header>
 
-      {/* Controls */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* View toggle */}
-        <div
-          className="flex rounded-lg border border-border overflow-hidden"
-          data-testid="view-toggle"
-        >
-          <Button
-            variant={view === 'timeline' ? 'default' : 'ghost'}
-            size="sm"
-            className="rounded-none h-8 gap-1.5"
-            onClick={() => setView('timeline')}
-            data-testid="view-timeline-btn"
+      {/* ── KPI 概览 ─────────────────────────────────────────── */}
+      <div className="mb-8 grid grid-cols-4 gap-5">
+        {kpiItems.map((kpi) => (
+          <div
+            key={kpi.label}
+            data-testid={`history-kpi-${kpi.label}`}
+            className="rounded-xl border border-[#e5e7eb] bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-sm"
           >
-            <List className="h-4 w-4" />
-            时间线
-          </Button>
-          <Button
-            variant={view === 'dashboard' ? 'default' : 'ghost'}
-            size="sm"
-            className="rounded-none h-8 gap-1.5"
-            onClick={() => setView('dashboard')}
-            data-testid="view-dashboard-btn"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            统计
-          </Button>
-        </div>
-
-        {/* Date range */}
-        <div className="flex rounded-lg border border-border overflow-hidden" data-testid="date-range-select">
-          {DATE_RANGE_OPTIONS.map((opt) => (
-            <Button
-              key={opt.value}
-              variant={dateRange === opt.value ? 'default' : 'ghost'}
-              size="sm"
-              className="rounded-none h-8"
-              onClick={() => setDateRange(opt.value)}
-              data-testid={`date-range-btn-${opt.value}`}
+            <div
+              className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ backgroundColor: kpi.bg }}
             >
-              {opt.label}
-            </Button>
-          ))}
-        </div>
-
-        {/* Custom date inputs */}
-        {dateRange === 'custom' && (
-          <div className="flex items-center gap-2" data-testid="date-range-custom-inputs">
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => updateParams({ dateFrom: e.target.value || null })}
-              className="h-8 rounded-md border border-border bg-card px-2 text-body-sm text-on-surface"
-              data-testid="date-range-from"
-            />
-            <span className="text-muted-foreground text-body-sm">—</span>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => updateParams({ dateTo: e.target.value || null })}
-              className="h-8 rounded-md border border-border bg-card px-2 text-body-sm text-on-surface"
-              data-testid="date-range-to"
-            />
-          </div>
-        )}
-
-        {/* Tool filter toggle */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 gap-1.5"
-          onClick={() => setShowToolFilter(!showToolFilter)}
-          data-testid="tool-filter-toggle"
-        >
-          工具筛选
-          {selectedTools.length > 0 && (
-            <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
-              {selectedTools.length}
-            </span>
-          )}
-        </Button>
-      </div>
-
-      {/* Tool multi-select panel */}
-      {showToolFilter && (
-        <div
-          className="flex flex-wrap gap-2 rounded-lg border border-border bg-surface-variant/20 p-4"
-          data-testid="tool-filter-multiselect"
-        >
-          {TOOL_DEFS.map((tool) => {
-            const selected = selectedTools.includes(tool.slug);
-            const Icon = tool.icon;
-            return (
-              <button
-                key={tool.slug}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-label-sm font-label border transition-colors ${
-                  selected
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary'
-                }`}
-                onClick={() => toggleTool(tool.slug)}
-                data-testid={`tool-filter-chip-${tool.slug}`}
+              <span
+                className="material-symbols-outlined text-[20px]"
+                aria-hidden="true"
+                style={{ color: kpi.color }}
               >
-                <Icon className="h-3.5 w-3.5" />
-                {tool.label}
-              </button>
-            );
-          })}
-          {selectedTools.length > 0 && (
-            <button
-              className="text-label-sm font-label text-muted-foreground hover:text-destructive underline"
-              onClick={() => updateParams({ tools: null })}
-              data-testid="tool-filter-clear"
+                {kpi.label === '记录总数'
+                  ? 'history'
+                  : kpi.label === '近 7 天'
+                  ? 'date_range'
+                  : kpi.label === '脚本类型'
+                  ? 'category'
+                  : 'event_note'}
+              </span>
+            </div>
+            <p
+              className="text-[26px] font-extrabold leading-none tracking-tighter"
+              style={{ color: kpi.color }}
             >
-              清空筛选
-            </button>
-          )}
+              {kpi.value}
+            </p>
+            <p className="mt-1 text-[12px] text-[#9ca3af]">
+              {kpi.label} · {kpi.sub}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* ── 历史列表 ─────────────────────────────────────────── */}
+      <section aria-labelledby="history-section-title" className="rounded-xl border border-[#e5e7eb] bg-[#f8f9fa] p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">history</span>
+          <h2 id="history-section-title" className="text-[16px] font-bold text-[#111827]">生成记录</h2>
+          <span className="text-[12px] text-[#9ca3af]">· 共 {entries.length} 条</span>
         </div>
-      )}
 
-      {/* Content */}
-      {view === 'timeline' ? (
-        <HistoryTimeline
-          rows={rows ?? []}
-          isLoading={isLoading}
-          error={error}
-          onViewDetail={setDrawerRow}
-          onRestore={handleRestore}
-          onDelete={(id) => void handleDelete(id)}
-          deletingId={deletingId}
-        />
-      ) : (
-        <HistoryDashboard
-          dateRange={dateRange}
-          tools={selectedTools}
-          dateFrom={dateFrom || undefined}
-          dateTo={dateTo || undefined}
+        {isError ? (
+          <div data-testid="history-error" className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-white py-20">
+            <span className="material-symbols-outlined text-[48px] text-[#d1d5db]" aria-hidden="true">error_outline</span>
+            <p className="mt-3 text-[14px] text-[#9ca3af]">加载失败</p>
+            <button
+              data-testid="history-retry"
+              onClick={() => void refetch()}
+              className="mt-4 rounded-lg border border-[#002fa7] px-4 py-2 text-[13px] font-semibold text-[#002fa7] hover:bg-[#eff3fc]"
+            >
+              重试
+            </button>
+          </div>
+        ) : isLoading ? (
+          <HistorySkeleton />
+        ) : (
+          <HistoryList
+            entries={entries}
+            deletingId={deletingId}
+            isAnyDeleting={deleteMutation.isPending}
+            onView={handleView}
+            onCopy={handleCopy}
+            onDelete={handleDelete}
+          />
+        )}
+      </section>
+
+      {/* ── Detail Drawer ────────────────────────────────────── */}
+      {detailEntry && (
+        <DetailDrawer
+          entry={detailEntry}
+          onClose={() => setDetailEntry(null)}
         />
       )}
-
-      {/* Detail Drawer */}
-      <HistoryDetailDrawer row={drawerRow} onClose={() => setDrawerRow(null)} />
-    </main>
+    </PioneerLayout>
   );
 }

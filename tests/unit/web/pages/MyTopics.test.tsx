@@ -1,7 +1,9 @@
 /**
- * MyTopics.test.tsx — PRD-15 US-007 AC-9
- * ≥ 8 unit tests: source-inspection (Node environment · no React render)
- * Covers: 2 view 切换 + URL state + 3 source 聚合 + 筛选 + 添加 Modal + 跳 Step 7 + 编辑 + 删除
+ * MyTopics.test.tsx — PRD-15 US-007 AC-9 (重写版)
+ * 源码自省测试 (readFileSync+toContain) · Node 环境 · 无 React render
+ * 断言当前先锋白接真设计:
+ *   tRPC list + countBySource · source filter chip · search 防抖 · copy/download
+ *   TopicCard · 空态 · accountId 安全 · 无旧 PRD-15 遗留(删 view-card-btn/edit/delete/modal 等)
  */
 
 import { describe, it, expect } from 'vitest';
@@ -9,215 +11,257 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 const ROOT = resolve(__dirname, '../../../../');
-const MY_TOPICS_PAGE  = `${ROOT}/apps/web/src/pages/modules/MyTopics.tsx`;
+const MY_TOPICS_PAGE   = `${ROOT}/apps/web/src/pages/modules/MyTopics.tsx`;
 const MY_TOPICS_ROUTER = `${ROOT}/apps/api/src/trpc/routers/app/myTopics.ts`;
+const MY_TOPICS_CONSTS = `${ROOT}/apps/web/src/lib/constants/myTopics.ts`;
 
 function src(path: string): string {
   return readFileSync(path, 'utf-8');
 }
 
-// ── 1 · 页面规模 + 2 view ───────────────────────────────────────────────────
+// ── 1 · 页面规模 + 基础结构 ───────────────────────────────────────────────────
 
-describe('View switching (AC-1 + AC-2 + AC-3)', () => {
+describe('Page structure (先锋白设计)', () => {
   it('MyTopics.tsx has 200+ lines', () => {
     const lines = src(MY_TOPICS_PAGE).split('\n').length;
     expect(lines).toBeGreaterThan(200);
   });
 
-  it('renders card-grid container (卡片视图)', () => {
-    expect(src(MY_TOPICS_PAGE)).toContain('card-grid');
+  it('renders PioneerLayout wrapper', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('PioneerLayout');
   });
 
-  it('renders topic-table container (表格视图)', () => {
-    expect(src(MY_TOPICS_PAGE)).toContain('topic-table');
+  it('data-testid="my-topics-page" root wrapper', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('my-topics-page');
   });
 
-  it('view toggle buttons: view-card-btn + view-table-btn', () => {
+  it('has back-link testid + uses MY_TOPICS_BACK_HREF constant (resolves to /step/5)', () => {
     const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('view-card-btn');
-    expect(page).toContain('view-table-btn');
-    expect(page).toContain('view-toggle');
+    expect(page).toContain('back-link');
+    // Page uses constants (MY_TOPICS_BACK_HREF) not hardcoded literals
+    expect(page).toContain('MY_TOPICS_BACK_HREF');
+    // Constants file contains the actual /step/5 value
+    expect(src(MY_TOPICS_CONSTS)).toContain('/step/5');
+  });
+
+  it('has breadcrumb-chip + h1-title + subtitle testids', () => {
+    const page = src(MY_TOPICS_PAGE);
+    expect(page).toContain('breadcrumb-chip');
+    expect(page).toContain('h1-title');
+    expect(page).toContain('subtitle');
   });
 });
 
-// ── 2 · URL state (AC-4) ─────────────────────────────────────────────────────
+// ── 2 · tRPC 接真 — list + countBySource ─────────────────────────────────────
 
-describe('URL state deep-link (AC-4)', () => {
-  it('uses useSearchParams for URL state', () => {
-    expect(src(MY_TOPICS_PAGE)).toContain('useSearchParams');
+describe('tRPC real wiring', () => {
+  it('uses trpc.myTopics.list.useQuery', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('trpc.myTopics.list.useQuery');
   });
 
-  it('URL state covers view/source/industry/search/page', () => {
+  it('passes source/search/page/pageSize to list query', () => {
     const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain("'view'");
-    expect(page).toContain("'source'");
-    expect(page).toContain("'industry'");
-    expect(page).toContain("'search'");
-    expect(page).toContain("'page'");
+    expect(page).toContain('source: filter');
+    expect(page).toContain('pageSize: 100');
   });
 
-  it('setSearchParams called via updateParams', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('setSearchParams');
-    expect(page).toContain('updateParams');
+  it('uses trpc.myTopics.countBySource.useQuery for stable KPI', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('trpc.myTopics.countBySource.useQuery');
+  });
+
+  it('uses keepPreviousData to suppress flicker on filter switch', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('keepPreviousData');
   });
 });
 
-// ── 3 · 3 source 聚合 (AC-5) ─────────────────────────────────────────────────
+// ── 3 · 搜索防抖 ─────────────────────────────────────────────────────────────
 
-describe('3-source aggregation (AC-5)', () => {
-  it('backend list reads step_data for step5 source', () => {
-    const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('stepData.findMany');
-    expect(router).toContain("'step5'");
+describe('Search debounce (P1)', () => {
+  it('search input data-testid="search-input" exists', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('search-input');
   });
 
-  it('backend list reads trendingFavorite for trending source', () => {
-    const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('trendingFavorite.findMany');
-    expect(router).toContain('trendingItem.findMany');
+  it('useDebounce / debounce logic present (300ms)', () => {
+    const page = src(MY_TOPICS_PAGE);
+    // Either a useDebounce hook or explicit setTimeout(300)
+    expect(page).toMatch(/useDebounce|300/);
   });
 
-  it('backend list reads topics table for manual source', () => {
-    const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('topic.findMany');
-    expect(router).toContain("sourceType: 'manual'");
+  it('debouncedSearch used in query (not raw search)', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('debouncedSearch');
   });
 });
 
-// ── 4 · 多维筛选 (AC-6) ──────────────────────────────────────────────────────
+// ── 4 · source filter chips ──────────────────────────────────────────────────
 
-describe('Multi-dimension filter (AC-6)', () => {
-  it('source filter tabs: all/step5/trending/manual', () => {
+describe('Source filter chips (对齐后端)', () => {
+  it('filter-chips container testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('filter-chips');
+  });
+
+  it('filter-chip-all / step5 / trending / manual testids via template literal', () => {
     const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('source-filter');
-    // Dynamic testid via template literal: data-testid={`source-tab-${s}`}
-    expect(page).toContain('source-tab-');
+    expect(page).toContain('filter-chip-');
     expect(page).toContain("'all'");
     expect(page).toContain("'step5'");
     expect(page).toContain("'trending'");
     expect(page).toContain("'manual'");
   });
 
-  it('IndustryDropdown used for industry filter', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('IndustryDropdown');
-    expect(page).toContain("from '@/components/IndustryDropdown'");
-  });
-
-  it('search input with data-testid="search-input"', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('search-input');
-    expect(page).toContain('搜索选题标题');
+  it('MY_TOPICS_FILTERS drives filter chips (no hardcoded labels)', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('MY_TOPICS_FILTERS');
   });
 });
 
-// ── 5 · 添加选题 Modal (AC-7) ────────────────────────────────────────────────
+// ── 5 · TopicCard 渲染 ────────────────────────────────────────────────────────
 
-describe('AddTopicModal (AC-7)', () => {
-  it('btn-add-topic button triggers modal', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('btn-add-topic');
-    expect(page).toContain('添加选题');
+describe('TopicCard rendering', () => {
+  it('topic-card-{index} testid via template literal', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('topic-card-');
   });
 
-  it('AddTopicModal has title input + industry dropdown + platform input', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('add-topic-modal');
-    expect(page).toContain('add-topic-title-input');
-    expect(page).toContain('add-topic-platform-input');
-    expect(page).toContain('add-topic-submit');
+  it('topic-title-{index} testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('topic-title-');
   });
 
-  it('AddTopicModal calls trpc.myTopics.add.useMutation()', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('trpc.myTopics.add.useMutation');
-  });
-});
-
-// ── 6 · 一键到 Step 7 (AC-8) ─────────────────────────────────────────────────
-
-describe('Step 7 jump (AC-8)', () => {
-  it('navigates to /step/7 with topic + source=mytopics + topicId', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('/step/7');
-    expect(page).toContain("'mytopics'");
-    expect(page).toContain('topicId');
+  it('topic-source-badge-{index} testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('topic-source-badge-');
   });
 
-  it('btn-step7 appears in card view', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('btn-step7-');
-    expect(page).toContain('一键到 Step 7');
+  it('topic-list testid on grid wrapper', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('topic-list');
   });
 
-  it('table-btn-step7 appears in table view', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('table-btn-step7-');
+  it('topic-list-skeleton testid on skeleton loader', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('topic-list-skeleton');
   });
 });
 
-// ── 7 · 编辑选题 (manual only) ───────────────────────────────────────────────
+// ── 6 · copy / download 成功 toast ───────────────────────────────────────────
 
-describe('Edit topic (AC-8 extension)', () => {
-  it('edit button only for manual topics', () => {
-    const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain("item.source === 'manual'");
-    expect(page).toContain('edit-topic-modal');
-    expect(page).toContain('edit-topic-title-input');
-    expect(page).toContain('edit-topic-submit');
+describe('Copy / Download actions (toast 修复)', () => {
+  it('copy-all-btn testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('copy-all-btn');
   });
 
-  it('edit calls trpc.myTopics.update.useMutation()', () => {
+  it('download-txt-btn testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('download-txt-btn');
+  });
+
+  it('成功 toast 用 MY_TOPICS_TOAST_COPY_SUCCESS (非空列表文案)', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('MY_TOPICS_TOAST_COPY_SUCCESS');
+  });
+
+  it('成功 toast 用 MY_TOPICS_TOAST_DOWNLOAD_SUCCESS (非空列表文案)', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('MY_TOPICS_TOAST_DOWNLOAD_SUCCESS');
+  });
+
+  it('空列表 toast 用 toast.info + 原空态文案 (MY_TOPICS_TOAST_COPY)', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('MY_TOPICS_TOAST_COPY');
+    expect(src(MY_TOPICS_PAGE)).toContain('toast.info');
+  });
+
+  it('download uses URL.createObjectURL + navigator.clipboard or Blob', () => {
     const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('trpc.myTopics.update.useMutation');
+    expect(page).toContain('URL.createObjectURL');
+    expect(page).toContain('Blob');
   });
 });
 
-// ── 8 · 删除选题 + 后端 procedures (AC-9 + AC-10) ─────────────────────────────
+// ── 7 · 空态 ─────────────────────────────────────────────────────────────────
 
-describe('Delete + backend procedures (AC-10)', () => {
-  it('delete button on every topic item', () => {
+describe('Empty state', () => {
+  it('empty-state testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('empty-state');
+  });
+
+  it('empty-cta-btn testid', () => {
+    expect(src(MY_TOPICS_PAGE)).toContain('empty-cta-btn');
+  });
+
+  it('empty-title + empty-desc testids', () => {
     const page = src(MY_TOPICS_PAGE);
-    expect(page).toContain('btn-delete-');
-    expect(page).toContain('trpc.myTopics.delete.useMutation');
+    expect(page).toContain('empty-title');
+    expect(page).toContain('empty-desc');
   });
 
-  it('backend has 5 procedures: list/add/update/delete/countBySource', () => {
-    const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('list:');
-    expect(router).toContain('add:');
-    expect(router).toContain('update:');
-    expect(router).toContain('delete:');
-    expect(router).toContain('countBySource:');
+  it('error-state testid + retry-btn', () => {
+    const page = src(MY_TOPICS_PAGE);
+    expect(page).toContain('error-state');
+    expect(page).toContain('retry-btn');
+  });
+});
+
+// ── 8 · constants 对齐 ────────────────────────────────────────────────────────
+
+describe('Constants alignment', () => {
+  it('no lucide imports in constants (禁 lucide)', () => {
+    expect(src(MY_TOPICS_CONSTS)).not.toContain("from 'lucide-react'");
   });
 
-  it('backend list supports source/industry/search/page/pageSize filters', () => {
-    const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('source');
-    expect(router).toContain('industry');
-    expect(router).toContain('search');
-    expect(router).toContain('page');
-    expect(router).toContain('pageSize');
+  it('TopicFilter interface 无 icon 字段', () => {
+    const consts = src(MY_TOPICS_CONSTS);
+    // interface TopicFilter should not contain icon
+    const interfaceMatch = consts.match(/interface TopicFilter\s*\{[\s\S]*?\}/);
+    expect(interfaceMatch).not.toBeNull();
+    expect(interfaceMatch![0]).not.toContain('icon');
   });
 
-  it('backend add creates topic with sourceType=manual', () => {
-    const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('topic.create');
-    expect(router).toContain("sourceType: 'manual'");
+  it('MY_TOPICS_SEARCH_PLACEHOLDER 不含"行业"(只搜标题)', () => {
+    expect(src(MY_TOPICS_CONSTS)).not.toContain('行业');
+    expect(src(MY_TOPICS_CONSTS)).toContain('搜索选题标题');
   });
 
-  it('backend delete handles both manual and trending sources', () => {
+  it('MY_TOPICS_TOAST_COPY_SUCCESS 和 MY_TOPICS_TOAST_DOWNLOAD_SUCCESS 存在', () => {
+    const consts = src(MY_TOPICS_CONSTS);
+    expect(consts).toContain('MY_TOPICS_TOAST_COPY_SUCCESS');
+    expect(consts).toContain('MY_TOPICS_TOAST_DOWNLOAD_SUCCESS');
+  });
+});
+
+// ── 9 · 后端安全 accountId isolation ─────────────────────────────────────────
+
+describe('Backend accountId isolation (TD-019)', () => {
+  it('list: stepData.findMany where 含 accountId', () => {
     const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('topic.deleteMany');
-    expect(router).toContain('trendingFavorite.deleteMany');
+    const match = router.match(/stepData\.findMany\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(match).not.toBeNull();
+    expect(match![0]).toContain('accountId');
   });
 
-  it('backend countBySource returns step5/trending/manual counts', () => {
+  it('countBySource: stepData.findFirst where 含 accountId', () => {
     const router = src(MY_TOPICS_ROUTER);
-    expect(router).toContain('countBySource');
-    expect(router).toContain('step5Count');
-    expect(router).toContain('trendingCount');
-    expect(router).toContain('manualCount');
+    const match = router.match(/stepData\.findFirst\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(match).not.toBeNull();
+    expect(match![0]).toContain('accountId');
+  });
+
+  it('trendingFavorite.findMany where 含 accountId', () => {
+    const router = src(MY_TOPICS_ROUTER);
+    const match = router.match(/trendingFavorite\.findMany\(\s*\{[\s\S]*?\}\s*\)/);
+    expect(match).not.toBeNull();
+    expect(match![0]).toContain('accountId');
+  });
+});
+
+// ── 10 · FILTER_ICON Material Symbols ────────────────────────────────────────
+
+describe('FILTER_ICON Material Symbols (禁 lucide)', () => {
+  it('FILTER_ICON covers all 4 keys', () => {
+    const page = src(MY_TOPICS_PAGE);
+    expect(page).toContain('FILTER_ICON');
+    expect(page).toContain("all:");
+    expect(page).toContain("step5:");
+    expect(page).toContain("trending:");
+    expect(page).toContain("manual:");
+  });
+
+  it('FILTER_ICON values are material symbol strings not lucide components', () => {
+    const page = src(MY_TOPICS_PAGE);
+    // Material symbol names
+    expect(page).toContain('filter_list');
+    expect(page).toContain('auto_awesome');
+    expect(page).toContain('local_fire_department');
+    expect(page).toContain('bookmark_added');
   });
 });

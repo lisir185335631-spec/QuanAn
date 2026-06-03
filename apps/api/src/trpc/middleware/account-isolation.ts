@@ -46,6 +46,13 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next, t
   // set_config(name, value, is_local=true) is transaction-scoped (equivalent to SET LOCAL).
   // Wrapping in $transaction ensures is_local applies correctly — parameters are cleared on commit.
   // SET LOCAL ROLE quanan_app ensures RLS policies apply even when the connection owner is a superuser.
+  //
+  // timeout=70000ms: LLM-backed mutations (VideoAgent/PositioningAgent/etc.) take up to 45s per
+  // invocation + 1 retry = ~90s worst case, but in practice < 60s. The previous 5000ms default
+  // caused "Transaction already closed" 500s for any LLM call. 70s covers the VideoAgent
+  // timeout_ms=45000 with buffer; fast non-LLM procedures commit in milliseconds regardless.
+  // maxWait=5000ms: time Prisma waits to acquire a connection before failing — keep low so the
+  // pool doesn't get starved waiting for a slot when under load.
   return ctx.prisma.$transaction(async (tx) => {
     // Switch to non-superuser role so RLS policies are enforced (superusers bypass RLS by default)
     await tx.$executeRaw`SET LOCAL ROLE quanan_app`;
@@ -55,7 +62,7 @@ export const accountIsolationMiddleware = middleware(async ({ ctx, meta, next, t
     }
     // Pass the transaction client as prisma so resolver queries are inside the same transaction
     return next({ ctx: { ...ctx, prisma: tx as unknown as PrismaClient } });
-  });
+  }, { timeout: 70_000, maxWait: 5_000 });
 });
 
 /**

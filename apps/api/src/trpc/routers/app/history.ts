@@ -110,6 +110,30 @@ function buildDateFilter(
 
 export const historyRouter = router({
   /**
+   * count: total history rows for the active account, with optional dateRange filter.
+   * Used by frontend KPI cards to get true total (unbounded by list's max 100).
+   */
+  count: protectedProcedure
+    .input(
+      z.object({
+        dateRange: z.enum(DATE_RANGE_VALUES).optional(),
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+      }).optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma, activeAccountId } = ctx;
+      const dateRange = input?.dateRange ?? 'all';
+      const dateFilter = buildDateFilter(dateRange, { dateFrom: input?.dateFrom, dateTo: input?.dateTo });
+      return prisma.history.count({
+        where: {
+          accountId: activeAccountId!,
+          ...dateFilter,
+        },
+      });
+    }),
+
+  /**
    * AC-1,2: list with optional filters, pagination, ordered by createdAt desc
    * AC-12: limit capped at 100 by zod max
    * US-008 AC-7: tools[] → agentId IN () via toolsToAgentIds

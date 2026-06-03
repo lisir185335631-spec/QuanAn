@@ -30,8 +30,26 @@ const ApprovalGatesPage = lazy(/* webpackChunkName: "p1-health" */ () => import(
 
 // PRD-28 Evaluation
 const EvaluationPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationPage'));
+
+// PRD-29 Diagnosis
+const DiagnosisPage = lazy(/* webpackChunkName: "p1-health" */ () => import('./pages/diagnosis/index'));
 const EvaluationDetailPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/EvaluationDetailPage'));
 const InterRaterPage = lazy(/* webpackChunkName: "admin-evaluation" */ () => import('./pages/evaluation/InterRaterPage'));
+
+// PRD-29.6 LLM Config
+const LlmConfigPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/llmConfig/LlmConfigPage'));
+
+// PRD-29 StepData
+const StepDataPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/stepData/index'));
+
+// PRD-29 History (生成历史)
+const HistoryPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/history/index'));
+
+// PRD-29 Topics (选题库)
+const TopicsPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/topics/index'));
+
+// PRD-29 DailyTasks (每日任务)
+const DailyTasksPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/dailyTasks/index'));
 
 // P2 高级
 const AbExperimentsPage = lazy(/* webpackChunkName: "p2-advanced" */ () => import('./pages/abExperiments/AbExperimentsPage'));
@@ -71,6 +89,9 @@ export function AdminRoutes() {
 
           {/* PRD-28 Evaluation */}
           <Route path="evaluation" element={<EvaluationPage />} />
+
+          {/* PRD-29 Diagnosis */}
+          <Route path="diagnosis" element={<DiagnosisPage />} />
           <Route path="evaluation/:runId" element={<EvaluationDetailPage />} />
           {/* AC-7: inter-rater route · nav 不显示(仅 click-through) */}
           <Route path="evaluation/inter-rater/:runId" element={<InterRaterPage />} />
@@ -81,6 +102,21 @@ export function AdminRoutes() {
           <Route path="constants" element={<ConstantsPage />} />
           <Route path="knowledge" element={<KnowledgePlaceholder />} />
           <Route path="feature-flags" element={<FeatureFlagsPage />} />
+
+          {/* PRD-29.6 LLM Config */}
+          <Route path="llm-config" element={<LlmConfigPage />} />
+
+          {/* PRD-29 StepData */}
+          <Route path="step-data" element={<StepDataPage />} />
+
+          {/* PRD-29 History (生成历史) */}
+          <Route path="history" element={<HistoryPage />} />
+
+          {/* PRD-29 Topics (选题库) */}
+          <Route path="topics" element={<TopicsPage />} />
+
+          {/* PRD-29 DailyTasks (每日任务) */}
+          <Route path="daily-tasks" element={<DailyTasksPage />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/login" replace />} />

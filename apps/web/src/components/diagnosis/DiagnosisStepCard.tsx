@@ -1,8 +1,17 @@
-// D-226 · 通用 8 step 向导组件 · controlled props · 不 hardcode 维度
+// D-227 → Sally 1:1 · 8 step wizard card
+// SPEC §6.2 大改 · step header 灰小字 · Step1 2x2 grid · DimensionIconBlock · lucide ✕/✓ · dim placeholders
 
-import { Button } from '@/components/ui/button';
-import { type DiagnosisDimension, DIAGNOSIS_STAGES_4, DIAGNOSIS_NOTES_PLACEHOLDER } from '@/lib/constants/diagnosis';
+import {
+  type DiagnosisDimension,
+  DIAGNOSIS_STAGES_4,
+  DIAGNOSIS_NOTES_PLACEHOLDER,
+  DIAGNOSIS_STEP1_LABELS,
+  DIAGNOSIS_DIMENSION_PLACEHOLDERS,
+  DIAGNOSIS_BUTTONS,
+} from '@/lib/constants/diagnosis';
 import { cn } from '@/lib/utils';
+
+import { DimensionIconBlock } from './DimensionIconBlock';
 
 export interface DiagnosisStepCardProps {
   stepIndex: number;        // 1-8
@@ -46,138 +55,195 @@ export function DiagnosisStepCard({
 }: DiagnosisStepCardProps) {
   const isStep1 = dimension.id === 'basic';
 
+  const inputCls =
+    'w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]';
+  const labelCls =
+    'mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-[\'\']';
+
   return (
     <div className="flex flex-col gap-6" data-testid="diagnosis-step-card">
-      {/* Header */}
-      <div className="flex flex-col gap-1">
-        <p className="text-label-sm font-label text-primary uppercase tracking-wide">
-          步骤 {stepIndex} / {totalSteps} · {dimension.label}
-        </p>
-        <h2 className="text-h2 font-display text-on-surface">{dimension.label}</h2>
-        <p className="text-body-md text-muted-foreground">{dimension.subtitle}</p>
-      </div>
+      {/* Step label */}
+      <p className="text-[13px] font-semibold text-[#9ca3af] uppercase tracking-widest">
+        步骤 {stepIndex}/{totalSteps} · {dimension.label}
+      </p>
 
-      {/* Step 1: 基本信息 — industry / product / stage */}
+      {/* Step 1: 基本信息 — industry / product / stage 2x2 grid */}
       {isStep1 && (
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-2">
-            <label className="text-label-sm font-label text-on-surface" htmlFor="diagnosis-industry">
-              行业
+        <div className="flex flex-col gap-6">
+          {/* 行业输入 */}
+          <div>
+            <label className={labelCls} htmlFor="diagnosis-industry">
+              {DIAGNOSIS_STEP1_LABELS.industry}
             </label>
-            <input
-              id="diagnosis-industry"
-              data-testid="diagnosis-industry"
-              className="rounded-md border border-border bg-surface-container px-3 py-2 text-body-md text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="请输入你的行业，如：美业"
-              value={industry}
-              onChange={(e) => onIndustryChange?.(e.target.value)}
-            />
+            <div className="relative">
+              <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]" aria-hidden="true">category</span>
+              <input
+                id="diagnosis-industry"
+                data-testid="diagnosis-industry"
+                className={inputCls}
+                placeholder="例如：美业、电商、知识付费..."
+                value={industry}
+                onChange={(e) => onIndustryChange?.(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-label-sm font-label text-on-surface" htmlFor="diagnosis-product">
-              产品
+          {/* 产品输入 */}
+          <div>
+            <label className={labelCls} htmlFor="diagnosis-product">
+              {DIAGNOSIS_STEP1_LABELS.product}
             </label>
-            <input
-              id="diagnosis-product"
-              data-testid="diagnosis-product"
-              className="rounded-md border border-border bg-surface-container px-3 py-2 text-body-md text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="请输入你的产品或服务，如：皮肤管理"
-              value={product}
-              onChange={(e) => onProductChange?.(e.target.value)}
-            />
+            <div className="relative">
+              <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]" aria-hidden="true">inventory_2</span>
+              <input
+                id="diagnosis-product"
+                data-testid="diagnosis-product"
+                className={inputCls}
+                placeholder="例如：皮肤管理项目、智能体定制..."
+                value={product}
+                onChange={(e) => onProductChange?.(e.target.value)}
+              />
+            </div>
           </div>
+          {/* 阶段 2x2 grid 4 cards */}
           <div className="flex flex-col gap-3">
-            <p className="text-label-sm font-label text-on-surface">当前阶段</p>
-            {DIAGNOSIS_STAGES_4.map((s) => (
-              <label
-                key={s.value}
-                data-testid={`diagnosis-stage-${s.value}`}
-                className={cn(
-                  'flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-all',
-                  stage === s.value
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border bg-card hover:border-primary/40',
-                )}
-              >
-                <input
-                  type="radio"
-                  name="diagnosis-stage"
-                  value={s.value}
-                  checked={stage === s.value}
-                  onChange={() => onStageChange?.(s.value)}
-                  className="accent-primary"
-                  aria-label={s.label}
-                />
-                <span className="text-body-md text-on-surface">{s.label}</span>
-              </label>
-            ))}
+            <p id="diagnosis-stage-label" className={labelCls}>{DIAGNOSIS_STEP1_LABELS.stage}</p>
+            <div role="radiogroup" aria-labelledby="diagnosis-stage-label" className="grid grid-cols-2 gap-4">
+              {DIAGNOSIS_STAGES_4.map((s) => (
+                <div
+                  key={s.value}
+                  role="radio"
+                  aria-checked={stage === s.value}
+                  tabIndex={0}
+                  data-testid={`diagnosis-stage-${s.value}`}
+                  className={cn(
+                    'cursor-pointer flex flex-col gap-1 rounded-xl border px-4 py-3.5 transition-all',
+                    stage === s.value
+                      ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm'
+                      : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]',
+                  )}
+                  onClick={() => onStageChange?.(s.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') onStageChange?.(s.value);
+                  }}
+                >
+                  <span
+                    className={cn(
+                      'text-[15px] font-bold',
+                      stage === s.value ? 'text-[#002fa7]' : 'text-[#111827]',
+                    )}
+                  >
+                    {s.label}
+                  </span>
+                  <span className="text-[13px] text-[#6b7280]">{s.desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Step 2-8: checkbox list + notes */}
+      {/* Step 2-8: icon block + checkbox chips + notes */}
       {!isStep1 && (
         <div className="flex flex-col gap-5">
+          <DimensionIconBlock
+            dimensionId={dimension.id}
+            label={dimension.label}
+            subtitle={dimension.subtitle}
+          />
+          {/* Checkbox chips — 可多选卡片 */}
           <div className="flex flex-col gap-3">
             {dimension.checkboxes.map((item) => {
               const checked = selectedCheckboxes.includes(item);
               return (
-                <label
+                <div
                   key={item}
+                  role="checkbox"
+                  aria-checked={checked}
+                  aria-label={item}
+                  tabIndex={0}
                   data-testid={`diagnosis-checkbox-${item}`}
                   className={cn(
-                    'flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-all',
+                    'flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 transition-all',
                     checked
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-card hover:border-primary/40',
+                      ? 'border-[#002fa7] bg-[#002fa7]/[0.05] shadow-sm'
+                      : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]',
                   )}
+                  onClick={() => onCheckboxToggle(item)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') onCheckboxToggle(item);
+                  }}
                 >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => onCheckboxToggle(item)}
-                    className="mt-0.5 accent-primary"
-                    aria-label={item}
-                  />
-                  <span className="text-body-md text-on-surface">{item}</span>
-                </label>
+                  {checked ? (
+                    <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#002fa7] shrink-0 icon-fill" aria-hidden="true">check_circle</span>
+                  ) : (
+                    <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#c4c5d6] shrink-0" aria-hidden="true">radio_button_unchecked</span>
+                  )}
+                  <span
+                    className={cn(
+                      'text-[15px] leading-relaxed',
+                      checked ? 'font-medium text-[#111827]' : 'text-[#444653]',
+                    )}
+                  >
+                    {item}
+                  </span>
+                </div>
               );
             })}
           </div>
+          {/* Notes textarea */}
           <div className="flex flex-col gap-2">
-            <label className="text-label-sm font-label text-muted-foreground" htmlFor={`diagnosis-notes-${stepIndex}`}>
+            <label
+              className={labelCls}
+              htmlFor={`diagnosis-notes-${stepIndex}`}
+            >
               {DIAGNOSIS_NOTES_PLACEHOLDER}
             </label>
-            <textarea
-              id={`diagnosis-notes-${stepIndex}`}
-              data-testid="diagnosis-notes"
-              className="min-h-[80px] rounded-md border border-border bg-surface-container px-3 py-2 text-body-md text-on-surface placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-              placeholder={DIAGNOSIS_NOTES_PLACEHOLDER}
-              value={notes}
-              onChange={(e) => onNotesChange(e.target.value)}
-            />
+            <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+              <textarea
+                id={`diagnosis-notes-${stepIndex}`}
+                data-testid="diagnosis-notes"
+                className="min-h-[80px] w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                placeholder={DIAGNOSIS_DIMENSION_PLACEHOLDERS[dimension.id] ?? ''}
+                value={notes}
+                onChange={(e) => onNotesChange(e.target.value)}
+              />
+            </div>
           </div>
         </div>
       )}
 
       {/* Navigation */}
       <div className="flex items-center justify-between pt-2">
-        <Button
+        <button
           type="button"
-          variant="outline"
           onClick={onPrev}
           disabled={isFirst}
           data-testid="diagnosis-prev"
+          aria-label="上一步"
+          className="flex items-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#444653] transition-colors hover:bg-[#f3f3f3] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          上一步
-        </Button>
-        <Button
+          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_back</span>
+          {DIAGNOSIS_BUTTONS.prev}
+        </button>
+        <button
           type="button"
           onClick={onNext}
           data-testid="diagnosis-next"
+          aria-label={isLast ? DIAGNOSIS_BUTTONS.generate : DIAGNOSIS_BUTTONS.next}
+          className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-6 py-2.5 text-[14px] font-bold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:bg-[#001e73] active:translate-y-px"
         >
-          {isLast ? '生成诊断报告' : '下一步'}
-        </Button>
+          {isLast ? (
+            <>
+              {DIAGNOSIS_BUTTONS.generate}
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">stethoscope</span>
+            </>
+          ) : (
+            <>
+              {DIAGNOSIS_BUTTONS.next}
+              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export type TrendingPlatform = 'douyin' | 'xiaohongshu' | 'bilibili' | 'kuaishou' | 'shipinhao' | 'weibo';
 export type TimeRange = 'today' | 'week' | 'month' | 'quarter';
-export type SortField = 'likeCount' | 'commentCount' | 'shareCount' | 'collectCount';
+export type SortField = 'likeCount' | 'commentCount' | 'shareCount';
 
 export interface TrendingFilterState {
   platforms: TrendingPlatform[];
@@ -47,7 +47,6 @@ const SORT_OPTIONS: Array<{ value: SortField; label: string }> = [
   { value: 'likeCount', label: '按点赞' },
   { value: 'commentCount', label: '按评论' },
   { value: 'shareCount', label: '按转发' },
-  { value: 'collectCount', label: '按收藏' },
 ];
 
 export function TrendingFilters({ filters, onChange }: TrendingFiltersProps) {

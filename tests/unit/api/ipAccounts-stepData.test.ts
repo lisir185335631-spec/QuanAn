@@ -38,6 +38,7 @@ function makeCtx(overrides: Record<string, unknown> = {}) {
       findFirst: vi.fn(async () => null),
       create: vi.fn(async (args: { data: Record<string, unknown> }) => ({ id: 99, ...args.data })),
       update: vi.fn(async (args: { data: Record<string, unknown> }) => ({ id: 1, ...args.data })),
+      updateMany: vi.fn(async () => ({ count: 1 })),
     },
     stepData: {
       findMany: vi.fn(async () => []),
@@ -145,14 +146,28 @@ describe('ipAccounts.create', () => {
 });
 
 describe('ipAccounts.update', () => {
-  it('updates the active account (where:{id: activeAccountId})', async () => {
+  it('updates via updateMany scoped to {id, userId} (atomic ownership · defaults to active account)', async () => {
     const { ctx, prisma } = makeCtx({ activeAccountId: 5 });
-    prisma.ipAccount.update.mockResolvedValueOnce({ id: 5, name: 'Updated', industry: 'food', platform: 'wechat', stage: 'growth', isActive: true, followersRange: '1k-10k' });
+    prisma.ipAccount.updateMany.mockResolvedValueOnce({ count: 1 });
+    prisma.ipAccount.findFirst.mockResolvedValueOnce({ id: 5, name: 'Updated', industry: 'food', platform: 'wechat', stage: 'growth', isActive: true, followersRange: '1k-10k' });
     const caller = ipAccountsRouter.createCaller(ctx);
     await caller.update({ name: 'Updated' });
-    expect(prisma.ipAccount.update).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id: 5 },
+    expect(prisma.ipAccount.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: 5, userId: 42 },
     }));
+  });
+
+  it('rejects update with no fields (BAD_REQUEST)', async () => {
+    const { ctx } = makeCtx({ activeAccountId: 5 });
+    const caller = ipAccountsRouter.createCaller(ctx);
+    await expect(caller.update({})).rejects.toThrow(TRPCError);
+  });
+
+  it('throws NOT_FOUND when the account is not owned (count=0)', async () => {
+    const { ctx, prisma } = makeCtx({ activeAccountId: 5 });
+    prisma.ipAccount.updateMany.mockResolvedValueOnce({ count: 0 });
+    const caller = ipAccountsRouter.createCaller(ctx);
+    await expect(caller.update({ accountId: 999, name: 'X' })).rejects.toThrow('account_not_found');
   });
 });
 

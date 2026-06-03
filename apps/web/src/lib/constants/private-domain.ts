@@ -19,3 +19,13 @@ export const PRIVATE_DOMAIN_STAGES: readonly Stage[] = [
   { value: 'close', label: '成交话术', icon: 'Handshake', desc: '临门一脚 + 价格谈判 + 异议处理' },
   { value: 'follow', label: '售后跟进', icon: 'RefreshCw', desc: '复购唤醒 + 转介绍 + 流失挽回' },
 ] as const;
+
+// ─── PRD-29.13 · 真实字面 ──────────────────────────────────
+export const PRIVATE_DOMAIN_H1 = '私域成交流程' as const;
+export const PRIVATE_DOMAIN_SUBTITLE = '覆盖从加好友到成交复购的全链路话术，让私域转化率翻倍' as const;
+export const PRIVATE_DOMAIN_FORM_PRODUCT_LABEL = '产品/服务名称' as const;
+export const PRIVATE_DOMAIN_FORM_TARGET_LABEL = '目标用户' as const;
+export const PRIVATE_DOMAIN_FORM_SCENARIO_LABEL = '具体场景' as const;
+export const PRIVATE_DOMAIN_CTA_GENERATE = '生成话术' as const;
+export const PRIVATE_DOMAIN_CTA_COPY_ALL = '复制全部话术' as const;
+export const PRIVATE_DOMAIN_FOOTER_FEEDBACK = '这个结果对你有帮助吗？' as const;

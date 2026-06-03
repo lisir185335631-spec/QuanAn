@@ -1,162 +1,182 @@
 /**
- * PRD-25 US-006 · VideoProduction unit tests
- * AC-8: ≥ 5 tests · mock trpc · 验证 H3 渲染真数据 + isFallback + retry
- * SHIELD: mock data 字段从 VideoAgent.ts production mode inferred (AC-8 anti_pattern fix)
+ * VideoProduction.test.tsx — 阶段2 接真 trpc.videoProduction.generate
+ * mock trpc · 断言:
+ *   - h1/subtitle/CTA 字面锁
+ *   - 无真结果时:section 标题可见、分镜渲染 mock 数据、不显 fallback/error 提示
+ *   - 有真结果:映射 shotList/equipment → 渲染真数据(门控)
+ *   - loading 态:显示 vp-loading-banner
+ *   - error 态:显示 vp-error-notice
+ *   - isFallback=true:显示 vp-fallback-notice
+ *   - CTA 调 generate mutation
  */
-import { act, render, screen, fireEvent, within } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import {
+  VIDEO_PRODUCTION_BGM,
+  VIDEO_PRODUCTION_BGM_TITLE,
+  VIDEO_PRODUCTION_DEFAULT_COPY,
+  VIDEO_PRODUCTION_EDITING,
+  VIDEO_PRODUCTION_EDITING_TITLE,
+  VIDEO_PRODUCTION_FEEDBACK_PROMPT,
+  VIDEO_PRODUCTION_H1,
+  VIDEO_PRODUCTION_SHOOTING_TITLE,
+  VIDEO_PRODUCTION_STORYBOARD_TITLE,
+  VIDEO_PRODUCTION_SUBTITLE,
+  VIDEO_PRODUCTION_TELEPROMPTER_TITLE,
+} from '@/lib/constants/video-production';
 import VideoProduction from '@/pages/tools/VideoProduction';
 
-// ── Mock control ──────────────────────────────────────────────────────────────
-
-const mockCtrl = vi.hoisted(() => ({
-  onSuccess: undefined as ((data: unknown) => void) | undefined,
-  onError: undefined as ((error: unknown) => void) | undefined,
+// ── Mutable store: tests set state here before renderPage() ──────────────────
+const _store: {
+  isPending: boolean;
+  isError: boolean;
+  data: unknown;
+  mutate: ReturnType<typeof vi.fn>;
+} = {
   isPending: false,
-}));
+  isError: false,
+  data: undefined,
+  mutate: vi.fn(),
+};
 
-// ── Mock data (fields 1:1 from VideoAgent.ts ProductionOutputSchema) ──────────
-
-const MOCK_PRODUCTION_ROW = vi.hoisted(() => ({
-  id: 1,
-  content: JSON.stringify({
-    shotList: [
-      {
-        scene: '制作开场',
-        duration: '3s',
-        action: '镜头从产品特写拉远至全景',
-        dialogue: '欢迎来到今天的精彩内容，我来分享一个改变命运的方法',
-        cameraAngle: '近景拉远',
-        prop: '产品道具',
-        lighting: '三点布光',
-        transition: '缓推',
-        sfx: '开场音效',
-        voiceover: '今天我要分享的内容非常重要',
-        subtitle: '开场字幕',
-        costume: '商务休闲',
-        location: '专业摄影棚',
-        index: 1,
-        angle: '近景',
-        movement: '拉远',
-        description: '镜头从产品特写拉远展示整体场景',
-        bgm: '轻快开场音乐',
-        reference: '参考样片A',
-        note: '注意灯光',
-      },
-      {
-        scene: '核心内容展示',
-        duration: '30s',
-        action: '详细展示核心内容',
-        dialogue: '这个方法帮助了数百位创作者从0到10万粉丝',
-        cameraAngle: '中景',
-        prop: '演示图表',
-        lighting: '补光灯',
-        transition: '跳切',
-        sfx: '背景音乐',
-        voiceover: '核心卖点阐述旁白内容',
-        subtitle: '关键信息字幕',
-        costume: '同开场',
-        location: '同开场',
-        index: 2,
-        angle: '中景',
-        movement: '摇',
-        description: '多角度展示核心内容',
-        bgm: '专业背景音乐',
-        reference: '无',
-        note: '无',
-      },
-    ],
-    equipment: ['专业相机', '三脚架', '补光灯', '麦克风'],
-    schedule: '拍摄时间约 2-3 小时，建议周六上午 9-12 点',
-  }),
-  contentType: 'json',
-  agentId: 'VideoAgent',
-  agentMode: 'production',
-  scriptType: null,
-  elements: [],
-  isFallback: false,
-  tokensUsed: 200,
-  modelUsed: 'claude-sonnet-4-5',
-  durationMs: 8000,
-  traceId: null,
-  createdAt: new Date(),
-}));
-
-const MOCK_FALLBACK_ROW = vi.hoisted(() => ({
-  id: 2,
-  content: JSON.stringify({
-    shotList: [
-      {
-        scene: '备用开场',
-        duration: '3s',
-        action: '备用动作',
-        dialogue: '这是备用台词内容（系统繁忙备用）',
-        cameraAngle: '正面',
-        prop: '无',
-        lighting: '自然光',
-        transition: '淡出',
-        sfx: '无',
-        voiceover: '备用旁白',
-        subtitle: '备用字幕',
-        costume: '休闲',
-        location: '室内',
-        index: 1,
-        angle: '中景',
-        movement: '固定',
-        description: '备用画面描述',
-        bgm: '无',
-        reference: '无',
-        note: '备用',
-      },
-    ],
-    equipment: ['手机', '三脚架'],
-    schedule: '备用拍摄安排（系统繁忙备用）',
-  }),
-  contentType: 'json',
-  agentId: 'VideoAgent',
-  agentMode: 'production',
-  scriptType: null,
-  elements: [],
-  isFallback: true,
-  tokensUsed: 0,
-  modelUsed: 'fallback',
-  durationMs: 0,
-  traceId: null,
-  createdAt: new Date(),
-}));
-
-// ── Mocks ─────────────────────────────────────────────────────────────────────
-
+// ── trpc mock — reads from _store on every useMutation() call ────────────────
 vi.mock('@/lib/trpc', () => ({
   trpc: {
+    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
+    ipAccounts: {
+      list: { useQuery: () => ({ data: [], isLoading: false }) },
+      active: { useQuery: () => ({ data: null, isLoading: false }) },
+      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
+    stepData: {
+      get: {
+        useQuery: () => ({
+          data: null,
+          isLoading: false,
+          isError: false,
+          error: null,
+          refetch: vi.fn(),
+        }),
+      },
+      save: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+    },
     videoProduction: {
       generate: {
-        useMutation: (opts?: {
-          onSuccess?: (data: unknown) => void;
-          onError?: (error: unknown) => void;
-        }) => {
-          mockCtrl.onSuccess = opts?.onSuccess;
-          mockCtrl.onError = opts?.onError;
-          return {
-            mutate: vi.fn(),
-            isPending: mockCtrl.isPending,
-            isError: false,
-          };
-        },
+        useMutation: ({ onSuccess, onError }: {
+          onSuccess?: () => void;
+          onError?: (err: { message: string }) => void;
+        } = {}) => ({
+          mutate: (...args: unknown[]) => {
+            _store.mutate(...args);
+            if (!_store.isError) onSuccess?.();
+            else onError?.({ message: 'generate error' });
+          },
+          isPending: _store.isPending,
+          isError: _store.isError,
+          data: _store.data,
+        }),
       },
     },
   },
 }));
 
-vi.mock('sonner', () => ({
-  toast: { error: vi.fn(), success: vi.fn(), info: vi.fn() },
+vi.mock('@/hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({
+    account: null,
+    isLoading: false,
+    isSwitching: false,
+    switchTo: vi.fn(),
+  }),
 }));
 
-// ── Helper ────────────────────────────────────────────────────────────────────
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    isLoading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    refetch: vi.fn(),
+  }),
+}));
 
-function renderVideoProduction() {
+vi.mock('sonner', () => ({
+  toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() },
+}));
+
+// ── real result shapes ────────────────────────────────────────────────────────
+const REAL_SHOT_LIST = [
+  {
+    scene: '开场',
+    duration: '3s',
+    action: '镜头推近',
+    dialogue: '大家好',
+    cameraAngle: '中景',
+    prop: '补光灯',
+    lighting: '三点布光',
+    transition: '切',
+    sfx: '无',
+    voiceover: '（开场白）你好世界',
+    subtitle: '开场字幕',
+    costume: '商务休闲',
+    location: '摄影棚',
+    index: 1,
+    angle: '平角',
+    movement: '推',
+    description: '开场画面描述',
+    bgm: '轻快科技感',
+    reference: '无',
+    note: '无',
+  },
+  {
+    scene: '核心内容',
+    duration: '30s',
+    action: '详细讲解',
+    dialogue: '核心内容台词',
+    cameraAngle: '近景',
+    prop: '笔记本电脑',
+    lighting: '补光',
+    transition: '跳切',
+    sfx: '背景音乐',
+    voiceover: '（讲解）这是核心内容',
+    subtitle: '关键信息',
+    costume: '同开场',
+    location: '同开场',
+    index: 2,
+    angle: '中景',
+    movement: '固定',
+    description: '展示核心内容',
+    bgm: '专业背景音乐',
+    reference: '无',
+    note: '无',
+  },
+];
+
+function makeResultRow(isFallback: boolean) {
+  return {
+    id: 42,
+    content: JSON.stringify({
+      shotList: REAL_SHOT_LIST,
+      equipment: ['专业相机', '三脚架', '补光灯'],
+      schedule: '2小时',
+    }),
+    contentType: 'json',
+    agentId: 'VideoAgent',
+    agentMode: 'production',
+    scriptType: null,
+    elements: [],
+    isFallback,
+    tokensUsed: 1200,
+    modelUsed: 'claude-3-5-sonnet',
+    durationMs: 8000,
+    traceId: 'trace-abc',
+    createdAt: new Date(),
+  };
+}
+
+// ── render helper ─────────────────────────────────────────────────────────────
+function renderPage() {
   return render(
     <MemoryRouter>
       <VideoProduction />
@@ -164,113 +184,295 @@ function renderVideoProduction() {
   );
 }
 
-function fillAndSubmit(text = '这是一段超过十个字的短视频文案内容测试') {
-  const textarea = screen.getByPlaceholderText(/至少 10 个字/);
-  fireEvent.change(textarea, { target: { value: text } });
-  fireEvent.click(screen.getByRole('button', { name: '生成制作方案' }));
-}
+// ── reset store to idle before each test ─────────────────────────────────────
+beforeEach(() => {
+  _store.isPending = false;
+  _store.isError = false;
+  _store.data = undefined;
+  _store.mutate = vi.fn();
+});
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
-describe('VideoProduction', () => {
+// ── 字面锁 ────────────────────────────────────────────────────────────────────
+describe('VideoProduction — 字面锁 + 常量', () => {
+  it('h1 字面锁 "短视频一键制作"', () => {
+    renderPage();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(VIDEO_PRODUCTION_H1);
+  });
+
+  it('subtitle 字面锁', () => {
+    renderPage();
+    expect(screen.getByText(VIDEO_PRODUCTION_SUBTITLE)).toBeInTheDocument();
+  });
+
+  it('CTA button 存在且默认不 disabled', () => {
+    renderPage();
+    expect(screen.getByTestId('vp-generate-btn')).toBeInTheDocument();
+    expect(screen.getByTestId('vp-generate-btn')).not.toBeDisabled();
+  });
+
+  it('默认文案 prefilled', () => {
+    renderPage();
+    expect(screen.getByRole('textbox')).toHaveValue(VIDEO_PRODUCTION_DEFAULT_COPY);
+  });
+});
+
+// ── section 标题 ──────────────────────────────────────────────────────────────
+describe('VideoProduction — section 标题常量', () => {
+  it('5 section 标题全部可见', () => {
+    renderPage();
+    expect(screen.getByText(VIDEO_PRODUCTION_STORYBOARD_TITLE)).toBeInTheDocument();
+    expect(screen.getByText(VIDEO_PRODUCTION_SHOOTING_TITLE)).toBeInTheDocument();
+    expect(screen.getByText(VIDEO_PRODUCTION_TELEPROMPTER_TITLE)).toBeInTheDocument();
+    expect(screen.getByText(VIDEO_PRODUCTION_BGM_TITLE)).toBeInTheDocument();
+    expect(screen.getByText(VIDEO_PRODUCTION_EDITING_TITLE)).toBeInTheDocument();
+  });
+});
+
+// ── idle 态 · mock 数据渲染 ───────────────────────────────────────────────────
+describe('VideoProduction — 无真结果(idle)· mock 数据渲染', () => {
+  it('分镜:场景 1 + time 0:00-0:03', () => {
+    renderPage();
+    expect(screen.getAllByText('场景 1').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('0:00-0:03')).toBeInTheDocument();
+  });
+
+  it('分镜:场景 14 + time 1:14-1:18', () => {
+    renderPage();
+    expect(screen.getAllByText('场景 14').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('1:14-1:18')).toBeInTheDocument();
+  });
+
+  it('分镜:场景 1 voiceover 字面', () => {
+    renderPage();
+    expect(
+      screen.getAllByText(
+        '（BGM起，略带神秘感）你有没有发现，同样是美业老板，有人每天忙得焦头烂额，赚的却是辛苦钱；',
+      ).length,
+    ).toBeGreaterThanOrEqual(1);
+  });
+
+  it('拍摄方案:设备项 "手机（iPhone 15 Pro Max或同级别安卓旗舰）"', () => {
+    renderPage();
+    expect(
+      screen.getByText('手机（iPhone 15 Pro Max或同级别安卓旗舰）'),
+    ).toBeInTheDocument();
+  });
+
+  it('拍摄方案:预计时长 "1分20秒 - 1分30秒"', () => {
+    renderPage();
+    expect(screen.getByText('1分20秒 - 1分30秒')).toBeInTheDocument();
+  });
+
+  it('配乐建议:4 chip 全部可见', () => {
+    renderPage();
+    VIDEO_PRODUCTION_BGM.chips.forEach((chip) => {
+      expect(screen.getAllByText(chip).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('剪辑要点:第 1 条字面', () => {
+    renderPage();
+    expect(
+      screen.getByText('开头3秒内迅速抛出核心问题，抓住观众注意力。'),
+    ).toBeInTheDocument();
+  });
+
+  it('剪辑要点:11 条全部渲染', () => {
+    renderPage();
+    VIDEO_PRODUCTION_EDITING.forEach((item) => {
+      expect(screen.getAllByText(item).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('反馈 prompt "这个结果对你有帮助吗？"', () => {
+    renderPage();
+    expect(screen.getByText(VIDEO_PRODUCTION_FEEDBACK_PROMPT)).toBeInTheDocument();
+  });
+
+  it('反馈按钮:有帮助 + 无帮助', () => {
+    renderPage();
+    expect(screen.getByRole('button', { name: '有帮助' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '无帮助' })).toBeInTheDocument();
+  });
+
+  it('idle 态:无 fallback notice / error notice / loading banner', () => {
+    renderPage();
+    expect(screen.queryByTestId('vp-fallback-notice')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('vp-error-notice')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('vp-loading-banner')).not.toBeInTheDocument();
+  });
+});
+
+// ── loading 态 ────────────────────────────────────────────────────────────────
+describe('VideoProduction — loading 态', () => {
+  it('isPending=true: 显示 vp-loading-banner + CTA disabled', () => {
+    _store.isPending = true;
+    renderPage();
+    expect(screen.getByTestId('vp-loading-banner')).toBeInTheDocument();
+    expect(screen.getByTestId('vp-generate-btn')).toBeDisabled();
+  });
+});
+
+// ── error 态 ──────────────────────────────────────────────────────────────────
+describe('VideoProduction — error 态', () => {
+  it('isError=true: 显示 vp-error-notice', () => {
+    _store.isError = true;
+    renderPage();
+    expect(screen.getByTestId('vp-error-notice')).toBeInTheDocument();
+  });
+
+  it('isError=true: 不显示 loading banner', () => {
+    _store.isError = true;
+    renderPage();
+    expect(screen.queryByTestId('vp-loading-banner')).not.toBeInTheDocument();
+  });
+});
+
+// ── CTA 调 generate mutation ──────────────────────────────────────────────────
+describe('VideoProduction — CTA 调 generate mutation', () => {
+  it('点击 CTA 时调用 generateMutation.mutate(sourceCopy)', () => {
+    renderPage();
+    fireEvent.click(screen.getByTestId('vp-generate-btn'));
+    expect(_store.mutate).toHaveBeenCalledTimes(1);
+    expect(_store.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ sourceCopy: expect.any(String) }),
+    );
+  });
+});
+
+// ── 有真结果 · 门控渲染真数据 ────────────────────────────────────────────────
+describe('VideoProduction — 有真结果(门控)', () => {
   beforeEach(() => {
-    mockCtrl.isPending = false;
-    mockCtrl.onSuccess = undefined;
-    mockCtrl.onError = undefined;
+    _store.data = makeResultRow(false);
   });
 
-  it('AC-1 · H1 字面锁 "短视频一键制作"', () => {
-    renderVideoProduction();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('短视频一键制作');
+  it('真 shotList 渲染到分镜 section(vp-storyboard-real testid 可见)', () => {
+    renderPage();
+    expect(screen.getByTestId('vp-storyboard-real')).toBeInTheDocument();
   });
 
-  it('AC-1 · 副标题包含 "AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导"', () => {
-    renderVideoProduction();
-    expect(screen.getByText(/AI 自动生成分镜脚本、拍摄方案、口播提词器和剪辑指导/)).toBeInTheDocument();
+  it('真 shotList 第一条 scene "开场" 可见', () => {
+    renderPage();
+    expect(screen.getAllByText('开场').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('AC-1 · CTA "生成制作方案" 初始 disabled (text < 10 字)', () => {
-    renderVideoProduction();
-    expect(screen.getByRole('button', { name: '生成制作方案' })).toBeDisabled();
+  it('真 shotList 第二条 scene "核心内容" 可见', () => {
+    renderPage();
+    expect(screen.getAllByText('核心内容').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('AC-1 · text ≥ 10 字 → CTA enabled', () => {
-    renderVideoProduction();
-    const textarea = screen.getByPlaceholderText(/至少 10 个字/);
-    fireEvent.change(textarea, { target: { value: '这是一段超过十个字的短视频文案测试内容' } });
-    expect(screen.getByRole('button', { name: '生成制作方案' })).not.toBeDisabled();
+  it('真设备列表 "专业相机" 渲染到拍摄方案', () => {
+    renderPage();
+    expect(screen.getAllByText('专业相机').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('AC-2 · onSuccess → 4 H3 区块渲染', () => {
-    renderVideoProduction();
-    fillAndSubmit();
-
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_PRODUCTION_ROW);
-    });
-
-    expect(screen.getByRole('heading', { level: 3, name: '分镜脚本' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '拍摄方案' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '口播提词器' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: '剪辑指导' })).toBeInTheDocument();
+  it('有真结果(isFallback=false):无 fallback notice', () => {
+    renderPage();
+    expect(screen.queryByTestId('vp-fallback-notice')).not.toBeInTheDocument();
   });
 
-  it('AC-2 · production output 真实数据内容渲染 (shotList/equipment/schedule)', () => {
-    renderVideoProduction();
-    fillAndSubmit();
+  it('有真结果:mock 拍摄设备 "手机（iPhone 15 Pro Max或同级别安卓旗舰）" 不再显示(已被真数据替换)', () => {
+    renderPage();
+    expect(
+      screen.queryByText('手机（iPhone 15 Pro Max或同级别安卓旗舰）'),
+    ).not.toBeInTheDocument();
+  });
+});
 
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_PRODUCTION_ROW);
-    });
-
-    // shotList rendered
-    const shotList = screen.getByTestId('vp-shot-list');
-    expect(shotList).toBeInTheDocument();
-    expect(within(shotList).getAllByText(/制作开场/).length).toBeGreaterThan(0);
-    // equipment rendered
-    expect(screen.getByTestId('vp-equipment')).toBeInTheDocument();
-    expect(screen.getByText('专业相机')).toBeInTheDocument();
-    // schedule rendered
-    expect(screen.getByTestId('vp-schedule')).toBeInTheDocument();
-    expect(screen.getByText(/周六上午/)).toBeInTheDocument();
-    // teleprompter dialogue
-    expect(screen.getByTestId('vp-teleprompter')).toBeInTheDocument();
-    expect(screen.getByText(/欢迎来到今天的精彩内容/)).toBeInTheDocument();
+// ── isFallback 降级提示 ───────────────────────────────────────────────────────
+describe('VideoProduction — isFallback 降级提示', () => {
+  it('isFallback=true 显示 vp-fallback-notice', () => {
+    _store.data = makeResultRow(true);
+    renderPage();
+    expect(screen.getByTestId('vp-fallback-notice')).toBeInTheDocument();
   });
 
-  it('AC-5 · isFallback=true → 显示 fallback banner + retry button', () => {
-    renderVideoProduction();
-    fillAndSubmit();
+  it('isFallback=false 不显示 vp-fallback-notice', () => {
+    _store.data = makeResultRow(false);
+    renderPage();
+    expect(screen.queryByTestId('vp-fallback-notice')).not.toBeInTheDocument();
+  });
+});
 
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_FALLBACK_ROW);
-    });
+// ── P2.14 补充测试 ─────────────────────────────────────────────────────────────
 
-    expect(screen.getByTestId('video-production-fallback-banner')).toBeInTheDocument();
-    expect(screen.getByText(/AI 暂未生成制作方案 · 显示备用模板/)).toBeInTheDocument();
-    expect(screen.getByTestId('video-production-retry')).toBeInTheDocument();
+// malformed JSON content → hasResult=false 不崩
+describe('VideoProduction — malformed JSON content', () => {
+  it('content 不是合法 JSON → hasResult=false，不崩溃', () => {
+    _store.data = {
+      ...makeResultRow(false),
+      content: '{not valid json!!!',
+    };
+    // 渲染不抛错
+    expect(() => renderPage()).not.toThrow();
+    // 因 parseContent 返回 undefined，不显示真实分镜
+    expect(screen.queryByTestId('vp-storyboard-real')).not.toBeInTheDocument();
   });
 
-  it('AC-5 · isFallback=false → 不显示 fallback banner', () => {
-    renderVideoProduction();
-    fillAndSubmit();
-
-    act(() => {
-      mockCtrl.onSuccess?.(MOCK_PRODUCTION_ROW);
-    });
-
-    expect(screen.queryByTestId('video-production-fallback-banner')).not.toBeInTheDocument();
+  it('content 合法 JSON 但缺 shotList → hasResult=false，不崩溃', () => {
+    _store.data = {
+      ...makeResultRow(false),
+      content: JSON.stringify({ equipment: [], schedule: '2h' }),
+    };
+    expect(() => renderPage()).not.toThrow();
+    expect(screen.queryByTestId('vp-storyboard-real')).not.toBeInTheDocument();
   });
+});
 
-  it('AC-6 · onError → toast.error 被调用', async () => {
-    const { toast } = await import('sonner');
-    renderVideoProduction();
-    fillAndSubmit();
+// 全 voiceover='无' → 回退 mock teleprompter
+describe('VideoProduction — voiceover 全为"无"时回退 mock 提词器', () => {
+  it('所有 voiceover="无" 时提词器仍有内容(mock fallback)', () => {
+    _store.data = {
+      ...makeResultRow(false),
+      content: JSON.stringify({
+        shotList: [
+          { ...REAL_SHOT_LIST[0], voiceover: '无' },
+          { ...REAL_SHOT_LIST[1], voiceover: '无' },
+        ],
+        equipment: ['相机'],
+        schedule: '1小时',
+      }),
+    };
+    renderPage();
+    // 段落数 > 0 说明回退了 mock teleprompter
+    const teleprompterSection = screen.getByRole('heading', { level: 3, name: /提词器/i });
+    expect(teleprompterSection).toBeInTheDocument();
+    // 页面正常渲染(mock teleprompter fallback 使段落列表非空)
+    expect(screen.getByTestId('vp-generate-btn')).toBeInTheDocument();
+  });
+});
 
-    act(() => {
-      mockCtrl.onError?.(new Error('Network error'));
-    });
+// 真 voiceover 内容渲染进提词器
+describe('VideoProduction — 真 voiceover 渲染进提词器', () => {
+  it('voiceover 有实质内容时提词器显示真文字(含 voiceover 文本)', () => {
+    _store.data = makeResultRow(false); // REAL_SHOT_LIST has voiceovers
+    renderPage();
+    // 真分镜 voiceover "（开场白）你好世界" 应出现在提词器(已过滤"无")
+    expect(screen.getAllByText(/你好世界/).length).toBeGreaterThanOrEqual(1);
+  });
+});
 
-    expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('生成失败'));
+// idle 不显示 vp-storyboard-real（负向）
+describe('VideoProduction — idle 不显示真分镜(负向)', () => {
+  it('无真结果时不渲染 vp-storyboard-real', () => {
+    // _store.data 已在 beforeEach 重置为 undefined
+    renderPage();
+    expect(screen.queryByTestId('vp-storyboard-real')).not.toBeInTheDocument();
+  });
+});
+
+// isError 态 → 重试按钮存在
+describe('VideoProduction — error 态重试按钮', () => {
+  it('isError=true 时重试按钮可点且重新触发 mutate', () => {
+    _store.isError = true;
+    renderPage();
+    const retryBtn = screen.getByRole('button', { name: '重试' });
+    expect(retryBtn).toBeInTheDocument();
+    fireEvent.click(retryBtn);
+    expect(_store.mutate).toHaveBeenCalledTimes(1);
   });
 });

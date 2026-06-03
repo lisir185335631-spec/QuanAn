@@ -1,30 +1,16 @@
 /**
- * QuanAn · Tailwind 配置
+ * QuanAn · Tailwind 配置 — 先锋白·工业精密版
  *
- * 颜色全部派生自 ui/aurelian_dark/DESIGN.md YAML frontmatter(LD-015 权威源)
- * 字体跟 AGENTS §2.1 一致 · Manrope / Plus Jakarta Sans / Inter
- *
- * ⚠️ 不要 hardcode 颜色 · 全部走 tokens.colors.X
- * ⚠️ YAML 优先于文字段(LD-015 · text section 中的颜色值不作数)
+ * 颜色/圆角/间距已硬编码为先锋白(克莱因蓝 #002fa7 / 白底 / 深字)。
+ * 原 aiipznt 暗金来源 ui/aurelian_dark/DESIGN.md 已解耦并删除。
+ * 字体:Manrope(display/label/sans)· Noto Sans SC(cn)。
  */
 
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
 import animatePlugin from 'tailwindcss-animate';
-import { parseTokensFromFile } from './src/lib/parseDesignTokens.js';
 
 const animate = animatePlugin.default ?? animatePlugin;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Pass explicit path so tests can override; tailwind runs from apps/web/
-const tokens = parseTokensFromFile(
-  path.resolve(__dirname, '../../ui/aurelian_dark/DESIGN.md')
-);
-const c = tokens.colors;
-
-/** Convert a 6-char hex color to rgba(r, g, b, alpha) without hardcoding hex literals. */
+/** Convert a 6-char hex color to rgba(r, g, b, alpha). */
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -44,59 +30,59 @@ export default {
     },
     extend: {
       colors: {
-        // === Surface (DESIGN.md YAML) ===
-        surface: c['surface'],
-        'surface-dim': c['surface-dim'],
-        'surface-bright': c['surface-bright'],
-        'surface-container-lowest': c['surface-container-lowest'],
-        'surface-container-low': c['surface-container-low'],
-        'surface-container': c['surface-container'],
-        'surface-container-high': c['surface-container-high'],
-        'surface-container-highest': c['surface-container-highest'],
+        // === Surface · 先锋白 re-skin(原 c[...] 暗金 → 白底浅灰阶 · DESIGN.md 不动)===
+        surface: '#ffffff',
+        'surface-dim': '#f3f4f6',
+        'surface-bright': '#ffffff',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f8f9fa',
+        'surface-container': '#f3f4f6',
+        'surface-container-high': '#eceef2',
+        'surface-container-highest': '#e5e7eb',
 
-        'on-surface': c['on-surface'],
-        'on-surface-variant': c['on-surface-variant'],
-        'inverse-surface': c['inverse-surface'],
-        'inverse-on-surface': c['inverse-on-surface'],
+        'on-surface': '#111827',
+        'on-surface-variant': '#6b7280',
+        'inverse-surface': '#1b1b1b',
+        'inverse-on-surface': '#f8f9fa',
 
-        // === Primary Gold (YAML is authoritative · text section lists hover/active variants) ===
+        // === Primary · 克莱因蓝 #002fa7(原暗金）===
         primary: {
-          DEFAULT: c['primary'],
-          container: c['primary-container'],
-          fixed: c['primary-fixed'],
-          'fixed-dim': c['primary-fixed-dim'],
+          DEFAULT: '#002fa7',
+          container: '#e0e7ff',
+          fixed: '#dbe3ff',
+          'fixed-dim': '#bcc9f5',
         },
-        'on-primary': c['on-primary'],
-        'on-primary-container': c['on-primary-container'],
-        'inverse-primary': c['inverse-primary'],
-        'on-primary-fixed-variant': c['on-primary-fixed-variant'],
+        'on-primary': '#ffffff',
+        'on-primary-container': '#001e73',
+        'inverse-primary': '#bcc9f5',
+        'on-primary-fixed-variant': '#001e73',
 
         // === Secondary / Tertiary ===
-        secondary: c['secondary'],
-        'on-secondary': c['on-secondary'],
-        'secondary-container': c['secondary-container'],
+        secondary: '#f3f4f6',
+        'on-secondary': '#374151',
+        'secondary-container': '#e5e7eb',
 
-        tertiary: c['tertiary'],
-        'on-tertiary': c['on-tertiary'],
-        'tertiary-container': c['tertiary-container'],
+        tertiary: '#781621',
+        'on-tertiary': '#ffffff',
+        'tertiary-container': '#f7e7ea',
 
-        // === Error ===
-        error: c['error'],
-        'on-error': c['on-error'],
-        'error-container': c['error-container'],
-        'on-error-container': c['on-error-container'],
+        // === Error · 勃艮第红系 ===
+        error: '#9a2233',
+        'on-error': '#ffffff',
+        'error-container': '#fdecef',
+        'on-error-container': '#781621',
 
         // === Outline ===
-        outline: c['outline'],
-        'outline-variant': c['outline-variant'],
+        outline: '#c4c5d6',
+        'outline-variant': '#e5e7eb',
 
         // === Background ===
-        background: c['background'],
-        'on-background': c['on-background'],
+        background: '#ffffff',
+        'on-background': '#111827',
 
         // === Misc ===
-        'surface-tint': c['surface-tint'],
-        'surface-variant': c['surface-variant'],
+        'surface-tint': '#002fa7',
+        'surface-variant': '#f3f4f6',
 
         // === shadcn/ui CSS-var tokens (reference CSS custom properties, not hex) ===
         border: 'hsl(var(--border))',
@@ -126,8 +112,8 @@ export default {
       },
       fontFamily: {
         // === aiipznt alignment · PRD-16 US-001 ===
-        display: ['Orbitron', 'Rajdhani', 'Noto Sans SC', 'system-ui', 'sans-serif'],
-        label: ['Rajdhani', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+        display: ['Manrope', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+        label: ['Manrope', 'Noto Sans SC', 'system-ui', 'sans-serif'],
         cn: ['Noto Sans SC', 'system-ui', 'sans-serif'],
         sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
@@ -145,22 +131,20 @@ export default {
         'label-sm': ['11px', { lineHeight: '1', letterSpacing: '0.08em', fontWeight: '600' }],
       },
       borderRadius: {
-        // === DESIGN.md rounded segment ===
-        sm: String(tokens.rounded['sm']),
-        DEFAULT: String(tokens.rounded['DEFAULT']),
-        md: String(tokens.rounded['md']),
-        lg: String(tokens.rounded['lg']),
-        xl: String(tokens.rounded['xl']),
-        full: String(tokens.rounded['full']),
+        sm: '0.125rem',
+        DEFAULT: '0.25rem',
+        md: '0.375rem',
+        lg: '0.5rem',
+        xl: '0.75rem',
+        full: '9999px',
       },
       spacing: {
-        // === DESIGN.md spacing (4px Rule) ===
-        xs: String(tokens.spacing['xs']),
-        sm: String(tokens.spacing['sm']),
-        md: String(tokens.spacing['md']),
-        lg: String(tokens.spacing['lg']),
-        xl: String(tokens.spacing['xl']),
-        '2xl': String(tokens.spacing['2xl']),
+        xs: '4px',
+        sm: '8px',
+        md: '16px',
+        lg: '24px',
+        xl: '40px',
+        '2xl': '64px',
       },
       animation: {
         // === ARCHITECTURE §8.8 core animations ===
@@ -177,8 +161,8 @@ export default {
           '100%': { transform: 'translateX(200%) skewX(-20deg)', opacity: '0' },
         },
         'gold-glow-pulse': {
-          '0%, 100%': { boxShadow: `0 0 0 2px ${hexToRgba(c['primary'], 0.15)}` },
-          '50%': { boxShadow: `0 0 0 4px ${hexToRgba(c['primary'], 0.3)}` },
+          '0%, 100%': { boxShadow: `0 0 0 2px ${hexToRgba('#002fa7', 0.15)}` },
+          '50%': { boxShadow: `0 0 0 4px ${hexToRgba('#002fa7', 0.3)}` },
         },
         'card-lift': {
           '0%': { transform: 'translateY(0)' },

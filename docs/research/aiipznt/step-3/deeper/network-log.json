@@ -1,0 +1,17 @@
+[
+  {
+    "ts": 1779515396709,
+    "method": "POST",
+    "url": "https://aiipznt.vip/api/trpc/accountPackaging.generate?batch=1"
+  },
+  {
+    "ts": 1779515397375,
+    "method": "POST",
+    "url": "https://api2.amplitude.com/2/httpapi"
+  },
+  {
+    "ts": 1779515429973,
+    "method": "POST",
+    "url": "https://aiipznt.vip/api/trpc/accountPackaging.generate?batch=1"
+  }
+]

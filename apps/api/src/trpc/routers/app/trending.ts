@@ -222,16 +222,25 @@ export const trendingRouter = router({
       const { trendingItemId, action } = input;
       const accountId = ctx.activeAccountId!;
 
+      // Guard: reject dangling references to mock/non-existent items
+      const exists = await prisma.trendingItem.findUnique({
+        where: { id: trendingItemId },
+        select: { id: true },
+      });
+      if (!exists) {
+        return { favorited: false, skipped: true } as { favorited: boolean; skipped?: boolean };
+      }
+
       if (action === 'add') {
         await prisma.trendingFavorite.upsert({
           where: { accountId_trendingItemId: { accountId, trendingItemId } },
           create: { accountId, trendingItemId },
           update: {},
         });
-        return { favorited: true };
+        return { favorited: true } as { favorited: boolean; skipped?: boolean };
       }
       await prisma.trendingFavorite.deleteMany({ where: { accountId, trendingItemId } });
-      return { favorited: false };
+      return { favorited: false } as { favorited: boolean; skipped?: boolean };
     }),
 
   /** Detail view — full content */

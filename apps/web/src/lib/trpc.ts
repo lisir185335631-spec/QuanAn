@@ -13,9 +13,11 @@ import { httpBatchStreamLink, httpSubscriptionLink, splitLink } from '@trpc/clie
 import { createTRPCReact } from '@trpc/react-query';
 
 import type { AppRouter, AuthMeOutput } from '@quanan/clients/router-types';
+import type { inferRouterOutputs } from '@trpc/server';
 
 export type { AuthMeOutput };
 export type { AppRouter };
+export type RouterOutputs = inferRouterOutputs<AppRouter>;
 
 // ── Trace ID generator ────────────────────────────────────────────────────────
 // Generates a 16-char random hex string per request (AC-6, US-007).
@@ -46,6 +48,10 @@ export const trpcClient = trpc.createClient({
       condition: (op) => op.type === 'subscription',
       true: httpSubscriptionLink({
         url: TRPC_URL,
+        // P0: SSE 订阅携带 session cookie → protectedProcedure 不再 401
+        // EventSourceLike.InitDict.withCredentials 对应浏览器原生 EventSource
+        // 第二参数的写法；回调形式兼容异步 ponyfill
+        eventSourceOptions: () => ({ withCredentials: true }),
       }),
       false: httpBatchStreamLink({
         url: TRPC_URL,
