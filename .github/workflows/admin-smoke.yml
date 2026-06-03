@@ -50,8 +50,8 @@ jobs:
       DEV_OAUTH_MOCK: 'true'
 
       # ── 前端 / 网络 ──
-      # 【不设 VITE_API_BASE_URL】:admin 前端按默认直连 api :3000(admin-client.ts:21)。
-      # 跨端口同 site,登录 cookie 正常携带(见上"跨端口 cookie 说明"),无需 proxy / 无需改产品代码。
+      # admin 前端 API base:容器内统一走 127.0.0.1(下方 VITE_API_BASE_URL),避免 localhost→::1 解析歧义。
+      # 同 host(127.0.0.1)跨端口仍同 site,登录 cookie `admin_session_id` 正常携带,无需 proxy / 不改产品代码。
       # API 的 CORS 允许源(apps/api/src/index.ts:51 `ADMIN_BASE_URL ?? http://127.0.0.1:5174`):
       # 必须 allow admin 真实 origin :5174 才能带 credentials 跨域,故显式声明(也正是默认值)。
       ADMIN_BASE_URL: 'http://127.0.0.1:5174'
@@ -69,6 +69,13 @@ jobs:
       # smoke 脚本登录依次尝试的邮箱列表,第一个必须 == 下方 seed 的那一行,且其 isMock/isActive=true。
       # (mock 回调只按 email 查库 + 校 isMock/isActive,不校验 ADMIN_EMAILS 本身 —— oauth-admin-mock.ts:19-29)
       ADMIN_EMAILS: 'super@quanan.com'
+
+      # ── 冒烟范围限定 ──
+      # 本 admin-smoke 分支只含 4 个【复用】admin 模块;5 个 phase-2 新模块(diagnosis / step-data /
+      # history / topics / daily-tasks)的页面+后端路由在另一条 phase-2 分支,本分支 goto 这些路由会弹回 /login。
+      # 故显式把冒烟限定到本分支真实存在的 4 个模块,CI 才诚实反映"本分支可登录并渲染的模块"。
+      # phase-2 分支跑同一 workflow 时【不设】此 env → admin-acceptance.mjs 默认覆盖全部 9 个模块。
+      ADMIN_SMOKE_MODULES: 'accounts,evolution,reviewTrending,reviewDeepLearn'
 
     services:
       # P0-1:必须用自带 pgvector 的镜像。第一条迁移 prisma/migrations/20260507000000_init/migration.sql:2

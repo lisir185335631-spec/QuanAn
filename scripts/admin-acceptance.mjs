@@ -11,7 +11,7 @@ const BASE = process.env.ADMIN_URL ?? 'http://localhost:5174';
 // dev mock-OAuth 超管邮箱(按需改;脚本会依次尝试直到登录成功)
 const LOGIN_EMAILS = (process.env.ADMIN_EMAILS ?? 'super@quanan.com,super@quanqn.com,browser-test@quanqn.com').split(',');
 
-const MODULES = [
+const ALL_MODULES = [
   // 阶段2 本会话新增的 5 个
   { key: 'diagnosis',      path: '/admin/diagnosis',        label: '诊断报告',     group: '新增' },
   { key: 'step-data',      path: '/admin/step-data',        label: '用户内容',     group: '新增' },
@@ -24,6 +24,13 @@ const MODULES = [
   { key: 'reviewTrending', path: '/admin/reviewTrending',   label: 'Trending审核', group: '复用' },
   { key: 'reviewDeepLearn',path: '/admin/reviewDeepLearn',  label: 'DeepLearn审核',group: '复用' },
 ];
+
+// 限定本次要跑的模块(env allow-list,逗号分隔 key);留空/不设 → 跑全部。
+// 本 admin-smoke 分支只含 4 个【复用】模块(5 个 phase-2 新模块的页面/路由在另一条分支),
+// CI 在本分支显式设 ADMIN_SMOKE_MODULES 限定到这 4 个;phase-2 分支不设此 env 即全 9 覆盖。
+const ONLY = (process.env.ADMIN_SMOKE_MODULES ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+const MODULES = ONLY.length ? ALL_MODULES.filter((m) => ONLY.includes(m.key)) : ALL_MODULES;
+const SKIPPED = ALL_MODULES.filter((m) => !MODULES.includes(m));
 
 const ERR_MARKERS = ['数据加载失败', '加载失败', '出错了', '无权访问', 'Forbidden', '403', 'UNAUTHORIZED', 'Something went wrong'];
 
@@ -48,6 +55,11 @@ for (const email of LOGIN_EMAILS) {
 }
 console.log(loggedInAs ? `✅ 登录成功: ${loggedInAs} → ${page.url()}` : '❌ 登录失败(检查 admin email / 服务在跑)');
 if (!loggedInAs) { await browser.close(); process.exit(1); }
+
+if (SKIPPED.length) {
+  console.log(`⚠ 本分支限定 ${MODULES.length}/${ALL_MODULES.length} 模块: [${MODULES.map((m) => m.key).join(', ')}]`);
+  console.log(`  跳过(phase-2 分支覆盖): [${SKIPPED.map((m) => m.key).join(', ')}]`);
+}
 
 // ── 2. 逐模块验收 ────────────────────────────────────────
 const results = [];
@@ -86,6 +98,7 @@ for (const r of results) {
     (r.redirected ? ' ⚠被踢回登录' : '') + (r.errText ? ` ⚠"${r.errText}"` : ''));
 }
 const passed = results.filter((r) => r.pass).length;
-console.log(`\n总计: ${passed}/${results.length} PASS · 登录=${loggedInAs} · 截图在 /tmp/admin-*.png`);
+console.log(`\n总计: ${passed}/${results.length} PASS · 登录=${loggedInAs} · 截图在 /tmp/admin-*.png` +
+  (SKIPPED.length ? `\n(本分支限定 ${MODULES.length}/${ALL_MODULES.length} 模块;${SKIPPED.length} 个 phase-2 新模块在另一分支覆盖)` : ''));
 await browser.close();
 process.exit(passed === results.length ? 0 : 2);
