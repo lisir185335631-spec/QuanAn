@@ -105,7 +105,11 @@ export const stepDataRouter = adminTrpcRouter({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'step_data_not_found' });
       }
 
-      return record;
+      return {
+        ...record,
+        inputs: record.inputs as Record<string, unknown>,
+        result: record.result as Record<string, unknown> | null,
+      };
     }),
 
   /**

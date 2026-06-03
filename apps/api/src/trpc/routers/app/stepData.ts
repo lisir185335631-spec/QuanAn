@@ -46,17 +46,28 @@ export const stepDataRouter = router({
         where: { stepKey: input.stepKey },
         select: STEP_DATA_SELECT,
       });
-      return row ?? null;
+      return row
+        ? {
+            ...row,
+            inputs: row.inputs as Record<string, unknown>,
+            result: row.result as Record<string, unknown> | null,
+          }
+        : null;
     }),
 
   /** Returns all StepData rows for the current account (RLS filters) */
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
     // ✅ No where:{accountId} — RLS auto-filters
-    return prisma.stepData.findMany({
+    const rows = await prisma.stepData.findMany({
       select: STEP_DATA_SELECT,
       orderBy: { updatedAt: 'desc' },
     });
+    return rows.map((r) => ({
+      ...r,
+      inputs: r.inputs as Record<string, unknown>,
+      result: r.result as Record<string, unknown> | null,
+    }));
   }),
 
   /**
@@ -124,10 +135,24 @@ export const stepDataRouter = router({
           agentRes,
           traceId: traceId ?? null,
         });
-        return { ok: true, data: updatedRow };
+        return {
+          ok: true,
+          data: {
+            ...updatedRow,
+            inputs: updatedRow.inputs as Record<string, unknown>,
+            result: updatedRow.result as Record<string, unknown> | null,
+          },
+        };
       }
 
-      return { ok: true, data: row };
+      return {
+        ok: true,
+        data: {
+          ...row,
+          inputs: row.inputs as Record<string, unknown>,
+          result: row.result as Record<string, unknown> | null,
+        },
+      };
     }),
 
   /**

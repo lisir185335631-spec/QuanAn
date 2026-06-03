@@ -13,11 +13,6 @@ import type { DiagnosisAnswer } from '@quanan/schemas/specialist-io';
 
 // answers/dimensions 是 Json 列,形状确定(同 app/diagnosis):收窄回域类型对齐前端。
 type DiagnosisDimensions = Record<string, { score: number; issues: string[]; suggestions: string[] }>;
-const shapeDiagnosis = <T extends { answers: unknown; dimensions: unknown }>(r: T) => ({
-  ...r,
-  answers: r.answers as DiagnosisAnswer[],
-  dimensions: r.dimensions as DiagnosisDimensions,
-});
 
 // ── Input schemas ──────────────────────────────────────────────────────────
 
@@ -122,7 +117,11 @@ export const diagnosisRouter = adminTrpcRouter({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'diagnosis_report_not_found' });
       }
 
-      return shapeDiagnosis(report);
+      return {
+        ...report,
+        answers: report.answers as DiagnosisAnswer[],
+        dimensions: report.dimensions as DiagnosisDimensions,
+      };
     }),
 
   /**

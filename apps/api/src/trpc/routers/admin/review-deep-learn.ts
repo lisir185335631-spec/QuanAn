@@ -207,6 +207,7 @@ export const reviewDeepLearnRouter = adminTrpcRouter({
 
     return {
       ...item,
+      autoScanResult: item.autoScanResult as Record<string, unknown>,
       textPreview,
       userViolationCount: totalViolationCount,
       userViolations: violations,
