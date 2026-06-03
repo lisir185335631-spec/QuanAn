@@ -18,6 +18,7 @@ import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
 
 import type { PrismaClient } from '@prisma/client';
+import type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 
 function getIp(ctx: { req: Request }): string {
   return (
@@ -339,7 +340,33 @@ export const usersRouter = adminTrpcRouter({
       success: true,
     });
 
-    return { user: userWithProfile, ipAccounts, costAggregate, auditLogs, stepData };
+    return {
+      user: userWithProfile
+        ? {
+            ...userWithProfile,
+            ipAccounts: userWithProfile.ipAccounts.map((acc) => ({
+              ...acc,
+              evolutionProfile: acc.evolutionProfile
+                ? {
+                    ...acc.evolutionProfile,
+                    latestInsight: acc.evolutionProfile.latestInsight as EvolutionInsightContent | null,
+                  }
+                : null,
+            })),
+          }
+        : null,
+      ipAccounts,
+      costAggregate,
+      auditLogs: auditLogs.map((log) => ({
+        ...log,
+        payload: log.payload as Record<string, unknown> | null,
+      })),
+      stepData: stepData.map((s) => ({
+        ...s,
+        inputs: s.inputs as Record<string, unknown>,
+        result: s.result as Record<string, unknown> | null,
+      })),
+    };
   }),
 
   /** Change user plan — super_admin auto-executes, admin creates pending approval (AC-4) */

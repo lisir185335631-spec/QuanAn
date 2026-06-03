@@ -154,7 +154,10 @@ export const evolutionHealthRouter = adminTrpcRouter({
     const results = hasMore ? items.slice(0, input.limit) : items;
     const nextCursor = hasMore ? results[results.length - 1]?.id : undefined;
 
-    return { items: results, nextCursor };
+    return {
+      items: results.map((r) => ({ ...r, evidence: r.evidence as Record<string, unknown> })),
+      nextCursor,
+    };
   }),
 
   /**
@@ -206,7 +209,14 @@ export const evolutionHealthRouter = adminTrpcRouter({
         }),
       ]);
 
-      return { profile, insights, anomalyFlags };
+      return {
+        profile,
+        insights,
+        anomalyFlags: anomalyFlags.map((f) => ({
+          ...f,
+          evidence: f.evidence as Record<string, unknown>,
+        })),
+      };
     }),
 
   /**
@@ -315,7 +325,7 @@ export const evolutionHealthRouter = adminTrpcRouter({
         success: true,
       });
 
-      return updated;
+      return { ...updated, evidence: updated.evidence as Record<string, unknown> };
     }),
 
   /**

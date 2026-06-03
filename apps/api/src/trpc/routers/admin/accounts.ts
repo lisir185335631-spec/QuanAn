@@ -13,6 +13,7 @@ import { adminProcedure } from '@/trpc/procedures/admin';
 import { adminTrpcRouter } from '@/trpc/trpc-admin';
 
 import type { Prisma } from '@prisma/client';
+import type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 
 function getIp(ctx: { req: Request }): string {
   return (
@@ -146,7 +147,20 @@ export const accountsRouter = adminTrpcRouter({
       success: true,
     });
 
-    return { accounts, count, page, pageSize };
+    return {
+      accounts: accounts.map((a) => ({
+        ...a,
+        evolutionProfile: a.evolutionProfile
+          ? {
+              ...a.evolutionProfile,
+              latestInsight: a.evolutionProfile.latestInsight as EvolutionInsightContent | null,
+            }
+          : null,
+      })),
+      count,
+      page,
+      pageSize,
+    };
   }),
 
   /** Account detail: 6-table parallel query (AC-3) */
@@ -187,7 +201,27 @@ export const accountsRouter = adminTrpcRouter({
       success: true,
     });
 
-    return { account: accountWithUser, stepData, evolutionProfile, insights, histories, adminNotes, anomalyFlags };
+    return {
+      account: accountWithUser,
+      stepData: stepData.map((s) => ({
+        ...s,
+        inputs: s.inputs as Record<string, unknown>,
+        result: s.result as Record<string, unknown> | null,
+      })),
+      evolutionProfile: evolutionProfile
+        ? {
+            ...evolutionProfile,
+            latestInsight: evolutionProfile.latestInsight as EvolutionInsightContent | null,
+          }
+        : null,
+      insights: insights.map((i) => ({ ...i, content: i.content as Record<string, unknown> })),
+      histories,
+      adminNotes,
+      anomalyFlags: anomalyFlags.map((f) => ({
+        ...f,
+        evidence: f.evidence as Record<string, unknown>,
+      })),
+    };
   }),
 
   /** Flag anomaly account — medium risk, no Approval (AC-4) */

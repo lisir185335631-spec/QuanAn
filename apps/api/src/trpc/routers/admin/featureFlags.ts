@@ -222,7 +222,7 @@ export const featureFlagsRouter = adminTrpcRouter({
     return rows.map((r) => ({
       id: r.id,
       actionType: r.actionType,
-      actionPayload: r.actionPayload,
+      actionPayload: r.actionPayload as Record<string, unknown>,
       decidedAt: r.decidedAt,
       postReviewRequired: r.postReviewRequired,
       postReviewedAt: r.postReviewedAt,

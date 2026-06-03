@@ -173,7 +173,7 @@ export const adminAuditRouter = adminTrpcRouter({
           eventType: r.eventType,
           eventCategory: r.eventCategory,
           createdAt: r.createdAt,
-          payload: r.payload,
+          payload: r.payload as Record<string, unknown> | null,
         })),
         ...adminAuditLogs.map((r) => ({
           source: 'admin_audit_log' as const,
@@ -182,7 +182,7 @@ export const adminAuditRouter = adminTrpcRouter({
           eventType: r.eventType,
           eventCategory: r.eventCategory,
           createdAt: r.createdAt,
-          payload: r.payload,
+          payload: r.payload as Record<string, unknown> | null,
         })),
         ...costLogs.map((r) => ({
           source: 'cost_log' as const,
@@ -344,6 +344,7 @@ export const adminAuditRouter = adminTrpcRouter({
 
       return logs.map((log) => ({
         ...log,
+        payload: log.payload as Record<string, unknown> | null,
         isHighRisk: (HIGH_RISK_CATEGORIES as readonly string[]).includes(log.eventCategory),
       }));
     }),

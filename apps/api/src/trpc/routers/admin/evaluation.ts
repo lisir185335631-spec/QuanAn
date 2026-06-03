@@ -90,7 +90,7 @@ export const evaluationRouter = adminTrpcRouter({
         where: { runId: input.runId },
       });
       if (!run) throw new TRPCError({ code: 'NOT_FOUND', message: 'run not found' });
-      return run;
+      return { ...run, metadata: run.metadata as Record<string, unknown> | null };
     }),
 
   // ── listSamples ───────────────────────────────────────────────────────────
@@ -177,6 +177,8 @@ export const evaluationRouter = adminTrpcRouter({
 
       const samples = ordered.map((r) => ({
         ...r,
+        input: r.input as Record<string, unknown>,
+        actualOutput: r.actualOutput as Record<string, unknown>,
         criteria: getGoldenCriteria(r.goldenId),
       }));
 

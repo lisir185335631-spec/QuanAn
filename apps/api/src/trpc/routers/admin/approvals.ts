@@ -68,7 +68,7 @@ function enrichRequest(
     requesterAdminId: number;
     requesterRole: string;
     actionType: string;
-    actionPayload: unknown;
+    actionPayload: Record<string, unknown>;
     riskLevel: string;
     requireDualApproval: boolean;
     emergencyMode: boolean;

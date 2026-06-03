@@ -16,11 +16,6 @@ import type { DiagnosisAnswer } from '@quanan/schemas/specialist-io';
 // answers/dimensions 是 Json 列,但形状确定:answers=诊断输入(DiagnosisAnswer[]),
 // dimensions=DiagnosisAgent 输出(每维 score/issues/suggestions)。收窄回域类型,对齐前端读取。
 type DiagnosisDimensions = Record<string, { score: number; issues: string[]; suggestions: string[] }>;
-const shapeDiagnosis = <T extends { answers: unknown; dimensions: unknown }>(r: T) => ({
-  ...r,
-  answers: r.answers as DiagnosisAnswer[],
-  dimensions: r.dimensions as DiagnosisDimensions,
-});
 
 const generateDiagnosisInput = z.object({
   answers: z
@@ -95,7 +90,11 @@ export const diagnosisRouter = router({
         select: DIAGNOSIS_SELECT,
       });
 
-      return shapeDiagnosis(report);
+      return {
+        ...report,
+        answers: report.answers as DiagnosisAnswer[],
+        dimensions: report.dimensions as DiagnosisDimensions,
+      };
     }),
 
   /** List past diagnosis reports for the current account (RLS auto-filters) */
@@ -109,7 +108,11 @@ export const diagnosisRouter = router({
         take: input.limit,
         skip: input.offset,
       });
-      return rows.map(shapeDiagnosis);
+      return rows.map((r) => ({
+        ...r,
+        answers: r.answers as DiagnosisAnswer[],
+        dimensions: r.dimensions as DiagnosisDimensions,
+      }));
     }),
 
   /** Get the latest diagnosis report for the current account (RLS auto-filters) */
@@ -119,6 +122,12 @@ export const diagnosisRouter = router({
       select: DIAGNOSIS_SELECT,
       orderBy: { createdAt: 'desc' },
     });
-    return report ? shapeDiagnosis(report) : null;
+    return report
+      ? {
+          ...report,
+          answers: report.answers as DiagnosisAnswer[],
+          dimensions: report.dimensions as DiagnosisDimensions,
+        }
+      : null;
   }),
 });

@@ -16,6 +16,7 @@ import { protectedProcedure } from '@/trpc/middleware/account-isolation';
 import { router } from '@/trpc/trpc';
 
 import type { Prisma } from '@prisma/client';
+import type { EvolutionInsightContent } from '@quanan/schemas/specialist-io';
 
 // ─── Shared selects ──────────────────────────────────────────────────────────
 
@@ -96,7 +97,9 @@ export const evolutionRouter = router({
       },
     });
 
-    return profile ?? null;
+    return profile
+      ? { ...profile, latestInsight: profile.latestInsight as EvolutionInsightContent | null }
+      : null;
   }),
 
   // ─── US-005: 7 new Specialist procedures ───────────────────────────────────
@@ -160,12 +163,13 @@ export const evolutionRouter = router({
     .input(historyInput)
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
-      return prisma.evolutionInsight.findMany({
+      const rows = await prisma.evolutionInsight.findMany({
         select: EVOLUTION_INSIGHT_SELECT,
         orderBy: { createdAt: 'desc' },
         take: input.limit,
         skip: input.offset,
       });
+      return rows.map((r) => ({ ...r, content: r.content as Record<string, unknown> }));
     }),
 
   /** Recent feedback log entries (RLS auto-filters by account) */
@@ -212,12 +216,13 @@ export const evolutionRouter = router({
   /** AC-3: Insight history · max 10 · desc · LD-009 dual-layer: protectedProcedure + accountId filter */
   getInsightHistory: protectedProcedure.query(async ({ ctx }) => {
     const { prisma, activeAccountId } = ctx;
-    return prisma.evolutionInsight.findMany({
+    const rows = await prisma.evolutionInsight.findMany({
       where: { accountId: activeAccountId! },
       select: EVOLUTION_INSIGHT_SELECT,
       orderBy: { createdAt: 'desc' },
       take: 10,
     });
+    return rows.map((r) => ({ ...r, content: r.content as Record<string, unknown> }));
   }),
 
   /** AC-4: Feedback trend by day · approved deviation: Prisma groupBy cannot do DATE_TRUNC natively;

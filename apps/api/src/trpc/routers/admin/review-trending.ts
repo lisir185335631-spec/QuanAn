@@ -228,7 +228,11 @@ export const reviewTrendingRouter = adminTrpcRouter({
     if (!item) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'trending_review_queue_not_found' });
     }
-    return item;
+    return {
+      ...item,
+      rawContent: item.rawContent as Record<string, unknown>,
+      autoScanResult: item.autoScanResult as Record<string, unknown>,
+    };
   }),
 
   /**
@@ -464,6 +468,6 @@ export const reviewTrendingRouter = adminTrpcRouter({
       success: true,
     });
 
-    return rule;
+    return { ...rule, ruleValue: rule.ruleValue as Record<string, unknown> };
   }),
 });

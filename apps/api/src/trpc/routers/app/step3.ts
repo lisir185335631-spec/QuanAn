@@ -101,7 +101,14 @@ export const step3Router = router({
         agentRes,
       );
 
-      return { ok: true, data: row };
+      return {
+        ok: true,
+        data: {
+          ...row,
+          inputs: row.inputs as Record<string, unknown>,
+          result: row.result as Record<string, unknown> | null,
+        },
+      };
     }),
 
   optimizeSection: protectedProcedure
@@ -133,6 +140,14 @@ export const step3Router = router({
         agentRes,
       );
 
-      return { ok: true, data: row, isFallback: agentRes.isFallback };
+      return {
+        ok: true,
+        data: {
+          ...row,
+          inputs: row.inputs as Record<string, unknown>,
+          result: row.result as Record<string, unknown> | null,
+        },
+        isFallback: agentRes.isFallback,
+      };
     }),
 });
