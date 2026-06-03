@@ -104,11 +104,11 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -172,7 +172,7 @@ jobs:
       # if-no-files-found 用 warn(不是 ignore):登录就失败时一张模块图都不会生成,warn 至少在日志留痕、不静默掩盖。
       - name: Upload admin smoke artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: admin-smoke-artifacts
           path: |
