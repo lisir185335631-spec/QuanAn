@@ -4,7 +4,13 @@
  * out of the browser bundle. Mirrors apps/api/src/trpc/routers/_app.ts.
  * PRD-3 US-001: removed step/account alias shadow routes (TD-012).
  * PRD-8 US-012: added stt / tts / voiceChat shadow types.
- * TD: replace with TypeScript project references in P1.
+ *
+ * ⚠️ 此 shadow 是 LOAD-BEARING,不能简单删除(2026-06 实测确认)。让 web/admin 直接 import 真 router 类型会失败:
+ *   ① api router 用 @/ 自引用;前端 import 真类型会重编译 api 源码,@/ 解析到各自 app 的 src → TS2307 串扰失败。
+ *   ② 真 AdminRouter 体量大 + adminProcedure 7 道中间件类型过重,createTRPCReact 装饰超 TS 类型实例化上限
+ *      → 客户端类型被毒化成 "collides with a built-in method" 报错串。
+ * 删除前置条件:完整 TS project references + .d.ts 路径重写(如 tsc-alias),或后端去掉 @/ 自引用 —— 非机械重构。
+ * (注:shadow 是真 API 的手写近似,形状与真 router 非结构等价,故也无法用编译期 drift 守卫断言,实测会假阳。)
  */
 
 import { initTRPC } from '@trpc/server';
