@@ -1,9 +1,12 @@
+import '@/styles/ikb-hero.css';
+
 import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { C, F } from '@/components/home/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   STEP3B_AUDIENCE,
   STEP3B_CTA_LABEL,
@@ -211,977 +214,1764 @@ export default function Step3b() {
     { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
     { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
   ];
-  const ACCENT: Record<string, string> = { green: '#10b981', yellow: '#F6D300', purple: '#781621' };
-  const BAR_COLORS = ['#002fa7', '#781621', '#F6D300', '#002fa7'];
-  const btnSecondary =
-    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
 
-  // 数据洞察雷达维度
+  // roadmap accent → IKB 三主色轮转
+  const ACCENT: Record<string, string> = {
+    green: C.ikb,
+    yellow: C.accent3,
+    purple: C.burgundy,
+  };
+  // 内容矩阵柱状图颜色轮转
+  const BAR_COLORS = [C.ikb, C.burgundy, C.accent3, C.ikb];
+
+  // 数据洞察雷达维度 — IKB 三主色轮转
   const RADAR_DIMS = [
-    { label: '实战性', value: 92, color: '#002fa7' },
-    { label: '韧性', value: 88, color: '#781621' },
-    { label: '真诚度', value: 90, color: '#F6D300' },
-    { label: '专业度', value: 84, color: '#002fa7' },
-    { label: '记忆点', value: 86, color: '#781621' },
-    { label: '影响力', value: 78, color: '#F6D300' },
+    { label: '实战性', value: 92, color: C.ikb },
+    { label: '韧性', value: 88, color: C.burgundy },
+    { label: '真诚度', value: 90, color: C.accent3 },
+    { label: '专业度', value: 84, color: C.ikb },
+    { label: '记忆点', value: 86, color: C.burgundy },
+    { label: '影响力', value: 78, color: C.accent3 },
   ];
   // 趋势图数据
   const TREND_DATA = [20, 32, 40, 55, 72, 100];
   const TREND_LABELS = ['第1月', '第2月', '第3月', '第4月', '第5月', '第6月'];
 
   return (
-    <PioneerLayout>
-      {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
-              战略节点
-            </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
-              核心引擎
-            </span>
-          </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
-            STEP 03b · 深度人设分析
-          </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
-            {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-nowrap gap-3">
-          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
-            智能优化
-          </button>
-          <button type="button" onClick={handleCopyAll} disabled={!hasRealResult} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]">content_copy</span>
-            复制全部
-          </button>
-          <button
-            type="button"
-            onClick={handleExport}
-            disabled={!hasRealResult}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <span className="material-symbols-outlined text-[18px]">download</span>
-            导出人设方案
-          </button>
-        </div>
-      </header>
-
-      {/* ── 输入人设参数 ───────────────────────────────────── */}
-      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
-          <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined">tune</span>
-            </span>
-            <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">输入人设参数</h2>
-              <p className="text-[12px] text-[#9ca3af]">填写基础信息 · AI 据此生成深度人设分析报告</p>
-            </div>
-          </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
-            参数就绪
-          </span>
-        </div>
-        <div className="relative">
-          <form onSubmit={handleSubmit} className="space-y-7">
-            {/* 目标平台 · 可视化平台卡 */}
-            <fieldset>
-              <legend className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                目标平台
-              </legend>
-              <div className="grid grid-cols-3 gap-4" role="radiogroup">
-                {PLATFORMS.map((p) => {
-                  const active = platform === p.key;
-                  return (
-                    <button
-                      type="button"
-                      key={p.key}
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => setPlatform(p.key)}
-                      className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
-                    >
-                      <span
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
-                        style={{ backgroundColor: p.color }}
-                      >
-                        <span className="material-symbols-outlined text-[22px]">{p.icon}</span>
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-[14px] font-bold text-[#111827]">{p.label}</span>
-                        <span className="block text-[11px] text-[#9ca3af]">{p.desc}</span>
-                      </span>
-                      <span
-                        className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
-                      >
-                        <span className="material-symbols-outlined text-[12px]">check</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            {/* 目标受众 · 带图标输入 */}
-            <div>
-              <label htmlFor="s3b-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                目标受众
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">groups</span>
-                <input
-                  id="s3b-audience"
-                  type="text"
-                  value={audience}
-                  onChange={(e) => setAudience(e.target.value)}
-                  placeholder={STEP3B_AUDIENCE.placeholder}
-                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
-                />
-              </div>
-            </div>
-
-            {/* 你的个人信息 · 框式编辑器 */}
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label htmlFor="s3b-personalInfo" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                  你的个人信息 <span className="ml-1 text-[#781621]">*</span>
-                </label>
-                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
-                  <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
-                  AI 据此提取人设关键词
-                </span>
-              </div>
-              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
-                <textarea
-                  id="s3b-personalInfo"
-                  required
-                  value={personalInfo}
-                  onChange={(e) => setPersonalInfo(e.target.value)}
-                  rows={6}
-                  placeholder="详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。"
-                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
-                />
-                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-[#9ca3af]">可包含</span>
-                    {['背景', '经历', '技能', '转型', '成就'].map((t) => (
-                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{personalInfo.length} 字</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 个人优势 + 个人故事 · 双列框式编辑器 */}
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="s3b-advantage" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                  个人优势/特长
-                </label>
-                <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
-                  <textarea
-                    id="s3b-advantage"
-                    value={personalAdvantage}
-                    onChange={(e) => setPersonalAdvantage(e.target.value)}
-                    rows={4}
-                    placeholder="你有什么独特的优势？比如：独特的经历、专业证书、成功案例、个人特质..."
-                    className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
-                  />
-                  <div className="flex items-center justify-end border-t border-[#eef1f6] bg-white/60 px-4 py-2">
-                    <span className="text-[11px] tabular-nums text-[#9ca3af]">{personalAdvantage.length} 字</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label htmlFor="s3b-story" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                  个人故事/经历
-                </label>
-                <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
-                  <textarea
-                    id="s3b-story"
-                    value={personalStory}
-                    onChange={(e) => setPersonalStory(e.target.value)}
-                    rows={4}
-                    placeholder="分享你的个人故事：为什么做这个行业？有什么转折点？什么经历让你与众不同？"
-                    className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
-                  />
-                  <div className="flex items-center justify-end border-t border-[#eef1f6] bg-white/60 px-4 py-2">
-                    <span className="text-[11px] tabular-nums text-[#9ca3af]">{personalStory.length} 字</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={!personalInfo.trim() || isLoading}
-                className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+    <IKBLayout>
+      <div className="pb-28">
+        {/* ── Header ─────────────────────────────────────────── */}
+        <header className="mb-12 flex flex-row items-center justify-between gap-8">
+          <div className="shrink-0">
+            <div className="mb-3 flex items-center gap-3">
+              <span
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: 11,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  border: `1px solid ${C.line}`,
+                  background: C.base,
+                  color: C.ink,
+                  padding: '4px 10px',
+                }}
               >
-                <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-                {isLoading ? '生成中…' : STEP3B_CTA_LABEL}
-              </button>
+                战略节点
+              </span>
+              <span
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: 11,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  border: `1px solid ${C.accent3}55`,
+                  background: `${C.accent3}18`,
+                  color: C.purpleText,
+                  padding: '4px 10px',
+                }}
+              >
+                核心引擎
+              </span>
             </div>
-          </form>
-        </div>
-      </section>
-
-      {generateMutation.isPending && (
-        <div
-          data-testid="step3b-loading"
-          className="mb-8 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#002fa7]/5 p-4 text-[14px] font-medium text-[#001e73]"
-        >
-          <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
-          {STEP3B_LOADING_TEXT}
-        </div>
-      )}
-
-      {generateMutation.isError && (
-        <div
-          data-testid="step3b-error"
-          className="mb-8 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[14px] font-medium text-[#991b1b]"
-        >
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[20px]">error</span>
-            {generateMutation.error?.message ?? '生成失败，请重试'}
+            <h1
+              style={{
+                fontFamily: F.display,
+                fontWeight: 400,
+                fontSize: 40,
+                lineHeight: 1.05,
+                letterSpacing: '-0.01em',
+                margin: 0,
+                whiteSpace: 'nowrap',
+                background: C.grad,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+              }}
+            >
+              STEP 03b · 深度人设分析
+            </h1>
+            <p
+              className="mt-2 max-w-[820px]"
+              style={{ fontSize: 16, color: '#5A6173', fontFamily: F.cn }}
+            >
+              {STEP3B_SUBTITLE_TEMPLATE.replace('{industry}', industry)}
+            </p>
           </div>
-          <button
-            type="button"
-            onClick={() =>
-              generateMutation.mutate({
-                stepKey: 'step3b',
-                inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
-              })
-            }
-            className="shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
-          >
-            重试
-          </button>
-        </div>
-      )}
-
-      {dbQuery.isLoading && (
-        <div
-          data-testid="step3b-db-loading"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#f0f4ff] p-4 text-[13px] font-medium text-[#001e73]"
-        >
-          <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-          正在加载历史记录…
-        </div>
-      )}
-
-      {dbQuery.isError && !hasRealResult && (
-        <div
-          data-testid="step3b-db-error"
-          className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[13px] font-medium text-[#991b1b]"
-        >
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[18px]">error</span>
-            历史记录加载失败，请重试
+          <div className="flex shrink-0 flex-nowrap gap-3">
+            <button
+              type="button"
+              onClick={handleOptimize}
+              disabled={!canBulkActions}
+              aria-label="智能优化"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '10px 16px',
+                fontFamily: F.mono,
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                cursor: canBulkActions ? 'pointer' : 'not-allowed',
+                opacity: canBulkActions ? 1 : 0.4,
+                transition: 'background 0.2s',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_fix_high</span>
+              智能优化
+            </button>
+            <button
+              type="button"
+              onClick={handleCopyAll}
+              disabled={!hasRealResult}
+              aria-label="复制全部"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '10px 16px',
+                fontFamily: F.mono,
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                cursor: hasRealResult ? 'pointer' : 'not-allowed',
+                opacity: hasRealResult ? 1 : 0.4,
+                transition: 'background 0.2s',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">content_copy</span>
+              复制全部
+            </button>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={!hasRealResult}
+              aria-label="导出人设方案"
+              className="ikb-gradbtn"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                padding: '10px 18px',
+                fontFamily: F.cn,
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                border: 'none',
+                cursor: hasRealResult ? 'pointer' : 'not-allowed',
+                opacity: hasRealResult ? 1 : 0.4,
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">download</span>
+              导出人设方案
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => void dbQuery.refetch()}
-            className="shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+        </header>
+
+        {/* ── 输入人设参数 ───────────────────────────────────── */}
+        <section
+          style={{
+            position: 'relative',
+            border: `1px solid ${C.line}`,
+            background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+            padding: 24,
+            marginBottom: 48,
+            overflow: 'hidden',
+          }}
+        >
+          {/* 装饰光晕 */}
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              right: -64,
+              top: -64,
+              height: 176,
+              width: 176,
+              borderRadius: '50%',
+              background: `${C.ikb}08`,
+              filter: 'blur(32px)',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              bottom: -80,
+              left: '33%',
+              height: 176,
+              width: 176,
+              borderRadius: '50%',
+              background: `${C.burgundy}06`,
+              filter: 'blur(32px)',
+            }}
+          />
+
+          {/* 段落标题 */}
+          <div
+            style={{
+              position: 'relative',
+              marginBottom: 24,
+              paddingBottom: 20,
+              borderBottom: `1px solid ${C.line}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            重试
-          </button>
-        </div>
-      )}
-
-      {hasRealResult && isFallbackFlag && (
-        <div
-          data-testid="step3b-fallback-notice"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-[#F6D300]/40 bg-[#fffde7] p-4 text-[13px] font-medium text-[#8a6a00]"
-        >
-          <span className="material-symbols-outlined text-[20px]">warning</span>
-          AI 模型降级处理，结果为备用方案，建议重新生成以获取最优质方案。
-        </div>
-      )}
-
-      {!hasRealResult && !generateMutation.isPending && !dbQuery.isLoading && (
-        <div
-          data-testid="step3b-empty-state"
-          className="mb-8 flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-[#f9fafb] py-16 text-center"
-        >
-          <span className="material-symbols-outlined mb-4 text-[48px] text-[#d1d5db]">person_search</span>
-          <p className="text-[16px] font-semibold text-[#374151]">尚未生成人设方案</p>
-          <p className="mt-2 text-[13px] text-[#9ca3af]">填写上方表单，点击「生成专属人设方案」开始分析</p>
-        </div>
-      )}
-
-      {/* ── 报告区 · 仅有真实数据时显示 ──────────────────────── */}
-      {hasRealResult && (
-      <>
-      {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 综合示意</span>
-      </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
-        {/* 人设竞争力雷达 */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]">radar</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 44,
+                  width: 44,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: C.grad,
+                  color: '#fff',
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">tune</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">人设竞争力雷达</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>输入人设参数</h2>
+                <p style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成深度人设分析报告</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">85</p>
-              <p className="text-[10px] text-[#9ca3af]">综合分</p>
-            </div>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 999,
+                background: `${C.ikb}15`,
+                padding: '4px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: C.ikb,
+                fontFamily: F.mono,
+                letterSpacing: '0.04em',
+              }}
+            >
+              <span
+                style={{
+                  height: 6,
+                  width: 6,
+                  borderRadius: '50%',
+                  background: C.ikb,
+                  animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                  display: 'inline-block',
+                }}
+              />
+              参数就绪
+            </span>
           </div>
-          {(() => {
-            const dims = RADAR_DIMS;
-            const cx = 130;
-            const cy = 122;
-            const R = 88;
-            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-            return (
-              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="人设竞争力雷达图：六维模型评估">
-                <title>人设竞争力雷达图</title>
-                <defs>
-                  <linearGradient id="radarFillB" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
-                  </linearGradient>
-                </defs>
-                {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
-                ))}
-                {dims.map((_, i) => {
-                  const [x, y] = pt(i, R);
-                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
-                })}
-                <polygon points={dataPoly} fill="url(#radarFillB)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R * (d.value / 100));
-                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                })}
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R + 16);
-                  return (
-                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                      {d.label}
-                    </text>
-                  );
-                })}
-              </svg>
-            );
-          })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
-            {RADAR_DIMS.map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* 6 个月影响力预估 */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">show_chart</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">6 个月影响力预估</h3>
-                <p className="text-[11px] text-[#9ca3af]">按当前人设矩阵测算</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {['曝光', '涨粉', '互动'].map((t, i) => (
-                <span
-                  key={t}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+          {/* 表单 */}
+          <div style={{ position: 'relative' }}>
+            <form onSubmit={handleSubmit} className="space-y-7">
+              {/* 目标平台 · 可视化平台卡 */}
+              <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                <legend
+                  style={{
+                    marginBottom: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    color: C.ink,
+                    fontFamily: F.cn,
+                  }}
                 >
-                  {t}
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      height: 14,
+                      width: 3,
+                      background: C.grad,
+                      flexShrink: 0,
+                    }}
+                    aria-hidden="true"
+                  />
+                  目标平台
+                </legend>
+                <div className="grid grid-cols-3 gap-4" role="radiogroup" aria-label="目标平台">
+                  {PLATFORMS.map((p) => {
+                    const active = platform === p.key;
+                    return (
+                      <button
+                        type="button"
+                        key={p.key}
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => setPlatform(p.key)}
+                        className="ikb-focusring"
+                        style={{
+                          position: 'relative',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                          overflow: 'hidden',
+                          border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
+                          background: active ? `${C.ikb}08` : C.paper,
+                          padding: '14px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: 'flex',
+                            height: 40,
+                            width: 40,
+                            flexShrink: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#fff',
+                            backgroundColor: p.color,
+                          }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden="true">{p.icon}</span>
+                        </span>
+                        <span style={{ minWidth: 0 }}>
+                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{p.label}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: '#6b7280', fontFamily: F.mono }}>{p.desc}</span>
+                        </span>
+                        <span
+                          style={{
+                            position: 'absolute',
+                            right: 10,
+                            top: 10,
+                            display: 'flex',
+                            height: 16,
+                            width: 16,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '50%',
+                            background: active ? C.ikb : C.paper,
+                            border: active ? 'none' : `1px solid ${C.line}`,
+                            color: active ? '#fff' : 'transparent',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden="true">check</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+
+              {/* 目标受众 · 带图标输入 */}
+              <div>
+                <label
+                  htmlFor="s3b-audience"
+                  style={{
+                    marginBottom: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    color: C.ink,
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                  目标受众
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#6b7280', pointerEvents: 'none' }} aria-hidden="true">groups</span>
+                  <input
+                    id="s3b-audience"
+                    type="text"
+                    value={audience}
+                    onChange={(e) => setAudience(e.target.value)}
+                    placeholder={STEP3B_AUDIENCE.placeholder}
+                    className="ikb-input"
+                    style={{
+                      width: '100%',
+                      border: `1px solid ${C.line}`,
+                      background: C.paper,
+                      padding: '12px 12px 12px 40px',
+                      fontSize: 14,
+                      fontFamily: F.cn,
+                      color: C.ink,
+                      transition: 'border-color 0.2s',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 你的个人信息 · 框式编辑器 */}
+              <div>
+                <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label
+                    htmlFor="s3b-personalInfo"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: C.ink,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    你的个人信息{' '}
+                    <span style={{ marginLeft: 4, color: C.burgundyText }}>*</span>
+                  </label>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.burgundyText }} aria-hidden="true">auto_awesome</span>
+                    AI 据此提取人设关键词
+                  </span>
+                </div>
+                <div
+                  style={{
+                    overflow: 'hidden',
+                    border: `1px solid ${C.line}`,
+                    background: C.paper,
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocusCapture={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
+                    (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                  }}
+                  onBlurCapture={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
+                    (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                  }}
+                >
+                  <textarea
+                    id="s3b-personalInfo"
+                    required
+                    value={personalInfo}
+                    onChange={(e) => setPersonalInfo(e.target.value)}
+                    rows={6}
+                    placeholder="详细描述你的个人背景、专业技能、从业经验、擅长领域、个人特点等。"
+                    className="ikb-input"
+                    style={{
+                      width: '100%',
+                      resize: 'none',
+                      border: 0,
+                      background: 'transparent',
+                      padding: 16,
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      fontFamily: F.cn,
+                      color: C.ink,
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                      borderTop: `1px solid ${C.line}`,
+                      background: `${C.paper}99`,
+                      padding: '10px 16px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>可包含</span>
+                      {['背景', '经历', '技能', '转型', '成就'].map((t) => (
+                        <span
+                          key={t}
+                          style={{
+                            borderRadius: 999,
+                            background: `${C.ikb}10`,
+                            padding: '2px 10px',
+                            fontSize: 11,
+                            fontWeight: 500,
+                            color: C.purpleText,
+                            fontFamily: F.mono,
+                          }}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalInfo.length} 字</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 个人优势 + 个人故事 · 双列框式编辑器 */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="s3b-advantage"
+                    style={{
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: C.ink,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    个人优势/特长
+                  </label>
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      border: `1px solid ${C.line}`,
+                      background: C.paper,
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocusCapture={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
+                      (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                    }}
+                    onBlurCapture={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
+                      (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                    }}
+                  >
+                    <textarea
+                      id="s3b-advantage"
+                      value={personalAdvantage}
+                      onChange={(e) => setPersonalAdvantage(e.target.value)}
+                      rows={4}
+                      placeholder="你有什么独特的优势？比如：独特的经历、专业证书、成功案例、个人特质..."
+                      className="ikb-input"
+                      style={{
+                        width: '100%',
+                        resize: 'none',
+                        border: 0,
+                        background: 'transparent',
+                        padding: 16,
+                        fontSize: 14,
+                        lineHeight: 1.6,
+                        fontFamily: F.cn,
+                        color: C.ink,
+                      }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `1px solid ${C.line}`, background: `${C.paper}99`, padding: '8px 16px' }}>
+                      <span style={{ fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalAdvantage.length} 字</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="s3b-story"
+                    style={{
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: C.ink,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    个人故事/经历
+                  </label>
+                  <div
+                    style={{
+                      overflow: 'hidden',
+                      border: `1px solid ${C.line}`,
+                      background: C.paper,
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocusCapture={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
+                      (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                    }}
+                    onBlurCapture={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
+                      (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                    }}
+                  >
+                    <textarea
+                      id="s3b-story"
+                      value={personalStory}
+                      onChange={(e) => setPersonalStory(e.target.value)}
+                      rows={4}
+                      placeholder="分享你的个人故事：为什么做这个行业？有什么转折点？什么经历让你与众不同？"
+                      className="ikb-input"
+                      style={{
+                        width: '100%',
+                        resize: 'none',
+                        border: 0,
+                        background: 'transparent',
+                        padding: 16,
+                        fontSize: 14,
+                        lineHeight: 1.6,
+                        fontFamily: F.cn,
+                        color: C.ink,
+                      }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: `1px solid ${C.line}`, background: `${C.paper}99`, padding: '8px 16px' }}>
+                      <span style={{ fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalStory.length} 字</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  type="submit"
+                  disabled={!personalInfo.trim() || isLoading}
+                  aria-label={isLoading ? '生成中…生成专属人设方案' : '生成专属人设方案'}
+                  className="ikb-gradbtn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '12px 32px',
+                    fontFamily: F.cn,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: (!personalInfo.trim() || isLoading) ? 'not-allowed' : 'pointer',
+                    opacity: (!personalInfo.trim() || isLoading) ? 0.4 : 1,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_awesome</span>
+                  {isLoading ? '生成中…' : STEP3B_CTA_LABEL}
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        {generateMutation.isPending && (
+          <div
+            data-testid="step3b-loading"
+            style={{
+              marginBottom: 32,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              border: `1px solid ${C.ikb}30`,
+              background: `${C.ikb}08`,
+              padding: 16,
+              fontSize: 14,
+              fontWeight: 500,
+              color: C.purpleText,
+              fontFamily: F.cn,
+            }}
+          >
+            <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">progress_activity</span>
+            {STEP3B_LOADING_TEXT}
+          </div>
+        )}
+
+        {generateMutation.isError && (
+          <div
+            data-testid="step3b-error"
+            style={{
+              marginBottom: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              border: '1px solid #dc262630',
+              background: '#fef2f2',
+              padding: 16,
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#991b1b',
+              fontFamily: F.cn,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">error</span>
+              {generateMutation.error?.message ?? '生成失败，请重试'}
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                generateMutation.mutate({
+                  stepKey: 'step3b',
+                  inputs: { personalInfo, personalAdvantage, personalStory, platform, audience },
+                })
+              }
+              aria-label="重试重新生成"
+              className="ikb-focusring"
+              style={{
+                flexShrink: 0,
+                border: '1px solid #dc262630',
+                background: '#fff',
+                padding: '6px 16px',
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#991b1b',
+                cursor: 'pointer',
+                fontFamily: F.mono,
+              }}
+            >
+              重试
+            </button>
+          </div>
+        )}
+
+        {dbQuery.isLoading && (
+          <div
+            data-testid="step3b-db-loading"
+            style={{
+              marginBottom: 24,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              border: `1px solid ${C.ikb}20`,
+              background: `${C.base}`,
+              padding: 16,
+              fontSize: 13,
+              fontWeight: 500,
+              color: C.purpleText,
+              fontFamily: F.cn,
+            }}
+          >
+            <span className="material-symbols-outlined animate-spin" style={{ fontSize: 18, color: C.ikb }} aria-hidden="true">progress_activity</span>
+            正在加载历史记录…
+          </div>
+        )}
+
+        {dbQuery.isError && !hasRealResult && (
+          <div
+            data-testid="step3b-db-error"
+            style={{
+              marginBottom: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              border: '1px solid #dc262630',
+              background: '#fef2f2',
+              padding: 16,
+              fontSize: 13,
+              fontWeight: 500,
+              color: '#991b1b',
+              fontFamily: F.cn,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">error</span>
+              历史记录加载失败，请重试
+            </div>
+            <button
+              type="button"
+              onClick={() => void dbQuery.refetch()}
+              aria-label="重试重新加载历史记录"
+              className="ikb-focusring"
+              style={{
+                flexShrink: 0,
+                border: '1px solid #dc262630',
+                background: '#fff',
+                padding: '6px 16px',
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#991b1b',
+                cursor: 'pointer',
+                fontFamily: F.mono,
+              }}
+            >
+              重试
+            </button>
+          </div>
+        )}
+
+        {hasRealResult && isFallbackFlag && (
+          <div
+            data-testid="step3b-fallback-notice"
+            style={{
+              marginBottom: 24,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              border: `1px solid ${C.accent3}40`,
+              background: `${C.accent3}08`,
+              padding: 16,
+              fontSize: 13,
+              fontWeight: 500,
+              color: C.purpleText,
+              fontFamily: F.cn,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.accent3 }} aria-hidden="true">warning</span>
+            AI 模型降级处理，结果为备用方案，建议重新生成以获取最优质方案。
+          </div>
+        )}
+
+        {!hasRealResult && !generateMutation.isPending && !dbQuery.isLoading && (
+          <div
+            data-testid="step3b-empty-state"
+            style={{
+              marginBottom: 32,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: `1px dashed ${C.line}`,
+              background: C.base,
+              padding: '64px 0',
+              textAlign: 'center',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: `${C.ink}30` }} aria-hidden="true">person_search</span>
+            <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>尚未生成人设方案</p>
+            <p style={{ marginTop: 8, fontSize: 13, color: '#6b7280', fontFamily: F.cn }}>填写上方表单，点击「生成专属人设方案」开始分析</p>
+          </div>
+        )}
+
+        {/* ── 报告区 · 仅有真实数据时显示 ──────────────────────── */}
+        {hasRealResult && (
+        <>
+        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 综合示意</span>
+        </div>
+        <div className="mb-8 grid grid-cols-12 gap-6">
+          {/* 人设竞争力雷达 */}
+          <div
+            className="col-span-5"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-1 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.ikb}15`,
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>人设竞争力雷达</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>85</p>
+                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
+              </div>
+            </div>
+            {(() => {
+              const dims = RADAR_DIMS;
+              const cx = 130;
+              const cy = 122;
+              const R = 88;
+              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+              const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+              const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+              return (
+                <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="人设竞争力雷达图：六维模型评估">
+                  <title>人设竞争力雷达图</title>
+                  <defs>
+                    <linearGradient id="s3b-radarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                    </linearGradient>
+                  </defs>
+                  {[0.25, 0.5, 0.75, 1].map((f) => (
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
+                  ))}
+                  {dims.map((_, i) => {
+                    const [x, y] = pt(i, R);
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />;
+                  })}
+                  <polygon points={dataPoly} fill="url(#s3b-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R * (d.value / 100));
+                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                  })}
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R + 16);
+                    return (
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                        {d.label}
+                      </text>
+                    );
+                  })}
+                </svg>
+              );
+            })()}
+            <div className="mt-2 grid grid-cols-3 gap-y-2">
+              {RADAR_DIMS.map((d) => (
+                <div key={d.label} className="flex items-center gap-1.5">
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, display: 'inline-block', flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 6 个月影响力预估 */}
+          <div
+            className="col-span-7"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.burgundy}15`,
+                    color: C.burgundyText,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>6 个月影响力预估</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {['曝光', '涨粉', '互动'].map((t, i) => (
+                  <span
+                    key={t}
+                    style={{
+                      borderRadius: 4,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fontFamily: F.mono,
+                      background: i === 0 ? C.ikb : `${C.ikb}12`,
+                      color: i === 0 ? '#fff' : '#6b7280',
+                    }}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="mb-3 flex items-end gap-3">
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>38.5K</p>
+              <span
+                style={{
+                  marginBottom: 4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>
+                +186%
+              </span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
+            </div>
+            {(() => {
+              const data = TREND_DATA;
+              const W = 560;
+              const H = 168;
+              const padL = 6;
+              const padR = 6;
+              const padT = 12;
+              const padB = 8;
+              const innerW = W - padL - padR;
+              const innerH = H - padT - padB;
+              const max = 110;
+              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+              const y = (v: number) => padT + innerH * (1 - v / max);
+              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+              return (
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="6 个月影响力预估趋势图">
+                  <title>6 个月影响力预估趋势图</title>
+                  <defs>
+                    <linearGradient id="s3b-trendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="s3b-trendLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
+                    </linearGradient>
+                  </defs>
+                  {[0, 0.33, 0.66, 1].map((f) => (
+                    <line
+                      key={f}
+                      x1={padL}
+                      x2={W - padR}
+                      y1={(padT + innerH * f).toFixed(1)}
+                      y2={(padT + innerH * f).toFixed(1)}
+                      stroke={C.line}
+                      strokeWidth="1"
+                    />
+                  ))}
+                  <path d={area} fill="url(#s3b-trendFill)" />
+                  <path d={line} fill="none" stroke="url(#s3b-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  {data.map((v, i) =>
+                    i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
+                  )}
+                </svg>
+              );
+            })()}
+            <div className="mt-1 flex justify-between px-1">
+              {TREND_LABELS.map((m) => (
+                <span key={m} style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>{m}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── KPI 卡一排 ─────────────────────────────────────── */}
+        <div className="mb-8 grid grid-cols-4 gap-6">
+          {/* 人设完整度 · 环形进度 · 蓝 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 20,
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
+          >
+            <div className="flex items-center justify-between">
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">verified</span>
+              </span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden="true">trending_up</span>
+                +18%
+              </span>
+            </div>
+            <div className="mt-4 flex items-end justify-between">
+              <div>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                  88<span style={{ fontSize: 15, color: '#6b7280' }}>%</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>人设完整度</p>
+              </div>
+              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}20`} strokeWidth="3.5" />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.915"
+                    fill="none"
+                    stroke={C.ikb}
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeDasharray="88 100"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* 记忆锚点 · 迷你柱 · 玫红 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
+          >
+            <div className="flex items-center justify-between">
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}15`, color: C.burgundyText }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">push_pin</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  background: `${C.burgundy}15`,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: C.burgundyText,
+                  fontFamily: F.mono,
+                }}
+              >
+                已评估
+              </span>
+            </div>
+            <div className="mt-4">
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                {result.coreIdentity.memoryPoints.length}
+                <span style={{ fontSize: 15, color: '#6b7280' }}> 个</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>记忆锚点</p>
+            </div>
+            <div className="mt-3 flex h-6 items-end gap-1">
+              {[58, 84, 70, 96, 78].map((h, i) => (
+                <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: `${C.burgundy}B0`, height: `${h}%` }} />
+              ))}
+            </div>
+          </div>
+
+          {/* 内容支柱 · 进度条 · 紫 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
+          >
+            <div className="flex items-center justify-between">
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">view_column</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  background: `${C.accent3}18`,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: C.purpleText,
+                  fontFamily: F.mono,
+                }}
+              >
+                全覆盖
+              </span>
+            </div>
+            <div className="mt-4">
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                {result.contentPersona.contentPillars.length}
+                <span style={{ fontSize: 15, color: '#6b7280' }}> 个</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>内容支柱</p>
+            </div>
+            <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.accent3}20` }}>
+              <div style={{ height: 8, width: '100%', borderRadius: 999, background: C.grad }} />
+            </div>
+          </div>
+
+          {/* 信任背书 · 关键词 chip · 蓝 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
+          >
+            <div className="flex items-center justify-between">
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">shield_with_heart</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                {result.trustSystem.backings.length} 项
+              </span>
+            </div>
+            <div className="mt-4">
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                {result.trustSystem.backings.length}
+                <span style={{ fontSize: 15, color: '#6b7280' }}> 项</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>信任背书</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {['实战案例', '客户反馈', '历程背书'].slice(0, 3).map((k) => (
+                <span
+                  key={k}
+                  style={{
+                    background: `${C.ikb}12`,
+                    padding: '2px 6px',
+                    fontSize: 10,
+                    fontWeight: 500,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                  }}
+                >
+                  {k}
                 </span>
               ))}
             </div>
           </div>
-          <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none text-[#111827]">38.5K</p>
-            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[14px]">trending_up</span>+186%
-            </span>
-            <span className="mb-1 text-[12px] text-[#9ca3af]">较冷启动基线</span>
-          </div>
-          {(() => {
-            const data = TREND_DATA;
-            const W = 560;
-            const H = 168;
-            const padL = 6;
-            const padR = 6;
-            const padT = 12;
-            const padB = 8;
-            const innerW = W - padL - padR;
-            const innerH = H - padT - padB;
-            const max = 110;
-            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-            const y = (v: number) => padT + innerH * (1 - v / max);
-            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-            return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="6 个月影响力预估趋势图">
-                <title>6 个月影响力预估趋势图</title>
-                <defs>
-                  <linearGradient id="trendFillB" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="trendLineB" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#002fa7" />
-                    <stop offset="100%" stopColor="#781621" />
-                  </linearGradient>
-                </defs>
-                {[0, 0.33, 0.66, 1].map((f) => (
-                  <line
-                    key={f}
-                    x1={padL}
-                    x2={W - padR}
-                    y1={(padT + innerH * f).toFixed(1)}
-                    y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9"
-                    strokeWidth="1"
-                  />
-                ))}
-                <path d={area} fill="url(#trendFillB)" />
-                <path d={line} fill="none" stroke="url(#trendLineB)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                {data.map((v, i) =>
-                  i % 1 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
-                )}
-              </svg>
-            );
-          })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
-            {TREND_LABELS.map((m) => (
-              <span key={m}>{m}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── KPI 卡一排 ─────────────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
-        {/* 人设完整度 · 环形进度 · 蓝 */}
-        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]">verified</span>
-            </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[13px]">trending_up</span>+18%
-            </span>
-          </div>
-          <div className="mt-4 flex items-end justify-between">
-            <div>
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
-                88<span className="text-[15px] text-[#9ca3af]">%</span>
-              </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">人设完整度</p>
-            </div>
-            <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="none"
-                  stroke="#002fa7"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeDasharray="88 100"
-                />
-              </svg>
-            </div>
-          </div>
         </div>
 
-        {/* 记忆锚点 · 迷你柱 · 勃艮第红 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span className="material-symbols-outlined text-[20px]">push_pin</span>
-            </span>
-            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已评估</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              {result.coreIdentity.memoryPoints.length}
-              <span className="text-[15px] text-[#9ca3af]"> 个</span>
-            </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">记忆锚点</p>
-          </div>
-          <div className="mt-3 flex h-6 items-end gap-1">
-            {[58, 84, 70, 96, 78].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-        </div>
-
-        {/* 内容支柱 · 进度条 · 黄 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-              <span className="material-symbols-outlined text-[20px]">view_column</span>
-            </span>
-            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">全覆盖</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              {result.contentPersona.contentPillars.length}
-              <span className="text-[15px] text-[#9ca3af]"> 个</span>
-            </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">内容支柱</p>
-          </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
-          </div>
-        </div>
-
-        {/* 信任背书 · 关键词 chip · 蓝 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]">shield_with_heart</span>
-            </span>
-            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
-              {result.trustSystem.backings.length} 项
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              {result.trustSystem.backings.length}
-              <span className="text-[15px] text-[#9ca3af]"> 项</span>
-            </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">信任背书</p>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1">
-            {['实战案例', '客户反馈', '历程背书'].slice(0, 3).map((k) => (
-              <span
-                key={k}
-                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
-              >
-                {k}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── 结果区(3 列 bento)─────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-6">
-        {/* 左 2 列 */}
-        <div className="col-span-2 space-y-6">
-          {/* Core Identity 蓝卡 */}
-          <section className="pw-shadow-soft relative overflow-hidden rounded-xl bg-[#002fa7] p-8 text-white">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full border border-white/10" />
-            <div className="pointer-events-none absolute right-8 top-8 h-24 w-24 rounded-full border border-dashed border-white/10" />
-            <div className="relative z-10 flex flex-row items-center justify-between gap-6">
-              <div>
-                <h3 className="mb-1 text-[14px] font-medium text-[#b8c4ff]">
-                  核心定位基因 (Core Identity)
-                </h3>
-                <div className="mb-4 text-[22px] font-bold leading-tight">
-                  {result.coreIdentity.identityTag}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {result.coreIdentity.traits.map((t) => (
-                    <span
-                      key={t.name}
-                      className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[13px] font-medium"
+        {/* ── 结果区(3 列 bento)─────────────────────────────── */}
+        <div className="grid grid-cols-3 gap-6">
+          {/* 左 2 列 */}
+          <div className="col-span-2 space-y-6">
+            {/* Core Identity · 白底 + 顶部 3px 渐变色条 */}
+            <section
+              style={{
+                position: 'relative',
+                overflow: 'hidden',
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: 0,
+              }}
+            >
+              {/* 顶部 3px 渐变色条 */}
+              <div style={{ height: 3, width: '100%', background: C.grad }} aria-hidden="true" />
+              {/* 装饰光晕(极淡,装饰用) */}
+              <div style={{ pointerEvents: 'none', position: 'absolute', right: -40, top: -40, height: 192, width: 192, borderRadius: '50%', background: `${C.ikb}05`, filter: 'blur(40px)' }} aria-hidden="true" />
+              <div style={{ pointerEvents: 'none', position: 'absolute', bottom: -40, left: '40%', height: 120, width: 120, borderRadius: '50%', background: `${C.burgundy}05`, filter: 'blur(32px)' }} aria-hidden="true" />
+              <div style={{ position: 'relative', zIndex: 10, padding: 32 }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+                  <div>
+                    <h3 style={{ marginBottom: 4, fontSize: 14, fontWeight: 500, color: '#6b7280', fontFamily: F.mono, letterSpacing: '0.04em' }}>
+                      核心定位基因 (Core Identity)
+                    </h3>
+                    <div
+                      style={{
+                        marginBottom: 16,
+                        fontSize: 22,
+                        fontWeight: 700,
+                        lineHeight: 1.3,
+                        fontFamily: F.display,
+                        background: C.grad,
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        color: 'transparent',
+                      }}
                     >
-                      {t.name}
+                      {result.coreIdentity.identityTag}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {result.coreIdentity.traits.map((t) => (
+                        <span
+                          key={t.name}
+                          style={{
+                            borderRadius: 999,
+                            border: `1px solid ${C.line}`,
+                            background: C.base,
+                            padding: '4px 12px',
+                            fontSize: 13,
+                            fontWeight: 500,
+                            color: C.ink,
+                            fontFamily: F.cn,
+                          }}
+                        >
+                          {t.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      height: 128,
+                      width: 128,
+                      flexShrink: 0,
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%',
+                      border: `4px solid ${C.line}`,
+                      background: C.base,
+                    }}
+                  >
+                    <span style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#6b7280', fontFamily: F.mono }}>ID</span>
+                    <span style={{ fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.display }}>#72421</span>
+                    <div style={{ position: 'absolute', bottom: -8, right: -8, height: 24, width: 24, borderRadius: '50%', border: `2px solid ${C.paper}`, background: C.burgundy }} aria-hidden="true" />
+                  </div>
+                </div>
+                <div style={{ marginTop: 32, borderTop: `1px solid ${C.line}`, paddingTop: 24 }}>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
+                    {result.coreIdentity.differentiation}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* IP 孵化成长路线图 */}
+            <section style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
+              <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+                <span className="material-symbols-outlined" style={{ color: C.ikb }} aria-hidden="true">timeline</span>
+                IP 孵化成长路线图
+              </h3>
+              <div className="grid grid-cols-3 gap-6">
+                {result.roadmap.map((r, i) => {
+                  const accent = ACCENT[r.accent] ?? C.ikb;
+                  return (
+                    <div key={r.period} style={{ border: `1px solid ${C.line}`, background: C.base, padding: 20 }}>
+                      <div style={{ marginBottom: 8, height: 12, width: 12, borderRadius: '50%', backgroundColor: accent }} aria-hidden="true" />
+                      <div
+                        style={{
+                          marginBottom: 4,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.08em',
+                          color: accent,
+                          fontFamily: F.mono,
+                        }}
+                      >
+                        阶段 {String(i + 1).padStart(2, '0')}
+                      </div>
+                      <h4 style={{ marginBottom: 8, fontSize: 15, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{r.period}</h4>
+                      <p style={{ fontSize: 12, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{r.goal}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 信任背书体系 */}
+            <section style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
+              <h3 style={{ marginBottom: 24, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>信任背书体系</h3>
+              <div className="grid grid-cols-3 gap-4">
+                {result.trustSystem.backings.slice(0, 3).map((b) => (
+                  <div
+                    key={b.claim}
+                    style={{
+                      border: `1px solid ${C.line}`,
+                      background: C.base,
+                      padding: 16,
+                      transition: 'border-color 0.2s',
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.line; }}
+                  >
+                    <div style={{ marginBottom: 12, display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">verified</span>
+                    </div>
+                    <h4 style={{ marginBottom: 4, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn }}>{b.claim}</h4>
+                    <p style={{ fontSize: 12, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{b.display}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* 右 1 列 · 内容矩阵占比 */}
+          <div className="space-y-6">
+            <section style={{ display: 'flex', height: '100%', flexDirection: 'column', border: `1px solid ${C.line}`, background: C.paper, padding: 24 }}>
+              <h3 style={{ marginBottom: 4, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>内容矩阵占比</h3>
+              <p style={{ marginBottom: 24, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
+                基于算法优化的最佳内容输出配比，平衡专业深度与受众广度。
+              </p>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {result.contentPersona.contentPillars.map((p, i) => {
+                  const pct = parseInt(String(p.percentage), 10) || 0;
+                  const color = BAR_COLORS[i % BAR_COLORS.length];
+                  return (
+                    <div key={p.title}>
+                      <div style={{ marginBottom: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: C.ink, fontFamily: F.cn }}>{p.title}</span>
+                        <span style={{ flexShrink: 0, fontSize: 14, fontWeight: 700, color, fontFamily: F.mono }}>{p.percentage}</span>
+                      </div>
+                      <div style={{ height: 8, width: '100%', borderRadius: 999, background: `${C.line}` }}>
+                        <div
+                          style={{ height: 8, borderRadius: 999, backgroundColor: color, width: `${pct}%` }}
+                        />
+                      </div>
+                      <p style={{ marginTop: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{p.desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ marginTop: 24, borderTop: `1px solid ${C.line}`, paddingTop: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 500, color: C.ikb, fontFamily: F.cn }}>
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+                  配比状态健康，建议持续执行
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        {/* ── P0 补充区块 · 思想体系 / 内容人设 / 信任体系补充 ─── */}
+
+        {/* 思想体系 · thoughtSystem */}
+        <section style={{ marginTop: 24, border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
+          <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">lightbulb</span>
+            </span>
+            思想体系
+          </h3>
+
+          {/* 核心信念 coreBeliefs */}
+          <div style={{ marginBottom: 32 }}>
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+              核心信念
+            </h4>
+            <div className="space-y-4">
+              {result.thoughtSystem.coreBeliefs.map((cb, i) => (
+                <div
+                  key={i}
+                  style={{
+                    border: `1px solid ${C.line}`,
+                    background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+                    padding: 20,
+                  }}
+                >
+                  <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                    <span
+                      style={{
+                        marginTop: 2,
+                        display: 'flex',
+                        height: 24,
+                        width: 24,
+                        flexShrink: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        background: C.ikb,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: '#fff',
+                        fontFamily: F.mono,
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                    <p style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, margin: 0 }}>{cb.belief}</p>
+                  </div>
+                  <p style={{ marginBottom: 8, paddingLeft: 36, fontSize: 13, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{cb.reason}</p>
+                  <div style={{ marginLeft: 36, border: `1px solid ${C.ikb}30`, background: `${C.ikb}08`, padding: '8px 12px' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>内容角度 · </span>
+                    <span style={{ fontSize: 12, color: '#374151', fontFamily: F.cn }}>{cb.angle}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 独特观点 viewpoints */}
+          <div style={{ marginBottom: 32 }}>
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.burgundy, display: 'inline-block' }} aria-hidden="true" />
+              独特观点
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              {result.thoughtSystem.viewpoints.map((vp, i) => (
+                <div
+                  key={i}
+                  style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 20 }}
+                >
+                  <p style={{ marginBottom: 8, fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn }}>{vp.title}</p>
+                  <p style={{ marginBottom: 12, fontSize: 13, lineHeight: 1.6, color: '#6b7280', fontFamily: F.cn }}>{vp.desc}</p>
+                  <div style={{ border: `1px solid ${C.burgundy}30`, background: `${C.burgundy}08`, padding: '8px 12px' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>示例标题 · </span>
+                    <span style={{ fontSize: 12, color: '#374151', fontFamily: F.cn }}>{vp.exampleTitle}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 品牌金句 mottos */}
+          <div>
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.accent3, display: 'inline-block' }} aria-hidden="true" />
+              品牌金句
+            </h4>
+            <div className="grid grid-cols-3 gap-4">
+              {result.thoughtSystem.mottos.map((m, i) => (
+                <div
+                  key={i}
+                  style={{
+                    border: `1px solid ${C.accent3}40`,
+                    background: `linear-gradient(135deg, ${C.accent3}08 0%, ${C.paper} 100%)`,
+                    padding: 20,
+                  }}
+                >
+                  <p style={{ marginBottom: 12, fontSize: 16, fontWeight: 700, lineHeight: 1.4, color: C.purpleText, fontFamily: F.display }}>{m.motto}</p>
+                  <div style={{ marginBottom: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
+                    <span style={{ fontWeight: 600, color: C.ink }}>使用时机 · </span>
+                    {m.whenToUse}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
+                    <span style={{ fontWeight: 600, color: C.ink }}>效果 · </span>
+                    {m.effect}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 内容人设 · contentPersona */}
+        <section style={{ marginTop: 24, border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
+          <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}15`, color: C.burgundyText }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">person_play</span>
+            </span>
+            内容人设
+          </h3>
+
+          {/* 表达风格 speakingStyle */}
+          <div
+            style={{
+              marginBottom: 24,
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.burgundy}06 100%)`,
+              padding: 20,
+            }}
+          >
+            <h4 style={{ marginBottom: 8, fontSize: 14, fontWeight: 700, color: C.burgundyText, fontFamily: F.cn }}>表达风格</h4>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
+              {result.contentPersona.speakingStyle}
+            </p>
+          </div>
+
+          {/* Dos & Donts */}
+          <div className="mb-6 grid grid-cols-2 gap-4">
+            <div style={{ border: '1px solid #dcfce7', background: '#f0fdf4', padding: 20 }}>
+              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: '#166534', fontFamily: F.cn }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">check_circle</span>
+                建议这样说
+              </h4>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {result.contentPersona.speakingDos.map((d, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
+                    <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} aria-hidden="true" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div style={{ border: '1px solid #fee2e2', background: '#fff5f5', padding: 20 }}>
+              <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 700, color: '#991b1b', fontFamily: F.cn }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">cancel</span>
+                避免这样说
+              </h4>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {result.contentPersona.speakingDonts.map((d, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
+                    <span style={{ marginTop: 6, height: 6, width: 6, flexShrink: 0, borderRadius: '50%', background: '#dc2626', display: 'inline-block' }} aria-hidden="true" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* 示例开场白 examplePitch */}
+          <div style={{ marginBottom: 24, border: `1px solid ${C.line}`, background: C.base, padding: 20 }}>
+            <h4 style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.ikb }} aria-hidden="true">record_voice_over</span>
+              示例开场白
+            </h4>
+            <p style={{ fontSize: 14, lineHeight: 1.8, color: '#374151', whiteSpace: 'pre-wrap', fontFamily: F.cn }}>
+              {result.contentPersona.examplePitch}
+            </p>
+          </div>
+
+          {/* 视觉形象 visualStyle */}
+          <div>
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: C.burgundyText }} aria-hidden="true">style</span>
+              视觉形象建议
+            </h4>
+            <div className="grid grid-cols-3 gap-4">
+              <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 16 }}>
+                <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>整体风格</p>
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
+                  {result.contentPersona.visualStyle.style}
+                </p>
+              </div>
+              <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 16 }}>
+                <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>穿搭建议</p>
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
+                  {result.contentPersona.visualStyle.outfit}
+                </p>
+              </div>
+              <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 16 }}>
+                <p style={{ marginBottom: 4, fontSize: 12, fontWeight: 700, color: C.purpleText, fontFamily: F.mono }}>场景选择</p>
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>
+                  {result.contentPersona.visualStyle.scene}
+                </p>
+              </div>
+            </div>
+            {result.contentPersona.visualStyle.props.length > 0 && (
+              <div style={{ marginTop: 16, border: `1px solid ${C.line}`, background: C.base, padding: '16px 20px' }}>
+                <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, color: '#374151', fontFamily: F.cn }}>道具清单</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {result.contentPersona.visualStyle.props.map((prop) => (
+                    <span
+                      key={prop}
+                      style={{
+                        border: `1px solid ${C.line}`,
+                        background: C.paper,
+                        padding: '4px 12px',
+                        fontSize: 12,
+                        fontWeight: 500,
+                        color: '#374151',
+                        borderRadius: 999,
+                        fontFamily: F.cn,
+                      }}
+                    >
+                      {prop}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="relative flex h-32 w-32 shrink-0 flex-col items-center justify-center rounded-full border-4 border-[#002fa7] bg-white shadow-lg">
-                <span className="text-[11px] font-medium uppercase tracking-widest text-[#6b7280]">
-                  ID
-                </span>
-                <span className="text-[20px] font-bold text-[#111827]">#72421</span>
-                <div className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full border-2 border-white bg-[#781621]" />
-              </div>
-            </div>
-            <div className="mt-8 border-t border-white/10 pt-6">
-              <p className="text-[14px] leading-relaxed text-[#dbe2ff]">
-                {result.coreIdentity.differentiation}
-              </p>
-            </div>
-          </section>
-
-          {/* IP 孵化成长路线图 */}
-          <section className="rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
-            <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
-              <span className="material-symbols-outlined text-[#002fa7]">timeline</span>
-              IP 孵化成长路线图
-            </h3>
-            <div className="grid grid-cols-3 gap-6">
-              {result.roadmap.map((r, i) => {
-                const accent = ACCENT[r.accent] ?? '#002fa7';
-                return (
-                  <div key={r.period} className="rounded-lg border border-[#f3f4f6] bg-white p-5 shadow-sm">
-                    <div className="mb-2 h-3 w-3 rounded-full" style={{ backgroundColor: accent }} />
-                    <div
-                      className="mb-1 text-[12px] font-bold uppercase tracking-wider"
-                      style={{ color: accent }}
-                    >
-                      阶段 {String(i + 1).padStart(2, '0')}
-                    </div>
-                    <h4 className="mb-2 text-[15px] font-bold text-[#111827]">{r.period}</h4>
-                    <p className="text-[12px] leading-relaxed text-[#6b7280]">{r.goal}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* 信任背书体系 */}
-          <section className="rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
-            <h3 className="mb-6 text-[18px] font-bold text-[#111827]">信任背书体系</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {result.trustSystem.backings.slice(0, 3).map((b) => (
-                <div
-                  key={b.claim}
-                  className="rounded-lg border border-[#f3f4f6] bg-[#f9fafb] p-4 transition-colors hover:border-[#e5e7eb]"
-                >
-                  <div className="mb-3 flex h-8 w-8 items-center justify-center rounded bg-[#dbeafe] text-[#002fa7]">
-                    <span className="material-symbols-outlined text-[18px]">verified</span>
-                  </div>
-                  <h4 className="mb-1 text-[14px] font-bold leading-snug text-[#111827]">{b.claim}</h4>
-                  <p className="text-[12px] leading-relaxed text-[#6b7280]">{b.display}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-
-        {/* 右 1 列 · 内容矩阵占比 */}
-        <div className="space-y-6">
-          <section className="flex h-full flex-col rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
-            <h3 className="mb-1 text-[18px] font-bold text-[#111827]">内容矩阵占比</h3>
-            <p className="mb-6 text-[12px] text-[#6b7280]">
-              基于算法优化的最佳内容输出配比,平衡专业深度与受众广度。
-            </p>
-            <div className="flex-1 space-y-5">
-              {result.contentPersona.contentPillars.map((p, i) => {
-                const pct = parseInt(String(p.percentage), 10) || 0;
-                const color = BAR_COLORS[i % BAR_COLORS.length];
-                return (
-                  <div key={p.title}>
-                    <div className="mb-1 flex items-end justify-between gap-2">
-                      <span className="text-[14px] font-semibold text-[#111827]">{p.title}</span>
-                      <span className="shrink-0 text-[14px] font-bold" style={{ color }}>
-                        {p.percentage}
-                      </span>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-[#f3f4f6]">
-                      <div
-                        className="h-2 rounded-full"
-                        style={{ width: `${pct}%`, backgroundColor: color }}
-                      />
-                    </div>
-                    <p className="mt-1 text-[11px] text-[#9ca3af]">{p.desc}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-6 border-t border-[#f3f4f6] pt-4">
-              <div className="flex items-center gap-2 text-[12px] font-medium text-[#10b981]">
-                <span className="h-2 w-2 rounded-full bg-[#10b981]" />
-                配比状态健康,建议持续执行
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-
-      {/* ── P0 补充区块 · 思想体系 / 内容人设 / 信任体系补充 ─── */}
-
-      {/* 思想体系 · thoughtSystem */}
-      <section className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
-        <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[20px]">lightbulb</span>
-          </span>
-          思想体系
-        </h3>
-
-        {/* 核心信念 coreBeliefs */}
-        <div className="mb-8">
-          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="h-1 w-4 rounded-full bg-[#002fa7]" />
-            核心信念
-          </h4>
-          <div className="space-y-4">
-            {result.thoughtSystem.coreBeliefs.map((cb, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-5"
-              >
-                <div className="mb-2 flex items-start gap-3">
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[11px] font-bold text-white">
-                    {i + 1}
-                  </span>
-                  <p className="text-[15px] font-bold leading-snug text-[#111827]">{cb.belief}</p>
-                </div>
-                <p className="mb-2 pl-9 text-[13px] leading-relaxed text-[#6b7280]">{cb.reason}</p>
-                <div className="ml-9 rounded-lg border border-[#dbeafe] bg-[#eff4ff] px-3 py-2">
-                  <span className="text-[11px] font-bold text-[#002fa7]">内容角度 · </span>
-                  <span className="text-[12px] text-[#374151]">{cb.angle}</span>
-                </div>
-              </div>
-            ))}
+            )}
           </div>
-        </div>
+        </section>
 
-        {/* 独特观点 viewpoints */}
-        <div className="mb-8">
-          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="h-1 w-4 rounded-full bg-[#781621]" />
-            独特观点
-          </h4>
-          <div className="grid grid-cols-2 gap-4">
-            {result.thoughtSystem.viewpoints.map((vp, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm"
-              >
-                <p className="mb-2 text-[14px] font-bold leading-snug text-[#111827]">{vp.title}</p>
-                <p className="mb-3 text-[13px] leading-relaxed text-[#6b7280]">{vp.desc}</p>
-                <div className="rounded-lg border border-[#fce7c8] bg-[#fff7ed] px-3 py-2">
-                  <span className="text-[11px] font-bold text-[#9a4100]">示例标题 · </span>
-                  <span className="text-[12px] text-[#374151]">{vp.exampleTitle}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* 信任体系补充 · trustSystem socialProofs + storyLine */}
+        <section style={{ marginTop: 24, border: `1px solid ${C.line}`, background: C.paper, padding: 32 }}>
+          <h3 style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">workspace_premium</span>
+            </span>
+            信任体系 · 社会证明与故事线
+          </h3>
 
-        {/* 品牌金句 mottos */}
-        <div>
-          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="h-1 w-4 rounded-full bg-[#F6D300]" />
-            品牌金句
-          </h4>
-          <div className="grid grid-cols-3 gap-4">
-            {result.thoughtSystem.mottos.map((m, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-[#f0e060] bg-gradient-to-br from-[#fffde7] to-white p-5 shadow-sm"
-              >
-                <p className="mb-3 text-[16px] font-bold leading-snug text-[#8a6a00]">{m.motto}</p>
-                <div className="mb-1.5 text-[12px] text-[#6b7280]">
-                  <span className="font-semibold text-[#374151]">使用时机 · </span>
-                  {m.whenToUse}
-                </div>
-                <div className="text-[12px] text-[#6b7280]">
-                  <span className="font-semibold text-[#374151]">效果 · </span>
-                  {m.effect}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 内容人设 · contentPersona */}
-      <section className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
-        <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-            <span className="material-symbols-outlined text-[20px]">person_play</span>
-          </span>
-          内容人设
-        </h3>
-
-        {/* 表达风格 speakingStyle */}
-        <div className="mb-6 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#fdf5f5] p-5">
-          <h4 className="mb-2 text-[14px] font-bold text-[#781621]">表达风格</h4>
-          <p className="text-[14px] leading-relaxed text-[#374151]">
-            {result.contentPersona.speakingStyle}
-          </p>
-        </div>
-
-        {/* Dos & Donts */}
-        <div className="mb-6 grid grid-cols-2 gap-4">
-          <div className="rounded-xl border border-[#dcfce7] bg-[#f0fdf4] p-5">
-            <h4 className="mb-3 flex items-center gap-1.5 text-[14px] font-bold text-[#166534]">
-              <span className="material-symbols-outlined text-[18px]">check_circle</span>
-              建议这样说
+          {/* 社会证明 socialProofs */}
+          <div style={{ marginBottom: 32 }}>
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.ikb, display: 'inline-block' }} aria-hidden="true" />
+              社会证明
             </h4>
-            <ul className="space-y-2">
-              {result.contentPersona.speakingDos.map((d, i) => (
-                <li key={i} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#16a34a]" />
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-xl border border-[#fee2e2] bg-[#fff5f5] p-5">
-            <h4 className="mb-3 flex items-center gap-1.5 text-[14px] font-bold text-[#991b1b]">
-              <span className="material-symbols-outlined text-[18px]">cancel</span>
-              避免这样说
-            </h4>
-            <ul className="space-y-2">
-              {result.contentPersona.speakingDonts.map((d, i) => (
-                <li key={i} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#dc2626]" />
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* 示例开场白 examplePitch */}
-        <div className="mb-6 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-5">
-          <h4 className="mb-3 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="material-symbols-outlined text-[18px] text-[#002fa7]">record_voice_over</span>
-            示例开场白
-          </h4>
-          <p className="whitespace-pre-wrap text-[14px] leading-loose text-[#374151]">
-            {result.contentPersona.examplePitch}
-          </p>
-        </div>
-
-        {/* 视觉形象 visualStyle */}
-        <div>
-          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="material-symbols-outlined text-[18px] text-[#781621]">style</span>
-            视觉形象建议
-          </h4>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
-              <p className="mb-1 text-[12px] font-bold text-[#002fa7]">整体风格</p>
-              <p className="text-[13px] leading-relaxed text-[#374151]">
-                {result.contentPersona.visualStyle.style}
-              </p>
-            </div>
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
-              <p className="mb-1 text-[12px] font-bold text-[#781621]">穿搭建议</p>
-              <p className="text-[13px] leading-relaxed text-[#374151]">
-                {result.contentPersona.visualStyle.outfit}
-              </p>
-            </div>
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
-              <p className="mb-1 text-[12px] font-bold text-[#8a6a00]">场景选择</p>
-              <p className="text-[13px] leading-relaxed text-[#374151]">
-                {result.contentPersona.visualStyle.scene}
-              </p>
-            </div>
-          </div>
-          {result.contentPersona.visualStyle.props.length > 0 && (
-            <div className="mt-4 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] px-5 py-4">
-              <p className="mb-2 text-[12px] font-bold text-[#374151]">道具清单</p>
-              <div className="flex flex-wrap gap-2">
-                {result.contentPersona.visualStyle.props.map((prop) => (
-                  <span
-                    key={prop}
-                    className="rounded-full border border-[#e5e7eb] bg-white px-3 py-1 text-[12px] font-medium text-[#374151] shadow-sm"
-                  >
-                    {prop}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 信任体系补充 · trustSystem socialProofs + storyLine */}
-      <section className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
-        <h3 className="mb-6 flex items-center gap-2 text-[18px] font-bold text-[#111827]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-            <span className="material-symbols-outlined text-[20px]">workspace_premium</span>
-          </span>
-          信任体系 · 社会证明与故事线
-        </h3>
-
-        {/* 社会证明 socialProofs */}
-        <div className="mb-8">
-          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="h-1 w-4 rounded-full bg-[#002fa7]" />
-            社会证明
-          </h4>
-          <div className="grid grid-cols-2 gap-4">
-            {result.trustSystem.socialProofs.map((sp, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-5"
-              >
-                <div className="mb-3 flex items-start gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                    <span className="material-symbols-outlined text-[18px]">thumb_up</span>
-                  </span>
-                  <p className="text-[14px] font-bold leading-snug text-[#111827]">{sp.proof}</p>
-                </div>
-                <div className="rounded-lg border border-[#dbeafe] bg-[#eff4ff] px-3 py-2">
-                  <span className="text-[11px] font-bold text-[#002fa7]">落地方式 · </span>
-                  <span className="text-[13px] leading-relaxed text-[#374151]">{sp.method}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 故事线 storyLine */}
-        <div>
-          <h4 className="mb-4 flex items-center gap-2 text-[14px] font-bold text-[#111827]">
-            <span className="h-1 w-4 rounded-full bg-[#781621]" />
-            IP 故事线
-          </h4>
-          <div className="space-y-4">
-            <div className="rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#fdf5f5] p-5">
-              <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-[#781621]">核心故事</p>
-              <p className="text-[14px] leading-relaxed text-[#374151]">
-                {result.trustSystem.storyLine.mainStory}
-              </p>
-            </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm">
-                <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-[#002fa7]">关键转折点</p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">
-                  {result.trustSystem.storyLine.turningPoint}
+              {result.trustSystem.socialProofs.map((sp, i) => (
+                <div
+                  key={i}
+                  style={{
+                    border: `1px solid ${C.line}`,
+                    background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+                    padding: 20,
+                  }}
+                >
+                  <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                    <span style={{ display: 'flex', height: 32, width: 32, flexShrink: 0, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">thumb_up</span>
+                    </span>
+                    <p style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.4, color: C.ink, fontFamily: F.cn, margin: 0 }}>{sp.proof}</p>
+                  </div>
+                  <div style={{ border: `1px solid ${C.ikb}25`, background: `${C.ikb}08`, padding: '8px 12px' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>落地方式 · </span>
+                    <span style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: F.cn }}>{sp.method}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 故事线 storyLine */}
+          <div>
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>
+              <span style={{ height: 4, width: 16, borderRadius: 999, background: C.burgundy, display: 'inline-block' }} aria-hidden="true" />
+              IP 故事线
+            </h4>
+            <div className="space-y-4">
+              <div
+                style={{
+                  border: `1px solid ${C.line}`,
+                  background: `linear-gradient(135deg, ${C.paper} 0%, ${C.burgundy}05 100%)`,
+                  padding: 20,
+                }}
+              >
+                <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.burgundyText, fontFamily: F.mono }}>核心故事</p>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
+                  {result.trustSystem.storyLine.mainStory}
                 </p>
               </div>
-              <div className="rounded-xl border border-[#f0e060] bg-[#fffde7] p-5">
-                <p className="mb-2 text-[12px] font-bold uppercase tracking-widest text-[#8a6a00]">叙事方式</p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">
-                  {result.trustSystem.storyLine.narrationMethod}
-                </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div style={{ border: `1px solid ${C.line}`, background: C.paper, padding: 20 }}>
+                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.ikb, fontFamily: F.mono }}>关键转折点</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
+                    {result.trustSystem.storyLine.turningPoint}
+                  </p>
+                </div>
+                <div style={{ border: `1px solid ${C.accent3}40`, background: `${C.accent3}06`, padding: 20 }}>
+                  <p style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: C.purpleText, fontFamily: F.mono }}>叙事方式</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: '#374151', fontFamily: F.cn }}>
+                    {result.trustSystem.storyLine.narrationMethod}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      </>
-      )}
-    </PioneerLayout>
+        </section>
+        </>
+        )}
+      </div>
+    </IKBLayout>
   );
 }
