@@ -25,33 +25,53 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
   return (
     <div
       data-testid="ip-health-score-card"
-      className="rounded-xl border border-[#e5e7eb] bg-white p-6 flex flex-col gap-5 pw-shadow-soft"
+      className="rounded-xl p-6 flex flex-col gap-5 pw-shadow-soft"
+      style={{
+        border: '1px solid rgba(22,32,72,0.13)',
+        background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',
+      }}
     >
       {/* KPI 大数值 */}
       <div className="flex items-center gap-5">
         <div className="relative h-24 w-24 shrink-0">
           <svg viewBox="0 0 100 100" className="-rotate-90 h-24 w-24">
+            <defs>
+              <linearGradient id="dg-health-ring" x1="1" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#2B53E6" />
+                <stop offset="52%" stopColor="#7A3BE0" />
+                <stop offset="100%" stopColor="#EF3E6B" />
+              </linearGradient>
+            </defs>
             <circle cx="50" cy="50" r={r} fill="none" stroke="#eef2ff" strokeWidth="8" />
             <circle
               cx="50"
               cy="50"
               r={r}
               fill="none"
-              stroke="#002fa7"
+              stroke="url(#dg-health-ring)"
               strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={`${dash.toFixed(1)} ${circumference.toFixed(1)}`}
             />
           </svg>
-          <span className="absolute inset-0 flex items-center justify-center text-[26px] font-extrabold text-[#002fa7]">
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[26px] font-extrabold"
+            style={{ color: '#2B53E6' }}
+          >
             {overallScore}
           </span>
         </div>
         <div>
-          <p className="text-[13px] font-semibold uppercase tracking-widest text-[#9ca3af]">{REPORT_LABEL_SCORE_TOTAL}</p>
-          <p className="mt-1 text-[32px] font-extrabold leading-none text-[#111827]">{overallScore}<span className="ml-1 text-[16px] font-normal text-[#9ca3af]">/ 100</span></p>
-          <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#10b981]/10 px-2.5 py-0.5 text-[12px] font-bold text-[#10b981]">
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>
+          <p className="text-[13px] font-semibold uppercase tracking-widest text-[#6b7280]">{REPORT_LABEL_SCORE_TOTAL}</p>
+          <p className="mt-1 text-[32px] font-extrabold leading-none" style={{ color: '#161D33' }}>
+            {overallScore}
+            <span className="ml-1 text-[16px] font-normal text-[#6b7280]">/ 100</span>
+          </p>
+          <span
+            className="mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-bold"
+            style={{ background: 'rgba(43,83,230,0.10)', color: '#2B53E6' }}
+          >
+            <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
             IP健康度
           </span>
         </div>
@@ -61,13 +81,16 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
         {scores.map((dim) => (
           <div key={dim.id} className="flex items-center gap-3">
             <span className="text-[12px] font-semibold text-[#6b7280] w-16 shrink-0">{dim.shortLabel}</span>
-            <div className="flex-1 h-1.5 rounded-full bg-[#eef2ff] overflow-hidden">
+            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#eef2ff' }}>
               <div
-                className="h-full bg-[#002fa7] rounded-full transition-all"
-                style={{ width: `${maxScore > 0 ? (dim.score / maxScore) * 100 : 0}%` }}
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${maxScore > 0 ? (dim.score / maxScore) * 100 : 0}%`,
+                  background: 'linear-gradient(110deg, #2B53E6 0%, #7A3BE0 52%, #EF3E6B 100%)',
+                }}
               />
             </div>
-            <span className="text-[12px] font-bold text-[#111827] w-6 text-right shrink-0">{dim.score}</span>
+            <span className="text-[12px] font-bold w-6 text-right shrink-0" style={{ color: '#161D33' }}>{dim.score}</span>
           </div>
         ))}
       </div>

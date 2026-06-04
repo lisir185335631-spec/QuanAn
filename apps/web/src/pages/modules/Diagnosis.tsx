@@ -3,6 +3,8 @@
 // AC-7 · onError → toast.error + retry button
 // 阶段2: 真后端驱动 — onSuccess(report) → 存 report state + setIsReportView(true)
 
+import '@/styles/ikb-hero.css';
+
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -18,8 +20,9 @@ import { PriorityPlanSection } from '@/components/diagnosis/PriorityPlanSection'
 import { ReportFooterActions } from '@/components/diagnosis/ReportFooterActions';
 import { WeeklyTasksSection } from '@/components/diagnosis/WeeklyTasksSection';
 import { FadeInWrapper } from '@/components/FadeInWrapper';
+import { C, F } from '@/components/home/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   DIAGNOSIS_H1,
   DIAGNOSIS_DIMENSIONS_8,
@@ -421,67 +424,143 @@ export default function Diagnosis() {
   // AC-4: loading state — show spinner while mutation is pending
   if (generateMutation.isPending) {
     return (
-      <PioneerLayout>
+      <IKBLayout>
         <div
-          className="flex flex-col items-center justify-center gap-6 py-16 max-w-3xl"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 24,
+            padding: '64px 0',
+            maxWidth: 768,
+          }}
           data-testid="diagnosis-loading"
         >
           <FadeInWrapper from="up">
-            <div className="flex flex-col items-center gap-6">
-              {/* Material Symbols spinner replacing Lucide Loader2 */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+              {/* Material Symbols spinner */}
               <span
-                className="material-symbols-outlined animate-spin text-[48px] text-[#002fa7]"
-                aria-hidden="true"
+                className="material-symbols-outlined animate-spin"
+                aria-hidden={true}
+                style={{ fontSize: 48, color: C.ikb }}
               >
                 progress_activity
               </span>
-              <p className="text-[18px] font-semibold text-[#111827]">AI 分析中...</p>
-              <p className="text-[14px] text-[#6b7280]">正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>AI 分析中...</p>
+              <p style={{ fontSize: 14, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>正在生成 7 维度诊断报告，请稍候 (约 8-15 秒)</p>
             </div>
           </FadeInWrapper>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // AC-7: error state — show retry button
   if (generateMutation.isError) {
     return (
-      <PioneerLayout>
+      <IKBLayout>
         <div
-          className="py-8 max-w-3xl"
+          style={{ padding: '32px 0', maxWidth: 768 }}
           data-testid="diagnosis-error"
         >
           <FadeInWrapper from="up">
             {/* Header chrome */}
-            <div className="mb-6 flex items-center gap-3">
-              <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span
+                style={{
+                  borderRadius: 6,
+                  border: `1px solid ${C.line}`,
+                  background: C.base,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: C.ink,
+                  fontFamily: F.mono,
+                }}
+              >
                 智能引擎
               </span>
-              <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              <span
+                style={{
+                  borderRadius: 6,
+                  border: `1px solid ${C.ikb}40`,
+                  background: `${C.ikb}0d`,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
                 IP 诊断
               </span>
             </div>
-            <h1 className="text-[40px] font-extrabold tracking-tighter text-[#1b1b1b] mb-8">{DIAGNOSIS_H1}</h1>
-            <div className="rounded-xl border border-[#781621]/20 bg-[#781621]/5 p-6 flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[20px] text-[#781621]" aria-hidden="true">error</span>
-                <p className="text-[16px] font-semibold text-[#781621]">生成报告失败 · 请稍后再试</p>
+            <h1
+              className="ikb-gradtext"
+              style={{ fontFamily: F.display, fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 32 }}
+            >
+              {DIAGNOSIS_H1}
+            </h1>
+            <div
+              style={{
+                borderRadius: 12,
+                border: `1px solid ${C.burgundy}30`,
+                background: `${C.burgundy}08`,
+                padding: 24,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  className="material-symbols-outlined"
+                  aria-hidden={true}
+                  style={{ fontSize: 20, color: C.burgundy }}
+                >
+                  error
+                </span>
+                <p style={{ fontSize: 16, fontWeight: 600, color: C.burgundy, fontFamily: F.cn, margin: 0 }}>生成报告失败 · 请稍后再试</p>
               </div>
               <button
                 type="button"
                 onClick={handleRetry}
                 data-testid="retry-button"
                 aria-label="重试"
-                className="self-start flex items-center gap-2 rounded-xl bg-[#002fa7] px-5 py-2.5 text-[14px] font-bold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:bg-[#001e73]"
+                className="ikb-gradbtn ikb-focusring"
+                style={{
+                  alignSelf: 'flex-start',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 8,
+                  padding: '10px 20px',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: F.cn,
+                }}
               >
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">refresh</span>
+                <span
+                  className="material-symbols-outlined"
+                  aria-hidden={true}
+                  style={{ fontSize: 18 }}
+                >
+                  refresh
+                </span>
                 重试
               </button>
             </div>
           </FadeInWrapper>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
@@ -501,26 +580,43 @@ export default function Diagnosis() {
       : '记住，IP孵化变现不是玩虚的，每一步都要实打实地干。从现在开始，按照这个路子走，坚持执行，变现只是时间问题。';
 
     return (
-      <PioneerLayout>
+      <IKBLayout>
         <div
-          className="py-2"
+          style={{ padding: '8px 0' }}
           data-testid="diagnosis-report"
         >
           <FadeInWrapper from="up">
             {/* isFallback 降级提示 */}
             {report.isFallback && (
-              <div className="mb-4 flex items-center gap-2 rounded-lg border border-[#F6D300]/50 bg-[#F6D300]/10 px-4 py-2.5">
-                <span className="material-symbols-outlined text-[16px] text-[#6e5e00]" aria-hidden="true">warning</span>
-                <span className="text-[13px] font-medium text-[#6e5e00]">AI 繁忙·降级结果 — 本次报告由备用模型生成，仅供参考</span>
+              <div
+                style={{
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 8,
+                  border: `1px solid ${C.accent3}40`,
+                  background: `${C.accent3}0a`,
+                  padding: '10px 16px',
+                }}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  aria-hidden={true}
+                  style={{ fontSize: 16, color: C.accent3 }}
+                >
+                  warning
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: C.purpleText, fontFamily: F.cn }}>AI 繁忙·降级结果 — 本次报告由备用模型生成，仅供参考</span>
               </div>
             )}
 
             {/* Shared header: report uses step 7 (0-indexed, 8/8 all lit) */}
             <DiagnosisHeader currentStep={7} totalSteps={TOTAL_STEPS} />
 
-            <div className="flex flex-col gap-8">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
               {/* Section A: 总分 + 雷达图 */}
-              <div className="grid grid-cols-2 gap-6">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
                 <IPHealthScoreCard
                   scores={dimensionScores}
                   overallScore={report.overallScore}
@@ -564,22 +660,27 @@ export default function Diagnosis() {
             </div>
           </FadeInWrapper>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // Wizard view (form)
   return (
-    <PioneerLayout>
-      <div
-        className="py-2 max-w-3xl"
-      >
+    <IKBLayout>
+      <div style={{ padding: '8px 0', maxWidth: 768 }}>
         <FadeInWrapper from="up">
           {/* Shared header */}
           <DiagnosisHeader currentStep={progress.currentStep} totalSteps={TOTAL_STEPS} />
 
-          {/* Wizard card —先锋白软卡 */}
-          <div className="rounded-xl border border-[#e5e7eb] bg-white p-8 pw-shadow-soft">
+          {/* Wizard card — IKB 白纸面 + 墨线边 */}
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              padding: 32,
+            }}
+          >
             <DiagnosisStepCard
               stepIndex={progress.currentStep + 1}
               totalSteps={TOTAL_STEPS}
@@ -602,6 +703,6 @@ export default function Diagnosis() {
           </div>
         </FadeInWrapper>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }

@@ -21,16 +21,20 @@ export function DetailedReportSection({
   return (
     <div
       data-testid="detailed-report-section"
-      className="rounded-xl border border-[#e5e7eb] bg-white p-6 flex flex-col gap-6 pw-shadow-soft"
+      className="rounded-xl p-6 flex flex-col gap-6 pw-shadow-soft"
+      style={{
+        border: '1px solid rgba(22,32,72,0.13)',
+        background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',
+      }}
     >
       <div className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">stethoscope</span>
-        <span className="text-[18px] font-bold text-[#111827]">{REPORT_HEADING_DETAILED}</span>
+        <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: '#2B53E6' }}>stethoscope</span>
+        <span className="text-[18px] font-bold" style={{ color: '#161D33' }}>{REPORT_HEADING_DETAILED}</span>
       </div>
       <p className="text-[15px] text-[#444653]">{intro}</p>
-      <h2 className="text-[24px] font-bold text-[#111827]">{reportH2}</h2>
+      <h2 className="text-[24px] font-bold" style={{ color: '#161D33' }}>{reportH2}</h2>
       <p className="text-[15px] text-[#444653]">
-        <span className="font-bold text-[#111827]">{verdictLead}</span>
+        <span className="font-bold" style={{ color: '#161D33' }}>{verdictLead}</span>
         {verdictBody}
       </p>
       <div className="flex flex-col gap-8">
