@@ -691,7 +691,7 @@ export default function Step8() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 直播转化力雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="ikb-hovercard col-span-5 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -765,7 +765,7 @@ export default function Step8() {
 
         {/* 直播节奏·在线人数曲线 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="ikb-hovercard col-span-7 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -863,7 +863,7 @@ export default function Step8() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 方案模块数 · 环形 · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -896,7 +896,7 @@ export default function Step8() {
 
         {/* 开场话术 · 字数 · 玫红 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -921,7 +921,7 @@ export default function Step8() {
 
         {/* 产品话术 · 字数 · 紫 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -947,7 +947,7 @@ export default function Step8() {
 
         {/* 流程环节 · chip · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1002,7 +1002,7 @@ export default function Step8() {
           // Border color: use 20% opacity of the accent color
           const cardBorderColor = `${aColor}33`;
           return (
-            <div key={key} className="overflow-hidden rounded-xl border bg-white" style={{ borderColor: cardBorderColor }}>
+            <div key={key} className="ikb-hovercard overflow-hidden rounded-xl border bg-white" style={{ borderColor: cardBorderColor }}>
               <div className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor: C.line }}>
                 <div className="flex items-center gap-3">
                   <span
@@ -1056,7 +1056,7 @@ export default function Step8() {
       </div>
 
       {/* ── AI 优化 ───────────────────────────────────────────── */}
-      <div className="mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+      <div className="ikb-hovercard mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
         <div className="flex items-center gap-3 border-b px-6 py-4" style={{ borderColor: C.line }}>
           <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>auto_fix_high</span>

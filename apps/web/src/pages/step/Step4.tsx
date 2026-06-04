@@ -835,7 +835,7 @@ export default function Step4() {
       </div>
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 执行健康度雷达 */}
-        <div className="col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+        <div className="ikb-hovercard col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
@@ -903,7 +903,7 @@ export default function Step4() {
         </div>
 
         {/* 累计完成度预估 */}
-        <div className="col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+        <div className="ikb-hovercard col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-2.5">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
@@ -991,7 +991,7 @@ export default function Step4() {
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 任务总数 · 环形进度 · 蓝 */}
-        <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: `${C.ikb}25`, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: `${C.ikb}25`, background: C.paper }}>
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>task_alt</span>
@@ -1027,7 +1027,7 @@ export default function Step4() {
         </div>
 
         {/* 执行周期 · 迷你柱 · 玫红 */}
-        <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>date_range</span>
@@ -1049,7 +1049,7 @@ export default function Step4() {
         </div>
 
         {/* 里程碑数 · 进度条 · 紫 */}
-        <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.accent3}15`, color: C.accent3 }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>flag</span>
@@ -1069,7 +1069,7 @@ export default function Step4() {
         </div>
 
         {/* 避坑预警数 · chip · 蓝 */}
-        <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
           <div className="flex items-center justify-between">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>shield</span>
@@ -1106,7 +1106,7 @@ export default function Step4() {
           <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>执行总览</h2>
           <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 核心目标 · 阶段规划 · 平台策略</span>
         </div>
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="grid grid-cols-2 gap-6">
             {/* 左列 */}
             <div className="space-y-5">
@@ -1182,7 +1182,7 @@ export default function Step4() {
                     {phase.dailyTasks.map((task, ti) => (
                       <div
                         key={ti}
-                        className="grid grid-cols-[180px_1fr] gap-4 rounded-lg border p-3"
+                        className="ikb-hovercard grid grid-cols-[180px_1fr] gap-4 rounded-lg border p-3"
                         style={{ borderColor: C.line, background: C.base }}
                       >
                         <div>
@@ -1206,7 +1206,7 @@ export default function Step4() {
                   </p>
                   <div className="space-y-3">
                     {phase.milestones.map((m, mi) => (
-                      <div key={mi} className="rounded-lg border p-3" style={{ borderColor: C.line, background: C.base }}>
+                      <div key={mi} className="ikb-hovercard rounded-lg border p-3" style={{ borderColor: C.line, background: C.base }}>
                         <div className="flex items-start gap-3">
                           <span className="mt-0.5 shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold" style={{ color: phaseAccentText, borderColor: `${phaseAccent}40`, background: C.paper, fontFamily: F.mono }}>
                             {m.week}
@@ -1229,7 +1229,7 @@ export default function Step4() {
                     <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>edit_calendar</span>
                     内容计划
                   </p>
-                  <div className="rounded-lg border p-4" style={{ borderColor: C.line, background: C.base }}>
+                  <div className="ikb-hovercard rounded-lg border p-4" style={{ borderColor: C.line, background: C.base }}>
                     <div className="mb-3 flex flex-wrap gap-4 text-[12px]" style={{ fontFamily: F.cn }}>
                       <span style={{ color: '#6b7280' }}>
                         每周发布：<span className="font-bold" style={{ color: phaseAccentText }}>{phase.contentPlan.frequency}</span>
@@ -1268,7 +1268,7 @@ export default function Step4() {
                     {phase.kpis.map((kpi, ki) => (
                       <div
                         key={ki}
-                        className="rounded-lg border p-3"
+                        className="ikb-hovercard rounded-lg border p-3"
                         style={{ borderColor: C.line, background: C.base }}
                       >
                         <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{kpi.name}</p>
@@ -1375,7 +1375,7 @@ export default function Step4() {
       {/* ── 避坑预警 + 成功标准 ────────────────────────────── */}
       <div className="grid grid-cols-2 gap-6">
         {/* 避坑预警 · 玫红/紫 轮转 */}
-        <section className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>warning</span>
@@ -1391,7 +1391,7 @@ export default function Step4() {
               return (
                 <div
                   key={w.signal}
-                  className="rounded-xl border p-4"
+                  className="ikb-hovercard rounded-xl border p-4"
                   style={{ borderColor: wc.border, background: wc.bg }}
                 >
                   <div className="mb-1 flex items-start gap-2">
@@ -1412,7 +1412,7 @@ export default function Step4() {
         </section>
 
         {/* 成功标准 · 蓝/紫轮转 */}
-        <section className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
@@ -1426,7 +1426,7 @@ export default function Step4() {
               return (
                 <div
                   key={sc.period}
-                  className="flex items-start gap-3 rounded-xl border p-4"
+                  className="ikb-hovercard flex items-start gap-3 rounded-xl border p-4"
                   style={{ borderColor: `${scAccent}28`, background: `${scAccent}06` }}
                 >
                   <span className="mt-0.5 shrink-0 rounded-lg border px-2 py-0.5 text-[11px] font-bold" style={{ borderColor: `${scAccent}40`, background: C.paper, color: scTextColor, fontFamily: F.mono }}>
@@ -1441,7 +1441,7 @@ export default function Step4() {
       </div>
 
       {/* ── Footer actions ──────────────────────────────────── */}
-      <div className="mt-6 rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+      <div className="ikb-hovercard mt-6 rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
         <div className="flex flex-row items-center justify-between gap-6">
           {/* Feedback */}
           <div className="flex items-center gap-3">

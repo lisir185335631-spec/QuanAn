@@ -406,7 +406,7 @@ export default function Step7() {
           </div>
           <div className="mb-8 grid grid-cols-12 gap-6">
             {/* 文案爆款力雷达 */}
-            <div className="col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+            <div className="ikb-hovercard col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
@@ -474,7 +474,7 @@ export default function Step7() {
             </div>
 
             {/* 爆款元素权重分布 / 文案结构曲线 */}
-            <div className="col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+            <div className="ikb-hovercard col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
@@ -562,7 +562,7 @@ export default function Step7() {
           {/* ── KPI 卡一排 ─────────────────────────────────────── */}
           <div className="mb-8 grid grid-cols-4 gap-6">
             {/* 脚本类型 · 环形 · 蓝 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>description</span>
@@ -598,7 +598,7 @@ export default function Step7() {
             </div>
 
             {/* 爆款元素 · 迷你柱 · 玫红 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
@@ -620,7 +620,7 @@ export default function Step7() {
             </div>
 
             {/* 已选元素 · 进度条 · 紫 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.accent3}18`, color: C.accent3 }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>check_circle</span>
@@ -646,7 +646,7 @@ export default function Step7() {
             </div>
 
             {/* 文案字数 · chip · 蓝 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>article</span>
@@ -681,7 +681,7 @@ export default function Step7() {
       {/* ── 2 列配置区 ─────────────────────────────────────── */}
       <div className="mb-8 grid grid-cols-2 gap-6">
         {/* 左:脚本类型(7 · IKB 可视化选择卡) */}
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center gap-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
               <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>description</span>
@@ -728,7 +728,7 @@ export default function Step7() {
         {/* 右:爆款元素多选 + 文案主题 + CTA */}
         <div className="space-y-5">
           {/* 爆款元素多选 */}
-          <div className="rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
             <div className="mb-4 flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
                 <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>local_fire_department</span>
@@ -776,7 +776,7 @@ export default function Step7() {
           </div>
 
           {/* 文案主题 + 当前脚本提示 + 生成 CTA */}
-          <div className="rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
             <div className="mb-2 flex items-center justify-between">
               <label htmlFor="s7-topic" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide" style={{ color: C.ink, fontFamily: F.cn }}>
                 <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
@@ -847,7 +847,7 @@ export default function Step7() {
       {/* ── 生成结果(全宽) · hasResult 门控 ───────────────── */}
       {hasResult && (
         <>
-          <div className="mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="ikb-hovercard mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
             <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: C.line }}>
               <div className="flex items-center gap-3">
                 <span className="ikb-gradbtn flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-lg">
@@ -896,7 +896,7 @@ export default function Step7() {
           </div>
 
           {/* ── AI 优化区 ────────────────────────────────────────── */}
-          <div className="mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="ikb-hovercard mb-6 overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
             <div className="flex items-center gap-3 border-b px-6 py-4" style={{ borderColor: C.line }}>
               <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                 <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>auto_fix_high</span>
