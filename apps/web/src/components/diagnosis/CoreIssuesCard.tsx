@@ -8,7 +8,7 @@ export function CoreIssuesCard({ issues }: CoreIssuesCardProps) {
   return (
     <div
       data-testid="core-issues-card"
-      className="rounded-xl p-6 flex flex-col gap-4 pw-shadow-soft"
+      className="rounded-xl p-6 flex flex-col gap-4 pw-shadow-soft ikb-hovercard"
       style={{
         border: '1px solid rgba(239,62,107,0.20)',
         background: 'rgba(239,62,107,0.05)',

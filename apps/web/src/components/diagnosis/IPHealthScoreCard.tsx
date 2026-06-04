@@ -25,7 +25,7 @@ export function IPHealthScoreCard({ scores, overallScore }: IPHealthScoreCardPro
   return (
     <div
       data-testid="ip-health-score-card"
-      className="rounded-xl p-6 flex flex-col gap-5 pw-shadow-soft"
+      className="rounded-xl p-6 flex flex-col gap-5 pw-shadow-soft ikb-hovercard"
       style={{
         border: '1px solid rgba(22,32,72,0.13)',
         background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',

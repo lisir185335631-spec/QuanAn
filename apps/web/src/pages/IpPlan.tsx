@@ -171,6 +171,7 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
   const dashArray = `${percent} 100`;
   return (
     <section
+      className="ikb-hovercard"
       style={{
         marginBottom: 32,
         borderRadius: 12,
@@ -312,11 +313,12 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
 
   return (
     <div
-      className="ikb-card ikb-focusring"
+      className="ikb-hovercard ikb-focusring"
       style={{
         borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
         padding: 20,
-        transition: 'all 0.2s',
         ['--ikb-accent' as string]: numColor,
       } as React.CSSProperties}
       data-testid={`ip-plan-step-card-${step.id}`}
@@ -575,6 +577,7 @@ function IpMaturityRadar() {
 
   return (
     <div
+      className="ikb-hovercard"
       style={{
         gridColumn: 'span 5',
         borderRadius: 12,
@@ -680,6 +683,7 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
 
   return (
     <div
+      className="ikb-hovercard"
       style={{
         gridColumn: 'span 7',
         borderRadius: 12,
@@ -833,12 +837,12 @@ export default function IpPlan() {
             return (
               <div
                 key={kpi.label}
+                className="ikb-hovercard"
                 style={{
                   borderRadius: 12,
                   border: `1px solid ${accent.borderColor}`,
                   background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
                   padding: 20,
-                  transition: 'all 0.2s',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

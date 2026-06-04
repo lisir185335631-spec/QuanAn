@@ -115,18 +115,9 @@ function TopicCard({ item, index }: TopicCardProps) {
         border: `1px solid ${C.line}`,
         background: C.paper,
         padding: '16px 20px',
-        transition: 'box-shadow 0.2s, transform 0.2s',
       }}
-      className="ikb-card"
+      className="ikb-hovercard"
       data-testid={`topic-card-${index}`}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}18`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = '';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '';
-      }}
     >
       {/* Title */}
       <p
@@ -388,6 +379,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
             return (
               <div
                 key={kpi.label}
+                className="ikb-hovercard"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',

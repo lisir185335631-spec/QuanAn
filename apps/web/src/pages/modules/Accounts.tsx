@@ -114,6 +114,7 @@ function IKBAccountCard({
 
   return (
     <div
+      className="ikb-hovercard"
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -121,11 +122,8 @@ function IKBAccountCard({
         border: `1px solid ${C.line}`,
         background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
         padding: 24,
-        transition: 'transform 0.2s, box-shadow 0.2s',
       }}
       data-testid={`ip-account-card-${account.id}`}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(43,83,230,0.10)'; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
     >
       {/* 背景装饰光晕 */}
       <div style={{ pointerEvents: 'none', position: 'absolute', right: -56, top: -56, height: 144, width: 144, borderRadius: '50%', background: `${C.ikb}06`, filter: 'blur(24px)' }} />
@@ -464,9 +462,8 @@ export default function Accounts() {
       <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
         {/* 账号总数 · 蓝 · 环形进度 */}
         <div
-          style={{ borderRadius: 12, border: `1px solid ${C.ikb}28`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          className="ikb-hovercard"
+          style={{ borderRadius: 12, border: `1px solid ${C.ikb}28`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, padding: 20 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
@@ -515,9 +512,8 @@ export default function Accounts() {
 
         {/* 活跃账号 · 玫红 · 迷你柱 */}
         <div
-          style={{ borderRadius: 12, border: `1px solid ${C.burgundy}28`, background: C.paper, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}12`; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          className="ikb-hovercard"
+          style={{ borderRadius: 12, border: `1px solid ${C.burgundy}28`, background: C.paper, padding: 20 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>
@@ -548,9 +544,8 @@ export default function Accounts() {
 
         {/* 平台覆盖 · 紫 · 进度条 */}
         <div
-          style={{ borderRadius: 12, border: `1px solid ${C.accent3}28`, background: C.paper, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}12`; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          className="ikb-hovercard"
+          style={{ borderRadius: 12, border: `1px solid ${C.accent3}28`, background: C.paper, padding: 20 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}10`, color: C.accent3 }}>
@@ -583,9 +578,8 @@ export default function Accounts() {
 
         {/* 总粉丝 · 蓝 · 关键词 chip */}
         <div
-          style={{ borderRadius: 12, border: `1px solid ${C.ikb}28`, background: C.paper, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          className="ikb-hovercard"
+          style={{ borderRadius: 12, border: `1px solid ${C.ikb}28`, background: C.paper, padding: 20 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
@@ -630,7 +624,7 @@ export default function Accounts() {
       </div>
 
       {/* 粉丝增长曲线 (装饰性 SVG · 后端无趋势接口 · 保持现状) */}
-      <div style={{ marginBottom: 32, borderRadius: 12, border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, padding: 24 }}>
+      <div className="ikb-hovercard" style={{ marginBottom: 32, borderRadius: 12, border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, padding: 24 }}>
         <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>

@@ -59,7 +59,7 @@ export function IPRadarChart({ scores: rawScores }: IPRadarChartProps) {
   return (
     <div
       data-testid="ip-radar-chart"
-      className="rounded-xl p-6 flex flex-col items-center justify-center pw-shadow-soft"
+      className="rounded-xl p-6 flex flex-col items-center justify-center pw-shadow-soft ikb-hovercard"
       style={{
         border: '1px solid rgba(22,32,72,0.13)',
         background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',
