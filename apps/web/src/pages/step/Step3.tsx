@@ -1,7 +1,10 @@
+import '@/styles/ikb-hero.css';
+
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { C, F } from '@/components/home/ikb/system';
 import { type AvatarDesignContent } from '@/components/step3/AvatarDesignSection';
 import { type BackgroundImageContent } from '@/components/step3/BackgroundImageDesignSection';
 import { type IntroCopyEntry } from '@/components/step3/IntroCopySection';
@@ -13,7 +16,7 @@ import { type OverallStrategyContent } from '@/components/step3/OverallStrategyS
 import { type VideoReferenceCase } from '@/components/step3/VideoReferenceCaseSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import { breakSentences } from '@/lib/text';
 import { trpc } from '@/lib/trpc';
 
@@ -430,6 +433,13 @@ function adaptStep3Result(raw: Record<string, unknown>): Step3Result {
   };
 }
 
+// ── 平台卡数据(保留 color 作为平台图标背景色,与原逻辑兼容) ─────────────────────
+const PLATFORMS = [
+  { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
+  { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
+  { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+];
+
 export default function Step3() {
   const navigate = useNavigate();
   const { account } = useActiveAccount();
@@ -561,709 +571,1515 @@ export default function Step3() {
       .catch(() => toast.error('复制失败'));
   }
 
-  const PLATFORMS = [
-    { key: 'xiaohongshu', label: '小红书', icon: 'menu_book', color: '#ff2442', desc: '种草 · 图文' },
-    { key: 'douyin', label: '抖音', icon: 'music_note', color: '#0ea5b7', desc: '短视频 · 流量' },
-    { key: 'wechat', label: '视频号', icon: 'smart_display', color: '#07c160', desc: '私域 · 转化' },
+  // ── 雷达数据(IKB 三主色轮转) ──────────────────────────────────────────────
+  const radarDims = [
+    { label: '专业度', value: 88, color: C.ikb },
+    { label: '影响力', value: 76, color: C.burgundy },
+    { label: '记忆点', value: 92, color: C.accent3 },
+    { label: '转化力', value: 81, color: C.ikb },
+    { label: '稀缺性', value: 70, color: C.burgundy },
+    { label: '一致性', value: 85, color: C.accent3 },
   ];
-  const btnSecondary =
-    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
 
   return (
-    <PioneerLayout>
-      {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
-              战略节点
-            </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
-              账号矩阵
-            </span>
-          </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
-            STEP 03 · 账号包装方案
-          </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
-            为「{industry}」生成高度定制的自媒体账号基础包装 · 构建专业、权威的数字形象基石。
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-nowrap gap-3">
-          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
-            智能优化
-          </button>
-          <button
-            type="button"
-            onClick={handleRegenerateAll}
-            disabled={isLoading || !personalInfo.trim() || !platform}
-            className={btnSecondary}
-          >
-            <span className="material-symbols-outlined text-[18px]">refresh</span>
-            重新生成
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <span className="material-symbols-outlined text-[18px]">download</span>
-            导出方案
-          </button>
-        </div>
-      </header>
-
-      {/* ── 输入节点参数 ───────────────────────────────────── */}
-      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
-          <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined">tune</span>
-            </span>
-            <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">输入节点参数</h2>
-              <p className="text-[12px] text-[#9ca3af]">填写基础信息 · AI 据此生成全套账号包装矩阵</p>
+    <IKBLayout>
+      <div className="pb-28">
+        {/* ── Header ─────────────────────────────────────────── */}
+        <header className="mb-12 flex flex-row items-center justify-between gap-8">
+          <div className="shrink-0">
+            <div className="mb-3 flex items-center gap-3">
+              <span
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: 11,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  border: `1px solid ${C.line}`,
+                  background: C.base,
+                  color: C.ink,
+                  padding: '4px 10px',
+                }}
+              >
+                战略节点
+              </span>
+              <span
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: 11,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  border: `1px solid ${C.accent3}55`,
+                  background: `${C.accent3}18`,
+                  color: C.purpleText,
+                  padding: '4px 10px',
+                }}
+              >
+                账号矩阵
+              </span>
             </div>
+            <h1
+              style={{
+                fontFamily: F.display,
+                fontWeight: 400,
+                fontSize: 40,
+                lineHeight: 1.05,
+                letterSpacing: '-0.01em',
+                margin: 0,
+                whiteSpace: 'nowrap',
+                background: C.grad,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+              }}
+            >
+              STEP 03 · 账号包装方案
+            </h1>
+            <p
+              className="mt-2 max-w-[820px]"
+              style={{ fontSize: 16, color: '#5A6173', fontFamily: F.cn }}
+            >
+              为「{industry}」生成高度定制的自媒体账号基础包装 · 构建专业、权威的数字形象基石。
+            </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
-            参数就绪
+          <div className="flex shrink-0 flex-nowrap gap-3">
+            <button
+              type="button"
+              onClick={handleOptimize}
+              disabled={!canBulkActions}
+              aria-label="智能优化"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '10px 16px',
+                fontFamily: F.mono,
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                cursor: canBulkActions ? 'pointer' : 'not-allowed',
+                opacity: canBulkActions ? 1 : 0.4,
+                transition: 'background 0.2s',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_fix_high</span>
+              智能优化
+            </button>
+            <button
+              type="button"
+              onClick={handleRegenerateAll}
+              disabled={isLoading || !personalInfo.trim() || !platform}
+              aria-label="重新生成"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '10px 16px',
+                fontFamily: F.mono,
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                cursor: (!isLoading && personalInfo.trim() && platform) ? 'pointer' : 'not-allowed',
+                opacity: (!isLoading && personalInfo.trim() && platform) ? 1 : 0.4,
+                transition: 'background 0.2s',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">refresh</span>
+              重新生成
+            </button>
+            <button
+              type="button"
+              onClick={handleCopyAll}
+              aria-label="导出方案"
+              className="ikb-gradbtn"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                padding: '10px 18px',
+                fontFamily: F.cn,
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">download</span>
+              导出方案
+            </button>
+          </div>
+        </header>
+
+        {/* ── 输入节点参数 ───────────────────────────────────── */}
+        <section
+          style={{
+            position: 'relative',
+            border: `1px solid ${C.line}`,
+            background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+            padding: 24,
+            marginBottom: 48,
+            overflow: 'hidden',
+          }}
+        >
+          {/* 装饰光晕 */}
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              right: -64,
+              top: -64,
+              height: 176,
+              width: 176,
+              borderRadius: '50%',
+              background: `${C.ikb}08`,
+              filter: 'blur(32px)',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              pointerEvents: 'none',
+              position: 'absolute',
+              bottom: -80,
+              left: '33%',
+              height: 176,
+              width: 176,
+              borderRadius: '50%',
+              background: `${C.burgundy}06`,
+              filter: 'blur(32px)',
+            }}
+          />
+
+          {/* 段落标题 */}
+          <div
+            style={{
+              position: 'relative',
+              marginBottom: 24,
+              paddingBottom: 20,
+              borderBottom: `1px solid ${C.line}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 44,
+                  width: 44,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: C.grad,
+                  color: '#fff',
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">tune</span>
+              </span>
+              <div>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>输入节点参数</h2>
+                <p style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>填写基础信息 · AI 据此生成全套账号包装矩阵</p>
+              </div>
+            </div>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 999,
+                background: `${C.ikb}15`,
+                padding: '4px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: C.ikb,
+                fontFamily: F.mono,
+                letterSpacing: '0.04em',
+              }}
+            >
+              <span
+                style={{
+                  height: 6,
+                  width: 6,
+                  borderRadius: '50%',
+                  background: C.ikb,
+                  animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                  display: 'inline-block',
+                }}
+              />
+              参数就绪
+            </span>
+          </div>
+
+          {/* 表单 */}
+          <div style={{ position: 'relative' }}>
+            <form onSubmit={handleSubmit} className="space-y-7">
+              {/* 目标平台 · 可视化平台卡 */}
+              <div>
+                <span
+                  style={{
+                    marginBottom: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    color: C.ink,
+                    fontFamily: F.cn,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      height: 14,
+                      width: 3,
+                      background: C.grad,
+                      flexShrink: 0,
+                    }}
+                    aria-hidden="true"
+                  />
+                  目标平台
+                </span>
+                <div className="grid grid-cols-3 gap-4">
+                  {PLATFORMS.map((p) => {
+                    const active = platform === p.key;
+                    return (
+                      <button
+                        type="button"
+                        key={p.key}
+                        onClick={() => setPlatform(p.key)}
+                        aria-pressed={active}
+                        className="ikb-focusring"
+                        style={{
+                          position: 'relative',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                          overflow: 'hidden',
+                          border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
+                          background: active ? `${C.ikb}08` : C.paper,
+                          padding: '14px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: 'flex',
+                            height: 40,
+                            width: 40,
+                            flexShrink: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#fff',
+                            backgroundColor: p.color,
+                          }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden="true">{p.icon}</span>
+                        </span>
+                        <span style={{ minWidth: 0 }}>
+                          <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{p.label}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: '#6b7280', fontFamily: F.mono }}>{p.desc}</span>
+                        </span>
+                        <span
+                          style={{
+                            position: 'absolute',
+                            right: 10,
+                            top: 10,
+                            display: 'flex',
+                            height: 16,
+                            width: 16,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '50%',
+                            background: active ? C.ikb : C.paper,
+                            border: active ? 'none' : `1px solid ${C.line}`,
+                            color: active ? '#fff' : 'transparent',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden="true">check</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 目标受众 + 账号状态 · 双列带图标输入 */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="s3-audience"
+                    style={{
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: C.ink,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    目标受众
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#6b7280', pointerEvents: 'none' }} aria-hidden="true">groups</span>
+                    <input
+                      id="s3-audience"
+                      type="text"
+                      value={audience}
+                      onChange={(e) => setAudience(e.target.value)}
+                      placeholder="例如：企业老板和创业者"
+                      className="ikb-input"
+                      style={{
+                        width: '100%',
+                        border: `1px solid ${C.line}`,
+                        background: C.paper,
+                        padding: '12px 12px 12px 40px',
+                        fontSize: 14,
+                        fontFamily: F.cn,
+                        color: C.ink,
+                        transition: 'border-color 0.2s',
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="s3-account-status"
+                    style={{
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: C.ink,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    账号状态
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: '#6b7280', pointerEvents: 'none' }} aria-hidden="true">verified_user</span>
+                    <input
+                      id="s3-account-status"
+                      type="text"
+                      value={accountStatus}
+                      onChange={(e) => setAccountStatus(e.target.value)}
+                      placeholder="例如：新账号 / 已有粉丝"
+                      className="ikb-input"
+                      style={{
+                        width: '100%',
+                        border: `1px solid ${C.line}`,
+                        background: C.paper,
+                        padding: '12px 12px 12px 40px',
+                        fontSize: 14,
+                        fontFamily: F.cn,
+                        color: C.ink,
+                        transition: 'border-color 0.2s',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 个人背景 · 框式编辑器 + 工具栏 */}
+              <div>
+                <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label
+                    htmlFor="s3-personal-info"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: C.ink,
+                      fontFamily: F.cn,
+                    }}
+                  >
+                    <span style={{ display: 'inline-block', height: 14, width: 3, background: C.grad, flexShrink: 0 }} aria-hidden="true" />
+                    个人背景与核心优势提取
+                  </label>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: C.burgundyText }} aria-hidden="true">auto_awesome</span>
+                    AI 据此提取人设关键词
+                  </span>
+                </div>
+                <div
+                  style={{
+                    overflow: 'hidden',
+                    border: `1px solid ${C.line}`,
+                    background: C.paper,
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocusCapture={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb;
+                    (e.currentTarget as HTMLDivElement).style.outline = `1px solid ${C.ikb}`;
+                  }}
+                  onBlurCapture={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
+                    (e.currentTarget as HTMLDivElement).style.outline = 'none';
+                  }}
+                >
+                  <textarea
+                    id="s3-personal-info"
+                    value={personalInfo}
+                    onChange={(e) => setPersonalInfo(e.target.value)}
+                    rows={6}
+                    placeholder="输入过去的经历、成就、特殊技能，以及希望传达的核心人设"
+                    className="ikb-input"
+                    style={{
+                      width: '100%',
+                      resize: 'none',
+                      border: 0,
+                      background: 'transparent',
+                      padding: 16,
+                      fontSize: 14,
+                      lineHeight: 1.6,
+                      fontFamily: F.cn,
+                      color: C.ink,
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                      borderTop: `1px solid ${C.line}`,
+                      background: `${C.paper}99`,
+                      padding: '10px 16px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>可包含</span>
+                      {['经历', '成就', '技能', '人设', '价值观'].map((t) => (
+                        <span
+                          key={t}
+                          style={{
+                            borderRadius: 999,
+                            background: `${C.ikb}10`,
+                            padding: '2px 10px',
+                            fontSize: 11,
+                            fontWeight: 500,
+                            color: C.purpleText,
+                            fontFamily: F.mono,
+                          }}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <span style={{ flexShrink: 0, fontSize: 11, fontFamily: F.mono, color: '#6b7280' }}>{personalInfo.length} 字</span>
+                  </div>
+                </div>
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    type="submit"
+                    disabled={!personalInfo.trim() || !platform || isLoading}
+                    className="ikb-gradbtn"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '12px 32px',
+                      fontFamily: F.cn,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: '#fff',
+                      border: 'none',
+                      cursor: (!personalInfo.trim() || !platform || isLoading) ? 'not-allowed' : 'pointer',
+                      opacity: (!personalInfo.trim() || !platform || isLoading) ? 0.4 : 1,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">auto_awesome</span>
+                    {isLoading ? '生成中…' : '生成包装矩阵'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden="true">insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span
+            style={{
+              marginLeft: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 999,
+              background: `${C.ikb}15`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              color: C.ikb,
+              fontFamily: F.mono,
+              letterSpacing: '0.04em',
+            }}
+          >
+            <span
+              style={{
+                height: 6,
+                width: 6,
+                borderRadius: '50%',
+                background: C.ikb,
+                animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                display: 'inline-block',
+              }}
+            />
+            模型已就绪
           </span>
         </div>
-        <div className="relative">
-        <form onSubmit={handleSubmit} className="space-y-7">
-          {/* 目标平台 · 可视化平台卡 */}
-          <div>
-            <span className="mb-3 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-              目标平台
-            </span>
-            <div className="grid grid-cols-3 gap-4">
-              {PLATFORMS.map((p) => {
-                const active = platform === p.key;
-                return (
-                  <button
-                    type="button"
-                    key={p.key}
-                    onClick={() => setPlatform(p.key)}
-                    className={`group relative flex items-center gap-3 overflow-hidden rounded-xl border p-3.5 text-left transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+
+        <div className="mb-8 grid grid-cols-12 gap-6">
+          {/* 人设竞争力雷达 */}
+          <div
+            className="col-span-5"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-1 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.ikb}18`,
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">radar</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>人设竞争力雷达</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p
+                  className="ikb-gradtext"
+                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
+                >
+                  82
+                </p>
+                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
+              </div>
+            </div>
+            {(() => {
+              const dims = radarDims;
+              const cx = 130;
+              const cy = 122;
+              const R = 88;
+              const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
+              const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+              const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
+              const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
+              return (
+                <svg viewBox="0 0 260 244" className="w-full">
+                  <defs>
+                    <linearGradient id="radarFillS3" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
+                    </linearGradient>
+                  </defs>
+                  {[0.25, 0.5, 0.75, 1].map((f) => (
+                    <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                  ))}
+                  {dims.map((_, i) => {
+                    const [x, y] = pt(i, R);
+                    return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+                  })}
+                  <polygon points={dataPoly} fill="url(#radarFillS3)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R * (d.value / 100));
+                    return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
+                  })}
+                  {dims.map((d, i) => {
+                    const [x, y] = pt(i, R + 16);
+                    return (
+                      <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
+                        {d.label}
+                      </text>
+                    );
+                  })}
+                </svg>
+              );
+            })()}
+            <div className="mt-2 grid grid-cols-3 gap-y-2">
+              {radarDims.map((d) => (
+                <div key={d.label} className="flex items-center gap-1.5">
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 90 天曝光 / 涨粉预估 */}
+          <div
+            className="col-span-7"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div className="mb-4 flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.burgundy}18`,
+                    color: C.burgundyText,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">show_chart</span>
+                </span>
+                <div>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>90 天曝光预估</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>按当前人设矩阵测算</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {(['曝光', '涨粉', '互动'] as const).map((t, i) => (
+                  <span
+                    key={t}
+                    style={{
+                      borderRadius: 4,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fontFamily: F.mono,
+                      background: i === 0 ? C.ikb : '#f1f3f9',
+                      color: i === 0 ? '#fff' : '#6b7280',
+                    }}
                   >
-                    <span
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white shadow-sm"
-                      style={{ backgroundColor: p.color }}
-                    >
-                      <span className="material-symbols-outlined text-[22px]">{p.icon}</span>
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-[14px] font-bold text-[#111827]">{p.label}</span>
-                      <span className="block text-[11px] text-[#9ca3af]">{p.desc}</span>
-                    </span>
-                    <span
-                      className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
-                    >
-                      <span className="material-symbols-outlined text-[12px]">check</span>
-                    </span>
-                  </button>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="mb-3 flex items-end gap-3">
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>1.24M</p>
+              <span
+                style={{
+                  marginBottom: 4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden="true">trending_up</span>+214%
+              </span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
+            </div>
+            {(() => {
+              const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
+              const W = 560;
+              const H = 168;
+              const padL = 6;
+              const padR = 6;
+              const padT = 12;
+              const padB = 8;
+              const innerW = W - padL - padR;
+              const innerH = H - padT - padB;
+              const max = 110;
+              const x = (i: number) => padL + (innerW * i) / (data.length - 1);
+              const y = (v: number) => padT + innerH * (1 - v / max);
+              const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+              const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
+              return (
+                <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                  <defs>
+                    <linearGradient id="trendFillS3" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="trendLineS3" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
+                    </linearGradient>
+                  </defs>
+                  {[0, 0.33, 0.66, 1].map((f) => (
+                    <line
+                      key={f}
+                      x1={padL}
+                      x2={W - padR}
+                      y1={(padT + innerH * f).toFixed(1)}
+                      y2={(padT + innerH * f).toFixed(1)}
+                      stroke="#f1f3f9"
+                      strokeWidth="1"
+                    />
+                  ))}
+                  <path d={area} fill="url(#trendFillS3)" />
+                  <path d={line} fill="none" stroke="url(#trendLineS3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  {data.map((v, i) =>
+                    i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
+                  )}
+                </svg>
+              );
+            })()}
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
+              {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
+                <span key={m}>{m}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── 数据概览(KPI 仪表盘)──────────────────────────── */}
+        <div className="mb-8 grid grid-cols-4 gap-6">
+          {/* 人设完整度 · 环形进度 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">verified</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '2px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: F.mono,
+                  letterSpacing: '0.06em',
+                  background: `${C.ikb}18`,
+                  color: C.ikb,
+                }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 13 }} aria-hidden="true">trending_up</span>
+                  +18%
+                </span>
+              </span>
+            </div>
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+              <div>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                  92<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}>%</span>
+                </p>
+                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>人设完整度</p>
+              </div>
+              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.ikb} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="92 100" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* 推荐昵称 · 数量 + 迷你柱 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">text_fields</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '2px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: F.mono,
+                  letterSpacing: '0.06em',
+                  background: `${C.burgundy}18`,
+                  color: C.burgundyText,
+                }}
+              >
+                已评估
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                {generated.nicknames.length}<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}> 个</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>推荐昵称</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
+              {[58, 84, 70, 96, 78].map((h, i) => (
+                <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: `${C.burgundy}99`, height: `${h}%` }} />
+              ))}
+            </div>
+          </div>
+
+          {/* 平台覆盖 · 进度条 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">hub</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '2px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: F.mono,
+                  letterSpacing: '0.06em',
+                  background: `${C.accent3}18`,
+                  color: C.purpleText,
+                }}
+              >
+                全覆盖
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                5<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}> 平台</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>平台覆盖</p>
+            </div>
+            <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.accent3}22` }}>
+              <div style={{ height: 8, borderRadius: 999, background: C.grad, width: '100%', transition: 'width 0.4s' }} />
+            </div>
+          </div>
+
+          {/* 简介方案 · 数量 + 关键词 */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">edit_document</span>
+              </span>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '2px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  fontFamily: F.mono,
+                  letterSpacing: '0.06em',
+                  background: `${C.ikb}18`,
+                  color: C.ikb,
+                }}
+              >
+                {generated.bioCoreKeywords?.length ?? 5} 关键词
+              </span>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                {generated.bioEntries.length}<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}> 套</span>
+              </p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>简介文案方案</p>
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {(generated.bioCoreKeywords ?? []).slice(0, 3).map((k) => (
+                <span
+                  key={k}
+                  style={{
+                    borderRadius: 0,
+                    background: `${C.ikb}10`,
+                    padding: '2px 6px',
+                    fontSize: 10,
+                    fontWeight: 500,
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                  }}
+                >
+                  {k}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Results bento grid ─────────────────────────────── */}
+        <div className="grid grid-cols-12 gap-6">
+          {/* 核心定位策略 (col-12) */}
+          <div
+            className="relative col-span-12 overflow-hidden"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
+            <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', right: -48, top: -48, height: 176, width: 176, borderRadius: '50%', background: `${C.ikb}08`, filter: 'blur(32px)' }} />
+            <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', bottom: -64, right: 160, height: 160, width: 160, borderRadius: '50%', background: `${C.burgundy}07`, filter: 'blur(32px)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  height: 48,
+                  width: 48,
+                  flexShrink: 0,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: C.grad,
+                  color: '#fff',
+                }}
+              >
+                <span className="material-symbols-outlined icon-fill" aria-hidden="true">psychology</span>
+              </div>
+              <div>
+                <span
+                  style={{
+                    marginBottom: 6,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    borderRadius: 999,
+                    background: `${C.ikb}12`,
+                    padding: '2px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: C.ikb,
+                    fontFamily: F.mono,
+                  }}
+                >
+                  <span style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
+                  Core Strategy
+                </span>
+                <h3 style={{ marginBottom: 8, fontSize: 20, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>核心定位策略</h3>
+                <p style={{ fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
+                  {generated.overallStrategy.视觉统一性}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 矩阵命名 (col-4 · Module 01) */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 24,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            className="col-span-4"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">text_fields</span>
+                </span>
+                矩阵命名
+              </h3>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  fontFamily: F.mono,
+                  background: `${C.burgundy}18`,
+                  color: C.burgundyText,
+                }}
+              >
+                Module 01
+              </span>
+            </div>
+            <div className="space-y-4">
+              {generated.nicknames.slice(0, 4).map((n) => {
+                const score = n.searchability?.startsWith('高')
+                  ? 92
+                  : n.searchability?.startsWith('中高')
+                    ? 80
+                    : n.searchability?.startsWith('中')
+                      ? 66
+                      : 74;
+                return (
+                  <div
+                    key={n.name}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`复制 ${n.name}`}
+                    onClick={() => copyText(n.name)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') copyText(n.name); }}
+                    className="group ikb-focusring"
+                    style={{
+                      cursor: 'pointer',
+                      border: `1px solid ${C.line}`,
+                      background: C.base,
+                      padding: 12,
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = C.burgundy;
+                      (e.currentTarget as HTMLDivElement).style.background = C.paper;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
+                      (e.currentTarget as HTMLDivElement).style.background = C.base;
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{n.name}</div>
+                      <span className="material-symbols-outlined" style={{ flexShrink: 0, color: '#6b7280', fontSize: 18 }} aria-hidden="true">
+                        content_copy
+                      </span>
+                    </div>
+                    <div style={{ marginTop: 4, fontSize: 13, lineHeight: 1.45, color: '#6b7280', fontFamily: F.cn }}>{n.description}</div>
+                    <div style={{ marginTop: 10 }}>
+                      <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11 }}>
+                        <span style={{ color: '#6b7280', fontFamily: F.mono }}>搜索度</span>
+                        <span style={{ fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>{score}%</span>
+                      </div>
+                      <div style={{ height: 6, width: '100%', borderRadius: 999, background: '#eef2ff' }}>
+                        <div
+                          style={{
+                            height: 6,
+                            borderRadius: 999,
+                            background: C.burgundy,
+                            width: `${score}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
             </div>
           </div>
 
-          {/* 目标受众 + 账号状态 · 双列带图标输入 */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="s3-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                目标受众
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">groups</span>
-                <input
-                  id="s3-audience"
-                  type="text"
-                  value={audience}
-                  onChange={(e) => setAudience(e.target.value)}
-                  placeholder="例如：企业老板和创业者"
-                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
-                />
-              </div>
-            </div>
-            <div>
-              <label htmlFor="s3-account-status" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                账号状态
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">verified_user</span>
-                <input
-                  id="s3-account-status"
-                  type="text"
-                  value={accountStatus}
-                  onChange={(e) => setAccountStatus(e.target.value)}
-                  placeholder="例如：新账号 / 已有粉丝"
-                  className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* 个人背景 · 框式编辑器 + 工具栏 */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <label htmlFor="s3-personal-info" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                个人背景与核心优势提取
-              </label>
-              <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
-                <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
-                AI 据此提取人设关键词
-              </span>
-            </div>
-            <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
-              <textarea
-                id="s3-personal-info"
-                value={personalInfo}
-                onChange={(e) => setPersonalInfo(e.target.value)}
-                rows={6}
-                placeholder="输入过去的经历、成就、特殊技能，以及希望传达的核心人设"
-                className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
-              />
-              <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] text-[#9ca3af]">可包含</span>
-                  {['经历', '成就', '技能', '人设', '价值观'].map((t) => (
-                    <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{personalInfo.length} 字</span>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                type="submit"
-                disabled={!personalInfo.trim() || !platform || isLoading}
-                className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-                {isLoading ? '生成中…' : '生成包装矩阵'}
-              </button>
-            </div>
-          </div>
-        </form>
-        </div>
-      </section>
-
-      {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
-          模型已就绪
-        </span>
-      </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
-        {/* 人设竞争力雷达 */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]">radar</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">人设竞争力雷达</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">82</p>
-              <p className="text-[10px] text-[#9ca3af]">综合分</p>
-            </div>
-          </div>
-          {(() => {
-            const dims = [
-              { label: '专业度', value: 88, color: '#002fa7' },
-              { label: '影响力', value: 76, color: '#781621' },
-              { label: '记忆点', value: 92, color: '#F6D300' },
-              { label: '转化力', value: 81, color: '#002fa7' },
-              { label: '稀缺性', value: 70, color: '#781621' },
-              { label: '一致性', value: 85, color: '#F6D300' },
-            ];
-            const cx = 130;
-            const cy = 122;
-            const R = 88;
-            const ang = (i: number) => ((-90 + i * 60) * Math.PI) / 180;
-            const pt = (i: number, r: number): [number, number] => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
-            const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
-            const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
-            return (
-              <svg viewBox="0 0 260 244" className="w-full">
-                <defs>
-                  <linearGradient id="radarFillS3" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
-                  </linearGradient>
-                </defs>
-                {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
-                ))}
-                {dims.map((_, i) => {
-                  const [x, y] = pt(i, R);
-                  return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
-                })}
-                <polygon points={dataPoly} fill="url(#radarFillS3)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R * (d.value / 100));
-                  return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
-                })}
-                {dims.map((d, i) => {
-                  const [x, y] = pt(i, R + 16);
-                  return (
-                    <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill="#6b7280" fontSize="10.5" fontWeight="600">
-                      {d.label}
-                    </text>
-                  );
-                })}
-              </svg>
-            );
-          })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
-            {[
-              { label: '专业度', value: 88, color: '#002fa7' },
-              { label: '影响力', value: 76, color: '#781621' },
-              { label: '记忆点', value: 92, color: '#F6D300' },
-              { label: '转化力', value: 81, color: '#002fa7' },
-              { label: '稀缺性', value: 70, color: '#781621' },
-              { label: '一致性', value: 85, color: '#F6D300' },
-            ].map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 90 天曝光 / 涨粉预估 */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">show_chart</span>
-              </span>
-              <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">90 天曝光预估</h3>
-                <p className="text-[11px] text-[#9ca3af]">按当前人设矩阵测算</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {['曝光', '涨粉', '互动'].map((t, i) => (
-                <span
-                  key={t}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
-                >
-                  {t}
+          {/* 头像生成流 (col-4 · Module 02) */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 24,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            className="col-span-4"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">face</span>
                 </span>
+                头像生成流
+              </h3>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  fontFamily: F.mono,
+                  background: `${C.burgundy}18`,
+                  color: C.burgundyText,
+                }}
+              >
+                Module 02
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={handleImageGenStub}
+              aria-label="点击生成头像"
+              className="ikb-focusring"
+              style={{
+                marginBottom: 16,
+                display: 'flex',
+                aspectRatio: '1',
+                width: '100%',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: `1px solid ${C.line}`,
+                background: C.base,
+                padding: 16,
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'border-color 0.2s',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; }}
+            >
+              <span className="material-symbols-outlined" style={{ marginBottom: 8, fontSize: 36, color: '#757685' }} aria-hidden="true">image</span>
+              <p style={{ fontSize: 14, color: '#5A6173', fontFamily: F.cn }}>点击生成头像</p>
+            </button>
+            <div style={{ border: `1px solid ${C.line}`, background: C.base, padding: 12 }}>
+              <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', fontFamily: F.mono, color: C.burgundyText }}>
+                AI Prompt
+                <button
+                  type="button"
+                  aria-label="复制"
+                  onClick={() => copyText(generated.avatar.aiPrompt ?? '')}
+                  className="ikb-focusring"
+                  style={{ cursor: 'pointer', fontSize: 16, color: C.burgundyText, background: 'none', border: 'none', padding: 0 }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden="true">content_copy</span>
+                </button>
+              </div>
+              <p style={{ wordBreak: 'break-word', fontFamily: F.mono, fontSize: 13, lineHeight: 1.6, color: '#5A6173' }}>
+                {generated.avatar.aiPrompt}
+              </p>
+            </div>
+          </div>
+
+          {/* 背景墙视觉 (col-4 · Module 03) */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 24,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            className="col-span-4"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">wallpaper</span>
+                </span>
+                背景墙视觉
+              </h3>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  fontFamily: F.mono,
+                  background: `${C.burgundy}18`,
+                  color: C.burgundyText,
+                }}
+              >
+                Module 03
+              </span>
+            </div>
+            {/* 背景预览 · 红蓝紫主渐变 */}
+            <div
+              style={{
+                position: 'relative',
+                marginBottom: 16,
+                display: 'flex',
+                aspectRatio: '16/9',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                border: `1px solid ${C.line}`,
+                background: C.grad,
+              }}
+            >
+              <div style={{ position: 'absolute', inset: 0, background: C.grad, opacity: 0.85 }} />
+              <div style={{ position: 'relative', zIndex: 10, padding: '0 16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', fontFamily: F.display }}>理性 · 认知 · 破局</div>
+                <div style={{ marginTop: 8, fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: F.mono }}>
+                  Systematic Thinking
+                </div>
+              </div>
+            </div>
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>{generated.background.风格理念}</p>
+          </div>
+
+          {/* 简介文案公式 (col-8 · Module 04) */}
+          <div
+            style={{
+              border: `1px solid ${C.line}`,
+              background: C.paper,
+              padding: 24,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            className="col-span-8"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}1A`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.transform = '';
+              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+            }}
+          >
+            <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">edit_document</span>
+                </span>
+                简介文案公式
+              </h3>
+              <span
+                style={{
+                  borderRadius: 999,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  fontFamily: F.mono,
+                  background: `${C.accent3}18`,
+                  color: C.purpleText,
+                }}
+              >
+                Module 04
+              </span>
+            </div>
+            {generated.bioFormula && (
+              <div
+                style={{
+                  marginBottom: 16,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  border: `1px solid ${C.accent3}44`,
+                  background: `${C.accent3}08`,
+                  padding: 12,
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  color: C.purpleText,
+                  fontFamily: F.cn,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 18, color: C.purpleText }} aria-hidden="true">bolt</span>
+                <span>
+                  <span style={{ fontWeight: 700 }}>公式 · </span>
+                  {generated.bioFormula}
+                </span>
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              {generated.bioEntries.slice(0, 2).map((b) => (
+                <div key={b.platformKey} style={{ border: `1px solid ${C.line}`, background: C.base, padding: 16 }}>
+                  <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        borderRadius: 999,
+                        background: C.grad,
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        color: 'transparent',
+                        padding: '4px 0',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        fontFamily: F.mono,
+                      }}
+                    >
+                      {b.platformLabel}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`复制 ${b.platformLabel} 简介`}
+                      onClick={() => copyText(b.copy)}
+                      className="ikb-focusring"
+                      style={{ cursor: 'pointer', fontSize: 16, color: '#6b7280', background: 'none', border: 'none', padding: 0, transition: 'color 0.2s' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden="true">content_copy</span>
+                    </button>
+                  </div>
+                  <div style={{ whiteSpace: 'pre-line', fontSize: 14, lineHeight: 1.65, color: C.ink, fontFamily: F.cn }}>
+                    {b.copy}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-          <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none text-[#111827]">1.24M</p>
-            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[14px]">trending_up</span>+214%
-            </span>
-            <span className="mb-1 text-[12px] text-[#9ca3af]">较冷启动基线</span>
-          </div>
-          {(() => {
-            const data = [18, 26, 24, 38, 49, 45, 60, 70, 66, 80, 88, 100];
-            const W = 560;
-            const H = 168;
-            const padL = 6;
-            const padR = 6;
-            const padT = 12;
-            const padB = 8;
-            const innerW = W - padL - padR;
-            const innerH = H - padT - padB;
-            const max = 110;
-            const x = (i: number) => padL + (innerW * i) / (data.length - 1);
-            const y = (v: number) => padT + innerH * (1 - v / max);
-            const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-            const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
-            return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-                <defs>
-                  <linearGradient id="trendFillS3" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="trendLineS3" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#002fa7" />
-                    <stop offset="100%" stopColor="#781621" />
-                  </linearGradient>
-                </defs>
-                {[0, 0.33, 0.66, 1].map((f) => (
-                  <line
-                    key={f}
-                    x1={padL}
-                    x2={W - padR}
-                    y1={(padT + innerH * f).toFixed(1)}
-                    y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9"
-                    strokeWidth="1"
-                  />
-                ))}
-                <path d={area} fill="url(#trendFillS3)" />
-                <path d={line} fill="none" stroke="url(#trendLineS3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                {data.map((v, i) =>
-                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
-                )}
-              </svg>
-            );
-          })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
-            {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
-              <span key={m}>{m}</span>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* ── 数据概览(KPI 仪表盘)──────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
-        {/* 人设完整度 · 环形进度 */}
-        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]">verified</span>
-            </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[13px]">trending_up</span>+18%
-            </span>
-          </div>
-          <div className="mt-4 flex items-end justify-between">
-            <div>
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
-                92<span className="text-[15px] text-[#9ca3af]">%</span>
-              </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">人设完整度</p>
-            </div>
-            <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="15.915"
-                  fill="none"
-                  stroke="#002fa7"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeDasharray="92 100"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-        {/* 推荐昵称 · 数量 + 迷你柱 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span className="material-symbols-outlined text-[20px]">text_fields</span>
-            </span>
-            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已评估</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              {generated.nicknames.length}
-              <span className="text-[15px] text-[#9ca3af]"> 个</span>
-            </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">推荐昵称</p>
-          </div>
-          <div className="mt-3 flex h-6 items-end gap-1">
-            {[58, 84, 70, 96, 78].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
-            ))}
-          </div>
-        </div>
-        {/* 平台覆盖 · 进度条 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-              <span className="material-symbols-outlined text-[20px]">hub</span>
-            </span>
-            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">全覆盖</span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              5<span className="text-[15px] text-[#9ca3af]"> 平台</span>
-            </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">平台覆盖</p>
-          </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-            <div className="h-2 w-full rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
-          </div>
-        </div>
-        {/* 简介方案 · 数量 + 关键词 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]">edit_document</span>
-            </span>
-            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
-              {generated.bioCoreKeywords?.length ?? 5} 关键词
-            </span>
-          </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              {generated.bioEntries.length}
-              <span className="text-[15px] text-[#9ca3af]"> 套</span>
-            </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">简介文案方案</p>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-1">
-            {(generated.bioCoreKeywords ?? []).slice(0, 3).map((k) => (
-              <span
-                key={k}
-                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
-              >
-                {k}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Results bento grid ─────────────────────────────── */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* 核心定位策略 (col-12) */}
-        <div className="relative col-span-12 overflow-hidden rounded-xl border border-[#dbe2ff] bg-gradient-to-br from-[#eff4ff] via-white to-[#f7f1ff] p-6 pw-shadow-soft">
-          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-[#002fa7]/[0.07] blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-16 right-40 h-40 w-40 rounded-full bg-[#781621]/[0.06] blur-2xl" />
-          <div className="relative flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined icon-fill text-white">psychology</span>
-            </div>
-            <div>
-              <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full bg-[#002fa7]/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#002fa7]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#002fa7]" />
-                Core Strategy
-              </span>
-              <h3 className="mb-2 text-[20px] font-bold text-[#111827]">核心定位策略</h3>
-              <p className="text-[16px] leading-relaxed text-[#444653]">
-                {generated.overallStrategy.视觉统一性}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* 矩阵命名 (col-4 · Module 01) */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-4">
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">text_fields</span>
-              </span>
-              矩阵命名
-            </h3>
-            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
-              Module 01
-            </span>
-          </div>
-          <div className="space-y-4">
-            {generated.nicknames.slice(0, 4).map((n) => {
-              const score = n.searchability?.startsWith('高')
-                ? 92
-                : n.searchability?.startsWith('中高')
-                  ? 80
-                  : n.searchability?.startsWith('中')
-                    ? 66
-                    : 74;
-              return (
-                <div
-                  key={n.name}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => copyText(n.name)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') copyText(n.name); }}
-                  className="group cursor-pointer rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-all hover:border-[#781621] hover:bg-white"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="text-[16px] font-bold text-[#111827]">{n.name}</div>
-                    <span className="material-symbols-outlined shrink-0 text-[#9ca3af] group-hover:text-[#781621]">
-                      content_copy
-                    </span>
-                  </div>
-                  <div className="mt-1 text-[13px] leading-snug text-[#6b7280]">{n.description}</div>
-                  <div className="mt-2.5">
-                    <div className="mb-1 flex items-center justify-between text-[11px]">
-                      <span className="text-[#9ca3af]">搜索度</span>
-                      <span className="font-bold text-[#781621]">{score}%</span>
-                    </div>
-                    <div className="h-1.5 w-full rounded-full bg-[#eef2ff]">
-                      <div
-                        className="h-1.5 rounded-full bg-gradient-to-r from-[#781621] to-[#781621]"
-                        style={{ width: `${score}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 头像生成流 (col-4 · Module 02 · border-t red) */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-4">
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">face</span>
-              </span>
-              头像生成流
-            </h3>
-            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
-              Module 02
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={handleImageGenStub}
-            className="mb-4 flex aspect-square w-full flex-col items-center justify-center rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] p-4 text-center transition-colors hover:border-[#002fa7]"
+          {/* 下一步执行 (col-4 · Module 05 · 红蓝紫渐变底) */}
+          <div
+            className="relative col-span-4 overflow-hidden"
+            style={{
+              background: C.grad,
+              padding: 24,
+              color: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
           >
-            <span className="material-symbols-outlined mb-2 text-4xl text-[#757685]">image</span>
-            <p className="text-[14px] text-[#444653]">点击生成头像</p>
-          </button>
-          <div className="rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] p-3">
-            <div className="mb-2 flex justify-between text-[12px] font-bold uppercase text-[#a5383f]">
-              AI Prompt
-              <button
-                type="button"
-                aria-label="复制"
-                onClick={() => copyText(generated.avatar.aiPrompt ?? '')}
-                className="cursor-pointer text-[16px] hover:text-[#1b1b1b]"
-              >
-                <span className="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span>
-              </button>
-            </div>
-            <p className="break-words font-mono text-[13px] leading-relaxed text-[#444653]">
-              {generated.avatar.aiPrompt}
-            </p>
-          </div>
-        </div>
-
-        {/* 背景墙视觉 (col-4 · Module 03) */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-4">
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">wallpaper</span>
-              </span>
-              背景墙视觉
-            </h3>
-            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
-              Module 03
-            </span>
-          </div>
-          <div className="relative mb-4 flex aspect-video items-center justify-center overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#002fa7]">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#001e73] via-[#002fa7] to-[#3654c8] opacity-80" />
-            <div className="relative z-10 px-4 text-center">
-              <div className="text-[20px] font-bold text-white">理性 · 认知 · 破局</div>
-              <div className="mt-2 text-[12px] font-bold uppercase tracking-widest text-white/80">
-                Systematic Thinking
-              </div>
-            </div>
-          </div>
-          <p className="text-[14px] leading-relaxed text-[#444653]">{generated.background.风格理念}</p>
-        </div>
-
-        {/* 简介文案公式 (col-8 · Module 04 · border-t gold) */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md col-span-8">
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/10 text-[#8a6a00]">
-                <span className="material-symbols-outlined text-[20px]">edit_document</span>
-              </span>
-              简介文案公式
-            </h3>
-            <span className="rounded-full bg-[#F6D300]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#8a6a00]">
-              Module 04
-            </span>
-          </div>
-          {generated.bioFormula && (
-            <div className="mb-4 flex items-start gap-2 rounded-lg border border-[#F3E08A] bg-gradient-to-r from-[#fefce0] to-[#fefce8] p-3 text-[14px] leading-relaxed text-[#854d0e]">
-              <span className="material-symbols-outlined mt-0.5 text-[18px] text-[#8a6a00]">bolt</span>
-              <span>
-                <span className="font-bold">公式 · </span>
-                {generated.bioFormula}
-              </span>
-            </div>
-          )}
-          <div className="grid grid-cols-2 gap-4">
-            {generated.bioEntries.slice(0, 2).map((b) => (
-              <div key={b.platformKey} className="rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-r from-[#002fa7]/10 to-[#781621]/10 px-2.5 py-1 text-[12px] font-bold text-[#002fa7]">
-                    <span className="material-symbols-outlined text-[14px]">alternate_email</span>
-                    {b.platformLabel}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => copyText(b.copy)}
-                    className="material-symbols-outlined cursor-pointer text-[16px] text-[#9ca3af] transition-colors hover:text-[#002fa7]"
-                  >
-                    content_copy
-                  </button>
-                </div>
-                <div className="whitespace-pre-line text-[14px] leading-relaxed text-[#1b1b1b]">
-                  {b.copy}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 下一步执行 (col-4 · Module 05 · blue) */}
-        <div className="relative col-span-4 flex flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-[#002fa7] to-[#001952] p-6 text-white pw-shadow-soft">
-          <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#781621]/20 blur-2xl" />
-          <div className="relative">
-            <h3 className="mb-4 flex items-center gap-2.5 text-[18px] font-semibold">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
-              </span>
-              下一步执行
-            </h3>
-            <ul className="space-y-3 text-[15px]">
-              <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#b8c4ff]">check_box</span>
-                确认并导出全套包装物料
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#b8c4ff]">
-                  check_box_outline_blank
+            <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', right: -48, top: -48, height: 160, width: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', filter: 'blur(32px)' }} />
+            <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', bottom: -40, left: -40, height: 128, width: 128, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', filter: 'blur(32px)' }} />
+            <div style={{ position: 'relative' }}>
+              <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: '#fff', fontFamily: F.cn }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.18)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">rocket_launch</span>
                 </span>
-                进入 STEP 04 进行内容选题规划
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined mt-0.5 text-[20px] text-[#b8c4ff]">
-                  check_box_outline_blank
-                </span>
-                注册目标平台账号并应用配置
-              </li>
-            </ul>
+                下一步执行
+              </h3>
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 12, fontSize: 15, fontFamily: F.cn }}>
+                <li style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 20, color: 'rgba(255,255,255,0.75)', flexShrink: 0 }} aria-hidden="true">check_box</span>
+                  确认并导出全套包装物料
+                </li>
+                <li style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 20, color: 'rgba(255,255,255,0.75)', flexShrink: 0 }} aria-hidden="true">check_box_outline_blank</span>
+                  进入 STEP 04 进行内容选题规划
+                </li>
+                <li style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <span className="material-symbols-outlined" style={{ marginTop: 2, fontSize: 20, color: 'rgba(255,255,255,0.75)', flexShrink: 0 }} aria-hidden="true">check_box_outline_blank</span>
+                  注册目标平台账号并应用配置
+                </li>
+              </ul>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/step/4')}
+              className="ikb-focusring"
+              style={{
+                marginTop: 32,
+                width: '100%',
+                border: `1px solid rgba(255,255,255,0.6)`,
+                background: 'rgba(255,255,255,0.15)',
+                padding: '12px 0',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#fff',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                fontFamily: F.mono,
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.25)'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.15)'; }}
+            >
+              进入内容系统 →
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/step/4')}
-            className="mt-8 w-full rounded-xl border border-[#e5e7eb] bg-white py-3 text-[12px] font-bold uppercase tracking-widest text-[#002fa7] shadow-sm transition-colors hover:bg-[#f3f3f3]"
-          >
-            进入内容系统 →
-          </button>
         </div>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
