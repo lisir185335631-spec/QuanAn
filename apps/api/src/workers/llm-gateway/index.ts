@@ -80,10 +80,10 @@ export interface ToolDef {
 // ============== 模型路由 ==============
 
 const MODEL_BY_TIER = {
-  reasoning:   { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
-  lightweight: { primary: 'claude-haiku-4-5',  fallback: 'gpt-4o-mini' },
-  balanced:    { primary: 'claude-sonnet-4-6', fallback: 'gpt-4o' },
-} as const satisfies Record<ModelTier, { primary: string; fallback: string }>;
+  reasoning:   { primary: process.env.LLM_REASONING_MODEL   ?? 'claude-sonnet-4-6', fallback: process.env.LLM_REASONING_FALLBACK_MODEL   ?? 'gpt-4o' },
+  lightweight: { primary: process.env.LLM_LIGHTWEIGHT_MODEL ?? 'claude-haiku-4-5',  fallback: process.env.LLM_LIGHTWEIGHT_FALLBACK_MODEL ?? 'gpt-4o-mini' },
+  balanced:    { primary: process.env.LLM_BALANCED_MODEL    ?? 'claude-sonnet-4-6', fallback: process.env.LLM_BALANCED_FALLBACK_MODEL    ?? 'gpt-4o' },
+} satisfies Record<ModelTier, { primary: string; fallback: string }>;
 
 // ============== LLM Key Cache (AC-1, AC-3) ==============
 
@@ -157,7 +157,8 @@ async function getAnthropicClient(tier: string): Promise<Anthropic> {
 async function getOpenAIClient(): Promise<OpenAI> {
   const key = await loadLlmKey('openai');
   if (!key) throw new Error('OPENAI_API_KEY missing for fallback tier');
-  return (_openaiClient ??= new OpenAI({ apiKey: key }));
+  const baseURL = process.env.LLM_OPENAI_BASE_URL ?? process.env.OPENAI_BASE_URL ?? undefined;
+  return (_openaiClient ??= new OpenAI({ apiKey: key, baseURL }));
 }
 
 // ============== Gateway 实现 ==============
@@ -222,15 +223,26 @@ class LLMGateway {
   }
 
   /** 流式调用 · CopywritingAgent / VideoAgent / VoiceChatAgent 用 */
-  // eslint-disable-next-line @typescript-eslint/require-await
   async *stream(req: CompleteRequest): AsyncIterable<StreamChunk> {
     const { trace_id } = req.metadata;
     const startedAt = Date.now();
+
+    let res: CompleteResponse;
+    try {
+      res = await this.complete(req);
+    } catch (err) {
+      yield { type: 'error', trace_id, error: { code: 'stream_failed', message: String(err) } };
+      return;
+    }
+
     // D-019 / REJ-003: emit actual model in first chunk — consumers read stream.meta.model
-    const actualModel = MODEL_BY_TIER[req.model_tier].primary;
-    yield { type: 'meta', trace_id, meta: { model: actualModel } };
-    // TODO P3 · 真实流式实现
-    yield { type: 'done', trace_id, duration_ms: Date.now() - startedAt };
+    yield { type: 'meta', trace_id, meta: { model: res.model } };
+
+    // complete() returns parsed object for json_schema; _consumeStream accumulates string then JSON.parse — stringify back
+    const deltaStr = typeof res.content === 'string' ? res.content : JSON.stringify(res.content);
+    yield { type: 'delta', trace_id, delta: deltaStr };
+
+    yield { type: 'done', trace_id, tokens: res.tokens, duration_ms: Date.now() - startedAt };
   }
 
   /** Embedding(用于 RAG · pgvector) */
