@@ -1,13 +1,15 @@
 /**
- * VoiceChat.tsx — 先锋白·工业精密版 语音对话 / AI 助手
- * 阶段2 页9: 接真流式后端 · trpc.voiceChat.start subscription (SSE)
- * 先锋白标准 · PioneerLayout · 品牌三主色 · 逻辑 / testid 零改动
- * 3 voice-chat 子组件 inline
+ * VoiceChat.tsx — 红蓝紫渐变 IKB 体系 · 语音对话 / AI 助手
+ * IKBLayout 外壳 · inline IKB 气泡 · 逻辑/testid 零改动
+ * 2026-06-04
  */
+import '@/styles/ikb-hero.css';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   VOICE_CHAT_CHIP_SUBTITLE,
   VOICE_CHAT_CHIP_TITLE,
@@ -58,9 +60,14 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
   if (isUser) {
     return (
       <div className="flex justify-end" data-testid="message-bubble-user">
-        <div className="max-w-2xl rounded-2xl rounded-tr-sm bg-[#002fa7] px-5 py-3.5 shadow-sm">
+        <div
+          className="max-w-2xl rounded-2xl rounded-tr-sm px-5 py-3.5 shadow-sm"
+          style={{ background: C.grad }}
+        >
           <p className="text-[14px] leading-relaxed text-white">{message.content}</p>
-          <p className="mt-1.5 text-[11px] text-[#a5b8ee]">{message.timestamp}</p>
+          <p className="mt-1.5 text-[11px]" style={{ color: 'rgba(255,255,255,0.65)' }}>
+            {message.timestamp}
+          </p>
         </div>
       </div>
     );
@@ -72,18 +79,25 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
       {/* AI avatar chip + bubble */}
       <div className="flex items-start gap-3">
         {/* AI avatar icon chip */}
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#002fa7]/10 text-[#002fa7]">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        <span
+          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+          style={{ background: `${C.ikb}12`, color: C.ikb }}
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
             smart_toy
           </span>
         </span>
-        <div className="max-w-3xl rounded-2xl rounded-tl-sm border border-[#e5e7eb] bg-white px-5 py-3.5 shadow-sm">
-          <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-[#1b1b1b]">
+        <div
+          className="max-w-3xl rounded-2xl rounded-tl-sm px-5 py-3.5 shadow-sm"
+          style={{ border: `1px solid ${C.line}`, background: C.base }}
+        >
+          <p className="whitespace-pre-wrap text-[14px] leading-relaxed" style={{ color: C.ink }}>
             {message.content}
             {isStreaming && (
               <span
-                className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse bg-[#002fa7]"
-                aria-hidden="true"
+                className="ml-0.5 inline-block h-3.5 w-0.5 animate-pulse"
+                style={{ background: C.ikb }}
+                aria-hidden={true}
               />
             )}
           </p>
@@ -93,16 +107,25 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
       {/* bottom row: timestamp + play + copy */}
       {!isStreaming && (
         <div className="flex items-center gap-3 pl-12">
-          <span className="text-[11px] text-[#9ca3af]">{message.timestamp}</span>
+          <span className="text-[11px]" style={{ color: '#6b7280' }}>{message.timestamp}</span>
 
           <button
             type="button"
             onClick={() => toast.info(VOICE_CHAT_TOAST_AUDIO)}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium text-[#6b7280] transition-colors hover:bg-[#f3f4f6] hover:text-[#002fa7]"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors ikb-focusring"
+            style={{ color: '#6b7280' }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}10`;
+              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+            }}
             data-testid="message-play-btn"
             aria-label={VOICE_CHAT_LABEL_PLAY}
           >
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
+            <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>
               volume_up
             </span>
             {VOICE_CHAT_LABEL_PLAY}
@@ -114,11 +137,20 @@ function MessageBubble({ message }: { message: ChatMessage | MockMessage }) {
               void navigator.clipboard.writeText(message.content).catch(() => {});
               toast.info(VOICE_CHAT_TOAST_COPIED);
             }}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium text-[#6b7280] transition-colors hover:bg-[#f3f4f6] hover:text-[#002fa7]"
+            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-medium transition-colors ikb-focusring"
+            style={{ color: '#6b7280' }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}10`;
+              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+            }}
             data-testid="message-copy-btn"
             aria-label={VOICE_CHAT_LABEL_COPY}
           >
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">
+            <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>
               content_copy
             </span>
             {VOICE_CHAT_LABEL_COPY}
@@ -149,7 +181,8 @@ function VoiceChatInput({ value, onChange, onMicClick, onSend, disabled }: Voice
 
   return (
     <div
-      className="flex items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3 shadow-sm"
+      className="flex items-center gap-3 rounded-2xl px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-[#2B53E6]"
+      style={{ border: `1px solid ${C.line}`, background: C.paper }}
       data-testid="voice-chat-input-row"
     >
       {/* left mic button */}
@@ -157,11 +190,12 @@ function VoiceChatInput({ value, onChange, onMicClick, onSend, disabled }: Voice
         type="button"
         onClick={onMicClick}
         disabled={disabled}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-white shadow-sm transition-all hover:bg-[#001e73] active:scale-95 disabled:opacity-60"
+        className="ikb-gradbtn flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-all active:scale-95 disabled:opacity-60 ikb-focusring"
+        style={{ background: C.grad }}
         data-testid="voice-chat-mic-btn"
         aria-label="语音输入"
       >
-        <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
           mic
         </span>
       </button>
@@ -176,7 +210,8 @@ function VoiceChatInput({ value, onChange, onMicClick, onSend, disabled }: Voice
         data-testid="voice-chat-input"
         aria-label="输入消息"
         disabled={disabled}
-        className="flex-1 bg-transparent text-[14px] text-[#1b1b1b] outline-none placeholder:text-[#9ca3af] disabled:opacity-60"
+        className="ikb-input flex-1 bg-transparent text-[14px] disabled:opacity-60"
+        style={{ color: C.ink }}
       />
 
       {/* right send button */}
@@ -184,11 +219,12 @@ function VoiceChatInput({ value, onChange, onMicClick, onSend, disabled }: Voice
         type="button"
         onClick={onSend}
         disabled={disabled}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-white shadow-sm transition-all hover:bg-[#001e73] active:scale-95 disabled:opacity-60"
+        className="ikb-gradbtn flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white shadow-sm transition-all active:scale-95 disabled:opacity-60 ikb-focusring"
+        style={{ background: C.grad }}
         data-testid="voice-chat-send-btn"
         aria-label="发送"
       >
-        <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
           send
         </span>
       </button>
@@ -205,6 +241,9 @@ const WELCOME_MESSAGE: ChatMessage = {
   content: VOICE_CHAT_MOCK_MESSAGES[1]?.content ?? '你好！我是你的AI助手，有什么问题尽管问我！',
   timestamp: VOICE_CHAT_MOCK_MESSAGES[1]?.timestamp ?? '00:00',
 };
+
+// 轮转三主色 (IKB 蓝 / 玫红 / 紫)
+const KPI_ACCENT: [string, string, string] = [C.ikb, C.burgundy, C.accent3];
 
 export default function VoiceChat() {
   const [input, setInput] = useState('');
@@ -362,24 +401,69 @@ export default function VoiceChat() {
   // (id === 'welcome') so an empty conversation shows 0, not 1
   const completedTurns = messages.filter((m) => !m.streaming && m.id !== 'welcome').length;
 
+  // KPI 卡数据(轮转三主色)
+  const kpiCards = [
+    {
+      icon: 'forum',
+      value: <span data-testid="kpi-turns">{completedTurns}</span>,
+      label: '对话轮次',
+      accent: KPI_ACCENT[0],
+    },
+    {
+      icon: 'speed',
+      value: <span>— s</span>,
+      label: '平均响应（示例）',
+      accent: KPI_ACCENT[1],
+    },
+    {
+      icon: 'smart_toy',
+      value: (
+        <span
+          className="text-[13px] font-bold leading-none truncate"
+          data-testid="kpi-model"
+          style={{ color: KPI_ACCENT[2] }}
+        >
+          {modelName ?? 'AIP'}
+        </span>
+      ),
+      label: '助手模型',
+      accent: KPI_ACCENT[2],
+    },
+    {
+      icon: 'thumb_up',
+      value: <span>—</span>,
+      label: '满意度（示例）',
+      accent: KPI_ACCENT[0],
+    },
+  ];
+
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-10 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           {/* 双徽标 */}
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.mono }}
+            >
               智能引擎
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ border: `1px solid ${C.ikb}40`, background: `${C.ikb}18`, color: C.ikb, fontFamily: F.mono }}
+            >
               AI 助手
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tighter"
+            style={{ fontFamily: F.display }}
+          >
             {VOICE_CHAT_CHIP_TITLE} · 语音对话
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>
             {VOICE_CHAT_CHIP_SUBTITLE} · 实时 AI 对话 · 多模态交互 · 随时随地获取专业建议
           </p>
         </div>
@@ -388,13 +472,19 @@ export default function VoiceChat() {
         <div className="flex shrink-0 items-center gap-3">
           {/* 连接状态 — 按实际订阅状态显示 */}
           {isStreaming ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#002fa7]/10 px-3 py-1.5 text-[12px] font-semibold text-[#002fa7]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#002fa7]" />
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold"
+              style={{ background: `${C.ikb}14`, color: C.ikb }}
+            >
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
               回复中…
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1.5 text-[12px] font-semibold text-[#10b981]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold"
+              style={{ background: `${C.ikb}14`, color: C.ikb }}
+            >
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
               在线
             </span>
           )}
@@ -403,11 +493,20 @@ export default function VoiceChat() {
           <button
             type="button"
             onClick={() => toast.info(VOICE_CHAT_TOAST_AUDIO)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e7eb] bg-white text-[#444653] shadow-sm transition-all hover:border-[#002fa7] hover:text-[#002fa7]"
+            className="flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all ikb-focusring"
+            style={{ border: `1px solid ${C.line}`, background: C.paper, color: '#444653' }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+              (e.currentTarget as HTMLButtonElement).style.color = '#444653';
+            }}
             data-testid="voice-chat-audio-btn"
             aria-label="音频"
           >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
               volume_up
             </span>
           </button>
@@ -417,11 +516,22 @@ export default function VoiceChat() {
             type="button"
             onClick={() => clearSessionMutation.mutate()}
             disabled={clearSessionMutation.isPending || isStreaming}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e7eb] bg-white text-[#444653] shadow-sm transition-all hover:border-[#781621] hover:text-[#781621] disabled:opacity-50"
+            className="flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all disabled:opacity-50 ikb-focusring"
+            style={{ border: `1px solid ${C.line}`, background: C.paper, color: '#444653' }}
+            onMouseEnter={(e) => {
+              if (!(e.currentTarget as HTMLButtonElement).disabled) {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = C.burgundy;
+                (e.currentTarget as HTMLButtonElement).style.color = C.burgundy;
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+              (e.currentTarget as HTMLButtonElement).style.color = '#444653';
+            }}
             data-testid="voice-chat-clear-btn"
             aria-label="清空"
           >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
               delete_sweep
             </span>
           </button>
@@ -430,98 +540,90 @@ export default function VoiceChat() {
 
       {/* ── 轻量概览 KPI chips ──────────────────────────────── */}
       <div className="mb-8 grid grid-cols-4 gap-5">
-        {/* 对话轮次 — 真实数据 */}
-        <div className="flex items-center gap-3 rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-4 pw-shadow-soft">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
-              forum
-            </span>
-          </span>
-          <div className="min-w-0">
-            <p className="text-[22px] font-bold leading-none text-[#002fa7]" data-testid="kpi-turns">
-              {completedTurns}
-            </p>
-            <p className="mt-0.5 truncate text-[11px] text-[#6b7280]">对话轮次</p>
-          </div>
-        </div>
-
-        {/* 平均响应 — 示例值 */}
-        <div className="flex items-center gap-3 rounded-xl border border-[#f3d4d7] bg-gradient-to-br from-white to-[#fff5f6] p-4 pw-shadow-soft">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#781621]/10 text-[#781621]">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
-              speed
-            </span>
-          </span>
-          <div className="min-w-0">
-            <p className="text-[22px] font-bold leading-none text-[#781621]">— s</p>
-            <p className="mt-0.5 truncate text-[11px] text-[#6b7280]">平均响应（示例）</p>
-          </div>
-        </div>
-
-        {/* 助手模型 — 真实模型名（若有）*/}
-        <div className="flex items-center gap-3 rounded-xl border border-[#fef3c0] bg-gradient-to-br from-white to-[#fffbeb] p-4 pw-shadow-soft">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F6D300]/20 text-[#8A6A00]">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
-              smart_toy
-            </span>
-          </span>
-          <div className="min-w-0">
-            <p
-              className="text-[13px] font-bold leading-none text-[#8A6A00] truncate"
-              data-testid="kpi-model"
+        {kpiCards.map((kpi, idx) => (
+          <div
+            key={idx}
+            className="flex items-center gap-3 p-4"
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${kpi.accent}30`,
+              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            }}
+          >
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ background: `${kpi.accent}12`, color: kpi.accent }}
             >
-              {modelName ?? 'AIP'}
-            </p>
-            <p className="mt-0.5 truncate text-[11px] text-[#6b7280]">助手模型</p>
-          </div>
-        </div>
-
-        {/* 满意度 — 示例值 */}
-        <div className="flex items-center gap-3 rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-4 pw-shadow-soft">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
-              thumb_up
+              <span className="material-symbols-outlined text-[22px]" aria-hidden={true}>
+                {kpi.icon}
+              </span>
             </span>
-          </span>
-          <div className="min-w-0">
-            <p className="text-[22px] font-bold leading-none text-[#002fa7]">—</p>
-            <p className="mt-0.5 truncate text-[11px] text-[#6b7280]">满意度（示例）</p>
+            <div className="min-w-0">
+              <p className="text-[22px] font-bold leading-none" style={{ color: kpi.accent }}>
+                {kpi.value}
+              </p>
+              <p className="mt-0.5 truncate text-[11px]" style={{ color: '#6b7280' }}>
+                {kpi.label}
+              </p>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
 
       {/* ── 聊天主体卡 ─────────────────────────────────────── */}
-      <section className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-[#f8f9fa] pw-shadow-soft">
+      <section
+        className="overflow-hidden"
+        style={{
+          borderRadius: 12,
+          border: `1px solid ${C.line}`,
+          background: C.base,
+        }}
+      >
         {/* chip header bar */}
-        <div className="flex items-center gap-3 border-b border-[#e5e7eb] bg-white px-6 py-4">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#002fa7] text-white shadow-sm">
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+        <div
+          className="flex items-center gap-3 px-6 py-4"
+          style={{ borderBottom: `1px solid ${C.line}`, background: C.paper }}
+        >
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
+            style={{ background: C.grad }}
+          >
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
               mic
             </span>
           </span>
           <div>
             <p
-              className="text-[18px] font-extrabold uppercase tracking-widest text-[#002fa7]"
+              className="text-[18px] font-extrabold uppercase tracking-widest ikb-gradtext"
+              style={{ fontFamily: F.mono }}
               data-testid="voice-chat-chip-title"
             >
               {VOICE_CHAT_CHIP_TITLE}
             </p>
-            <p className="text-[12px] text-[#6b7280]" data-testid="voice-chat-chip-subtitle">
+            <p className="text-[12px]" style={{ color: '#6b7280' }} data-testid="voice-chat-chip-subtitle">
               {VOICE_CHAT_CHIP_SUBTITLE}
             </p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             {isStreaming ? (
               <>
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#002fa7]" />
-                <span className="text-[12px] font-semibold text-[#002fa7]" data-testid="status-streaming">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
+                <span
+                  className="text-[12px] font-semibold"
+                  style={{ color: C.ikb }}
+                  data-testid="status-streaming"
+                >
                   回复中…
                 </span>
               </>
             ) : (
               <>
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
-                <span className="text-[12px] font-semibold text-[#10b981]" data-testid="status-online">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: C.ikb }} />
+                <span
+                  className="text-[12px] font-semibold"
+                  style={{ color: C.ikb }}
+                  data-testid="status-online"
+                >
                   连接中
                 </span>
               </>
@@ -543,13 +645,16 @@ export default function VoiceChat() {
               className="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 text-center"
               data-testid="empty-state"
             >
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[36px]" aria-hidden="true">
+              <span
+                className="flex h-16 w-16 items-center justify-center rounded-2xl"
+                style={{ background: `${C.ikb}12`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>
                   chat_bubble_outline
                 </span>
               </span>
-              <p className="text-[16px] font-semibold text-[#1b1b1b]">开始你的对话</p>
-              <p className="text-[14px] text-[#6b7280]">在下方输入问题，AI 助手将实时回复</p>
+              <p className="text-[16px] font-semibold" style={{ color: C.ink }}>开始你的对话</p>
+              <p className="text-[14px]" style={{ color: '#6b7280' }}>在下方输入问题，AI 助手将实时回复</p>
             </div>
           ) : (
             messages.map((msg) => <MessageBubble key={msg.id} message={msg} />)
@@ -558,7 +663,10 @@ export default function VoiceChat() {
         </div>
 
         {/* input row */}
-        <div className="border-t border-[#e5e7eb] bg-white px-6 py-4">
+        <div
+          className="px-6 py-4"
+          style={{ borderTop: `1px solid ${C.line}`, background: C.paper }}
+        >
           <VoiceChatInput
             value={input}
             onChange={setInput}
@@ -568,6 +676,6 @@ export default function VoiceChat() {
           />
         </div>
       </section>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
