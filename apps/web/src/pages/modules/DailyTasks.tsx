@@ -1,13 +1,16 @@
 /**
- * /daily-tasks · 今日行动清单 · 先锋白·工业精密版
+ * /daily-tasks · 今日行动清单 · 红蓝紫渐变 IKB 体系
  * 阶段2: 接真 trpc.dailyTasks.* · 三态(loading/error/null空态) · 乐观完成
- * PioneerLayout · 内联软卡 · 品牌三主色
+ * IKBLayout · inline style + token · testid 全保留
  */
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   DAILY_TASKS_FOOTER_BTN_1,
   DAILY_TASKS_FOOTER_BTN_1_HREF,
@@ -89,6 +92,7 @@ function toDateKey(d: Date | string): string {
 }
 
 // ── Icon metadata · order locked: streak / total-days / total-tasks ──────────
+// IKB 三色轮转: streak=暖黄accent3, total-days=蓝ikb, total-tasks=蓝ikb
 const STAT_ICON_META: Array<{
   icon: string;
   iconBg: string;
@@ -96,41 +100,60 @@ const STAT_ICON_META: Array<{
   valueColor: string;
   badge: string;
   badgeText: string;
+  barColor: string;
 }> = [
-  // streak · 暖黄火焰
+  // streak · accent3 紫
   {
     icon: 'local_fire_department',
-    iconBg: 'bg-[#F6D300]/20',
-    iconColor: 'text-[#8A6A00]',
-    valueColor: 'text-[#8A6A00]',
-    badge: 'bg-[#F6D300]/20',
-    badgeText: 'text-[#8A6A00]',
+    iconBg: `${C.accent3}1a`,
+    iconColor: C.purpleText,
+    valueColor: C.purpleText,
+    badge: `${C.accent3}1a`,
+    badgeText: C.purpleText,
+    barColor: C.accent3,
   },
-  // total-days · 蓝奖杯
+  // total-days · ikb 蓝
   {
     icon: 'emoji_events',
-    iconBg: 'bg-[#002fa7]/10',
-    iconColor: 'text-[#002fa7]',
-    valueColor: 'text-[#002fa7]',
-    badge: 'bg-[#002fa7]/10',
-    badgeText: 'text-[#002fa7]',
+    iconBg: `${C.ikb}1a`,
+    iconColor: C.ikb,
+    valueColor: C.ikb,
+    badge: `${C.ikb}1a`,
+    badgeText: C.ikb,
+    barColor: C.ikb,
   },
-  // total-tasks · 绿完成
+  // total-tasks · ikb 蓝(完成/正向)
   {
     icon: 'task_alt',
-    iconBg: 'bg-[#10b981]/10',
-    iconColor: 'text-[#10b981]',
-    valueColor: 'text-[#10b981]',
-    badge: 'bg-[#10b981]/10',
-    badgeText: 'text-[#10b981]',
+    iconBg: `${C.ikb}1a`,
+    iconColor: C.ikb,
+    valueColor: C.ikb,
+    badge: `${C.ikb}1a`,
+    badgeText: C.ikb,
+    barColor: C.ikb,
   },
 ];
 
-// ── Priority styles · 先锋白品牌色 ──────────────────────────────────────────
-const PRIORITY_STYLE: Record<TaskPriority, { bg: string; text: string; dot: string }> = {
-  high: { bg: 'bg-[#781621]/10', text: 'text-[#781621]', dot: 'bg-[#781621]' },
-  medium: { bg: 'bg-[#002fa7]/10', text: 'text-[#002fa7]', dot: 'bg-[#002fa7]' },
-  low: { bg: 'bg-[#f1f3f9]', text: 'text-[#6b7280]', dot: 'bg-[#6b7280]' },
+// ── Priority styles · IKB 三主色 ─────────────────────────────────────────────
+const PRIORITY_STYLE: Record<TaskPriority, { bg: string; border: string; text: string; dot: string }> = {
+  high: {
+    bg: `${C.burgundy}12`,
+    border: `${C.burgundy}30`,
+    text: C.burgundyText,
+    dot: C.burgundy,
+  },
+  medium: {
+    bg: `${C.ikb}12`,
+    border: `${C.ikb}30`,
+    text: C.ikb,
+    dot: C.ikb,
+  },
+  low: {
+    bg: `${C.accent3}0d`,
+    border: `${C.accent3}28`,
+    text: C.purpleText,
+    dot: C.accent3,
+  },
 };
 
 // ── Category icon · Material Symbols ─────────────────────────────────────────
@@ -140,23 +163,48 @@ const CATEGORY_ICON: Record<TaskCategory, string> = {
   账号优化: 'manage_accounts',
 };
 
-const CATEGORY_STYLE: Record<TaskCategory, { bg: string; text: string }> = {
-  学习研究: { bg: 'bg-[#002fa7]/10', text: 'text-[#002fa7]' },
-  内容创作: { bg: 'bg-[#781621]/10', text: 'text-[#781621]' },
-  账号优化: { bg: 'bg-[#F6D300]/20', text: 'text-[#8A6A00]' },
+// IKB 三主色轮转
+const CATEGORY_STYLE: Record<TaskCategory, { bg: string; border: string; text: string }> = {
+  学习研究: { bg: `${C.ikb}0d`, border: `${C.ikb}28`, text: C.ikb },
+  内容创作: { bg: `${C.burgundy}0d`, border: `${C.burgundy}28`, text: C.burgundyText },
+  账号优化: { bg: `${C.accent3}0d`, border: `${C.accent3}28`, text: C.purpleText },
 };
 
-// ── Inline pioneer-white soft components ─────────────────────────────────────
+// ── ChipHeader ────────────────────────────────────────────────────────────────
 
 function ChipHeader() {
   return (
-    <div className="mb-3 flex items-center gap-3">
-      <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+    <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span
+        style={{
+          borderRadius: 8,
+          border: `1px solid ${C.line}`,
+          background: C.base,
+          padding: '3px 12px',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: C.ink,
+          fontFamily: F.mono,
+        }}
+      >
         智能引擎
       </span>
       <span
         data-testid="daily-tasks-chip"
-        className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]"
+        style={{
+          borderRadius: 8,
+          border: `1px solid ${C.ikb}40`,
+          background: `${C.ikb}14`,
+          padding: '3px 12px',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: C.ikb,
+          fontFamily: F.mono,
+        }}
       >
         每日任务
       </span>
@@ -164,23 +212,24 @@ function ChipHeader() {
   );
 }
 
+// ── ProgressRing ──────────────────────────────────────────────────────────────
 
 function ProgressRing({ pct }: { pct: number }) {
   const dash = ((pct / 100) * 100).toFixed(1);
   return (
     <svg
       viewBox="0 0 36 36"
-      className="-rotate-90 h-12 w-12 shrink-0"
+      style={{ width: 48, height: 48, flexShrink: 0, transform: 'rotate(-90deg)' }}
       role="img"
       aria-label={`今日完成率 ${pct}%`}
     >
-      <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+      <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
       <circle
         cx="18"
         cy="18"
         r="15.915"
         fill="none"
-        stroke="#002fa7"
+        stroke={C.ikb}
         strokeWidth="3.5"
         strokeLinecap="round"
         strokeDasharray={`${dash} 100`}
@@ -188,6 +237,8 @@ function ProgressRing({ pct }: { pct: number }) {
     </svg>
   );
 }
+
+// ── TodayProgressSection ──────────────────────────────────────────────────────
 
 function TodayProgressSection({
   completed,
@@ -201,27 +252,58 @@ function TodayProgressSection({
   return (
     <div
       data-testid="today-progress-card"
-      className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-6 pw-shadow-soft"
+      style={{
+        borderRadius: 12,
+        border: `1px solid ${C.ikb}28`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+        boxShadow: `0 2px 12px ${C.ikb}0a`,
+      }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">today</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span
+            style={{
+              display: 'flex',
+              height: 40,
+              width: 40,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 12,
+              background: `${C.ikb}14`,
+              color: C.ikb,
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 22 }}>today</span>
           </span>
           <div>
-            <h3 className="text-[16px] font-bold text-[#111827]">今日进度</h3>
-            <p className="text-[12px] text-[#9ca3af]">完成 {completed} / {total} 项任务</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>今日进度</h3>
+            <p style={{ fontSize: 12, color: '#6b7280', margin: 0 }}>完成 {completed} / {total} 项任务</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[28px] font-bold text-[#002fa7]">{pct}%</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 28, fontWeight: 700, color: C.ikb, fontFamily: F.display }}>{pct}%</span>
           <ProgressRing pct={pct} />
         </div>
       </div>
-      <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-[#eef2ff]">
+      <div
+        style={{
+          marginTop: 16,
+          height: 10,
+          width: '100%',
+          overflow: 'hidden',
+          borderRadius: 9999,
+          background: `${C.ikb}14`,
+        }}
+      >
         <div
-          className="h-2.5 rounded-full bg-gradient-to-r from-[#002fa7] to-[#3654c8] transition-all duration-500"
-          style={{ width: `${pct}%` }}
+          style={{
+            height: 10,
+            borderRadius: 9999,
+            background: C.grad,
+            width: `${pct}%`,
+            transition: 'width 0.5s ease',
+          }}
         />
       </div>
     </div>
@@ -249,59 +331,150 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
   return (
     <div
       data-testid={`task-card-${task.id}`}
-      className={`rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md${isCompleted ? ' opacity-70' : ''}`}
+      style={{
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        opacity: isCompleted ? 0.72 : 1,
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = '';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+      }}
     >
-      <div className="flex items-start gap-4">
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
         <button
           type="button"
           disabled={isCompleted || isMarking}
           onClick={() => { if (!isCompleted && !isMarking) onComplete(task.id); }}
-          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7] disabled:cursor-not-allowed disabled:opacity-60"
-          aria-label={isCompleted ? '已完成' : '标记完成'}
+          className="ikb-focusring"
+          style={{
+            marginTop: 2,
+            display: 'flex',
+            height: 32,
+            width: 32,
+            flexShrink: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 8,
+            border: 'none',
+            background: `${C.ikb}14`,
+            color: C.ikb,
+            cursor: isCompleted || isMarking ? 'not-allowed' : 'pointer',
+            opacity: isCompleted || isMarking ? 0.6 : 1,
+          }}
+          aria-label={isCompleted ? `已完成` : `标记完成`}
         >
-          <span className="material-symbols-outlined text-[18px]">
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
             {isCompleted ? 'check_circle' : isMarking ? 'hourglass_empty' : 'radio_button_unchecked'}
           </span>
         </button>
-        <div className="flex-1">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h3 className={`text-[16px] font-bold leading-snug${isCompleted ? ' line-through text-[#9ca3af]' : ' text-[#111827]'}`}>{task.title}</h3>
+        <div style={{ flex: 1 }}>
+          <div style={{ marginBottom: 8, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+            <h3
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                lineHeight: 1.3,
+                fontFamily: F.display,
+                color: isCompleted ? '#6b7280' : C.ink,
+                margin: 0,
+                textDecoration: isCompleted ? 'line-through' : 'none',
+              }}
+            >
+              {task.title}
+            </h3>
             {/* Priority chip */}
             <span
               data-testid="task-priority-tag"
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${pri.bg} ${pri.text}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 9999,
+                border: `1px solid ${pri.border}`,
+                background: pri.bg,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: pri.text,
+                fontFamily: F.mono,
+              }}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${pri.dot}`} />
+              <span style={{ height: 6, width: 6, borderRadius: '50%', background: pri.dot, display: 'inline-block' }} />
               {PRIORITY_LABELS[priority]}优先
             </span>
             {/* Category chip */}
             <span
               data-testid="task-category-tag"
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${cat.bg} ${cat.text}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 9999,
+                border: `1px solid ${cat.border}`,
+                background: cat.bg,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 500,
+                color: cat.text,
+                fontFamily: F.cn,
+              }}
             >
-              <span className="material-symbols-outlined text-[12px]" aria-hidden="true">{catIcon}</span>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>{catIcon}</span>
               {category}
             </span>
             {/* estimatedMinutes badge */}
             {task.estimatedMinutes !== null && task.estimatedMinutes !== undefined && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#f1f3f9] px-2 py-0.5 text-[11px] text-[#6b7280]">
-                <span className="material-symbols-outlined text-[12px]" aria-hidden="true">schedule</span>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  borderRadius: 9999,
+                  border: `1px solid ${C.line}`,
+                  background: C.base,
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  color: '#6b7280',
+                  fontFamily: F.cn,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>schedule</span>
                 {task.estimatedMinutes} 分钟
               </span>
             )}
           </div>
           {task.description && (
-            <p className="text-[14px] leading-relaxed text-[#444653]">{task.description}</p>
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: '#5A6173', margin: 0, fontFamily: F.cn }}>{task.description}</p>
           )}
           {task.ctaUrl && !isCompleted && (
             <a
               href={task.ctaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-[#002fa7] hover:underline"
+              className="ikb-focusring"
+              style={{
+                marginTop: 8,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                fontSize: 13,
+                fontWeight: 600,
+                color: C.ikb,
+                textDecoration: 'none',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'underline'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.textDecoration = 'none'; }}
             >
               {task.ctaText ?? '去完成'}
-              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">open_in_new</span>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>open_in_new</span>
             </a>
           )}
         </div>
@@ -318,36 +491,85 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
   return (
     <div
       data-testid={`task-card-${task.id}`}
-      className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      style={{
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+        transition: 'transform 0.2s, box-shadow 0.2s',
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = '';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+      }}
     >
-      <div className="flex items-start gap-4">
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
         <span
-          className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]"
-          aria-hidden="true"
+          style={{
+            marginTop: 2,
+            display: 'flex',
+            height: 32,
+            width: 32,
+            flexShrink: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 8,
+            background: `${C.ikb}14`,
+            color: C.ikb,
+          }}
+          aria-hidden={true}
         >
-          <span className="material-symbols-outlined text-[18px]">radio_button_unchecked</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>radio_button_unchecked</span>
         </span>
-        <div className="flex-1">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h3 className="text-[16px] font-bold text-[#111827] leading-snug">{task.title}</h3>
+        <div style={{ flex: 1 }}>
+          <div style={{ marginBottom: 8, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3, fontFamily: F.display, color: C.ink, margin: 0 }}>{task.title}</h3>
             {/* Priority chip */}
             <span
               data-testid="task-priority-tag"
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${pri.bg} ${pri.text}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 9999,
+                border: `1px solid ${pri.border}`,
+                background: pri.bg,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: pri.text,
+                fontFamily: F.mono,
+              }}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${pri.dot}`} />
+              <span style={{ height: 6, width: 6, borderRadius: '50%', background: pri.dot, display: 'inline-block' }} />
               {PRIORITY_LABELS[task.priority]}优先
             </span>
             {/* Category chip */}
             <span
               data-testid="task-category-tag"
-              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${cat.bg} ${cat.text}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 9999,
+                border: `1px solid ${cat.border}`,
+                background: cat.bg,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 500,
+                color: cat.text,
+                fontFamily: F.cn,
+              }}
             >
-              <span className="material-symbols-outlined text-[12px]" aria-hidden="true">{catIcon}</span>
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 12 }}>{catIcon}</span>
               {task.category}
             </span>
           </div>
-          <p className="text-[14px] leading-relaxed text-[#444653]">{task.desc}</p>
+          <p style={{ fontSize: 14, lineHeight: 1.65, color: '#5A6173', margin: 0, fontFamily: F.cn }}>{task.desc}</p>
         </div>
       </div>
     </div>
@@ -364,25 +586,63 @@ function FooterButtons({
   return (
     <div
       data-testid="daily-tasks-footer"
-      className="flex flex-wrap items-center justify-center gap-4 py-4"
+      style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 16, paddingTop: 16, paddingBottom: 16 }}
     >
       <button
         type="button"
         onClick={onIPDiagnosis}
         data-testid="footer-btn-diagnosis"
-        className="inline-flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-6 py-3 text-[13px] font-bold text-[#1b1b1b] transition-all hover:border-[#002fa7] hover:bg-[#f3f6ff]"
+        className="ikb-focusring"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 12,
+          border: `1px solid ${C.line}`,
+          background: C.paper,
+          padding: '12px 24px',
+          fontSize: 13,
+          fontWeight: 700,
+          color: C.ink,
+          fontFamily: F.cn,
+          cursor: 'pointer',
+          transition: 'border-color 0.15s, color 0.15s, background 0.15s',
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+          (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}0a`;
+          (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+          (e.currentTarget as HTMLButtonElement).style.background = C.paper;
+          (e.currentTarget as HTMLButtonElement).style.color = C.ink;
+        }}
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">stethoscope</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>stethoscope</span>
         {DAILY_TASKS_FOOTER_BTN_1}
       </button>
       <button
         type="button"
         onClick={onContinue}
         data-testid="footer-btn-continue"
-        className="inline-flex items-center gap-2 rounded-xl bg-[#002fa7] px-6 py-3 text-[13px] font-bold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+        className="ikb-gradbtn ikb-focusring"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 12,
+          border: 'none',
+          padding: '12px 24px',
+          fontSize: 13,
+          fontWeight: 700,
+          color: '#fff',
+          fontFamily: F.cn,
+          cursor: 'pointer',
+        }}
       >
         {DAILY_TASKS_FOOTER_BTN_2}
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>arrow_forward</span>
       </button>
     </div>
   );
@@ -391,7 +651,15 @@ function FooterButtons({
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div className="h-24 animate-pulse rounded-xl border border-[#e5e7eb] bg-[#f3f6ff]" />
+    <div
+      style={{
+        height: 96,
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: C.base,
+        animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      }}
+    />
   );
 }
 
@@ -560,76 +828,132 @@ export default function DailyTasks() {
   // ── Loading skeleton ──────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <PioneerLayout>
-        <header className="mb-12">
+      <IKBLayout>
+        <header style={{ marginBottom: 48 }}>
           <ChipHeader />
-          <h1 data-testid="daily-tasks-loading" className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            data-testid="daily-tasks-loading"
+            style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink, fontFamily: F.display, margin: 0 }}
+          >
             {DAILY_TASKS_H1}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
             {DAILY_TASKS_SUBTITLE}
           </p>
         </header>
-        <div className="space-y-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SkeletonCard />
           <SkeletonCard />
           <SkeletonCard />
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // ── Error state ───────────────────────────────────────────────────────────
   if (isError) {
     return (
-      <PioneerLayout>
-        <header className="mb-12">
+      <IKBLayout>
+        <header style={{ marginBottom: 48 }}>
           <ChipHeader />
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink, fontFamily: F.display, margin: 0 }}>
             {DAILY_TASKS_H1}
           </h1>
         </header>
-        <div data-testid="daily-tasks-error" className="flex flex-col items-center gap-4 rounded-xl border border-[#fecaca] bg-[#fff5f5] p-12 text-center">
-          <span className="material-symbols-outlined text-[48px] text-[#ef4444]">error_outline</span>
-          <p className="text-[16px] font-semibold text-[#111827]">加载今日任务失败</p>
+        <div
+          data-testid="daily-tasks-error"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
+            borderRadius: 12,
+            border: '1px solid #fecaca',
+            background: '#fff5f5',
+            padding: '48px 32px',
+            textAlign: 'center',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 48, color: '#ef4444' }}>error_outline</span>
+          <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn }}>加载今日任务失败</p>
           <button
             type="button"
             data-testid="daily-tasks-retry"
             onClick={() => void refetch()}
-            className="rounded-xl bg-[#002fa7] px-6 py-2.5 text-[13px] font-bold text-white hover:bg-[#001f7a]"
+            className="ikb-gradbtn ikb-focusring"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              borderRadius: 12,
+              border: 'none',
+              padding: '10px 24px',
+              fontSize: 13,
+              fontWeight: 700,
+              color: '#fff',
+              fontFamily: F.cn,
+              cursor: 'pointer',
+            }}
           >
             重试
           </button>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // ── Empty state (getToday null) ───────────────────────────────────────────
   if (!todayRecord) {
     return (
-      <PioneerLayout>
-        <header className="mb-12">
+      <IKBLayout>
+        <header style={{ marginBottom: 48 }}>
           <ChipHeader />
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', color: C.ink, fontFamily: F.display, margin: 0 }}>
             {DAILY_TASKS_H1}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
             {DAILY_TASKS_SUBTITLE}
           </p>
         </header>
-        <div data-testid="daily-tasks-empty" className="flex flex-col items-center gap-4 rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-16 text-center">
-          <span className="material-symbols-outlined text-[48px] text-[#002fa7]">inbox</span>
-          <p className="text-[18px] font-bold text-[#111827]">今日暂无任务</p>
-          <p className="text-[14px] text-[#6b7280]">AI 正在为你规划今日行动清单，或点击下方手动生成</p>
+        <div
+          data-testid="daily-tasks-empty"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
+            borderRadius: 12,
+            border: `1px solid ${C.ikb}28`,
+            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            padding: '64px 32px',
+            textAlign: 'center',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.ikb }}>inbox</span>
+          <p style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.display }}>今日暂无任务</p>
+          <p style={{ fontSize: 14, color: '#6b7280', margin: 0, fontFamily: F.cn }}>AI 正在为你规划今日行动清单，或点击下方手动生成</p>
           <button
             type="button"
             data-testid="daily-tasks-regenerate"
             disabled={regenerateToday.isPending}
             onClick={() => regenerateToday.mutate()}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#002fa7] px-7 py-3 text-[14px] font-bold text-white disabled:opacity-60"
+            className="ikb-gradbtn ikb-focusring"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              borderRadius: 12,
+              border: 'none',
+              padding: '12px 28px',
+              fontSize: 14,
+              fontWeight: 700,
+              color: '#fff',
+              fontFamily: F.cn,
+              cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
+              opacity: regenerateToday.isPending ? 0.6 : 1,
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">refresh</span>
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>refresh</span>
             {regenerateToday.isPending ? '生成中…' : '重新生成'}
           </button>
         </div>
@@ -637,26 +961,43 @@ export default function DailyTasks() {
           onIPDiagnosis={() => navigate(DAILY_TASKS_FOOTER_BTN_1_HREF)}
           onContinue={() => navigate(DAILY_TASKS_FOOTER_BTN_2_HREF)}
         />
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // ── Normal render (todayRecord present) ──────────────────────────────────
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <header className="mb-12">
+      <header style={{ marginBottom: 48 }}>
         <ChipHeader />
-        <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+        <h1
+          className="ikb-gradtext"
+          style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em', fontFamily: F.display, margin: 0 }}
+        >
           {DAILY_TASKS_H1}
         </h1>
-        <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+        <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>
           {DAILY_TASKS_SUBTITLE}
         </p>
         {/* isFallback warning */}
         {todayRecord.isFallback && (
-          <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[#fde68a] bg-[#fffbeb] px-4 py-2 text-[13px] text-[#92400e]">
-            <span className="material-symbols-outlined text-[16px]" aria-hidden="true">warning</span>
+          <div
+            style={{
+              marginTop: 12,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              borderRadius: 8,
+              border: '1px solid #fde68a',
+              background: '#fffbeb',
+              padding: '8px 16px',
+              fontSize: 13,
+              color: '#92400e',
+              fontFamily: F.cn,
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 16 }}>warning</span>
             当前为降级数据，AI 任务生成中，稍后刷新查看最新内容
           </div>
         )}
@@ -664,39 +1005,57 @@ export default function DailyTasks() {
 
       {/* ── 数据洞察 band ────────────────────────────────────────────────────── */}
       {/* P1: removed "历史数据综合评估" wording → "参考基准 · 示例"; deleted "模型已就绪" badge */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">执行力数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· 参考基准 · 示例</span>
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>insights</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>执行力数据洞察</h2>
+        <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· 参考基准 · 示例</span>
       </div>
-      <div className="mb-8 grid grid-cols-12 gap-6">
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 执行力雷达 · 六维 · 装饰 · P1: label改参考基准示例 · P12: aria-hidden */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+        <div
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.line}`,
+            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            padding: 24,
+          }}
+        >
+          <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 8,
+                  background: `${C.ikb}14`,
+                  color: C.ikb,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">执行力雷达</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>执行力雷达</h3>
                 {/* P1: clarified as reference/example, not real personalised data */}
-                <p className="text-[11px] text-[#9ca3af]">六维参考示例</p>
+                <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>六维参考示例</p>
               </div>
             </div>
-            <div className="text-right">
+            <div style={{ textAlign: 'right' }}>
               {/* P1: clarified as reference score */}
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">78</p>
-              <p className="text-[10px] text-[#9ca3af]">参考示例分</p>
+              <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>78</p>
+              <p style={{ fontSize: 10, color: '#6b7280', margin: 0, fontFamily: F.cn }}>参考示例分</p>
             </div>
           </div>
           {(() => {
             const dims = [
-              { label: '坚持度', value: 80, color: '#002fa7' },
-              { label: '完成率', value: 75, color: '#781621' },
-              { label: '效率', value: 82, color: '#F6D300' },
-              { label: '专注', value: 70, color: '#002fa7' },
-              { label: '连续性', value: 68, color: '#781621' },
-              { label: '任务量', value: 90, color: '#10b981' },
+              { label: '坚持度', value: 80, color: C.ikb },
+              { label: '完成率', value: 75, color: C.burgundy },
+              { label: '效率', value: 82, color: C.accent3 },
+              { label: '专注', value: 70, color: C.ikb },
+              { label: '连续性', value: 68, color: C.burgundy },
+              { label: '任务量', value: 90, color: C.ikb },
             ];
             const cx = 130;
             const cy = 122;
@@ -713,26 +1072,26 @@ export default function DailyTasks() {
               .join(' ');
             return (
               // P12: radar is purely decorative
-              <svg viewBox="0 0 260 244" className="w-full" aria-hidden="true">
+              <svg viewBox="0 0 260 244" style={{ width: '100%' }} aria-hidden={true}>
                 <defs>
-                  <linearGradient id="radarFillDT" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  <linearGradient id="dt-radarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke={`${C.line}`} strokeWidth="1" />
                 ))}
                 {dims.map((_, i) => {
                   const [x, y] = pt(i, R);
                   return (
-                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />
+                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={`${C.ikb}1a`} strokeWidth="1" />
                   );
                 })}
                 <polygon
                   points={dataPoly}
-                  fill="url(#radarFillDT)"
-                  stroke="#002fa7"
+                  fill="url(#dt-radarFill)"
+                  stroke={C.ikb}
                   strokeWidth="2"
                   strokeLinejoin="round"
                 />
@@ -762,48 +1121,81 @@ export default function DailyTasks() {
               </svg>
             );
           })()}
-          <div className="mt-2 grid grid-cols-3 gap-y-2">
+          <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px 0' }}>
             {[
-              { label: '坚持度', value: 80, color: '#002fa7' },
-              { label: '完成率', value: 75, color: '#781621' },
-              { label: '效率', value: 82, color: '#F6D300' },
-              { label: '专注', value: 70, color: '#002fa7' },
-              { label: '连续性', value: 68, color: '#781621' },
-              { label: '任务量', value: 90, color: '#10b981' },
+              { label: '坚持度', value: 80, color: C.ikb },
+              { label: '完成率', value: 75, color: C.burgundy },
+              { label: '效率', value: 82, color: C.accent3 },
+              { label: '专注', value: 70, color: C.ikb },
+              { label: '连续性', value: 68, color: C.burgundy },
+              { label: '任务量', value: 90, color: C.ikb },
             ].map((d) => (
-              <div key={d.label} className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+              <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, display: 'inline-block' }} />
+                <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 近 7 日任务完成趋势 · 真数据驱动(若有 history) */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">show_chart</span>
+        <div
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.line}`,
+            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            padding: 24,
+          }}
+        >
+          <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  height: 36,
+                  width: 36,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 8,
+                  background: `${C.burgundy}14`,
+                  color: C.burgundyText,
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>show_chart</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">近 7 日任务完成</h3>
-                <p className="text-[11px] text-[#9ca3af]">
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>近 7 日任务完成</h3>
+                <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>
                   {hasHistoryData ? '按每日实际完成数量统计' : '暂无历史数据 · 完成任务后自动更新'}
                 </p>
               </div>
             </div>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2.5 py-1 text-[12px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>
+            {/* 持续进步 badge — ikb 蓝(正向/增长) */}
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                borderRadius: 9999,
+                background: `${C.ikb}14`,
+                border: `1px solid ${C.ikb}28`,
+                padding: '4px 10px',
+                fontSize: 12,
+                fontWeight: 700,
+                color: C.ikb,
+                fontFamily: F.mono,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>trending_up</span>
               持续进步
             </span>
           </div>
-          <div className="mb-2 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none text-[#111827]">
+          <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+            <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
               {totalCount}
             </p>
-            <span className="mb-1 text-[13px] text-[#9ca3af]">今日任务总数</span>
+            <span style={{ marginBottom: 4, fontSize: 13, color: '#6b7280', fontFamily: F.cn }}>今日任务总数</span>
           </div>
           {(() => {
             const data = trendData;
@@ -826,18 +1218,18 @@ export default function DailyTasks() {
               // P12: trend chart carries real data → role=img + label
               <svg
                 viewBox={`0 0 ${W} ${H}`}
-                className="w-full"
+                style={{ width: '100%' }}
                 role="img"
                 aria-label="近 7 日每日完成任务数量趋势图"
               >
                 <defs>
-                  <linearGradient id="trendFillDT" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.22" />
-                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  <linearGradient id="dt-trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.22" />
+                    <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                   </linearGradient>
-                  <linearGradient id="trendLineDT" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#002fa7" />
-                    <stop offset="100%" stopColor="#781621" />
+                  <linearGradient id="dt-trendLine" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={C.ikb} />
+                    <stop offset="100%" stopColor={C.burgundy} />
                   </linearGradient>
                 </defs>
                 {[0, 0.33, 0.66, 1].map((f) => (
@@ -847,27 +1239,27 @@ export default function DailyTasks() {
                     x2={W - padR}
                     y1={(padT + innerH * f).toFixed(1)}
                     y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9"
+                    stroke={`${C.line}`}
                     strokeWidth="1"
                   />
                 ))}
-                <path d={area} fill="url(#trendFillDT)" />
+                <path d={area} fill="url(#dt-trendFill)" />
                 <path
                   d={line}
                   fill="none"
-                  stroke="url(#trendLineDT)"
+                  stroke="url(#dt-trendLine)"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 {data.map((v, i) => (
-                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" />
+                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
                 ))}
               </svg>
             );
           })()}
           {/* P11: x-axis labels match actual trendData length */}
-          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+          <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4, fontSize: 10, color: '#6b7280', fontFamily: F.cn }}>
             {xAxisLabels.map((d) => (
               <span key={d}>{d}</span>
             ))}
@@ -876,50 +1268,84 @@ export default function DailyTasks() {
       </div>
 
       {/* ── KPI 卡一排 (3 stats + 今日完成率) ──────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
         {liveStats.map((stat, i) => {
           const meta = STAT_ICON_META[i] ?? STAT_ICON_META[0]!;
           return (
             <div
               key={stat.id}
               data-testid="stat-card"
-              className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              style={{
+                borderRadius: 12,
+                border: `1px solid ${C.line}`,
+                background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+                padding: 20,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = '';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+              }}
             >
-              <div className="flex items-center justify-between">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${meta.iconBg} ${meta.iconColor}`}
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                    background: meta.iconBg,
+                    color: meta.iconColor,
+                  }}
                 >
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+                  <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>
                     {meta.icon}
                   </span>
                 </span>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${meta.badge} ${meta.badgeText}`}>
+                <span
+                  style={{
+                    borderRadius: 9999,
+                    background: meta.badge,
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: meta.badgeText,
+                    fontFamily: F.mono,
+                  }}
+                >
                   {stat.label}
                 </span>
               </div>
-              <div className="mt-4">
-                <p className={`text-[28px] font-bold leading-none ${meta.valueColor}`}>{stat.value}</p>
+              <div style={{ marginTop: 16 }}>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: meta.valueColor, fontFamily: F.display, margin: 0 }}>{stat.value}</p>
                 {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
-                <p className="mt-1.5 text-[12px] text-[#6b7280]">
+                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', margin: '6px 0 0', fontFamily: F.cn }}>
                   {isHistoryError
-                    ? <span className="text-[#ef4444]">数据加载失败</span>
+                    ? <span style={{ color: '#ef4444' }}>数据加载失败</span>
                     : stat.label}
                 </p>
                 {/* P3: 30-day window disclaimer on the two cumulative stats */}
                 {(stat.id === 'total-days' || stat.id === 'total-tasks') && !isHistoryError && (
-                  <p className="mt-0.5 text-[10px] text-[#b0b8c8]">近 30 天</p>
+                  <p style={{ marginTop: 2, fontSize: 10, color: '#b0b8c8', fontFamily: F.cn }}>近 30 天</p>
                 )}
               </div>
               {/* P12: mini bar chart is purely decorative */}
-              <div className="mt-3 flex h-6 items-end gap-1" aria-hidden="true">
+              <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
                 {[40, 60, 50, 80, 70, 90, typeof stat.value === 'number' && stat.value > 0 ? 100 : 20].map((h, j) => (
                   <div
                     key={j}
-                    className="flex-1 rounded-t opacity-70"
                     style={{
+                      flex: 1,
+                      borderRadius: '2px 2px 0 0',
+                      opacity: 0.7,
                       height: `${h}%`,
-                      backgroundColor:
-                        i === 0 ? '#F6D300' : i === 1 ? '#002fa7' : '#10b981',
+                      background: meta.barColor,
                     }}
                   />
                 ))}
@@ -928,24 +1354,66 @@ export default function DailyTasks() {
           );
         })}
 
-        {/* 今日完成率 · 第 4 张 · 蓝 + 环形 */}
-        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">donut_large</span>
+        {/* 今日完成率 · 第 4 张 · ikb 蓝 + 环形 */}
+        <div
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.ikb}28`,
+            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            padding: 20,
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.transform = '';
+            (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span
+              style={{
+                display: 'flex',
+                height: 36,
+                width: 36,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                background: `${C.ikb}14`,
+                color: C.ikb,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>donut_large</span>
             </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[13px]" aria-hidden="true">trending_up</span>
+            {/* 今日 badge — ikb 蓝(正向) */}
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 2,
+                borderRadius: 9999,
+                background: `${C.ikb}14`,
+                border: `1px solid ${C.ikb}28`,
+                padding: '2px 8px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: C.ikb,
+                fontFamily: F.mono,
+              }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 13 }}>trending_up</span>
               今日
             </span>
           </div>
-          <div className="mt-4 flex items-end justify-between">
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
             <div>
-              <p className="text-[28px] font-bold leading-none text-[#002fa7]">
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>
                 {todayPct}
-                <span className="text-[15px] text-[#9ca3af]">%</span>
+                <span style={{ fontSize: 15, color: '#6b7280' }}>%</span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">今日完成率</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: '6px 0 0' }}>今日完成率</p>
             </div>
             <ProgressRing pct={todayPct} />
           </div>
@@ -953,15 +1421,27 @@ export default function DailyTasks() {
       </div>
 
       {/* ── 今日进度卡 ──────────────────────────────────────────────────────── */}
-      <div className="mb-8">
+      <div style={{ marginBottom: 32 }}>
         <TodayProgressSection completed={completedCount} total={totalCount} />
       </div>
 
       {/* ── 任务清单 ─────────────────────────────────────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">checklist</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">今日任务清单</h2>
-        <span className="ml-2 rounded-full bg-[#002fa7]/10 px-2.5 py-0.5 text-[12px] font-bold text-[#002fa7]">
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>checklist</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>今日任务清单</h2>
+        <span
+          style={{
+            marginLeft: 8,
+            borderRadius: 9999,
+            background: `${C.ikb}14`,
+            border: `1px solid ${C.ikb}28`,
+            padding: '2px 10px',
+            fontSize: 12,
+            fontWeight: 700,
+            color: C.ikb,
+            fontFamily: F.mono,
+          }}
+        >
           {tasks.length > 0 ? tasks.length : DAILY_TASKS_MOCK.length} 项
         </span>
         {/* regenerate button */}
@@ -970,13 +1450,40 @@ export default function DailyTasks() {
           data-testid="daily-tasks-regenerate"
           disabled={regenerateToday.isPending}
           onClick={() => regenerateToday.mutate()}
-          className="ml-auto inline-flex items-center gap-1 rounded-lg border border-[#e5e7eb] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#6b7280] transition-all hover:border-[#002fa7] hover:text-[#002fa7] disabled:opacity-50"
+          className="ikb-focusring"
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            borderRadius: 8,
+            border: `1px solid ${C.line}`,
+            background: C.paper,
+            padding: '6px 12px',
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#6b7280',
+            fontFamily: F.cn,
+            cursor: regenerateToday.isPending ? 'not-allowed' : 'pointer',
+            opacity: regenerateToday.isPending ? 0.5 : 1,
+            transition: 'border-color 0.15s, color 0.15s',
+          }}
+          onMouseEnter={(e) => {
+            if (!regenerateToday.isPending) {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+              (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+            }
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+            (e.currentTarget as HTMLButtonElement).style.color = '#6b7280';
+          }}
         >
-          <span className="material-symbols-outlined text-[15px]" aria-hidden="true">refresh</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 15 }}>refresh</span>
           {regenerateToday.isPending ? '生成中…' : '重新生成'}
         </button>
       </div>
-      <div className="mb-8 space-y-4">
+      <div style={{ marginBottom: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {tasks.length > 0
           ? tasks.map((task) => (
               <TaskRow
@@ -996,6 +1503,6 @@ export default function DailyTasks() {
         onIPDiagnosis={() => navigate(DAILY_TASKS_FOOTER_BTN_1_HREF)}
         onContinue={() => navigate(DAILY_TASKS_FOOTER_BTN_2_HREF)}
       />
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
