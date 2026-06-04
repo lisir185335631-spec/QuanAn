@@ -1,5 +1,5 @@
 /**
- * /ip-plan · 我的IP方案/进度总览 — 先锋白·工业精密版
+ * /ip-plan · 我的IP方案/进度总览 — 红蓝紫渐变 IKB 体系
  *
  * 逻辑零改动：IP_PLAN_STEPS / completed / remaining / firstUncompleted / navigate
  * testid 全保留：ip-plan-page + header/subtitle/progress/step-list/footer 各子 testid
@@ -7,7 +7,10 @@
  */
 import { useNavigate } from 'react-router-dom';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import '@/styles/ikb-hero.css';
+
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   IP_PLAN_FOOTER_TPL,
   IP_PLAN_GO_COMPLETE,
@@ -22,92 +25,141 @@ import {
   type IpPlanStep,
 } from '@/lib/constants/ipPlan';
 
-// ── KPI 卡色轮(蓝→勃艮第→黄→蓝) ──────────────────────────────────────────────
+// ── KPI 卡色轮(蓝→玫红→紫→蓝) ──────────────────────────────────────────────
 const KPI_ACCENTS = [
   {
-    border: 'border-[#e0e7ff]',
-    bg: 'bg-gradient-to-br from-white to-[#f3f6ff]',
-    iconBg: 'bg-[#002fa7]/10',
-    iconText: 'text-[#002fa7]',
-    valColor: 'text-[#002fa7]',
-    badge: 'bg-[#002fa7]/10 text-[#002fa7]',
-    ringTrack: '#eef2ff',
-    ringFill: '#002fa7',
+    borderColor: `${C.ikb}30`,
+    iconBg: `${C.ikb}1a`,
+    iconText: C.ikb,
+    valColor: C.ikb,
+    badgeBg: `${C.ikb}1a`,
+    badgeText: C.purpleText,
+    ringTrack: `${C.ikb}18`,
+    ringFill: C.ikb,
     icon: 'map',
   },
   {
-    border: 'border-[#e5e7eb]',
-    bg: 'bg-white',
-    iconBg: 'bg-[#781621]/10',
-    iconText: 'text-[#781621]',
-    valColor: 'text-[#781621]',
-    badge: 'bg-[#781621]/10 text-[#781621]',
-    ringTrack: '#fef2f2',
-    ringFill: '#781621',
+    borderColor: `${C.burgundy}30`,
+    iconBg: `${C.burgundy}1a`,
+    iconText: C.burgundy,
+    valColor: C.burgundy,
+    badgeBg: `${C.burgundy}1a`,
+    badgeText: C.burgundyText,
+    ringTrack: `${C.burgundy}18`,
+    ringFill: C.burgundy,
     icon: 'check_circle',
   },
   {
-    border: 'border-[#e5e7eb]',
-    bg: 'bg-white',
-    iconBg: 'bg-[#F6D300]/20',
-    iconText: 'text-[#8A6A00]',
-    valColor: 'text-[#111827]',
-    badge: 'bg-[#FEFCE0] text-[#8A6A00]',
-    ringTrack: '#fdf6cc',
-    ringFill: '#F6D300',
+    borderColor: `${C.accent3}30`,
+    iconBg: `${C.accent3}1a`,
+    iconText: C.accent3,
+    valColor: C.ink,
+    badgeBg: `${C.accent3}1a`,
+    badgeText: C.purpleText,
+    ringTrack: `${C.accent3}18`,
+    ringFill: C.accent3,
     icon: 'pending_actions',
   },
   {
-    border: 'border-[#e0e7ff]',
-    bg: 'bg-gradient-to-br from-white to-[#f3f6ff]',
-    iconBg: 'bg-[#002fa7]/10',
-    iconText: 'text-[#002fa7]',
-    valColor: 'text-[#111827]',
-    badge: 'bg-[#002fa7]/10 text-[#002fa7]',
-    ringTrack: '#eef2ff',
-    ringFill: '#002fa7',
+    borderColor: `${C.ikb}30`,
+    iconBg: `${C.ikb}1a`,
+    iconText: C.ikb,
+    valColor: C.ink,
+    badgeBg: `${C.ikb}1a`,
+    badgeText: C.purpleText,
+    ringTrack: `${C.ikb}18`,
+    ringFill: C.ikb,
     icon: 'format_list_numbered',
   },
 ] as const;
 
 // ── IP 成熟度雷达六维 ─────────────────────────────────────────────────────────
 const IP_RADAR_DIMS = [
-  { label: '定位', value: 82, color: '#002fa7' },
-  { label: '包装', value: 75, color: '#781621' },
-  { label: '人设', value: 88, color: '#F6D300' },
-  { label: '执行', value: 70, color: '#002fa7' },
-  { label: '变现', value: 64, color: '#781621' },
-  { label: '内容', value: 78, color: '#F6D300' },
+  { label: '定位', value: 82, color: C.ikb },
+  { label: '包装', value: 75, color: C.burgundy },
+  { label: '人设', value: 88, color: C.accent3 },
+  { label: '执行', value: 70, color: C.ikb },
+  { label: '变现', value: 64, color: C.burgundy },
+  { label: '内容', value: 78, color: C.accent3 },
 ];
 
 // ── inline IpPlanHeader ───────────────────────────────────────────────────────
 function IpPlanHeader({ completed, total }: { completed: number; total: number }) {
   return (
-    <header className="mb-12 flex flex-row items-center justify-between gap-8" data-testid="ip-plan-header">
-      <div className="shrink-0">
-        <div className="mb-3 flex items-center gap-3">
-          <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+    <header
+      style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}
+      data-testid="ip-plan-header"
+    >
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span
+            style={{
+              borderRadius: 8,
+              border: `1px solid ${C.line}`,
+              background: C.base,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.ink,
+              fontFamily: F.mono,
+            }}
+          >
             更多
           </span>
-          <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+          <span
+            style={{
+              borderRadius: 8,
+              border: `1px solid ${C.ikb}50`,
+              background: `${C.ikb}12`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.purpleText,
+              fontFamily: F.mono,
+            }}
+          >
             IP 方案
           </span>
         </div>
         <h1
-          className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+          className="ikb-gradtext"
+          style={{ fontFamily: F.display, fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', margin: 0, whiteSpace: 'nowrap' }}
           data-testid="ip-plan-h1"
         >
           {IP_PLAN_H1}
         </h1>
         <p
-          className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]"
+          style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}
           data-testid="ip-plan-subtitle"
         >
           {IP_PLAN_SUBTITLE_TPL(completed, total)}
         </p>
       </div>
-      <div className="flex shrink-0 items-center gap-2 rounded-full border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-medium shadow-sm">
-        <span className="block h-2.5 w-2.5 animate-pulse rounded-full bg-[#10b981]" />
+      <div
+        style={{
+          display: 'flex',
+          flexShrink: 0,
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 9999,
+          border: `1px solid ${C.line}`,
+          background: C.paper,
+          padding: '8px 16px',
+          fontSize: 14,
+          fontWeight: 500,
+          fontFamily: F.cn,
+          color: C.ink,
+        }}
+      >
+        <span
+          className="ikb-pulse"
+          style={{ display: 'block', height: 10, width: 10, borderRadius: 9999, background: C.ikb }}
+          aria-hidden={true}
+        />
         进度追踪中
       </div>
     </header>
@@ -119,29 +171,79 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
   const dashArray = `${percent} 100`;
   return (
     <section
-      className="pw-shadow-soft mb-8 rounded-xl border border-[#e5e7eb] bg-white p-8"
+      style={{
+        marginBottom: 32,
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
+        padding: 32,
+      }}
       data-testid="ip-plan-progress-card"
     >
-      <div className="mb-5 flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 text-[18px] font-extrabold text-[#111827] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h3
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 18,
+            fontWeight: 800,
+            color: C.ink,
+            fontFamily: F.display,
+            margin: 0,
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              width: 4,
+              height: 14,
+              borderRadius: 9999,
+              background: C.grad,
+              flexShrink: 0,
+            }}
+            aria-hidden={true}
+          />
           <span data-testid="ip-plan-progress-label">{IP_PLAN_PROGRESS_LABEL}</span>
         </h3>
-        <div className="flex items-end gap-2">
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
           <span
-            className="text-[30px] font-bold leading-none text-[#002fa7]"
+            className="ikb-gradtext"
+            style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, fontFamily: F.display }}
             data-testid="ip-plan-progress-percent"
           >
             {percent}%
           </span>
-          <span className="mb-1 ml-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>
+          <span
+            style={{
+              marginBottom: 4,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 2,
+              borderRadius: 9999,
+              background: `${C.ikb}15`,
+              padding: '2px 8px',
+              fontSize: 12,
+              fontWeight: 700,
+              color: C.purpleText,
+              fontFamily: F.mono,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>
             {completed}/{total} 已完成
           </span>
         </div>
       </div>
       {/* 品牌色进度条 */}
       <div
-        className="mb-4 h-4 w-full overflow-hidden rounded-full bg-[#f3f4f6]"
+        style={{
+          marginBottom: 16,
+          height: 16,
+          width: '100%',
+          overflow: 'hidden',
+          borderRadius: 9999,
+          background: C.base,
+        }}
         role="progressbar"
         aria-valuenow={percent}
         aria-valuemin={0}
@@ -149,46 +251,51 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
         aria-label={`IP 打造进度 ${percent}%`}
       >
         <div
-          className="h-4 rounded-full bg-gradient-to-r from-[#002fa7] to-[#781621] transition-all duration-700"
-          style={{ width: `${percent}%` }}
+          style={{ height: 16, borderRadius: 9999, background: C.grad, width: `${percent}%`, transition: 'width 0.7s ease' }}
           data-testid="ip-plan-progress-bar-fill"
         />
       </div>
       {/* 大环形进度 + 数字 */}
-      <div className="mt-6 flex items-center justify-center gap-12">
-        <div className="relative flex h-32 w-32 items-center justify-center">
-          <svg viewBox="0 0 36 36" className="-rotate-90 h-32 w-32" aria-hidden="true">
+      <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48 }}>
+        <div style={{ position: 'relative', display: 'flex', height: 128, width: 128, alignItems: 'center', justifyContent: 'center' }}>
+          <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)', height: 128, width: 128 }} aria-hidden={true}>
             <defs>
-              <linearGradient id="ipProgressGrad" x1="1" y1="0" x2="0" y2="0">
-                <stop offset="0%" stopColor="#002fa7" />
-                <stop offset="100%" stopColor="#781621" />
+              <linearGradient id="ip-progress-grad" x1="1" y1="0" x2="0" y2="0">
+                <stop offset="0%" stopColor={C.ikb} />
+                <stop offset="50%" stopColor={C.accent3} />
+                <stop offset="100%" stopColor={C.burgundy} />
               </linearGradient>
             </defs>
-            <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3" />
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}18`} strokeWidth="3" />
             <circle
               cx="18"
               cy="18"
               r="15.915"
               fill="none"
-              stroke="url(#ipProgressGrad)"
+              stroke="url(#ip-progress-grad)"
               strokeWidth="3"
               strokeLinecap="round"
               strokeDasharray={dashArray}
             />
           </svg>
-          <div className="absolute flex flex-col items-center">
-            <span className="text-[28px] font-bold leading-none text-[#002fa7]">{percent}<span className="text-[14px] text-[#9ca3af]">%</span></span>
-            <span className="mt-1 text-[10px] text-[#9ca3af]">完成度</span>
+          <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span
+              className="ikb-gradtext"
+              style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, fontFamily: F.display }}
+            >
+              {percent}<span style={{ fontSize: 14, color: '#6b7280', WebkitTextFillColor: '#6b7280', backgroundImage: 'none' }}>%</span>
+            </span>
+            <span style={{ marginTop: 4, fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>完成度</span>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 32, rowGap: 12 }}>
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-[#9ca3af]">已完成</p>
-            <p className="text-[22px] font-bold text-[#10b981]">{completed}</p>
+            <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono, margin: 0 }}>已完成</p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: C.ikb, fontFamily: F.display, margin: 0 }}>{completed}</p>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-wider text-[#9ca3af]">总步数</p>
-            <p className="text-[22px] font-bold text-[#111827]">{total}</p>
+            <p style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono, margin: 0 }}>总步数</p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>{total}</p>
           </div>
         </div>
       </div>
@@ -198,48 +305,95 @@ function IpPlanProgressCard({ percent, completed, total }: { percent: number; co
 
 // ── inline step row (为 IpPlanStepList 内联使用) ──────────────────────────────
 function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
-  // 序号色轮：蓝→勃艮第→蓝…
-  const numColor = step.done ? '#10b981' : index % 2 === 0 ? '#002fa7' : '#781621';
-  const numBg = step.done ? '#d1fae5' : index % 2 === 0 ? '#eef2ff' : '#fef2f2';
+  // 序号色轮：蓝→玫红→紫 循环
+  const NUM_COLORS = [C.ikb, C.burgundy, C.accent3];
+  const numColor = step.done ? C.ikb : (NUM_COLORS[index % 3] ?? C.ikb);
+  const numBg = step.done ? `${C.ikb}18` : `${numColor}18`;
 
   return (
     <div
-      className={`rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${step.done ? 'border-[#d1fae5] bg-gradient-to-r from-white to-[#f0fdf4]' : 'border-[#e5e7eb] bg-white'}`}
+      className="ikb-card ikb-focusring"
+      style={{
+        borderRadius: 12,
+        padding: 20,
+        transition: 'all 0.2s',
+        ['--ikb-accent' as string]: numColor,
+      } as React.CSSProperties}
       data-testid={`ip-plan-step-card-${step.id}`}
     >
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* 左侧：序号 + 名称 + 状态 */}
-        <div className="flex items-center gap-4">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {/* 序号圆圈 */}
           <div
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[15px] font-extrabold"
-            style={{ backgroundColor: numBg, color: numColor }}
+            style={{
+              display: 'flex',
+              height: 48,
+              width: 48,
+              flexShrink: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 9999,
+              fontSize: 15,
+              fontWeight: 800,
+              fontFamily: F.mono,
+              backgroundColor: numBg,
+              color: numColor,
+            }}
             data-testid={`ip-plan-step-icon-circle-${index}`}
           >
             {String(index + 1).padStart(2, '0')}
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <h3
-                className={`text-[15px] font-bold ${step.done ? 'text-[#111827]' : 'text-[#444653]'}`}
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: step.done ? C.ink : '#5A6173',
+                  fontFamily: F.cn,
+                  margin: 0,
+                }}
                 data-testid={`ip-plan-step-title-${step.id}`}
               >
                 {step.title}
               </h3>
               {step.done ? (
                 <span
-                  className="inline-flex items-center gap-1 rounded-full bg-[#d1fae5] px-2 py-0.5 text-[11px] font-semibold text-[#065f46]"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    borderRadius: 9999,
+                    background: `${C.ikb}15`,
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: C.purpleText,
+                    fontFamily: F.mono,
+                  }}
                   data-testid={`ip-plan-step-status-${step.id}`}
                 >
-                  <span className="material-symbols-outlined text-[12px]" aria-hidden="true">check_circle</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>check_circle</span>
                   {IP_PLAN_STATUS_DONE}
                 </span>
               ) : (
                 <span
-                  className="inline-flex items-center gap-1 rounded-full bg-[#f3f4f6] px-2 py-0.5 text-[11px] font-semibold text-[#6b7280]"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    borderRadius: 9999,
+                    background: C.base,
+                    padding: '2px 8px',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: '#6b7280',
+                    fontFamily: F.mono,
+                  }}
                   data-testid={`ip-plan-step-status-${step.id}`}
                 >
-                  <span className="material-symbols-outlined text-[12px]" aria-hidden="true">radio_button_unchecked</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>radio_button_unchecked</span>
                   {IP_PLAN_STATUS_TODO}
                 </span>
               )}
@@ -248,10 +402,11 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
         </div>
 
         {/* 右侧：完成标记 + 跳转链接 */}
-        <div className="flex shrink-0 items-center gap-3">
+        <div style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: 12 }}>
           {step.done ? (
             <span
-              className="material-symbols-outlined text-[22px] text-[#10b981]"
+              className="material-symbols-outlined"
+              style={{ fontSize: 22, color: C.ikb }}
               aria-label={`${step.title} 已完成`}
               data-testid={`ip-plan-step-check-${step.id}`}
             >
@@ -259,7 +414,8 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
             </span>
           ) : (
             <span
-              className="material-symbols-outlined text-[22px] text-[#d1d5db]"
+              className="material-symbols-outlined"
+              style={{ fontSize: 22, color: '#d1d5db' }}
               aria-label={`${step.title} 未完成`}
               data-testid={`ip-plan-step-circle-${step.id}`}
             >
@@ -268,11 +424,26 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
           )}
           <a
             href={step.href}
-            className={`flex items-center gap-1 rounded-lg border px-3 py-1.5 text-[13px] font-semibold transition-all hover:-translate-y-0.5 ${step.done ? 'border-[#002fa7]/20 bg-[#002fa7]/5 text-[#002fa7] hover:bg-[#002fa7]/10' : 'border-[#e5e7eb] bg-white text-[#781621] hover:border-[#781621]/30 hover:bg-[#781621]/5'}`}
+            className="ikb-focusring"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              borderRadius: 8,
+              border: `1px solid ${step.done ? `${C.ikb}30` : C.line}`,
+              padding: '6px 12px',
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: F.cn,
+              color: step.done ? C.ikb : C.burgundy,
+              background: step.done ? `${C.ikb}08` : C.paper,
+              textDecoration: 'none',
+              transition: 'all 0.2s',
+            }}
             data-testid={`ip-plan-step-action-${step.id}`}
           >
             {step.done ? IP_PLAN_VIEW_DETAIL : IP_PLAN_GO_COMPLETE}
-            <span className="material-symbols-outlined text-[14px]" aria-hidden="true">chevron_right</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>chevron_right</span>
           </a>
         </div>
       </div>
@@ -280,10 +451,14 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
       {/* 完成态 extra 行 */}
       {step.done && step.extra && (
         <div
-          className="mt-3 border-t border-[#d1fae5] pt-3"
+          style={{
+            marginTop: 12,
+            borderTop: `1px solid ${C.ikb}18`,
+            paddingTop: 12,
+          }}
           data-testid={`ip-plan-step-extra-${step.id}`}
         >
-          <p className="text-[12px] text-[#6b7280]">{step.extra}</p>
+          <p style={{ fontSize: 12, color: '#6b7280', margin: 0, fontFamily: F.cn }}>{step.extra}</p>
         </div>
       )}
     </div>
@@ -294,12 +469,12 @@ function StepRow({ step, index }: { step: IpPlanStep; index: number }) {
 function IpPlanStepList({ steps }: { steps: ReadonlyArray<IpPlanStep> }) {
   return (
     <section data-testid="ip-plan-step-list">
-      <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">checklist</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">步骤清单</h2>
-        <span className="text-[12px] text-[#9ca3af]">· 点击跳转对应步骤</span>
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>checklist</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>步骤清单</h2>
+        <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· 点击跳转对应步骤</span>
       </div>
-      <div className="space-y-4">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {steps.map((step, index) => (
           <StepRow key={step.id} step={step} index={index} />
         ))}
@@ -312,18 +487,37 @@ function IpPlanStepList({ steps }: { steps: ReadonlyArray<IpPlanStep> }) {
 function IpPlanFooter({ remaining, onNext }: { remaining: number; onNext: () => void }) {
   return (
     <section
-      className="mt-8 overflow-hidden rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-8 pw-shadow-soft"
+      style={{
+        marginTop: 32,
+        overflow: 'hidden',
+        borderRadius: 12,
+        border: `1px solid ${C.ikb}28`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 32,
+      }}
       data-testid="ip-plan-footer"
     >
-      <div className="flex items-center justify-between gap-8">
-        <div className="flex items-center gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">rocket_launch</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span
+            style={{
+              display: 'flex',
+              height: 48,
+              width: 48,
+              flexShrink: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 12,
+              background: C.grad,
+              color: '#fff',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 22 }} aria-hidden={true}>rocket_launch</span>
           </span>
           <div>
-            <p className="text-[16px] font-bold text-[#111827]">继续打造你的 IP</p>
+            <p style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>继续打造你的 IP</p>
             <p
-              className="mt-0.5 text-[14px] text-[#6b7280]"
+              style={{ marginTop: 4, fontSize: 14, color: '#6b7280', fontFamily: F.cn, margin: '4px 0 0' }}
               data-testid="ip-plan-footer-text"
             >
               {IP_PLAN_FOOTER_TPL(remaining)}
@@ -334,10 +528,26 @@ function IpPlanFooter({ remaining, onNext }: { remaining: number; onNext: () => 
           type="button"
           onClick={onNext}
           aria-label="继续下一步"
-          className="flex shrink-0 items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[13px] font-bold uppercase tracking-widest text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:bg-[#001e73] hover:shadow-md active:translate-y-0"
+          className="ikb-gradbtn ikb-focusring"
+          style={{
+            display: 'flex',
+            flexShrink: 0,
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 12,
+            padding: '12px 32px',
+            fontSize: 13,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: F.mono,
+          }}
           data-testid="ip-plan-next-btn"
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>arrow_forward</span>
           {IP_PLAN_NEXT_BTN}
         </button>
       </div>
@@ -364,40 +574,64 @@ function IpMaturityRadar() {
     .join(' ');
 
   return (
-    <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
-      <div className="mb-1 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+    <div
+      style={{
+        gridColumn: 'span 5',
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+      }}
+    >
+      <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span
+            style={{
+              display: 'flex',
+              height: 36,
+              width: 36,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              background: `${C.ikb}1a`,
+              color: C.ikb,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>radar</span>
           </span>
           <div>
-            <h3 className="text-[14px] font-bold text-[#111827]">IP 成熟度雷达</h3>
-            <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>IP 成熟度雷达</h3>
+            <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>六维模型评估</p>
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-[26px] font-bold leading-none text-[#002fa7]">{avg}</p>
-          <p className="text-[10px] text-[#9ca3af]">综合分</p>
+        <div style={{ textAlign: 'right' }}>
+          <p
+            className="ikb-gradtext"
+            style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, fontFamily: F.display, margin: 0 }}
+          >
+            {avg}
+          </p>
+          <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
         </div>
       </div>
-      <svg viewBox="0 0 260 244" className="w-full" aria-hidden="true">
+      <svg viewBox="0 0 260 244" style={{ width: '100%' }} aria-hidden={true}>
         <defs>
-          <linearGradient id="radarFillIP" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-            <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+          <linearGradient id="ip-radar-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+            <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75, 1].map((f) => (
-          <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+          <polygon key={f} points={poly(R * f)} fill="none" stroke={`${C.ikb}18`} strokeWidth="1" />
         ))}
         {dims.map((_, i) => {
           const [x, y] = pt(i, R);
-          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
+          return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={`${C.ikb}18`} strokeWidth="1" />;
         })}
         <polygon
           points={dataPoly}
-          fill="url(#radarFillIP)"
-          stroke="#002fa7"
+          fill="url(#ip-radar-fill)"
+          stroke={C.ikb}
           strokeWidth="2"
           strokeLinejoin="round"
         />
@@ -414,12 +648,12 @@ function IpMaturityRadar() {
           );
         })}
       </svg>
-      <div className="mt-2 grid grid-cols-3 gap-y-2">
+      <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', rowGap: 8 }}>
         {dims.map((d) => (
-          <div key={d.label} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-            <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-            <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+          <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ height: 8, width: 8, borderRadius: 9999, backgroundColor: d.color, flexShrink: 0 }} aria-hidden={true} />
+            <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
           </div>
         ))}
       </div>
@@ -445,45 +679,91 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
   const area = `${line} L ${x(trend.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
 
   return (
-    <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
-      <div className="mb-4 flex items-start justify-between">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">show_chart</span>
+    <div
+      style={{
+        gridColumn: 'span 7',
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+      }}
+    >
+      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span
+            style={{
+              display: 'flex',
+              height: 36,
+              width: 36,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 8,
+              background: `${C.burgundy}1a`,
+              color: C.burgundy,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>show_chart</span>
           </span>
           <div>
-            <h3 className="text-[14px] font-bold text-[#111827]">IP 完成进度趋势</h3>
-            <p className="text-[11px] text-[#9ca3af]">按步骤完成节点测算</p>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>IP 完成进度趋势</h3>
+            <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>按步骤完成节点测算</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {['进度', '步数', '剩余'].map((t, i) => (
             <span
               key={t}
-              className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+              style={{
+                borderRadius: 6,
+                padding: '4px 10px',
+                fontSize: 11,
+                fontWeight: 600,
+                fontFamily: F.mono,
+                background: i === 0 ? C.ikb : C.base,
+                color: i === 0 ? '#fff' : '#6b7280',
+              }}
             >
               {t}
             </span>
           ))}
         </div>
       </div>
-      <div className="mb-3 flex items-end gap-3">
-        <p className="text-[30px] font-bold leading-none text-[#111827]">{completed}/{total}</p>
-        <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-          <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+        <p
+          style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}
+        >
+          {completed}/{total}
+        </p>
+        <span
+          style={{
+            marginBottom: 4,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 2,
+            borderRadius: 9999,
+            background: `${C.ikb}15`,
+            padding: '2px 8px',
+            fontSize: 12,
+            fontWeight: 700,
+            color: C.purpleText,
+            fontFamily: F.mono,
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 14 }} aria-hidden={true}>trending_up</span>
           步骤完成
         </span>
-        <span className="mb-1 text-[12px] text-[#9ca3af]">持续推进中</span>
+        <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>持续推进中</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-hidden="true">
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }} aria-hidden={true}>
         <defs>
-          <linearGradient id="trendFillIP" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-            <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+          <linearGradient id="ip-trend-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+            <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
           </linearGradient>
-          <linearGradient id="trendLineIP" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#002fa7" />
-            <stop offset="100%" stopColor="#781621" />
+          <linearGradient id="ip-trend-line" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={C.ikb} />
+            <stop offset="50%" stopColor={C.accent3} />
+            <stop offset="100%" stopColor={C.burgundy} />
           </linearGradient>
         </defs>
         {[0, 0.33, 0.66, 1].map((f) => (
@@ -493,19 +773,19 @@ function IpProgressTrend({ completed, total }: { completed: number; total: numbe
             x2={W - padR}
             y1={(padT + innerH * f).toFixed(1)}
             y2={(padT + innerH * f).toFixed(1)}
-            stroke="#f1f3f9"
+            stroke={C.base}
             strokeWidth="1"
           />
         ))}
-        <path d={area} fill="url(#trendFillIP)" />
-        <path d={line} fill="none" stroke="url(#trendLineIP)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={area} fill="url(#ip-trend-fill)" />
+        <path d={line} fill="none" stroke="url(#ip-trend-line)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {trend.map((v, i) => (
-          <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" />
+          <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
         ))}
       </svg>
-      <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+      <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', padding: '0 4px' }}>
         {Array.from({ length: 9 }, (_, i) => `步${i + 1}`).map((m) => (
-          <span key={m}>{m}</span>
+          <span key={m} style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>{m}</span>
         ))}
       </div>
     </div>
@@ -530,16 +810,16 @@ export default function IpPlan() {
   ];
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       <main
-        className="mx-auto max-w-6xl space-y-8"
+        style={{ maxWidth: 1152, margin: '0 auto' }}
         data-testid="ip-plan-page"
       >
         {/* ── Header ─────────────────────────────────────────── */}
         <IpPlanHeader completed={completed} total={total} />
 
         {/* ── KPI 概览一排 ───────────────────────────────────── */}
-        <div className="grid grid-cols-4 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 32 }}>
           {kpiItems.map((kpi) => {
             const accent = KPI_ACCENTS[kpi.accentIdx]!;
             const ringPercent = kpi.accentIdx === 0
@@ -553,29 +833,58 @@ export default function IpPlan() {
             return (
               <div
                 key={kpi.label}
-                className={`rounded-xl border p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${accent.border} ${accent.bg}`}
+                style={{
+                  borderRadius: 12,
+                  border: `1px solid ${accent.borderColor}`,
+                  background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+                  padding: 20,
+                  transition: 'all 0.2s',
+                }}
               >
-                <div className="flex items-center justify-between">
-                  <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${accent.iconBg} ${accent.iconText}`}>
-                    <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{accent.icon}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span
+                    style={{
+                      display: 'flex',
+                      height: 36,
+                      width: 36,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: 8,
+                      background: accent.iconBg,
+                      color: accent.iconText,
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden={true}>{accent.icon}</span>
                   </span>
-                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${accent.badge}`}>{kpi.badge}</span>
+                  <span
+                    style={{
+                      borderRadius: 9999,
+                      padding: '2px 8px',
+                      fontSize: 11,
+                      fontWeight: 700,
+                      fontFamily: F.mono,
+                      background: accent.badgeBg,
+                      color: accent.badgeText,
+                    }}
+                  >
+                    {kpi.badge}
+                  </span>
                 </div>
-                <div className="mt-4 flex items-end justify-between">
+                <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div>
-                    <p className={`text-[28px] font-bold leading-none ${accent.valColor}`}>{kpi.value}</p>
-                    <p className="mt-1.5 text-[12px] text-[#6b7280]">{kpi.label}</p>
+                    <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: accent.valColor, fontFamily: F.display, margin: 0 }}>{kpi.value}</p>
+                    <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn, margin: '6px 0 0' }}>{kpi.label}</p>
                   </div>
                   {kpi.accentIdx === 0 && (
                     <div
-                      className="h-12 w-12 shrink-0"
+                      style={{ height: 48, width: 48, flexShrink: 0 }}
                       role="progressbar"
                       aria-valuenow={ringPercent}
                       aria-valuemin={0}
                       aria-valuemax={100}
                       aria-label={`${kpi.label} ${kpi.value}`}
                     >
-                      <svg viewBox="0 0 36 36" className="-rotate-90" aria-hidden="true">
+                      <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }} aria-hidden={true}>
                         <circle cx="18" cy="18" r="15.915" fill="none" stroke={accent.ringTrack} strokeWidth="3.5" />
                         <circle
                           cx="18"
@@ -591,20 +900,37 @@ export default function IpPlan() {
                     </div>
                   )}
                   {kpi.accentIdx === 3 && (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: accent.ringTrack }} aria-hidden="true">
-                      <span className="material-symbols-outlined text-[22px]" style={{ color: accent.ringFill }}>format_list_numbered</span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        height: 48,
+                        width: 48,
+                        flexShrink: 0,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 9999,
+                        background: accent.ringTrack,
+                      }}
+                      aria-hidden={true}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 22, color: accent.ringFill }}>format_list_numbered</span>
                     </div>
                   )}
                   {kpi.accentIdx === 1 && (
-                    <div className="flex h-6 items-end gap-1">
+                    <div style={{ display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }} aria-hidden={true}>
                       {[44, 56, 78, 100].map((h, i) => (
-                        <div key={i} className="w-3 rounded-t bg-[#10b981]/70" style={{ height: `${h}%` }} />
+                        <div
+                          key={i}
+                          style={{ width: 12, borderRadius: '2px 2px 0 0', background: C.ikb, opacity: 0.7, height: `${h}%` }}
+                        />
                       ))}
                     </div>
                   )}
                   {kpi.accentIdx === 2 && (
-                    <div className="mt-3 h-2 w-16 rounded-full bg-[#fdf6cc]">
-                      <div className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" style={{ width: `${ringPercent}%` }} />
+                    <div style={{ marginTop: 12, height: 8, width: 64, borderRadius: 9999, background: `${C.accent3}18` }} aria-hidden={true}>
+                      <div
+                        style={{ height: 8, borderRadius: 9999, background: C.grad, width: `${ringPercent}%` }}
+                      />
                     </div>
                   )}
                 </div>
@@ -617,16 +943,34 @@ export default function IpPlan() {
         <IpPlanProgressCard percent={percent} completed={completed} total={total} />
 
         {/* ── 数据洞察 band ───────────────────────────────────── */}
-        <div className="mb-1 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-          <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-          <span className="text-[12px] text-[#9ca3af]">· IP 成熟度综合评估</span>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }} aria-hidden={true}>insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display, margin: 0 }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· IP 成熟度综合评估</span>
+          <span
+            style={{
+              marginLeft: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 9999,
+              background: `${C.ikb}12`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              color: C.purpleText,
+              fontFamily: F.mono,
+            }}
+          >
+            <span
+              className="ikb-pulse"
+              style={{ height: 6, width: 6, borderRadius: 9999, background: C.ikb, display: 'inline-block' }}
+              aria-hidden={true}
+            />
             模型已就绪
           </span>
         </div>
-        <div className="grid grid-cols-12 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 24, marginBottom: 32, marginTop: 8 }}>
           <IpMaturityRadar />
           <IpProgressTrend completed={completed} total={total} />
         </div>
@@ -642,6 +986,6 @@ export default function IpPlan() {
           />
         )}
       </main>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
