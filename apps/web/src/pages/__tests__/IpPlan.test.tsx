@@ -22,36 +22,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-// ── PioneerLayout requires trpc + useActiveAccount + useAuth ─────────────────
-vi.mock('@/lib/trpc', () => ({
-  trpc: {
-    auth: { me: { useQuery: () => ({ data: null, isLoading: false }) } },
-    ipAccounts: {
-      list: { useQuery: () => ({ data: [], isLoading: false }) },
-      active: { useQuery: () => ({ data: null, isLoading: false }) },
-      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
-    },
-  },
-}));
-
-vi.mock('@/hooks/useActiveAccount', () => ({
-  useActiveAccount: () => ({
-    account: null,
-    isLoading: false,
-    isSwitching: false,
-    switchTo: vi.fn(),
-  }),
-}));
-
-vi.mock('@/hooks/useAuth', () => ({
-  useAuth: () => ({
-    user: null,
-    login: vi.fn(),
-    logout: vi.fn(),
-    isLoading: false,
-  }),
-}));
-
 // ── helper ────────────────────────────────────────────────────────────────────
 
 function renderIpPlan() {

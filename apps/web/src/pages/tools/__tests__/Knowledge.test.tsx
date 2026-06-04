@@ -18,30 +18,6 @@ vi.mock('sonner', () => ({
   },
 }));
 
-// trpc mock — PioneerLayout uses ipAccounts.list + auth hooks
-vi.mock('@/lib/trpc', () => ({
-  trpc: {
-    ipAccounts: {
-      list: { useQuery: () => ({ data: [], isLoading: false }) },
-      active: { useQuery: () => ({ data: null, isLoading: false }) },
-      switchActive: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
-    },
-    auth: {
-      me: { useQuery: () => ({ data: null, isLoading: false }) },
-    },
-  },
-}));
-
-// useAuth hook mock — PioneerLayout HeaderRight
-vi.mock('@/hooks/useAuth', () => ({
-  useAuth: () => ({ user: null, login: vi.fn(), logout: vi.fn() }),
-}));
-
-// useActiveAccount hook mock — PioneerLayout AccountSwitcherPw
-vi.mock('@/hooks/useActiveAccount', () => ({
-  useActiveAccount: () => ({ account: null, switchTo: vi.fn() }),
-}));
-
 function renderPage() {
   return render(
     <MemoryRouter>

@@ -32,14 +32,6 @@ vi.mock('sonner', () => ({
   toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() },
 }));
 
-// PioneerLayout uses useAuth + useActiveAccount → both call trpc → mock at module level
-vi.mock('@/hooks/useAuth', () => ({
-  useAuth: () => ({ user: null, isLoading: false, login: vi.fn(), logout: vi.fn(), refetch: vi.fn() }),
-}));
-vi.mock('@/hooks/useActiveAccount', () => ({
-  useActiveAccount: () => ({ account: null, switchTo: vi.fn(), isSwitching: false, isLoading: false }),
-}));
-
 function renderPage() {
   return render(
     <MemoryRouter>
