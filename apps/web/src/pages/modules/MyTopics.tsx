@@ -1,14 +1,17 @@
 /**
- * MyTopics.tsx — /my-topics 我的选题库 · 先锋白 PioneerLayout 重构
+ * MyTopics.tsx — /my-topics 我的选题库 · 红蓝紫渐变 IKB 体系
  * Phase-2: 接真 tRPC · TopicCard + TopicList · source 过滤对齐后端 · KPI 真数据
  * 逻辑零回退 · testid 全保留 · 4 个 my-topics 组件 inline 重写(禁旧 import)
  */
+import '@/styles/ikb-hero.css';
+
 import { keepPreviousData } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   MY_TOPICS_BACK,
   MY_TOPICS_BACK_HREF,
@@ -53,6 +56,14 @@ const FILTER_ICON: Record<TopicFilterKey, string> = {
   manual:   'bookmark_added',
 };
 
+// ─── IKB 三主色轮转 ────────────────────────────────────────────────────────────
+
+const IKB_CHIP_COLORS = [
+  { border: `${C.ikb}40`,      bg: `${C.ikb}0d`,      text: C.ikb      },
+  { border: `${C.burgundy}40`, bg: `${C.burgundy}0d`, text: C.burgundy },
+  { border: `${C.accent3}40`,  bg: `${C.accent3}0d`,  text: C.accent3  },
+] as const;
+
 // ─── Source badge helpers ─────────────────────────────────────────────────────
 
 function getSourceLabel(source: MyTopicItem['source']): string {
@@ -62,9 +73,10 @@ function getSourceLabel(source: MyTopicItem['source']): string {
 }
 
 function getSourceColor(source: MyTopicItem['source']): { bg: string; text: string; border: string } {
-  if (source === 'step5') return { bg: '#002fa7', text: '#fff', border: '#002fa7' };
-  if (source === 'trending') return { bg: '#781621', text: '#fff', border: '#781621' };
-  return { bg: '#F6D300', text: '#221b00', border: '#6e5e00' };
+  if (source === 'step5') return { bg: C.ikb, text: '#fff', border: C.ikb };
+  if (source === 'trending') return { bg: C.burgundy, text: '#fff', border: C.burgundy };
+  // manual: 紫底白字
+  return { bg: C.accent3, text: '#fff', border: C.accent3 };
 }
 
 function getSourceIcon(source: MyTopicItem['source']): string {
@@ -95,47 +107,97 @@ function TopicCard({ item, index }: TopicCardProps) {
   const badge = getSourceColor(item.source);
   return (
     <div
-      className="flex flex-col gap-2 rounded-xl border border-[#e5e7eb] bg-white px-5 py-4 shadow-sm transition-shadow hover:shadow-md"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        borderRadius: 0,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
+        padding: '16px 20px',
+        transition: 'box-shadow 0.2s, transform 0.2s',
+      }}
+      className="ikb-card"
       data-testid={`topic-card-${index}`}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}18`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.transform = '';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+      }}
     >
       {/* Title */}
       <p
-        className="text-[14px] font-semibold leading-snug text-[#1b1b1b] line-clamp-2"
+        className="ikb-c-title line-clamp-2"
+        style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.45, color: C.ink, fontFamily: F.cn, margin: 0 }}
         data-testid={`topic-title-${index}`}
       >
         {item.title}
       </p>
 
       {/* Footer row */}
-      <div className="flex flex-wrap items-center gap-2 mt-auto">
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
         {/* Source badge */}
         <span
-          className="inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-bold"
-          style={{ background: badge.bg, color: badge.text, borderColor: badge.border }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            borderRadius: 6,
+            border: `1px solid ${badge.border}`,
+            background: badge.bg,
+            color: badge.text,
+            padding: '2px 8px',
+            fontSize: 11,
+            fontWeight: 700,
+            fontFamily: F.mono,
+          }}
           data-testid={`topic-source-badge-${index}`}
         >
-          <span className="material-symbols-outlined text-[12px]" aria-hidden="true">
+          <span className="material-symbols-outlined" style={{ fontSize: 12 }} aria-hidden={true}>
             {getSourceIcon(item.source)}
           </span>
           {getSourceLabel(item.source)}
         </span>
 
-        {/* Industry chip (optional) */}
+        {/* Industry chip (optional) — IKB 蓝 */}
         {item.industry && (
-          <span className="rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-2 py-0.5 text-[11px] text-[#444653]">
+          <span
+            style={{
+              borderRadius: 6,
+              border: `1px solid ${IKB_CHIP_COLORS[0].border}`,
+              background: IKB_CHIP_COLORS[0].bg,
+              color: IKB_CHIP_COLORS[0].text,
+              padding: '2px 8px',
+              fontSize: 11,
+              fontFamily: F.cn,
+            }}
+          >
             {item.industry}
           </span>
         )}
 
-        {/* Platform chip (optional) */}
+        {/* Platform chip (optional) — IKB 玫红 */}
         {item.platform && (
-          <span className="rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-2 py-0.5 text-[11px] text-[#444653]">
+          <span
+            style={{
+              borderRadius: 6,
+              border: `1px solid ${IKB_CHIP_COLORS[1].border}`,
+              background: IKB_CHIP_COLORS[1].bg,
+              color: IKB_CHIP_COLORS[1].text,
+              padding: '2px 8px',
+              fontSize: 11,
+              fontFamily: F.cn,
+            }}
+          >
             {item.platform}
           </span>
         )}
 
         {/* Date */}
-        <span className="ml-auto text-[11px] text-[#9ca3af]">
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#6b7280', fontFamily: F.mono }}>
           {formatDate(item.createdAt)}
         </span>
       </div>
@@ -175,7 +237,8 @@ function TopicListSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="h-[96px] animate-pulse rounded-xl border border-[#e5e7eb] bg-[#f3f4f6]"
+          className="animate-pulse"
+          style={{ height: 96, border: `1px solid ${C.line}`, background: C.base, borderRadius: 0 }}
         />
       ))}
     </div>
@@ -191,35 +254,92 @@ interface MyTopicsHeaderProps {
 }
 
 function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderProps) {
+  // KPI 三色轮转
+  const kpiAccents = [C.ikb, C.burgundy, C.accent3, C.ikb] as const;
+
   return (
     <div className="mb-10" data-testid="my-topics-header">
       {/* 返回 link */}
       <Link
         to={MY_TOPICS_BACK_HREF}
-        className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#444653] transition-colors hover:text-[#002fa7]"
+        className="ikb-focusring"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          marginBottom: 16,
+          fontSize: 13,
+          fontWeight: 500,
+          color: '#6b7280',
+          textDecoration: 'none',
+          fontFamily: F.cn,
+          transition: 'color 0.15s',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = C.ikb; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#6b7280'; }}
         data-testid="back-link"
       >
-        <span className="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_back</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>arrow_back</span>
         {MY_TOPICS_BACK}
       </Link>
 
-      {/* 双徽标 + H1 */}
-      <div className="mb-3 flex items-center gap-3">
-        <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+      {/* 双徽标 + breadcrumb */}
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span
+          style={{
+            borderRadius: 0,
+            border: `1px solid ${C.line}`,
+            background: '#e8e8e8',
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: C.ink,
+            fontFamily: F.mono,
+          }}
+        >
           更多
         </span>
-        <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+        <span
+          style={{
+            borderRadius: 0,
+            border: `1px solid ${C.accent3}66`,
+            background: `${C.accent3}18`,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: C.purpleText,
+            fontFamily: F.mono,
+          }}
+        >
           选题库
         </span>
-        {/* breadcrumb chip(for testid) */}
+        {/* breadcrumb chip */}
         <span
-          className="rounded-lg border border-[#002fa7] bg-[#002fa7]/5 px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#002fa7]"
+          style={{
+            borderRadius: 0,
+            border: `1px solid ${C.ikb}40`,
+            background: `${C.ikb}0d`,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            color: C.ikb,
+            fontFamily: F.mono,
+          }}
           data-testid="breadcrumb-chip"
         >
           {MY_TOPICS_BREADCRUMB}
         </span>
-        <span className="text-[#9ca3af] text-[12px]">›</span>
-        <span className="text-[14px] font-semibold text-[#002fa7]" data-testid="breadcrumb-right">
+        <span style={{ color: '#6b7280', fontSize: 12 }}>›</span>
+        <span
+          style={{ fontSize: 14, fontWeight: 600, color: C.ikb, fontFamily: F.cn }}
+          data-testid="breadcrumb-right"
+        >
           {MY_TOPICS_H1}
         </span>
       </div>
@@ -231,19 +351,25 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
 
       <div className="flex items-start justify-between gap-8">
         <div className="shrink-0">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined icon-fill text-[32px] text-[#781621]" aria-hidden="true" data-testid="h1-heart-icon">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <span
+              className="material-symbols-outlined icon-fill"
+              style={{ fontSize: 32, color: C.burgundy }}
+              aria-hidden={true}
+              data-testid="h1-heart-icon"
+            >
               favorite
             </span>
             <h1
-              className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+              className="ikb-gradtext whitespace-nowrap"
+              style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', fontFamily: F.display, margin: 0 }}
               data-testid="h1-title"
             >
               {MY_TOPICS_H1}
             </h1>
           </div>
           <p
-            className="max-w-[820px] text-[16px] leading-relaxed text-[#444653]"
+            style={{ maxWidth: 820, fontSize: 16, lineHeight: 1.65, color: '#444653', fontFamily: F.cn, margin: 0 }}
             data-testid="subtitle"
           >
             {MY_TOPICS_SUBTITLE}
@@ -251,33 +377,45 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
         </div>
 
         {/* KPI 概览 · 一排 4 个小卡 · 真数据 */}
-        <div className="flex shrink-0 gap-4">
+        <div style={{ display: 'flex', flexShrink: 0, gap: 16 }}>
           {[
-            { label: '收藏选题', value: topicCount,  icon: 'favorite',            accent: '#002fa7' },
-            { label: '本周新增', value: weeklyNew,   icon: 'add_circle',          accent: '#781621' },
-            { label: '筛选维度', value: MY_TOPICS_FILTERS.length, icon: 'category', accent: '#F6D300', textDark: true },
-            { label: '来源数',   value: sourceCount, icon: 'hub',                 accent: '#002fa7' },
-          ].map((kpi) => (
-            <div
-              key={kpi.label}
-              className="flex w-[108px] flex-col items-center rounded-xl border border-[#e5e7eb] bg-white px-3 py-3 shadow-sm"
-            >
-              <span
-                className="material-symbols-outlined mb-1 text-[22px]"
-                style={{ color: kpi.accent }}
-                aria-hidden="true"
+            { label: '收藏选题', value: topicCount,  icon: 'favorite',   accentIdx: 0 },
+            { label: '本周新增', value: weeklyNew,   icon: 'add_circle', accentIdx: 1 },
+            { label: '筛选维度', value: MY_TOPICS_FILTERS.length, icon: 'category', accentIdx: 2 },
+            { label: '来源数',   value: sourceCount, icon: 'hub',        accentIdx: 3 },
+          ].map((kpi) => {
+            const accent = kpiAccents[kpi.accentIdx];
+            return (
+              <div
+                key={kpi.label}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  width: 108,
+                  borderRadius: 0,
+                  border: `1px solid ${C.line}`,
+                  background: C.paper,
+                  padding: '12px',
+                  boxShadow: `0 2px 8px ${accent}10`,
+                }}
               >
-                {kpi.icon}
-              </span>
-              <span
-                className="text-[22px] font-extrabold leading-none"
-                style={{ color: kpi.textDark ? '#221b00' : kpi.accent }}
-              >
-                {kpi.value}
-              </span>
-              <span className="mt-1 text-[11px] text-[#9ca3af]">{kpi.label}</span>
-            </div>
-          ))}
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 22, marginBottom: 4, color: accent }}
+                  aria-hidden={true}
+                >
+                  {kpi.icon}
+                </span>
+                <span style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: accent, fontFamily: F.display }}>
+                  {kpi.value}
+                </span>
+                <span style={{ marginTop: 4, fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>
+                  {kpi.label}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -296,12 +434,21 @@ interface MyTopicsSearchRowProps {
 
 function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisabled }: MyTopicsSearchRowProps) {
   return (
-    <div className="mb-5 flex items-center gap-3" data-testid="search-row">
+    <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }} data-testid="search-row">
       {/* Search input */}
-      <div className="relative flex-1">
+      <div style={{ position: 'relative', flex: 1 }}>
         <span
-          className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]"
-          aria-hidden="true"
+          className="material-symbols-outlined"
+          style={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            left: 12,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: 18,
+            color: '#6b7280',
+          }}
+          aria-hidden={true}
         >
           search
         </span>
@@ -314,42 +461,84 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={MY_TOPICS_SEARCH_PLACEHOLDER}
-          className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-2.5 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+          className="ikb-input"
+          style={{
+            width: '100%',
+            borderRadius: 0,
+            border: `1px solid ${C.line}`,
+            background: C.base,
+            padding: '10px 12px 10px 40px',
+            fontSize: 14,
+            color: C.ink,
+            fontFamily: F.cn,
+            boxSizing: 'border-box',
+            transition: 'border-color 0.15s',
+          }}
+          onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = C.ikb; (e.currentTarget as HTMLInputElement).style.background = C.paper; }}
+          onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = C.line; (e.currentTarget as HTMLInputElement).style.background = C.base; }}
           data-testid="search-input"
         />
       </div>
 
-      {/* Right btn group */}
+      {/* Copy btn */}
       <button
         type="button"
         onClick={onCopy}
         disabled={actionsDisabled}
         aria-label={MY_TOPICS_COPY_ALL}
-        className={[
-          'flex items-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#444653] transition-colors',
-          actionsDisabled
-            ? 'opacity-40 cursor-not-allowed'
-            : 'hover:border-[#002fa7] hover:text-[#002fa7]',
-        ].join(' ')}
+        className="ikb-focusring"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 0,
+          border: `1px solid ${C.line}`,
+          background: C.paper,
+          padding: '10px 16px',
+          fontSize: 13,
+          fontWeight: 600,
+          color: '#5A6173',
+          fontFamily: F.cn,
+          cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+          opacity: actionsDisabled ? 0.4 : 1,
+          transition: 'border-color 0.15s, color 0.15s',
+        }}
+        onMouseEnter={(e) => { if (!actionsDisabled) { (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; (e.currentTarget as HTMLButtonElement).style.color = C.ikb; } }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; }}
         data-testid="copy-all-btn"
       >
-        <span className="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>content_copy</span>
         {MY_TOPICS_COPY_ALL}
       </button>
+
+      {/* Download btn */}
       <button
         type="button"
         onClick={onDownload}
         disabled={actionsDisabled}
         aria-label={MY_TOPICS_DOWNLOAD_TXT}
-        className={[
-          'flex items-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#444653] transition-colors',
-          actionsDisabled
-            ? 'opacity-40 cursor-not-allowed'
-            : 'hover:border-[#002fa7] hover:text-[#002fa7]',
-        ].join(' ')}
+        className="ikb-focusring"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 0,
+          border: `1px solid ${C.line}`,
+          background: C.paper,
+          padding: '10px 16px',
+          fontSize: 13,
+          fontWeight: 600,
+          color: '#5A6173',
+          fontFamily: F.cn,
+          cursor: actionsDisabled ? 'not-allowed' : 'pointer',
+          opacity: actionsDisabled ? 0.4 : 1,
+          transition: 'border-color 0.15s, color 0.15s',
+        }}
+        onMouseEnter={(e) => { if (!actionsDisabled) { (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; (e.currentTarget as HTMLButtonElement).style.color = C.ikb; } }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; }}
         data-testid="download-txt-btn"
       >
-        <span className="material-symbols-outlined text-[16px]" aria-hidden="true">download</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }} aria-hidden={true}>download</span>
         {MY_TOPICS_DOWNLOAD_TXT}
       </button>
     </div>
@@ -365,9 +554,11 @@ interface MyTopicsFiltersProps {
 
 function MyTopicsFilters({ active, onChange }: MyTopicsFiltersProps) {
   return (
-    <div className="mb-8 flex items-center gap-2" data-testid="filter-chips">
-      {MY_TOPICS_FILTERS.map(({ key, label }) => {
+    <div style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 8 }} data-testid="filter-chips">
+      {MY_TOPICS_FILTERS.map(({ key, label }, idx) => {
         const isActive = active === key;
+        // 轮转三色: all=蓝, step5=蓝, trending=玫红, manual=紫
+        const chipAccent = [C.ikb, C.ikb, C.burgundy, C.accent3][idx % 4] ?? C.ikb;
         return (
           <button
             key={key}
@@ -375,17 +566,28 @@ function MyTopicsFilters({ active, onChange }: MyTopicsFiltersProps) {
             onClick={() => onChange(key)}
             data-testid={`filter-chip-${key}`}
             aria-pressed={isActive}
-            className={[
-              'inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-[13px] font-semibold transition-all',
-              isActive
-                ? 'border-[#002fa7] bg-[#002fa7] text-white shadow-sm'
-                : 'border-[#e5e7eb] bg-white text-[#444653] hover:border-[#002fa7] hover:text-[#002fa7]',
-            ].join(' ')}
+            aria-label={label}
+            className="ikb-focusring"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 0,
+              border: `1px solid ${isActive ? chipAccent : C.line}`,
+              background: isActive ? chipAccent : C.paper,
+              color: isActive ? '#fff' : '#444653',
+              padding: '8px 16px',
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: F.cn,
+              cursor: 'pointer',
+              transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+            }}
           >
             <span
-              className="material-symbols-outlined text-[16px]"
-              aria-hidden="true"
-              style={{ color: isActive ? '#fff' : '#9ca3af' }}
+              className="material-symbols-outlined"
+              style={{ fontSize: 16, color: isActive ? '#fff' : '#6b7280' }}
+              aria-hidden={true}
             >
               {FILTER_ICON[key]}
             </span>
@@ -406,24 +608,41 @@ interface MyTopicsEmptyProps {
 function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
   return (
     <div
-      className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#e5e7eb] bg-white px-8 py-20"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: `2px dashed ${C.line}`,
+        background: C.base,
+        padding: '80px 32px',
+      }}
       data-testid="empty-state"
     >
       <span
-        className="material-symbols-outlined mb-5 text-[64px] text-[#d1d5db]"
-        aria-hidden="true"
+        className="material-symbols-outlined"
+        style={{ fontSize: 64, marginBottom: 20, color: `${C.ikb}30` }}
+        aria-hidden={true}
         data-testid="empty-heart-icon"
       >
         favorite
       </span>
       <p
-        className="mb-2 text-[18px] font-bold text-[#1b1b1b]"
+        style={{ marginBottom: 8, fontSize: 18, fontWeight: 700, color: C.ink, fontFamily: F.display }}
         data-testid="empty-title"
       >
         {MY_TOPICS_EMPTY_TITLE}
       </p>
       <p
-        className="mb-8 max-w-[400px] text-center text-[14px] leading-relaxed text-[#9ca3af]"
+        style={{
+          marginBottom: 32,
+          maxWidth: 400,
+          textAlign: 'center',
+          fontSize: 14,
+          lineHeight: 1.65,
+          color: '#6b7280',
+          fontFamily: F.cn,
+        }}
         data-testid="empty-desc"
       >
         {MY_TOPICS_EMPTY_DESC}
@@ -432,9 +651,25 @@ function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
         type="button"
         onClick={onCta}
         data-testid="empty-cta-btn"
-        className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[13px] font-bold uppercase tracking-widest text-white shadow-sm transition-all hover:bg-[#001e73] hover:-translate-y-0.5 active:translate-y-0"
+        className="ikb-gradbtn ikb-focusring"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          borderRadius: 0,
+          padding: '12px 32px',
+          fontSize: 13,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          color: '#fff',
+          fontFamily: F.mono,
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'transform 0.2s',
+        }}
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">local_fire_department</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden={true}>local_fire_department</span>
         {MY_TOPICS_EMPTY_CTA}
       </button>
     </div>
@@ -543,7 +778,7 @@ export default function MyTopics() {
   const actionsDisabled = items.length === 0;
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       <div data-testid="my-topics-page">
         <MyTopicsHeader
           topicCount={totalTopicCount}
@@ -564,20 +799,41 @@ export default function MyTopics() {
           <TopicListSkeleton />
         ) : isError ? (
           <div
-            className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#e5e7eb] bg-white px-8 py-20"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: `2px dashed ${C.line}`,
+              background: C.base,
+              padding: '80px 32px',
+            }}
             data-testid="error-state"
           >
             <span
-              className="material-symbols-outlined mb-4 text-[48px] text-[#e5e7eb]"
-              aria-hidden="true"
+              className="material-symbols-outlined"
+              style={{ fontSize: 48, marginBottom: 16, color: `${C.burgundy}40` }}
+              aria-hidden={true}
             >
               error_outline
             </span>
-            <p className="mb-4 text-[16px] font-bold text-[#1b1b1b]">加载失败，请重试</p>
+            <p style={{ marginBottom: 16, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.display }}>
+              加载失败，请重试
+            </p>
             <button
               type="button"
               onClick={() => { void refetch(); }}
-              className="rounded-xl bg-[#002fa7] px-6 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-[#001e73]"
+              className="ikb-gradbtn ikb-focusring"
+              style={{
+                borderRadius: 0,
+                padding: '10px 24px',
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                fontFamily: F.mono,
+                border: 'none',
+                cursor: 'pointer',
+              }}
               data-testid="retry-btn"
             >
               重试
@@ -589,6 +845,6 @@ export default function MyTopics() {
           <TopicList items={items} />
         )}
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
