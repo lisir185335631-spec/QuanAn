@@ -211,14 +211,14 @@ describe('Generate · 交互', () => {
     renderGenerate();
     const btn = screen.getByText('晒过程').closest('button')!;
     fireEvent.click(btn);
-    expect(btn.className).toContain('border-[#002fa7]');
+    expect(btn).toHaveAttribute('data-state', 'active');
   });
 
   it('element click 多选', () => {
     renderGenerate();
     const btn = screen.getByText('贪念').closest('button')!;
     fireEvent.click(btn);
-    expect(btn.className).toContain('border-[#002fa7]');
+    expect(btn).toHaveAttribute('data-state', 'active');
   });
 
   it('textarea 改值 · count 同步', () => {
