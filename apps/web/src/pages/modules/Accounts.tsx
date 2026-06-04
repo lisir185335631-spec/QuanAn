@@ -1,16 +1,19 @@
 /**
- * /accounts — 先锋白·工业精密版
- * tRPC-first · PioneerLayout · testid 全保留
+ * /accounts — 红蓝紫渐变 IKB 体系
+ * IKBLayout · inline style + token · testid 全保留
  * testid: create-account-trigger / accounts-list / ip-account-card-* / ip-account-avatar-* / ip-account-active-chip-*
  */
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { CreateAccountModal } from '@/components/accounts/CreateAccountModal';
 import { EditAccountModal } from '@/components/accounts/EditAccountModal';
+import { C, F } from '@/components/home/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   ACCOUNT_ACTIVE_CHIP,
   ACCOUNTS_CREATE_BTN,
@@ -33,7 +36,7 @@ function getIndustryLabel(industryId: string): string {
   return found ? found.label : industryId;
 }
 
-// Platform chip color lookup
+// Platform chip color lookup — platform brand colors kept as identity colors
 function getPlatformColor(label: string): string {
   if (label.includes('抖音')) return '#0ea5b7';
   if (label.includes('小红书')) return '#ff2442';
@@ -41,7 +44,7 @@ function getPlatformColor(label: string): string {
   if (label.includes('微博')) return '#e6162d';
   if (label.includes('B站') || label.includes('bilibili')) return '#fb7299';
   if (label.includes('快手')) return '#ff6633';
-  return '#002fa7';
+  return C.ikb;
 }
 
 // Determine if a chip is the platform chip
@@ -72,9 +75,9 @@ interface TrpcAccount {
   ipPositioning?: string | null;
 }
 
-// ── PioneerAccountCard ────────────────────────────────────────────────────────
+// ── IKBAccountCard ────────────────────────────────────────────────────────────
 
-interface PioneerAccountCardProps {
+interface IKBAccountCardProps {
   account: TrpcAccount;
   isActive: boolean;
   onSwitch: () => void;
@@ -82,13 +85,13 @@ interface PioneerAccountCardProps {
   onData: () => void;
 }
 
-function PioneerAccountCard({
+function IKBAccountCard({
   account,
   isActive,
   onSwitch,
   onEdit,
   onData,
-}: PioneerAccountCardProps) {
+}: IKBAccountCardProps) {
   const platformLabel = getPlatformLabel(account.platform);
   const industryLabel = getIndustryLabel(account.industry);
   const followersLabel = account.followersRange ? `${account.followersRange}粉` : '暂无粉丝';
@@ -102,68 +105,119 @@ function PioneerAccountCard({
     { label: positioningLabel },
   ];
 
+  // IKB 三主色轮转 for non-platform chips
+  const ikbChipColors = [
+    { border: `${C.ikb}40`,      bg: `${C.ikb}0d`,      text: C.ikb      },
+    { border: `${C.burgundy}40`, bg: `${C.burgundy}0d`, text: C.burgundy },
+    { border: `${C.accent3}40`,  bg: `${C.accent3}0d`,  text: C.accent3  },
+  ] as const;
+
   return (
     <div
-      className="relative overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+        transition: 'transform 0.2s, box-shadow 0.2s',
+      }}
       data-testid={`ip-account-card-${account.id}`}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(43,83,230,0.10)'; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
     >
       {/* 背景装饰光晕 */}
-      <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-[#002fa7]/[0.04] blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-12 left-1/2 h-28 w-28 rounded-full bg-[#781621]/[0.03] blur-2xl" />
+      <div style={{ pointerEvents: 'none', position: 'absolute', right: -56, top: -56, height: 144, width: 144, borderRadius: '50%', background: `${C.ikb}06`, filter: 'blur(24px)' }} />
+      <div style={{ pointerEvents: 'none', position: 'absolute', bottom: -48, left: '50%', height: 112, width: 112, borderRadius: '50%', background: `${C.burgundy}04`, filter: 'blur(24px)' }} />
 
       {/* ACTIVE chip — 绝对定位右上 (testid 保留) */}
       {isActive && (
         <span
-          className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-2.5 py-1 text-[11px] font-semibold text-[#10b981]"
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 16,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            borderRadius: 9999,
+            background: `${C.ikb}14`,
+            border: `1px solid ${C.ikb}30`,
+            padding: '4px 10px',
+            fontSize: 11,
+            fontWeight: 700,
+            color: C.ikb,
+            fontFamily: F.mono,
+          }}
           data-testid={`ip-account-active-chip-${account.id}`}
+          data-state="active"
         >
-          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+          <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
           {ACCOUNT_ACTIVE_CHIP}
         </span>
       )}
 
-      <div className="relative flex items-start gap-5">
-        {/* 先锋白渐变圆形头像 (testid 保留) */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+        {/* IKB 渐变圆形头像 (testid 保留) */}
         <div
-          className="flex h-16 w-16 shrink-0 select-none items-center justify-center rounded-full bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-[24px] font-extrabold text-white shadow-lg shadow-[#002fa7]/20"
+          style={{
+            display: 'flex',
+            height: 64,
+            width: 64,
+            flexShrink: 0,
+            userSelect: 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '50%',
+            background: C.grad,
+            fontSize: 24,
+            fontWeight: 800,
+            color: '#fff',
+            fontFamily: F.display,
+            boxShadow: `0 6px 18px ${C.ikb}28`,
+          }}
           data-testid={`ip-account-avatar-${account.id}`}
         >
           {account.name[0] ?? '?'}
         </div>
 
-        <div className="min-w-0 flex-1">
+        <div style={{ minWidth: 0, flex: 1 }}>
           {/* 账号名 */}
-          <h3 className="text-[20px] font-bold leading-tight text-[#111827]">
+          <h3 style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: C.ink, fontFamily: F.display, margin: 0 }}>
             {account.name}
           </h3>
 
-          {/* Chip 横排 — 先锋白风格 */}
-          <div className="mt-2 flex flex-wrap gap-2">
-            {chips.map((chip) => {
+          {/* Chip 横排 — IKB 三主色轮转 */}
+          <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {chips.map((chip, chipIdx) => {
               const platformColor = isPlatformChip(chip.label)
                 ? getPlatformColor(chip.label)
                 : null;
+              const cp = platformColor
+                ? { border: `${platformColor}40`, bg: `${platformColor}12`, text: platformColor }
+                : ikbChipColors[chipIdx % ikbChipColors.length]!;
               return (
                 <span
                   key={chip.label}
-                  className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] font-medium"
-                  style={
-                    platformColor
-                      ? {
-                          borderColor: `${platformColor}40`,
-                          backgroundColor: `${platformColor}12`,
-                          color: platformColor,
-                        }
-                      : {
-                          borderColor: '#e5e7eb',
-                          backgroundColor: '#f3f6ff',
-                          color: '#444653',
-                        }
-                  }
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    borderRadius: 6,
+                    border: `1px solid ${cp.border}`,
+                    backgroundColor: cp.bg,
+                    color: cp.text,
+                    padding: '4px 10px',
+                    fontSize: 12,
+                    fontWeight: 500,
+                    fontFamily: F.cn,
+                  }}
                 >
                   <span
-                    aria-hidden="true"
-                    className="material-symbols-outlined text-[14px]"
+                    aria-hidden={true}
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 14 }}
                   >
                     {isPlatformChip(chip.label)
                       ? 'smartphone'
@@ -185,17 +239,34 @@ function PioneerAccountCard({
           </div>
 
           {/* 简介 — 完整渲染不截断 */}
-          <p className="mt-3 text-[14px] leading-relaxed text-[#444653]">{desc}</p>
+          <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.65, color: '#5A6173', fontFamily: F.cn }}>{desc}</p>
 
           {/* 操作按钮行 */}
-          <div className="mt-4 flex items-center gap-2">
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
               type="button"
               aria-label={`编辑账号 ${account.name}`}
               onClick={onEdit}
-              className="flex items-center gap-1.5 rounded-lg border border-[#e5e7eb] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#444653] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 8,
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: '#5A6173',
+                fontFamily: F.cn,
+                cursor: 'pointer',
+                transition: 'border-color 0.15s, color 0.15s',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; }}
             >
-              <span aria-hidden="true" className="material-symbols-outlined text-[15px]">
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 edit
               </span>
               编辑
@@ -204,9 +275,26 @@ function PioneerAccountCard({
               type="button"
               aria-label={`查看账号 ${account.name} 的数据`}
               onClick={onData}
-              className="flex items-center gap-1.5 rounded-lg border border-[#e5e7eb] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#444653] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 8,
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: '#5A6173',
+                fontFamily: F.cn,
+                cursor: 'pointer',
+                transition: 'border-color 0.15s, color 0.15s',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.burgundy; (e.currentTarget as HTMLButtonElement).style.color = C.burgundy; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; }}
             >
-              <span aria-hidden="true" className="material-symbols-outlined text-[15px]">
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 bar_chart
               </span>
               数据
@@ -216,9 +304,27 @@ function PioneerAccountCard({
               aria-label={`切换账号 ${account.name}`}
               onClick={onSwitch}
               disabled={isActive}
-              className="flex items-center gap-1.5 rounded-lg border border-[#e5e7eb] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#444653] transition-colors hover:border-[#002fa7] hover:text-[#002fa7] disabled:cursor-not-allowed disabled:opacity-50"
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                borderRadius: 8,
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '6px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: '#5A6173',
+                fontFamily: F.cn,
+                cursor: isActive ? 'not-allowed' : 'pointer',
+                opacity: isActive ? 0.5 : 1,
+                transition: 'border-color 0.15s, color 0.15s',
+              }}
+              onMouseEnter={(e) => { if (!isActive) { (e.currentTarget as HTMLButtonElement).style.borderColor = C.accent3; (e.currentTarget as HTMLButtonElement).style.color = C.accent3; } }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#5A6173'; }}
             >
-              <span aria-hidden="true" className="material-symbols-outlined text-[15px]">
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>
                 swap_horiz
               </span>
               切换
@@ -275,22 +381,51 @@ export default function Accounts() {
   const TOTAL_FANS_LABEL = '1 000+';
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ───────────────────────────────────────────────────────────── */}
-      <header className="mb-12 flex flex-row items-center justify-between gap-8">
-        <div className="shrink-0">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+      <header style={{ marginBottom: 48, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span
+              style={{
+                borderRadius: 8,
+                border: `1px solid ${C.line}`,
+                background: C.base,
+                padding: '4px 12px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                fontFamily: F.mono,
+              }}
+            >
               更多
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              style={{
+                borderRadius: 8,
+                border: `1px solid ${C.ikb}50`,
+                background: `${C.ikb}12`,
+                padding: '4px 12px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: C.purpleText,
+                fontFamily: F.mono,
+              }}
+            >
               账号矩阵
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext"
+            style={{ whiteSpace: 'nowrap', fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', fontFamily: F.display }}
+          >
             {ACCOUNTS_H1}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.7, color: '#5A6173', fontFamily: F.cn }}>
             {ACCOUNTS_SUBTITLE}
           </p>
         </div>
@@ -301,9 +436,24 @@ export default function Accounts() {
           data-testid="create-account-trigger"
           aria-label="新建账号"
           onClick={() => setCreateOpen(true)}
-          className="flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-3 text-[13px] font-bold tracking-widest text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-gradbtn ikb-focusring"
+          style={{
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 12,
+            padding: '12px 24px',
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: F.cn,
+          }}
         >
-          <span aria-hidden="true" className="material-symbols-outlined text-[18px]">
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 18 }}>
             add
           </span>
           {ACCOUNTS_CREATE_BTN}
@@ -311,39 +461,49 @@ export default function Accounts() {
       </header>
 
       {/* ── KPI 概览一排 (4 卡) ──────────────────────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-6">
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
         {/* 账号总数 · 蓝 · 环形进度 */}
-        <div className="rounded-xl border border-[#dbe2ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+        <div
+          style={{ borderRadius: 12, border: `1px solid ${C.ikb}28`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 manage_accounts
               </span>
             </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[13px]">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 13 }}>
                 trending_up
               </span>
               已配置
             </span>
           </div>
-          <div className="mt-4 flex items-end justify-between">
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
             <div>
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display }}>
                 {totalAccounts}
-                <span className="text-[15px] text-[#9ca3af]"> 个</span>
+                <span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}> 个</span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">账号总数</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>账号总数</p>
             </div>
-            <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+            <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+              <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                <defs>
+                  <linearGradient id="ac-ringGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={C.ikb} />
+                    <stop offset="100%" stopColor={C.accent3} />
+                  </linearGradient>
+                </defs>
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.base} strokeWidth="3.5" />
                 <circle
                   cx="18"
                   cy="18"
                   r="15.915"
                   fill="none"
-                  stroke="#002fa7"
+                  stroke="url(#ac-ringGrad)"
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeDasharray={`${Math.min(totalAccounts * 25, 100)} 100`}
@@ -353,86 +513,101 @@ export default function Accounts() {
           </div>
         </div>
 
-        {/* 活跃账号 · 勃艮第红 · 迷你柱 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+        {/* 活跃账号 · 玫红 · 迷你柱 */}
+        <div
+          style={{ borderRadius: 12, border: `1px solid ${C.burgundy}28`, background: C.paper, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}12`; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 bolt
               </span>
             </span>
-            <span className="rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+            <span style={{ borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
               运营中
             </span>
           </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display }}>
               {activeAccountsCount}
-              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+              <span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}> 个</span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">活跃账号</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>活跃账号</p>
           </div>
-          <div className="mt-3 flex h-6 items-end gap-1">
+          <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
             {[60, 80, 70, 90, 75].map((h, i) => (
               <div
                 key={i}
-                className="flex-1 rounded-t bg-[#781621]/70"
-                style={{ height: `${h}%` }}
+                style={{ flex: 1, borderRadius: '2px 2px 0 0', background: C.burgundy, opacity: 0.7, height: `${h}%` }}
               />
             ))}
           </div>
         </div>
 
-        {/* 平台覆盖 · 暖黄 · 进度条 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+        {/* 平台覆盖 · 紫 · 进度条 */}
+        <div
+          style={{ borderRadius: 12, border: `1px solid ${C.accent3}28`, background: C.paper, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}12`; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}10`, color: C.accent3 }}>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 hub
               </span>
             </span>
-            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">
+            <span style={{ borderRadius: 9999, background: `${C.accent3}12`, border: `1px solid ${C.accent3}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.purpleText, fontFamily: F.mono }}>
               已接入
             </span>
           </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display }}>
               {platformCoverage}
-              <span className="text-[15px] text-[#9ca3af]"> 平台</span>
+              <span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}> 平台</span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">平台覆盖</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>平台覆盖</p>
           </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+          <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: `${C.accent3}14` }}>
             <div
-              className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]"
-              style={{ width: `${Math.min(platformCoverage * 33, 100)}%` }}
+              style={{
+                height: 8,
+                borderRadius: 9999,
+                background: `linear-gradient(90deg, ${C.ikb}, ${C.accent3})`,
+                width: `${Math.min(platformCoverage * 33, 100)}%`,
+              }}
             />
           </div>
         </div>
 
         {/* 总粉丝 · 蓝 · 关键词 chip */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+        <div
+          style={{ borderRadius: 12, border: `1px solid ${C.ikb}28`, background: C.paper, padding: 20, transition: 'transform 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 group
               </span>
             </span>
-            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+            <span style={{ borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
               粉丝数
             </span>
           </div>
-          <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display }}>
               {TOTAL_FANS_LABEL}
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">总粉丝数</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>总粉丝数</p>
           </div>
-          <div className="mt-3 flex flex-wrap gap-1">
+          <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {['增长中', '精准流量', '私域'].map((k) => (
               <span
                 key={k}
-                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+                style={{ borderRadius: 4, background: `${C.ikb}10`, border: `1px solid ${C.ikb}28`, padding: '2px 6px', fontSize: 10, fontWeight: 500, color: C.ikb, fontFamily: F.mono }}
               >
                 {k}
               </span>
@@ -442,52 +617,60 @@ export default function Accounts() {
       </div>
 
       {/* ── 数据洞察 band ────────────────────────────────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-[#002fa7]">
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>
           insights
         </span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· 账号矩阵健康度 · 粉丝增长趋势</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span aria-hidden="true" className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>数据洞察</h2>
+        <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· 账号矩阵健康度 · 粉丝增长趋势</span>
+        <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: `${C.ikb}10`, border: `1px solid ${C.ikb}28`, padding: '4px 12px', fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.mono }}>
+          <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
           实时
         </span>
       </div>
 
       {/* 粉丝增长曲线 (装饰性 SVG · 后端无趋势接口 · 保持现状) */}
-      <div className="mb-8 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
-        <div className="mb-4 flex items-start justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px]">
+      <div style={{ marginBottom: 32, borderRadius: 12, border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, padding: 24 }}>
+        <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 show_chart
               </span>
             </span>
             <div>
-              <h3 className="text-[14px] font-bold text-[#111827]">粉丝增长曲线</h3>
-              <p className="text-[11px] text-[#9ca3af]">按当前账号矩阵测算 · 90 天趋势</p>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>粉丝增长曲线</h3>
+              <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>按当前账号矩阵测算 · 90 天趋势</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {['粉丝', '互动', '曝光'].map((t, i) => (
               <span
                 key={t}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                style={{
+                  borderRadius: 6,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: i === 0 ? C.ikb : C.base,
+                  color: i === 0 ? '#fff' : '#6b7280',
+                  fontFamily: F.mono,
+                }}
               >
                 {t}
               </span>
             ))}
           </div>
         </div>
-        <div className="mb-3 flex items-end gap-3">
-          <p className="text-[30px] font-bold leading-none text-[#111827]">+420%</p>
-          <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-            <span aria-hidden="true" className="material-symbols-outlined text-[14px]">
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+          <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display }}>+420%</p>
+          <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 14 }}>
               trending_up
             </span>
             增长强劲
           </span>
-          <span className="mb-1 text-[12px] text-[#9ca3af]">较冷启动基线</span>
+          <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较冷启动基线</span>
         </div>
         {(() => {
           const data = [10, 18, 22, 30, 28, 42, 50, 48, 64, 72, 80, 100];
@@ -507,15 +690,15 @@ export default function Accounts() {
             .join(' ');
           const area = `${line} L ${xFn(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${xFn(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
           return (
-            <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+            <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }}>
               <defs>
-                <linearGradient id="trendFillAC" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#002fa7" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                <linearGradient id="ac-trendFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={C.ikb} stopOpacity="0.22" />
+                  <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                 </linearGradient>
-                <linearGradient id="trendLineAC" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#002fa7" />
-                  <stop offset="100%" stopColor="#781621" />
+                <linearGradient id="ac-trendLine" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor={C.ikb} />
+                  <stop offset="100%" stopColor={C.burgundy} />
                 </linearGradient>
               </defs>
               {[0, 0.33, 0.66, 1].map((f) => (
@@ -525,73 +708,73 @@ export default function Accounts() {
                   x2={W - padR}
                   y1={(padT + innerH * f).toFixed(1)}
                   y2={(padT + innerH * f).toFixed(1)}
-                  stroke="#f1f3f9"
+                  stroke={C.line}
                   strokeWidth="1"
                 />
               ))}
-              <path d={area} fill="url(#trendFillAC)" />
+              <path d={area} fill="url(#ac-trendFill)" />
               <path
                 d={line}
                 fill="none"
-                stroke="url(#trendLineAC)"
+                stroke="url(#ac-trendLine)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
               {data.map((v, i) =>
                 i % 3 === 0 ? (
-                  <circle key={i} cx={xFn(i)} cy={yFn(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" />
+                  <circle key={i} cx={xFn(i)} cy={yFn(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
                 ) : null,
               )}
             </svg>
           );
         })()}
-        <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+        <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4 }}>
           {['第1周', '第3周', '第5周', '第7周', '第9周', '第12周'].map((m) => (
-            <span key={m}>{m}</span>
+            <span key={m} style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>{m}</span>
           ))}
         </div>
       </div>
 
       {/* ── 账号列表 ─────────────────────────────────────────────────────────── */}
-      <div className="mb-3 flex items-center gap-2">
-        <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-[#002fa7]">
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>
           grid_view
         </span>
-        <h2 className="text-[16px] font-bold text-[#111827]">账号列表</h2>
-        <span className="text-[12px] text-[#9ca3af]">· {active.length} 个账号</span>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>账号列表</h2>
+        <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· {active.length} 个账号</span>
       </div>
 
-      <div className="space-y-4" data-testid="accounts-list">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} data-testid="accounts-list">
         {isLoading ? (
           /* 加载骨架 */
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-[#f9fafb] py-16 text-center">
-            <span aria-hidden="true" className="material-symbols-outlined mb-4 text-[48px] text-[#d1d5db]">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 12, border: `2px dashed ${C.line}`, background: C.base, paddingTop: 64, paddingBottom: 64, textAlign: 'center' }}>
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: '#d1d5db' }}>
               hourglass_empty
             </span>
-            <p className="text-[16px] font-semibold text-[#6b7280]">加载中…</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#6b7280', fontFamily: F.cn }}>加载中…</p>
           </div>
         ) : isError ? (
           /* 错误提示 */
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#fca5a5] bg-[#fef2f2] py-16 text-center">
-            <span aria-hidden="true" className="material-symbols-outlined mb-4 text-[48px] text-[#f87171]">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 12, border: `2px dashed ${C.burgundy}40`, background: `${C.burgundy}06`, paddingTop: 64, paddingBottom: 64, textAlign: 'center' }}>
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: `${C.burgundy}80` }}>
               error_outline
             </span>
-            <p className="text-[16px] font-semibold text-[#b91c1c]">加载失败</p>
-            <p className="mt-1 text-[13px] text-[#9ca3af]">请刷新页面重试</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: C.burgundy, fontFamily: F.cn }}>加载失败</p>
+            <p style={{ marginTop: 4, fontSize: 13, color: '#6b7280', fontFamily: F.cn }}>请刷新页面重试</p>
           </div>
         ) : active.length === 0 ? (
           /* 空态占位 */
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-[#f9fafb] py-16 text-center">
-            <span aria-hidden="true" className="material-symbols-outlined mb-4 text-[48px] text-[#d1d5db]">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 12, border: `2px dashed ${C.line}`, background: C.base, paddingTop: 64, paddingBottom: 64, textAlign: 'center' }}>
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ marginBottom: 16, fontSize: 48, color: '#d1d5db' }}>
               manage_accounts
             </span>
-            <p className="text-[16px] font-semibold text-[#6b7280]">暂无账号</p>
-            <p className="mt-1 text-[13px] text-[#9ca3af]">点击右上角「新建账号」开始配置</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#6b7280', fontFamily: F.cn }}>暂无账号</p>
+            <p style={{ marginTop: 4, fontSize: 13, color: '#6b7280', fontFamily: F.cn }}>点击右上角「新建账号」开始配置</p>
           </div>
         ) : (
           active.map((account) => (
-            <PioneerAccountCard
+            <IKBAccountCard
               key={account.id}
               account={account}
               isActive={account.id === activeAccount?.id}
@@ -618,6 +801,7 @@ export default function Accounts() {
           onUpdated={handleUpdated}
         />
       )}
-    </PioneerLayout>
+
+    </IKBLayout>
   );
 }
