@@ -129,3 +129,20 @@
 /* 禁用态:关闭流光动画,防止非活跃 CTA 持续播放(a11y · 减少干扰) */
 .ikb-gradbtn:disabled { animation: none; }
 .ikb-gradbtn:disabled::after { display: none; }
+
+/* ── 通用卡片悬停 · 上抬 + 红蓝紫主色描边 + 柔和彩色光晕 ──────────────────────────
+ * 数据卡 / 图表卡 / 列表卡 / 导航卡通用(区别于首页 .ikb-card 的整块渐变灌注)。
+ * 给卡片容器加 className="ikb-hovercard" 即可;hover 时上抬 + 边框亮起 IKB 蓝 + 红蓝紫柔光。 */
+.ikb-hovercard {
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), border-color .3s ease, box-shadow .3s ease;
+  will-change: transform;
+}
+.ikb-hovercard:hover {
+  transform: translateY(-4px);
+  border-color: #2B53E6 !important;
+  box-shadow: 0 14px 30px -12px rgba(43, 83, 230, 0.30), 0 6px 14px -8px rgba(123, 59, 224, 0.22);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ikb-hovercard { transition: border-color .3s ease, box-shadow .3s ease; }
+  .ikb-hovercard:hover { transform: none; }
+}
