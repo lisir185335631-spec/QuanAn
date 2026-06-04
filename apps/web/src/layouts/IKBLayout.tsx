@@ -1,9 +1,9 @@
 /**
- * IKBLayout · 红蓝紫渐变·先锋印刷 外壳(首页专用)
+ * IKBLayout · 红蓝紫渐变·先锋印刷 外壳(全站 33 页通用)
  *
  * 结构 = PioneerLayout 同构(一级/二级下拉导航 + 右侧账号区 + FitCanvas 缩放 + 页脚),
  * 仅【换皮】到编辑语言:渐变六边形 logo · 浅纸底 · 红蓝紫渐变点缀 · 锐角面板。
- * 不改 PioneerLayout 本体(其它仍用先锋白的页面不受影响)。
+ * 不改 PioneerLayout 本体(遗留组件,现已无页面使用先锋白)。
  */
 import { ChevronDown, LogIn, LogOut, Settings } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';

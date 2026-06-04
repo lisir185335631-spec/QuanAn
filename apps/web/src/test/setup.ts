@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
 /**
- * 全局 mock — 先锋白迁移后所有页面都套 PioneerLayout,其 HeaderRight/AccountSwitcherPw
+ * 全局 mock — 所有页面外壳(IKBLayout)的顶栏 / 账号切换器
  * 依赖 useAuth / useActiveAccount / trpc.ipAccounts.list。测试若无 provider 会在 render 即崩。
  * 这里统一兜底,让任意页面测试都能渲染外壳;需要特定行为的测试在自己文件里 vi.mock 覆盖即可。
  */
