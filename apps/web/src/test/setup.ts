@@ -46,3 +46,40 @@ vi.mock('@/lib/trpc', () => {
   };
   return { trpc: new Proxy({}, handler) };
 });
+
+/**
+ * jsdom 不实现 IntersectionObserver / ResizeObserver / matchMedia。
+ * 首页 IKB sections 用 framer-motion 的 whileInView(依赖 IntersectionObserver),
+ * ikb-hero.css 的动效有 prefers-reduced-motion 守卫(依赖 matchMedia)。
+ * 缺失会在 render 即抛 "IntersectionObserver is not defined" 整页崩。统一兜底。
+ */
+class IntersectionObserverStub {
+  readonly root = null;
+  readonly rootMargin = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+}
+vi.stubGlobal('IntersectionObserver', IntersectionObserverStub);
+
+class ResizeObserverStub {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+vi.stubGlobal('ResizeObserver', ResizeObserverStub);
+
+vi.stubGlobal('matchMedia', (query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+}));
