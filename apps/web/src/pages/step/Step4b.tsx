@@ -1,11 +1,14 @@
-// PRD-29.10 · /step/4b 变现路径 · 先锋白 Pioneer 品牌风格 · PioneerLayout 独立路由
+// PRD-29.10 · /step/4b 变现路径 · IKB 红蓝紫渐变重构
+import '@/styles/ikb-hero.css';
+
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
+import { C, F } from '@/components/home/ikb/system';
 import { type Step4bStage } from '@/components/step4b/Step4bStageSection';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   STEP4B_BUTTON_GENERATE_REAL,
   STEP4B_H1,
@@ -371,7 +374,7 @@ function generateMockResult(): Step4bResult {
 // ── Style tokens ──────────────────────────────────────────────────────────────
 
 const btnSecondary =
-  'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+  'ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded border border-[rgba(22,32,72,0.13)] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#161D33] transition-colors hover:bg-[#F3F5FC] disabled:cursor-not-allowed disabled:opacity-40';
 
 // ── Case row status helpers ───────────────────────────────────────────────────
 
@@ -386,24 +389,24 @@ function getCaseStatus(index: number): CaseStatus {
 function CaseStatusBadge({ status }: { status: CaseStatus }) {
   if (status === 'best') {
     return (
-      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#10b981]/20 bg-[#10b981]/10 px-2.5 py-1">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
-        <span className="text-[11px] font-semibold text-[#10b981]">最佳</span>
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#2B53E6]/20 bg-[#2B53E6]/10 px-2.5 py-1">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#2B53E6]" />
+        <span className="text-[11px] font-semibold text-[#2B53E6]">最佳</span>
       </div>
     );
   }
   if (status === 'expanding') {
     return (
-      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#F3E08A] bg-[#FEFCE0] px-2.5 py-1">
-        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8A6A00]" />
-        <span className="text-[11px] font-semibold text-[#8A6A00]">扩展中</span>
+      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#7A3BE0]/25 bg-[#7A3BE0]/10 px-2.5 py-1">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#7A3BE0]" />
+        <span className="text-[11px] font-semibold text-[#3A1A6E]">扩展中</span>
       </div>
     );
   }
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-2.5 py-1 opacity-60">
-      <span className="h-1.5 w-1.5 rounded-full bg-[#9ca3af]" />
-      <span className="text-[11px] font-semibold text-[#9ca3af]">初始化中</span>
+    <div className="inline-flex items-center gap-1.5 rounded-md border border-[rgba(22,32,72,0.13)] bg-[#F3F5FC] px-2.5 py-1 opacity-60">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#6b7280]" />
+      <span className="text-[11px] font-semibold text-[#6b7280]">初始化中</span>
     </div>
   );
 }
@@ -421,45 +424,45 @@ interface StageCfg {
 
 const STAGE_CONFIGS: [StageCfg, StageCfg, StageCfg] = [
   {
-    barColors: ['#d1d5db', '#9ca3af', '#002fa7'],
+    barColors: ['#d1d5db', '#7A3BE0', '#2B53E6'],
     barHeights: [30, 45, 60],
     labelColor: '#6b7280',
-    valueColor: '#002fa7',
+    valueColor: '#2B53E6',
     subtitle: '初始捕获',
-    accentColor: '#002fa7',
+    accentColor: '#2B53E6',
   },
   {
-    barColors: ['#9ca3af', '#002fa7', '#781621'],
+    barColors: ['#7A3BE0', '#2B53E6', '#EF3E6B'],
     barHeights: [40, 70, 85],
     labelColor: '#6b7280',
-    valueColor: '#002fa7',
+    valueColor: '#2B53E6',
     subtitle: '规模与渗透',
-    accentColor: '#781621',
+    accentColor: '#D11E52',
   },
   {
-    barColors: ['#002fa7', '#781621', '#F6D300'],
+    barColors: ['#2B53E6', '#EF3E6B', '#7A3BE0'],
     barHeights: [60, 80, 100],
-    labelColor: '#002fa7',
-    valueColor: '#781621',
+    labelColor: '#2B53E6',
+    valueColor: '#D11E52',
     subtitle: '生态系统主导',
-    accentColor: '#8A6A00',
+    accentColor: '#3A1A6E',
   },
 ];
 
 // ── Donut chart colors · 品牌三色轮转 ────────────────────────────────────────
 
-const DONUT_COLORS = ['#002fa7', '#781621', '#F6D300', '#001E73'];
+const DONUT_COLORS = ['#2B53E6', '#EF3E6B', '#7A3BE0', '#161D33'];
 const CIRCUMFERENCE = 440; // 2π × 70 ≈ 439.8 → 440
 
 // ── 数据洞察静态数据 S4B ─────────────────────────────────────────────────────
 
 const RADAR_DIMS_S4B = [
-  { label: '获客力', value: 85, color: '#002fa7' },
-  { label: '转化率', value: 78, color: '#781621' },
-  { label: '客单价', value: 92, color: '#F6D300' },
-  { label: '复购率', value: 70, color: '#002fa7' },
-  { label: '利润率', value: 88, color: '#781621' },
-  { label: '规模化', value: 74, color: '#F6D300' },
+  { label: '获客力', value: 85, color: '#2B53E6' },
+  { label: '转化率', value: 78, color: '#EF3E6B' },
+  { label: '客单价', value: 92, color: '#7A3BE0' },
+  { label: '复购率', value: 70, color: '#2B53E6' },
+  { label: '利润率', value: 88, color: '#EF3E6B' },
+  { label: '规模化', value: 74, color: '#7A3BE0' },
 ];
 
 // 收入轨迹趋势 · 12个月 · 单位万
@@ -545,61 +548,77 @@ export default function Step4b() {
   });
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: C.line, background: C.base, color: C.ink }}
+            >
               战略路径
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: '#7A3BE0', background: '#EEE8FC', color: '#3A1A6E' }}
+            >
               增长模型
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tighter"
+            style={{ fontFamily: F.display }}
+          >
             {STEP4B_H1}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#5A6173' }}>
             {STEP4B_SUBTITLE_REAL.replace('{industry}', industry)}
           </p>
         </div>
         <div className="flex shrink-0 flex-nowrap gap-3">
-          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+          <button type="button" onClick={handleOptimize} disabled={!canBulkActions} className={btnSecondary} aria-label="智能优化">
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_fix_high</span>
             智能优化
           </button>
-          <button type="button" onClick={handleRegenerateAll} disabled={isLoading} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]">refresh</span>
+          <button type="button" onClick={handleRegenerateAll} disabled={isLoading} className={btnSecondary} aria-label="重新生成">
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>refresh</span>
             重新生成
           </button>
           <button
             type="button"
             onClick={handleCopyAll}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            aria-label="导出数据"
           >
-            <span className="material-symbols-outlined text-[18px]">download</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>download</span>
             导出数据
           </button>
         </div>
       </header>
 
       {/* ── 输入变现参数 card ───────────────────────────────── */}
-      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+      <section
+        className="relative mb-12 overflow-hidden rounded p-6"
+        style={{ background: 'linear-gradient(135deg, #FFFFFF, #F3F5FC)', border: `1px solid ${C.line}`, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}
+      >
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#2B53E6]/[0.05] blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#EF3E6B]/[0.04] blur-2xl" />
+        <div className="relative mb-6 flex items-center justify-between pb-5" style={{ borderBottom: `1px solid ${C.line}` }}>
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined">payments</span>
+            <span
+              className="ikb-gradbtn flex h-11 w-11 items-center justify-center rounded text-white"
+              aria-hidden={true}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true}>payments</span>
             </span>
             <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">输入变现参数</h2>
-              <p className="text-[12px] text-[#9ca3af]">填写基础信息 · AI 据此规划完整变现路径</p>
+              <h2 className="text-[18px] font-bold" style={{ color: C.ink }}>输入变现参数</h2>
+              <p className="text-[12px] text-[#6b7280]">填写基础信息 · AI 据此规划完整变现路径</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2B53E6]/10 px-3 py-1 text-[12px] font-semibold text-[#2B53E6]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2B53E6]" />
             参数就绪
           </span>
         </div>
@@ -608,15 +627,16 @@ export default function Step4b() {
             {/* 产品/服务描述 · 框式编辑器 */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <label htmlFor="s4b-product-service" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
-                  产品/服务描述 <span className="ml-1 text-[#781621]">*</span>
+                <label htmlFor="s4b-product-service" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide before:h-3.5 before:w-1 before:rounded-full before:content-['']" style={{ color: C.ink, ['--tw-before-bg' as string]: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}>
+                  <span style={{ display: 'inline-block', width: 4, height: 14, borderRadius: 2, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} aria-hidden={true} />
+                  产品/服务描述 <span className="ml-1" style={{ color: C.burgundyText }}>*</span>
                 </label>
-                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
-                  <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+                <span className="flex items-center gap-1 text-[11px] text-[#6b7280]">
+                  <span className="material-symbols-outlined text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>auto_awesome</span>
                   AI 据此测算变现潜力
                 </span>
               </div>
-              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+              <div className="overflow-hidden rounded border bg-[#F3F5FC] transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-[#2B53E6]" style={{ borderColor: C.line }}>
                 <textarea
                   id="s4b-product-service"
                   required
@@ -624,18 +644,18 @@ export default function Step4b() {
                   onChange={(e) => setProductService(e.target.value)}
                   rows={4}
                   placeholder="描述你的产品/服务，包括定价、对象、交付形式等"
-                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                  className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
                 />
-                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                <div className="flex items-center justify-between gap-3 bg-white/60 px-4 py-2.5" style={{ borderTop: `1px solid ${C.line}` }}>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-[#9ca3af]">可包含</span>
+                    <span className="text-[11px] text-[#6b7280]">可包含</span>
                     {['定价', '受众', '交付', '服务范围', '培训'].map((t) => (
-                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                      <span key={t} className="rounded-full bg-[#EEF1FE] px-2.5 py-0.5 text-[11px] font-medium" style={{ color: C.ikb }}>
                         {t}
                       </span>
                     ))}
                   </div>
-                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{productService.length} 字</span>
+                  <span className="shrink-0 text-[11px] tabular-nums text-[#6b7280]">{productService.length} 字</span>
                 </div>
               </div>
             </div>
@@ -643,34 +663,38 @@ export default function Step4b() {
             {/* 目标受众 + IP定位 · 双列带图标 */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label htmlFor="s4b-target-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                <label htmlFor="s4b-target-audience" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide" style={{ color: C.ink }}>
+                  <span style={{ display: 'inline-block', width: 4, height: 14, borderRadius: 2, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} aria-hidden={true} />
                   目标受众
                 </label>
                 <div className="relative">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">groups</span>
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#6b7280]" aria-hidden={true}>groups</span>
                   <input
                     id="s4b-target-audience"
                     type="text"
                     value={targetAudience}
                     onChange={(e) => setTargetAudience(e.target.value)}
                     placeholder="例如：25-40男性企业主"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                    className="ikb-input w-full rounded border bg-[#F3F5FC] py-3 pl-10 pr-3 text-[14px] transition-all focus:bg-white focus:ring-2 focus:ring-[#2B53E6]"
+                    style={{ borderColor: C.line }}
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="s4b-ip-positioning" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                <label htmlFor="s4b-ip-positioning" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide" style={{ color: C.ink }}>
+                  <span style={{ display: 'inline-block', width: 4, height: 14, borderRadius: 2, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} aria-hidden={true} />
                   IP定位
                 </label>
                 <div className="relative">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">person_pin</span>
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#6b7280]" aria-hidden={true}>person_pin</span>
                   <input
                     id="s4b-ip-positioning"
                     type="text"
                     value={ipPositioning}
                     onChange={(e) => setIpPositioning(e.target.value)}
                     placeholder="例如：AI智能体定制"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                    className="ikb-input w-full rounded border bg-[#F3F5FC] py-3 pl-10 pr-3 text-[14px] transition-all focus:bg-white focus:ring-2 focus:ring-[#2B53E6]"
+                    style={{ borderColor: C.line }}
                   />
                 </div>
               </div>
@@ -679,18 +703,20 @@ export default function Step4b() {
             {/* 当前收入水平 + 提交按钮 */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label htmlFor="s4b-current-income" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                <label htmlFor="s4b-current-income" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide" style={{ color: C.ink }}>
+                  <span style={{ display: 'inline-block', width: 4, height: 14, borderRadius: 2, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 4 }} aria-hidden={true} />
                   当前收入水平
                 </label>
                 <div className="relative">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">monetization_on</span>
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#6b7280]" aria-hidden={true}>monetization_on</span>
                   <input
                     id="s4b-current-income"
                     type="text"
                     value={currentIncome}
                     onChange={(e) => setCurrentIncome(e.target.value)}
                     placeholder="例如：年入30万"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                    className="ikb-input w-full rounded border bg-[#F3F5FC] py-3 pl-10 pr-3 text-[14px] transition-all focus:bg-white focus:ring-2 focus:ring-[#2B53E6]"
+                    style={{ borderColor: C.line }}
                   />
                 </div>
               </div>
@@ -698,9 +724,9 @@ export default function Step4b() {
                 <button
                   type="submit"
                   disabled={!productService.trim() || isLoading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+                  className="ikb-gradbtn ikb-focusring flex w-full items-center justify-center gap-2 rounded px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <span className="material-symbols-outlined text-[18px]">payments</span>
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>payments</span>
                   {isLoading ? '生成中…' : STEP4B_BUTTON_GENERATE_REAL}
                 </button>
               </div>
@@ -711,38 +737,41 @@ export default function Step4b() {
 
       {/* ── Loading bar ────────────────────────────────────── */}
       {isLoading && (
-        <div className="mb-8 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#002fa7]/5 p-4 text-[14px] font-medium text-[#001e73]">
-          <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+        <div className="mb-8 flex items-center gap-3 rounded p-4 text-[14px] font-medium" style={{ border: `1px solid ${C.ikb}30`, background: `${C.ikb}08`, color: '#2B53E6' }}>
+          <span className="material-symbols-outlined animate-spin text-[20px]" aria-hidden={true}>progress_activity</span>
           正在规划变现路径…
         </div>
       )}
 
       {/* ── 数据洞察 band ──────────────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
+        <h2 className="text-[16px] font-bold" style={{ color: C.ink }}>数据洞察</h2>
+        <span className="text-[12px] text-[#6b7280]">· AI 综合评估 · 实时测算</span>
+        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#2B53E6]/10 px-3 py-1 text-[12px] font-semibold text-[#2B53E6]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2B53E6]" />
           模型已就绪
         </span>
       </div>
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 变现能力雷达 · col-span-5 */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-5 rounded p-6"
+          style={{ background: 'linear-gradient(135deg, #FFFFFF, #F3F5FC)', border: `1px solid ${C.line}`, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}
+        >
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]">radar</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.ikb}15`, color: C.ikb }}>
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">变现能力雷达</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>变现能力雷达</h3>
+                <p className="text-[11px] text-[#6b7280]">六维模型评估</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">81</p>
-              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+              <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>81</p>
+              <p className="text-[10px] text-[#6b7280]">综合分</p>
             </div>
           </div>
           {(() => {
@@ -755,11 +784,11 @@ export default function Step4b() {
             const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
             const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
             return (
-              <svg viewBox="0 0 260 244" className="w-full">
+              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="变现能力雷达图">
                 <defs>
-                  <linearGradient id="radarFillS4B" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  <linearGradient id="s4b-radarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2B53E6" stopOpacity="0.38" />
+                    <stop offset="100%" stopColor="#EF3E6B" stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -769,7 +798,7 @@ export default function Step4b() {
                   const [x, y] = pt(i, R);
                   return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
                 })}
-                <polygon points={dataPoly} fill="url(#radarFillS4B)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                <polygon points={dataPoly} fill="url(#s4b-radarFill)" stroke="#2B53E6" strokeWidth="2" strokeLinejoin="round" />
                 {dims.map((d, i) => {
                   const [x, y] = pt(i, R * (d.value / 100));
                   return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -790,29 +819,33 @@ export default function Step4b() {
               <div key={d.label} className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
                 <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                <span className="text-[11px] font-bold" style={{ color: C.ink }}>{d.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 营收增长预估 · col-span-7 */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-7 rounded p-6"
+          style={{ background: 'linear-gradient(135deg, #FFFFFF, #F3F5FC)', border: `1px solid ${C.line}`, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}
+        >
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">show_chart</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.burgundy}15`, color: C.burgundy }}>
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">营收增长预估</h3>
-                <p className="text-[11px] text-[#9ca3af]">按当前变现矩阵测算</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>营收增长预估</h3>
+                <p className="text-[11px] text-[#6b7280]">按当前变现矩阵测算</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {['营收', '增速', '复购'].map((t, i) => (
                 <span
                   key={t}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                  className="rounded px-2.5 py-1 text-[11px] font-semibold"
+                  style={i === 0 ? { background: C.grad, color: '#fff' } : { background: C.base, color: '#6b7280' }}
                 >
                   {t}
                 </span>
@@ -820,11 +853,11 @@ export default function Step4b() {
             </div>
           </div>
           <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none text-[#111827]">¥190万</p>
-            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[14px]">trending_up</span>+128%
+            <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>¥190万</p>
+            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#2B53E6]/10 px-2 py-0.5 text-[12px] font-bold text-[#2B53E6]">
+              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+128%
             </span>
-            <span className="mb-1 text-[12px] text-[#9ca3af]">同比增长</span>
+            <span className="mb-1 text-[12px] text-[#6b7280]">同比增长</span>
           </div>
           {(() => {
             const data = REVENUE_TREND_S4B;
@@ -842,15 +875,15 @@ export default function Step4b() {
             const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
             const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
             return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="营收增长趋势图">
                 <defs>
-                  <linearGradient id="trendFillS4B" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  <linearGradient id="s4b-trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2B53E6" stopOpacity="0.24" />
+                    <stop offset="100%" stopColor="#2B53E6" stopOpacity="0" />
                   </linearGradient>
-                  <linearGradient id="trendLineS4B" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#002fa7" />
-                    <stop offset="100%" stopColor="#781621" />
+                  <linearGradient id="s4b-trendLine" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#2B53E6" />
+                    <stop offset="100%" stopColor="#EF3E6B" />
                   </linearGradient>
                 </defs>
                 {[0, 0.33, 0.66, 1].map((f) => (
@@ -864,15 +897,15 @@ export default function Step4b() {
                     strokeWidth="1"
                   />
                 ))}
-                <path d={area} fill="url(#trendFillS4B)" />
-                <path d={line} fill="none" stroke="url(#trendLineS4B)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={area} fill="url(#s4b-trendFill)" />
+                <path d={line} fill="none" stroke="url(#s4b-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 {data.map((v, i) =>
-                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#2B53E6" strokeWidth="2" /> : null,
                 )}
               </svg>
             );
           })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#6b7280]">
             {REVENUE_LABELS_S4B.map((m) => (
               <span key={m}>{m}</span>
             ))}
@@ -883,31 +916,34 @@ export default function Step4b() {
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 预估年营收 · 环形 · 蓝 */}
-        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        <div
+          className="ikb-focusring rounded p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ background: 'linear-gradient(135deg, #FFFFFF, #F3F5FC)', border: `1px solid ${C.line}`, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]">monitoring</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.ikb}15`, color: C.ikb }}>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>monitoring</span>
             </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[13px]">trending_up</span>+128%
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#2B53E6]/10 px-2 py-0.5 text-[11px] font-bold text-[#2B53E6]">
+              <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>+128%
             </span>
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
-                1,420<span className="text-[15px] text-[#9ca3af]">万</span>
+              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+                1,420<span className="text-[15px] text-[#6b7280]">万</span>
               </p>
               <p className="mt-1.5 text-[12px] text-[#6b7280]">预估年营收(ARR)</p>
             </div>
             <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+              <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label="78% 进度">
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#EEF1FE" strokeWidth="3.5" />
                 <circle
                   cx="18"
                   cy="18"
                   r="15.915"
                   fill="none"
-                  stroke="#002fa7"
+                  stroke="#2B53E6"
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeDasharray="78 100"
@@ -917,60 +953,69 @@ export default function Step4b() {
           </div>
         </div>
 
-        {/* 变现渠道数 · 迷你柱 · 勃艮第 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        {/* 变现渠道数 · 迷你柱 · 玫红 */}
+        <div
+          className="ikb-focusring rounded p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ background: C.paper, border: `1px solid ${C.line}`, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span className="material-symbols-outlined text-[20px]">account_tree</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.burgundy}15`, color: C.burgundy }}>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>account_tree</span>
             </span>
-            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已规划</span>
+            <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.burgundy}15`, color: C.burgundyText }}>已规划</span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
               {generated.revenueStructure.length}
-              <span className="text-[15px] text-[#9ca3af]"> 条</span>
+              <span className="text-[15px] text-[#6b7280]"> 条</span>
             </p>
             <p className="mt-1.5 text-[12px] text-[#6b7280]">变现渠道</p>
           </div>
-          <div className="mt-3 flex h-6 items-end gap-1">
+          <div className="mt-3 flex h-6 items-end gap-1" aria-hidden={true}>
             {[40, 70, 85, 58, 92].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+              <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.burgundy}99` }} />
             ))}
           </div>
         </div>
 
-        {/* 客单价区间 · 进度条 · 黄 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        {/* 客单价区间 · 进度条 · 紫 */}
+        <div
+          className="ikb-focusring rounded p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ background: C.paper, border: `1px solid ${C.line}`, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-              <span className="material-symbols-outlined text-[20px]">sell</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.accent3}18`, color: C.accent3 }}>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>sell</span>
             </span>
-            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">高客单</span>
+            <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.accent3}15`, color: C.purpleText }}>高客单</span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              1万<span className="text-[15px] text-[#9ca3af]">-100万</span>
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              1万<span className="text-[15px] text-[#6b7280]">-100万</span>
             </p>
             <p className="mt-1.5 text-[12px] text-[#6b7280]">客单价区间</p>
           </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-            <div className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" style={{ width: '82%' }} />
+          <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.accent3}20` }} aria-hidden={true}>
+            <div className="h-2 rounded-full" style={{ width: '82%', background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }} />
           </div>
         </div>
 
         {/* 综合转化率 · 关键词 chip · 蓝 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        <div
+          className="ikb-focusring rounded p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ background: C.paper, border: `1px solid ${C.line}`, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]">conversion_path</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.ikb}15`, color: C.ikb }}>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>conversion_path</span>
             </span>
-            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+            <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.ikb}15`, color: C.ikb }}>
               {generated.stages.length} 阶段
             </span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              3.8<span className="text-[15px] text-[#9ca3af]">%</span>
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
+              3.8<span className="text-[15px] text-[#6b7280]">%</span>
             </p>
             <p className="mt-1.5 text-[12px] text-[#6b7280]">综合转化率</p>
           </div>
@@ -978,7 +1023,8 @@ export default function Step4b() {
             {['引流品', '信任品', '利润品'].map((k) => (
               <span
                 key={k}
-                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+                style={{ background: '#EEF1FE', color: C.ikb }}
               >
                 {k}
               </span>
@@ -990,27 +1036,28 @@ export default function Step4b() {
       {/* ── Main grid: 收入轨迹 + 右侧 ─────────────────────── */}
       <div className="grid grid-cols-3 gap-6">
         {/* Left col-span-2: 收入轨迹分析 */}
-        <div className="col-span-2 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
-          <div className="flex items-center justify-between bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+        <div className="col-span-2 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+          <div className="ikb-gradbtn flex items-center justify-between px-6 py-4 text-white">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-                <span className="material-symbols-outlined text-[18px]">bar_chart</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded bg-white/15">
+                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>bar_chart</span>
               </span>
-              <h3 className="text-[16px] font-bold">收入轨迹分析</h3>
+              <h3 className="text-[16px] font-bold" style={{ fontFamily: F.display }}>收入轨迹分析</h3>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
               3 阶段规划
             </span>
           </div>
-          <div className="space-y-6 bg-[#f9fafb] p-6">
+          <div className="space-y-6 p-6" style={{ background: C.base }}>
             {generated.stages.map((stage, idx) => {
               const cfgIdx = (idx < 3 ? idx : 0) as 0 | 1 | 2;
               const cfg: StageCfg = STAGE_CONFIGS[cfgIdx];
               return (
                 <div
                   key={stage.number}
-                  className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft"
+                  className="rounded p-6"
+                  style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
                 >
                   {/* Stage header */}
                   <div className="mb-5 flex items-start justify-between gap-4">
@@ -1022,17 +1069,17 @@ export default function Step4b() {
                         >
                           阶段 {String(stage.number).padStart(2, '0')}
                         </span>
-                        <span className="rounded-md border border-[#e5e7eb] bg-[#f3f4f6] px-2 py-0.5 text-[10px] font-semibold text-[#6b7280]">
+                        <span className="rounded border px-2 py-0.5 text-[10px] font-semibold text-[#6b7280]" style={{ borderColor: C.line, background: C.base }}>
                           {stage.duration}
                         </span>
                       </div>
                       <div
-                        className="mb-1 text-[22px] font-bold leading-none"
-                        style={{ color: cfg.valueColor }}
+                        className="ikb-gradtext mb-1 text-[22px] font-bold leading-none"
+                        style={{ fontFamily: F.display }}
                       >
                         {stage.range}
                       </div>
-                      <p className="text-[13px] font-semibold text-[#111827]">{stage.title}</p>
+                      <p className="text-[13px] font-semibold" style={{ color: C.ink }}>{stage.title}</p>
                       <p
                         className="mt-0.5 text-[11px] font-semibold"
                         style={{ color: cfg.accentColor }}
@@ -1040,7 +1087,7 @@ export default function Step4b() {
                         {cfg.subtitle}
                       </p>
                     </div>
-                    <div className="flex h-20 shrink-0 items-end gap-1.5">
+                    <div className="flex h-20 shrink-0 items-end gap-1.5" aria-hidden={true}>
                       {cfg.barColors.map((color, bi) => (
                         <div
                           key={bi}
@@ -1052,8 +1099,9 @@ export default function Step4b() {
                   </div>
 
                   {/* 核心策略 */}
-                  <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                    <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                  <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                    <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.ikb }}>
+                      <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.ikb, marginRight: 2 }} aria-hidden={true} />
                       核心策略
                     </p>
                     <p className="text-[13px] leading-relaxed text-[#374151]">{stage.coreStrategy}</p>
@@ -1062,23 +1110,25 @@ export default function Step4b() {
                   {/* 产品矩阵 */}
                   {stage.productMatrix.length > 0 && (
                     <div className="mb-4">
-                      <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                      <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.burgundyText }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.burgundy, marginRight: 2 }} aria-hidden={true} />
                         产品矩阵
                       </p>
                       <div className="grid grid-cols-1 gap-3">
                         {stage.productMatrix.map((product, pi) => (
                           <div
                             key={pi}
-                            className="rounded-xl border border-[#e5e7eb] bg-white p-4 pw-shadow-soft"
+                            className="rounded p-4"
+                            style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.05)' }}
                           >
                             <div className="mb-2 flex items-start justify-between gap-2">
                               <div>
-                                <span className="rounded-md bg-[#eff4ff] px-2 py-0.5 text-[10px] font-bold text-[#002fa7]">
+                                <span className="rounded px-2 py-0.5 text-[10px] font-bold" style={{ background: '#EEF1FE', color: C.ikb }}>
                                   {product.category}
                                 </span>
-                                <p className="mt-1 text-[13px] font-semibold text-[#111827]">{product.name}</p>
+                                <p className="mt-1 text-[13px] font-semibold" style={{ color: C.ink }}>{product.name}</p>
                               </div>
-                              <span className="shrink-0 rounded-lg border border-[#F6D300]/60 bg-[#FEFCE0] px-2.5 py-1 text-[12px] font-bold text-[#8a6a00]">
+                              <span className="shrink-0 rounded border px-2.5 py-1 text-[12px] font-bold" style={{ borderColor: `${C.accent3}40`, background: '#EEE8FC', color: C.purpleText }}>
                                 {product.priceRange}
                               </span>
                             </div>
@@ -1093,7 +1143,7 @@ export default function Step4b() {
                               </div>
                               <div>
                                 <span className="font-semibold text-[#374151]">月收入</span>
-                                <p className="mt-0.5 font-semibold text-[#10b981]">{product.monthlyRevenue}</p>
+                                <p className="mt-0.5 font-semibold text-[#2B53E6]">{product.monthlyRevenue}</p>
                               </div>
                             </div>
                           </div>
@@ -1104,8 +1154,9 @@ export default function Step4b() {
 
                   {/* 流量策略 */}
                   {stage.trafficStrategy && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.ikb }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.ikb, marginRight: 2 }} aria-hidden={true} />
                         流量策略
                       </p>
                       <p className="text-[13px] leading-relaxed text-[#374151]">{stage.trafficStrategy}</p>
@@ -1114,14 +1165,15 @@ export default function Step4b() {
 
                   {/* 转化流程 */}
                   {stage.conversionFlow && stage.conversionFlow.length > 0 && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.ikb }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.ikb, marginRight: 2 }} aria-hidden={true} />
                         转化流程
                       </p>
                       <div className="space-y-2">
                         {stage.conversionFlow.map((step, si) => (
                           <div key={si} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
-                            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[9px] font-bold text-white">
+                            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white" style={{ background: C.ikb }}>
                               {si + 1}
                             </span>
                             <span>{step}</span>
@@ -1133,8 +1185,9 @@ export default function Step4b() {
 
                   {/* 团队建设 */}
                   {stage.teamBuilding && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.burgundyText }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.burgundy, marginRight: 2 }} aria-hidden={true} />
                         团队建设
                       </p>
                       <p className="text-[13px] leading-relaxed text-[#374151]">{stage.teamBuilding}</p>
@@ -1143,8 +1196,9 @@ export default function Step4b() {
 
                   {/* 体系化建设 */}
                   {stage.systemBuilding && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.burgundyText }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.burgundy, marginRight: 2 }} aria-hidden={true} />
                         体系化建设
                       </p>
                       <p className="text-[13px] leading-relaxed text-[#374151]">{stage.systemBuilding}</p>
@@ -1153,8 +1207,9 @@ export default function Step4b() {
 
                   {/* 品牌化策略 */}
                   {stage.brandStrategy && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#8a6a00] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#F6D300] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.purpleText }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.accent3, marginRight: 2 }} aria-hidden={true} />
                         品牌化策略
                       </p>
                       <p className="text-[13px] leading-relaxed text-[#374151]">{stage.brandStrategy}</p>
@@ -1163,8 +1218,9 @@ export default function Step4b() {
 
                   {/* 矩阵化布局 */}
                   {stage.matrixLayout && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-4">
-                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#8a6a00] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#F6D300] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                      <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.purpleText }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.accent3, marginRight: 2 }} aria-hidden={true} />
                         矩阵化布局
                       </p>
                       <p className="text-[13px] leading-relaxed text-[#374151]">{stage.matrixLayout}</p>
@@ -1173,14 +1229,15 @@ export default function Step4b() {
 
                   {/* 关键动作 */}
                   {stage.keyActions.length > 0 && (
-                    <div className="mb-4 rounded-xl border border-[#e5e7eb] bg-[#f0fff4] p-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#10b981] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#10b981] before:content-['']">
+                    <div className="mb-4 rounded p-4" style={{ border: '1px solid #dcfce7', background: '#f0fdf4' }}>
+                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#166534]">
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: '#16a34a', marginRight: 2 }} aria-hidden={true} />
                         关键动作
                       </p>
                       <ul className="space-y-1.5">
                         {stage.keyActions.map((action, ai) => (
                           <li key={ai} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#374151]">
-                            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[14px] text-[#10b981]">check_circle</span>
+                            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[14px] text-[#16a34a]" aria-hidden={true}>check_circle</span>
                             <span>{action}</span>
                           </li>
                         ))}
@@ -1190,14 +1247,15 @@ export default function Step4b() {
 
                   {/* 风险提示 */}
                   {stage.risks.length > 0 && (
-                    <div className="rounded-xl border border-[#fecaca] bg-[#fff5f5] p-4">
-                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                    <div className="rounded p-4" style={{ border: `1px solid ${C.burgundy}30`, background: `${C.burgundy}06` }}>
+                      <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.burgundyText }}>
+                        <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: C.burgundy, marginRight: 2 }} aria-hidden={true} />
                         风险提示
                       </p>
                       <ul className="space-y-1.5">
                         {stage.risks.map((risk, ri) => (
-                          <li key={ri} className="flex items-start gap-2 text-[13px] leading-relaxed text-[#781621]">
-                            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[14px] text-[#781621]">warning</span>
+                          <li key={ri} className="flex items-start gap-2 text-[13px] leading-relaxed" style={{ color: C.burgundyText }}>
+                            <span className="material-symbols-outlined mt-0.5 shrink-0 text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>warning</span>
                             <span>{risk}</span>
                           </li>
                         ))}
@@ -1213,13 +1271,16 @@ export default function Step4b() {
         {/* Right col-span-1 */}
         <div className="flex flex-col gap-6">
           {/* 收入结构模型 */}
-          <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
-            <h3 className="mb-1 text-[16px] font-bold text-[#111827]">收入结构模型</h3>
-            <p className="mb-4 text-[11px] text-[#9ca3af]">三色环形占比 · 品牌三色轮转</p>
+          <div
+            className="rounded p-6"
+            style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}
+          >
+            <h3 className="mb-1 text-[16px] font-bold" style={{ color: C.ink }}>收入结构模型</h3>
+            <p className="mb-4 text-[11px] text-[#6b7280]">三色环形占比 · 红蓝紫轮转</p>
             <div className="mb-6 flex items-center justify-center">
-              <svg className="-rotate-90" viewBox="0 0 160 160" width="160" height="160">
+              <svg className="-rotate-90" viewBox="0 0 160 160" width="160" height="160" role="img" aria-label="收入结构环形图">
                 {/* track */}
-                <circle cx="80" cy="80" fill="none" r="70" stroke="#f1f5f9" strokeWidth="12" />
+                <circle cx="80" cy="80" fill="none" r="70" stroke="#EEF1FE" strokeWidth="12" />
                 {/* segments */}
                 {donutSegments.map((seg, i) => (
                   <circle
@@ -1238,7 +1299,7 @@ export default function Step4b() {
             </div>
             <div className="space-y-4">
               {donutSegments.map((seg) => (
-                <div key={seg.name} className="rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-3">
+                <div key={seg.name} className="rounded p-3" style={{ border: `1px solid ${C.line}`, background: C.base }}>
                   <div className="mb-1.5 flex items-center gap-2">
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: seg.color }} />
                     <span className="flex-1 text-[12px] font-semibold text-[#374151]">{seg.name}</span>
@@ -1247,28 +1308,28 @@ export default function Step4b() {
                     </span>
                   </div>
                   {seg.desc && (
-                    <p className="pl-4.5 text-[11px] leading-relaxed text-[#6b7280]">{seg.desc}</p>
+                    <p className="pl-4 text-[11px] leading-relaxed text-[#6b7280]">{seg.desc}</p>
                   )}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ARR card · 品牌蓝渐变 */}
-          <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#002fa7] to-[#001952] p-6 text-white pw-shadow-soft">
+          {/* ARR card · IKB 渐变底 */}
+          <div className="ikb-gradbtn relative overflow-hidden rounded p-6 text-white" style={{ boxShadow: '0 4px 16px rgba(43,83,230,0.25)' }}>
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#781621]/20 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#EF3E6B]/20 blur-2xl" />
             <div className="relative z-10">
               <div className="mb-3 flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-                  <span className="material-symbols-outlined text-[18px]">currency_yen</span>
+                <span className="flex h-8 w-8 items-center justify-center rounded bg-white/15">
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>currency_yen</span>
                 </span>
-                <p className="text-[12px] font-medium text-[#b8c4ff]">预计年度经常性收入 (ARR)</p>
+                <p className="text-[12px] font-medium text-white/80">预计年度经常性收入 (ARR)</p>
               </div>
-              <div className="mb-1 text-[32px] font-bold leading-none">¥1,420万</div>
+              <div className="mb-1 text-[32px] font-bold leading-none" style={{ fontFamily: F.display }}>¥1,420万</div>
               <div className="mt-3 flex items-center gap-2 text-[13px]">
-                <span className="material-symbols-outlined text-[16px] text-[#10b981]">trending_up</span>
-                <span className="font-semibold text-[#10b981]">同比增长 +128%</span>
+                <span className="material-symbols-outlined text-[16px] text-white/90" aria-hidden={true}>trending_up</span>
+                <span className="font-semibold text-white/90">同比增长 +128%</span>
               </div>
             </div>
           </div>
@@ -1276,13 +1337,13 @@ export default function Step4b() {
       </div>
 
       {/* ── 节点性能指标 table ──────────────────────────────── */}
-      <div className="mt-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
-        <div className="flex items-center justify-between border-b border-[#eef1f6] bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+      <div className="mt-6 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+        <div className="ikb-gradbtn flex items-center justify-between px-6 py-4 text-white" style={{ borderBottom: `1px solid ${C.line}` }}>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]">sort</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded bg-white/15">
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>sort</span>
             </span>
-            <h3 className="text-[16px] font-bold">节点性能指标</h3>
+            <h3 className="text-[16px] font-bold" style={{ fontFamily: F.display }}>节点性能指标</h3>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold">
             {generated.successCases.length} 条参考
@@ -1291,25 +1352,28 @@ export default function Step4b() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[14px]">
             <thead>
-              <tr className="bg-[#f8faff]">
-                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">名称</th>
-                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">体量层级</th>
-                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">转化率</th>
-                <th className="w-32 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">状态</th>
-                <th className="w-20 px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-[#002fa7]">操作</th>
+              <tr style={{ background: C.base }}>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: C.ikb }}>名称</th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: C.ikb }}>体量层级</th>
+                <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: C.ikb }}>转化率</th>
+                <th className="w-32 px-6 py-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: C.ikb }}>状态</th>
+                <th className="w-20 px-6 py-4 text-[11px] font-bold uppercase tracking-widest" style={{ color: C.ikb }}>操作</th>
               </tr>
             </thead>
             <tbody className="text-[#374151]">
               {generated.successCases.map((sc, idx) => (
                 <tr
                   key={sc.title}
-                  className={`border-t border-[#f3f4f6] transition-colors hover:bg-[#f8faff] ${idx % 2 === 1 ? 'bg-[#fafbff]' : ''}`}
+                  className="transition-colors"
+                  style={{ borderTop: `1px solid ${C.line}`, background: idx % 2 === 1 ? C.base : 'transparent' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = '#EEF1FE'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = idx % 2 === 1 ? C.base : 'transparent'; }}
                 >
-                  <td className="px-6 py-4 font-semibold text-[#111827]">
+                  <td className="px-6 py-4 font-semibold" style={{ color: C.ink }}>
                     {sc.title.length > 28 ? `${sc.title.slice(0, 28)}…` : sc.title}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="rounded-md border border-[#dbe2ff] bg-[#eff4ff] px-2 py-0.5 text-[11px] font-semibold text-[#002fa7]">
+                    <span className="rounded border px-2 py-0.5 text-[11px] font-semibold" style={{ borderColor: `${C.ikb}30`, background: '#EEF1FE', color: C.ikb }}>
                       {sc.category}
                     </span>
                   </td>
@@ -1322,10 +1386,13 @@ export default function Step4b() {
                   <td className="px-6 py-4">
                     <button
                       type="button"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#6b7280] transition-colors hover:border-[#002fa7] hover:bg-[#002fa7] hover:text-white"
-                      aria-label="操作"
+                      className="ikb-focusring flex h-7 w-7 items-center justify-center rounded border text-[#6b7280] transition-colors hover:text-white"
+                      style={{ borderColor: C.line, background: C.paper }}
+                      aria-label={`操作 ${sc.title}`}
+                      onMouseEnter={(e) => { const b = e.currentTarget; b.style.background = C.ikb; b.style.borderColor = C.ikb; b.style.color = '#fff'; }}
+                      onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = C.paper; b.style.borderColor = C.line; b.style.color = '#6b7280'; }}
                     >
-                      <span className="material-symbols-outlined text-[14px]">more_vert</span>
+                      <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>more_vert</span>
                     </button>
                   </td>
                 </tr>
@@ -1336,13 +1403,16 @@ export default function Step4b() {
       </div>
 
       {/* ── 成功案例参考 cards ──────────────────────────────── */}
-      <div className="mt-6 overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
-        <div className="flex items-center justify-between bg-gradient-to-r from-[#781621] to-[#a01e2a] px-6 py-4 text-white">
+      <div className="mt-6 overflow-hidden rounded" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+        <div
+          className="flex items-center justify-between px-6 py-4 text-white"
+          style={{ background: `linear-gradient(110deg, ${C.burgundy} 0%, #9B2A51 100%)` }}
+        >
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]">emoji_events</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded bg-white/15">
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>emoji_events</span>
             </span>
-            <h3 className="text-[16px] font-bold">成功案例参考</h3>
+            <h3 className="text-[16px] font-bold" style={{ fontFamily: F.display }}>成功案例参考</h3>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold">
             {generated.successCases.length} 个案例
@@ -1352,29 +1422,30 @@ export default function Step4b() {
           {generated.successCases.map((sc, idx) => (
             <div
               key={sc.title}
-              className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft"
+              className="rounded p-5"
+              style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}
             >
               <div className="mb-3 flex items-start gap-3">
                 <CaseStatusBadge status={getCaseStatus(idx)} />
-                <span className="rounded-md border border-[#dbe2ff] bg-[#eff4ff] px-2 py-0.5 text-[11px] font-semibold text-[#002fa7]">
+                <span className="rounded border px-2 py-0.5 text-[11px] font-semibold" style={{ borderColor: `${C.ikb}30`, background: '#EEF1FE', color: C.ikb }}>
                   {sc.category}
                 </span>
               </div>
-              <p className="mb-3 text-[14px] font-bold text-[#111827]">{sc.title}</p>
+              <p className="mb-3 text-[14px] font-bold" style={{ color: C.ink }}>{sc.title}</p>
               {sc.journey && (
-                <div className="mb-3 rounded-xl border border-[#e5e7eb] bg-[#f9faff] p-3">
-                  <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#002fa7]">成长历程</p>
+                <div className="mb-3 rounded p-3" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+                  <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest" style={{ color: C.ikb }}>成长历程</p>
                   <p className="text-[12px] leading-relaxed text-[#374151]">{sc.journey}</p>
                 </div>
               )}
-              <div className="mb-3 rounded-xl border border-[#d1fae5] bg-[#f0fdf4] p-3">
-                <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#10b981]">最终成果</p>
-                <p className="text-[12px] font-semibold leading-relaxed text-[#065f46]">{sc.outcome}</p>
+              <div className="mb-3 rounded p-3" style={{ border: '1px solid #dcfce7', background: '#f0fdf4' }}>
+                <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#166534]">最终成果</p>
+                <p className="text-[12px] font-semibold leading-relaxed text-[#166534]">{sc.outcome}</p>
               </div>
               {sc.insight && (
-                <div className="rounded-xl border border-[#F6D300]/50 bg-[#FEFCE0] p-3">
-                  <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-[#8a6a00]">启示</p>
-                  <p className="text-[12px] leading-relaxed text-[#6b5a00]">{sc.insight}</p>
+                <div className="rounded p-3" style={{ border: `1px solid ${C.accent3}30`, background: '#F4F0FD' }}>
+                  <p className="mb-1 text-[10px] font-extrabold uppercase tracking-widest" style={{ color: C.purpleText }}>启示</p>
+                  <p className="text-[12px] leading-relaxed" style={{ color: C.purpleText }}>{sc.insight}</p>
                 </div>
               )}
             </div>
@@ -1383,10 +1454,10 @@ export default function Step4b() {
       </div>
 
       {/* ── 市场分析 card ───────────────────────────────────── */}
-      <div className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
-        <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold text-[#111827]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[20px]">insights</span>
+      <div className="mt-6 rounded p-6" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 2px 8px rgba(43,83,230,0.07)' }}>
+        <h3 className="mb-5 flex items-center gap-2.5 text-[16px] font-bold" style={{ color: C.ink }}>
+          <span className="flex h-9 w-9 items-center justify-center rounded" style={{ background: `${C.ikb}15`, color: C.ikb }}>
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>insights</span>
           </span>
           市场分析
         </h3>
@@ -1397,8 +1468,9 @@ export default function Step4b() {
             { key: '竞争格局', val: generated.marketAnalysis.competition },
             { key: '变现潜力', val: generated.marketAnalysis.monetizationPotential },
           ].map((item) => (
-            <div key={item.key} className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-              <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+            <div key={item.key} className="rounded p-4" style={{ border: `1px solid ${C.line}`, background: C.base }}>
+              <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest" style={{ color: C.ikb }}>
+                <span style={{ display: 'inline-block', width: 2, height: 10, borderRadius: 1, background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})`, marginRight: 2 }} aria-hidden={true} />
                 {item.key}
               </p>
               <p className="text-[13px] leading-relaxed text-[#374151]">{item.val}</p>
@@ -1408,29 +1480,33 @@ export default function Step4b() {
       </div>
 
       {/* ── Footer actions ──────────────────────────────────── */}
-      <div className="mt-6 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+      <div className="mt-6 rounded p-6" style={{ border: `1px solid ${C.line}`, background: C.paper, boxShadow: '0 1px 4px rgba(22,32,72,0.06)' }}>
         <div className="flex flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <span className="text-[13px] font-medium text-[#6b7280]">这个结果对你有帮助吗？</span>
             <button
               type="button"
               onClick={handleFeedbackUp}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#f0fdf4] hover:text-[#10b981]"
+              className="ikb-focusring flex h-8 w-8 items-center justify-center rounded border text-[#374151] shadow-sm transition-colors hover:bg-[#EEF1FE] hover:text-[#2B53E6]"
+              style={{ borderColor: C.line, background: C.paper }}
               aria-label="有帮助"
             >
-              <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>thumb_up</span>
             </button>
             <button
               type="button"
               onClick={handleFeedbackDown}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#374151] shadow-sm transition-colors hover:bg-[#fff0f2] hover:text-[#781621]"
+              className="ikb-focusring flex h-8 w-8 items-center justify-center rounded border text-[#374151] shadow-sm transition-colors"
+              style={{ borderColor: C.line, background: C.paper }}
               aria-label="没帮助"
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.burgundyText; (e.currentTarget as HTMLButtonElement).style.background = `${C.burgundy}08`; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#374151'; (e.currentTarget as HTMLButtonElement).style.background = C.paper; }}
             >
-              <span className="material-symbols-outlined text-[18px]">thumb_down</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>thumb_down</span>
             </button>
           </div>
         </div>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
