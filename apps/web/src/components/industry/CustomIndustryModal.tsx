@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { C, F } from '@/components/home/ikb/system';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,6 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import '@/styles/ikb-hero.css';
 import {
   STEP1_CUSTOM_MODAL_CANCEL,
   STEP1_CUSTOM_MODAL_CONFIRM,
@@ -66,9 +68,9 @@ export function CustomIndustryModal({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="glass-card">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-display">{STEP1_CUSTOM_MODAL_TITLE}</DialogTitle>
+          <DialogTitle style={{ fontFamily: F.display, color: C.ink }}>{STEP1_CUSTOM_MODAL_TITLE}</DialogTitle>
         </DialogHeader>
         <Input
           maxLength={20}
@@ -79,14 +81,22 @@ export function CustomIndustryModal({
             if (e.key === 'Enter') handleConfirm();
           }}
           data-testid="custom-industry-input"
+          className="ikb-input"
+          style={{ borderColor: C.line }}
         />
         <DialogFooter>
-          <Button variant="outline" onClick={() => handleOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            className="ikb-focusring"
+            style={{ border: `1px solid ${C.line}`, color: C.ink, background: 'transparent' }}
+          >
             {STEP1_CUSTOM_MODAL_CANCEL}
           </Button>
           <Button
             disabled={!input.trim()}
-            className="bg-gradient-to-r from-primary to-primary/80"
+            className="ikb-gradbtn ikb-focusring"
+            style={{ color: '#fff' }}
             onClick={handleConfirm}
             data-testid="custom-industry-confirm"
           >

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { C, F } from '@/components/home/ikb/system';
 import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import '@/styles/ikb-hero.css';
 import { trpc } from '@/lib/trpc';
 
 interface CreateAccountModalProps {
@@ -120,7 +122,8 @@ export function CreateAccountModal({
       {/* Controlled mode: no built-in trigger (caller renders its own button) */}
       {!isControlled && (
         <Button
-          className="bg-gradient-to-r from-primary to-primary/60 text-primary-foreground"
+          className="ikb-gradbtn ikb-focusring"
+          style={{ color: '#fff' }}
           onClick={() => setOpen(true)}
           data-testid="create-account-trigger"
         >
@@ -131,7 +134,7 @@ export function CreateAccountModal({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent data-testid="create-account-modal">
           <DialogHeader>
-            <DialogTitle>新建 IP 账号</DialogTitle>
+            <DialogTitle style={{ fontFamily: F.display, color: C.ink }}>新建 IP 账号</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
@@ -145,6 +148,8 @@ export function CreateAccountModal({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="如：赵语AI"
                 data-testid="create-account-name"
+                className="ikb-input"
+                style={{ borderColor: C.line }}
               />
             </div>
 
@@ -160,7 +165,8 @@ export function CreateAccountModal({
                   onChange={(e) => setIndustry(e.target.value)}
                   placeholder="如：企业服务"
                   data-testid="create-account-industry"
-                  className="flex-1"
+                  className="ikb-input flex-1"
+                  style={{ borderColor: C.line }}
                 />
                 <Button
                   type="button"
@@ -212,13 +218,21 @@ export function CreateAccountModal({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancel} data-testid="create-account-cancel">
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              data-testid="create-account-cancel"
+              className="ikb-focusring"
+              style={{ border: `1px solid ${C.line}`, color: C.ink, background: 'transparent' }}
+            >
               取消
             </Button>
             <Button
               disabled={isDisabled || createMutation.isPending}
               onClick={() => void handleCreate()}
               data-testid="create-account-submit"
+              className="ikb-gradbtn ikb-focusring"
+              style={{ color: '#fff' }}
             >
               {createMutation.isPending ? '创建中…' : '创建并开始'}
             </Button>

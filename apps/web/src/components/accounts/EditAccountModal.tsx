@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 
+import { C, F } from '@/components/home/ikb/system';
 import { PlatformInlineRadio } from '@/components/inline-pickers/PlatformInlineRadio';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import '@/styles/ikb-hero.css';
 import { trpc } from '@/lib/trpc';
 
 interface EditableAccount {
@@ -83,7 +85,7 @@ export function EditAccountModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent data-testid="edit-account-modal">
         <DialogHeader>
-          <DialogTitle>编辑 IP 账号</DialogTitle>
+          <DialogTitle style={{ fontFamily: F.display, color: C.ink }}>编辑 IP 账号</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
@@ -100,6 +102,8 @@ export function EditAccountModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="如：赵语AI"
               data-testid="edit-account-name"
+              className="ikb-input"
+              style={{ borderColor: C.line }}
             />
           </div>
 
@@ -116,6 +120,8 @@ export function EditAccountModal({
               onChange={(e) => setIndustry(e.target.value)}
               placeholder="如：企业服务"
               data-testid="edit-account-industry"
+              className="ikb-input"
+              style={{ borderColor: C.line }}
             />
           </div>
 
@@ -145,13 +151,21 @@ export function EditAccountModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel} data-testid="edit-account-cancel">
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            data-testid="edit-account-cancel"
+            className="ikb-focusring"
+            style={{ border: `1px solid ${C.line}`, color: C.ink, background: 'transparent' }}
+          >
             取消
           </Button>
           <Button
             disabled={isDisabled || updateMutation.isPending}
             onClick={() => void handleSave()}
             data-testid="edit-account-submit"
+            className="ikb-gradbtn ikb-focusring"
+            style={{ color: '#fff' }}
           >
             {updateMutation.isPending ? '保存中…' : '保存'}
           </Button>
