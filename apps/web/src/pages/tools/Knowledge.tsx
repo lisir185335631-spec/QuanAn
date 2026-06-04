@@ -1,14 +1,17 @@
 /**
- * /knowledge 页面 — AIP文案方法论 · 先锋白重构
+ * /knowledge 页面 — AIP文案方法论
+ * IKB 红蓝紫渐变体系重构 · IKBLayout 外壳
  * 4 tab(20类脚本 / 20大爆款 / 开头公式 / 核心公式) + 起承转合 footer
- * 先锋白标准 · PioneerLayout · 自定义 tab(无 shadcn Tabs · 无 lucide 图标) · 品牌三主色
- * testid 全保留 · 逻辑零改动 · 禁断点 · 禁 line-clamp
+ * 逻辑零改动 · testid 全保留 · 禁断点 · 禁 line-clamp
  */
+
+import '@/styles/ikb-hero.css';
 
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import { CORE_FORMULAS } from '@/lib/constants/coreFormulas';
 import { ELEMENT_DETAILS } from '@/lib/constants/elementDetails';
 import { ALL_ELEMENTS, HOT_ELEMENT_GROUPS } from '@/lib/constants/elements';
@@ -48,20 +51,20 @@ for (const group of HOT_ELEMENT_GROUPS) {
   }
 }
 
-// KPI data
+// KPI data — IKB 三主色轮转: 蓝/玫红/紫/蓝
 const KPI_CARDS = [
-  { label: '脚本类型', value: `${SCRIPT_TYPES.length}`, unit: '类', icon: 'chat',      color: '#002fa7', bg: '#e0e7ff', borderColor: '#c7d2fe' },
-  { label: '爆款元素', value: '20',                       unit: '个', icon: 'bolt',      color: '#781621', bg: '#fde8ec', borderColor: '#f5c2c7' },
-  { label: '开头公式', value: `${OPENING_FORMULAS.length}`, unit: '个', icon: 'menu_book', color: '#8a6a00', bg: '#fdf6cc', borderColor: '#F3E08A' },
-  { label: '核心公式', value: `${CORE_FORMULAS.length}`,  unit: '个', icon: 'lightbulb', color: '#002fa7', bg: '#e0e7ff', borderColor: '#c7d2fe' },
+  { label: '脚本类型', value: `${SCRIPT_TYPES.length}`, unit: '类', icon: 'chat',      color: C.ikb,      bg: `${C.ikb}10`,      borderColor: `${C.ikb}28`      },
+  { label: '爆款元素', value: '20',                       unit: '个', icon: 'bolt',      color: C.burgundy, bg: `${C.burgundy}10`, borderColor: `${C.burgundy}28` },
+  { label: '开头公式', value: `${OPENING_FORMULAS.length}`, unit: '个', icon: 'menu_book', color: C.accent3,  bg: `${C.accent3}10`,  borderColor: `${C.accent3}28`  },
+  { label: '核心公式', value: `${CORE_FORMULAS.length}`,  unit: '个', icon: 'lightbulb', color: C.ikb,      bg: `${C.ikb}10`,      borderColor: `${C.ikb}28`      },
 ];
 
-// Story stage accent colors (pioneer-white)
+// Story stage accent colors (IKB 三主色轮转: 起→玫红 承→紫 转→蓝 合→蓝)
 const STAGE_ACCENT: Record<string, { color: string; bg: string; border: string }> = {
-  qi:    { color: '#781621', bg: '#fde8ec', border: '#f5c2c7' },
-  cheng: { color: '#8a6a00', bg: '#fdf6cc', border: '#F3E08A' },
-  zhuan: { color: '#10b981', bg: '#d1fae5', border: '#6ee7b7' },
-  he:    { color: '#002fa7', bg: '#e0e7ff', border: '#c7d2fe' },
+  qi:    { color: C.burgundy, bg: `${C.burgundy}10`, border: `${C.burgundy}28` },
+  cheng: { color: C.accent3,  bg: `${C.accent3}10`,  border: `${C.accent3}28`  },
+  zhuan: { color: C.ikb,      bg: `${C.ikb}10`,      border: `${C.ikb}28`      },
+  he:    { color: C.ikb,      bg: `${C.ikb}08`,      border: `${C.ikb}20`      },
 };
 
 // ── Sub-components (inline) ────────────────────────────────────────────────────
@@ -86,8 +89,9 @@ function ScriptTab() {
       <div className="flex items-center justify-between gap-4">
         <div className="relative">
           <span
-            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]"
-            aria-hidden="true"
+            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
+            style={{ color: '#6b7280' }}
+            aria-hidden={true}
           >
             search
           </span>
@@ -96,11 +100,12 @@ function ScriptTab() {
             placeholder={KNOWLEDGE_PAGE.searchPlaceholders.scripts}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-[320px] rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-2.5 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+            className="ikb-input w-[320px] rounded-lg py-2.5 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
+            style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
             data-testid="script-search"
           />
         </div>
-        <span className="shrink-0 text-[13px] text-[#6b7280]" data-testid="script-count">
+        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="script-count">
           {KNOWLEDGE_PAGE.countText.scripts(SCRIPT_TYPES.length, filtered.length)}
         </span>
       </div>
@@ -112,19 +117,21 @@ function ScriptTab() {
           return (
             <div
               key={s.key}
-              className="rounded-xl border border-[#e5e7eb] bg-white p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md pw-shadow-soft"
+              className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+              style={{ borderColor: C.line, background: C.paper }}
               data-testid={`script-card-${s.key}`}
             >
               {/* header */}
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-[#002fa7]/10 text-[#002fa7] text-[13px] font-bold shrink-0"
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-[13px] font-bold shrink-0"
+                    style={{ background: `${C.ikb}12`, color: C.ikb }}
                     data-testid={`script-chip-${s.key}`}
                   >
                     {s.emoji}
                   </span>
-                  <span className="font-bold text-[13px] leading-snug text-[#111827]">{s.label}</span>
+                  <span className="font-bold text-[13px] leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>{s.label}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button
@@ -132,9 +139,10 @@ function ScriptTab() {
                     aria-label="收藏"
                     data-testid={`script-bookmark-${s.key}`}
                     onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#F6D300] hover:text-[#8a6a00]"
+                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
+                    style={{ borderColor: C.line, color: '#6b7280' }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden="true">bookmark</span>
+                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
                   </button>
                   <button
                     type="button"
@@ -144,36 +152,38 @@ function ScriptTab() {
                       void navigator.clipboard.writeText(s.label);
                       toast.success(KNOWLEDGE_PAGE.toasts.copied);
                     }}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+                    style={{ borderColor: C.line, color: '#6b7280' }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden="true">content_copy</span>
+                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
                   </button>
                 </div>
               </div>
 
               {/* desc */}
-              <p className="text-[12px] text-[#6b7280]">{s.desc}</p>
+              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{s.desc}</p>
 
               {/* methodology */}
-              <p className="text-[11px] text-[#9ca3af] leading-relaxed">{s.methodology}</p>
+              <p className="text-[11px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>{s.methodology}</p>
 
               {/* expand cases */}
               <button
                 type="button"
                 data-testid={`script-cases-${s.key}`}
                 onClick={() => setExpanded((v) => ({ ...v, [s.key]: !v[s.key] }))}
-                className="flex items-center gap-1 text-[11px] text-[#9ca3af] hover:text-[#002fa7] transition-colors w-full"
+                className="ikb-focusring flex items-center gap-1 text-[11px] transition-colors w-full hover:text-[#2B53E6]"
+                style={{ color: '#6b7280', fontFamily: F.cn }}
               >
                 <span>实战案例</span>
                 <span
                   className={`material-symbols-outlined text-[13px] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                  aria-hidden="true"
+                  aria-hidden={true}
                 >
                   expand_more
                 </span>
               </button>
               {isExpanded && (
-                <p className="text-[11px] text-[#9ca3af] pl-2 border-l-2 border-[#e5e7eb]">
+                <p className="text-[11px] pl-2 border-l-2" style={{ color: '#6b7280', borderColor: C.line, fontFamily: F.cn }}>
                   暂无案例数据
                 </p>
               )}
@@ -198,28 +208,29 @@ function ElementsTab() {
     <div className="space-y-4" data-testid="elements-tab">
       {/* filter chips */}
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" role="radiogroup" aria-label="爆款元素分类筛选">
           {FILTER_CHIPS.map((chip) => {
             const active = activeFilter === chip.key;
             return (
               <button
                 key={chip.key}
                 type="button"
-                aria-pressed={active}
+                role="radio"
+                aria-checked={active}
                 data-testid={`elements-filter-${chip.key}`}
                 onClick={() => setActiveFilter(chip.key)}
-                className={`rounded-full px-3 py-1.5 text-[12px] font-semibold border transition-all ${
-                  active
-                    ? 'border-[#002fa7] bg-[#002fa7] text-white'
-                    : 'border-[#e5e7eb] text-[#6b7280] hover:border-[#002fa7] hover:text-[#002fa7]'
-                }`}
+                className="ikb-focusring rounded-full px-3 py-1.5 text-[12px] font-semibold border transition-all"
+                style={active
+                  ? { borderColor: C.ikb, background: C.ikb, color: '#fff', fontFamily: F.cn }
+                  : { borderColor: C.line, color: '#6b7280', background: 'transparent', fontFamily: F.cn }
+                }
               >
                 {chip.label}
               </button>
             );
           })}
         </div>
-        <span className="shrink-0 text-[13px] text-[#6b7280]" data-testid="elements-count">
+        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="elements-count">
           {KNOWLEDGE_PAGE.countText.elements(ALL_ELEMENTS.length, filtered.length)}
         </span>
       </div>
@@ -233,17 +244,21 @@ function ElementsTab() {
           return (
             <div
               key={item.key}
-              className="rounded-xl border border-[#e5e7eb] bg-white p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md pw-shadow-soft"
+              className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+              style={{ borderColor: C.line, background: C.paper }}
               data-testid={`element-card-${item.key}`}
             >
               {/* header */}
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <span className="text-[22px] shrink-0">{item.emoji}</span>
-                  <span className="font-bold text-[13px] leading-snug text-[#111827]">{item.label}</span>
+                  <span className="font-bold text-[13px] leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>{item.label}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <span className="rounded-full border border-[#e5e7eb] bg-[#f9f9f9] px-2 py-0.5 text-[10px] font-medium text-[#6b7280]">
+                  <span
+                    className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                    style={{ background: C.base, color: '#6b7280', border: `1px solid ${C.line}`, fontFamily: F.cn }}
+                  >
                     {groupLabel}
                   </span>
                   <button
@@ -251,9 +266,10 @@ function ElementsTab() {
                     aria-label="收藏"
                     data-testid={`element-bookmark-${item.key}`}
                     onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#F6D300] hover:text-[#8a6a00]"
+                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
+                    style={{ borderColor: C.line, color: '#6b7280' }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden="true">bookmark</span>
+                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
                   </button>
                   <button
                     type="button"
@@ -263,23 +279,27 @@ function ElementsTab() {
                       void navigator.clipboard.writeText(item.label);
                       toast.success(KNOWLEDGE_PAGE.toasts.copied);
                     }}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+                    className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+                    style={{ borderColor: C.line, color: '#6b7280' }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" aria-hidden="true">content_copy</span>
+                    <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
                   </button>
                 </div>
               </div>
 
               {/* desc */}
-              <p className="text-[12px] text-[#6b7280]">{detail.desc}</p>
+              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{detail.desc}</p>
 
               {/* techniques */}
               <div className="space-y-1.5">
-                <p className="text-[11px] font-semibold text-[#111827]">使用技巧</p>
+                <p className="text-[11px] font-semibold" style={{ color: C.ink, fontFamily: F.cn }}>使用技巧</p>
                 <ol className="space-y-1">
                   {detail.techniques.map((t, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[11px] text-[#6b7280]">
-                      <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#f1f3f9] text-[10px] font-bold shrink-0 mt-0.5 text-[#002fa7]">
+                    <li key={i} className="flex items-start gap-2 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+                      <span
+                        className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold shrink-0 mt-0.5"
+                        style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+                      >
                         {i + 1}
                       </span>
                       <span>{t}</span>
@@ -314,8 +334,9 @@ function OpeningTab() {
       <div className="flex items-center justify-between gap-4">
         <div className="relative">
           <span
-            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]"
-            aria-hidden="true"
+            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
+            style={{ color: '#6b7280' }}
+            aria-hidden={true}
           >
             search
           </span>
@@ -324,11 +345,12 @@ function OpeningTab() {
             placeholder={KNOWLEDGE_PAGE.searchPlaceholders.opening}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-[320px] rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-2.5 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+            className="ikb-input w-[320px] rounded-lg py-2.5 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
+            style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
             data-testid="opening-search"
           />
         </div>
-        <span className="shrink-0 text-[13px] text-[#6b7280]" data-testid="opening-count">
+        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="opening-count">
           {KNOWLEDGE_PAGE.countText.opening(OPENING_FORMULAS.length, filtered.length)}
         </span>
       </div>
@@ -338,16 +360,20 @@ function OpeningTab() {
         {filtered.map((f) => (
           <div
             key={f.num}
-            className="rounded-xl border border-[#e5e7eb] bg-white p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md pw-shadow-soft"
+            className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+            style={{ borderColor: C.line, background: C.paper }}
             data-testid={`opening-card-${f.num}`}
           >
             {/* header */}
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#002fa7] text-white text-[11px] font-bold shrink-0">
+                <span
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-[11px] font-bold shrink-0"
+                  style={{ background: C.ikb, fontFamily: F.mono }}
+                >
                   {f.num}
                 </span>
-                <span className="font-bold text-[13px] leading-snug text-[#111827]">{f.name}</span>
+                <span className="font-bold text-[13px] leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>{f.name}</span>
               </div>
               <div className="flex items-center gap-1 shrink-0">
                 <button
@@ -355,9 +381,10 @@ function OpeningTab() {
                   aria-label="收藏"
                   data-testid={`opening-bookmark-${f.num}`}
                   onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#F6D300] hover:text-[#8a6a00]"
+                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
+                  style={{ borderColor: C.line, color: '#6b7280' }}
                 >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden="true">bookmark</span>
+                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
                 </button>
                 <button
                   type="button"
@@ -367,23 +394,27 @@ function OpeningTab() {
                     void navigator.clipboard.writeText(f.formula);
                     toast.success(KNOWLEDGE_PAGE.toasts.copied);
                   }}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+                  style={{ borderColor: C.line, color: '#6b7280' }}
                 >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden="true">content_copy</span>
+                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
                 </button>
               </div>
             </div>
 
             {/* formula */}
             <div className="space-y-1">
-              <p className="text-[11px] font-semibold text-[#6b7280]">公式</p>
-              <p className="text-[12px] text-[#111827]">{f.formula}</p>
+              <p className="text-[11px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>公式</p>
+              <p className="text-[12px]" style={{ color: C.ink, fontFamily: F.cn }}>{f.formula}</p>
             </div>
 
             {/* example */}
             <div className="space-y-1">
-              <p className="text-[11px] font-semibold text-[#6b7280]">示例</p>
-              <blockquote className="text-[12px] text-[#6b7280] italic rounded-lg bg-[#f9f9f9] border border-[#e5e7eb] px-3 py-2">
+              <p className="text-[11px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>示例</p>
+              <blockquote
+                className="text-[12px] italic rounded-lg px-3 py-2"
+                style={{ color: '#6b7280', background: C.base, border: `1px solid ${C.line}`, fontFamily: F.cn }}
+              >
                 {f.example}
               </blockquote>
             </div>
@@ -409,8 +440,9 @@ function CoreTab() {
       <div className="flex items-center justify-between gap-4">
         <div className="relative">
           <span
-            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]"
-            aria-hidden="true"
+            className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
+            style={{ color: '#6b7280' }}
+            aria-hidden={true}
           >
             search
           </span>
@@ -419,11 +451,12 @@ function CoreTab() {
             placeholder={KNOWLEDGE_PAGE.searchPlaceholders.core}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-[320px] rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-2.5 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+            className="ikb-input w-[320px] rounded-lg py-2.5 pl-10 pr-3 text-[14px] transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
+            style={{ border: `1px solid ${C.line}`, background: C.base, color: C.ink, fontFamily: F.cn }}
             data-testid="core-search"
           />
         </div>
-        <span className="shrink-0 text-[13px] text-[#6b7280]" data-testid="core-count">
+        <span className="shrink-0 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }} data-testid="core-count">
           {KNOWLEDGE_PAGE.countText.core(CORE_FORMULAS.length, filtered.length)}
         </span>
       </div>
@@ -433,12 +466,13 @@ function CoreTab() {
         {filtered.map((f, i) => (
           <div
             key={f.name}
-            className="rounded-xl border border-[#e5e7eb] bg-white p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md pw-shadow-soft"
+            className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+            style={{ borderColor: C.line, background: C.paper }}
             data-testid={`core-card-${i}`}
           >
             {/* header */}
             <div className="flex items-start justify-between gap-2">
-              <span className="font-bold text-[13px] leading-snug text-[#111827] flex-1 min-w-0">
+              <span className="font-bold text-[13px] leading-snug flex-1 min-w-0" style={{ color: C.ink, fontFamily: F.cn }}>
                 {f.name}
               </span>
               <div className="flex items-center gap-1 shrink-0">
@@ -447,9 +481,10 @@ function CoreTab() {
                   aria-label="收藏"
                   data-testid={`core-bookmark-${i}`}
                   onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.bookmarked)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#F6D300] hover:text-[#8a6a00]"
+                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#7A3BE0] hover:text-[#7A3BE0]"
+                  style={{ borderColor: C.line, color: '#6b7280' }}
                 >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden="true">bookmark</span>
+                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>bookmark</span>
                 </button>
                 <button
                   type="button"
@@ -459,33 +494,49 @@ function CoreTab() {
                     void navigator.clipboard.writeText(f.name);
                     toast.success(KNOWLEDGE_PAGE.toasts.copied);
                   }}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+                  className="ikb-focusring flex h-7 w-7 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+                  style={{ borderColor: C.line, color: '#6b7280' }}
                 >
-                  <span className="material-symbols-outlined text-[15px]" aria-hidden="true">content_copy</span>
+                  <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>content_copy</span>
                 </button>
               </div>
             </div>
 
-            {/* flow chips */}
+            {/* flow chips — IKB 三主色轮转 */}
             <div className="flex items-center gap-1 flex-wrap">
-              {f.flow.map((step, si) => (
-                <div key={si} className="flex items-center gap-1">
-                  <span className="rounded-md border border-[#c7d2fe] bg-[#eff4ff] px-2 py-0.5 text-[11px] font-medium text-[#002fa7]">
-                    {step}
-                  </span>
-                  {si < f.flow.length - 1 && (
-                    <span className="material-symbols-outlined text-[13px] text-[#002fa7] shrink-0" aria-hidden="true">
-                      arrow_forward
+              {f.flow.map((step, si) => {
+                // 轮转 [C.ikb, C.burgundy, C.accent3]
+                const chipColors = [
+                  { border: `${C.ikb}40`,      bg: `${C.ikb}0c`,      text: C.ikb      },
+                  { border: `${C.burgundy}40`, bg: `${C.burgundy}0c`, text: C.burgundy },
+                  { border: `${C.accent3}40`,  bg: `${C.accent3}0c`,  text: C.accent3  },
+                ] as const;
+                const cp = chipColors[si % chipColors.length]!;
+                return (
+                  <div key={si} className="flex items-center gap-1">
+                    <span
+                      className="rounded-md px-2 py-0.5 text-[11px] font-medium"
+                      style={{ border: `1px solid ${cp.border}`, background: cp.bg, color: cp.text, fontFamily: F.mono }}
+                    >
+                      {step}
                     </span>
-                  )}
-                </div>
-              ))}
+                    {si < f.flow.length - 1 && (
+                      <span className="material-symbols-outlined text-[13px] shrink-0" style={{ color: C.ikb }} aria-hidden={true}>
+                        arrow_forward
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* example quote */}
             <div className="space-y-1">
-              <p className="text-[11px] font-semibold text-[#6b7280]">实战案例</p>
-              <blockquote className="text-[12px] text-[#6b7280] italic rounded-lg bg-[#f9f9f9] border border-[#e5e7eb] px-3 py-2">
+              <p className="text-[11px] font-semibold" style={{ color: '#6b7280', fontFamily: F.cn }}>实战案例</p>
+              <blockquote
+                className="text-[12px] italic rounded-lg px-3 py-2"
+                style={{ color: '#6b7280', background: C.base, border: `1px solid ${C.line}`, fontFamily: F.cn }}
+              >
                 {f.example}
               </blockquote>
             </div>
@@ -495,9 +546,10 @@ function CoreTab() {
               type="button"
               data-testid={`core-generate-${i}`}
               onClick={() => toast.info(KNOWLEDGE_PAGE.toasts.generate)}
-              className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-[#002fa7] text-white text-[12px] font-semibold hover:bg-[#001e73] transition-colors"
+              className="ikb-gradbtn ikb-focusring flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-white text-[12px] font-semibold transition-all active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ fontFamily: F.cn }}
             >
-              <span className="material-symbols-outlined text-[16px]" aria-hidden="true">auto_awesome</span>
+              <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>auto_awesome</span>
               用这个公式生成文案
             </button>
           </div>
@@ -512,26 +564,34 @@ export default function Knowledge() {
   const [activeTab, setActiveTab] = useState<TabKey>('scripts');
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            >
               更多
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: `${C.accent3}50`, background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+            >
               方法论
             </span>
           </div>
           <h1
-            className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
+            style={{ fontFamily: F.display }}
             data-testid="knowledge-h1"
           >
             {KNOWLEDGE_PAGE.h1}
           </h1>
           <p
-            className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]"
+            className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
+            style={{ color: '#5A6173', fontFamily: F.cn }}
             data-testid="knowledge-subtitle"
           >
             {KNOWLEDGE_PAGE.subtitle}
@@ -544,23 +604,23 @@ export default function Knowledge() {
         {KPI_CARDS.map((kpi) => (
           <div
             key={kpi.label}
-            className="rounded-xl border p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-            style={{ backgroundColor: '#fff', borderColor: kpi.borderColor }}
+            className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            style={{ backgroundColor: C.paper, borderColor: kpi.borderColor }}
           >
             <div className="flex items-center justify-between">
               <span
                 className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ backgroundColor: `${kpi.color}18`, color: kpi.color }}
+                style={{ backgroundColor: kpi.bg, color: kpi.color }}
               >
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{kpi.icon}</span>
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>{kpi.icon}</span>
               </span>
             </div>
             <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
+              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                 {kpi.value}
-                <span className="text-[15px] text-[#9ca3af]"> {kpi.unit}</span>
+                <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> {kpi.unit}</span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">{kpi.label}</p>
+              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{kpi.label}</p>
             </div>
           </div>
         ))}
@@ -573,7 +633,7 @@ export default function Knowledge() {
         role="tablist"
         aria-label="方法论分类"
       >
-        <div className="flex items-center gap-2 border-b border-[#e5e7eb] pb-0">
+        <div className="flex items-center gap-2 pb-0" style={{ borderBottom: `1px solid ${C.line}` }}>
           {TABS.map((tab) => {
             const active = activeTab === tab.key;
             return (
@@ -586,13 +646,13 @@ export default function Knowledge() {
                 aria-controls={`tab-panel-${tab.key}`}
                 data-testid={tab.testid}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-5 py-3 text-[13px] font-semibold transition-all border-b-2 -mb-px ${
-                  active
-                    ? 'border-[#002fa7] bg-[#002fa7]/[0.04] text-[#002fa7]'
-                    : 'border-transparent text-[#6b7280] hover:text-[#111827] hover:border-[#c7d2fe]'
-                }`}
+                className="ikb-focusring flex items-center gap-2 px-5 py-3 text-[13px] font-semibold transition-all border-b-2 -mb-px"
+                style={active
+                  ? { borderBottomColor: C.ikb, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }
+                  : { borderBottomColor: 'transparent', color: '#6b7280', fontFamily: F.cn }
+                }
               >
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{tab.icon}</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>{tab.icon}</span>
                 {tab.label}
               </button>
             );
@@ -651,40 +711,41 @@ export default function Knowledge() {
       {/* ── 起承转合 Footer ────────────────────────────────────── */}
       <section className="space-y-4" data-testid="story-footer">
         <div className="flex items-center gap-2 mb-4">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">
+          <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>
             auto_stories
           </span>
           <h2
-            className="text-[18px] font-bold text-[#111827]"
+            className="text-[18px] font-bold"
+            style={{ color: C.ink, fontFamily: F.cn }}
             data-testid="story-footer-title"
           >
             {STORY_FOOTER_TITLE}
           </h2>
-          <span className="text-[12px] text-[#9ca3af]">· 短视频文案四步法</span>
+          <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· 短视频文案四步法</span>
         </div>
         <div className="grid grid-cols-4 gap-4">
           {STORY_STAGES.map((stage) => {
-            const accent = STAGE_ACCENT[stage.key] ?? { color: '#002fa7', bg: '#e0e7ff', border: '#c7d2fe' };
+            const accent = STAGE_ACCENT[stage.key] ?? { color: C.ikb, bg: `${C.ikb}10`, border: `${C.ikb}28` };
             return (
               <div
                 key={stage.key}
-                className="rounded-xl border p-5 space-y-2 transition-all hover:-translate-y-0.5 hover:shadow-md pw-shadow-soft"
+                className="rounded-xl border p-5 space-y-2 transition-all hover:-translate-y-0.5 hover:shadow-md"
                 style={{ borderColor: accent.border, backgroundColor: accent.bg }}
                 data-testid={`story-stage-${stage.key}`}
               >
                 <p
                   className="font-bold text-[13px]"
-                  style={{ color: accent.color }}
+                  style={{ color: accent.color, fontFamily: F.cn }}
                   data-testid={`story-stage-label-${stage.key}`}
                 >
                   {stage.label}
                 </p>
-                <p className="text-[12px] text-[#444653] leading-relaxed">{stage.desc}</p>
+                <p className="text-[12px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{stage.desc}</p>
               </div>
             );
           })}
         </div>
       </section>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
