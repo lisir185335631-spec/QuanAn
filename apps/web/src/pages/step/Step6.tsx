@@ -1,11 +1,14 @@
-// PRD-29.11 · Step6 拍摄计划 — 先锋白 PioneerLayout 全站统一重构
+// PRD-29.11 · Step6 拍摄计划 — IKB 红蓝紫渐变重构
 // Phase2 Step6: 接真后端 · trpc.stepData.save/get · shooting mode → ShootingOutput
+import '@/styles/ikb-hero.css';
+
 import { type FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { C, F } from '@/components/home/ikb/system';
 import { useActiveAccount } from '@/hooks/useActiveAccount';
 import { readOtherStep, useStepData } from '@/hooks/useStepData';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import { trpc } from '@/lib/trpc';
 
 // ─── VideoAgent shooting mode output shape ────────────────────────────────────
@@ -153,16 +156,16 @@ export default function Step6() {
   }
 
   const btnSecondary =
-    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+    'ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest transition-colors hover:bg-[#f0f2ff] disabled:cursor-not-allowed disabled:opacity-40';
 
   // ── 雷达数据(拍摄完备度六维)— 仅在有真结果时显示 ─────────────────────────
   const radarDims = hasResult ? [
-    { label: '分镜完整度', value: Math.min(100, (result.shotList.length / 10) * 100), color: '#002fa7' },
-    { label: '节奏张力', value: 85, color: '#781621' },
-    { label: '视觉表现', value: 88, color: '#F6D300' },
-    { label: '口播质量', value: 90, color: '#002fa7' },
-    { label: '场景多样', value: 78, color: '#781621' },
-    { label: '设备完备', value: Math.min(100, (result.equipment.length / 5) * 100), color: '#F6D300' },
+    { label: '分镜完整度', value: Math.min(100, (result.shotList.length / 10) * 100), color: C.ikb },
+    { label: '节奏张力', value: 85, color: C.burgundy },
+    { label: '视觉表现', value: 88, color: C.accent3 },
+    { label: '口播质量', value: 90, color: C.ikb },
+    { label: '场景多样', value: 78, color: C.burgundy },
+    { label: '设备完备', value: Math.min(100, (result.equipment.length / 5) * 100), color: C.accent3 },
   ] : [];
 
   // ── 情绪节奏曲线(动态取 shotList 长度) ───────────────────────────────────────
@@ -171,25 +174,25 @@ export default function Step6() {
     : [];
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest" style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}>
               战略节点
             </span>
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest" style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}>
               内容执行
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest" style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}>
               拍摄脚本
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tight text-[#1b1b1b]">
+          <h1 className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight" style={{ fontFamily: F.display }}>
             STEP 06 · 拍摄计划
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#5A6173', fontFamily: F.cn }}>
             输入你的文案内容，AI 将自动生成完整的分镜脚本、拍摄方案和口播提词器。
             专业级内容生产流程，让每一帧都有意义。
           </p>
@@ -199,48 +202,54 @@ export default function Step6() {
             type="button"
             onClick={handleOptimize}
             disabled={!canBulkActions}
+            aria-label="智能优化"
             className={btnSecondary}
+            style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
           >
-            <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_fix_high</span>
             智能优化
           </button>
           <button
             type="button"
             onClick={handleCopyAll}
             disabled={!canBulkActions}
+            aria-label="复制全部"
             className={btnSecondary}
+            style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
           >
-            <span className="material-symbols-outlined text-[18px]">content_copy</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
             复制全部
           </button>
           <button
             type="button"
             onClick={handleCopyAll}
             disabled={!canBulkActions}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="复制 JSON"
+            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-[13px] font-semibold text-white transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ fontFamily: F.mono }}
           >
-            <span className="material-symbols-outlined text-[18px]">content_copy</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
             复制 JSON
           </button>
         </div>
       </header>
 
       {/* ── 输入文案 ───────────────────────────────────────── */}
-      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+      <section className="relative mb-12 overflow-hidden rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl" style={{ background: `${C.ikb}08` }} />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl" style={{ background: `${C.burgundy}06` }} />
+        <div className="relative mb-6 flex items-center justify-between pb-5" style={{ borderBottom: `1px solid ${C.line}` }}>
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined">videocam</span>
+            <span className="ikb-gradbtn flex h-11 w-11 items-center justify-center rounded-xl text-white">
+              <span className="material-symbols-outlined" aria-hidden={true}>videocam</span>
             </span>
             <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">输入文案</h2>
-              <p className="text-[12px] text-[#9ca3af]">填写脚本文案 · AI 据此生成完整拍摄计划</p>
+              <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>输入文案</h2>
+              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>填写脚本文案 · AI 据此生成完整拍摄计划</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+          <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
             参数就绪
           </span>
         </div>
@@ -250,18 +259,20 @@ export default function Step6() {
               <div className="mb-2 flex items-center justify-between">
                 <label
                   htmlFor="s6-content"
-                  className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']"
+                  className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+                  style={{ color: C.ink, fontFamily: F.cn }}
                 >
+                  <span className="mr-1 inline-block h-3.5 w-1 rounded-full" style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }} />
                   文案内容
                 </label>
-                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
-                  <span className="material-symbols-outlined text-[14px] text-[#781621]">
+                <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+                  <span className="material-symbols-outlined text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>
                     auto_awesome
                   </span>
                   AI 据此生成分镜+提词器
                 </span>
               </div>
-              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+              <div className="ikb-input overflow-hidden rounded-xl border transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]" style={{ borderColor: C.line, background: C.base }}>
                 <textarea
                   id="s6-content"
                   value={content}
@@ -269,20 +280,22 @@ export default function Step6() {
                   rows={10}
                   placeholder="输入你的视频脚本文案，包含标题、话题抛出、正反方观点、结论等结构"
                   className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                  style={{ fontFamily: F.cn, color: C.ink }}
                 />
-                <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                <div className="flex items-center justify-between gap-3 border-t bg-white/60 px-4 py-2.5" style={{ borderColor: C.line }}>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-[#9ca3af]">建议包含</span>
+                    <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>建议包含</span>
                     {['标题', '话题', '正方', '反方', '结论', '引导'].map((t) => (
                       <span
                         key={t}
-                        className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]"
+                        className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+                        style={{ background: C.base, color: '#6b7280', fontFamily: F.mono }}
                       >
                         {t}
                       </span>
                     ))}
                   </div>
-                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">
+                  <span className="shrink-0 text-[11px] tabular-nums" style={{ color: '#6b7280', fontFamily: F.mono }}>
                     {content.length} 字
                   </span>
                 </div>
@@ -292,9 +305,10 @@ export default function Step6() {
               <button
                 type="submit"
                 disabled={!content.trim() || isLoading}
-                className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+                className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ fontFamily: F.mono }}
               >
-                <span className="material-symbols-outlined text-[18px]">videocam</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>videocam</span>
                 {isLoading ? '生成中…' : '生成拍摄计划'}
               </button>
             </div>
@@ -306,14 +320,15 @@ export default function Step6() {
       {isLoading && (
         <div
           data-testid="step6-loading"
-          className="mb-8 overflow-hidden rounded-xl border border-[#dbe2ff] bg-[#eff4ff] p-4"
+          className="mb-8 overflow-hidden rounded-xl border p-4"
+          style={{ borderColor: `${C.ikb}25`, background: `${C.ikb}08` }}
         >
-          <div className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-[#002fa7]">
-            <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+          <div className="mb-2 flex items-center gap-2 text-[13px] font-semibold" style={{ color: C.ikb, fontFamily: F.cn }}>
+            <span className="material-symbols-outlined animate-spin text-[18px]" aria-hidden={true}>progress_activity</span>
             AI 正在生成拍摄计划，预计 30-60 秒…
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#dbe2ff]">
-            <div className="h-full w-2/3 animate-pulse rounded-full bg-gradient-to-r from-[#002fa7] to-[#3654c8]" />
+          <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: `${C.ikb}20` }}>
+            <div className="h-full w-2/3 animate-pulse rounded-full" style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }} />
           </div>
         </div>
       )}
@@ -325,7 +340,7 @@ export default function Step6() {
           className="mb-8 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[14px] font-medium text-[#991b1b]"
         >
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[20px]">error</span>
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>error</span>
             {generateMutation.error?.message ?? '生成失败，请重试'}
           </div>
           <button
@@ -336,7 +351,7 @@ export default function Step6() {
                 inputs: { content },
               })
             }
-            className="shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+            className="ikb-focusring shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
           >
             重试
           </button>
@@ -347,9 +362,10 @@ export default function Step6() {
       {dbQuery.isLoading && (
         <div
           data-testid="step6-db-loading"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-[#002fa7]/20 bg-[#f0f4ff] p-4 text-[13px] font-medium text-[#001e73]"
+          className="mb-6 flex items-center gap-3 rounded-xl border p-4 text-[13px] font-medium"
+          style={{ borderColor: `${C.ikb}20`, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }}
         >
-          <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+          <span className="material-symbols-outlined animate-spin text-[18px]" aria-hidden={true}>progress_activity</span>
           正在加载历史记录…
         </div>
       )}
@@ -361,13 +377,13 @@ export default function Step6() {
           className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[13px] font-medium text-[#991b1b]"
         >
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-[18px]">error</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>error</span>
             历史记录加载失败，请重试
           </div>
           <button
             type="button"
             onClick={() => void dbQuery.refetch()}
-            className="shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+            className="ikb-focusring shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
           >
             重试
           </button>
@@ -378,9 +394,10 @@ export default function Step6() {
       {hasResult && isFallbackFlag && (
         <div
           data-testid="step6-fallback-notice"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-[#F6D300]/40 bg-[#fffde7] p-4 text-[13px] font-medium text-[#8a6a00]"
+          className="mb-6 flex items-center gap-3 rounded-xl border p-4 text-[13px] font-medium"
+          style={{ borderColor: `${C.accent3}40`, background: `${C.accent3}08`, color: C.purpleText, fontFamily: F.cn }}
         >
-          <span className="material-symbols-outlined text-[20px]">warning</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>warning</span>
           AI 模型降级处理，结果为备用方案，建议重新生成以获取最优质方案。
         </div>
       )}
@@ -389,14 +406,15 @@ export default function Step6() {
       {!hasResult && !isLoading && !dbQuery.isLoading && (
         <div
           data-testid="step6-empty-state"
-          className="mb-8 flex flex-col items-center gap-4 rounded-xl border border-dashed border-[#e5e7eb] bg-[#f9fafb] py-16 text-center"
+          className="mb-8 flex flex-col items-center gap-4 rounded-xl border border-dashed py-16 text-center"
+          style={{ borderColor: C.line, background: C.base }}
         >
-          <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[36px]">videocam_off</span>
+          <span className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: `${C.ikb}10`, color: C.ikb }}>
+            <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>videocam_off</span>
           </span>
           <div>
-            <p className="text-[16px] font-bold text-[#111827]">尚未生成拍摄计划</p>
-            <p className="mt-1 text-[13px] text-[#9ca3af]">填写文案内容后点击「生成拍摄计划」开始生成</p>
+            <p className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>尚未生成拍摄计划</p>
+            <p className="mt-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>填写文案内容后点击「生成拍摄计划」开始生成</p>
           </div>
         </div>
       )}
@@ -406,32 +424,32 @@ export default function Step6() {
         <>
           {/* ── 数据洞察(雷达 + 情绪曲线)─────────────────────── */}
           <div className="mb-3 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
-            <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-            <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+            <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
+            <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
+            <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+            <span className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
+              <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
               模型已就绪
             </span>
           </div>
           <div className="mb-8 grid grid-cols-12 gap-6">
             {/* 拍摄完备度雷达 */}
-            <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+            <div className="col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                    <span className="material-symbols-outlined text-[20px]">radar</span>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
                   </span>
                   <div>
-                    <h3 className="text-[14px] font-bold text-[#111827]">拍摄完备度雷达</h3>
-                    <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>拍摄完备度雷达</h3>
+                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-[26px] font-bold leading-none text-[#002fa7]">
+                  <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>
                     {Math.round(radarDims.reduce((s, d) => s + d.value, 0) / radarDims.length)}
                   </p>
-                  <p className="text-[10px] text-[#9ca3af]">综合分</p>
+                  <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分</p>
                 </div>
               </div>
               {(() => {
@@ -453,11 +471,11 @@ export default function Step6() {
                   )
                   .join(' ');
                 return (
-                  <svg viewBox="0 0 260 244" className="w-full">
+                  <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="拍摄完备度雷达图">
                     <defs>
-                      <linearGradient id="radarFillS6" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                        <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                      <linearGradient id="s6-radarFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                        <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                       </linearGradient>
                     </defs>
                     {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -485,8 +503,8 @@ export default function Step6() {
                     })}
                     <polygon
                       points={dataPoly}
-                      fill="url(#radarFillS6)"
-                      stroke="#002fa7"
+                      fill="url(#s6-radarFill)"
+                      stroke={C.ikb}
                       strokeWidth="2"
                       strokeLinejoin="round"
                     />
@@ -528,30 +546,31 @@ export default function Step6() {
                 {radarDims.map((d) => (
                   <div key={d.label} className="flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                    <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                    <span className="text-[11px] font-bold text-[#111827]">{Math.round(d.value)}</span>
+                    <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                    <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{Math.round(d.value)}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* 情绪节奏曲线 */}
-            <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+            <div className="col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                    <span className="material-symbols-outlined text-[20px]">show_chart</span>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
+                    <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
                   </span>
                   <div>
-                    <h3 className="text-[14px] font-bold text-[#111827]">情绪节奏曲线</h3>
-                    <p className="text-[11px] text-[#9ca3af]">沿 {result.shotList.length} 个镜头情绪强度推演</p>
+                    <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>情绪节奏曲线</h3>
+                    <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>沿 {result.shotList.length} 个镜头情绪强度推演</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {['强度', '节奏', '峰值'].map((t, i) => (
                     <span
                       key={t}
-                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                      className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                      style={i === 0 ? { background: C.ikb, color: '#fff', fontFamily: F.mono } : { background: C.base, color: '#6b7280', fontFamily: F.mono }}
                     >
                       {t}
                     </span>
@@ -559,14 +578,14 @@ export default function Step6() {
                 </div>
               </div>
               <div className="mb-3 flex items-end gap-3">
-                <p className="text-[30px] font-bold leading-none text-[#111827]">
+                <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                   {Math.max(...emotionCurve)}
                 </p>
-                <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-                  <span className="material-symbols-outlined text-[14px]">trending_up</span>
+                <span className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                  <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
                   峰值
                 </span>
-                <span className="mb-1 text-[12px] text-[#9ca3af]">第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}镜情绪最高点</span>
+                <span className="mb-1 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>第{emotionCurve.indexOf(Math.max(...emotionCurve)) + 1}镜情绪最高点</span>
               </div>
               {emotionCurve.length >= 2 && (() => {
                 const data = emotionCurve;
@@ -586,15 +605,16 @@ export default function Step6() {
                   .join(' ');
                 const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
                 return (
-                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                  <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="情绪节奏曲线图">
                     <defs>
-                      <linearGradient id="trendFillS6" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                        <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                      <linearGradient id="s6-trendFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                        <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                       </linearGradient>
-                      <linearGradient id="trendLineS6" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#002fa7" />
-                        <stop offset="100%" stopColor="#781621" />
+                      <linearGradient id="s6-trendLine" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={C.ikb} />
+                        <stop offset="55%" stopColor={C.accent3} />
+                        <stop offset="100%" stopColor={C.burgundy} />
                       </linearGradient>
                     </defs>
                     {[0, 0.33, 0.66, 1].map((f) => (
@@ -608,11 +628,11 @@ export default function Step6() {
                         strokeWidth="1"
                       />
                     ))}
-                    <path d={area} fill="url(#trendFillS6)" />
+                    <path d={area} fill="url(#s6-trendFill)" />
                     <path
                       d={line}
                       fill="none"
-                      stroke="url(#trendLineS6)"
+                      stroke="url(#s6-trendLine)"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -625,7 +645,7 @@ export default function Step6() {
                           cy={y(v)}
                           r="3.4"
                           fill="#fff"
-                          stroke="#002fa7"
+                          stroke={C.ikb}
                           strokeWidth="2"
                         />
                       ) : null,
@@ -633,7 +653,7 @@ export default function Step6() {
                   </svg>
                 );
               })()}
-              <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+              <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
                 {result.shotList.filter((_, i) => i % 3 === 0).map((_, i) => (
                   <span key={i * 3}>{`镜头${i * 3 + 1}`}</span>
                 ))}
@@ -644,33 +664,33 @@ export default function Step6() {
           {/* ── KPI 卡 ─────────────────────────────────────────── */}
           <div className="mb-8 grid grid-cols-4 gap-6">
             {/* 分镜镜头 · 环形进度 */}
-            <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                  <span className="material-symbols-outlined text-[20px]">movie</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>movie</span>
                 </span>
-                <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-                  <span className="material-symbols-outlined text-[13px]">trending_up</span>
+                <span className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                  <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>
                   完整
                 </span>
               </div>
               <div className="mt-4 flex items-end justify-between">
                 <div>
-                  <p className="text-[28px] font-bold leading-none text-[#111827]">
+                  <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                     {result.shotList.length}
-                    <span className="text-[15px] text-[#9ca3af]"> 个</span>
+                    <span className="text-[15px]" style={{ color: '#6b7280' }}> 个</span>
                   </p>
-                  <p className="mt-1.5 text-[12px] text-[#6b7280]">分镜镜头</p>
+                  <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>分镜镜头</p>
                 </div>
                 <div className="h-12 w-12 shrink-0">
-                  <svg viewBox="0 0 36 36" className="-rotate-90">
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                  <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label={`分镜进度 ${Math.min(100, result.shotList.length * 10)}%`}>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
                     <circle
                       cx="18"
                       cy="18"
                       r="15.915"
                       fill="none"
-                      stroke="#002fa7"
+                      stroke={C.ikb}
                       strokeWidth="3.5"
                       strokeLinecap="round"
                       strokeDasharray={`${Math.min(100, result.shotList.length * 10)} 100`}
@@ -681,79 +701,80 @@ export default function Step6() {
             </div>
 
             {/* 拍摄时程 · 迷你柱 */}
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                  <span className="material-symbols-outlined text-[20px]">timer</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>timer</span>
                 </span>
-                <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">
+                <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.burgundy}12`, color: C.burgundyText }}>
                   已测算
                 </span>
               </div>
               <div className="mt-4">
-                <p className="line-clamp-2 text-[14px] font-bold leading-snug text-[#111827]">
+                <p className="line-clamp-2 text-[14px] font-bold leading-snug" style={{ color: C.ink, fontFamily: F.cn }}>
                   {result.schedule.length > 30 ? result.schedule.slice(0, 30) + '…' : result.schedule}
                 </p>
-                <p className="mt-1.5 text-[12px] text-[#6b7280]">拍摄时程</p>
+                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>拍摄时程</p>
               </div>
               <div className="mt-3 flex h-6 items-end gap-1">
                 {[45, 68, 55, 80, 62, 90, 72].map((h, i) => (
                   <div
                     key={i}
-                    className="flex-1 rounded-t bg-[#781621]/70"
-                    style={{ height: `${h}%` }}
+                    className="flex-1 rounded-t"
+                    style={{ height: `${h}%`, background: `${C.burgundy}70` }}
                   />
                 ))}
               </div>
             </div>
 
             {/* 设备清单 · 进度条 */}
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-                  <span className="material-symbols-outlined text-[20px]">videocam</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.accent3}18`, color: C.accent3 }}>
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>videocam</span>
                 </span>
-                <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">
+                <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.accent3}12`, color: C.purpleText }}>
                   {result.equipment.length} 件
                 </span>
               </div>
               <div className="mt-4">
-                <p className="text-[28px] font-bold leading-none text-[#111827]">
+                <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                   {result.equipment.length}
-                  <span className="text-[15px] text-[#9ca3af]"> 件</span>
+                  <span className="text-[15px]" style={{ color: '#6b7280' }}> 件</span>
                 </p>
-                <p className="mt-1.5 text-[12px] text-[#6b7280]">拍摄设备</p>
+                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>拍摄设备</p>
               </div>
-              <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
+              <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.accent3}18` }}>
                 <div
-                  className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]"
-                  style={{ width: `${Math.min(100, (result.equipment.length / 5) * 100)}%` }}
+                  className="h-2 rounded-full"
+                  style={{ width: `${Math.min(100, (result.equipment.length / 5) * 100)}%`, background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }}
                 />
               </div>
             </div>
 
             {/* 镜头维度 · 关键词 chip */}
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                  <span className="material-symbols-outlined text-[20px]">grid_view</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>grid_view</span>
                 </span>
-                <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+                <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                   8 维
                 </span>
               </div>
               <div className="mt-4">
-                <p className="text-[28px] font-bold leading-none text-[#111827]">
+                <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                   8
-                  <span className="text-[15px] text-[#9ca3af]"> 维</span>
+                  <span className="text-[15px]" style={{ color: '#6b7280' }}> 维</span>
                 </p>
-                <p className="mt-1.5 text-[12px] text-[#6b7280]">分镜字段</p>
+                <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>分镜字段</p>
               </div>
               <div className="mt-3 flex flex-wrap gap-1">
                 {['景别', '角度', '运镜', '情绪'].map((k) => (
                   <span
                     key={k}
-                    className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+                    className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+                    style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
                   >
                     {k}
                   </span>
@@ -765,21 +786,21 @@ export default function Step6() {
           {/* ── 结果区 ─────────────────────────────────────────── */}
           <div className="grid grid-cols-12 gap-6">
             {/* 8 列分镜脚本 (col-12 · 时间轴) */}
-            <div className="col-span-12 rounded-xl border border-[#dbe2ff] bg-gradient-to-br from-[#eff4ff] via-white to-[#f7f1ff] p-6 pw-shadow-soft">
+            <div className="col-span-12 rounded-xl border p-6" style={{ borderColor: `${C.ikb}25`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 50%, ${C.paper} 100%)` }}>
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-                    <span className="material-symbols-outlined">movie</span>
+                  <span className="ikb-gradbtn flex h-11 w-11 items-center justify-center rounded-xl text-white">
+                    <span className="material-symbols-outlined" aria-hidden={true}>movie</span>
                   </span>
                   <div>
-                    <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-[#002fa7]/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#002fa7]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#002fa7]" />
+                    <span className="mb-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
                       Storyboard
                     </span>
-                    <h3 className="text-[20px] font-bold text-[#111827]">分镜脚本</h3>
+                    <h3 className="text-[20px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>分镜脚本</h3>
                   </div>
                 </div>
-                <span className="rounded-full bg-[#002fa7]/10 px-3 py-1 text-[12px] font-bold text-[#002fa7]">
+                <span className="rounded-full px-3 py-1 text-[12px] font-bold" style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}>
                   {result.shotList.length} 镜头
                 </span>
               </div>
@@ -788,50 +809,53 @@ export default function Step6() {
                   <div key={idx} className="relative flex gap-4">
                     {/* 竖轴线 */}
                     <div className="flex flex-col items-center">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-[#002fa7] bg-white text-[13px] font-bold text-[#002fa7] shadow-sm">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 bg-white text-[13px] font-bold shadow-sm" style={{ borderColor: C.ikb, color: C.ikb }}>
                         {idx + 1}
                       </div>
                       {idx < result.shotList.length - 1 && (
-                        <div className="w-0.5 flex-1 bg-gradient-to-b from-[#002fa7]/30 to-[#781621]/20" style={{ minHeight: '20px' }} />
+                        <div className="w-0.5 flex-1" style={{ minHeight: '20px', background: `linear-gradient(to bottom, ${C.ikb}30, ${C.burgundy}20)` }} />
                       )}
                     </div>
                     {/* 卡片 */}
-                    <div className="mb-4 flex-1 rounded-xl border border-[#e5e7eb] bg-white p-4 pw-shadow-soft">
+                    <div className="mb-4 flex-1 rounded-xl border bg-white p-4" style={{ borderColor: C.line }}>
                       <div className="mb-3 flex flex-wrap items-center gap-2">
-                        <span className="rounded-md bg-[#002fa7] px-2.5 py-0.5 text-[11px] font-bold text-white">
+                        <span className="rounded-md px-2.5 py-0.5 text-[11px] font-bold text-white" style={{ background: C.ikb }}>
                           {shot.duration}
                         </span>
-                        <span className="rounded-md border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-0.5 text-[11px] font-medium text-[#444653]">
+                        <span className="rounded-md border px-2.5 py-0.5 text-[11px] font-medium" style={{ borderColor: C.line, background: C.base, color: '#444653' }}>
                           {shot.shotType}
                         </span>
-                        <span className="rounded-md border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-0.5 text-[11px] font-medium text-[#444653]">
+                        <span className="rounded-md border px-2.5 py-0.5 text-[11px] font-medium" style={{ borderColor: C.line, background: C.base, color: '#444653' }}>
                           {shot.angle}
                         </span>
-                        <span className="rounded-md border border-[#e5e7eb] bg-[#f9fafb] px-2.5 py-0.5 text-[11px] font-medium text-[#444653]">
+                        <span className="rounded-md border px-2.5 py-0.5 text-[11px] font-medium" style={{ borderColor: C.line, background: C.base, color: '#444653' }}>
                           {shot.movement}
                         </span>
-                        <span className="rounded-md bg-[#781621]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#781621]">
+                        <span className="rounded-md px-2.5 py-0.5 text-[11px] font-medium" style={{ background: `${C.burgundy}12`, color: C.burgundyText }}>
                           {shot.emotion}
                         </span>
                       </div>
                       <div className="grid grid-cols-3 gap-4">
                         <div>
-                          <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold text-[#111827] before:h-3 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+                          <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold" style={{ color: C.ink, fontFamily: F.cn }}>
+                            <span className="inline-block h-3 w-0.5 rounded-full" style={{ background: C.ikb }} />
                             场景
                           </p>
-                          <p className="text-[13px] leading-relaxed text-[#444653]">{shot.scene}</p>
+                          <p className="text-[13px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{shot.scene}</p>
                         </div>
                         <div>
-                          <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold text-[#111827] before:h-3 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+                          <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold" style={{ color: C.ink, fontFamily: F.cn }}>
+                            <span className="inline-block h-3 w-0.5 rounded-full" style={{ background: C.burgundy }} />
                             台词
                           </p>
-                          <p className="text-[13px] leading-relaxed text-[#444653]">{shot.dialogue}</p>
+                          <p className="text-[13px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{shot.dialogue}</p>
                         </div>
                         <div>
-                          <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold text-[#111827] before:h-3 before:w-0.5 before:rounded-full before:bg-[#F6D300] before:content-['']">
+                          <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-extrabold" style={{ color: C.ink, fontFamily: F.cn }}>
+                            <span className="inline-block h-3 w-0.5 rounded-full" style={{ background: C.accent3 }} />
                             动作
                           </p>
-                          <p className="text-[13px] leading-relaxed text-[#444653]">{shot.action}</p>
+                          <p className="text-[13px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{shot.action}</p>
                         </div>
                       </div>
                     </div>
@@ -841,20 +865,20 @@ export default function Step6() {
             </div>
 
             {/* 设备清单 (col-7) */}
-            <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+            <div className="col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
               <div className="mb-5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#781621] to-[#a52030] text-white shadow-lg shadow-[#781621]/25">
-                    <span className="material-symbols-outlined">photo_camera</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg" style={{ background: `linear-gradient(135deg, ${C.burgundy}, #a52030)`, boxShadow: `0 4px 14px ${C.burgundy}25` }}>
+                    <span className="material-symbols-outlined" aria-hidden={true}>photo_camera</span>
                   </span>
                   <div>
-                    <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-[#781621]/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#781621]">
+                    <span className="mb-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider" style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}>
                       Equipment
                     </span>
-                    <h3 className="text-[20px] font-bold text-[#111827]">拍摄设备</h3>
+                    <h3 className="text-[20px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>拍摄设备</h3>
                   </div>
                 </div>
-                <span className="rounded-full border border-[#781621]/20 bg-[#781621]/10 px-3 py-1 text-[12px] font-bold text-[#781621]">
+                <span className="rounded-full border px-3 py-1 text-[12px] font-bold" style={{ borderColor: `${C.burgundy}20`, background: `${C.burgundy}10`, color: C.burgundyText, fontFamily: F.mono }}>
                   {result.equipment.length} 件
                 </span>
               </div>
@@ -862,7 +886,8 @@ export default function Step6() {
                 {result.equipment.map((eq) => (
                   <span
                     key={eq}
-                    className="rounded-lg border border-[#dbe2ff] bg-[#eff4ff] px-2.5 py-1 text-[12px] font-medium text-[#002fa7]"
+                    className="rounded-lg border px-2.5 py-1 text-[12px] font-medium"
+                    style={{ borderColor: `${C.ikb}25`, background: `${C.ikb}08`, color: C.ikb, fontFamily: F.cn }}
                   >
                     {eq}
                   </span>
@@ -871,33 +896,36 @@ export default function Step6() {
             </div>
 
             {/* 拍摄时程 (col-5) */}
-            <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+            <div className="col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
               <div className="mb-5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#F6D300] to-[#ffe45c] text-[#221b00] shadow-lg shadow-[#F6D300]/40">
-                    <span className="material-symbols-outlined">schedule</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl shadow-lg" style={{ background: `linear-gradient(135deg, ${C.accent3}, #5b2ab8)`, boxShadow: `0 4px 14px ${C.accent3}30`, color: '#fff' }}>
+                    <span className="material-symbols-outlined" aria-hidden={true}>schedule</span>
                   </span>
                   <div>
-                    <span className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-[#F6D300]/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#8a6a00]">
+                    <span className="mb-1 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider" style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}>
                       Schedule
                     </span>
-                    <h3 className="text-[20px] font-bold text-[#111827]">拍摄时程</h3>
+                    <h3 className="text-[20px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>拍摄时程</h3>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => copyText(result.schedule)}
                   aria-label="复制时程"
-                  className="cursor-pointer text-[#9ca3af] hover:text-[#8a6a00]"
+                  className="ikb-focusring cursor-pointer transition-colors"
+                  style={{ color: '#6b7280' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C.accent3; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = '#6b7280'; }}
                 >
-                  <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
                 </button>
               </div>
-              <p className="text-[14px] leading-relaxed text-[#444653]">{result.schedule}</p>
+              <p className="text-[14px] leading-relaxed" style={{ color: '#444653', fontFamily: F.cn }}>{result.schedule}</p>
             </div>
           </div>
         </>
       )}
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
