@@ -175,7 +175,7 @@ function InlineEmptyPlaceholderCard() {
       data-testid="ai-video-empty-card"
     >
       <span className="material-symbols-outlined mb-6 text-[64px]" aria-hidden={true} style={{ color: '#6b7280' }}>
-        clapperboard
+        movie
       </span>
       <h3 className="mb-3 text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{AI_VIDEO_EMPTY_H3}</h3>
       <p className="mb-6 max-w-md text-[14px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>{AI_VIDEO_EMPTY_DESC}</p>
@@ -634,7 +634,7 @@ export default function AiVideo() {
               style={{ background: C.grad }}
             >
               <span className="material-symbols-outlined" aria-hidden={true}>
-                clapperboard
+                movie
               </span>
             </span>
             <div>
