@@ -157,12 +157,12 @@ describe('Step1 · 选中行业后 banner + sticky bar', () => {
     expect(screen.getByText('已选择:')).toBeInTheDocument();
   });
 
-  it('点击 美业 → card 选中样式包含 border-[#002fa7]', () => {
+  it('点击 美业 → card 获得 data-state="active"', () => {
     renderStep1();
     fireEvent.click(screen.getByTestId('industry-card-美业'));
-    // 先锋白迁移后选中态使用 border-[#002fa7] 替代 border-primary
+    // IKB 体系选中态通过内联 style 设置边框色,用 data-state 属性判断选中状态
     const card = screen.getByTestId('industry-card-美业');
-    expect(card.className).toContain('border-[#002fa7]');
+    expect(card).toHaveAttribute('data-state', 'active');
   });
 
   it('默认无选中时 sticky bar 不渲染', () => {

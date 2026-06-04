@@ -118,3 +118,14 @@
 .ikb-step:hover .ikb-step-idx { color: #ffffff !important; }
 .ikb-step:hover .ikb-step-ic { color: #ffffff !important; }
 .ikb-step:hover .ikb-step-lb { color: #ffffff !important; }
+
+/* 搜索框:浏览器默认 outline 关闭,改用 focus-visible 蓝框(a11y 兼容) */
+.ikb-input { outline: none; }
+.ikb-input:focus-visible { outline: 2px solid #2B53E6; outline-offset: 1px; }
+
+/* 通用键盘焦点环(tab 过滤按钮 / 行业卡 / 次要按钮) */
+.ikb-focusring:focus-visible { outline: 2px solid #2B53E6; outline-offset: 2px; }
+
+/* 禁用态:关闭流光动画,防止非活跃 CTA 持续播放(a11y · 减少干扰) */
+.ikb-gradbtn:disabled { animation: none; }
+.ikb-gradbtn:disabled::after { display: none; }

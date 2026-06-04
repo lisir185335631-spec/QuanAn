@@ -15,6 +15,7 @@ export const C = {
   yellow: '#7A3BE0', // 紫(原 yellow 槽 → 第二主色)
   burgundy: '#EF3E6B', // 玫红 — 暖点缀(红蓝紫的「红」· 大字/渐变/装饰用)
   burgundyText: '#D11E52', // 玫红·深(小字可读版 · 白底 ≈5:1 过 WCAG AA · 给 kicker/小标签)
+  purpleText: '#3A1A6E', // 深紫·小字可读版(白底过 AA)
   accent3: '#7A3BE0', // 紫(轮转)
   ink: '#161D33', // 正文近黑(冷调藏蓝)
   paper: '#FFFFFF', // 卡片面
