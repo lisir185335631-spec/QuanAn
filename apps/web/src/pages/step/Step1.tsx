@@ -1,14 +1,17 @@
 /**
- * /step/1 · 选择行业赛道 — 先锋白·工业精密版(Stitch 设计基准 · 1:1 还原)
+ * /step/1 · 选择行业赛道 — 红蓝紫渐变 IKB 体系
  *
  * 数据/行为保留:56 行业 + 分类 tabs + 搜索过滤 + 选择 + 自定义行业 modal + 跳 /step/3。
- * 视觉换向:PioneerLayout 外壳 + Step 01 chip + bento 行业卡网格 + sticky 操作栏。
+ * 视觉换向:IKBLayout 外壳 + Step 01 chip + bento 行业卡网格 + sticky 操作栏。
  */
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { C, F } from '@/components/home/ikb/system';
 import { CustomIndustryModal } from '@/components/industry/CustomIndustryModal';
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   type Industry,
   STEP1_INDUSTRIES_56,
@@ -30,9 +33,10 @@ const S1_KPI = [
     value: String(STEP1_INDUSTRIES_56.length),
     unit: '个',
     badge: '全覆盖',
-    badgeColor: 'bg-[#002fa7]/10 text-[#002fa7]',
-    iconBg: 'bg-[#002fa7]/10 text-[#002fa7]',
-    cardBg: 'bg-gradient-to-br from-white to-[#f3f6ff] border-[#e0e7ff]',
+    badgeColor: C.ikb,
+    badgeBg: `${C.ikb}18`,
+    iconColor: C.ikb,
+    iconBg: `${C.ikb}18`,
     extra: null,
   },
   {
@@ -41,9 +45,10 @@ const S1_KPI = [
     value: '92',
     unit: '%',
     badge: '+18%',
-    badgeColor: 'bg-[#10b981]/10 text-[#10b981]',
-    iconBg: 'bg-[#781621]/10 text-[#781621]',
-    cardBg: 'bg-white border-[#e5e7eb]',
+    badgeColor: C.ikb,
+    badgeBg: `${C.ikb}18`,
+    iconColor: C.burgundyText,
+    iconBg: `${C.burgundy}18`,
     extra: 'ring',
   },
   {
@@ -52,9 +57,10 @@ const S1_KPI = [
     value: '0',
     unit: '个',
     badge: '选择中',
-    badgeColor: 'bg-[#F6D300]/20 text-[#8a6a00]',
-    iconBg: 'bg-[#F6D300]/20 text-[#8a6a00]',
-    cardBg: 'bg-white border-[#e5e7eb]',
+    badgeColor: C.purpleText,
+    badgeBg: `${C.yellow}28`,
+    iconColor: C.purpleText,
+    iconBg: `${C.yellow}28`,
     extra: 'bar',
   },
   {
@@ -63,31 +69,32 @@ const S1_KPI = [
     value: '86',
     unit: '/100',
     badge: '↑热门',
-    badgeColor: 'bg-[#002fa7]/10 text-[#002fa7]',
-    iconBg: 'bg-[#002fa7]/10 text-[#002fa7]',
-    cardBg: 'bg-white border-[#e5e7eb]',
+    badgeColor: C.ikb,
+    badgeBg: `${C.ikb}18`,
+    iconColor: C.ikb,
+    iconBg: `${C.ikb}18`,
     extra: null,
   },
 ] as const;
 
 // ── 赛道吸引力雷达六维(S1 suffix 防 id 冲突) ─────────────────────────────────
 const S1_RADAR_DIMS = [
-  { label: '市场规模', value: 88, color: '#002fa7' },
-  { label: '增长性', value: 82, color: '#781621' },
-  { label: '变现力', value: 90, color: '#F6D300' },
-  { label: '竞争度', value: 72, color: '#002fa7' },
-  { label: '门槛', value: 68, color: '#781621' },
-  { label: '政策', value: 85, color: '#F6D300' },
+  { label: '市场规模', value: 88, color: C.ikb },
+  { label: '增长性', value: 82, color: C.burgundy },
+  { label: '变现力', value: 90, color: C.accent3 },
+  { label: '竞争度', value: 72, color: C.ikb },
+  { label: '门槛', value: 68, color: C.burgundy },
+  { label: '政策', value: 85, color: C.accent3 },
 ];
 
 // ── 赛道热度趋势数据 ─────────────────────────────────────────────────────────
 const S1_TREND_DATA = [22, 35, 44, 58, 70, 83, 92, 100];
 const S1_TREND_LABELS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月'];
 
-// ── 行业卡 icon tile 颜色轮转(三主色) ────────────────────────────────────────
-const S1_TILE_COLORS = ['#002fa7', '#781621', '#F6D300', '#002fa7', '#781621'];
+// ── 行业卡 icon tile 颜色轮转(红蓝紫三主色) ────────────────────────────────────────
+const S1_TILE_COLORS = [C.ikb, C.burgundy, C.accent3, C.ikb, C.burgundy];
 
-// ── 行业卡微指标静态热度(循环分配) ──────────────────────────────────────────
+// ── 行业卡微指标静态热度(循环分配) · 占位假数据,待接入真实 API ────────────────────
 const S1_HEAT = [92, 85, 88, 78, 83, 90, 72, 86, 80, 94, 75, 88, 82, 76, 89, 84, 71, 93,
                  87, 79, 85, 91, 73, 88, 82, 77, 86, 94, 80, 75, 89, 83, 70, 92, 85, 78,
                  88, 82, 76, 90, 84, 71, 93, 87, 79, 85, 91, 73, 88, 82, 77, 86, 94, 80, 75, 89];
@@ -136,9 +143,6 @@ export default function Step1() {
     navigate('/step/3');
   }
 
-  const btnSecondary =
-    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
-
   // ── 雷达 SVG 渲染(静态)──────────────────────────────────────────────────────
   function renderRadar() {
     const dims = S1_RADAR_DIMS;
@@ -153,8 +157,8 @@ export default function Step1() {
       <svg viewBox="0 0 260 244" className="w-full">
         <defs>
           <linearGradient id="radarFillS1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-            <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+            <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+            <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -164,7 +168,7 @@ export default function Step1() {
           const [x, y] = pt(i, R);
           return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
         })}
-        <polygon points={dataPoly} fill="url(#radarFillS1)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+        <polygon points={dataPoly} fill="url(#radarFillS1)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
         {dims.map((d, i) => {
           const [x, y] = pt(i, R * (d.value / 100));
           return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -201,12 +205,12 @@ export default function Step1() {
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
         <defs>
           <linearGradient id="trendFillS1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-            <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+            <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+            <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
           </linearGradient>
           <linearGradient id="trendLineS1" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#002fa7" />
-            <stop offset="100%" stopColor="#781621" />
+            <stop offset="0%" stopColor={C.ikb} />
+            <stop offset="100%" stopColor={C.burgundy} />
           </linearGradient>
         </defs>
         {[0, 0.33, 0.66, 1].map((f) => (
@@ -223,38 +227,89 @@ export default function Step1() {
         <path d={area} fill="url(#trendFillS1)" />
         <path d={line} fill="none" stroke="url(#trendLineS1)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {data.map((v, i) =>
-          i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+          i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
         )}
       </svg>
     );
   }
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       <div className="pb-28">
         {/* ── Header ─────────────────────────────────────────── */}
         <header className="mb-12 flex flex-row items-center justify-between gap-8">
           <div className="shrink-0">
             <div className="mb-3 flex items-center gap-3">
-              <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+              <span
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: 11,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  border: `1px solid ${C.line}`,
+                  background: C.base,
+                  color: C.ink,
+                  padding: '4px 10px',
+                }}
+              >
                 战略节点
               </span>
-              <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              <span
+                style={{
+                  fontFamily: F.mono,
+                  fontSize: 11,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  border: `1px solid ${C.yellow}55`,
+                  background: `${C.yellow}18`,
+                  color: C.purpleText,
+                  padding: '4px 10px',
+                }}
+              >
                 赛道选择
               </span>
             </div>
-            <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tight text-[#1b1b1b]">
+            <h1
+              style={{
+                fontFamily: F.display,
+                fontWeight: 400,
+                fontSize: 40,
+                lineHeight: 1.05,
+                letterSpacing: '-0.01em',
+                margin: 0,
+                whiteSpace: 'nowrap',
+                background: C.grad,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+              }}
+            >
               STEP 01 · {STEP1_PAGE_H1}
             </h1>
-            <p className="mt-2 max-w-2xl text-[16px] text-[#444653]">
+            <p
+              className="mt-2 max-w-2xl"
+              style={{ fontSize: 16, color: '#5A6173', fontFamily: F.cn }}
+            >
               {STEP1_SUBTITLE_PART1}
-              <span className="font-bold text-[#002fa7]">{STEP1_SUBTITLE_COUNT}</span>
+              <span style={{ fontWeight: 700, color: C.ikb }}>{STEP1_SUBTITLE_COUNT}</span>
               {STEP1_SUBTITLE_PART2}
               <button
                 type="button"
                 data-testid="subtitle-custom-link"
                 onClick={() => setCustomModalOpen(true)}
-                className="font-semibold text-[#002fa7] underline-offset-2 hover:underline"
+                style={{
+                  fontWeight: 600,
+                  color: C.burgundyText,
+                  textDecoration: 'underline',
+                  textUnderlineOffset: 2,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: F.cn,
+                  fontSize: 16,
+                  padding: 0,
+                }}
               >
                 {STEP1_SUBTITLE_CUSTOM_LINK}
               </button>
@@ -262,17 +317,56 @@ export default function Step1() {
             </p>
           </div>
           <div className="flex shrink-0 flex-nowrap gap-3">
-            <button type="button" onClick={() => setCustomModalOpen(true)} className={btnSecondary}>
-              <span className="material-symbols-outlined text-[18px]">edit</span>
+            <button
+              type="button"
+              onClick={() => setCustomModalOpen(true)}
+              className="ikb-focusring"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '10px 16px',
+                fontFamily: F.mono,
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: C.ink,
+                cursor: 'pointer',
+                transition: 'background 0.2s, border-color 0.2s',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.base; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.paper; }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
               自定义行业
             </button>
             <button
               type="button"
               onClick={handleSubmit}
               disabled={!hasSelection}
-              className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+              className="ikb-gradbtn"
+              style={{
+                display: 'flex',
+                flexShrink: 0,
+                alignItems: 'center',
+                gap: 8,
+                whiteSpace: 'nowrap',
+                padding: '10px 18px',
+                fontFamily: F.cn,
+                fontSize: 13,
+                fontWeight: 700,
+                color: '#fff',
+                border: 'none',
+                cursor: hasSelection ? 'pointer' : 'not-allowed',
+                opacity: hasSelection ? 1 : 0.4,
+              }}
             >
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
               确认并进入下一步
             </button>
           </div>
@@ -283,44 +377,98 @@ export default function Step1() {
           {S1_KPI.map((kpi, idx) => (
             <div
               key={kpi.label}
-              className={`rounded-xl border p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${kpi.cardBg}`}
+              style={{
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                borderRadius: 0,
+                padding: 20,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}1A`;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.transform = '';
+                (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+              }}
             >
-              <div className="flex items-center justify-between">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${kpi.iconBg}`}>
-                  <span className="material-symbols-outlined text-[20px]">{kpi.icon}</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: kpi.iconBg,
+                    color: kpi.iconColor,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{kpi.icon}</span>
                 </span>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${kpi.badgeColor}`}>
-                  {idx === 1
-                    ? <span className="inline-flex items-center gap-0.5"><span className="material-symbols-outlined text-[13px]">trending_up</span>{kpi.badge}</span>
-                    : kpi.badge}
+                <span
+                  style={{
+                    borderRadius: 999,
+                    padding: '2px 10px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    fontFamily: F.mono,
+                    letterSpacing: '0.06em',
+                    background: kpi.badgeBg,
+                    color: kpi.badgeColor,
+                  }}
+                >
+                  {idx === 1 ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>trending_up</span>
+                      {kpi.badge}
+                    </span>
+                  ) : kpi.badge}
                 </span>
               </div>
-              <div className="mt-4 flex items-end justify-between">
+              <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <div>
-                  <p className="text-[28px] font-bold leading-none text-[#111827]">
+                  <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
                     {idx === 2 ? (hasSelection ? '1' : '0') : kpi.value}
-                    <span className="text-[15px] text-[#9ca3af]">{kpi.unit}</span>
+                    <span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn, fontWeight: 400 }}>{kpi.unit}</span>
                   </p>
-                  <p className="mt-1.5 text-[12px] text-[#6b7280]">{kpi.label}</p>
+                  <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>{kpi.label}</p>
                 </div>
                 {kpi.extra === 'ring' && (
-                  <div className="h-12 w-12 shrink-0">
-                    <svg viewBox="0 0 36 36" className="-rotate-90">
+                  <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                    <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
                       <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
-                      <circle cx="18" cy="18" r="15.915" fill="none" stroke="#781621" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="92 100" />
+                      <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.burgundy} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="92 100" />
                     </svg>
                   </div>
                 )}
               </div>
               {kpi.extra === 'bar' && (
-                <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" style={{ width: hasSelection ? '100%' : '4%' }} />
+                <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 999, background: `${C.yellow}22` }}>
+                  <div
+                    style={{
+                      height: 8,
+                      borderRadius: 999,
+                      background: C.grad,
+                      width: hasSelection ? '100%' : '4%',
+                      transition: 'width 0.4s',
+                    }}
+                  />
                 </div>
               )}
               {kpi.extra === null && idx === 3 && (
-                <div className="mt-3 flex h-6 items-end gap-1">
+                <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
                   {[68, 82, 75, 90, 78].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t bg-[#002fa7]/60" style={{ height: `${h}%` }} />
+                    <div
+                      key={i}
+                      style={{
+                        flex: 1,
+                        borderRadius: '2px 2px 0 0',
+                        background: `${C.ikb}99`,
+                        height: `${h}%`,
+                      }}
+                    />
                   ))}
                 </div>
               )}
@@ -330,61 +478,132 @@ export default function Step1() {
 
         {/* ── 数据洞察(雷达 + 趋势)──────────────────────────── */}
         <div className="mb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
-          <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-          <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 行业吸引力实时测算</span>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 行业吸引力实时测算</span>
+          <span
+            style={{
+              marginLeft: 'auto',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              borderRadius: 999,
+              background: `${C.ikb}15`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 600,
+              color: C.ikb,
+              fontFamily: F.mono,
+              letterSpacing: '0.04em',
+            }}
+          >
+            <span
+              style={{
+                height: 6,
+                width: 6,
+                borderRadius: '50%',
+                background: C.ikb,
+                animation: 'ikb-pulse 1.6s ease-in-out infinite',
+                display: 'inline-block',
+              }}
+            />
             模型已就绪
           </span>
         </div>
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 赛道吸引力雷达 */}
-          <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div
+            className="col-span-5"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
             <div className="mb-1 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                  <span className="material-symbols-outlined text-[20px]">radar</span>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.ikb}18`,
+                    color: C.ikb,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>radar</span>
                 </span>
                 <div>
-                  <h3 className="text-[14px] font-bold text-[#111827]">赛道吸引力雷达</h3>
-                  <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道吸引力雷达</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>六维模型评估</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[26px] font-bold leading-none text-[#002fa7]">81</p>
-                <p className="text-[10px] text-[#9ca3af]">综合分</p>
+              <div style={{ textAlign: 'right' }}>
+                <p
+                  className="ikb-gradtext"
+                  style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, margin: 0, fontFamily: F.display }}
+                >
+                  81
+                </p>
+                <p style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono, margin: 0 }}>综合分</p>
               </div>
             </div>
             {renderRadar()}
             <div className="mt-2 grid grid-cols-3 gap-y-2">
               {S1_RADAR_DIMS.map((d) => (
                 <div key={d.label} className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                  <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                  <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 赛道热度趋势 */}
-          <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div
+            className="col-span-7"
+            style={{
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
+              padding: 24,
+            }}
+          >
             <div className="mb-4 flex items-start justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                  <span className="material-symbols-outlined text-[20px]">show_chart</span>
+                <span
+                  style={{
+                    display: 'flex',
+                    height: 36,
+                    width: 36,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `${C.burgundy}18`,
+                    color: C.burgundyText,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>show_chart</span>
                 </span>
                 <div>
-                  <h3 className="text-[14px] font-bold text-[#111827]">赛道热度趋势</h3>
-                  <p className="text-[11px] text-[#9ca3af]">近 8 个月综合热度指数</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn, margin: 0 }}>赛道热度趋势</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn, margin: 0 }}>近 8 个月综合热度指数</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {['热度', '流量', '竞争'].map((t, i) => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {(['热度', '流量', '竞争'] as const).map((t, i) => (
                   <span
                     key={t}
-                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                    style={{
+                      borderRadius: 4,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      fontFamily: F.mono,
+                      background: i === 0 ? C.ikb : '#f1f3f9',
+                      color: i === 0 ? '#fff' : '#6b7280',
+                    }}
                   >
                     {t}
                   </span>
@@ -392,14 +611,28 @@ export default function Step1() {
               </div>
             </div>
             <div className="mb-3 flex items-end gap-3">
-              <p className="text-[30px] font-bold leading-none text-[#111827]">100</p>
-              <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-                <span className="material-symbols-outlined text-[14px]">trending_up</span>+354%
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>100</p>
+              <span
+                style={{
+                  marginBottom: 4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  borderRadius: 999,
+                  background: `${C.ikb}15`,
+                  padding: '2px 8px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.mono,
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+354%
               </span>
-              <span className="mb-1 text-[12px] text-[#9ca3af]">较同期基线</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>较同期基线</span>
             </div>
             {renderTrend()}
-            <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            <div className="mt-1 flex justify-between px-1" style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>
               {S1_TREND_LABELS.map((m) => (
                 <span key={m}>{m}</span>
               ))}
@@ -419,12 +652,32 @@ export default function Step1() {
                   data-testid={`tab-${tab.id}`}
                   data-state={active ? 'active' : 'inactive'}
                   onClick={() => setActiveTabId(tab.id)}
-                  className={[
-                    'rounded-md border px-4 py-2 text-[12px] font-bold uppercase tracking-wide transition-all',
-                    active
-                      ? 'border-[#002fa7] bg-[#002fa7] text-white shadow-sm'
-                      : 'border-[#c4c5d6] bg-white text-[#444653] hover:border-[#001e73] hover:text-[#001e73]',
-                  ].join(' ')}
+                  className="ikb-focusring"
+                  style={{
+                    border: active ? `1px solid ${C.ikb}` : `1px solid rgba(22,32,72,0.18)`,
+                    background: active ? C.ikb : C.paper,
+                    color: active ? '#fff' : '#5A6173',
+                    padding: '8px 16px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    fontFamily: F.mono,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+                      (e.currentTarget as HTMLButtonElement).style.color = C.ikb;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(22,32,72,0.18)';
+                      (e.currentTarget as HTMLButtonElement).style.color = '#5A6173';
+                    }
+                  }}
                 >
                   {tab.label} ({tab.count})
                 </button>
@@ -432,7 +685,7 @@ export default function Step1() {
             })}
           </div>
           <div className="relative">
-            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]">
+            <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" style={{ fontSize: 18, color: '#6b7280' }}>
               search
             </span>
             <input
@@ -441,19 +694,46 @@ export default function Step1() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={STEP1_SEARCH_PLACEHOLDER}
               data-testid="industry-search"
-              className="w-64 rounded-md border border-[#e5e7eb] bg-white py-2 pl-10 pr-4 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:ring-1 focus:ring-[#002fa7]"
+              className="ikb-input"
+              style={{
+                width: 256,
+                border: `1px solid ${C.line}`,
+                background: C.paper,
+                padding: '8px 16px 8px 40px',
+                fontSize: 14,
+                fontFamily: F.cn,
+                color: C.ink,
+                transition: 'border-color 0.2s',
+              }}
             />
           </div>
         </div>
 
         {/* ── Industry bento grid ────────────────────────────── */}
         {filteredIndustries.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#c4c5d6] bg-[#f9f9f9] py-16 text-center">
-            <p className="text-[16px] font-bold text-[#1b1b1b]">未找到匹配的行业</p>
+          <div
+            style={{
+              border: `1px dashed rgba(22,32,72,0.22)`,
+              background: C.base,
+              padding: '64px 0',
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>未找到匹配的行业</p>
             <button
               type="button"
               onClick={() => setCustomModalOpen(true)}
-              className="mt-2 text-[14px] font-semibold text-[#002fa7] hover:underline"
+              style={{
+                marginTop: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                color: C.ikb,
+                textDecoration: 'underline',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: F.cn,
+              }}
             >
               尝试自定义输入 →
             </button>
@@ -471,56 +751,132 @@ export default function Step1() {
                   data-testid={`industry-card-${ind.label}`}
                   data-state={active ? 'active' : 'inactive'}
                   onClick={() => handleSelectIndustry(ind)}
-                  className={[
-                    'group relative flex cursor-pointer flex-col items-start gap-2 overflow-hidden rounded-xl p-4 text-left transition-all',
-                    active
-                      ? 'border-2 border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm'
-                      : 'border border-[#e5e7eb] bg-white hover:-translate-y-1 hover:border-[#001e73] hover:shadow-md',
-                  ].join(' ')}
+                  className="ikb-focusring"
+                  style={{
+                    position: 'relative',
+                    display: 'flex',
+                    cursor: 'pointer',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 8,
+                    overflow: 'hidden',
+                    padding: 16,
+                    textAlign: 'left',
+                    transition: 'all 0.2s',
+                    border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
+                    background: active ? `${C.ikb}08` : C.paper,
+                    boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
+                    transform: 'translateY(0)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-4px)';
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 24px ${C.ikb}18`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.transform = '';
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = '';
+                    }
+                  }}
                 >
                   {/* 选中 check 徽标 */}
                   <span
-                    className={`absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                    style={{
+                      position: 'absolute',
+                      right: 10,
+                      top: 10,
+                      display: 'flex',
+                      height: 16,
+                      width: 16,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%',
+                      background: active ? C.ikb : C.paper,
+                      border: active ? 'none' : `1px solid ${C.line}`,
+                      color: active ? '#fff' : 'transparent',
+                      transition: 'all 0.2s',
+                    }}
                   >
-                    <span className="material-symbols-outlined text-[12px]">check</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 12 }}>check</span>
                   </span>
 
                   {/* 彩色 icon tile */}
                   <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl shadow-sm"
-                    style={{ backgroundColor: tileColor }}
+                    style={{
+                      display: 'flex',
+                      height: 40,
+                      width: 40,
+                      flexShrink: 0,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 20,
+                      boxShadow: `0 2px 8px ${tileColor}40`,
+                      backgroundColor: tileColor,
+                    }}
                   >
                     {ind.emoji}
                   </span>
 
                   {/* 行业名 + 副标 */}
-                  <div className="w-full min-w-0">
+                  <div style={{ width: '100%', minWidth: 0 }}>
                     <h3
-                      className={[
-                        'text-[14px] font-bold leading-tight',
-                        active ? 'text-[#001e73]' : 'text-[#1b1b1b]',
-                      ].join(' ')}
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 700,
+                        lineHeight: 1.25,
+                        fontFamily: F.cn,
+                        color: active ? C.ikb : C.ink,
+                        margin: 0,
+                      }}
                     >
                       {ind.label}
                     </h3>
-                    <p className="mt-0.5 truncate text-[10px] font-bold uppercase tracking-wide text-[#9ca3af]">
+                    <p
+                      style={{
+                        marginTop: 2,
+                        fontSize: 10,
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        color: '#6b7280',
+                        fontFamily: F.mono,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        margin: '2px 0 0',
+                      }}
+                    >
                       {ind.category}
                     </p>
                   </div>
 
                   {/* 微指标: 热度进度条 */}
-                  <div className="w-full">
-                    <div className="mb-1 flex items-center justify-between text-[10px]">
-                      <span className="text-[#9ca3af]">热度</span>
-                      <span className={`font-bold ${active ? 'text-[#002fa7]' : 'text-[#6b7280]'}`}>{heat}%</span>
-                    </div>
-                    <div className="h-1 w-full rounded-full bg-[#f3f4f6]">
-                      <div
-                        className="h-1 rounded-full transition-all"
+                  <div style={{ width: '100%' }}>
+                    <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10 }}>
+                      <span style={{ color: '#6b7280', fontFamily: F.mono }}>热度</span>
+                      <span
                         style={{
+                          fontWeight: 700,
+                          color: active ? C.ikb : '#6b7280',
+                          fontFamily: F.mono,
+                        }}
+                      >
+                        {heat}%
+                      </span>
+                    </div>
+                    <div style={{ height: 4, width: '100%', borderRadius: 999, background: '#f3f4f6' }}>
+                      <div
+                        style={{
+                          height: 4,
+                          borderRadius: 999,
+                          transition: 'all 0.3s',
                           width: `${heat}%`,
-                          backgroundColor: active ? '#002fa7' : tileColor,
-                          opacity: active ? 1 : 0.6,
+                          background: active ? C.grad : tileColor,
+                          opacity: active ? 1 : 0.65,
                         }}
                       />
                     </div>
@@ -534,29 +890,89 @@ export default function Step1() {
 
       {/* ── Sticky action bar ────────────────────────────────── */}
       {hasSelection && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#c4c5d6] bg-white/95 shadow-[0px_-4px_20px_rgba(0,0,0,0.04)] backdrop-blur-sm">
-          <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-10 py-4">
-            <div className="flex items-center gap-4">
-              <span className="text-[14px] text-[#444653]">已选择:</span>
-              <span className="flex items-center gap-1 rounded-full border border-[#002fa7]/20 bg-[#002fa7]/10 px-3 py-1 text-[12px] font-bold text-[#001e73]">
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 30,
+            borderTop: `1px solid ${C.line}`,
+            background: 'rgba(255,255,255,0.96)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: `0 -4px 20px ${C.ikb}0F`,
+          }}
+        >
+          <div
+            style={{
+              margin: '0 auto',
+              display: 'flex',
+              width: '100%',
+              maxWidth: 1440,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 40px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span style={{ fontSize: 14, color: '#5A6173', fontFamily: F.cn }}>已选择:</span>
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  borderRadius: 999,
+                  border: `1px solid ${C.ikb}33`,
+                  background: `${C.ikb}12`,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: C.ikb,
+                  fontFamily: F.cn,
+                }}
+              >
                 {selectedLabel}
                 <button
                   type="button"
                   aria-label="清除选择"
                   onClick={clearSelection}
-                  className="material-symbols-outlined text-[14px] hover:text-[#781621]"
+                  style={{
+                    fontSize: 14,
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: C.ikb,
+                    padding: 0,
+                    display: 'inline-flex',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.burgundy; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
                 >
-                  close
+                  <span className="material-symbols-outlined" aria-hidden="true">close</span>
                 </button>
               </span>
             </div>
             <button
               type="button"
               onClick={handleSubmit}
-              className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[14px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm"
+              className="ikb-gradbtn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '12px 32px',
+                fontSize: 14,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: F.cn,
+              }}
             >
               确认并进入下一步
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
             </button>
           </div>
         </div>
@@ -568,6 +984,6 @@ export default function Step1() {
         hideTrigger
         onConfirm={handleCustomConfirm}
       />
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
