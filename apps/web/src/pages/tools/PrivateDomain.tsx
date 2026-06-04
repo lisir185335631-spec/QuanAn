@@ -1,12 +1,16 @@
 /**
- * PrivateDomain.tsx — /private-domain 私域成交流程 · 先锋白标准重构
- * 照抄 Step3/Step8 手法 · 逻辑零改动 · 只换皮 + 加可视化
+ * PrivateDomain.tsx — /private-domain 私域成交流程
+ * IKB 红蓝紫渐变体系重构 · IKBLayout 外壳
+ * 逻辑零改动 · testid 全保留 · 只换皮
  */
+
+import '@/styles/ikb-hero.css';
 
 import { type FormEvent, useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
@@ -182,10 +186,10 @@ function generateMockResult(): PrivateDomainResult {
 // ── KPI representative values ─────────────────────────────────────────────────
 
 const KPI_META = [
-  { label: '好友添加率', value: '32%', num: 32, icon: 'person_add', accent: '#002fa7' },
-  { label: '咨询转化率', value: '18%', num: 18, icon: 'chat', accent: '#781621' },
-  { label: '复购率',     value: '45%', num: 45, icon: 'autorenew', accent: '#F6D300' },
-  { label: '客户好评率', value: '96%',   num: 96, icon: 'star_rate', accent: '#002fa7' },
+  { label: '好友添加率', value: '32%', num: 32, icon: 'person_add', accent: C.ikb },
+  { label: '咨询转化率', value: '18%', num: 18, icon: 'chat',       accent: C.burgundy },
+  { label: '复购率',     value: '45%', num: 45, icon: 'autorenew',  accent: C.accent3 },
+  { label: '客户好评率', value: '96%', num: 96, icon: 'star_rate',  accent: C.ikb },
 ];
 
 // ── helper ────────────────────────────────────────────────────────────────────
@@ -238,17 +242,18 @@ export default function PrivateDomain() {
       .catch(() => toast.error('导出失败'));
   }
 
+  // secondary button — IKB 锐角 墨线边
   const btnSecondary =
-    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+    'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#d0d5e8] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#161D33] transition-colors hover:bg-[#F3F5FC] disabled:cursor-not-allowed disabled:opacity-40 ikb-focusring';
 
   // ── radar data ──────────────────────────────────────────────────────────────
   const radarDims = [
-    { label: '引流获客', value: 72, color: '#002fa7' },
-    { label: '破冰建联', value: 80, color: '#781621' },
-    { label: '信任建立', value: 88, color: '#F6D300' },
-    { label: '需求洞察', value: 76, color: '#002fa7' },
-    { label: '成交转化', value: 65, color: '#781621' },
-    { label: '复购裂变', value: 70, color: '#F6D300' },
+    { label: '引流获客', value: 72, color: C.ikb },
+    { label: '破冰建联', value: 80, color: C.burgundy },
+    { label: '信任建立', value: 88, color: C.accent3 },
+    { label: '需求洞察', value: 76, color: C.ikb },
+    { label: '成交转化', value: 65, color: C.burgundy },
+    { label: '复购裂变', value: 70, color: C.accent3 },
   ];
 
   const cx = 130;
@@ -277,51 +282,61 @@ export default function PrivateDomain() {
   const trendArea = `${trendLine} L ${tx(trendData.length - 1).toFixed(1)} ${(trendPadT + trendInnerH).toFixed(1)} L ${tx(0).toFixed(1)} ${(trendPadT + trendInnerH).toFixed(1)} Z`;
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: `${C.line}`, background: C.base, color: C.ink, fontFamily: F.mono }}
+            >
               成交链路
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: `${C.burgundy}44`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+            >
               话术库
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tight text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
+            style={{ fontFamily: F.display }}
+          >
             私域成交流程
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#5A6173', fontFamily: F.cn }}>
             覆盖从加好友到成交复购的全链路话术，让私域转化率翻倍。欢迎话术、破冰暖场、信任建立、需求挖掘、成交促单、售后复购，六大场景一次生成。
           </p>
         </div>
         <div className="flex shrink-0 flex-nowrap gap-3">
-          <button type="button" onClick={handleOptimize} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">auto_fix_high</span>
+          <button type="button" onClick={handleOptimize} aria-label="智能优化" className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_fix_high</span>
             智能优化
           </button>
-          <button type="button" onClick={handleCopyAll} className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">content_copy</span>
+          <button type="button" onClick={handleCopyAll} aria-label="复制全部话术" className={btnSecondary}>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
             复制全部话术
           </button>
           <button
             type="button"
             onClick={handleExport}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+            aria-label="导出"
+            className="ikb-gradbtn flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">download</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>download</span>
             导出
           </button>
         </div>
       </header>
 
       {/* ── 场景选择(6 tile 卡) ──────────────────────────────── */}
-      <section className="mb-10">
+      <div className="mb-10" role="radiogroup" aria-label="选择话术场景">
         <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">category</span>
-          <h2 className="text-[16px] font-bold text-[#111827]">选择场景</h2>
-          <span className="text-[12px] text-[#9ca3af]">· 当前：{currentScenario.name}</span>
+          <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>category</span>
+          <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>选择场景</h2>
+          <span className="text-[12px]" style={{ color: '#6b7280' }}>· 当前：{currentScenario.name}</span>
         </div>
         <div className="grid grid-cols-6 gap-3">
           {SCENARIOS.map((s) => {
@@ -331,42 +346,75 @@ export default function PrivateDomain() {
                 key={s.id}
                 type="button"
                 onClick={() => setActiveScenario(s.id)}
-                className={`group relative flex flex-col items-center gap-2 overflow-hidden rounded-xl border p-4 text-center transition-all ${active ? 'border-[#002fa7] bg-[#002fa7]/[0.04] shadow-sm' : 'border-[#e5e7eb] bg-white hover:border-[#c7d2fe] hover:bg-[#f8faff]'}`}
+                aria-label={`选择场景：${s.name}`}
+                aria-pressed={active}
+                className="ikb-focusring group relative flex flex-col items-center gap-2 overflow-hidden rounded-xl border p-4 text-center transition-all"
+                style={{
+                  borderColor: active ? C.ikb : C.line,
+                  background: active ? `${C.ikb}08` : C.paper,
+                  boxShadow: active ? `0 0 0 1px ${C.ikb}30` : undefined,
+                }}
               >
                 <span
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg shadow-sm transition-colors ${active ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280] group-hover:bg-[#dbe2ff] group-hover:text-[#002fa7]'}`}
+                  className="flex h-10 w-10 items-center justify-center rounded-lg shadow-sm transition-colors"
+                  style={{
+                    background: active ? C.ikb : C.base,
+                    color: active ? '#fff' : '#6b7280',
+                  }}
                 >
-                  <span className="material-symbols-outlined text-[22px]" aria-hidden="true">{s.icon}</span>
+                  <span className="material-symbols-outlined text-[22px]" aria-hidden={true}>{s.icon}</span>
                 </span>
-                <span className="block text-[13px] font-bold text-[#111827]">{s.name}</span>
-                <span className="block text-[10px] leading-tight text-[#9ca3af]">{s.subtitle}</span>
+                <span className="block text-[13px] font-bold" style={{ color: C.ink }}>{s.name}</span>
+                <span className="block text-[10px] leading-tight" style={{ color: '#6b7280' }}>{s.subtitle}</span>
                 <span
-                  className={`absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full transition-all ${active ? 'bg-[#002fa7] text-white' : 'border border-[#e5e7eb] bg-white text-transparent'}`}
+                  className="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full transition-all"
+                  style={{
+                    background: active ? C.ikb : C.paper,
+                    color: active ? '#fff' : 'transparent',
+                    border: active ? 'none' : `1px solid ${C.line}`,
+                  }}
                 >
-                  <span className="material-symbols-outlined text-[12px]" aria-hidden="true">check</span>
+                  <span className="material-symbols-outlined text-[12px]" aria-hidden={true}>check</span>
                 </span>
               </button>
             );
           })}
         </div>
-      </section>
+      </div>
 
       {/* ── 输入卡 ──────────────────────────────────────────── */}
-      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+      <section
+        className="relative mb-12 overflow-hidden rounded-xl border p-6"
+        style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+      >
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.ikb}08` }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.burgundy}06` }}
+        />
+        <div
+          className="relative mb-6 flex items-center justify-between border-b pb-5"
+          style={{ borderColor: C.line }}
+        >
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined" aria-hidden="true">tune</span>
+            <span
+              className="ikb-gradbtn flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
+            >
+              <span className="material-symbols-outlined" aria-hidden={true}>tune</span>
             </span>
             <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">话术参数</h2>
-              <p className="text-[12px] text-[#9ca3af]">填写产品与用户信息 · AI 据此生成全链路话术</p>
+              <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>话术参数</h2>
+              <p className="text-[12px]" style={{ color: '#6b7280' }}>填写产品与用户信息 · AI 据此生成全链路话术</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+            style={{ background: `${C.ikb}10`, color: C.ikb }}
+          >
+            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
             参数就绪
           </span>
         </div>
@@ -375,12 +423,25 @@ export default function PrivateDomain() {
             <div className="grid grid-cols-2 gap-6">
               {/* 产品名称 */}
               <div>
-                <label htmlFor="pd-product-name" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                <label
+                  htmlFor="pd-product-name"
+                  className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide before:h-3.5 before:w-1 before:rounded-full before:content-['']"
+                  style={{ color: C.ink, fontFamily: F.cn }}
+                >
+                  <span
+                    className="inline-block h-3.5 w-1 shrink-0 rounded-full"
+                    style={{ background: C.grad }}
+                    aria-hidden={true}
+                  />
                   产品/服务名称
-                  <span className="ml-1 text-[#781621]">*</span>
+                  <span className="ml-1" style={{ color: C.burgundy }}>*</span>
                 </label>
                 <div className="relative">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]" aria-hidden="true">inventory_2</span>
+                  <span
+                    className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
+                    style={{ color: '#6b7280' }}
+                    aria-hidden={true}
+                  >inventory_2</span>
                   <input
                     id="pd-product-name"
                     type="text"
@@ -388,25 +449,40 @@ export default function PrivateDomain() {
                     onChange={(e) => setProductName(e.target.value)}
                     placeholder="例如：护肤套装"
                     required
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                    className="ikb-input w-full rounded-lg border bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] transition-all focus:bg-white"
+                    style={{ borderColor: C.line }}
                   />
                 </div>
               </div>
               {/* 目标用户 */}
               <div>
-                <label htmlFor="pd-target-user" className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                <label
+                  htmlFor="pd-target-user"
+                  className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+                  style={{ color: C.ink, fontFamily: F.cn }}
+                >
+                  <span
+                    className="inline-block h-3.5 w-1 shrink-0 rounded-full"
+                    style={{ background: C.grad }}
+                    aria-hidden={true}
+                  />
                   目标用户
-                  <span className="ml-2 text-[11px] font-normal text-[#9ca3af]">（选填）</span>
+                  <span className="ml-2 text-[11px] font-normal" style={{ color: '#6b7280' }}>（选填）</span>
                 </label>
                 <div className="relative">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]" aria-hidden="true">groups</span>
+                  <span
+                    className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]"
+                    style={{ color: '#6b7280' }}
+                    aria-hidden={true}
+                  >groups</span>
                   <input
                     id="pd-target-user"
                     type="text"
                     value={targetUser}
                     onChange={(e) => setTargetUser(e.target.value)}
                     placeholder="例如：25-35宝妈"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                    className="ikb-input w-full rounded-lg border bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] transition-all focus:bg-white"
+                    style={{ borderColor: C.line }}
                   />
                 </div>
               </div>
@@ -414,43 +490,66 @@ export default function PrivateDomain() {
             {/* 具体场景 */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <label htmlFor="pd-scenario" className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+                <label
+                  htmlFor="pd-scenario"
+                  className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+                  style={{ color: C.ink, fontFamily: F.cn }}
+                >
+                  <span
+                    className="inline-block h-3.5 w-1 shrink-0 rounded-full"
+                    style={{ background: C.grad }}
+                    aria-hidden={true}
+                  />
                   具体场景
-                  <span className="ml-2 text-[11px] font-normal text-[#9ca3af]">（选填）</span>
+                  <span className="ml-2 text-[11px] font-normal" style={{ color: '#6b7280' }}>（选填）</span>
                 </label>
-                <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]">
-                  <span className="material-symbols-outlined text-[14px] text-[#781621]" aria-hidden="true">auto_awesome</span>
+                <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280' }}>
+                  <span className="material-symbols-outlined text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>auto_awesome</span>
                   AI 据此生成精准话术
                 </span>
               </div>
-              <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+              <div
+                className="overflow-hidden rounded-xl border transition-all focus-within:ring-1"
+                style={{
+                  borderColor: C.line,
+                  background: '#f9f9f9',
+                  ['--tw-ring-color' as string]: C.ikb,
+                }}
+              >
                 <textarea
                   id="pd-scenario"
                   value={scenario}
                   onChange={(e) => setScenario(e.target.value)}
                   rows={4}
                   placeholder="描述具体场景，例如：客户看了朋友圈主动咨询、老客户3个月没复购"
-                  className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                  className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
                 />
-                <div className="flex items-center justify-between border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+                <div
+                  className="flex items-center justify-between border-t px-4 py-2.5"
+                  style={{ borderColor: C.line, background: 'rgba(255,255,255,0.6)' }}
+                >
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-[#9ca3af]">可描述</span>
+                    <span className="text-[11px]" style={{ color: '#6b7280' }}>可描述</span>
                     {['触达时机', '客户类型', '主要痛点', '期望结果'].map((t) => (
-                      <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                      <span
+                        key={t}
+                        className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+                        style={{ background: C.base, color: '#6b7280' }}
+                      >
                         {t}
                       </span>
                     ))}
                   </div>
-                  <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{scenario.length} 字</span>
+                  <span className="shrink-0 text-[11px] tabular-nums" style={{ color: '#6b7280' }}>{scenario.length} 字</span>
                 </div>
               </div>
               <div className="mt-4 flex justify-end">
                 <button
                   type="submit"
                   disabled={!productName.trim()}
-                  className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+                  className="ikb-gradbtn flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">auto_awesome</span>
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_awesome</span>
                   生成全链路话术
                 </button>
               </div>
@@ -461,37 +560,46 @@ export default function PrivateDomain() {
 
       {/* ── 数据洞察 band ─────────────────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
+        <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
+        <span className="text-[12px]" style={{ color: '#6b7280' }}>· AI 综合评估 · 实时测算</span>
+        <span
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          style={{ background: `${C.ikb}10`, color: C.ikb }}
+        >
+          <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
           模型已就绪
         </span>
       </div>
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 私域转化力雷达 */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-5 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+        >
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}10`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">私域转化力雷达</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>私域转化力雷达</h3>
+                <p className="text-[11px]" style={{ color: '#6b7280' }}>六维模型评估</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">75</p>
-              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+              <p className="text-[26px] font-bold leading-none" style={{ color: C.ikb, fontFamily: F.display }}>75</p>
+              <p className="text-[10px]" style={{ color: '#6b7280' }}>综合分</p>
             </div>
           </div>
           <svg viewBox="0 0 260 244" className="w-full">
             <defs>
-              <linearGradient id="radarFillPD" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+              <linearGradient id="pd-radarFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
               </linearGradient>
             </defs>
             {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -501,7 +609,7 @@ export default function PrivateDomain() {
               const [x, y] = pt(i, R);
               return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
             })}
-            <polygon points={dataPoly} fill="url(#radarFillPD)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+            <polygon points={dataPoly} fill="url(#pd-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
             {radarDims.map((d, i) => {
               const [x, y] = pt(i, R * (d.value / 100));
               return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -519,30 +627,37 @@ export default function PrivateDomain() {
             {radarDims.map((d) => (
               <div key={d.label} className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                <span className="text-[11px]" style={{ color: '#6b7280' }}>{d.label}</span>
+                <span className="text-[11px] font-bold" style={{ color: C.ink }}>{d.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 成交转化漏斗 / 复购曲线 */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-7 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+        >
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">show_chart</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.burgundy}10`, color: C.burgundy }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">成交转化漏斗 / 复购曲线</h3>
-                <p className="text-[11px] text-[#9ca3af]">按当前链路参数测算</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>成交转化漏斗 / 复购曲线</h3>
+                <p className="text-[11px]" style={{ color: '#6b7280' }}>按当前链路参数测算</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {['成交', '复购', '裂变'].map((t, i) => (
+              {(['成交', '复购', '裂变'] as const).map((t, i) => (
                 <span
                   key={t}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                  style={i === 0 ? { background: C.ikb, color: '#fff' } : { background: C.base, color: '#6b7280' }}
                 >
                   {t}
                 </span>
@@ -550,21 +665,24 @@ export default function PrivateDomain() {
             </div>
           </div>
           <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none text-[#111827]">45%</p>
-            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>+28%
+            <p className="text-[30px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>45%</p>
+            <span
+              className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>+28%
             </span>
-            <span className="mb-1 text-[12px] text-[#9ca3af]">较行业基线</span>
+            <span className="mb-1 text-[12px]" style={{ color: '#6b7280' }}>较行业基线</span>
           </div>
           <svg viewBox={`0 0 ${trendW} ${trendH}`} className="w-full">
             <defs>
-              <linearGradient id="trendFillPD" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+              <linearGradient id="pd-trendFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
               </linearGradient>
-              <linearGradient id="trendLinePD" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#002fa7" />
-                <stop offset="100%" stopColor="#781621" />
+              <linearGradient id="pd-trendLine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor={C.ikb} />
+                <stop offset="100%" stopColor={C.burgundy} />
               </linearGradient>
             </defs>
             {[0, 0.33, 0.66, 1].map((f) => (
@@ -578,13 +696,13 @@ export default function PrivateDomain() {
                 strokeWidth="1"
               />
             ))}
-            <path d={trendArea} fill="url(#trendFillPD)" />
-            <path d={trendLine} fill="none" stroke="url(#trendLinePD)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d={trendArea} fill="url(#pd-trendFill)" />
+            <path d={trendLine} fill="none" stroke="url(#pd-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             {trendData.map((v, i) =>
-              i % 2 === 0 ? <circle key={i} cx={tx(i)} cy={ty(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+              i % 2 === 0 ? <circle key={i} cx={tx(i)} cy={ty(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
             )}
           </svg>
-          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+          <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280' }}>
             {funnelLabels.map((m) => (
               <span key={m}>{m}</span>
             ))}
@@ -595,40 +713,43 @@ export default function PrivateDomain() {
       {/* ── KPI 卡一排 ───────────────────────────────────────── */}
       <div className="mb-8 grid grid-cols-4 gap-6">
         {KPI_META.map((k, idx) => {
-          const borderColors = ['border-[#e0e7ff]', 'border-[#e5e7eb]', 'border-[#F3E08A]', 'border-[#e0e7ff]'];
-          const bgColors = ['from-white to-[#f3f6ff]', 'bg-white', 'from-white to-[#fffbeb]', 'from-white to-[#f3f6ff]'];
-          const iconBgs = ['bg-[#002fa7]/10 text-[#002fa7]', 'bg-[#781621]/10 text-[#781621]', 'bg-[#F6D300]/20 text-[#221b00]', 'bg-[#002fa7]/10 text-[#002fa7]'];
-          const badgeColors = [
-            'bg-[#10b981]/10 text-[#10b981]',
-            'bg-[#781621]/10 text-[#781621]',
-            'bg-[#fdf6cc] text-[#221b00]',
-            'bg-[#002fa7]/10 text-[#002fa7]',
-          ];
+          const accentColors = [C.ikb, C.burgundy, C.accent3, C.ikb];
+          const acc = accentColors[idx];
           const badges = ['+12%', '已优化', '持续增长', '+8%'];
           return (
             <div
               key={k.label}
-              className={`rounded-xl border ${borderColors[idx]} bg-gradient-to-br ${bgColors[idx]} p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md`}
+              className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              style={{
+                borderColor: `${acc}30`,
+                background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              }}
             >
               <div className="flex items-center justify-between">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${iconBgs[idx]}`}>
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{k.icon}</span>
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: `${acc}10`, color: acc }}
+                >
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>{k.icon}</span>
                 </span>
-                <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold ${badgeColors[idx]}`}>
-                  {idx === 0 || idx === 3 ? (
-                    <span className="material-symbols-outlined text-[13px]" aria-hidden="true">trending_up</span>
+                <span
+                  className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                  style={{ background: `${acc}10`, color: acc }}
+                >
+                  {(idx === 0 || idx === 3) ? (
+                    <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>
                   ) : null}
                   {badges[idx]}
                 </span>
               </div>
               <div className="mt-4 flex items-end justify-between">
                 <div>
-                  <p className="text-[28px] font-bold leading-none text-[#111827]">{k.value}</p>
-                  <p className="mt-1.5 text-[12px] text-[#6b7280]">{k.label}</p>
+                  <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>{k.value}</p>
+                  <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280' }}>{k.label}</p>
                 </div>
                 <div className="h-12 w-12 shrink-0">
                   <svg viewBox="0 0 36 36" className="-rotate-90">
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${acc}18`} strokeWidth="3.5" />
                     <circle
                       cx="18"
                       cy="18"
@@ -651,36 +772,53 @@ export default function PrivateDomain() {
       <div className="space-y-6">
 
         {/* 引流话术 trafficScripts */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div
+          className="rounded-xl border bg-white p-6"
+          style={{ borderColor: C.line }}
+        >
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">campaign</span>
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold" style={{ color: C.ink }}>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}10`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>campaign</span>
               </span>
               引流话术
             </h3>
-            <span className="rounded-full bg-[#002fa7]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#002fa7]">
+            <span
+              className="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
               Traffic Scripts
             </span>
           </div>
           <div className="grid grid-cols-3 gap-5">
             {/* 短视频引流 */}
             <div>
-              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 短视频引流
               </p>
               <div className="space-y-2">
                 {generated.trafficScripts.shortVideo.map((s, i) => (
-                  <div key={i} className="group flex items-start gap-2 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-colors hover:border-[#002fa7] hover:bg-white">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[10px] font-bold text-white">{i + 1}</span>
-                    <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                  <div
+                    key={i}
+                    className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                    style={{ borderColor: C.line, background: C.base }}
+                  >
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ background: C.ikb }}
+                    >{i + 1}</span>
+                    <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                     <button
                       type="button"
                       onClick={() => copyText(s)}
-                      aria-label="复制话术"
-                      className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="复制短视频引流话术"
+                      className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                     >
-                      <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#002fa7]" aria-hidden="true">content_copy</span>
+                      <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                     </button>
                   </div>
                 ))}
@@ -688,21 +826,29 @@ export default function PrivateDomain() {
             </div>
             {/* 评论互动 */}
             <div>
-              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#781621] before:content-['']">
+              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                 评论互动引流
               </p>
               <div className="space-y-2">
                 {generated.trafficScripts.commentInteraction.map((s, i) => (
-                  <div key={i} className="group flex items-start gap-2 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-colors hover:border-[#781621] hover:bg-white">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#781621] text-[10px] font-bold text-white">{i + 1}</span>
-                    <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                  <div
+                    key={i}
+                    className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                    style={{ borderColor: C.line, background: C.base }}
+                  >
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ background: C.burgundy }}
+                    >{i + 1}</span>
+                    <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                     <button
                       type="button"
                       onClick={() => copyText(s)}
-                      aria-label="复制话术"
-                      className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="复制评论互动引流话术"
+                      className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                     >
-                      <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#781621]" aria-hidden="true">content_copy</span>
+                      <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                     </button>
                   </div>
                 ))}
@@ -710,21 +856,29 @@ export default function PrivateDomain() {
             </div>
             {/* 私信引导 */}
             <div>
-              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#221b00] before:content-['']">
+              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.accent3 }} aria-hidden={true} />
                 私信引导话术
               </p>
               <div className="space-y-2">
                 {generated.trafficScripts.dmGuidance.map((s, i) => (
-                  <div key={i} className="group flex items-start gap-2 rounded-lg border border-[#F3E08A] bg-[#fdf6cc]/40 p-3 transition-colors hover:bg-[#fdf6cc]/70">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F6D300] text-[10px] font-bold text-[#221b00]">{i + 1}</span>
-                    <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                  <div
+                    key={i}
+                    className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                    style={{ borderColor: `${C.accent3}28`, background: `${C.accent3}06` }}
+                  >
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ background: C.accent3 }}
+                    >{i + 1}</span>
+                    <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                     <button
                       type="button"
                       onClick={() => copyText(s)}
-                      aria-label="复制话术"
-                      className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="复制私信引导话术"
+                      className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                     >
-                      <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#221b00]" aria-hidden="true">content_copy</span>
+                      <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                     </button>
                   </div>
                 ))}
@@ -734,49 +888,62 @@ export default function PrivateDomain() {
         </div>
 
         {/* 朋友圈话术 momentsScripts */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div
+          className="rounded-xl border bg-white p-6"
+          style={{ borderColor: C.line }}
+        >
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">photo_album</span>
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold" style={{ color: C.ink }}>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.burgundy}10`, color: C.burgundy }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>photo_album</span>
               </span>
               朋友圈话术
             </h3>
-            <span className="rounded-full bg-[#781621]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#781621]">
+            <span
+              className="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+              style={{ background: `${C.burgundy}10`, color: C.burgundy }}
+            >
               Moments Scripts
             </span>
           </div>
           <div className="grid grid-cols-2 gap-5">
             {(
               [
-                { key: 'grass',   label: '种草内容',  color: '#002fa7', numColor: '#fff',    items: generated.momentsScripts.grass },
-                { key: 'trust',   label: '信任背书',  color: '#781621', numColor: '#fff',    items: generated.momentsScripts.trust },
-                { key: 'closing', label: '促单话术',  color: '#F6D300', numColor: '#221b00', items: generated.momentsScripts.closing },
-                { key: 'fission', label: '裂变钩子',  color: '#10b981', numColor: '#fff',    items: generated.momentsScripts.fission },
+                { key: 'grass',   label: '种草内容', color: C.ikb,      numColor: '#fff',    items: generated.momentsScripts.grass },
+                { key: 'trust',   label: '信任背书', color: C.burgundy, numColor: '#fff',    items: generated.momentsScripts.trust },
+                { key: 'closing', label: '促单话术', color: C.accent3,  numColor: '#fff',    items: generated.momentsScripts.closing },
+                { key: 'fission', label: '裂变钩子', color: C.ikb,      numColor: '#fff',    items: generated.momentsScripts.fission },
               ] as const
             ).map((group) => (
               <div key={group.key}>
-                <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827]" style={{ '--bar-color': group.color } as React.CSSProperties}>
-                  <span className="inline-block h-3 w-1 rounded-full" style={{ backgroundColor: group.color }} />
+                <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                  <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ backgroundColor: group.color }} aria-hidden={true} />
                   {group.label}
                 </p>
                 <div className="space-y-2">
                   {group.items.map((s, i) => (
-                    <div key={i} className={`group flex items-start gap-2 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-colors hover:bg-white ${group.key === 'closing' ? 'hover:border-[#F3E08A]' : 'hover:border-[#002fa7]'}`}>
+                    <div
+                      key={i}
+                      className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                      style={{ borderColor: C.line, background: C.base }}
+                    >
                       <span
                         className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold"
                         style={{ backgroundColor: group.color, color: group.numColor }}
                       >
                         {i + 1}
                       </span>
-                      <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                      <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                       <button
                         type="button"
                         onClick={() => copyText(s)}
                         aria-label="复制话术"
-                        className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                        className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#002fa7]" aria-hidden="true">content_copy</span>
+                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                       </button>
                     </div>
                   ))}
@@ -787,36 +954,53 @@ export default function PrivateDomain() {
         </div>
 
         {/* 销售话术 salesScripts */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div
+          className="rounded-xl border bg-white p-6"
+          style={{ borderColor: C.line }}
+        >
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#221b00]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">record_voice_over</span>
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold" style={{ color: C.ink }}>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.accent3}10`, color: C.accent3 }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>record_voice_over</span>
               </span>
               销售话术
             </h3>
-            <span className="rounded-full bg-[#F6D300]/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#221b00]">
+            <span
+              className="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+              style={{ background: `${C.accent3}10`, color: C.purpleText }}
+            >
               Sales Scripts
             </span>
           </div>
           <div className="space-y-5">
             {/* 初次咨询 */}
             <div>
-              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 初次咨询话术
               </p>
               <div className="space-y-2">
                 {generated.salesScripts.firstConsult.map((s, i) => (
-                  <div key={i} className="group flex items-start gap-2 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-colors hover:border-[#002fa7] hover:bg-white">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[10px] font-bold text-white">{i + 1}</span>
-                    <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                  <div
+                    key={i}
+                    className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                    style={{ borderColor: C.line, background: C.base }}
+                  >
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ background: C.ikb }}
+                    >{i + 1}</span>
+                    <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                     <button
                       type="button"
                       onClick={() => copyText(s)}
-                      aria-label="复制话术"
-                      className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="复制咨询话术"
+                      className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                     >
-                      <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#002fa7]" aria-hidden="true">content_copy</span>
+                      <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                     </button>
                   </div>
                 ))}
@@ -824,26 +1008,35 @@ export default function PrivateDomain() {
             </div>
             {/* 异议处理 */}
             <div>
-              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#781621] before:content-['']">
+              <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                 异议处理话术
               </p>
               <div className="space-y-3">
                 {generated.salesScripts.objectionHandling.map((pair, i) => (
-                  <div key={i} className="rounded-xl border border-[#e5e7eb] bg-[#f9fafb] overflow-hidden">
-                    <div className="flex items-start gap-2 border-b border-[#e5e7eb] bg-[#fff1f0] px-4 py-2.5">
-                      <span className="material-symbols-outlined mt-0.5 text-[16px] text-[#781621]" aria-hidden="true">report_problem</span>
-                      <p className="text-[13px] font-semibold text-[#781621]">{pair.objection}</p>
+                  <div
+                    key={i}
+                    className="overflow-hidden rounded-xl border"
+                    style={{ borderColor: C.line, background: C.base }}
+                  >
+                    <div
+                      className="flex items-start gap-2 border-b px-4 py-2.5"
+                      style={{ borderColor: C.line, background: `${C.burgundy}0c` }}
+                    >
+                      <span className="material-symbols-outlined mt-0.5 text-[16px]" style={{ color: C.burgundy }} aria-hidden={true}>report_problem</span>
+                      <p className="text-[13px] font-semibold" style={{ color: C.burgundyText }}>{pair.objection}</p>
                     </div>
                     <div className="group flex items-start gap-2 px-4 py-3">
-                      <span className="material-symbols-outlined mt-0.5 text-[16px] text-[#10b981]" aria-hidden="true">check_circle</span>
-                      <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{pair.response}</p>
+                      {/* 建议/成功块 — 保留深绿 per spec */}
+                      <span className="material-symbols-outlined mt-0.5 text-[16px]" style={{ color: '#16a34a' }} aria-hidden={true}>check_circle</span>
+                      <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{pair.response}</p>
                       <button
                         type="button"
                         onClick={() => copyText(pair.response)}
                         aria-label="复制应答话术"
-                        className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                        className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#002fa7]" aria-hidden="true">content_copy</span>
+                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                       </button>
                     </div>
                   </div>
@@ -853,42 +1046,58 @@ export default function PrivateDomain() {
             {/* 促单 + 售后 双列 */}
             <div className="grid grid-cols-2 gap-5">
               <div>
-                <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#221b00] before:content-['']">
+                <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                  <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.accent3 }} aria-hidden={true} />
                   促单/催单话术
                 </p>
                 <div className="space-y-2">
                   {generated.salesScripts.pushOrder.map((s, i) => (
-                    <div key={i} className="group flex items-start gap-2 rounded-lg border border-[#F3E08A] bg-[#fdf6cc]/40 p-3 transition-colors hover:bg-[#fdf6cc]/70">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F6D300] text-[10px] font-bold text-[#221b00]">{i + 1}</span>
-                      <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                    <div
+                      key={i}
+                      className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                      style={{ borderColor: `${C.accent3}28`, background: `${C.accent3}06` }}
+                    >
+                      <span
+                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                        style={{ background: C.accent3 }}
+                      >{i + 1}</span>
+                      <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                       <button
                         type="button"
                         onClick={() => copyText(s)}
-                        aria-label="复制话术"
-                        className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="复制促单话术"
+                        className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#221b00]" aria-hidden="true">content_copy</span>
+                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
               <div>
-                <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold text-[#111827] before:h-3 before:w-1 before:rounded-full before:bg-[#10b981] before:content-['']">
+                <p className="mb-3 flex items-center gap-1.5 text-[13px] font-bold" style={{ color: C.ink }}>
+                  <span className="inline-block h-3 w-1 shrink-0 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                   售后跟进话术
                 </p>
                 <div className="space-y-2">
                   {generated.salesScripts.afterSales.map((s, i) => (
-                    <div key={i} className="group flex items-start gap-2 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3 transition-colors hover:border-[#10b981] hover:bg-white">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#10b981] text-[10px] font-bold text-white">{i + 1}</span>
-                      <p className="flex-1 text-[13px] leading-relaxed text-[#444653]">{s}</p>
+                    <div
+                      key={i}
+                      className="group flex items-start gap-2 rounded-lg border p-3 transition-colors hover:bg-white"
+                      style={{ borderColor: C.line, background: C.base }}
+                    >
+                      <span
+                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                        style={{ background: C.ikb }}
+                      >{i + 1}</span>
+                      <p className="flex-1 text-[13px] leading-relaxed" style={{ color: '#444653' }}>{s}</p>
                       <button
                         type="button"
                         onClick={() => copyText(s)}
-                        aria-label="复制话术"
-                        className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="复制售后话术"
+                        className="ikb-focusring shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
                       >
-                        <span className="material-symbols-outlined text-[16px] text-[#9ca3af] hover:text-[#10b981]" aria-hidden="true">content_copy</span>
+                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#6b7280' }} aria-hidden={true}>content_copy</span>
                       </button>
                     </div>
                   ))}
@@ -899,38 +1108,60 @@ export default function PrivateDomain() {
         </div>
 
         {/* 成交 SOP · Day 时间线 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 pw-shadow-soft">
+        <div
+          className="rounded-xl border bg-white p-6"
+          style={{ borderColor: C.line }}
+        >
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">timeline</span>
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold" style={{ color: C.ink }}>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}10`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>timeline</span>
               </span>
               成交 SOP 时间线
             </h3>
-            <span className="rounded-full bg-[#002fa7]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#002fa7]">
+            <span
+              className="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
               {generated.sop.length} 阶段
             </span>
           </div>
           <div className="relative">
-            <div className="absolute left-[22px] top-0 h-full w-0.5 bg-gradient-to-b from-[#002fa7] to-[#781621]" />
+            <div
+              className="absolute left-[22px] top-0 h-full w-0.5"
+              style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+            />
             <div className="space-y-4">
               {generated.sop.map((step, i) => (
                 <div key={i} className="relative flex gap-5">
-                  <span className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#002fa7] bg-white text-[11px] font-extrabold text-[#002fa7]">
+                  <span
+                    className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 bg-white text-[11px] font-extrabold"
+                    style={{ borderColor: C.ikb, color: C.ikb }}
+                  >
                     {i + 1}
                   </span>
-                  <div className="flex-1 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-4 transition-colors hover:border-[#002fa7] hover:bg-white">
+                  <div
+                    className="flex-1 rounded-xl border p-4 transition-colors hover:bg-white"
+                    style={{ borderColor: C.line, background: C.base }}
+                  >
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="rounded-full border border-[#F3E08A] bg-[#fdf6cc] px-2.5 py-0.5 text-[11px] font-bold text-[#221b00]">
+                      <span
+                        className="rounded-full border px-2.5 py-0.5 text-[11px] font-bold"
+                        style={{ borderColor: `${C.accent3}30`, background: `${C.accent3}0c`, color: C.purpleText }}
+                      >
                         {step.day}
                       </span>
-                      <span className="text-[15px] font-bold text-[#111827]">{step.title}</span>
+                      <span className="text-[15px] font-bold" style={{ color: C.ink }}>{step.title}</span>
                     </div>
-                    <p className="mb-1.5 flex items-center gap-1 text-[12px] font-semibold text-[#10b981]">
-                      <span className="material-symbols-outlined text-[14px]" aria-hidden="true">flag</span>
+                    {/* goal — 深绿成功色 per spec */}
+                    <p className="mb-1.5 flex items-center gap-1 text-[12px] font-semibold" style={{ color: '#166534' }}>
+                      <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>flag</span>
                       目标：{step.goal}
                     </p>
-                    <p className="text-[13px] leading-relaxed text-[#444653]">{step.desc}</p>
+                    <p className="text-[13px] leading-relaxed" style={{ color: '#444653' }}>{step.desc}</p>
                   </div>
                 </div>
               ))}
@@ -939,15 +1170,24 @@ export default function PrivateDomain() {
         </div>
 
         {/* 关键指标 keyMetrics · 全部 5 项 */}
-        <div className="rounded-xl border border-[#dbe2ff] bg-gradient-to-br from-[#eff4ff] via-white to-[#f7f1ff] p-6 pw-shadow-soft">
+        <div
+          className="rounded-xl border p-6"
+          style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg, ${C.base}, ${C.paper}, ${C.base})` }}
+        >
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold text-[#111827]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">analytics</span>
+            <h3 className="flex items-center gap-2.5 text-[18px] font-semibold" style={{ color: C.ink }}>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}10`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>analytics</span>
               </span>
               关键指标
             </h3>
-            <span className="rounded-full bg-[#002fa7]/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#002fa7]">
+            <span
+              className="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
               {generated.keyMetrics.length} 项
             </span>
           </div>
@@ -955,12 +1195,16 @@ export default function PrivateDomain() {
             {generated.keyMetrics.map((m, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white p-4 text-center transition-colors hover:border-[#002fa7]"
+                className="flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-colors hover:bg-white"
+                style={{ borderColor: C.line, background: C.paper }}
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#002fa7] text-[14px] font-bold text-white">
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[14px] font-bold text-white"
+                  style={{ background: C.ikb }}
+                >
                   {i + 1}
                 </span>
-                <span className="text-[13px] font-semibold text-[#111827]">{m}</span>
+                <span className="text-[13px] font-semibold" style={{ color: C.ink }}>{m}</span>
               </div>
             ))}
           </div>
@@ -969,35 +1213,38 @@ export default function PrivateDomain() {
       </div>
 
       {/* ── 底部反馈 ─────────────────────────────────────────── */}
-      <div className="mt-10 flex items-center justify-between border-t border-[#eef1f6] pt-6">
+      <div className="mt-10 flex items-center justify-between border-t pt-6" style={{ borderColor: C.line }}>
         <div className="flex items-center gap-3">
-          <p className="text-[13px] text-[#9ca3af]">这个结果对你有帮助吗？</p>
+          <p className="text-[13px]" style={{ color: '#6b7280' }}>这个结果对你有帮助吗？</p>
           <button
             type="button"
             onClick={handleFeedbackUp}
             aria-label="有帮助"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+            className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition-colors hover:border-[#2B53E6]"
+            style={{ borderColor: C.line }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">thumb_up</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>thumb_up</span>
           </button>
           <button
             type="button"
             onClick={handleFeedbackDown}
             aria-label="无帮助"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white transition-colors hover:border-[#781621] hover:text-[#781621]"
+            className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition-colors"
+            style={{ borderColor: C.line }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">thumb_down</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>thumb_down</span>
           </button>
         </div>
         <button
           type="button"
           onClick={handleCopyAll}
-          className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-6 py-2.5 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73]"
+          aria-label="复制全部话术"
+          className="ikb-gradbtn flex items-center gap-2 rounded-xl px-6 py-2.5 text-[12px] font-bold uppercase tracking-widest text-white transition-all"
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">content_copy</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
           复制全部话术
         </button>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
