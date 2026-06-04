@@ -223,8 +223,6 @@ beforeEach(() => {
   vi.mocked(toast.error).mockReset();
   vi.mocked(toast.success).mockReset();
   vi.mocked(toast.info).mockReset();
-  // Reset window.confirm to return true by default
-  vi.stubGlobal('confirm', vi.fn(() => true));
 });
 
 // ── 1 · header 字面锁 ──────────────────────────────────────────────────────────
@@ -697,26 +695,28 @@ describe('DeepLearning · learn 批量提交', () => {
 // ── 13 · 删除档案 + 确认对话框 ────────────────────────────────────────────────
 
 describe('DeepLearning · 删除档案', () => {
-  it('点 archive-delete-btn → window.confirm 弹出', () => {
+  it('点 archive-delete-btn → 弹出确认对话框', async () => {
     mockListData = [SAMPLE_ROW_1];
     renderPage();
     fireEvent.click(screen.getByTestId('archive-delete-btn'));
-    expect(window.confirm).toHaveBeenCalledWith('确认删除此学习档案？');
+    expect(await screen.findByTestId('confirm-dialog')).toBeInTheDocument();
   });
 
-  it('confirm=true → 调 deleteMutation.mutate({ archiveId })', () => {
+  it('confirm=true → 调 deleteMutation.mutate({ archiveId })', async () => {
     mockListData = [SAMPLE_ROW_1];
-    vi.stubGlobal('confirm', vi.fn(() => true));
     renderPage();
     fireEvent.click(screen.getByTestId('archive-delete-btn'));
+    const btn = await screen.findByTestId('confirm-dialog-confirm');
+    fireEvent.click(btn);
     expect(mockDeleteMutate).toHaveBeenCalledWith({ archiveId: 101 });
   });
 
-  it('confirm=false → 不调 deleteMutation.mutate', () => {
+  it('confirm=false → 不调 deleteMutation.mutate', async () => {
     mockListData = [SAMPLE_ROW_1];
-    vi.stubGlobal('confirm', vi.fn(() => false));
     renderPage();
     fireEvent.click(screen.getByTestId('archive-delete-btn'));
+    const c = await screen.findByTestId('confirm-dialog-cancel');
+    fireEvent.click(c);
     expect(mockDeleteMutate).not.toHaveBeenCalled();
   });
 
