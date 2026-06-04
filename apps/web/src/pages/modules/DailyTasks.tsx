@@ -252,6 +252,7 @@ function TodayProgressSection({
   return (
     <div
       data-testid="today-progress-card"
+      className="ikb-hovercard"
       style={{
         borderRadius: 12,
         border: `1px solid ${C.ikb}28`,
@@ -331,21 +332,13 @@ function TaskRow({ task, onComplete, markingIds }: TaskRowProps) {
   return (
     <div
       data-testid={`task-card-${task.id}`}
+      className="ikb-hovercard"
       style={{
         borderRadius: 12,
         border: `1px solid ${C.line}`,
         background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
         padding: 24,
-        transition: 'transform 0.2s, box-shadow 0.2s',
         opacity: isCompleted ? 0.72 : 1,
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = '';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '';
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
@@ -491,20 +484,12 @@ function MockTaskRow({ task }: { task: TaskMockItem }) {
   return (
     <div
       data-testid={`task-card-${task.id}`}
+      className="ikb-hovercard"
       style={{
         borderRadius: 12,
         border: `1px solid ${C.line}`,
         background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
         padding: 24,
-        transition: 'transform 0.2s, box-shadow 0.2s',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.transform = '';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '';
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
@@ -1013,6 +998,7 @@ export default function DailyTasks() {
       <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24 }}>
         {/* 执行力雷达 · 六维 · 装饰 · P1: label改参考基准示例 · P12: aria-hidden */}
         <div
+          className="ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.line}`,
@@ -1141,6 +1127,7 @@ export default function DailyTasks() {
 
         {/* 近 7 日任务完成趋势 · 真数据驱动(若有 history) */}
         <div
+          className="ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.line}`,
@@ -1275,20 +1262,12 @@ export default function DailyTasks() {
             <div
               key={stat.id}
               data-testid="stat-card"
+              className="ikb-hovercard"
               style={{
                 borderRadius: 12,
                 border: `1px solid ${C.line}`,
                 background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
                 padding: 20,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = '';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = '';
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1356,20 +1335,12 @@ export default function DailyTasks() {
 
         {/* 今日完成率 · 第 4 张 · ikb 蓝 + 环形 */}
         <div
+          className="ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.ikb}28`,
             background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
             padding: 20,
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px ${C.ikb}10`;
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLDivElement).style.transform = '';
-            (e.currentTarget as HTMLDivElement).style.boxShadow = '';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

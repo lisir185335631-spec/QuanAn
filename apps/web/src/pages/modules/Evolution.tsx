@@ -144,8 +144,8 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
   return (
     <div
       data-testid="level-card"
-      className="ikb-card mb-8 overflow-hidden rounded-xl p-6"
-      style={{ background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+      className="ikb-hovercard mb-8 overflow-hidden rounded-xl p-6"
+      style={{ border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
     >
       <div className="flex items-center justify-between gap-6">
         <div className="min-w-0 flex-1 space-y-4">
@@ -295,7 +295,7 @@ function StatCard({ variant, label, value, unit = '', showDelta = false }: StatC
   return (
     <div
       data-testid={`stat-card-${variant}`}
-      className="rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      className="ikb-hovercard rounded-xl p-5"
       style={{
         border: `1px solid ${s.borderColor}`,
         background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
@@ -351,7 +351,7 @@ function InsightCard({ items }: { items: InsightItem[] }) {
     return (
       <div
         data-testid="empty-insight-card"
-        className="rounded-xl p-5"
+        className="ikb-hovercard rounded-xl p-5"
         style={{ border: `1px dashed ${C.ikb}55`, background: C.base }}
       >
         <div className="mb-4 flex items-center gap-2">
@@ -383,7 +383,7 @@ function InsightCard({ items }: { items: InsightItem[] }) {
   return (
     <div
       data-testid="insight-card"
-      className="rounded-xl p-5"
+      className="ikb-hovercard rounded-xl p-5"
       style={{ border: `1px solid ${C.ikb}44`, background: C.base }}
     >
       <div className="mb-4 flex items-center gap-2">
@@ -441,7 +441,7 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
     return (
       <div
         data-testid="empty-feedback-card"
-        className="rounded-xl p-5"
+        className="ikb-hovercard rounded-xl p-5"
         style={{ border: `1px dashed ${C.accent3}55`, background: C.base }}
       >
         <div className="mb-4 flex items-center gap-2">
@@ -473,7 +473,7 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
   return (
     <div
       data-testid="feedback-card"
-      className="rounded-xl p-5"
+      className="ikb-hovercard rounded-xl p-5"
       style={{ border: `1px solid ${C.accent3}44`, background: C.base }}
     >
       <div className="mb-4 flex items-center gap-2">
@@ -727,7 +727,7 @@ export default function Evolution() {
         <div className="grid grid-cols-12 gap-6">
           {/* 进化维度雷达 · col-span-5 */}
           <div
-            className="col-span-5 rounded-xl p-6"
+            className="ikb-hovercard col-span-5 rounded-xl p-6"
             style={{ border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
           >
             <div className="mb-1 flex items-center justify-between">
@@ -805,7 +805,7 @@ export default function Evolution() {
 
           {/* 进化成长曲线 · col-span-7 */}
           <div
-            className="col-span-7 rounded-xl p-6"
+            className="ikb-hovercard col-span-7 rounded-xl p-6"
             style={{ border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
           >
             <div className="mb-4 flex items-start justify-between">

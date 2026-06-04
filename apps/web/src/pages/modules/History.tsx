@@ -274,6 +274,7 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
   return (
     <div
       data-testid={`history-entry-card-${entry.id}`}
+      className="ikb-hovercard"
       style={{
         position: 'relative',
         borderRadius: 10,
@@ -281,10 +282,7 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
         background: C.paper,
         padding: 20,
         opacity: isDeleting ? 0.5 : 1,
-        transition: 'border-color 0.2s, box-shadow 0.2s',
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 16px ${C.ikb}12`; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.line; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
     >
       {/* 右上 3 icon btn */}
       <div
@@ -562,15 +560,13 @@ export default function History() {
           <div
             key={kpi.label}
             data-testid={`history-kpi-${kpi.label}`}
+            className="ikb-hovercard"
             style={{
               borderRadius: 10,
               border: `1px solid ${kpi.color}28`,
               background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${kpi.color}14`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
           >
             <div
               style={{

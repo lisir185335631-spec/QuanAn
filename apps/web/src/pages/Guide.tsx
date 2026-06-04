@@ -143,20 +143,12 @@ function KpiOverview() {
       {KPI_ITEMS.map((k) => (
         <div
           key={k.label}
+          className="ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.line}`,
             background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
             padding: 20,
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${k.color}18`;
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLDivElement).style.transform = '';
-            (e.currentTarget as HTMLDivElement).style.boxShadow = '';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -202,6 +194,7 @@ function FlowCard({ step, index }: { step: FlowStep; index: number }) {
   return (
     <div
       data-testid={`flow-card-${index}`}
+      className="ikb-hovercard"
       style={{
         flex: 1,
         display: 'flex',
@@ -299,6 +292,7 @@ function SectionAccordion({ section }: { section: GuideSection }) {
   return (
     <div
       data-testid={`section-accordion-${section.id}`}
+      className="ikb-hovercard"
       style={{
         overflow: 'hidden',
         borderRadius: 12,
@@ -466,6 +460,7 @@ function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
   return (
     <div
       data-testid={`faq-card-${index}`}
+      className="ikb-hovercard"
       style={{
         borderRadius: 12,
         border: `1px solid ${C.line}`,

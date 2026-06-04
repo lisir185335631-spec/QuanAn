@@ -10,7 +10,7 @@ export function WeeklyTasksSection({ tasks, closing }: WeeklyTasksSectionProps) 
   return (
     <div
       data-testid="weekly-tasks-section"
-      className="rounded-xl p-6 flex flex-col gap-5 pw-shadow-soft"
+      className="rounded-xl p-6 flex flex-col gap-5 pw-shadow-soft ikb-hovercard"
       style={{
         border: '1px solid rgba(22,32,72,0.13)',
         background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',

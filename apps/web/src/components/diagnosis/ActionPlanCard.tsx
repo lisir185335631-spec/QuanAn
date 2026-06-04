@@ -12,7 +12,7 @@ export function ActionPlanCard({ plan }: ActionPlanCardProps) {
   return (
     <div
       data-testid={`action-plan-card-${plan.num}`}
-      className="ikb-card flex items-start gap-4 rounded-xl p-5"
+      className="ikb-hovercard flex items-start gap-4 rounded-xl p-5"
       style={{
         border: '1px solid rgba(43,83,230,0.18)',
         background: 'linear-gradient(135deg, #F3F5FC, #FFFFFF)',
