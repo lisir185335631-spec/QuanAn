@@ -1,12 +1,16 @@
 /**
  * VideoAnalysis.tsx — /video-analysis · 爆款文案解析
- * 先锋白·工业精密版 · PioneerLayout · inline 软卡 · 逻辑零改动
- * 样板: Step3.tsx + Step4b.tsx
+ * IKB 红蓝紫渐变体系重构 · IKBLayout 外壳 · 逻辑零改动 · testid / htmlFor / id 全保留
+ * 样板: Analysis.tsx / AcquisitionVideo.tsx / Generate.tsx
  */
+
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -128,7 +132,7 @@ function generateMockResult(): VideoAnalysisResult {
 // ── Style tokens ──────────────────────────────────────────────────────────────
 
 const btnSecondary =
-  'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-[#e5e7eb] bg-white px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b] transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
+  'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border px-4 py-2.5 text-[12px] font-bold uppercase tracking-widest transition-colors hover:bg-[#e8e8e8] disabled:cursor-not-allowed disabled:opacity-40';
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -173,14 +177,14 @@ export default function VideoAnalysis() {
     generated.rewriteResult.ending,
   ].join('').length;
 
-  // 爆款解析雷达六维数据
+  // 爆款解析雷达六维数据 — IKB 三色轮转
   const RADAR_DIMS_VA = [
-    { label: '选题精准', value: 72, color: '#002fa7' },
-    { label: '钩子强度', value: generated.hookAnalysis.score, color: '#781621' },
-    { label: '叙事张力', value: 65, color: '#F6D300' },
-    { label: '元素密度', value: generated.popularElements.length * 30, color: '#002fa7' },
-    { label: '情绪价值', value: 78, color: '#781621' },
-    { label: '转化引导', value: 55, color: '#F6D300' },
+    { label: '选题精准', value: 72, color: C.ikb },
+    { label: '钩子强度', value: generated.hookAnalysis.score, color: C.burgundy },
+    { label: '叙事张力', value: 65, color: C.accent3 },
+    { label: '元素密度', value: generated.popularElements.length * 30, color: C.ikb },
+    { label: '情绪价值', value: 78, color: C.burgundy },
+    { label: '转化引导', value: 55, color: C.accent3 },
   ];
 
   // 黄金3秒注意力曲线
@@ -188,67 +192,104 @@ export default function VideoAnalysis() {
   const NARRATIVE_DATA = [40, 55, 70, 80, 75, 90, 85, 78, 88, 82, 76, 68];
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            >
               创作引擎
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+            >
               拆解器
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
+            style={{ fontFamily: F.display }}
+          >
             爆款文案解析
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p
+            className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
+            style={{ color: '#5A6173', fontFamily: F.cn }}
+          >
             粘贴爆款视频的完整文案/口播稿，AI 将深度拆解爆款密码，支持一键仿写生成同类高转化内容。
           </p>
         </div>
         <div className="flex shrink-0 flex-nowrap gap-3">
-          <button type="button" onClick={handleRewriteCopy} aria-label="复制仿写文案" className={btnSecondary}>
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">content_copy</span>
+          <button
+            type="button"
+            onClick={handleRewriteCopy}
+            aria-label="复制仿写文案"
+            className={btnSecondary}
+            style={{ borderColor: C.line, background: C.paper, color: C.ink, fontFamily: F.mono }}
+          >
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>content_copy</span>
             复制仿写
           </button>
           <button
             type="button"
             onClick={handleAnalyze}
             disabled={!content.trim()}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-[13px] font-semibold text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ fontFamily: F.mono }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">analytics</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>analytics</span>
             重新解析
           </button>
         </div>
       </header>
 
       {/* ── 使用方法提示卡 ─────────────────────────────────── */}
-      <div className="mb-8 flex items-start gap-3 rounded-xl border border-[#dbe2ff] bg-[#002fa7]/5 p-4">
-        <span className="material-symbols-outlined mt-0.5 shrink-0 text-[20px] text-[#002fa7]" aria-hidden="true">info</span>
-        <p className="text-[14px] leading-relaxed text-[#1b2a5e]">
+      <div
+        className="mb-8 flex items-start gap-3 rounded-xl border p-4"
+        style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}
+      >
+        <span className="material-symbols-outlined mt-0.5 shrink-0 text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>info</span>
+        <p className="text-[14px] leading-relaxed" style={{ color: C.purpleText, fontFamily: F.cn }}>
           <span className="font-bold">使用方法：</span>
           打开抖音/小红书/快手等 APP → 找到爆款视频 → 复制视频的完整口播文案/文字内容 → 粘贴到下方输入框 → 点击「开始深度解析」
         </p>
       </div>
 
       {/* ── 输入卡 ─────────────────────────────────────────── */}
-      <section className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+      <section
+        className="relative mb-12 overflow-hidden rounded-xl border p-6"
+        style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+      >
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.ikb}08` }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.burgundy}06` }}
+        />
+        <div className="relative mb-6 flex items-center justify-between border-b pb-5" style={{ borderColor: C.line }}>
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined" aria-hidden="true">content_paste_search</span>
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
+              style={{ background: C.grad }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true}>content_paste_search</span>
             </span>
             <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">输入文案内容</h2>
-              <p className="text-[12px] text-[#9ca3af]">粘贴爆款文案 · AI 深度拆解爆款密码</p>
+              <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>输入文案内容</h2>
+              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>粘贴爆款文案 · AI 深度拆解爆款密码</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+          >
+            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
             待解析
           </span>
         </div>
@@ -257,20 +298,27 @@ export default function VideoAnalysis() {
           <div>
             <label
               htmlFor="va-title"
-              className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']"
+              className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+              style={{ color: C.ink, fontFamily: F.cn }}
             >
+              <span
+                className="mr-0.5 inline-block h-3.5 w-1 rounded-full"
+                style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+                aria-hidden={true}
+              />
               视频标题
-              <span className="ml-1 text-[12px] font-normal text-[#9ca3af]">（选填）</span>
+              <span className="ml-1 text-[12px] font-normal" style={{ color: '#6b7280' }}>（选填）</span>
             </label>
             <div className="relative">
-              <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]" aria-hidden="true">title</span>
+              <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]" style={{ color: '#6b7280' }} aria-hidden={true}>title</span>
               <input
                 id="va-title"
                 type="text"
                 value={videoTitle}
                 onChange={(e) => setVideoTitle(e.target.value)}
                 placeholder="粘贴视频标题（可选）"
-                className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus:ring-1 focus-within:ring-[#2B53E6]"
+                style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
               />
             </div>
           </div>
@@ -280,34 +328,51 @@ export default function VideoAnalysis() {
             <div className="mb-2 flex items-center justify-between">
               <label
                 htmlFor="va-content"
-                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']"
+                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+                style={{ color: C.ink, fontFamily: F.cn }}
               >
-                文案内容 <span className="ml-1 text-[#781621]">*</span>
+                <span
+                  className="mr-0.5 inline-block h-3.5 w-1 rounded-full"
+                  style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+                  aria-hidden={true}
+                />
+                文案内容 <span className="ml-1" style={{ color: C.burgundyText }}>*</span>
               </label>
-              <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]" aria-hidden="true">
-                <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+              <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }} aria-hidden={true}>
+                <span className="material-symbols-outlined text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>auto_awesome</span>
                 AI 据此拆解爆款结构
               </span>
             </div>
-            <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+            <div
+              className="overflow-hidden rounded-xl border transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
+              style={{ borderColor: C.line, background: C.base }}
+            >
               <textarea
                 id="va-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={8}
                 placeholder="粘贴完整口播文案/视频文字内容"
-                className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
+                style={{ color: C.ink, fontFamily: F.cn }}
               />
-              <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+              <div
+                className="flex items-center justify-between gap-3 border-t px-4 py-2.5"
+                style={{ borderColor: C.line, background: `${C.paper}99` }}
+              >
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] text-[#9ca3af]">支持</span>
+                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>支持</span>
                   {['口播稿', '字幕', '描述文案', '评论区文案'].map((t) => (
-                    <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                    <span
+                      key={t}
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+                      style={{ background: C.base, color: '#6b7280', border: `1px solid ${C.line}`, fontFamily: F.cn }}
+                    >
                       {t}
                     </span>
                   ))}
                 </div>
-                <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{content.length} 字</span>
+                <span className="shrink-0 tabular-nums text-[11px]" style={{ color: '#6b7280', fontFamily: F.mono }}>{content.length} 字</span>
               </div>
             </div>
           </div>
@@ -318,9 +383,10 @@ export default function VideoAnalysis() {
               type="button"
               onClick={handleAnalyze}
               disabled={!content.trim()}
-              className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ fontFamily: F.mono }}
             >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">analytics</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>analytics</span>
               开始深度解析
             </button>
           </div>
@@ -329,32 +395,41 @@ export default function VideoAnalysis() {
 
       {/* ── 数据洞察 band ──────────────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
+        <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
+        <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+        <span
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+        >
+          <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
           模型已就绪
         </span>
       </div>
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 爆款解析雷达 · col-span-5 */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-5 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}12`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">爆款解析雷达</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>爆款解析雷达</h3>
+                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">
+              <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>
                 {Math.round(RADAR_DIMS_VA.reduce((acc, d) => acc + d.value, 0) / RADAR_DIMS_VA.length)}
               </p>
-              <p className="text-[10px] text-[#9ca3af]">综合分</p>
+              <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>综合分</p>
             </div>
           </div>
           {(() => {
@@ -367,11 +442,11 @@ export default function VideoAnalysis() {
             const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
             const dataPoly = dims.map((d, i) => pt(i, R * (Math.min(d.value, 100) / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
             return (
-              <svg viewBox="0 0 260 244" className="w-full">
+              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="爆款解析雷达图">
                 <defs>
-                  <linearGradient id="radarFillVA" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  <linearGradient id="va-radarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -381,7 +456,7 @@ export default function VideoAnalysis() {
                   const [x, y] = pt(i, R);
                   return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
                 })}
-                <polygon points={dataPoly} fill="url(#radarFillVA)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                <polygon points={dataPoly} fill="url(#va-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                 {dims.map((d, i) => {
                   const [x, y] = pt(i, R * (Math.min(d.value, 100) / 100));
                   return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -401,30 +476,40 @@ export default function VideoAnalysis() {
             {RADAR_DIMS_VA.map((d) => (
               <div key={d.label} className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 黄金3秒 + 叙事节奏趋势 · col-span-7 */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-7 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">show_chart</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">黄金3秒注意力曲线 / 叙事节奏</h3>
-                <p className="text-[11px] text-[#9ca3af]">注意力留存 vs 叙事张力对比</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>黄金3秒注意力曲线 / 叙事节奏</h3>
+                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>注意力留存 vs 叙事张力对比</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {['注意力', '叙事'].map((t, i) => (
                 <span
                   key={t}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                  style={i === 0
+                    ? { background: C.ikb, color: '#ffffff', fontFamily: F.mono }
+                    : { background: C.base, color: '#6b7280', fontFamily: F.mono }
+                  }
                 >
                   {t}
                 </span>
@@ -449,13 +534,13 @@ export default function VideoAnalysis() {
             return (
               <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
                 <defs>
-                  <linearGradient id="trendFillVA" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.18" />
-                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  <linearGradient id="va-trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.18" />
+                    <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                   </linearGradient>
-                  <linearGradient id="trendLineVA" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#002fa7" />
-                    <stop offset="100%" stopColor="#781621" />
+                  <linearGradient id="va-trendLine" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={C.ikb} />
+                    <stop offset="100%" stopColor={C.burgundy} />
                   </linearGradient>
                 </defs>
                 {[0, 0.33, 0.66, 1].map((f) => (
@@ -469,16 +554,16 @@ export default function VideoAnalysis() {
                     strokeWidth="1"
                   />
                 ))}
-                <path d={area1} fill="url(#trendFillVA)" />
-                <path d={line1} fill="none" stroke="url(#trendLineVA)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d={line2} fill="none" stroke="#781621" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6 3" />
+                <path d={area1} fill="url(#va-trendFill)" />
+                <path d={line1} fill="none" stroke="url(#va-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={line2} fill="none" stroke={C.burgundy} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6 3" />
                 {ATTENTION_DATA.map((v, i) =>
-                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={yFn(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                  i % 3 === 0 ? <circle key={i} cx={x(i)} cy={yFn(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
                 )}
               </svg>
             );
           })()}
-          <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+          <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>
             {['开头', '第2节', '第3节', '第4节', '第5节', '第6节', '第7节', '第8节', '第9节', '第10节', '第11节', '结尾'].map((m) => (
               <span key={m}>{m}</span>
             ))}
@@ -489,32 +574,41 @@ export default function VideoAnalysis() {
       {/* ── KPI 卡一排 ─────────────────────────────────────── */}
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 钩子评分 · 环形 · 蓝 */}
-        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">anchor</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.ikb}12`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>anchor</span>
             </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+            <span
+              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+            >
               已分析
             </span>
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
+              <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                 {generated.hookAnalysis.score}
-                <span className="text-[15px] text-[#9ca3af]">/{generated.hookAnalysis.maxScore}</span>
+                <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">钩子评分</p>
+              <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>钩子评分</p>
             </div>
             <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+              <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label={`钩子评分 ${generated.hookAnalysis.score} 分`}>
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
                 <circle
                   cx="18"
                   cy="18"
                   r="15.915"
                   fill="none"
-                  stroke="#002fa7"
+                  stroke={C.ikb}
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeDasharray={`${(generated.hookAnalysis.score / generated.hookAnalysis.maxScore) * 100} 100`}
@@ -524,67 +618,101 @@ export default function VideoAnalysis() {
           </div>
         </div>
 
-        {/* 爆款元素数 · 勃艮第 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        {/* 爆款元素数 · 玫红 */}
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">stars</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>stars</span>
             </span>
-            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">已提取</span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+            >
+              已提取
+            </span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
               {generated.popularElements.length}
-              <span className="text-[15px] text-[#9ca3af]"> 个</span>
+              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">爆款元素</p>
+            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>爆款元素</p>
           </div>
           <div className="mt-3 flex h-6 items-end gap-1">
             {[40, 70, 55, 85, 65].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+              <div key={i} className="flex-1 rounded-t" style={{ height: `${h}%`, background: `${C.burgundy}B3` }} />
             ))}
           </div>
         </div>
 
-        {/* 叙事结构 · 黄 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        {/* 叙事结构 · 紫 */}
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">timeline</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.accent3}12`, color: C.accent3 }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>timeline</span>
             </span>
-            <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">已识别</span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+            >
+              已识别
+            </span>
           </div>
           <div className="mt-4">
-            <p className="text-[20px] font-bold leading-tight text-[#111827]">
+            <p className="text-[20px] font-bold leading-tight" style={{ color: C.ink, fontFamily: F.display }}>
               {generated.narrativeStructure.label}
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">叙事结构</p>
+            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>叙事结构</p>
           </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-            <div className="h-2 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" style={{ width: '45%' }} />
+          <div className="mt-3 h-2 w-full rounded-full" style={{ background: `${C.accent3}18` }}>
+            <div className="h-2 rounded-full" style={{ width: '45%', background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }} />
           </div>
         </div>
 
         {/* 仿写字数 · 蓝 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">edit_note</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.ikb}12`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>edit_note</span>
             </span>
-            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">仿写就绪</span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+            >
+              仿写就绪
+            </span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
+            <p className="text-[28px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
               {rewriteWordCount}
-              <span className="text-[15px] text-[#9ca3af]"> 字</span>
+              <span className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 字</span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">仿写总字数</p>
+            <p className="mt-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>仿写总字数</p>
           </div>
           <div className="mt-3 flex flex-wrap gap-1">
             {['标题', '开头', '正文', '结尾'].map((k) => (
               <span
                 key={k}
-                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+                style={{ background: `${C.ikb}10`, color: C.ikb, fontFamily: F.mono }}
               >
                 {k}
               </span>
@@ -597,165 +725,230 @@ export default function VideoAnalysis() {
       <div className="space-y-6">
 
         {/* ── 选题策略 ──────────────────────────────────────── */}
-        <section className="rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft overflow-hidden">
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="flex items-center gap-2.5 px-6 py-4" style={{ background: C.grad }}>
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">target</span>
+              <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>target</span>
             </span>
-            <h3 className="text-[16px] font-bold">选题策略</h3>
+            <h3 className="text-[16px] font-bold text-white">选题策略</h3>
           </div>
-          <div className="p-6 grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+          <div className="grid grid-cols-2 gap-4 p-6">
+            <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+              <p
+                className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 内容分类
               </p>
-              <p className="text-[14px] leading-relaxed text-[#374151]">{generated.topicStrategy.category}</p>
+              <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.topicStrategy.category}</p>
             </div>
-            <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+            <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+              <p
+                className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 切入角度
               </p>
-              <p className="text-[14px] leading-relaxed text-[#374151]">{generated.topicStrategy.angle}</p>
+              <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.topicStrategy.angle}</p>
             </div>
-            <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+            <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+              <p
+                className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.burgundy, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                 目标受众
               </p>
-              <p className="text-[14px] leading-relaxed text-[#374151]">{generated.topicStrategy.targetAudience}</p>
+              <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.topicStrategy.targetAudience}</p>
             </div>
-            <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4 col-span-2">
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+            <div className="col-span-2 rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+              <p
+                className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.burgundy, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                 综合评估
               </p>
-              <p className="text-[14px] leading-relaxed text-[#374151]">{generated.topicStrategy.evaluation}</p>
+              <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.topicStrategy.evaluation}</p>
             </div>
           </div>
         </section>
 
         {/* ── 钩子分析 ──────────────────────────────────────── */}
-        <section className="rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft overflow-hidden">
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#781621] to-[#a02030] px-6 py-4 text-white">
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div
+            className="flex items-center gap-2.5 px-6 py-4"
+            style={{ background: `linear-gradient(to right, ${C.burgundy}, #c4304e)` }}
+          >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">anchor</span>
+              <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>anchor</span>
             </span>
-            <h3 className="text-[16px] font-bold">钩子分析</h3>
+            <h3 className="text-[16px] font-bold text-white">钩子分析</h3>
           </div>
           <div className="p-6">
             <div className="mb-5 flex items-center gap-6">
               <div className="flex items-baseline gap-2">
-                <span className="text-[52px] font-extrabold leading-none text-[#002fa7]">
+                <span className="text-[52px] font-extrabold leading-none" style={{ color: C.ikb, fontFamily: F.display }}>
                   {generated.hookAnalysis.score}
                 </span>
-                <span className="text-[22px] font-bold text-[#9ca3af]">/{generated.hookAnalysis.maxScore}</span>
+                <span className="text-[22px] font-bold" style={{ color: '#6b7280', fontFamily: F.cn }}>/{generated.hookAnalysis.maxScore}</span>
               </div>
               <div>
-                <span className="inline-flex items-center rounded-full bg-[#002fa7]/10 px-3 py-1 text-[13px] font-bold text-[#002fa7]">
+                <span
+                  className="inline-flex items-center rounded-full px-3 py-1 text-[13px] font-bold"
+                  style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+                >
                   {generated.hookAnalysis.type}
                 </span>
-                <div className="mt-2 h-2 w-48 rounded-full bg-[#eef1f6]">
+                <div className="mt-2 h-2 w-48 rounded-full" style={{ background: `${C.ikb}18` }}>
                   <div
-                    className="h-2 rounded-full bg-gradient-to-r from-[#002fa7] to-[#781621]"
-                    style={{ width: `${(generated.hookAnalysis.score / generated.hookAnalysis.maxScore) * 100}%` }}
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${(generated.hookAnalysis.score / generated.hookAnalysis.maxScore) * 100}%`,
+                      background: `linear-gradient(to right, ${C.ikb}, ${C.burgundy})`,
+                    }}
                   />
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.ikb, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                   钩子技法
                 </p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.hookAnalysis.technique}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.hookAnalysis.technique}</p>
               </div>
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.burgundy, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                   效果评估
                 </p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.hookAnalysis.evaluation}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.hookAnalysis.evaluation}</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* ── 叙事结构 ──────────────────────────────────────── */}
-        <section className="rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft overflow-hidden">
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#F6D300] to-[#e8c800] px-6 py-4 text-[#221b00]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#221b00]/10">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">timeline</span>
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div
+            className="flex items-center gap-2.5 px-6 py-4"
+            style={{ background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }}
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+              <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>timeline</span>
             </span>
-            <h3 className="text-[16px] font-bold">叙事结构</h3>
+            <h3 className="text-[16px] font-bold text-white">叙事结构</h3>
           </div>
           <div className="p-6">
             <div className="mb-5 flex items-center gap-3">
-              <span className="inline-flex items-center rounded-full bg-[#F6D300]/20 px-4 py-1.5 text-[14px] font-bold text-[#8a6a00]">
+              <span
+                className="inline-flex items-center rounded-full px-4 py-1.5 text-[14px] font-bold"
+                style={{ background: `${C.accent3}18`, color: C.purpleText, fontFamily: F.mono }}
+              >
                 {generated.narrativeStructure.label}
               </span>
             </div>
             <div className="mb-5">
-              <p className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <p
+                className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 叙事时间线
               </p>
               <ol className="space-y-2">
                 {generated.narrativeStructure.timeline.map((step, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[11px] font-bold text-white">
+                    <span
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                      style={{ background: C.ikb, fontFamily: F.mono }}
+                    >
                       {i + 1}
                     </span>
-                    <p className="text-[14px] leading-relaxed text-[#374151]">{step}</p>
+                    <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{step}</p>
                   </li>
                 ))}
               </ol>
             </div>
-            <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+            <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+              <p
+                className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.burgundy, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                 节奏评估
               </p>
-              <p className="text-[14px] leading-relaxed text-[#374151]">{generated.narrativeStructure.evaluation}</p>
+              <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.narrativeStructure.evaluation}</p>
             </div>
           </div>
         </section>
 
         {/* ── 爆款元素 + 公式 ───────────────────────────────── */}
-        <section className="rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft overflow-hidden">
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#002fa7] to-[#781621] px-6 py-4 text-white">
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div
+            className="flex items-center gap-2.5 px-6 py-4"
+            style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.burgundy})` }}
+          >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">stars</span>
+              <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>stars</span>
             </span>
-            <h3 className="text-[16px] font-bold">爆款元素 &amp; 公式</h3>
+            <h3 className="text-[16px] font-bold text-white">爆款元素 &amp; 公式</h3>
           </div>
-          <div className="p-6 space-y-5">
+          <div className="space-y-5 p-6">
             {/* 元素列表 */}
             <div>
-              <p className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <p
+                className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 爆款元素
               </p>
               <div className="space-y-3">
                 {generated.popularElements.map((el, i) => (
-                  <div key={i} className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
+                  <div key={i} className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#002fa7] text-[11px] font-bold text-white">
+                      <span
+                        className="flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                        style={{ background: C.ikb, fontFamily: F.mono }}
+                      >
                         {i + 1}
                       </span>
-                      <span className="text-[14px] font-bold text-[#111827]">{el.name}</span>
+                      <span className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{el.name}</span>
                     </div>
-                    <p className="mb-1.5 text-[14px] leading-relaxed text-[#374151]">{el.main}</p>
-                    <p className="text-[13px] leading-relaxed text-[#6b7280]">{el.note}</p>
+                    <p className="mb-1.5 text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{el.main}</p>
+                    <p className="text-[13px] leading-relaxed" style={{ color: '#6b7280', fontFamily: F.cn }}>{el.note}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* 爆款公式 */}
-            <div className="rounded-xl border border-[#dbe2ff] bg-[#002fa7]/5 p-5">
-              <p className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+            <div className="rounded-xl border p-5" style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}>
+              <p
+                className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                style={{ color: C.ikb, fontFamily: F.mono }}
+              >
+                <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                 爆款公式
               </p>
-              <p className="mb-3 text-[14px] font-bold text-[#111827]">{generated.popularFormula.title}</p>
+              <p className="mb-3 text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{generated.popularFormula.title}</p>
               <div className="flex flex-wrap gap-2">
                 {generated.popularFormula.chips.map((chip) => (
                   <span
                     key={chip}
-                    className="rounded-full border border-[#dbe2ff] bg-white px-3 py-1 text-[12px] font-semibold text-[#002fa7]"
+                    className="rounded-full border px-3 py-1 text-[12px] font-semibold"
+                    style={{ borderColor: `${C.ikb}30`, background: C.paper, color: C.ikb, fontFamily: F.cn }}
                   >
                     {chip}
                   </span>
@@ -766,51 +959,63 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 一键仿写 ──────────────────────────────────────── */}
-        <section className="rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft overflow-hidden">
-          <div className="flex items-center justify-between bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <div
+            className="flex items-center justify-between px-6 py-4"
+            style={{ background: C.grad }}
+          >
             <div className="flex items-center gap-2.5">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">edit_note</span>
+                <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>edit_note</span>
               </span>
-              <h3 className="text-[16px] font-bold">一键仿写</h3>
+              <h3 className="text-[16px] font-bold text-white">一键仿写</h3>
             </div>
             <button
               type="button"
               onClick={handleRewriteCopy}
               aria-label="复制仿写文案"
-              className="flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-[12px] font-semibold transition-colors hover:bg-white/25"
+              className="ikb-focusring flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-white/25"
+              style={{ fontFamily: F.mono }}
             >
-              <span className="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span>
+              <span className="material-symbols-outlined text-[16px]" aria-hidden={true}>content_copy</span>
               复制全文
             </button>
           </div>
-          <div className="p-6 space-y-5">
+          <div className="space-y-5 p-6">
             {/* 仿写主题输入 */}
             <div>
               <label
                 htmlFor="va-rewrite"
-                className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']"
+                className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+                style={{ color: C.ink, fontFamily: F.cn }}
               >
+                <span
+                  className="mr-0.5 inline-block h-3.5 w-1 rounded-full"
+                  style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+                  aria-hidden={true}
+                />
                 仿写主题
               </label>
               <div className="flex gap-3">
                 <div className="relative flex-1">
-                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#9ca3af]" aria-hidden="true">subject</span>
+                  <span className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px]" style={{ color: '#6b7280' }} aria-hidden={true}>subject</span>
                   <input
                     id="va-rewrite"
                     type="text"
                     value={rewriteTopic}
                     onChange={(e) => setRewriteTopic(e.target.value)}
                     placeholder="输入仿写主题（选填，留空则沿用原文角度）"
-                    className="w-full rounded-lg border border-[#e5e7eb] bg-[#f9f9f9] py-3 pl-10 pr-3 text-[14px] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+                    className="ikb-input w-full rounded-lg border py-3 pl-10 pr-3 text-[14px] transition-all focus:ring-1 focus-within:ring-[#2B53E6]"
+                    style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.cn }}
                   />
                 </div>
                 <button
                   type="button"
                   onClick={handleRewriteGenerate}
-                  className="flex shrink-0 items-center gap-2 rounded-xl bg-[#002fa7] px-6 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px"
+                  className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 rounded-xl px-6 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px"
+                  style={{ fontFamily: F.mono }}
                 >
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">auto_awesome</span>
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_awesome</span>
                   生成仿写
                 </button>
               </div>
@@ -819,59 +1024,84 @@ export default function VideoAnalysis() {
             {/* 仿写结果展示 */}
             <div className="space-y-4">
               {/* 标题 */}
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.ikb, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                   标题
                 </p>
-                <p className="text-[15px] font-bold text-[#111827]">{generated.rewriteResult.title}</p>
+                <p className="text-[15px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{generated.rewriteResult.title}</p>
               </div>
 
               {/* 开头 */}
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.burgundy, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                   开头 · 黄金3秒
                 </p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.rewriteResult.intro}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.rewriteResult.intro}</p>
               </div>
 
               {/* 正文 · 多段完整 */}
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-3 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.ikb, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                   正文
                 </p>
                 <div className="space-y-3">
                   {generated.rewriteResult.body.map((para, i) => (
-                    <p key={i} className="text-[14px] leading-relaxed text-[#374151]">{para}</p>
+                    <p key={i} className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{para}</p>
                   ))}
                 </div>
               </div>
 
               {/* 转折/升华 */}
-              <div className="rounded-xl border border-[#dbe2ff] bg-[#002fa7]/5 p-4">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}>
+                <p
+                  className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.ikb, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                   转折 · 升华
                 </p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.rewriteResult.twist}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.rewriteResult.twist}</p>
               </div>
 
               {/* 结尾 */}
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#781621] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#781621] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-1.5 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.burgundy, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.burgundy }} aria-hidden={true} />
                   结尾 · 引导互动
                 </p>
-                <p className="text-[14px] leading-relaxed text-[#374151]">{generated.rewriteResult.ending}</p>
+                <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{generated.rewriteResult.ending}</p>
               </div>
 
               {/* 话题标签 */}
-              <div className="rounded-xl border border-[#eef1f6] bg-[#f9faff] p-4">
-                <p className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#002fa7] before:h-2.5 before:w-0.5 before:rounded-full before:bg-[#002fa7] before:content-['']">
+              <div className="rounded-xl border p-4" style={{ borderColor: C.line, background: C.base }}>
+                <p
+                  className="mb-2 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest"
+                  style={{ color: C.ikb, fontFamily: F.mono }}
+                >
+                  <span className="inline-block h-2.5 w-0.5 rounded-full" style={{ background: C.ikb }} aria-hidden={true} />
                   话题标签
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {generated.rewriteResult.hashtags.split(' ').map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full border border-[#dbe2ff] bg-white px-2.5 py-0.5 text-[12px] font-medium text-[#002fa7]"
+                      className="rounded-full border px-2.5 py-0.5 text-[12px] font-medium"
+                      style={{ borderColor: `${C.ikb}30`, background: C.paper, color: C.ikb, fontFamily: F.cn }}
                     >
                       {tag}
                     </span>
@@ -884,25 +1114,27 @@ export default function VideoAnalysis() {
       </div>
 
       {/* ── 反馈 footer ─────────────────────────────────────── */}
-      <div className="mt-8 flex items-center gap-3 border-t border-[#eef1f6] pt-6">
-        <p className="text-[13px] text-[#9ca3af]">解析结果有帮助吗？</p>
+      <div className="mt-8 flex items-center gap-3 border-t pt-6" style={{ borderColor: C.line }}>
+        <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>解析结果有帮助吗？</p>
         <button
           type="button"
           onClick={handleFeedbackUp}
           aria-label="有帮助"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#6b7280] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+          style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">thumb_up</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_up</span>
         </button>
         <button
           type="button"
           onClick={handleFeedbackDown}
           aria-label="没有帮助"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#6b7280] transition-colors hover:border-[#781621] hover:text-[#781621]"
+          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+          style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">thumb_down</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_down</span>
         </button>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
