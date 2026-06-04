@@ -574,7 +574,7 @@ export default function PrivateDomain() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 私域转化力雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="col-span-5 rounded-xl border p-6 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -636,7 +636,7 @@ export default function PrivateDomain() {
 
         {/* 成交转化漏斗 / 复购曲线 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="col-span-7 rounded-xl border p-6 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -719,7 +719,7 @@ export default function PrivateDomain() {
           return (
             <div
               key={k.label}
-              className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="rounded-xl border p-5 ikb-hovercard"
               style={{
                 borderColor: `${acc}30`,
                 background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
@@ -773,7 +773,7 @@ export default function PrivateDomain() {
 
         {/* 引流话术 trafficScripts */}
         <div
-          className="rounded-xl border bg-white p-6"
+          className="rounded-xl border bg-white p-6 ikb-hovercard"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -889,7 +889,7 @@ export default function PrivateDomain() {
 
         {/* 朋友圈话术 momentsScripts */}
         <div
-          className="rounded-xl border bg-white p-6"
+          className="rounded-xl border bg-white p-6 ikb-hovercard"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -955,7 +955,7 @@ export default function PrivateDomain() {
 
         {/* 销售话术 salesScripts */}
         <div
-          className="rounded-xl border bg-white p-6"
+          className="rounded-xl border bg-white p-6 ikb-hovercard"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -1109,7 +1109,7 @@ export default function PrivateDomain() {
 
         {/* 成交 SOP · Day 时间线 */}
         <div
-          className="rounded-xl border bg-white p-6"
+          className="rounded-xl border bg-white p-6 ikb-hovercard"
           style={{ borderColor: C.line }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -1144,7 +1144,7 @@ export default function PrivateDomain() {
                     {i + 1}
                   </span>
                   <div
-                    className="flex-1 rounded-xl border p-4 transition-colors hover:bg-white"
+                    className="flex-1 rounded-xl border p-4 ikb-hovercard"
                     style={{ borderColor: C.line, background: C.base }}
                   >
                     <div className="mb-2 flex items-center gap-2">
@@ -1171,7 +1171,7 @@ export default function PrivateDomain() {
 
         {/* 关键指标 keyMetrics · 全部 5 项 */}
         <div
-          className="rounded-xl border p-6"
+          className="rounded-xl border p-6 ikb-hovercard"
           style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg, ${C.base}, ${C.paper}, ${C.base})` }}
         >
           <div className="mb-5 flex items-center justify-between">
@@ -1195,7 +1195,7 @@ export default function PrivateDomain() {
             {generated.keyMetrics.map((m, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-colors hover:bg-white"
+                className="flex flex-col items-center gap-2 rounded-xl border p-4 text-center ikb-hovercard"
                 style={{ borderColor: C.line, background: C.paper }}
               >
                 <span

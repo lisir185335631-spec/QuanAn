@@ -422,7 +422,7 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             <div
               key={item.id}
               data-testid={`ps-recommended-item-${item.id}`}
-              className="rounded-xl border"
+              className="ikb-hovercard rounded-xl border"
               style={{ borderColor: C.line, background: C.paper }}
             >
               {/* Icon tile — ps-prefix on inline gradient */}
@@ -661,7 +661,7 @@ export default function PresentStyles() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 内容形式适配雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="col-span-5 ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -804,7 +804,7 @@ export default function PresentStyles() {
 
         {/* 各形式流量热度趋势 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="col-span-7 ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -942,7 +942,7 @@ export default function PresentStyles() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 呈现形式总数 · 蓝 · 环形 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
         >
           <div className="flex items-center justify-between">
@@ -1001,7 +1001,7 @@ export default function PresentStyles() {
 
         {/* 覆盖场景 · 玫红 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: `${C.burgundy}28`, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1051,7 +1051,7 @@ export default function PresentStyles() {
 
         {/* 上手难度 · 紫 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: `${C.accent3}28`, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1101,7 +1101,7 @@ export default function PresentStyles() {
 
         {/* 适用平台 · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: `${C.ikb}28`, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1248,7 +1248,7 @@ export default function PresentStyles() {
             <div
               key={style.id}
               data-testid={`style-card-${style.id}`}
-              className="ikb-card flex flex-col rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="ikb-hovercard flex flex-col rounded-xl border"
               style={{ borderColor: C.line, background: C.paper }}
             >
               {/* Icon tile */}

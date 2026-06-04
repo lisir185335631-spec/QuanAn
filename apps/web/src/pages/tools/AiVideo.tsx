@@ -86,7 +86,7 @@ function InlinePlatformCard({
       onClick={onClick}
       aria-pressed={selected}
       data-testid={`platform-card-${platform.key}`}
-      className="ikb-card group relative flex items-center gap-3 overflow-hidden p-3.5 text-left transition-all ikb-focusring"
+      className="ikb-hovercard group relative flex items-center gap-3 overflow-hidden p-3.5 text-left transition-all ikb-focusring"
       style={{
         borderColor: selected ? C.ikb : C.line,
         background: selected ? `${C.ikb}08` : C.paper,
@@ -137,7 +137,7 @@ function InlineVideoTypeCard({
       onClick={onClick}
       aria-pressed={selected}
       data-testid={`video-type-card-${type.key}`}
-      className="ikb-card relative flex flex-col items-start gap-1 p-4 text-left transition-all ikb-focusring"
+      className="ikb-hovercard relative flex flex-col items-start gap-1 p-4 text-left transition-all ikb-focusring"
       style={{
         borderRadius: 12,
         border: `1px solid ${selected ? C.ikb : C.line}`,
@@ -209,7 +209,7 @@ function InlineResultTitleCard({
 }) {
   return (
     <div
-      className="relative overflow-hidden p-6"
+      className="relative overflow-hidden p-6 ikb-hovercard"
       style={{
         borderRadius: 12,
         border: `1px solid ${C.line}`,
@@ -339,7 +339,7 @@ function InlineAdviceCard({
   const accent = ADVICE_ACCENT[index % 3] ?? C.ikb;
   return (
     <div
-      className="flex items-start gap-4 rounded-xl p-4"
+      className="flex items-start gap-4 rounded-xl p-4 ikb-hovercard"
       style={{ border: `1px solid ${C.line}`, background: C.paper }}
       data-testid={`advice-card-${advice.id}`}
     >
@@ -393,7 +393,7 @@ function InlineShotCard({
       </div>
       {/* カード */}
       <div
-        className="mb-4 flex-1 p-5"
+        className="mb-4 flex-1 p-5 ikb-hovercard"
         style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
       >
         {/* ヘッダー: SHOT# + 秒 + 景别 chip */}
@@ -806,7 +806,7 @@ export default function AiVideo() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 视频制作力雷达 */}
         <div
-          className="col-span-5 p-6"
+          className="col-span-5 p-6 ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.line}`,
@@ -918,7 +918,7 @@ export default function AiVideo() {
 
         {/* 分镜情绪/节奏曲线 */}
         <div
-          className="col-span-7 p-6"
+          className="col-span-7 p-6 ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.line}`,
@@ -1048,7 +1048,7 @@ export default function AiVideo() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 分镜数 · 环形进度 */}
         <div
-          className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="p-5 ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.ikb}30`,
@@ -1103,7 +1103,7 @@ export default function AiVideo() {
 
         {/* 总时长 · 迷你柱 */}
         <div
-          className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="p-5 ikb-hovercard"
           style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1141,7 +1141,7 @@ export default function AiVideo() {
 
         {/* 目标平台 · 进度条 */}
         <div
-          className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="p-5 ikb-hovercard"
           style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1176,7 +1176,7 @@ export default function AiVideo() {
 
         {/* 视频类型 · 关键词 chip */}
         <div
-          className="p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="p-5 ikb-hovercard"
           style={{ borderRadius: 12, border: `1px solid ${C.line}`, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -1262,7 +1262,7 @@ export default function AiVideo() {
 
           {/* 10 SHOT 分镜时间线 */}
           <div
-            className="p-6"
+            className="p-6 ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.line}`,

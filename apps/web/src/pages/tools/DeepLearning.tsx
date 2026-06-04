@@ -150,7 +150,7 @@ function SampleFormPioneer({
   return (
     <div
       data-testid="sample-form"
-      className="ikb-card relative overflow-hidden rounded-xl p-6"
+      className="ikb-hovercard relative overflow-hidden rounded-xl p-6"
       style={{ background: `linear-gradient(135deg,${C.paper},${C.base})`, border: `1px solid ${C.line}` }}
     >
       {/* ambient glows */}
@@ -496,7 +496,7 @@ function SampleFormPioneer({
         {parseAnalysis && (
           <div
             data-testid="parse-result"
-            className="rounded-xl border p-5 space-y-4"
+            className="rounded-xl border p-5 space-y-4 ikb-hovercard"
             style={{ borderColor: `${C.ikb}28`, background: `${C.ikb}06` }}
           >
             <p
@@ -669,7 +669,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
   return (
     <div
       data-testid={`archive-card-${row.id}`}
-      className="ikb-card rounded-xl border p-6 space-y-6"
+      className="ikb-hovercard rounded-xl border p-6 space-y-6"
       style={{ background: C.paper, border: `1px solid ${C.line}` }}
     >
       {/* header row */}
@@ -921,7 +921,7 @@ function UsageInstructionsPioneer() {
   return (
     <div
       data-testid="usage-instructions"
-      className="rounded-xl border p-6 space-y-5"
+      className="rounded-xl border p-6 space-y-5 ikb-hovercard"
       style={{ borderColor: C.line, background: C.paper }}
     >
       <div className="flex items-center gap-3 pb-4" style={{ borderBottom: `1px solid ${C.line}` }}>
@@ -1259,7 +1259,7 @@ export default function DeepLearning() {
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* AI 学习能力雷达 */}
           <div
-            className="col-span-5 rounded-xl border p-6"
+            className="col-span-5 rounded-xl border p-6 ikb-hovercard"
             style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
           >
             <div className="mb-1 flex items-center justify-between">
@@ -1332,7 +1332,7 @@ export default function DeepLearning() {
 
           {/* 训练样本积累趋势 */}
           <div
-            className="col-span-7 rounded-xl border p-6"
+            className="col-span-7 rounded-xl border p-6 ikb-hovercard"
             style={{ borderColor: C.line, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
           >
             <div className="mb-4 flex items-start justify-between">
@@ -1417,7 +1417,7 @@ export default function DeepLearning() {
         <div className="mb-8 grid grid-cols-4 gap-6">
           {/* 档案数 · 蓝 */}
           <div
-            className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-5 ikb-hovercard"
             style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg,${C.paper},${C.base})` }}
           >
             <div className="flex items-center justify-between">
@@ -1452,7 +1452,7 @@ export default function DeepLearning() {
 
           {/* 样本数 · 玫红 */}
           <div
-            className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-5 ikb-hovercard"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="flex items-center justify-between">
@@ -1487,7 +1487,7 @@ export default function DeepLearning() {
 
           {/* 训练进度 · 紫 */}
           <div
-            className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-5 ikb-hovercard"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="flex items-center justify-between">
@@ -1518,7 +1518,7 @@ export default function DeepLearning() {
 
           {/* 模型版本 · 蓝 */}
           <div
-            className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-5 ikb-hovercard"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="flex items-center justify-between">

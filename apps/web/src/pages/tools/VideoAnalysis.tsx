@@ -409,7 +409,7 @@ export default function VideoAnalysis() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 爆款解析雷达 · col-span-5 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="col-span-5 ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -485,7 +485,7 @@ export default function VideoAnalysis() {
 
         {/* 黄金3秒 + 叙事节奏趋势 · col-span-7 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="col-span-7 ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -575,7 +575,7 @@ export default function VideoAnalysis() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 钩子评分 · 环形 · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -620,7 +620,7 @@ export default function VideoAnalysis() {
 
         {/* 爆款元素数 · 玫红 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -653,7 +653,7 @@ export default function VideoAnalysis() {
 
         {/* 叙事结构 · 紫 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -683,7 +683,7 @@ export default function VideoAnalysis() {
 
         {/* 仿写字数 · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -725,7 +725,7 @@ export default function VideoAnalysis() {
       <div className="space-y-6">
 
         {/* ── 选题策略 ──────────────────────────────────────── */}
-        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div className="flex items-center gap-2.5 px-6 py-4" style={{ background: C.grad }}>
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
               <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>target</span>
@@ -777,7 +777,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 钩子分析 ──────────────────────────────────────── */}
-        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center gap-2.5 px-6 py-4"
             style={{ background: `linear-gradient(to right, ${C.burgundy}, #c4304e)` }}
@@ -839,7 +839,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 叙事结构 ──────────────────────────────────────── */}
-        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center gap-2.5 px-6 py-4"
             style={{ background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }}
@@ -894,7 +894,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 爆款元素 + 公式 ───────────────────────────────── */}
-        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center gap-2.5 px-6 py-4"
             style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.burgundy})` }}
@@ -959,7 +959,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 一键仿写 ──────────────────────────────────────── */}
-        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center justify-between px-6 py-4"
             style={{ background: C.grad }}

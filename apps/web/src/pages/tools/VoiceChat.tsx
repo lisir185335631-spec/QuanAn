@@ -543,7 +543,7 @@ export default function VoiceChat() {
         {kpiCards.map((kpi, idx) => (
           <div
             key={idx}
-            className="flex items-center gap-3 p-4"
+            className="flex items-center gap-3 p-4 ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${kpi.accent}30`,
