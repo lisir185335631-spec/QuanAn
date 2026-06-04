@@ -1,6 +1,10 @@
 /**
- * Home page unit tests — 1:1 复刻 mock-first
- * Tests: 7 大字面锁 / 9 step label / 4 stat / 15 card title / 6 workflow step / footer
+ * Home page unit tests — 红蓝紫 IKB 重设计后内容锁(PR #11 重做 hero/sections 后对齐)
+ * 锁:hero(chip/副标题/brand)· progress(标题/查看方案/100%)· 9 step
+ *    · 4 stat 标签 · FUNCTION MATRIX(标题/4 分组/15 卡片)· WORKFLOW(标题/6 step)· READY/页脚
+ * 注:① stat 数值由 CountUp 动画驱动(jsdom useInView=false 时停在 0),故只锁标签
+ *    ② workflow 编号 01/02… 在 progress 步骤 / matrix 分组也出现,用 getAllByText
+ *    ③ 旧版的 progress 副标题/总体进度、matrix/workflow 副标题在重设计中已移除,相应断言删除
  */
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -27,9 +31,9 @@ describe('Home page — 字面锁', () => {
     expect(screen.getByText(/OPC全案落地 · 从流量到成交 · AI\+短视频\+IP · 全链路变现/)).toBeTruthy();
   });
 
-  it('hero brand: POWERED BY ADVANCED AI · FULL-CHAIN INTELLIGENT ACCELERATION', () => {
+  it('hero brand: 全链路 · 智能加速', () => {
     renderHome();
-    expect(screen.getByText(/POWERED BY ADVANCED AI · FULL-CHAIN INTELLIGENT ACCELERATION/)).toBeTruthy();
+    expect(screen.getByText(/全链路 · 智能加速/)).toBeTruthy();
   });
 
   it('progress title: 我的IP打造进度', () => {
@@ -37,19 +41,9 @@ describe('Home page — 字面锁', () => {
     expect(screen.getByText('我的IP打造进度')).toBeTruthy();
   });
 
-  it('progress subtitle: 恭喜！全部流程已完成', () => {
-    renderHome();
-    expect(screen.getByText(/恭喜！全部流程已完成/)).toBeTruthy();
-  });
-
   it('progress view plan: 查看IP方案', () => {
     renderHome();
     expect(screen.getByText(/查看IP方案/)).toBeTruthy();
-  });
-
-  it('progress overall: 总体进度', () => {
-    renderHome();
-    expect(screen.getByText('总体进度')).toBeTruthy();
   });
 
   it('progress percent: 100%', () => {
@@ -78,44 +72,37 @@ describe('Home page — 9 step labels', () => {
   });
 });
 
-describe('Home page — 4 stats', () => {
-  it('stat: 覆盖行业 + 56+', () => {
-    renderHome();
-    expect(screen.getByText('覆盖行业')).toBeTruthy();
-    expect(screen.getByText('56+')).toBeTruthy();
-  });
-  it('stat: 爆款元素 + 22', () => {
-    renderHome();
-    expect(screen.getByText('爆款元素')).toBeTruthy();
-    expect(screen.getByText('22')).toBeTruthy();
-  });
-  it('stat: 脚本类型 + 20', () => {
-    renderHome();
-    expect(screen.getByText('脚本类型')).toBeTruthy();
-    expect(screen.getByText('20')).toBeTruthy();
-  });
-  it('stat: 平台覆盖 + 5', () => {
-    renderHome();
-    expect(screen.getByText('平台覆盖')).toBeTruthy();
-    expect(screen.getByText('5')).toBeTruthy();
+describe('Home page — 4 stats(标签锁;数值 CountUp 动画不锁)', () => {
+  const statLabels = ['覆盖行业', '爆款元素', '脚本类型', '平台覆盖'];
+  statLabels.forEach((label) => {
+    it(`stat label: ${label}`, () => {
+      renderHome();
+      expect(screen.getAllByText(label).length).toBeGreaterThanOrEqual(1);
+    });
   });
 });
 
 describe('Home page — FUNCTION MATRIX', () => {
-  it('section title: FUNCTION MATRIX', () => {
+  it('section title: 全链路功能矩阵', () => {
     renderHome();
-    expect(screen.getByText('FUNCTION MATRIX')).toBeTruthy();
+    expect(screen.getByText('全链路功能矩阵')).toBeTruthy();
   });
-  it('subtitle: 全链路功能矩阵 · 洞察市场 → 设计变现 → 创作内容 → 智能工具', () => {
+  it('group: 市场洞察', () => {
     renderHome();
-    expect(
-      screen.getByText(/全链路功能矩阵 · 洞察市场 → 设计变现 → 创作内容 → 智能工具/),
-    ).toBeTruthy();
+    expect(screen.getByText('市场洞察')).toBeTruthy();
   });
-  it('group: 市场洞察', () => { renderHome(); expect(screen.getByText('市场洞察')).toBeTruthy(); });
-  it('group: 变现设计', () => { renderHome(); expect(screen.getByText('变现设计')).toBeTruthy(); });
-  it('group: 内容创作', () => { renderHome(); expect(screen.getByText('内容创作')).toBeTruthy(); });
-  it('group: 智能工具', () => { renderHome(); expect(screen.getByText('智能工具')).toBeTruthy(); });
+  it('group: 变现设计', () => {
+    renderHome();
+    expect(screen.getByText('变现设计')).toBeTruthy();
+  });
+  it('group: 内容创作', () => {
+    renderHome();
+    expect(screen.getByText('内容创作')).toBeTruthy();
+  });
+  it('group: 智能工具', () => {
+    renderHome();
+    expect(screen.getByText('智能工具')).toBeTruthy();
+  });
 
   const cardTitles = [
     '全网爆款库',
@@ -144,13 +131,9 @@ describe('Home page — FUNCTION MATRIX', () => {
 });
 
 describe('Home page — WORKFLOW', () => {
-  it('section title: WORKFLOW', () => {
+  it('section title: 从 0 到变现的全流程', () => {
     renderHome();
-    expect(screen.getByText('WORKFLOW')).toBeTruthy();
-  });
-  it('subtitle: 按照流程从零到一打造你的短视频变现体系', () => {
-    renderHome();
-    expect(screen.getByText('按照流程从零到一打造你的短视频变现体系')).toBeTruthy();
+    expect(screen.getByText('从 0 到变现的全流程')).toBeTruthy();
   });
   const workflowSteps = [
     { num: '01', title: '选择行业' },
@@ -163,7 +146,8 @@ describe('Home page — WORKFLOW', () => {
   workflowSteps.forEach(({ num, title }) => {
     it(`workflow step ${num}: ${title}`, () => {
       renderHome();
-      expect(screen.getByText(num)).toBeTruthy();
+      // 编号 01/02… 在 progress 步骤序号 / matrix 分组序号也出现,用 getAllByText
+      expect(screen.getAllByText(num).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(title).length).toBeGreaterThanOrEqual(1);
     });
   });
@@ -182,10 +166,8 @@ describe('Home page — READY TO START + footer', () => {
     renderHome();
     expect(screen.getByText(/立即启动/)).toBeTruthy();
   });
-  it('footer: AIP AGENT · AI FULL-CHAIN IP MONETIZATION ENGINE', () => {
+  it('footer brand: AI Full-Chain IP Monetization Engine', () => {
     renderHome();
-    expect(
-      screen.getByText('AIP AGENT · AI FULL-CHAIN IP MONETIZATION ENGINE'),
-    ).toBeTruthy();
+    expect(screen.getByText('AI Full-Chain IP Monetization Engine')).toBeTruthy();
   });
 });
