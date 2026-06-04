@@ -1,6 +1,9 @@
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   GUIDE_CHIP_SUBTITLE,
   GUIDE_CHIP_TITLE,
@@ -16,11 +19,7 @@ import {
   type GuideSection,
 } from '@/lib/constants/guide';
 
-// ── 先锋白品牌三主色 ──────────────────────────────────────────────────────────
-// 蓝 #002FA7 / 暖黄 #F6D300 (文字深金 #8A6A00, 黄底深色 #221b00) / 勃艮第 #781621
-// 绿 #10b981 状态色
-
-// ── 先锋白 Material Symbols icon 映射(section id → icon name)──────────────────
+// ── Material Symbols icon 映射(section id → icon name)──────────────────────
 const SECTION_ICON_MAP: Record<string, string> = {
   system_overview: 'shield',
   trending_library: 'trending_up',
@@ -38,6 +37,9 @@ const SECTION_ICON_MAP: Record<string, string> = {
   acquisition_video: 'target',
 };
 
+// ── 三色轮转 ──────────────────────────────────────────────────────────────────
+const ACCENT_CYCLE = [C.ikb, C.burgundy, C.accent3] as const;
+
 // ── KPI 概览数据 ──────────────────────────────────────────────────────────────
 const KPI_ITEMS = [
   {
@@ -45,60 +47,87 @@ const KPI_ITEMS = [
     value: String(GUIDE_SECTIONS_14.length),
     unit: '个',
     icon: 'grid_view',
-    color: '#002fa7',
-    bg: '#e8eeff',
+    color: C.ikb,
+    bg: `${C.ikb}1a`,
   },
   {
     label: '推荐流程步骤',
     value: String(GUIDE_FLOW.length),
     unit: '步',
     icon: 'route',
-    color: '#781621',
-    bg: '#fce8ea',
+    color: C.burgundy,
+    bg: `${C.burgundy}1a`,
   },
   {
     label: 'FAQ 问题',
     value: String(GUIDE_FAQS_5.length),
     unit: '条',
     icon: 'quiz',
-    color: '#8a6a00',
-    bg: '#fff9e0',
+    color: C.accent3,
+    bg: `${C.accent3}1a`,
   },
   {
     label: '最佳实践技巧',
     value: String(GUIDE_SECTIONS_14.reduce((acc, s) => acc + s.tips.length, 0)),
     unit: '条',
     icon: 'lightbulb',
-    color: '#002fa7',
-    bg: '#e8eeff',
+    color: C.ikb,
+    bg: `${C.ikb}1a`,
   },
 ];
 
-// ── GuideChip · 先锋白 Header ─────────────────────────────────────────────────
+// ── GuideChip · IKB Header ────────────────────────────────────────────────────
 function GuideChip() {
   return (
     <header
       data-testid="guide-chip"
-      className="mb-8 flex flex-row items-center justify-between gap-8"
+      style={{ marginBottom: 32, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}
     >
-      <div className="shrink-0">
-        <div className="mb-3 flex items-center gap-3">
-          <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+      <div style={{ flexShrink: 0 }}>
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span
+            style={{
+              borderRadius: 8,
+              border: `1px solid ${C.line}`,
+              background: C.base,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.ink,
+              fontFamily: F.mono,
+            }}
+          >
             更多
           </span>
-          <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+          <span
+            style={{
+              borderRadius: 8,
+              border: `1px solid ${C.ikb}50`,
+              background: `${C.ikb}12`,
+              padding: '4px 12px',
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: C.purpleText,
+              fontFamily: F.mono,
+            }}
+          >
             使用说明
           </span>
         </div>
         <h1
           data-testid="guide-chip-title"
-          className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+          className="ikb-gradtext"
+          style={{ whiteSpace: 'nowrap', fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', fontFamily: F.display, margin: 0 }}
         >
           {GUIDE_CHIP_TITLE}
         </h1>
         <p
           data-testid="guide-chip-subtitle"
-          className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]"
+          style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}
         >
           {GUIDE_CHIP_SUBTITLE}
         </p>
@@ -110,36 +139,56 @@ function GuideChip() {
 // ── KPI 概览 ──────────────────────────────────────────────────────────────────
 function KpiOverview() {
   return (
-    <div className="mb-8 grid grid-cols-4 gap-5">
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
       {KPI_ITEMS.map((k) => (
         <div
           key={k.label}
-          className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-md"
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.line}`,
+            background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+            padding: 20,
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${k.color}18`;
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.transform = '';
+            (e.currentTarget as HTMLDivElement).style.boxShadow = '';
+          }}
         >
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span
-              className="flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ backgroundColor: k.bg, color: k.color }}
+              style={{
+                display: 'flex',
+                height: 36,
+                width: 36,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                background: k.bg,
+                color: k.color,
+              }}
             >
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 {k.icon}
               </span>
             </span>
           </div>
-          <p
-            className="mt-3 text-[28px] font-extrabold leading-none text-[#111827]"
-          >
+          <p style={{ marginTop: 12, fontSize: 28, fontWeight: 800, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: '12px 0 0' }}>
             {k.value}
-            <span className="ml-1 text-[14px] font-bold text-[#6b7280]">{k.unit}</span>
+            <span style={{ marginLeft: 4, fontSize: 14, fontWeight: 700, color: '#6b7280', fontFamily: F.cn }}>{k.unit}</span>
           </p>
-          <p className="mt-1 text-[12px] font-medium text-[#6b7280]">{k.label}</p>
+          <p style={{ marginTop: 4, fontSize: 12, fontWeight: 500, color: '#6b7280', fontFamily: F.cn }}>{k.label}</p>
         </div>
       ))}
     </div>
   );
 }
 
-// ── FlowSection · 先锋白时间线 ───────────────────────────────────────────────
+// ── FlowSection · IKB 时间线 ──────────────────────────────────────────────────
 const FLOW_ICON_MAP: Record<string, string> = {
   深度学习: 'school',
   设计变现: 'payments',
@@ -149,23 +198,41 @@ const FLOW_ICON_MAP: Record<string, string> = {
 };
 
 function FlowCard({ step, index }: { step: FlowStep; index: number }) {
-  const FLOW_COLORS = ['#002fa7', '#781621', '#002fa7', '#002fa7', '#781621'];
-  const color = FLOW_COLORS[index % FLOW_COLORS.length];
+  const color = ACCENT_CYCLE[index % ACCENT_CYCLE.length];
   return (
     <div
       data-testid={`flow-card-${index}`}
-      className="flex flex-1 flex-col items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white p-4 text-center pw-shadow-soft"
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 8,
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
+        padding: 16,
+        textAlign: 'center',
+      }}
     >
       <span
-        className="flex h-12 w-12 items-center justify-center rounded-full text-white shadow-sm"
-        style={{ backgroundColor: color }}
+        style={{
+          display: 'flex',
+          height: 48,
+          width: 48,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          background: color,
+          color: '#fff',
+        }}
       >
-        <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+        <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 22 }}>
           {FLOW_ICON_MAP[step.name] ?? 'chevron_right'}
         </span>
       </span>
-      <span className="text-[14px] font-bold text-[#111827]">{step.name}</span>
-      <span className="text-[11px] text-[#6b7280]">{step.sub}</span>
+      <span style={{ fontSize: 14, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>{step.name}</span>
+      <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{step.sub}</span>
     </div>
   );
 }
@@ -174,25 +241,44 @@ function FlowSection() {
   return (
     <section
       data-testid="flow-section"
-      className="mb-8 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft"
+      style={{
+        marginBottom: 32,
+        overflow: 'hidden',
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+        padding: 24,
+      }}
     >
-      <div className="mb-5 flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span
+          style={{
+            display: 'flex',
+            height: 36,
+            width: 36,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 8,
+            background: `${C.ikb}12`,
+            color: C.ikb,
+          }}
+        >
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
             rocket_launch
           </span>
         </span>
-        <h2 className="text-[18px] font-bold text-[#111827]">{GUIDE_FLOW_TITLE}</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{GUIDE_FLOW_TITLE}</h2>
       </div>
-      <div className="flex items-stretch gap-3">
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 12 }}>
         {GUIDE_FLOW.map((step, i) => (
-          <div key={step.name} className="flex flex-1 items-center gap-3">
+          <div key={step.name} style={{ display: 'flex', flex: 1, alignItems: 'center', gap: 12 }}>
             <FlowCard step={step} index={i} />
             {i < GUIDE_FLOW.length - 1 && (
               <span
                 data-testid={`flow-arrow-${i}`}
-                className="material-symbols-outlined shrink-0 text-[20px] text-[#002fa7]"
-                aria-hidden="true"
+                aria-hidden={true}
+                className="material-symbols-outlined"
+                style={{ flexShrink: 0, fontSize: 20, color: C.ikb }}
               >
                 chevron_right
               </span>
@@ -204,32 +290,21 @@ function FlowSection() {
   );
 }
 
-// ── SectionAccordion · 先锋白折叠卡 ─────────────────────────────────────────
+// ── SectionAccordion · IKB 折叠卡 ────────────────────────────────────────────
 function SectionAccordion({ section }: { section: GuideSection }) {
   const [isOpen, setIsOpen] = useState(true);
-  const ACCENT_COLORS = [
-    '#002fa7',
-    '#781621',
-    '#002fa7',
-    '#781621',
-    '#002fa7',
-    '#781621',
-    '#002fa7',
-    '#781621',
-    '#002fa7',
-    '#781621',
-    '#002fa7',
-    '#781621',
-    '#002fa7',
-    '#781621',
-  ];
   const sectionIdx = GUIDE_SECTIONS_14.findIndex((s) => s.id === section.id);
-  const accentColor = ACCENT_COLORS[sectionIdx % ACCENT_COLORS.length];
+  const accentColor = ACCENT_CYCLE[sectionIdx % ACCENT_CYCLE.length];
 
   return (
     <div
       data-testid={`section-accordion-${section.id}`}
-      className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft"
+      style={{
+        overflow: 'hidden',
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
+      }}
     >
       {/* 标题行 */}
       <button
@@ -238,25 +313,55 @@ function SectionAccordion({ section }: { section: GuideSection }) {
         aria-expanded={isOpen}
         aria-label={`${isOpen ? '收起' : '展开'} ${section.name}`}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex w-full cursor-pointer items-center justify-between p-5 text-left transition-colors hover:bg-[#f8f9fa]"
+        className="ikb-focusring"
+        style={{
+          display: 'flex',
+          width: '100%',
+          cursor: 'pointer',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 20,
+          textAlign: 'left',
+          background: 'transparent',
+          border: 'none',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.base; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
-            style={{ backgroundColor: accentColor }}
+            style={{
+              display: 'flex',
+              height: 44,
+              width: 44,
+              flexShrink: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+              background: accentColor,
+              color: '#fff',
+            }}
           >
-            <span className="material-symbols-outlined text-[22px]" aria-hidden="true">
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 22 }}>
               {SECTION_ICON_MAP[section.id] ?? 'help_outline'}
             </span>
           </span>
           <div>
-            <p className="text-[15px] font-bold text-[#111827]">{section.name}</p>
-            <p className="text-[12px] text-[#6b7280]">{section.sub}</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{section.name}</p>
+            <p style={{ fontSize: 12, color: '#6b7280', margin: 0, fontFamily: F.cn }}>{section.sub}</p>
           </div>
         </div>
         <span
-          className={`material-symbols-outlined shrink-0 text-[22px] text-[#6b7280] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          aria-hidden="true"
+          aria-hidden={true}
+          className="material-symbols-outlined"
+          style={{
+            flexShrink: 0,
+            fontSize: 22,
+            color: '#6b7280',
+            transition: 'transform 0.2s',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
         >
           expand_more
         </span>
@@ -266,21 +371,33 @@ function SectionAccordion({ section }: { section: GuideSection }) {
       {isOpen && (
         <div
           data-testid={`section-body-${section.id}`}
-          className="space-y-5 px-5 pb-5 pt-0"
+          style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '0 20px 20px' }}
         >
           {/* 步骤列表 */}
-          <ol data-testid="section-steps-list" className="space-y-3">
+          <ol data-testid="section-steps-list" style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: 0, padding: 0, listStyle: 'none' }}>
             {section.steps.map((step, i) => (
-              <li key={step.title} className="flex gap-3">
+              <li key={step.title} style={{ display: 'flex', gap: 12 }}>
                 <span
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold text-white shadow-sm"
-                  style={{ backgroundColor: accentColor }}
+                  style={{
+                    display: 'flex',
+                    height: 32,
+                    width: 32,
+                    flexShrink: 0,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '50%',
+                    fontSize: 13,
+                    fontWeight: 800,
+                    color: '#fff',
+                    background: accentColor,
+                    fontFamily: F.mono,
+                  }}
                 >
                   {i + 1}
                 </span>
-                <div className="flex-1 pt-0.5">
-                  <p className="text-[14px] font-bold text-[#111827]">{step.title}</p>
-                  <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-[#444653]">
+                <div style={{ flex: 1, paddingTop: 2 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{step.title}</p>
+                  <p style={{ marginTop: 4, whiteSpace: 'pre-line', fontSize: 13, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>
                     {step.desc}
                   </p>
                 </div>
@@ -292,28 +409,46 @@ function SectionAccordion({ section }: { section: GuideSection }) {
           {section.tips.length > 0 && (
             <div
               data-testid="tips-box"
-              className="rounded-lg border border-[#e5e7eb] bg-[#f8f9fa] p-4"
+              style={{
+                borderRadius: 8,
+                border: `1px solid ${C.line}`,
+                background: C.base,
+                padding: 16,
+              }}
             >
-              <h4 className="mb-3 flex items-center gap-2 text-[13px] font-bold text-[#111827]">
+              <h4
+                style={{
+                  marginBottom: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: C.ink,
+                  margin: '0 0 12px',
+                  fontFamily: F.cn,
+                }}
+              >
                 <span
-                  className="material-symbols-outlined text-[17px]"
-                  style={{ color: accentColor }}
-                  aria-hidden="true"
+                  aria-hidden={true}
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 17, color: accentColor }}
                 >
                   lightbulb
                 </span>
                 {GUIDE_TIPS_TITLE}
               </h4>
-              <ul className="space-y-2">
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: 0, padding: 0, listStyle: 'none' }}>
                 {section.tips.map((tip) => (
-                  <li key={tip} className="flex items-start gap-2">
+                  <li key={tip} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                     <span
-                      className="material-symbols-outlined mt-0.5 shrink-0 text-[16px] text-[#10b981]"
-                      aria-hidden="true"
+                      aria-hidden={true}
+                      className="material-symbols-outlined"
+                      style={{ marginTop: 2, flexShrink: 0, fontSize: 16, color: '#166534' }}
                     >
                       check_circle
                     </span>
-                    <span className="text-[13px] leading-relaxed text-[#444653]">{tip}</span>
+                    <span style={{ fontSize: 13, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>{tip}</span>
                   </li>
                 ))}
               </ul>
@@ -325,24 +460,30 @@ function SectionAccordion({ section }: { section: GuideSection }) {
   );
 }
 
-// ── FAQSection · 先锋白 Q&A 折叠卡 ──────────────────────────────────────────
+// ── FAQSection · IKB Q&A 折叠卡 ──────────────────────────────────────────────
 function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
+  const color = ACCENT_CYCLE[index % ACCENT_CYCLE.length];
   return (
     <div
       data-testid={`faq-card-${index}`}
-      className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft"
+      style={{
+        borderRadius: 12,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
+        padding: 20,
+      }}
     >
-      <div className="mb-2 flex items-start gap-3">
+      <div style={{ marginBottom: 8, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
         <span
-          className="material-symbols-outlined mt-0.5 shrink-0 text-[18px] text-[#F6D300]"
-          style={{ WebkitTextStroke: '1px #8a6a00' }}
-          aria-hidden="true"
+          aria-hidden={true}
+          className="material-symbols-outlined"
+          style={{ marginTop: 2, flexShrink: 0, fontSize: 18, color }}
         >
           star
         </span>
-        <p className="text-[15px] font-bold text-[#111827]">{faq.q}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{faq.q}</p>
       </div>
-      <p className="pl-8 text-[13px] leading-relaxed text-[#444653]">{faq.a}</p>
+      <p style={{ paddingLeft: 30, fontSize: 13, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>{faq.a}</p>
     </div>
   );
 }
@@ -350,15 +491,26 @@ function FaqCard({ faq, index }: { faq: FAQ; index: number }) {
 function FAQSection() {
   return (
     <section data-testid="faq-section">
-      <div className="mb-5 flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span
+          style={{
+            display: 'flex',
+            height: 36,
+            width: 36,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 8,
+            background: `${C.burgundy}12`,
+            color: C.burgundy,
+          }}
+        >
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>
             help
           </span>
         </span>
-        <h2 className="text-[18px] font-bold text-[#111827]">{GUIDE_FAQ_TITLE}</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>{GUIDE_FAQ_TITLE}</h2>
       </div>
-      <div className="space-y-3">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {GUIDE_FAQS_5.map((faq, i) => (
           <FaqCard key={faq.q} faq={faq} index={i} />
         ))}
@@ -378,7 +530,7 @@ export default function Guide() {
     : GUIDE_SECTIONS_14;
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── 页面 Header ──────────────────────────────────────────── */}
       <GuideChip />
 
@@ -389,10 +541,33 @@ export default function Guide() {
       {!searchQuery && <FlowSection />}
 
       {/* ── 搜索框 ────────────────────────────────────────────────── */}
-      <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#e5e7eb] bg-white px-4 py-3 pw-shadow-soft transition-all focus-within:border-[#002fa7] focus-within:ring-1 focus-within:ring-[#002fa7]">
+      <div
+        style={{
+          marginBottom: 24,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          borderRadius: 12,
+          border: `1px solid ${C.line}`,
+          background: C.paper,
+          padding: '12px 16px',
+          transition: 'border-color 0.15s, box-shadow 0.15s',
+        }}
+        onFocus={(e) => {
+          const el = e.currentTarget as HTMLDivElement;
+          el.style.borderColor = C.ikb;
+          el.style.boxShadow = `0 0 0 1px ${C.ikb}`;
+        }}
+        onBlur={(e) => {
+          const el = e.currentTarget as HTMLDivElement;
+          el.style.borderColor = C.line;
+          el.style.boxShadow = '';
+        }}
+      >
         <span
-          className="material-symbols-outlined shrink-0 text-[22px] text-[#9ca3af]"
-          aria-hidden="true"
+          aria-hidden={true}
+          className="material-symbols-outlined"
+          style={{ flexShrink: 0, fontSize: 22, color: '#6b7280' }}
         >
           search
         </span>
@@ -406,31 +581,35 @@ export default function Guide() {
           placeholder={GUIDE_SEARCH_PLACEHOLDER}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 bg-transparent text-[14px] outline-none placeholder:text-[#9ca3af]"
+          className="ikb-input"
+          style={{ flex: 1, background: 'transparent', fontSize: 14, color: C.ink, fontFamily: F.cn }}
         />
         {searchQuery && (
           <button
             type="button"
             aria-label="清除搜索"
             onClick={() => setSearchQuery('')}
-            className="shrink-0 text-[#9ca3af] transition-colors hover:text-[#111827]"
+            className="ikb-focusring"
+            style={{ flexShrink: 0, color: '#6b7280', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'color 0.15s', padding: 0 }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = C.ink; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
           >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         )}
       </div>
 
       {/* ── 14 Section 折叠卡 ────────────────────────────────────── */}
-      <div className="space-y-3">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {filtered.map((section) => (
           <SectionAccordion key={section.id} section={section} />
         ))}
       </div>
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
-      <div className="mt-8">
+      <div style={{ marginTop: 32 }}>
         <FAQSection />
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
