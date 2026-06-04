@@ -1170,7 +1170,7 @@ export default function Step3() {
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 人设竞争力雷达 */}
           <div
-            className="col-span-5"
+            className="col-span-5 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
@@ -1260,7 +1260,7 @@ export default function Step3() {
 
           {/* 90 天曝光 / 涨粉预估 */}
           <div
-            className="col-span-7"
+            className="col-span-7 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
@@ -1385,19 +1385,11 @@ export default function Step3() {
         <div className="mb-8 grid grid-cols-4 gap-6">
           {/* 人设完整度 · 环形进度 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1440,19 +1432,11 @@ export default function Step3() {
 
           {/* 推荐昵称 · 数量 + 迷你柱 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1489,19 +1473,11 @@ export default function Step3() {
 
           {/* 平台覆盖 · 进度条 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1536,19 +1512,11 @@ export default function Step3() {
 
           {/* 简介方案 · 数量 + 关键词 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1656,20 +1624,11 @@ export default function Step3() {
 
           {/* 矩阵命名 (col-4 · Module 01) */}
           <div
+            className="col-span-4 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            className="col-span-4"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1712,21 +1671,12 @@ export default function Step3() {
                     aria-label={`复制 ${n.name}`}
                     onClick={() => copyText(n.name)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') copyText(n.name); }}
-                    className="group ikb-focusring"
+                    className="group ikb-focusring ikb-hovercard"
                     style={{
                       cursor: 'pointer',
                       border: `1px solid ${C.line}`,
                       background: C.base,
                       padding: 12,
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = C.burgundy;
-                      (e.currentTarget as HTMLDivElement).style.background = C.paper;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLDivElement).style.borderColor = C.line;
-                      (e.currentTarget as HTMLDivElement).style.background = C.base;
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1760,20 +1710,11 @@ export default function Step3() {
 
           {/* 头像生成流 (col-4 · Module 02) */}
           <div
+            className="col-span-4 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            className="col-span-4"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1846,20 +1787,11 @@ export default function Step3() {
 
           {/* 背景墙视觉 (col-4 · Module 03) */}
           <div
+            className="col-span-4 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            className="col-span-4"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1912,20 +1844,11 @@ export default function Step3() {
 
           {/* 简介文案公式 (col-8 · Module 04) */}
           <div
+            className="col-span-8 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            className="col-span-8"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}1A`;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLDivElement).style.transform = '';
-              (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

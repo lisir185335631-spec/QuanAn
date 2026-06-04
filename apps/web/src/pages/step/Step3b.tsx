@@ -1065,7 +1065,7 @@ export default function Step3b() {
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 人设竞争力雷达 */}
           <div
-            className="col-span-5"
+            className="col-span-5 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
@@ -1151,7 +1151,7 @@ export default function Step3b() {
 
           {/* 6 个月影响力预估 */}
           <div
-            className="col-span-7"
+            className="col-span-7 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
@@ -1278,14 +1278,12 @@ export default function Step3b() {
         <div className="mb-8 grid grid-cols-4 gap-6">
           {/* 人设完整度 · 环形进度 · 蓝 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 20,
-              transition: 'transform 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
           >
             <div className="flex items-center justify-between">
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
@@ -1336,14 +1334,12 @@ export default function Step3b() {
 
           {/* 记忆锚点 · 迷你柱 · 玫红 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
           >
             <div className="flex items-center justify-between">
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}15`, color: C.burgundyText }}>
@@ -1379,14 +1375,12 @@ export default function Step3b() {
 
           {/* 内容支柱 · 进度条 · 紫 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
           >
             <div className="flex items-center justify-between">
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
@@ -1420,14 +1414,12 @@ export default function Step3b() {
 
           {/* 信任背书 · 关键词 chip · 蓝 */}
           <div
+            className="ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; }}
           >
             <div className="flex items-center justify-between">
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}15`, color: C.ikb }}>
@@ -1603,14 +1595,12 @@ export default function Step3b() {
                 {result.trustSystem.backings.slice(0, 3).map((b) => (
                   <div
                     key={b.claim}
+                    className="ikb-hovercard"
                     style={{
                       border: `1px solid ${C.line}`,
                       background: C.base,
                       padding: 16,
-                      transition: 'border-color 0.2s',
                     }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.line; }}
                   >
                     <div style={{ marginBottom: 12, display: 'flex', height: 32, width: 32, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
                       <span className="material-symbols-outlined" style={{ fontSize: 18 }} aria-hidden="true">verified</span>

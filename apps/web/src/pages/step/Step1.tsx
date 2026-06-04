@@ -377,20 +377,12 @@ export default function Step1() {
           {S1_KPI.map((kpi, idx) => (
             <div
               key={kpi.label}
+              className="ikb-hovercard"
               style={{
                 border: `1px solid ${C.line}`,
                 background: C.paper,
                 borderRadius: 0,
                 padding: 20,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}1A`;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.transform = '';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = '';
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -513,7 +505,7 @@ export default function Step1() {
         <div className="mb-8 grid grid-cols-12 gap-6">
           {/* 赛道吸引力雷达 */}
           <div
-            className="col-span-5"
+            className="col-span-5 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
@@ -564,7 +556,7 @@ export default function Step1() {
 
           {/* 赛道热度趋势 */}
           <div
-            className="col-span-7"
+            className="col-span-7 ikb-hovercard"
             style={{
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
@@ -751,7 +743,7 @@ export default function Step1() {
                   data-testid={`industry-card-${ind.label}`}
                   data-state={active ? 'active' : 'inactive'}
                   onClick={() => handleSelectIndustry(ind)}
-                  className="ikb-focusring"
+                  className={`ikb-focusring ikb-hovercard`}
                   style={{
                     position: 'relative',
                     display: 'flex',
@@ -762,25 +754,9 @@ export default function Step1() {
                     overflow: 'hidden',
                     padding: 16,
                     textAlign: 'left',
-                    transition: 'all 0.2s',
                     border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
                     background: active ? `${C.ikb}08` : C.paper,
                     boxShadow: active ? `0 2px 12px ${C.ikb}20` : 'none',
-                    transform: 'translateY(0)',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!active) {
-                      (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-4px)';
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb;
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 8px 24px ${C.ikb}18`;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!active) {
-                      (e.currentTarget as HTMLButtonElement).style.transform = '';
-                      (e.currentTarget as HTMLButtonElement).style.borderColor = C.line;
-                      (e.currentTarget as HTMLButtonElement).style.boxShadow = '';
-                    }
                   }}
                 >
                   {/* 选中 check 徽标 */}

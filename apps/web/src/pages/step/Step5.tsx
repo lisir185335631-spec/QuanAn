@@ -589,7 +589,7 @@ export default function Step5() {
           </div>
           <div className="mb-8 grid grid-cols-12 gap-6">
             {/* 选题矩阵雷达 (5 维) */}
-            <div className="col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+            <div className="ikb-hovercard col-span-5 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
@@ -661,7 +661,7 @@ export default function Step5() {
             </div>
 
             {/* 选题难度分布 / 评分曲线 */}
-            <div className="col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+            <div className="ikb-hovercard col-span-7 rounded-xl border p-6" style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
@@ -756,7 +756,7 @@ export default function Step5() {
           {/* ── KPI 卡一排 ─────────────────────────────────────── */}
           <div className="mb-8 grid grid-cols-4 gap-6">
             {/* 总选题 · 环形 · 蓝 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>format_list_bulleted</span>
@@ -791,7 +791,7 @@ export default function Step5() {
             </div>
 
             {/* 选题大类 · 迷你柱 · 玫红 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>category</span>
@@ -812,7 +812,7 @@ export default function Step5() {
             </div>
 
             {/* 当前类 · 进度条 · 紫 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.accent3}18`, color: C.accent3 }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>filter_list</span>
@@ -831,7 +831,7 @@ export default function Step5() {
             </div>
 
             {/* 平均评分 · chip · 蓝 */}
-            <div className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="ikb-hovercard rounded-xl border p-5" style={{ borderColor: C.line, background: C.paper }}>
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
                   <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>star</span>
@@ -932,10 +932,8 @@ export default function Step5() {
               return (
                 <div
                   key={`${activeCategory}-${t.index}`}
-                  className="group flex items-center gap-4 rounded-xl border bg-white p-4 transition-all hover:shadow-sm"
+                  className="ikb-hovercard group flex items-center gap-4 rounded-xl border bg-white p-4"
                   style={{ borderColor: C.line }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = C.ikb; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = C.line; }}
                 >
                   {/* 序号 */}
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[13px] font-bold" style={{ background: C.base, color: '#6b7280', fontFamily: F.mono }}>
