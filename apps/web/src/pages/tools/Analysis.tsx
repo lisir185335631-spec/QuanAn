@@ -1,12 +1,16 @@
 /**
  * Analysis.tsx — /analysis · 文案结构分析
- * 先锋白·工业精密版 · PioneerLayout · inline 软卡 · 逻辑零改动
- * 样板: VideoAnalysis.tsx + Step3.tsx
+ * IKB 红蓝紫渐变体系重构 · IKBLayout 外壳 · 逻辑零改动 · testid 全保留
+ * 参考样板: Generate.tsx / Trending.tsx
  */
+
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   ANALYSIS_CONS,
   ANALYSIS_CONS_TITLE,
@@ -32,12 +36,12 @@ import {
 // ── Radar dims derived from ANALYSIS_DIMENSIONS ───────────────────────────────
 // map 5 analysis dims → 6 radar dims (ANALYSIS_DIMENSIONS has exactly 5 entries per constants)
 const RADAR_DIMS_AN = [
-  { label: '开头吸引力', value: ANALYSIS_DIMENSIONS[0]!.score, color: '#002fa7' },
-  { label: '情感张力',   value: ANALYSIS_DIMENSIONS[1]!.score, color: '#781621' },
-  { label: '节奏感',     value: ANALYSIS_DIMENSIONS[2]!.score, color: '#F6D300' },
-  { label: '完播率预测', value: ANALYSIS_DIMENSIONS[3]!.score, color: '#002fa7' },
-  { label: '爆款元素运用', value: ANALYSIS_DIMENSIONS[4]!.score, color: '#781621' },
-  { label: '综合评分',   value: ANALYSIS_OVERALL_SCORE,        color: '#F6D300' },
+  { label: '开头吸引力', value: ANALYSIS_DIMENSIONS[0]!.score, color: C.ikb },
+  { label: '情感张力',   value: ANALYSIS_DIMENSIONS[1]!.score, color: C.burgundy },
+  { label: '节奏感',     value: ANALYSIS_DIMENSIONS[2]!.score, color: C.accent3 },
+  { label: '完播率预测', value: ANALYSIS_DIMENSIONS[3]!.score, color: C.ikb },
+  { label: '爆款元素运用', value: ANALYSIS_DIMENSIONS[4]!.score, color: C.burgundy },
+  { label: '综合评分',   value: ANALYSIS_OVERALL_SCORE,        color: C.accent3 },
 ] as const;
 
 // ── Main Component ────────────────────────────────────────────────────────────
@@ -59,41 +63,58 @@ export default function Analysis() {
 
   // ── Header ─────────────────────────────────────────────────────────────────
   return (
-    <PioneerLayout>
+    <IKBLayout>
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            >
               工具
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: `${C.burgundy}50`, background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+            >
               拆解器
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
+            style={{ fontFamily: F.display }}
+          >
             {ANALYSIS_H1}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p
+            className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
+            style={{ color: '#5A6173', fontFamily: F.cn }}
+          >
             {ANALYSIS_SUBTITLE}
           </p>
         </div>
         <div className="flex shrink-0 flex-nowrap gap-3">
           <button
             type="button"
+            aria-label="重新分析"
             onClick={handleAnalyze}
             disabled={!copy.trim()}
-            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
+            className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-[13px] font-semibold text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ fontFamily: F.mono }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">analytics</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>analytics</span>
             重新分析
           </button>
         </div>
       </header>
 
       {/* ── 使用方法提示卡 ───────────────────────────────────────────────────── */}
-      <div className="mb-8 flex items-start gap-3 rounded-xl border border-[#dbe2ff] bg-[#002fa7]/5 p-4">
-        <span className="material-symbols-outlined mt-0.5 shrink-0 text-[20px] text-[#002fa7]" aria-hidden="true">info</span>
-        <p className="text-[14px] leading-relaxed text-[#1b2a5e]">
+      <div
+        className="mb-8 flex items-start gap-3 rounded-xl border p-4"
+        style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06` }}
+      >
+        <span className="material-symbols-outlined mt-0.5 shrink-0 text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>info</span>
+        <p className="text-[14px] leading-relaxed" style={{ color: C.purpleText, fontFamily: F.cn }}>
           <span className="font-bold">使用方法：</span>
           粘贴任意短视频文案/口播稿 → AI 将从结构、节奏、爆款元素等多维度深度分析
         </p>
@@ -102,23 +123,36 @@ export default function Analysis() {
       {/* ── 输入卡 (AnalysisInputCard) ───────────────────────────────────────── */}
       <section
         data-testid="analysis-input-card"
-        className="relative mb-12 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft"
+        className="relative mb-12 overflow-hidden rounded-xl border p-6"
+        style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
       >
-        <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.ikb}08` }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
+          style={{ background: `${C.burgundy}06` }}
+        />
 
-        <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+        <div className="relative mb-6 flex items-center justify-between border-b pb-5" style={{ borderColor: C.line }}>
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined" aria-hidden="true">content_paste_search</span>
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
+              style={{ background: C.grad }}
+            >
+              <span className="material-symbols-outlined" aria-hidden={true}>content_paste_search</span>
             </span>
             <div>
-              <h2 className="text-[18px] font-bold text-[#111827]">输入文案内容</h2>
-              <p className="text-[12px] text-[#9ca3af]">粘贴短视频文案 · AI 多维度深度分析</p>
+              <h2 className="text-[18px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>输入文案内容</h2>
+              <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>粘贴短视频文案 · AI 多维度深度分析</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+            style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+          >
+            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
             待分析
           </span>
         </div>
@@ -129,34 +163,51 @@ export default function Analysis() {
             <div className="mb-2 flex items-center justify-between">
               <label
                 htmlFor="an-copy"
-                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']"
+                className="flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+                style={{ color: C.ink, fontFamily: F.cn }}
               >
-                文案内容 <span className="ml-1 text-[#781621]">*</span>
+                <span
+                  className="mr-1 inline-block h-3.5 w-1 rounded-full"
+                  style={{ background: `linear-gradient(to bottom, ${C.ikb}, ${C.burgundy})` }}
+                  aria-hidden={true}
+                />
+                文案内容 <span className="ml-1" style={{ color: C.burgundyText }}>*</span>
               </label>
-              <span className="flex items-center gap-1 text-[11px] text-[#9ca3af]" aria-hidden="true">
-                <span className="material-symbols-outlined text-[14px] text-[#781621]">auto_awesome</span>
+              <span className="flex items-center gap-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }} aria-hidden={true}>
+                <span className="material-symbols-outlined text-[14px]" style={{ color: C.burgundy }} aria-hidden={true}>auto_awesome</span>
                 AI 据此深度拆解
               </span>
             </div>
-            <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-[#f9f9f9] transition-all focus-within:border-[#002fa7] focus-within:bg-white focus-within:ring-1 focus-within:ring-[#002fa7]">
+            <div
+              className="overflow-hidden rounded-xl border transition-all focus-within:ring-1 focus-within:ring-[#2B53E6]"
+              style={{ borderColor: C.line, background: C.base }}
+            >
               <textarea
                 id="an-copy"
                 value={copy}
                 onChange={(e) => setCopy(e.target.value)}
                 rows={10}
                 placeholder="粘贴短视频文案/口播稿"
-                className="w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+                className="ikb-input w-full resize-none border-0 bg-transparent p-4 text-[14px] leading-relaxed"
+                style={{ color: C.ink, fontFamily: F.cn }}
               />
-              <div className="flex items-center justify-between gap-3 border-t border-[#eef1f6] bg-white/60 px-4 py-2.5">
+              <div
+                className="flex items-center justify-between gap-3 border-t px-4 py-2.5"
+                style={{ borderColor: C.line, background: `${C.paper}99` }}
+              >
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] text-[#9ca3af]">支持</span>
+                  <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>支持</span>
                   {['口播稿', '字幕', '描述文案', '评论区文案'].map((t) => (
-                    <span key={t} className="rounded-full bg-[#f1f3f9] px-2.5 py-0.5 text-[11px] font-medium text-[#6b7280]">
+                    <span
+                      key={t}
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-medium"
+                      style={{ background: C.base, color: '#6b7280', border: `1px solid ${C.line}`, fontFamily: F.cn }}
+                    >
                       {t}
                     </span>
                   ))}
                 </div>
-                <span className="shrink-0 text-[11px] tabular-nums text-[#9ca3af]">{copy.length} 字</span>
+                <span className="shrink-0 tabular-nums text-[11px]" style={{ color: '#6b7280', fontFamily: F.mono }}>{copy.length} 字</span>
               </div>
             </div>
           </div>
@@ -167,9 +218,10 @@ export default function Analysis() {
               type="button"
               onClick={handleAnalyze}
               disabled={!copy.trim()}
-              className="flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              className="ikb-gradbtn ikb-focusring flex items-center gap-2 rounded-xl px-8 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px active:shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ fontFamily: F.mono }}
             >
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">analytics</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>analytics</span>
               {ANALYSIS_CTA}
             </button>
           </div>
@@ -178,37 +230,44 @@ export default function Analysis() {
 
       {/* ── 数据洞察 band ────────────────────────────────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <span className="material-symbols-outlined text-[20px]" style={{ color: C.ikb }} aria-hidden={true}>insights</span>
+        <h2 className="text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>数据洞察</h2>
+        <span className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+        <span
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+        >
+          <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.ikb }} />
           模型已就绪
         </span>
       </div>
 
       {/* ── 雷达 + KPI 一行 ──────────────────────────────────────────────────── */}
       <div className="mb-8 grid grid-cols-12 gap-6">
-        {/* AnalysisDimensions · 先锋白雷达 · col-span-5 */}
+        {/* AnalysisDimensions · 雷达 · col-span-5 */}
         <div
           data-testid="analysis-dimensions"
-          className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft"
+          className="col-span-5 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}12`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">{ANALYSIS_DIMENSIONS_TITLE}</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{ANALYSIS_DIMENSIONS_TITLE}</h3>
+                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>六维模型评估</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">
+              <p className="ikb-gradtext text-[26px] font-bold leading-none" style={{ fontFamily: F.display }}>
                 {ANALYSIS_OVERALL_SCORE}
               </p>
-              <p className="text-[10px] text-[#9ca3af]">{ANALYSIS_OVERALL_LABEL}</p>
+              <p className="text-[10px]" style={{ color: '#6b7280', fontFamily: F.mono }}>{ANALYSIS_OVERALL_LABEL}</p>
             </div>
           </div>
           {(() => {
@@ -221,11 +280,11 @@ export default function Analysis() {
             const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
             const dataPoly = dims.map((d, i) => pt(i, R * (Math.min(d.value, 100) / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
             return (
-              <svg viewBox="0 0 260 244" className="w-full">
+              <svg viewBox="0 0 260 244" className="w-full" role="img" aria-label="文案分析雷达图">
                 <defs>
-                  <linearGradient id="radarFillAN" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  <linearGradient id="anl-radarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -235,7 +294,7 @@ export default function Analysis() {
                   const [x, y] = pt(i, R);
                   return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
                 })}
-                <polygon points={dataPoly} fill="url(#radarFillAN)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                <polygon points={dataPoly} fill="url(#anl-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                 {dims.map((d, i) => {
                   const [x, y] = pt(i, R * (Math.min(d.value, 100) / 100));
                   return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -255,8 +314,8 @@ export default function Analysis() {
             {RADAR_DIMS_AN.map((d) => (
               <div key={d.label} className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                <span className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                <span className="text-[11px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.value}</span>
               </div>
             ))}
           </div>
@@ -267,37 +326,44 @@ export default function Analysis() {
           {/* 综合评分大卡 */}
           <div
             data-testid="analysis-score-card"
-            className="flex-1 rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-6 pw-shadow-soft"
+            className="flex-1 rounded-xl border p-6"
+            style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
           >
             <div className="mb-4 flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">grade</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}12`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>grade</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">{ANALYSIS_OVERALL_LABEL}</h3>
-                <p className="text-[11px] text-[#9ca3af]">综合 AI 评估</p>
+                <h3 className="text-[14px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>{ANALYSIS_OVERALL_LABEL}</h3>
+                <p className="text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>综合 AI 评估</p>
               </div>
-              <span className="ml-auto inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
+              <span
+                className="ml-auto inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                style={{ background: `${C.ikb}12`, color: C.ikb, fontFamily: F.mono }}
+              >
                 已分析
               </span>
             </div>
             <div className="flex items-end gap-6">
               <div>
-                <p className="text-[64px] font-bold leading-none text-[#111827]">
+                <p className="text-[64px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                   {ANALYSIS_OVERALL_SCORE}
-                  <span className="text-[24px] text-[#9ca3af]">/100</span>
+                  <span className="text-[24px]" style={{ color: '#6b7280', fontFamily: F.cn }}>/100</span>
                 </p>
               </div>
               {/* 环形进度 */}
               <div className="h-20 w-20 shrink-0">
-                <svg viewBox="0 0 36 36" className="-rotate-90">
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+                <svg viewBox="0 0 36 36" className="-rotate-90" role="img" aria-label={`综合评分 ${ANALYSIS_OVERALL_SCORE} 分环形进度`}>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}22`} strokeWidth="3.5" />
                   <circle
                     cx="18"
                     cy="18"
                     r="15.915"
                     fill="none"
-                    stroke="#002fa7"
+                    stroke={C.ikb}
                     strokeWidth="3.5"
                     strokeLinecap="round"
                     strokeDasharray={`${Math.min(100, ANALYSIS_OVERALL_SCORE)} 100`}
@@ -309,14 +375,14 @@ export default function Analysis() {
             <div className="mt-4 space-y-2.5">
               {ANALYSIS_DIMENSIONS.map((d) => (
                 <div key={d.label} className="flex items-center gap-3">
-                  <span className="w-[90px] shrink-0 text-[12px] text-[#6b7280]">{d.label}</span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#f1f3f9]">
+                  <span className="w-[90px] shrink-0 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <div className="h-2 flex-1 overflow-hidden rounded-full" style={{ background: `${C.ikb}18` }}>
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#002fa7] to-[#3654c8]"
-                      style={{ width: `${d.score}%` }}
+                      className="h-full rounded-full"
+                      style={{ width: `${d.score}%`, background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }}
                     />
                   </div>
-                  <span className="w-8 shrink-0 text-right text-[12px] font-bold text-[#111827]">{d.score}</span>
+                  <span className="w-8 shrink-0 text-right text-[12px] font-bold" style={{ color: C.ink, fontFamily: F.mono }}>{d.score}</span>
                 </div>
               ))}
             </div>
@@ -324,47 +390,74 @@ export default function Analysis() {
 
           {/* 小 KPI 一排 */}
           <div className="grid grid-cols-3 gap-4">
-            {/* 爆款元素数 */}
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 pw-shadow-soft">
+            {/* 爆款元素数 · 玫红 */}
+            <div
+              className="rounded-xl border p-4"
+              style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+            >
               <div className="flex items-center justify-between">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">stars</span>
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-lg"
+                  style={{ background: `${C.burgundy}12`, color: C.burgundy }}
+                >
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>stars</span>
                 </span>
-                <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[10px] font-bold text-[#781621]">已提取</span>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+                  style={{ background: `${C.burgundy}12`, color: C.burgundyText, fontFamily: F.mono }}
+                >
+                  已提取
+                </span>
               </div>
-              <p className="mt-3 text-[24px] font-bold leading-none text-[#111827]">
+              <p className="mt-3 text-[24px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                 {ANALYSIS_ELEMENTS.length}
-                <span className="text-[13px] text-[#9ca3af]"> 个</span>
+                <span className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 个</span>
               </p>
-              <p className="mt-1 text-[11px] text-[#6b7280]">爆款元素</p>
+              <p className="mt-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>爆款元素</p>
             </div>
-            {/* 优点数 */}
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 pw-shadow-soft">
+            {/* 优点数 · 深绿(check_circle 建议/成功块保留绿) */}
+            <div
+              className="rounded-xl border p-4"
+              style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+            >
               <div className="flex items-center justify-between">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#10b981]/10 text-[#10b981]">
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">check_circle</span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0fdf4] text-[#16a34a]">
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>check_circle</span>
                 </span>
-                <span className="rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[10px] font-bold text-[#10b981]">优点</span>
+                <span className="rounded-full bg-[#f0fdf4] px-2 py-0.5 text-[10px] font-bold text-[#166534]" style={{ fontFamily: F.mono }}>
+                  优点
+                </span>
               </div>
-              <p className="mt-3 text-[24px] font-bold leading-none text-[#111827]">
+              <p className="mt-3 text-[24px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                 {ANALYSIS_PROS.length}
-                <span className="text-[13px] text-[#9ca3af]"> 条</span>
+                <span className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 条</span>
               </p>
-              <p className="mt-1 text-[11px] text-[#6b7280]">亮点</p>
+              <p className="mt-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>亮点</p>
             </div>
-            {/* 建议数 */}
-            <div className="rounded-xl border border-[#e5e7eb] bg-white p-4 pw-shadow-soft">
+            {/* 建议数 · 紫 */}
+            <div
+              className="rounded-xl border p-4"
+              style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
+            >
               <div className="flex items-center justify-between">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8a6a00]">
-                  <span className="material-symbols-outlined text-[18px]" aria-hidden="true">lightbulb</span>
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-lg"
+                  style={{ background: `${C.accent3}12`, color: C.accent3 }}
+                >
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>lightbulb</span>
                 </span>
-                <span className="rounded-full bg-[#F6D300]/20 px-2 py-0.5 text-[10px] font-bold text-[#8a6a00]">建议</span>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+                  style={{ background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+                >
+                  建议
+                </span>
               </div>
-              <p className="mt-3 text-[24px] font-bold leading-none text-[#111827]">
+              <p className="mt-3 text-[24px] font-bold leading-none" style={{ color: C.ink, fontFamily: F.display }}>
                 {ANALYSIS_SUGGESTIONS.length}
-                <span className="text-[13px] text-[#9ca3af]"> 条</span>
+                <span className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}> 条</span>
               </p>
-              <p className="mt-1 text-[11px] text-[#6b7280]">优化建议</p>
+              <p className="mt-1 text-[11px]" style={{ color: '#6b7280', fontFamily: F.cn }}>优化建议</p>
             </div>
           </div>
         </div>
@@ -376,32 +469,36 @@ export default function Analysis() {
         {/* ── AnalysisStructure · 结构拆解 ─────────────────────────────────── */}
         <section
           data-testid="analysis-structure"
-          className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft"
+          className="overflow-hidden rounded-xl border"
+          style={{ borderColor: C.line, background: C.paper }}
         >
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#F6D300] to-[#e8c800] px-6 py-4 text-[#221b00]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#221b00]/10">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">timeline</span>
+          <div
+            className="flex items-center gap-2.5 px-6 py-4"
+            style={{ background: C.grad }}
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+              <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>timeline</span>
             </span>
-            <h3 className="text-[16px] font-bold">{ANALYSIS_STRUCTURE_TITLE}</h3>
+            <h3 className="text-[16px] font-bold text-white">{ANALYSIS_STRUCTURE_TITLE}</h3>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               {ANALYSIS_STRUCTURE.map((it, idx) => {
-                // 品牌三色轮转: 0→蓝, 1→勃艮第, 2→暖黄(深字), 3→蓝
+                // 品牌三色轮转: 0→蓝, 1→玫红, 2→紫, 3→蓝
                 const palette = [
-                  { bg: '#002fa7', badgeBg: '#002fa7', text: '#ffffff', badgeText: '#ffffff' },
-                  { bg: '#781621', badgeBg: '#781621', text: '#ffffff', badgeText: '#ffffff' },
-                  { bg: '#F6D300', badgeBg: '#F6D300', text: '#221b00', badgeText: '#221b00' },
-                  { bg: '#002fa7', badgeBg: '#002fa7', text: '#ffffff', badgeText: '#ffffff' },
+                  { bg: C.ikb, text: '#ffffff' },
+                  { bg: C.burgundy, text: '#ffffff' },
+                  { bg: C.accent3, text: '#ffffff' },
+                  { bg: C.ikb, text: '#ffffff' },
                 ] as const;
-                const { bg, badgeBg, text, badgeText } = palette[idx % palette.length]!;
+                const { bg, text } = palette[idx % palette.length]!;
                 return (
-                  <div key={it.stage} className="overflow-hidden rounded-xl border border-[#eef1f6] bg-[#f9faff]">
+                  <div key={it.stage} className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.base }}>
                     <div className="flex items-center justify-between gap-4 px-4 py-3" style={{ backgroundColor: bg }}>
                       <div className="flex items-center gap-3">
                         <span
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold"
-                          style={{ backgroundColor: `rgba(255,255,255,0.18)`, color: text }}
+                          style={{ backgroundColor: 'rgba(255,255,255,0.18)', color: text }}
                         >
                           {idx + 1}
                         </span>
@@ -409,16 +506,16 @@ export default function Analysis() {
                       </div>
                       <span
                         className="shrink-0 rounded-full px-2.5 py-0.5 text-[12px] font-bold"
-                        style={{ backgroundColor: badgeBg, color: badgeText, border: `1px solid rgba(255,255,255,0.25)` }}
+                        style={{ backgroundColor: 'rgba(255,255,255,0.18)', color: text, border: '1px solid rgba(255,255,255,0.25)' }}
                       >
                         {it.score}分
                       </span>
                     </div>
                     <div className="p-4">
                       {it.type !== undefined && (
-                        <p className="mb-1.5 text-[12px] text-[#6b7280]">类型：{it.type}</p>
+                        <p className="mb-1.5 text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>类型：{it.type}</p>
                       )}
-                      <p className="text-[14px] leading-relaxed text-[#374151]">{it.desc}</p>
+                      <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{it.desc}</p>
                     </div>
                   </div>
                 );
@@ -430,20 +527,25 @@ export default function Analysis() {
         {/* ── AnalysisElements · 识别到的爆款元素 ─────────────────────────── */}
         <section
           data-testid="analysis-elements"
-          className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft"
+          className="overflow-hidden rounded-xl border"
+          style={{ borderColor: C.line, background: C.paper }}
         >
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#002fa7] to-[#781621] px-6 py-4 text-white">
+          <div
+            className="flex items-center gap-2.5 px-6 py-4"
+            style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.burgundy})` }}
+          >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">stars</span>
+              <span className="material-symbols-outlined text-[18px] text-white" aria-hidden={true}>stars</span>
             </span>
-            <h3 className="text-[16px] font-bold">{ANALYSIS_ELEMENTS_TITLE}</h3>
+            <h3 className="text-[16px] font-bold text-white">{ANALYSIS_ELEMENTS_TITLE}</h3>
           </div>
           <div className="p-6">
             <div className="flex flex-wrap gap-3">
               {ANALYSIS_ELEMENTS.map((e) => (
                 <span
                   key={e}
-                  className="rounded-full border border-[#dbe2ff] bg-[#002fa7]/5 px-4 py-2 text-[13px] font-semibold text-[#002fa7]"
+                  className="rounded-full border px-4 py-2 text-[13px] font-semibold"
+                  style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}06`, color: C.ikb, fontFamily: F.cn }}
                 >
                   {e}
                 </span>
@@ -457,19 +559,19 @@ export default function Analysis() {
           data-testid="analysis-pros-cons"
           className="grid grid-cols-2 gap-6"
         >
-          {/* 优点 · 绿 */}
-          <section className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
-            <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#059669] to-[#10b981] px-6 py-4 text-white">
+          {/* 优点 · 深绿(check_circle 建议/成功块保留绿) */}
+          <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+            <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#059669] to-[#16a34a] px-6 py-4 text-white">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">check_circle</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>check_circle</span>
               </span>
               <h3 className="text-[16px] font-bold">{ANALYSIS_PROS_TITLE}</h3>
             </div>
             <div className="p-6">
               <ul className="space-y-3">
                 {ANALYSIS_PROS.map((p) => (
-                  <li key={p} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-[#374151]">
-                    <span className="mt-0.5 shrink-0 text-[16px] font-bold text-[#10b981]">+</span>
+                  <li key={p} className="flex items-start gap-2.5 text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>
+                    <span className="mt-0.5 shrink-0 text-[16px] font-bold text-[#16a34a]">+</span>
                     <span>{p}</span>
                   </li>
                 ))}
@@ -477,19 +579,22 @@ export default function Analysis() {
             </div>
           </section>
 
-          {/* 不足 · 勃艮第 */}
-          <section className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft">
-            <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#781621] to-[#a02030] px-6 py-4 text-white">
+          {/* 不足 · 玫红(避免/警告红保留) */}
+          <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+            <div
+              className="flex items-center gap-2.5 px-6 py-4 text-white"
+              style={{ background: `linear-gradient(to right, ${C.burgundy}, #c4304e)` }}
+            >
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">warning</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>warning</span>
               </span>
               <h3 className="text-[16px] font-bold">{ANALYSIS_CONS_TITLE}</h3>
             </div>
             <div className="p-6">
               <ul className="space-y-3">
                 {ANALYSIS_CONS.map((c) => (
-                  <li key={c} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-[#374151]">
-                    <span className="mt-0.5 shrink-0 text-[16px] font-bold text-[#781621]">−</span>
+                  <li key={c} className="flex items-start gap-2.5 text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>
+                    <span className="mt-0.5 shrink-0 text-[16px] font-bold" style={{ color: C.burgundy }}>−</span>
                     <span>{c}</span>
                   </li>
                 ))}
@@ -501,11 +606,15 @@ export default function Analysis() {
         {/* ── AnalysisSuggestions · 优化建议 ──────────────────────────────── */}
         <section
           data-testid="analysis-suggestions"
-          className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft"
+          className="overflow-hidden rounded-xl border"
+          style={{ borderColor: C.line, background: C.paper }}
         >
-          <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-6 py-4 text-white">
+          <div
+            className="flex items-center gap-2.5 px-6 py-4 text-white"
+            style={{ background: `linear-gradient(to right, ${C.ikb}, ${C.accent3})` }}
+          >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
-              <span className="material-symbols-outlined text-[18px]" aria-hidden="true">lightbulb</span>
+              <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>lightbulb</span>
             </span>
             <h3 className="text-[16px] font-bold">{ANALYSIS_SUGGESTIONS_TITLE}</h3>
           </div>
@@ -513,10 +622,13 @@ export default function Analysis() {
             <ol className="space-y-4">
               {ANALYSIS_SUGGESTIONS.map((s, i) => (
                 <li key={s} className="flex items-start gap-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#002fa7] text-[12px] font-bold text-white">
+                  <span
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-bold text-white"
+                    style={{ background: C.ikb, fontFamily: F.mono }}
+                  >
                     {i + 1}
                   </span>
-                  <p className="text-[14px] leading-relaxed text-[#374151]">{s}</p>
+                  <p className="text-[14px] leading-relaxed" style={{ color: '#374151', fontFamily: F.cn }}>{s}</p>
                 </li>
               ))}
             </ol>
@@ -527,26 +639,29 @@ export default function Analysis() {
       {/* ── AnalysisFeedback · 反馈 footer ──────────────────────────────────── */}
       <div
         data-testid="analysis-feedback"
-        className="mt-8 flex items-center gap-3 border-t border-[#eef1f6] pt-6"
+        className="mt-8 flex items-center gap-3 border-t pt-6"
+        style={{ borderColor: C.line }}
       >
-        <p className="text-[13px] text-[#9ca3af]">{ANALYSIS_FEEDBACK_PROMPT}</p>
+        <p className="text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>{ANALYSIS_FEEDBACK_PROMPT}</p>
         <button
           type="button"
           onClick={handleFeedbackUp}
           aria-label="有帮助"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#6b7280] transition-colors hover:border-[#002fa7] hover:text-[#002fa7]"
+          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+          style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">thumb_up</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_up</span>
         </button>
         <button
           type="button"
           onClick={handleFeedbackDown}
           aria-label="无帮助"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#e5e7eb] bg-white text-[#6b7280] transition-colors hover:border-[#781621] hover:text-[#781621]"
+          className="ikb-focusring flex h-9 w-9 items-center justify-center rounded-lg border transition-colors"
+          style={{ borderColor: C.line, background: C.paper, color: '#6b7280' }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">thumb_down</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>thumb_down</span>
         </button>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
