@@ -1,15 +1,18 @@
 /**
  * /present-styles · 爆款呈现形式合集
- * 先锋白标准 · PioneerLayout · 14 形式卡 · 阶段2 接真
+ * IKB 红蓝紫渐变体系 · IKBLayout · 14 形式卡 · 阶段2 接真
  * trpc.presentStyles.recommend · hasResult 门控 · 三态 + isFallback
- * 2026-06-02
+ * 2026-06-04
  */
+
+import '@/styles/ikb-hero.css';
 
 import { PRESENTATION_STYLE_IDS } from '@quanan/schemas/specialist-io';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   PAGE_SUBTITLE,
   PAGE_TITLE,
@@ -79,40 +82,56 @@ function parseContent(row: RecommendHistoryRow | undefined): PresentationResult 
   }
 }
 
-// ── ACCENT_CYCLE ──────────────────────────────────────────────────────────────
+// ── ACCENT_CYCLE — IKB 三主色轮转 ────────────────────────────────────────────
 const ACCENT_CYCLE = [
   {
-    bg: '#002fa7',
-    tileBg: 'bg-[#002fa7]',
-    badgeBg: 'bg-[#002fa7]/10',
-    badgeText: 'text-[#002fa7]',
+    bg: C.ikb,
+    tileBg: `bg-[${C.ikb}]`,
+    badgeBg: `bg-[${C.ikb}]/10`,
+    badgeText: `text-[${C.ikb}]`,
     border: 'border-[#c7d2fe]',
     tipsBg: 'bg-[#eff4ff]',
-    tipsText: 'text-[#002fa7]',
+    tipsText: `text-[${C.ikb}]`,
     tipsBorder: 'border-[#c7d2fe]',
     tileText: 'text-white',
+    // raw values for inline styles
+    rawColor: C.ikb,
+    rawBg: `${C.ikb}0f`,
+    rawBorder: `${C.ikb}40`,
+    rawTipsBg: `${C.ikb}08`,
+    rawTipsBorder: `${C.ikb}30`,
   },
   {
-    bg: '#781621',
-    tileBg: 'bg-[#781621]',
-    badgeBg: 'bg-[#781621]/10',
-    badgeText: 'text-[#781621]',
-    border: 'border-[#f5c2c7]',
-    tipsBg: 'bg-[#fff1f2]',
-    tipsText: 'text-[#781621]',
-    tipsBorder: 'border-[#f5c2c7]',
+    bg: C.burgundy,
+    tileBg: `bg-[${C.burgundy}]`,
+    badgeBg: `bg-[${C.burgundy}]/10`,
+    badgeText: `text-[${C.burgundyText}]`,
+    border: 'border-[#f9c0ce]',
+    tipsBg: 'bg-[#fff0f4]',
+    tipsText: `text-[${C.burgundyText}]`,
+    tipsBorder: 'border-[#f9c0ce]',
     tileText: 'text-white',
+    rawColor: C.burgundy,
+    rawBg: `${C.burgundy}0f`,
+    rawBorder: `${C.burgundy}40`,
+    rawTipsBg: `${C.burgundy}08`,
+    rawTipsBorder: `${C.burgundy}30`,
   },
   {
-    bg: '#F6D300',
-    tileBg: 'bg-[#F6D300]',
-    badgeBg: 'bg-[#fdf6cc]',
-    badgeText: 'text-[#8a6a00]',
-    border: 'border-[#F3E08A]',
-    tipsBg: 'bg-[#fdf6cc]',
-    tipsText: 'text-[#8a6a00]',
-    tipsBorder: 'border-[#F3E08A]',
-    tileText: 'text-[#221b00]',
+    bg: C.accent3,
+    tileBg: `bg-[${C.accent3}]`,
+    badgeBg: `bg-[${C.accent3}]/10`,
+    badgeText: `text-[${C.purpleText}]`,
+    border: 'border-[#d8c4f8]',
+    tipsBg: 'bg-[#f3eeff]',
+    tipsText: `text-[${C.purpleText}]`,
+    tipsBorder: 'border-[#d8c4f8]',
+    tileText: 'text-white',
+    rawColor: C.accent3,
+    rawBg: `${C.accent3}0f`,
+    rawBorder: `${C.accent3}40`,
+    rawTipsBg: `${C.accent3}08`,
+    rawTipsBorder: `${C.accent3}30`,
   },
 ] as const;
 
@@ -137,7 +156,15 @@ const STYLE_ICON: Record<string, string> = {
 // ── FieldLabel helper ─────────────────────────────────────────────────────────
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <span className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide text-[#1b1b1b] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+    <span
+      className="mb-2 flex items-center gap-1.5 text-[14px] font-extrabold tracking-wide"
+      style={{ color: C.ink, fontFamily: F.cn }}
+    >
+      <span
+        className="h-3.5 w-1 rounded-full"
+        style={{ background: C.grad }}
+        aria-hidden={true}
+      />
       {children}
     </span>
   );
@@ -164,22 +191,49 @@ function PresentStylesForm({
   textError,
 }: FormProps) {
   return (
-    <section className="relative overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7faff] p-6 pw-shadow-soft">
-      <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#002fa7]/[0.05] blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full bg-[#781621]/[0.04] blur-2xl" />
+    <section
+      className="relative overflow-hidden rounded-xl border p-6"
+      style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+    >
+      <div
+        className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full blur-2xl"
+        style={{ background: `${C.ikb}08` }}
+        aria-hidden={true}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-20 left-1/3 h-44 w-44 rounded-full blur-2xl"
+        style={{ background: `${C.burgundy}06` }}
+        aria-hidden={true}
+      />
 
-      <div className="relative mb-6 flex items-center justify-between border-b border-[#eef1f6] pb-5">
+      <div
+        className="relative mb-6 flex items-center justify-between border-b pb-5"
+        style={{ borderColor: C.line }}
+      >
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-lg shadow-[#002fa7]/25">
-            <span className="material-symbols-outlined" aria-hidden="true">tune</span>
+          <span
+            className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
+            style={{ background: C.grad }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true}>tune</span>
           </span>
           <div>
-            <h2 className="text-[18px] font-bold text-[#111827]">{PS_FORM_TITLE}</h2>
-            <p className="text-[12px] text-[#9ca3af]">填写文案 + 平台，AI 推荐最匹配形式</p>
+            <h2
+              className="text-[18px] font-bold"
+              style={{ color: C.ink, fontFamily: F.cn }}
+            >
+              {PS_FORM_TITLE}
+            </h2>
+            <p className="text-[12px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+              填写文案 + 平台，AI 推荐最匹配形式
+            </p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          style={{ background: `${C.ikb}12`, color: C.ikb }}
+        >
+          <span className="h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
           参数就绪
         </span>
       </div>
@@ -190,15 +244,18 @@ function PresentStylesForm({
           <label htmlFor="ps-text" className="mb-2 block">
             <FieldLabel>
               {PS_LABEL_TEXT}
-              {' '}<span className="text-[#781621]">*</span>
+              {' '}<span style={{ color: C.burgundy }}>*</span>
             </FieldLabel>
           </label>
           <div
-            className={`overflow-hidden rounded-xl border bg-[#f9f9f9] transition-all focus-within:bg-white focus-within:ring-1 ${
-              textError
-                ? 'border-[#781621] focus-within:border-[#781621] focus-within:ring-[#781621]'
-                : 'border-[#e5e7eb] focus-within:border-[#002fa7] focus-within:ring-[#002fa7]'
+            className={`ikb-input overflow-hidden rounded-xl border bg-[#f9f9f9] transition-all focus-within:bg-white focus-within:ring-1 ${
+              textError ? '' : ''
             }`}
+            style={
+              textError
+                ? { borderColor: C.burgundy, outline: undefined }
+                : { borderColor: C.line }
+            }
           >
             <textarea
               id="ps-text"
@@ -207,11 +264,16 @@ function PresentStylesForm({
               onChange={(e) => onTextChange(e.target.value)}
               rows={4}
               placeholder={`请输入你的文案内容（至少 ${PS_TEXT_MIN} 字）`}
-              className="w-full resize-y border-0 bg-transparent p-4 text-[14px] leading-relaxed outline-none"
+              className="w-full resize-y border-0 bg-transparent p-4 text-[14px] leading-relaxed focus:outline-none"
+              style={{ color: C.ink, fontFamily: F.cn }}
             />
           </div>
           {textError && (
-            <p data-testid="ps-text-error" className="mt-1 text-[12px] text-[#781621]">
+            <p
+              data-testid="ps-text-error"
+              className="mt-1 text-[12px]"
+              style={{ color: C.burgundy, fontFamily: F.cn }}
+            >
               {textError}
             </p>
           )}
@@ -227,7 +289,13 @@ function PresentStylesForm({
             data-testid="ps-platform-select"
             value={platform}
             onChange={(e) => onPlatformChange(e.target.value)}
-            className="w-full rounded-md border border-[#e5e7eb] bg-[#f9f9f9] px-4 py-3 text-[14px] text-[#1b1b1b] outline-none transition-all focus:border-[#002fa7] focus:bg-white focus:ring-1 focus:ring-[#002fa7]"
+            className="ikb-focusring w-full rounded-md border px-4 py-3 text-[14px] transition-all focus:ring-1 focus:outline-none"
+            style={{
+              borderColor: C.line,
+              background: C.base,
+              color: C.ink,
+              fontFamily: F.cn,
+            }}
           >
             {PLATFORM_OPTIONS.map((p) => (
               <option key={p.value} value={p.value}>
@@ -243,9 +311,10 @@ function PresentStylesForm({
           data-testid="ps-recommend-btn"
           onClick={onRecommend}
           disabled={isPending || text.trim().length < PS_TEXT_MIN}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#002fa7] px-4 py-3 text-[12px] font-bold uppercase tracking-widest text-white pw-shadow-soft transition-all hover:bg-[#001e73] active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+          className="ikb-gradbtn ikb-focusring mt-2 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-[12px] font-bold uppercase tracking-widest text-white transition-all active:translate-x-px active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+          style={{ fontFamily: F.mono }}
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">auto_awesome</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>auto_awesome</span>
           {PS_CTA}
         </button>
       </div>
@@ -258,13 +327,25 @@ function PresentStylesEmptyState() {
   return (
     <div
       data-testid="ps-empty-state"
-      className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#d1d5db] bg-gradient-to-br from-white to-[#f9fafb] p-12 text-center"
+      className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center"
+      style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
     >
-      <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#002fa7]/8 text-[#002fa7]">
-        <span className="material-symbols-outlined text-[36px]" aria-hidden="true">style</span>
+      <span
+        className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl"
+        style={{ background: `${C.ikb}10`, color: C.ikb }}
+      >
+        <span className="material-symbols-outlined text-[36px]" aria-hidden={true}>style</span>
       </span>
-      <h3 className="mb-2 text-[18px] font-bold text-[#111827]">{PS_RESULT_TITLE}</h3>
-      <p className="text-[14px] leading-relaxed text-[#9ca3af]">
+      <h3
+        className="mb-2 text-[18px] font-bold"
+        style={{ color: C.ink, fontFamily: F.cn }}
+      >
+        {PS_RESULT_TITLE}
+      </h3>
+      <p
+        className="text-[14px] leading-relaxed"
+        style={{ color: '#6b7280', fontFamily: F.cn }}
+      >
         填写左侧文案 + 平台，点击「{PS_CTA}」
         <br />AI 将为你推荐最适合的呈现形式
       </p>
@@ -291,21 +372,36 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
       {isFallback && (
         <div
           data-testid="ps-fallback-notice"
-          className="flex items-center gap-3 rounded-xl border border-[#F3E08A] bg-[#fef9e0] px-4 py-3 text-[13px] text-[#8a6a00]"
+          className="flex items-center gap-3 rounded-xl border px-4 py-3 text-[13px]"
+          style={{ borderColor: `${C.accent3}40`, background: `${C.accent3}08`, color: C.purpleText }}
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">warning</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>warning</span>
           AI 繁忙，已返回备用推荐方案，建议稍后重试以获取个性化结果。
         </div>
       )}
 
       {/* 结果标题 */}
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#002fa7] to-[#3654c8] text-white shadow-md">
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">style</span>
+        <span
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-md"
+          style={{ background: C.grad }}
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>style</span>
         </span>
-        <h2 className="text-[18px] font-bold text-[#111827]">{PS_RESULT_TITLE}</h2>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <h2
+          className="text-[18px] font-bold"
+          style={{ color: C.ink, fontFamily: F.cn }}
+        >
+          {PS_RESULT_TITLE}
+        </h2>
+        <span
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          style={{ background: `${C.ikb}12`, color: C.ikb }}
+        >
+          <span
+            className="h-1.5 w-1.5 animate-pulse rounded-full"
+            style={{ background: C.ikb }}
+          />
           推荐已就绪
         </span>
       </div>
@@ -326,19 +422,24 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
             <div
               key={item.id}
               data-testid={`ps-recommended-item-${item.id}`}
-              className="rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft"
+              className="rounded-xl border"
+              style={{ borderColor: C.line, background: C.paper }}
             >
-              {/* Icon tile */}
-              <div className={`flex h-14 w-full items-center gap-3 rounded-t-xl px-5 ${accent.tileBg}`}>
-                <span className={`material-symbols-outlined text-[26px] ${accent.tileText}`} aria-hidden="true">
+              {/* Icon tile — ps-prefix on inline gradient */}
+              <div
+                className="flex h-14 w-full items-center gap-3 rounded-t-xl px-5"
+                style={{ background: accent.rawColor }}
+              >
+                <span className="material-symbols-outlined text-[26px] text-white" aria-hidden={true}>
                   {icon}
                 </span>
-                <span className={`text-[16px] font-extrabold tracking-tight ${accent.tileText}`}>
+                <span className="text-[16px] font-extrabold tracking-tight text-white">
                   {displayLabel}
                 </span>
                 {/* matchScore 徽章 */}
                 <span
-                  className={`ml-auto rounded-full px-2.5 py-0.5 text-[11px] font-bold ${accent.tileText} bg-white/20`}
+                  className="ml-auto rounded-full px-2.5 py-0.5 text-[11px] font-bold text-white"
+                  style={{ background: 'rgba(255,255,255,0.2)' }}
                   data-testid={`ps-match-score-${item.id}`}
                 >
                   匹配度 {item.matchScore}%
@@ -346,36 +447,73 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
               </div>
 
               <div className="flex flex-col gap-3 p-5">
-                <p className="text-[14px] leading-relaxed text-[#444653]">{displayDescription}</p>
+                <p
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: '#444653', fontFamily: F.cn }}
+                >
+                  {displayDescription}
+                </p>
 
                 {/* 推荐理由 */}
                 {item.rationale && (
                   <div
-                    className={`flex items-start gap-2 rounded-lg border p-3 ${accent.tipsBg} ${accent.tipsBorder}`}
+                    className="flex items-start gap-2 rounded-lg border p-3"
+                    style={{
+                      background: accent.rawTipsBg,
+                      borderColor: accent.rawTipsBorder,
+                    }}
                     data-testid={`ps-rationale-${item.id}`}
                   >
                     <span
-                      className={`material-symbols-outlined mt-0.5 shrink-0 text-[18px] ${accent.tipsText}`}
-                      aria-hidden="true"
+                      className="material-symbols-outlined mt-0.5 shrink-0 text-[18px]"
+                      style={{ color: accent.rawColor }}
+                      aria-hidden={true}
                     >
                       recommend
                     </span>
                     <div>
-                      <span className={`mr-1 text-[12px] font-extrabold ${accent.tipsText}`}>推荐理由</span>
-                      <span className={`text-[13px] leading-relaxed ${accent.tipsText}`}>{item.rationale}</span>
+                      <span
+                        className="mr-1 text-[12px] font-extrabold"
+                        style={{ color: accent.rawColor, fontFamily: F.cn }}
+                      >
+                        推荐理由
+                      </span>
+                      <span
+                        className="text-[13px] leading-relaxed"
+                        style={{ color: accent.rawColor, fontFamily: F.cn }}
+                      >
+                        {item.rationale}
+                      </span>
                     </div>
                   </div>
                 )}
 
                 {/* 操作要点 */}
                 {displayTips && (
-                  <div className="flex items-start gap-2 rounded-lg border border-[#e5e7eb] bg-[#f9fafb] p-3">
-                    <span className="material-symbols-outlined mt-0.5 shrink-0 text-[18px] text-[#6b7280]" aria-hidden="true">
+                  <div
+                    className="flex items-start gap-2 rounded-lg border p-3"
+                    style={{ borderColor: C.line, background: C.base }}
+                  >
+                    <span
+                      className="material-symbols-outlined mt-0.5 shrink-0 text-[18px]"
+                      style={{ color: '#6b7280' }}
+                      aria-hidden={true}
+                    >
                       lightbulb
                     </span>
                     <div>
-                      <span className="mr-1 text-[12px] font-extrabold text-[#6b7280]">要点</span>
-                      <span className="text-[13px] leading-relaxed text-[#6b7280]">{displayTips}</span>
+                      <span
+                        className="mr-1 text-[12px] font-extrabold"
+                        style={{ color: '#6b7280', fontFamily: F.cn }}
+                      >
+                        要点
+                      </span>
+                      <span
+                        className="text-[13px] leading-relaxed"
+                        style={{ color: '#6b7280', fontFamily: F.cn }}
+                      >
+                        {displayTips}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -386,23 +524,33 @@ function PresentStylesResult({ result, isFallback }: ResultProps) {
       </div>
 
       {/* 反馈 row */}
-      <div className="flex items-center gap-3 border-t border-[#eef1f6] pt-4">
-        <p className="text-[14px] text-[#6b7280]">{PS_FEEDBACK_PROMPT}</p>
+      <div
+        className="flex items-center gap-3 border-t pt-4"
+        style={{ borderColor: C.line }}
+      >
+        <p
+          className="text-[14px]"
+          style={{ color: '#6b7280', fontFamily: F.cn }}
+        >
+          {PS_FEEDBACK_PROMPT}
+        </p>
         <button
           type="button"
           onClick={handleFeedback}
           aria-label="有帮助"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#10b981] hover:text-[#10b981]"
+          className="ikb-focusring flex h-8 w-8 items-center justify-center rounded-full border transition-colors hover:border-[#2B53E6] hover:text-[#2B53E6]"
+          style={{ borderColor: C.line, color: '#6b7280' }}
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">thumb_up</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>thumb_up</span>
         </button>
         <button
           type="button"
           onClick={handleFeedback}
           aria-label="无帮助"
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e5e7eb] text-[#9ca3af] transition-colors hover:border-[#781621] hover:text-[#781621]"
+          className="ikb-focusring flex h-8 w-8 items-center justify-center rounded-full border transition-colors hover:border-[#EF3E6B] hover:text-[#EF3E6B]"
+          style={{ borderColor: C.line, color: '#6b7280' }}
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">thumb_down</span>
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>thumb_down</span>
         </button>
       </div>
     </div>
@@ -444,22 +592,34 @@ export default function PresentStyles() {
   }
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex flex-row items-center justify-between gap-8">
         <div className="shrink-0">
           <div className="mb-3 flex items-center gap-3">
-            <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: C.line, background: C.base, color: C.ink, fontFamily: F.mono }}
+            >
               创作引擎
             </span>
-            <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+            <span
+              className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+              style={{ borderColor: `${C.accent3}50`, background: `${C.accent3}12`, color: C.purpleText, fontFamily: F.mono }}
+            >
               形式库
             </span>
           </div>
-          <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+          <h1
+            className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tight"
+            style={{ fontFamily: F.display }}
+          >
             {PAGE_TITLE}
           </h1>
-          <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+          <p
+            className="mt-2 max-w-[820px] text-[16px] leading-relaxed"
+            style={{ color: '#5A6173', fontFamily: F.cn }}
+          >
             {PAGE_SUBTITLE}
           </p>
         </div>
@@ -467,41 +627,89 @@ export default function PresentStyles() {
 
       {/* ── 数据洞察 band ──────────────────────────────────── */}
       <div className="mb-3 flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-        <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-        <span className="text-[12px] text-[#9ca3af]">· 内容形式覆盖全景</span>
-        <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <span
+          className="material-symbols-outlined text-[20px]"
+          style={{ color: C.ikb }}
+          aria-hidden={true}
+        >
+          insights
+        </span>
+        <h2
+          className="text-[16px] font-bold"
+          style={{ color: C.ink, fontFamily: F.cn }}
+        >
+          数据洞察
+        </h2>
+        <span
+          className="text-[12px]"
+          style={{ color: '#6b7280', fontFamily: F.cn }}
+        >
+          · 内容形式覆盖全景
+        </span>
+        <span
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+          style={{ background: `${C.ikb}12`, color: C.ikb }}
+        >
+          <span
+            className="h-1.5 w-1.5 animate-pulse rounded-full"
+            style={{ background: C.ikb }}
+          />
           已收录 {PRESENT_STYLES.length} 种形式
         </span>
       </div>
 
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 内容形式适配雷达 */}
-        <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-5 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+        >
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.ikb}10`, color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">内容形式适配雷达</h3>
-                <p className="text-[11px] text-[#9ca3af]">六维模型评估（示例/参考）</p>
+                <h3
+                  className="text-[14px] font-bold"
+                  style={{ color: C.ink, fontFamily: F.cn }}
+                >
+                  内容形式适配雷达
+                </h3>
+                <p
+                  className="text-[11px]"
+                  style={{ color: '#6b7280', fontFamily: F.cn }}
+                >
+                  六维模型评估（示例/参考）
+                </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[26px] font-bold leading-none text-[#002fa7]">14</p>
-              <p className="text-[10px] text-[#9ca3af]">形式总数</p>
+              <p
+                className="text-[26px] font-bold leading-none"
+                style={{ color: C.ikb, fontFamily: F.display }}
+              >
+                14
+              </p>
+              <p
+                className="text-[10px]"
+                style={{ color: '#6b7280', fontFamily: F.cn }}
+              >
+                形式总数
+              </p>
             </div>
           </div>
           {(() => {
             const dims = [
-              { label: '知识输出', value: 85, color: '#002fa7' },
-              { label: '剧情张力', value: 72, color: '#781621' },
-              { label: '测评种草', value: 78, color: '#F6D300' },
-              { label: '人设打造', value: 90, color: '#002fa7' },
-              { label: '互动话题', value: 68, color: '#781621' },
-              { label: '带货转化', value: 80, color: '#F6D300' },
+              { label: '知识输出', value: 85, color: C.ikb },
+              { label: '剧情张力', value: 72, color: C.burgundy },
+              { label: '测评种草', value: 78, color: C.accent3 },
+              { label: '人设打造', value: 90, color: C.ikb },
+              { label: '互动话题', value: 68, color: C.burgundy },
+              { label: '带货转化', value: 80, color: C.accent3 },
             ];
             const cx = 130;
             const cy = 122;
@@ -517,26 +725,26 @@ export default function PresentStyles() {
               .map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(','))
               .join(' ');
             return (
-              <svg viewBox="0 0 260 244" className="w-full">
+              <svg viewBox="0 0 260 244" className="w-full" aria-hidden={true}>
                 <defs>
-                  <linearGradient id="radarFillPS" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                    <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                  <linearGradient id="ps-radarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                    <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                   </linearGradient>
                 </defs>
                 {[0.25, 0.5, 0.75, 1].map((f) => (
-                  <polygon key={f} points={poly(R * f)} fill="none" stroke="#e8ebf2" strokeWidth="1" />
+                  <polygon key={f} points={poly(R * f)} fill="none" stroke={C.line} strokeWidth="1" />
                 ))}
                 {dims.map((_, i) => {
                   const [x, y] = pt(i, R);
                   return (
-                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />
+                    <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={C.line} strokeWidth="1" />
                   );
                 })}
                 <polygon
                   points={dataPoly}
-                  fill="url(#radarFillPS)"
-                  stroke="#002fa7"
+                  fill="url(#ps-radarFill)"
+                  stroke={C.ikb}
                   strokeWidth="2"
                   strokeLinejoin="round"
                 />
@@ -568,39 +776,70 @@ export default function PresentStyles() {
           })()}
           <div className="mt-2 grid grid-cols-3 gap-y-2">
             {[
-              { label: '知识输出', value: 85, color: '#002fa7' },
-              { label: '剧情张力', value: 72, color: '#781621' },
-              { label: '测评种草', value: 78, color: '#F6D300' },
-              { label: '人设打造', value: 90, color: '#002fa7' },
-              { label: '互动话题', value: 68, color: '#781621' },
-              { label: '带货转化', value: 80, color: '#F6D300' },
+              { label: '知识输出', value: 85, color: C.ikb },
+              { label: '剧情张力', value: 72, color: C.burgundy },
+              { label: '测评种草', value: 78, color: C.accent3 },
+              { label: '人设打造', value: 90, color: C.ikb },
+              { label: '互动话题', value: 68, color: C.burgundy },
+              { label: '带货转化', value: 80, color: C.accent3 },
             ].map((d) => (
               <div key={d.label} className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                <span
+                  className="text-[11px]"
+                  style={{ color: '#6b7280', fontFamily: F.cn }}
+                >
+                  {d.label}
+                </span>
+                <span
+                  className="text-[11px] font-bold"
+                  style={{ color: C.ink, fontFamily: F.cn }}
+                >
+                  {d.value}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 各形式流量热度趋势 */}
-        <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+        <div
+          className="col-span-7 rounded-xl border p-6"
+          style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+        >
           <div className="mb-4 flex items-start justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]" aria-hidden="true">show_chart</span>
+              <span
+                className="flex h-9 w-9 items-center justify-center rounded-lg"
+                style={{ background: `${C.burgundy}10`, color: C.burgundy }}
+              >
+                <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
               </span>
               <div>
-                <h3 className="text-[14px] font-bold text-[#111827]">各形式流量热度</h3>
-                <p className="text-[11px] text-[#9ca3af]">代表形式综合热度指数（示例/参考）</p>
+                <h3
+                  className="text-[14px] font-bold"
+                  style={{ color: C.ink, fontFamily: F.cn }}
+                >
+                  各形式流量热度
+                </h3>
+                <p
+                  className="text-[11px]"
+                  style={{ color: '#6b7280', fontFamily: F.cn }}
+                >
+                  代表形式综合热度指数（示例/参考）
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {['口播', '剧情', '教程', '测评', 'Vlog', '清单'].map((t, i) => (
                 <span
                   key={t}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                  className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                  style={
+                    i === 0
+                      ? { background: C.ikb, color: '#fff', fontFamily: F.cn }
+                      : { background: C.base, color: '#6b7280', fontFamily: F.cn }
+                  }
                 >
                   {t}
                 </span>
@@ -608,12 +847,25 @@ export default function PresentStyles() {
             </div>
           </div>
           <div className="mb-3 flex items-end gap-3">
-            <p className="text-[30px] font-bold leading-none text-[#111827]">口播</p>
-            <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>
+            <p
+              className="text-[30px] font-bold leading-none"
+              style={{ color: C.ink, fontFamily: F.display }}
+            >
+              口播
+            </p>
+            <span
+              className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
+              style={{ background: `${C.ikb}12`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
               最高热度
             </span>
-            <span className="mb-1 text-[12px] text-[#9ca3af]">当前最主流形式</span>
+            <span
+              className="mb-1 text-[12px]"
+              style={{ color: '#6b7280', fontFamily: F.cn }}
+            >
+              当前最主流形式
+            </span>
           </div>
           {(() => {
             const data = [92, 78, 82, 71, 68, 74, 62, 58];
@@ -634,15 +886,15 @@ export default function PresentStyles() {
               .join(' ');
             const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
             return (
-              <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-hidden={true}>
                 <defs>
-                  <linearGradient id="trendFillPS" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                    <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                  <linearGradient id="ps-trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                    <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                   </linearGradient>
-                  <linearGradient id="trendLinePS" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#002fa7" />
-                    <stop offset="100%" stopColor="#781621" />
+                  <linearGradient id="ps-trendLine" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor={C.ikb} />
+                    <stop offset="100%" stopColor={C.burgundy} />
                   </linearGradient>
                 </defs>
                 {[0, 0.33, 0.66, 1].map((f) => (
@@ -652,21 +904,21 @@ export default function PresentStyles() {
                     x2={W - padR}
                     y1={(padT + innerH * f).toFixed(1)}
                     y2={(padT + innerH * f).toFixed(1)}
-                    stroke="#f1f3f9"
+                    stroke={C.line}
                     strokeWidth="1"
                   />
                 ))}
-                <path d={area} fill="url(#trendFillPS)" />
+                <path d={area} fill="url(#ps-trendFill)" />
                 <path
                   d={line}
                   fill="none"
-                  stroke="url(#trendLinePS)"
+                  stroke="url(#ps-trendLine)"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 {data.map((v, i) => (
-                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" />
+                  <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
                 ))}
                 {data.map((_, i) => (
                   <text
@@ -674,7 +926,7 @@ export default function PresentStyles() {
                     x={x(i).toFixed(1)}
                     y={(padT + innerH + 14).toFixed(1)}
                     textAnchor="middle"
-                    fill="#9ca3af"
+                    fill="#6b7280"
                     fontSize="11"
                   >
                     {labels[i]}
@@ -689,33 +941,55 @@ export default function PresentStyles() {
       {/* ── KPI 卡一排(4 卡) ──────────────────────────────── */}
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 呈现形式总数 · 蓝 · 环形 */}
-        <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: `${C.ikb}28`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">video_library</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>video_library</span>
             </span>
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-              <span className="material-symbols-outlined text-[13px]" aria-hidden="true">trending_up</span>
+            <span
+              className="inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.ikb}12`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>trending_up</span>
               全覆盖
             </span>
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
+              <p
+                className="text-[28px] font-bold leading-none"
+                style={{ color: C.ink, fontFamily: F.display }}
+              >
                 {PRESENT_STYLES.length}
-                <span className="text-[15px] text-[#9ca3af]"> 种</span>
+                <span
+                  className="text-[15px]"
+                  style={{ color: '#6b7280', fontFamily: F.cn }}
+                >
+                  {' '}种
+                </span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">呈现形式</p>
+              <p
+                className="mt-1.5 text-[12px]"
+                style={{ color: '#6b7280', fontFamily: F.cn }}
+              >
+                呈现形式
+              </p>
             </div>
             <div className="h-12 w-12 shrink-0">
-              <svg viewBox="0 0 36 36" className="-rotate-90" aria-hidden="true">
-                <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+              <svg viewBox="0 0 36 36" className="-rotate-90" aria-hidden={true}>
+                <circle cx="18" cy="18" r="15.915" fill="none" stroke={`${C.ikb}20`} strokeWidth="3.5" />
                 <circle
                   cx="18"
                   cy="18"
                   r="15.915"
                   fill="none"
-                  stroke="#002fa7"
+                  stroke={C.ikb}
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   strokeDasharray="100 100"
@@ -725,71 +999,151 @@ export default function PresentStyles() {
           </div>
         </div>
 
-        {/* 覆盖场景 · 勃艮第 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        {/* 覆盖场景 · 玫红 */}
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: `${C.burgundy}28`, background: C.paper }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">category</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.burgundy}10`, color: C.burgundy }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>category</span>
             </span>
-            <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.burgundy}10`, color: C.burgundyText }}
+            >
               多场景
             </span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              6<span className="text-[15px] text-[#9ca3af]"> 类</span>
+            <p
+              className="text-[28px] font-bold leading-none"
+              style={{ color: C.ink, fontFamily: F.display }}
+            >
+              6
+              <span
+                className="text-[15px]"
+                style={{ color: '#6b7280', fontFamily: F.cn }}
+              >
+                {' '}类
+              </span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">覆盖场景</p>
+            <p
+              className="mt-1.5 text-[12px]"
+              style={{ color: '#6b7280', fontFamily: F.cn }}
+            >
+              覆盖场景
+            </p>
           </div>
           <div className="mt-3 flex h-6 items-end gap-1">
             {[70, 90, 60, 85, 75, 95].map((h, i) => (
-              <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+              <div
+                key={i}
+                className="flex-1 rounded-t"
+                style={{ height: `${h}%`, background: `${C.burgundy}70` }}
+              />
             ))}
           </div>
         </div>
 
-        {/* 上手难度 · 暖黄 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        {/* 上手难度 · 紫 */}
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: `${C.accent3}28`, background: C.paper }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#fdf6cc] text-[#8a6a00]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">signal_cellular_alt</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.accent3}10`, color: C.accent3 }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>signal_cellular_alt</span>
             </span>
-            <span className="rounded-full bg-[#fdf6cc] px-2 py-0.5 text-[11px] font-bold text-[#8a6a00]">
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.accent3}10`, color: C.purpleText }}
+            >
               易上手
             </span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              初级<span className="text-[15px] text-[#9ca3af]"> 起</span>
+            <p
+              className="text-[28px] font-bold leading-none"
+              style={{ color: C.ink, fontFamily: F.display }}
+            >
+              初级
+              <span
+                className="text-[15px]"
+                style={{ color: '#6b7280', fontFamily: F.cn }}
+              >
+                {' '}起
+              </span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">上手难度</p>
+            <p
+              className="mt-1.5 text-[12px]"
+              style={{ color: '#6b7280', fontFamily: F.cn }}
+            >
+              上手难度
+            </p>
           </div>
-          <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-            <div className="h-2 w-2/5 rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
+          <div
+            className="mt-3 h-2 w-full rounded-full"
+            style={{ background: `${C.accent3}15` }}
+          >
+            <div
+              className="h-2 w-2/5 rounded-full"
+              style={{ background: `linear-gradient(to right, ${C.accent3}, ${C.ikb})` }}
+            />
           </div>
         </div>
 
         {/* 适用平台 · 蓝 */}
-        <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+        <div
+          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          style={{ borderColor: `${C.ikb}28`, background: C.paper }}
+        >
           <div className="flex items-center justify-between">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">hub</span>
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-lg"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>hub</span>
             </span>
-            <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+            <span
+              className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+              style={{ background: `${C.ikb}10`, color: C.ikb }}
+            >
               全平台
             </span>
           </div>
           <div className="mt-4">
-            <p className="text-[28px] font-bold leading-none text-[#111827]">
-              3<span className="text-[15px] text-[#9ca3af]"> 平台</span>
+            <p
+              className="text-[28px] font-bold leading-none"
+              style={{ color: C.ink, fontFamily: F.display }}
+            >
+              3
+              <span
+                className="text-[15px]"
+                style={{ color: '#6b7280', fontFamily: F.cn }}
+              >
+                {' '}平台
+              </span>
             </p>
-            <p className="mt-1.5 text-[12px] text-[#6b7280]">适用平台</p>
+            <p
+              className="mt-1.5 text-[12px]"
+              style={{ color: '#6b7280', fontFamily: F.cn }}
+            >
+              适用平台
+            </p>
           </div>
           <div className="mt-3 flex flex-wrap gap-1">
             {['抖音', '小红书', '视频号'].map((k) => (
               <span
                 key={k}
-                className="rounded bg-[#eff4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#002fa7]"
+                className="rounded px-1.5 py-0.5 text-[10px] font-medium"
+                style={{ background: `${C.ikb}10`, color: C.ikb, fontFamily: F.cn }}
               >
                 {k}
               </span>
@@ -802,9 +1156,10 @@ export default function PresentStyles() {
       {isPending && (
         <div
           data-testid="ps-loading-banner"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-[#dbe2ff] bg-[#eff4ff] px-5 py-4 text-[14px] text-[#002fa7]"
+          className="mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 text-[14px]"
+          style={{ borderColor: `${C.ikb}30`, background: `${C.ikb}08`, color: C.ikb }}
         >
-          <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden={true}>
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
@@ -816,14 +1171,16 @@ export default function PresentStyles() {
       {isError && (
         <div
           data-testid="ps-error-notice"
-          className="mb-6 flex items-center gap-3 rounded-xl border border-[#f5d0d4] bg-[#fef5f5] px-5 py-4 text-[14px] text-[#781621]"
+          className="mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 text-[14px]"
+          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">error</span>
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>error</span>
           推荐失败，请检查网络后重试。
           <button
             type="button"
             onClick={handleRecommend}
-            className="ml-auto rounded-lg bg-[#781621] px-3 py-1 text-[12px] font-bold text-white hover:bg-[#5a1018]"
+            className="ikb-focusring ml-auto rounded-lg px-3 py-1 text-[12px] font-bold text-white transition-opacity hover:opacity-90"
+            style={{ background: C.burgundy }}
           >
             重试
           </button>
@@ -853,17 +1210,30 @@ export default function PresentStyles() {
       {/* ── 全部参考目录 section header ─────────────────── */}
       <div className="mb-6 flex flex-col gap-1.5" data-testid="ps-catalog-header">
         <div className="flex items-center gap-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">auto_stories</span>
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-lg"
+            style={{ background: `${C.ikb}10`, color: C.ikb }}
+          >
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>auto_stories</span>
           </span>
-          <h2 className="text-[20px] font-extrabold tracking-tight text-[#111827]" data-testid="ps-catalog-title">
+          <h2
+            className="text-[20px] font-extrabold tracking-tight"
+            style={{ color: C.ink, fontFamily: F.cn }}
+            data-testid="ps-catalog-title"
+          >
             全部呈现形式 · 参考目录
           </h2>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#002fa7]/10 px-3 py-1 text-[12px] font-semibold text-[#002fa7]">
+          <span
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+            style={{ background: `${C.ikb}10`, color: C.ikb }}
+          >
             共 {PRESENT_STYLES.length} 种
           </span>
         </div>
-        <p className="pl-11 text-[14px] leading-relaxed text-[#6b7280]">
+        <p
+          className="pl-11 text-[14px] leading-relaxed"
+          style={{ color: '#6b7280', fontFamily: F.cn }}
+        >
           以下是所有支持的呈现形式，AI 已从中为你个性化推荐——填写左侧文案后点击「{PS_CTA}」即可查看推荐结果。
         </p>
       </div>
@@ -878,14 +1248,18 @@ export default function PresentStyles() {
             <div
               key={style.id}
               data-testid={`style-card-${style.id}`}
-              className="flex flex-col rounded-xl border border-[#e5e7eb] bg-white pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="ikb-card flex flex-col rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              style={{ borderColor: C.line, background: C.paper }}
             >
               {/* Icon tile */}
-              <div className={`flex h-14 w-full items-center gap-3 rounded-t-xl px-5 ${accent.tileBg}`}>
-                <span className={`material-symbols-outlined text-[26px] ${accent.tileText}`} aria-hidden="true">
+              <div
+                className="flex h-14 w-full items-center gap-3 rounded-t-xl px-5"
+                style={{ background: accent.rawColor }}
+              >
+                <span className="material-symbols-outlined text-[26px] text-white" aria-hidden={true}>
                   {icon}
                 </span>
-                <span className={`text-[16px] font-extrabold tracking-tight ${accent.tileText}`}>
+                <span className="text-[16px] font-extrabold tracking-tight text-white">
                   {style.label}
                 </span>
               </div>
@@ -893,33 +1267,57 @@ export default function PresentStyles() {
               {/* Card body */}
               <div className="flex flex-1 flex-col gap-4 p-5">
                 {/* description */}
-                <p className="text-[14px] leading-relaxed text-[#444653]">{style.description}</p>
+                <p
+                  className="text-[14px] leading-relaxed"
+                  style={{ color: '#444653', fontFamily: F.cn }}
+                >
+                  {style.description}
+                </p>
 
                 {/* tips block */}
                 <div
-                  className={`flex items-start gap-2 rounded-lg border p-3 ${accent.tipsBg} ${accent.tipsBorder}`}
+                  className="flex items-start gap-2 rounded-lg border p-3"
+                  style={{
+                    background: accent.rawTipsBg,
+                    borderColor: accent.rawTipsBorder,
+                  }}
                 >
                   <span
-                    className={`material-symbols-outlined mt-0.5 shrink-0 text-[18px] ${accent.tipsText}`}
-                    aria-hidden="true"
+                    className="material-symbols-outlined mt-0.5 shrink-0 text-[18px]"
+                    style={{ color: accent.rawColor }}
+                    aria-hidden={true}
                   >
                     lightbulb
                   </span>
                   <div>
-                    <span className={`mr-1 text-[12px] font-extrabold ${accent.tipsText}`}>要点</span>
-                    <span className={`text-[13px] leading-relaxed ${accent.tipsText}`}>{style.tips}</span>
+                    <span
+                      className="mr-1 text-[12px] font-extrabold"
+                      style={{ color: accent.rawColor, fontFamily: F.cn }}
+                    >
+                      要点
+                    </span>
+                    <span
+                      className="text-[13px] leading-relaxed"
+                      style={{ color: accent.rawColor, fontFamily: F.cn }}
+                    >
+                      {style.tips}
+                    </span>
                   </div>
                 </div>
 
                 {/* 场景行 */}
                 <div className="mt-auto flex items-center gap-1.5 pt-1">
                   <span
-                    className={`material-symbols-outlined text-[16px] ${accent.badgeText}`}
-                    aria-hidden="true"
+                    className="material-symbols-outlined text-[16px]"
+                    style={{ color: accent.rawColor }}
+                    aria-hidden={true}
                   >
                     visibility
                   </span>
-                  <span className={`text-[12px] font-semibold ${accent.badgeText}`}>
+                  <span
+                    className="text-[12px] font-semibold"
+                    style={{ color: accent.rawColor, fontFamily: F.cn }}
+                  >
                     {SCENE_LABEL}：{SCENE_VALUE_DEFAULT}
                   </span>
                 </div>
@@ -928,6 +1326,6 @@ export default function PresentStyles() {
           );
         })}
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
