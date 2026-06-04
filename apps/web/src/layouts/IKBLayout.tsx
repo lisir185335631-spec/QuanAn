@@ -158,8 +158,8 @@ function HeaderRight() {
       <AccountSwitcher />
       <span style={{ width: 1, height: 22, background: C.line }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-        <span style={{ width: 26, height: 26, borderRadius: '50%', background: C.grad, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.display, fontSize: 13, lineHeight: 1 }}>{user.name.slice(0, 1)}</span>
-        <span style={{ fontFamily: F.cn, fontSize: 13, fontWeight: 500, color: C.ink }}>{user.name}</span>
+        <span style={{ width: 26, height: 26, borderRadius: '50%', background: C.grad, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: F.display, fontSize: 13, lineHeight: 1 }}>{(user.name ?? '').slice(0, 1)}</span>
+        <span style={{ fontFamily: F.cn, fontSize: 13, fontWeight: 500, color: C.ink }}>{user.name ?? ''}</span>
       </div>
       <button onClick={logout} aria-label="退出登录" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 30, width: 30, color: '#9095a5', background: 'transparent', border: 'none', cursor: 'pointer' }}>
         <LogOut size={15} />
