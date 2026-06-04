@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
+import '@/styles/ikb-hero.css';
 
 const NOT_FOUND_CODE = '404' as const;
 const NOT_FOUND_TITLE = '页面未找到' as const;
@@ -10,31 +12,47 @@ const NOT_FOUND_CTA = '返回首页' as const;
 
 export default function NotFound() {
   return (
-    <PioneerLayout>
+    <IKBLayout>
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center text-center">
-        <div className="pw-shadow-soft flex w-full flex-col items-center rounded-3xl border border-[#e5e7eb] bg-white px-8 py-20">
-          <span className="mb-8 flex h-24 w-24 items-center justify-center rounded-full border-2 border-[#002fa7]/30 bg-[#002fa7]/[0.06]">
-            <span className="material-symbols-outlined text-[44px] text-[#002fa7]" aria-hidden="true">
+        <div
+          className="flex w-full flex-col items-center px-8 py-20"
+          style={{ background: `linear-gradient(135deg, ${C.paper}, ${C.base})`, border: `1px solid ${C.line}` }}
+        >
+          <span
+            className="mb-8 flex h-24 w-24 items-center justify-center rounded-full"
+            style={{ border: `2px solid ${C.ikb}33`, background: `${C.ikb}0f` }}
+          >
+            <span className="material-symbols-outlined text-[44px]" style={{ color: C.ikb }} aria-hidden={true}>
               error_outline
             </span>
           </span>
-          <h1 className="mb-3 bg-gradient-to-r from-[#002fa7] to-[#781621] bg-clip-text text-[96px] font-black leading-none tracking-tighter text-transparent">
+          <h1
+            className="ikb-gradtext mb-3 text-[96px] font-black leading-none tracking-tighter"
+            style={{ fontFamily: F.display }}
+          >
             {NOT_FOUND_CODE}
           </h1>
-          <p className="mb-5 text-[22px] font-bold text-[#111827]">{NOT_FOUND_TITLE}</p>
-          <p className="text-[15px] text-[#6b7280]">{NOT_FOUND_DESC_1}</p>
-          <p className="mb-10 text-[15px] text-[#6b7280]">{NOT_FOUND_DESC_2}</p>
+          <p className="mb-5 text-[22px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
+            {NOT_FOUND_TITLE}
+          </p>
+          <p className="text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+            {NOT_FOUND_DESC_1}
+          </p>
+          <p className="mb-10 text-[15px]" style={{ color: '#6b7280', fontFamily: F.cn }}>
+            {NOT_FOUND_DESC_2}
+          </p>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#002fa7] px-8 py-3.5 text-[15px] font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#001e73] hover:shadow-md"
+            className="ikb-gradbtn ikb-focusring inline-flex items-center gap-2 px-8 py-3.5 text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
+            style={{ fontFamily: F.cn }}
           >
-            <span className="material-symbols-outlined text-[20px]" aria-hidden="true">
+            <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>
               home
             </span>
             {NOT_FOUND_CTA}
           </Link>
         </div>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
