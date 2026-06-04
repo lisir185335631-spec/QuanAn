@@ -1,29 +1,21 @@
 /**
- * /dashboard · 系统控制台 — 先锋白·工业精密版(Stitch 设计基准 · 1:1 还原)
+ * /dashboard · 系统控制台 — 红蓝紫渐变 IKB 体系
  *
- * 部署进度斜条纹 + 3 实色 metric 卡(蓝/黄/红)+ 活动节点流数据表。
- * 统一走 PioneerLayout 外壳。CTA「控制台」入口指向此路由。
+ * 部署进度斜条纹 + 3 实色 metric 卡(蓝/玫红/紫)+ 活动节点流数据表。
+ * 统一走 IKBLayout 外壳。CTA「控制台」入口指向此路由。
  */
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import '@/styles/ikb-hero.css';
+
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 
 type Tone = 'green' | 'yellow' | 'red';
 
-const STATUS_TONE: Record<Tone, string> = {
-  green: 'bg-[#d1fae5] text-[#065f46] border-[#6ee7b7]',
-  yellow: 'bg-[#FEFCE0] text-[#8A6A00] border-[#F3E08A]',
-  red: 'bg-[#fef2f2] text-[#781621] border-[#fca5a5]',
-};
-const DOT_TONE: Record<Tone, string> = {
-  green: 'bg-[#10b981]',
-  yellow: 'bg-[#F6D300]',
-  red: 'bg-[#781621]',
-};
-
 // icon chip 三色轮转
 const ICON_CHIP_COLORS = [
-  { bg: 'bg-[#002fa7]/10', text: 'text-[#002fa7]' },
-  { bg: 'bg-[#781621]/10', text: 'text-[#781621]' },
-  { bg: 'bg-[#F6D300]/20', text: 'text-[#8A6A00]' },
+  { bg: `${C.ikb}1a`, text: C.ikb },
+  { bg: `${C.burgundy}1a`, text: C.burgundy },
+  { bg: `${C.accent3}1a`, text: C.accent3 },
 ];
 
 const TABLE_ROWS: {
@@ -42,12 +34,12 @@ const TABLE_ROWS: {
 
 // ── 系统健康度雷达维度 ─────────────────────────────────────────────────────
 const DB_RADAR_DIMS = [
-  { label: '算力', value: 86, color: '#002fa7' },
-  { label: '稳定性', value: 91, color: '#781621' },
-  { label: '响应速度', value: 78, color: '#F6D300' },
-  { label: '任务吞吐', value: 83, color: '#002fa7' },
-  { label: '在线率', value: 95, color: '#781621' },
-  { label: '资源余量', value: 72, color: '#F6D300' },
+  { label: '算力', value: 86, color: C.ikb },
+  { label: '稳定性', value: 91, color: C.burgundy },
+  { label: '响应速度', value: 78, color: C.accent3 },
+  { label: '任务吞吐', value: 83, color: C.ikb },
+  { label: '在线率', value: 95, color: C.burgundy },
+  { label: '资源余量', value: 72, color: C.accent3 },
 ];
 
 // ── 7 日吞吐趋势数据 ────────────────────────────────────────────────────────
@@ -56,68 +48,132 @@ const DB_TREND_LABELS = ['周一', '周二', '周三', '周四', '周五', '周�
 
 // ── 部署阶段节点 ────────────────────────────────────────────────────────────
 const DEPLOY_PHASES = [
-  { label: '初始化', pct: 16.67, color: '#002fa7', done: true },
-  { label: '编译', pct: 16.67, color: '#002fa7', done: true },
-  { label: '集成', pct: 16.67, color: '#002fa7', done: true },
-  { label: '测试', pct: 16.66, color: '#002fa7', done: true },
-  { label: '活跃阶段', pct: 11.33, color: '#781621', done: false },
-  { label: '完成', pct: 22.0, color: '#e5e7eb', done: false },
+  { label: '初始化', pct: 16.67, color: C.ikb, done: true },
+  { label: '编译', pct: 16.67, color: C.ikb, done: true },
+  { label: '集成', pct: 16.67, color: C.ikb, done: true },
+  { label: '测试', pct: 16.66, color: C.ikb, done: true },
+  { label: '活跃阶段', pct: 11.33, color: C.burgundy, done: false },
+  { label: '完成', pct: 22.0, color: C.line, done: false },
 ];
 
 export default function Dashboard() {
   return (
-    <PioneerLayout>
-      <div className="mx-auto max-w-6xl space-y-8">
+    <IKBLayout>
+      <div style={{ maxWidth: 1152, margin: '0 auto' }}>
         {/* ── Header ─────────────────────────────────────────── */}
-        <header className="mb-4 flex flex-row items-center justify-between gap-8">
-          <div className="shrink-0">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+        <header style={{ marginBottom: 32, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 32 }}>
+          <div style={{ flexShrink: 0 }}>
+            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span
+                style={{
+                  borderRadius: 8,
+                  border: `1px solid ${C.line}`,
+                  background: C.base,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: C.ink,
+                  fontFamily: F.mono,
+                }}
+              >
                 系统
               </span>
-              <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+              <span
+                style={{
+                  borderRadius: 8,
+                  border: `1px solid ${C.ikb}50`,
+                  background: `${C.ikb}12`,
+                  padding: '4px 12px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: C.purpleText,
+                  fontFamily: F.mono,
+                }}
+              >
                 运行中
               </span>
             </div>
-            <h1 className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+            <h1
+              className="ikb-gradtext"
+              style={{ whiteSpace: 'nowrap', fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', fontFamily: F.display, margin: 0 }}
+            >
               系统控制台
             </h1>
-            <p className="mt-2 whitespace-nowrap text-[16px] text-[#444653]">核心数据与运行状态概览</p>
+            <p style={{ marginTop: 8, fontSize: 16, lineHeight: 1.6, color: '#5A6173', fontFamily: F.cn }}>核心数据与运行状态概览</p>
           </div>
-          <div className="flex shrink-0 items-center gap-2 rounded-full border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-medium shadow-sm">
-            <span className="block h-2.5 w-2.5 animate-pulse rounded-full bg-[#10b981]" />
+          <div
+            style={{
+              flexShrink: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              borderRadius: 9999,
+              border: `1px solid ${C.ikb}28`,
+              background: C.paper,
+              padding: '8px 16px',
+              fontSize: 14,
+              fontWeight: 500,
+              color: C.ink,
+              fontFamily: F.cn,
+            }}
+          >
+            <span
+              aria-hidden={true}
+              className="ikb-pulse"
+              style={{ display: 'inline-block', height: 10, width: 10, borderRadius: '50%', background: C.ikb }}
+            />
             系统在线
           </div>
         </header>
 
         {/* ── 数据概览 KPI 卡一排 ───────────────────────────────── */}
-        <div className="grid grid-cols-4 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 32 }}>
           {/* 市场洞察 · 环形进度 · 蓝 */}
-          <div className="rounded-xl border border-[#e0e7ff] bg-gradient-to-br from-white to-[#f3f6ff] p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-            <div className="flex items-center justify-between">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]">insights</span>
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.ikb}28`,
+              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>insights</span>
               </span>
-              <span className="inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[11px] font-bold text-[#10b981]">
-                <span className="material-symbols-outlined text-[13px]">trending_up</span>+12.4%
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 13 }}>trending_up</span>+12.4%
               </span>
             </div>
-            <div className="mt-4 flex items-end justify-between">
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <p className="text-[28px] font-bold leading-none text-[#111827]">
-                  8.4M<span className="text-[15px] text-[#9ca3af]"> TB</span>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                  8.4M<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}> TB</span>
                 </p>
-                <p className="mt-1.5 text-[12px] text-[#6b7280]">市场洞察</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>市场洞察</p>
               </div>
-              <div className="h-12 w-12 shrink-0">
-                <svg viewBox="0 0 36 36" className="-rotate-90">
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                  <defs>
+                    <linearGradient id="db-ringGrad1" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.accent3} />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.base} strokeWidth="3.5" />
                   <circle
                     cx="18"
                     cy="18"
                     r="15.915"
                     fill="none"
-                    stroke="#002fa7"
+                    stroke="url(#db-ringGrad1)"
                     strokeWidth="3.5"
                     strokeLinecap="round"
                     strokeDasharray="78 100"
@@ -127,70 +183,113 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* 收益模型 · 迷你柱 · 勃艮第红 */}
-          <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-            <div className="flex items-center justify-between">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                <span className="material-symbols-outlined text-[20px]">monetization_on</span>
+          {/* 收益模型 · 迷你柱 · 玫红 */}
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.burgundy}28`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}12`; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>monetization_on</span>
               </span>
-              <span className="rounded-full bg-[#781621]/10 px-2 py-0.5 text-[11px] font-bold text-[#781621]">Q3预期</span>
+              <span style={{ borderRadius: 9999, background: `${C.burgundy}10`, border: `1px solid ${C.burgundy}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.burgundyText, fontFamily: F.mono }}>Q3预期</span>
             </div>
-            <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
-                ¥2.1B<span className="text-[15px] text-[#9ca3af]"> CNY</span>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                ¥2.1B<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}> CNY</span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">收益模型</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>收益模型</p>
             </div>
-            <div className="mt-3 flex h-6 items-end gap-1">
+            <div style={{ marginTop: 12, display: 'flex', height: 24, alignItems: 'flex-end', gap: 4 }}>
               {[58, 84, 70, 96, 78].map((h, i) => (
-                <div key={i} className="flex-1 rounded-t bg-[#781621]/70" style={{ height: `${h}%` }} />
+                <div key={i} style={{ flex: 1, borderRadius: '2px 2px 0 0', background: C.burgundy, opacity: 0.7, height: `${h}%` }} />
               ))}
             </div>
           </div>
 
-          {/* 内容生成 · 进度条 · 黄 */}
-          <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-            <div className="flex items-center justify-between">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8A6A00]">
-                <span className="material-symbols-outlined text-[20px]">bolt</span>
+          {/* 内容生成 · 进度条 · 紫 */}
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.accent3}28`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}12`; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}10`, color: C.accent3 }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>bolt</span>
               </span>
-              <span className="rounded-full bg-[#FEFCE0] px-2 py-0.5 text-[11px] font-bold text-[#8A6A00]">高速</span>
+              <span style={{ borderRadius: 9999, background: `${C.accent3}12`, border: `1px solid ${C.accent3}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.purpleText, fontFamily: F.mono }}>高速</span>
             </div>
-            <div className="mt-4">
-              <p className="text-[28px] font-bold leading-none text-[#111827]">
-                45K<span className="text-[15px] text-[#9ca3af]"> 节点/秒</span>
+            <div style={{ marginTop: 16 }}>
+              <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                45K<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}> 节点/秒</span>
               </p>
-              <p className="mt-1.5 text-[12px] text-[#6b7280]">内容生成</p>
+              <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>内容生成</p>
             </div>
-            <div className="mt-3 h-2 w-full rounded-full bg-[#fdf6cc]">
-              <div className="h-2 w-[84%] rounded-full bg-gradient-to-r from-[#F6D300] to-[#ffe45c]" />
+            <div style={{ marginTop: 12, height: 8, width: '100%', borderRadius: 9999, background: `${C.accent3}14` }}>
+              <div
+                style={{
+                  height: 8,
+                  borderRadius: 9999,
+                  background: `linear-gradient(90deg, ${C.ikb}, ${C.accent3})`,
+                  width: '84%',
+                }}
+              />
             </div>
           </div>
 
           {/* 部署进度 · 环形 + 百分比 · 蓝 */}
-          <div className="rounded-xl border border-[#e5e7eb] bg-white p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-            <div className="flex items-center justify-between">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.ikb}28`,
+              background: C.paper,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>rocket_launch</span>
               </span>
-              <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">进行中</span>
+              <span style={{ borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 11, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>进行中</span>
             </div>
-            <div className="mt-4 flex items-end justify-between">
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
               <div>
-                <p className="text-[28px] font-bold leading-none text-[#111827]">
-                  78<span className="text-[15px] text-[#9ca3af]">%</span>
+                <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1, color: C.ink, fontFamily: F.display, margin: 0 }}>
+                  78<span style={{ fontSize: 15, color: '#6b7280', fontFamily: F.cn }}>%</span>
                 </p>
-                <p className="mt-1.5 text-[12px] text-[#6b7280]">整体部署进度</p>
+                <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>整体部署进度</p>
               </div>
-              <div className="h-12 w-12 shrink-0">
-                <svg viewBox="0 0 36 36" className="-rotate-90">
-                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#eef2ff" strokeWidth="3.5" />
+              <div style={{ height: 48, width: 48, flexShrink: 0 }}>
+                <svg viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                  <defs>
+                    <linearGradient id="db-ringGrad2" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke={C.base} strokeWidth="3.5" />
                   <circle
                     cx="18"
                     cy="18"
                     r="15.915"
                     fill="none"
-                    stroke="#002fa7"
+                    stroke="url(#db-ringGrad2)"
                     strokeWidth="3.5"
                     strokeLinecap="round"
                     strokeDasharray="78 100"
@@ -202,36 +301,85 @@ export default function Dashboard() {
         </div>
 
         {/* ── 部署进度详情 ──────────────────────────────────────── */}
-        <section className="pw-shadow-soft rounded-xl border border-[#e5e7eb] bg-white p-8">
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="flex items-center gap-1.5 text-[18px] font-extrabold text-[#111827] before:h-3.5 before:w-1 before:rounded-full before:bg-gradient-to-b before:from-[#002fa7] before:to-[#781621] before:content-['']">
+        <section
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.line}`,
+            background: C.paper,
+            padding: 32,
+            marginBottom: 32,
+          }}
+        >
+          <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h3
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 18,
+                fontWeight: 800,
+                color: C.ink,
+                margin: 0,
+                fontFamily: F.cn,
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  height: 14,
+                  width: 4,
+                  borderRadius: 9999,
+                  background: C.grad,
+                  flexShrink: 0,
+                }}
+              />
               部署进度
             </h3>
-            <div className="flex items-end gap-2">
-              <span className="text-[30px] font-bold leading-none text-[#002fa7]">78</span>
-              <span className="mb-1 text-[15px] text-[#9ca3af]">%</span>
-              <span className="mb-1 ml-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-                <span className="material-symbols-outlined text-[14px]">trending_up</span>+5%
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+              <span style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display }}>78</span>
+              <span style={{ marginBottom: 4, fontSize: 15, color: '#6b7280', fontFamily: F.cn }}>%</span>
+              <span style={{ marginBottom: 4, marginLeft: 4, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+5%
               </span>
             </div>
           </div>
           {/* 品牌色进度条 */}
-          <div className="mb-4 h-4 w-full overflow-hidden rounded-full bg-[#f3f4f6]">
+          <div style={{ marginBottom: 16, height: 16, width: '100%', overflow: 'hidden', borderRadius: 9999, background: C.base }}>
             <div
-              className="h-4 rounded-full bg-gradient-to-r from-[#002fa7] to-[#781621] transition-all duration-700"
-              style={{ width: '78%' }}
+              style={{
+                height: 16,
+                borderRadius: 9999,
+                background: C.grad,
+                width: '78%',
+                transition: 'width 0.7s ease',
+              }}
             />
           </div>
           {/* 阶段节点 */}
-          <div className="flex items-start gap-0">
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
             {DEPLOY_PHASES.map((phase, i) => (
-              <div key={phase.label} className="flex flex-col items-center" style={{ width: `${phase.pct}%` }}>
+              <div key={phase.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: `${phase.pct}%` }}>
                 <div
-                  className={`mb-1.5 h-2 w-full rounded-sm ${i < DEPLOY_PHASES.length - 2 ? 'opacity-100' : 'opacity-40'}`}
-                  style={{ backgroundColor: phase.color }}
+                  style={{
+                    marginBottom: 6,
+                    height: 8,
+                    width: '100%',
+                    borderRadius: 2,
+                    backgroundColor: phase.color,
+                    opacity: i < DEPLOY_PHASES.length - 2 ? 1 : 0.4,
+                  }}
                 />
                 <span
-                  className={`text-[10px] font-semibold ${phase.done ? 'text-[#002fa7]' : i === DEPLOY_PHASES.length - 2 ? 'font-bold text-[#781621]' : 'text-[#9ca3af]'}`}
+                  style={{
+                    fontSize: 10,
+                    fontWeight: phase.done ? 600 : i === DEPLOY_PHASES.length - 2 ? 700 : 400,
+                    color: phase.done
+                      ? C.ikb
+                      : i === DEPLOY_PHASES.length - 2
+                        ? C.burgundyText
+                        : '#6b7280',
+                    fontFamily: F.mono,
+                  }}
                 >
                   {phase.label}
                 </span>
@@ -241,31 +389,38 @@ export default function Dashboard() {
         </section>
 
         {/* ── 数据洞察 band (雷达 + 趋势) ──────────────────────── */}
-        <div className="mb-1 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]">insights</span>
-          <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-          <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+        <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20, color: C.ikb }}>insights</span>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>数据洞察</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· AI 综合评估 · 实时测算</span>
+          <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: `${C.ikb}10`, border: `1px solid ${C.ikb}28`, padding: '4px 12px', fontSize: 12, fontWeight: 600, color: C.ikb, fontFamily: F.mono }}>
+            <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: C.ikb, display: 'inline-block' }} />
             模型已就绪
           </span>
         </div>
-        <div className="grid grid-cols-12 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32 }}>
           {/* 系统健康度雷达 · col-span-5 */}
-          <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
-            <div className="mb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                  <span className="material-symbols-outlined text-[20px]">radar</span>
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
+                  <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>radar</span>
                 </span>
                 <div>
-                  <h3 className="text-[14px] font-bold text-[#111827]">系统健康度雷达</h3>
-                  <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>系统健康度雷达</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>六维模型评估</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[26px] font-bold leading-none text-[#002fa7]">84</p>
-                <p className="text-[10px] text-[#9ca3af]">综合分</p>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ikb, fontFamily: F.display, margin: 0 }}>84</p>
+                <p style={{ fontSize: 10, color: '#6b7280', margin: 0, fontFamily: F.cn }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -278,11 +433,11 @@ export default function Dashboard() {
               const poly = (r: number) => dims.map((_, i) => pt(i, r).map((n) => n.toFixed(1)).join(',')).join(' ');
               const dataPoly = dims.map((d, i) => pt(i, R * (d.value / 100)).map((n) => n.toFixed(1)).join(',')).join(' ');
               return (
-                <svg viewBox="0 0 260 244" className="w-full">
+                <svg viewBox="0 0 260 244" style={{ width: '100%' }}>
                   <defs>
-                    <linearGradient id="radarFillDB" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                      <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                    <linearGradient id="db-radarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                     </linearGradient>
                   </defs>
                   {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -292,7 +447,7 @@ export default function Dashboard() {
                     const [x, y] = pt(i, R);
                     return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
                   })}
-                  <polygon points={dataPoly} fill="url(#radarFillDB)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                  <polygon points={dataPoly} fill="url(#db-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                   {dims.map((d, i) => {
                     const [x, y] = pt(i, R * (d.value / 100));
                     return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -308,46 +463,61 @@ export default function Dashboard() {
                 </svg>
               );
             })()}
-            <div className="mt-2 grid grid-cols-3 gap-y-2">
+            <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px 0' }}>
               {DB_RADAR_DIMS.map((d) => (
-                <div key={d.label} className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                  <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                  <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ height: 8, width: 8, borderRadius: '50%', background: d.color, flexShrink: 0, display: 'inline-block' }} />
+                  <span style={{ fontSize: 11, color: '#6b7280', fontFamily: F.cn }}>{d.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.ink, fontFamily: F.mono }}>{d.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 7 日吞吐趋势 · col-span-7 */}
-          <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
-            <div className="mb-4 flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                  <span className="material-symbols-outlined text-[20px]">show_chart</span>
+          <div
+            style={{
+              borderRadius: 12,
+              border: `1px solid ${C.line}`,
+              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>
+                  <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 20 }}>show_chart</span>
                 </span>
                 <div>
-                  <h3 className="text-[14px] font-bold text-[#111827]">7 日吞吐趋势</h3>
-                  <p className="text-[11px] text-[#9ca3af]">按当前系统节点测算</p>
+                  <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>7 日吞吐趋势</h3>
+                  <p style={{ fontSize: 11, color: '#6b7280', margin: 0, fontFamily: F.cn }}>按当前系统节点测算</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 {['吞吐', '延迟', '在线率'].map((t, i) => (
                   <span
                     key={t}
-                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'}`}
+                    style={{
+                      borderRadius: 6,
+                      padding: '4px 10px',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      background: i === 0 ? C.ikb : C.base,
+                      color: i === 0 ? '#fff' : '#6b7280',
+                      fontFamily: F.mono,
+                    }}
                   >
                     {t}
                   </span>
                 ))}
               </div>
             </div>
-            <div className="mb-3 flex items-end gap-3">
-              <p className="text-[30px] font-bold leading-none text-[#111827]">92K</p>
-              <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-                <span className="material-symbols-outlined text-[14px]">trending_up</span>+142%
+            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+              <p style={{ fontSize: 30, fontWeight: 700, lineHeight: 1, color: C.ink, margin: 0, fontFamily: F.display }}>92K</p>
+              <span style={{ marginBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 9999, background: `${C.ikb}12`, border: `1px solid ${C.ikb}28`, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: C.ikb, fontFamily: F.mono }}>
+                <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 14 }}>trending_up</span>+142%
               </span>
-              <span className="mb-1 text-[12px] text-[#9ca3af]">节点/秒峰值</span>
+              <span style={{ marginBottom: 4, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>节点/秒峰值</span>
             </div>
             {(() => {
               const data = DB_TREND_DATA;
@@ -365,15 +535,15 @@ export default function Dashboard() {
               const line = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
               const area = `${line} L ${x(data.length - 1).toFixed(1)} ${(padT + innerH).toFixed(1)} L ${x(0).toFixed(1)} ${(padT + innerH).toFixed(1)} Z`;
               return (
-                <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+                <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%' }}>
                   <defs>
-                    <linearGradient id="trendFillDB" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                      <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                    <linearGradient id="db-trendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                     </linearGradient>
-                    <linearGradient id="trendLineDB" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#002fa7" />
-                      <stop offset="100%" stopColor="#781621" />
+                    <linearGradient id="db-trendLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
                     </linearGradient>
                   </defs>
                   {[0, 0.33, 0.66, 1].map((f) => (
@@ -387,70 +557,151 @@ export default function Dashboard() {
                       strokeWidth="1"
                     />
                   ))}
-                  <path d={area} fill="url(#trendFillDB)" />
-                  <path d={line} fill="none" stroke="url(#trendLineDB)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={area} fill="url(#db-trendFill)" />
+                  <path d={line} fill="none" stroke="url(#db-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                   {data.map((v, i) => (
-                    <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" />
+                    <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" />
                   ))}
                 </svg>
               );
             })()}
-            <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', paddingLeft: 4, paddingRight: 4 }}>
               {DB_TREND_LABELS.map((m) => (
-                <span key={m}>{m}</span>
+                <span key={m} style={{ fontSize: 10, color: '#6b7280', fontFamily: F.mono }}>{m}</span>
               ))}
             </div>
           </div>
         </div>
 
         {/* ── 活动节点流 ─────────────────────────────────────── */}
-        <section className="pw-shadow-soft overflow-hidden rounded-xl border border-[#e5e7eb] bg-white">
-          <div className="flex items-center justify-between border-b border-[#e5e7eb] bg-gradient-to-r from-[#002fa7] to-[#001e73] px-6 py-4 text-white">
-            <h3 className="flex items-center gap-1.5 text-[18px] font-extrabold before:h-3.5 before:w-1 before:rounded-full before:bg-[#F6D300] before:content-['']">
+        <section
+          style={{
+            overflow: 'hidden',
+            borderRadius: 12,
+            border: `1px solid ${C.line}`,
+            background: C.paper,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: `1px solid ${C.line}`,
+              background: C.grad,
+              padding: '16px 24px',
+              color: '#fff',
+            }}
+          >
+            <h3
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 18,
+                fontWeight: 800,
+                margin: 0,
+                fontFamily: F.cn,
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  height: 14,
+                  width: 4,
+                  borderRadius: 9999,
+                  background: 'rgba(255,255,255,0.8)',
+                  flexShrink: 0,
+                }}
+              />
               活动节点流
             </h3>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[12px] font-semibold text-white">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#F6D300]" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, borderRadius: 9999, background: 'rgba(255,255,255,0.2)', padding: '4px 12px', fontSize: 12, fontWeight: 600, color: '#fff', fontFamily: F.mono }}>
+                <span aria-hidden={true} className="ikb-pulse" style={{ height: 6, width: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'inline-block' }} />
                 实时监控
               </span>
-              <span className="material-symbols-outlined text-white/80">sort</span>
+              <span aria-hidden={true} className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.8)' }}>sort</span>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-[#e5e7eb] bg-[#f8faff] font-medium text-[#6b7280]">
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', textAlign: 'left', fontSize: 14, borderCollapse: 'collapse' }}>
+              <thead style={{ borderBottom: `1px solid ${C.line}`, background: C.base }}>
                 <tr>
-                  <th className="px-6 py-4 text-[12px] font-bold uppercase tracking-wider">标识符</th>
-                  <th className="px-6 py-4 text-[12px] font-bold uppercase tracking-wider">来源</th>
-                  <th className="px-6 py-4 text-[12px] font-bold uppercase tracking-wider">状态</th>
-                  <th className="px-6 py-4 text-right text-[12px] font-bold uppercase tracking-wider">延迟</th>
+                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>标识符</th>
+                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>来源</th>
+                  <th style={{ padding: '16px 24px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>状态</th>
+                  <th style={{ padding: '16px 24px', textAlign: 'right', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', fontFamily: F.mono }}>延迟</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f3f4f6]">
+              <tbody>
                 {TABLE_ROWS.map((r) => {
                   const chip = ICON_CHIP_COLORS[r.chipIdx % ICON_CHIP_COLORS.length] ?? ICON_CHIP_COLORS[0]!;
+                  // Status badge & latency badge styling
+                  const statusStyle =
+                    r.tone === 'green'
+                      ? { background: `${C.ikb}0d`, color: C.ikb, borderColor: `${C.ikb}30` }
+                      : r.tone === 'yellow'
+                        ? { background: '#FEFCE0', color: '#8A6A00', borderColor: '#F3E08A' }
+                        : { background: '#fef2f2', color: C.burgundyText, borderColor: '#fca5a5' };
+                  const dotColor =
+                    r.tone === 'green' ? C.ikb : r.tone === 'yellow' ? '#F3C200' : C.burgundy;
+                  const latencyStyle =
+                    r.tone === 'green'
+                      ? { background: `${C.ikb}0d`, color: C.ikb }
+                      : r.tone === 'yellow'
+                        ? { background: '#FEFCE0', color: '#8A6A00' }
+                        : { background: '#fef2f2', color: C.burgundyText };
                   return (
-                    <tr key={r.id} className="transition-colors hover:bg-[#f8faff]">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${chip.bg} ${chip.text}`}>
-                            <span className="material-symbols-outlined text-[15px]">{r.icon}</span>
+                    <tr
+                      key={r.id}
+                      style={{ borderBottom: `1px solid ${C.base}`, transition: 'background 0.15s' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = C.base; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = ''; }}
+                    >
+                      <td style={{ padding: '16px 24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span
+                            style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: chip.bg, color: chip.text }}
+                          >
+                            <span aria-hidden={true} className="material-symbols-outlined" style={{ fontSize: 15 }}>{r.icon}</span>
                           </span>
-                          <span className="font-mono text-[#4b5563]">{r.id}</span>
+                          <span style={{ fontFamily: F.mono, fontSize: 13, color: '#4b5563' }}>{r.id}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-medium text-[#111827]">{r.src}</td>
-                      <td className="px-6 py-4">
+                      <td style={{ padding: '16px 24px', fontWeight: 500, color: C.ink, fontFamily: F.cn }}>{r.src}</td>
+                      <td style={{ padding: '16px 24px' }}>
                         <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${STATUS_TONE[r.tone]}`}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            borderRadius: 9999,
+                            border: `1px solid ${statusStyle.borderColor}`,
+                            background: statusStyle.background,
+                            color: statusStyle.color,
+                            padding: '4px 10px',
+                            fontSize: 12,
+                            fontWeight: 500,
+                            fontFamily: F.cn,
+                          }}
                         >
-                          <span className={`h-1.5 w-1.5 rounded-full ${DOT_TONE[r.tone]}`} />
+                          <span style={{ height: 6, width: 6, borderRadius: '50%', background: dotColor, display: 'inline-block', flexShrink: 0 }} />
                           {r.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className={`rounded-md px-2 py-0.5 font-mono text-[13px] font-semibold ${r.tone === 'green' ? 'bg-[#d1fae5] text-[#065f46]' : r.tone === 'yellow' ? 'bg-[#FEFCE0] text-[#8A6A00]' : 'bg-[#fef2f2] text-[#781621]'}`}>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <span
+                          style={{
+                            borderRadius: 6,
+                            padding: '2px 8px',
+                            fontFamily: F.mono,
+                            fontSize: 13,
+                            fontWeight: 600,
+                            background: latencyStyle.background,
+                            color: latencyStyle.color,
+                          }}
+                        >
                           {r.latency}
                         </span>
                       </td>
@@ -462,6 +713,6 @@ export default function Dashboard() {
           </div>
         </section>
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
