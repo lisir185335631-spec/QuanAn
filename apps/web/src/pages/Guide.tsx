@@ -30,7 +30,7 @@ const SECTION_ICON_MAP: Record<string, string> = {
   trending_generation: 'bolt',
   content_generation: 'auto_awesome',
   content_analysis: 'manage_search',
-  ai_video: 'clapperboard',
+  ai_video: 'movie',
   voice_chat: 'mic',
   deep_learning: 'school',
   video_production: 'movie',
@@ -193,7 +193,7 @@ const FLOW_ICON_MAP: Record<string, string> = {
   深度学习: 'school',
   设计变现: 'payments',
   创作内容: 'auto_awesome',
-  制作视频: 'clapperboard',
+  制作视频: 'movie',
   私域成交: 'groups',
 };
 

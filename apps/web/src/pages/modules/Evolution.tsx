@@ -154,7 +154,7 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
               className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-lg"
               style={{ background: C.grad }}
             >
-              <span className="material-symbols-outlined text-[28px] text-white" aria-hidden={true}>sprout</span>
+              <span className="material-symbols-outlined text-[28px] text-white" aria-hidden={true}>eco</span>
             </div>
             <div>
               <p
@@ -217,7 +217,7 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
                   aria-hidden={true}
                 >
                   {lvl.id === 'L1'
-                    ? 'sprout'
+                    ? 'eco'
                     : lvl.id === 'L2'
                       ? 'menu_book'
                       : lvl.id === 'L3'
@@ -276,7 +276,7 @@ const STAT_VARIANT_STYLES: Record<StatVariant, StatVariantStyle> = {
     borderColor: C.accent3 + '33',
     iconBg: C.accent3 + '18',
     iconColor: C.accent3,
-    icon: 'brain',
+    icon: 'neurology',
     chipBg: C.accent3 + '18',
     chipColor: C.purpleText,
   },
@@ -654,7 +654,7 @@ export default function Evolution() {
             data-testid="evolution-empty"
             className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-center"
           >
-            <span className="material-symbols-outlined text-[64px]" aria-hidden={true} style={{ color: C.ikb + '66' }}>sprout</span>
+            <span className="material-symbols-outlined text-[64px]" aria-hidden={true} style={{ color: C.ikb + '66' }}>eco</span>
             <p
               data-testid="evolution-empty-title"
               className="text-[18px] font-extrabold"
