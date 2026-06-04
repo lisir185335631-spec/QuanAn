@@ -499,7 +499,7 @@ export default function VideoProduction() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 分镜场景数 · 蓝 · 环形 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: `${C.ikb}30`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
         >
           <div className="flex items-center justify-between">
@@ -545,7 +545,7 @@ export default function VideoProduction() {
 
         {/* 预计时长 · 玫红 · 迷你柱 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -581,7 +581,7 @@ export default function VideoProduction() {
 
         {/* 口播段落 · 紫 · 进度条 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -612,7 +612,7 @@ export default function VideoProduction() {
 
         {/* BGM建议数 · 蓝 · chip — P1.9: 始终来自 mock，加通用参考标注 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div className="flex items-center justify-between">
@@ -667,7 +667,7 @@ export default function VideoProduction() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 制作完备度雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="col-span-5 ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -791,7 +791,7 @@ export default function VideoProduction() {
 
         {/* 情绪节奏曲线 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="col-span-7 ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -919,7 +919,7 @@ export default function VideoProduction() {
 
         {/* ── 分镜脚本 section ─────────────────────────────── */}
         <div
-          className="rounded-xl border p-6"
+          className="ikb-hovercard rounded-xl border p-6"
           style={{ borderColor: `${C.ikb}25`, background: `linear-gradient(135deg, ${C.base} 0%, ${C.paper} 50%, ${C.base} 100%)` }}
         >
           <div className="mb-6 flex items-center justify-between">
@@ -1117,7 +1117,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── 拍摄方案 section ──────────────────────────────── */}
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span
@@ -1223,7 +1223,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── 口播提词器 section ──────────────────────────────── */}
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span
@@ -1284,7 +1284,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── BGM 配乐建议 section ──────────────────────────── */}
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center gap-3">
             <span
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"
@@ -1340,7 +1340,7 @@ export default function VideoProduction() {
         </div>
 
         {/* ── 剪辑要点 section ──────────────────────────────── */}
-        <div className="rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
+        <div className="ikb-hovercard rounded-xl border p-6" style={{ borderColor: C.line, background: C.paper }}>
           <div className="mb-5 flex items-center gap-3">
             <span
               className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg"

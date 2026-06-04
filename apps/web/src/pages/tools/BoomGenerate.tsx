@@ -403,7 +403,7 @@ function BoomResultEntry({ entry }: { entry: BoomEntry }) {
 
   return (
     <div
-      className="overflow-hidden rounded-xl border transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="overflow-hidden rounded-xl border ikb-hovercard"
       style={{ borderColor: C.line, background: C.paper }}
     >
       <div
@@ -591,7 +591,7 @@ export default function BoomGenerate() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 爆款力雷达 · col-span-5 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="col-span-5 rounded-xl border p-6 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -665,7 +665,7 @@ export default function BoomGenerate() {
 
         {/* 元素权重/热度曲线 · col-span-7 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="col-span-7 rounded-xl border p-6 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -762,7 +762,7 @@ export default function BoomGenerate() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 爆款元素 · 蓝 · 环形 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="rounded-xl border p-5 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -798,7 +798,7 @@ export default function BoomGenerate() {
 
         {/* 选中元素 · 玫红 · 进度条 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="rounded-xl border p-5 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -833,7 +833,7 @@ export default function BoomGenerate() {
 
         {/* 生成结果 · 紫 · 迷你柱 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="rounded-xl border p-5 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -864,7 +864,7 @@ export default function BoomGenerate() {
 
         {/* 命中率 · 蓝 · chip */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="rounded-xl border p-5 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">

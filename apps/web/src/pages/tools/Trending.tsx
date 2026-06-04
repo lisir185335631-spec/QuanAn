@@ -305,7 +305,7 @@ function TrendingFilterCard({
   return (
     <section
       data-testid="trending-filter-card"
-      className="relative mb-12 overflow-hidden rounded-xl border p-6"
+      className="ikb-hovercard relative mb-12 overflow-hidden rounded-xl border p-6"
       style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
     >
       <div
@@ -548,7 +548,7 @@ function TrendingKPI({ industryLabel, total, weekNew, myFavorites }: TrendingKPI
       {kpiCards.map((k) => (
         <div
           key={k.label}
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -611,7 +611,7 @@ function TrendingInsights() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 爆款趋势雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="ikb-hovercard col-span-5 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -682,7 +682,7 @@ function TrendingInsights() {
 
         {/* 全网热度曲线 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="ikb-hovercard col-span-7 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">

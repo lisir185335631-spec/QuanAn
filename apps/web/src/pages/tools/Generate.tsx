@@ -220,7 +220,7 @@ export default function Generate() {
       <div className="mb-8 grid grid-cols-12 gap-6">
         {/* 文案爆款力雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="ikb-hovercard col-span-5 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -294,7 +294,7 @@ export default function Generate() {
 
         {/* 文案结构曲线 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="ikb-hovercard col-span-7 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -391,7 +391,7 @@ export default function Generate() {
       <div className="mb-8 grid grid-cols-4 gap-6">
         {/* 脚本类型 · 环形 · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -436,7 +436,7 @@ export default function Generate() {
 
         {/* 爆款元素 · 迷你柱 · 玫红 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -469,7 +469,7 @@ export default function Generate() {
 
         {/* 已选元素 · 进度条 · 紫 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -506,7 +506,7 @@ export default function Generate() {
 
         {/* 文案字数 · chip · 蓝 */}
         <div
-          className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="ikb-hovercard rounded-xl border p-5"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="flex items-center justify-between">
@@ -550,7 +550,7 @@ export default function Generate() {
         <div className="space-y-5">
           {/* ── GenerateScriptPicker inline ── */}
           <section
-            className="rounded-xl border p-6"
+            className="ikb-hovercard rounded-xl border p-6"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="mb-5 flex items-center gap-3">
@@ -602,7 +602,7 @@ export default function Generate() {
 
           {/* ── GenerateElementsPicker inline ── */}
           <section
-            className="rounded-xl border p-5"
+            className="ikb-hovercard rounded-xl border p-5"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="mb-4 flex items-center gap-3">
@@ -653,7 +653,7 @@ export default function Generate() {
 
           {/* ── GenerateTopicForm inline ── */}
           <section
-            className="rounded-xl border p-5"
+            className="ikb-hovercard rounded-xl border p-5"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div className="mb-2 flex items-center justify-between">
@@ -727,7 +727,7 @@ export default function Generate() {
         <div className="space-y-5">
           {/* ── GenerateResult inline ── */}
           <section
-            className="overflow-hidden rounded-xl border"
+            className="ikb-hovercard overflow-hidden rounded-xl border"
             style={{ borderColor: C.line, background: C.paper }}
           >
             <div

@@ -117,7 +117,7 @@ function ScriptTab() {
           return (
             <div
               key={s.key}
-              className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+              className="rounded-xl border p-4 space-y-3 ikb-hovercard"
               style={{ borderColor: C.line, background: C.paper }}
               data-testid={`script-card-${s.key}`}
             >
@@ -244,7 +244,7 @@ function ElementsTab() {
           return (
             <div
               key={item.key}
-              className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+              className="rounded-xl border p-4 space-y-3 ikb-hovercard"
               style={{ borderColor: C.line, background: C.paper }}
               data-testid={`element-card-${item.key}`}
             >
@@ -360,7 +360,7 @@ function OpeningTab() {
         {filtered.map((f) => (
           <div
             key={f.num}
-            className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-4 space-y-3 ikb-hovercard"
             style={{ borderColor: C.line, background: C.paper }}
             data-testid={`opening-card-${f.num}`}
           >
@@ -466,7 +466,7 @@ function CoreTab() {
         {filtered.map((f, i) => (
           <div
             key={f.name}
-            className="rounded-xl border p-4 space-y-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-4 space-y-3 ikb-hovercard"
             style={{ borderColor: C.line, background: C.paper }}
             data-testid={`core-card-${i}`}
           >
@@ -604,7 +604,7 @@ export default function Knowledge() {
         {KPI_CARDS.map((kpi) => (
           <div
             key={kpi.label}
-            className="rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border p-5 ikb-hovercard"
             style={{ backgroundColor: C.paper, borderColor: kpi.borderColor }}
           >
             <div className="flex items-center justify-between">
@@ -729,7 +729,7 @@ export default function Knowledge() {
             return (
               <div
                 key={stage.key}
-                className="rounded-xl border p-5 space-y-2 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-xl border p-5 space-y-2 ikb-hovercard"
                 style={{ borderColor: accent.border, backgroundColor: accent.bg }}
                 data-testid={`story-stage-${stage.key}`}
               >

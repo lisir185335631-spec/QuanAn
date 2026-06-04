@@ -247,7 +247,7 @@ export default function Analysis() {
         {/* AnalysisDimensions · 雷达 · col-span-5 */}
         <div
           data-testid="analysis-dimensions"
-          className="col-span-5 rounded-xl border p-6"
+          className="col-span-5 rounded-xl border p-6 ikb-hovercard"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -326,7 +326,7 @@ export default function Analysis() {
           {/* 综合评分大卡 */}
           <div
             data-testid="analysis-score-card"
-            className="flex-1 rounded-xl border p-6"
+            className="flex-1 rounded-xl border p-6 ikb-hovercard"
             style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
           >
             <div className="mb-4 flex items-center gap-2.5">
@@ -392,7 +392,7 @@ export default function Analysis() {
           <div className="grid grid-cols-3 gap-4">
             {/* 爆款元素数 · 玫红 */}
             <div
-              className="rounded-xl border p-4"
+              className="rounded-xl border p-4 ikb-hovercard"
               style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
             >
               <div className="flex items-center justify-between">
@@ -417,7 +417,7 @@ export default function Analysis() {
             </div>
             {/* 优点数 · 深绿(check_circle 建议/成功块保留绿) */}
             <div
-              className="rounded-xl border p-4"
+              className="rounded-xl border p-4 ikb-hovercard"
               style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
             >
               <div className="flex items-center justify-between">
@@ -436,7 +436,7 @@ export default function Analysis() {
             </div>
             {/* 建议数 · 紫 */}
             <div
-              className="rounded-xl border p-4"
+              className="rounded-xl border p-4 ikb-hovercard"
               style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
             >
               <div className="flex items-center justify-between">
@@ -469,7 +469,7 @@ export default function Analysis() {
         {/* ── AnalysisStructure · 结构拆解 ─────────────────────────────────── */}
         <section
           data-testid="analysis-structure"
-          className="overflow-hidden rounded-xl border"
+          className="overflow-hidden rounded-xl border ikb-hovercard"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div
@@ -527,7 +527,7 @@ export default function Analysis() {
         {/* ── AnalysisElements · 识别到的爆款元素 ─────────────────────────── */}
         <section
           data-testid="analysis-elements"
-          className="overflow-hidden rounded-xl border"
+          className="overflow-hidden rounded-xl border ikb-hovercard"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div
@@ -560,7 +560,7 @@ export default function Analysis() {
           className="grid grid-cols-2 gap-6"
         >
           {/* 优点 · 深绿(check_circle 建议/成功块保留绿) */}
-          <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <section className="overflow-hidden rounded-xl border ikb-hovercard" style={{ borderColor: C.line, background: C.paper }}>
             <div className="flex items-center gap-2.5 bg-gradient-to-r from-[#059669] to-[#16a34a] px-6 py-4 text-white">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
                 <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>check_circle</span>
@@ -580,7 +580,7 @@ export default function Analysis() {
           </section>
 
           {/* 不足 · 玫红(避免/警告红保留) */}
-          <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+          <section className="overflow-hidden rounded-xl border ikb-hovercard" style={{ borderColor: C.line, background: C.paper }}>
             <div
               className="flex items-center gap-2.5 px-6 py-4 text-white"
               style={{ background: `linear-gradient(to right, ${C.burgundy}, #c4304e)` }}
@@ -606,7 +606,7 @@ export default function Analysis() {
         {/* ── AnalysisSuggestions · 优化建议 ──────────────────────────────── */}
         <section
           data-testid="analysis-suggestions"
-          className="overflow-hidden rounded-xl border"
+          className="overflow-hidden rounded-xl border ikb-hovercard"
           style={{ borderColor: C.line, background: C.paper }}
         >
           <div

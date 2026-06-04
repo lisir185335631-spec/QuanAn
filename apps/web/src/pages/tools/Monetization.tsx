@@ -152,7 +152,7 @@ function MonetizationForm({
 }: MonetizationFormProps) {
   return (
     <section
-      className="relative overflow-hidden rounded-xl border p-6"
+      className="ikb-hovercard relative overflow-hidden rounded-xl border p-6"
       style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
     >
       <div
@@ -402,7 +402,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
           return (
             <div
               key={k.label}
-              className="rounded-xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="ikb-hovercard rounded-xl p-4"
               style={{ border: c.border, background: c.bg }}
             >
               <div className="flex items-center justify-between">
@@ -434,7 +434,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
       <div className="grid grid-cols-12 gap-6">
         {/* 变现能力雷达 */}
         <div
-          className="col-span-5 rounded-xl border p-6"
+          className="ikb-hovercard col-span-5 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-1 flex items-center justify-between">
@@ -493,7 +493,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
 
         {/* 营收增长预估 */}
         <div
-          className="col-span-7 rounded-xl border p-6"
+          className="ikb-hovercard col-span-7 rounded-xl border p-6"
           style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
         >
           <div className="mb-4 flex items-start justify-between">
@@ -547,7 +547,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
 
       {/* ── 产品矩阵(真结果) ──────────────────────────────── */}
       <div
-        className="relative overflow-hidden rounded-xl border p-6"
+        className="ikb-hovercard relative overflow-hidden rounded-xl border p-6"
         style={{ borderColor: `${C.ikb}20`, background: `linear-gradient(135deg, ${C.base} 0%, ${C.paper} 60%, ${C.base} 100%)` }}
       >
         <div
@@ -594,7 +594,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
       </div>
 
       {/* ── 定价策略 ────────────────────────────────────────── */}
-      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
+      <div className="ikb-hovercard rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
         <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
           <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.ikb}12`, color: C.ikb }}>
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>sell</span>
@@ -611,7 +611,7 @@ function MonetizationResult({ result, isFallback }: MonetizationResultProps) {
       </div>
 
       {/* ── 转化漏斗 ────────────────────────────────────────── */}
-      <div className="rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
+      <div className="ikb-hovercard rounded-xl border bg-white p-6" style={{ borderColor: C.line }}>
         <h3 className="mb-4 flex items-center gap-2 text-[16px] font-bold" style={{ color: C.ink, fontFamily: F.cn }}>
           <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: `${C.burgundy}12`, color: C.burgundy }}>
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>filter_alt</span>
