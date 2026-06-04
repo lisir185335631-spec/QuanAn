@@ -188,12 +188,12 @@ describe('Evolution page · 阶段2 trpc 真后端', () => {
 
   it('L2 icon active · L1 inactive', () => {
     renderEvolution();
-    // L2 active: bg-[#002fa7]
+    // L2 active: data-state=active
     const l2 = screen.getByTestId('level-icon-L2');
-    expect(l2.className).toContain('bg-[#002fa7]');
-    // L1 inactive: opacity-40
+    expect(l2).toHaveAttribute('data-state', 'active');
+    // L1 inactive: data-state=inactive
     const l1 = screen.getByTestId('level-icon-L1');
-    expect(l1.className).toContain('opacity-40');
+    expect(l1).toHaveAttribute('data-state', 'inactive');
   });
 
   // ── §3 StatCards — 真实数据 ────────────────────────────────────
