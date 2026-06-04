@@ -22,11 +22,16 @@ export function DiagnosisProgressBar({ currentStep, totalSteps }: DiagnosisProgr
           className={cn(
             'flex-1 h-1.5 rounded-full transition-colors',
             i < currentStep
-              ? 'bg-[#002fa7]'
+              ? 'opacity-100'
               : i === currentStep
-                ? 'bg-[#002fa7] opacity-70'
-                : 'bg-[#e5e7eb]',
+                ? 'opacity-70'
+                : '',
           )}
+          style={
+            i <= currentStep
+              ? { background: 'linear-gradient(110deg, #2B53E6 0%, #7A3BE0 52%, #EF3E6B 100%)' }
+              : { background: '#e5e7eb' }
+          }
         />
       ))}
     </div>

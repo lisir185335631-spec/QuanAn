@@ -14,8 +14,8 @@ export function ActionPlanCardsSection({ plans }: ActionPlanCardsSectionProps) {
       className="flex flex-col gap-4"
     >
       <div className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">trending_up</span>
-        <h2 className="text-[24px] font-bold text-[#111827]">{REPORT_HEADING_ACTION_PLAN}</h2>
+        <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: '#2B53E6' }}>trending_up</span>
+        <h2 className="text-[24px] font-bold" style={{ color: '#161D33' }}>{REPORT_HEADING_ACTION_PLAN}</h2>
       </div>
       <div className="flex flex-col gap-4">
         {plans.map((plan) => (

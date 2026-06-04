@@ -141,7 +141,7 @@ describe('DiagnosisStepCard', () => {
     expect(onStageChange).toHaveBeenCalledWith('startup');
   });
 
-  it('selected checkbox 状态: border-primary class 应用', () => {
+  it('selected checkbox 状态: data-state=checked 应用', () => {
     render(
       <DiagnosisStepCard
         {...defaultProps}
@@ -149,7 +149,7 @@ describe('DiagnosisStepCard', () => {
       />,
     );
     const el = screen.getByTestId('diagnosis-checkbox-已确定赛道方向');
-    expect(el.className).toContain('border-[#002fa7]');
+    expect(el).toHaveAttribute('data-state', 'checked');
   });
 
   it('textarea placeholder 来自 DIAGNOSIS_DIMENSION_PLACEHOLDERS', () => {

@@ -13,13 +13,23 @@ export function DiagnosisHeader({ currentStep, totalSteps }: DiagnosisHeaderProp
     <div data-testid="diagnosis-header" className="mb-10">
       {/* 双徽标 chrome */}
       <div className="mb-4 flex items-center gap-3">
-        <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+        <span
+          className="rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+          style={{
+            border: '1px solid rgba(22,32,72,0.13)',
+            background: '#F3F5FC',
+            color: '#161D33',
+          }}
+        >
           智能引擎
         </span>
         <DiagnosisChip />
       </div>
       {/* H1 */}
-      <h1 className="text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]">
+      <h1
+        className="text-[40px] font-extrabold tracking-tighter"
+        style={{ color: '#161D33' }}
+      >
         {DIAGNOSIS_H1}
       </h1>
       <p className="mt-2 text-[16px] leading-relaxed text-[#444653]">{DIAGNOSIS_SUBTITLE}</p>
