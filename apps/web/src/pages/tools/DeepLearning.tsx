@@ -9,6 +9,7 @@ import '@/styles/ikb-hero.css';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { C, F } from '@/components/home/ikb/system';
 import { IKBLayout } from '@/layouts/IKBLayout';
 import {
@@ -649,6 +650,7 @@ interface QueueArchiveCardProps {
 
 function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }: QueueArchiveCardProps) {
   const [expanded, setExpanded] = useState(true);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const isDeleting = isDeletePending && deletingId === row.id;
 
   function handleCopy() {
@@ -657,8 +659,7 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
 
   function handleDelete() {
     if (isDeleting) return;
-    if (!window.confirm('确认删除此学习档案？')) return;
-    onDelete(row.id);
+    setConfirmOpen(true);
   }
 
   const createdDateStr = row.createdAt
@@ -739,6 +740,16 @@ function QueueArchiveCardPioneer({ row, onDelete, isDeletePending, deletingId }:
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="删除学习档案"
+        description="确认删除此学习档案？"
+        confirmLabel="删除"
+        destructive
+        onConfirm={() => onDelete(row.id)}
+      />
 
       {/* expanded content */}
       {expanded && (
