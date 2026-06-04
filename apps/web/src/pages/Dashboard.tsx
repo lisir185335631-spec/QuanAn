@@ -134,15 +134,13 @@ export default function Dashboard() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 32 }}>
           {/* 市场洞察 · 环形进度 · 蓝 */}
           <div
+            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.ikb}28`,
               background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
@@ -185,15 +183,13 @@ export default function Dashboard() {
 
           {/* 收益模型 · 迷你柱 · 玫红 */}
           <div
+            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.burgundy}28`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.burgundy}12`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}10`, color: C.burgundy }}>
@@ -216,15 +212,13 @@ export default function Dashboard() {
 
           {/* 内容生成 · 进度条 · 紫 */}
           <div
+            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.accent3}28`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.accent3}12`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}10`, color: C.accent3 }}>
@@ -252,15 +246,13 @@ export default function Dashboard() {
 
           {/* 部署进度 · 环形 + 百分比 · 蓝 */}
           <div
+            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.ikb}28`,
               background: C.paper,
               padding: 20,
-              transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${C.ikb}12`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}10`, color: C.ikb }}>
@@ -302,6 +294,7 @@ export default function Dashboard() {
 
         {/* ── 部署进度详情 ──────────────────────────────────────── */}
         <section
+          className="ikb-hovercard"
           style={{
             borderRadius: 12,
             border: `1px solid ${C.line}`,
@@ -401,6 +394,7 @@ export default function Dashboard() {
         <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 24, marginBottom: 32 }}>
           {/* 系统健康度雷达 · col-span-5 */}
           <div
+            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.line}`,
@@ -476,6 +470,7 @@ export default function Dashboard() {
 
           {/* 7 日吞吐趋势 · col-span-7 */}
           <div
+            className="ikb-hovercard"
             style={{
               borderRadius: 12,
               border: `1px solid ${C.line}`,
@@ -575,6 +570,7 @@ export default function Dashboard() {
 
         {/* ── 活动节点流 ─────────────────────────────────────── */}
         <section
+          className="ikb-hovercard"
           style={{
             overflow: 'hidden',
             borderRadius: 12,
