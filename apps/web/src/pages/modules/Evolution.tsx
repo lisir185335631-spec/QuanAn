@@ -1,13 +1,16 @@
 /**
- * Evolution.tsx · 先锋白·工业精密版
+ * Evolution.tsx · 红蓝紫渐变 IKB 体系
  * /evolution · 智能体进化中心 · 阶段2: trpc 真后端
- * PioneerLayout 外壳 · 7 个子组件 inline · testid 零改动
+ * IKBLayout 外壳 · inline style + token · testid 零改动
  */
+import '@/styles/ikb-hero.css';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import {
   EVOLUTION_ARCHIVE_ADD,
   EVOLUTION_ARCHIVE_DONE_CHIP,
@@ -62,7 +65,7 @@ function calcNextNeed(level: string, feedbackTotal: number): number {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Inline 先锋白组件 (testid 全保留)
+// Inline IKB 组件 (testid 全保留)
 // ─────────────────────────────────────────────────────────────────
 
 // ── EvolutionHeader ────────────────────────────────────────────────
@@ -73,32 +76,39 @@ function EvolutionHeader({ onTrigger }: EvolutionHeaderProps) {
   return (
     <header data-testid="evolution-header" className="mb-12 flex flex-row items-center justify-between gap-8">
       <div className="shrink-0">
-        <div data-testid="evolution-breadcrumb" className="mb-2 flex items-center gap-1 text-[11px] text-[#9ca3af]">
-          <span className="font-bold uppercase tracking-widest text-[#002fa7]">
+        <div data-testid="evolution-breadcrumb" className="mb-2 flex items-center gap-1 text-[11px] text-[#6b7280]">
+          <span style={{ fontFamily: F.mono, color: C.ikb }} className="font-bold uppercase tracking-widest">
             {EVOLUTION_BREADCRUMB_LEFT}
           </span>
-          <span className="material-symbols-outlined text-[13px]" aria-hidden="true">chevron_right</span>
+          <span className="material-symbols-outlined text-[13px]" aria-hidden={true}>chevron_right</span>
           <span>{EVOLUTION_H1}</span>
         </div>
         <div className="mb-3 flex items-center gap-3">
-          <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+          <span
+            className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+            style={{ borderColor: C.line, background: '#e8e8e8', color: '#1b1b1b' }}
+          >
             智能引擎
           </span>
-          <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+          <span
+            className="rounded-lg border px-3 py-1 text-[12px] font-bold uppercase tracking-widest"
+            style={{ borderColor: `${C.accent3}66`, background: `${C.accent3}18`, color: C.purpleText }}
+          >
             进化引擎
           </span>
         </div>
         <h1
           data-testid="evolution-h1"
-          className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+          className="ikb-gradtext whitespace-nowrap text-[40px] font-extrabold tracking-tighter"
+          style={{ fontFamily: F.display }}
         >
           {EVOLUTION_H1}
         </h1>
-        <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]">
+        <p className="mt-2 max-w-[820px] text-[16px] leading-relaxed" style={{ color: '#444653' }}>
           {EVOLUTION_SUBTITLE_PARTS.prefix}
-          <span className="font-semibold text-[#002fa7]">{EVOLUTION_SUBTITLE_PARTS.highlight1}</span>
+          <span className="font-semibold" style={{ color: C.ikb }}>{EVOLUTION_SUBTITLE_PARTS.highlight1}</span>
           {EVOLUTION_SUBTITLE_PARTS.middle}
-          <span className="font-semibold text-[#002fa7]">{EVOLUTION_SUBTITLE_PARTS.highlight2}</span>
+          <span className="font-semibold" style={{ color: C.ikb }}>{EVOLUTION_SUBTITLE_PARTS.highlight2}</span>
           {EVOLUTION_SUBTITLE_PARTS.suffix}
         </p>
       </div>
@@ -106,10 +116,10 @@ function EvolutionHeader({ onTrigger }: EvolutionHeaderProps) {
         type="button"
         data-testid="trigger-evolution-btn"
         onClick={onTrigger}
-        className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-gradient-to-r from-[#002fa7] to-[#3654c8] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm shadow-[#002fa7]/25 transition-all hover:-translate-y-0.5 hover:shadow-md"
+        className="ikb-gradbtn ikb-focusring flex shrink-0 items-center gap-2 whitespace-nowrap rounded-md px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
         aria-label="触发进化"
       >
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">bolt</span>
+        <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>bolt</span>
         {EVOLUTION_TRIGGER_BTN}
       </button>
     </header>
@@ -134,43 +144,50 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
   return (
     <div
       data-testid="level-card"
-      className="mb-8 overflow-hidden rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f3f6ff] p-6 pw-shadow-soft"
+      className="ikb-card mb-8 overflow-hidden rounded-xl p-6"
+      style={{ background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
     >
       <div className="flex items-center justify-between gap-6">
         <div className="min-w-0 flex-1 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#002fa7] to-[#3654c8] shadow-lg shadow-[#002fa7]/25">
-              <span className="material-symbols-outlined text-[28px] text-white" aria-hidden="true">sprout</span>
+            <div
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-lg"
+              style={{ background: C.grad }}
+            >
+              <span className="material-symbols-outlined text-[28px] text-white" aria-hidden={true}>sprout</span>
             </div>
             <div>
               <p
                 data-testid="level-title"
-                className="text-[16px] font-extrabold text-[#111827]"
+                className="text-[16px] font-extrabold"
+                style={{ color: C.ink }}
               >
                 {titleText}
               </p>
               <p
                 data-testid="level-info"
-                className="mt-0.5 text-[12px] text-[#9ca3af]"
+                className="mt-0.5 text-[12px]"
+                style={{ color: '#6b7280' }}
               >
                 {infoText}
               </p>
             </div>
           </div>
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] text-[#9ca3af]">
+            <div className="flex items-center justify-between text-[11px]" style={{ color: '#6b7280' }}>
               <span>进化经验</span>
               <span>{progressPct}%</span>
             </div>
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#eef2ff]">
+            <div className="h-2.5 w-full overflow-hidden rounded-full" style={{ background: C.base }}>
               <div
-                className="h-2.5 rounded-full bg-gradient-to-r from-[#002fa7] to-[#3654c8] transition-all duration-700"
-                style={{ width: `${progressPct}%` }}
+                className="h-2.5 rounded-full transition-all duration-700"
+                style={{ width: `${progressPct}%`, background: C.grad }}
               />
             </div>
             <p
               data-testid="level-next"
-              className="text-[11px] text-[#9ca3af]"
+              className="text-[11px]"
+              style={{ color: '#6b7280' }}
             >
               {nextText}
             </p>
@@ -187,16 +204,17 @@ function LevelCard({ level, feedbackCountTotal, deepLearningCount }: LevelCardPr
               <div
                 key={lvl.id}
                 data-testid={`level-icon-${lvl.id}`}
+                data-state={isActive ? 'active' : 'inactive'}
                 className={`flex h-11 w-11 items-center justify-center rounded-xl transition-all ${
                   isActive
-                    ? 'bg-[#002fa7] shadow-md shadow-[#002fa7]/25'
+                    ? 'bg-[#2B53E6] shadow-md shadow-[#2B53E6]/25'
                     : 'border border-[#e5e7eb] bg-white opacity-40'
                 }`}
                 title={`${lvl.id} ${lvl.label}`}
               >
                 <span
-                  className={`material-symbols-outlined text-[20px] ${isActive ? 'text-white' : 'text-[#9ca3af]'}`}
-                  aria-hidden="true"
+                  className={`material-symbols-outlined text-[20px] ${isActive ? 'text-white' : 'text-[#6b7280]'}`}
+                  aria-hidden={true}
                 >
                   {lvl.id === 'L1'
                     ? 'sprout'
@@ -228,45 +246,47 @@ interface StatCardProps {
   showDelta?: boolean;
 }
 
-const STAT_VARIANT_STYLES: Record<
-  StatVariant,
-  { border: string; bg: string; iconBg: string; iconText: string; icon: string; chipBg: string; chipText: string }
-> = {
+type StatVariantStyle = {
+  borderColor: string;
+  iconBg: string;
+  iconColor: string;
+  icon: string;
+  chipBg: string;
+  chipColor: string;
+};
+
+const STAT_VARIANT_STYLES: Record<StatVariant, StatVariantStyle> = {
   good: {
-    border: 'border-[#d1fae5]',
-    bg: 'from-white to-[#f0fdf7]',
-    iconBg: 'bg-[#10b981]/10',
-    iconText: 'text-[#10b981]',
+    borderColor: C.ikb + '33',
+    iconBg: C.ikb + '18',
+    iconColor: C.ikb,
     icon: 'thumb_up',
-    chipBg: 'bg-[#d1fae5]',
-    chipText: 'text-[#065f46]',
+    chipBg: C.ikb + '18',
+    chipColor: C.ikb,
   },
   needsImprove: {
-    border: 'border-[#fecaca]',
-    bg: 'from-white to-[#fff5f5]',
-    iconBg: 'bg-[#781621]/10',
-    iconText: 'text-[#781621]',
+    borderColor: '#fecaca',
+    iconBg: C.burgundy + '18',
+    iconColor: C.burgundy,
     icon: 'thumb_down',
-    chipBg: 'bg-[#fef2f2]',
-    chipText: 'text-[#781621]',
+    chipBg: '#fef2f2',
+    chipColor: C.burgundyText,
   },
   learning: {
-    border: 'border-[#e0e7ff]',
-    bg: 'from-white to-[#f3f6ff]',
-    iconBg: 'bg-[#002fa7]/10',
-    iconText: 'text-[#002fa7]',
+    borderColor: C.accent3 + '33',
+    iconBg: C.accent3 + '18',
+    iconColor: C.accent3,
     icon: 'brain',
-    chipBg: 'bg-[#002fa7]/10',
-    chipText: 'text-[#002fa7]',
+    chipBg: C.accent3 + '18',
+    chipColor: C.purpleText,
   },
   satisfaction: {
-    border: 'border-[#e0e7ff]',
-    bg: 'from-white to-[#f3f6ff]',
-    iconBg: 'bg-[#002fa7]/10',
-    iconText: 'text-[#002fa7]',
+    borderColor: C.ikb + '33',
+    iconBg: C.ikb + '18',
+    iconColor: C.ikb,
     icon: 'trending_up',
-    chipBg: 'bg-[#FEFCE0]',
-    chipText: 'text-[#8A6A00]',
+    chipBg: C.accent3 + '18',
+    chipColor: C.purpleText,
   },
 };
 
@@ -275,29 +295,38 @@ function StatCard({ variant, label, value, unit = '', showDelta = false }: StatC
   return (
     <div
       data-testid={`stat-card-${variant}`}
-      className={`rounded-xl border ${s.border} bg-gradient-to-br ${s.bg} p-5 pw-shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md`}
+      className="rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      style={{
+        border: `1px solid ${s.borderColor}`,
+        background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+      }}
     >
       <div className="flex items-center justify-between">
-        <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${s.iconBg} ${s.iconText}`}>
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{s.icon}</span>
+        <span
+          className="flex h-9 w-9 items-center justify-center rounded-lg"
+          style={{ background: s.iconBg, color: s.iconColor }}
+        >
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>{s.icon}</span>
         </span>
         {showDelta && (
           <span
             data-testid="stat-delta-chip"
-            className={`rounded-full ${s.chipBg} ${s.chipText} px-2 py-0.5 text-[11px] font-bold`}
+            className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+            style={{ background: s.chipBg, color: s.chipColor }}
           >
             -0%
           </span>
         )}
       </div>
       <div className="mt-4">
-        <p className="text-[28px] font-bold leading-none text-[#111827]">
+        <p className="text-[28px] font-bold leading-none" style={{ color: C.ink }}>
           {value}
-          {unit && <span className="text-[15px] text-[#9ca3af]">{unit}</span>}
+          {unit && <span className="text-[15px]" style={{ color: '#6b7280' }}>{unit}</span>}
         </p>
         <p
           data-testid={`stat-label-${variant}`}
-          className="mt-1.5 text-[12px] text-[#6b7280]"
+          className="mt-1.5 text-[12px]"
+          style={{ color: '#6b7280' }}
         >
           {label}
         </p>
@@ -322,23 +351,28 @@ function InsightCard({ items }: { items: InsightItem[] }) {
     return (
       <div
         data-testid="empty-insight-card"
-        className="rounded-xl border border-dashed border-[#c7d2fe] bg-[#f8faff] p-5"
+        className="rounded-xl p-5"
+        style={{ border: `1px dashed ${C.ikb}55`, background: C.base }}
       >
         <div className="mb-4 flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">emoji_events</span>
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-lg"
+            style={{ background: C.ikb + '18', color: C.ikb }}
+          >
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>emoji_events</span>
           </span>
-          <h3 className="text-[13px] font-semibold text-[#111827]">{EVOLUTION_INSIGHT_TITLE}</h3>
+          <h3 className="text-[13px] font-semibold" style={{ color: C.ink }}>{EVOLUTION_INSIGHT_TITLE}</h3>
         </div>
         <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-          <span className="material-symbols-outlined text-[48px] text-[#c7d2fe]" aria-hidden="true">shield</span>
+          <span className="material-symbols-outlined text-[48px]" aria-hidden={true} style={{ color: C.ikb + '55' }}>shield</span>
           <p
             data-testid="insight-empty-title"
-            className="text-[13px] font-medium text-[#374151]"
+            className="text-[13px] font-medium"
+            style={{ color: '#374151' }}
           >
             {EVOLUTION_INSIGHT_EMPTY_TITLE}
           </p>
-          <p className="max-w-[200px] text-[11px] text-[#9ca3af]">
+          <p className="max-w-[200px] text-[11px]" style={{ color: '#6b7280' }}>
             {EVOLUTION_INSIGHT_EMPTY_DESC}
           </p>
         </div>
@@ -349,32 +383,40 @@ function InsightCard({ items }: { items: InsightItem[] }) {
   return (
     <div
       data-testid="insight-card"
-      className="rounded-xl border border-[#c7d2fe] bg-[#f8faff] p-5"
+      className="rounded-xl p-5"
+      style={{ border: `1px solid ${C.ikb}44`, background: C.base }}
     >
       <div className="mb-4 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">emoji_events</span>
+        <span
+          className="flex h-8 w-8 items-center justify-center rounded-lg"
+          style={{ background: C.ikb + '18', color: C.ikb }}
+        >
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>emoji_events</span>
         </span>
-        <h3 className="text-[13px] font-semibold text-[#111827]">{EVOLUTION_INSIGHT_TITLE}</h3>
+        <h3 className="text-[13px] font-semibold" style={{ color: C.ink }}>{EVOLUTION_INSIGHT_TITLE}</h3>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
           <div
             key={String(item.id)}
             data-testid={`insight-item-${String(item.id)}`}
-            className="rounded-lg border border-[#e0e7ff] bg-white px-4 py-3"
+            className="rounded-lg px-4 py-3"
+            style={{ border: `1px solid ${C.line}`, background: C.paper }}
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[12px] font-semibold text-[#002fa7]">
+              <span className="text-[12px] font-semibold" style={{ color: C.ikb }}>
                 {item.direction ?? '综合'}
               </span>
               {item.levelAfter && (
-                <span className="rounded-full bg-[#002fa7]/10 px-2 py-0.5 text-[11px] font-bold text-[#002fa7]">
+                <span
+                  className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+                  style={{ background: C.ikb + '18', color: C.ikb }}
+                >
                   → {item.levelAfter}
                 </span>
               )}
             </div>
-            <p className="mt-1 text-[11px] text-[#9ca3af]">
+            <p className="mt-1 text-[11px]" style={{ color: '#6b7280' }}>
               {item.triggerType} · {new Date(item.createdAt).toLocaleDateString('zh-CN')}
             </p>
           </div>
@@ -399,23 +441,28 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
     return (
       <div
         data-testid="empty-feedback-card"
-        className="rounded-xl border border-dashed border-[#fde68a] bg-[#fdfaf0] p-5"
+        className="rounded-xl p-5"
+        style={{ border: `1px dashed ${C.accent3}55`, background: C.base }}
       >
         <div className="mb-4 flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8A6A00]">
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chat_bubble</span>
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-lg"
+            style={{ background: C.accent3 + '18', color: C.purpleText }}
+          >
+            <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>chat_bubble</span>
           </span>
-          <h3 className="text-[13px] font-semibold text-[#111827]">{EVOLUTION_FEEDBACK_TITLE}</h3>
+          <h3 className="text-[13px] font-semibold" style={{ color: C.ink }}>{EVOLUTION_FEEDBACK_TITLE}</h3>
         </div>
         <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-          <span className="material-symbols-outlined text-[48px] text-[#fde68a]" aria-hidden="true">chat_bubble_outline</span>
+          <span className="material-symbols-outlined text-[48px]" aria-hidden={true} style={{ color: C.accent3 + '55' }}>chat_bubble_outline</span>
           <p
             data-testid="feedback-empty-title"
-            className="text-[13px] font-medium text-[#374151]"
+            className="text-[13px] font-medium"
+            style={{ color: '#374151' }}
           >
             {EVOLUTION_FEEDBACK_EMPTY_TITLE}
           </p>
-          <p className="max-w-[200px] text-[11px] text-[#9ca3af]">
+          <p className="max-w-[200px] text-[11px]" style={{ color: '#6b7280' }}>
             {EVOLUTION_FEEDBACK_EMPTY_DESC}
           </p>
         </div>
@@ -426,20 +473,25 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
   return (
     <div
       data-testid="feedback-card"
-      className="rounded-xl border border-[#fde68a] bg-[#fdfaf0] p-5"
+      className="rounded-xl p-5"
+      style={{ border: `1px solid ${C.accent3}44`, background: C.base }}
     >
       <div className="mb-4 flex items-center gap-2">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F6D300]/20 text-[#8A6A00]">
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chat_bubble</span>
+        <span
+          className="flex h-8 w-8 items-center justify-center rounded-lg"
+          style={{ background: C.accent3 + '18', color: C.purpleText }}
+        >
+          <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>chat_bubble</span>
         </span>
-        <h3 className="text-[13px] font-semibold text-[#111827]">{EVOLUTION_FEEDBACK_TITLE}</h3>
+        <h3 className="text-[13px] font-semibold" style={{ color: C.ink }}>{EVOLUTION_FEEDBACK_TITLE}</h3>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
           <div
             key={String(item.id)}
             data-testid={`feedback-item-${String(item.id)}`}
-            className="flex items-start gap-3 rounded-lg border border-[#fde68a] bg-white px-4 py-3"
+            className="flex items-start gap-3 rounded-lg px-4 py-3"
+            style={{ border: `1px solid ${C.accent3}33`, background: C.paper }}
           >
             <span
               className="mt-0.5 text-[18px]"
@@ -448,11 +500,11 @@ function FeedbackCard({ items }: { items: FeedbackItem[] }) {
               {item.rating === 'good' ? '👍' : '👎'}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[12px] font-semibold text-[#111827]">{item.agentId}</p>
+              <p className="text-[12px] font-semibold" style={{ color: C.ink }}>{item.agentId}</p>
               {item.comment && (
-                <p className="mt-0.5 text-[11px] text-[#6b7280]">{item.comment}</p>
+                <p className="mt-0.5 text-[11px]" style={{ color: '#6b7280' }}>{item.comment}</p>
               )}
-              <p className="mt-0.5 text-[10px] text-[#9ca3af]">
+              <p className="mt-0.5 text-[10px]" style={{ color: '#6b7280' }}>
                 {new Date(item.createdAt).toLocaleDateString('zh-CN')}
               </p>
             </div>
@@ -474,11 +526,12 @@ function SettingRow({ label, desc, control, testid = 'setting-row' }: SettingRow
   return (
     <div
       data-testid={testid}
-      className="flex items-center justify-between gap-4 rounded-xl border border-[#e5e7eb] bg-white px-5 py-4 pw-shadow-soft"
+      className="flex items-center justify-between gap-4 rounded-xl px-5 py-4"
+      style={{ border: `1px solid ${C.line}`, background: C.paper }}
     >
       <div className="space-y-0.5">
-        <p className="text-[13px] font-bold text-[#111827]">{label}</p>
-        <p className="text-[11px] text-[#9ca3af]">{desc}</p>
+        <p className="text-[13px] font-bold" style={{ color: C.ink }}>{label}</p>
+        <p className="text-[11px]" style={{ color: '#6b7280' }}>{desc}</p>
       </div>
       <div className="shrink-0">{control}</div>
     </div>
@@ -489,12 +542,12 @@ function SettingRow({ label, desc, control, testid = 'setting-row' }: SettingRow
 // Radar / Trend static decoration (不依赖后端，视觉装饰)
 // ─────────────────────────────────────────────────────────────────
 const EV_RADAR_DIMS = [
-  { label: '内容质量', value: 72, color: '#002fa7' },
-  { label: '互动率',   value: 65, color: '#781621' },
-  { label: '转化',     value: 58, color: '#F6D300' },
-  { label: '更新频率', value: 80, color: '#002fa7' },
-  { label: '学习力',   value: 90, color: '#781621' },
-  { label: '满意度',   value: 70, color: '#F6D300' },
+  { label: '内容质量', value: 72, color: C.ikb },
+  { label: '互动率',   value: 65, color: C.burgundy },
+  { label: '转化',     value: 58, color: C.accent3 },
+  { label: '更新频率', value: 80, color: C.ikb },
+  { label: '学习力',   value: 90, color: C.burgundy },
+  { label: '满意度',   value: 70, color: C.accent3 },
 ];
 
 const EV_TREND_DATA   = [20, 28, 25, 38, 44, 50, 62, 72, 68, 80, 86, 92];
@@ -551,73 +604,75 @@ export default function Evolution() {
   // ── loading state ─────────────────────────────────────────────
   if (profileQuery.isLoading) {
     return (
-      <PioneerLayout>
+      <IKBLayout>
         <div className="mx-auto max-w-6xl space-y-8">
           <EvolutionHeader onTrigger={handleTrigger} />
           <div
             data-testid="evolution-loading"
-            className="flex min-h-[400px] items-center justify-center text-[#9ca3af]"
+            className="flex min-h-[400px] items-center justify-center"
+            style={{ color: '#6b7280' }}
           >
-            <span className="material-symbols-outlined animate-spin text-[32px]" aria-hidden="true">progress_activity</span>
+            <span className="material-symbols-outlined animate-spin text-[32px]" aria-hidden={true}>progress_activity</span>
           </div>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // ── error state ───────────────────────────────────────────────
   if (profileQuery.isError) {
     return (
-      <PioneerLayout>
+      <IKBLayout>
         <div className="mx-auto max-w-6xl space-y-8">
           <EvolutionHeader onTrigger={handleTrigger} />
           <div
             data-testid="evolution-error"
             className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-center"
           >
-            <span className="material-symbols-outlined text-[48px] text-[#781621]" aria-hidden="true">error</span>
-            <p className="text-[14px] font-semibold text-[#781621]">加载进化档案失败，请刷新重试</p>
+            <span className="material-symbols-outlined text-[48px]" aria-hidden={true} style={{ color: C.burgundy }}>error</span>
+            <p className="text-[14px] font-semibold" style={{ color: C.burgundyText }}>加载进化档案失败，请刷新重试</p>
             <button
               type="button"
               onClick={() => void profileQuery.refetch()}
-              className="rounded-md bg-[#002fa7] px-4 py-2 text-[13px] font-semibold text-white"
+              className="ikb-gradbtn ikb-focusring rounded-md px-4 py-2 text-[13px] font-semibold text-white"
             >
               重试
             </button>
           </div>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   // ── null / undefined (no profile yet) state ──────────────────
   if (profile === null) {
     return (
-      <PioneerLayout>
+      <IKBLayout>
         <div className="mx-auto max-w-6xl space-y-8">
           <EvolutionHeader onTrigger={handleTrigger} />
           <div
             data-testid="evolution-empty"
             className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-center"
           >
-            <span className="material-symbols-outlined text-[64px] text-[#c7d2fe]" aria-hidden="true">sprout</span>
+            <span className="material-symbols-outlined text-[64px]" aria-hidden={true} style={{ color: C.ikb + '66' }}>sprout</span>
             <p
               data-testid="evolution-empty-title"
-              className="text-[18px] font-extrabold text-[#111827]"
+              className="text-[18px] font-extrabold"
+              style={{ color: C.ink }}
             >
               暂无进化档案
             </p>
-            <p className="max-w-[320px] text-[13px] text-[#6b7280]">
+            <p className="max-w-[320px] text-[13px]" style={{ color: '#6b7280' }}>
               开始使用各功能并留下反馈，积累后进化档案将自动创建
             </p>
           </div>
         </div>
-      </PioneerLayout>
+      </IKBLayout>
     );
   }
 
   return (
-    <PioneerLayout>
+    <IKBLayout>
       <div className="mx-auto max-w-6xl space-y-8">
 
         {/* §1 Header */}
@@ -658,30 +713,39 @@ export default function Evolution() {
 
         {/* §4 数据洞察 band */}
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">insights</span>
-          <h2 className="text-[16px] font-bold text-[#111827]">数据洞察</h2>
-          <span className="text-[12px] text-[#9ca3af]">· AI 综合评估 · 实时测算</span>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-[#10b981]/10 px-3 py-1 text-[12px] font-semibold text-[#10b981]">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#10b981]" />
+          <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>insights</span>
+          <h2 className="text-[16px] font-bold" style={{ color: C.ink }}>数据洞察</h2>
+          <span className="text-[12px]" style={{ color: '#6b7280' }}>· AI 综合评估 · 实时测算</span>
+          <span
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold"
+            style={{ background: C.ikb + '18', color: C.ikb }}
+          >
+            <span className="ikb-pulse h-1.5 w-1.5 rounded-full" style={{ background: C.ikb }} />
             模型已就绪
           </span>
         </div>
         <div className="grid grid-cols-12 gap-6">
           {/* 进化维度雷达 · col-span-5 */}
-          <div className="col-span-5 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f5f8ff] p-6 pw-shadow-soft">
+          <div
+            className="col-span-5 rounded-xl p-6"
+            style={{ border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+          >
             <div className="mb-1 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#002fa7]/10 text-[#002fa7]">
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">radar</span>
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: C.ikb + '18', color: C.ikb }}
+                >
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>radar</span>
                 </span>
                 <div>
-                  <h3 className="text-[14px] font-bold text-[#111827]">进化维度雷达</h3>
-                  <p className="text-[11px] text-[#9ca3af]">六维模型评估</p>
+                  <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>进化维度雷达</h3>
+                  <p className="text-[11px]" style={{ color: '#6b7280' }}>六维模型评估</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-[26px] font-bold leading-none text-[#002fa7]">73</p>
-                <p className="text-[10px] text-[#9ca3af]">综合分</p>
+                <p className="text-[26px] font-bold leading-none" style={{ color: C.ikb }}>73</p>
+                <p className="text-[10px]" style={{ color: '#6b7280' }}>综合分</p>
               </div>
             </div>
             {(() => {
@@ -700,9 +764,9 @@ export default function Evolution() {
               return (
                 <svg viewBox="0 0 260 244" className="w-full">
                   <defs>
-                    <linearGradient id="radarFillEV" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#002fa7" stopOpacity="0.38" />
-                      <stop offset="100%" stopColor="#781621" stopOpacity="0.12" />
+                    <linearGradient id="ev-radarFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.38" />
+                      <stop offset="100%" stopColor={C.burgundy} stopOpacity="0.12" />
                     </linearGradient>
                   </defs>
                   {[0.25, 0.5, 0.75, 1].map((f) => (
@@ -712,7 +776,7 @@ export default function Evolution() {
                     const [x, y] = pt(i, R);
                     return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#eef1f6" strokeWidth="1" />;
                   })}
-                  <polygon points={dataPoly} fill="url(#radarFillEV)" stroke="#002fa7" strokeWidth="2" strokeLinejoin="round" />
+                  <polygon points={dataPoly} fill="url(#ev-radarFill)" stroke={C.ikb} strokeWidth="2" strokeLinejoin="round" />
                   {dims.map((d, i) => {
                     const [x, y] = pt(i, R * (d.value / 100));
                     return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke={d.color} strokeWidth="2" />;
@@ -732,32 +796,41 @@ export default function Evolution() {
               {EV_RADAR_DIMS.map((d) => (
                 <div key={d.label} className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: d.color }} />
-                  <span className="text-[11px] text-[#6b7280]">{d.label}</span>
-                  <span className="text-[11px] font-bold text-[#111827]">{d.value}</span>
+                  <span className="text-[11px]" style={{ color: '#6b7280' }}>{d.label}</span>
+                  <span className="text-[11px] font-bold" style={{ color: C.ink }}>{d.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 进化成长曲线 · col-span-7 */}
-          <div className="col-span-7 rounded-xl border border-[#e5e7eb] bg-gradient-to-br from-white to-[#f7f5ff] p-6 pw-shadow-soft">
+          <div
+            className="col-span-7 rounded-xl p-6"
+            style={{ border: `1px solid ${C.line}`, background: `linear-gradient(135deg, ${C.paper}, ${C.base})` }}
+          >
             <div className="mb-4 flex items-start justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#781621]/10 text-[#781621]">
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">show_chart</span>
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: C.burgundy + '18', color: C.burgundy }}
+                >
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>show_chart</span>
                 </span>
                 <div>
-                  <h3 className="text-[14px] font-bold text-[#111827]">进化成长曲线</h3>
-                  <p className="text-[11px] text-[#9ca3af]">按进化维度综合测算</p>
+                  <h3 className="text-[14px] font-bold" style={{ color: C.ink }}>进化成长曲线</h3>
+                  <p className="text-[11px]" style={{ color: '#6b7280' }}>按进化维度综合测算</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {['成长', '反馈', '学习'].map((t, i) => (
                   <span
                     key={t}
-                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${
-                      i === 0 ? 'bg-[#002fa7] text-white' : 'bg-[#f1f3f9] text-[#6b7280]'
-                    }`}
+                    className="rounded-md px-2.5 py-1 text-[11px] font-semibold"
+                    style={
+                      i === 0
+                        ? { background: C.ikb, color: '#fff' }
+                        : { background: C.base, color: '#6b7280' }
+                    }
                   >
                     {t}
                   </span>
@@ -765,12 +838,15 @@ export default function Evolution() {
               </div>
             </div>
             <div className="mb-3 flex items-end gap-3">
-              <p className="text-[30px] font-bold leading-none text-[#111827]">92</p>
-              <span className="mb-1 inline-flex items-center gap-0.5 rounded-full bg-[#10b981]/10 px-2 py-0.5 text-[12px] font-bold text-[#10b981]">
-                <span className="material-symbols-outlined text-[14px]" aria-hidden="true">trending_up</span>
+              <p className="text-[30px] font-bold leading-none" style={{ color: C.ink }}>92</p>
+              <span
+                className="mb-1 inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[12px] font-bold"
+                style={{ background: C.ikb + '18', color: C.ikb }}
+              >
+                <span className="material-symbols-outlined text-[14px]" aria-hidden={true}>trending_up</span>
                 +360%
               </span>
-              <span className="mb-1 text-[12px] text-[#9ca3af]">较冷启动基线</span>
+              <span className="mb-1 text-[12px]" style={{ color: '#6b7280' }}>较冷启动基线</span>
             </div>
             {(() => {
               const data = EV_TREND_DATA;
@@ -785,27 +861,27 @@ export default function Evolution() {
               return (
                 <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
                   <defs>
-                    <linearGradient id="trendFillEV" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#002fa7" stopOpacity="0.24" />
-                      <stop offset="100%" stopColor="#002fa7" stopOpacity="0" />
+                    <linearGradient id="ev-trendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={C.ikb} stopOpacity="0.24" />
+                      <stop offset="100%" stopColor={C.ikb} stopOpacity="0" />
                     </linearGradient>
-                    <linearGradient id="trendLineEV" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#002fa7" />
-                      <stop offset="100%" stopColor="#781621" />
+                    <linearGradient id="ev-trendLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={C.ikb} />
+                      <stop offset="100%" stopColor={C.burgundy} />
                     </linearGradient>
                   </defs>
                   {[0, 0.33, 0.66, 1].map((f) => (
                     <line key={f} x1={padL} x2={W - padR} y1={(padT + innerH * f).toFixed(1)} y2={(padT + innerH * f).toFixed(1)} stroke="#f1f3f9" strokeWidth="1" />
                   ))}
-                  <path d={area} fill="url(#trendFillEV)" />
-                  <path d={line} fill="none" stroke="url(#trendLineEV)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={area} fill="url(#ev-trendFill)" />
+                  <path d={line} fill="none" stroke="url(#ev-trendLine)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                   {data.map((v, i) =>
-                    i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke="#002fa7" strokeWidth="2" /> : null,
+                    i % 2 === 0 ? <circle key={i} cx={x(i)} cy={y(v)} r="3.4" fill="#fff" stroke={C.ikb} strokeWidth="2" /> : null,
                   )}
                 </svg>
               );
             })()}
-            <div className="mt-1 flex justify-between px-1 text-[10px] text-[#9ca3af]">
+            <div className="mt-1 flex justify-between px-1 text-[10px]" style={{ color: '#6b7280' }}>
               {EV_TREND_LABELS.map((m) => <span key={m}>{m}</span>)}
             </div>
           </div>
@@ -820,18 +896,19 @@ export default function Evolution() {
         {/* §6 深度学习档案 — 显示计数 + 跳转入口 (不再用 EVOLUTION_ARCHIVE_MOCK) */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-[16px] font-extrabold text-[#111827]">
-              <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">auto_awesome</span>
+            <h2 className="flex items-center gap-2 text-[16px] font-extrabold" style={{ color: C.ink }}>
+              <span className="material-symbols-outlined text-[20px]" aria-hidden={true} style={{ color: C.ikb }}>auto_awesome</span>
               {EVOLUTION_ARCHIVE_TITLE}
             </h2>
             <button
               type="button"
               data-testid="add-learning-link"
               onClick={() => navigate('/deep-learning')}
-              className="flex items-center gap-1.5 rounded-lg border border-[#002fa7]/30 bg-[#f3f6ff] px-3 py-1.5 text-[12px] font-semibold text-[#002fa7] transition-colors hover:bg-[#e0e7ff]"
+              className="ikb-focusring flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors"
+              style={{ border: `1px solid ${C.ikb}44`, background: C.base, color: C.ikb }}
               aria-label="新增深度学习"
             >
-              <span className="material-symbols-outlined text-[15px]" aria-hidden="true">add</span>
+              <span className="material-symbols-outlined text-[15px]" aria-hidden={true}>add</span>
               {EVOLUTION_ARCHIVE_ADD}
             </button>
           </div>
@@ -839,24 +916,29 @@ export default function Evolution() {
           {deepLearningCount > 0 ? (
             <div
               data-testid="archive-count-card"
-              className="flex items-center justify-between rounded-xl border border-[#e5e7eb] bg-white px-5 py-4 pw-shadow-soft"
+              className="flex items-center justify-between rounded-xl px-5 py-4"
+              style={{ border: `1px solid ${C.line}`, background: C.paper }}
             >
               <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#10b981]/10">
-                  <span className="material-symbols-outlined text-[18px] text-[#10b981]" aria-hidden="true">auto_awesome</span>
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: C.ikb + '18' }}
+                >
+                  <span className="material-symbols-outlined text-[18px]" aria-hidden={true} style={{ color: C.ikb }}>auto_awesome</span>
                 </span>
                 <div>
-                  <p className="text-[13px] font-bold text-[#111827]">
+                  <p className="text-[13px] font-bold" style={{ color: C.ink }}>
                     已完成 {deepLearningCount} 个深度学习档案
                   </p>
-                  <p className="mt-0.5 text-[11px] text-[#9ca3af]">
+                  <p className="mt-0.5 text-[11px]" style={{ color: '#6b7280' }}>
                     点击「新增学习」继续积累 · 或在深度学习页查看详情
                   </p>
                 </div>
               </div>
               <span
                 data-testid="archive-chip-archive-1"
-                className="shrink-0 rounded-full bg-[#d1fae5] px-2.5 py-0.5 text-[11px] font-semibold text-[#065f46]"
+                className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                style={{ background: C.ikb + '18', color: C.ikb }}
               >
                 {EVOLUTION_ARCHIVE_DONE_CHIP}
               </span>
@@ -864,9 +946,10 @@ export default function Evolution() {
           ) : (
             <div
               data-testid="archive-empty"
-              className="rounded-xl border border-dashed border-[#e5e7eb] bg-[#fafafa] px-5 py-6 text-center"
+              className="rounded-xl px-5 py-6 text-center"
+              style={{ border: `1px dashed ${C.line}`, background: C.base }}
             >
-              <p className="text-[13px] text-[#9ca3af]">
+              <p className="text-[13px]" style={{ color: '#6b7280' }}>
                 还没有深度学习档案 · 点击「新增学习」开始积累
               </p>
             </div>
@@ -875,7 +958,7 @@ export default function Evolution() {
 
         {/* §7 进化设置 */}
         <section className="space-y-4">
-          <h2 className="text-[16px] font-extrabold text-[#111827]">{EVOLUTION_SETTINGS_TITLE}</h2>
+          <h2 className="text-[16px] font-extrabold" style={{ color: C.ink }}>{EVOLUTION_SETTINGS_TITLE}</h2>
           <SettingRow
             testid="setting-row-auto"
             label={EVOLUTION_SETTING_AUTO_LABEL}
@@ -890,9 +973,8 @@ export default function Evolution() {
                   updateConfig.mutate({ autoEvolutionEnabled: next });
                   toast.info(next ? EVOLUTION_TOAST_AUTO_ON : EVOLUTION_TOAST_AUTO_OFF);
                 }}
-                className={`relative h-7 w-12 rounded-full transition-colors ${
-                  autoOn ? 'bg-[#002fa7]' : 'bg-[#e5e7eb]'
-                }`}
+                className="ikb-focusring relative h-7 w-12 rounded-full transition-colors"
+                style={{ background: autoOn ? C.ikb : '#e5e7eb' }}
                 aria-pressed={autoOn}
                 aria-label="自动进化开关"
               >
@@ -909,7 +991,10 @@ export default function Evolution() {
             label={EVOLUTION_SETTING_DIR_LABEL}
             desc={EVOLUTION_SETTING_DIR_DESC}
             control={
-              <span className="rounded-md border border-[#002fa7]/30 bg-[#f3f6ff] px-3 py-1 text-[12px] font-semibold text-[#002fa7]">
+              <span
+                className="rounded-md px-3 py-1 text-[12px] font-semibold"
+                style={{ border: `1px solid ${C.ikb}44`, background: C.base, color: C.ikb }}
+              >
                 {currentDirection || EVOLUTION_DIR_DEFAULT_TAG}
               </span>
             }
@@ -917,6 +1002,6 @@ export default function Evolution() {
         </section>
 
       </div>
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
