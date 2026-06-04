@@ -1,12 +1,14 @@
 /**
- * History.tsx — /history 历史记录页 · 先锋白迁移 · 阶段2 接真 tRPC
- * 逻辑零改动 · testid 全保留 · inline 先锋白重写(无旧组件 import)
+ * History.tsx — /history 历史记录页 · 红蓝紫渐变 IKB 体系
+ * 逻辑零改动 · testid 全保留 · inline IKB style + token
  */
+import '@/styles/ikb-hero.css';
 
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { PioneerLayout } from '@/layouts/PioneerLayout';
+import { C, F } from '@/components/home/ikb/system';
+import { IKBLayout } from '@/layouts/IKBLayout';
 import { ALL_ELEMENTS } from '@/lib/constants/elements';
 import {
   HISTORY_ACTIONS,
@@ -73,38 +75,66 @@ function buildKpi(rows: HistoryRow[], totalCount: number, weekCount: number) {
     ? formatTs(rows[0].createdAt).split(' ')[0] ?? '—'
     : '—';
   return [
-    { label: '记录总数', value: String(totalCount), sub: '全部生成记录', color: '#002fa7', bg: '#eff3fc' },
-    { label: '近 7 天', value: String(weekCount), sub: '最近 7 天生成', color: '#781621', bg: '#fdf2f2' },
-    { label: '脚本类型', value: rows.length > 0 ? String(scriptTypes) : '0', sub: '种内容类型', color: '#8A6A00', bg: '#fefae0' },
-    { label: '最新记录', value: latest, sub: '最近生成日期', color: '#002fa7', bg: '#eff3fc' },
+    { label: '记录总数', value: String(totalCount), sub: '全部生成记录', color: C.ikb, bg: `${C.ikb}10` },
+    { label: '近 7 天',  value: String(weekCount),  sub: '最近 7 天生成', color: C.burgundy, bg: `${C.burgundy}10` },
+    { label: '脚本类型', value: rows.length > 0 ? String(scriptTypes) : '0', sub: '种内容类型', color: C.accent3, bg: `${C.accent3}10` },
+    { label: '最新记录', value: latest, sub: '最近生成日期', color: C.ikb, bg: `${C.ikb}10` },
   ];
 }
+
+// ── IKB三色轮转 chip colors ────────────────────────────────────────────────────
+
+const IKB_CHIP_COLORS = [
+  { border: `${C.ikb}40`,      bg: `${C.ikb}0d`,      text: C.ikb },
+  { border: `${C.burgundy}40`, bg: `${C.burgundy}0d`, text: C.burgundy },
+  { border: `${C.accent3}40`,  bg: `${C.accent3}0d`,  text: C.accent3 },
+] as const;
 
 // ── inline ChipRow ──────────────────────────────────────────────────────────────
 
 function ChipRow({ scriptType, elementKeys, entryId }: { scriptType: string; elementKeys: ReadonlyArray<string>; entryId?: number | string }) {
-  const typeColor = scriptType === '搞辩论' ? '#002fa7' : '#781621';
-  const typeBg = scriptType === '搞辩论' ? '#eff3fc' : '#fdf2f2';
+  // scriptType chip: 搞辩论=蓝, others=玫红
+  const typeColor = scriptType === '搞辩论' ? C.ikb : C.burgundy;
+  const typeBg    = scriptType === '搞辩论' ? `${C.ikb}0d`      : `${C.burgundy}0d`;
+  const typeBdr   = scriptType === '搞辩论' ? `${C.ikb}40`      : `${C.burgundy}40`;
   const prefix = entryId !== undefined ? `-${entryId}` : '';
 
   return (
-    <div data-testid={`history-chip-row${prefix}`} className="flex flex-wrap gap-2">
+    <div data-testid={`history-chip-row${prefix}`} style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
       <span
         data-testid={`script-type-chip-${scriptType}`}
-        style={{ color: typeColor, backgroundColor: typeBg, border: `1px solid ${typeColor}33` }}
-        className="rounded-md px-3 py-1 text-[12px] font-bold tracking-wide"
+        style={{
+          color: typeColor,
+          backgroundColor: typeBg,
+          border: `1px solid ${typeBdr}`,
+          borderRadius: 6,
+          padding: '3px 10px',
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: '0.04em',
+          fontFamily: F.mono,
+        }}
       >
         {scriptType}
       </span>
 
-      {elementKeys.map((key) => {
+      {elementKeys.map((key, idx) => {
         const el = ALL_ELEMENTS.find((e) => e.key === key);
         if (!el) return null;
+        const cp = IKB_CHIP_COLORS[idx % IKB_CHIP_COLORS.length]!;
         return (
           <span
             key={key}
             data-testid={`element-chip-${entryId !== undefined ? `${entryId}-` : ''}${key}`}
-            className="rounded-md border border-[#e5e7eb] bg-[#f8f9fa] px-2 py-1 text-[12px] text-[#444653]"
+            style={{
+              borderRadius: 6,
+              border: `1px solid ${cp.border}`,
+              backgroundColor: cp.bg,
+              color: cp.text,
+              padding: '3px 8px',
+              fontSize: 12,
+              fontFamily: F.cn,
+            }}
           >
             {el.emoji} {el.label}
           </span>
@@ -139,7 +169,7 @@ function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
     <div
       data-testid="history-detail-drawer"
       role="presentation"
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 backdrop-blur-sm"
+      style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog requires keyboard Esc handling */}
@@ -149,7 +179,16 @@ function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
         aria-modal="true"
         aria-label="生成详情"
         tabIndex={-1}
-        className="relative w-full max-w-2xl rounded-t-2xl border border-[#e5e7eb] bg-white p-6 pb-10 shadow-xl outline-none"
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: 672,
+          borderRadius: '16px 16px 0 0',
+          border: `1px solid ${C.line}`,
+          background: C.paper,
+          padding: '24px 24px 40px',
+          boxShadow: `0 -8px 40px ${C.ikb}14`,
+        }}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
@@ -158,15 +197,48 @@ function DetailDrawer({ entry, onClose }: DetailDrawerProps) {
           data-testid="history-detail-close"
           aria-label="关闭"
           onClick={onClose}
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-[#9ca3af] hover:bg-[#f3f4f6] hover:text-[#002fa7]"
+          className="ikb-focusring"
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 16,
+            display: 'flex',
+            height: 32,
+            width: 32,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '50%',
+            border: `1px solid ${C.line}`,
+            background: C.base,
+            color: '#6b7280',
+            cursor: 'pointer',
+            transition: 'border-color 0.15s, color 0.15s',
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.ikb; (e.currentTarget as HTMLButtonElement).style.color = C.ikb; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = C.line; (e.currentTarget as HTMLButtonElement).style.color = '#6b7280'; }}
         >
-          <span className="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20 }}>close</span>
         </button>
 
-        <h3 className="mb-1 text-[16px] font-bold text-[#111827]">生成详情</h3>
-        <p className="mb-4 text-[12px] text-[#9ca3af]">{entry.timestamp}</p>
+        <h3 style={{ marginBottom: 4, fontSize: 16, fontWeight: 700, color: C.ink, fontFamily: F.cn }}>生成详情</h3>
+        <p style={{ marginBottom: 16, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>{entry.timestamp}</p>
         <ChipRow scriptType={entry.scriptType} elementKeys={entry.elementKeys} entryId={`drawer-${entry.id}`} />
-        <div className="mt-4 max-h-[50vh] overflow-y-auto rounded-lg border border-[#e5e7eb] bg-[#f8f9fa] p-4 text-[13px] leading-relaxed text-[#1b1b1b] whitespace-pre-wrap">
+        <div
+          style={{
+            marginTop: 16,
+            maxHeight: '50vh',
+            overflowY: 'auto',
+            borderRadius: 8,
+            border: `1px solid ${C.line}`,
+            background: C.base,
+            padding: 16,
+            fontSize: 13,
+            lineHeight: 1.7,
+            color: C.ink,
+            whiteSpace: 'pre-wrap',
+            fontFamily: F.cn,
+          }}
+        >
           {entry.content || '（无内容）'}
         </div>
       </div>
@@ -202,13 +274,22 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
   return (
     <div
       data-testid={`history-entry-card-${entry.id}`}
-      className="relative rounded-xl border border-[#e5e7eb] bg-white p-6 transition-all hover:border-[#002fa7] hover:shadow-sm"
-      style={{ opacity: isDeleting ? 0.5 : 1 }}
+      style={{
+        position: 'relative',
+        borderRadius: 10,
+        border: `1px solid ${C.line}`,
+        background: C.paper,
+        padding: 20,
+        opacity: isDeleting ? 0.5 : 1,
+        transition: 'border-color 0.2s, box-shadow 0.2s',
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.ikb; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 16px ${C.ikb}12`; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = C.line; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
     >
       {/* 右上 3 icon btn */}
       <div
         data-testid={`history-entry-actions-${entry.id}`}
-        className="absolute right-4 top-4 flex gap-1"
+        style={{ position: 'absolute', right: 16, top: 16, display: 'flex', gap: 4 }}
       >
         {HISTORY_ACTIONS.map(({ key, label }) => (
           <button
@@ -217,9 +298,37 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
             aria-label={label}
             disabled={isDeleting || (key === 'delete' && isAnyDeleting)}
             onClick={() => handleAction(key)}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[#9ca3af] transition-colors hover:bg-[#f3f4f6] hover:text-[#002fa7] disabled:cursor-not-allowed disabled:opacity-50"
+            className="ikb-focusring"
+            style={{
+              display: 'flex',
+              height: 30,
+              width: 30,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              border: `1px solid transparent`,
+              background: 'transparent',
+              color: '#6b7280',
+              cursor: isDeleting || (key === 'delete' && isAnyDeleting) ? 'not-allowed' : 'pointer',
+              opacity: isDeleting || (key === 'delete' && isAnyDeleting) ? 0.5 : 1,
+              transition: 'background 0.15s, color 0.15s, border-color 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              if (!isDeleting && !(key === 'delete' && isAnyDeleting)) {
+                const btn = e.currentTarget as HTMLButtonElement;
+                btn.style.background = `${C.ikb}0d`;
+                btn.style.borderColor = `${C.ikb}40`;
+                btn.style.color = C.ikb;
+              }
+            }}
+            onMouseLeave={(e) => {
+              const btn = e.currentTarget as HTMLButtonElement;
+              btn.style.background = 'transparent';
+              btn.style.borderColor = 'transparent';
+              btn.style.color = '#6b7280';
+            }}
           >
-            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 18 }}>
               {ACTION_ICONS[key] ?? 'more_horiz'}
             </span>
           </button>
@@ -230,17 +339,17 @@ function EntryCard({ entry, onView, onCopy, onDelete, isDeleting, isAnyDeleting 
       <ChipRow scriptType={entry.scriptType} elementKeys={entry.elementKeys} entryId={entry.id} />
 
       {/* row 2 · 主题 */}
-      <p data-testid={`history-topic-${entry.id}`} className="mt-3 text-[14px] leading-relaxed text-[#1b1b1b]">
-        <span className="text-[#9ca3af]">{HISTORY_TOPIC_PREFIX}</span>
-        <span className="font-semibold text-[#111827]">{entry.topic}</span>
+      <p data-testid={`history-topic-${entry.id}`} style={{ marginTop: 12, fontSize: 14, lineHeight: 1.65, color: C.ink, fontFamily: F.cn }}>
+        <span style={{ color: '#6b7280' }}>{HISTORY_TOPIC_PREFIX}</span>
+        <span style={{ fontWeight: 600, color: C.ink }}>{entry.topic}</span>
       </p>
 
       {/* row 3 · timestamp */}
       <p
         data-testid={`history-timestamp-${entry.id}`}
-        className="mt-2 flex items-center gap-1.5 text-[12px] text-[#9ca3af]"
+        style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#6b7280', fontFamily: F.mono }}
       >
-        <span className="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 14 }}>schedule</span>
         {entry.timestamp}
       </p>
     </div>
@@ -262,15 +371,28 @@ interface HistoryListProps {
 function HistoryList({ entries, onView, onCopy, onDelete, deletingId, isAnyDeleting }: HistoryListProps) {
   if (entries.length === 0) {
     return (
-      <div data-testid="history-list" className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-white py-20">
-        <span className="material-symbols-outlined text-[48px] text-[#d1d5db]" aria-hidden="true">history</span>
-        <p className="mt-3 text-[14px] text-[#9ca3af]">暂无历史记录</p>
+      <div
+        data-testid="history-list"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          border: `2px dashed ${C.line}`,
+          background: C.base,
+          paddingTop: 80,
+          paddingBottom: 80,
+        }}
+      >
+        <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 48, color: '#d1d5db' }}>history</span>
+        <p style={{ marginTop: 12, fontSize: 14, color: '#6b7280', fontFamily: F.cn }}>暂无历史记录</p>
       </div>
     );
   }
 
   return (
-    <div data-testid="history-list" className="space-y-4">
+    <div data-testid="history-list" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {entries.map((entry) => (
         <EntryCard
           key={entry.id}
@@ -291,23 +413,50 @@ function HistoryList({ entries, onView, onCopy, onDelete, deletingId, isAnyDelet
 function HistoryHeader({ count }: { count: number }) {
   return (
     <div data-testid="history-header">
-      <div className="mb-3 flex items-center gap-3">
-        <span className="rounded-lg border border-[#e5e7eb] bg-[#e8e8e8] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#1b1b1b]">
+      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span
+          style={{
+            borderRadius: 8,
+            border: `1px solid ${C.line}`,
+            background: C.base,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase' as const,
+            color: C.ink,
+            fontFamily: F.mono,
+          }}
+        >
           更多
         </span>
-        <span className="rounded-lg border border-[#6e5e00] bg-[#F6D300] px-3 py-1 text-[12px] font-bold uppercase tracking-widest text-[#221b00]">
+        <span
+          style={{
+            borderRadius: 8,
+            border: `1px solid ${C.ikb}50`,
+            background: `${C.ikb}12`,
+            padding: '4px 12px',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase' as const,
+            color: C.purpleText,
+            fontFamily: F.mono,
+          }}
+        >
           历史记录
         </span>
       </div>
       <h1
         data-testid="history-h1"
-        className="whitespace-nowrap text-[40px] font-extrabold tracking-tighter text-[#1b1b1b]"
+        className="ikb-gradtext"
+        style={{ whiteSpace: 'nowrap', fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', fontFamily: F.display }}
       >
         {HISTORY_H1}
       </h1>
       <p
         data-testid="history-subtitle"
-        className="mt-2 max-w-[820px] text-[16px] leading-relaxed text-[#444653]"
+        style={{ marginTop: 8, maxWidth: 820, fontSize: 16, lineHeight: 1.7, color: '#5A6173', fontFamily: F.cn }}
       >
         {HISTORY_SUBTITLE_TPL(count)}
       </p>
@@ -319,9 +468,18 @@ function HistoryHeader({ count }: { count: number }) {
 
 function HistorySkeleton() {
   return (
-    <div data-testid="history-loading" className="space-y-4">
+    <div data-testid="history-loading" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-32 animate-pulse rounded-xl border border-[#e5e7eb] bg-[#f3f4f6]" />
+        <div
+          key={i}
+          style={{
+            height: 128,
+            borderRadius: 10,
+            border: `1px solid ${C.line}`,
+            background: C.base,
+            animation: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
+          }}
+        />
       ))}
     </div>
   );
@@ -383,46 +541,71 @@ export default function History() {
     deleteMutation.mutate({ id });
   }
 
+  // KPI icon lookup
+  const kpiIcons: Record<string, string> = {
+    '记录总数': 'history',
+    '近 7 天':  'date_range',
+    '脚本类型': 'category',
+    '最新记录': 'event_note',
+  };
+
   return (
-    <PioneerLayout>
+    <IKBLayout>
       {/* ── Header ──────────────────────────────────────────── */}
-      <header className="mb-10">
+      <header style={{ marginBottom: 40 }}>
         <HistoryHeader count={entries.length} />
       </header>
 
       {/* ── KPI 概览 ─────────────────────────────────────────── */}
-      <div className="mb-8 grid grid-cols-4 gap-5">
+      <div style={{ marginBottom: 32, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
         {kpiItems.map((kpi) => (
           <div
             key={kpi.label}
             data-testid={`history-kpi-${kpi.label}`}
-            className="rounded-xl border border-[#e5e7eb] bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-sm"
+            style={{
+              borderRadius: 10,
+              border: `1px solid ${kpi.color}28`,
+              background: `linear-gradient(135deg, ${C.paper}, ${C.base})`,
+              padding: 20,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 6px 20px ${kpi.color}14`; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}
           >
             <div
-              className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg"
-              style={{ backgroundColor: kpi.bg }}
+              style={{
+                marginBottom: 12,
+                display: 'inline-flex',
+                height: 36,
+                width: 36,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 8,
+                background: kpi.bg,
+                color: kpi.color,
+              }}
             >
               <span
-                className="material-symbols-outlined text-[20px]"
-                aria-hidden="true"
-                style={{ color: kpi.color }}
+                className="material-symbols-outlined"
+                aria-hidden={true}
+                style={{ fontSize: 20 }}
               >
-                {kpi.label === '记录总数'
-                  ? 'history'
-                  : kpi.label === '近 7 天'
-                  ? 'date_range'
-                  : kpi.label === '脚本类型'
-                  ? 'category'
-                  : 'event_note'}
+                {kpiIcons[kpi.label] ?? 'info'}
               </span>
             </div>
             <p
-              className="text-[26px] font-extrabold leading-none tracking-tighter"
-              style={{ color: kpi.color }}
+              style={{
+                fontSize: 26,
+                fontWeight: 800,
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+                color: kpi.color,
+                fontFamily: F.display,
+              }}
             >
               {kpi.value}
             </p>
-            <p className="mt-1 text-[12px] text-[#9ca3af]">
+            <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>
               {kpi.label} · {kpi.sub}
             </p>
           </div>
@@ -430,21 +613,57 @@ export default function History() {
       </div>
 
       {/* ── 历史列表 ─────────────────────────────────────────── */}
-      <section aria-labelledby="history-section-title" className="rounded-xl border border-[#e5e7eb] bg-[#f8f9fa] p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[20px] text-[#002fa7]" aria-hidden="true">history</span>
-          <h2 id="history-section-title" className="text-[16px] font-bold text-[#111827]">生成记录</h2>
-          <span className="text-[12px] text-[#9ca3af]">· 共 {entries.length} 条</span>
+      <section
+        aria-labelledby="history-section-title"
+        style={{
+          borderRadius: 10,
+          border: `1px solid ${C.line}`,
+          background: C.base,
+          padding: 24,
+        }}
+      >
+        <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 20, color: C.ikb }}>history</span>
+          <h2 id="history-section-title" style={{ fontSize: 16, fontWeight: 700, color: C.ink, margin: 0, fontFamily: F.cn }}>生成记录</h2>
+          <span style={{ fontSize: 12, color: '#6b7280', fontFamily: F.cn }}>· 共 {entries.length} 条</span>
         </div>
 
         {isError ? (
-          <div data-testid="history-error" className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#e5e7eb] bg-white py-20">
-            <span className="material-symbols-outlined text-[48px] text-[#d1d5db]" aria-hidden="true">error_outline</span>
-            <p className="mt-3 text-[14px] text-[#9ca3af]">加载失败</p>
+          <div
+            data-testid="history-error"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+              border: `2px dashed ${C.burgundy}40`,
+              background: `${C.burgundy}06`,
+              paddingTop: 80,
+              paddingBottom: 80,
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden={true} style={{ fontSize: 48, color: `${C.burgundy}80` }}>error_outline</span>
+            <p style={{ marginTop: 12, fontSize: 14, color: C.burgundy, fontFamily: F.cn }}>加载失败</p>
             <button
               data-testid="history-retry"
               onClick={() => void refetch()}
-              className="mt-4 rounded-lg border border-[#002fa7] px-4 py-2 text-[13px] font-semibold text-[#002fa7] hover:bg-[#eff3fc]"
+              className="ikb-focusring"
+              style={{
+                marginTop: 16,
+                borderRadius: 8,
+                border: `1px solid ${C.ikb}`,
+                background: 'transparent',
+                padding: '8px 20px',
+                fontSize: 13,
+                fontWeight: 600,
+                color: C.ikb,
+                cursor: 'pointer',
+                fontFamily: F.cn,
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${C.ikb}0d`; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               重试
             </button>
@@ -470,6 +689,6 @@ export default function History() {
           onClose={() => setDetailEntry(null)}
         />
       )}
-    </PioneerLayout>
+    </IKBLayout>
   );
 }
