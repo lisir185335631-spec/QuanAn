@@ -594,6 +594,7 @@ export default function Step3() {
                   fontSize: 11,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
+                  borderRadius: 8,
                   border: `1px solid ${C.line}`,
                   background: C.base,
                   color: C.ink,
@@ -608,6 +609,7 @@ export default function Step3() {
                   fontSize: 11,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
+                  borderRadius: 8,
                   border: `1px solid ${C.accent3}55`,
                   background: `${C.accent3}18`,
                   color: C.purpleText,
@@ -655,6 +657,7 @@ export default function Step3() {
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
+                borderRadius: 10,
                 border: `1px solid ${C.line}`,
                 background: C.paper,
                 padding: '10px 16px',
@@ -684,6 +687,7 @@ export default function Step3() {
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
+                borderRadius: 10,
                 border: `1px solid ${C.line}`,
                 background: C.paper,
                 padding: '10px 16px',
@@ -712,6 +716,7 @@ export default function Step3() {
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
+                borderRadius: 10,
                 padding: '10px 18px',
                 fontFamily: F.cn,
                 fontSize: 13,
@@ -731,6 +736,7 @@ export default function Step3() {
         <section
           style={{
             position: 'relative',
+            borderRadius: 12,
             border: `1px solid ${C.line}`,
             background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
             padding: 24,
@@ -788,6 +794,7 @@ export default function Step3() {
                   width: 44,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  borderRadius: 10,
                   background: C.grad,
                   color: '#fff',
                 }}
@@ -874,6 +881,7 @@ export default function Step3() {
                           alignItems: 'center',
                           gap: 12,
                           overflow: 'hidden',
+                          borderRadius: 12,
                           border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
                           background: active ? `${C.ikb}08` : C.paper,
                           padding: '14px',
@@ -891,6 +899,7 @@ export default function Step3() {
                             flexShrink: 0,
                             alignItems: 'center',
                             justifyContent: 'center',
+                            borderRadius: 8,
                             color: '#fff',
                             backgroundColor: p.color,
                           }}
@@ -957,6 +966,7 @@ export default function Step3() {
                       className="ikb-input"
                       style={{
                         width: '100%',
+                        borderRadius: 10,
                         border: `1px solid ${C.line}`,
                         background: C.paper,
                         padding: '12px 12px 12px 40px',
@@ -997,6 +1007,7 @@ export default function Step3() {
                       className="ikb-input"
                       style={{
                         width: '100%',
+                        borderRadius: 10,
                         border: `1px solid ${C.line}`,
                         background: C.paper,
                         padding: '12px 12px 12px 40px',
@@ -1037,6 +1048,7 @@ export default function Step3() {
                 <div
                   style={{
                     overflow: 'hidden',
+                    borderRadius: 10,
                     border: `1px solid ${C.line}`,
                     background: C.paper,
                     transition: 'border-color 0.2s',
@@ -1111,6 +1123,7 @@ export default function Step3() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
+                      borderRadius: 10,
                       padding: '12px 32px',
                       fontFamily: F.cn,
                       fontSize: 12,
@@ -1137,6 +1150,7 @@ export default function Step3() {
           <div
             className="col-span-5 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -1151,6 +1165,7 @@ export default function Step3() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: `${C.ikb}18`,
                     color: C.ikb,
                   }}
@@ -1227,6 +1242,7 @@ export default function Step3() {
           <div
             className="col-span-7 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -1241,6 +1257,7 @@ export default function Step3() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: `${C.burgundy}18`,
                     color: C.burgundyText,
                   }}
@@ -1352,13 +1369,14 @@ export default function Step3() {
           <div
             className="ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}18`, color: C.ikb }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">verified</span>
               </span>
               <span
@@ -1399,13 +1417,14 @@ export default function Step3() {
           <div
             className="ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">text_fields</span>
               </span>
               <span
@@ -1440,13 +1459,14 @@ export default function Step3() {
           <div
             className="ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}18`, color: C.purpleText }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">hub</span>
               </span>
               <span
@@ -1479,13 +1499,14 @@ export default function Step3() {
           <div
             className="ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 20,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.ikb}18`, color: C.ikb }}>
+              <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.ikb}18`, color: C.ikb }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">edit_document</span>
               </span>
               <span
@@ -1514,7 +1535,7 @@ export default function Step3() {
                 <span
                   key={k}
                   style={{
-                    borderRadius: 0,
+                    borderRadius: 9999,
                     background: `${C.ikb}10`,
                     padding: '2px 6px',
                     fontSize: 10,
@@ -1536,6 +1557,7 @@ export default function Step3() {
           <div
             className="relative col-span-12 overflow-hidden"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -1552,6 +1574,7 @@ export default function Step3() {
                   flexShrink: 0,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  borderRadius: 10,
                   background: C.grad,
                   color: '#fff',
                 }}
@@ -1591,6 +1614,7 @@ export default function Step3() {
           <div
             className="col-span-4 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
@@ -1598,7 +1622,7 @@ export default function Step3() {
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">text_fields</span>
                 </span>
                 矩阵命名
@@ -1639,6 +1663,7 @@ export default function Step3() {
                     className="group ikb-focusring ikb-hovercard"
                     style={{
                       cursor: 'pointer',
+                      borderRadius: 10,
                       border: `1px solid ${C.line}`,
                       background: C.base,
                       padding: 12,
@@ -1677,6 +1702,7 @@ export default function Step3() {
           <div
             className="col-span-4 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
@@ -1684,7 +1710,7 @@ export default function Step3() {
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">face</span>
                 </span>
                 头像生成流
@@ -1718,6 +1744,7 @@ export default function Step3() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderRadius: 10,
                 border: `1px solid ${C.line}`,
                 background: C.base,
                 padding: 16,
@@ -1731,7 +1758,7 @@ export default function Step3() {
               <span className="material-symbols-outlined" style={{ marginBottom: 8, fontSize: 36, color: '#757685' }} aria-hidden="true">image</span>
               <p style={{ fontSize: 14, color: '#5A6173', fontFamily: F.cn }}>点击生成头像</p>
             </button>
-            <div style={{ border: `1px solid ${C.line}`, background: C.base, padding: 12 }}>
+            <div style={{ borderRadius: 10, border: `1px solid ${C.line}`, background: C.base, padding: 12 }}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', fontFamily: F.mono, color: C.burgundyText }}>
                 AI Prompt
                 <button
@@ -1754,6 +1781,7 @@ export default function Step3() {
           <div
             className="col-span-4 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
@@ -1761,7 +1789,7 @@ export default function Step3() {
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.burgundy}18`, color: C.burgundyText }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.burgundy}18`, color: C.burgundyText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">wallpaper</span>
                 </span>
                 背景墙视觉
@@ -1792,6 +1820,7 @@ export default function Step3() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 overflow: 'hidden',
+                borderRadius: 8,
                 border: `1px solid ${C.line}`,
                 background: C.grad,
               }}
@@ -1811,6 +1840,7 @@ export default function Step3() {
           <div
             className="col-span-8 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: C.paper,
               padding: 24,
@@ -1818,7 +1848,7 @@ export default function Step3() {
           >
             <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: C.ink, fontFamily: F.cn, margin: 0 }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: `${C.accent3}18`, color: C.purpleText }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${C.accent3}18`, color: C.purpleText }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">edit_document</span>
                 </span>
                 简介文案公式
@@ -1846,6 +1876,7 @@ export default function Step3() {
                   display: 'flex',
                   alignItems: 'flex-start',
                   gap: 8,
+                  borderRadius: 8,
                   border: `1px solid ${C.accent3}44`,
                   background: `${C.accent3}08`,
                   padding: 12,
@@ -1864,7 +1895,7 @@ export default function Step3() {
             )}
             <div className="grid grid-cols-2 gap-4">
               {generated.bioEntries.slice(0, 2).map((b) => (
-                <div key={b.platformKey} style={{ border: `1px solid ${C.line}`, background: C.base, padding: 16 }}>
+                <div key={b.platformKey} style={{ borderRadius: 10, border: `1px solid ${C.line}`, background: C.base, padding: 16 }}>
                   <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span
                       style={{
@@ -1909,6 +1940,7 @@ export default function Step3() {
           <div
             className="relative col-span-4 overflow-hidden"
             style={{
+              borderRadius: 12,
               background: C.grad,
               padding: 24,
               color: '#fff',
@@ -1921,7 +1953,7 @@ export default function Step3() {
             <div aria-hidden="true" style={{ pointerEvents: 'none', position: 'absolute', bottom: -40, left: -40, height: 128, width: 128, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', filter: 'blur(32px)' }} />
             <div style={{ position: 'relative' }}>
               <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10, fontSize: 18, fontWeight: 600, color: '#fff', fontFamily: F.cn }}>
-                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.18)' }}>
+                <span style={{ display: 'flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(255,255,255,0.18)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">rocket_launch</span>
                 </span>
                 下一步执行
@@ -1948,6 +1980,7 @@ export default function Step3() {
               style={{
                 marginTop: 32,
                 width: '100%',
+                borderRadius: 10,
                 border: `1px solid rgba(255,255,255,0.6)`,
                 background: 'rgba(255,255,255,0.15)',
                 padding: '12px 0',
@@ -2008,6 +2041,7 @@ export default function Step3() {
           <div
             className="col-span-5 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -2022,6 +2056,7 @@ export default function Step3() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: `${C.ikb}18`,
                     color: C.ikb,
                   }}
@@ -2098,6 +2133,7 @@ export default function Step3() {
           <div
             className="col-span-7 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -2112,6 +2148,7 @@ export default function Step3() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: `${C.burgundy}18`,
                     color: C.burgundyText,
                   }}

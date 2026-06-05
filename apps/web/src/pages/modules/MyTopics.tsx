@@ -111,7 +111,7 @@ function TopicCard({ item, index }: TopicCardProps) {
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
-        borderRadius: 0,
+        borderRadius: 12,
         border: `1px solid ${C.line}`,
         background: C.paper,
         padding: '16px 20px',
@@ -229,7 +229,7 @@ function TopicListSkeleton() {
         <div
           key={i}
           className="animate-pulse"
-          style={{ height: 96, border: `1px solid ${C.line}`, background: C.base, borderRadius: 0 }}
+          style={{ height: 96, border: `1px solid ${C.line}`, background: C.base, borderRadius: 12 }}
         />
       ))}
     </div>
@@ -278,7 +278,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
       <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
         <span
           style={{
-            borderRadius: 0,
+            borderRadius: 8,
             border: `1px solid ${C.line}`,
             background: '#e8e8e8',
             padding: '4px 12px',
@@ -294,7 +294,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
         </span>
         <span
           style={{
-            borderRadius: 0,
+            borderRadius: 8,
             border: `1px solid ${C.accent3}66`,
             background: `${C.accent3}18`,
             padding: '4px 12px',
@@ -311,7 +311,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
         {/* breadcrumb chip */}
         <span
           style={{
-            borderRadius: 0,
+            borderRadius: 8,
             border: `1px solid ${C.ikb}40`,
             background: `${C.ikb}0d`,
             padding: '4px 12px',
@@ -385,7 +385,7 @@ function MyTopicsHeader({ topicCount, weeklyNew, sourceCount }: MyTopicsHeaderPr
                   flexDirection: 'column',
                   alignItems: 'center',
                   width: 108,
-                  borderRadius: 0,
+                  borderRadius: 12,
                   border: `1px solid ${C.line}`,
                   background: C.paper,
                   padding: '12px',
@@ -456,7 +456,7 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
           className="ikb-input"
           style={{
             width: '100%',
-            borderRadius: 0,
+            borderRadius: 10,
             border: `1px solid ${C.line}`,
             background: C.base,
             padding: '10px 12px 10px 40px',
@@ -483,7 +483,7 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
           display: 'flex',
           alignItems: 'center',
           gap: 8,
-          borderRadius: 0,
+          borderRadius: 10,
           border: `1px solid ${C.line}`,
           background: C.paper,
           padding: '10px 16px',
@@ -514,7 +514,7 @@ function MyTopicsSearchRow({ value, onChange, onCopy, onDownload, actionsDisable
           display: 'flex',
           alignItems: 'center',
           gap: 8,
-          borderRadius: 0,
+          borderRadius: 10,
           border: `1px solid ${C.line}`,
           background: C.paper,
           padding: '10px 16px',
@@ -564,7 +564,7 @@ function MyTopicsFilters({ active, onChange }: MyTopicsFiltersProps) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              borderRadius: 0,
+              borderRadius: 9999,
               border: `1px solid ${isActive ? chipAccent : C.line}`,
               background: isActive ? chipAccent : C.paper,
               color: isActive ? '#fff' : '#444653',
@@ -605,6 +605,7 @@ function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        borderRadius: 12,
         border: `2px dashed ${C.line}`,
         background: C.base,
         padding: '80px 32px',
@@ -648,7 +649,7 @@ function MyTopicsEmpty({ onCta }: MyTopicsEmptyProps) {
           display: 'flex',
           alignItems: 'center',
           gap: 8,
-          borderRadius: 0,
+          borderRadius: 10,
           padding: '12px 32px',
           fontSize: 13,
           fontWeight: 700,
@@ -796,6 +797,7 @@ export default function MyTopics() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
+              borderRadius: 12,
               border: `2px dashed ${C.line}`,
               background: C.base,
               padding: '80px 32px',
@@ -817,7 +819,7 @@ export default function MyTopics() {
               onClick={() => { void refetch(); }}
               className="ikb-gradbtn ikb-focusring"
               style={{
-                borderRadius: 0,
+                borderRadius: 10,
                 padding: '10px 24px',
                 fontSize: 13,
                 fontWeight: 700,
