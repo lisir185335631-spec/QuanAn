@@ -246,6 +246,7 @@ export default function Step1() {
                   fontSize: 11,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
+                  borderRadius: 8,
                   border: `1px solid ${C.line}`,
                   background: C.base,
                   color: C.ink,
@@ -260,6 +261,7 @@ export default function Step1() {
                   fontSize: 11,
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
+                  borderRadius: 8,
                   border: `1px solid ${C.yellow}55`,
                   background: `${C.yellow}18`,
                   color: C.purpleText,
@@ -327,6 +329,7 @@ export default function Step1() {
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
+                borderRadius: 10,
                 border: `1px solid ${C.line}`,
                 background: C.paper,
                 padding: '10px 16px',
@@ -356,6 +359,7 @@ export default function Step1() {
                 alignItems: 'center',
                 gap: 8,
                 whiteSpace: 'nowrap',
+                borderRadius: 10,
                 padding: '10px 18px',
                 fontFamily: F.cn,
                 fontSize: 13,
@@ -381,7 +385,7 @@ export default function Step1() {
               style={{
                 border: `1px solid ${C.line}`,
                 background: C.paper,
-                borderRadius: 0,
+                borderRadius: 12,
                 padding: 20,
               }}
             >
@@ -393,6 +397,7 @@ export default function Step1() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: kpi.iconBg,
                     color: kpi.iconColor,
                   }}
@@ -482,6 +487,7 @@ export default function Step1() {
                   onClick={() => setActiveTabId(tab.id)}
                   className="ikb-focusring"
                   style={{
+                    borderRadius: 9999,
                     border: active ? `1px solid ${C.ikb}` : `1px solid rgba(22,32,72,0.18)`,
                     background: active ? C.ikb : C.paper,
                     color: active ? '#fff' : '#5A6173',
@@ -525,6 +531,7 @@ export default function Step1() {
               className="ikb-input"
               style={{
                 width: 256,
+                borderRadius: 10,
                 border: `1px solid ${C.line}`,
                 background: C.paper,
                 padding: '8px 16px 8px 40px',
@@ -541,6 +548,7 @@ export default function Step1() {
         {filteredIndustries.length === 0 ? (
           <div
             style={{
+              borderRadius: 12,
               border: `1px dashed rgba(22,32,72,0.22)`,
               background: C.base,
               padding: '64px 0',
@@ -588,6 +596,7 @@ export default function Step1() {
                     alignItems: 'flex-start',
                     gap: 8,
                     overflow: 'hidden',
+                    borderRadius: 12,
                     padding: 16,
                     textAlign: 'left',
                     border: active ? `2px solid ${C.ikb}` : `1px solid ${C.line}`,
@@ -626,6 +635,7 @@ export default function Step1() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: 20,
+                      borderRadius: 8,
                       boxShadow: `0 2px 8px ${tileColor}40`,
                       backgroundColor: tileColor,
                     }}
@@ -738,6 +748,7 @@ export default function Step1() {
           <div
             className="col-span-5 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -752,6 +763,7 @@ export default function Step1() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: `${C.ikb}18`,
                     color: C.ikb,
                   }}
@@ -789,6 +801,7 @@ export default function Step1() {
           <div
             className="col-span-7 ikb-hovercard"
             style={{
+              borderRadius: 12,
               border: `1px solid ${C.line}`,
               background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)`,
               padding: 24,
@@ -803,6 +816,7 @@ export default function Step1() {
                     width: 36,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    borderRadius: 8,
                     background: `${C.burgundy}18`,
                     color: C.burgundyText,
                   }}
@@ -936,6 +950,7 @@ export default function Step1() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
+                borderRadius: 10,
                 padding: '12px 32px',
                 fontSize: 14,
                 fontWeight: 700,
