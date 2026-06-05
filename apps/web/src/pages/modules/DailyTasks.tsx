@@ -853,13 +853,13 @@ export default function DailyTasks() {
             alignItems: 'center',
             gap: 16,
             borderRadius: 12,
-            border: '1px solid #fecaca',
-            background: '#fff5f5',
+            border: `1px solid ${C.burgundy}30`,
+            background: `${C.burgundy}08`,
             padding: '48px 32px',
             textAlign: 'center',
           }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 48, color: '#ef4444' }}>error_outline</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 48, color: C.burgundyText }}>error_outline</span>
           <p style={{ fontSize: 16, fontWeight: 600, color: C.ink, margin: 0, fontFamily: F.cn }}>加载今日任务失败</p>
           <button
             type="button"
@@ -974,11 +974,11 @@ export default function DailyTasks() {
               alignItems: 'center',
               gap: 8,
               borderRadius: 8,
-              border: '1px solid #fde68a',
-              background: '#fffbeb',
+              border: `1px solid ${C.accent3}30`,
+              background: `${C.accent3}08`,
               padding: '8px 16px',
               fontSize: 13,
-              color: '#92400e',
+              color: C.purpleText,
               fontFamily: F.cn,
             }}
           >
@@ -1040,7 +1040,7 @@ export default function DailyTasks() {
                 {/* P2/P3: show loading/error inline; totalDays/totalTasks clarified as 近30天 */}
                 <p style={{ marginTop: 6, fontSize: 12, color: '#6b7280', margin: '6px 0 0', fontFamily: F.cn }}>
                   {isHistoryError
-                    ? <span style={{ color: '#ef4444' }}>数据加载失败</span>
+                    ? <span style={{ color: C.burgundyText }}>数据加载失败</span>
                     : stat.label}
                 </p>
                 {/* P3: 30-day window disclaimer on the two cumulative stats */}

@@ -501,7 +501,8 @@ export default function Step5() {
       {saveMutation.isError && (
         <div
           data-testid="step5-error"
-          className="mb-8 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[14px] font-medium text-[#991b1b]"
+          className="mb-8 flex items-center justify-between gap-3 rounded-xl border p-4 text-[14px] font-medium"
+          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
         >
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>error</span>
@@ -510,7 +511,8 @@ export default function Step5() {
           <button
             type="button"
             onClick={handleGenerateAll}
-            className="ikb-focusring shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+            className="ikb-focusring shrink-0 rounded-lg border bg-white px-4 py-1.5 text-[12px] font-bold"
+            style={{ borderColor: `${C.burgundy}30`, color: C.burgundyText }}
           >
             重试
           </button>
@@ -533,7 +535,8 @@ export default function Step5() {
       {dbIsError && !hasResult && (
         <div
           data-testid="step5-db-error"
-          className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-[#dc2626]/20 bg-[#fef2f2] p-4 text-[13px] font-medium text-[#991b1b]"
+          className="mb-6 flex items-center justify-between gap-3 rounded-xl border p-4 text-[13px] font-medium"
+          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText }}
         >
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-[18px]" aria-hidden={true}>error</span>
@@ -542,7 +545,8 @@ export default function Step5() {
           <button
             type="button"
             onClick={() => { for (const q of Object.values(categoryQueries)) void q.refetch(); }}
-            className="ikb-focusring shrink-0 rounded-lg border border-[#dc2626]/30 bg-white px-4 py-1.5 text-[12px] font-bold text-[#991b1b] hover:bg-[#fef2f2]"
+            className="ikb-focusring shrink-0 rounded-lg border bg-white px-4 py-1.5 text-[12px] font-bold"
+            style={{ borderColor: `${C.burgundy}30`, color: C.burgundyText }}
           >
             重试
           </button>

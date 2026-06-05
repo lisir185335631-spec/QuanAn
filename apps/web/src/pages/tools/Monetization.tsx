@@ -725,7 +725,7 @@ export default function Monetization() {
         <div
           data-testid="mn-error-notice"
           className="mb-6 flex items-center gap-3 rounded-xl border px-5 py-4 text-[14px]"
-          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundy, fontFamily: F.cn }}
+          style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08`, color: C.burgundyText, fontFamily: F.cn }}
         >
           <span className="material-symbols-outlined text-[20px]" aria-hidden={true}>error</span>
           生成失败，请检查网络后重试。

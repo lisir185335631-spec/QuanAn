@@ -350,19 +350,19 @@ function SampleFormPioneer({
                   </span>
                   <span
                     className="shrink-0 text-[11px] tabular-nums"
-                    style={{ color: isTextTooLong ? '#dc2626' : '#6b7280', fontFamily: F.mono }}
+                    style={{ color: isTextTooLong ? C.burgundyText : '#6b7280', fontFamily: F.mono }}
                   >
                     {text.length} 字
                   </span>
                 </div>
               </div>
               {text.length > 0 && text.length < TEXT_MIN_PARSE && (
-                <p data-testid="text-length-warning" className="mt-1.5 text-[12px]" style={{ color: '#dc2626', fontFamily: F.cn }}>
+                <p data-testid="text-length-warning" className="mt-1.5 text-[12px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>
                   文案需不少于 100 字（当前 {text.length} 字）
                 </p>
               )}
               {isTextTooLong && (
-                <p data-testid="text-too-long-warning" className="mt-1.5 text-[12px]" style={{ color: '#dc2626', fontFamily: F.cn }}>
+                <p data-testid="text-too-long-warning" className="mt-1.5 text-[12px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>
                   超过 10000 字（当前 {text.length} 字）
                 </p>
               )}
@@ -574,7 +574,7 @@ function SampleFormPioneer({
                   style={{ borderColor: C.line, color: C.ink, fontFamily: F.cn }}
                 />
                 {applyTopic.length > 500 && (
-                  <p className="text-[12px]" style={{ color: '#dc2626', fontFamily: F.cn }}>主题不能超过 500 字</p>
+                  <p className="text-[12px]" style={{ color: C.burgundyText, fontFamily: F.cn }}>主题不能超过 500 字</p>
                 )}
                 <button
                   data-testid="apply-formula-btn"
@@ -895,19 +895,19 @@ function ArchivesErrorPioneer({ onRetry }: { onRetry: () => void }) {
     <div
       data-testid="archives-error"
       className="flex flex-col items-center gap-4 rounded-xl border border-dashed py-12 text-center"
-      style={{ borderColor: '#fecaca', background: '#fff5f5' }}
+      style={{ borderColor: `${C.burgundy}30`, background: `${C.burgundy}08` }}
     >
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: '#fee2e2' }}>
-        <span className="material-symbols-outlined text-[32px]" style={{ color: '#dc2626' }} aria-hidden={true}>error</span>
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: `${C.burgundy}18` }}>
+        <span className="material-symbols-outlined text-[32px]" style={{ color: C.burgundyText }} aria-hidden={true}>error</span>
       </span>
-      <p className="text-[15px] font-semibold" style={{ color: '#dc2626', fontFamily: F.cn }}>加载学习档案失败</p>
+      <p className="text-[15px] font-semibold" style={{ color: C.burgundyText, fontFamily: F.cn }}>加载学习档案失败</p>
       <button
         type="button"
         onClick={onRetry}
         className="ikb-focusring rounded-lg px-4 py-2 text-[13px] font-semibold text-white"
-        style={{ background: '#dc2626', fontFamily: F.cn }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#b91c1c'; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#dc2626'; }}
+        style={{ background: C.burgundy, fontFamily: F.cn }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.burgundyText; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.burgundy; }}
       >
         重试
       </button>

@@ -982,9 +982,9 @@ export default function Trending() {
         <div
           data-testid="trending-error"
           className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20 text-center"
-          style={{ borderColor: '#fca5a5', background: '#fff5f5' }}
+          style={{ borderColor: `${C.burgundy}40`, background: `${C.burgundy}08` }}
         >
-          <span className="material-symbols-outlined mb-3 text-[40px]" aria-hidden={true} style={{ color: '#fca5a5' }}>wifi_off</span>
+          <span className="material-symbols-outlined mb-3 text-[40px]" aria-hidden={true} style={{ color: C.burgundy }}>wifi_off</span>
           <p className="text-[16px] font-bold" style={{ color: '#6b7280', fontFamily: F.cn }}>加载失败</p>
           <p className="mt-1 text-[13px]" style={{ color: '#6b7280', fontFamily: F.cn }}>网络错误，请稍后重试</p>
           <button
