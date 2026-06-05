@@ -130,19 +130,50 @@
 .ikb-gradbtn:disabled { animation: none; }
 .ikb-gradbtn:disabled::after { display: none; }
 
-/* ── 通用卡片悬停 · 上抬 + 红蓝紫主色描边 + 柔和彩色光晕 ──────────────────────────
- * 数据卡 / 图表卡 / 列表卡 / 导航卡通用(区别于首页 .ikb-card 的整块渐变灌注)。
- * 给卡片容器加 className="ikb-hovercard" 即可;hover 时上抬 + 边框亮起 IKB 蓝 + 红蓝紫柔光。 */
+/* ── 通用卡片悬停 · 首页同款「红蓝紫渐变灌注 + 上抬 + 内容转白」────────────────────
+ * 给卡片容器加 className="ikb-hovercard";hover 时整块灌红蓝紫渐变 + 上抬 5px,
+ * 内部文字/图标统一转白,徽标/图标块/迷你图表磨砂成半透明白(在渐变上仍可读,不糊)。
+ * 与首页 .ikb-card 视觉一致(.ikb-card 靠 .ikb-c-* 逐元素变白;本类用后代通配选择器,
+ * 适配任意卡片结构,无需逐卡改 markup)。内部颜色多为内联样式,故统一用 !important 压过。 */
 .ikb-hovercard {
-  transition: transform .3s cubic-bezier(.16, 1, .3, 1), border-color .3s ease, box-shadow .3s ease;
+  transition: background .4s cubic-bezier(.16, 1, .3, 1), border-color .4s ease,
+    transform .4s cubic-bezier(.16, 1, .3, 1), box-shadow .4s ease;
   will-change: transform;
 }
 .ikb-hovercard:hover {
-  transform: translateY(-4px);
-  border-color: #2B53E6 !important;
-  box-shadow: 0 14px 30px -12px rgba(43, 83, 230, 0.30), 0 6px 14px -8px rgba(123, 59, 224, 0.22);
+  background: var(--ikb-grad) !important;
+  background-image: var(--ikb-grad) !important;
+  border-color: transparent !important;
+  transform: translateY(-5px);
+  box-shadow: 0 18px 38px -14px rgba(43, 83, 230, 0.48), 0 8px 18px -10px rgba(123, 59, 224, 0.36);
+}
+/* 文字 + 连字图标 → 白(内联非 !important 被压过) */
+.ikb-hovercard:hover :where(h1, h2, h3, h4, h5, h6, p, span, a, strong, b, em, small, label, li, dt, dd, th, td, figcaption, time),
+.ikb-hovercard:hover :where(.material-symbols-outlined) {
+  color: #ffffff !important;
+}
+/* 徽标 / 胶囊 / chip / 图标方块 → 磨砂半透明白(均为 Tailwind 圆角工具类) */
+.ikb-hovercard:hover :where(.rounded-full, .rounded, .rounded-md, .rounded-lg) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+/* 内部白底 / 浅底小面板 → 磨砂(防渐变上留死白块) */
+.ikb-hovercard:hover :where(.bg-white, .bg-gray-50, .bg-slate-50, .bg-zinc-50) {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+/* 迷你柱状 / 进度填充 → 实白 */
+.ikb-hovercard:hover :where(.rounded-t) {
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+/* SVG 图表(环形 / 雷达 / 迷你折线)→ 描边白 + 实心填充淡白(fill=none 的描边图不动填充) */
+.ikb-hovercard:hover svg :where(circle, path, rect, line, polyline, polygon) {
+  stroke: rgba(255, 255, 255, 0.92) !important;
+}
+.ikb-hovercard:hover svg :where(circle, path, rect, polygon)[fill]:not([fill='none']) {
+  fill: rgba(255, 255, 255, 0.22) !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  .ikb-hovercard { transition: border-color .3s ease, box-shadow .3s ease; }
-  .ikb-hovercard:hover { transform: none; }
+  .ikb-hovercard:hover {
+    transform: none;
+  }
 }

@@ -152,7 +152,7 @@ function MonetizationForm({
 }: MonetizationFormProps) {
   return (
     <section
-      className="ikb-hovercard relative overflow-hidden rounded-xl border p-6"
+      className="relative overflow-hidden rounded-xl border p-6"
       style={{ borderColor: C.line, background: `linear-gradient(135deg, ${C.paper} 0%, ${C.base} 100%)` }}
     >
       <div

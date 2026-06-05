@@ -959,7 +959,7 @@ export default function VideoAnalysis() {
         </section>
 
         {/* ── 一键仿写 ──────────────────────────────────────── */}
-        <section className="ikb-hovercard overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
+        <section className="overflow-hidden rounded-xl border" style={{ borderColor: C.line, background: C.paper }}>
           <div
             className="flex items-center justify-between px-6 py-4"
             style={{ background: C.grad }}
